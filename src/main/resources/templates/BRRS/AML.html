@@ -1066,7 +1066,52 @@ PURPOSE		: BRRSREPORT
     </script>
 
 
+<style>
+		.left-arrow-circle {
+			background-color: white;
+			color: #007bff;
+			border-radius: 50%;
+			padding: 8px;
+			margin-right: 10px;
+			cursor: pointer;
+		}
 
+		/* 🚌 Bus display style box */
+		/* 🚌 Bus display style box */
+					.boards {
+						transform: translateY(6px);
+					  background-color: rgb(107, 122, 143);
+					  color: white;
+					  padding: 5px 80px;
+					  border-radius: 8px;
+					  overflow: hidden;
+					  white-space: nowrap;
+					  flex: 1; /* ✅ makes it take available space dynamically */
+					  min-width: 200px;
+					  box-shadow: 0 0 10px rgb(107, 122, 143);
+					  position: relative;
+					}
+
+		/* ✨ Scrolling animation */
+		.scrolling-text {
+			display: inline-block;
+			font-family: "Courier New", monospace;
+			font-weight: bold;
+			letter-spacing: 1px;
+			animation: scroll-left 10s linear infinite;
+		}
+
+		/* Animation keyframes */
+		@keyframes scroll-left {
+			0% {
+				transform: translateX(100%);
+			}
+
+			100% {
+				transform: translateX(-100%);
+			}
+		}
+	</style>
     <style>
         table {
             border-collapse: collapse;
@@ -1135,6 +1180,9 @@ PURPOSE		: BRRSREPORT
                 "> DATA GATHERING TEMPLATE - AML / CFT
 
                         </h5>
+                        <div class="boards">
+							<p class="scrolling-text">BANK OF BOTSWANA - BANKING SUPERVISION DEPARTMENT </p>
+						</div>
                     </div>
 
                     <div class="custom-tab-btn-group nav-buttons"
@@ -1156,10 +1204,10 @@ PURPOSE		: BRRSREPORT
                             Details
                         </button>
                         <!-- Modify button -->
-                        <button type="button" class="custom-tab-btn" onclick="showmodify(this);"
+                        <!-- <button type="button" class="custom-tab-btn" onclick="showmodify(this);"
                             title="Click to EDIT Records" th:if="${type != 'ARCHIVAL'}"
                             th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
-                            id="addRecord">Modify</button>
+                            id="addRecord">Modify</button> -->
                         <button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord"
                             onclick="cancelModify();" style="display: none;">Cancel</button>
                         <button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
@@ -1198,7 +1246,7 @@ PURPOSE		: BRRSREPORT
                                     <table class="table table-bordered table-hover table-sm">
                                         <thead>
                                             <p
-                                                style="text-align: center;vertical-align: center;font-family: Arial, sans-serif;font-weight: bold;padding-top: 10px;">
+                                                style="text-align: center;vertical-align: center;font-family: Arial, sans-serif;font-weight: bold;padding-top: 10px;background-color: #D8D8D8;">
                                                 BREAKDOWN OF CUSTOMER DEPOSITS</p>
                                             <p
                                                 style="text-align: left;vertical-align: left;font-family: Arial, sans-serif;font-weight: bold;">
@@ -1261,14 +1309,12 @@ PURPOSE		: BRRSREPORT
                                             <tr>
                                                 <td th:text="${reportsummary.r15_cust_base_deposit}"
                                                     style="font-weight: bold;"></td>
-                                                <td style="text-align: right; padding-right:10px;font-weight: bold;"
+                                                <td style="text-align: right;color: white; background-color: rgb(107, 122, 143); padding-right:10px;font-weight: bold;"
                                                     th:text="${reportsummary?.r15_cust_base_no_of_acct ?: ''}"
-                                                    th:attr="RowId='R15', ColumnId='C2'"
-                                                    onclick="showdetailsbyRowAndColumn(this)"></td>
-                                                <td style="text-align: right; padding-right:10px;font-weight: bold;"
+                                                    ></td>
+                                                <td style="text-align: right;color: white;background-color: rgb(107, 122, 143); padding-right:10px;font-weight: bold;"
                                                     th:text="${reportsummary?.r15_cust_base_tot_dep ?: ''}"
-                                                    th:attr="RowId='R15', ColumnId='C3'"
-                                                    onclick="showdetailsbyRowAndColumn(this)"></td>
+                                                  ></td>
                                             </tr>
 
                                         </tbody>
@@ -1324,11 +1370,11 @@ PURPOSE		: BRRSREPORT
                                             <tr>
                                                 <td th:text="${reportsummary.r24_cust_risk_pro_deposit}"
                                                     style="font-weight: bold;"></td>
-                                                <td style="text-align: right; padding-right:10px;font-weight: bold;"
+                                                <td style="text-align: right; color: white;background-color: rgb(107, 122, 143); padding-right:10px;font-weight: bold;"
                                                     th:text="${reportsummary?.r24_cust_risk_pro_num_of_cust ?: ''}"
                                                     th:attr="RowId='R24', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
-                                                <td style="text-align: right; padding-right:10px;font-weight: bold;"
+                                                <td style="text-align: right;color: white;background-color: rgb(107, 122, 143);  padding-right:10px;font-weight: bold;"
                                                     th:text="${reportsummary?.r24_cust_risk_pro_value ?: ''}"
                                                     th:attr="RowId='R24', ColumnId='C3'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
@@ -1394,15 +1440,13 @@ PURPOSE		: BRRSREPORT
                                                     th:attr="RowId='R30', ColumnId='C3'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
 
-                                                <td style="text-align:right; padding-right:10px;font-weight: bold;"
+                                                <td style="text-align:right;color: white;background-color: rgb(107, 122, 143);  padding-right:10px;font-weight: bold;"
                                                     th:text="${reportsummary?.r30_b2_tot_no_cust ?: ''}"
-                                                    th:attr="RowId='R30', ColumnId='C2'"
-                                                    onclick="showdetailsbyRowAndColumn(this)"></td>
+                                               ></td>
 
-                                                <td style="text-align:right; padding-right:10px;font-weight: bold;"
+                                                <td style="text-align:right; color: white;background-color: rgb(107, 122, 143); padding-right:10px;font-weight: bold;"
                                                     th:text="${reportsummary?.r30_b2_tot_deposit ?: ''}"
-                                                    th:attr="RowId='R30', ColumnId='C3'"
-                                                    onclick="showdetailsbyRowAndColumn(this)"></td>
+                                              ></td>
                                             </tr>
 
                                             <tr>
@@ -1438,15 +1482,13 @@ PURPOSE		: BRRSREPORT
                                                     th:attr="RowId='R31', ColumnId='C3'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
 
-                                                <td style="text-align:right; padding-right:10px;font-weight: bold;"
+                                                <td style="text-align:right;color: white;background-color: rgb(107, 122, 143);  padding-right:10px;font-weight: bold;"
                                                     th:text="${reportsummary?.r31_b2_tot_no_cust ?: ''}"
-                                                    th:attr="RowId='R31', ColumnId='C2'"
-                                                    onclick="showdetailsbyRowAndColumn(this)"></td>
+                                                  ></td>
 
-                                                <td style="text-align:right; padding-right:10px;font-weight: bold;"
+                                                <td style="text-align:right; color: white;background-color: rgb(107, 122, 143); padding-right:10px;font-weight: bold;"
                                                     th:text="${reportsummary?.r31_b2_tot_deposit ?: ''}"
-                                                    th:attr="RowId='R31', ColumnId='C3'"
-                                                    onclick="showdetailsbyRowAndColumn(this)"></td>
+                                               ></td>
                                             </tr>
                                             <tr>
                                                 <td th:text="${reportsummary.r32_b2_cust_deposit}"></td>
@@ -1481,59 +1523,49 @@ PURPOSE		: BRRSREPORT
                                                     th:attr="RowId='R32', ColumnId='C3'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
 
-                                                <td style="text-align:right; padding-right:10px;font-weight: bold;"
+                                                <td style="text-align:right;color: white;background-color: rgb(107, 122, 143);  padding-right:10px;font-weight: bold;"
                                                     th:text="${reportsummary?.r32_b2_tot_no_cust ?: ''}"
-                                                    th:attr="RowId='R32', ColumnId='C2'"
-                                                    onclick="showdetailsbyRowAndColumn(this)"></td>
+                                                 ></td>
 
-                                                <td style="text-align:right; padding-right:10px;font-weight: bold;"
+                                                <td style="text-align:right; color: white;background-color: rgb(107, 122, 143); padding-right:10px;font-weight: bold;"
                                                     th:text="${reportsummary?.r32_b2_tot_deposit ?: ''}"
-                                                    th:attr="RowId='R32', ColumnId='C3'"
-                                                    onclick="showdetailsbyRowAndColumn(this)"></td>
+                                          ></td>
                                             </tr>
                                             <tr>
                                                 <td th:text="${reportsummary.r33_b2_cust_deposit}"
                                                     style="font-weight: bold;"></td>
 
-                                                <td style="text-align:right; padding-right:10px;font-weight: bold;"
+                                                <td style="text-align:right;color: white;background-color: rgb(107, 122, 143);  padding-right:10px;font-weight: bold;"
                                                     th:text="${reportsummary?.r33_b2_low_risk_no_cust ?: ''}"
-                                                    th:attr="RowId='R33', ColumnId='C2'"
-                                                    onclick="showdetailsbyRowAndColumn(this)"></td>
+                                                ></td>
 
-                                                <td style="text-align:right; padding-right:10px;font-weight: bold;"
+                                                <td style="text-align:right;color: white;background-color: rgb(107, 122, 143);  padding-right:10px;font-weight: bold;"
                                                     th:text="${reportsummary?.r33_b2_low_risk_deposit ?: ''}"
-                                                    th:attr="RowId='R33', ColumnId='C3'"
-                                                    onclick="showdetailsbyRowAndColumn(this)"></td>
+                                               ></td>
 
-                                                <td style="text-align:right; padding-right:10px;font-weight: bold;"
+                                                <td style="text-align:right;color: white;background-color: rgb(107, 122, 143);  padding-right:10px;font-weight: bold;"
                                                     th:text="${reportsummary?.r33_b2_medi_risk_no_cust ?: ''}"
-                                                    th:attr="RowId='R33', ColumnId='C2'"
-                                                    onclick="showdetailsbyRowAndColumn(this)"></td>
+                                                 ></td>
 
-                                                <td style="text-align:right; padding-right:10px;font-weight: bold;"
+                                                <td style="text-align:right; color: white;background-color: rgb(107, 122, 143); padding-right:10px;font-weight: bold;"
                                                     th:text="${reportsummary?.r33_b2_medi_risk_deposit ?: ''}"
-                                                    th:attr="RowId='R33', ColumnId='C3'"
-                                                    onclick="showdetailsbyRowAndColumn(this)"></td>
+                                                 ></td>
 
-                                                <td style="text-align:right; padding-right:10px;font-weight: bold;"
+                                                <td style="text-align:right;color: white;background-color: rgb(107, 122, 143);  padding-right:10px;font-weight: bold;"
                                                     th:text="${reportsummary?.r33_b2_high_risk_no_cust ?: ''}"
-                                                    th:attr="RowId='R33', ColumnId='C2'"
-                                                    onclick="showdetailsbyRowAndColumn(this)"></td>
+                                                    ></td>
 
-                                                <td style="text-align:right; padding-right:10px;font-weight: bold;"
+                                                <td style="text-align:right;color: white;background-color: rgb(107, 122, 143);  padding-right:10px;font-weight: bold;"
                                                     th:text="${reportsummary?.r33_b2_high_risk_deposit ?: ''}"
-                                                    th:attr="RowId='R33', ColumnId='C3'"
-                                                    onclick="showdetailsbyRowAndColumn(this)"></td>
+                                                 ></td>
 
-                                                <td style="text-align:right; padding-right:10px;font-weight: bold;"
+                                                <td style="text-align:right; color: white;background-color: rgb(107, 122, 143); padding-right:10px;font-weight: bold;"
                                                     th:text="${reportsummary?.r33_b2_tot_no_cust ?: ''}"
-                                                    th:attr="RowId='R33', ColumnId='C2'"
-                                                    onclick="showdetailsbyRowAndColumn(this)"></td>
+                           ></td>
 
-                                                <td style="text-align:right; padding-right:10px;font-weight: bold;"
+                                                <td style="text-align:right;color: white;background-color: rgb(107, 122, 143);  padding-right:10px;font-weight: bold;"
                                                     th:text="${reportsummary?.r33_b2_tot_deposit ?: ''}"
-                                                    th:attr="RowId='R33', ColumnId='C3'"
-                                                    onclick="showdetailsbyRowAndColumn(this)"></td>
+                                               ></td>
                                             </tr>
 
                                         </tbody>
@@ -1582,15 +1614,13 @@ PURPOSE		: BRRSREPORT
                                                 <td th:text="${reportsummary.r41_cust_base_cust_deposit}"
                                                     style="font-weight: bold;"></td>
 
-                                                <td style="text-align:right; padding-right:10px;font-weight: bold;"
+                                                <td style="text-align:right;color: white;background-color: rgb(107, 122, 143);  padding-right:10px;font-weight: bold;"
                                                     th:text="${reportsummary?.r41_cust_base_no_cust ?: ''}"
-                                                    th:attr="RowId='R41', ColumnId='C2'"
-                                                    onclick="showdetailsbyRowAndColumn(this)"></td>
+                                                    ></td>
 
-                                                <td style="text-align:right; padding-right:10px;font-weight: bold;"
+                                                <td style="text-align:right;color: white;background-color: rgb(107, 122, 143);  padding-right:10px;font-weight: bold;"
                                                     th:text="${reportsummary?.r41_cust_base_deposits ?: ''}"
-                                                    th:attr="RowId='R41', ColumnId='C3'"
-                                                    onclick="showdetailsbyRowAndColumn(this)"></td>
+                                                    ></td>
                                             </tr>
 
                                         </tbody>
@@ -1609,16 +1639,16 @@ PURPOSE		: BRRSREPORT
                                         </thead>
                                         <tbody style="font-family: Arial" th:each="reportsummary: ${reportsummary}">
                                             <tr>
-                                                <td th:text="${reportsummary.r50_brkdown_typ_of_cust}"
+                                                <td th:text="${reportsummary.r50_brkdown_typ_of_cust}" colspan="2"
                                                     style="font-weight: bold;"></td>
-                                                <td style="text-align:right; padding-right:10px;font-weight: bold;"
+                                                <!-- <td style="text-align:right; padding-right:10px;font-weight: bold;"
                                                     th:text="${reportsummary?.r50_brkdown_num_of_cust ?: ''}"
                                                     th:attr="RowId='R50', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                                 <td style="text-align:right; padding-right:10px;font-weight: bold;"
                                                     th:text="${reportsummary?.r50_brkdown_tot_depo ?: ''}"
                                                     th:attr="RowId='R50', ColumnId='C3'"
-                                                    onclick="showdetailsbyRowAndColumn(this)"></td>
+                                                    onclick="showdetailsbyRowAndColumn(this)"></td> -->
                                             </tr>
 
                                             <tr>
@@ -1672,14 +1702,12 @@ PURPOSE		: BRRSREPORT
                                             <tr>
                                                 <td th:text="${reportsummary.r55_brkdown_typ_of_cust}"
                                                     style="font-weight: bold;"></td>
-                                                <td style="text-align:right; padding-right:10px;font-weight: bold;"
+                                                <td style="text-align:right;color: white;background-color: rgb(107, 122, 143);  padding-right:10px;font-weight: bold;"
                                                     th:text="${reportsummary?.r55_brkdown_num_of_cust ?: ''}"
-                                                    th:attr="RowId='R55', ColumnId='C2'"
-                                                    onclick="showdetailsbyRowAndColumn(this)"></td>
-                                                <td style="text-align:right; padding-right:10px;font-weight: bold;"
+                                                  ></td>
+                                                <td style="text-align:right;color: white;background-color: rgb(107, 122, 143);  padding-right:10px;font-weight: bold;"
                                                     th:text="${reportsummary?.r55_brkdown_tot_depo ?: ''}"
-                                                    th:attr="RowId='R55', ColumnId='C3'"
-                                                    onclick="showdetailsbyRowAndColumn(this)"></td>
+                                                 ></td>
                                             </tr>
 
                                             <tr>
@@ -1854,14 +1882,12 @@ PURPOSE		: BRRSREPORT
                                             <tr>
                                                 <td th:text="${reportsummary.r70_brkdown_typ_of_cust}"
                                                     style="font-weight: bold;"></td>
-                                                <td style="text-align:right; padding-right:10px;font-weight: bold;"
+                                                <td style="text-align:right;color: white;background-color: rgb(107, 122, 143);  padding-right:10px;font-weight: bold;"
                                                     th:text="${reportsummary?.r70_brkdown_num_of_cust ?: ''}"
-                                                    th:attr="RowId='R70', ColumnId='C2'"
-                                                    onclick="showdetailsbyRowAndColumn(this)"></td>
-                                                <td style="text-align:right; padding-right:10px;font-weight: bold;"
+                                                    ></td>
+                                                <td style="text-align:right;color: white;background-color: rgb(107, 122, 143);  padding-right:10px;font-weight: bold;"
                                                     th:text="${reportsummary?.r70_brkdown_tot_depo ?: ''}"
-                                                    th:attr="RowId='R70', ColumnId='C3'"
-                                                    onclick="showdetailsbyRowAndColumn(this)"></td>
+                                                   ></td>
                                             </tr>
 
                                             <tr>
@@ -1919,14 +1945,12 @@ PURPOSE		: BRRSREPORT
                                             <tr>
                                                 <td th:text="${reportsummary.r75_brkdown_typ_of_cust}"
                                                     style="font-weight: bold;"></td>
-                                                <td style="text-align:right; padding-right:10px;font-weight: bold;"
+                                                <td style="text-align:right;color: white;background-color: rgb(107, 122, 143);  padding-right:10px;font-weight: bold;"
                                                     th:text="${reportsummary?.r75_brkdown_num_of_cust ?: ''}"
-                                                    th:attr="RowId='R75', ColumnId='C2'"
-                                                    onclick="showdetailsbyRowAndColumn(this)"></td>
-                                                <td style="text-align:right; padding-right:10px;font-weight: bold;"
+                                                 ></td>
+                                                <td style="text-align:right;color: white;background-color: rgb(107, 122, 143);  padding-right:10px;font-weight: bold;"
                                                     th:text="${reportsummary?.r75_brkdown_tot_depo ?: ''}"
-                                                    th:attr="RowId='R75', ColumnId='C3'"
-                                                    onclick="showdetailsbyRowAndColumn(this)"></td>
+                                                 ></td>
                                             </tr>
 
                                         </tbody>
@@ -2745,15 +2769,13 @@ PURPOSE		: BRRSREPORT
                                                 <td th:text="${reportsummary.r164_j_trade_finc_prod}"
                                                     style="font-weight: bold;"></td>
 
-                                                <td style="text-align:right; padding-right:10px;font-weight: bold;"
+                                                <td style="text-align:right; color: white;background-color: rgb(107, 122, 143); padding-right:10px;font-weight: bold;"
                                                     th:text="${reportsummary?.r164_j_num_of_cust ?: ''}"
-                                                    th:attr="RowId='R164', ColumnId='C2'"
-                                                    onclick="showdetailsbyRowAndColumn(this)"></td>
+                                                  ></td>
 
-                                                <td style="text-align:right; padding-right:10px;font-weight: bold;"
+                                                <td style="text-align:right; color: white;background-color: rgb(107, 122, 143); padding-right:10px;font-weight: bold;"
                                                     th:text="${reportsummary?.r164_j_commitment_at_jun ?: ''}"
-                                                    th:attr="RowId='R164', ColumnId='C3'"
-                                                    onclick="showdetailsbyRowAndColumn(this)"></td>
+                                                 ></td>
                                             </tr>
 
                                         </tbody>
