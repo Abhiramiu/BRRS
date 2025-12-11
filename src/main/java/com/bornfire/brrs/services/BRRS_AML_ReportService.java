@@ -2313,7 +2313,7 @@ public class BRRS_AML_ReportService {
             numberStyle.setFont(font);
             // --- End of Style Definitions ---
 
-            int startRow = 1;
+            int startRow = 10;
 
             if (!dataList.isEmpty()) {
                 for (int i = 0; i < dataList.size(); i++) {
@@ -2325,28 +2325,1922 @@ public class BRRS_AML_ReportService {
                         row = sheet.createRow(startRow + i);
                     }
 
-                    // row2
-                    // Column C
+                    // A TABLE
 
-                    // Cell cellC = row.getCell(2);
-                    // if (cellC == null)
-                    // cellC = row.createCell(2);
-                    // if (record.getR2_cap_ratio_buff_amt() != null) {
-                    // cellC.setCellValue(record.getR2_cap_ratio_buff_amt().doubleValue());
-                    // } else {
-                    // cellC.setCellValue(0);
-                    // }
+                    Cell cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+                    if (record.getR11_cust_base_no_of_acct() != null) {
+                        cellC.setCellValue(record.getR11_cust_base_no_of_acct().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
 
-                    // // ======================= R30 =======================
-                    // row = sheet.getRow(29);
-                    // cellC = row.getCell(2);
-                    // if (cellC == null)
-                    // cellC = row.createCell(2);
-                    // if (record.getR30_cap_ratio_buff_amt() != null) {
-                    // cellC.setCellValue(record.getR30_cap_ratio_buff_amt().doubleValue());
-                    // } else {
-                    // cellC.setCellValue(0);
-                    // }
+                    Cell cellD = row.getCell(3);
+                    if (cellD == null)
+                        cellD = row.createCell(2);
+                    if (record.getR11_cust_base_tot_dep() != null) {
+                        cellD.setCellValue(record.getR11_cust_base_tot_dep().doubleValue());
+                    } else {
+                        cellD.setCellValue(0);
+                    }
+
+                    // ROW 12
+                    row = sheet.getRow(11);
+
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+                    if (record.getR12_cust_base_no_of_acct() != null) {
+                        cellC.setCellValue(record.getR12_cust_base_no_of_acct().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    cellD = row.getCell(3);
+                    if (cellD == null)
+                        cellD = row.createCell(3);
+                    if (record.getR12_cust_base_tot_dep() != null) {
+                        cellD.setCellValue(record.getR12_cust_base_tot_dep().doubleValue());
+                    } else {
+                        cellD.setCellValue(0);
+                    }
+
+                    // ROW 13
+                    row = sheet.getRow(12);
+
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+                    if (record.getR13_cust_base_no_of_acct() != null) {
+                        cellC.setCellValue(record.getR13_cust_base_no_of_acct().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    cellD = row.getCell(3);
+                    if (cellD == null)
+                        cellD = row.createCell(3);
+                    if (record.getR13_cust_base_tot_dep() != null) {
+                        cellD.setCellValue(record.getR13_cust_base_tot_dep().doubleValue());
+                    } else {
+                        cellD.setCellValue(0);
+                    }
+
+                    // ROW 14
+                    row = sheet.getRow(13);
+
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+                    if (record.getR14_cust_base_no_of_acct() != null) {
+                        cellC.setCellValue(record.getR14_cust_base_no_of_acct().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    cellD = row.getCell(3);
+                    if (cellD == null)
+                        cellD = row.createCell(3);
+                    if (record.getR14_cust_base_tot_dep() != null) {
+                        cellD.setCellValue(record.getR14_cust_base_tot_dep().doubleValue());
+                    } else {
+                        cellD.setCellValue(0);
+                    }
+
+                    // B1 TABLE
+
+                    // ROW 21
+                    row = sheet.getRow(20);
+
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+                    if (record.getR21_cust_risk_pro_num_of_cust() != null) {
+                        cellC.setCellValue(record.getR21_cust_risk_pro_num_of_cust().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    cellD = row.getCell(3);
+                    if (cellD == null)
+                        cellD = row.createCell(3);
+                    if (record.getR21_cust_risk_pro_value() != null) {
+                        cellD.setCellValue(record.getR21_cust_risk_pro_value().doubleValue());
+                    } else {
+                        cellD.setCellValue(0);
+                    }
+
+                    // ROW 22
+                    row = sheet.getRow(21);
+
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+                    if (record.getR22_cust_risk_pro_num_of_cust() != null) {
+                        cellC.setCellValue(record.getR22_cust_risk_pro_num_of_cust().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    cellD = row.getCell(3);
+                    if (cellD == null)
+                        cellD = row.createCell(3);
+                    if (record.getR22_cust_risk_pro_value() != null) {
+                        cellD.setCellValue(record.getR22_cust_risk_pro_value().doubleValue());
+                    } else {
+                        cellD.setCellValue(0);
+                    }
+
+                    // ROW 23
+                    row = sheet.getRow(22);
+
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+                    if (record.getR23_cust_risk_pro_num_of_cust() != null) {
+                        cellC.setCellValue(record.getR23_cust_risk_pro_num_of_cust().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    cellD = row.getCell(3);
+                    if (cellD == null)
+                        cellD = row.createCell(3);
+                    if (record.getR23_cust_risk_pro_value() != null) {
+                        cellD.setCellValue(record.getR23_cust_risk_pro_value().doubleValue());
+                    } else {
+                        cellD.setCellValue(0);
+                    }
+
+                    // B2 TABLE
+
+                    // ROW 30
+                    row = sheet.getRow(29);
+
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+                    if (record.getR30_b2_low_risk_no_cust() != null) {
+                        cellC.setCellValue(record.getR30_b2_low_risk_no_cust().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    cellD = row.getCell(3);
+                    if (cellD == null)
+                        cellD = row.createCell(3);
+                    if (record.getR30_b2_low_risk_deposit() != null) {
+                        cellD.setCellValue(record.getR30_b2_low_risk_deposit().doubleValue());
+                    } else {
+                        cellD.setCellValue(0);
+                    }
+
+                    Cell cellE = row.getCell(4);
+                    if (cellE == null)
+                        cellE = row.createCell(4);
+                    if (record.getR30_b2_medi_risk_no_cust() != null) {
+                        cellE.setCellValue(record.getR30_b2_medi_risk_no_cust().doubleValue());
+                    } else {
+                        cellE.setCellValue(0);
+                    }
+
+                    Cell cellF = row.getCell(5);
+                    if (cellF == null)
+                        cellF = row.createCell(5);
+                    if (record.getR30_b2_medi_risk_deposit() != null) {
+                        cellF.setCellValue(record.getR30_b2_medi_risk_deposit().doubleValue());
+                    } else {
+                        cellF.setCellValue(0);
+                    }
+
+                    Cell cellG = row.getCell(6);
+                    if (cellG == null)
+                        cellG = row.createCell(6);
+                    if (record.getR30_b2_high_risk_no_cust() != null) {
+                        cellG.setCellValue(record.getR30_b2_high_risk_no_cust().doubleValue());
+                    } else {
+                        cellG.setCellValue(0);
+                    }
+
+                    Cell cellH = row.getCell(7);
+                    if (cellH == null)
+                        cellH = row.createCell(7);
+                    if (record.getR30_b2_high_risk_deposit() != null) {
+                        cellH.setCellValue(record.getR30_b2_high_risk_deposit().doubleValue());
+                    } else {
+                        cellH.setCellValue(0);
+                    }
+
+                    // ROW 31
+                    row = sheet.getRow(30);
+
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+                    if (record.getR31_b2_low_risk_no_cust() != null) {
+                        cellC.setCellValue(record.getR31_b2_low_risk_no_cust().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    cellD = row.getCell(3);
+                    if (cellD == null)
+                        cellD = row.createCell(3);
+                    if (record.getR31_b2_low_risk_deposit() != null) {
+                        cellD.setCellValue(record.getR31_b2_low_risk_deposit().doubleValue());
+                    } else {
+                        cellD.setCellValue(0);
+                    }
+
+                    cellE = row.getCell(4);
+                    if (cellE == null)
+                        cellE = row.createCell(4);
+                    if (record.getR31_b2_medi_risk_no_cust() != null) {
+                        cellE.setCellValue(record.getR31_b2_medi_risk_no_cust().doubleValue());
+                    } else {
+                        cellE.setCellValue(0);
+                    }
+
+                    cellF = row.getCell(5);
+                    if (cellF == null)
+                        cellF = row.createCell(5);
+                    if (record.getR31_b2_medi_risk_deposit() != null) {
+                        cellF.setCellValue(record.getR31_b2_medi_risk_deposit().doubleValue());
+                    } else {
+                        cellF.setCellValue(0);
+                    }
+
+                    cellG = row.getCell(6);
+                    if (cellG == null)
+                        cellG = row.createCell(6);
+                    if (record.getR31_b2_high_risk_no_cust() != null) {
+                        cellG.setCellValue(record.getR31_b2_high_risk_no_cust().doubleValue());
+                    } else {
+                        cellG.setCellValue(0);
+                    }
+
+                    cellH = row.getCell(7);
+                    if (cellH == null)
+                        cellH = row.createCell(7);
+                    if (record.getR31_b2_high_risk_deposit() != null) {
+                        cellH.setCellValue(record.getR31_b2_high_risk_deposit().doubleValue());
+                    } else {
+                        cellH.setCellValue(0);
+                    }
+
+                    // ROW 32
+                    row = sheet.getRow(31);
+
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+                    if (record.getR32_b2_low_risk_no_cust() != null) {
+                        cellC.setCellValue(record.getR32_b2_low_risk_no_cust().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    cellD = row.getCell(3);
+                    if (cellD == null)
+                        cellD = row.createCell(3);
+                    if (record.getR32_b2_low_risk_deposit() != null) {
+                        cellD.setCellValue(record.getR32_b2_low_risk_deposit().doubleValue());
+                    } else {
+                        cellD.setCellValue(0);
+                    }
+
+                    // C TABLE 39 AND 40
+
+                    // ROW 39
+                    row = sheet.getRow(38);
+
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+                    if (record.getR39_cust_base_no_cust() != null) {
+                        cellC.setCellValue(record.getR39_cust_base_no_cust().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    cellD = row.getCell(3);
+                    if (cellD == null)
+                        cellD = row.createCell(3);
+                    if (record.getR39_cust_base_deposits() != null) {
+                        cellD.setCellValue(record.getR39_cust_base_deposits().doubleValue());
+                    } else {
+                        cellD.setCellValue(0);
+                    }
+
+                    // ROW 40
+                    row = sheet.getRow(39);
+
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+                    if (record.getR40_cust_base_no_cust() != null) {
+                        cellC.setCellValue(record.getR40_cust_base_no_cust().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    cellD = row.getCell(3);
+                    if (cellD == null)
+                        cellD = row.createCell(3);
+                    if (record.getR40_cust_base_deposits() != null) {
+                        cellD.setCellValue(record.getR40_cust_base_deposits().doubleValue());
+                    } else {
+                        cellD.setCellValue(0);
+                    }
+
+                    // D TABLE 39 AND 40 D AND E COLUMN
+
+                    // ROW 51
+                    row = sheet.getRow(50);
+
+                    cellD = row.getCell(3);
+                    if (cellD == null)
+                        cellD = row.createCell(3);
+                    if (record.getR51_brkdown_num_of_cust() != null) {
+                        cellD.setCellValue(record.getR51_brkdown_num_of_cust().doubleValue());
+                    } else {
+                        cellD.setCellValue(0);
+                    }
+
+                    cellE = row.getCell(4);
+                    if (cellE == null)
+                        cellE = row.createCell(4);
+                    if (record.getR51_brkdown_tot_depo() != null) {
+                        cellE.setCellValue(record.getR51_brkdown_tot_depo().doubleValue());
+                    } else {
+                        cellE.setCellValue(0);
+                    }
+
+                    // ROW 52
+                    row = sheet.getRow(51);
+
+                    cellD = row.getCell(3);
+                    if (cellD == null)
+                        cellD = row.createCell(3);
+                    if (record.getR52_brkdown_num_of_cust() != null) {
+                        cellD.setCellValue(record.getR52_brkdown_num_of_cust().doubleValue());
+                    } else {
+                        cellD.setCellValue(0);
+                    }
+
+                    cellE = row.getCell(4);
+                    if (cellE == null)
+                        cellE = row.createCell(4);
+                    if (record.getR52_brkdown_tot_depo() != null) {
+                        cellE.setCellValue(record.getR52_brkdown_tot_depo().doubleValue());
+                    } else {
+                        cellE.setCellValue(0);
+                    }
+
+                    // ROW 53
+                    row = sheet.getRow(52);
+
+                    cellD = row.getCell(3);
+                    if (cellD == null)
+                        cellD = row.createCell(3);
+                    if (record.getR53_brkdown_num_of_cust() != null) {
+                        cellD.setCellValue(record.getR53_brkdown_num_of_cust().doubleValue());
+                    } else {
+                        cellD.setCellValue(0);
+                    }
+
+                    cellE = row.getCell(4);
+                    if (cellE == null)
+                        cellE = row.createCell(4);
+                    if (record.getR53_brkdown_tot_depo() != null) {
+                        cellE.setCellValue(record.getR53_brkdown_tot_depo().doubleValue());
+                    } else {
+                        cellE.setCellValue(0);
+                    }
+
+                    // ROW 54
+                    row = sheet.getRow(53);
+
+                    cellD = row.getCell(3);
+                    if (cellD == null)
+                        cellD = row.createCell(3);
+                    if (record.getR54_brkdown_num_of_cust() != null) {
+                        cellD.setCellValue(record.getR54_brkdown_num_of_cust().doubleValue());
+                    } else {
+                        cellD.setCellValue(0);
+                    }
+
+                    cellE = row.getCell(4);
+                    if (cellE == null)
+                        cellE = row.createCell(4);
+                    if (record.getR54_brkdown_tot_depo() != null) {
+                        cellE.setCellValue(record.getR54_brkdown_tot_depo().doubleValue());
+                    } else {
+                        cellE.setCellValue(0);
+                    }
+
+                    // ROW 57
+                    row = sheet.getRow(56);
+
+                    cellD = row.getCell(3);
+                    if (cellD == null)
+                        cellD = row.createCell(3);
+                    if (record.getR57_brkdown_num_of_cust() != null) {
+                        cellD.setCellValue(record.getR57_brkdown_num_of_cust().doubleValue());
+                    } else {
+                        cellD.setCellValue(0);
+                    }
+
+                    cellE = row.getCell(4);
+                    if (cellE == null)
+                        cellE = row.createCell(4);
+                    if (record.getR57_brkdown_tot_depo() != null) {
+                        cellE.setCellValue(record.getR57_brkdown_tot_depo().doubleValue());
+                    } else {
+                        cellE.setCellValue(0);
+                    }
+
+                    // ROW 58
+                    row = sheet.getRow(57);
+
+                    cellD = row.getCell(3);
+                    if (cellD == null)
+                        cellD = row.createCell(3);
+                    if (record.getR58_brkdown_num_of_cust() != null) {
+                        cellD.setCellValue(record.getR58_brkdown_num_of_cust().doubleValue());
+                    } else {
+                        cellD.setCellValue(0);
+                    }
+
+                    cellE = row.getCell(4);
+                    if (cellE == null)
+                        cellE = row.createCell(4);
+                    if (record.getR58_brkdown_tot_depo() != null) {
+                        cellE.setCellValue(record.getR58_brkdown_tot_depo().doubleValue());
+                    } else {
+                        cellE.setCellValue(0);
+                    }
+
+                    // ROW 59
+                    row = sheet.getRow(58);
+
+                    cellD = row.getCell(3);
+                    if (cellD == null)
+                        cellD = row.createCell(3);
+                    if (record.getR59_brkdown_num_of_cust() != null) {
+                        cellD.setCellValue(record.getR59_brkdown_num_of_cust().doubleValue());
+                    } else {
+                        cellD.setCellValue(0);
+                    }
+
+                    cellE = row.getCell(4);
+                    if (cellE == null)
+                        cellE = row.createCell(4);
+                    if (record.getR59_brkdown_tot_depo() != null) {
+                        cellE.setCellValue(record.getR59_brkdown_tot_depo().doubleValue());
+                    } else {
+                        cellE.setCellValue(0);
+                    }
+
+                    // ROW 60
+                    row = sheet.getRow(59);
+
+                    cellD = row.getCell(3);
+                    if (cellD == null)
+                        cellD = row.createCell(3);
+                    if (record.getR60_brkdown_num_of_cust() != null) {
+                        cellD.setCellValue(record.getR60_brkdown_num_of_cust().doubleValue());
+                    } else {
+                        cellD.setCellValue(0);
+                    }
+
+                    cellE = row.getCell(4);
+                    if (cellE == null)
+                        cellE = row.createCell(4);
+                    if (record.getR60_brkdown_tot_depo() != null) {
+                        cellE.setCellValue(record.getR60_brkdown_tot_depo().doubleValue());
+                    } else {
+                        cellE.setCellValue(0);
+                    }
+
+                    // ROW 61
+                    row = sheet.getRow(60);
+
+                    cellD = row.getCell(3);
+                    if (cellD == null)
+                        cellD = row.createCell(3);
+                    if (record.getR61_brkdown_num_of_cust() != null) {
+                        cellD.setCellValue(record.getR61_brkdown_num_of_cust().doubleValue());
+                    } else {
+                        cellD.setCellValue(0);
+                    }
+
+                    cellE = row.getCell(4);
+                    if (cellE == null)
+                        cellE = row.createCell(4);
+                    if (record.getR61_brkdown_tot_depo() != null) {
+                        cellE.setCellValue(record.getR61_brkdown_tot_depo().doubleValue());
+                    } else {
+                        cellE.setCellValue(0);
+                    }
+
+                    // ROW 62
+                    row = sheet.getRow(61);
+
+                    cellD = row.getCell(3);
+                    if (cellD == null)
+                        cellD = row.createCell(3);
+                    if (record.getR62_brkdown_num_of_cust() != null) {
+                        cellD.setCellValue(record.getR62_brkdown_num_of_cust().doubleValue());
+                    } else {
+                        cellD.setCellValue(0);
+                    }
+
+                    cellE = row.getCell(4);
+                    if (cellE == null)
+                        cellE = row.createCell(4);
+                    if (record.getR62_brkdown_tot_depo() != null) {
+                        cellE.setCellValue(record.getR62_brkdown_tot_depo().doubleValue());
+                    } else {
+                        cellE.setCellValue(0);
+                    }
+
+                    // ROW 63
+                    row = sheet.getRow(62);
+
+                    cellD = row.getCell(3);
+                    if (cellD == null)
+                        cellD = row.createCell(3);
+                    if (record.getR63_brkdown_num_of_cust() != null) {
+                        cellD.setCellValue(record.getR63_brkdown_num_of_cust().doubleValue());
+                    } else {
+                        cellD.setCellValue(0);
+                    }
+
+                    cellE = row.getCell(4);
+                    if (cellE == null)
+                        cellE = row.createCell(4);
+                    if (record.getR63_brkdown_tot_depo() != null) {
+                        cellE.setCellValue(record.getR63_brkdown_tot_depo().doubleValue());
+                    } else {
+                        cellE.setCellValue(0);
+                    }
+
+                    // ROW 64
+                    row = sheet.getRow(63);
+
+                    cellD = row.getCell(3);
+                    if (cellD == null)
+                        cellD = row.createCell(3);
+                    if (record.getR64_brkdown_num_of_cust() != null) {
+                        cellD.setCellValue(record.getR64_brkdown_num_of_cust().doubleValue());
+                    } else {
+                        cellD.setCellValue(0);
+                    }
+
+                    cellE = row.getCell(4);
+                    if (cellE == null)
+                        cellE = row.createCell(4);
+                    if (record.getR64_brkdown_tot_depo() != null) {
+                        cellE.setCellValue(record.getR64_brkdown_tot_depo().doubleValue());
+                    } else {
+                        cellE.setCellValue(0);
+                    }
+
+                    // ROW 65
+                    row = sheet.getRow(64);
+
+                    cellD = row.getCell(3);
+                    if (cellD == null)
+                        cellD = row.createCell(3);
+                    if (record.getR65_brkdown_num_of_cust() != null) {
+                        cellD.setCellValue(record.getR65_brkdown_num_of_cust().doubleValue());
+                    } else {
+                        cellD.setCellValue(0);
+                    }
+
+                    cellE = row.getCell(4);
+                    if (cellE == null)
+                        cellE = row.createCell(4);
+                    if (record.getR65_brkdown_tot_depo() != null) {
+                        cellE.setCellValue(record.getR65_brkdown_tot_depo().doubleValue());
+                    } else {
+                        cellE.setCellValue(0);
+                    }
+
+                    // ROW 66
+                    row = sheet.getRow(65);
+
+                    cellD = row.getCell(3);
+                    if (cellD == null)
+                        cellD = row.createCell(3);
+                    if (record.getR66_brkdown_num_of_cust() != null) {
+                        cellD.setCellValue(record.getR66_brkdown_num_of_cust().doubleValue());
+                    } else {
+                        cellD.setCellValue(0);
+                    }
+
+                    cellE = row.getCell(4);
+                    if (cellE == null)
+                        cellE = row.createCell(4);
+                    if (record.getR66_brkdown_tot_depo() != null) {
+                        cellE.setCellValue(record.getR66_brkdown_tot_depo().doubleValue());
+                    } else {
+                        cellE.setCellValue(0);
+                    }
+
+                    // ROW 67
+                    row = sheet.getRow(66);
+
+                    cellD = row.getCell(3);
+                    if (cellD == null)
+                        cellD = row.createCell(3);
+                    if (record.getR67_brkdown_num_of_cust() != null) {
+                        cellD.setCellValue(record.getR67_brkdown_num_of_cust().doubleValue());
+                    } else {
+                        cellD.setCellValue(0);
+                    }
+
+                    cellE = row.getCell(4);
+                    if (cellE == null)
+                        cellE = row.createCell(4);
+                    if (record.getR67_brkdown_tot_depo() != null) {
+                        cellE.setCellValue(record.getR67_brkdown_tot_depo().doubleValue());
+                    } else {
+                        cellE.setCellValue(0);
+                    }
+
+                    // ROW 68
+                    row = sheet.getRow(67);
+
+                    cellD = row.getCell(3);
+                    if (cellD == null)
+                        cellD = row.createCell(3);
+                    if (record.getR68_brkdown_num_of_cust() != null) {
+                        cellD.setCellValue(record.getR68_brkdown_num_of_cust().doubleValue());
+                    } else {
+                        cellD.setCellValue(0);
+                    }
+
+                    cellE = row.getCell(4);
+                    if (cellE == null)
+                        cellE = row.createCell(4);
+                    if (record.getR68_brkdown_tot_depo() != null) {
+                        cellE.setCellValue(record.getR68_brkdown_tot_depo().doubleValue());
+                    } else {
+                        cellE.setCellValue(0);
+                    }
+
+                    // ROW 69
+                    row = sheet.getRow(68);
+
+                    cellD = row.getCell(3);
+                    if (cellD == null)
+                        cellD = row.createCell(3);
+                    if (record.getR69_brkdown_num_of_cust() != null) {
+                        cellD.setCellValue(record.getR69_brkdown_num_of_cust().doubleValue());
+                    } else {
+                        cellD.setCellValue(0);
+                    }
+
+                    cellE = row.getCell(4);
+                    if (cellE == null)
+                        cellE = row.createCell(4);
+                    if (record.getR69_brkdown_tot_depo() != null) {
+                        cellE.setCellValue(record.getR69_brkdown_tot_depo().doubleValue());
+                    } else {
+                        cellE.setCellValue(0);
+                    }
+
+                    // ROW 72
+                    row = sheet.getRow(71);
+
+                    cellD = row.getCell(3);
+                    if (cellD == null)
+                        cellD = row.createCell(3);
+                    if (record.getR72_brkdown_num_of_cust() != null) {
+                        cellD.setCellValue(record.getR72_brkdown_num_of_cust().doubleValue());
+                    } else {
+                        cellD.setCellValue(0);
+                    }
+
+                    cellE = row.getCell(4);
+                    if (cellE == null)
+                        cellE = row.createCell(4);
+                    if (record.getR72_brkdown_tot_depo() != null) {
+                        cellE.setCellValue(record.getR72_brkdown_tot_depo().doubleValue());
+                    } else {
+                        cellE.setCellValue(0);
+                    }
+
+                    // ROW 73
+                    row = sheet.getRow(72);
+
+                    cellD = row.getCell(3);
+                    if (cellD == null)
+                        cellD = row.createCell(3);
+                    if (record.getR73_brkdown_num_of_cust() != null) {
+                        cellD.setCellValue(record.getR73_brkdown_num_of_cust().doubleValue());
+                    } else {
+                        cellD.setCellValue(0);
+                    }
+
+                    cellE = row.getCell(4);
+                    if (cellE == null)
+                        cellE = row.createCell(4);
+                    if (record.getR73_brkdown_tot_depo() != null) {
+                        cellE.setCellValue(record.getR73_brkdown_tot_depo().doubleValue());
+                    } else {
+                        cellE.setCellValue(0);
+                    }
+
+                    // ROW 74
+                    row = sheet.getRow(73);
+
+                    cellD = row.getCell(3);
+                    if (cellD == null)
+                        cellD = row.createCell(3);
+                    if (record.getR74_brkdown_num_of_cust() != null) {
+                        cellD.setCellValue(record.getR74_brkdown_num_of_cust().doubleValue());
+                    } else {
+                        cellD.setCellValue(0);
+                    }
+
+                    cellE = row.getCell(4);
+                    if (cellE == null)
+                        cellE = row.createCell(4);
+                    if (record.getR74_brkdown_tot_depo() != null) {
+                        cellE.setCellValue(record.getR74_brkdown_tot_depo().doubleValue());
+                    } else {
+                        cellE.setCellValue(0);
+                    }
+
+                    // E1 TABLE
+
+                    // ROW 82
+                    row = sheet.getRow(81);
+
+                    Cell cellB = row.getCell(1);
+                    if (cellB == null)
+                        cellB = row.createCell(1);
+                    if (record.getR82_e1_tot_no_cust() != null) {
+                        cellB.setCellValue(record.getR82_e1_tot_no_cust().doubleValue());
+                    } else {
+                        cellB.setCellValue(0);
+                    }
+
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(1);
+                    if (record.getR82_e1_loan_on_bal_expo() != null) {
+                        cellC.setCellValue(record.getR82_e1_loan_on_bal_expo().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    cellD = row.getCell(3);
+                    if (cellD == null)
+                        cellD = row.createCell(3);
+                    if (record.getR82_e1_deposit() != null) {
+                        cellD.setCellValue(record.getR82_e1_deposit().doubleValue());
+                    } else {
+                        cellD.setCellValue(0);
+                    }
+
+                    cellE = row.getCell(4);
+                    if (cellE == null)
+                        cellE = row.createCell(4);
+                    if (record.getR82_e1_funds_behalf_cust() != null) {
+                        cellE.setCellValue(record.getR82_e1_funds_behalf_cust().doubleValue());
+                    } else {
+                        cellE.setCellValue(0);
+                    }
+
+                    cellF = row.getCell(5);
+                    if (cellF == null)
+                        cellF = row.createCell(5);
+                    if (record.getR82_e1_turnover() != null) {
+                        cellF.setCellValue(record.getR82_e1_turnover().doubleValue());
+                    } else {
+                        cellF.setCellValue(0);
+                    }
+
+                    // ROW 83
+                    row = sheet.getRow(82);
+
+                    cellB = row.getCell(1);
+                    if (cellB == null)
+                        cellB = row.createCell(1);
+                    if (record.getR83_e1_tot_no_cust() != null) {
+                        cellB.setCellValue(record.getR83_e1_tot_no_cust().doubleValue());
+                    } else {
+                        cellB.setCellValue(0);
+                    }
+
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+                    if (record.getR83_e1_loan_on_bal_expo() != null) {
+                        cellC.setCellValue(record.getR83_e1_loan_on_bal_expo().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    cellD = row.getCell(3);
+                    if (cellD == null)
+                        cellD = row.createCell(3);
+                    if (record.getR83_e1_deposit() != null) {
+                        cellD.setCellValue(record.getR83_e1_deposit().doubleValue());
+                    } else {
+                        cellD.setCellValue(0);
+                    }
+
+                    cellE = row.getCell(4);
+                    if (cellE == null)
+                        cellE = row.createCell(4);
+                    if (record.getR83_e1_funds_behalf_cust() != null) {
+                        cellE.setCellValue(record.getR83_e1_funds_behalf_cust().doubleValue());
+                    } else {
+                        cellE.setCellValue(0);
+                    }
+
+                    cellF = row.getCell(5);
+                    if (cellF == null)
+                        cellF = row.createCell(5);
+                    if (record.getR83_e1_turnover() != null) {
+                        cellF.setCellValue(record.getR83_e1_turnover().doubleValue());
+                    } else {
+                        cellF.setCellValue(0);
+                    }
+
+                    // E2 TABLE
+
+                    // ROW 89
+                    row = sheet.getRow(88);
+
+                    cellB = row.getCell(1);
+                    if (cellB == null)
+                        cellB = row.createCell(1);
+                    if (record.getR89_e2_tot_no_cust() != null) {
+                        cellB.setCellValue(record.getR89_e2_tot_no_cust().doubleValue());
+                    } else {
+                        cellB.setCellValue(0);
+                    }
+
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+                    if (record.getR89_e2_loans_bal_expo() != null) {
+                        cellC.setCellValue(record.getR89_e2_loans_bal_expo().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    cellD = row.getCell(3);
+                    if (cellD == null)
+                        cellD = row.createCell(3);
+                    if (record.getR89_e2_deposit() != null) {
+                        cellD.setCellValue(record.getR89_e2_deposit().doubleValue());
+                    } else {
+                        cellD.setCellValue(0);
+                    }
+
+                    cellE = row.getCell(4);
+                    if (cellE == null)
+                        cellE = row.createCell(4);
+                    if (record.getR89_e2_funds_behalf_cust() != null) {
+                        cellE.setCellValue(record.getR89_e2_funds_behalf_cust().doubleValue());
+                    } else {
+                        cellE.setCellValue(0);
+                    }
+
+                    cellF = row.getCell(5);
+                    if (cellF == null)
+                        cellF = row.createCell(5);
+                    if (record.getR89_e2_turnover() != null) {
+                        cellF.setCellValue(record.getR89_e2_turnover().doubleValue());
+                    } else {
+                        cellF.setCellValue(0);
+                    }
+
+                    // ROW 90
+                    row = sheet.getRow(89);
+
+                    cellB = row.getCell(1);
+                    if (cellB == null)
+                        cellB = row.createCell(1);
+                    if (record.getR90_e2_tot_no_cust() != null) {
+                        cellB.setCellValue(record.getR90_e2_tot_no_cust().doubleValue());
+                    } else {
+                        cellB.setCellValue(0);
+                    }
+
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+                    if (record.getR90_e2_loans_bal_expo() != null) {
+                        cellC.setCellValue(record.getR90_e2_loans_bal_expo().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    cellD = row.getCell(3);
+                    if (cellD == null)
+                        cellD = row.createCell(3);
+                    if (record.getR90_e2_deposit() != null) {
+                        cellD.setCellValue(record.getR90_e2_deposit().doubleValue());
+                    } else {
+                        cellD.setCellValue(0);
+                    }
+
+                    cellE = row.getCell(4);
+                    if (cellE == null)
+                        cellE = row.createCell(4);
+                    if (record.getR90_e2_funds_behalf_cust() != null) {
+                        cellE.setCellValue(record.getR90_e2_funds_behalf_cust().doubleValue());
+                    } else {
+                        cellE.setCellValue(0);
+                    }
+
+                    cellF = row.getCell(5);
+                    if (cellF == null)
+                        cellF = row.createCell(5);
+                    if (record.getR90_e2_turnover() != null) {
+                        cellF.setCellValue(record.getR90_e2_turnover().doubleValue());
+                    } else {
+                        cellF.setCellValue(0);
+                    }
+
+                    // E3 TABLE
+
+                    // ROW 96
+                    row = sheet.getRow(95);
+
+                    cellB = row.getCell(1);
+                    if (cellB == null)
+                        cellB = row.createCell(1);
+                    if (record.getR96_e3_tot_no_cust() != null) {
+                        cellB.setCellValue(record.getR96_e3_tot_no_cust().doubleValue());
+                    } else {
+                        cellB.setCellValue(0);
+                    }
+
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+                    if (record.getR96_e3_loans_bal_expo() != null) {
+                        cellC.setCellValue(record.getR96_e3_loans_bal_expo().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    cellD = row.getCell(3);
+                    if (cellD == null)
+                        cellD = row.createCell(3);
+                    if (record.getR96_e3_deposit() != null) {
+                        cellD.setCellValue(record.getR96_e3_deposit().doubleValue());
+                    } else {
+                        cellD.setCellValue(0);
+                    }
+
+                    cellE = row.getCell(4);
+                    if (cellE == null)
+                        cellE = row.createCell(4);
+                    if (record.getR96_e3_funds_behalf_cust() != null) {
+                        cellE.setCellValue(record.getR96_e3_funds_behalf_cust().doubleValue());
+                    } else {
+                        cellE.setCellValue(0);
+                    }
+
+                    cellF = row.getCell(5);
+                    if (cellF == null)
+                        cellF = row.createCell(5);
+                    if (record.getR96_e3_turnover() != null) {
+                        cellF.setCellValue(record.getR96_e3_turnover().doubleValue());
+                    } else {
+                        cellF.setCellValue(0);
+                    }
+
+                    // ROW 97
+                    row = sheet.getRow(96);
+
+                    cellB = row.getCell(1);
+                    if (cellB == null)
+                        cellB = row.createCell(1);
+                    if (record.getR97_e3_tot_no_cust() != null) {
+                        cellB.setCellValue(record.getR97_e3_tot_no_cust().doubleValue());
+                    } else {
+                        cellB.setCellValue(0);
+                    }
+
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+                    if (record.getR97_e3_loans_bal_expo() != null) {
+                        cellC.setCellValue(record.getR97_e3_loans_bal_expo().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    cellD = row.getCell(3);
+                    if (cellD == null)
+                        cellD = row.createCell(3);
+                    if (record.getR97_e3_deposit() != null) {
+                        cellD.setCellValue(record.getR97_e3_deposit().doubleValue());
+                    } else {
+                        cellD.setCellValue(0);
+                    }
+
+                    cellE = row.getCell(4);
+                    if (cellE == null)
+                        cellE = row.createCell(4);
+                    if (record.getR97_e3_funds_behalf_cust() != null) {
+                        cellE.setCellValue(record.getR97_e3_funds_behalf_cust().doubleValue());
+                    } else {
+                        cellE.setCellValue(0);
+                    }
+
+                    cellF = row.getCell(5);
+                    if (cellF == null)
+                        cellF = row.createCell(5);
+                    if (record.getR97_e3_turnover() != null) {
+                        cellF.setCellValue(record.getR97_e3_turnover().doubleValue());
+                    } else {
+                        cellF.setCellValue(0);
+                    }
+
+                    // F TABLE
+
+                    // ROW 104
+                    row = sheet.getRow(103);
+
+                    cellB = row.getCell(1);
+                    if (cellB == null)
+                        cellB = row.createCell(1);
+                    if (record.getR104_f_num_of_cust() != null) {
+                        cellB.setCellValue(record.getR104_f_num_of_cust().doubleValue());
+                    } else {
+                        cellB.setCellValue(0);
+                    }
+
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+                    if (record.getR104_f_loans_bal_expo() != null) {
+                        cellC.setCellValue(record.getR104_f_loans_bal_expo().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    cellD = row.getCell(3);
+                    if (cellD == null)
+                        cellD = row.createCell(3);
+                    if (record.getR104_f_deposit() != null) {
+                        cellD.setCellValue(record.getR104_f_deposit().doubleValue());
+                    } else {
+                        cellD.setCellValue(0);
+                    }
+
+                    cellE = row.getCell(4);
+                    if (cellE == null)
+                        cellE = row.createCell(4);
+                    if (record.getR104_f_funds_behalf_cust() != null) {
+                        cellE.setCellValue(record.getR104_f_funds_behalf_cust().doubleValue());
+                    } else {
+                        cellE.setCellValue(0);
+                    }
+
+                    cellF = row.getCell(5);
+                    if (cellF == null)
+                        cellF = row.createCell(5);
+                    if (record.getR104_f_turnover() != null) {
+                        cellF.setCellValue(record.getR104_f_turnover().doubleValue());
+                    } else {
+                        cellF.setCellValue(0);
+                    }
+
+                    // ROW 105
+                    row = sheet.getRow(104);
+
+                    cellB = row.getCell(1);
+                    if (cellB == null)
+                        cellB = row.createCell(1);
+                    if (record.getR105_f_num_of_cust() != null) {
+                        cellB.setCellValue(record.getR105_f_num_of_cust().doubleValue());
+                    } else {
+                        cellB.setCellValue(0);
+                    }
+
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+                    if (record.getR105_f_loans_bal_expo() != null) {
+                        cellC.setCellValue(record.getR105_f_loans_bal_expo().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    cellD = row.getCell(3);
+                    if (cellD == null)
+                        cellD = row.createCell(3);
+                    if (record.getR105_f_deposit() != null) {
+                        cellD.setCellValue(record.getR105_f_deposit().doubleValue());
+                    } else {
+                        cellD.setCellValue(0);
+                    }
+
+                    cellE = row.getCell(4);
+                    if (cellE == null)
+                        cellE = row.createCell(4);
+                    if (record.getR105_f_funds_behalf_cust() != null) {
+                        cellE.setCellValue(record.getR105_f_funds_behalf_cust().doubleValue());
+                    } else {
+                        cellE.setCellValue(0);
+                    }
+
+                    cellF = row.getCell(5);
+                    if (cellF == null)
+                        cellF = row.createCell(5);
+                    if (record.getR105_f_turnover() != null) {
+                        cellF.setCellValue(record.getR105_f_turnover().doubleValue());
+                    } else {
+                        cellF.setCellValue(0);
+                    }
+
+                    // G1 TABLE
+
+                    // ROW 111
+                    row = sheet.getRow(110);
+
+                    // Column D – Number of Transactions
+                    cellD = row.getCell(3);
+                    if (cellD == null)
+                        cellD = row.createCell(3);
+                    if (record.getR111_g1_num_trans() != null) {
+                        cellD.setCellValue(record.getR111_g1_num_trans().doubleValue());
+                    } else {
+                        cellD.setCellValue(0);
+                    }
+
+                    // Column E – Value of Transactions
+                    cellE = row.getCell(4);
+                    if (cellE == null)
+                        cellE = row.createCell(4);
+                    if (record.getR111_g1_val_trans() != null) {
+                        cellE.setCellValue(record.getR111_g1_val_trans().doubleValue());
+                    } else {
+                        cellE.setCellValue(0);
+                    }
+
+                    // ROW 112
+                    row = sheet.getRow(111);
+
+                    // Column D – Number of Transactions
+                    cellD = row.getCell(3);
+                    if (cellD == null)
+                        cellD = row.createCell(3);
+                    if (record.getR112_g1_num_trans() != null) {
+                        cellD.setCellValue(record.getR112_g1_num_trans().doubleValue());
+                    } else {
+                        cellD.setCellValue(0);
+                    }
+
+                    // Column E – Value of Transactions
+                    cellE = row.getCell(4);
+                    if (cellE == null)
+                        cellE = row.createCell(4);
+                    if (record.getR112_g1_val_trans() != null) {
+                        cellE.setCellValue(record.getR112_g1_val_trans().doubleValue());
+                    } else {
+                        cellE.setCellValue(0);
+                    }
+
+                    // ROW 114
+                    row = sheet.getRow(113);
+
+                    // Column D – Number of Transactions
+                    cellD = row.getCell(3);
+                    if (cellD == null)
+                        cellD = row.createCell(3);
+                    if (record.getR114_g1_num_trans() != null) {
+                        cellD.setCellValue(record.getR114_g1_num_trans().doubleValue());
+                    } else {
+                        cellD.setCellValue(0);
+                    }
+
+                    // Column E – Value of Transactions
+                    cellE = row.getCell(4);
+                    if (cellE == null)
+                        cellE = row.createCell(4);
+                    if (record.getR114_g1_val_trans() != null) {
+                        cellE.setCellValue(record.getR114_g1_val_trans().doubleValue());
+                    } else {
+                        cellE.setCellValue(0);
+                    }
+
+                    // ROW 115
+                    row = sheet.getRow(114);
+
+                    // Column D – Number of Transactions
+                    cellD = row.getCell(3);
+                    if (cellD == null)
+                        cellD = row.createCell(3);
+                    if (record.getR115_g1_num_trans() != null) {
+                        cellD.setCellValue(record.getR115_g1_num_trans().doubleValue());
+                    } else {
+                        cellD.setCellValue(0);
+                    }
+
+                    // Column E – Value of Transactions
+                    cellE = row.getCell(4);
+                    if (cellE == null)
+                        cellE = row.createCell(4);
+                    if (record.getR115_g1_val_trans() != null) {
+                        cellE.setCellValue(record.getR115_g1_val_trans().doubleValue());
+                    } else {
+                        cellE.setCellValue(0);
+                    }
+
+                    // ROW 117
+                    row = sheet.getRow(116);
+
+                    // Column D – Number of Transactions
+                    cellD = row.getCell(3);
+                    if (cellD == null)
+                        cellD = row.createCell(3);
+                    if (record.getR117_g1_num_trans() != null) {
+                        cellD.setCellValue(record.getR117_g1_num_trans().doubleValue());
+                    } else {
+                        cellD.setCellValue(0);
+                    }
+
+                    // Column E – Value of Transactions
+                    cellE = row.getCell(4);
+                    if (cellE == null)
+                        cellE = row.createCell(4);
+                    if (record.getR117_g1_val_trans() != null) {
+                        cellE.setCellValue(record.getR117_g1_val_trans().doubleValue());
+                    } else {
+                        cellE.setCellValue(0);
+                    }
+
+                    // ROW 118
+                    row = sheet.getRow(117);
+
+                    // Column D – Number of Transactions
+                    cellD = row.getCell(3);
+                    if (cellD == null)
+                        cellD = row.createCell(3);
+                    if (record.getR118_g1_num_trans() != null) {
+                        cellD.setCellValue(record.getR118_g1_num_trans().doubleValue());
+                    } else {
+                        cellD.setCellValue(0);
+                    }
+
+                    // Column E – Value of Transactions
+                    cellE = row.getCell(4);
+                    if (cellE == null)
+                        cellE = row.createCell(4);
+                    if (record.getR118_g1_val_trans() != null) {
+                        cellE.setCellValue(record.getR118_g1_val_trans().doubleValue());
+                    } else {
+                        cellE.setCellValue(0);
+                    }
+
+                    // ROW 120
+                    row = sheet.getRow(119);
+
+                    // Column D – Number of Transactions
+                    cellD = row.getCell(3);
+                    if (cellD == null)
+                        cellD = row.createCell(3);
+                    if (record.getR120_g1_num_trans() != null) {
+                        cellD.setCellValue(record.getR120_g1_num_trans().doubleValue());
+                    } else {
+                        cellD.setCellValue(0);
+                    }
+
+                    // Column E – Value of Transactions
+                    cellE = row.getCell(4);
+                    if (cellE == null)
+                        cellE = row.createCell(4);
+                    if (record.getR120_g1_val_trans() != null) {
+                        cellE.setCellValue(record.getR120_g1_val_trans().doubleValue());
+                    } else {
+                        cellE.setCellValue(0);
+                    }
+
+                    // ROW 121
+                    row = sheet.getRow(120);
+
+                    // Column D – Number of Transactions
+                    cellD = row.getCell(3);
+                    if (cellD == null)
+                        cellD = row.createCell(3);
+                    if (record.getR121_g1_num_trans() != null) {
+                        cellD.setCellValue(record.getR121_g1_num_trans().doubleValue());
+                    } else {
+                        cellD.setCellValue(0);
+                    }
+
+                    // Column E – Value of Transactions
+                    cellE = row.getCell(4);
+                    if (cellE == null)
+                        cellE = row.createCell(4);
+                    if (record.getR121_g1_val_trans() != null) {
+                        cellE.setCellValue(record.getR121_g1_val_trans().doubleValue());
+                    } else {
+                        cellE.setCellValue(0);
+                    }
+
+                    // ROW 123
+                    row = sheet.getRow(122);
+
+                    // Column D – Number of Transactions
+                    cellD = row.getCell(3);
+                    if (cellD == null)
+                        cellD = row.createCell(3);
+                    if (record.getR123_g1_num_trans() != null) {
+                        cellD.setCellValue(record.getR123_g1_num_trans().doubleValue());
+                    } else {
+                        cellD.setCellValue(0);
+                    }
+
+                    // Column E – Value of Transactions
+                    cellE = row.getCell(4);
+                    if (cellE == null)
+                        cellE = row.createCell(4);
+                    if (record.getR123_g1_val_trans() != null) {
+                        cellE.setCellValue(record.getR123_g1_val_trans().doubleValue());
+                    } else {
+                        cellE.setCellValue(0);
+                    }
+
+                    // ROW 124
+                    row = sheet.getRow(123);
+
+                    // Column D – Number of Transactions
+                    cellD = row.getCell(3);
+                    if (cellD == null)
+                        cellD = row.createCell(3);
+                    if (record.getR124_g1_num_trans() != null) {
+                        cellD.setCellValue(record.getR124_g1_num_trans().doubleValue());
+                    } else {
+                        cellD.setCellValue(0);
+                    }
+
+                    // Column E – Value of Transactions
+                    cellE = row.getCell(4);
+                    if (cellE == null)
+                        cellE = row.createCell(4);
+                    if (record.getR124_g1_val_trans() != null) {
+                        cellE.setCellValue(record.getR124_g1_val_trans().doubleValue());
+                    } else {
+                        cellE.setCellValue(0);
+                    }
+
+                    // ROW 126
+                    row = sheet.getRow(125);
+
+                    // Column D – Number of Transactions
+                    cellD = row.getCell(3);
+                    if (cellD == null)
+                        cellD = row.createCell(3);
+                    if (record.getR126_g1_num_trans() != null) {
+                        cellD.setCellValue(record.getR126_g1_num_trans().doubleValue());
+                    } else {
+                        cellD.setCellValue(0);
+                    }
+
+                    // Column E – Value of Transactions
+                    cellE = row.getCell(4);
+                    if (cellE == null)
+                        cellE = row.createCell(4);
+                    if (record.getR126_g1_val_trans() != null) {
+                        cellE.setCellValue(record.getR126_g1_val_trans().doubleValue());
+                    } else {
+                        cellE.setCellValue(0);
+                    }
+
+                    // ROW 127
+                    row = sheet.getRow(126);
+
+                    // Column D – Number of Transactions
+                    cellD = row.getCell(3);
+                    if (cellD == null)
+                        cellD = row.createCell(3);
+                    if (record.getR127_g1_num_trans() != null) {
+                        cellD.setCellValue(record.getR127_g1_num_trans().doubleValue());
+                    } else {
+                        cellD.setCellValue(0);
+                    }
+
+                    // Column E – Value of Transactions
+                    cellE = row.getCell(4);
+                    if (cellE == null)
+                        cellE = row.createCell(4);
+                    if (record.getR127_g1_val_trans() != null) {
+                        cellE.setCellValue(record.getR127_g1_val_trans().doubleValue());
+                    } else {
+                        cellE.setCellValue(0);
+                    }
+
+                    // ROW 128
+                    row = sheet.getRow(127);
+
+                    // Column D – Number of Transactions
+                    cellD = row.getCell(3);
+                    if (cellD == null)
+                        cellD = row.createCell(3);
+                    if (record.getR128_g1_num_trans() != null) {
+                        cellD.setCellValue(record.getR128_g1_num_trans().doubleValue());
+                    } else {
+                        cellD.setCellValue(0);
+                    }
+
+                    // Column E – Value of Transactions
+                    cellE = row.getCell(4);
+                    if (cellE == null)
+                        cellE = row.createCell(4);
+                    if (record.getR128_g1_val_trans() != null) {
+                        cellE.setCellValue(record.getR128_g1_val_trans().doubleValue());
+                    } else {
+                        cellE.setCellValue(0);
+                    }
+
+                    // G2 TABLE
+
+                    // ROW 135
+                    row = sheet.getRow(134);
+
+                    // Column E – Value of Transactions
+                    cellE = row.getCell(4);
+                    if (cellE == null)
+                        cellE = row.createCell(4);
+                    if (record.getR135_g2_val_transac() != null) {
+                        cellE.setCellValue(record.getR135_g2_val_transac().doubleValue());
+                    } else {
+                        cellE.setCellValue(0);
+                    }
+
+                    // ROW 136
+                    row = sheet.getRow(135);
+
+                    // Column E – Value of Transactions
+                    cellE = row.getCell(4);
+                    if (cellE == null)
+                        cellE = row.createCell(4);
+                    if (record.getR136_g2_val_transac() != null) {
+                        cellE.setCellValue(record.getR136_g2_val_transac().doubleValue());
+                    } else {
+                        cellE.setCellValue(0);
+                    }
+
+                    // ROW 138
+                    row = sheet.getRow(137);
+
+                    // Column E – Value of Transactions
+                    cellE = row.getCell(4);
+                    if (cellE == null)
+                        cellE = row.createCell(4);
+                    if (record.getR138_g2_val_transac() != null) {
+                        cellE.setCellValue(record.getR138_g2_val_transac().doubleValue());
+                    } else {
+                        cellE.setCellValue(0);
+                    }
+
+                    // ROW 139
+                    row = sheet.getRow(138);
+
+                    // Column E – Value of Transactions
+                    cellE = row.getCell(4);
+                    if (cellE == null)
+                        cellE = row.createCell(4);
+                    if (record.getR139_g2_val_transac() != null) {
+                        cellE.setCellValue(record.getR139_g2_val_transac().doubleValue());
+                    } else {
+                        cellE.setCellValue(0);
+                    }
+
+                    // H TABLE
+
+                    // ROW 144
+                    row = sheet.getRow(143);
+
+                    // Column F – Amount
+                    cellF = row.getCell(5);
+                    if (cellF == null)
+                        cellF = row.createCell(5);
+                    if (record.getR144_h_amount() != null) {
+                        cellF.setCellValue(record.getR144_h_amount().doubleValue());
+                    } else {
+                        cellF.setCellValue(0);
+                    }
+
+                    // ROW 145
+                    row = sheet.getRow(144);
+
+                    // Column F – Amount
+                    cellF = row.getCell(5);
+                    if (cellF == null)
+                        cellF = row.createCell(5);
+                    if (record.getR145_h_amount() != null) {
+                        cellF.setCellValue(record.getR145_h_amount().doubleValue());
+                    } else {
+                        cellF.setCellValue(0);
+                    }
+
+                    // ROW 146
+                    row = sheet.getRow(145);
+
+                    // Column F – Amount
+                    cellF = row.getCell(5);
+                    if (cellF == null)
+                        cellF = row.createCell(5);
+                    if (record.getR146_h_amount() != null) {
+                        cellF.setCellValue(record.getR146_h_amount().doubleValue());
+                    } else {
+                        cellF.setCellValue(0);
+                    }
+
+                    // ROW 147
+                    row = sheet.getRow(146);
+
+                    // Column F – Amount
+                    cellF = row.getCell(5);
+                    if (cellF == null)
+                        cellF = row.createCell(5);
+                    if (record.getR147_h_amount() != null) {
+                        cellF.setCellValue(record.getR147_h_amount().doubleValue());
+                    } else {
+                        cellF.setCellValue(0);
+                    }
+
+                    // ROW 148
+                    row = sheet.getRow(147);
+
+                    // Column F – Amount
+                    cellF = row.getCell(5);
+                    if (cellF == null)
+                        cellF = row.createCell(5);
+                    if (record.getR148_h_amount() != null) {
+                        cellF.setCellValue(record.getR148_h_amount().doubleValue());
+                    } else {
+                        cellF.setCellValue(0);
+                    }
+
+                    // I TABLE
+
+                    // ROW 153
+                    row = sheet.getRow(152);
+
+                    // Column C – Number of Customers
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+                    if (record.getR153_i_no_cust() != null) {
+                        cellC.setCellValue(record.getR153_i_no_cust().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    // Column D – Outstanding Balance
+                    cellD = row.getCell(3);
+                    if (cellD == null)
+                        cellD = row.createCell(3);
+                    if (record.getR153_i_outs_bal() != null) {
+                        cellD.setCellValue(record.getR153_i_outs_bal().doubleValue());
+                    } else {
+                        cellD.setCellValue(0);
+                    }
+
+                    // Column E – Turnover
+                    cellE = row.getCell(4);
+                    if (cellE == null)
+                        cellE = row.createCell(4);
+                    if (record.getR153_i_turnover() != null) {
+                        cellE.setCellValue(record.getR153_i_turnover().doubleValue());
+                    } else {
+                        cellE.setCellValue(0);
+                    }
+
+                    // ROW 154
+                    row = sheet.getRow(153);
+
+                    // Column C – Number of Customers
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+                    if (record.getR154_i_no_cust() != null) {
+                        cellC.setCellValue(record.getR154_i_no_cust().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    // Column D – Outstanding Balance
+                    cellD = row.getCell(3);
+                    if (cellD == null)
+                        cellD = row.createCell(3);
+                    if (record.getR154_i_outs_bal() != null) {
+                        cellD.setCellValue(record.getR154_i_outs_bal().doubleValue());
+                    } else {
+                        cellD.setCellValue(0);
+                    }
+
+                    // Column E – Turnover
+                    cellE = row.getCell(4);
+                    if (cellE == null)
+                        cellE = row.createCell(4);
+                    if (record.getR154_i_turnover() != null) {
+                        cellE.setCellValue(record.getR154_i_turnover().doubleValue());
+                    } else {
+                        cellE.setCellValue(0);
+                    }
+
+                    // ROW 155
+                    row = sheet.getRow(154);
+
+                    // Column C – Number of Customers
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+                    if (record.getR155_i_no_cust() != null) {
+                        cellC.setCellValue(record.getR155_i_no_cust().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    // Column D – Outstanding Balance
+                    cellD = row.getCell(3);
+                    if (cellD == null)
+                        cellD = row.createCell(3);
+                    if (record.getR155_i_outs_bal() != null) {
+                        cellD.setCellValue(record.getR155_i_outs_bal().doubleValue());
+                    } else {
+                        cellD.setCellValue(0);
+                    }
+
+                    // Column E – Turnover
+                    cellE = row.getCell(4);
+                    if (cellE == null)
+                        cellE = row.createCell(4);
+                    if (record.getR155_i_turnover() != null) {
+                        cellE.setCellValue(record.getR155_i_turnover().doubleValue());
+                    } else {
+                        cellE.setCellValue(0);
+                    }
+
+                    // J TABLE
+
+                    // ROW 161
+                    row = sheet.getRow(160);
+
+                    // Column C – Number of Customers
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+                    if (record.getR161_j_num_of_cust() != null) {
+                        cellC.setCellValue(record.getR161_j_num_of_cust().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    // ROW 162
+                    row = sheet.getRow(161);
+
+                    // Column C – Number of Customers
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+                    if (record.getR162_j_num_of_cust() != null) {
+                        cellC.setCellValue(record.getR162_j_num_of_cust().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    // ROW 163
+                    row = sheet.getRow(162);
+
+                    // Column C – Number of Customers
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+                    if (record.getR163_j_num_of_cust() != null) {
+                        cellC.setCellValue(record.getR163_j_num_of_cust().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    // K TABLE
+
+                    // ROW 170
+                    row = sheet.getRow(169);
+
+                    // Column E – Number of Transactions
+                    cellE = row.getCell(4);
+                    if (cellE == null)
+                        cellE = row.createCell(4);
+                    if (record.getR170_k_num_of_trans() != null) {
+                        cellE.setCellValue(record.getR170_k_num_of_trans().doubleValue());
+                    } else {
+                        cellE.setCellValue(0);
+                    }
+
+                    // Column F – Value of Transactions
+                    cellF = row.getCell(5);
+                    if (cellF == null)
+                        cellF = row.createCell(5);
+                    if (record.getR170_k_value_of_trans() != null) {
+                        cellF.setCellValue(record.getR170_k_value_of_trans().doubleValue());
+                    } else {
+                        cellF.setCellValue(0);
+                    }
+
+                    // ROW 171
+                    row = sheet.getRow(170);
+
+                    // Column E – Number of Transactions
+                    cellE = row.getCell(4);
+                    if (cellE == null)
+                        cellE = row.createCell(4);
+                    if (record.getR171_k_num_of_trans() != null) {
+                        cellE.setCellValue(record.getR171_k_num_of_trans().doubleValue());
+                    } else {
+                        cellE.setCellValue(0);
+                    }
+
+                    // Column F – Value of Transactions
+                    cellF = row.getCell(5);
+                    if (cellF == null)
+                        cellF = row.createCell(5);
+                    if (record.getR171_k_value_of_trans() != null) {
+                        cellF.setCellValue(record.getR171_k_value_of_trans().doubleValue());
+                    } else {
+                        cellF.setCellValue(0);
+                    }
+
+                    // ROW 172
+                    row = sheet.getRow(171);
+
+                    // Column E – Number of Transactions
+                    cellE = row.getCell(4);
+                    if (cellE == null)
+                        cellE = row.createCell(4);
+                    if (record.getR172_k_num_of_trans() != null) {
+                        cellE.setCellValue(record.getR172_k_num_of_trans().doubleValue());
+                    } else {
+                        cellE.setCellValue(0);
+                    }
+
+                    // Column F – Value of Transactions
+                    cellF = row.getCell(5);
+                    if (cellF == null)
+                        cellF = row.createCell(5);
+                    if (record.getR172_k_value_of_trans() != null) {
+                        cellF.setCellValue(record.getR172_k_value_of_trans().doubleValue());
+                    } else {
+                        cellF.setCellValue(0);
+                    }
+
+                    // L TABLE
+
+                    // ROW 179
+                    row = sheet.getRow(178);
+
+                    // Column F – Number of Transactions
+                    cellF = row.getCell(5);
+                    if (cellF == null)
+                        cellF = row.createCell(5);
+                    if (record.getR179_l_num_of_transac() != null) {
+                        cellF.setCellValue(record.getR179_l_num_of_transac().doubleValue());
+                    } else {
+                        cellF.setCellValue(0);
+                    }
+
+                    // ROW 180
+                    row = sheet.getRow(179);
+
+                    // Column F – Number of Transactions
+                    cellF = row.getCell(5);
+                    if (cellF == null)
+                        cellF = row.createCell(5);
+                    if (record.getR180_l_num_of_transac() != null) {
+                        cellF.setCellValue(record.getR180_l_num_of_transac().doubleValue());
+                    } else {
+                        cellF.setCellValue(0);
+                    }
+
+                    // ROW 181
+                    row = sheet.getRow(180);
+
+                    // Column F – Number of Transactions
+                    cellF = row.getCell(5);
+                    if (cellF == null)
+                        cellF = row.createCell(5);
+                    if (record.getR181_l_num_of_transac() != null) {
+                        cellF.setCellValue(record.getR181_l_num_of_transac().doubleValue());
+                    } else {
+                        cellF.setCellValue(0);
+                    }
+
+                    // M TABLE
+
+                    // ROW 187
+                    row = sheet.getRow(186);
+
+                    // Column E – Number of Transactions
+                    cellE = row.getCell(4);
+                    if (cellE == null)
+                        cellE = row.createCell(4);
+                    if (record.getR187_m_num_of_transac() != null) {
+                        cellE.setCellValue(record.getR187_m_num_of_transac().doubleValue());
+                    } else {
+                        cellE.setCellValue(0);
+                    }
+
+                    // Column F – Value of Transactions
+                    cellF = row.getCell(5);
+                    if (cellF == null)
+                        cellF = row.createCell(5);
+                    if (record.getR187_m_val_of_transac() != null) {
+                        cellF.setCellValue(record.getR187_m_val_of_transac().doubleValue());
+                    } else {
+                        cellF.setCellValue(0);
+                    }
+
+                    // N TABLE
+
+                    // ROW 192
+                    row = sheet.getRow(191);
+
+                    // Column E – Number of Transactions
+                    cellE = row.getCell(4);
+                    if (cellE == null)
+                        cellE = row.createCell(4);
+                    if (record.getR192_n_num_of_transac() != null) {
+                        cellE.setCellValue(record.getR192_n_num_of_transac().doubleValue());
+                    } else {
+                        cellE.setCellValue(0);
+                    }
+
+                    // Column F – Value of Transactions
+                    cellF = row.getCell(5);
+                    if (cellF == null)
+                        cellF = row.createCell(5);
+                    if (record.getR192_n_val_of_transac() != null) {
+                        cellF.setCellValue(record.getR192_n_val_of_transac().doubleValue());
+                    } else {
+                        cellF.setCellValue(0);
+                    }
+
+                    // O TABLE
+
+                    // ROW 196
+                    row = sheet.getRow(195);
+
+                    // Column E – Number of Transactions
+                    cellE = row.getCell(4);
+                    if (cellE == null)
+                        cellE = row.createCell(4);
+                    if (record.getR196_o_num_of_transac() != null) {
+                        cellE.setCellValue(record.getR196_o_num_of_transac().doubleValue());
+                    } else {
+                        cellE.setCellValue(0);
+                    }
+
+                    // Column F – Value of Transactions
+                    cellF = row.getCell(5);
+                    if (cellF == null)
+                        cellF = row.createCell(5);
+                    if (record.getR196_o_val_of_transac() != null) {
+                        cellF.setCellValue(record.getR196_o_val_of_transac().doubleValue());
+                    } else {
+                        cellF.setCellValue(0);
+                    }
+
+                    // ROW 201
+                    row = sheet.getRow(200);
+
+                    // Column E – Number of Transactions
+                    cellE = row.getCell(4);
+                    if (cellE == null)
+                        cellE = row.createCell(4);
+                    if (record.getR201_p_num_of_transac() != null) {
+                        cellE.setCellValue(record.getR201_p_num_of_transac().doubleValue());
+                    } else {
+                        cellE.setCellValue(0);
+                    }
+
+                    // Column F – Value of Transactions
+                    cellF = row.getCell(5);
+                    if (cellF == null)
+                        cellF = row.createCell(5);
+                    if (record.getR201_p_val_of_transac() != null) {
+                        cellF.setCellValue(record.getR201_p_val_of_transac().doubleValue());
+                    } else {
+                        cellF.setCellValue(0);
+                    }
 
                 }
 
