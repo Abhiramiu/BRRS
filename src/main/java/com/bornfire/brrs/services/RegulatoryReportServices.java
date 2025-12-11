@@ -269,6 +269,9 @@ public class RegulatoryReportServices {
 
 	@Autowired
 	BRRS_ADISB1_ReportService BRRS_ADISB1_ReportService;
+	
+	@Autowired
+	BRRS_ADISB2_ReportService BRRS_ADISB2_ReportService;
 
 	@Autowired
 	BRRS_CAP_RATIO_BUFFER_ReportService brrs_cap_ratio_buffer_reportservice;
@@ -724,6 +727,13 @@ public class RegulatoryReportServices {
 						pageable, type, version);
 
 				break;
+				
+			case "ADISB2":
+				repsummary = BRRS_ADISB2_ReportService.getADISB2View(reportId, fromdate, todate, currency,
+						dtltype,
+						pageable, type, version);
+
+				break;
 
 			case "Recon_Of_FS":
 
@@ -943,6 +953,14 @@ public class RegulatoryReportServices {
 			case "ADISB1":
 
 				repdetail = BRRS_ADISB1_ReportService.getADISB1currentDtl(reportId, fromdate, todate, currency,
+						dtltype,
+						pageable, Filter, type, version);
+				break;
+				
+				
+			case "ADISB2":
+
+				repdetail = BRRS_ADISB2_ReportService.getADISB2currentDtl(reportId, fromdate, todate, currency,
 						dtltype,
 						pageable, Filter, type, version);
 				break;
@@ -1754,6 +1772,17 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
+				
+			case "ADISB2":
+				try {
+					repfile = BRRS_ADISB2_ReportService.getM_ADISB2Excel(filename, reportId, fromdate, todate,
+							currency, dtltype, type, version);
+
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
 			case "Recon_Of_FS":
 				try {
@@ -1857,6 +1886,9 @@ public class RegulatoryReportServices {
 					filename, fromdate, todate, currency, dtltype, type, version);
 		} else if ("ADISB1Detail".equals(filename)) {
 			return BRRS_ADISB1_ReportService.getADISB1DetailExcel(
+					filename, fromdate, todate, currency, dtltype, type, version);
+		}else if ("ADISB2Detail".equals(filename)) {
+			return BRRS_ADISB2_ReportService.getADISB2DetailExcel(
 					filename, fromdate, todate, currency, dtltype, type, version);
 		}
 
@@ -2550,6 +2582,15 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
+				
+			case "ADISB2":
+				try {
+					archivalData = BRRS_ADISB2_ReportService.getADISB2Archival();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
 			default:
 				System.out.println("No archival logic defined for report: " + rptcode);
@@ -2714,6 +2755,12 @@ public class RegulatoryReportServices {
 		else if ("ADISB1".equals(filename)) {
 
 			fileData = BRRS_ADISB1_ReportService.getADISB1DetailExcel(filename, fromdate, todate, currency,
+					dtltype, type, version);
+		}
+		
+		else if ("ADISB2".equals(filename)) {
+
+			fileData = BRRS_ADISB2_ReportService.getADISB2DetailExcel(filename, fromdate, todate, currency,
 					dtltype, type, version);
 		}
 
@@ -2922,6 +2969,11 @@ public class RegulatoryReportServices {
 					modelAndView = BRRS_ADISB1_ReportService.getViewOrEditPage(request.getParameter("acctNo"),
 							request.getParameter("formmode"));
 					break;
+					
+				case "ADISB2":
+					modelAndView = BRRS_ADISB2_ReportService.getViewOrEditPage(request.getParameter("acctNo"),
+							request.getParameter("formmode"));
+					break;
 
 				default:
 					logger.warn("No detail service found for reportId: {}", reportId);
@@ -3060,6 +3112,10 @@ public class RegulatoryReportServices {
 
 				case "ADISB1":
 					response = BRRS_ADISB1_ReportService.updateDetailEdit(request);
+					break;
+					
+				case "ADISB2":
+					response = BRRS_ADISB2_ReportService.updateDetailEdit(request);
 					break;
 				case "Recon_Of_FS":
 					response = BRRS_RECON_OF_FS_ReportService.updateDetailEdit(request);
