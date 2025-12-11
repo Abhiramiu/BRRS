@@ -508,11 +508,37 @@ public class BRRS_M_AIDP_ReportService {
 	System.out.println("came to excel download service"); 
 	// Fetch data
 	logger.info("report date: {}", todate);
-	 List<BRRS_M_AIDP_Summary_Entity1> dataList = BRRS_M_aidpRepo1.getdatabydateList(dateformat.parse(todate));
-	 List<BRRS_M_AIDP_Summary_Entity2> dataList2 = BRRS_M_aidpRepo2.getdatabydateList(dateformat.parse(todate));
-	 List<BRRS_M_AIDP_Summary_Entity3> dataList3 = BRRS_M_aidpRepo3.getdatabydateList(dateformat.parse(todate));
-	 List<BRRS_M_AIDP_Summary_Entity4> dataList4 = BRRS_M_aidpRepo4.getdatabydateList(dateformat.parse(todate)); 
+	//  List<BRRS_M_AIDP_Summary_Entity1> dataList = BRRS_M_aidpRepo1.getdatabydateList(dateformat.parse(todate));
+	//  List<BRRS_M_AIDP_Summary_Entity2> dataList2 = BRRS_M_aidpRepo2.getdatabydateList(dateformat.parse(todate));
+	//  List<BRRS_M_AIDP_Summary_Entity3> dataList3 = BRRS_M_aidpRepo3.getdatabydateList(dateformat.parse(todate));
+	//  List<BRRS_M_AIDP_Summary_Entity4> dataList4 = BRRS_M_aidpRepo4.getdatabydateList(dateformat.parse(todate)); 
 
+
+	  // ✅ FIX: Correct date parsing
+    SimpleDateFormat inputFormat = new SimpleDateFormat("dd/MM/yyyy");
+    Date parsedDate = null;
+
+	 try {
+        parsedDate = inputFormat.parse(todate);
+        logger.info("Parsed report date: {}", parsedDate);
+    } catch (Exception e) {
+        logger.error("Invalid date format for todate: {}. Expected dd/MM/yyyy", todate);
+        throw e;
+    }
+
+	  List<BRRS_M_AIDP_Summary_Entity1> dataList =
+            BRRS_M_aidpRepo1.getdatabydateList(parsedDate);
+
+    List<BRRS_M_AIDP_Summary_Entity2> dataList2 =
+            BRRS_M_aidpRepo2.getdatabydateList(parsedDate);
+
+    List<BRRS_M_AIDP_Summary_Entity3> dataList3 =
+            BRRS_M_aidpRepo3.getdatabydateList(parsedDate);
+
+    List<BRRS_M_AIDP_Summary_Entity4> dataList4 =
+            BRRS_M_aidpRepo4.getdatabydateList(parsedDate);
+
+			
 	if (dataList.isEmpty()) {
 		logger.warn("Service: No data found for Entity1. Returning empty result.");
 		return new byte[0];
