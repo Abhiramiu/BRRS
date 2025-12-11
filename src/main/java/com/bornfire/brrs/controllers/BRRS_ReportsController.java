@@ -91,6 +91,7 @@ import com.bornfire.brrs.services.BRRS_M_SRWA_12F_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SRWA_12G_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SRWA_12H_ReportService;
 import com.bornfire.brrs.services.BRRS_M_TBS_ReportService;
+import com.bornfire.brrs.services.BRRS_M_TOP_100_BORROWER_ReportService;
 import com.bornfire.brrs.services.BRRS_M_UNCONS_INVEST_ReportService;
 import com.bornfire.brrs.services.BRRS_Q_BRANCHNET_ReportService;
 import com.bornfire.brrs.services.BRRS_Q_RLFA1_ReportService;
@@ -499,6 +500,38 @@ public class BRRS_ReportsController {
 
 			// call services
 			brrs_m_ca2_reportservice.updateReport(request1);
+
+			return ResponseEntity.ok("Updated Successfully.");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
+		}
+	}
+	
+	@Autowired
+	private BRRS_M_TOP_100_BORROWER_ReportService M_TOP_100_BORROWER_ReportService;
+	
+	
+
+	@RequestMapping(value = "/M_TOP_100_BORROWERupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<String> updateAllReports(
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+
+			@ModelAttribute M_TOP_100_BORROWER_Manual_Summary_Entity1 request1,
+			@ModelAttribute M_TOP_100_BORROWER_Manual_Summary_Entity2 request2
+
+	) {
+		try {
+			System.out.println("Came to single controller");
+
+			// set date into entities
+			request1.setReport_date(asondate);
+			request2.setReport_date(asondate);
+
+			// call services
+			M_TOP_100_BORROWER_ReportService.updateReport(request1);
+			M_TOP_100_BORROWER_ReportService.updateReport1(request2);
 
 			return ResponseEntity.ok("Updated Successfully.");
 		} catch (Exception e) {
