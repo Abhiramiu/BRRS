@@ -102,6 +102,7 @@ import com.bornfire.brrs.services.BRRS_M_DEP4_ReportService;
 import com.bornfire.brrs.services.BRRS_M_PD_ReportService;
 import com.bornfire.brrs.services.BRRS_M_PI_ReportService;
 import com.bornfire.brrs.services.BRRS_BDISB2_ReportService;
+import com.bornfire.brrs.services.BRRS_MDISB5_ReportService;
 import com.bornfire.brrs.services.BRRS_ADISB1_ReportService;
 import com.bornfire.brrs.services.RegulatoryReportServices;
 import com.bornfire.brrs.services.ReportCodeMappingService;
@@ -1142,6 +1143,68 @@ return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 					.body("M_BDISB1 Resubmission Update Failed: " + e.getMessage());
+		}
+	}
+	
+	
+	@Autowired
+	private BRRS_MDISB5_ReportService brrs_MDISB5_ReportService;
+
+	@RequestMapping(value = "/updateMDISB5All", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<String> updateAllReports(
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+			@ModelAttribute MDISB5_Summary_Entity1 request1, @ModelAttribute MDISB5_Summary_Entity2 request2, 
+			@ModelAttribute MDISB5_Summary_Entity3 request3
+
+	) {
+		try {
+			System.out.println("Came to single controller");
+			// set date into all 4 entities
+			request1.setReportDate(asondate);
+			request2.setReportDate(asondate);
+			request3.setReportDate(asondate);
+			
+
+	
+			// call services
+			brrs_MDISB5_ReportService.updateReport1(request1);
+			brrs_MDISB5_ReportService.updateReport2(request2);
+			brrs_MDISB5_ReportService.updateReport3(request3);
+			
+			return ResponseEntity.ok("Updated Successfully.");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
+		}
+	}
+	
+	@RequestMapping(value = "/UpdateMDISB5_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<String> updateReportReSubAll(
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+			@ModelAttribute MDISB5_Summary_Entity1 request1, @ModelAttribute MDISB5_Summary_Entity2 request2, 
+			@ModelAttribute MDISB5_Summary_Entity3 request3,
+			HttpServletRequest req) {
+
+		try {
+			System.out.println("Came to MDISB5 Resub Controller");
+
+			if (asondate != null) {
+				request1.setReportDate(asondate);
+				System.out.println("🗓 Set Report Date: " + asondate);
+			}
+
+			// ✅ Call service
+		
+			 brrs_MDISB5_ReportService.updateReportReSub(request1, request2, request3);
+
+			return ResponseEntity.ok("Resubmission Updated Successfully");
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("MDISB5 Resubmission Update Failed: " + e.getMessage());
 		}
 	}
 	

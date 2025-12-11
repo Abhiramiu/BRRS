@@ -1,0 +1,27 @@
+package com.bornfire.brrs.entities;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+
+public interface BRRS_MDISB5_Summary_Repo2 extends JpaRepository<MDISB5_Summary_Entity2, Date> {
+
+    // Fetch all rows for a specific report date
+    @Query(value = "SELECT * FROM BRRS_MDISB5_SUMMARYTABLE2 WHERE REPORT_DATE = ?1", nativeQuery = true)
+    List<MDISB5_Summary_Entity2> getdatabydateList(Date rpt_date);
+    
+@Query(value = "SELECT *  FROM BRRS_MDISB5_SUMMARYTABLE2 WHERE REPORT_DATE = ?1   AND REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION DESC FETCH FIRST 1 ROWS ONLY ", nativeQuery = true)
+List<MDISB5_Summary_Entity2> getdatabydateListWithVersion(String todate);
+
+    // Find the latest version for a report date
+    Optional<MDISB5_Summary_Entity2> findTopByReportDateOrderByReportVersionDesc(Date reportDate);
+
+    // Check if a version exists for a report date
+    Optional<MDISB5_Summary_Entity2> findByReportDateAndReportVersion(Date reportDate, String reportVersion);
+
+        @Query(value = "SELECT *  FROM BRRS_MDISB5_SUMMARYTABLE2 WHERE REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION DESC FETCH FIRST 1 ROWS ONLY ", nativeQuery = true)
+    List<MDISB5_Summary_Entity2> getdatabydateListWithVersion();
+}

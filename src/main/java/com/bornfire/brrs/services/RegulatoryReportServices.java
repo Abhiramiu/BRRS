@@ -282,6 +282,9 @@ public class RegulatoryReportServices {
 
 	@Autowired
 	BRRS_RECON_OF_FS_ReportService BRRS_RECON_OF_FS_ReportService;
+	
+	@Autowired
+	BRRS_MDISB5_ReportService BRRS_MDISB5_ReportService;
 
 	@Autowired
 	BRRS_AML_ReportService brrs_aml_reportservice;
@@ -755,6 +758,12 @@ public class RegulatoryReportServices {
 				repsummary = BRRS_RECON_OF_FS_ReportService.getBRRS_Recon_Of_FS_View(reportId, fromdate, todate,
 						currency, dtltype, pageable, type, version);
 				break;
+				
+			case "MDISB5":
+
+				repsummary = BRRS_MDISB5_ReportService.getMDISB5View(reportId, fromdate, todate,
+						currency, dtltype, pageable, type, version);
+				break;
 
 			case "AML":
 
@@ -1092,6 +1101,17 @@ public class RegulatoryReportServices {
 			case "BDISB1":
 				try {
 					repfile = brrs_m_bdisb1_reportservice.getM_BDISB1Excel(filename, reportId, fromdate, todate,
+							currency,
+							dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+				
+			case "MDISB5":
+				try {
+					repfile = BRRS_MDISB5_ReportService.getMDISB5Excel(filename, reportId, fromdate, todate,
 							currency,
 							dtltype, type, version);
 				} catch (Exception e) {
@@ -2604,6 +2624,12 @@ public class RegulatoryReportServices {
 				archivalData.addAll(ca3List);
 				System.out.println("Fetched TBS archival data: " + ca3List.size());
 				break;
+				
+			case "MDISB5":
+				List<Object[]> MDISB5List = BRRS_MDISB5_ReportService.getMDISB5Archival();
+				archivalData.addAll(MDISB5List);
+				System.out.println("Fetched TBS archival data: " + MDISB5List.size());
+				break;
 
 			case "M_NOSVOS":
 				try {
@@ -3318,6 +3344,18 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
+				
+			case "MDISB5":
+				try {
+					List<Object[]> resubList = BRRS_MDISB5_ReportService.getMDISB5Resub();
+					resubmissionData.addAll(resubList);
+					System.out.println("Resubmission data fetched for MDISB5: " + resubList.size());
+				} catch (Exception e) {
+					System.err.println("Error fetching resubmission data for MDISB5: " + e.getMessage());
+					e.printStackTrace();
+				}
+				break;
+				
 			case "M_IS":
 				try {
 					List<Object[]> resubList = BRRS_M_IS_reportservice.getM_ISResub();
