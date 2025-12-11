@@ -1125,6 +1125,17 @@ public class BRRS_M_TOP_100_BORROWER_ReportService {
 
 	        // ✅ Save after all updates
 	        BRRS_M_TOP_100_BORROWER_Manual_Summary_Repo1.save(existing);
+	        System.out.println("✅ M_TOP_100_BORROWER Summary updated and COMMITTED");
+
+		    // NOW PROCEDURE CAN SEE UPDATED DATA
+		    String oracleDate = new SimpleDateFormat("dd-MM-yyyy")
+		            .format(updatedEntity.getReport_date())
+		            .toUpperCase();
+
+		    String sql = "BEGIN BRRS.BRRS_M_TOP_100_BORROWER_SUMMARY_PROCEDURE('" + oracleDate + "'); END;";
+		    jdbcTemplate.execute(sql);
+
+		    System.out.println("Procedure executed for date: " + oracleDate);
 
 	    } catch (Exception e) {
 	        throw new RuntimeException("Error while updating report fields", e);
