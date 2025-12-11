@@ -269,7 +269,7 @@ public class RegulatoryReportServices {
 
 	@Autowired
 	BRRS_ADISB1_ReportService BRRS_ADISB1_ReportService;
-	
+
 	@Autowired
 	BRRS_ADISB2_ReportService BRRS_ADISB2_ReportService;
 
@@ -278,6 +278,9 @@ public class RegulatoryReportServices {
 
 	@Autowired
 	BRRS_RECON_OF_FS_ReportService BRRS_RECON_OF_FS_ReportService;
+
+	@Autowired
+	BRRS_AML_ReportService brrs_aml_reportservice;
 
 	private static final Logger logger = LoggerFactory.getLogger(RegulatoryReportServices.class);
 
@@ -727,7 +730,7 @@ public class RegulatoryReportServices {
 						pageable, type, version);
 
 				break;
-				
+
 			case "ADISB2":
 				repsummary = BRRS_ADISB2_ReportService.getADISB2View(reportId, fromdate, todate, currency,
 						dtltype,
@@ -739,6 +742,13 @@ public class RegulatoryReportServices {
 
 				repsummary = BRRS_RECON_OF_FS_ReportService.getBRRS_Recon_Of_FS_View(reportId, fromdate, todate,
 						currency, dtltype, pageable, type, version);
+				break;
+
+			case "AML":
+
+				repsummary = brrs_aml_reportservice.getAMLView(reportId, fromdate, todate, currency, dtltype,
+						pageable, type, version);
+
 				break;
 
 		}
@@ -956,8 +966,7 @@ public class RegulatoryReportServices {
 						dtltype,
 						pageable, Filter, type, version);
 				break;
-				
-				
+
 			case "ADISB2":
 
 				repdetail = BRRS_ADISB2_ReportService.getADISB2currentDtl(reportId, fromdate, todate, currency,
@@ -971,7 +980,12 @@ public class RegulatoryReportServices {
 						dtltype,
 						pageable, Filter, type, version);
 				break;
+			case "AML":
 
+				repdetail = brrs_aml_reportservice.getAMLcurrentDtl(reportId, fromdate, todate, currency,
+						dtltype,
+						pageable, Filter, type, version);
+				break;
 		}
 		return repdetail;
 	}
@@ -1772,7 +1786,7 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
-				
+
 			case "ADISB2":
 				try {
 					repfile = BRRS_ADISB2_ReportService.getM_ADISB2Excel(filename, reportId, fromdate, todate,
@@ -1789,6 +1803,17 @@ public class RegulatoryReportServices {
 					repfile = BRRS_RECON_OF_FS_ReportService.getRecon_Of_FSExcel(filename, reportId, fromdate,
 							todate,
 							currency, dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+
+			case "AML":
+				try {
+
+					repfile = brrs_aml_reportservice.getAMLExcel(filename, reportId, fromdate, todate, currency,
+							dtltype, type, version);
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -1887,7 +1912,7 @@ public class RegulatoryReportServices {
 		} else if ("ADISB1Detail".equals(filename)) {
 			return BRRS_ADISB1_ReportService.getADISB1DetailExcel(
 					filename, fromdate, todate, currency, dtltype, type, version);
-		}else if ("ADISB2Detail".equals(filename)) {
+		} else if ("ADISB2Detail".equals(filename)) {
 			return BRRS_ADISB2_ReportService.getADISB2DetailExcel(
 					filename, fromdate, todate, currency, dtltype, type, version);
 		}
@@ -2352,7 +2377,15 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 
-				// New Archival
+			case "AML":
+				try {
+					archivalData = brrs_aml_reportservice.getAMLArchival();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+			// New Archival
 			case "M_SRWA_12H":
 				List<Object[]> srwaList1 = BRRS_M_SRWA_12H_reportservice.getM_SRWA_12HArchival();
 				archivalData.addAll(srwaList1);
@@ -2582,7 +2615,7 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
-				
+
 			case "ADISB2":
 				try {
 					archivalData = BRRS_ADISB2_ReportService.getADISB2Archival();
@@ -2757,10 +2790,13 @@ public class RegulatoryReportServices {
 			fileData = BRRS_ADISB1_ReportService.getADISB1DetailExcel(filename, fromdate, todate, currency,
 					dtltype, type, version);
 		}
-		
+
 		else if ("ADISB2".equals(filename)) {
 
 			fileData = BRRS_ADISB2_ReportService.getADISB2DetailExcel(filename, fromdate, todate, currency,
+					dtltype, type, version);
+		} else if ("AML".equals(filename)) {
+			fileData = brrs_aml_reportservice.getAMLDetailExcel(filename, fromdate, todate, currency,
 					dtltype, type, version);
 		}
 
@@ -2969,9 +3005,13 @@ public class RegulatoryReportServices {
 					modelAndView = BRRS_ADISB1_ReportService.getViewOrEditPage(request.getParameter("acctNo"),
 							request.getParameter("formmode"));
 					break;
-					
+
 				case "ADISB2":
 					modelAndView = BRRS_ADISB2_ReportService.getViewOrEditPage(request.getParameter("acctNo"),
+							request.getParameter("formmode"));
+					break;
+				case "AML":
+					modelAndView = brrs_aml_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
 							request.getParameter("formmode"));
 					break;
 
@@ -3113,12 +3153,15 @@ public class RegulatoryReportServices {
 				case "ADISB1":
 					response = BRRS_ADISB1_ReportService.updateDetailEdit(request);
 					break;
-					
+
 				case "ADISB2":
 					response = BRRS_ADISB2_ReportService.updateDetailEdit(request);
 					break;
 				case "Recon_Of_FS":
 					response = BRRS_RECON_OF_FS_ReportService.updateDetailEdit(request);
+					break;
+				case "AML":
+					response = brrs_aml_reportservice.updateDetailEdit(request);
 					break;
 				default:
 					logger.warn("Unsupported report ID: {}", reportId);
