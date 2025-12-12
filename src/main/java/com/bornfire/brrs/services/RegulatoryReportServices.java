@@ -257,6 +257,9 @@ public class RegulatoryReportServices {
 
 	@Autowired
 	BRRS_BDISB1_ReportService brrs_m_bdisb1_reportservice;
+	
+	@Autowired
+	BRRS_BDISB3_ReportService brrs_bdisb3_reportservice;
 
 	@Autowired
 	BRRS_M_SCI_E_ReportService brrs_m_sci_e_reportservice;
@@ -391,6 +394,11 @@ public class RegulatoryReportServices {
 
 			case "BDISB1":
 				repsummary = brrs_m_bdisb1_reportservice.getM_BDISB1View(reportId, fromdate, todate, currency, dtltype,
+						pageable, type, version);
+				break;
+				
+			case "BDISB3":
+				repsummary = brrs_bdisb3_reportservice.getM_BDISB3View(reportId, fromdate, todate, currency, dtltype,
 						pageable, type, version);
 				break;
 
@@ -1139,6 +1147,17 @@ public class RegulatoryReportServices {
 			case "BDISB1":
 				try {
 					repfile = brrs_m_bdisb1_reportservice.getM_BDISB1Excel(filename, reportId, fromdate, todate,
+							currency,
+							dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+				
+			case "BDISB3":
+				try {
+					repfile = brrs_bdisb3_reportservice.getBDISB3Excel(filename, reportId, fromdate, todate,
 							currency,
 							dtltype, type, version);
 				} catch (Exception e) {
@@ -2615,6 +2634,12 @@ public class RegulatoryReportServices {
 				archivalData.addAll(bdisb1List);
 				System.out.println("Fetched M_C archival data: " + bdisb1List.size());
 				break;
+				
+			case "BDISB3":
+				List<Object[]> bdisb3List = brrs_bdisb3_reportservice.getBDISB3Archival();
+				archivalData.addAll(bdisb3List);
+				System.out.println("Fetched M_C archival data: " + bdisb3List.size());
+				break;
 
 			case "M_CA7":
 				List<Object[]> CA7List = BRRS_M_CA7_reportservice.getM_CA7Archival();
@@ -3605,6 +3630,7 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
+				
 
 			case "M_OR2":
 				try {
@@ -3765,6 +3791,18 @@ public class RegulatoryReportServices {
 			case "BDISB2":
 				try {
 					List<Object[]> resubList = BRRS_BDISB2_ReportService.getBDISB2Resub();
+					resubmissionData.addAll(resubList);
+					System.out.println("Resubmission data fetched for BDISB2: " + resubList.size());
+				} catch (Exception e) {
+					System.err.println("Error fetching resubmission data for BDISB2: " + e.getMessage());
+					e.printStackTrace();
+				}
+
+				break;
+				
+			case "BDISB3":
+				try {
+					List<Object[]> resubList = brrs_bdisb3_reportservice.getBDISB3Resub();
 					resubmissionData.addAll(resubList);
 					System.out.println("Resubmission data fetched for BDISB2: " + resubList.size());
 				} catch (Exception e) {

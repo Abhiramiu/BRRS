@@ -955,7 +955,7 @@ return out.toByteArray();
 			System.out.println("countser" + ADISB2Archivallist.size());
 		} catch (Exception e) {
 			// Log the exception
-			System.err.println("Error fetching ADISB1 Archival data: " + e.getMessage());
+			System.err.println("Error fetching ADISB2 Archival data: " + e.getMessage());
 			e.printStackTrace();
 
 			// Optionally, you can rethrow it or return empty list
@@ -974,7 +974,7 @@ if (type.equals("ARCHIVAL") & version != null) {
 
 }
 XSSFWorkbook workbook = new XSSFWorkbook();
-XSSFSheet sheet = workbook.createSheet("ADISB1Detail");
+XSSFSheet sheet = workbook.createSheet("ADISB2Detail");
 
 // Common border style
 BorderStyle border = BorderStyle.THIN;

@@ -973,17 +973,17 @@ PURPOSE		: BRFREPORT
 									<thead class="thead-light">
 										<!-- First header row -->
 										<tr style="background-color: #D8D8D8; text-align:center;">
-											<th style="text-align:left;">What if Deposit Insurance <br>Coverage was (amounts in Pula)?</th>
-											<th style="text-align:left;">Report the total <br> amount of deposits <br>  up to and including <br> this level (Pula)</th>
-											<th style="text-align:left;">Report the total number of depositors fully covered at this level</th>
-											<th style="text-align:left;">"Report the percentage of fully covered depositors <br>
+											<th style="text-align:right;">What if Deposit Insurance <br>Coverage was (amounts in Pula)?</th>
+											<th style="text-align:right;">Report the total <br> amount of deposits <br>  up to and including <br> this level (Pula)</th>
+											<th style="text-align:right;">Report the total number of depositors fully covered at this level</th>
+											<th style="text-align:right;">"Report the percentage of fully covered depositors <br>
 (Column D as a percentage of total number of depositors in the bank)"
 </th>
-                                             <th style="text-align:left;">"Report the number of depositors whose total deposits exceed this level <br> 
+                                             <th style="text-align:right;">"Report the number of depositors whose total deposits exceed this level <br> 
 
 (total depositors less column D)"
 </th>  
-											<th style="text-align:left;">"Report the percentage of the amount of deposits covered at this level to total deposits at the bank
+											<th style="text-align:right;">"Report the percentage of the amount of deposits covered at this level to total deposits at the bank
 <br>
 (column C as a percentage of the total amount of deposits in the bank)"
 </th>							
@@ -997,7 +997,7 @@ PURPOSE		: BRFREPORT
 									
 	
 <tr th:each="row : ${reportsummary}">
-    <td style="text-align:left; padding-left:20px;color: black;">1,00,000</td>
+    <td style="text-align:center; padding-left:20px;color: black;">1,00,000</td>
 
     <td id="R6_TOTAL_DEPOSIT_AMOUNT"
         th:text="${#numbers.formatDecimal(row.R6_TOTAL_DEPOSIT_AMOUNT,1,'COMMA',0,'POINT')}"
@@ -1034,7 +1034,7 @@ PURPOSE		: BRFREPORT
 
 
 <tr th:each="row : ${reportsummary}">
-    <td style="text-align:left; padding-left:20px;color: black;">1,50,000</td>
+    <td style="text-align:center; padding-left:20px;color: black;">1,50,000</td>
 
     <td id="R7_TOTAL_DEPOSIT_AMOUNT"
         th:text="${#numbers.formatDecimal(row.R7_TOTAL_DEPOSIT_AMOUNT,1,'COMMA',0,'POINT')}"
@@ -1071,7 +1071,7 @@ PURPOSE		: BRFREPORT
 
 
 <tr th:each="row : ${reportsummary}">
-    <td style="text-align:left; padding-left:20px;color: black;">2,00,000</td>
+    <td style="text-align:center; padding-left:20px;color: black;">2,00,000</td>
 
     <td id="R8_TOTAL_DEPOSIT_AMOUNT"
         th:text="${#numbers.formatDecimal(row.R8_TOTAL_DEPOSIT_AMOUNT,1,'COMMA',0,'POINT')}"
@@ -1108,7 +1108,7 @@ PURPOSE		: BRFREPORT
 
 
 <tr th:each="row : ${reportsummary}">
-    <td style="text-align:left; padding-left:20px;color: black;">2,50,000</td>
+    <td style="text-align:center; padding-left:20px;color: black;">2,50,000</td>
 
     <td id="R9_TOTAL_DEPOSIT_AMOUNT"
         th:text="${#numbers.formatDecimal(row.R9_TOTAL_DEPOSIT_AMOUNT,1,'COMMA',0,'POINT')}"
@@ -1145,7 +1145,7 @@ PURPOSE		: BRFREPORT
 
 
 <tr th:each="row : ${reportsummary}">
-    <td style="text-align:left; padding-left:20px;color: black;">3,00,000</td>
+    <td style="text-align:center; padding-left:20px;color: black;">3,00,000</td>
 
     <td id="R10_TOTAL_DEPOSIT_AMOUNT"
         th:text="${#numbers.formatDecimal(row.R10_TOTAL_DEPOSIT_AMOUNT,1,'COMMA',0,'POINT')}"
@@ -1182,7 +1182,7 @@ PURPOSE		: BRFREPORT
 
 
 <tr th:each="row : ${reportsummary}">
-    <td style="text-align:left; padding-left:20px;color: black;">3,50,000</td>
+    <td style="text-align:center; padding-left:20px;color: black;">3,50,000</td>
 
     <td id="R11_TOTAL_DEPOSIT_AMOUNT"
         th:text="${#numbers.formatDecimal(row.R11_TOTAL_DEPOSIT_AMOUNT,1,'COMMA',0,'POINT')}"
@@ -1219,7 +1219,7 @@ PURPOSE		: BRFREPORT
 
 
 <tr th:each="row : ${reportsummary}">
-    <td style="text-align:left; padding-left:20px;color: black;">4,00,000</td>
+    <td style="text-align:center; padding-left:20px;color: black;">4,00,000</td>
 
     <td id="R12_TOTAL_DEPOSIT_AMOUNT"
         th:text="${#numbers.formatDecimal(row.R12_TOTAL_DEPOSIT_AMOUNT,1,'COMMA',0,'POINT')}"
@@ -1256,7 +1256,7 @@ PURPOSE		: BRFREPORT
 
 
 <tr th:each="row : ${reportsummary}">
-    <td style="text-align:left; padding-left:20px;color: black;">5,00,000</td>
+    <td style="text-align:center; padding-left:20px;color: black;">5,00,000</td>
 
     <td id="R13_TOTAL_DEPOSIT_AMOUNT"
         th:text="${#numbers.formatDecimal(row.R13_TOTAL_DEPOSIT_AMOUNT,1,'COMMA',0,'POINT')}"
@@ -1293,7 +1293,7 @@ PURPOSE		: BRFREPORT
 
 
 <tr th:each="row : ${reportsummary}">
-    <td style="text-align:left; padding-left:20px; color: black;">>5,00,000</td>
+    <td style="text-align:center; padding-left:20px; color: black;">>5,00,000</td>
 
     <td id="R14_TOTAL_DEPOSIT_AMOUNT"
         th:text="${#numbers.formatDecimal(row.R14_TOTAL_DEPOSIT_AMOUNT,1,'COMMA',0,'POINT')}"
@@ -1330,20 +1330,18 @@ PURPOSE		: BRFREPORT
 
 
 <tr th:each="row : ${reportsummary}">
-    <td style="text-align:left; padding-left:20px;color: black;">Total</td>
+    <td style="text-align:center; padding-left:20px;color: black;">Total</td>
 
     <td id="R15_TOTAL_DEPOSIT_AMOUNT"
         th:text="${#numbers.formatDecimal(row.R15_TOTAL_DEPOSIT_AMOUNT,1,'COMMA',0,'POINT')}"
         style="text-align:right;width:200px;"
-        th:attr="reportLable='R15',reportAddlCriteria1='C2'"
-        onclick="showdetailsbyRowAndColumn(this)">
+        th:attr="reportLable='R15',reportAddlCriteria1='C2'">
     </td>
 
     <td id="R15_COVERED_DEPOSITORS"
         th:text="${#numbers.formatDecimal(row.R15_COVERED_DEPOSITORS,1,'COMMA',0,'POINT')}"
         style="text-align:right;width:200px;"
-        th:attr="reportLable='R15',reportAddlCriteria1='C3'"
-        onclick="showdetailsbyRowAndColumn(this)">
+        th:attr="reportLable='R15',reportAddlCriteria1='C3'">
     </td>
 
     <td id="R15_COVERED_DEPOSITORS_PCT"
