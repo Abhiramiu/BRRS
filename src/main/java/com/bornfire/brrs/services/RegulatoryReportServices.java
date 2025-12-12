@@ -288,6 +288,9 @@ public class RegulatoryReportServices {
 
 	@Autowired
 	BRRS_AML_ReportService brrs_aml_reportservice;
+	
+	@Autowired
+	BRRS_FSI_ReportService BRRS_FSI_ReportService;
 
 	@Autowired
 	BRRS_Expanded_Regu_BS_ReportService BRRS_Expanded_Regu_BS_ReportService;
@@ -773,6 +776,13 @@ public class RegulatoryReportServices {
 						pageable, type, version);
 
 				break;
+				
+			case "FSI":
+				repsummary = BRRS_FSI_ReportService.getFSIView(reportId, fromdate, todate, currency,
+						dtltype,
+						pageable, type, version);
+
+				break;
 
 			case "EXPANDED_REGU_BS":
 
@@ -1024,9 +1034,19 @@ public class RegulatoryReportServices {
 						pageable, Filter, type, version);
 				break;
 
+
 			case "EXPANDED_REGU_BS":
 				repdetail = BRRS_Expanded_Regu_BS_ReportService.getBRRS_Expanded_Regu_BScurrentDtl(reportId, fromdate,
 						todate, currency,
+						dtltype,
+						pageable, Filter, type, version);
+				break;
+
+
+				
+			case "FSI":
+
+				repdetail = BRRS_FSI_ReportService.getFSIcurrentDtl(reportId, fromdate, todate, currency,
 						dtltype,
 						pageable, Filter, type, version);
 				break;
@@ -1886,6 +1906,17 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
+				
+//			case "FSI":
+//				try {
+//					repfile = BRRS_FSI_ReportService.BRRS_FSIExcel(filename, reportId, fromdate, todate,
+//							currency, dtltype, type, version);
+//
+//				} catch (Exception e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//				break;
 
 			case "EXPANDED_REGU_BS":
 				try {
@@ -1996,8 +2027,10 @@ public class RegulatoryReportServices {
 		} else if ("ADISB2Detail".equals(filename)) {
 			return BRRS_ADISB2_ReportService.getADISB2DetailExcel(
 					filename, fromdate, todate, currency, dtltype, type, version);
+		} else if ("FSIDetail".equals(filename)) {
+			return BRRS_FSI_ReportService.getFSIDetailExcel(
+					filename, fromdate, todate, currency, dtltype, type, version);
 		}
-
 		return new byte[0];
 	}
 
@@ -2727,6 +2760,15 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
+				
+			case "FSI":
+				try {
+					archivalData = BRRS_FSI_ReportService.getFSIArchival();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
 			default:
 				System.out.println("No archival logic defined for report: " + rptcode);
@@ -2908,6 +2950,11 @@ public class RegulatoryReportServices {
 		} else if (filename.equals("EXPANDED_REGU_BS")) {
 			fileData = BRRS_Expanded_Regu_BS_ReportService.BRRS_Expanded_Regu_BSDetailExcel(filename, fromdate, todate,
 					currency, dtltype, type, version);
+		}
+		else if ("FSI".equals(filename)) {
+
+			fileData = BRRS_FSI_ReportService.getFSIDetailExcel(filename, fromdate, todate, currency,
+					dtltype, type, version);
 		}
 
 		if (fileData == null) {
@@ -3130,10 +3177,18 @@ public class RegulatoryReportServices {
 					modelAndView = brrs_aml_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
 							request.getParameter("formmode"));
 					break;
+
 				case "EXPANDED_REGU_BS":
 					modelAndView = BRRS_Expanded_Regu_BS_ReportService.getViewOrEditPage(request.getParameter("acctNo"),
 							request.getParameter("formmode"));
 					break;
+
+				case "FSI":
+					modelAndView = BRRS_FSI_ReportService.getViewOrEditPage(request.getParameter("acctNo"),
+							request.getParameter("formmode"));
+					break;
+
+
 				default:
 					logger.warn("No detail service found for reportId: {}", reportId);
 					modelAndView = new ModelAndView("error/report_not_found");
@@ -3287,9 +3342,17 @@ public class RegulatoryReportServices {
 					response = brrs_aml_reportservice.updateDetailEdit(request);
 					break;
 
+
 				case "EXPANDED_REGU_BS":
 					response = BRRS_Expanded_Regu_BS_ReportService.updateDetailEdit(request);
 					break;
+
+
+					
+				case "FSI":
+					response = BRRS_FSI_ReportService.updateDetailEdit(request);
+					break;
+					
 
 				default:
 					logger.warn("Unsupported report ID: {}", reportId);
