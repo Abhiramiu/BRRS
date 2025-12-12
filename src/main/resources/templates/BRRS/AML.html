@@ -1066,52 +1066,53 @@ PURPOSE		: BRRSREPORT
     </script>
 
 
-<style>
-		.left-arrow-circle {
-			background-color: white;
-			color: #007bff;
-			border-radius: 50%;
-			padding: 8px;
-			margin-right: 10px;
-			cursor: pointer;
-		}
+    <style>
+        .left-arrow-circle {
+            background-color: white;
+            color: #007bff;
+            border-radius: 50%;
+            padding: 8px;
+            margin-right: 10px;
+            cursor: pointer;
+        }
 
-		/* 🚌 Bus display style box */
-		/* 🚌 Bus display style box */
-					.boards {
-						transform: translateY(6px);
-					  background-color: rgb(107, 122, 143);
-					  color: white;
-					  padding: 5px 80px;
-					  border-radius: 8px;
-					  overflow: hidden;
-					  white-space: nowrap;
-					  flex: 1; /* ✅ makes it take available space dynamically */
-					  min-width: 200px;
-					  box-shadow: 0 0 10px rgb(107, 122, 143);
-					  position: relative;
-					}
+        /* 🚌 Bus display style box */
+        /* 🚌 Bus display style box */
+        .boards {
+            transform: translateY(6px);
+            background-color: rgb(107, 122, 143);
+            color: white;
+            padding: 5px 80px;
+            border-radius: 8px;
+            overflow: hidden;
+            white-space: nowrap;
+            flex: 1;
+            /* ✅ makes it take available space dynamically */
+            min-width: 200px;
+            box-shadow: 0 0 10px rgb(107, 122, 143);
+            position: relative;
+        }
 
-		/* ✨ Scrolling animation */
-		.scrolling-text {
-			display: inline-block;
-			font-family: "Courier New", monospace;
-			font-weight: bold;
-			letter-spacing: 1px;
-			animation: scroll-left 10s linear infinite;
-		}
+        /* ✨ Scrolling animation */
+        .scrolling-text {
+            display: inline-block;
+            font-family: "Courier New", monospace;
+            font-weight: bold;
+            letter-spacing: 1px;
+            animation: scroll-left 10s linear infinite;
+        }
 
-		/* Animation keyframes */
-		@keyframes scroll-left {
-			0% {
-				transform: translateX(100%);
-			}
+        /* Animation keyframes */
+        @keyframes scroll-left {
+            0% {
+                transform: translateX(100%);
+            }
 
-			100% {
-				transform: translateX(-100%);
-			}
-		}
-	</style>
+            100% {
+                transform: translateX(-100%);
+            }
+        }
+    </style>
     <style>
         table {
             border-collapse: collapse;
@@ -1181,8 +1182,8 @@ PURPOSE		: BRRSREPORT
 
                         </h5>
                         <div class="boards">
-							<p class="scrolling-text">BANK OF BOTSWANA - BANKING SUPERVISION DEPARTMENT </p>
-						</div>
+                            <p class="scrolling-text">BANK OF BOTSWANA - BANKING SUPERVISION DEPARTMENT </p>
+                        </div>
                     </div>
 
                     <div class="custom-tab-btn-group nav-buttons"
@@ -1241,8 +1242,7 @@ PURPOSE		: BRRSREPORT
 
                         <div class="col-sm-12">
                             <form action="#" method="POST" id="fileupload">
-                                <div class="table-wrapper table-responsive scrollable-table-container "
-                                    >
+                                <div class="table-wrapper table-responsive scrollable-table-container ">
                                     <table class="table table-bordered table-hover table-sm">
                                         <thead>
                                             <p
@@ -1253,8 +1253,10 @@ PURPOSE		: BRRSREPORT
                                                 A: CUSTOMER BASE</p>
                                             <tr>
                                                 <th style="background-color: #D8D8D8;">Customer Deposit</th>
-                                                <th style="text-align: right;background-color: #D8D8D8;">Number of Accounts</th>
-                                                <th style="text-align: right;background-color: #D8D8D8;">Total Deposits (P'000) </th>
+                                                <th style="text-align: right;background-color: #D8D8D8;">Number of
+                                                    Accounts</th>
+                                                <th style="text-align: right;background-color: #D8D8D8;">Total Deposits
+                                                    (P'000) </th>
                                             </tr>
                                         </thead>
                                         <tbody style="font-family: Arial" th:each="reportsummary: ${reportsummary}">
@@ -1310,11 +1312,9 @@ PURPOSE		: BRRSREPORT
                                                 <td th:text="${reportsummary.r15_cust_base_deposit}"
                                                     style="font-weight: bold;"></td>
                                                 <td style="text-align: right;color: white; background-color: rgb(107, 122, 143); padding-right:10px;font-weight: bold;"
-                                                    th:text="${reportsummary?.r15_cust_base_no_of_acct ?: ''}"
-                                                    ></td>
+                                                    th:text="${reportsummary?.r15_cust_base_no_of_acct ?: ''}"></td>
                                                 <td style="text-align: right;color: white;background-color: rgb(107, 122, 143); padding-right:10px;font-weight: bold;"
-                                                    th:text="${reportsummary?.r15_cust_base_tot_dep ?: ''}"
-                                                  ></td>
+                                                    th:text="${reportsummary?.r15_cust_base_tot_dep ?: ''}"></td>
                                             </tr>
 
                                         </tbody>
@@ -1325,9 +1325,12 @@ PURPOSE		: BRRSREPORT
                                                 style="text-align: left;vertical-align: left;font-family: Arial, sans-serif;font-weight: bold;">
                                                 B1: CUSTOMER RISK PROFILE OF DEPOSITORS AS DETERMINED BY THE BANK </p>
                                             <tr>
-                                                <th style="width: 650px;background-color: #D8D8D8;">Customer Deposit</th>
-                                                <th style="text-align: right;width: 610px;background-color: #D8D8D8;">Number of Customers</th>
-                                                <th style="text-align: right;background-color: #D8D8D8;">Value (P'000) </th>
+                                                <th style="width: 650px;background-color: #D8D8D8;">Customer Deposit
+                                                </th>
+                                                <th style="text-align: right;width: 610px;background-color: #D8D8D8;">
+                                                    Number of Customers</th>
+                                                <th style="text-align: right;background-color: #D8D8D8;">Value (P'000)
+                                                </th>
                                             </tr>
                                         </thead>
                                         <tbody style="font-family: Arial" th:each="reportsummary: ${reportsummary}">
@@ -1389,21 +1392,33 @@ PURPOSE		: BRRSREPORT
                                                 B2: CUSTOMER RISK PROFILE OF DEPOSITORS AS DETERMINED BY THE BANK </p>
                                             <tr>
                                                 <th style="background-color: #D8D8D8;">Customer Deposit</th>
-                                                <th colspan="2" style="text-align: center;background-color: #D8D8D8;">Low Risk Customer</th>
-                                                <th colspan="2" style="text-align: center;background-color: #D8D8D8;">Medium Risk Customers </th>
-                                                <th colspan="2" style="text-align: center;background-color: #D8D8D8;">High Risk Customers </th>
-                                                <th colspan="2" style="text-align: center;background-color: #D8D8D8;">Total</th>
+                                                <th colspan="2" style="text-align: center;background-color: #D8D8D8;">
+                                                    Low Risk Customer</th>
+                                                <th colspan="2" style="text-align: center;background-color: #D8D8D8;">
+                                                    Medium Risk Customers </th>
+                                                <th colspan="2" style="text-align: center;background-color: #D8D8D8;">
+                                                    High Risk Customers </th>
+                                                <th colspan="2" style="text-align: center;background-color: #D8D8D8;">
+                                                    Total</th>
                                             </tr>
                                             <tr>
                                                 <th style="background-color: #D8D8D8;"></th>
-                                                <th style="text-align: right;background-color: #D8D8D8;">Number of customers</th>
-                                                <th style="text-align: right;background-color: #D8D8D8;">Deposits (P'000)</th>
-                                                <th style="text-align: right;background-color: #D8D8D8;">Number of customers</th>
-                                                <th style="text-align: right;background-color: #D8D8D8;">Deposits (P'000)</th>
-                                                <th style="text-align: right;background-color: #D8D8D8;">Number of customers</th>
-                                                <th style="text-align: right;background-color: #D8D8D8;">Deposits (P'000)</th>
-                                                <th style="text-align: right;background-color: #D8D8D8;">Number of customers</th>
-                                                <th style="text-align: right;background-color: #D8D8D8;">Deposits (P'000)</th>
+                                                <th style="text-align: right;background-color: #D8D8D8;">Number of
+                                                    customers</th>
+                                                <th style="text-align: right;background-color: #D8D8D8;">Deposits
+                                                    (P'000)</th>
+                                                <th style="text-align: right;background-color: #D8D8D8;">Number of
+                                                    customers</th>
+                                                <th style="text-align: right;background-color: #D8D8D8;">Deposits
+                                                    (P'000)</th>
+                                                <th style="text-align: right;background-color: #D8D8D8;">Number of
+                                                    customers</th>
+                                                <th style="text-align: right;background-color: #D8D8D8;">Deposits
+                                                    (P'000)</th>
+                                                <th style="text-align: right;background-color: #D8D8D8;">Number of
+                                                    customers</th>
+                                                <th style="text-align: right;background-color: #D8D8D8;">Deposits
+                                                    (P'000)</th>
                                             </tr>
                                         </thead>
                                         <tbody style="font-family: Arial" th:each="reportsummary: ${reportsummary}">
@@ -1441,12 +1456,10 @@ PURPOSE		: BRRSREPORT
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
 
                                                 <td style="text-align:right;color: white;background-color: rgb(107, 122, 143);  padding-right:10px;font-weight: bold;"
-                                                    th:text="${reportsummary?.r30_b2_tot_no_cust ?: ''}"
-                                               ></td>
+                                                    th:text="${reportsummary?.r30_b2_tot_no_cust ?: ''}"></td>
 
                                                 <td style="text-align:right; color: white;background-color: rgb(107, 122, 143); padding-right:10px;font-weight: bold;"
-                                                    th:text="${reportsummary?.r30_b2_tot_deposit ?: ''}"
-                                              ></td>
+                                                    th:text="${reportsummary?.r30_b2_tot_deposit ?: ''}"></td>
                                             </tr>
 
                                             <tr>
@@ -1483,12 +1496,10 @@ PURPOSE		: BRRSREPORT
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
 
                                                 <td style="text-align:right;color: white;background-color: rgb(107, 122, 143);  padding-right:10px;font-weight: bold;"
-                                                    th:text="${reportsummary?.r31_b2_tot_no_cust ?: ''}"
-                                                  ></td>
+                                                    th:text="${reportsummary?.r31_b2_tot_no_cust ?: ''}"></td>
 
                                                 <td style="text-align:right; color: white;background-color: rgb(107, 122, 143); padding-right:10px;font-weight: bold;"
-                                                    th:text="${reportsummary?.r31_b2_tot_deposit ?: ''}"
-                                               ></td>
+                                                    th:text="${reportsummary?.r31_b2_tot_deposit ?: ''}"></td>
                                             </tr>
                                             <tr>
                                                 <td th:text="${reportsummary.r32_b2_cust_deposit}"></td>
@@ -1524,48 +1535,38 @@ PURPOSE		: BRRSREPORT
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
 
                                                 <td style="text-align:right;color: white;background-color: rgb(107, 122, 143);  padding-right:10px;font-weight: bold;"
-                                                    th:text="${reportsummary?.r32_b2_tot_no_cust ?: ''}"
-                                                 ></td>
+                                                    th:text="${reportsummary?.r32_b2_tot_no_cust ?: ''}"></td>
 
                                                 <td style="text-align:right; color: white;background-color: rgb(107, 122, 143); padding-right:10px;font-weight: bold;"
-                                                    th:text="${reportsummary?.r32_b2_tot_deposit ?: ''}"
-                                          ></td>
+                                                    th:text="${reportsummary?.r32_b2_tot_deposit ?: ''}"></td>
                                             </tr>
                                             <tr>
                                                 <td th:text="${reportsummary.r33_b2_cust_deposit}"
                                                     style="font-weight: bold;"></td>
 
                                                 <td style="text-align:right;color: white;background-color: rgb(107, 122, 143);  padding-right:10px;font-weight: bold;"
-                                                    th:text="${reportsummary?.r33_b2_low_risk_no_cust ?: ''}"
-                                                ></td>
+                                                    th:text="${reportsummary?.r33_b2_low_risk_no_cust ?: ''}"></td>
 
                                                 <td style="text-align:right;color: white;background-color: rgb(107, 122, 143);  padding-right:10px;font-weight: bold;"
-                                                    th:text="${reportsummary?.r33_b2_low_risk_deposit ?: ''}"
-                                               ></td>
+                                                    th:text="${reportsummary?.r33_b2_low_risk_deposit ?: ''}"></td>
 
                                                 <td style="text-align:right;color: white;background-color: rgb(107, 122, 143);  padding-right:10px;font-weight: bold;"
-                                                    th:text="${reportsummary?.r33_b2_medi_risk_no_cust ?: ''}"
-                                                 ></td>
+                                                    th:text="${reportsummary?.r33_b2_medi_risk_no_cust ?: ''}"></td>
 
                                                 <td style="text-align:right; color: white;background-color: rgb(107, 122, 143); padding-right:10px;font-weight: bold;"
-                                                    th:text="${reportsummary?.r33_b2_medi_risk_deposit ?: ''}"
-                                                 ></td>
+                                                    th:text="${reportsummary?.r33_b2_medi_risk_deposit ?: ''}"></td>
 
                                                 <td style="text-align:right;color: white;background-color: rgb(107, 122, 143);  padding-right:10px;font-weight: bold;"
-                                                    th:text="${reportsummary?.r33_b2_high_risk_no_cust ?: ''}"
-                                                    ></td>
+                                                    th:text="${reportsummary?.r33_b2_high_risk_no_cust ?: ''}"></td>
 
                                                 <td style="text-align:right;color: white;background-color: rgb(107, 122, 143);  padding-right:10px;font-weight: bold;"
-                                                    th:text="${reportsummary?.r33_b2_high_risk_deposit ?: ''}"
-                                                 ></td>
+                                                    th:text="${reportsummary?.r33_b2_high_risk_deposit ?: ''}"></td>
 
                                                 <td style="text-align:right; color: white;background-color: rgb(107, 122, 143); padding-right:10px;font-weight: bold;"
-                                                    th:text="${reportsummary?.r33_b2_tot_no_cust ?: ''}"
-                           ></td>
+                                                    th:text="${reportsummary?.r33_b2_tot_no_cust ?: ''}"></td>
 
                                                 <td style="text-align:right;color: white;background-color: rgb(107, 122, 143);  padding-right:10px;font-weight: bold;"
-                                                    th:text="${reportsummary?.r33_b2_tot_deposit ?: ''}"
-                                               ></td>
+                                                    th:text="${reportsummary?.r33_b2_tot_deposit ?: ''}"></td>
                                             </tr>
 
                                         </tbody>
@@ -1576,9 +1577,12 @@ PURPOSE		: BRRSREPORT
                                                 style="text-align: left;vertical-align: left;font-family: Arial, sans-serif;font-weight: bold;">
                                                 C: CUSTOMER BASE ACCORDING TO RESIDENCE STATUS </p>
                                             <tr>
-                                                <th style="width: 570px;background-color: #D8D8D8;">Customer Deposit</th>
-                                                <th style="text-align: right;width: 660px;background-color: #D8D8D8;">No. of customers</th>
-                                                <th style="text-align: right;background-color: #D8D8D8;">Deposits (P'000)</th>
+                                                <th style="width: 570px;background-color: #D8D8D8;">Customer Deposit
+                                                </th>
+                                                <th style="text-align: right;width: 660px;background-color: #D8D8D8;">
+                                                    No. of customers</th>
+                                                <th style="text-align: right;background-color: #D8D8D8;">Deposits
+                                                    (P'000)</th>
                                             </tr>
                                         </thead>
                                         <tbody style="font-family: Arial" th:each="reportsummary: ${reportsummary}">
@@ -1615,12 +1619,10 @@ PURPOSE		: BRRSREPORT
                                                     style="font-weight: bold;"></td>
 
                                                 <td style="text-align:right;color: white;background-color: rgb(107, 122, 143);  padding-right:10px;font-weight: bold;"
-                                                    th:text="${reportsummary?.r41_cust_base_no_cust ?: ''}"
-                                                    ></td>
+                                                    th:text="${reportsummary?.r41_cust_base_no_cust ?: ''}"></td>
 
                                                 <td style="text-align:right;color: white;background-color: rgb(107, 122, 143);  padding-right:10px;font-weight: bold;"
-                                                    th:text="${reportsummary?.r41_cust_base_deposits ?: ''}"
-                                                    ></td>
+                                                    th:text="${reportsummary?.r41_cust_base_deposits ?: ''}"></td>
                                             </tr>
 
                                         </tbody>
@@ -1632,9 +1634,12 @@ PURPOSE		: BRRSREPORT
                                                 style="text-align: left;vertical-align: left;font-family: Arial, sans-serif;font-weight: bold;">
                                                 D: BREAKDOWN OF CUSTOMER TYPE </p>
                                             <tr>
-                                                <th style="width: 570px;background-color: #D8D8D8;">Types of customers</th>
-                                                <th style="text-align: right;width: 660px;background-color: #D8D8D8;">Number of customers</th>
-                                                <th style="text-align: right;background-color: #D8D8D8;">Total Deposits (P'000)</th>
+                                                <th style="width: 570px;background-color: #D8D8D8;">Types of customers
+                                                </th>
+                                                <th style="text-align: right;width: 660px;background-color: #D8D8D8;">
+                                                    Number of customers</th>
+                                                <th style="text-align: right;background-color: #D8D8D8;">Total Deposits
+                                                    (P'000)</th>
                                             </tr>
                                         </thead>
                                         <tbody style="font-family: Arial" th:each="reportsummary: ${reportsummary}">
@@ -1703,11 +1708,9 @@ PURPOSE		: BRRSREPORT
                                                 <td th:text="${reportsummary.r55_brkdown_typ_of_cust}"
                                                     style="font-weight: bold;"></td>
                                                 <td style="text-align:right;color: white;background-color: rgb(107, 122, 143);  padding-right:10px;font-weight: bold;"
-                                                    th:text="${reportsummary?.r55_brkdown_num_of_cust ?: ''}"
-                                                  ></td>
+                                                    th:text="${reportsummary?.r55_brkdown_num_of_cust ?: ''}"></td>
                                                 <td style="text-align:right;color: white;background-color: rgb(107, 122, 143);  padding-right:10px;font-weight: bold;"
-                                                    th:text="${reportsummary?.r55_brkdown_tot_depo ?: ''}"
-                                                 ></td>
+                                                    th:text="${reportsummary?.r55_brkdown_tot_depo ?: ''}"></td>
                                             </tr>
 
                                             <tr>
@@ -1883,11 +1886,9 @@ PURPOSE		: BRRSREPORT
                                                 <td th:text="${reportsummary.r70_brkdown_typ_of_cust}"
                                                     style="font-weight: bold;"></td>
                                                 <td style="text-align:right;color: white;background-color: rgb(107, 122, 143);  padding-right:10px;font-weight: bold;"
-                                                    th:text="${reportsummary?.r70_brkdown_num_of_cust ?: ''}"
-                                                    ></td>
+                                                    th:text="${reportsummary?.r70_brkdown_num_of_cust ?: ''}"></td>
                                                 <td style="text-align:right;color: white;background-color: rgb(107, 122, 143);  padding-right:10px;font-weight: bold;"
-                                                    th:text="${reportsummary?.r70_brkdown_tot_depo ?: ''}"
-                                                   ></td>
+                                                    th:text="${reportsummary?.r70_brkdown_tot_depo ?: ''}"></td>
                                             </tr>
 
                                             <tr>
@@ -1918,7 +1919,7 @@ PURPOSE		: BRRSREPORT
 
                                             <tr>
                                                 <td th:text="${reportsummary.r73_brkdown_typ_of_cust}"
-                                                    style="padding-left: 20px;"></td>>
+                                                    style="padding-left: 20px;"></td>
                                                 <td style="text-align:right; padding-right:10px;"
                                                     th:text="${reportsummary?.r73_brkdown_num_of_cust ?: ''}"
                                                     th:attr="RowId='R73', ColumnId='C2'"
@@ -1931,7 +1932,7 @@ PURPOSE		: BRRSREPORT
 
                                             <tr>
                                                 <td th:text="${reportsummary.r74_brkdown_typ_of_cust}"
-                                                    style="padding-left: 20px;"></td>></td>
+                                                    style="padding-left: 20px;"></td>
                                                 <td style="text-align:right; padding-right:10px;"
                                                     th:text="${reportsummary?.r74_brkdown_num_of_cust ?: ''}"
                                                     th:attr="RowId='R74', ColumnId='C2'"
@@ -1946,11 +1947,9 @@ PURPOSE		: BRRSREPORT
                                                 <td th:text="${reportsummary.r75_brkdown_typ_of_cust}"
                                                     style="font-weight: bold;"></td>
                                                 <td style="text-align:right;color: white;background-color: rgb(107, 122, 143);  padding-right:10px;font-weight: bold;"
-                                                    th:text="${reportsummary?.r75_brkdown_num_of_cust ?: ''}"
-                                                 ></td>
+                                                    th:text="${reportsummary?.r75_brkdown_num_of_cust ?: ''}"></td>
                                                 <td style="text-align:right;color: white;background-color: rgb(107, 122, 143);  padding-right:10px;font-weight: bold;"
-                                                    th:text="${reportsummary?.r75_brkdown_tot_depo ?: ''}"
-                                                 ></td>
+                                                    th:text="${reportsummary?.r75_brkdown_tot_depo ?: ''}"></td>
                                             </tr>
 
                                         </tbody>
@@ -1963,13 +1962,18 @@ PURPOSE		: BRRSREPORT
                                                 E1: PROMINENT INFLUENTIAL PERSONS (PIPs) & RELATED
                                                 COMPANIES/AFFILIATIONS - FOREIGN PIPS</p>
                                             <tr>
-                                                <th style="width: 300px;background-color: #D8D8D8;">Total number of customers</th>
-                                                <th style="text-align: right;width: 370px;background-color: #D8D8D8;">Loans and on-balance sheet
+                                                <th style="width: 300px;background-color: #D8D8D8;">Total number of
+                                                    customers</th>
+                                                <th style="text-align: right;width: 370px;background-color: #D8D8D8;">
+                                                    Loans and on-balance sheet
                                                     exposures (P'000)</th>
-                                                <th style="text-align: right;width: 250px;background-color: #D8D8D8;">Deposits (P'000)</th>
-                                                <th style="text-align: right;width: 300px;background-color: #D8D8D8;">Funds managed on behalf of
+                                                <th style="text-align: right;width: 250px;background-color: #D8D8D8;">
+                                                    Deposits (P'000)</th>
+                                                <th style="text-align: right;width: 300px;background-color: #D8D8D8;">
+                                                    Funds managed on behalf of
                                                     customers (P'000)</th>
-                                                <th style="text-align: right;width: 250px;background-color: #D8D8D8;">Turnover* (P'000)</th>
+                                                <th style="text-align: right;width: 250px;background-color: #D8D8D8;">
+                                                    Turnover* (P'000)</th>
 
                                             </tr>
                                         </thead>
@@ -2043,13 +2047,18 @@ PURPOSE		: BRRSREPORT
                                                 E2: PROMINENT INFLUENTIAL PERSONS (PIPS) & RELATED
                                                 COMPANIES/AFFILIATIONS - DOMESTIC PIPs </p>
                                             <tr>
-                                                <th style="width: 300px;background-color: #D8D8D8;">Total number of customers</th>
-                                                <th style="text-align: right;width: 370px;background-color: #D8D8D8;">Loans and on-balance sheet
+                                                <th style="width: 300px;background-color: #D8D8D8;">Total number of
+                                                    customers</th>
+                                                <th style="text-align: right;width: 370px;background-color: #D8D8D8;">
+                                                    Loans and on-balance sheet
                                                     exposures (P'000)</th>
-                                                <th style="text-align: right;width: 250px;background-color: #D8D8D8;">Deposits (P'000)</th>
-                                                <th style="text-align: right;width: 300px;background-color: #D8D8D8;">Funds managed on behalf of
+                                                <th style="text-align: right;width: 250px;background-color: #D8D8D8;">
+                                                    Deposits (P'000)</th>
+                                                <th style="text-align: right;width: 300px;background-color: #D8D8D8;">
+                                                    Funds managed on behalf of
                                                     customers (P'000)</th>
-                                                <th style="text-align: right;width: 250px;background-color: #D8D8D8;">Turnover* (P'000)</th>
+                                                <th style="text-align: right;width: 250px;background-color: #D8D8D8;">
+                                                    Turnover* (P'000)</th>
 
                                             </tr>
                                         </thead>
@@ -2119,13 +2128,18 @@ PURPOSE		: BRRSREPORT
                                                 E3: PROMINENNT INFLUENTIAL PERSONS (PIPs) & RELATED
                                                 COMPANIES/AFFILIATIONS - INTERNATIONAL ORGANISATIONS</p>
                                             <tr>
-                                                <th style="width: 300px;background-color: #D8D8D8;">Total number of customers</th>
-                                                <th style="text-align: right;width: 370px;background-color: #D8D8D8;">Loans and on-balance sheet
+                                                <th style="width: 300px;background-color: #D8D8D8;">Total number of
+                                                    customers</th>
+                                                <th style="text-align: right;width: 370px;background-color: #D8D8D8;">
+                                                    Loans and on-balance sheet
                                                     exposures (P'000)</th>
-                                                <th style="text-align: right;width: 250px;background-color: #D8D8D8;">Deposits (P'000)</th>
-                                                <th style="text-align: right;width: 300px;background-color: #D8D8D8;">Funds managed on behalf of
+                                                <th style="text-align: right;width: 250px;background-color: #D8D8D8;">
+                                                    Deposits (P'000)</th>
+                                                <th style="text-align: right;width: 300px;background-color: #D8D8D8;">
+                                                    Funds managed on behalf of
                                                     customers (P'000)</th>
-                                                <th style="text-align: right;width: 250px;background-color: #D8D8D8;">Turnover* (P'000)</th>
+                                                <th style="text-align: right;width: 250px;background-color: #D8D8D8;">
+                                                    Turnover* (P'000)</th>
 
                                             </tr>
                                         </thead>
@@ -2193,13 +2207,18 @@ PURPOSE		: BRRSREPORT
                                                 style="text-align: left;vertical-align: left;font-family: Arial, sans-serif;font-weight: bold;">
                                                 F: PRIVATE BANKING/HIGH NET-WORTH CUSTOMERS </p>
                                             <tr>
-                                                <th style="width: 250px;background-color: #D8D8D8;">Number of customers</th>
-                                                <th style="text-align: right;width: 300px;background-color: #D8D8D8;">Loans and on-balance sheet
+                                                <th style="width: 250px;background-color: #D8D8D8;">Number of customers
+                                                </th>
+                                                <th style="text-align: right;width: 300px;background-color: #D8D8D8;">
+                                                    Loans and on-balance sheet
                                                     exposures (P'000)</th>
-                                                <th style="text-align: right;width: 200px;background-color: #D8D8D8;">Deposits (P'000)</th>
-                                                <th style="text-align: right;width: 250px;background-color: #D8D8D8;">Funds managed on behalf of
+                                                <th style="text-align: right;width: 200px;background-color: #D8D8D8;">
+                                                    Deposits (P'000)</th>
+                                                <th style="text-align: right;width: 250px;background-color: #D8D8D8;">
+                                                    Funds managed on behalf of
                                                     customers (P'000)</th>
-                                                <th style="text-align: right;width: 200px;background-color: #D8D8D8;">Turnover* (P'000)</th>
+                                                <th style="text-align: right;width: 200px;background-color: #D8D8D8;">
+                                                    Turnover* (P'000)</th>
 
                                             </tr>
                                         </thead>
@@ -2266,16 +2285,20 @@ PURPOSE		: BRRSREPORT
                                                 style="text-align: left;vertical-align: left;font-family: Arial, sans-serif;font-weight: bold;">
                                                 G1: WIRE TRANSFERS </p>
                                             <tr>
-                                                <th style="width: 250px;background-color: #D8D8D8;" colspan="2">Payment Mechanism</th>
-                                                <th style="text-align: right;width: 300px;background-color: #D8D8D8;">Number of transfers </th>
-                                                <th style="text-align: right;width: 200px;background-color: #D8D8D8;">Value of transfers*(P'000)
+                                                <th style="width: 250px;background-color: #D8D8D8;" colspan="2">Payment
+                                                    Mechanism</th>
+                                                <th style="text-align: right;width: 300px;background-color: #D8D8D8;">
+                                                    Number of transfers </th>
+                                                <th style="text-align: right;width: 200px;background-color: #D8D8D8;">
+                                                    Value of transfers*(P'000)
                                                 </th>
                                             </tr>
 
                                         </thead>
                                         <tbody style="font-family: Arial" th:each="reportsummary: ${reportsummary}">
                                             <tr>
-                                                <td th:text="${reportsummary.r111_g1_pay_mech}" style="font-weight: bold;"></td>
+                                                <td th:text="${reportsummary.r111_g1_pay_mech}"
+                                                    style="font-weight: bold;"></td>
                                                 <td th:text="${reportsummary.r111_g1_pay_mechanisum}"
                                                     style="text-align: center;font-weight: bold;"></td>
                                                 <td style="text-align:right; padding-right:10px;"
@@ -2289,7 +2312,8 @@ PURPOSE		: BRRSREPORT
                                             </tr>
 
                                             <tr>
-                                                <td th:text="${reportsummary.r112_g1_pay_mech}" style="font-weight: bold;"></td>
+                                                <td th:text="${reportsummary.r112_g1_pay_mech}"
+                                                    style="font-weight: bold;"></td>
                                                 <td th:text="${reportsummary.r112_g1_pay_mechanisum} "
                                                     style="text-align: center;font-weight: bold;"></td>
                                                 <td style="text-align:right; padding-right:10px;"
@@ -2303,7 +2327,8 @@ PURPOSE		: BRRSREPORT
                                             </tr>
 
                                             <tr>
-                                                <td th:text="${reportsummary.r113_g1_pay_mech}" style="font-weight: bold;"></td>
+                                                <td th:text="${reportsummary.r113_g1_pay_mech}"
+                                                    style="font-weight: bold;"></td>
                                                 <td th:text="${reportsummary.r113_g1_pay_mechanisum} "
                                                     style="text-align: center;font-weight: bold;"></td>
                                                 <td style="text-align:right; padding-right:10px;"
@@ -2317,7 +2342,8 @@ PURPOSE		: BRRSREPORT
                                             </tr>
 
                                             <tr>
-                                                <td th:text="${reportsummary.r114_g1_pay_mech}" style="font-weight: bold;"></td>
+                                                <td th:text="${reportsummary.r114_g1_pay_mech}"
+                                                    style="font-weight: bold;"></td>
                                                 <td th:text="${reportsummary.r114_g1_pay_mechanisum} "
                                                     style="text-align: center;font-weight: bold;"></td>
                                                 <td style="text-align:right; padding-right:10px;"
@@ -2331,7 +2357,8 @@ PURPOSE		: BRRSREPORT
                                             </tr>
 
                                             <tr>
-                                                <td th:text="${reportsummary.r115_g1_pay_mech}" style="font-weight: bold;"></td>
+                                                <td th:text="${reportsummary.r115_g1_pay_mech}"
+                                                    style="font-weight: bold;"></td>
                                                 <td th:text="${reportsummary.r115_g1_pay_mechanisum} "
                                                     style="text-align: center;font-weight: bold;"></td>
                                                 <td style="text-align:right; padding-right:10px;"
@@ -2345,7 +2372,8 @@ PURPOSE		: BRRSREPORT
                                             </tr>
 
                                             <tr>
-                                                <td th:text="${reportsummary.r116_g1_pay_mech}" style="font-weight: bold;"></td>
+                                                <td th:text="${reportsummary.r116_g1_pay_mech}"
+                                                    style="font-weight: bold;"></td>
                                                 <td th:text="${reportsummary.r116_g1_pay_mechanisum} "
                                                     style="text-align: center;font-weight: bold;"></td>
                                                 <td style="text-align:right; padding-right:10px;"
@@ -2359,7 +2387,8 @@ PURPOSE		: BRRSREPORT
                                             </tr>
 
                                             <tr>
-                                                <td th:text="${reportsummary.r117_g1_pay_mech}" style="font-weight: bold;"></td>
+                                                <td th:text="${reportsummary.r117_g1_pay_mech}"
+                                                    style="font-weight: bold;"></td>
                                                 <td th:text="${reportsummary.r117_g1_pay_mechanisum} "
                                                     style="text-align: center;font-weight: bold;"></td>
                                                 <td style="text-align:right; padding-right:10px;"
@@ -2373,7 +2402,8 @@ PURPOSE		: BRRSREPORT
                                             </tr>
 
                                             <tr>
-                                                <td th:text="${reportsummary.r118_g1_pay_mech}" style="font-weight: bold;"></td>
+                                                <td th:text="${reportsummary.r118_g1_pay_mech}"
+                                                    style="font-weight: bold;"></td>
                                                 <td th:text="${reportsummary.r118_g1_pay_mechanisum} "
                                                     style="text-align: center;font-weight: bold;"></td>
                                                 <td style="text-align:right; padding-right:10px;"
@@ -2387,7 +2417,8 @@ PURPOSE		: BRRSREPORT
                                             </tr>
 
                                             <tr>
-                                                <td th:text="${reportsummary.r119_g1_pay_mech}" style="font-weight: bold;"></td>
+                                                <td th:text="${reportsummary.r119_g1_pay_mech}"
+                                                    style="font-weight: bold;"></td>
                                                 <td th:text="${reportsummary.r119_g1_pay_mechanisum} "
                                                     style="text-align: center;font-weight: bold;"></td>
                                                 <td style="text-align:right; padding-right:10px;"
@@ -2401,7 +2432,8 @@ PURPOSE		: BRRSREPORT
                                             </tr>
 
                                             <tr>
-                                                <td th:text="${reportsummary.r120_g1_pay_mech}" style="font-weight: bold;"></td>
+                                                <td th:text="${reportsummary.r120_g1_pay_mech}"
+                                                    style="font-weight: bold;"></td>
                                                 <td th:text="${reportsummary.r120_g1_pay_mechanisum} "
                                                     style="text-align: center;font-weight: bold;"></td>
                                                 <td style="text-align:right; padding-right:10px;"
@@ -2415,7 +2447,8 @@ PURPOSE		: BRRSREPORT
                                             </tr>
 
                                             <tr>
-                                                <td th:text="${reportsummary.r121_g1_pay_mech}" style="font-weight: bold;"></td>
+                                                <td th:text="${reportsummary.r121_g1_pay_mech}"
+                                                    style="font-weight: bold;"></td>
                                                 <td th:text="${reportsummary.r121_g1_pay_mechanisum} "
                                                     style="text-align: center;font-weight: bold;"></td>
                                                 <td style="text-align:right; padding-right:10px;"
@@ -2429,7 +2462,8 @@ PURPOSE		: BRRSREPORT
                                             </tr>
 
                                             <tr>
-                                                <td th:text="${reportsummary.r122_g1_pay_mech}" style="font-weight: bold;"></td>
+                                                <td th:text="${reportsummary.r122_g1_pay_mech}"
+                                                    style="font-weight: bold;"></td>
                                                 <td th:text="${reportsummary.r122_g1_pay_mechanisum} "
                                                     style="text-align: center;font-weight: bold;"></td>
                                                 <td style="text-align:right; padding-right:10px;"
@@ -2443,7 +2477,8 @@ PURPOSE		: BRRSREPORT
                                             </tr>
 
                                             <tr>
-                                                <td th:text="${reportsummary.r123_g1_pay_mech}" style="font-weight: bold;"></td>
+                                                <td th:text="${reportsummary.r123_g1_pay_mech}"
+                                                    style="font-weight: bold;"></td>
                                                 <td th:text="${reportsummary.r123_g1_pay_mechanisum} "
                                                     style="text-align: center;font-weight: bold;"></td>
                                                 <td style="text-align:right; padding-right:10px;"
@@ -2457,7 +2492,8 @@ PURPOSE		: BRRSREPORT
                                             </tr>
 
                                             <tr>
-                                                <td th:text="${reportsummary.r124_g1_pay_mech}" style="font-weight: bold;"></td>
+                                                <td th:text="${reportsummary.r124_g1_pay_mech}"
+                                                    style="font-weight: bold;"></td>
                                                 <td th:text="${reportsummary.r124_g1_pay_mechanisum} "
                                                     style="text-align: center;font-weight: bold;"></td>
                                                 <td style="text-align:right; padding-right:10px;"
@@ -2471,7 +2507,8 @@ PURPOSE		: BRRSREPORT
                                             </tr>
 
                                             <tr>
-                                                <td th:text="${reportsummary.r125_g1_pay_mech}" style="font-weight: bold;"></td>
+                                                <td th:text="${reportsummary.r125_g1_pay_mech}"
+                                                    style="font-weight: bold;"></td>
                                                 <td th:text="${reportsummary.r125_g1_pay_mechanisum} "
                                                     style="text-align: center;font-weight: bold;"></td>
                                                 <td style="text-align:right; padding-right:10px;"
@@ -2485,7 +2522,8 @@ PURPOSE		: BRRSREPORT
                                             </tr>
 
                                             <tr>
-                                                <td th:text="${reportsummary.r126_g1_pay_mech}" style="font-weight: bold;"></td>
+                                                <td th:text="${reportsummary.r126_g1_pay_mech}"
+                                                    style="font-weight: bold;"></td>
                                                 <td th:text="${reportsummary.r126_g1_pay_mechanisum} "
                                                     style="text-align: center;font-weight: bold;"></td>
                                                 <td style="text-align:right; padding-right:10px;"
@@ -2499,7 +2537,8 @@ PURPOSE		: BRRSREPORT
                                             </tr>
 
                                             <tr>
-                                                <td th:text="${reportsummary.r127_g1_pay_mech}" style="font-weight: bold;"></td>
+                                                <td th:text="${reportsummary.r127_g1_pay_mech}"
+                                                    style="font-weight: bold;"></td>
                                                 <td th:text="${reportsummary.r127_g1_pay_mechanisum} "
                                                     style="text-align: center;font-weight: bold;"></td>
                                                 <td style="text-align:right; padding-right:10px;"
@@ -2513,7 +2552,8 @@ PURPOSE		: BRRSREPORT
                                             </tr>
 
                                             <tr>
-                                                <td th:text="${reportsummary.r128_g1_pay_mech}" style="font-weight: bold;"></td>
+                                                <td th:text="${reportsummary.r128_g1_pay_mech}"
+                                                    style="font-weight: bold;"></td>
                                                 <td th:text="${reportsummary.r128_g1_pay_mechanisum} "
                                                     style="text-align: center;font-weight: bold;"></td>
                                                 <td style="text-align:right; padding-right:10px;"
@@ -2535,8 +2575,10 @@ PURPOSE		: BRRSREPORT
                                                 style="text-align: left;vertical-align: left;font-family: Arial, sans-serif;font-weight: bold;">
                                                 G2: FOREIGN CURRENCY EXCHANGE </p>
                                             <tr>
-                                                <th style="width: 250px;background-color: #D8D8D8;" colspan="3">FOREIGN EXCHANGE</th>
-                                                <th style="text-align: right;width: 300px;background-color: #D8D8D8;">Value of transactions*
+                                                <th style="width: 250px;background-color: #D8D8D8;" colspan="3">FOREIGN
+                                                    EXCHANGE</th>
+                                                <th style="text-align: right;width: 300px;background-color: #D8D8D8;">
+                                                    Value of transactions*
                                                     (P'000)</th>
                                             </tr>
 
@@ -2591,8 +2633,10 @@ PURPOSE		: BRRSREPORT
                                                 style="text-align: left;vertical-align: left;font-family: Arial, sans-serif;font-weight: bold;">
                                                 H: LENDING ACTIVITIES </p>
                                             <tr>
-                                                <th style="width: 250px;text-align: center;background-color: #D8D8D8;">Types </th>
-                                                <th style="text-align: right;width: 300px;background-color: #D8D8D8;">Amount (P'000)</th>
+                                                <th style="width: 250px;text-align: center;background-color: #D8D8D8;">
+                                                    Types </th>
+                                                <th style="text-align: right;width: 300px;background-color: #D8D8D8;">
+                                                    Amount (P'000)</th>
                                             </tr>
 
                                         </thead>
@@ -2645,10 +2689,13 @@ PURPOSE		: BRRSREPORT
                                                 I: PRODUCTS AND SERVICES</p>
                                             <tr>
                                                 <th style="width: 450px;background-color: #D8D8D8;">Product/Service</th>
-                                                <th style="text-align: right;width: 370px;background-color: #D8D8D8;">No. of customers</th>
-                                                <th style="text-align: right;width: 370px;background-color: #D8D8D8;">Outstanding Balance (P'000)
+                                                <th style="text-align: right;width: 370px;background-color: #D8D8D8;">
+                                                    No. of customers</th>
+                                                <th style="text-align: right;width: 370px;background-color: #D8D8D8;">
+                                                    Outstanding Balance (P'000)
                                                 </th>
-                                                <th style="text-align: right;width: 370px;background-color: #D8D8D8;">Turnover (P'000)</th>
+                                                <th style="text-align: right;width: 370px;background-color: #D8D8D8;">
+                                                    Turnover (P'000)</th>
 
                                             </tr>
                                         </thead>
@@ -2717,9 +2764,12 @@ PURPOSE		: BRRSREPORT
                                                 style="text-align: left;vertical-align: left;font-family: Arial, sans-serif;font-weight: bold;">
                                                 J: TRADE FINANCE (NEW SCHEDULE)</p>
                                             <tr>
-                                                <th style="width: 300px;background-color: #D8D8D8;">Trade Finance Products</th>
-                                                <th style="text-align: right;width: 370px;background-color: #D8D8D8;">Number of customers</th>
-                                                <th style="text-align: right;width: 370px;background-color: #D8D8D8;">Commitment as at June 30,
+                                                <th style="width: 300px;background-color: #D8D8D8;">Trade Finance
+                                                    Products</th>
+                                                <th style="text-align: right;width: 370px;background-color: #D8D8D8;">
+                                                    Number of customers</th>
+                                                <th style="text-align: right;width: 370px;background-color: #D8D8D8;">
+                                                    Commitment as at June 30,
                                                     2025(P'000)</th>
 
 
@@ -2770,12 +2820,10 @@ PURPOSE		: BRRSREPORT
                                                     style="font-weight: bold;"></td>
 
                                                 <td style="text-align:right; color: white;background-color: rgb(107, 122, 143); padding-right:10px;font-weight: bold;"
-                                                    th:text="${reportsummary?.r164_j_num_of_cust ?: ''}"
-                                                  ></td>
+                                                    th:text="${reportsummary?.r164_j_num_of_cust ?: ''}"></td>
 
                                                 <td style="text-align:right; color: white;background-color: rgb(107, 122, 143); padding-right:10px;font-weight: bold;"
-                                                    th:text="${reportsummary?.r164_j_commitment_at_jun ?: ''}"
-                                                 ></td>
+                                                    th:text="${reportsummary?.r164_j_commitment_at_jun ?: ''}"></td>
                                             </tr>
 
                                         </tbody>
@@ -2787,9 +2835,12 @@ PURPOSE		: BRRSREPORT
                                                 style="text-align: left;vertical-align: left;font-family: Arial, sans-serif;font-weight: bold;">
                                                 K: TRANSFERS TO AND FROM HIGH RISK JURISDICTIONS</p>
                                             <tr>
-                                                <th style="width: 300px;background-color: #D8D8D8;" colspan="2">Payment Mechanism</th>
-                                                <th style="text-align: right;width: 370px;background-color: #D8D8D8;">Number of transfers</th>
-                                                <th style="text-align: right;width: 370px;background-color: #D8D8D8;">Value of Transfers*(P'000)
+                                                <th style="width: 300px;background-color: #D8D8D8;" colspan="2">Payment
+                                                    Mechanism</th>
+                                                <th style="text-align: right;width: 370px;background-color: #D8D8D8;">
+                                                    Number of transfers</th>
+                                                <th style="text-align: right;width: 370px;background-color: #D8D8D8;">
+                                                    Value of Transfers*(P'000)
                                                 </th>
 
 
@@ -2857,7 +2908,8 @@ PURPOSE		: BRRSREPORT
                                                 L: TRANSACTION REPORTS</p>
                                             <tr>
                                                 <th style="background-color: #D8D8D8;">Transaction Report</th>
-                                                <th style="width: 300px;text-align: right;background-color: #D8D8D8;" colspan="3">Number of
+                                                <th style="width: 300px;text-align: right;background-color: #D8D8D8;"
+                                                    colspan="3">Number of
                                                     Transactions</th>
                                             </tr>
                                         </thead>
@@ -2897,9 +2949,12 @@ PURPOSE		: BRRSREPORT
                                                 style="text-align: left;vertical-align: left;font-family: Arial, sans-serif;font-weight: bold;">
                                                 M: LARGE CASH TRANSACTION REPORTS</p>
                                             <tr>
-                                                <th style="width: 960px;background-color: #D8D8D8;">TRANSACTION TYPE</th>
-                                                <th style="text-align: right;width: 465px;background-color: #D8D8D8;">Number of transactions</th>
-                                                <th style="text-align: right;background-color: #D8D8D8;">Value of Transactions
+                                                <th style="width: 960px;background-color: #D8D8D8;">TRANSACTION TYPE
+                                                </th>
+                                                <th style="text-align: right;width: 465px;background-color: #D8D8D8;">
+                                                    Number of transactions</th>
+                                                <th style="text-align: right;background-color: #D8D8D8;">Value of
+                                                    Transactions
                                                     (P'000)</th>
                                             </tr>
                                         </thead>
@@ -2927,9 +2982,12 @@ PURPOSE		: BRRSREPORT
                                                 style="text-align: left;vertical-align: left;font-family: Arial, sans-serif;font-weight: bold;">
                                                 N: EFT TRANSACTIONS TRANSACTION REPORTS</p>
                                             <tr>
-                                                <th style="width: 960px;background-color: #D8D8D8;">TRANSACTION TYPE</th>
-                                                <th style="text-align: right;width: 465px; background-color: #D8D8D8;">Number of transactions</th>
-                                                <th style="text-align: right;background-color: #D8D8D8;">Value of Transactions
+                                                <th style="width: 960px;background-color: #D8D8D8;">TRANSACTION TYPE
+                                                </th>
+                                                <th style="text-align: right;width: 465px; background-color: #D8D8D8;">
+                                                    Number of transactions</th>
+                                                <th style="text-align: right;background-color: #D8D8D8;">Value of
+                                                    Transactions
                                                     (P'000)</th>
                                             </tr>
                                         </thead>
@@ -2957,9 +3015,12 @@ PURPOSE		: BRRSREPORT
                                                 style="text-align: left;vertical-align: left;font-family: Arial, sans-serif;font-weight: bold;">
                                                 O:LARGE WIRE TRANSFER (SWIFT - INCOMING) TRANSACTION REPORTS</p>
                                             <tr>
-                                                <th style="width: 500px;background-color: #D8D8D8;">TRANSACTION TYPE</th>
-                                                <th style="text-align: right;width: 400px;background-color: #D8D8D8;">Number of transactions</th>
-                                                <th style="text-align: right;width: 400px;background-color: #D8D8D8;">Value of Transactions
+                                                <th style="width: 500px;background-color: #D8D8D8;">TRANSACTION TYPE
+                                                </th>
+                                                <th style="text-align: right;width: 400px;background-color: #D8D8D8;">
+                                                    Number of transactions</th>
+                                                <th style="text-align: right;width: 400px;background-color: #D8D8D8;">
+                                                    Value of Transactions
                                                     (P'000)</th>
                                             </tr>
                                         </thead>
@@ -2987,9 +3048,12 @@ PURPOSE		: BRRSREPORT
                                                 style="text-align: left;vertical-align: left;font-family: Arial, sans-serif;font-weight: bold;">
                                                 P:LARGE WIRE TRANSFER (SWIFT - OUTGOING) TRANSACTION REPORTS</p>
                                             <tr>
-                                                <th style="width: 500px;background-color: #D8D8D8;">TRANSACTION TYPE</th>
-                                                <th style="text-align: right;width: 400px;background-color: #D8D8D8;">Number of transactions</th>
-                                                <th style="text-align: right;width: 400px;background-color: #D8D8D8;">Value of Transactions
+                                                <th style="width: 500px;background-color: #D8D8D8;">TRANSACTION TYPE
+                                                </th>
+                                                <th style="text-align: right;width: 400px;background-color: #D8D8D8;">
+                                                    Number of transactions</th>
+                                                <th style="text-align: right;width: 400px;background-color: #D8D8D8;">
+                                                    Value of Transactions
                                                     (P'000)</th>
 
 
@@ -3067,8 +3131,9 @@ PURPOSE		: BRRSREPORT
                                     <td th:text="${report.acctNumber}"></td>
                                     <td th:text="${report.acctName}"></td>
                                     <td style="text-align:right;"
-                                        th:text="${#numbers.formatDecimal(report.acctBalanceInpula == null ? 0 : report.acctBalanceInpula, 1, 'COMMA', 0, 'POINT')}">
+                                        th:text="${#numbers.formatDecimal(report.acctBalanceInpula == null ? 0 : report.acctBalanceInpula, 0, 'COMMA', 0, 'POINT')}">
                                     </td>
+
 
                                     <td th:text="${report.reportLable}"></td>
                                     <td th:text="${report.reportAddlCriteria_1}"></td>

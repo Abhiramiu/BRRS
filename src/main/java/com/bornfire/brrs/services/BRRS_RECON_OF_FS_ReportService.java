@@ -969,7 +969,7 @@ public class BRRS_RECON_OF_FS_ReportService<BBRS_Recon_Of_FS_Detail_Repo> {
 			// ACCT BALANCE style (right aligned with 3 decimals)
 			CellStyle balanceStyle = workbook.createCellStyle();
 			balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
-			balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0.000"));
+			balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0"));
 			balanceStyle.setBorderTop(border);
 			balanceStyle.setBorderBottom(border);
 			balanceStyle.setBorderLeft(border);
@@ -1004,7 +1004,7 @@ public class BRRS_RECON_OF_FS_ReportService<BBRS_Recon_Of_FS_Detail_Repo> {
 					if (item.getAcctBalanceInPula() != null) {
 						balanceCell.setCellValue(item.getAcctBalanceInPula().doubleValue());
 					} else {
-						balanceCell.setCellValue(0.000);
+						balanceCell.setCellValue(0);
 					}
 					balanceCell.setCellStyle(balanceStyle);
 					row.createCell(4).setCellValue(item.getReportLabel());
@@ -1822,7 +1822,7 @@ public class BRRS_RECON_OF_FS_ReportService<BBRS_Recon_Of_FS_Detail_Repo> {
 			// Balance style
 			CellStyle balanceStyle = workbook.createCellStyle();
 			balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
-			balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0.000"));
+			balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0"));
 			balanceStyle.setBorderTop(border);
 			balanceStyle.setBorderBottom(border);
 			balanceStyle.setBorderLeft(border);

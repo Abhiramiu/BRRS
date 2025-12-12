@@ -1121,7 +1121,7 @@ public class BRRS_Expanded_Regu_BS_ReportService<BBRS_Expanded_Regu_BS_Detail_Re
             // ACCT BALANCE style (right aligned with 3 decimals)
             CellStyle balanceStyle = workbook.createCellStyle();
             balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
-            balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0.000"));
+            balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0"));
             balanceStyle.setBorderTop(border);
             balanceStyle.setBorderBottom(border);
             balanceStyle.setBorderLeft(border);
@@ -1157,7 +1157,7 @@ public class BRRS_Expanded_Regu_BS_ReportService<BBRS_Expanded_Regu_BS_Detail_Re
                     if (item.getAcctBalanceInPula() != null) {
                         balanceCell.setCellValue(item.getAcctBalanceInPula().doubleValue());
                     } else {
-                        balanceCell.setCellValue(0.000);
+                        balanceCell.setCellValue(0);
                     }
                     balanceCell.setCellStyle(balanceStyle);
                     row.createCell(4).setCellValue(item.getReportLabel());
@@ -2123,7 +2123,7 @@ public class BRRS_Expanded_Regu_BS_ReportService<BBRS_Expanded_Regu_BS_Detail_Re
             // Balance style
             CellStyle balanceStyle = workbook.createCellStyle();
             balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
-            balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0.000"));
+            balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0"));
             balanceStyle.setBorderTop(border);
             balanceStyle.setBorderBottom(border);
             balanceStyle.setBorderLeft(border);
@@ -2166,7 +2166,7 @@ public class BRRS_Expanded_Regu_BS_ReportService<BBRS_Expanded_Regu_BS_Detail_Re
                     Cell balanceCell = row.createCell(3);
                     balanceCell.setCellValue(item.getAcctBalanceInPula() != null
                             ? item.getAcctBalanceInPula().doubleValue()
-                            : 0.000);
+                            : 0);
                     balanceCell.setCellStyle(balanceStyle);
 
                     row.createCell(4).setCellValue(item.getReportLabel());

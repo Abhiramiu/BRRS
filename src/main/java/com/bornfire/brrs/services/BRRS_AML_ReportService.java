@@ -4354,7 +4354,7 @@ public class BRRS_AML_ReportService {
             // ACCT BALANCE style (right aligned with 3 decimals)
             CellStyle balanceStyle = workbook.createCellStyle();
             balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
-            balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0.000"));
+            balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0"));
             balanceStyle.setBorderTop(border);
             balanceStyle.setBorderBottom(border);
             balanceStyle.setBorderLeft(border);
@@ -4395,7 +4395,7 @@ public class BRRS_AML_ReportService {
                     if (item.getAcctBalanceInpula() != null) {
                         balanceCell.setCellValue(item.getAcctBalanceInpula().doubleValue());
                     } else {
-                        balanceCell.setCellValue(0.000);
+                        balanceCell.setCellValue(0);
                     }
                     balanceCell.setCellStyle(balanceStyle);
 
@@ -4475,7 +4475,7 @@ public class BRRS_AML_ReportService {
             // ACCT BALANCE style (right aligned with 3 decimals)
             CellStyle balanceStyle = workbook.createCellStyle();
             balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
-            balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0.000"));
+            balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0"));
             balanceStyle.setBorderTop(border);
             balanceStyle.setBorderBottom(border);
             balanceStyle.setBorderLeft(border);
@@ -4518,7 +4518,7 @@ public class BRRS_AML_ReportService {
                     if (item.getAcctBalanceInpula() != null) {
                         balanceCell.setCellValue(item.getAcctBalanceInpula().doubleValue());
                     } else {
-                        balanceCell.setCellValue(0.000);
+                        balanceCell.setCellValue(0);
                     }
                     balanceCell.setCellStyle(balanceStyle);
 
