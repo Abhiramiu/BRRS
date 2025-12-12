@@ -1987,6 +1987,16 @@ public class BRRS_AML_ReportService {
                         cellC.setCellValue(0);
                     }
 
+                    // Column D – Commitment at June
+                    cellD = row.getCell(3);
+                    if (cellD == null)
+                        cellD = row.createCell(3);
+                    if (record.getR161_j_commitment_at_jun() != null) {
+                        cellD.setCellValue(record.getR161_j_commitment_at_jun().doubleValue());
+                    } else {
+                        cellD.setCellValue(0);
+                    }
+
                     // ROW 162
                     row = sheet.getRow(161);
 
@@ -2000,7 +2010,17 @@ public class BRRS_AML_ReportService {
                         cellC.setCellValue(0);
                     }
 
-                    // ROW 163
+                    // Column D – Commitment at June
+                    cellD = row.getCell(3);
+                    if (cellD == null)
+                        cellD = row.createCell(3);
+                    if (record.getR162_j_commitment_at_jun() != null) {
+                        cellD.setCellValue(record.getR162_j_commitment_at_jun().doubleValue());
+                    } else {
+                        cellD.setCellValue(0);
+                    }
+
+                    /// ROW 163
                     row = sheet.getRow(162);
 
                     // Column C – Number of Customers
@@ -2013,6 +2033,15 @@ public class BRRS_AML_ReportService {
                         cellC.setCellValue(0);
                     }
 
+                    // Column D – Commitment at June
+                    cellD = row.getCell(3);
+                    if (cellD == null)
+                        cellD = row.createCell(3);
+                    if (record.getR163_j_commitment_at_jun() != null) {
+                        cellD.setCellValue(record.getR163_j_commitment_at_jun().doubleValue());
+                    } else {
+                        cellD.setCellValue(0);
+                    }
                     // K TABLE
 
                     // ROW 170

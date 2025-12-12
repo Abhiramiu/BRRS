@@ -148,8 +148,7 @@ public class RegulatoryReportServices {
 
 	@Autowired
 	BRRS_M_TOP_100_BORROWER_ReportService BRRS_M_TOP_100_BORROWER_reportservice;
-	
-	
+
 	@Autowired
 	BRRS_Q_STAFF_Report_Service BRRS_Q_STAFF_report_service;
 
@@ -283,11 +282,15 @@ public class RegulatoryReportServices {
 	@Autowired
 	BRRS_RECON_OF_FS_ReportService BRRS_RECON_OF_FS_ReportService;
 	
+
 	@Autowired
 	BRRS_MDISB5_ReportService BRRS_MDISB5_ReportService;
 
 	@Autowired
 	BRRS_AML_ReportService brrs_aml_reportservice;
+
+	@Autowired
+	BRRS_Expanded_Regu_BS_ReportService BRRS_Expanded_Regu_BS_ReportService;
 
 	private static final Logger logger = LoggerFactory.getLogger(RegulatoryReportServices.class);
 
@@ -526,14 +529,13 @@ public class RegulatoryReportServices {
 						pageable,
 						type, version);
 				break;
-				
+
 			case "M_TOP_100_BORROWER":
-				repsummary = BRRS_M_TOP_100_BORROWER_reportservice.getM_TOP_100_BORROWERView(reportId, fromdate, todate, currency, dtltype,
+				repsummary = BRRS_M_TOP_100_BORROWER_reportservice.getM_TOP_100_BORROWERView(reportId, fromdate, todate,
+						currency, dtltype,
 						pageable,
 						type, version);
 				break;
-				
-				
 
 			case "Q_STAFF":
 				repsummary = BRRS_Q_STAFF_report_service.getQ_STAFFView(reportId, fromdate, todate, currency, dtltype,
@@ -758,7 +760,7 @@ public class RegulatoryReportServices {
 				repsummary = BRRS_RECON_OF_FS_ReportService.getBRRS_Recon_Of_FS_View(reportId, fromdate, todate,
 						currency, dtltype, pageable, type, version);
 				break;
-				
+
 			case "MDISB5":
 
 				repsummary = BRRS_MDISB5_ReportService.getMDISB5View(reportId, fromdate, todate,
@@ -768,6 +770,14 @@ public class RegulatoryReportServices {
 			case "AML":
 
 				repsummary = brrs_aml_reportservice.getAMLView(reportId, fromdate, todate, currency, dtltype,
+						pageable, type, version);
+
+				break;
+
+			case "EXPANDED_REGU_BS":
+
+				repsummary = BRRS_Expanded_Regu_BS_ReportService.getBRRS_Expanded_Regu_BS_View(reportId, fromdate,
+						todate, currency, dtltype,
 						pageable, type, version);
 
 				break;
@@ -919,11 +929,11 @@ public class RegulatoryReportServices {
 				break;
 
 			case "M_TOP_100_BORROWER":
-				repdetail = BRRS_M_TOP_100_BORROWER_reportservice.getM_TOP_100_BORROWERcurrentDtl(reportId, fromdate, todate, currency, dtltype,
+				repdetail = BRRS_M_TOP_100_BORROWER_reportservice.getM_TOP_100_BORROWERcurrentDtl(reportId, fromdate,
+						todate, currency, dtltype,
 						pageable, Filter, type, version);
 				break;
-				
-				
+
 			case "Q_SMME":
 				repdetail = BRRS_Q_SMME_Intrest_Income_ReportService.getBRRS_Q_SMMEcurrentDtl(reportId, fromdate,
 						todate,
@@ -1013,6 +1023,14 @@ public class RegulatoryReportServices {
 						dtltype,
 						pageable, Filter, type, version);
 				break;
+
+			case "EXPANDED_REGU_BS":
+				repdetail = BRRS_Expanded_Regu_BS_ReportService.getBRRS_Expanded_Regu_BScurrentDtl(reportId, fromdate,
+						todate, currency,
+						dtltype,
+						pageable, Filter, type, version);
+				break;
+
 		}
 		return repdetail;
 	}
@@ -1108,7 +1126,7 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
-				
+
 			case "MDISB5":
 				try {
 					repfile = BRRS_MDISB5_ReportService.getMDISB5Excel(filename, reportId, fromdate, todate,
@@ -1464,18 +1482,17 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
-				
+
 			case "M_TOP_100_BORROWER":
 				try {
-					repfile = BRRS_M_TOP_100_BORROWER_reportservice.getM_TOP_100_BORROWERExcel(filename, reportId, fromdate, todate, currency,
+					repfile = BRRS_M_TOP_100_BORROWER_reportservice.getM_TOP_100_BORROWERExcel(filename, reportId,
+							fromdate, todate, currency,
 							dtltype, type, version);
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				break;
-				
-				
 
 			case "Q_STAFF":
 				try {
@@ -1870,6 +1887,17 @@ public class RegulatoryReportServices {
 				}
 				break;
 
+			case "EXPANDED_REGU_BS":
+				try {
+					repfile = BRRS_Expanded_Regu_BS_ReportService.getExpanded_Regu_BSExcel(filename, reportId, fromdate,
+							todate,
+							currency, dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+
 		}
 		return repfile;
 	}
@@ -1951,7 +1979,7 @@ public class RegulatoryReportServices {
 		} else if ("M_TOP_100_BORROWER".equals(filename)) {
 			return BRRS_M_TOP_100_BORROWER_reportservice.getM_TOP_100_BORROWERDetailExcel(
 					filename, fromdate, todate, currency, dtltype, type, version);
-		}else if ("M_FASDetail".equals(filename)) {
+		} else if ("M_FASDetail".equals(filename)) {
 			return BRRS_M_FAS_reportservice.BRRS_M_FASDetailExcel(filename, fromdate, todate, currency, dtltype, type,
 					version);
 		} else if ("Q_SMMEDetail".equals(filename)) {
@@ -2230,7 +2258,7 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
-				
+
 			case "M_TOP_100_BORROWER":
 				try {
 					archivalData = BRRS_M_TOP_100_BORROWER_reportservice.getM_TOP_100_BORROWERArchival();
@@ -2239,8 +2267,6 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
-				
-				
 
 			// case "M_LARADV":
 			// try {
@@ -2449,7 +2475,14 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
-			// New Archival
+			case "EXPANDED_REGU_BS":
+				try {
+					archivalData = BRRS_Expanded_Regu_BS_ReportService.getExpanded_Regu_BSArchival();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				// New Archival
 			case "M_SRWA_12H":
 				List<Object[]> srwaList1 = BRRS_M_SRWA_12H_reportservice.getM_SRWA_12HArchival();
 				archivalData.addAll(srwaList1);
@@ -2624,7 +2657,7 @@ public class RegulatoryReportServices {
 				archivalData.addAll(ca3List);
 				System.out.println("Fetched TBS archival data: " + ca3List.size());
 				break;
-				
+
 			case "MDISB5":
 				List<Object[]> MDISB5List = BRRS_MDISB5_ReportService.getMDISB5Archival();
 				archivalData.addAll(MDISB5List);
@@ -2772,10 +2805,11 @@ public class RegulatoryReportServices {
 		} else if (filename.equals("M_LCRDetail")) {
 			fileData = BRRS_M_LCR_reportservice.getM_LCRDetailExcel(filename, fromdate, todate, currency, dtltype, type,
 					version);
-		}else if (filename.equals("M_TOP_100_BORROWERDetail")) {
-			fileData = BRRS_M_TOP_100_BORROWER_reportservice.getM_TOP_100_BORROWERDetailExcel(filename, fromdate, todate, currency, dtltype, type,
+		} else if (filename.equals("M_TOP_100_BORROWERDetail")) {
+			fileData = BRRS_M_TOP_100_BORROWER_reportservice.getM_TOP_100_BORROWERDetailExcel(filename, fromdate,
+					todate, currency, dtltype, type,
 					version);
-		}else if (filename.equals("Q_SMME_LA")) {
+		} else if (filename.equals("Q_SMME_LA")) {
 			fileData = BRRS_Q_SMME_loans_Advances_reportService.BRRS_Q_SMMEDetailExcel(filename, fromdate, todate,
 					currency, dtltype, type, version);
 		} else if (filename.equals("M_CA2Detail")) {
@@ -2871,6 +2905,9 @@ public class RegulatoryReportServices {
 		} else if ("AML".equals(filename)) {
 			fileData = brrs_aml_reportservice.getAMLDetailExcel(filename, fromdate, todate, currency,
 					dtltype, type, version);
+		} else if (filename.equals("EXPANDED_REGU_BS")) {
+			fileData = BRRS_Expanded_Regu_BS_ReportService.BRRS_Expanded_Regu_BSDetailExcel(filename, fromdate, todate,
+					currency, dtltype, type, version);
 		}
 
 		if (fileData == null) {
@@ -2987,13 +3024,12 @@ public class RegulatoryReportServices {
 					modelAndView = BRRS_M_LCR_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
 							request.getParameter("formmode"));
 					break;
-					
+
 				case "M_TOP_100_BORROWER":
-					modelAndView = BRRS_M_TOP_100_BORROWER_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
+					modelAndView = BRRS_M_TOP_100_BORROWER_reportservice.getViewOrEditPage(
+							request.getParameter("acctNo"),
 							request.getParameter("formmode"));
 					break;
-					
-					
 
 				case "M_DEP1":
 					modelAndView = BRRS_M_DEP1_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
@@ -3094,7 +3130,10 @@ public class RegulatoryReportServices {
 					modelAndView = brrs_aml_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
 							request.getParameter("formmode"));
 					break;
-
+				case "EXPANDED_REGU_BS":
+					modelAndView = BRRS_Expanded_Regu_BS_ReportService.getViewOrEditPage(request.getParameter("acctNo"),
+							request.getParameter("formmode"));
+					break;
 				default:
 					logger.warn("No detail service found for reportId: {}", reportId);
 					modelAndView = new ModelAndView("error/report_not_found");
@@ -3166,7 +3205,7 @@ public class RegulatoryReportServices {
 				case "M_LCR":
 					response = BRRS_M_LCR_reportservice.updateDetailEdit(request);
 					break;
-					
+
 				case "M_TOP_100_BORROWER":
 					response = BRRS_M_TOP_100_BORROWER_reportservice.updateDetailEdit(request);
 					break;
@@ -3247,6 +3286,11 @@ public class RegulatoryReportServices {
 				case "AML":
 					response = brrs_aml_reportservice.updateDetailEdit(request);
 					break;
+
+				case "EXPANDED_REGU_BS":
+					response = BRRS_Expanded_Regu_BS_ReportService.updateDetailEdit(request);
+					break;
+
 				default:
 					logger.warn("Unsupported report ID: {}", reportId);
 					response = ResponseEntity.badRequest()
@@ -3344,7 +3388,7 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
-				
+
 			case "MDISB5":
 				try {
 					List<Object[]> resubList = BRRS_MDISB5_ReportService.getMDISB5Resub();
@@ -3355,7 +3399,7 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
-				
+
 			case "M_IS":
 				try {
 					List<Object[]> resubList = BRRS_M_IS_reportservice.getM_ISResub();
