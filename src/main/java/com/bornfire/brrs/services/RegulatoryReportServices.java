@@ -1892,7 +1892,8 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
-
+				
+				
 			case "ADISB2":
 				try {
 					repfile = BRRS_ADISB2_ReportService.getM_ADISB2Excel(filename, reportId, fromdate, todate,
@@ -1926,16 +1927,16 @@ public class RegulatoryReportServices {
 				}
 				break;
 				
-//			case "FSI":
-//				try {
-//					repfile = BRRS_FSI_ReportService.BRRS_FSIExcel(filename, reportId, fromdate, todate,
-//							currency, dtltype, type, version);
-//
-//				} catch (Exception e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-//				break;
+			case "FSI":
+			try {
+				repfile = BRRS_FSI_ReportService.getFSIExcel(filename, reportId, fromdate, todate,
+							currency, dtltype, type, version);
+
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+ 			break;
 
 			case "EXPANDED_REGU_BS":
 				try {

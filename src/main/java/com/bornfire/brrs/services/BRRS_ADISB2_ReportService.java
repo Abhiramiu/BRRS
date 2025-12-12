@@ -512,7 +512,7 @@ cell6.setCellStyle(textStyle);
 }
 
 
-//Cell26 - R5_EXCHANGE_RATE
+row = sheet.getRow(6);
 cell2 = row.createCell(2);
 if (record.getR7_TOTAL_DEPOSIT_AMOUNT() != null) {
 cell2.setCellValue(record.getR7_TOTAL_DEPOSIT_AMOUNT().doubleValue());
@@ -559,7 +559,7 @@ cell6.setCellValue("");
 cell6.setCellStyle(textStyle);
 }
 
-//Cell26 - R5_EXCHANGE_RATE
+row = sheet.getRow(7);
 cell2 = row.createCell(2);
 if (record.getR8_TOTAL_DEPOSIT_AMOUNT() != null) {
 cell2.setCellValue(record.getR8_TOTAL_DEPOSIT_AMOUNT().doubleValue());
@@ -606,7 +606,7 @@ cell6.setCellValue("");
 cell6.setCellStyle(textStyle);
 }
 
-//Cell26 - R5_EXCHANGE_RATE
+row = sheet.getRow(8);
 cell2 = row.createCell(2);
 if (record.getR9_TOTAL_DEPOSIT_AMOUNT() != null) {
 cell2.setCellValue(record.getR9_TOTAL_DEPOSIT_AMOUNT().doubleValue());
@@ -653,7 +653,7 @@ cell6.setCellValue("");
 cell6.setCellStyle(textStyle);
 }
 
-//Cell26 - R5_EXCHANGE_RATE
+row = sheet.getRow(9);
 cell2 = row.createCell(2);
 if (record.getR10_TOTAL_DEPOSIT_AMOUNT() != null) {
 cell2.setCellValue(record.getR10_TOTAL_DEPOSIT_AMOUNT().doubleValue());
@@ -700,7 +700,7 @@ cell6.setCellValue("");
 cell6.setCellStyle(textStyle);
 }
 
-//Cell26 - R5_EXCHANGE_RATE
+row = sheet.getRow(10);
 cell2 = row.createCell(2);
 if (record.getR11_TOTAL_DEPOSIT_AMOUNT() != null) {
 cell2.setCellValue(record.getR11_TOTAL_DEPOSIT_AMOUNT().doubleValue());
@@ -747,7 +747,7 @@ cell6.setCellValue("");
 cell6.setCellStyle(textStyle);
 }
 
-//Cell26 - R5_EXCHANGE_RATE
+row = sheet.getRow(11);
 cell2 = row.createCell(2);
 if (record.getR12_TOTAL_DEPOSIT_AMOUNT() != null) {
 cell2.setCellValue(record.getR12_TOTAL_DEPOSIT_AMOUNT().doubleValue());
@@ -794,7 +794,7 @@ cell6.setCellValue("");
 cell6.setCellStyle(textStyle);
 }
 
-//Cell26 - R5_EXCHANGE_RATE
+row = sheet.getRow(12);
 cell2 = row.createCell(2);
 if (record.getR13_TOTAL_DEPOSIT_AMOUNT() != null) {
 cell2.setCellValue(record.getR13_TOTAL_DEPOSIT_AMOUNT().doubleValue());
@@ -841,7 +841,7 @@ cell6.setCellValue("");
 cell6.setCellStyle(textStyle);
 }
 
-//Cell26 - R5_EXCHANGE_RATE
+row = sheet.getRow(13);
 cell2 = row.createCell(2);
 if (record.getR14_TOTAL_DEPOSIT_AMOUNT() != null) {
 cell2.setCellValue(record.getR14_TOTAL_DEPOSIT_AMOUNT().doubleValue());
@@ -888,7 +888,7 @@ cell6.setCellValue("");
 cell6.setCellStyle(textStyle);
 }
 
-//Cell26 - R5_EXCHANGE_RATE
+row = sheet.getRow(14);
 cell2 = row.createCell(2);
 if (record.getR15_TOTAL_DEPOSIT_AMOUNT() != null) {
 cell2.setCellValue(record.getR15_TOTAL_DEPOSIT_AMOUNT().doubleValue());
@@ -1224,9 +1224,10 @@ return new byte[0];
 				cell6.setCellValue("");
 				cell6.setCellStyle(textStyle);
 				}
+				
 
 
-				//Cell26 - R5_EXCHANGE_RATE
+				row = sheet.getRow(6);
 				cell2 = row.createCell(2);
 				if (record1.getR7_TOTAL_DEPOSIT_AMOUNT() != null) {
 				cell2.setCellValue(record1.getR7_TOTAL_DEPOSIT_AMOUNT().doubleValue());
@@ -1273,7 +1274,7 @@ return new byte[0];
 				cell6.setCellStyle(textStyle);
 				}
 
-				//Cell26 - R5_EXCHANGE_RATE
+				row = sheet.getRow(7);
 				cell2 = row.createCell(2);
 				if (record1.getR8_TOTAL_DEPOSIT_AMOUNT() != null) {
 				cell2.setCellValue(record1.getR8_TOTAL_DEPOSIT_AMOUNT().doubleValue());
@@ -1320,7 +1321,7 @@ return new byte[0];
 				cell6.setCellStyle(textStyle);
 				}
 
-				//Cell26 - R5_EXCHANGE_RATE
+				row = sheet.getRow(8);
 				cell2 = row.createCell(2);
 				if (record1.getR9_TOTAL_DEPOSIT_AMOUNT() != null) {
 				cell2.setCellValue(record1.getR9_TOTAL_DEPOSIT_AMOUNT().doubleValue());
@@ -1367,7 +1368,7 @@ return new byte[0];
 				cell6.setCellStyle(textStyle);
 				}
 
-				//Cell26 - R5_EXCHANGE_RATE
+				row = sheet.getRow(9);
 				cell2 = row.createCell(2);
 				if (record1.getR10_TOTAL_DEPOSIT_AMOUNT() != null) {
 				cell2.setCellValue(record1.getR10_TOTAL_DEPOSIT_AMOUNT().doubleValue());
@@ -1414,7 +1415,7 @@ return new byte[0];
 				cell6.setCellStyle(textStyle);
 				}
 
-				//Cell26 - R5_EXCHANGE_RATE
+				row = sheet.getRow(10);
 				cell2 = row.createCell(2);
 				if (record1.getR11_TOTAL_DEPOSIT_AMOUNT() != null) {
 				cell2.setCellValue(record1.getR11_TOTAL_DEPOSIT_AMOUNT().doubleValue());
@@ -1461,7 +1462,7 @@ return new byte[0];
 				cell6.setCellStyle(textStyle);
 				}
 
-				//Cell26 - R5_EXCHANGE_RATE
+				row = sheet.getRow(11);
 				cell2 = row.createCell(2);
 				if (record1.getR12_TOTAL_DEPOSIT_AMOUNT() != null) {
 				cell2.setCellValue(record1.getR12_TOTAL_DEPOSIT_AMOUNT().doubleValue());
@@ -1508,7 +1509,7 @@ return new byte[0];
 				cell6.setCellStyle(textStyle);
 				}
 
-				//Cell26 - R5_EXCHANGE_RATE
+				row = sheet.getRow(12);
 				cell2 = row.createCell(2);
 				if (record1.getR13_TOTAL_DEPOSIT_AMOUNT() != null) {
 				cell2.setCellValue(record1.getR13_TOTAL_DEPOSIT_AMOUNT().doubleValue());
@@ -1555,7 +1556,7 @@ return new byte[0];
 				cell6.setCellStyle(textStyle);
 				}
 
-				//Cell26 - R5_EXCHANGE_RATE
+				row = sheet.getRow(13);
 				cell2 = row.createCell(2);
 				if (record1.getR14_TOTAL_DEPOSIT_AMOUNT() != null) {
 				cell2.setCellValue(record1.getR14_TOTAL_DEPOSIT_AMOUNT().doubleValue());
@@ -1602,7 +1603,7 @@ return new byte[0];
 				cell6.setCellStyle(textStyle);
 				}
 
-				//Cell26 - R5_EXCHANGE_RATE
+				row = sheet.getRow(14);
 				cell2 = row.createCell(2);
 				if (record1.getR15_TOTAL_DEPOSIT_AMOUNT() != null) {
 				cell2.setCellValue(record1.getR15_TOTAL_DEPOSIT_AMOUNT().doubleValue());
