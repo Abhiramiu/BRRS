@@ -866,7 +866,7 @@ function cancelModify() {
      }
  }
  </script>
- --> 
+ 
    <script th:inline="javascript">
        /*<![CDATA[*/
        const reportId = /*[[${reportid}]]*/ null;
@@ -1035,7 +1035,7 @@ function cancelModify() {
 
 <title>BRRS</title>
 <body> 
-<div class="container-fluid" style="padding-left:0px; padding-right:0px;">
+<div class="container-fluid" style="padding-left:10px; padding-right:0px;">
   <div class="row">
   
    <div th:insert="HeaderMenu :: header"></div>
@@ -1052,7 +1052,7 @@ function cancelModify() {
 
        <!-- Title -->
        <h5 class="header-title">
-         FSI Deposit by Ownership Category
+         FSI New Format
        </h5>
 
        <!-- 🚌 Bus display box -->
@@ -1078,8 +1078,8 @@ function cancelModify() {
             Details
         </button>
 
-        <!-- <!-- Modify -->
-        <button class="custom-tab-btn"
+       <!-- Modify -->
+   <!--      <button class="custom-tab-btn"
                 onclick="showmodify(this);"
                 title="Click to EDIT Records"
                 th:if="${type != 'ARCHIVAL' and displaymode == 'summary'}"
@@ -1093,8 +1093,8 @@ function cancelModify() {
                 id="cancelRecord"
                 onclick="cancelModify();">
             Cancel
-        </button>
- -->
+        </button> -->
+ 
         <!-- Download button - Summary -->
         <button type="button" class="custom-tab-btn"
             th:if="${displaymode == 'summary'}"
@@ -1145,10 +1145,10 @@ function cancelModify() {
          class="sticky-header-table table table-bordered table-cell table-sm table-condensed"
          id="reports">
    <thead class="thead-light" style="position: sticky; top: 0;border:2px solid black;  z-index: 1;">
-        <colgroup>
-        <col style="width: 400px;">  <!-- Col 1 -->
-        <col style="width: 200px;">  <!-- Col 2 -->
-        </colgroup>
+        <!-- <colgroup>
+        <col style="width: 400px;">  Col 1
+        <col style="width: 200px;">  Col 2
+        </colgroup> -->
     <tr>
          <th colspan = "2">Table 1: Financial Statement (Deposit-Takers-Income and Expense Statement)</th>    
     </tr>
@@ -1158,403 +1158,966 @@ function cancelModify() {
       </tr>
     </thead>
   <tbody style="font-family: Arial"th:each="reportsummary: ${reportsummary}">
-                     <!-- r5 -->
-                       <tr class="empty-row">
-                         <td></td>
-                         <td></td>
-                         <td></td>
-                     </tr>
-                     <!-- r6 -->
-                     <tr>
-                         <td style="text-align:left; font-weight:bold;">Individual</td>
-                         <td></td>
-                         <td></td>
-                     </tr>      
-                     <!-- r7 -->
-                     <tr>
-                         <td style="text-align:left; padding-left:20px;">Single</td>
-                         <td id="r7_total_no_of_acct" th:text="${#numbers.formatDecimal(reportsummary.r7_total_no_of_acct,1,'COMMA',0,'POINT')}" style="text-align: right; width: 200px;"
-                          th:attr="reportLable='R7', reportAddlCriteria1='C2'"
-                          onclick="showdetailsbyRowAndColumn(this)"></td>
-                         <td id="r7_total_value" th:text="${#numbers.formatDecimal(reportsummary.r7_total_value,1,'COMMA',0,'POINT')}" style="text-align: right; width: 200px;"
-                          th:attr="reportLable='R7', reportAddlCriteria1='C3'"
-                          onclick="showdetailsbyRowAndColumn(this)"></td>
-                     </tr>   
-                     <!-- r8 -->   
-                     <tr>
-                         <td style="text-align:left; padding-left:20px;">Joint</td>
-                         <td id="r8_total_no_of_acct" th:text="${#numbers.formatDecimal(reportsummary.r8_total_no_of_acct,1,'COMMA',0,'POINT')}" style="text-align: right; width: 200px;"
-                          th:attr="reportLable='R8', reportAddlCriteria1='C2'"
-                          onclick="showdetailsbyRowAndColumn(this)"></td>
-                         <td id="r8_total_value" th:text="${#numbers.formatDecimal(reportsummary.r8_total_value,1,'COMMA',0,'POINT')}" style="text-align: right; width: 200px;"
-                          th:attr="reportLable='R8', reportAddlCriteria1='C3'"
-                          onclick="showdetailsbyRowAndColumn(this)"></td>
-                     </tr>  
-                     <!-- r9 -->              
-                     <tr>
-                         <td style="text-align:left; padding-left:20px;">Minor account</td>
-                         <td id="r9_total_no_of_acct" th:text="${#numbers.formatDecimal(reportsummary.r9_total_no_of_acct,1,'COMMA',0,'POINT')}" style="text-align: right; width: 200px;"
-                          th:attr="reportLable='R9', reportAddlCriteria1='C2'"
-                          onclick="showdetailsbyRowAndColumn(this)"></td>
-                         <td id="r9_total_value" th:text="${#numbers.formatDecimal(reportsummary.r9_total_value,1,'COMMA',0,'POINT')}" style="text-align: right; width: 200px;"
-                          th:attr="reportLable='R9', reportAddlCriteria1='C3'"
-                          onclick="showdetailsbyRowAndColumn(this)"></td>
-                     </tr>   
-                     <!-- r10 --> 
-                     <tr class="empty-row">
-                         <td></td>
-                         <td></td>
-                         <td></td>                     
-                     </tr>
-                     <!-- r11 -->
-                     <tr>
-                         <td style="text-align:left; font-weight:bold;">Business(resident)</td>
-                         <td></td>
-                         <td></td>
-                     </tr>     
-                     <!-- r12 -->              
-                     <tr>
-                         <td style="text-align:left; padding-left:20px;">Financial</td>
-                         <td id="r12_total_no_of_acct" th:text="${#numbers.formatDecimal(reportsummary.r12_total_no_of_acct,1,'COMMA',0,'POINT')}" style="text-align: right; width: 200px;"
-                          th:attr="reportLable='R12', reportAddlCriteria1='C2'"
-                          onclick="showdetailsbyRowAndColumn(this)"></td>
-                         <td id="r12_total_value" th:text="${#numbers.formatDecimal(reportsummary.r12_total_value,1,'COMMA',0,'POINT')}" style="text-align: right; width: 200px;"
-                          th:attr="reportLable='R12', reportAddlCriteria1='C3'"
-                          onclick="showdetailsbyRowAndColumn(this)"></td>
-                     </tr>   
-                     <!-- r13 -->              
-                     <tr>
-                         <td style="text-align:left; padding-left:20px;">Non-financial</td>
-                         <td id="r13_total_no_of_acct" th:text="${#numbers.formatDecimal(reportsummary.r13_total_no_of_acct,1,'COMMA',0,'POINT')}" style="text-align: right; width: 200px;"
-                          th:attr="reportLable='R13', reportAddlCriteria1='C2'"
-                          onclick="showdetailsbyRowAndColumn(this)"></td>
-                         <td id="r13_total_value" th:text="${#numbers.formatDecimal(reportsummary.r13_total_value,1,'COMMA',0,'POINT')}" style="text-align: right; width: 200px;"
-                          th:attr="reportLable='R13', reportAddlCriteria1='C3'"
-                          onclick="showdetailsbyRowAndColumn(this)"></td>
-                     </tr>    
-                     <!-- r14 -->              
-                     <tr>
-                         <td style="text-align:left; padding-left:20px;">Parastatal</td>
-                         <td id="r14_total_no_of_acct" th:text="${#numbers.formatDecimal(reportsummary.r14_total_no_of_acct,1,'COMMA',0,'POINT')}" style="text-align: right; width: 200px;"
-                          th:attr="reportLable='R14', reportAddlCriteria1='C2'"
-                          onclick="showdetailsbyRowAndColumn(this)"></td>
-                         <td id="r14_total_value" th:text="${#numbers.formatDecimal(reportsummary.r14_total_value,1,'COMMA',0,'POINT')}" style="text-align: right; width: 200px;"
-                          th:attr="reportLable='R14', reportAddlCriteria1='C3'"
-                          onclick="showdetailsbyRowAndColumn(this)"></td>
-                     </tr>
-                     <!-- r15 --> 
-                     <tr class="empty-row">
-                         <td></td>
-                         <td></td>
-                         <td></td>                     
-                     </tr>
-                     <!-- r16 --> 
-                     <tr class="empty-row">
-                         <td></td>
-                         <td></td>
-                         <td></td>                     
-                     </tr>
-                     <!-- r17 -->
-                     <tr>
-                         <td style="text-align:left;">Partnerships</td>
-                         <td></td>
-                         <td></td>
-                     </tr>
-                     <!-- r18 -->
-                     <tr>          
-                          <td style="text-align:left;">Other(Specify)</td>
-                          <td></td>
-                         <td></td>
-                     <tr>
-                     <!-- r19 -->
-                     <tr>          
-                          <td style="text-align:left;">Associations</td>
-                          <td></td>
-                         <td></td>
-                     </tr>
-                     <!-- r20 --> 
-                     <tr class="empty-row">
-                         <td></td>
-                         <td></td>
-                         <td></td>                     
-                     </tr>
-                     <!-- r21 -->
-                     <tr>          
-                          <td style="text-align:left;font-weight:bold;">Trust</td>
-                          <td></td>
-                         <td></td>
-                     </tr>
-                     <!-- r22 --> 
-                     <tr class="empty-row">
-                         <td></td>
-                         <td></td>
-                         <td></td>                     
-                     </tr>
-                     <!-- r23 --> 
-                     <tr>
-                         <td style="text-align:left; padding-left:20px;">Accounts with beneficiaries disclosed*</td>
-                         <td th:each="report: ${reportsummary1}" id="r23" style="text-align: right; width: 200px; padding-left:10px; ">
-                         <input class="display-input Show_input " type="text"
-                                th:value="${report.r23_total_no_of_acct != null ? #numbers.formatDecimal(report.r23_total_no_of_acct, 1, 'COMMA', 0, 'POINT') : '0'}"
-                                id="r23_total_no_of_acct" name="r23_total_no_of_acct"
-                                style="background-color: #FFFFFF; width: 180px;margin-left:10px; height: 28px; border-color: transparent; text-align: right; "
-                                readonly />
-                         </td>
-                         <td th:each="report: ${reportsummary1}" id="r23" style="text-align: right; width: 200px; padding-left:10px; ">
-                         <input class="display-input Show_input " type="text"
-                                th:value="${report.r23_total_value != null ? #numbers.formatDecimal(report.r23_total_value, 1, 'COMMA', 0, 'POINT') : '0'}"
-                                id="r23_total_value" name="r23_total_value"
-                                style="background-color: #FFFFFF; width: 180px;margin-left:10px; height: 28px; border-color: transparent; text-align: right; "
-                                readonly />
-                         </td>                     
-                     </tr>
-                     <!-- r24 --> 
-                     <tr class="empty-row">
-                         <td></td>
-                         <td></td>
-                         <td></td>                     
-                     </tr>
-                     <!-- r25 --> 
-                     <tr>
-                         <td style="text-align:left;">Trust Accounts with 1-5 beneficiaries</td>
-                         <td th:each="report: ${reportsummary1}" id="r25" style="text-align: right; width: 200px; padding-left:10px; ">
-                         <input class="display-input Show_input " type="text"
-                                th:value="${report.r25_total_no_of_acct != null ? #numbers.formatDecimal(report.r25_total_no_of_acct, 1, 'COMMA', 0, 'POINT') : '0'}"
-                                id="r25_total_no_of_acct" name="r25_total_no_of_acct"
-                                style="background-color: #FFFFFF; width: 180px;margin-left:10px; height: 28px; border-color: transparent; text-align: right; "
-                                readonly />
-                         </td>
-                         <td th:each="report: ${reportsummary1}" id="r25" style="text-align: right; width: 200px; padding-left:10px; ">
-                         <input class="display-input Show_input " type="text"
-                                th:value="${report.r25_total_value != null ? #numbers.formatDecimal(report.r25_total_value, 1, 'COMMA', 0, 'POINT') : '0'}"
-                                id="r25_total_value" name="r25_total_value"
-                                style="background-color: #FFFFFF; width: 180px;margin-left:10px; height: 28px; border-color: transparent; text-align: right; "
-                                readonly />
-                         </td>                     
-                     </tr>
-                     <!-- r26 --> 
-                     <tr>
-                         <td style="text-align:left;">Trust Accounts with more than five beneficiaries</td>
-                         <td th:each="report: ${reportsummary1}" id="r26" style="text-align: right; width: 200px; padding-left:10px; ">
-                         <input class="display-input Show_input " type="text"
-                                th:value="${report.r26_total_no_of_acct != null ? #numbers.formatDecimal(report.r26_total_no_of_acct, 1, 'COMMA', 0, 'POINT') : '0'}"
-                                id="r26_total_no_of_acct" name="r26_total_no_of_acct"
-                                style="background-color: #FFFFFF; width: 180px;margin-left:10px; height: 28px; border-color: transparent; text-align: right; "
-                                readonly />
-                         </td>
-                         <td th:each="report: ${reportsummary1}" id="r26" style="text-align: right; width: 200px; padding-left:10px; ">
-                         <input class="display-input Show_input " type="text"
-                                th:value="${report.r26_total_value != null ? #numbers.formatDecimal(report.r26_total_value, 1, 'COMMA', 0, 'POINT') : '0'}"
-                                id="r26_total_value" name="r26_total_value"
-                                style="background-color: #FFFFFF; width: 180px;margin-left:10px; height: 28px; border-color: transparent; text-align: right; "
-                                readonly />
-                         </td>                     
-                     </tr>
-                     <!-- r27 --> 
-                     <tr class="empty-row">
-                         <td></td>
-                         <td></td>
-                         <td></td>                     
-                     </tr>
-                     <!-- r28 --> 
-                     <tr class="empty-row">
-                         <td></td>
-                         <td></td>
-                         <td></td>                     
-                     </tr>
-                     <!-- r29 --> 
-                     <tr class="empty-row">
-                         <td></td>
-                         <td></td>
-                         <td></td>                     
-                     </tr>
-                     <!-- r30 --> 
-                     <tr>
-                         <td style="text-align:left; padding-left:20px;">Accounts with beneficiaries disclosed*</td>
-                         <td th:each="report: ${reportsummary1}" id="r30" style="text-align: right; width: 200px; padding-left:10px; ">
-                         <input class="display-input Show_input " type="text"
-                                th:value="${report.r30_total_no_of_acct != null ? #numbers.formatDecimal(report.r30_total_no_of_acct, 1, 'COMMA', 0, 'POINT') : '0'}"
-                                id="r30_total_no_of_acct" name="r30_total_no_of_acct"
-                                style="background-color: #FFFFFF; width: 180px;margin-left:10px; height: 28px; border-color: transparent; text-align: right; "
-                                readonly />
-                         </td>
-                         <td th:each="report: ${reportsummary1}" id="r30" style="text-align: right; width: 200px; padding-left:10px; ">
-                         <input class="display-input Show_input " type="text"
-                                th:value="${report.r30_total_value != null ? #numbers.formatDecimal(report.r30_total_value, 1, 'COMMA', 0, 'POINT') : '0'}"
-                                id="r30_total_value" name="r30_total_value"
-                                style="background-color: #FFFFFF; width: 180px;margin-left:10px; height: 28px; border-color: transparent; text-align: right; "
-                                readonly />
-                         </td>                     
-                     </tr>
-                     <!-- r31 --> 
-                     <tr class="empty-row">
-                         <td></td>
-                         <td></td>
-                         <td></td>                     
-                     </tr>
-                     <!-- r32 --> 
-                     <tr class="empty-row">
-                         <td></td>
-                         <td></td>
-                         <td></td>                     
-                     </tr>
-                     <!-- r33 -->
-                     <tr>
-                         <td style="text-align:left; font-weight:bold;">Societies</td>
-                         <td></td>
-                         <td></td>
-                     </tr>     
-                     <!-- r34 -->              
-                     <tr>
-                         <td style="text-align:left; padding-left:20px;">Registered</td>
-                         <td id="r34_total_no_of_acct" th:text="${#numbers.formatDecimal(reportsummary.r34_total_no_of_acct,1,'COMMA',0,'POINT')}" style="text-align: right; width: 200px;"
-                          th:attr="reportLable='R34', reportAddlCriteria1='C2'"
-                          onclick="showdetailsbyRowAndColumn(this)"></td>
-                         <td id="r34_total_value" th:text="${#numbers.formatDecimal(reportsummary.r34_total_value,1,'COMMA',0,'POINT')}" style="text-align: right; width: 200px;"
-                          th:attr="reportLable='R34', reportAddlCriteria1='C3'"
-                          onclick="showdetailsbyRowAndColumn(this)"></td>
-                     </tr>
-                     <!-- r35 --> 
-                     <tr>
-                         <td style="text-align:left; padding-left:20px;">Unregistered(e.g. Motshelo)</td>
-                         <td th:each="report: ${reportsummary1}" id="r35" style="text-align: right; width: 200px; padding-left:10px; ">
-                         <input class="display-input Show_input " type="text"
-                                th:value="${report.r35_total_no_of_acct != null ? #numbers.formatDecimal(report.r35_total_no_of_acct, 1, 'COMMA', 0, 'POINT') : '0'}"
-                                id="r35_total_no_of_acct" name="r35_total_no_of_acct"
-                                style="background-color: #FFFFFF; width: 180px;margin-left:10px; height: 28px; border-color: transparent; text-align: right; "
-                                readonly />
-                         </td>
-                         <td th:each="report: ${reportsummary1}" id="r35" style="text-align: right; width: 200px; padding-left:10px; ">
-                         <input class="display-input Show_input " type="text"
-                                th:value="${report.r35_total_value != null ? #numbers.formatDecimal(report.r35_total_value, 1, 'COMMA', 0, 'POINT') : '0'}"
-                                id="r35_total_value" name="r35_total_value"
-                                style="background-color: #FFFFFF; width: 180px;margin-left:10px; height: 28px; border-color: transparent; text-align: right; "
-                                readonly />
-                         </td>                     
-                     </tr>
-                     <!-- r36 --> 
-                     <tr class="empty-row">
-                         <td></td>
-                         <td></td>
-                         <td></td>                     
-                     </tr>
-                     <!-- r37 -->
-                     <tr>
-                         <td style="text-align:left; font-weight:bold;">Government</td>
-                         <td></td>
-                         <td></td>
-                     </tr>
-                     <!-- r38 -->              
-                     <tr>
-                         <td style="text-align:left; padding-left:20px;">Central</td>
-                         <td id="r38_total_no_of_acct" th:text="${#numbers.formatDecimal(reportsummary.r38_total_no_of_acct,1,'COMMA',0,'POINT')}" style="text-align: right; width: 200px;"
-                          th:attr="reportLable='R38', reportAddlCriteria1='C2'"
-                          onclick="showdetailsbyRowAndColumn(this)"></td>
-                         <td id="r38_total_value" th:text="${#numbers.formatDecimal(reportsummary.r38_total_value,1,'COMMA',0,'POINT')}" style="text-align: right; width: 200px;"
-                          th:attr="reportLable='R38', reportAddlCriteria1='C3'"
-                          onclick="showdetailsbyRowAndColumn(this)"></td>
-                     </tr>
-                     <!-- r39 -->              
-                     <tr>
-                         <td style="text-align:left; padding-left:20px;">Local</td>
-                         <td id="r39_total_no_of_acct" th:text="${#numbers.formatDecimal(reportsummary.r39_total_no_of_acct,1,'COMMA',0,'POINT')}" style="text-align: right; width: 200px;"
-                          th:attr="reportLable='R39', reportAddlCriteria1='C2'"
-                          onclick="showdetailsbyRowAndColumn(this)"></td>
-                         <td id="r39_total_value" th:text="${#numbers.formatDecimal(reportsummary.r39_total_value,1,'COMMA',0,'POINT')}" style="text-align: right; width: 200px;"
-                          th:attr="reportLable='R39', reportAddlCriteria1='C3'"
-                          onclick="showdetailsbyRowAndColumn(this)"></td>
-                     </tr>
-                     <!-- r40 --> 
-                     <tr class="empty-row">
-                         <td></td>
-                         <td></td>
-                         <td></td>                     
-                     </tr>
-                     <!-- r41 -->
-                     <tr>
-                         <td style="text-align:left; font-weight:bold;">Non-Residents</td>
-                         <td></td>
-                         <td></td>
-                     </tr>
-                     <!-- r42 --> 
-                     <tr>
-                         <td style="text-align:left; padding-left:20px;">Individual</td>
-                         <td th:each="report: ${reportsummary1}" id="r42" style="text-align: right; width: 200px; padding-left:10px; ">
-                         <input class="display-input Show_input " type="text"
-                                th:value="${report.r42_total_no_of_acct != null ? #numbers.formatDecimal(report.r42_total_no_of_acct, 1, 'COMMA', 0, 'POINT') : '0'}"
-                                id="r42_total_no_of_acct" name="r42_total_no_of_acct"
-                                style="background-color: #FFFFFF; width: 180px;margin-left:10px; height: 28px; border-color: transparent; text-align: right; "
-                                readonly />
-                         </td>
-                         <td th:each="report: ${reportsummary1}" id="r42" style="text-align: right; width: 200px; padding-left:10px; ">
-                         <input class="display-input Show_input " type="text"
-                                th:value="${report.r42_total_value != null ? #numbers.formatDecimal(report.r42_total_value, 1, 'COMMA', 0, 'POINT') : '0'}"
-                                id="r42_total_value" name="r42_total_value"
-                                style="background-color: #FFFFFF; width: 180px;margin-left:10px; height: 28px; border-color: transparent; text-align: right; "
-                                readonly />
-                         </td>                     
-                     </tr>
-                     <!-- r43 --> 
-                     <tr>
-                         <td style="text-align:left; padding-left:20px;">Business(non-financial)</td>
-                         <td th:each="report: ${reportsummary1}" id="r43" style="text-align: right; width: 200px; padding-left:10px; ">
-                         <input class="display-input Show_input " type="text"
-                                th:value="${report.r43_total_no_of_acct != null ? #numbers.formatDecimal(report.r43_total_no_of_acct, 1, 'COMMA', 0, 'POINT') : '0'}"
-                                id="r43_total_no_of_acct" name="r43_total_no_of_acct"
-                                style="background-color: #FFFFFF; width: 180px;margin-left:10px; height: 28px; border-color: transparent; text-align: right; "
-                                readonly />
-                         </td>
-                         <td th:each="report: ${reportsummary1}" id="r43" style="text-align: right; width: 200px; padding-left:10px; ">
-                         <input class="display-input Show_input " type="text"
-                                th:value="${report.r43_total_value != null ? #numbers.formatDecimal(report.r43_total_value, 1, 'COMMA', 0, 'POINT') : '0'}"
-                                id="r43_total_value" name="r43_total_value"
-                                style="background-color: #FFFFFF; width: 180px;margin-left:10px; height: 28px; border-color: transparent; text-align: right; "
-                                readonly />
-                         </td>                     
-                     </tr>
-                     <!-- r44 --> 
-                     <tr>
-                         <td style="text-align:left; padding-left:20px;">Business(financial)</td>
-                         <td th:each="report: ${reportsummary1}" id="r44" style="text-align: right; width: 200px; padding-left:10px; ">
-                         <input class="display-input Show_input " type="text"
-                                th:value="${report.r44_total_no_of_acct != null ? #numbers.formatDecimal(report.r44_total_no_of_acct, 1, 'COMMA', 0, 'POINT') : '0'}"
-                                id="r44_total_no_of_acct" name="r44_total_no_of_acct"
-                                style="background-color: #FFFFFF; width: 180px;margin-left:10px; height: 28px; border-color: transparent; text-align: right; "
-                                readonly />
-                         </td>
-                         <td th:each="report: ${reportsummary1}" id="r44" style="text-align: right; width: 200px; padding-left:10px; ">
-                         <input class="display-input Show_input " type="text"
-                                th:value="${report.r44_total_value != null ? #numbers.formatDecimal(report.r44_total_value, 1, 'COMMA', 0, 'POINT') : '0'}"
-                                id="r44_total_value" name="r44_total_value"
-                                style="background-color: #FFFFFF; width: 180px;margin-left:10px; height: 28px; border-color: transparent; text-align: right; "
-                                readonly />
-                         </td>                     
-                     </tr>
-                     <!-- r45 --> 
-                     <tr class="empty-row">
-                         <td></td>
-                         <td></td>
-                         <td></td>                     
-                     </tr>
-                     <!-- r46 --> 
-                     <tr>
-                         <td style="text-align:left; padding-left:20px; font-weight:bold;">Others (Please specify)</td>
-                         <td th:each="report: ${reportsummary1}" id="r46" style="text-align: right; width: 200px; padding-left:10px; ">
-                         <input class="display-input Show_input " type="text"
-                                th:value="${report.r46_total_no_of_acct != null ? #numbers.formatDecimal(report.r46_total_no_of_acct, 1, 'COMMA', 0, 'POINT') : '0'}"
-                                id="r46_total_no_of_acct" name="r46_total_no_of_acct"
-                                style="background-color: #FFFFFF; width: 180px;margin-left:10px; height: 28px; border-color: transparent; text-align: right; "
-                                readonly />
-                         </td>
-                         <td th:each="report: ${reportsummary1}" id="r46" style="text-align: right; width: 200px; padding-left:10px; ">
-                         <input class="display-input Show_input " type="text"
-                                th:value="${report.r46_total_value != null ? #numbers.formatDecimal(report.r46_total_value, 1, 'COMMA', 0, 'POINT') : '0'}"
-                                id="r46_total_value" name="r46_total_value"
-                                style="background-color: #FFFFFF; width: 180px;margin-left:10px; height: 28px; border-color: transparent; text-align: right; "
-                                readonly />
-                         </td>                     
-                     </tr>
-            </tbody>
+      <!-- R11 -->
+    <tr>
+       <td style="text-align:left; padding-left:10px;">1.Interest income (i-ii)</td>
+       <td id="R11_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R11_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="background-color: rgb(107, 122, 143);color: white;text-align: right; width: 200px;"
+         th:attr="reportLable='R11', reportAddlCriteria1='C2'">
+       </td>
+    </tr> 
+      <!-- R12 -->
+    <tr>
+       <td style="text-align:left; padding-left:20px;">(i)Gross interest income</td>
+       <td id="R12_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R12_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R12', reportAddlCriteria1='C2'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+    </tr>
+    <!-- R13 -->
+    <tr>
+       <td style="text-align:left; padding-left:20px;">(ii) Less provisions for accrued interest on nonperforming assets</td>
+       <td id="R13_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R13_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R13', reportAddlCriteria1='C2'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+    </tr>
+    <!-- R14 -->
+    <tr>
+       <td style="text-align:left; padding-left:10px;">2.Interest expense</td>
+       <td id="R14_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R14_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R14', reportAddlCriteria1='C2'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+    </tr>
+    <!-- R15 -->
+    <tr>
+       <td style="text-align:left; padding-left:10px;">3.Net interest income (= 1 - 2)</td>
+       <td id="R15_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R15_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="background-color: rgb(107, 122, 143);color: white;text-align: right; width: 200px;"
+         th:attr="reportLable='R15', reportAddlCriteria1='C2'">
+       </td>
+    </tr> 
+    <!-- R16 -->
+    <tr>
+       <td style="text-align:left; padding-left:10px;">4.Noninterest income (i+ii+iii+iv)</td>
+       <td id="R16_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R16_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="background-color: rgb(107, 122, 143);color: white;text-align: right; width: 200px;"
+         th:attr="reportLable='R16', reportAddlCriteria1='C2'">
+       </td>
+    </tr> 
+    <!-- R17 -->
+    <tr>
+       <td style="text-align:left; padding-left:20px;">(i)Fees and commissions receivable</td>
+       <td id="R17_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R17_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R17', reportAddlCriteria1='C2'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+    </tr>
+    <!-- R18 -->
+    <tr>
+       <td style="text-align:left; padding-left:20px;">(ii)Gains or losses on financial instruments</td>
+       <td id="R18_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R18_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R18', reportAddlCriteria1='C2'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+    </tr>
+    <!-- R19 -->
+    <tr>
+       <td style="text-align:left; padding-left:20px;">(iii)Pro-rated earnings</td>
+       <td id="R19_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R19_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R19', reportAddlCriteria1='C2'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+    </tr>
+    <!-- R20 -->
+    <tr>
+       <td style="text-align:left; padding-left:20px;">iv)Other income</td>
+       <td id="R20_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R20_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R20', reportAddlCriteria1='C2'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+    </tr>
+    <!-- R21 -->
+    <tr>
+       <td style="text-align:left; padding-left:10px;">5.Gross income  (= 3 + 4)</td>
+       <td id="R21_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R21_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="background-color: rgb(107, 122, 143);color: white;text-align: right; width: 200px;"
+         th:attr="reportLable='R21', reportAddlCriteria1='C2'">
+       </td>
+    </tr> 
+    <!-- R22 -->
+    <tr>
+       <td style="text-align:left; padding-left:10px;">6.Noninterest expenses (i+ii)</td>
+       <td id="R22_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R22_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="background-color: rgb(107, 122, 143);color: white;text-align: right; width: 200px;"
+         th:attr="reportLable='R22', reportAddlCriteria1='C2'">
+       </td>
+    </tr> 
+    <!-- R23 -->
+    <tr>
+       <td style="text-align:left; padding-left:20px;">(i)Staff Expenses</td>
+       <td id="R23_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R23_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R23', reportAddlCriteria1='C2'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+    </tr>
+    <!-- R24 -->
+    <tr>
+       <td style="text-align:left; padding-left:20px;"> (ii)Other expenses</td>
+       <td id="R24_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R24_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R24', reportAddlCriteria1='C2'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+    </tr>
+    <!-- R25 -->
+    <tr>
+       <td style="text-align:left; padding-left:10px;">7.Provisions (net)</td>
+       <td id="R25_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R25_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="background-color: rgb(107, 122, 143);color: white;text-align: right; width: 200px;"
+         th:attr="reportLable='R25', reportAddlCriteria1='C2'">
+       </td>
+    </tr> 
+    <!-- R26 -->
+    <tr>
+       <td style="text-align:left; padding-left:20px;">(i)Loan loss provisions</td>
+       <td id="R26_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R26_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R26', reportAddlCriteria1='C2'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+    </tr>
+    <!-- R27 -->
+    <tr>
+       <td style="text-align:left; padding-left:20px;">(ii)Other financial asset provisions</td>
+       <td id="R27_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R27_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R27', reportAddlCriteria1='C2'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+    </tr>
+    <!-- R28 -->
+    <tr>
+       <td style="text-align:left; padding-left:10px;">8.Net income (before extraordinary items and taxes) (= 5 - (6 + 7))</td>
+       <td id="R28_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R28_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="background-color: rgb(107, 122, 143);color: white;text-align: right; width: 200px;"
+         th:attr="reportLable='R28', reportAddlCriteria1='C2'">
+       </td>
+    </tr> 
+    <!-- R29 -->
+    <tr>
+       <td style="text-align:left; padding-left:10px;">9.Extraordinary items (+/-)</td>
+       <td id="R29_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R29_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R29', reportAddlCriteria1='C2'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+    </tr>
+    <!-- R30 -->
+    <tr>
+       <td style="text-align:left; padding-left:10px;">10.Income tax</td>
+       <td id="R30_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R30_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R30', reportAddlCriteria1='C2'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+    </tr>
+    <!-- R31 -->
+    <tr>
+       <td style="text-align:left; padding-left:10px;">11.Net income after extraordinary items and taxes  (= 8 - (9 +10))</td>
+       <td id="R31_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R31_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="background-color: rgb(107, 122, 143);color: white;text-align: right; width: 200px;"
+         th:attr="reportLable='R31', reportAddlCriteria1='C2'">
+       </td>
+    </tr> 
+    <!-- R32 -->
+    <tr>
+       <td style="text-align:left; padding-left:10px;">12.Dividends payable</td>
+       <td id="R32_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R32_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R32', reportAddlCriteria1='C2'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+    </tr>
+    <!-- R33 -->
+    <tr>
+       <td style="text-align:left; padding-left:10px;">13.Retained earnings (= 11 - 12)</td>
+       <td id="R33_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R33_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="background-color: rgb(107, 122, 143);color: white;text-align: right; width: 200px;"
+         th:attr="reportLable='R33', reportAddlCriteria1='C2'">
+       </td>
+    </tr> 
+   </tbody>
+</table>
+<!-- TABLE 2 -->
+        <table
+         class="sticky-header-table table table-bordered table-cell table-sm table-condensed"
+         id="reports">
+   <thead class="thead-light" style="position: sticky; top: 0;border:2px solid black;  z-index: 1;">
+        <!-- <colgroup>
+        <col style="width: 400px;">  Col 1
+        <col style="width: 200px;">  Col 2
+        </colgroup> -->
+    <tr>
+         <th colspan = "2">Table 2: Financial Statement (Deposit-Takers-Balance Sheet)</th>    
+    </tr>
+      <tr>
+        <th style="text-align:center;">Items</th>
+        <th style="text-align:right;">Amount(₹ in Lakhs)</th>
+      </tr>
+    </thead>
+  <tbody style="font-family: Arial"th:each="reportsummary: ${reportsummary}">
+       <!-- R41 -->
+    <tr>
+       <td style="text-align:left; padding-left:10px;">14.Total assets (= 15 + 16 = 23+31)</td>
+       <td id="R41_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R41_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="background-color: rgb(107, 122, 143);color: white;text-align: right; width: 200px;"
+         th:attr="reportLable='R41', reportAddlCriteria1='C2'">
+       </td>
+    </tr> 
+    <!-- R42 -->
+    <tr>
+       <td style="text-align:left; padding-left:10px;">15.Nonfinancial assets</td>
+       <td id="R42_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R42_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R42', reportAddlCriteria1='C2'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+    </tr>
+    <!-- R43 -->
+    <tr>
+       <td style="text-align:left; padding-left:10px;">16. Financial assets (= 17 through 22)</td>
+       <td id="R43_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R43_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="background-color: rgb(107, 122, 143);color: white;text-align: right; width: 200px;"
+         th:attr="reportLable='R43', reportAddlCriteria1='C2'">
+       </td>
+    </tr> 
+    <!-- R44 -->
+    <tr>
+       <td style="text-align:left; padding-left:10px;">17.Currency and Deposits</td>
+       <td id="R44_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R44_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R44', reportAddlCriteria1='C2'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+    </tr>
+    <!-- R45 -->
+    <tr>
+       <td style="text-align:left; padding-left:10px;">18. Loans (after specific provisions) (= 18.i - 18.ii)</td>
+       <td id="R45_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R45_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="background-color: rgb(107, 122, 143);color: white;text-align: right; width: 200px;"
+         th:attr="reportLable='R45', reportAddlCriteria1='C2'">
+       </td>
+    </tr> 
+    <!-- R46 -->
+    <tr>
+       <td style="text-align:left; padding-left:20px;">(i)Gross loans</td>
+       <td id="R46_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R46_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="background-color: rgb(107, 122, 143);color: white;text-align: right; width: 200px;"
+         th:attr="reportLable='R46', reportAddlCriteria1='C2'">
+       </td>
+    </tr> 
+    <!-- R47 -->
+    <tr>
+       <td style="text-align:left; padding-left:50px;">(i.i)Interbank loans</td>
+       <td id="R47_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R47_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="background-color: rgb(107, 122, 143);color: white;text-align: right; width: 200px;"
+         th:attr="reportLable='R47', reportAddlCriteria1='C2'">
+       </td>
+    </tr> 
+    <!-- R48 -->
+    <tr>
+       <td style="text-align:left; padding-left:80px;">(i.i.i)Resident</td>
+       <td id="R48_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R48_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R48', reportAddlCriteria1='C2'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+    </tr>
+    <!-- R49 -->
+    <tr>
+       <td style="text-align:left; padding-left:80px;">(i.i.ii)Nonresident</td>
+       <td id="R49_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R49_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R49', reportAddlCriteria1='C2'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+    </tr>
+    <!-- R50 -->
+    <tr>
+       <td style="text-align:left; padding-left:50px;">(i.ii)Noninterbank loans</td>
+       <td id="R50_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R50_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="background-color: rgb(107, 122, 143);color: white;text-align: right; width: 200px;"
+         th:attr="reportLable='R50', reportAddlCriteria1='C2'">
+       </td>
+    </tr> 
+    <!-- R51 -->
+    <tr>
+       <td style="text-align:left; padding-left:70px;">(i.ii.i) Resident</td>
+       <td id="R51_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R51_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="background-color: rgb(107, 122, 143);color: white;text-align: right; width: 200px;"
+         th:attr="reportLable='R51', reportAddlCriteria1='C2'">
+       </td>
+    </tr> 
+    <!-- R52 -->
+    <tr>
+       <td style="text-align:left; padding-left:90px;">(i.ii.i.i)Central bank</td>
+       <td id="R52_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R52_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R52', reportAddlCriteria1='C2'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+    </tr>
+    <!-- R53 -->
+    <tr>
+       <td style="text-align:left; padding-left:90px;">(i.ii.i.ii)Government</td>
+       <td id="R53_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R53_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R53', reportAddlCriteria1='C2'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+    </tr>
+    <!-- R54 -->
+    <tr>
+       <td style="text-align:left; padding-left:90px;">(i.ii.i.iii)Other financial corporations</td>
+       <td id="R54_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R54_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R54', reportAddlCriteria1='C2'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+    </tr>
+    <!-- R55 -->
+    <tr>
+       <td style="text-align:left; padding-left:90px;">  (i.ii.i.iv)Nonfinancial corporations incl PSUs</td>
+       <td id="R55_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R55_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R55', reportAddlCriteria1='C2'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+    </tr>
+    <!-- R56 -->
+    <tr>
+       <td style="text-align:left; padding-left:90px;"> (i.ii.i.v)Other domestic sectors</td>
+       <td id="R56_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R56_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R56', reportAddlCriteria1='C2'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+    </tr>
+    <!-- R57 -->
+    <tr>
+       <td style="text-align:left; padding-left:70px;"> (i.ii.ii)Nonresidents</td>
+       <td id="R57_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R57_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R57', reportAddlCriteria1='C2'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+    </tr>
+    <!-- R58 -->
+    <tr>
+       <td style="text-align:left; padding-left:50px;">(ii)Specific provisions</td>
+       <td id="R58_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R58_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R58', reportAddlCriteria1='C2'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+    </tr>
+    <!-- R59 -->
+    <tr>
+       <td style="text-align:left; padding-left:10px;">19.Debt securities</td>
+       <td id="R59_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R59_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R59', reportAddlCriteria1='C2'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+    </tr>
+    <!-- R60 -->
+    <tr>
+       <td style="text-align:left; padding-left:10px;">20. Equity and investment fund shares</td>
+       <td id="R60_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R60_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R60', reportAddlCriteria1='C2'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+    </tr>
+    <!-- R61 -->
+    <tr>
+       <td style="text-align:left; padding-left:10px;">21. Financial derivatives1</td>
+       <td id="R61_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R61_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R61', reportAddlCriteria1='C2'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+    </tr>
+    <!-- R62 -->
+    <tr>
+       <td style="text-align:left; padding-left:10px;">22. Other financial assets1</td>
+       <td id="R62_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R62_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R62', reportAddlCriteria1='C2'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+    </tr>
+    <!-- R63 -->
+    <tr>
+       <td style="text-align:left; padding-left:10px;">23. Liabilities (= 28 + 29 + 30)</td>
+       <td id="R63_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R63_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="background-color: rgb(107, 122, 143);color: white;text-align: right; width: 200px;"
+         th:attr="reportLable='R63', reportAddlCriteria1='C2'">
+       </td>
+    </tr> 
+    <!-- R64 -->
+    <tr>
+       <td style="text-align:left; padding-left:10px;">24. Currency and deposits</td>
+       <td id="R64_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R64_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="background-color: rgb(107, 122, 143);color: white;text-align: right; width: 200px;"
+         th:attr="reportLable='R64', reportAddlCriteria1='C2'">
+       </td>
+    </tr> 
+    <!-- R65 -->
+    <tr>
+       <td style="text-align:left; padding-left:50px;">(i)Customer deposits</td>
+       <td id="R65_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R65_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R65', reportAddlCriteria1='C2'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+    </tr>
+    <!-- R66 -->
+    <tr>
+       <td style="text-align:left; padding-left:50px;">(ii)Interbank deposits</td>
+       <td id="R66_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R66_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="background-color: rgb(107, 122, 143);color: white;text-align: right; width: 200px;"
+         th:attr="reportLable='R66', reportAddlCriteria1='C2'">
+       </td>
+    </tr> 
+    <!-- R67 -->
+    <tr>
+       <td style="text-align:left; padding-left:70px;">(ii.i)Resident</td>
+       <td id="R67_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R67_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R67', reportAddlCriteria1='C2'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+    </tr>
+    <!-- R68 -->
+    <tr>
+       <td style="text-align:left; padding-left:80px;">(ii.ii)Nonresident</td>
+       <td id="R68_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R68_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R68', reportAddlCriteria1='C2'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+    </tr>
+    <!-- R69 -->
+    <tr>
+       <td style="text-align:left; padding-left:50px;">   (iii). Other currency and deposits</td>
+       <td id="R69_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R69_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R69', reportAddlCriteria1='C2'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+    </tr>
+    <!-- R70 -->
+    <tr>
+       <td style="text-align:left; padding-left:10px;">25. Loans</td>
+       <td id="R70_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R70_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R70', reportAddlCriteria1='C2'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+    </tr>
+    <!-- R71 -->
+    <tr>
+       <td style="text-align:left; padding-left:10px;">26. Debt securities</td>
+       <td id="R71_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R71_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R71', reportAddlCriteria1='C2'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+    </tr>
+    <!-- R72 -->
+    <tr>
+       <td style="text-align:left; padding-left:10px;">27. Other liabilities</td>
+       <td id="R72_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R72_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R72', reportAddlCriteria1='C2'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+    </tr>
+    <!-- R73 -->
+    <tr>
+       <td style="text-align:left; padding-left:10px;">28. Debt (= 24 through 27)</td>
+       <td id="R73_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R73_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="background-color: rgb(107, 122, 143);color: white;text-align: right; width: 200px;"
+         th:attr="reportLable='R73', reportAddlCriteria1='C2'">
+       </td>
+    </tr> 
+    <!-- R74 -->
+    <tr>
+       <td style="text-align:left; padding-left:10px;">29. Financial derivatives and employee stock options</td>
+       <td id="R74_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R74_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R74', reportAddlCriteria1='C2'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+    </tr>
+    <!-- R75 -->
+    <tr>
+       <td style="text-align:left; padding-left:10px;">30. General and other provisions</td>
+       <td id="R75_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R75_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R75', reportAddlCriteria1='C2'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+    </tr>
+    <!-- R76 -->
+    <tr>
+       <td style="text-align:left; padding-left:10px;">31. Capital and reserves</td>
+       <td id="R76_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R76_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R76', reportAddlCriteria1='C2'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+    </tr>
+    <!-- R77 -->
+    <tr>
+       <td style="text-align:left; padding-left:10px;">32. Balance sheet total (=23 + 31 = 14)</td>
+       <td id="R77_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R77_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="background-color: rgb(107, 122, 143);color: white;text-align: right; width: 200px;"
+         th:attr="reportLable='R77', reportAddlCriteria1='C2'">
+       </td>
+    </tr> 
+   </tbody>
+</table>
+<!-- TABLE 3 -->
+        <table
+         class="sticky-header-table table table-bordered table-cell table-sm table-condensed"
+         id="reports">
+   <thead class="thead-light" style="position: sticky; top: 0;border:2px solid black;  z-index: 1;">
+   <!--      <colgroup>
+        <col style="width: 400px;">  Col 1
+        <col style="width: 200px;">  Col 2
+        </colgroup> -->
+    <tr>
+         <th colspan = "2">Table 3: Financial Statement (Deposit-Takers - Memorandum)</th>    
+    </tr>
+      <tr>
+        <th style="text-align:center;">Items</th>
+        <th style="text-align:right;">Amount(₹ in Lakhs)</th>
+      </tr>
+    </thead>
+  <tbody style="font-family: Arial"th:each="reportsummary: ${reportsummary}">
+      <tr>
+        <td style="text-align:left; background-color:grey; font-weight:bold;">
+        Other series required to calculate FSIs:
+        </td>
+        <td style="text-align:left; background-color:grey; font-weight:bold;"></td>
+      </tr>
+      <tr>
+        <td style="text-align:left; background-color:grey; font-weight:bold;">
+        Supervisory-based series
+        </td>
+        <td style="text-align:left; background-color:grey; font-weight:bold;"></td>
+      </tr>
+      <!-- R86 -->
+    <tr>
+       <td style="text-align:left; padding-left:10px;">33. Tier 1 capital less corresponding supervisory deductions4</td>
+       <td id="R86_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R86_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R86', reportAddlCriteria1='C2'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+    </tr>
+    <!-- R87 -->
+    <tr>
+       <td style="text-align:left; padding-left:10px;">34. Common Equity Tier 1 (CET1) capital less corresponding supervisory deductions4</td>
+       <td id="R87_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R87_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R87', reportAddlCriteria1='C2'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+    </tr>
+    <!-- R88 -->
+    <tr>
+       <td style="text-align:left; padding-left:10px;">35. Additional Tier 1 (AT1) capital less corresponding supervisory deductions4</td>
+       <td id="R88_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R88_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R88', reportAddlCriteria1='C2'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+    </tr>
+    <!-- R89 -->
+    <tr>
+       <td style="text-align:left; padding-left:10px;">36. Tier 2 capital less corresponding supervisory deductions</td>
+       <td id="R89_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R89_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R89', reportAddlCriteria1='C2'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+    </tr>
+    <!-- R90 -->
+    <tr>
+       <td style="text-align:left; padding-left:10px;">37. Tier 3 capital</td>
+       <td id="R90_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R90_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R90', reportAddlCriteria1='C2'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+    </tr>
+    <!-- R91 -->
+    <tr>
+       <td style="text-align:left; padding-left:10px;">38. Other supervisory deductions5</td>
+       <td id="R91_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R91_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R91', reportAddlCriteria1='C2'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+    </tr>
+    <!-- R92 -->
+    <tr>
+       <td style="text-align:left; padding-left:10px;">39. Total regulatory capital (= 33 + 36+ 37- 38)</td>
+       <td id="R92_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R92_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="background-color: rgb(107, 122, 143);color: white;text-align: right; width: 200px;"
+         th:attr="reportLable='R92', reportAddlCriteria1='C2'">
+       </td>
+    </tr> 
+    <!-- R93 -->
+    <tr>
+       <td style="text-align:left; padding-left:10px;">40. Risk-weighted assets</td>
+       <td id="R93_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R93_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R93', reportAddlCriteria1='C2'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+    </tr>
+    <!-- R94 -->
+    <tr>
+       <td style="text-align:left; padding-left:10px;">41. Basel III total exposure measure</td>
+       <td id="R94_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R94_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R94', reportAddlCriteria1='C2'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+    </tr>
+    <!-- R95 -->
+    <tr>
+       <td style="text-align:left; padding-left:10px;">42. High-quality liquid assets</td>
+       <td id="R95_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R95_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R95', reportAddlCriteria1='C2'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+    </tr>
+    <!-- R96 -->
+    <tr>
+       <td style="text-align:left; padding-left:10px;">43. Total net cash outflows over the next 30 calendar days</td>
+       <td id="R96_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R96_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R96', reportAddlCriteria1='C2'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+    </tr>
+    <!-- R97 -->
+    <tr>
+       <td style="text-align:left; padding-left:10px;">44. Available amount of stable funding</td>
+       <td id="R97_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R97_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R97', reportAddlCriteria1='C2'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+    </tr>
+    <!-- R98 -->
+    <tr>
+       <td style="text-align:left; padding-left:10px;">45. Required amount of stable funding</td>
+       <td id="R98_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R98_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R98', reportAddlCriteria1='C2'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+    </tr>
+    <!-- R99 -->
+    <tr>
+       <td style="text-align:left; padding-left:10px;">46. Large exposures</td>
+       <td id="R99_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R99_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R99', reportAddlCriteria1='C2'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+    </tr>
+    <!-- R100 -->
+    <tr>
+       <td style="text-align:left; padding-left:10px;">Series that provide a further analysis of the balance sheet:</td>
+       <td style="background-color: grey;"></td>
+    </tr> 
+    <!-- R101 -->
+    <tr>
+       <td style="text-align:left; padding-left:10px;">47. Liquid assets</td>
+       <td id="R101_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R101_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R101', reportAddlCriteria1='C2'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+    </tr>
+    <!-- R102 -->
+    <tr>
+       <td style="text-align:left; padding-left:10px;">48. Short-term liabilities</td>
+       <td id="R102_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R102_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R102', reportAddlCriteria1='C2'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+    </tr>
+    <!-- R103 -->
+    <tr>
+       <td style="text-align:left; padding-left:10px;">49. Nonperforming loans</td>
+       <td id="R103_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R103_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R103', reportAddlCriteria1='C2'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+    </tr>
+    <!-- R104 -->
+    <tr>
+       <td style="text-align:left; padding-left:10px;">50. Residential real estate loans</td>
+       <td id="R104_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R104_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R104', reportAddlCriteria1='C2'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+    </tr>
+    <!-- R105 -->
+    <tr>
+       <td style="text-align:left; padding-left:10px;">51. Commercial real estate loans</td>
+       <td id="R105_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R105_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R105', reportAddlCriteria1='C2'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+    </tr>
+    <!-- R106 -->
+    <tr>
+       <td style="text-align:left; padding-left:10px;">52. Geographic distribution of loans6</td>
+       <td style="background-color: grey;"></td>
+    </tr>
+    <!-- R107 -->
+    <tr>
+       <td style="text-align:left; padding-left:10px;">(i) Domestic economy</td>
+       <td id="R107_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R107_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R107', reportAddlCriteria1='C2'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+    </tr>
+    <!-- R108 -->
+    <tr>
+       <td style="text-align:left; padding-left:10px;">(ii) Advanced economies</td>
+       <td id="R108_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R108_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R108', reportAddlCriteria1='C2'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+    </tr>
+    <!-- R109 -->
+    <tr>
+       <td style="text-align:left; padding-left:10px;">(iii)  Emerging market and developing economies</td>
+       <td id="R109_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R109_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="background-color: rgb(107, 122, 143);color: white;text-align: right; width: 200px;"
+         th:attr="reportLable='R109', reportAddlCriteria1='C2'">
+       </td>
+    </tr> 
+    <!-- R110 -->
+    <tr>
+       <td style="text-align:left; padding-left:10px;"> iii.i.  Emerging and developing Asia</td>
+       <td id="R110_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R110_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R110', reportAddlCriteria1='C2'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+    </tr>
+    <!-- R111 -->
+    <tr>
+       <td style="text-align:left; padding-left:10px;"> iii.ii.  Emerging and developing Europe</td>
+       <td id="R111_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R111_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R111', reportAddlCriteria1='C2'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+    </tr>
+    <!-- R112 -->
+    <tr>
+       <td style="text-align:left; padding-left:10px;"> iii.iii.  Latin America and the Caribbean</td>
+       <td id="R112_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R112_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R112', reportAddlCriteria1='C2'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+    </tr>
+    <!-- R113 -->
+    <tr>
+       <td style="text-align:left; padding-left:10px;"> iii.iv.  Middle East and Central Asia</td>
+       <td id="R113_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R113_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R113', reportAddlCriteria1='C2'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+    </tr>
+    <!-- R114 -->
+    <tr>
+       <td style="text-align:left; padding-left:10px;"> iii.v.  Sub-Saharan Africa</td>
+       <td id="R114_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R114_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R114', reportAddlCriteria1='C2'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+    </tr>
+    <!-- R115 -->
+    <tr>
+       <td style="text-align:left; padding-left:10px;">53. Foreign currency loans</td>
+       <td id="R115_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R115_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R115', reportAddlCriteria1='C2'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+    </tr>
+    <!-- R116 -->
+    <tr>
+       <td style="text-align:left; padding-left:10px;">54. Foreign currency liabilities</td>
+       <td id="R116_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R116_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R116', reportAddlCriteria1='C2'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+    </tr>
+    <!-- R117 -->
+    <tr>
+       <td style="text-align:left; padding-left:10px;">55. Net open position in foreign currency for on-balance-sheet items</td>
+       <td id="R117_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R117_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R117', reportAddlCriteria1='C2'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+    </tr>
+    <!-- R118 -->
+    <tr>
+       <td style="text-align:left; padding-left:10px;">56. Total net open position in foreign currency</td>
+       <td id="R118_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R118_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R118', reportAddlCriteria1='C2'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+    </tr>
+    <!-- R119 -->
+    <tr>
+       <td style="text-align:left; padding-left:10px;">57. Credit to the private sector</td>
+       <td id="R119_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R119_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R119', reportAddlCriteria1='C2'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+    </tr>
+    <!-- R120 -->
+    <tr>
+       <td style="text-align:left; padding-left:10px;">58. Loan concentration by economic activity</td>
+       <td id="R120_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R120_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R120', reportAddlCriteria1='C2'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+    </tr>
+    <!-- R121 -->
+    <tr>
+       <td style="text-align:left; padding-left:10px;">59. Reference lending rates</td>
+       <td id="R121_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R121_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R121', reportAddlCriteria1='C2'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+    </tr>
+    <!-- R122 -->
+    <tr>
+       <td style="text-align:left; padding-left:10px;">60. Reference deposit rates</td>
+       <td id="R122_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R122_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R122', reportAddlCriteria1='C2'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+    </tr>
+    <!-- R123 -->
+    <tr>
+       <td style="text-align:left; padding-left:10px;">61. Highest interbank rate</td>
+       <td id="R123_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R123_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R123', reportAddlCriteria1='C2'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+    </tr>
+    <!-- R124 -->
+    <tr>
+       <td style="text-align:left;padding-left:10px;">62. Lowest interbank rate</td>
+       <td id="R124_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R124_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R124', reportAddlCriteria1='C2'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+    </tr>
+    <!-- R125 -->
+    <tr>
+       <td style="text-align:left; font-weight:bold;padding-left:10px;">Data series for compiling FSIs: ROA and ROE</td>
+       <td id="R125_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R125_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R125', reportAddlCriteria1='C2'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+    </tr>
+    <!-- R126 -->
+    <tr>
+       <td style="text-align:left; padding-left:10px;">63. Annualized net income before taxes</td>
+       <td id="R126_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R126_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R126', reportAddlCriteria1='C2'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+    </tr>
+    <!-- R127 -->
+    <tr>
+       <td style="text-align:left; padding-left:10px;">64. Annualized net income after taxes</td>
+       <td id="R127_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R127_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R127', reportAddlCriteria1='C2'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+    </tr>
+    <!-- R128 -->
+    <tr>
+       <td style="text-align:left; padding-left:10px;">65. Average total assets</td>
+       <td id="R128_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R128_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R128', reportAddlCriteria1='C2'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+    </tr>
+    <!-- R129 -->
+    <tr>
+       <td style="text-align:left; padding-left:10px;">66. Average capital and reserves</td>
+       <td id="R129_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R129_AMOUNT,1,'COMMA',0,'POINT')}"
+         style="text-align: right; width: 200px;"
+         th:attr="reportLable='R129', reportAddlCriteria1='C2'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+    </tr>
+    
+      
+   </tbody>
 </table>
 
        </div>
@@ -1922,18 +2485,21 @@ div.dataTables_wrapper div.dataTables_info {
     height: 30px;
 }
 /* 1. Force table to obey colgroup */
-#reports {
+/* #reports {
     table-layout: fixed !important;
+     position: sticky;
+ top: 0;
+ background-color: #b3b6b9;
 }
 
 /* 2. Make header cells follow colgroup width */
-#reports th {
+/* #reports th {
     width: inherit !important;
     background-color: #D8D8D8; /* set header color */
     
 }
-
-  
+ */
+ */  
 </style>
 
 </html>

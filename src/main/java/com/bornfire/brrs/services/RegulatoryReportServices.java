@@ -2979,7 +2979,7 @@ public class RegulatoryReportServices {
 			fileData = BRRS_Expanded_Regu_BS_ReportService.BRRS_Expanded_Regu_BSDetailExcel(filename, fromdate, todate,
 					currency, dtltype, type, version);
 		}
-		else if ("FSI".equals(filename)) {
+		else if ("FSIDetail".equals(filename)) {
 
 			fileData = BRRS_FSI_ReportService.getFSIDetailExcel(filename, fromdate, todate, currency,
 					dtltype, type, version);
