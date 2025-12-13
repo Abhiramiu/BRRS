@@ -2401,6 +2401,7 @@ public class BRRS_Q_ATF_ReportService {
 	public byte[] getQ_ATFDetailExcel(String filename, String fromdate, String todate, String currency, String dtltype,
 			String type, String version) {
 		try {
+			logger.info("Getting Inside getQ_ATFDetailExcel");
 			logger.info("Generating Excel for Q_ATF Details...");
 			System.out.println("came to Detail download service");
 

@@ -356,7 +356,7 @@ public class BRRS_ReportsController {
 			@RequestParam(value = "version", required = false) String version) {
 		String jobId = UUID.randomUUID().toString();
 		System.out.println("jobid" + jobId);
-
+		logger.info("Getting Inside startreport");
 		regreportServices.generateReportAsync(jobId, filename, fromdate, todate, dtltype, type, currency, version);
 		// RT_SLSServices.generateReportAsync(jobId, filename, reportdate,
 		// currency,version);
