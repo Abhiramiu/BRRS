@@ -297,6 +297,16 @@ public class RegulatoryReportServices {
 
 	@Autowired
 	BRRS_Expanded_Regu_BS_ReportService BRRS_Expanded_Regu_BS_ReportService;
+	
+	
+	
+
+@Autowired
+	BRRS_BASEL_III_COM_EQUITY_DISC_ReportService b_III_cetd_ReportService;
+	
+	
+	
+	
 
 	private static final Logger logger = LoggerFactory.getLogger(RegulatoryReportServices.class);
 
@@ -799,6 +809,16 @@ public class RegulatoryReportServices {
 						pageable, type, version);
 
 				break;
+				
+				
+				
+				
+			case "B_III_CETD":
+
+				repsummary = b_III_cetd_ReportService.getB_III_CETDView(reportId, fromdate, todate, currency, dtltype,
+						pageable, type, version);
+
+				break;
 
 		}
 
@@ -1058,6 +1078,19 @@ public class RegulatoryReportServices {
 						dtltype,
 						pageable, Filter, type, version);
 				break;
+				
+				
+				
+				
+			case "B_III_CETD":
+
+				repdetail = b_III_cetd_ReportService.getB_III_CETDcurrentDtl(reportId, fromdate, todate, currency,
+						dtltype,
+						pageable, Filter, type, version);
+				break;	
+				
+				
+				
 
 		}
 		return repdetail;
@@ -1948,6 +1981,23 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
+				
+				
+				
+			case "B_III_CETD":
+				try {
+
+					repfile = b_III_cetd_ReportService.getB_III_CETDExcel(filename, reportId, fromdate,
+							todate, currency,
+							dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+				
+				
+				
 
 		}
 		return repfile;
@@ -2051,6 +2101,7 @@ public class RegulatoryReportServices {
 			return BRRS_FSI_ReportService.getFSIDetailExcel(
 					filename, fromdate, todate, currency, dtltype, type, version);
 		}
+		
 		return new byte[0];
 	}
 
@@ -2511,6 +2562,17 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
+				
+				
+			case "B_III_CETD":
+				try {
+					archivalData = b_III_cetd_ReportService.getB_III_CETDArchival();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+				
 
 			case "Recon_Of_FS":
 				try {
@@ -2801,6 +2863,10 @@ public class RegulatoryReportServices {
 			default:
 				System.out.println("No archival logic defined for report: " + rptcode);
 				break;
+				
+				
+				
+				
 
 		}
 		return archivalData;
@@ -2979,6 +3045,17 @@ public class RegulatoryReportServices {
 			fileData = BRRS_Expanded_Regu_BS_ReportService.BRRS_Expanded_Regu_BSDetailExcel(filename, fromdate, todate,
 					currency, dtltype, type, version);
 		}
+		
+	
+		else if ("B_III_CETD".equals(filename)) {
+
+			fileData = b_III_cetd_ReportService.getB_III_CETDDetailExcel(filename, fromdate, todate,
+					currency,
+					dtltype, type, version);
+		}
+		
+		
+		
 		else if ("FSIDetail".equals(filename)) {
 
 			fileData = BRRS_FSI_ReportService.getFSIDetailExcel(filename, fromdate, todate, currency,
@@ -3210,6 +3287,14 @@ public class RegulatoryReportServices {
 					modelAndView = BRRS_Expanded_Regu_BS_ReportService.getViewOrEditPage(request.getParameter("acctNo"),
 							request.getParameter("formmode"));
 					break;
+				
+					
+				case "B_III_CETD":
+					modelAndView = b_III_cetd_ReportService.getViewOrEditPage(request.getParameter("acctNo"),
+							request.getParameter("formmode"));
+					break;	
+					
+					
 
 				case "FSI":
 					modelAndView = BRRS_FSI_ReportService.getViewOrEditPage(request.getParameter("acctNo"),
@@ -3376,6 +3461,10 @@ public class RegulatoryReportServices {
 					break;
 
 
+				case "B_III_CETD":
+					response = b_III_cetd_ReportService.updateDetailEdit(request);
+					break;
+					
 					
 				case "FSI":
 					response = BRRS_FSI_ReportService.updateDetailEdit(request);
