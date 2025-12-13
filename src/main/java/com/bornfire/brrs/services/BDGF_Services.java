@@ -93,7 +93,7 @@ public class BDGF_Services {
 	@Transactional
 	public String addBDGF(MultipartFile file, String userid, String username) {
 	    long startTime = System.currentTimeMillis();
-	    int savedCount = 0, skippedCount = 0, insertedCount = 0, updatedCount = 0;
+	    int savedCount = 0, skippedCount = 0, insertedCount = 0;
 	    int batchSize = 500;
 	    
 	    try (InputStream is = file.getInputStream();
@@ -117,6 +117,12 @@ public class BDGF_Services {
 	                "WHERE ACCOUNT_NO = ? AND REPORT_DATE = ? AND DEL_FLG = 'N'";
 	        PreparedStatement stmtSoftDeleteMaster = conn.prepareStatement(softDeleteMaster);
 	        
+	        // 🔄 Soft delete existing records in GENERAL_MASTER_SRC
+	        String softDeleteSrc = "UPDATE GENERAL_MASTER_SRC SET DEL_FLG = 'Y', DEL_USER = ?, " +
+	                "MODIFY_TIME = ?, MODIFY_USER = ? " +
+	                "WHERE ACCOUNT_NO = ? AND REPORT_DATE = ? AND DEL_FLG = 'N'";
+	        PreparedStatement stmtSoftDeleteSrc = conn.prepareStatement(softDeleteSrc);
+	        
 	        // 🔍 Get max version for DEP_GENERAL
 	        String getMaxVersionBDGF = "SELECT COALESCE(MAX(VERSION), 0) FROM DEP_GENERAL " +
 	                "WHERE ACCOUNT_NO = ? AND REPORT_DATE = ?";
@@ -126,6 +132,11 @@ public class BDGF_Services {
 	        String getMaxVersionMaster = "SELECT COALESCE(MAX(VERSION), 0) FROM GENERAL_MASTER_TABLE " +
 	                "WHERE ACCOUNT_NO = ? AND REPORT_DATE = ?";
 	        PreparedStatement stmtGetMaxVersionMaster = conn.prepareStatement(getMaxVersionMaster);
+	        
+	        // 🔍 Get max version for GENERAL_MASTER_SRC
+	        String getMaxVersionSrc = "SELECT COALESCE(MAX(VERSION), 0) FROM GENERAL_MASTER_SRC " +
+	                "WHERE ACCOUNT_NO = ? AND REPORT_DATE = ?";
+	        PreparedStatement stmtGetMaxVersionSrc = conn.prepareStatement(getMaxVersionSrc);
 	        
 	        // 🟢 Insert new record in GENERAL_MASTER_TABLE with VERSION
 	        String insertMaster = "INSERT INTO GENERAL_MASTER_TABLE (SOL_ID, CUSTOMER_ID, CUSTOMER_NAME, ACCOUNT_NO, " +
@@ -138,6 +149,18 @@ public class BDGF_Services {
 	                "ENTRY_FLG, MODIFY_FLG, VERIFY_FLG, DEL_FLG, BDGF_FLG) " +
 	                "VALUES (" + String.join(",", Collections.nCopies(41, "?")) + ")";
 	        PreparedStatement stmtInsertMaster = conn.prepareStatement(insertMaster);
+	        
+	        // 🟢 Insert new record in GENERAL_MASTER_SRC with VERSION (same structure)
+	        String insertSrc = "INSERT INTO GENERAL_MASTER_SRC (SOL_ID, CUSTOMER_ID, CUSTOMER_NAME, ACCOUNT_NO, " +
+	                "ACCT_OPEN_DATE, AMOUNT_DEPOSITED, CURRENCY, PERIOD, RATE_OF_INTEREST, HUNDRED, BAL_EQUI_TO_BWP, " +
+	                "OUTSTANDING_BALANCE, OUSTNDNG_BAL_UGX, MATURITY_DATE, MATURITY_AMOUNT, SCHEME, CR_PREF_INT_RATE, " +
+	                "SEGMENT, REFERENCE_DATE, DIFFERENCE, LIQGAP_BUCKET, MDEP2A_BUCKET, MDEP_BUCKET, PERIOD_DAYS, " +
+	                "EFFECTIVE_INTEREST_RATE, REPORT_CODE, REPORT_DATE, VERSION, " +
+	                "ENTRY_TIME, MODIFY_TIME, VERIFY_TIME, UPLOAD_DATE, " +
+	                "ENTRY_USER, MODIFY_USER, VERIFY_USER, DEL_USER, " +
+	                "ENTRY_FLG, MODIFY_FLG, VERIFY_FLG, DEL_FLG, BDGF_FLG) " +
+	                "VALUES (" + String.join(",", Collections.nCopies(41, "?")) + ")";
+	        PreparedStatement stmtInsertSrc = conn.prepareStatement(insertSrc);
 	        
 	        // 🟩 Insert SQL for DEP_GENERAL with VERSION
 	        String insertSql = "INSERT INTO DEP_GENERAL (" +
@@ -188,7 +211,15 @@ public class BDGF_Services {
 	                stmtSoftDeleteMaster.setDate(5, reportDate);
 	                stmtSoftDeleteMaster.executeUpdate();
 	                
-	                // 🔍 Step 3: Get max version for DEP_GENERAL
+	                // 🔄 Step 3: Soft delete existing active records in GENERAL_MASTER_SRC
+	                stmtSoftDeleteSrc.setString(1, userid);
+	                stmtSoftDeleteSrc.setDate(2, currentDate);
+	                stmtSoftDeleteSrc.setString(3, userid);
+	                stmtSoftDeleteSrc.setString(4, accountNo);
+	                stmtSoftDeleteSrc.setDate(5, reportDate);
+	                stmtSoftDeleteSrc.executeUpdate();
+	                
+	                // 🔍 Step 4: Get max version for DEP_GENERAL
 	                stmtGetMaxVersionBDGF.setString(1, accountNo);
 	                stmtGetMaxVersionBDGF.setDate(2, reportDate);
 	                int newVersionBDGF = 1;
@@ -198,7 +229,7 @@ public class BDGF_Services {
 	                    }
 	                }
 	                
-	                // 🔍 Step 4: Get max version for GENERAL_MASTER_TABLE
+	                // 🔍 Step 5: Get max version for GENERAL_MASTER_TABLE
 	                stmtGetMaxVersionMaster.setString(1, accountNo);
 	                stmtGetMaxVersionMaster.setDate(2, reportDate);
 	                int newVersionMaster = 1;
@@ -208,7 +239,17 @@ public class BDGF_Services {
 	                    }
 	                }
 	                
-	                // 🟩 Step 5: Insert new record into DEP_GENERAL
+	                // 🔍 Step 6: Get max version for GENERAL_MASTER_SRC
+	                stmtGetMaxVersionSrc.setString(1, accountNo);
+	                stmtGetMaxVersionSrc.setDate(2, reportDate);
+	                int newVersionSrc = 1;
+	                try (ResultSet rs = stmtGetMaxVersionSrc.executeQuery()) {
+	                    if (rs.next()) {
+	                        newVersionSrc = rs.getInt(1) + 1;
+	                    }
+	                }
+	                
+	                // 🟩 Step 7: Insert new record into DEP_GENERAL
 	                int col = 0;
 	                stmtInsertBDGF.setString(++col, getCellStringSafe(row, 0, formatter, evaluator));
 	                stmtInsertBDGF.setBigDecimal(++col, getCellDecimalSafe(row, 1, formatter, evaluator));
@@ -238,7 +279,7 @@ public class BDGF_Services {
 	                stmtInsertBDGF.setBigDecimal(++col, getCellDecimalSafe(row, 25, formatter, evaluator));
 	                stmtInsertBDGF.setDate(++col, reportDate);
 	                stmtInsertBDGF.setString(++col, "DEPG");
-	                stmtInsertBDGF.setInt(++col, newVersionBDGF); // VERSION
+	                stmtInsertBDGF.setInt(++col, newVersionBDGF);
 	                stmtInsertBDGF.setDate(++col, currentDate);
 	                stmtInsertBDGF.setDate(++col, currentDate);
 	                stmtInsertBDGF.setDate(++col, currentDate);
@@ -253,9 +294,8 @@ public class BDGF_Services {
 	                stmtInsertBDGF.setString(++col, "N");
 	                stmtInsertBDGF.addBatch();
 	                
-	                // 🟢 Step 6: Insert new record in GENERAL_MASTER_TABLE with VERSION
+	                // 🟢 Step 8: Insert new record in GENERAL_MASTER_TABLE with VERSION
 	                col = 0;
-	                //stmtInsertMaster.setString(++col, sequence.generateRequestUUId());
 	                stmtInsertMaster.setString(++col, getCellStringSafe(row, 0, formatter, evaluator));
 	                stmtInsertMaster.setString(++col, getCellStringSafe(row, 3, formatter, evaluator));
 	                stmtInsertMaster.setString(++col, getCellStringSafe(row, 4, formatter, evaluator));
@@ -281,32 +321,77 @@ public class BDGF_Services {
 	                stmtInsertMaster.setString(++col, getCellStringSafe(row, 23, formatter, evaluator));
 	                stmtInsertMaster.setBigDecimal(++col, getCellDecimalSafe(row, 24, formatter, evaluator));
 	                stmtInsertMaster.setBigDecimal(++col, getCellDecimalSafe(row, 25, formatter, evaluator));
-	                stmtInsertMaster.setString(++col, "DEPG"); // REPORT_CODE
-	                stmtInsertMaster.setDate(++col, reportDate); // REPORT_DATE
-	                stmtInsertMaster.setInt(++col, newVersionMaster); // VERSION ⭐
-	                stmtInsertMaster.setDate(++col, currentDate); // ENTRY_TIME
-	                stmtInsertMaster.setDate(++col, currentDate); // MODIFY_TIME
-	                stmtInsertMaster.setDate(++col, currentDate); // VERIFY_TIME
-	                stmtInsertMaster.setDate(++col, currentDate); // UPLOAD_DATE
-	                stmtInsertMaster.setString(++col, userid); // ENTRY_USER
-	                stmtInsertMaster.setString(++col, userid); // MODIFY_USER
-	                stmtInsertMaster.setString(++col, userid); // VERIFY_USER
-	                stmtInsertMaster.setString(++col, "N"); // DEL_USER
-	                stmtInsertMaster.setString(++col, "Y"); // ENTRY_FLG
-	                stmtInsertMaster.setString(++col, "N"); // MODIFY_FLG
-	                stmtInsertMaster.setString(++col, "Y"); // VERIFY_FLG
-	                stmtInsertMaster.setString(++col, "N"); // DEL_FLG ⭐
-	                stmtInsertMaster.setString(++col, "Y"); // BDGF_FLG
-	                
+	                stmtInsertMaster.setString(++col, "DEPG");
+	                stmtInsertMaster.setDate(++col, reportDate);
+	                stmtInsertMaster.setInt(++col, newVersionMaster);
+	                stmtInsertMaster.setDate(++col, currentDate);
+	                stmtInsertMaster.setDate(++col, currentDate);
+	                stmtInsertMaster.setDate(++col, currentDate);
+	                stmtInsertMaster.setDate(++col, currentDate);
+	                stmtInsertMaster.setString(++col, userid);
+	                stmtInsertMaster.setString(++col, userid);
+	                stmtInsertMaster.setString(++col, userid);
+	                stmtInsertMaster.setString(++col, "N");
+	                stmtInsertMaster.setString(++col, "Y");
+	                stmtInsertMaster.setString(++col, "N");
+	                stmtInsertMaster.setString(++col, "Y");
+	                stmtInsertMaster.setString(++col, "N");
+	                stmtInsertMaster.setString(++col, "Y");
 	                stmtInsertMaster.addBatch();
-	                insertedCount++;
 	                
+	                // 🟢 Step 9: Insert new record in GENERAL_MASTER_SRC with VERSION (SAME DATA)
+	                col = 0;
+	                stmtInsertSrc.setString(++col, getCellStringSafe(row, 0, formatter, evaluator));
+	                stmtInsertSrc.setString(++col, getCellStringSafe(row, 3, formatter, evaluator));
+	                stmtInsertSrc.setString(++col, getCellStringSafe(row, 4, formatter, evaluator));
+	                stmtInsertSrc.setString(++col, accountNo);
+	                stmtInsertSrc.setDate(++col, getCellDateSafe(row, 5, formatter, evaluator));
+	                stmtInsertSrc.setBigDecimal(++col, getCellDecimalSafe(row, 6, formatter, evaluator));
+	                stmtInsertSrc.setString(++col, getCellStringSafe(row, 7, formatter, evaluator));
+	                stmtInsertSrc.setString(++col, getCellStringSafe(row, 8, formatter, evaluator));
+	                stmtInsertSrc.setBigDecimal(++col, getCellDecimalSafe(row, 9, formatter, evaluator));
+	                stmtInsertSrc.setBigDecimal(++col, getCellDecimalSafe(row, 10, formatter, evaluator));
+	                stmtInsertSrc.setBigDecimal(++col, getCellDecimalSafe(row, 11, formatter, evaluator));
+	                stmtInsertSrc.setBigDecimal(++col, getCellDecimalSafe(row, 12, formatter, evaluator));
+	                stmtInsertSrc.setBigDecimal(++col, getCellDecimalSafe(row, 13, formatter, evaluator));
+	                stmtInsertSrc.setDate(++col, getCellDateSafe(row, 14, formatter, evaluator));
+	                stmtInsertSrc.setBigDecimal(++col, getCellDecimalSafe(row, 15, formatter, evaluator));
+	                stmtInsertSrc.setString(++col, getCellStringSafe(row, 16, formatter, evaluator));
+	                stmtInsertSrc.setBigDecimal(++col, getCellDecimalSafe(row, 17, formatter, evaluator));
+	                stmtInsertSrc.setString(++col, getCellStringSafe(row, 18, formatter, evaluator));
+	                stmtInsertSrc.setDate(++col, getCellDateSafe(row, 19, formatter, evaluator));
+	                stmtInsertSrc.setBigDecimal(++col, getCellDecimalSafe(row, 20, formatter, evaluator));
+	                stmtInsertSrc.setString(++col, getCellStringSafe(row, 21, formatter, evaluator));
+	                stmtInsertSrc.setString(++col, getCellStringSafe(row, 22, formatter, evaluator));
+	                stmtInsertSrc.setString(++col, getCellStringSafe(row, 23, formatter, evaluator));
+	                stmtInsertSrc.setBigDecimal(++col, getCellDecimalSafe(row, 24, formatter, evaluator));
+	                stmtInsertSrc.setBigDecimal(++col, getCellDecimalSafe(row, 25, formatter, evaluator));
+	                stmtInsertSrc.setString(++col, "DEPG");
+	                stmtInsertSrc.setDate(++col, reportDate);
+	                stmtInsertSrc.setInt(++col, newVersionSrc);
+	                stmtInsertSrc.setDate(++col, currentDate);
+	                stmtInsertSrc.setDate(++col, currentDate);
+	                stmtInsertSrc.setDate(++col, currentDate);
+	                stmtInsertSrc.setDate(++col, currentDate);
+	                stmtInsertSrc.setString(++col, userid);
+	                stmtInsertSrc.setString(++col, userid);
+	                stmtInsertSrc.setString(++col, userid);
+	                stmtInsertSrc.setString(++col, "N");
+	                stmtInsertSrc.setString(++col, "Y");
+	                stmtInsertSrc.setString(++col, "N");
+	                stmtInsertSrc.setString(++col, "Y");
+	                stmtInsertSrc.setString(++col, "N");
+	                stmtInsertSrc.setString(++col, "Y");
+	                stmtInsertSrc.addBatch();
+	                
+	                insertedCount++;
 	                savedCount++;
 	                count++;
 	                
 	                if (count % batchSize == 0) {
 	                    stmtInsertBDGF.executeBatch();
 	                    stmtInsertMaster.executeBatch();
+	                    stmtInsertSrc.executeBatch();  // Execute batch for SRC table
 	                    conn.commit();
 	                    evaluator.clearAllCachedResultValues();
 	                }
@@ -317,8 +402,10 @@ public class BDGF_Services {
 	            }
 	        }
 	        
+	        // Execute remaining batches
 	        stmtInsertBDGF.executeBatch();
 	        stmtInsertMaster.executeBatch();
+	        stmtInsertSrc.executeBatch();  // Execute final batch for SRC table
 	        conn.commit();
 	        
 	        long duration = System.currentTimeMillis() - startTime;
@@ -330,6 +417,7 @@ public class BDGF_Services {
 	        return "Error while reading Excel: " + e.getMessage();
 	    }
 	}
+	
 	private String getCellStringSafe(Row row, int index, DataFormatter formatter, FormulaEvaluator evaluator) {
 		Cell cell = row.getCell(index);
 		if (cell == null)
