@@ -510,35 +510,11 @@ PURPOSE		: BRRSREPORT
         }
 
 
-        function closemodel() {
-            $("#resultModal").modal("hide");
-            $('#loader').modal('hide');
-
-            // Check if the success message is showing
-            const message = $("#resultModalBody").text();
-
-            if (message.includes("Resubmission Updated Successfully")) {
-                // ✅ Go back to the previous page
-                window.history.back();
-            } else {
-                // For other messages, just reload the same page
-                setTimeout(() => location.reload(), 300);
-            }
-        }
-        function closemodel() {
-            $("#resultModal").modal("hide");
-            $('#loader').modal('hide');
-
-            // Only reload if not from Details modal
-            if (!isDetailsModal) {
-                setTimeout(function () {
-                    location.reload();
-                }, 300);
-            } else {
-                // reset flag for next modal usage
-                isDetailsModal = false;
-            }
-        }
+       function closemodel(){
+	$('#alert').modal('hide');
+	$('#resultModal').modal('hide');
+	
+}
 
 
     </script>

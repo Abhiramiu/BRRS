@@ -510,35 +510,7 @@ PURPOSE		: BRRSREPORT
         }
 
 
-        function closemodel() {
-            $("#resultModal").modal("hide");
-            $('#loader').modal('hide');
 
-            // Check if the success message is showing
-            const message = $("#resultModalBody").text();
-
-            if (message.includes("Resubmission Updated Successfully")) {
-                // ✅ Go back to the previous page
-                window.history.back();
-            } else {
-                // For other messages, just reload the same page
-                setTimeout(() => location.reload(), 300);
-            }
-        }
-        function closemodel() {
-            $("#resultModal").modal("hide");
-            $('#loader').modal('hide');
-
-            // Only reload if not from Details modal
-            if (!isDetailsModal) {
-                setTimeout(function () {
-                    location.reload();
-                }, 300);
-            } else {
-                // reset flag for next modal usage
-                isDetailsModal = false;
-            }
-        }
 
 
     </script>
@@ -1208,12 +1180,12 @@ PURPOSE		: BRRSREPORT
                             Details
                         </button>
                         <!-- Modify button -->
-                        <button type="button" class="custom-tab-btn" onclick="showmodify(this);"
+                        <!-- <button type="button" class="custom-tab-btn" onclick="showmodify(this);"
                             title="Click to EDIT Records" th:if="${type != 'ARCHIVAL'}"
                             th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
-                            id="addRecord">Modify</button>
-                        <button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord"
-                            onclick="cancelModify();" style="display: none;">Cancel</button>
+                            id="addRecord">Modify</button> -->
+                        <!-- <button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord"
+                            onclick="cancelModify();" style="display: none;">Cancel</button> -->
                         <button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
                             th:if="${displaymode == 'summary'}" th:attr="data-reportid=${reportid}, 
                     				 data-asondate=${asondate}, 
@@ -1805,6 +1777,8 @@ PURPOSE		: BRRSREPORT
                     <!-- Your custom styled button -->
                     <button type="button" class="custom-tab-btn" onclick="closemodel()" data-dismiss="modal">OK</button>
                 </div>
+
+                
             </div>
         </div>
     </div>
@@ -1839,7 +1813,14 @@ PURPOSE		: BRRSREPORT
 
 
 </body>
-
+<script>
+    
+function closemodel(){
+	$('#alert').modal('hide');
+	$('#resultModal').modal('hide');
+	
+}
+</script>
 
 <style>
     /* Your existing CSS - this is the correct approach */
