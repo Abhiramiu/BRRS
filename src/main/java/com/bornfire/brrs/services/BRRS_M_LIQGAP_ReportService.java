@@ -1,11 +1,10 @@
 package com.bornfire.brrs.services;
 
 import java.io.ByteArrayOutputStream;
-
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -18,7 +17,6 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -35,7 +33,6 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,27 +54,12 @@ import com.bornfire.brrs.entities.BRRS_M_LIQGAP_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_M_LIQGAP_Manual_Archival_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_M_LIQGAP_Manual_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_M_LIQGAP_Summary_Repo;
-import com.bornfire.brrs.entities.M_CA2_Archival_Detail_Entity;
-import com.bornfire.brrs.entities.M_CA2_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.M_CA2_Detail_Entity;
-import com.bornfire.brrs.entities.M_CA2_Manual_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.M_CA2_Manual_Summary_Entity;
-import com.bornfire.brrs.entities.M_CA2_Summary_Entity;
-import com.bornfire.brrs.entities.M_DEP3_Archival_Detail_Entity;
-import com.bornfire.brrs.entities.M_DEP3_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.M_DEP3_Detail_Entity;
-import com.bornfire.brrs.entities.M_DEP3_Manual_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.M_DEP3_Manual_Summary_Entity;
-import com.bornfire.brrs.entities.M_DEP3_Summary_Entity;
 import com.bornfire.brrs.entities.M_LIQGAP_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.M_LIQGAP_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.M_LIQGAP_Detail_Entity;
 import com.bornfire.brrs.entities.M_LIQGAP_Manual_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.M_LIQGAP_Manual_Summary_Entity;
 import com.bornfire.brrs.entities.M_LIQGAP_Summary_Entity;
-import com.bornfire.brrs.entities.M_MRC_Manual_Summary_Entity;
-
-import java.math.BigDecimal;
 
 @Component
 @Service

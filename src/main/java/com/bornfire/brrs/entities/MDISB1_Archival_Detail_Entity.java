@@ -1,3 +1,4 @@
+
 package com.bornfire.brrs.entities;
 
 import java.math.BigDecimal;
@@ -8,8 +9,8 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "BRRS_M_CA1_DETAILTABLE")
-public class M_CA1_Detail_Entity {
+@Table(name = "BRRS_MDISB1_ARCHIVALTABLE_DETAIL")
+public class MDISB1_Archival_Detail_Entity {
 
        @Id
        private String	cust_id;
@@ -173,7 +174,7 @@ public class M_CA1_Detail_Entity {
 	   public void setReport_addl_criteria_1(String report_addl_criteria_1) {
 		   this.report_addl_criteria_1 = report_addl_criteria_1;
 	   }
-	   public M_CA1_Detail_Entity() {
+	   public MDISB1_Archival_Detail_Entity() {
 		super();
 		// TODO Auto-generated constructor stub
 	   }

@@ -306,7 +306,8 @@ public class RegulatoryReportServices {
 	@Autowired
 	BRRS_CAP_ADEQ_ReportService brrs_cap_adeq_reportservice;
 
-	
+	@Autowired
+	BRRS_MDISB1_ReportService brrs_mdisb1_reportservice;
 
 	private static final Logger logger = LoggerFactory.getLogger(RegulatoryReportServices.class);
 
@@ -832,6 +833,14 @@ public class RegulatoryReportServices {
 						pageable, type, version);
 
 				break;
+				
+			case "MDISB1":
+
+				repsummary = brrs_mdisb1_reportservice.getMDISB1View(reportId, fromdate, todate, currency, dtltype,
+
+						pageable, type, version);
+
+				break;
 
 		}
 
@@ -1113,6 +1122,13 @@ public class RegulatoryReportServices {
 						dtltype,
 						pageable, Filter, type, version);
 				break;
+				
+			case "MDISB1":
+
+				repdetail = brrs_mdisb1_reportservice.getMDISB1currentDtl(reportId, fromdate, todate, currency,
+						dtltype,pageable, Filter, type, version);
+				break;
+
 
 		}
 		return repdetail;
@@ -2039,6 +2055,16 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
+				
+			case "MDISB1":
+				try {
+				repfile = brrs_mdisb1_reportservice.getMDISB1Excel(filename, reportId, fromdate, todate, currency,
+						dtltype, type, version);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+				break;
 
 		}
 		return repfile;
@@ -2141,8 +2167,10 @@ public class RegulatoryReportServices {
 		} else if ("FSIDetail".equals(filename)) {
 			return BRRS_FSI_ReportService.getFSIDetailExcel(
 					filename, fromdate, todate, currency, dtltype, type, version);
+		} else if ("MDISB1".equals(filename)) {
+			return brrs_mdisb1_reportservice.getMDISB1DetailExcel(
+					filename, fromdate, todate, currency, dtltype, type, version);
 		}
-
 		return new byte[0];
 	}
 
@@ -2919,6 +2947,16 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
+				
+			case "MDISB1":
+				try {
+					archivalData = brrs_mdisb1_reportservice.getMDISB1Archival();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+
 
 			default:
 				System.out.println("No archival logic defined for report: " + rptcode);
@@ -3112,9 +3150,11 @@ public class RegulatoryReportServices {
 					dtltype, type, version);
 		}
 		
+		else if (filename.equals("MDISB1Detail")) {
+			fileData = brrs_mdisb1_reportservice.getMDISB1DetailExcel(filename, fromdate, todate, currency, dtltype, type,
+					version);
 		
-		
-		else if ("CAP_ADEQ".equals(filename)) {
+		}else if ("CAP_ADEQ".equals(filename)) {
 
 			fileData = brrs_cap_adeq_reportservice.getCAP_ADEQDetailExcel(filename, fromdate, todate,
 					currency,
@@ -3385,6 +3425,11 @@ public class RegulatoryReportServices {
 					modelAndView.addObject("errorMessage",
 							"Details view for report '" + reportId + "' is not implemented.");
 					break;
+					
+				case "MDISB1":
+					modelAndView = brrs_mdisb1_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
+							request.getParameter("formmode"));
+					break;
 			}
 		} catch (Exception e) {
 			logger.error("Error processing details for reportId: {}", reportId, e);
@@ -3405,6 +3450,10 @@ public class RegulatoryReportServices {
 			switch (reportId) {
 				case "M_PLL":
 					response = BRRS_M_PLL_reportservice.updateDetailEdit(request);
+					break;
+					
+				case "MDISB1":
+					response = brrs_mdisb1_reportservice.updateDetailEdit(request);
 					break;
 
 				case "M_LA1":

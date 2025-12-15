@@ -1,6 +1,5 @@
 package com.bornfire.brrs.services;
 import java.io.ByteArrayOutputStream;
-
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -38,14 +37,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.bornfire.brrs.entities.M_CA1_Detail_Entity;
-import com.bornfire.brrs.entities.BRRS_M_CA1_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_M_CA1_Archival_Summary_Repo;
-import com.bornfire.brrs.entities.M_CA1_Summary_Entity;
-import com.bornfire.brrs.entities.M_CA7_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.M_CA7_Summary_Entity;
-import com.bornfire.brrs.entities.M_CA1_Archival_Summary_Entity;
+import com.bornfire.brrs.entities.BRRS_M_CA1_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_M_CA1_Summary_Repo;
+import com.bornfire.brrs.entities.M_CA1_Archival_Summary_Entity;
+import com.bornfire.brrs.entities.M_CA1_Detail_Entity;
+import com.bornfire.brrs.entities.M_CA1_Summary_Entity;
 
 
 @Component
