@@ -302,6 +302,11 @@ public class RegulatoryReportServices {
 
 	@Autowired
 	BRRS_BASEL_III_COM_EQUITY_DISC_ReportService b_III_cetd_ReportService;
+	
+	@Autowired
+	BRRS_CAP_ADEQ_ReportService brrs_cap_adeq_reportservice;
+
+	
 
 	private static final Logger logger = LoggerFactory.getLogger(RegulatoryReportServices.class);
 
@@ -812,6 +817,14 @@ public class RegulatoryReportServices {
 						pageable, type, version);
 
 				break;
+				
+				
+			case "CAP_ADEQ":
+
+				repsummary = brrs_cap_adeq_reportservice.getCAP_ADEQView(reportId, fromdate, todate, currency, dtltype,
+						pageable, type, version);
+
+				break;
 
 			case "B_III_CETD":
 
@@ -1081,6 +1094,18 @@ public class RegulatoryReportServices {
 						dtltype,
 						pageable, Filter, type, version);
 				break;
+				
+				
+				
+				
+				
+			case "CAP_ADEQ":
+
+				repdetail = brrs_cap_adeq_reportservice.getCAP_ADEQcurrentDtl(reportId, fromdate, todate, currency,
+						dtltype,
+						pageable, Filter, type, version);
+				break;
+				
 
 			case "B_III_CETD":
 
@@ -1989,6 +2014,19 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
+				
+				
+			case "CAP_ADEQ":
+				try {
+
+					repfile = brrs_cap_adeq_reportservice.getCAP_ADEQExcel(filename, reportId, fromdate,
+							todate, currency,
+							dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
 			case "B_III_CETD":
 				try {
@@ -2608,6 +2646,19 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
+				
+				
+			case "CAP_ADEQ":
+				try {
+					archivalData = brrs_cap_adeq_reportservice.getCAP_ADEQArchival();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+				
+				
+				
 			// New Archival
 			case "M_SRWA_12H":
 				List<Object[]> srwaList1 = BRRS_M_SRWA_12H_reportservice.getM_SRWA_12HArchival();
@@ -3060,6 +3111,17 @@ public class RegulatoryReportServices {
 					currency,
 					dtltype, type, version);
 		}
+		
+		
+		
+		else if ("CAP_ADEQ".equals(filename)) {
+
+			fileData = brrs_cap_adeq_reportservice.getCAP_ADEQDetailExcel(filename, fromdate, todate,
+					currency,
+					dtltype, type, version);
+		}
+		
+		
 
 		else if ("FSIDetail".equals(filename)) {
 
@@ -3302,6 +3364,15 @@ public class RegulatoryReportServices {
 					modelAndView = b_III_cetd_ReportService.getViewOrEditPage(request.getParameter("acctNo"),
 							request.getParameter("formmode"));
 					break;
+					
+					
+
+				case "CAP_ADEQ":
+					modelAndView = brrs_cap_adeq_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
+							request.getParameter("formmode"));
+					break;
+					
+					
 
 				case "FSI":
 					modelAndView = BRRS_FSI_ReportService.getViewOrEditPage(request.getParameter("acctNo"),
@@ -3470,6 +3541,10 @@ public class RegulatoryReportServices {
 
 				case "B_III_CETD":
 					response = b_III_cetd_ReportService.updateDetailEdit(request);
+					break;
+					
+				case "CAP_ADEQ":
+					response = brrs_cap_adeq_reportservice.updateDetailEdit(request);
 					break;
 
 				case "FSI":
