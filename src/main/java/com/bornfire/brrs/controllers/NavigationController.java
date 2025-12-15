@@ -463,6 +463,15 @@ public class NavigationController {
 
 		return "BRRS/BRRSArchival";
 	}
+	@RequestMapping(value = "HalfYearlyArchival", method = { RequestMethod.GET, RequestMethod.POST })
+	public String brrsHalfYearlyArchival(Model md, HttpServletRequest req) {
+		md.addAttribute("menu", "BRRS - BRRS HALFYEARLY ARCHIVAL");
+
+		System.out.println("Half Yearly count: " + rrReportlist.getReportListbrrsH().size());
+		md.addAttribute("reportlist", rrReportlist.getReportListbrrsH());
+
+		return "BRRS/BRRSArchival";
+	}
 
 	@RequestMapping(value = "Archival", method = { RequestMethod.GET, RequestMethod.POST })
 	public String Archival(Model md, @RequestParam(value = "rptcode", required = false) String rptcode,

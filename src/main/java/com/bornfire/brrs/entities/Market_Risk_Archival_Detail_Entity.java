@@ -10,8 +10,8 @@ import javax.persistence.Id;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
-@Table(name = "BRRS_COMMON_DISCLOSURE_DETAILTABLE")
-public class Common_Disclosure_Detail_Entity {
+@Table(name = "BRRS_MARKET_RISK_ARCHIVALTABLE_DETAIL")
+public class Market_Risk_Archival_Detail_Entity {
 
     @Column(name = "CUST_ID")
     private String custId;
@@ -248,7 +248,7 @@ public class Common_Disclosure_Detail_Entity {
         this.delFlg = delFlg;
     }
 
-    public Common_Disclosure_Detail_Entity() {
+    public Market_Risk_Archival_Detail_Entity() {
         super();
     }
 

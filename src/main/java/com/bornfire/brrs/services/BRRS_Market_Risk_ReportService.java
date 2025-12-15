@@ -46,20 +46,20 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.servlet.ModelAndView;
-import com.bornfire.brrs.entities.Common_Disclosure_Archival_Detail_Entity;
-import com.bornfire.brrs.entities.Common_Disclosure_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.Common_Disclosure_Detail_Entity;
-import com.bornfire.brrs.entities.Common_Disclosure_Summary_Entity;
-import com.bornfire.brrs.entities.BRRS_Common_Disclosure_Archival_Detail_Repo;
-import com.bornfire.brrs.entities.BRRS_Common_Disclosure_Archival_Summary_Repo;
-import com.bornfire.brrs.entities.BRRS_Common_Disclosure_Detail_Repo;
-import com.bornfire.brrs.entities.BRRS_Common_Disclosure_Summary_Repo;
+import com.bornfire.brrs.entities.Market_Risk_Archival_Detail_Entity;
+import com.bornfire.brrs.entities.Market_Risk_Archival_Summary_Entity;
+import com.bornfire.brrs.entities.Market_Risk_Detail_Entity;
+import com.bornfire.brrs.entities.Market_Risk_Summary_Entity;
+import com.bornfire.brrs.entities.BRRS_Market_Risk_Archival_Detail_Repo;
+import com.bornfire.brrs.entities.BRRS_Market_Risk_Archival_Summary_Repo;
+import com.bornfire.brrs.entities.BRRS_Market_Risk_Detail_Repo;
+import com.bornfire.brrs.entities.BRRS_Market_Risk_Summary_Repo;
 
 @Component
 @Service
 
-public class BRRS_Common_Disclosure_ReportService {
-    private static final Logger logger = LoggerFactory.getLogger(BRRS_Common_Disclosure_ReportService.class);
+public class BRRS_Market_Risk_ReportService {
+    private static final Logger logger = LoggerFactory.getLogger(BRRS_Market_Risk_ReportService.class);
 
     @Autowired
     private Environment env;
@@ -68,20 +68,20 @@ public class BRRS_Common_Disclosure_ReportService {
     SessionFactory sessionFactory;
 
     @Autowired
-    BRRS_Common_Disclosure_Summary_Repo Common_Disclosure_summary_repo;
+    BRRS_Market_Risk_Summary_Repo Market_Risk_summary_repo;
 
     @Autowired
-    BRRS_Common_Disclosure_Archival_Summary_Repo Common_Disclosure_Archival_Summary_Repo;
+    BRRS_Market_Risk_Archival_Summary_Repo Market_Risk_Archival_Summary_Repo;
 
     @Autowired
-    BRRS_Common_Disclosure_Detail_Repo Common_Disclosure_detail_repo;
+    BRRS_Market_Risk_Detail_Repo Market_Risk_detail_repo;
 
     @Autowired
-    BRRS_Common_Disclosure_Archival_Detail_Repo Common_Disclosure_Archival_Detail_Repo;
+    BRRS_Market_Risk_Archival_Detail_Repo Market_Risk_Archival_Detail_Repo;
 
     SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
-    public ModelAndView getCommon_DisclosureView(String reportId, String fromdate, String todate, String currency,
+    public ModelAndView getMarket_RiskView(String reportId, String fromdate, String todate, String currency,
             String dtltype,
             Pageable pageable, String type, String version) {
 
@@ -95,12 +95,12 @@ public class BRRS_Common_Disclosure_ReportService {
             System.out.println("ARCHIVAL MODE");
             System.out.println("version = " + version);
 
-            List<Common_Disclosure_Archival_Summary_Entity> T1Master = new ArrayList<>();
+            List<Market_Risk_Archival_Summary_Entity> T1Master = new ArrayList<>();
 
             try {
                 Date dt = dateformat.parse(todate);
 
-                T1Master = Common_Disclosure_Archival_Summary_Repo.getdatabydateListarchival(dt, version);
+                T1Master = Market_Risk_Archival_Summary_Repo.getdatabydateListarchival(dt, version);
 
                 System.out.println("T1Master size = " + T1Master.size());
 
@@ -112,12 +112,12 @@ public class BRRS_Common_Disclosure_ReportService {
 
         } else {
 
-            List<Common_Disclosure_Summary_Entity> T1Master = new ArrayList<Common_Disclosure_Summary_Entity>();
+            List<Market_Risk_Summary_Entity> T1Master = new ArrayList<Market_Risk_Summary_Entity>();
 
             try {
                 Date d1 = dateformat.parse(todate);
 
-                T1Master = Common_Disclosure_summary_repo.getdatabydateList(dateformat.parse(todate));
+                T1Master = Market_Risk_summary_repo.getdatabydateList(dateformat.parse(todate));
 
                 System.out.println("T1Master size " + T1Master.size());
                 mv.addObject("report_date", dateformat.format(d1));
@@ -129,7 +129,7 @@ public class BRRS_Common_Disclosure_ReportService {
 
         }
 
-        mv.setViewName("BRRS/COMMON_DISCLOSURE");
+        mv.setViewName("BRRS/Market_Risk");
 
         mv.addObject("displaymode", "summary");
 
@@ -139,7 +139,7 @@ public class BRRS_Common_Disclosure_ReportService {
 
     }
 
-    public ModelAndView getCommon_DisclosurecurrentDtl(String reportId, String fromdate, String todate, String currency,
+    public ModelAndView getMarket_RiskcurrentDtl(String reportId, String fromdate, String todate, String currency,
             String dtltype, Pageable pageable, String filter, String type, String version) {
 
         int pageSize = pageable != null ? pageable.getPageSize() : 10;
@@ -172,13 +172,13 @@ public class BRRS_Common_Disclosure_ReportService {
             if ("ARCHIVAL".equals(type) && version != null) {
                 System.out.println(type);
                 // ?? Archival branch
-                List<Common_Disclosure_Archival_Detail_Entity> T1Dt1;
+                List<Market_Risk_Archival_Detail_Entity> T1Dt1;
                 if (reportLabel != null && reportAddlCriteria1 != null) {
-                    T1Dt1 = Common_Disclosure_Archival_Detail_Repo.GetDataByRowIdAndColumnId(reportLabel,
+                    T1Dt1 = Market_Risk_Archival_Detail_Repo.GetDataByRowIdAndColumnId(reportLabel,
                             reportAddlCriteria1,
                             parsedDate, version);
                 } else {
-                    T1Dt1 = Common_Disclosure_Archival_Detail_Repo.getdatabydateList(parsedDate, version);
+                    T1Dt1 = Market_Risk_Archival_Detail_Repo.getdatabydateList(parsedDate, version);
                 }
 
                 mv.addObject("reportdetails", T1Dt1);
@@ -187,14 +187,14 @@ public class BRRS_Common_Disclosure_ReportService {
 
             } else {
                 // ?? Current branch
-                List<Common_Disclosure_Detail_Entity> T1Dt1;
+                List<Market_Risk_Detail_Entity> T1Dt1;
 
                 if (reportLabel != null && reportAddlCriteria1 != null) {
-                    T1Dt1 = Common_Disclosure_detail_repo.GetDataByRowIdAndColumnId(reportLabel, reportAddlCriteria1,
+                    T1Dt1 = Market_Risk_detail_repo.GetDataByRowIdAndColumnId(reportLabel, reportAddlCriteria1,
                             parsedDate);
                 } else {
-                    T1Dt1 = Common_Disclosure_detail_repo.getdatabydateList(parsedDate);
-                    totalPages = Common_Disclosure_detail_repo.getdatacount(parsedDate);
+                    T1Dt1 = Market_Risk_detail_repo.getdatabydateList(parsedDate);
+                    totalPages = Market_Risk_detail_repo.getdatacount(parsedDate);
                     mv.addObject("pagination", "YES");
 
                 }
@@ -212,7 +212,7 @@ public class BRRS_Common_Disclosure_ReportService {
             mv.addObject("errorMessage", "Unexpected error: " + e.getMessage());
         }
 
-        mv.setViewName("BRRS/COMMON_DISCLOSURE");
+        mv.setViewName("BRRS/Market_Risk");
         mv.addObject("displaymode", "Details");
         mv.addObject("currentPage", currentPage);
         System.out.println("totalPages: " + (int) Math.ceil((double) totalPages / 100));
@@ -222,7 +222,7 @@ public class BRRS_Common_Disclosure_ReportService {
         return mv;
     }
 
-    public byte[] getCommon_DisclosureExcel(String filename, String reportId, String fromdate, String todate,
+    public byte[] getMarket_RiskExcel(String filename, String reportId, String fromdate, String todate,
             String currency,
             String dtltype, String type, String version) throws Exception {
         logger.info("Service: Starting Excel generation process in memory.");
@@ -230,17 +230,17 @@ public class BRRS_Common_Disclosure_ReportService {
         // ARCHIVAL check
         if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && !version.trim().isEmpty()) {
             logger.info("Service: Generating ARCHIVAL report for version {}", version);
-            return getExcelCommon_DisclosureARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type,
+            return getExcelMarket_RiskARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type,
                     version);
         }
 
         // Fetch data
 
-        List<Common_Disclosure_Summary_Entity> dataList = Common_Disclosure_summary_repo
+        List<Market_Risk_Summary_Entity> dataList = Market_Risk_summary_repo
                 .getdatabydateList(dateformat.parse(todate));
 
         if (dataList.isEmpty()) {
-            logger.warn("Service: No data found for  Common_Disclosure report. Returning empty result.");
+            logger.warn("Service: No data found for  Market_Risk report. Returning empty result.");
             return new byte[0];
         }
 
@@ -300,11 +300,11 @@ public class BRRS_Common_Disclosure_ReportService {
             numberStyle.setFont(font);
             // --- End of Style Definitions ---
 
-            int startRow = 6;
+            int startRow = 4;
 
             if (!dataList.isEmpty()) {
                 for (int i = 0; i < dataList.size(); i++) {
-                    Common_Disclosure_Summary_Entity record = dataList.get(i);
+                    Market_Risk_Summary_Entity record = dataList.get(i);
 
                     System.out.println("rownumber=" + startRow + i);
                     Row row = sheet.getRow(startRow + i);
@@ -312,103 +312,125 @@ public class BRRS_Common_Disclosure_ReportService {
                         row = sheet.createRow(startRow + i);
                     }
 
-  // A TABLE
-                    // ---------- R7 (Row 7 -> index 6) ----------
-                    row = sheet.getRow(6);
+                    // R5
+                    row = sheet.getRow(4);
                     Cell cellC = row.getCell(4);
                     if (cellC == null)
                         cellC = row.createCell(4);
 
-                    if (record.getR7_COMPONENT_OF_REGU() != null) {
-                        cellC.setCellValue(record.getR7_COMPONENT_OF_REGU().doubleValue());
+                    if (record.getR5_QUAN_DIS() != null) {
+                        cellC.setCellValue(record.getR5_QUAN_DIS().doubleValue());
                     } else {
                         cellC.setCellValue(0);
                     }
 
-                    // ---------- R8 (Row 8 -> index 7) ----------
-                    row = sheet.getRow(7);
+                    // R6
+                    row = sheet.getRow(5);
                     cellC = row.getCell(4);
                     if (cellC == null)
                         cellC = row.createCell(4);
 
-                    if (record.getR8_COMPONENT_OF_REGU() != null) {
-                        cellC.setCellValue(record.getR8_COMPONENT_OF_REGU().doubleValue());
+                    if (record.getR6_QUAN_DIS() != null) {
+                        cellC.setCellValue(record.getR6_QUAN_DIS().doubleValue());
                     } else {
                         cellC.setCellValue(0);
                     }
 
-                    // ---------- R9 (Row 9 -> index 8) ----------
-                    row = sheet.getRow(8);
-                    cellC = row.getCell(4);
-                    if (cellC == null)
-                        cellC = row.createCell(4);
-
-                    if (record.getR9_COMPONENT_OF_REGU() != null) {
-                        cellC.setCellValue(record.getR9_COMPONENT_OF_REGU().doubleValue());
-                    } else {
-                        cellC.setCellValue(0);
-                    }
-
-                    // ---------- R10 (Row 10 -> index 9) ----------
-                    row = sheet.getRow(9);
-                    cellC = row.getCell(4);
-                    if (cellC == null)
-                        cellC = row.createCell(4);
-
-                    if (record.getR10_COMPONENT_OF_REGU() != null) {
-                        cellC.setCellValue(record.getR10_COMPONENT_OF_REGU().doubleValue());
-                    } else {
-                        cellC.setCellValue(0);
-                    }
-
-                    // ---------- R11 (Row 11 -> index 10) ----------
+                    // R11
                     row = sheet.getRow(10);
                     cellC = row.getCell(4);
                     if (cellC == null)
                         cellC = row.createCell(4);
 
-                    if (record.getR11_COMPONENT_OF_REGU() != null) {
-                        cellC.setCellValue(record.getR11_COMPONENT_OF_REGU().doubleValue());
+                    if (record.getR11_QUAN_DIS() != null) {
+                        cellC.setCellValue(record.getR11_QUAN_DIS().doubleValue());
                     } else {
                         cellC.setCellValue(0);
                     }
 
-                    // ROW 12
+                    // R12
                     row = sheet.getRow(11);
-
                     cellC = row.getCell(4);
                     if (cellC == null)
                         cellC = row.createCell(4);
-                    if (record.getR12_COMPONENT_OF_REGU() != null) {
-                        cellC.setCellValue(record.getR12_COMPONENT_OF_REGU().doubleValue());
+
+                    if (record.getR12_QUAN_DIS() != null) {
+                        cellC.setCellValue(record.getR12_QUAN_DIS().doubleValue());
                     } else {
                         cellC.setCellValue(0);
                     }
 
-                    // ROW 13
+                    // R13
                     row = sheet.getRow(12);
-
                     cellC = row.getCell(4);
                     if (cellC == null)
                         cellC = row.createCell(4);
-                    if (record.getR13_COMPONENT_OF_REGU() != null) {
-                        cellC.setCellValue(record.getR13_COMPONENT_OF_REGU().doubleValue());
+
+                    if (record.getR13_QUAN_DIS() != null) {
+                        cellC.setCellValue(record.getR13_QUAN_DIS().doubleValue());
                     } else {
                         cellC.setCellValue(0);
                     }
 
-                    // ROW 14
+                    // R14
                     row = sheet.getRow(13);
-
                     cellC = row.getCell(4);
                     if (cellC == null)
                         cellC = row.createCell(4);
-                    if (record.getR14_COMPONENT_OF_REGU() != null) {
-                        cellC.setCellValue(record.getR14_COMPONENT_OF_REGU().doubleValue());
+
+                    if (record.getR14_QUAN_DIS() != null) {
+                        cellC.setCellValue(record.getR14_QUAN_DIS().doubleValue());
                     } else {
                         cellC.setCellValue(0);
                     }
 
+                    // R15
+                    row = sheet.getRow(14);
+                    cellC = row.getCell(4);
+                    if (cellC == null)
+                        cellC = row.createCell(4);
+
+                    if (record.getR15_QUAN_DIS() != null) {
+                        cellC.setCellValue(record.getR15_QUAN_DIS().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    // R16
+                    row = sheet.getRow(15);
+                    cellC = row.getCell(4);
+                    if (cellC == null)
+                        cellC = row.createCell(4);
+
+                    if (record.getR16_QUAN_DIS() != null) {
+                        cellC.setCellValue(record.getR16_QUAN_DIS().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    // R20
+                    row = sheet.getRow(19);
+                    cellC = row.getCell(4);
+                    if (cellC == null)
+                        cellC = row.createCell(4);
+
+                    if (record.getR20_QUAN_DIS() != null) {
+                        cellC.setCellValue(record.getR20_QUAN_DIS().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    // R21
+                    row = sheet.getRow(20);
+                    cellC = row.getCell(4);
+                    if (cellC == null)
+                        cellC = row.createCell(4);
+
+                    if (record.getR21_QUAN_DIS() != null) {
+                        cellC.setCellValue(record.getR21_QUAN_DIS().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
 
                 }
 
@@ -427,7 +449,7 @@ public class BRRS_Common_Disclosure_ReportService {
 
     }
 
-    public byte[] getExcelCommon_DisclosureARCHIVAL(String filename, String reportId, String fromdate, String todate,
+    public byte[] getExcelMarket_RiskARCHIVAL(String filename, String reportId, String fromdate, String todate,
             String currency, String dtltype, String type, String version) throws Exception {
 
         logger.info("Service: Starting Excel generation process in memory.");
@@ -436,11 +458,11 @@ public class BRRS_Common_Disclosure_ReportService {
 
         }
 
-        List<Common_Disclosure_Archival_Summary_Entity> dataList = Common_Disclosure_Archival_Summary_Repo
+        List<Market_Risk_Archival_Summary_Entity> dataList = Market_Risk_Archival_Summary_Repo
                 .getdatabydateListarchival(dateformat.parse(todate), version);
 
         if (dataList.isEmpty()) {
-            logger.warn("Service: No data found for Common_Disclosure report. Returning empty result.");
+            logger.warn("Service: No data found for Market_Risk report. Returning empty result.");
             return new byte[0];
         }
 
@@ -500,110 +522,133 @@ public class BRRS_Common_Disclosure_ReportService {
             numberStyle.setFont(font);
             // --- End of Style Definitions ---
 
-            int startRow = 6;
+            int startRow = 4;
 
             if (!dataList.isEmpty()) {
                 for (int i = 0; i < dataList.size(); i++) {
-                    Common_Disclosure_Archival_Summary_Entity record = dataList.get(i);
+                    Market_Risk_Archival_Summary_Entity record = dataList.get(i);
 
                     System.out.println("rownumber=" + startRow + i);
                     Row row = sheet.getRow(startRow + i);
                     if (row == null) {
                         row = sheet.createRow(startRow + i);
                     }
-                    // A TABLE
-                    // ---------- R7 (Row 7 -> index 6) ----------
-                    row = sheet.getRow(6);
+                    // R5
+                    row = sheet.getRow(4);
                     Cell cellC = row.getCell(4);
                     if (cellC == null)
                         cellC = row.createCell(4);
 
-                    if (record.getR7_COMPONENT_OF_REGU() != null) {
-                        cellC.setCellValue(record.getR7_COMPONENT_OF_REGU().doubleValue());
+                    if (record.getR5_QUAN_DIS() != null) {
+                        cellC.setCellValue(record.getR5_QUAN_DIS().doubleValue());
                     } else {
                         cellC.setCellValue(0);
                     }
 
-                    // ---------- R8 (Row 8 -> index 7) ----------
-                    row = sheet.getRow(7);
+                    // R6
+                    row = sheet.getRow(5);
                     cellC = row.getCell(4);
                     if (cellC == null)
                         cellC = row.createCell(4);
 
-                    if (record.getR8_COMPONENT_OF_REGU() != null) {
-                        cellC.setCellValue(record.getR8_COMPONENT_OF_REGU().doubleValue());
+                    if (record.getR6_QUAN_DIS() != null) {
+                        cellC.setCellValue(record.getR6_QUAN_DIS().doubleValue());
                     } else {
                         cellC.setCellValue(0);
                     }
 
-                    // ---------- R9 (Row 9 -> index 8) ----------
-                    row = sheet.getRow(8);
-                    cellC = row.getCell(4);
-                    if (cellC == null)
-                        cellC = row.createCell(4);
-
-                    if (record.getR9_COMPONENT_OF_REGU() != null) {
-                        cellC.setCellValue(record.getR9_COMPONENT_OF_REGU().doubleValue());
-                    } else {
-                        cellC.setCellValue(0);
-                    }
-
-                    // ---------- R10 (Row 10 -> index 9) ----------
-                    row = sheet.getRow(9);
-                    cellC = row.getCell(4);
-                    if (cellC == null)
-                        cellC = row.createCell(4);
-
-                    if (record.getR10_COMPONENT_OF_REGU() != null) {
-                        cellC.setCellValue(record.getR10_COMPONENT_OF_REGU().doubleValue());
-                    } else {
-                        cellC.setCellValue(0);
-                    }
-
-                    // ---------- R11 (Row 11 -> index 10) ----------
+                    // R11
                     row = sheet.getRow(10);
                     cellC = row.getCell(4);
                     if (cellC == null)
                         cellC = row.createCell(4);
 
-                    if (record.getR11_COMPONENT_OF_REGU() != null) {
-                        cellC.setCellValue(record.getR11_COMPONENT_OF_REGU().doubleValue());
+                    if (record.getR11_QUAN_DIS() != null) {
+                        cellC.setCellValue(record.getR11_QUAN_DIS().doubleValue());
                     } else {
                         cellC.setCellValue(0);
                     }
 
-                    // ROW 12
+                    // R12
                     row = sheet.getRow(11);
-
                     cellC = row.getCell(4);
                     if (cellC == null)
                         cellC = row.createCell(4);
-                    if (record.getR12_COMPONENT_OF_REGU() != null) {
-                        cellC.setCellValue(record.getR12_COMPONENT_OF_REGU().doubleValue());
+
+                    if (record.getR12_QUAN_DIS() != null) {
+                        cellC.setCellValue(record.getR12_QUAN_DIS().doubleValue());
                     } else {
                         cellC.setCellValue(0);
                     }
 
-                    // ROW 13
+                    // R13
                     row = sheet.getRow(12);
-
                     cellC = row.getCell(4);
                     if (cellC == null)
                         cellC = row.createCell(4);
-                    if (record.getR13_COMPONENT_OF_REGU() != null) {
-                        cellC.setCellValue(record.getR13_COMPONENT_OF_REGU().doubleValue());
+
+                    if (record.getR13_QUAN_DIS() != null) {
+                        cellC.setCellValue(record.getR13_QUAN_DIS().doubleValue());
                     } else {
                         cellC.setCellValue(0);
                     }
 
-                    // ROW 14
+                    // R14
                     row = sheet.getRow(13);
-
                     cellC = row.getCell(4);
                     if (cellC == null)
                         cellC = row.createCell(4);
-                    if (record.getR14_COMPONENT_OF_REGU() != null) {
-                        cellC.setCellValue(record.getR14_COMPONENT_OF_REGU().doubleValue());
+
+                    if (record.getR14_QUAN_DIS() != null) {
+                        cellC.setCellValue(record.getR14_QUAN_DIS().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    // R15
+                    row = sheet.getRow(14);
+                    cellC = row.getCell(4);
+                    if (cellC == null)
+                        cellC = row.createCell(4);
+
+                    if (record.getR15_QUAN_DIS() != null) {
+                        cellC.setCellValue(record.getR15_QUAN_DIS().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    // R16
+                    row = sheet.getRow(15);
+                    cellC = row.getCell(4);
+                    if (cellC == null)
+                        cellC = row.createCell(4);
+
+                    if (record.getR16_QUAN_DIS() != null) {
+                        cellC.setCellValue(record.getR16_QUAN_DIS().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    // R20
+                    row = sheet.getRow(19);
+                    cellC = row.getCell(4);
+                    if (cellC == null)
+                        cellC = row.createCell(4);
+
+                    if (record.getR20_QUAN_DIS() != null) {
+                        cellC.setCellValue(record.getR20_QUAN_DIS().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    // R21
+                    row = sheet.getRow(20);
+                    cellC = row.getCell(4);
+                    if (cellC == null)
+                        cellC = row.createCell(4);
+
+                    if (record.getR21_QUAN_DIS() != null) {
+                        cellC.setCellValue(record.getR21_QUAN_DIS().doubleValue());
                     } else {
                         cellC.setCellValue(0);
                     }
@@ -625,40 +670,40 @@ public class BRRS_Common_Disclosure_ReportService {
 
     }
 
-    public List<Object> getCommon_DisclosureArchival() {
-        List<Object> Common_DisclosureArchivallist = new ArrayList<>();
+    public List<Object> getMarket_RiskArchival() {
+        List<Object> Market_RiskArchivallist = new ArrayList<>();
         try {
-            Common_DisclosureArchivallist = Common_Disclosure_Archival_Summary_Repo.getCommon_Disclosurearchival();
+            Market_RiskArchivallist = Market_Risk_Archival_Summary_Repo.getMarket_Riskarchival();
 
-            System.out.println("countser" + Common_DisclosureArchivallist.size());
+            System.out.println("countser" + Market_RiskArchivallist.size());
 
         } catch (Exception e) {
             // Log the exception
-            System.err.println("Error fetching Common_DisclosureArchivallist Archival data: " + e.getMessage());
+            System.err.println("Error fetching Market_RiskArchivallist Archival data: " + e.getMessage());
             e.printStackTrace();
 
             // Optionally, you can rethrow it or return empty list
             // throw new RuntimeException("Failed to fetch data", e);
         }
-        return Common_DisclosureArchivallist;
+        return Market_RiskArchivallist;
     }
 
-    public byte[] getCommon_DisclosureDetailExcel(String filename, String fromdate, String todate, String currency,
+    public byte[] getMarket_RiskDetailExcel(String filename, String fromdate, String todate, String currency,
             String dtltype,
             String type, String version) {
         try {
-            logger.info("Generating Excel for Common_Disclosure Details...");
+            logger.info("Generating Excel for Market_Risk Details...");
             System.out.println("came to Detail download service");
 
             if (type.equals("ARCHIVAL") & version != null) {
-                byte[] ARCHIVALreport = getCommon_DisclosureDetailExcelARCHIVAL(filename, fromdate, todate, currency,
+                byte[] ARCHIVALreport = getMarket_RiskDetailExcelARCHIVAL(filename, fromdate, todate, currency,
                         dtltype, type,
                         version);
                 return ARCHIVALreport;
             }
 
             XSSFWorkbook workbook = new XSSFWorkbook();
-            XSSFSheet sheet = workbook.createSheet("Common_DisclosureDetails");
+            XSSFSheet sheet = workbook.createSheet("Market_RiskDetails");
 
             // Common border style
             BorderStyle border = BorderStyle.THIN;
@@ -719,12 +764,12 @@ public class BRRS_Common_Disclosure_ReportService {
 
             // Get data
             Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
-            List<Common_Disclosure_Detail_Entity> reportData = Common_Disclosure_detail_repo
+            List<Market_Risk_Detail_Entity> reportData = Market_Risk_detail_repo
                     .getdatabydateList(parsedToDate);
 
             if (reportData != null && !reportData.isEmpty()) {
                 int rowIndex = 1;
-                for (Common_Disclosure_Detail_Entity item : reportData) {
+                for (Market_Risk_Detail_Entity item : reportData) {
                     XSSFRow row = sheet.createRow(rowIndex++);
 
                     row.createCell(0).setCellValue(item.getCustId());
@@ -754,7 +799,7 @@ public class BRRS_Common_Disclosure_ReportService {
                     }
                 }
             } else {
-                logger.info("No data found for Common_Disclosure — only header will be written.");
+                logger.info("No data found for Market_Risk — only header will be written.");
             }
 
             // Write to byte[]
@@ -766,22 +811,22 @@ public class BRRS_Common_Disclosure_ReportService {
             return bos.toByteArray();
 
         } catch (Exception e) {
-            logger.error("Error generating Common_Disclosure Excel", e);
+            logger.error("Error generating Market_Risk Excel", e);
             return new byte[0];
         }
     }
 
-    public byte[] getCommon_DisclosureDetailExcelARCHIVAL(String filename, String fromdate, String todate,
+    public byte[] getMarket_RiskDetailExcelARCHIVAL(String filename, String fromdate, String todate,
             String currency,
             String dtltype, String type, String version) {
         try {
-            logger.info("Generating Excel for Common_Disclosure ARCHIVAL Details...");
+            logger.info("Generating Excel for Market_Risk ARCHIVAL Details...");
             System.out.println("came to ARCHIVAL Detail download service");
             if (type.equals("ARCHIVAL") & version != null) {
 
             }
             XSSFWorkbook workbook = new XSSFWorkbook();
-            XSSFSheet sheet = workbook.createSheet("Common_DisclosureDetail");
+            XSSFSheet sheet = workbook.createSheet("Market_RiskDetail");
 
             // Common border style
             BorderStyle border = BorderStyle.THIN;
@@ -842,13 +887,13 @@ public class BRRS_Common_Disclosure_ReportService {
 
             // Get data
             Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
-            List<Common_Disclosure_Archival_Detail_Entity> reportData = Common_Disclosure_Archival_Detail_Repo
+            List<Market_Risk_Archival_Detail_Entity> reportData = Market_Risk_Archival_Detail_Repo
                     .getdatabydateList(parsedToDate,
                             version);
 
             if (reportData != null && !reportData.isEmpty()) {
                 int rowIndex = 1;
-                for (Common_Disclosure_Archival_Detail_Entity item : reportData) {
+                for (Market_Risk_Archival_Detail_Entity item : reportData) {
                     XSSFRow row = sheet.createRow(rowIndex++);
 
                     row.createCell(0).setCellValue(item.getCustId());
@@ -879,7 +924,7 @@ public class BRRS_Common_Disclosure_ReportService {
                     }
                 }
             } else {
-                logger.info("No data found for Common_Disclosure — only header will be written.");
+                logger.info("No data found for Market_Risk — only header will be written.");
             }
 
             // Write to byte[]
@@ -891,29 +936,29 @@ public class BRRS_Common_Disclosure_ReportService {
             return bos.toByteArray();
 
         } catch (Exception e) {
-            logger.error("Error generating  Common_Disclosure Excel", e);
+            logger.error("Error generating  Market_Risk Excel", e);
             return new byte[0];
         }
     }
 
     @Autowired
-    BRRS_Common_Disclosure_Detail_Repo brrs_Common_Disclosure_detail_repo;
+    BRRS_Market_Risk_Detail_Repo brrs_Market_Risk_detail_repo;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
     public ModelAndView getViewOrEditPage(String acctNo, String formMode) {
-        ModelAndView mv = new ModelAndView("BRRS/COMMON_DISCLOSURE");
+        ModelAndView mv = new ModelAndView("BRRS/Market_Risk");
 
         if (acctNo != null) {
-            Common_Disclosure_Detail_Entity Common_DisclosureEntity = brrs_Common_Disclosure_detail_repo
+            Market_Risk_Detail_Entity Market_RiskEntity = brrs_Market_Risk_detail_repo
                     .findByAcctnumber(acctNo);
-            if (Common_DisclosureEntity != null && Common_DisclosureEntity.getReportDate() != null) {
+            if (Market_RiskEntity != null && Market_RiskEntity.getReportDate() != null) {
                 String formattedDate = new SimpleDateFormat("dd/MM/yyyy")
-                        .format(Common_DisclosureEntity.getReportDate());
+                        .format(Market_RiskEntity.getReportDate());
                 mv.addObject("asondate", formattedDate);
             }
-            mv.addObject("Common_DisclosureData", Common_DisclosureEntity);
+            mv.addObject("Market_RiskData", Market_RiskEntity);
         }
 
         mv.addObject("displaymode", "edit");
@@ -931,7 +976,7 @@ public class BRRS_Common_Disclosure_ReportService {
 
             logger.info("Received update for ACCT_NO: {}", acctNo);
 
-            Common_Disclosure_Detail_Entity existing = brrs_Common_Disclosure_detail_repo.findByAcctnumber(acctNo);
+            Market_Risk_Detail_Entity existing = brrs_Market_Risk_detail_repo.findByAcctnumber(acctNo);
             if (existing == null) {
                 logger.warn("No record found for ACCT_NO: {}", acctNo);
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Record not found for update.");
@@ -958,7 +1003,7 @@ public class BRRS_Common_Disclosure_ReportService {
             }
 
             if (isChanged) {
-                brrs_Common_Disclosure_detail_repo.save(existing);
+                brrs_Market_Risk_detail_repo.save(existing);
                 logger.info("Record updated successfully for account {}", acctNo);
 
                 // Format date for procedure
@@ -970,9 +1015,9 @@ public class BRRS_Common_Disclosure_ReportService {
                     @Override
                     public void afterCommit() {
                         try {
-                            logger.info("Transaction committed — calling BRRS_COMMON_DISCLOSURE_SUMMARY_PROCEDURE({})",
+                            logger.info("Transaction committed — calling BRRS_Market_Risk_SUMMARY_PROCEDURE({})",
                                     formattedDate);
-                            jdbcTemplate.update("BEGIN BRRS_COMMON_DISCLOSURE_SUMMARY_PROCEDURE(?); END;",
+                            jdbcTemplate.update("BEGIN BRRS_Market_Risk_SUMMARY_PROCEDURE(?); END;",
                                     formattedDate);
                             logger.info("Procedure executed successfully after commit.");
                         } catch (Exception e) {
@@ -988,7 +1033,7 @@ public class BRRS_Common_Disclosure_ReportService {
             }
 
         } catch (Exception e) {
-            logger.error("Error updating Common_Disclosure record", e);
+            logger.error("Error updating Market_Risk record", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error updating record: " + e.getMessage());
         }

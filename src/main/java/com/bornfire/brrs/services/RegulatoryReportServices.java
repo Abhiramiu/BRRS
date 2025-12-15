@@ -302,12 +302,15 @@ public class RegulatoryReportServices {
 
 	@Autowired
 	BRRS_BASEL_III_COM_EQUITY_DISC_ReportService b_III_cetd_ReportService;
-	
+
 	@Autowired
 	BRRS_CAP_ADEQ_ReportService brrs_cap_adeq_reportservice;
 
 	@Autowired
 	BRRS_MDISB1_ReportService brrs_mdisb1_reportservice;
+
+	@Autowired
+	BRRS_Market_Risk_ReportService BRRS_Market_Risk_Reportservice;
 
 	private static final Logger logger = LoggerFactory.getLogger(RegulatoryReportServices.class);
 
@@ -818,8 +821,14 @@ public class RegulatoryReportServices {
 						pageable, type, version);
 
 				break;
-				
-				
+			case "Market_Risk":
+
+				repsummary = BRRS_Market_Risk_Reportservice.getMarket_RiskView(reportId, fromdate,
+						todate, currency, dtltype,
+						pageable, type, version);
+
+				break;
+
 			case "CAP_ADEQ":
 
 				repsummary = brrs_cap_adeq_reportservice.getCAP_ADEQView(reportId, fromdate, todate, currency, dtltype,
@@ -833,7 +842,7 @@ public class RegulatoryReportServices {
 						pageable, type, version);
 
 				break;
-				
+
 			case "MDISB1":
 
 				repsummary = brrs_mdisb1_reportservice.getMDISB1View(reportId, fromdate, todate, currency, dtltype,
@@ -1097,24 +1106,26 @@ public class RegulatoryReportServices {
 						pageable, Filter, type, version);
 				break;
 
+			case "Market_Risk":
+				repdetail = BRRS_Market_Risk_Reportservice.getMarket_RiskcurrentDtl(reportId, fromdate,
+						todate, currency,
+						dtltype,
+						pageable, Filter, type, version);
+				break;
+
 			case "FSI":
 
 				repdetail = BRRS_FSI_ReportService.getFSIcurrentDtl(reportId, fromdate, todate, currency,
 						dtltype,
 						pageable, Filter, type, version);
 				break;
-				
-				
-				
-				
-				
+
 			case "CAP_ADEQ":
 
 				repdetail = brrs_cap_adeq_reportservice.getCAP_ADEQcurrentDtl(reportId, fromdate, todate, currency,
 						dtltype,
 						pageable, Filter, type, version);
 				break;
-				
 
 			case "B_III_CETD":
 
@@ -1122,13 +1133,12 @@ public class RegulatoryReportServices {
 						dtltype,
 						pageable, Filter, type, version);
 				break;
-				
+
 			case "MDISB1":
 
 				repdetail = brrs_mdisb1_reportservice.getMDISB1currentDtl(reportId, fromdate, todate, currency,
-						dtltype,pageable, Filter, type, version);
+						dtltype, pageable, Filter, type, version);
 				break;
-
 
 		}
 		return repdetail;
@@ -2030,8 +2040,18 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
-				
-				
+
+			case "Market_Risk":
+				try {
+					repfile = BRRS_Market_Risk_Reportservice.getMarket_RiskExcel(filename, reportId,
+							fromdate,
+							todate,
+							currency, dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 			case "CAP_ADEQ":
 				try {
 
@@ -2055,15 +2075,15 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
-				
+
 			case "MDISB1":
 				try {
-				repfile = brrs_mdisb1_reportservice.getMDISB1Excel(filename, reportId, fromdate, todate, currency,
-						dtltype, type, version);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+					repfile = brrs_mdisb1_reportservice.getMDISB1Excel(filename, reportId, fromdate, todate, currency,
+							dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				break;
 
 		}
@@ -2674,8 +2694,16 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
-				
-				
+
+			case "Market_Risk":
+				try {
+					archivalData = BRRS_Market_Risk_Reportservice.getMarket_RiskArchival();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+
 			case "CAP_ADEQ":
 				try {
 					archivalData = brrs_cap_adeq_reportservice.getCAP_ADEQArchival();
@@ -2684,9 +2712,7 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
-				
-				
-				
+
 			// New Archival
 			case "M_SRWA_12H":
 				List<Object[]> srwaList1 = BRRS_M_SRWA_12H_reportservice.getM_SRWA_12HArchival();
@@ -2947,7 +2973,7 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
-				
+
 			case "MDISB1":
 				try {
 					archivalData = brrs_mdisb1_reportservice.getMDISB1Archival();
@@ -2956,7 +2982,6 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
-
 
 			default:
 				System.out.println("No archival logic defined for report: " + rptcode);
@@ -3141,6 +3166,9 @@ public class RegulatoryReportServices {
 		} else if (filename.equals("COMMON_DISCLOSURE")) {
 			fileData = BRRS_Common_Disclosure_Reportservice.getCommon_DisclosureDetailExcel(filename, fromdate, todate,
 					currency, dtltype, type, version);
+		} else if (filename.equals("Market_Risk")) {
+			fileData = BRRS_Market_Risk_Reportservice.getMarket_RiskDetailExcel(filename, fromdate, todate,
+					currency, dtltype, type, version);
 		}
 
 		else if ("B_III_CETD".equals(filename)) {
@@ -3149,19 +3177,18 @@ public class RegulatoryReportServices {
 					currency,
 					dtltype, type, version);
 		}
-		
+
 		else if (filename.equals("MDISB1Detail")) {
-			fileData = brrs_mdisb1_reportservice.getMDISB1DetailExcel(filename, fromdate, todate, currency, dtltype, type,
+			fileData = brrs_mdisb1_reportservice.getMDISB1DetailExcel(filename, fromdate, todate, currency, dtltype,
+					type,
 					version);
-		
-		}else if ("CAP_ADEQ".equals(filename)) {
+
+		} else if ("CAP_ADEQ".equals(filename)) {
 
 			fileData = brrs_cap_adeq_reportservice.getCAP_ADEQDetailExcel(filename, fromdate, todate,
 					currency,
 					dtltype, type, version);
 		}
-		
-		
 
 		else if ("FSIDetail".equals(filename)) {
 
@@ -3400,19 +3427,20 @@ public class RegulatoryReportServices {
 							request.getParameter("formmode"));
 					break;
 
+				case "Market_Risk":
+					modelAndView = BRRS_Market_Risk_Reportservice.getViewOrEditPage(
+							request.getParameter("acctNo"),
+							request.getParameter("formmode"));
+					break;
 				case "B_III_CETD":
 					modelAndView = b_III_cetd_ReportService.getViewOrEditPage(request.getParameter("acctNo"),
 							request.getParameter("formmode"));
 					break;
-					
-					
 
 				case "CAP_ADEQ":
 					modelAndView = brrs_cap_adeq_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
 							request.getParameter("formmode"));
 					break;
-					
-					
 
 				case "FSI":
 					modelAndView = BRRS_FSI_ReportService.getViewOrEditPage(request.getParameter("acctNo"),
@@ -3425,7 +3453,7 @@ public class RegulatoryReportServices {
 					modelAndView.addObject("errorMessage",
 							"Details view for report '" + reportId + "' is not implemented.");
 					break;
-					
+
 				case "MDISB1":
 					modelAndView = brrs_mdisb1_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
 							request.getParameter("formmode"));
@@ -3451,7 +3479,7 @@ public class RegulatoryReportServices {
 				case "M_PLL":
 					response = BRRS_M_PLL_reportservice.updateDetailEdit(request);
 					break;
-					
+
 				case "MDISB1":
 					response = brrs_mdisb1_reportservice.updateDetailEdit(request);
 					break;
@@ -3591,7 +3619,7 @@ public class RegulatoryReportServices {
 				case "B_III_CETD":
 					response = b_III_cetd_ReportService.updateDetailEdit(request);
 					break;
-					
+
 				case "CAP_ADEQ":
 					response = brrs_cap_adeq_reportservice.updateDetailEdit(request);
 					break;
@@ -3600,6 +3628,9 @@ public class RegulatoryReportServices {
 					response = BRRS_FSI_ReportService.updateDetailEdit(request);
 					break;
 
+				case "Market_Risk":
+					response = BRRS_Market_Risk_Reportservice.updateDetailEdit(request);
+					break;
 				default:
 					logger.warn("Unsupported report ID: {}", reportId);
 					response = ResponseEntity.badRequest()

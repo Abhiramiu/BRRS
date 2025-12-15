@@ -6,11 +6,11 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
-import javax.persistence.Id; 
+import javax.persistence.Id;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
-@Table(name = "BRRS_COMMON_DISCLOSURE_ARCHIVAL_DETAILTABLE")
+@Table(name = "BRRS_COMMON_DISCLOSURE_ARCHIVALTABLE_DETAIL")
 public class Common_Disclosure_Archival_Detail_Entity {
 
     @Column(name = "CUST_ID")
@@ -29,10 +29,10 @@ public class Common_Disclosure_Archival_Detail_Entity {
     private String reportName;
 
     @Column(name = "REPORT_LABEL")
-    private String reportLable;
+    private String reportLabel;
 
     @Column(name = "REPORT_ADDL_CRITERIA_1")
-    private String reportAddlCriteria_1;
+    private String reportAddlCriteria1;
 
     @Column(name = "REPORT_REMARKS")
     private String reportRemarks;
@@ -120,20 +120,20 @@ public class Common_Disclosure_Archival_Detail_Entity {
         this.reportName = reportName;
     }
 
-    public String getReportLable() {
-        return reportLable;
+    public String getReportLabel() {
+        return reportLabel;
     }
 
-    public void setReportLable(String reportLable) {
-        this.reportLable = reportLable;
+    public void setReportLabel(String reportLabel) {
+        this.reportLabel = reportLabel;
     }
 
-    public String getReportAddlCriteria_1() {
-        return reportAddlCriteria_1;
+    public String getReportAddlCriteria1() {
+        return reportAddlCriteria1;
     }
 
-    public void setReportAddlCriteria_1(String reportAddlCriteria_1) {
-        this.reportAddlCriteria_1 = reportAddlCriteria_1;
+    public void setReportAddlCriteria1(String reportAddlCriteria1) {
+        this.reportAddlCriteria1 = reportAddlCriteria1;
     }
 
     public String getReportRemarks() {
@@ -249,9 +249,7 @@ public class Common_Disclosure_Archival_Detail_Entity {
     }
 
     public Common_Disclosure_Archival_Detail_Entity() {
-           super();
+        super();
     }
-
-    
 
 }

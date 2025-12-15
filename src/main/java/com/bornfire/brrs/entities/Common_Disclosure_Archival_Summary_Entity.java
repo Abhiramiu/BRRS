@@ -1,5 +1,6 @@
 package com.bornfire.brrs.entities;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -22,7 +23,7 @@ public class Common_Disclosure_Archival_Summary_Entity {
     private String R7_PRODUCT;
 
     @Column(name = "R7_COMPONENT_OF_REGU")
-    private Double R7_COMPONENT_OF_REGU;
+    private BigDecimal R7_COMPONENT_OF_REGU;
 
     @Column(name = "R7_SOURCE_REF", length = 200)
     private String R7_SOURCE_REF;
@@ -31,7 +32,7 @@ public class Common_Disclosure_Archival_Summary_Entity {
     private String R8_PRODUCT;
 
     @Column(name = "R8_COMPONENT_OF_REGU")
-    private Double R8_COMPONENT_OF_REGU;
+    private BigDecimal R8_COMPONENT_OF_REGU;
 
     @Column(name = "R8_SOURCE_REF", length = 100)
     private String R8_SOURCE_REF;
@@ -40,7 +41,7 @@ public class Common_Disclosure_Archival_Summary_Entity {
     private String R9_PRODUCT;
 
     @Column(name = "R9_COMPONENT_OF_REGU")
-    private Double R9_COMPONENT_OF_REGU;
+    private BigDecimal R9_COMPONENT_OF_REGU;
 
     @Column(name = "R9_SOURCE_REF", length = 100)
     private String R9_SOURCE_REF;
@@ -49,7 +50,7 @@ public class Common_Disclosure_Archival_Summary_Entity {
     private String R10_PRODUCT;
 
     @Column(name = "R10_COMPONENT_OF_REGU")
-    private Double R10_COMPONENT_OF_REGU;
+    private BigDecimal R10_COMPONENT_OF_REGU;
 
     @Column(name = "R10_SOURCE_REF", length = 100)
     private String R10_SOURCE_REF;
@@ -58,7 +59,7 @@ public class Common_Disclosure_Archival_Summary_Entity {
     private String R11_PRODUCT;
 
     @Column(name = "R11_COMPONENT_OF_REGU")
-    private Double R11_COMPONENT_OF_REGU;
+    private BigDecimal R11_COMPONENT_OF_REGU;
 
     @Column(name = "R11_SOURCE_REF", length = 100)
     private String R11_SOURCE_REF;
@@ -67,7 +68,7 @@ public class Common_Disclosure_Archival_Summary_Entity {
     private String R12_PRODUCT;
 
     @Column(name = "R12_COMPONENT_OF_REGU")
-    private Double R12_COMPONENT_OF_REGU;
+    private BigDecimal R12_COMPONENT_OF_REGU;
 
     @Column(name = "R12_SOURCE_REF", length = 100)
     private String R12_SOURCE_REF;
@@ -76,7 +77,7 @@ public class Common_Disclosure_Archival_Summary_Entity {
     private String R13_PRODUCT;
 
     @Column(name = "R13_COMPONENT_OF_REGU")
-    private Double R13_COMPONENT_OF_REGU;
+    private BigDecimal R13_COMPONENT_OF_REGU;
 
     @Column(name = "R13_SOURCE_REF", length = 100)
     private String R13_SOURCE_REF;
@@ -85,7 +86,7 @@ public class Common_Disclosure_Archival_Summary_Entity {
     private String R14_PRODUCT;
 
     @Column(name = "R14_COMPONENT_OF_REGU")
-    private Double R14_COMPONENT_OF_REGU;
+    private BigDecimal R14_COMPONENT_OF_REGU;
 
     @Column(name = "R14_SOURCE_REF", length = 100)
     private String R14_SOURCE_REF;
@@ -127,11 +128,11 @@ public class Common_Disclosure_Archival_Summary_Entity {
         R7_PRODUCT = r7_PRODUCT;
     }
 
-    public Double getR7_COMPONENT_OF_REGU() {
+    public BigDecimal getR7_COMPONENT_OF_REGU() {
         return R7_COMPONENT_OF_REGU;
     }
 
-    public void setR7_COMPONENT_OF_REGU(Double r7_COMPONENT_OF_REGU) {
+    public void setR7_COMPONENT_OF_REGU(BigDecimal r7_COMPONENT_OF_REGU) {
         R7_COMPONENT_OF_REGU = r7_COMPONENT_OF_REGU;
     }
 
@@ -151,11 +152,11 @@ public class Common_Disclosure_Archival_Summary_Entity {
         R8_PRODUCT = r8_PRODUCT;
     }
 
-    public Double getR8_COMPONENT_OF_REGU() {
+    public BigDecimal getR8_COMPONENT_OF_REGU() {
         return R8_COMPONENT_OF_REGU;
     }
 
-    public void setR8_COMPONENT_OF_REGU(Double r8_COMPONENT_OF_REGU) {
+    public void setR8_COMPONENT_OF_REGU(BigDecimal r8_COMPONENT_OF_REGU) {
         R8_COMPONENT_OF_REGU = r8_COMPONENT_OF_REGU;
     }
 
@@ -175,11 +176,11 @@ public class Common_Disclosure_Archival_Summary_Entity {
         R9_PRODUCT = r9_PRODUCT;
     }
 
-    public Double getR9_COMPONENT_OF_REGU() {
+    public BigDecimal getR9_COMPONENT_OF_REGU() {
         return R9_COMPONENT_OF_REGU;
     }
 
-    public void setR9_COMPONENT_OF_REGU(Double r9_COMPONENT_OF_REGU) {
+    public void setR9_COMPONENT_OF_REGU(BigDecimal r9_COMPONENT_OF_REGU) {
         R9_COMPONENT_OF_REGU = r9_COMPONENT_OF_REGU;
     }
 
@@ -199,11 +200,11 @@ public class Common_Disclosure_Archival_Summary_Entity {
         R10_PRODUCT = r10_PRODUCT;
     }
 
-    public Double getR10_COMPONENT_OF_REGU() {
+    public BigDecimal getR10_COMPONENT_OF_REGU() {
         return R10_COMPONENT_OF_REGU;
     }
 
-    public void setR10_COMPONENT_OF_REGU(Double r10_COMPONENT_OF_REGU) {
+    public void setR10_COMPONENT_OF_REGU(BigDecimal r10_COMPONENT_OF_REGU) {
         R10_COMPONENT_OF_REGU = r10_COMPONENT_OF_REGU;
     }
 
@@ -223,11 +224,11 @@ public class Common_Disclosure_Archival_Summary_Entity {
         R11_PRODUCT = r11_PRODUCT;
     }
 
-    public Double getR11_COMPONENT_OF_REGU() {
+    public BigDecimal getR11_COMPONENT_OF_REGU() {
         return R11_COMPONENT_OF_REGU;
     }
 
-    public void setR11_COMPONENT_OF_REGU(Double r11_COMPONENT_OF_REGU) {
+    public void setR11_COMPONENT_OF_REGU(BigDecimal r11_COMPONENT_OF_REGU) {
         R11_COMPONENT_OF_REGU = r11_COMPONENT_OF_REGU;
     }
 
@@ -247,11 +248,11 @@ public class Common_Disclosure_Archival_Summary_Entity {
         R12_PRODUCT = r12_PRODUCT;
     }
 
-    public Double getR12_COMPONENT_OF_REGU() {
+    public BigDecimal getR12_COMPONENT_OF_REGU() {
         return R12_COMPONENT_OF_REGU;
     }
 
-    public void setR12_COMPONENT_OF_REGU(Double r12_COMPONENT_OF_REGU) {
+    public void setR12_COMPONENT_OF_REGU(BigDecimal r12_COMPONENT_OF_REGU) {
         R12_COMPONENT_OF_REGU = r12_COMPONENT_OF_REGU;
     }
 
@@ -271,11 +272,11 @@ public class Common_Disclosure_Archival_Summary_Entity {
         R13_PRODUCT = r13_PRODUCT;
     }
 
-    public Double getR13_COMPONENT_OF_REGU() {
+    public BigDecimal getR13_COMPONENT_OF_REGU() {
         return R13_COMPONENT_OF_REGU;
     }
 
-    public void setR13_COMPONENT_OF_REGU(Double r13_COMPONENT_OF_REGU) {
+    public void setR13_COMPONENT_OF_REGU(BigDecimal r13_COMPONENT_OF_REGU) {
         R13_COMPONENT_OF_REGU = r13_COMPONENT_OF_REGU;
     }
 
@@ -295,11 +296,11 @@ public class Common_Disclosure_Archival_Summary_Entity {
         R14_PRODUCT = r14_PRODUCT;
     }
 
-    public Double getR14_COMPONENT_OF_REGU() {
+    public BigDecimal getR14_COMPONENT_OF_REGU() {
         return R14_COMPONENT_OF_REGU;
     }
 
-    public void setR14_COMPONENT_OF_REGU(Double r14_COMPONENT_OF_REGU) {
+    public void setR14_COMPONENT_OF_REGU(BigDecimal r14_COMPONENT_OF_REGU) {
         R14_COMPONENT_OF_REGU = r14_COMPONENT_OF_REGU;
     }
 
