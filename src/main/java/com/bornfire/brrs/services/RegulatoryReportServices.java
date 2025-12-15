@@ -257,7 +257,7 @@ public class RegulatoryReportServices {
 
 	@Autowired
 	BRRS_BDISB1_ReportService brrs_m_bdisb1_reportservice;
-	
+
 	@Autowired
 	BRRS_BDISB3_ReportService brrs_bdisb3_reportservice;
 
@@ -284,29 +284,24 @@ public class RegulatoryReportServices {
 
 	@Autowired
 	BRRS_RECON_OF_FS_ReportService BRRS_RECON_OF_FS_ReportService;
-	
 
 	@Autowired
 	BRRS_MDISB5_ReportService BRRS_MDISB5_ReportService;
 
 	@Autowired
 	BRRS_AML_ReportService brrs_aml_reportservice;
-	
+
 	@Autowired
 	BRRS_FSI_ReportService BRRS_FSI_ReportService;
 
 	@Autowired
 	BRRS_Expanded_Regu_BS_ReportService BRRS_Expanded_Regu_BS_ReportService;
-	
-	
-	
 
-@Autowired
+	@Autowired
+	BRRS_Common_Disclosure_ReportService BRRS_Common_Disclosure_Reportservice;
+
+	@Autowired
 	BRRS_BASEL_III_COM_EQUITY_DISC_ReportService b_III_cetd_ReportService;
-	
-	
-	
-	
 
 	private static final Logger logger = LoggerFactory.getLogger(RegulatoryReportServices.class);
 
@@ -406,7 +401,7 @@ public class RegulatoryReportServices {
 				repsummary = brrs_m_bdisb1_reportservice.getM_BDISB1View(reportId, fromdate, todate, currency, dtltype,
 						pageable, type, version);
 				break;
-				
+
 			case "BDISB3":
 				repsummary = brrs_bdisb3_reportservice.getM_BDISB3View(reportId, fromdate, todate, currency, dtltype,
 						pageable, type, version);
@@ -794,7 +789,7 @@ public class RegulatoryReportServices {
 						pageable, type, version);
 
 				break;
-				
+
 			case "FSI":
 				repsummary = BRRS_FSI_ReportService.getFSIView(reportId, fromdate, todate, currency,
 						dtltype,
@@ -809,10 +804,15 @@ public class RegulatoryReportServices {
 						pageable, type, version);
 
 				break;
-				
-				
-				
-				
+
+			case "COMMON_DISCLOSURE":
+
+				repsummary = BRRS_Common_Disclosure_Reportservice.getCommon_DisclosureView(reportId, fromdate,
+						todate, currency, dtltype,
+						pageable, type, version);
+
+				break;
+
 			case "B_III_CETD":
 
 				repsummary = b_III_cetd_ReportService.getB_III_CETDView(reportId, fromdate, todate, currency, dtltype,
@@ -1062,35 +1062,32 @@ public class RegulatoryReportServices {
 						pageable, Filter, type, version);
 				break;
 
-
 			case "EXPANDED_REGU_BS":
 				repdetail = BRRS_Expanded_Regu_BS_ReportService.getBRRS_Expanded_Regu_BScurrentDtl(reportId, fromdate,
 						todate, currency,
 						dtltype,
 						pageable, Filter, type, version);
 				break;
+			case "COMMON_DISCLOSURE":
+				repdetail = BRRS_Common_Disclosure_Reportservice.getCommon_DisclosurecurrentDtl(reportId, fromdate,
+						todate, currency,
+						dtltype,
+						pageable, Filter, type, version);
+				break;
 
-
-				
 			case "FSI":
 
 				repdetail = BRRS_FSI_ReportService.getFSIcurrentDtl(reportId, fromdate, todate, currency,
 						dtltype,
 						pageable, Filter, type, version);
 				break;
-				
-				
-				
-				
+
 			case "B_III_CETD":
 
 				repdetail = b_III_cetd_ReportService.getB_III_CETDcurrentDtl(reportId, fromdate, todate, currency,
 						dtltype,
 						pageable, Filter, type, version);
-				break;	
-				
-				
-				
+				break;
 
 		}
 		return repdetail;
@@ -1187,7 +1184,7 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
-				
+
 			case "BDISB3":
 				try {
 					repfile = brrs_bdisb3_reportservice.getBDISB3Excel(filename, reportId, fromdate, todate,
@@ -1925,8 +1922,7 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
-				
-				
+
 			case "ADISB2":
 				try {
 					repfile = BRRS_ADISB2_ReportService.getM_ADISB2Excel(filename, reportId, fromdate, todate,
@@ -1959,17 +1955,17 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
-				
+
 			case "FSI":
-			try {
-				repfile = BRRS_FSI_ReportService.getFSIExcel(filename, reportId, fromdate, todate,
+				try {
+					repfile = BRRS_FSI_ReportService.getFSIExcel(filename, reportId, fromdate, todate,
 							currency, dtltype, type, version);
 
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
- 			break;
+				break;
 
 			case "EXPANDED_REGU_BS":
 				try {
@@ -1981,9 +1977,19 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
-				
-				
-				
+
+			case "COMMON_DISCLOSURE":
+				try {
+					repfile = BRRS_Common_Disclosure_Reportservice.getCommon_DisclosureExcel(filename, reportId,
+							fromdate,
+							todate,
+							currency, dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+
 			case "B_III_CETD":
 				try {
 
@@ -1995,9 +2001,6 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
-				
-				
-				
 
 		}
 		return repfile;
@@ -2101,7 +2104,7 @@ public class RegulatoryReportServices {
 			return BRRS_FSI_ReportService.getFSIDetailExcel(
 					filename, fromdate, todate, currency, dtltype, type, version);
 		}
-		
+
 		return new byte[0];
 	}
 
@@ -2562,8 +2565,7 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
-				
-				
+
 			case "B_III_CETD":
 				try {
 					archivalData = b_III_cetd_ReportService.getB_III_CETDArchival();
@@ -2572,7 +2574,6 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
-				
 
 			case "Recon_Of_FS":
 				try {
@@ -2599,7 +2600,15 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
-				// New Archival
+			case "COMMON_DISCLOSURE":
+				try {
+					archivalData = BRRS_Common_Disclosure_Reportservice.getCommon_DisclosureArchival();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+			// New Archival
 			case "M_SRWA_12H":
 				List<Object[]> srwaList1 = BRRS_M_SRWA_12H_reportservice.getM_SRWA_12HArchival();
 				archivalData.addAll(srwaList1);
@@ -2699,7 +2708,7 @@ public class RegulatoryReportServices {
 				archivalData.addAll(bdisb1List);
 				System.out.println("Fetched M_C archival data: " + bdisb1List.size());
 				break;
-				
+
 			case "BDISB3":
 				List<Object[]> bdisb3List = brrs_bdisb3_reportservice.getBDISB3Archival();
 				archivalData.addAll(bdisb3List);
@@ -2850,7 +2859,7 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
-				
+
 			case "FSI":
 				try {
 					archivalData = BRRS_FSI_ReportService.getFSIArchival();
@@ -2863,10 +2872,6 @@ public class RegulatoryReportServices {
 			default:
 				System.out.println("No archival logic defined for report: " + rptcode);
 				break;
-				
-				
-				
-				
 
 		}
 		return archivalData;
@@ -3044,18 +3049,18 @@ public class RegulatoryReportServices {
 		} else if (filename.equals("EXPANDED_REGU_BS")) {
 			fileData = BRRS_Expanded_Regu_BS_ReportService.BRRS_Expanded_Regu_BSDetailExcel(filename, fromdate, todate,
 					currency, dtltype, type, version);
+		} else if (filename.equals("COMMON_DISCLOSURE")) {
+			fileData = BRRS_Common_Disclosure_Reportservice.getCommon_DisclosureDetailExcel(filename, fromdate, todate,
+					currency, dtltype, type, version);
 		}
-		
-	
+
 		else if ("B_III_CETD".equals(filename)) {
 
 			fileData = b_III_cetd_ReportService.getB_III_CETDDetailExcel(filename, fromdate, todate,
 					currency,
 					dtltype, type, version);
 		}
-		
-		
-		
+
 		else if ("FSIDetail".equals(filename)) {
 
 			fileData = BRRS_FSI_ReportService.getFSIDetailExcel(filename, fromdate, todate, currency,
@@ -3287,20 +3292,21 @@ public class RegulatoryReportServices {
 					modelAndView = BRRS_Expanded_Regu_BS_ReportService.getViewOrEditPage(request.getParameter("acctNo"),
 							request.getParameter("formmode"));
 					break;
-				
-					
+				case "COMMON_DISCLOSURE":
+					modelAndView = BRRS_Common_Disclosure_Reportservice.getViewOrEditPage(
+							request.getParameter("acctNo"),
+							request.getParameter("formmode"));
+					break;
+
 				case "B_III_CETD":
 					modelAndView = b_III_cetd_ReportService.getViewOrEditPage(request.getParameter("acctNo"),
 							request.getParameter("formmode"));
-					break;	
-					
-					
+					break;
 
 				case "FSI":
 					modelAndView = BRRS_FSI_ReportService.getViewOrEditPage(request.getParameter("acctNo"),
 							request.getParameter("formmode"));
 					break;
-
 
 				default:
 					logger.warn("No detail service found for reportId: {}", reportId);
@@ -3455,21 +3461,20 @@ public class RegulatoryReportServices {
 					response = brrs_aml_reportservice.updateDetailEdit(request);
 					break;
 
-
 				case "EXPANDED_REGU_BS":
 					response = BRRS_Expanded_Regu_BS_ReportService.updateDetailEdit(request);
 					break;
-
+				case "COMMON_DISCLOSURE":
+					response = BRRS_Common_Disclosure_Reportservice.updateDetailEdit(request);
+					break;
 
 				case "B_III_CETD":
 					response = b_III_cetd_ReportService.updateDetailEdit(request);
 					break;
-					
-					
+
 				case "FSI":
 					response = BRRS_FSI_ReportService.updateDetailEdit(request);
 					break;
-					
 
 				default:
 					logger.warn("Unsupported report ID: {}", reportId);
@@ -3722,7 +3727,6 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
-				
 
 			case "M_OR2":
 				try {
@@ -3891,7 +3895,7 @@ public class RegulatoryReportServices {
 				}
 
 				break;
-				
+
 			case "BDISB3":
 				try {
 					List<Object[]> resubList = brrs_bdisb3_reportservice.getBDISB3Resub();
