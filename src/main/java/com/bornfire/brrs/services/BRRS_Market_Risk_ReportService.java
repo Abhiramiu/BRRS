@@ -958,7 +958,7 @@ public class BRRS_Market_Risk_ReportService {
                         .format(Market_RiskEntity.getReportDate());
                 mv.addObject("asondate", formattedDate);
             }
-            mv.addObject("Market_RiskData", Market_RiskEntity);
+            mv.addObject("MarketRiskData", Market_RiskEntity);
         }
 
         mv.addObject("displaymode", "edit");

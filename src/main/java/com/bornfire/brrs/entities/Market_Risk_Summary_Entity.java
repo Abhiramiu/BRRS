@@ -112,6 +112,7 @@ public class Market_Risk_Summary_Entity {
 
     @Column(name = "R20_QUAN_DIS")
     private BigDecimal R20_QUAN_DIS;
+
     /* ================= R21 ================= */
     @Column(name = "R21_QUALITATIVE_DISCLOSURES")
     private String R21_QUALITATIVE_DISCLOSURES;
@@ -364,6 +365,22 @@ public class Market_Risk_Summary_Entity {
         R20_PRODUCT = r20_PRODUCT;
     }
 
+    public BigDecimal getR20_QUAN_DIS() {
+        return R20_QUAN_DIS;
+    }
+
+    public void setR20_QUAN_DIS(BigDecimal r20_QUAN_DIS) {
+        R20_QUAN_DIS = r20_QUAN_DIS;
+    }
+
+    public String getR21_QUALITATIVE_DISCLOSURES() {
+        return R21_QUALITATIVE_DISCLOSURES;
+    }
+
+    public void setR21_QUALITATIVE_DISCLOSURES(String r21_QUALITATIVE_DISCLOSURES) {
+        R21_QUALITATIVE_DISCLOSURES = r21_QUALITATIVE_DISCLOSURES;
+    }
+
     public String getR21_PRODUCT() {
         return R21_PRODUCT;
     }
@@ -444,21 +461,5 @@ public class Market_Risk_Summary_Entity {
         DEL_FLG = dEL_FLG;
     }
 
-    public BigDecimal getR20_QUAN_DIS() {
-        return R20_QUAN_DIS;
-    }
-
-    public void setR20_QUAN_DIS(BigDecimal r20_QUAN_DIS) {
-        R20_QUAN_DIS = r20_QUAN_DIS;
-    }
-
-    public String getR21_QUALITATIVE_DISCLOSURES() {
-        return R21_QUALITATIVE_DISCLOSURES;
-    }
-
-    public void setR21_QUALITATIVE_DISCLOSURES(String r21_QUALITATIVE_DISCLOSURES) {
-        R21_QUALITATIVE_DISCLOSURES = r21_QUALITATIVE_DISCLOSURES;
-    }
-    
     
 }
