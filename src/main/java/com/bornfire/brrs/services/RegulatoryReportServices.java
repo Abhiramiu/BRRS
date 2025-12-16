@@ -322,7 +322,8 @@ public class RegulatoryReportServices {
 	BRRS_SCH_17_ReportService brrs_sch_17_reportservice;
 	
 	
-	
+	@Autowired
+	BRRS_PL_SCHS_ReportService BRRS_PL_SCHS_Reportservice;
 	
 	
 
@@ -843,6 +844,14 @@ public class RegulatoryReportServices {
 
 				break;
 
+				case "PL_SCHS":
+
+				repsummary = BRRS_PL_SCHS_Reportservice.getPL_SCHSView(reportId, fromdate,
+						todate, currency, dtltype,
+						pageable, type, version);
+
+				break;
+
 			case "CAP_ADEQ":
 
 				repsummary = brrs_cap_adeq_reportservice.getCAP_ADEQView(reportId, fromdate, todate, currency, dtltype,
@@ -1146,6 +1155,12 @@ public class RegulatoryReportServices {
 						pageable, Filter, type, version);
 				break;
 
+				case "PL_SCHS":
+				repdetail = BRRS_PL_SCHS_Reportservice.getPL_SCHScurrentDtl(reportId, fromdate,
+						todate, currency,
+						dtltype,
+						pageable, Filter, type, version);
+				break;
 			case "FSI":
 
 				repdetail = BRRS_FSI_ReportService.getFSIcurrentDtl(reportId, fromdate, todate, currency,
@@ -2101,6 +2116,18 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
+
+				case "PL_SCHS":
+				try {
+					repfile = BRRS_PL_SCHS_Reportservice.getPL_SCHSExcel(filename, reportId,
+							fromdate,
+							todate,
+							currency, dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 			case "CAP_ADEQ":
 				try {
 
@@ -2781,6 +2808,15 @@ public class RegulatoryReportServices {
 				}
 				break;
 
+				case "PL_SCHS":
+				try {
+					archivalData = BRRS_PL_SCHS_Reportservice.getPL_SCHSArchival();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+
 			case "CAP_ADEQ":
 				try {
 					archivalData = brrs_cap_adeq_reportservice.getCAP_ADEQArchival();
@@ -3268,6 +3304,9 @@ public class RegulatoryReportServices {
 		} else if (filename.equals("Market_Risk")) {
 			fileData = BRRS_Market_Risk_Reportservice.getMarket_RiskDetailExcel(filename, fromdate, todate,
 					currency, dtltype, type, version);
+		}else if (filename.equals("PL_SCHS")) {
+			fileData = BRRS_PL_SCHS_Reportservice.getPL_SCHSDetailExcel(filename, fromdate, todate,
+					currency, dtltype, type, version);
 		}
 
 		else if ("B_III_CETD".equals(filename)) {
@@ -3551,6 +3590,12 @@ public class RegulatoryReportServices {
 							request.getParameter("acctNo"),
 							request.getParameter("formmode"));
 					break;
+
+					case "PL_SCHS":
+					modelAndView = BRRS_PL_SCHS_Reportservice.getViewOrEditPage(
+							request.getParameter("acctNo"),
+							request.getParameter("formmode"));
+					break;
 				case "B_III_CETD":
 					modelAndView = b_III_cetd_ReportService.getViewOrEditPage(request.getParameter("acctNo"),
 							request.getParameter("formmode"));
@@ -3772,6 +3817,10 @@ public class RegulatoryReportServices {
 
 				case "Market_Risk":
 					response = BRRS_Market_Risk_Reportservice.updateDetailEdit(request);
+					break;
+
+					case "PL_SCHS":
+					response = BRRS_PL_SCHS_Reportservice.updateDetailEdit(request);
 					break;
 				default:
 					logger.warn("Unsupported report ID: {}", reportId);
