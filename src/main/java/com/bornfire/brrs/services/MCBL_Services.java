@@ -264,14 +264,14 @@ public class MCBL_Services {
 	        
 	        String insertGeneral = "INSERT INTO GENERAL_MASTER_TABLE (MCBL_GL_CODE, GL_SUB_HEAD_CODE, " +
 	            "ACCOUNT_NO, MCBL_DESCRIPTION, CURRENCY, MCBL_DEBIT_BALANCE, MCBL_CREDIT_BALANCE, " +
-	            "MCBL_DEBIT_EQUIVALENT, MCBL_CREDIT_EQUIVALENT, REPORT_CODE, DEL_FLG, VERSION, ENTRY_USER, ENTRY_TIME, UPLOAD_DATE, REPORT_DATE, MCBL_FLG) " +
-	            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+	            "MCBL_DEBIT_EQUIVALENT, MCBL_CREDIT_EQUIVALENT, REPORT_CODE, DEL_FLG, VERSION, ENTRY_USER, ENTRY_TIME, UPLOAD_DATE, REPORT_DATE, MCBL_FLG, CUST_FLG) " +
+	            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 	        PreparedStatement insertGeneralStmt = conn.prepareStatement(insertGeneral);
 	        
 	        String insertGeneralSrc = "INSERT INTO GENERAL_MASTER_SRC (MCBL_GL_CODE, GL_SUB_HEAD_CODE, " +
 	            "ACCOUNT_NO, MCBL_DESCRIPTION, CURRENCY, MCBL_DEBIT_BALANCE, MCBL_CREDIT_BALANCE, " +
-	            "MCBL_DEBIT_EQUIVALENT, MCBL_CREDIT_EQUIVALENT, REPORT_CODE, DEL_FLG, VERSION, ENTRY_USER, ENTRY_TIME, UPLOAD_DATE, REPORT_DATE, MCBL_FLG) " +
-	            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+	            "MCBL_DEBIT_EQUIVALENT, MCBL_CREDIT_EQUIVALENT, REPORT_CODE, DEL_FLG, VERSION, ENTRY_USER, ENTRY_TIME, UPLOAD_DATE, REPORT_DATE, MCBL_FLG, CUST_FLG) " +
+	            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 	        PreparedStatement insertGeneralSrcStmt = conn.prepareStatement(insertGeneralSrc);
 	        
 	        String insertTrack = "INSERT INTO BRRS_MCBL_ACCOUNT_TRACK " +
@@ -372,6 +372,7 @@ public class MCBL_Services {
 	            insertGeneralStmt.setDate(15, new java.sql.Date(System.currentTimeMillis()));
 	            insertGeneralStmt.setDate(16, sqlReportDate);
 	            insertGeneralStmt.setString(17, "Y");
+	            insertGeneralStmt.setString(18, custFlg);
 	            insertGeneralStmt.addBatch();
 	            
 	            existingGeneralKeys.add(generalKey);
@@ -394,6 +395,7 @@ public class MCBL_Services {
 	            insertGeneralSrcStmt.setDate(15, new java.sql.Date(System.currentTimeMillis()));
 	            insertGeneralSrcStmt.setDate(16, sqlReportDate);
 	            insertGeneralSrcStmt.setString(17, "Y");
+	            insertGeneralSrcStmt.setString(18, custFlg);
 	            insertGeneralSrcStmt.addBatch();
 	            
 	            existingGeneralSrcKeys.add(generalKey);
