@@ -311,21 +311,15 @@ public class RegulatoryReportServices {
 
 	@Autowired
 	BRRS_Market_Risk_ReportService BRRS_Market_Risk_Reportservice;
-	
-	
-	
+
 	@Autowired
 	BRRS_CREDIT_RISK_ReportService brrs_credit_risk_reportservice;
-	
-	
+
 	@Autowired
 	BRRS_SCH_17_ReportService brrs_sch_17_reportservice;
-	
-	
+
 	@Autowired
 	BRRS_PL_SCHS_ReportService BRRS_PL_SCHS_Reportservice;
-	
-	
 
 	private static final Logger logger = LoggerFactory.getLogger(RegulatoryReportServices.class);
 
@@ -844,7 +838,7 @@ public class RegulatoryReportServices {
 
 				break;
 
-				case "PL_SCHS":
+			case "PL_SCHS":
 
 				repsummary = BRRS_PL_SCHS_Reportservice.getPL_SCHSView(reportId, fromdate,
 						todate, currency, dtltype,
@@ -865,25 +859,21 @@ public class RegulatoryReportServices {
 						pageable, type, version);
 
 				break;
-				
-				
+
 			case "CREDIT_RISK":
 
-				repsummary = brrs_credit_risk_reportservice.getCREDIT_RISKView(reportId, fromdate, todate, currency, dtltype,
+				repsummary = brrs_credit_risk_reportservice.getCREDIT_RISKView(reportId, fromdate, todate, currency,
+						dtltype,
 						pageable, type, version);
 
 				break;
-				
-				
-				
+
 			case "SCH_17":
 
 				repsummary = brrs_sch_17_reportservice.getSCH_17View(reportId, fromdate, todate, currency, dtltype,
 						pageable, type, version);
 
 				break;
-				
-				
 
 			case "MDISB1":
 
@@ -1155,7 +1145,7 @@ public class RegulatoryReportServices {
 						pageable, Filter, type, version);
 				break;
 
-				case "PL_SCHS":
+			case "PL_SCHS":
 				repdetail = BRRS_PL_SCHS_Reportservice.getPL_SCHScurrentDtl(reportId, fromdate,
 						todate, currency,
 						dtltype,
@@ -1181,16 +1171,15 @@ public class RegulatoryReportServices {
 						dtltype,
 						pageable, Filter, type, version);
 				break;
-				
-				
+
 			case "CREDIT_RISK":
 
-				repdetail = brrs_credit_risk_reportservice.getCREDIT_RISKcurrentDtl(reportId, fromdate, todate, currency,
+				repdetail = brrs_credit_risk_reportservice.getCREDIT_RISKcurrentDtl(reportId, fromdate, todate,
+						currency,
 						dtltype,
 						pageable, Filter, type, version);
 				break;
-				
-				
+
 			case "SCH_17":
 
 				repdetail = brrs_sch_17_reportservice.getSCH_17currentDtl(reportId, fromdate, todate, currency,
@@ -2117,7 +2106,7 @@ public class RegulatoryReportServices {
 				}
 				break;
 
-				case "PL_SCHS":
+			case "PL_SCHS":
 				try {
 					repfile = BRRS_PL_SCHS_Reportservice.getPL_SCHSExcel(filename, reportId,
 							fromdate,
@@ -2139,8 +2128,7 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
-				
-				
+
 			case "CREDIT_RISK":
 				try {
 
@@ -2152,7 +2140,7 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
-				
+
 			case "SCH_17":
 				try {
 
@@ -2164,9 +2152,6 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
-				
-				
-				
 
 			case "B_III_CETD":
 				try {
@@ -2808,7 +2793,7 @@ public class RegulatoryReportServices {
 				}
 				break;
 
-				case "PL_SCHS":
+			case "PL_SCHS":
 				try {
 					archivalData = BRRS_PL_SCHS_Reportservice.getPL_SCHSArchival();
 				} catch (Exception e) {
@@ -2825,9 +2810,7 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
-				
-				
-				
+
 			case "CREDIT_RISK":
 				try {
 					archivalData = brrs_credit_risk_reportservice.getCREDIT_RISKArchival();
@@ -2836,7 +2819,7 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
-				
+
 			case "SCH_17":
 				try {
 					archivalData = brrs_sch_17_reportservice.getSCH_17Archival();
@@ -2845,8 +2828,6 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
-				
-				
 
 			// New Archival
 			case "M_SRWA_12H":
@@ -3304,7 +3285,7 @@ public class RegulatoryReportServices {
 		} else if (filename.equals("Market_Risk")) {
 			fileData = BRRS_Market_Risk_Reportservice.getMarket_RiskDetailExcel(filename, fromdate, todate,
 					currency, dtltype, type, version);
-		}else if (filename.equals("PL_SCHS")) {
+		} else if (filename.equals("PL_SCHS")) {
 			fileData = BRRS_PL_SCHS_Reportservice.getPL_SCHSDetailExcel(filename, fromdate, todate,
 					currency, dtltype, type, version);
 		}
@@ -3327,26 +3308,20 @@ public class RegulatoryReportServices {
 					currency,
 					dtltype, type, version);
 		}
-		
-		
-		
+
 		else if ("CREDIT_RISK".equals(filename)) {
 
 			fileData = brrs_credit_risk_reportservice.getCREDIT_RISKDetailExcel(filename, fromdate, todate,
 					currency,
 					dtltype, type, version);
 		}
-		
-		
-		
+
 		else if ("SCH_17".equals(filename)) {
 
 			fileData = brrs_sch_17_reportservice.getSCH_17DetailExcel(filename, fromdate, todate,
 					currency,
 					dtltype, type, version);
 		}
-		
-		
 
 		else if ("FSIDetail".equals(filename)) {
 
@@ -3591,7 +3566,7 @@ public class RegulatoryReportServices {
 							request.getParameter("formmode"));
 					break;
 
-					case "PL_SCHS":
+				case "PL_SCHS":
 					modelAndView = BRRS_PL_SCHS_Reportservice.getViewOrEditPage(
 							request.getParameter("acctNo"),
 							request.getParameter("formmode"));
@@ -3605,19 +3580,16 @@ public class RegulatoryReportServices {
 					modelAndView = brrs_cap_adeq_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
 							request.getParameter("formmode"));
 					break;
-					
-					
+
 				case "CREDIT_RISK":
 					modelAndView = brrs_credit_risk_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
 							request.getParameter("formmode"));
 					break;
-					
-					
+
 				case "SCH_17":
 					modelAndView = brrs_sch_17_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
 							request.getParameter("formmode"));
 					break;
-					
 
 				case "FSI":
 					modelAndView = BRRS_FSI_ReportService.getViewOrEditPage(request.getParameter("acctNo"),
@@ -3800,16 +3772,14 @@ public class RegulatoryReportServices {
 				case "CAP_ADEQ":
 					response = brrs_cap_adeq_reportservice.updateDetailEdit(request);
 					break;
-					
-					
+
 				case "CREDIT_RISK":
 					response = brrs_credit_risk_reportservice.updateDetailEdit(request);
 					break;
-					
+
 				case "SCH_17":
 					response = brrs_sch_17_reportservice.updateDetailEdit(request);
-					break;	
-					
+					break;
 
 				case "FSI":
 					response = BRRS_FSI_ReportService.updateDetailEdit(request);
@@ -3819,7 +3789,7 @@ public class RegulatoryReportServices {
 					response = BRRS_Market_Risk_Reportservice.updateDetailEdit(request);
 					break;
 
-					case "PL_SCHS":
+				case "PL_SCHS":
 					response = BRRS_PL_SCHS_Reportservice.updateDetailEdit(request);
 					break;
 				default:
