@@ -311,6 +311,16 @@ public class RegulatoryReportServices {
 
 	@Autowired
 	BRRS_Market_Risk_ReportService BRRS_Market_Risk_Reportservice;
+	
+	
+	
+	@Autowired
+	BRRS_CREDIT_RISK_ReportService brrs_credit_risk_reportservice;
+	
+	
+	
+	
+	
 
 	private static final Logger logger = LoggerFactory.getLogger(RegulatoryReportServices.class);
 
@@ -842,6 +852,20 @@ public class RegulatoryReportServices {
 						pageable, type, version);
 
 				break;
+				
+				
+			case "CREDIT_RISK":
+
+				repsummary = brrs_credit_risk_reportservice.getCREDIT_RISKView(reportId, fromdate, todate, currency, dtltype,
+						pageable, type, version);
+
+				break;
+				
+				
+				
+				
+				
+				
 
 			case "MDISB1":
 
@@ -1130,6 +1154,14 @@ public class RegulatoryReportServices {
 			case "B_III_CETD":
 
 				repdetail = b_III_cetd_ReportService.getB_III_CETDcurrentDtl(reportId, fromdate, todate, currency,
+						dtltype,
+						pageable, Filter, type, version);
+				break;
+				
+				
+			case "CREDIT_RISK":
+
+				repdetail = brrs_credit_risk_reportservice.getCREDIT_RISKcurrentDtl(reportId, fromdate, todate, currency,
 						dtltype,
 						pageable, Filter, type, version);
 				break;
@@ -2063,6 +2095,22 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
+				
+				
+			case "CREDIT_RISK":
+				try {
+
+					repfile = brrs_credit_risk_reportservice.getCREDIT_RISKExcel(filename, reportId, fromdate,
+							todate, currency,
+							dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+				
+				
+				
 
 			case "B_III_CETD":
 				try {
@@ -2712,6 +2760,19 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
+				
+				
+				
+			case "CREDIT_RISK":
+				try {
+					archivalData = brrs_credit_risk_reportservice.getCREDIT_RISKArchival();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+				
+				
 
 			// New Archival
 			case "M_SRWA_12H":
@@ -3189,6 +3250,15 @@ public class RegulatoryReportServices {
 					currency,
 					dtltype, type, version);
 		}
+		
+		
+		
+		else if ("CREDIT_RISK".equals(filename)) {
+
+			fileData = brrs_credit_risk_reportservice.getCREDIT_RISKDetailExcel(filename, fromdate, todate,
+					currency,
+					dtltype, type, version);
+		}
 
 		else if ("FSIDetail".equals(filename)) {
 
@@ -3441,6 +3511,12 @@ public class RegulatoryReportServices {
 					modelAndView = brrs_cap_adeq_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
 							request.getParameter("formmode"));
 					break;
+					
+					
+				case "CREDIT_RISK":
+					modelAndView = brrs_credit_risk_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
+							request.getParameter("formmode"));
+					break;
 
 				case "FSI":
 					modelAndView = BRRS_FSI_ReportService.getViewOrEditPage(request.getParameter("acctNo"),
@@ -3622,6 +3698,11 @@ public class RegulatoryReportServices {
 
 				case "CAP_ADEQ":
 					response = brrs_cap_adeq_reportservice.updateDetailEdit(request);
+					break;
+					
+					
+				case "CREDIT_RISK":
+					response = brrs_credit_risk_reportservice.updateDetailEdit(request);
 					break;
 
 				case "FSI":
