@@ -247,7 +247,7 @@ public class BRRS_SCH_17_ReportService {
 
 	public byte[] getSCH_17Excel(String filename, String reportId, String fromdate, String todate, String currency,
 			String dtltype, String type, String version) throws Exception {
-		logger.info("Service: Starting Excel generation process in memory.");
+		logger.info("Service: Starting Excel generation process in memory.sch17");
 
 		// ARCHIVAL check
 		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && !version.trim().isEmpty()) {
@@ -334,17 +334,29 @@ public class BRRS_SCH_17_ReportService {
 					}
 
   
-					// R9
-					row = sheet.getRow(8);
-					Cell cellC = row.getCell(2);
-					if (cellC == null) cellC = row.createCell(2);
-					cellC.setCellValue(record.getR9_31_3_25_amt() != null ? record.getR9_31_3_25_amt().doubleValue() : 0);
 					
-					// R9
-				
-					Cell cellD = row.getCell(3);
-					if (cellD == null) cellD = row.createCell(3);
-					cellD.setCellValue(record.getR9_30_9_25_amt() != null ? record.getR9_30_9_25_amt().doubleValue() : 0);
+
+			
+					// Column C
+					Cell cellC = row.createCell(2);
+					if (record.getR9_31_3_25_amt() != null) {
+					    cellC.setCellValue(record.getR9_31_3_25_amt().doubleValue());
+					    cellC.setCellStyle(numberStyle);
+					} else {
+					    cellC.setCellValue(0);   // IMPORTANT
+					    cellC.setCellStyle(numberStyle);
+					}
+
+					// Column D
+					Cell cellD = row.createCell(3);
+					if (record.getR9_30_9_25_amt() != null) {
+					    cellD.setCellValue(record.getR9_30_9_25_amt().doubleValue());
+					    cellD.setCellStyle(numberStyle);
+					} else {
+					    cellD.setCellValue(0);   // IMPORTANT
+					    cellD.setCellStyle(numberStyle);
+					}
+
 
 					// R10
 					row = sheet.getRow(9);
@@ -425,7 +437,15 @@ public class BRRS_SCH_17_ReportService {
 					if (cellD == null) cellD = row.createCell(3);
 					cellD.setCellValue(record.getR16_30_9_25_amt() != null ? record.getR16_30_9_25_amt().doubleValue() : 0);
 
+					// R17
+					row = sheet.getRow(16);
+					cellC = row.getCell(2);
+					if (cellC == null) cellC = row.createCell(2);
+					cellC.setCellValue(record.getR17_31_3_25_amt() != null ? record.getR17_31_3_25_amt().doubleValue() : 0);
 
+					cellD = row.getCell(3);
+					if (cellD == null) cellD = row.createCell(3);
+					cellD.setCellValue(record.getR17_30_9_25_amt() != null ? record.getR17_30_9_25_amt().doubleValue() : 0);
 				
 
 					// R18
@@ -448,14 +468,25 @@ public class BRRS_SCH_17_ReportService {
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
 					cellD.setCellValue(record.getR19_30_9_25_amt() != null ? record.getR19_30_9_25_amt().doubleValue() : 0);
+					
+					
+					// R20
+					row = sheet.getRow(19);
+					cellC = row.getCell(2);
+					if (cellC == null) cellC = row.createCell(2);
+					cellC.setCellValue(record.getR20_31_3_25_amt() != null ? record.getR20_31_3_25_amt().doubleValue() : 0);
 
-
-
+					cellD = row.getCell(3);
+					if (cellD == null) cellD = row.createCell(3);
+					cellD.setCellValue(record.getR20_30_9_25_amt() != null ? record.getR20_30_9_25_amt().doubleValue() : 0);
+					
 				
 				
 				}
+				
+				/* workbook.getCreationHelper().createFormulaEvaluator().evaluateAll(); */
 
-				workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
+				
 			} else {
 
 			}
@@ -651,7 +682,15 @@ public class BRRS_SCH_17_ReportService {
 					if (cellD == null) cellD = row.createCell(3);
 					cellD.setCellValue(record.getR16_30_9_25_amt() != null ? record.getR16_30_9_25_amt().doubleValue() : 0);
 
+					// R17
+					row = sheet.getRow(16);
+					cellC = row.getCell(2);
+					if (cellC == null) cellC = row.createCell(2);
+					cellC.setCellValue(record.getR17_31_3_25_amt() != null ? record.getR17_31_3_25_amt().doubleValue() : 0);
 
+					cellD = row.getCell(3);
+					if (cellD == null) cellD = row.createCell(3);
+					cellD.setCellValue(record.getR17_30_9_25_amt() != null ? record.getR17_30_9_25_amt().doubleValue() : 0);
 				
 
 					// R18
@@ -676,12 +715,20 @@ public class BRRS_SCH_17_ReportService {
 					cellD.setCellValue(record.getR19_30_9_25_amt() != null ? record.getR19_30_9_25_amt().doubleValue() : 0);
 
 
-				
+					// R20
+					row = sheet.getRow(19);
+					cellC = row.getCell(2);
+					if (cellC == null) cellC = row.createCell(2);
+					cellC.setCellValue(record.getR20_31_3_25_amt() != null ? record.getR20_31_3_25_amt().doubleValue() : 0);
+
+					cellD = row.getCell(3);
+					if (cellD == null) cellD = row.createCell(3);
+					cellD.setCellValue(record.getR20_30_9_25_amt() != null ? record.getR20_30_9_25_amt().doubleValue() : 0);
 					
 					
 				}
 
-				workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
+				
 			} else {
 
 			}
