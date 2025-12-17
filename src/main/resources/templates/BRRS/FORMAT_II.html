@@ -3,7 +3,7 @@
 <!-- 
 CREATED BY	: ISHWARYA 
 CREATED ON	: 16.12.2025
-PURPOSE		: BRRS SCH  REPORT
+PURPOSE		: BRRS FORMAT_II  REPORT
 -->
 
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml"
@@ -539,7 +539,7 @@ $(window).on('beforeunload', function() {
 	</script>
 
 	<script>
-	    function opensch_17Detail(elem, mode) { 
+	    function opencap_adeqDetail(elem, mode) { 
 			
 			var type = elem.getAttribute('data-type');   
 
@@ -561,8 +561,8 @@ $(window).on('beforeunload', function() {
 
 
 	<script>
-		function submitSCH_17Update() {
-			const formData = $('#sch_17DetailForm').serialize(); // Ensure correct form ID
+		function submitCAP_ADEQUpdate() {
+			const formData = $('#cap_adeqDetailForm').serialize(); // Ensure correct form ID
 
 			// ✅ Store the previous page URL
 			const previousUrl = document.referrer; // same as going back once in history
@@ -974,7 +974,7 @@ function cancelModify() {
 						<!-- Title -->
 						<h5
 							style="font-family: arial; font-size: 20px; font-weight: bold; color: white; margin: 0 10px; ">
-					SCHEDULES TO PROFIT AND LOSS A/C AS AT</h5>
+						 STATEMENT OF CAPITAL INVESTED BY BANK OF BARODA IN ITS SUBSIDIARIES</h5>
 							
 							
 							<!-- Moving bus-board text -->
@@ -1031,7 +1031,7 @@ function cancelModify() {
                      				 data-todate=${todate}, 
                      				 data-currency=${currency},  
                      				 data-dtltype=${dtltype}, 
-                     				 data-filename='SCH_17.xlsx',
+                     				 data-filename='CAP_ADEQ.xlsx',
 					 				 data-type=${type},
 					    			 data-version=${version}"
 							onclick="downloadfile(this);">
@@ -1043,7 +1043,7 @@ function cancelModify() {
 							th:attr="
 						    data-fromdate=${fromdate},
 						    data-todate=${todate},
-						    data-filename='SCH_17',
+						    data-filename='CAP_ADEQ',
 						 data-type=${type},
 					data-version=${version}  ">
 							<i class="fa fa-download"></i>
@@ -1068,316 +1068,528 @@ function cancelModify() {
 									id="reports">
 									<thead class="thead-light">
 										<tr style="background-color: #b3b6b9">
-
-												<th  colspan="2"
-													style="text-align: center; background-color: #D8D8D8; font-weight: bold; padding: 10px; ">
-													</th>
-												<th 
-													style="text-align: right; background-color: #D8D8D8; font-weight: bold;  padding: 10px;"> 31.03.2025 </th>
-
-												<th 
-													style="text-align: right; background-color: #D8D8D8; font-weight: bold; padding: 10px;"> 30.09.2025</th>
+											<th rowspan="3"
+												style="text-align: center; background-color: #D8D8D8;  padding: 10px; font-weight:bold;  color: #000000;">Particulars
+											</th>
+											
+											<th colspan="4"
+												style="text-align: center;  background-color: #D8D8D8;  padding: 10px; font-weight:bold;  color: #000000;"> Amount As On  				
+											</th>
+											
+											
+											
 												
-											</tr>
+										</tr>
+										
+										<tr style="background-color: #b3b6b9">
+											
+											<th rowspan="2"
+												style="text-align: center; background-color: #D8D8D8;  padding: 10px; font-weight:bold;  color: #000000;">01.04.2025
+											</th>
+											<th  colspan="2"
+												style="text-align: center;  background-color: #D8D8D8;  padding: 10px; font-weight:bold;  color: #000000;">Subsequent 				
+											</th>
+											
+											<th rowspan="2"
+												style="text-align: center; background-color: #D8D8D8;  padding: 10px; font-weight:bold;  color: #000000;">Total as at 30.06.2025
+											</th>
+											
+											
+												
+										</tr>
+										
+									
+										
+										<tr style="background-color: #b3b6b9">
+											
+											<th 
+												style="text-align: center; background-color: #D8D8D8;  padding: 10px; font-weight:bold;  color: #000000;">Addition As on  30.06.2025
+											</th>
+											<th  
+												style="text-align: center;  background-color: #D8D8D8;  padding: 10px; font-weight:bold;  color: #000000;">Deletion As on   30.06.2025				
+											</th>
+											
+											
+												
+										</tr>
 
 
 									</thead>
-									
-									<div >
-									
-								<p style="color:black; font-weight:bold; text-align: left; padding-top: 10px; ">Schedule - 17		
-</p>	
-									
-							<p style="color:black; font-weight:bold; text-align: center; ">BREAK-UP OF PROVISIONS AND CONTINGENCIES APPEARING IN PROFIT & LOSS ACCOUNT		
-</p>
-							</div>
 
 
 									<tbody th:each="report: ${reportsummary}"
 										style="font-family: Arial;">
-     
-     
-     
-                    					<tr >
+
 										
-										         <td    style="text-align: center;  "
-											  
-											   	>(a)</td>
+                                   
+                              	<tr >
 
 
-											
-													<td    style="text-align: left; "
-												th:text="${report?.r9_product ?: ''}"
+                                        
+
+											<td    style="text-align: left; font-weight:bold;   "
+												th:text="${report?.r13_product ?: ''}"
 												></td>
+												
+													<td    style="text-align: right; "
+												th:text="${report?.r13_amt ?: ''}"
+												th:attr="RowId='R13', ColumnId='C2'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
 												
 												
 													<td style="text-align: right; padding-right:10px; "  
-												th:text="${report?.r9_31_3_25_amt ?: ''}"
-												th:attr="RowId='R9', ColumnId='C2'"
+												th:text="${report?.r13_amt_sub_add ?: ''}"
+												th:attr="RowId='R13', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+												
+												
+												<td style="text-align: right; padding-right:10px; "  
+												th:text="${report?.r13_amt_sub_del ?: ''}"
+												th:attr="RowId='R13', ColumnId='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 												
 												<td style="text-align: right; padding-right:10px; "  
-												th:text="${report?.r9_30_9_25_amt ?: ''}"
-												th:attr="RowId='R9', ColumnId='C3'"
+												th:text="${report?.r13_amt_total ?: ''}"
+												th:attr="RowId='R13', ColumnId='C5'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
+												
 
 
 										</tr>
 										
-										<!-- R10 -->
-<tr>
-    <td style="text-align: center; ">(b)</td>
-
-    <td style="text-align: left;"
-        th:text="${report?.r10_product ?: ''}">
-    </td>
-
-    <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r10_31_3_25_amt ?: ''}"
-        th:attr="RowId='R10', ColumnId='C2'"
-        onclick="showdetailsbyRowAndColumn(this)">
-    </td>
-
-    <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r10_30_9_25_amt ?: ''}"
-        th:attr="RowId='R10', ColumnId='C3'"
-        onclick="showdetailsbyRowAndColumn(this)">
-    </td>
-</tr>
+										
+										<tr >
 
 
-<!-- R11 -->
-<tr>
-    <td style="text-align: center; ">(c)</td>
+                                        
 
-    <td style="text-align: left;"
-        th:text="${report?.r11_product ?: ''}">
-    </td>
-
-    <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r11_31_3_25_amt ?: ''}"
-        th:attr="RowId='R11', ColumnId='C2'"
-        onclick="showdetailsbyRowAndColumn(this)">
-    </td>
-
-    <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r11_30_9_25_amt ?: ''}"
-        th:attr="RowId='R11', ColumnId='C3'"
-        onclick="showdetailsbyRowAndColumn(this)">
-    </td>
-</tr>
-
-
-<!-- R12 -->
-<tr>
-    <td style="text-align: center; ">(d)</td>
-
-    <td style="text-align: left;"
-        th:text="${report?.r12_product ?: ''}">
-    </td>
-
-    <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r12_31_3_25_amt ?: ''}"
-        th:attr="RowId='R12', ColumnId='C2'"
-        onclick="showdetailsbyRowAndColumn(this)">
-    </td>
-
-    <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r12_30_9_25_amt ?: ''}"
-        th:attr="RowId='R12', ColumnId='C3'"
-        onclick="showdetailsbyRowAndColumn(this)">
-    </td>
-</tr>
+											<td    style="text-align: left;  padding-left:40px;  "
+												th:text="${report?.r14_product ?: ''}"
+												></td>
+												
+													<td    style="text-align: right; "
+												th:text="${report?.r14_amt ?: ''}"
+												th:attr="RowId='R14', ColumnId='C2'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+												
+												
+													<td style="text-align: right; padding-right:10px; "  
+												th:text="${report?.r14_amt_sub_add ?: ''}"
+												th:attr="RowId='R14', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+												
+												
+												<td style="text-align: right; padding-right:10px; "  
+												th:text="${report?.r14_amt_sub_del ?: ''}"
+												th:attr="RowId='R14', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+												
+												<td style="text-align: right; padding-right:10px; "  
+												th:text="${report?.r14_amt_total ?: ''}"
+												th:attr="RowId='R14', ColumnId='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+												
 
 
-<!-- R13 -->
-<tr>
-    <td style="text-align: center; ">(e)</td>
+										</tr>
+										
+                                   
+  <tr>
 
-    <td style="text-align: left;"
-        th:text="${report?.r13_product ?: ''}">
-    </td>
-
-    <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r13_31_3_25_amt ?: ''}"
-        th:attr="RowId='R13', ColumnId='C2'"
-        onclick="showdetailsbyRowAndColumn(this)">
-    </td>
-
-    <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r13_30_9_25_amt ?: ''}"
-        th:attr="RowId='R13', ColumnId='C3'"
-        onclick="showdetailsbyRowAndColumn(this)">
-    </td>
-</tr>
-
-
-<!-- R14 -->
-<tr>
-    <td style="text-align: center; ">(f)</td>
-
-    <td style="text-align: left;"
-        th:text="${report?.r14_product ?: ''}">
-    </td>
-
-    <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r14_31_3_25_amt ?: ''}"
-        th:attr="RowId='R14', ColumnId='C2'"
-        onclick="showdetailsbyRowAndColumn(this)">
-    </td>
-
-    <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r14_30_9_25_amt ?: ''}"
-        th:attr="RowId='R14', ColumnId='C3'"
-        onclick="showdetailsbyRowAndColumn(this)">
-    </td>
-</tr>
-
-
-<!-- R15 -->
-<tr>
-    <td style="text-align: center; ">(g)</td>
-
-    <td style="text-align: left;"
+    <td style="text-align: left; padding-left:70px;"
         th:text="${report?.r15_product ?: ''}">
     </td>
 
-    <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r15_31_3_25_amt ?: ''}"
+    <td style="text-align: right;"
+        th:text="${report?.r15_amt ?: ''}"
         th:attr="RowId='R15', ColumnId='C2'"
         onclick="showdetailsbyRowAndColumn(this)">
     </td>
 
     <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r15_30_9_25_amt ?: ''}"
+        th:text="${report?.r15_amt_sub_add ?: ''}"
         th:attr="RowId='R15', ColumnId='C3'"
         onclick="showdetailsbyRowAndColumn(this)">
     </td>
-</tr>
 
-
-<!-- R16 -->
-<tr>
-    <td style="text-align: center; ">(h)</td>
-
-    <td style="text-align: left;"
-        th:text="${report?.r16_product ?: ''}">
+    <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r15_amt_sub_del ?: ''}"
+        th:attr="RowId='R15', ColumnId='C4'"
+        onclick="showdetailsbyRowAndColumn(this)">
     </td>
 
     <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r16_31_3_25_amt ?: ''}"
+        th:text="${report?.r15_amt_total ?: ''}"
+        th:attr="RowId='R15', ColumnId='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+</tr>
+
+
+<tr>
+
+    <td style="text-align: left; padding-left:40px;"
+        th:text="${report?.r16_product ?: ''}">
+    </td>
+
+    <td style="text-align: right;"
+        th:text="${report?.r16_amt ?: ''}"
         th:attr="RowId='R16', ColumnId='C2'"
         onclick="showdetailsbyRowAndColumn(this)">
     </td>
 
     <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r16_30_9_25_amt ?: ''}"
+        th:text="${report?.r16_amt_sub_add ?: ''}"
         th:attr="RowId='R16', ColumnId='C3'"
         onclick="showdetailsbyRowAndColumn(this)">
     </td>
+
+    <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r16_amt_sub_del ?: ''}"
+        th:attr="RowId='R16', ColumnId='C4'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r16_amt_total ?: ''}"
+        th:attr="RowId='R16', ColumnId='C5'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
 </tr>
 
 
 <!-- R17 -->
 <tr>
-    <td style="text-align: center; "></td>
+    <td style="text-align: left; padding-left:40px;"
+        th:text="${report?.r17_product ?: ''}"></td>
 
-    <td style="text-align: left; font-weight:bold;"
-        th:text="${report?.r17_product ?: ''}">
-    </td>
+    <td style="text-align: right;"
+        th:text="${report?.r17_amt ?: ''}"
+        th:attr="RowId='R17', ColumnId='C2'"
+        onclick="showdetailsbyRowAndColumn(this)"></td>
 
-    <td class="green-cell" style="text-align: right; padding-right:10px; font-weight:bold;"
-        th:text="${report?.r17_31_3_25_amt ?: ''}"
-        >
-    </td>
+    <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r17_amt_sub_add ?: ''}"
+        th:attr="RowId='R17', ColumnId='C3'"
+        onclick="showdetailsbyRowAndColumn(this)"></td>
 
-    <td class="green-cell" style="text-align: right; padding-right:10px; font-weight:bold;"
-        th:text="${report?.r17_30_9_25_amt ?: ''}"
-       >
-    </td>
+    <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r17_amt_sub_del ?: ''}"
+        th:attr="RowId='R17', ColumnId='C4'"
+        onclick="showdetailsbyRowAndColumn(this)"></td>
+
+    <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r17_amt_total ?: ''}"
+        th:attr="RowId='R17', ColumnId='C5'"
+        onclick="showdetailsbyRowAndColumn(this)"></td>
 </tr>
-
 
 <!-- R18 -->
 <tr>
-    <td style="text-align: center; font-weight:bold;"></td>
+    <td style="text-align: left; padding-left:40px;"
+        th:text="${report?.r18_product ?: ''}"></td>
 
-    <td style="text-align: left;"
-        th:text="${report?.r18_product ?: ''}">
-    </td>
-
-    <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r18_31_3_25_amt ?: ''}"
+    <td style="text-align: right;"
+        th:text="${report?.r18_amt ?: ''}"
         th:attr="RowId='R18', ColumnId='C2'"
-        onclick="showdetailsbyRowAndColumn(this)">
-    </td>
+        onclick="showdetailsbyRowAndColumn(this)"></td>
 
     <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r18_30_9_25_amt ?: ''}"
+        th:text="${report?.r18_amt_sub_add ?: ''}"
         th:attr="RowId='R18', ColumnId='C3'"
-        onclick="showdetailsbyRowAndColumn(this)">
-    </td>
-</tr>
+        onclick="showdetailsbyRowAndColumn(this)"></td>
 
+    <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r18_amt_sub_del ?: ''}"
+        th:attr="RowId='R18', ColumnId='C4'"
+        onclick="showdetailsbyRowAndColumn(this)"></td>
+
+    <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r18_amt_total ?: ''}"
+        th:attr="RowId='R18', ColumnId='C5'"
+        onclick="showdetailsbyRowAndColumn(this)"></td>
+</tr>
 
 <!-- R19 -->
 <tr>
-    <td style="text-align: center; font-weight:bold;"></td>
+    <td style="text-align: left; padding-left:40px;"
+        th:text="${report?.r19_product ?: ''}"></td>
 
-    <td style="text-align: left;"
-        th:text="${report?.r19_product ?: ''}">
-    </td>
-
-    <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r19_31_3_25_amt ?: ''}"
+    <td style="text-align: right;"
+        th:text="${report?.r19_amt ?: ''}"
         th:attr="RowId='R19', ColumnId='C2'"
-        onclick="showdetailsbyRowAndColumn(this)">
-    </td>
+        onclick="showdetailsbyRowAndColumn(this)"></td>
 
     <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r19_30_9_25_amt ?: ''}"
+        th:text="${report?.r19_amt_sub_add ?: ''}"
         th:attr="RowId='R19', ColumnId='C3'"
-        onclick="showdetailsbyRowAndColumn(this)">
-    </td>
-</tr>
+        onclick="showdetailsbyRowAndColumn(this)"></td>
 
+    <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r19_amt_sub_del ?: ''}"
+        th:attr="RowId='R19', ColumnId='C4'"
+        onclick="showdetailsbyRowAndColumn(this)"></td>
+
+    <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r19_amt_total ?: ''}"
+        th:attr="RowId='R19', ColumnId='C5'"
+        onclick="showdetailsbyRowAndColumn(this)"></td>
+</tr>
 
 <!-- R20 -->
 <tr>
-    <td style="text-align: center; font-weight:bold;"></td>
+    <td style="text-align: left; padding-left:40px;"
+        th:text="${report?.r20_product ?: ''}"></td>
 
-    <td style="text-align: left; font-weight:bold;"
-        th:text="${report?.r20_product ?: ''}">
-    </td>
+    <td style="text-align: right;"
+        th:text="${report?.r20_amt ?: ''}"
+        th:attr="RowId='R20', ColumnId='C2'"
+        onclick="showdetailsbyRowAndColumn(this)"></td>
 
-    <td class="green-cell" style="text-align: right; padding-right:10px; font-weight:bold;"
-        th:text="${report?.r20_31_3_25_amt ?: ''}"
-       >
-    </td>
+    <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r20_amt_sub_add ?: ''}"
+        th:attr="RowId='R20', ColumnId='C3'"
+        onclick="showdetailsbyRowAndColumn(this)"></td>
 
-    <td  class="green-cell" style="text-align: right; padding-right:10px; font-weight:bold;"
-        th:text="${report?.r20_30_9_25_amt ?: ''}"
-       >
-    </td>
+    <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r20_amt_sub_del ?: ''}"
+        th:attr="RowId='R20', ColumnId='C4'"
+        onclick="showdetailsbyRowAndColumn(this)"></td>
+
+    <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r20_amt_total ?: ''}"
+        th:attr="RowId='R20', ColumnId='C5'"
+        onclick="showdetailsbyRowAndColumn(this)"></td>
 </tr>
-										
-										
-										
+
+<!-- R21 -->
+<tr>
+    <td style="text-align: left; padding-left:40px;"
+        th:text="${report?.r21_product ?: ''}"></td>
+
+    <td style="text-align: right;"
+        th:text="${report?.r21_amt ?: ''}"
+        th:attr="RowId='R21', ColumnId='C2'"
+        onclick="showdetailsbyRowAndColumn(this)"></td>
+
+    <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r21_amt_sub_add ?: ''}"
+        th:attr="RowId='R21', ColumnId='C3'"
+        onclick="showdetailsbyRowAndColumn(this)"></td>
+
+    <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r21_amt_sub_del ?: ''}"
+        th:attr="RowId='R21', ColumnId='C4'"
+        onclick="showdetailsbyRowAndColumn(this)"></td>
+
+    <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r21_amt_total ?: ''}"
+        th:attr="RowId='R21', ColumnId='C5'"
+        onclick="showdetailsbyRowAndColumn(this)"></td>
+</tr>
+
+<!-- R22 -->
+<tr>
+    <td style="text-align: left; padding-left:40px;"
+        th:text="${report?.r22_product ?: ''}"></td>
+
+    <td style="text-align: right;"
+        th:text="${report?.r22_amt ?: ''}"
+        th:attr="RowId='R22', ColumnId='C2'"
+        onclick="showdetailsbyRowAndColumn(this)"></td>
+
+    <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r22_amt_sub_add ?: ''}"
+        th:attr="RowId='R22', ColumnId='C3'"
+        onclick="showdetailsbyRowAndColumn(this)"></td>
+
+    <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r22_amt_sub_del ?: ''}"
+        th:attr="RowId='R22', ColumnId='C4'"
+        onclick="showdetailsbyRowAndColumn(this)"></td>
+
+    <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r22_amt_total ?: ''}"
+        th:attr="RowId='R22', ColumnId='C5'"
+        onclick="showdetailsbyRowAndColumn(this)"></td>
+</tr>
+
+<!-- R23 -->
+<tr>
+    <td style="text-align: left; padding-left:40px;"
+        th:text="${report?.r23_product ?: ''}"></td>
+
+    <td style="text-align: right;"
+        th:text="${report?.r23_amt ?: ''}"
+        th:attr="RowId='R23', ColumnId='C2'"
+        onclick="showdetailsbyRowAndColumn(this)"></td>
+
+    <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r23_amt_sub_add ?: ''}"
+        th:attr="RowId='R23', ColumnId='C3'"
+        onclick="showdetailsbyRowAndColumn(this)"></td>
+
+    <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r23_amt_sub_del ?: ''}"
+        th:attr="RowId='R23', ColumnId='C4'"
+        onclick="showdetailsbyRowAndColumn(this)"></td>
+
+    <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r23_amt_total ?: ''}"
+        th:attr="RowId='R23', ColumnId='C5'"
+        onclick="showdetailsbyRowAndColumn(this)"></td>
+</tr>
+
+<!-- R24 -->
+<tr>
+    <td style="text-align: left; padding-left:40px;"
+        th:text="${report?.r24_product ?: ''}"></td>
+
+    <td style="text-align: right;"
+        th:text="${report?.r24_amt ?: ''}"
+        th:attr="RowId='R24', ColumnId='C2'"
+        onclick="showdetailsbyRowAndColumn(this)"></td>
+
+    <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r24_amt_sub_add ?: ''}"
+        th:attr="RowId='R24', ColumnId='C3'"
+        onclick="showdetailsbyRowAndColumn(this)"></td>
+
+    <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r24_amt_sub_del ?: ''}"
+        th:attr="RowId='R24', ColumnId='C4'"
+        onclick="showdetailsbyRowAndColumn(this)"></td>
+
+    <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r24_amt_total ?: ''}"
+        th:attr="RowId='R24', ColumnId='C5'"
+        onclick="showdetailsbyRowAndColumn(this)"></td>
+</tr>
+
+<!-- R25 -->
+<tr>
+    <td style="text-align: left; padding-left:40px;"
+        th:text="${report?.r25_product ?: ''}"></td>
+
+    <td style="text-align: right;"
+        th:text="${report?.r25_amt ?: ''}"
+        th:attr="RowId='R25', ColumnId='C2'"
+        onclick="showdetailsbyRowAndColumn(this)"></td>
+
+    <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r25_amt_sub_add ?: ''}"
+        th:attr="RowId='R25', ColumnId='C3'"
+        onclick="showdetailsbyRowAndColumn(this)"></td>
+
+    <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r25_amt_sub_del ?: ''}"
+        th:attr="RowId='R25', ColumnId='C4'"
+        onclick="showdetailsbyRowAndColumn(this)"></td>
+
+    <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r25_amt_total ?: ''}"
+        th:attr="RowId='R25', ColumnId='C5'"
+        onclick="showdetailsbyRowAndColumn(this)"></td>
+</tr>
+
+<!-- R26 -->
+<tr>
+    <td style="text-align: left; padding-left:40px;"
+        th:text="${report?.r26_product ?: ''}"></td>
+
+    <td style="text-align: right;"
+        th:text="${report?.r26_amt ?: ''}"
+        th:attr="RowId='R26', ColumnId='C2'"
+        onclick="showdetailsbyRowAndColumn(this)"></td>
+
+    <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r26_amt_sub_add ?: ''}"
+        th:attr="RowId='R26', ColumnId='C3'"
+        onclick="showdetailsbyRowAndColumn(this)"></td>
+
+    <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r26_amt_sub_del ?: ''}"
+        th:attr="RowId='R26', ColumnId='C4'"
+        onclick="showdetailsbyRowAndColumn(this)"></td>
+
+    <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r26_amt_total ?: ''}"
+        th:attr="RowId='R26', ColumnId='C5'"
+        onclick="showdetailsbyRowAndColumn(this)"></td>
+</tr>
+
+<!-- R27 -->
+<tr>
+    <td style="text-align: left; padding-left:40px;"
+        th:text="${report?.r27_product ?: ''}"></td>
+
+    <td style="text-align: right;"
+        th:text="${report?.r27_amt ?: ''}"
+        th:attr="RowId='R27', ColumnId='C2'"
+        onclick="showdetailsbyRowAndColumn(this)"></td>
+
+    <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r27_amt_sub_add ?: ''}"
+        th:attr="RowId='R27', ColumnId='C3'"
+        onclick="showdetailsbyRowAndColumn(this)"></td>
+
+    <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r27_amt_sub_del ?: ''}"
+        th:attr="RowId='R27', ColumnId='C4'"
+        onclick="showdetailsbyRowAndColumn(this)"></td>
+
+    <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r27_amt_total ?: ''}"
+        th:attr="RowId='R27', ColumnId='C5'"
+        onclick="showdetailsbyRowAndColumn(this)"></td>
+</tr>
+
+<!-- R28 -->
+<tr>
+    <td style="text-align: left; padding-left:40px;"
+        th:text="${report?.r28_product ?: ''}"></td>
+
+    <td style="text-align: right;"
+        th:text="${report?.r28_amt ?: ''}"
+        th:attr="RowId='R28', ColumnId='C2'"
+        onclick="showdetailsbyRowAndColumn(this)"></td>
+
+    <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r28_amt_sub_add ?: ''}"
+        th:attr="RowId='R28', ColumnId='C3'"
+        onclick="showdetailsbyRowAndColumn(this)"></td>
+
+    <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r28_amt_sub_del ?: ''}"
+        th:attr="RowId='R28', ColumnId='C4'"
+        onclick="showdetailsbyRowAndColumn(this)"></td>
+
+    <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r28_amt_total ?: ''}"
+        th:attr="RowId='R28', ColumnId='C5'"
+        onclick="showdetailsbyRowAndColumn(this)"></td>
+</tr>
+
+
+  
 										
 
 									</tbody>
-									
+
+
 								</table>
 
 							</div>
 
-<div style="text-align: center; margin-top: 10px;">
+<!-- <div style="text-align: center; margin-top: 10px;">
 
 									<button id="submitButton" type="button"
 										class="custom-tab-btn Show_input" form="fileupload"
 										th:attr="data-todate=${asondate}" onclick="fileuploads(this);"
 										style="display: none;">Submit</button>
-								</div>
+								</div> -->
 
 
                   </form>
@@ -1415,7 +1627,7 @@ function cancelModify() {
 													<i class="fas fa-edit" style="color: black; cursor:pointer;"
 														th:attr="data-acctNo=${report.acctNumber},
 																							data-asondate=${#dates.format(report.reportDate, 'dd-MM-yyyy')},data-type=${type}"
-														onclick="opensch_17Detail(this, 'edit')"></i>
+														onclick="opencap_adeqDetail(this, 'edit')"></i>
 
 												</a>
 											</td>
@@ -1452,12 +1664,12 @@ function cancelModify() {
 				</div>
 				
 				
-				<!-- sch_17Data -->
+				<!-- BASEL_III_COM_EQUITY_DISC Detail Form Screen -->
 			<div th:if="${formmode == 'edit'}" class="card">
 
 
 				<div class="card-body">
-					<form th:object="${sch_17Data}" method="post" id="sch_17DetailForm">
+					<form th:object="${cap_adeqData}" method="post" id="cap_adeqDetailForm">
 						<div class="row formline" style="margin-top:10px;">
 							<label class="col-sm-2">Customer ID</label>
 							<div class="col-sm-3">
@@ -1507,13 +1719,13 @@ function cancelModify() {
 							<label class="col-sm-2">Report Date</label>
 							<div class="col-sm-3">
 								<input type="date" name="reportDate" class="form-control form-control-sm"readonly
-									th:value="${#dates.format(sch_17Data.reportDate, 'yyyy-MM-dd')}" />
+									th:value="${#dates.format(cap_adeqData.reportDate, 'yyyy-MM-dd')}" />
 							</div>
 						</div>
 
 						<div style="text-align:center; margin-top:20px;">
 							<button type="button" class="custom-tab-btn" th:if="${formmode == 'edit'}"
-								onclick="submitSCH_17Update()">Update</button>
+								onclick="submitCAP_ADEQUpdate()">Update</button>
 
 						</div>
 					</form>

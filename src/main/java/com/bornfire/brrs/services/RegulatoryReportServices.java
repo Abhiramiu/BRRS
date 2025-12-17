@@ -320,6 +320,15 @@ public class RegulatoryReportServices {
 
 	@Autowired
 	BRRS_PL_SCHS_ReportService BRRS_PL_SCHS_Reportservice;
+	
+	
+	@Autowired
+	BRRS_FORMAT_II_ReportService brrs_format_II_reportservice;
+	
+	
+	
+	
+	
 
 	private static final Logger logger = LoggerFactory.getLogger(RegulatoryReportServices.class);
 
@@ -874,6 +883,13 @@ public class RegulatoryReportServices {
 						pageable, type, version);
 
 				break;
+				
+			case "FORMAT_II":
+
+				repsummary = brrs_format_II_reportservice.getFORMAT_IIView(reportId, fromdate, todate, currency, dtltype,
+						pageable, type, version);
+
+				break;
 
 			case "MDISB1":
 
@@ -1183,6 +1199,13 @@ public class RegulatoryReportServices {
 			case "SCH_17":
 
 				repdetail = brrs_sch_17_reportservice.getSCH_17currentDtl(reportId, fromdate, todate, currency,
+						dtltype,
+						pageable, Filter, type, version);
+				break;
+				
+			case "FORMAT_II":
+
+				repdetail = brrs_format_II_reportservice.getFORMAT_IIcurrentDtl(reportId, fromdate, todate, currency,
 						dtltype,
 						pageable, Filter, type, version);
 				break;
@@ -2152,6 +2175,21 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
+				
+			case "FORMAT_II":
+				try {
+
+					repfile = brrs_format_II_reportservice.getFORMAT_IIExcel(filename, reportId, fromdate,
+							todate, currency,
+							dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+
+				
+				
 
 			case "B_III_CETD":
 				try {
@@ -2828,6 +2866,16 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
+				
+			case "FORMAT_II":
+				try {
+					archivalData = brrs_format_II_reportservice.getFORMAT_IIArchival();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+				
 
 			// New Archival
 			case "M_SRWA_12H":
@@ -3322,6 +3370,15 @@ public class RegulatoryReportServices {
 					currency,
 					dtltype, type, version);
 		}
+		
+		else if ("FORMAT_II".equals(filename)) {
+
+			fileData = brrs_format_II_reportservice.getFORMAT_IIDetailExcel(filename, fromdate, todate,
+					currency,
+					dtltype, type, version);
+		}
+		
+		
 
 		else if ("FSIDetail".equals(filename)) {
 
@@ -3590,6 +3647,12 @@ public class RegulatoryReportServices {
 					modelAndView = brrs_sch_17_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
 							request.getParameter("formmode"));
 					break;
+					
+				case "FORMAT_II":
+					modelAndView = brrs_format_II_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
+							request.getParameter("formmode"));
+					break;
+					
 
 				case "FSI":
 					modelAndView = BRRS_FSI_ReportService.getViewOrEditPage(request.getParameter("acctNo"),
@@ -3779,6 +3842,11 @@ public class RegulatoryReportServices {
 
 				case "SCH_17":
 					response = brrs_sch_17_reportservice.updateDetailEdit(request);
+					break;
+					
+					
+				case "FORMAT_II":
+					response = brrs_format_II_reportservice.updateDetailEdit(request);
 					break;
 
 				case "FSI":
