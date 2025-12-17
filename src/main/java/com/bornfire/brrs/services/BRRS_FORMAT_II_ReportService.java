@@ -322,7 +322,7 @@ public class BRRS_FORMAT_II_ReportService {
 			numberStyle.setFont(font);
 			// --- End of Style Definitions ---
 
-			int startRow = 6;
+			int startRow = 12;
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
@@ -334,15 +334,646 @@ public class BRRS_FORMAT_II_ReportService {
 						row = sheet.createRow(startRow + i);
 					}
 
-  
+                   // ROW 13
+					// Column E - 
+					Cell cellE = row.createCell(4);
+					if (record.getR13_amt() != null) {
+					    cellE.setCellValue(record.getR13_amt().doubleValue());
+					    cellE.setCellStyle(numberStyle);
+					} else {
+					    cellE.setCellValue("");
+					    cellE.setCellStyle(textStyle);
+					}
 					
+					
+					
+					// Column F - 01.04.2025
+					Cell cellF = row.createCell(5);
+					if (record.getR13_amt_sub_add() != null) {
+					    cellF.setCellValue(record.getR13_amt_sub_add().doubleValue());
+					    cellF.setCellStyle(numberStyle);
+					} else {
+					    cellF.setCellValue("");
+					    cellF.setCellStyle(textStyle);
+					}
+					
+					
+					// Column G - Addition As on  30.06.2025
+					Cell cellG = row.createCell(6);
+					if (record.getR13_amt_sub_del() != null) {
+					    cellG.setCellValue(record.getR13_amt_sub_del().doubleValue());
+					    cellG.setCellStyle(numberStyle);
+					} else {
+					    cellG.setCellValue("");
+					    cellG.setCellStyle(textStyle);
+					}
+					
+					
+					// Column H - Total as at 30.06.2025
+					Cell cellH = row.createCell(7);
+					if (record.getR13_amt_total() != null) {
+						cellH.setCellValue(record.getR13_amt_total().doubleValue());
+						cellH.setCellStyle(numberStyle);
+					} else {
+						cellH.setCellValue("");
+						cellH.setCellStyle(textStyle);
+					}
+					
+					/* ===================== ROW 14 ===================== */
+					// Column E
+					row = sheet.getRow(13);
+					 cellE = row.createCell(4);
+					if (record.getR14_amt() != null) {
+					    cellE.setCellValue(record.getR14_amt().doubleValue());
+					    cellE.setCellStyle(numberStyle);
+					} else {
+					    cellE.setCellValue("");
+					    cellE.setCellStyle(textStyle);
+					}
+
+					// Column F
+					 cellF = row.createCell(5);
+					if (record.getR14_amt_sub_add() != null) {
+					    cellF.setCellValue(record.getR14_amt_sub_add().doubleValue());
+					    cellF.setCellStyle(numberStyle);
+					} else {
+					    cellF.setCellValue("");
+					    cellF.setCellStyle(textStyle);
+					}
+
+					// Column G
+					 cellG = row.createCell(6);
+					if (record.getR14_amt_sub_del() != null) {
+					    cellG.setCellValue(record.getR14_amt_sub_del().doubleValue());
+					    cellG.setCellStyle(numberStyle);
+					} else {
+					    cellG.setCellValue("");
+					    cellG.setCellStyle(textStyle);
+					}
+
+					// Column H
+					 cellH = row.createCell(7);
+					if (record.getR14_amt_total() != null) {
+					    cellH.setCellValue(record.getR14_amt_total().doubleValue());
+					    cellH.setCellStyle(numberStyle);
+					} else {
+					    cellH.setCellValue("");
+					    cellH.setCellStyle(textStyle);
+					}
+
+
+					/* ===================== ROW 15 ===================== */
+					row = sheet.getRow(14);
+					Cell cellE15 = row.createCell(4);
+					if (record.getR15_amt() != null) {
+					    cellE15.setCellValue(record.getR15_amt().doubleValue());
+					    cellE15.setCellStyle(numberStyle);
+					} else {
+					    cellE15.setCellValue("");
+					    cellE15.setCellStyle(textStyle);
+					}
+
+					Cell cellF15 = row.createCell(5);
+					if (record.getR15_amt_sub_add() != null) {
+					    cellF15.setCellValue(record.getR15_amt_sub_add().doubleValue());
+					    cellF15.setCellStyle(numberStyle);
+					} else {
+					    cellF15.setCellValue("");
+					    cellF15.setCellStyle(textStyle);
+					}
+
+					Cell cellG15 = row.createCell(6);
+					if (record.getR15_amt_sub_del() != null) {
+					    cellG15.setCellValue(record.getR15_amt_sub_del().doubleValue());
+					    cellG15.setCellStyle(numberStyle);
+					} else {
+					    cellG15.setCellValue("");
+					    cellG15.setCellStyle(textStyle);
+					}
+
+					Cell cellH15 = row.createCell(7);
+					if (record.getR15_amt_total() != null) {
+					    cellH15.setCellValue(record.getR15_amt_total().doubleValue());
+					    cellH15.setCellStyle(numberStyle);
+					} else {
+					    cellH15.setCellValue("");
+					    cellH15.setCellStyle(textStyle);
+					}
+					
+					/* ===================== ROW 16 ===================== */
+					row = sheet.getRow(15);
+					cellE = row.createCell(4);
+					if (record.getR16_amt() != null) {
+					    cellE.setCellValue(record.getR16_amt().doubleValue());
+					    cellE.setCellStyle(numberStyle);
+					} else {
+					    cellE.setCellValue("");
+					    cellE.setCellStyle(textStyle);
+					}
+
+					cellF = row.createCell(5);
+					if (record.getR16_amt_sub_add() != null) {
+					    cellF.setCellValue(record.getR16_amt_sub_add().doubleValue());
+					    cellF.setCellStyle(numberStyle);
+					} else {
+					    cellF.setCellValue("");
+					    cellF.setCellStyle(textStyle);
+					}
+
+					cellG = row.createCell(6);
+					if (record.getR16_amt_sub_del() != null) {
+					    cellG.setCellValue(record.getR16_amt_sub_del().doubleValue());
+					    cellG.setCellStyle(numberStyle);
+					} else {
+					    cellG.setCellValue("");
+					    cellG.setCellStyle(textStyle);
+					}
+
+					cellH = row.createCell(7);
+					if (record.getR16_amt_total() != null) {
+					    cellH.setCellValue(record.getR16_amt_total().doubleValue());
+					    cellH.setCellStyle(numberStyle);
+					} else {
+					    cellH.setCellValue("");
+					    cellH.setCellStyle(textStyle);
+					}
+
+
+					/* ===================== ROW 17 ===================== */
+					row = sheet.getRow(16);
+					cellE = row.createCell(4);
+					if (record.getR17_amt() != null) {
+					    cellE.setCellValue(record.getR17_amt().doubleValue());
+					    cellE.setCellStyle(numberStyle);
+					} else {
+					    cellE.setCellValue("");
+					    cellE.setCellStyle(textStyle);
+					}
+
+					cellF = row.createCell(5);
+					if (record.getR17_amt_sub_add() != null) {
+					    cellF.setCellValue(record.getR17_amt_sub_add().doubleValue());
+					    cellF.setCellStyle(numberStyle);
+					} else {
+					    cellF.setCellValue("");
+					    cellF.setCellStyle(textStyle);
+					}
+
+					cellG = row.createCell(6);
+					if (record.getR17_amt_sub_del() != null) {
+					    cellG.setCellValue(record.getR17_amt_sub_del().doubleValue());
+					    cellG.setCellStyle(numberStyle);
+					} else {
+					    cellG.setCellValue("");
+					    cellG.setCellStyle(textStyle);
+					}
+
+					cellH = row.createCell(7);
+					if (record.getR17_amt_total() != null) {
+					    cellH.setCellValue(record.getR17_amt_total().doubleValue());
+					    cellH.setCellStyle(numberStyle);
+					} else {
+					    cellH.setCellValue("");
+					    cellH.setCellStyle(textStyle);
+					}
+
+
+					/* ===================== ROW 18 ===================== */
+					row = sheet.getRow(17);
+					cellE = row.createCell(4);
+					if (record.getR18_amt() != null) {
+					    cellE.setCellValue(record.getR18_amt().doubleValue());
+					    cellE.setCellStyle(numberStyle);
+					} else {
+					    cellE.setCellValue("");
+					    cellE.setCellStyle(textStyle);
+					}
+
+					cellF = row.createCell(5);
+					if (record.getR18_amt_sub_add() != null) {
+					    cellF.setCellValue(record.getR18_amt_sub_add().doubleValue());
+					    cellF.setCellStyle(numberStyle);
+					} else {
+					    cellF.setCellValue("");
+					    cellF.setCellStyle(textStyle);
+					}
+
+					cellG = row.createCell(6);
+					if (record.getR18_amt_sub_del() != null) {
+					    cellG.setCellValue(record.getR18_amt_sub_del().doubleValue());
+					    cellG.setCellStyle(numberStyle);
+					} else {
+					    cellG.setCellValue("");
+					    cellG.setCellStyle(textStyle);
+					}
+
+					cellH = row.createCell(7);
+					if (record.getR18_amt_total() != null) {
+					    cellH.setCellValue(record.getR18_amt_total().doubleValue());
+					    cellH.setCellStyle(numberStyle);
+					} else {
+					    cellH.setCellValue("");
+					    cellH.setCellStyle(textStyle);
+					}
+
+
+					/* ===================== ROW 19 ===================== */
+					row = sheet.getRow(18);
+					cellE = row.createCell(4);
+					if (record.getR19_amt() != null) {
+					    cellE.setCellValue(record.getR19_amt().doubleValue());
+					    cellE.setCellStyle(numberStyle);
+					} else {
+					    cellE.setCellValue("");
+					    cellE.setCellStyle(textStyle);
+					}
+
+					cellF = row.createCell(5);
+					if (record.getR19_amt_sub_add() != null) {
+					    cellF.setCellValue(record.getR19_amt_sub_add().doubleValue());
+					    cellF.setCellStyle(numberStyle);
+					} else {
+					    cellF.setCellValue("");
+					    cellF.setCellStyle(textStyle);
+					}
+
+					cellG = row.createCell(6);
+					if (record.getR19_amt_sub_del() != null) {
+					    cellG.setCellValue(record.getR19_amt_sub_del().doubleValue());
+					    cellG.setCellStyle(numberStyle);
+					} else {
+					    cellG.setCellValue("");
+					    cellG.setCellStyle(textStyle);
+					}
+
+					cellH = row.createCell(7);
+					if (record.getR19_amt_total() != null) {
+					    cellH.setCellValue(record.getR19_amt_total().doubleValue());
+					    cellH.setCellStyle(numberStyle);
+					} else {
+					    cellH.setCellValue("");
+					    cellH.setCellStyle(textStyle);
+					}
+
+
+					/* ===================== ROW 20 ===================== */
+					row = sheet.getRow(19);
+					cellE = row.createCell(4);
+					if (record.getR20_amt() != null) {
+					    cellE.setCellValue(record.getR20_amt().doubleValue());
+					    cellE.setCellStyle(numberStyle);
+					} else {
+					    cellE.setCellValue("");
+					    cellE.setCellStyle(textStyle);
+					}
+
+					cellF = row.createCell(5);
+					if (record.getR20_amt_sub_add() != null) {
+					    cellF.setCellValue(record.getR20_amt_sub_add().doubleValue());
+					    cellF.setCellStyle(numberStyle);
+					} else {
+					    cellF.setCellValue("");
+					    cellF.setCellStyle(textStyle);
+					}
+
+					cellG = row.createCell(6);
+					if (record.getR20_amt_sub_del() != null) {
+					    cellG.setCellValue(record.getR20_amt_sub_del().doubleValue());
+					    cellG.setCellStyle(numberStyle);
+					} else {
+					    cellG.setCellValue("");
+					    cellG.setCellStyle(textStyle);
+					}
+
+					cellH = row.createCell(7);
+					if (record.getR20_amt_total() != null) {
+					    cellH.setCellValue(record.getR20_amt_total().doubleValue());
+					    cellH.setCellStyle(numberStyle);
+					} else {
+					    cellH.setCellValue("");
+					    cellH.setCellStyle(textStyle);
+					}
+
+
+					/* ===================== ROW 21 ===================== */
+					row = sheet.getRow(20);
+					cellE = row.createCell(4);
+					if (record.getR21_amt() != null) {
+					    cellE.setCellValue(record.getR21_amt().doubleValue());
+					    cellE.setCellStyle(numberStyle);
+					} else {
+					    cellE.setCellValue("");
+					    cellE.setCellStyle(textStyle);
+					}
+
+					cellF = row.createCell(5);
+					if (record.getR21_amt_sub_add() != null) {
+					    cellF.setCellValue(record.getR21_amt_sub_add().doubleValue());
+					    cellF.setCellStyle(numberStyle);
+					} else {
+					    cellF.setCellValue("");
+					    cellF.setCellStyle(textStyle);
+					}
+
+					cellG = row.createCell(6);
+					if (record.getR21_amt_sub_del() != null) {
+					    cellG.setCellValue(record.getR21_amt_sub_del().doubleValue());
+					    cellG.setCellStyle(numberStyle);
+					} else {
+					    cellG.setCellValue("");
+					    cellG.setCellStyle(textStyle);
+					}
+
+					cellH = row.createCell(7);
+					if (record.getR21_amt_total() != null) {
+					    cellH.setCellValue(record.getR21_amt_total().doubleValue());
+					    cellH.setCellStyle(numberStyle);
+					} else {
+					    cellH.setCellValue("");
+					    cellH.setCellStyle(textStyle);
+					}
+
+
+					/* ===================== ROW 22 ===================== */
+					row = sheet.getRow(21);
+					cellE = row.createCell(4);
+					if (record.getR22_amt() != null) {
+					    cellE.setCellValue(record.getR22_amt().doubleValue());
+					    cellE.setCellStyle(numberStyle);
+					} else {
+					    cellE.setCellValue("");
+					    cellE.setCellStyle(textStyle);
+					}
+
+					cellF = row.createCell(5);
+					if (record.getR22_amt_sub_add() != null) {
+					    cellF.setCellValue(record.getR22_amt_sub_add().doubleValue());
+					    cellF.setCellStyle(numberStyle);
+					} else {
+					    cellF.setCellValue("");
+					    cellF.setCellStyle(textStyle);
+					}
+
+					cellG = row.createCell(6);
+					if (record.getR22_amt_sub_del() != null) {
+					    cellG.setCellValue(record.getR22_amt_sub_del().doubleValue());
+					    cellG.setCellStyle(numberStyle);
+					} else {
+					    cellG.setCellValue("");
+					    cellG.setCellStyle(textStyle);
+					}
+
+					cellH = row.createCell(7);
+					if (record.getR22_amt_total() != null) {
+					    cellH.setCellValue(record.getR22_amt_total().doubleValue());
+					    cellH.setCellStyle(numberStyle);
+					} else {
+					    cellH.setCellValue("");
+					    cellH.setCellStyle(textStyle);
+					}
+
+
+					/* ===================== ROW 23 ===================== */
+					row = sheet.getRow(22);
+					cellE = row.createCell(4);
+					if (record.getR23_amt() != null) {
+					    cellE.setCellValue(record.getR23_amt().doubleValue());
+					    cellE.setCellStyle(numberStyle);
+					} else {
+					    cellE.setCellValue("");
+					    cellE.setCellStyle(textStyle);
+					}
+
+					cellF = row.createCell(5);
+					if (record.getR23_amt_sub_add() != null) {
+					    cellF.setCellValue(record.getR23_amt_sub_add().doubleValue());
+					    cellF.setCellStyle(numberStyle);
+					} else {
+					    cellF.setCellValue("");
+					    cellF.setCellStyle(textStyle);
+					}
+
+					cellG = row.createCell(6);
+					if (record.getR23_amt_sub_del() != null) {
+					    cellG.setCellValue(record.getR23_amt_sub_del().doubleValue());
+					    cellG.setCellStyle(numberStyle);
+					} else {
+					    cellG.setCellValue("");
+					    cellG.setCellStyle(textStyle);
+					}
+
+					cellH = row.createCell(7);
+					if (record.getR23_amt_total() != null) {
+					    cellH.setCellValue(record.getR23_amt_total().doubleValue());
+					    cellH.setCellStyle(numberStyle);
+					} else {
+					    cellH.setCellValue("");
+					    cellH.setCellStyle(textStyle);
+					}
+
+
+					/* ===================== ROW 24 ===================== */
+					row = sheet.getRow(23);
+					cellE = row.createCell(4);
+					if (record.getR24_amt() != null) {
+					    cellE.setCellValue(record.getR24_amt().doubleValue());
+					    cellE.setCellStyle(numberStyle);
+					} else {
+					    cellE.setCellValue("");
+					    cellE.setCellStyle(textStyle);
+					}
+
+					cellF = row.createCell(5);
+					if (record.getR24_amt_sub_add() != null) {
+					    cellF.setCellValue(record.getR24_amt_sub_add().doubleValue());
+					    cellF.setCellStyle(numberStyle);
+					} else {
+					    cellF.setCellValue("");
+					    cellF.setCellStyle(textStyle);
+					}
+
+					cellG = row.createCell(6);
+					if (record.getR24_amt_sub_del() != null) {
+					    cellG.setCellValue(record.getR24_amt_sub_del().doubleValue());
+					    cellG.setCellStyle(numberStyle);
+					} else {
+					    cellG.setCellValue("");
+					    cellG.setCellStyle(textStyle);
+					}
+
+					cellH = row.createCell(7);
+					if (record.getR24_amt_total() != null) {
+					    cellH.setCellValue(record.getR24_amt_total().doubleValue());
+					    cellH.setCellStyle(numberStyle);
+					} else {
+					    cellH.setCellValue("");
+					    cellH.setCellStyle(textStyle);
+					}
+
+
+					/* ===================== ROW 25 ===================== */
+					row = sheet.getRow(24);
+					cellE = row.createCell(4);
+					if (record.getR25_amt() != null) {
+					    cellE.setCellValue(record.getR25_amt().doubleValue());
+					    cellE.setCellStyle(numberStyle);
+					} else {
+					    cellE.setCellValue("");
+					    cellE.setCellStyle(textStyle);
+					}
+
+					cellF = row.createCell(5);
+					if (record.getR25_amt_sub_add() != null) {
+					    cellF.setCellValue(record.getR25_amt_sub_add().doubleValue());
+					    cellF.setCellStyle(numberStyle);
+					} else {
+					    cellF.setCellValue("");
+					    cellF.setCellStyle(textStyle);
+					}
+
+					cellG = row.createCell(6);
+					if (record.getR25_amt_sub_del() != null) {
+					    cellG.setCellValue(record.getR25_amt_sub_del().doubleValue());
+					    cellG.setCellStyle(numberStyle);
+					} else {
+					    cellG.setCellValue("");
+					    cellG.setCellStyle(textStyle);
+					}
+
+					cellH = row.createCell(7);
+					if (record.getR25_amt_total() != null) {
+					    cellH.setCellValue(record.getR25_amt_total().doubleValue());
+					    cellH.setCellStyle(numberStyle);
+					} else {
+					    cellH.setCellValue("");
+					    cellH.setCellStyle(textStyle);
+					}
+
+
+					/* ===================== ROW 26 ===================== */
+					row = sheet.getRow(25);
+					cellE = row.createCell(4);
+					if (record.getR26_amt() != null) {
+					    cellE.setCellValue(record.getR26_amt().doubleValue());
+					    cellE.setCellStyle(numberStyle);
+					} else {
+					    cellE.setCellValue("");
+					    cellE.setCellStyle(textStyle);
+					}
+
+					cellF = row.createCell(5);
+					if (record.getR26_amt_sub_add() != null) {
+					    cellF.setCellValue(record.getR26_amt_sub_add().doubleValue());
+					    cellF.setCellStyle(numberStyle);
+					} else {
+					    cellF.setCellValue("");
+					    cellF.setCellStyle(textStyle);
+					}
+
+					cellG = row.createCell(6);
+					if (record.getR26_amt_sub_del() != null) {
+					    cellG.setCellValue(record.getR26_amt_sub_del().doubleValue());
+					    cellG.setCellStyle(numberStyle);
+					} else {
+					    cellG.setCellValue("");
+					    cellG.setCellStyle(textStyle);
+					}
+
+					cellH = row.createCell(7);
+					if (record.getR26_amt_total() != null) {
+					    cellH.setCellValue(record.getR26_amt_total().doubleValue());
+					    cellH.setCellStyle(numberStyle);
+					} else {
+					    cellH.setCellValue("");
+					    cellH.setCellStyle(textStyle);
+					}
+
+
+					/* ===================== ROW 27 ===================== */
+					row = sheet.getRow(26);
+					cellE = row.createCell(4);
+					if (record.getR27_amt() != null) {
+					    cellE.setCellValue(record.getR27_amt().doubleValue());
+					    cellE.setCellStyle(numberStyle);
+					} else {
+					    cellE.setCellValue("");
+					    cellE.setCellStyle(textStyle);
+					}
+
+					cellF = row.createCell(5);
+					if (record.getR27_amt_sub_add() != null) {
+					    cellF.setCellValue(record.getR27_amt_sub_add().doubleValue());
+					    cellF.setCellStyle(numberStyle);
+					} else {
+					    cellF.setCellValue("");
+					    cellF.setCellStyle(textStyle);
+					}
+
+					cellG = row.createCell(6);
+					if (record.getR27_amt_sub_del() != null) {
+					    cellG.setCellValue(record.getR27_amt_sub_del().doubleValue());
+					    cellG.setCellStyle(numberStyle);
+					} else {
+					    cellG.setCellValue("");
+					    cellG.setCellStyle(textStyle);
+					}
+
+					cellH = row.createCell(7);
+					if (record.getR27_amt_total() != null) {
+					    cellH.setCellValue(record.getR27_amt_total().doubleValue());
+					    cellH.setCellStyle(numberStyle);
+					} else {
+					    cellH.setCellValue("");
+					    cellH.setCellStyle(textStyle);
+					}
+
+
+					/* ===================== ROW 28 ===================== */
+					row = sheet.getRow(27);
+					cellE = row.createCell(4);
+					if (record.getR28_amt() != null) {
+					    cellE.setCellValue(record.getR28_amt().doubleValue());
+					    cellE.setCellStyle(numberStyle);
+					} else {
+					    cellE.setCellValue("");
+					    cellE.setCellStyle(textStyle);
+					}
+
+					cellF = row.createCell(5);
+					if (record.getR28_amt_sub_add() != null) {
+					    cellF.setCellValue(record.getR28_amt_sub_add().doubleValue());
+					    cellF.setCellStyle(numberStyle);
+					} else {
+					    cellF.setCellValue("");
+					    cellF.setCellStyle(textStyle);
+					}
+
+					cellG = row.createCell(6);
+					if (record.getR28_amt_sub_del() != null) {
+					    cellG.setCellValue(record.getR28_amt_sub_del().doubleValue());
+					    cellG.setCellStyle(numberStyle);
+					} else {
+					    cellG.setCellValue("");
+					    cellG.setCellStyle(textStyle);
+					}
+
+					cellH = row.createCell(7);
+					if (record.getR28_amt_total() != null) {
+					    cellH.setCellValue(record.getR28_amt_total().doubleValue());
+					    cellH.setCellStyle(numberStyle);
+					} else {
+					    cellH.setCellValue("");
+					    cellH.setCellStyle(textStyle);
+					}
+
+
 				
 
 					
 				
 				}
 
-				workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
+				
 			} else {
 
 			}
@@ -434,7 +1065,7 @@ public class BRRS_FORMAT_II_ReportService {
 			numberStyle.setFont(font);
 // --- End of Style Definitions ---
 
-			int startRow = 6;
+			int startRow = 12;
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
@@ -447,14 +1078,645 @@ public class BRRS_FORMAT_II_ReportService {
 					}
 
 
-					
+				     // ROW 13
+									// Column E - 
+									Cell cellE = row.createCell(4);
+									if (record.getR13_amt() != null) {
+									    cellE.setCellValue(record.getR13_amt().doubleValue());
+									    cellE.setCellStyle(numberStyle);
+									} else {
+									    cellE.setCellValue("");
+									    cellE.setCellStyle(textStyle);
+									}
+									
+									
+									
+									// Column F - 01.04.2025
+									Cell cellF = row.createCell(5);
+									if (record.getR13_amt_sub_add() != null) {
+									    cellF.setCellValue(record.getR13_amt_sub_add().doubleValue());
+									    cellF.setCellStyle(numberStyle);
+									} else {
+									    cellF.setCellValue("");
+									    cellF.setCellStyle(textStyle);
+									}
+									
+									
+									// Column G - Addition As on  30.06.2025
+									Cell cellG = row.createCell(6);
+									if (record.getR13_amt_sub_del() != null) {
+									    cellG.setCellValue(record.getR13_amt_sub_del().doubleValue());
+									    cellG.setCellStyle(numberStyle);
+									} else {
+									    cellG.setCellValue("");
+									    cellG.setCellStyle(textStyle);
+									}
+									
+									
+									// Column H - Total as at 30.06.2025
+									Cell cellH = row.createCell(7);
+									if (record.getR13_amt_total() != null) {
+										cellH.setCellValue(record.getR13_amt_total().doubleValue());
+										cellH.setCellStyle(numberStyle);
+									} else {
+										cellH.setCellValue("");
+										cellH.setCellStyle(textStyle);
+									}
+									
+									/* ===================== ROW 14 ===================== */
+									// Column E
+									row = sheet.getRow(13);
+									 cellE = row.createCell(4);
+									if (record.getR14_amt() != null) {
+									    cellE.setCellValue(record.getR14_amt().doubleValue());
+									    cellE.setCellStyle(numberStyle);
+									} else {
+									    cellE.setCellValue("");
+									    cellE.setCellStyle(textStyle);
+									}
+
+									// Column F
+									 cellF = row.createCell(5);
+									if (record.getR14_amt_sub_add() != null) {
+									    cellF.setCellValue(record.getR14_amt_sub_add().doubleValue());
+									    cellF.setCellStyle(numberStyle);
+									} else {
+									    cellF.setCellValue("");
+									    cellF.setCellStyle(textStyle);
+									}
+
+									// Column G
+									 cellG = row.createCell(6);
+									if (record.getR14_amt_sub_del() != null) {
+									    cellG.setCellValue(record.getR14_amt_sub_del().doubleValue());
+									    cellG.setCellStyle(numberStyle);
+									} else {
+									    cellG.setCellValue("");
+									    cellG.setCellStyle(textStyle);
+									}
+
+									// Column H
+									 cellH = row.createCell(7);
+									if (record.getR14_amt_total() != null) {
+									    cellH.setCellValue(record.getR14_amt_total().doubleValue());
+									    cellH.setCellStyle(numberStyle);
+									} else {
+									    cellH.setCellValue("");
+									    cellH.setCellStyle(textStyle);
+									}
+
+
+									/* ===================== ROW 15 ===================== */
+									row = sheet.getRow(14);
+									Cell cellE15 = row.createCell(4);
+									if (record.getR15_amt() != null) {
+									    cellE15.setCellValue(record.getR15_amt().doubleValue());
+									    cellE15.setCellStyle(numberStyle);
+									} else {
+									    cellE15.setCellValue("");
+									    cellE15.setCellStyle(textStyle);
+									}
+
+									Cell cellF15 = row.createCell(5);
+									if (record.getR15_amt_sub_add() != null) {
+									    cellF15.setCellValue(record.getR15_amt_sub_add().doubleValue());
+									    cellF15.setCellStyle(numberStyle);
+									} else {
+									    cellF15.setCellValue("");
+									    cellF15.setCellStyle(textStyle);
+									}
+
+									Cell cellG15 = row.createCell(6);
+									if (record.getR15_amt_sub_del() != null) {
+									    cellG15.setCellValue(record.getR15_amt_sub_del().doubleValue());
+									    cellG15.setCellStyle(numberStyle);
+									} else {
+									    cellG15.setCellValue("");
+									    cellG15.setCellStyle(textStyle);
+									}
+
+									Cell cellH15 = row.createCell(7);
+									if (record.getR15_amt_total() != null) {
+									    cellH15.setCellValue(record.getR15_amt_total().doubleValue());
+									    cellH15.setCellStyle(numberStyle);
+									} else {
+									    cellH15.setCellValue("");
+									    cellH15.setCellStyle(textStyle);
+									}
+									
+									/* ===================== ROW 16 ===================== */
+									row = sheet.getRow(15);
+									cellE = row.createCell(4);
+									if (record.getR16_amt() != null) {
+									    cellE.setCellValue(record.getR16_amt().doubleValue());
+									    cellE.setCellStyle(numberStyle);
+									} else {
+									    cellE.setCellValue("");
+									    cellE.setCellStyle(textStyle);
+									}
+
+									cellF = row.createCell(5);
+									if (record.getR16_amt_sub_add() != null) {
+									    cellF.setCellValue(record.getR16_amt_sub_add().doubleValue());
+									    cellF.setCellStyle(numberStyle);
+									} else {
+									    cellF.setCellValue("");
+									    cellF.setCellStyle(textStyle);
+									}
+
+									cellG = row.createCell(6);
+									if (record.getR16_amt_sub_del() != null) {
+									    cellG.setCellValue(record.getR16_amt_sub_del().doubleValue());
+									    cellG.setCellStyle(numberStyle);
+									} else {
+									    cellG.setCellValue("");
+									    cellG.setCellStyle(textStyle);
+									}
+
+									cellH = row.createCell(7);
+									if (record.getR16_amt_total() != null) {
+									    cellH.setCellValue(record.getR16_amt_total().doubleValue());
+									    cellH.setCellStyle(numberStyle);
+									} else {
+									    cellH.setCellValue("");
+									    cellH.setCellStyle(textStyle);
+									}
+
+
+									/* ===================== ROW 17 ===================== */
+									row = sheet.getRow(16);
+									cellE = row.createCell(4);
+									if (record.getR17_amt() != null) {
+									    cellE.setCellValue(record.getR17_amt().doubleValue());
+									    cellE.setCellStyle(numberStyle);
+									} else {
+									    cellE.setCellValue("");
+									    cellE.setCellStyle(textStyle);
+									}
+
+									cellF = row.createCell(5);
+									if (record.getR17_amt_sub_add() != null) {
+									    cellF.setCellValue(record.getR17_amt_sub_add().doubleValue());
+									    cellF.setCellStyle(numberStyle);
+									} else {
+									    cellF.setCellValue("");
+									    cellF.setCellStyle(textStyle);
+									}
+
+									cellG = row.createCell(6);
+									if (record.getR17_amt_sub_del() != null) {
+									    cellG.setCellValue(record.getR17_amt_sub_del().doubleValue());
+									    cellG.setCellStyle(numberStyle);
+									} else {
+									    cellG.setCellValue("");
+									    cellG.setCellStyle(textStyle);
+									}
+
+									cellH = row.createCell(7);
+									if (record.getR17_amt_total() != null) {
+									    cellH.setCellValue(record.getR17_amt_total().doubleValue());
+									    cellH.setCellStyle(numberStyle);
+									} else {
+									    cellH.setCellValue("");
+									    cellH.setCellStyle(textStyle);
+									}
+
+
+									/* ===================== ROW 18 ===================== */
+									row = sheet.getRow(17);
+									cellE = row.createCell(4);
+									if (record.getR18_amt() != null) {
+									    cellE.setCellValue(record.getR18_amt().doubleValue());
+									    cellE.setCellStyle(numberStyle);
+									} else {
+									    cellE.setCellValue("");
+									    cellE.setCellStyle(textStyle);
+									}
+
+									cellF = row.createCell(5);
+									if (record.getR18_amt_sub_add() != null) {
+									    cellF.setCellValue(record.getR18_amt_sub_add().doubleValue());
+									    cellF.setCellStyle(numberStyle);
+									} else {
+									    cellF.setCellValue("");
+									    cellF.setCellStyle(textStyle);
+									}
+
+									cellG = row.createCell(6);
+									if (record.getR18_amt_sub_del() != null) {
+									    cellG.setCellValue(record.getR18_amt_sub_del().doubleValue());
+									    cellG.setCellStyle(numberStyle);
+									} else {
+									    cellG.setCellValue("");
+									    cellG.setCellStyle(textStyle);
+									}
+
+									cellH = row.createCell(7);
+									if (record.getR18_amt_total() != null) {
+									    cellH.setCellValue(record.getR18_amt_total().doubleValue());
+									    cellH.setCellStyle(numberStyle);
+									} else {
+									    cellH.setCellValue("");
+									    cellH.setCellStyle(textStyle);
+									}
+
+
+									/* ===================== ROW 19 ===================== */
+									row = sheet.getRow(18);
+									cellE = row.createCell(4);
+									if (record.getR19_amt() != null) {
+									    cellE.setCellValue(record.getR19_amt().doubleValue());
+									    cellE.setCellStyle(numberStyle);
+									} else {
+									    cellE.setCellValue("");
+									    cellE.setCellStyle(textStyle);
+									}
+
+									cellF = row.createCell(5);
+									if (record.getR19_amt_sub_add() != null) {
+									    cellF.setCellValue(record.getR19_amt_sub_add().doubleValue());
+									    cellF.setCellStyle(numberStyle);
+									} else {
+									    cellF.setCellValue("");
+									    cellF.setCellStyle(textStyle);
+									}
+
+									cellG = row.createCell(6);
+									if (record.getR19_amt_sub_del() != null) {
+									    cellG.setCellValue(record.getR19_amt_sub_del().doubleValue());
+									    cellG.setCellStyle(numberStyle);
+									} else {
+									    cellG.setCellValue("");
+									    cellG.setCellStyle(textStyle);
+									}
+
+									cellH = row.createCell(7);
+									if (record.getR19_amt_total() != null) {
+									    cellH.setCellValue(record.getR19_amt_total().doubleValue());
+									    cellH.setCellStyle(numberStyle);
+									} else {
+									    cellH.setCellValue("");
+									    cellH.setCellStyle(textStyle);
+									}
+
+
+									/* ===================== ROW 20 ===================== */
+									row = sheet.getRow(19);
+									cellE = row.createCell(4);
+									if (record.getR20_amt() != null) {
+									    cellE.setCellValue(record.getR20_amt().doubleValue());
+									    cellE.setCellStyle(numberStyle);
+									} else {
+									    cellE.setCellValue("");
+									    cellE.setCellStyle(textStyle);
+									}
+
+									cellF = row.createCell(5);
+									if (record.getR20_amt_sub_add() != null) {
+									    cellF.setCellValue(record.getR20_amt_sub_add().doubleValue());
+									    cellF.setCellStyle(numberStyle);
+									} else {
+									    cellF.setCellValue("");
+									    cellF.setCellStyle(textStyle);
+									}
+
+									cellG = row.createCell(6);
+									if (record.getR20_amt_sub_del() != null) {
+									    cellG.setCellValue(record.getR20_amt_sub_del().doubleValue());
+									    cellG.setCellStyle(numberStyle);
+									} else {
+									    cellG.setCellValue("");
+									    cellG.setCellStyle(textStyle);
+									}
+
+									cellH = row.createCell(7);
+									if (record.getR20_amt_total() != null) {
+									    cellH.setCellValue(record.getR20_amt_total().doubleValue());
+									    cellH.setCellStyle(numberStyle);
+									} else {
+									    cellH.setCellValue("");
+									    cellH.setCellStyle(textStyle);
+									}
+
+
+									/* ===================== ROW 21 ===================== */
+									row = sheet.getRow(20);
+									cellE = row.createCell(4);
+									if (record.getR21_amt() != null) {
+									    cellE.setCellValue(record.getR21_amt().doubleValue());
+									    cellE.setCellStyle(numberStyle);
+									} else {
+									    cellE.setCellValue("");
+									    cellE.setCellStyle(textStyle);
+									}
+
+									cellF = row.createCell(5);
+									if (record.getR21_amt_sub_add() != null) {
+									    cellF.setCellValue(record.getR21_amt_sub_add().doubleValue());
+									    cellF.setCellStyle(numberStyle);
+									} else {
+									    cellF.setCellValue("");
+									    cellF.setCellStyle(textStyle);
+									}
+
+									cellG = row.createCell(6);
+									if (record.getR21_amt_sub_del() != null) {
+									    cellG.setCellValue(record.getR21_amt_sub_del().doubleValue());
+									    cellG.setCellStyle(numberStyle);
+									} else {
+									    cellG.setCellValue("");
+									    cellG.setCellStyle(textStyle);
+									}
+
+									cellH = row.createCell(7);
+									if (record.getR21_amt_total() != null) {
+									    cellH.setCellValue(record.getR21_amt_total().doubleValue());
+									    cellH.setCellStyle(numberStyle);
+									} else {
+									    cellH.setCellValue("");
+									    cellH.setCellStyle(textStyle);
+									}
+
+
+									/* ===================== ROW 22 ===================== */
+									row = sheet.getRow(21);
+									cellE = row.createCell(4);
+									if (record.getR22_amt() != null) {
+									    cellE.setCellValue(record.getR22_amt().doubleValue());
+									    cellE.setCellStyle(numberStyle);
+									} else {
+									    cellE.setCellValue("");
+									    cellE.setCellStyle(textStyle);
+									}
+
+									cellF = row.createCell(5);
+									if (record.getR22_amt_sub_add() != null) {
+									    cellF.setCellValue(record.getR22_amt_sub_add().doubleValue());
+									    cellF.setCellStyle(numberStyle);
+									} else {
+									    cellF.setCellValue("");
+									    cellF.setCellStyle(textStyle);
+									}
+
+									cellG = row.createCell(6);
+									if (record.getR22_amt_sub_del() != null) {
+									    cellG.setCellValue(record.getR22_amt_sub_del().doubleValue());
+									    cellG.setCellStyle(numberStyle);
+									} else {
+									    cellG.setCellValue("");
+									    cellG.setCellStyle(textStyle);
+									}
+
+									cellH = row.createCell(7);
+									if (record.getR22_amt_total() != null) {
+									    cellH.setCellValue(record.getR22_amt_total().doubleValue());
+									    cellH.setCellStyle(numberStyle);
+									} else {
+									    cellH.setCellValue("");
+									    cellH.setCellStyle(textStyle);
+									}
+
+
+									/* ===================== ROW 23 ===================== */
+									row = sheet.getRow(22);
+									cellE = row.createCell(4);
+									if (record.getR23_amt() != null) {
+									    cellE.setCellValue(record.getR23_amt().doubleValue());
+									    cellE.setCellStyle(numberStyle);
+									} else {
+									    cellE.setCellValue("");
+									    cellE.setCellStyle(textStyle);
+									}
+
+									cellF = row.createCell(5);
+									if (record.getR23_amt_sub_add() != null) {
+									    cellF.setCellValue(record.getR23_amt_sub_add().doubleValue());
+									    cellF.setCellStyle(numberStyle);
+									} else {
+									    cellF.setCellValue("");
+									    cellF.setCellStyle(textStyle);
+									}
+
+									cellG = row.createCell(6);
+									if (record.getR23_amt_sub_del() != null) {
+									    cellG.setCellValue(record.getR23_amt_sub_del().doubleValue());
+									    cellG.setCellStyle(numberStyle);
+									} else {
+									    cellG.setCellValue("");
+									    cellG.setCellStyle(textStyle);
+									}
+
+									cellH = row.createCell(7);
+									if (record.getR23_amt_total() != null) {
+									    cellH.setCellValue(record.getR23_amt_total().doubleValue());
+									    cellH.setCellStyle(numberStyle);
+									} else {
+									    cellH.setCellValue("");
+									    cellH.setCellStyle(textStyle);
+									}
+
+
+									/* ===================== ROW 24 ===================== */
+									row = sheet.getRow(23);
+									cellE = row.createCell(4);
+									if (record.getR24_amt() != null) {
+									    cellE.setCellValue(record.getR24_amt().doubleValue());
+									    cellE.setCellStyle(numberStyle);
+									} else {
+									    cellE.setCellValue("");
+									    cellE.setCellStyle(textStyle);
+									}
+
+									cellF = row.createCell(5);
+									if (record.getR24_amt_sub_add() != null) {
+									    cellF.setCellValue(record.getR24_amt_sub_add().doubleValue());
+									    cellF.setCellStyle(numberStyle);
+									} else {
+									    cellF.setCellValue("");
+									    cellF.setCellStyle(textStyle);
+									}
+
+									cellG = row.createCell(6);
+									if (record.getR24_amt_sub_del() != null) {
+									    cellG.setCellValue(record.getR24_amt_sub_del().doubleValue());
+									    cellG.setCellStyle(numberStyle);
+									} else {
+									    cellG.setCellValue("");
+									    cellG.setCellStyle(textStyle);
+									}
+
+									cellH = row.createCell(7);
+									if (record.getR24_amt_total() != null) {
+									    cellH.setCellValue(record.getR24_amt_total().doubleValue());
+									    cellH.setCellStyle(numberStyle);
+									} else {
+									    cellH.setCellValue("");
+									    cellH.setCellStyle(textStyle);
+									}
+
+
+									/* ===================== ROW 25 ===================== */
+									row = sheet.getRow(24);
+									cellE = row.createCell(4);
+									if (record.getR25_amt() != null) {
+									    cellE.setCellValue(record.getR25_amt().doubleValue());
+									    cellE.setCellStyle(numberStyle);
+									} else {
+									    cellE.setCellValue("");
+									    cellE.setCellStyle(textStyle);
+									}
+
+									cellF = row.createCell(5);
+									if (record.getR25_amt_sub_add() != null) {
+									    cellF.setCellValue(record.getR25_amt_sub_add().doubleValue());
+									    cellF.setCellStyle(numberStyle);
+									} else {
+									    cellF.setCellValue("");
+									    cellF.setCellStyle(textStyle);
+									}
+
+									cellG = row.createCell(6);
+									if (record.getR25_amt_sub_del() != null) {
+									    cellG.setCellValue(record.getR25_amt_sub_del().doubleValue());
+									    cellG.setCellStyle(numberStyle);
+									} else {
+									    cellG.setCellValue("");
+									    cellG.setCellStyle(textStyle);
+									}
+
+									cellH = row.createCell(7);
+									if (record.getR25_amt_total() != null) {
+									    cellH.setCellValue(record.getR25_amt_total().doubleValue());
+									    cellH.setCellStyle(numberStyle);
+									} else {
+									    cellH.setCellValue("");
+									    cellH.setCellStyle(textStyle);
+									}
+
+
+									/* ===================== ROW 26 ===================== */
+									row = sheet.getRow(25);
+									cellE = row.createCell(4);
+									if (record.getR26_amt() != null) {
+									    cellE.setCellValue(record.getR26_amt().doubleValue());
+									    cellE.setCellStyle(numberStyle);
+									} else {
+									    cellE.setCellValue("");
+									    cellE.setCellStyle(textStyle);
+									}
+
+									cellF = row.createCell(5);
+									if (record.getR26_amt_sub_add() != null) {
+									    cellF.setCellValue(record.getR26_amt_sub_add().doubleValue());
+									    cellF.setCellStyle(numberStyle);
+									} else {
+									    cellF.setCellValue("");
+									    cellF.setCellStyle(textStyle);
+									}
+
+									cellG = row.createCell(6);
+									if (record.getR26_amt_sub_del() != null) {
+									    cellG.setCellValue(record.getR26_amt_sub_del().doubleValue());
+									    cellG.setCellStyle(numberStyle);
+									} else {
+									    cellG.setCellValue("");
+									    cellG.setCellStyle(textStyle);
+									}
+
+									cellH = row.createCell(7);
+									if (record.getR26_amt_total() != null) {
+									    cellH.setCellValue(record.getR26_amt_total().doubleValue());
+									    cellH.setCellStyle(numberStyle);
+									} else {
+									    cellH.setCellValue("");
+									    cellH.setCellStyle(textStyle);
+									}
+
+
+									/* ===================== ROW 27 ===================== */
+									row = sheet.getRow(26);
+									cellE = row.createCell(4);
+									if (record.getR27_amt() != null) {
+									    cellE.setCellValue(record.getR27_amt().doubleValue());
+									    cellE.setCellStyle(numberStyle);
+									} else {
+									    cellE.setCellValue("");
+									    cellE.setCellStyle(textStyle);
+									}
+
+									cellF = row.createCell(5);
+									if (record.getR27_amt_sub_add() != null) {
+									    cellF.setCellValue(record.getR27_amt_sub_add().doubleValue());
+									    cellF.setCellStyle(numberStyle);
+									} else {
+									    cellF.setCellValue("");
+									    cellF.setCellStyle(textStyle);
+									}
+
+									cellG = row.createCell(6);
+									if (record.getR27_amt_sub_del() != null) {
+									    cellG.setCellValue(record.getR27_amt_sub_del().doubleValue());
+									    cellG.setCellStyle(numberStyle);
+									} else {
+									    cellG.setCellValue("");
+									    cellG.setCellStyle(textStyle);
+									}
+
+									cellH = row.createCell(7);
+									if (record.getR27_amt_total() != null) {
+									    cellH.setCellValue(record.getR27_amt_total().doubleValue());
+									    cellH.setCellStyle(numberStyle);
+									} else {
+									    cellH.setCellValue("");
+									    cellH.setCellStyle(textStyle);
+									}
+
+
+									/* ===================== ROW 28 ===================== */
+									row = sheet.getRow(27);
+									cellE = row.createCell(4);
+									if (record.getR28_amt() != null) {
+									    cellE.setCellValue(record.getR28_amt().doubleValue());
+									    cellE.setCellStyle(numberStyle);
+									} else {
+									    cellE.setCellValue("");
+									    cellE.setCellStyle(textStyle);
+									}
+
+									cellF = row.createCell(5);
+									if (record.getR28_amt_sub_add() != null) {
+									    cellF.setCellValue(record.getR28_amt_sub_add().doubleValue());
+									    cellF.setCellStyle(numberStyle);
+									} else {
+									    cellF.setCellValue("");
+									    cellF.setCellStyle(textStyle);
+									}
+
+									cellG = row.createCell(6);
+									if (record.getR28_amt_sub_del() != null) {
+									    cellG.setCellValue(record.getR28_amt_sub_del().doubleValue());
+									    cellG.setCellStyle(numberStyle);
+									} else {
+									    cellG.setCellValue("");
+									    cellG.setCellStyle(textStyle);
+									}
+
+									cellH = row.createCell(7);
+									if (record.getR28_amt_total() != null) {
+									    cellH.setCellValue(record.getR28_amt_total().doubleValue());
+									    cellH.setCellStyle(numberStyle);
+									} else {
+									    cellH.setCellValue("");
+									    cellH.setCellStyle(textStyle);
+									}
+
 
    
 					
 					
 				}
 
-				workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
+				
 			} else {
 
 			}

@@ -518,7 +518,7 @@ public class BRRS_SCH_17_ReportService {
 		
 
 		if (dataList.isEmpty()) {
-			logger.warn("Service: No data found for CAP_ADEQ report. Returning empty result.");
+			logger.warn("Service: No data found for SCH_17 report. Returning empty result.");
 			return new byte[0];
 		}
 

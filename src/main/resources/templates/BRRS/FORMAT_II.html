@@ -345,6 +345,8 @@ td {
 .table-bordered td, .table-bordered th {
 	border: 1px solid #000 !important;
 }
+
+
 </style>
 
 <style>
@@ -539,7 +541,7 @@ $(window).on('beforeunload', function() {
 	</script>
 
 	<script>
-	    function opencap_adeqDetail(elem, mode) { 
+	    function openformat_IIDetail(elem, mode) { 
 			
 			var type = elem.getAttribute('data-type');   
 
@@ -561,8 +563,8 @@ $(window).on('beforeunload', function() {
 
 
 	<script>
-		function submitCAP_ADEQUpdate() {
-			const formData = $('#cap_adeqDetailForm').serialize(); // Ensure correct form ID
+		function submitFROMAT_IIUpdate() {
+			const formData = $('#format_IIDetailForm').serialize(); // Ensure correct form ID
 
 			// ✅ Store the previous page URL
 			const previousUrl = document.referrer; // same as going back once in history
@@ -1031,7 +1033,7 @@ function cancelModify() {
                      				 data-todate=${todate}, 
                      				 data-currency=${currency},  
                      				 data-dtltype=${dtltype}, 
-                     				 data-filename='CAP_ADEQ.xlsx',
+                     				 data-filename='FORMAT_II.xlsx',
 					 				 data-type=${type},
 					    			 data-version=${version}"
 							onclick="downloadfile(this);">
@@ -1043,7 +1045,7 @@ function cancelModify() {
 							th:attr="
 						    data-fromdate=${fromdate},
 						    data-todate=${todate},
-						    data-filename='CAP_ADEQ',
+						    data-filename='FORMAT_II',
 						 data-type=${type},
 					data-version=${version}  ">
 							<i class="fa fa-download"></i>
@@ -1066,7 +1068,7 @@ function cancelModify() {
 								<table
 									class="sticky-header-table table table-bordered table-cell table-sm table-condensed"
 									id="reports">
-									<thead class="thead-light">
+									<thead class="thead-light"   style="position: sticky; top: 0; z-index: 20;">
 										<tr style="background-color: #b3b6b9">
 											<th rowspan="3"
 												style="text-align: center; background-color: #D8D8D8;  padding: 10px; font-weight:bold;  color: #000000;">Particulars
@@ -1184,10 +1186,9 @@ function cancelModify() {
 												th:attr="RowId='R14', ColumnId='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 												
-												<td style="text-align: right; padding-right:10px; "  
+												<td  class="green-cell" style="text-align: right; padding-right:10px; "  
 												th:text="${report?.r14_amt_total ?: ''}"
-												th:attr="RowId='R14', ColumnId='C5'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
+												></td>
 												
 
 
@@ -1218,10 +1219,9 @@ function cancelModify() {
         onclick="showdetailsbyRowAndColumn(this)">
     </td>
 
-    <td style="text-align: right; padding-right:10px;"
+    <td  class="green-cell" style="text-align: right; padding-right:10px;"
         th:text="${report?.r15_amt_total ?: ''}"
-        th:attr="RowId='R15', ColumnId='C5'"
-        onclick="showdetailsbyRowAndColumn(this)">
+        >
     </td>
 
 </tr>
@@ -1251,10 +1251,9 @@ function cancelModify() {
         onclick="showdetailsbyRowAndColumn(this)">
     </td>
 
-    <td style="text-align: right; padding-right:10px;"
+    <td class="green-cell" style="text-align: right; padding-right:10px;"
         th:text="${report?.r16_amt_total ?: ''}"
-        th:attr="RowId='R16', ColumnId='C5'"
-        onclick="showdetailsbyRowAndColumn(this)">
+       >
     </td>
 
 </tr>
@@ -1262,7 +1261,7 @@ function cancelModify() {
 
 <!-- R17 -->
 <tr>
-    <td style="text-align: left; padding-left:40px;"
+    <td  style="text-align: left;  font-weight:bold;"
         th:text="${report?.r17_product ?: ''}"></td>
 
     <td style="text-align: right;"
@@ -1280,10 +1279,9 @@ function cancelModify() {
         th:attr="RowId='R17', ColumnId='C4'"
         onclick="showdetailsbyRowAndColumn(this)"></td>
 
-    <td style="text-align: right; padding-right:10px;"
+    <td class="green-cell"  style="text-align: right; padding-right:10px;"
         th:text="${report?.r17_amt_total ?: ''}"
-        th:attr="RowId='R17', ColumnId='C5'"
-        onclick="showdetailsbyRowAndColumn(this)"></td>
+        ></td>
 </tr>
 
 <!-- R18 -->
@@ -1306,10 +1304,9 @@ function cancelModify() {
         th:attr="RowId='R18', ColumnId='C4'"
         onclick="showdetailsbyRowAndColumn(this)"></td>
 
-    <td style="text-align: right; padding-right:10px;"
+    <td class="green-cell" style="text-align: right; padding-right:10px;"
         th:text="${report?.r18_amt_total ?: ''}"
-        th:attr="RowId='R18', ColumnId='C5'"
-        onclick="showdetailsbyRowAndColumn(this)"></td>
+       ></td>
 </tr>
 
 <!-- R19 -->
@@ -1332,10 +1329,9 @@ function cancelModify() {
         th:attr="RowId='R19', ColumnId='C4'"
         onclick="showdetailsbyRowAndColumn(this)"></td>
 
-    <td style="text-align: right; padding-right:10px;"
+    <td  class="green-cell" style="text-align: right; padding-right:10px;"
         th:text="${report?.r19_amt_total ?: ''}"
-        th:attr="RowId='R19', ColumnId='C5'"
-        onclick="showdetailsbyRowAndColumn(this)"></td>
+        ></td>
 </tr>
 
 <!-- R20 -->
@@ -1358,10 +1354,9 @@ function cancelModify() {
         th:attr="RowId='R20', ColumnId='C4'"
         onclick="showdetailsbyRowAndColumn(this)"></td>
 
-    <td style="text-align: right; padding-right:10px;"
+    <td class="green-cell" style="text-align: right; padding-right:10px;"
         th:text="${report?.r20_amt_total ?: ''}"
-        th:attr="RowId='R20', ColumnId='C5'"
-        onclick="showdetailsbyRowAndColumn(this)"></td>
+       ></td>
 </tr>
 
 <!-- R21 -->
@@ -1392,7 +1387,7 @@ function cancelModify() {
 
 <!-- R22 -->
 <tr>
-    <td style="text-align: left; padding-left:40px;"
+    <td style="text-align: left; padding-left:70px;"
         th:text="${report?.r22_product ?: ''}"></td>
 
     <td style="text-align: right;"
@@ -1418,28 +1413,24 @@ function cancelModify() {
 
 <!-- R23 -->
 <tr>
-    <td style="text-align: left; padding-left:40px;"
+    <td style="text-align: left; font-weight:bold;"
         th:text="${report?.r23_product ?: ''}"></td>
 
-    <td style="text-align: right;"
+    <td class="green-cell" style="text-align: right;"
         th:text="${report?.r23_amt ?: ''}"
-        th:attr="RowId='R23', ColumnId='C2'"
-        onclick="showdetailsbyRowAndColumn(this)"></td>
+       ></td>
 
-    <td style="text-align: right; padding-right:10px;"
+    <td  class="green-cell" style="text-align: right; padding-right:10px;"
         th:text="${report?.r23_amt_sub_add ?: ''}"
-        th:attr="RowId='R23', ColumnId='C3'"
-        onclick="showdetailsbyRowAndColumn(this)"></td>
+        ></td>
 
-    <td style="text-align: right; padding-right:10px;"
+    <td class="green-cell"  style="text-align: right; padding-right:10px;"
         th:text="${report?.r23_amt_sub_del ?: ''}"
-        th:attr="RowId='R23', ColumnId='C4'"
-        onclick="showdetailsbyRowAndColumn(this)"></td>
+        ></td>
 
-    <td style="text-align: right; padding-right:10px;"
+    <td  class="green-cell" style="text-align: right; padding-right:10px;"
         th:text="${report?.r23_amt_total ?: ''}"
-        th:attr="RowId='R23', ColumnId='C5'"
-        onclick="showdetailsbyRowAndColumn(this)"></td>
+       ></td>
 </tr>
 
 <!-- R24 -->
@@ -1462,10 +1453,9 @@ function cancelModify() {
         th:attr="RowId='R24', ColumnId='C4'"
         onclick="showdetailsbyRowAndColumn(this)"></td>
 
-    <td style="text-align: right; padding-right:10px;"
+    <td class="green-cell"  style="text-align: right; padding-right:10px;"
         th:text="${report?.r24_amt_total ?: ''}"
-        th:attr="RowId='R24', ColumnId='C5'"
-        onclick="showdetailsbyRowAndColumn(this)"></td>
+       ></td>
 </tr>
 
 <!-- R25 -->
@@ -1488,10 +1478,9 @@ function cancelModify() {
         th:attr="RowId='R25', ColumnId='C4'"
         onclick="showdetailsbyRowAndColumn(this)"></td>
 
-    <td style="text-align: right; padding-right:10px;"
+    <td class="green-cell"  style="text-align: right; padding-right:10px;"
         th:text="${report?.r25_amt_total ?: ''}"
-        th:attr="RowId='R25', ColumnId='C5'"
-        onclick="showdetailsbyRowAndColumn(this)"></td>
+       ></td>
 </tr>
 
 <!-- R26 -->
@@ -1548,28 +1537,24 @@ function cancelModify() {
 
 <!-- R28 -->
 <tr>
-    <td style="text-align: left; padding-left:40px;"
+    <td style="text-align: left; font-weight:bold; padding-left:40px;"
         th:text="${report?.r28_product ?: ''}"></td>
 
-    <td style="text-align: right;"
+    <td  class="green-cell" style="text-align: right;"
         th:text="${report?.r28_amt ?: ''}"
-        th:attr="RowId='R28', ColumnId='C2'"
-        onclick="showdetailsbyRowAndColumn(this)"></td>
+       ></td>
 
-    <td style="text-align: right; padding-right:10px;"
+    <td  class="green-cell" style="text-align: right; padding-right:10px;"
         th:text="${report?.r28_amt_sub_add ?: ''}"
-        th:attr="RowId='R28', ColumnId='C3'"
-        onclick="showdetailsbyRowAndColumn(this)"></td>
+       ></td>
 
-    <td style="text-align: right; padding-right:10px;"
+    <td  class="green-cell" style="text-align: right; padding-right:10px;"
         th:text="${report?.r28_amt_sub_del ?: ''}"
-        th:attr="RowId='R28', ColumnId='C4'"
-        onclick="showdetailsbyRowAndColumn(this)"></td>
+       ></td>
 
-    <td style="text-align: right; padding-right:10px;"
+    <td class="green-cell"  style="text-align: right; padding-right:10px;"
         th:text="${report?.r28_amt_total ?: ''}"
-        th:attr="RowId='R28', ColumnId='C5'"
-        onclick="showdetailsbyRowAndColumn(this)"></td>
+        ></td>
 </tr>
 
 
@@ -1583,13 +1568,7 @@ function cancelModify() {
 
 							</div>
 
-<!-- <div style="text-align: center; margin-top: 10px;">
 
-									<button id="submitButton" type="button"
-										class="custom-tab-btn Show_input" form="fileupload"
-										th:attr="data-todate=${asondate}" onclick="fileuploads(this);"
-										style="display: none;">Submit</button>
-								</div> -->
 
 
                   </form>
@@ -1627,7 +1606,7 @@ function cancelModify() {
 													<i class="fas fa-edit" style="color: black; cursor:pointer;"
 														th:attr="data-acctNo=${report.acctNumber},
 																							data-asondate=${#dates.format(report.reportDate, 'dd-MM-yyyy')},data-type=${type}"
-														onclick="opencap_adeqDetail(this, 'edit')"></i>
+														onclick="openformat_IIDetail(this, 'edit')"></i>
 
 												</a>
 											</td>
@@ -1664,12 +1643,12 @@ function cancelModify() {
 				</div>
 				
 				
-				<!-- BASEL_III_COM_EQUITY_DISC Detail Form Screen -->
+				<!-- FORMATE II Detail Form Screen -->
 			<div th:if="${formmode == 'edit'}" class="card">
 
 
 				<div class="card-body">
-					<form th:object="${cap_adeqData}" method="post" id="cap_adeqDetailForm">
+					<form th:object="${formate_IIData}" method="post" id="format_IIDetailForm">
 						<div class="row formline" style="margin-top:10px;">
 							<label class="col-sm-2">Customer ID</label>
 							<div class="col-sm-3">
@@ -1719,35 +1698,18 @@ function cancelModify() {
 							<label class="col-sm-2">Report Date</label>
 							<div class="col-sm-3">
 								<input type="date" name="reportDate" class="form-control form-control-sm"readonly
-									th:value="${#dates.format(cap_adeqData.reportDate, 'yyyy-MM-dd')}" />
+									th:value="${#dates.format(formate_IIData.reportDate, 'yyyy-MM-dd')}" />
 							</div>
 						</div>
 
 						<div style="text-align:center; margin-top:20px;">
 							<button type="button" class="custom-tab-btn" th:if="${formmode == 'edit'}"
-								onclick="submitCAP_ADEQUpdate()">Update</button>
+								onclick="submitFROMAT_IIUpdate()">Update</button>
 
 						</div>
 					</form>
 				</div>
 			</div>
-			
-			
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
 				
 			</div>
 
