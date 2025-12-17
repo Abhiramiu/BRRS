@@ -293,6 +293,9 @@ public class RegulatoryReportServices {
 
 	@Autowired
 	BRRS_FSI_ReportService BRRS_FSI_ReportService;
+	
+	@Autowired
+	BRRS_FORMAT_NEW_CPR_ReportService BRRS_FORMAT_NEW_CPR_ReportService;
 
 	@Autowired
 	BRRS_Expanded_Regu_BS_ReportService BRRS_Expanded_Regu_BS_ReportService;
@@ -823,6 +826,13 @@ public class RegulatoryReportServices {
 						pageable, type, version);
 
 				break;
+				
+			case "FORMAT_NEW_CPR":
+				repsummary = BRRS_FORMAT_NEW_CPR_ReportService.getFORMAT_NEW_CPRView(reportId, fromdate, todate, currency,
+						dtltype,
+						pageable, type, version);
+
+				break;
 
 			case "EXPANDED_REGU_BS":
 
@@ -1170,6 +1180,13 @@ public class RegulatoryReportServices {
 			case "FSI":
 
 				repdetail = BRRS_FSI_ReportService.getFSIcurrentDtl(reportId, fromdate, todate, currency,
+						dtltype,
+						pageable, Filter, type, version);
+				break;
+				
+			case "FORMAT_NEW_CPR":
+
+				repdetail = BRRS_FORMAT_NEW_CPR_ReportService.getFORMAT_NEW_CPRcurrentDtl(reportId, fromdate, todate, currency,
 						dtltype,
 						pageable, Filter, type, version);
 				break;
@@ -2093,6 +2110,17 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
+				
+			case "FORMAT_NEW_CPR":
+				try {
+					repfile = BRRS_FORMAT_NEW_CPR_ReportService.getFORMAT_NEW_CPRExcel(filename, reportId, fromdate, todate,
+							currency, dtltype, type, version);
+
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
 			case "EXPANDED_REGU_BS":
 				try {
@@ -2313,6 +2341,9 @@ public class RegulatoryReportServices {
 					filename, fromdate, todate, currency, dtltype, type, version);
 		} else if ("FSIDetail".equals(filename)) {
 			return BRRS_FSI_ReportService.getFSIDetailExcel(
+					filename, fromdate, todate, currency, dtltype, type, version);
+		} else if ("FORMAT_NEW_CPRDetail".equals(filename)) {
+			return BRRS_FORMAT_NEW_CPR_ReportService.getFORMAT_NEW_CPRDetailExcel(
 					filename, fromdate, todate, currency, dtltype, type, version);
 		} else if ("MDISB1".equals(filename)) {
 			return brrs_mdisb1_reportservice.getMDISB1DetailExcel(
@@ -3137,6 +3168,15 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
+				
+			case "FORMAT_NEW_CPR":
+				try {
+					archivalData = BRRS_FORMAT_NEW_CPR_ReportService.getFNCArchival();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
 			case "MDISB1":
 				try {
@@ -3383,6 +3423,12 @@ public class RegulatoryReportServices {
 		else if ("FSIDetail".equals(filename)) {
 
 			fileData = BRRS_FSI_ReportService.getFSIDetailExcel(filename, fromdate, todate, currency,
+					dtltype, type, version);
+		}
+		
+		else if ("FORMAT_NEW_CPRDetail".equals(filename)) {
+
+			fileData = BRRS_FORMAT_NEW_CPR_ReportService.getFORMAT_NEW_CPRDetailExcel(filename, fromdate, todate, currency,
 					dtltype, type, version);
 		}
 
@@ -3658,6 +3704,11 @@ public class RegulatoryReportServices {
 					modelAndView = BRRS_FSI_ReportService.getViewOrEditPage(request.getParameter("acctNo"),
 							request.getParameter("formmode"));
 					break;
+					
+				case "FORMAT_NEW_CPR":
+					modelAndView = BRRS_FORMAT_NEW_CPR_ReportService.getViewOrEditPage(request.getParameter("acctNo"),
+							request.getParameter("formmode"));
+					break;
 
 				default:
 					logger.warn("No detail service found for reportId: {}", reportId);
@@ -3851,6 +3902,10 @@ public class RegulatoryReportServices {
 
 				case "FSI":
 					response = BRRS_FSI_ReportService.updateDetailEdit(request);
+					break;
+					
+				case "FORMAT_NEW_CPR":
+					response = BRRS_FORMAT_NEW_CPR_ReportService.updateDetailEdit(request);
 					break;
 
 				case "Market_Risk":
