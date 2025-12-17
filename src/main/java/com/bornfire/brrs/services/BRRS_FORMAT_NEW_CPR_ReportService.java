@@ -544,7 +544,7 @@ row = sheet.createRow(startRow + i);
 }
 
 
-Cell cell2 = row.createCell(1);
+Cell cell2 = row.createCell(2);
 if (record.getR8_AMOUNT() != null) {
    cell2.setCellValue(record.getR8_AMOUNT().doubleValue());
    cell2.setCellStyle(numberStyle);
@@ -555,7 +555,7 @@ if (record.getR8_AMOUNT() != null) {
 
 //R9
 row = sheet.getRow(8);
-cell2 = row.createCell(1);
+cell2 = row.createCell(2);
 if (record.getR9_AMOUNT() != null) {
  cell2.setCellValue(record.getR9_AMOUNT().doubleValue());
  cell2.setCellStyle(numberStyle);
@@ -566,7 +566,7 @@ if (record.getR9_AMOUNT() != null) {
 
 //R10
 row = sheet.getRow(9);
-cell2 = row.createCell(1);
+cell2 = row.createCell(2);
 if (record.getR10_AMOUNT() != null) {
  cell2.setCellValue(record.getR10_AMOUNT().doubleValue());
  cell2.setCellStyle(numberStyle);
@@ -577,7 +577,7 @@ if (record.getR10_AMOUNT() != null) {
 
 //R11
 row = sheet.getRow(10);
-cell2 = row.createCell(1);
+cell2 = row.createCell(2);
 if (record.getR11_AMOUNT() != null) {
  cell2.setCellValue(record.getR11_AMOUNT().doubleValue());
  cell2.setCellStyle(numberStyle);
@@ -588,7 +588,7 @@ if (record.getR11_AMOUNT() != null) {
 
 //R12
 row = sheet.getRow(11);
-cell2 = row.createCell(1);
+cell2 = row.createCell(2);
 if (record.getR12_AMOUNT() != null) {
  cell2.setCellValue(record.getR12_AMOUNT().doubleValue());
  cell2.setCellStyle(numberStyle);
@@ -599,7 +599,7 @@ if (record.getR12_AMOUNT() != null) {
 
 //R13
 row = sheet.getRow(12);
-cell2 = row.createCell(1);
+cell2 = row.createCell(2);
 if (record.getR13_AMOUNT() != null) {
  cell2.setCellValue(record.getR13_AMOUNT().doubleValue());
  cell2.setCellStyle(numberStyle);
@@ -610,7 +610,7 @@ if (record.getR13_AMOUNT() != null) {
 
 //R14
 row = sheet.getRow(13);
-cell2 = row.createCell(1);
+cell2 = row.createCell(2);
 if (record.getR14_AMOUNT() != null) {
  cell2.setCellValue(record.getR14_AMOUNT().doubleValue());
  cell2.setCellStyle(numberStyle);
@@ -621,7 +621,7 @@ if (record.getR14_AMOUNT() != null) {
 
 //R15
 row = sheet.getRow(14);
-cell2 = row.createCell(1);
+cell2 = row.createCell(2);
 if (record.getR15_AMOUNT() != null) {
  cell2.setCellValue(record.getR15_AMOUNT().doubleValue());
  cell2.setCellStyle(numberStyle);
@@ -632,7 +632,7 @@ if (record.getR15_AMOUNT() != null) {
 
 //R16
 row = sheet.getRow(15);
-cell2 = row.createCell(1);
+cell2 = row.createCell(2);
 if (record.getR16_AMOUNT() != null) {
  cell2.setCellValue(record.getR16_AMOUNT().doubleValue());
  cell2.setCellStyle(numberStyle);
@@ -643,7 +643,7 @@ if (record.getR16_AMOUNT() != null) {
 
 //R17
 row = sheet.getRow(16);
-cell2 = row.createCell(1);
+cell2 = row.createCell(2);
 if (record.getR17_AMOUNT() != null) {
  cell2.setCellValue(record.getR17_AMOUNT().doubleValue());
  cell2.setCellStyle(numberStyle);
@@ -654,7 +654,7 @@ if (record.getR17_AMOUNT() != null) {
 
 //R18
 row = sheet.getRow(17);
-cell2 = row.createCell(1);
+cell2 = row.createCell(2);
 if (record.getR18_AMOUNT() != null) {
  cell2.setCellValue(record.getR18_AMOUNT().doubleValue());
  cell2.setCellStyle(numberStyle);
@@ -665,7 +665,7 @@ if (record.getR18_AMOUNT() != null) {
 
 //R19
 row = sheet.getRow(18);
-cell2 = row.createCell(1);
+cell2 = row.createCell(2);
 if (record.getR19_AMOUNT() != null) {
  cell2.setCellValue(record.getR19_AMOUNT().doubleValue());
  cell2.setCellStyle(numberStyle);
@@ -676,7 +676,7 @@ if (record.getR19_AMOUNT() != null) {
 
 //R20
 row = sheet.getRow(19);
-cell2 = row.createCell(1);
+cell2 = row.createCell(2);
 if (record.getR20_AMOUNT() != null) {
  cell2.setCellValue(record.getR20_AMOUNT().doubleValue());
  cell2.setCellStyle(numberStyle);
@@ -687,7 +687,7 @@ if (record.getR20_AMOUNT() != null) {
 
 //R21
 row = sheet.getRow(20);
-cell2 = row.createCell(1);
+cell2 = row.createCell(2);
 if (record.getR21_AMOUNT() != null) {
  cell2.setCellValue(record.getR21_AMOUNT().doubleValue());
  cell2.setCellStyle(numberStyle);
@@ -698,7 +698,7 @@ if (record.getR21_AMOUNT() != null) {
 
 //R22
 row = sheet.getRow(21);
-cell2 = row.createCell(1);
+cell2 = row.createCell(2);
 if (record.getR22_AMOUNT() != null) {
  cell2.setCellValue(record.getR22_AMOUNT().doubleValue());
  cell2.setCellStyle(numberStyle);
@@ -709,7 +709,7 @@ if (record.getR22_AMOUNT() != null) {
 
 //R23
 row = sheet.getRow(22);
-cell2 = row.createCell(1);
+cell2 = row.createCell(2);
 if (record.getR23_AMOUNT() != null) {
  cell2.setCellValue(record.getR23_AMOUNT().doubleValue());
  cell2.setCellStyle(numberStyle);
@@ -720,7 +720,7 @@ if (record.getR23_AMOUNT() != null) {
 
 //R24
 row = sheet.getRow(23);
-cell2 = row.createCell(1);
+cell2 = row.createCell(2);
 if (record.getR24_AMOUNT() != null) {
  cell2.setCellValue(record.getR24_AMOUNT().doubleValue());
  cell2.setCellStyle(numberStyle);
@@ -731,7 +731,7 @@ if (record.getR24_AMOUNT() != null) {
 
 //R25
 row = sheet.getRow(24);
-cell2 = row.createCell(1);
+cell2 = row.createCell(2);
 if (record.getR25_AMOUNT() != null) {
  cell2.setCellValue(record.getR25_AMOUNT().doubleValue());
  cell2.setCellStyle(numberStyle);
@@ -742,7 +742,7 @@ if (record.getR25_AMOUNT() != null) {
 
 //R26
 row = sheet.getRow(25);
-cell2 = row.createCell(1);
+cell2 = row.createCell(2);
 if (record.getR26_AMOUNT() != null) {
  cell2.setCellValue(record.getR26_AMOUNT().doubleValue());
  cell2.setCellStyle(numberStyle);
@@ -753,7 +753,7 @@ if (record.getR26_AMOUNT() != null) {
 
 //R27
 row = sheet.getRow(26);
-cell2 = row.createCell(1);
+cell2 = row.createCell(2);
 if (record.getR27_AMOUNT() != null) {
  cell2.setCellValue(record.getR27_AMOUNT().doubleValue());
  cell2.setCellStyle(numberStyle);
@@ -764,7 +764,7 @@ if (record.getR27_AMOUNT() != null) {
 
 //R28
 row = sheet.getRow(27);
-cell2 = row.createCell(1);
+cell2 = row.createCell(2);
 if (record.getR28_AMOUNT() != null) {
  cell2.setCellValue(record.getR28_AMOUNT().doubleValue());
  cell2.setCellStyle(numberStyle);
@@ -775,7 +775,7 @@ if (record.getR28_AMOUNT() != null) {
 
 //R29
 row = sheet.getRow(28);
-cell2 = row.createCell(1);
+cell2 = row.createCell(2);
 if (record.getR29_AMOUNT() != null) {
  cell2.setCellValue(record.getR29_AMOUNT().doubleValue());
  cell2.setCellStyle(numberStyle);
@@ -786,7 +786,7 @@ if (record.getR29_AMOUNT() != null) {
 
 //R30
 row = sheet.getRow(29);
-cell2 = row.createCell(1);
+cell2 = row.createCell(2);
 if (record.getR30_AMOUNT() != null) {
  cell2.setCellValue(record.getR30_AMOUNT().doubleValue());
  cell2.setCellStyle(numberStyle);
@@ -797,7 +797,7 @@ if (record.getR30_AMOUNT() != null) {
 
 //R31
 row = sheet.getRow(30);
-cell2 = row.createCell(1);
+cell2 = row.createCell(2);
 if (record.getR31_AMOUNT() != null) {
  cell2.setCellValue(record.getR31_AMOUNT().doubleValue());
  cell2.setCellStyle(numberStyle);
@@ -808,7 +808,7 @@ if (record.getR31_AMOUNT() != null) {
 
 //R32
 row = sheet.getRow(31);
-cell2 = row.createCell(1);
+cell2 = row.createCell(2);
 if (record.getR32_AMOUNT() != null) {
  cell2.setCellValue(record.getR32_AMOUNT().doubleValue());
  cell2.setCellStyle(numberStyle);
@@ -819,7 +819,7 @@ if (record.getR32_AMOUNT() != null) {
 
 //R33
 row = sheet.getRow(32);
-cell2 = row.createCell(1);
+cell2 = row.createCell(2);
 if (record.getR33_AMOUNT() != null) {
  cell2.setCellValue(record.getR33_AMOUNT().doubleValue());
  cell2.setCellStyle(numberStyle);
@@ -830,7 +830,7 @@ if (record.getR33_AMOUNT() != null) {
 
 //R34
 row = sheet.getRow(33);
-cell2 = row.createCell(1);
+cell2 = row.createCell(2);
 if (record.getR34_AMOUNT() != null) {
  cell2.setCellValue(record.getR34_AMOUNT().doubleValue());
  cell2.setCellStyle(numberStyle);
@@ -841,7 +841,7 @@ if (record.getR34_AMOUNT() != null) {
 
 //R35
 row = sheet.getRow(34);
-cell2 = row.createCell(1);
+cell2 = row.createCell(2);
 if (record.getR35_AMOUNT() != null) {
  cell2.setCellValue(record.getR35_AMOUNT().doubleValue());
  cell2.setCellStyle(numberStyle);
@@ -852,7 +852,7 @@ if (record.getR35_AMOUNT() != null) {
 
 //R36
 row = sheet.getRow(35);
-cell2 = row.createCell(1);
+cell2 = row.createCell(2);
 if (record.getR36_AMOUNT() != null) {
  cell2.setCellValue(record.getR36_AMOUNT().doubleValue());
  cell2.setCellStyle(numberStyle);
@@ -863,7 +863,7 @@ if (record.getR36_AMOUNT() != null) {
 
 //R37
 row = sheet.getRow(36);
-cell2 = row.createCell(1);
+cell2 = row.createCell(2);
 if (record.getR37_AMOUNT() != null) {
  cell2.setCellValue(record.getR37_AMOUNT().doubleValue());
  cell2.setCellStyle(numberStyle);
@@ -874,7 +874,7 @@ if (record.getR37_AMOUNT() != null) {
 
 //R38
 row = sheet.getRow(37);
-cell2 = row.createCell(1);
+cell2 = row.createCell(2);
 if (record.getR38_AMOUNT() != null) {
  cell2.setCellValue(record.getR38_AMOUNT().doubleValue());
  cell2.setCellStyle(numberStyle);
@@ -885,7 +885,7 @@ if (record.getR38_AMOUNT() != null) {
 
 //R39
 row = sheet.getRow(38);
-cell2 = row.createCell(1);
+cell2 = row.createCell(2);
 if (record.getR39_AMOUNT() != null) {
  cell2.setCellValue(record.getR39_AMOUNT().doubleValue());
  cell2.setCellStyle(numberStyle);
@@ -896,7 +896,7 @@ if (record.getR39_AMOUNT() != null) {
 
 //R40
 row = sheet.getRow(39);
-cell2 = row.createCell(1);
+cell2 = row.createCell(2);
 if (record.getR40_AMOUNT() != null) {
  cell2.setCellValue(record.getR40_AMOUNT().doubleValue());
  cell2.setCellStyle(numberStyle);
@@ -907,7 +907,7 @@ if (record.getR40_AMOUNT() != null) {
 
 //R41
 row = sheet.getRow(40);
-cell2 = row.createCell(1);
+cell2 = row.createCell(2);
 if (record.getR41_AMOUNT() != null) {
  cell2.setCellValue(record.getR41_AMOUNT().doubleValue());
  cell2.setCellStyle(numberStyle);
@@ -918,7 +918,7 @@ if (record.getR41_AMOUNT() != null) {
 
 //R42
 row = sheet.getRow(41);
-cell2 = row.createCell(1);
+cell2 = row.createCell(2);
 if (record.getR42_AMOUNT() != null) {
  cell2.setCellValue(record.getR42_AMOUNT().doubleValue());
  cell2.setCellStyle(numberStyle);
@@ -929,7 +929,7 @@ if (record.getR42_AMOUNT() != null) {
 
 //R43
 row = sheet.getRow(42);
-cell2 = row.createCell(1);
+cell2 = row.createCell(2);
 if (record.getR43_AMOUNT() != null) {
  cell2.setCellValue(record.getR43_AMOUNT().doubleValue());
  cell2.setCellStyle(numberStyle);
@@ -940,7 +940,7 @@ if (record.getR43_AMOUNT() != null) {
 
 //R44
 row = sheet.getRow(43);
-cell2 = row.createCell(1);
+cell2 = row.createCell(2);
 if (record.getR44_AMOUNT() != null) {
  cell2.setCellValue(record.getR44_AMOUNT().doubleValue());
  cell2.setCellStyle(numberStyle);
@@ -952,7 +952,7 @@ if (record.getR44_AMOUNT() != null) {
 
 //R46
 row = sheet.getRow(45);
-cell2 = row.createCell(1);
+cell2 = row.createCell(2);
 if (record.getR46_AMOUNT() != null) {
  cell2.setCellValue(record.getR46_AMOUNT().doubleValue());
  cell2.setCellStyle(numberStyle);
@@ -963,7 +963,7 @@ if (record.getR46_AMOUNT() != null) {
 
 //R47
 row = sheet.getRow(46);
-cell2 = row.createCell(1);
+cell2 = row.createCell(2);
 if (record.getR47_AMOUNT() != null) {
  cell2.setCellValue(record.getR47_AMOUNT().doubleValue());
  cell2.setCellStyle(numberStyle);
@@ -974,7 +974,7 @@ if (record.getR47_AMOUNT() != null) {
 
 //R48
 row = sheet.getRow(47);
-cell2 = row.createCell(1);
+cell2 = row.createCell(2);
 if (record.getR48_AMOUNT() != null) {
  cell2.setCellValue(record.getR48_AMOUNT().doubleValue());
  cell2.setCellStyle(numberStyle);
@@ -985,7 +985,7 @@ if (record.getR48_AMOUNT() != null) {
 
 
 }
-workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
+workbook.setForceFormulaRecalculation(true);
 } else {
 
 }
@@ -1227,7 +1227,7 @@ return new byte[0];
 				row = sheet.createRow(startRow + i);
 				}
 				
-				Cell cell2 = row.createCell(1);
+				Cell cell2 = row.createCell(2);
 				if (record1.getR8_AMOUNT() != null) {
 				   cell2.setCellValue(record1.getR8_AMOUNT().doubleValue());
 				   cell2.setCellStyle(numberStyle);
@@ -1238,7 +1238,7 @@ return new byte[0];
 
 				//R9
 				row = sheet.getRow(8);
-				cell2 = row.createCell(1);
+				cell2 = row.createCell(2);
 				if (record1.getR9_AMOUNT() != null) {
 				 cell2.setCellValue(record1.getR9_AMOUNT().doubleValue());
 				 cell2.setCellStyle(numberStyle);
@@ -1249,7 +1249,7 @@ return new byte[0];
 
 				//R10
 				row = sheet.getRow(9);
-				cell2 = row.createCell(1);
+				cell2 = row.createCell(2);
 				if (record1.getR10_AMOUNT() != null) {
 				 cell2.setCellValue(record1.getR10_AMOUNT().doubleValue());
 				 cell2.setCellStyle(numberStyle);
@@ -1260,7 +1260,7 @@ return new byte[0];
 
 				//R11
 				row = sheet.getRow(10);
-				cell2 = row.createCell(1);
+				cell2 = row.createCell(2);
 				if (record1.getR11_AMOUNT() != null) {
 				 cell2.setCellValue(record1.getR11_AMOUNT().doubleValue());
 				 cell2.setCellStyle(numberStyle);
@@ -1271,7 +1271,7 @@ return new byte[0];
 
 				//R12
 				row = sheet.getRow(11);
-				cell2 = row.createCell(1);
+				cell2 = row.createCell(2);
 				if (record1.getR12_AMOUNT() != null) {
 				 cell2.setCellValue(record1.getR12_AMOUNT().doubleValue());
 				 cell2.setCellStyle(numberStyle);
@@ -1282,7 +1282,7 @@ return new byte[0];
 
 				//R13
 				row = sheet.getRow(12);
-				cell2 = row.createCell(1);
+				cell2 = row.createCell(2);
 				if (record1.getR13_AMOUNT() != null) {
 				 cell2.setCellValue(record1.getR13_AMOUNT().doubleValue());
 				 cell2.setCellStyle(numberStyle);
@@ -1293,7 +1293,7 @@ return new byte[0];
 
 				//R14
 				row = sheet.getRow(13);
-				cell2 = row.createCell(1);
+				cell2 = row.createCell(2);
 				if (record1.getR14_AMOUNT() != null) {
 				 cell2.setCellValue(record1.getR14_AMOUNT().doubleValue());
 				 cell2.setCellStyle(numberStyle);
@@ -1304,7 +1304,7 @@ return new byte[0];
 
 				//R15
 				row = sheet.getRow(14);
-				cell2 = row.createCell(1);
+				cell2 = row.createCell(2);
 				if (record1.getR15_AMOUNT() != null) {
 				 cell2.setCellValue(record1.getR15_AMOUNT().doubleValue());
 				 cell2.setCellStyle(numberStyle);
@@ -1315,7 +1315,7 @@ return new byte[0];
 
 				//R16
 				row = sheet.getRow(15);
-				cell2 = row.createCell(1);
+				cell2 = row.createCell(2);
 				if (record1.getR16_AMOUNT() != null) {
 				 cell2.setCellValue(record1.getR16_AMOUNT().doubleValue());
 				 cell2.setCellStyle(numberStyle);
@@ -1326,7 +1326,7 @@ return new byte[0];
 
 				//R17
 				row = sheet.getRow(16);
-				cell2 = row.createCell(1);
+				cell2 = row.createCell(2);
 				if (record1.getR17_AMOUNT() != null) {
 				 cell2.setCellValue(record1.getR17_AMOUNT().doubleValue());
 				 cell2.setCellStyle(numberStyle);
@@ -1337,7 +1337,7 @@ return new byte[0];
 
 				//R18
 				row = sheet.getRow(17);
-				cell2 = row.createCell(1);
+				cell2 = row.createCell(2);
 				if (record1.getR18_AMOUNT() != null) {
 				 cell2.setCellValue(record1.getR18_AMOUNT().doubleValue());
 				 cell2.setCellStyle(numberStyle);
@@ -1348,7 +1348,7 @@ return new byte[0];
 
 				//R19
 				row = sheet.getRow(18);
-				cell2 = row.createCell(1);
+				cell2 = row.createCell(2);
 				if (record1.getR19_AMOUNT() != null) {
 				 cell2.setCellValue(record1.getR19_AMOUNT().doubleValue());
 				 cell2.setCellStyle(numberStyle);
@@ -1359,7 +1359,7 @@ return new byte[0];
 
 				//R20
 				row = sheet.getRow(19);
-				cell2 = row.createCell(1);
+				cell2 = row.createCell(2);
 				if (record1.getR20_AMOUNT() != null) {
 				 cell2.setCellValue(record1.getR20_AMOUNT().doubleValue());
 				 cell2.setCellStyle(numberStyle);
@@ -1370,7 +1370,7 @@ return new byte[0];
 
 				//R21
 				row = sheet.getRow(20);
-				cell2 = row.createCell(1);
+				cell2 = row.createCell(2);
 				if (record1.getR21_AMOUNT() != null) {
 				 cell2.setCellValue(record1.getR21_AMOUNT().doubleValue());
 				 cell2.setCellStyle(numberStyle);
@@ -1381,7 +1381,7 @@ return new byte[0];
 
 				//R22
 				row = sheet.getRow(21);
-				cell2 = row.createCell(1);
+				cell2 = row.createCell(2);
 				if (record1.getR22_AMOUNT() != null) {
 				 cell2.setCellValue(record1.getR22_AMOUNT().doubleValue());
 				 cell2.setCellStyle(numberStyle);
@@ -1392,7 +1392,7 @@ return new byte[0];
 
 				//R23
 				row = sheet.getRow(22);
-				cell2 = row.createCell(1);
+				cell2 = row.createCell(2);
 				if (record1.getR23_AMOUNT() != null) {
 				 cell2.setCellValue(record1.getR23_AMOUNT().doubleValue());
 				 cell2.setCellStyle(numberStyle);
@@ -1403,7 +1403,7 @@ return new byte[0];
 
 				//R24
 				row = sheet.getRow(23);
-				cell2 = row.createCell(1);
+				cell2 = row.createCell(2);
 				if (record1.getR24_AMOUNT() != null) {
 				 cell2.setCellValue(record1.getR24_AMOUNT().doubleValue());
 				 cell2.setCellStyle(numberStyle);
@@ -1414,7 +1414,7 @@ return new byte[0];
 
 				//R25
 				row = sheet.getRow(24);
-				cell2 = row.createCell(1);
+				cell2 = row.createCell(2);
 				if (record1.getR25_AMOUNT() != null) {
 				 cell2.setCellValue(record1.getR25_AMOUNT().doubleValue());
 				 cell2.setCellStyle(numberStyle);
@@ -1425,7 +1425,7 @@ return new byte[0];
 
 				//R26
 				row = sheet.getRow(25);
-				cell2 = row.createCell(1);
+				cell2 = row.createCell(2);
 				if (record1.getR26_AMOUNT() != null) {
 				 cell2.setCellValue(record1.getR26_AMOUNT().doubleValue());
 				 cell2.setCellStyle(numberStyle);
@@ -1436,7 +1436,7 @@ return new byte[0];
 
 				//R27
 				row = sheet.getRow(26);
-				cell2 = row.createCell(1);
+				cell2 = row.createCell(2);
 				if (record1.getR27_AMOUNT() != null) {
 				 cell2.setCellValue(record1.getR27_AMOUNT().doubleValue());
 				 cell2.setCellStyle(numberStyle);
@@ -1447,7 +1447,7 @@ return new byte[0];
 
 				//R28
 				row = sheet.getRow(27);
-				cell2 = row.createCell(1);
+				cell2 = row.createCell(2);
 				if (record1.getR28_AMOUNT() != null) {
 				 cell2.setCellValue(record1.getR28_AMOUNT().doubleValue());
 				 cell2.setCellStyle(numberStyle);
@@ -1458,7 +1458,7 @@ return new byte[0];
 
 				//R29
 				row = sheet.getRow(28);
-				cell2 = row.createCell(1);
+				cell2 = row.createCell(2);
 				if (record1.getR29_AMOUNT() != null) {
 				 cell2.setCellValue(record1.getR29_AMOUNT().doubleValue());
 				 cell2.setCellStyle(numberStyle);
@@ -1469,7 +1469,7 @@ return new byte[0];
 
 				//R30
 				row = sheet.getRow(29);
-				cell2 = row.createCell(1);
+				cell2 = row.createCell(2);
 				if (record1.getR30_AMOUNT() != null) {
 				 cell2.setCellValue(record1.getR30_AMOUNT().doubleValue());
 				 cell2.setCellStyle(numberStyle);
@@ -1480,7 +1480,7 @@ return new byte[0];
 
 				//R31
 				row = sheet.getRow(30);
-				cell2 = row.createCell(1);
+				cell2 = row.createCell(2);
 				if (record1.getR31_AMOUNT() != null) {
 				 cell2.setCellValue(record1.getR31_AMOUNT().doubleValue());
 				 cell2.setCellStyle(numberStyle);
@@ -1491,7 +1491,7 @@ return new byte[0];
 
 				//R32
 				row = sheet.getRow(31);
-				cell2 = row.createCell(1);
+				cell2 = row.createCell(2);
 				if (record1.getR32_AMOUNT() != null) {
 				 cell2.setCellValue(record1.getR32_AMOUNT().doubleValue());
 				 cell2.setCellStyle(numberStyle);
@@ -1502,7 +1502,7 @@ return new byte[0];
 
 				//R33
 				row = sheet.getRow(32);
-				cell2 = row.createCell(1);
+				cell2 = row.createCell(2);
 				if (record1.getR33_AMOUNT() != null) {
 				 cell2.setCellValue(record1.getR33_AMOUNT().doubleValue());
 				 cell2.setCellStyle(numberStyle);
@@ -1513,7 +1513,7 @@ return new byte[0];
 
 				//R34
 				row = sheet.getRow(33);
-				cell2 = row.createCell(1);
+				cell2 = row.createCell(2);
 				if (record1.getR34_AMOUNT() != null) {
 				 cell2.setCellValue(record1.getR34_AMOUNT().doubleValue());
 				 cell2.setCellStyle(numberStyle);
@@ -1524,7 +1524,7 @@ return new byte[0];
 
 				//R35
 				row = sheet.getRow(34);
-				cell2 = row.createCell(1);
+				cell2 = row.createCell(2);
 				if (record1.getR35_AMOUNT() != null) {
 				 cell2.setCellValue(record1.getR35_AMOUNT().doubleValue());
 				 cell2.setCellStyle(numberStyle);
@@ -1535,7 +1535,7 @@ return new byte[0];
 
 				//R36
 				row = sheet.getRow(35);
-				cell2 = row.createCell(1);
+				cell2 = row.createCell(2);
 				if (record1.getR36_AMOUNT() != null) {
 				 cell2.setCellValue(record1.getR36_AMOUNT().doubleValue());
 				 cell2.setCellStyle(numberStyle);
@@ -1546,7 +1546,7 @@ return new byte[0];
 
 				//R37
 				row = sheet.getRow(36);
-				cell2 = row.createCell(1);
+				cell2 = row.createCell(2);
 				if (record1.getR37_AMOUNT() != null) {
 				 cell2.setCellValue(record1.getR37_AMOUNT().doubleValue());
 				 cell2.setCellStyle(numberStyle);
@@ -1557,7 +1557,7 @@ return new byte[0];
 
 				//R38
 				row = sheet.getRow(37);
-				cell2 = row.createCell(1);
+				cell2 = row.createCell(2);
 				if (record1.getR38_AMOUNT() != null) {
 				 cell2.setCellValue(record1.getR38_AMOUNT().doubleValue());
 				 cell2.setCellStyle(numberStyle);
@@ -1568,7 +1568,7 @@ return new byte[0];
 
 				//R39
 				row = sheet.getRow(38);
-				cell2 = row.createCell(1);
+				cell2 = row.createCell(2);
 				if (record1.getR39_AMOUNT() != null) {
 				 cell2.setCellValue(record1.getR39_AMOUNT().doubleValue());
 				 cell2.setCellStyle(numberStyle);
@@ -1579,7 +1579,7 @@ return new byte[0];
 
 				//R40
 				row = sheet.getRow(39);
-				cell2 = row.createCell(1);
+				cell2 = row.createCell(2);
 				if (record1.getR40_AMOUNT() != null) {
 				 cell2.setCellValue(record1.getR40_AMOUNT().doubleValue());
 				 cell2.setCellStyle(numberStyle);
@@ -1590,7 +1590,7 @@ return new byte[0];
 
 				//R41
 				row = sheet.getRow(40);
-				cell2 = row.createCell(1);
+				cell2 = row.createCell(2);
 				if (record1.getR41_AMOUNT() != null) {
 				 cell2.setCellValue(record1.getR41_AMOUNT().doubleValue());
 				 cell2.setCellStyle(numberStyle);
@@ -1601,7 +1601,7 @@ return new byte[0];
 
 				//R42
 				row = sheet.getRow(41);
-				cell2 = row.createCell(1);
+				cell2 = row.createCell(2);
 				if (record1.getR42_AMOUNT() != null) {
 				 cell2.setCellValue(record1.getR42_AMOUNT().doubleValue());
 				 cell2.setCellStyle(numberStyle);
@@ -1612,7 +1612,7 @@ return new byte[0];
 
 				//R43
 				row = sheet.getRow(42);
-				cell2 = row.createCell(1);
+				cell2 = row.createCell(2);
 				if (record1.getR43_AMOUNT() != null) {
 				 cell2.setCellValue(record1.getR43_AMOUNT().doubleValue());
 				 cell2.setCellStyle(numberStyle);
@@ -1623,7 +1623,7 @@ return new byte[0];
 
 				//R44
 				row = sheet.getRow(43);
-				cell2 = row.createCell(1);
+				cell2 = row.createCell(2);
 				if (record1.getR44_AMOUNT() != null) {
 				 cell2.setCellValue(record1.getR44_AMOUNT().doubleValue());
 				 cell2.setCellStyle(numberStyle);
@@ -1635,7 +1635,7 @@ return new byte[0];
 
 				//R46
 				row = sheet.getRow(45);
-				cell2 = row.createCell(1);
+				cell2 = row.createCell(2);
 				if (record1.getR46_AMOUNT() != null) {
 				 cell2.setCellValue(record1.getR46_AMOUNT().doubleValue());
 				 cell2.setCellStyle(numberStyle);
@@ -1646,7 +1646,7 @@ return new byte[0];
 
 				//R47
 				row = sheet.getRow(46);
-				cell2 = row.createCell(1);
+				cell2 = row.createCell(2);
 				if (record1.getR47_AMOUNT() != null) {
 				 cell2.setCellValue(record1.getR47_AMOUNT().doubleValue());
 				 cell2.setCellStyle(numberStyle);
@@ -1657,7 +1657,7 @@ return new byte[0];
 
 				//R48
 				row = sheet.getRow(47);
-				cell2 = row.createCell(1);
+				cell2 = row.createCell(2);
 				if (record1.getR48_AMOUNT() != null) {
 				 cell2.setCellValue(record1.getR48_AMOUNT().doubleValue());
 				 cell2.setCellStyle(numberStyle);
@@ -1668,7 +1668,7 @@ return new byte[0];
 
 
 				}
-				workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
+				workbook.setForceFormulaRecalculation(true);
 				} else {
 
 				}
