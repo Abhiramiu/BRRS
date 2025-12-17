@@ -2370,7 +2370,7 @@ public class RegulatoryReportServices {
 		} else if ("FSIDetail".equals(filename)) {
 			return BRRS_FSI_ReportService.getFSIDetailExcel(
 					filename, fromdate, todate, currency, dtltype, type, version);
-		} else if ("FORMAT_NEW_CPRDetail".equals(filename)) {
+		} else if ("FNCDetail".equals(filename)) {
 			return BRRS_FORMAT_NEW_CPR_ReportService.getFORMAT_NEW_CPRDetailExcel(
 					filename, fromdate, todate, currency, dtltype, type, version);
 		} else if ("MDISB1".equals(filename)) {
@@ -3466,7 +3466,7 @@ public class RegulatoryReportServices {
 					dtltype, type, version);
 		}
 		
-		else if ("FORMAT_NEW_CPRDetail".equals(filename)) {
+		else if ("FNCDetail".equals(filename)) {
 
 			fileData = BRRS_FORMAT_NEW_CPR_ReportService.getFORMAT_NEW_CPRDetailExcel(filename, fromdate, todate, currency,
 					dtltype, type, version);

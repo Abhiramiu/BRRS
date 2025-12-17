@@ -327,7 +327,7 @@ return ARCHIVALreport;
 }
 
 XSSFWorkbook workbook = new XSSFWorkbook();
-XSSFSheet sheet = workbook.createSheet("FSIDetail");
+XSSFSheet sheet = workbook.createSheet("FNCDetail");
 
 //Common border style
 BorderStyle border = BorderStyle.THIN;
