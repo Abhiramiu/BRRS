@@ -289,6 +289,9 @@ public class RegulatoryReportServices {
 	BRRS_MDISB5_ReportService BRRS_MDISB5_ReportService;
 	
 	@Autowired
+	BRRS_MDISB4_ReportService BRRS_MDISB4_ReportService;
+	
+	@Autowired
 	BRRS_DBS10_FINCON_II_1A_ReportService BRRS_DBS10_FINCON_II_1A_ReportService;
 
 	@Autowired
@@ -592,6 +595,12 @@ public class RegulatoryReportServices {
 				
 			case "DBS10_FINCON_II_1A":
 				repsummary = BRRS_DBS10_FINCON_II_1A_ReportService.getDBS10_FINCON_II_1AView(reportId, fromdate, todate, currency, dtltype,
+						pageable,
+						type, version);
+				break;
+				
+			case "MDISB4":
+				repsummary = BRRS_MDISB4_ReportService.getMDISB4View(reportId, fromdate, todate, currency, dtltype,
 						pageable,
 						type, version);
 				break;
@@ -1083,6 +1092,11 @@ public class RegulatoryReportServices {
 				
 			case "DBS10_FINCON_II_1A":
 				repdetail = BRRS_DBS10_FINCON_II_1A_ReportService.getDBS10_FINCON_II_1AcurrentDtl(reportId, fromdate, todate, currency, dtltype,
+						pageable, Filter, type, version);
+				break;
+				
+			case "MDISB4":
+				repdetail = BRRS_MDISB4_ReportService.getMDISB4currentDtl(reportId, fromdate, todate, currency, dtltype,
 						pageable, Filter, type, version);
 				break;
 
@@ -1737,6 +1751,17 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
+				
+				
+			case "MDISB4":
+				try {
+					repfile = BRRS_MDISB4_ReportService.getMDISB4Excel(filename, reportId, fromdate, todate, currency,
+							dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
 			case "M_TOP_100_BORROWER":
 				try {
@@ -2373,10 +2398,13 @@ public class RegulatoryReportServices {
 			return BRRS_M_LCR_reportservice.getM_LCRDetailExcel(
 					filename, fromdate, todate, currency, dtltype, type, version);
 		} else if ("M_TOP_100_BORROWER".equals(filename)) {
-			return BRRS_M_TOP_100_BORROWER_reportservice.getM_TOP_100_BORROWERDetailExcel(
+			return BRRS_M_TOP_100_BORROWER_reportservice.getM_TOP_100_BORROWERDetailExcel(  
 					filename, fromdate, todate, currency, dtltype, type, version);
 		} else if ("DBS10_FINCON_II_1ADetail".equals(filename)) {
 			return BRRS_DBS10_FINCON_II_1A_ReportService.getDBS10_FINCON_II_1ADetailExcel(
+					filename, fromdate, todate, currency, dtltype, type, version);
+		} else if ("MDISB4Detail".equals(filename)) {
+			return BRRS_MDISB4_ReportService.getMDISB4DetailExcel(
 					filename, fromdate, todate, currency, dtltype, type, version);
 		} else if ("M_FASDetail".equals(filename)) {
 			return BRRS_M_FAS_reportservice.BRRS_M_FASDetailExcel(filename, fromdate, todate, currency, dtltype, type,
@@ -2681,6 +2709,16 @@ public class RegulatoryReportServices {
 			case "DBS10_FINCON_II_1A":
 				try {
 					archivalData = BRRS_DBS10_FINCON_II_1A_ReportService.getDBS10_FINCON_II_1AArchival();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+				
+				
+			case "MDISB4":
+				try {
+					archivalData = BRRS_MDISB4_ReportService.getMDISB4Archival();
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -3341,12 +3379,15 @@ public class RegulatoryReportServices {
 		} else if (filename.equals("M_LCRDetail")) {
 			fileData = BRRS_M_LCR_reportservice.getM_LCRDetailExcel(filename, fromdate, todate, currency, dtltype, type,
 					version);
-		} else if (filename.equals("M_TOP_100_BORROWERDetail")) {
+		} else if (filename.equals("M_TOP_100_BORROWERDetail")) {  
 			fileData = BRRS_M_TOP_100_BORROWER_reportservice.getM_TOP_100_BORROWERDetailExcel(filename, fromdate,
 					todate, currency, dtltype, type,
 					version);
 		} else if (filename.equals("DBS10_FINCON_II_1ADetail")) {
 			fileData = BRRS_DBS10_FINCON_II_1A_ReportService.getDBS10_FINCON_II_1ADetailExcel(filename, fromdate, todate, currency, dtltype, type,
+					version);
+		} else if (filename.equals("MDISB4Detail")) {
+			fileData = BRRS_MDISB4_ReportService.getMDISB4DetailExcel(filename, fromdate, todate, currency, dtltype, type,
 					version);
 		} else if (filename.equals("Q_SMME_LA")) {
 			fileData = BRRS_Q_SMME_loans_Advances_reportService.BRRS_Q_SMMEDetailExcel(filename, fromdate, todate,
@@ -3643,6 +3684,11 @@ public class RegulatoryReportServices {
 					modelAndView = BRRS_DBS10_FINCON_II_1A_ReportService.getViewOrEditPage(request.getParameter("acctNo"),
 							request.getParameter("formmode"));
 					break;
+					
+				case "MDISB4":
+					modelAndView = BRRS_MDISB4_ReportService.getViewOrEditPage(request.getParameter("acctNo"),
+							request.getParameter("formmode"));
+					break;
 
 				case "M_DEP1":
 					modelAndView = BRRS_M_DEP1_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
@@ -3889,10 +3935,14 @@ public class RegulatoryReportServices {
 
 				case "M_TOP_100_BORROWER":
 					response = BRRS_M_TOP_100_BORROWER_reportservice.updateDetailEdit(request);
-					break;
+					break; 
 					
 				case "DBS10_FINCON_II_1A":
 					response = BRRS_DBS10_FINCON_II_1A_ReportService.updateDetailEdit(request);
+					break;
+					
+				case "MDISB4":
+					response = BRRS_MDISB4_ReportService.updateDetailEdit(request);
 					break;
 
 				case "M_DEP1":

@@ -1,0 +1,455 @@
+package com.bornfire.brrs.entities;
+
+import java.math.BigDecimal;
+import java.util.Date;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import org.springframework.format.annotation.DateTimeFormat;
+
+@Entity
+@Table(name = "BRRS_MDISB4_ARCHIVALTABLE_SUMMARY")
+
+public class MDISB4_Archival_Summary_Entity {
+	
+	
+    private String R6_EXCLUSIONS;
+    private BigDecimal R6_DEPOSITS_EXCLU_FCA_NO_OF_ACCOUNTS;
+    private BigDecimal R6_DEPOSITS_EXCLU_FCA_AMOUNT;
+    private BigDecimal R6_FOREIGN_CURR_DEPOS_NO_OF_ACCOUNTS;
+    private BigDecimal R6_FOREIGN_CURR_DEPOS_AMOUNT;
+    private BigDecimal R6_TOTAL_NO_OF_ACCOUNTS;
+    private BigDecimal R6_TOTAL_AMOUNT;
+
+    
+    private String R7_EXCLUSIONS;
+    private BigDecimal R7_DEPOSITS_EXCLU_FCA_NO_OF_ACCOUNTS;
+    private BigDecimal R7_DEPOSITS_EXCLU_FCA_AMOUNT;
+    private BigDecimal R7_FOREIGN_CURR_DEPOS_NO_OF_ACCOUNTS;
+    private BigDecimal R7_FOREIGN_CURR_DEPOS_AMOUNT;
+    private BigDecimal R7_TOTAL_NO_OF_ACCOUNTS;
+    private BigDecimal R7_TOTAL_AMOUNT;
+
+   
+    private String R8_EXCLUSIONS;
+    private BigDecimal R8_DEPOSITS_EXCLU_FCA_NO_OF_ACCOUNTS;
+    private BigDecimal R8_DEPOSITS_EXCLU_FCA_AMOUNT;
+    private BigDecimal R8_FOREIGN_CURR_DEPOS_NO_OF_ACCOUNTS;
+    private BigDecimal R8_FOREIGN_CURR_DEPOS_AMOUNT;
+    private BigDecimal R8_TOTAL_NO_OF_ACCOUNTS;
+    private BigDecimal R8_TOTAL_AMOUNT;
+
+   
+    private String R9_EXCLUSIONS;
+    private BigDecimal R9_DEPOSITS_EXCLU_FCA_NO_OF_ACCOUNTS;
+    private BigDecimal R9_DEPOSITS_EXCLU_FCA_AMOUNT;
+    private BigDecimal R9_FOREIGN_CURR_DEPOS_NO_OF_ACCOUNTS;
+    private BigDecimal R9_FOREIGN_CURR_DEPOS_AMOUNT;
+    private BigDecimal R9_TOTAL_NO_OF_ACCOUNTS;
+    private BigDecimal R9_TOTAL_AMOUNT;
+
+   
+    private String R10_EXCLUSIONS;
+    private BigDecimal R10_DEPOSITS_EXCLU_FCA_NO_OF_ACCOUNTS;
+    private BigDecimal R10_DEPOSITS_EXCLU_FCA_AMOUNT;
+    private BigDecimal R10_FOREIGN_CURR_DEPOS_NO_OF_ACCOUNTS;
+    private BigDecimal R10_FOREIGN_CURR_DEPOS_AMOUNT;
+    private BigDecimal R10_TOTAL_NO_OF_ACCOUNTS;
+    private BigDecimal R10_TOTAL_AMOUNT;
+
+    
+    private String R11_EXCLUSIONS;
+    private BigDecimal R11_DEPOSITS_EXCLU_FCA_NO_OF_ACCOUNTS;
+    private BigDecimal R11_DEPOSITS_EXCLU_FCA_AMOUNT;
+    private BigDecimal R11_FOREIGN_CURR_DEPOS_NO_OF_ACCOUNTS;
+    private BigDecimal R11_FOREIGN_CURR_DEPOS_AMOUNT;
+    private BigDecimal R11_TOTAL_NO_OF_ACCOUNTS;
+    private BigDecimal R11_TOTAL_AMOUNT;
+
+   
+    private String R12_EXCLUSIONS;
+    private BigDecimal R12_DEPOSITS_EXCLU_FCA_NO_OF_ACCOUNTS;
+    private BigDecimal R12_DEPOSITS_EXCLU_FCA_AMOUNT;
+    private BigDecimal R12_FOREIGN_CURR_DEPOS_NO_OF_ACCOUNTS;
+    private BigDecimal R12_FOREIGN_CURR_DEPOS_AMOUNT;
+    private BigDecimal R12_TOTAL_NO_OF_ACCOUNTS;
+    private BigDecimal R12_TOTAL_AMOUNT;
+
+    @Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern = "dd/MM/yyyy")
+    @Id
+    @Column(name = "REPORT_DATE")
+	private Date reportDate;
+    
+	@Column(name = "REPORT_VERSION")
+	private String reportVersion;
+	
+    private String REPORT_FREQUENCY;
+    private String REPORT_CODE;
+    private String REPORT_DESC;
+    private String ENTITY_FLG;
+    private String MODIFY_FLG;
+    private String DELETE_FLG;
+    
+    
+    
+	public String getR6_EXCLUSIONS() {
+		return R6_EXCLUSIONS;
+	}
+	public void setR6_EXCLUSIONS(String r6_EXCLUSIONS) {
+		R6_EXCLUSIONS = r6_EXCLUSIONS;
+	}
+	public BigDecimal getR6_DEPOSITS_EXCLU_FCA_NO_OF_ACCOUNTS() {
+		return R6_DEPOSITS_EXCLU_FCA_NO_OF_ACCOUNTS;
+	}
+	public void setR6_DEPOSITS_EXCLU_FCA_NO_OF_ACCOUNTS(BigDecimal r6_DEPOSITS_EXCLU_FCA_NO_OF_ACCOUNTS) {
+		R6_DEPOSITS_EXCLU_FCA_NO_OF_ACCOUNTS = r6_DEPOSITS_EXCLU_FCA_NO_OF_ACCOUNTS;
+	}
+	public BigDecimal getR6_DEPOSITS_EXCLU_FCA_AMOUNT() {
+		return R6_DEPOSITS_EXCLU_FCA_AMOUNT;
+	}
+	public void setR6_DEPOSITS_EXCLU_FCA_AMOUNT(BigDecimal r6_DEPOSITS_EXCLU_FCA_AMOUNT) {
+		R6_DEPOSITS_EXCLU_FCA_AMOUNT = r6_DEPOSITS_EXCLU_FCA_AMOUNT;
+	}
+	public BigDecimal getR6_FOREIGN_CURR_DEPOS_NO_OF_ACCOUNTS() {
+		return R6_FOREIGN_CURR_DEPOS_NO_OF_ACCOUNTS;
+	}
+	public void setR6_FOREIGN_CURR_DEPOS_NO_OF_ACCOUNTS(BigDecimal r6_FOREIGN_CURR_DEPOS_NO_OF_ACCOUNTS) {
+		R6_FOREIGN_CURR_DEPOS_NO_OF_ACCOUNTS = r6_FOREIGN_CURR_DEPOS_NO_OF_ACCOUNTS;
+	}
+	public BigDecimal getR6_FOREIGN_CURR_DEPOS_AMOUNT() {
+		return R6_FOREIGN_CURR_DEPOS_AMOUNT;
+	}
+	public void setR6_FOREIGN_CURR_DEPOS_AMOUNT(BigDecimal r6_FOREIGN_CURR_DEPOS_AMOUNT) {
+		R6_FOREIGN_CURR_DEPOS_AMOUNT = r6_FOREIGN_CURR_DEPOS_AMOUNT;
+	}
+	public BigDecimal getR6_TOTAL_NO_OF_ACCOUNTS() {
+		return R6_TOTAL_NO_OF_ACCOUNTS;
+	}
+	public void setR6_TOTAL_NO_OF_ACCOUNTS(BigDecimal r6_TOTAL_NO_OF_ACCOUNTS) {
+		R6_TOTAL_NO_OF_ACCOUNTS = r6_TOTAL_NO_OF_ACCOUNTS;
+	}
+	public BigDecimal getR6_TOTAL_AMOUNT() {
+		return R6_TOTAL_AMOUNT;
+	}
+	public void setR6_TOTAL_AMOUNT(BigDecimal r6_TOTAL_AMOUNT) {
+		R6_TOTAL_AMOUNT = r6_TOTAL_AMOUNT;
+	}
+	public String getR7_EXCLUSIONS() {
+		return R7_EXCLUSIONS;
+	}
+	public void setR7_EXCLUSIONS(String r7_EXCLUSIONS) {
+		R7_EXCLUSIONS = r7_EXCLUSIONS;
+	}
+	public BigDecimal getR7_DEPOSITS_EXCLU_FCA_NO_OF_ACCOUNTS() {
+		return R7_DEPOSITS_EXCLU_FCA_NO_OF_ACCOUNTS;
+	}
+	public void setR7_DEPOSITS_EXCLU_FCA_NO_OF_ACCOUNTS(BigDecimal r7_DEPOSITS_EXCLU_FCA_NO_OF_ACCOUNTS) {
+		R7_DEPOSITS_EXCLU_FCA_NO_OF_ACCOUNTS = r7_DEPOSITS_EXCLU_FCA_NO_OF_ACCOUNTS;
+	}
+	public BigDecimal getR7_DEPOSITS_EXCLU_FCA_AMOUNT() {
+		return R7_DEPOSITS_EXCLU_FCA_AMOUNT;
+	}
+	public void setR7_DEPOSITS_EXCLU_FCA_AMOUNT(BigDecimal r7_DEPOSITS_EXCLU_FCA_AMOUNT) {
+		R7_DEPOSITS_EXCLU_FCA_AMOUNT = r7_DEPOSITS_EXCLU_FCA_AMOUNT;
+	}
+	public BigDecimal getR7_FOREIGN_CURR_DEPOS_NO_OF_ACCOUNTS() {
+		return R7_FOREIGN_CURR_DEPOS_NO_OF_ACCOUNTS;
+	}
+	public void setR7_FOREIGN_CURR_DEPOS_NO_OF_ACCOUNTS(BigDecimal r7_FOREIGN_CURR_DEPOS_NO_OF_ACCOUNTS) {
+		R7_FOREIGN_CURR_DEPOS_NO_OF_ACCOUNTS = r7_FOREIGN_CURR_DEPOS_NO_OF_ACCOUNTS;
+	}
+	public BigDecimal getR7_FOREIGN_CURR_DEPOS_AMOUNT() {
+		return R7_FOREIGN_CURR_DEPOS_AMOUNT;
+	}
+	public void setR7_FOREIGN_CURR_DEPOS_AMOUNT(BigDecimal r7_FOREIGN_CURR_DEPOS_AMOUNT) {
+		R7_FOREIGN_CURR_DEPOS_AMOUNT = r7_FOREIGN_CURR_DEPOS_AMOUNT;
+	}
+	public BigDecimal getR7_TOTAL_NO_OF_ACCOUNTS() {
+		return R7_TOTAL_NO_OF_ACCOUNTS;
+	}
+	public void setR7_TOTAL_NO_OF_ACCOUNTS(BigDecimal r7_TOTAL_NO_OF_ACCOUNTS) {
+		R7_TOTAL_NO_OF_ACCOUNTS = r7_TOTAL_NO_OF_ACCOUNTS;
+	}
+	public BigDecimal getR7_TOTAL_AMOUNT() {
+		return R7_TOTAL_AMOUNT;
+	}
+	public void setR7_TOTAL_AMOUNT(BigDecimal r7_TOTAL_AMOUNT) {
+		R7_TOTAL_AMOUNT = r7_TOTAL_AMOUNT;
+	}
+	public String getR8_EXCLUSIONS() {
+		return R8_EXCLUSIONS;
+	}
+	public void setR8_EXCLUSIONS(String r8_EXCLUSIONS) {
+		R8_EXCLUSIONS = r8_EXCLUSIONS;
+	}
+	public BigDecimal getR8_DEPOSITS_EXCLU_FCA_NO_OF_ACCOUNTS() {
+		return R8_DEPOSITS_EXCLU_FCA_NO_OF_ACCOUNTS;
+	}
+	public void setR8_DEPOSITS_EXCLU_FCA_NO_OF_ACCOUNTS(BigDecimal r8_DEPOSITS_EXCLU_FCA_NO_OF_ACCOUNTS) {
+		R8_DEPOSITS_EXCLU_FCA_NO_OF_ACCOUNTS = r8_DEPOSITS_EXCLU_FCA_NO_OF_ACCOUNTS;
+	}
+	public BigDecimal getR8_DEPOSITS_EXCLU_FCA_AMOUNT() {
+		return R8_DEPOSITS_EXCLU_FCA_AMOUNT;
+	}
+	public void setR8_DEPOSITS_EXCLU_FCA_AMOUNT(BigDecimal r8_DEPOSITS_EXCLU_FCA_AMOUNT) {
+		R8_DEPOSITS_EXCLU_FCA_AMOUNT = r8_DEPOSITS_EXCLU_FCA_AMOUNT;
+	}
+	public BigDecimal getR8_FOREIGN_CURR_DEPOS_NO_OF_ACCOUNTS() {
+		return R8_FOREIGN_CURR_DEPOS_NO_OF_ACCOUNTS;
+	}
+	public void setR8_FOREIGN_CURR_DEPOS_NO_OF_ACCOUNTS(BigDecimal r8_FOREIGN_CURR_DEPOS_NO_OF_ACCOUNTS) {
+		R8_FOREIGN_CURR_DEPOS_NO_OF_ACCOUNTS = r8_FOREIGN_CURR_DEPOS_NO_OF_ACCOUNTS;
+	}
+	public BigDecimal getR8_FOREIGN_CURR_DEPOS_AMOUNT() {
+		return R8_FOREIGN_CURR_DEPOS_AMOUNT;
+	}
+	public void setR8_FOREIGN_CURR_DEPOS_AMOUNT(BigDecimal r8_FOREIGN_CURR_DEPOS_AMOUNT) {
+		R8_FOREIGN_CURR_DEPOS_AMOUNT = r8_FOREIGN_CURR_DEPOS_AMOUNT;
+	}
+	public BigDecimal getR8_TOTAL_NO_OF_ACCOUNTS() {
+		return R8_TOTAL_NO_OF_ACCOUNTS;
+	}
+	public void setR8_TOTAL_NO_OF_ACCOUNTS(BigDecimal r8_TOTAL_NO_OF_ACCOUNTS) {
+		R8_TOTAL_NO_OF_ACCOUNTS = r8_TOTAL_NO_OF_ACCOUNTS;
+	}
+	public BigDecimal getR8_TOTAL_AMOUNT() {
+		return R8_TOTAL_AMOUNT;
+	}
+	public void setR8_TOTAL_AMOUNT(BigDecimal r8_TOTAL_AMOUNT) {
+		R8_TOTAL_AMOUNT = r8_TOTAL_AMOUNT;
+	}
+	public String getR9_EXCLUSIONS() {
+		return R9_EXCLUSIONS;
+	}
+	public void setR9_EXCLUSIONS(String r9_EXCLUSIONS) {
+		R9_EXCLUSIONS = r9_EXCLUSIONS;
+	}
+	public BigDecimal getR9_DEPOSITS_EXCLU_FCA_NO_OF_ACCOUNTS() {
+		return R9_DEPOSITS_EXCLU_FCA_NO_OF_ACCOUNTS;
+	}
+	public void setR9_DEPOSITS_EXCLU_FCA_NO_OF_ACCOUNTS(BigDecimal r9_DEPOSITS_EXCLU_FCA_NO_OF_ACCOUNTS) {
+		R9_DEPOSITS_EXCLU_FCA_NO_OF_ACCOUNTS = r9_DEPOSITS_EXCLU_FCA_NO_OF_ACCOUNTS;
+	}
+	public BigDecimal getR9_DEPOSITS_EXCLU_FCA_AMOUNT() {
+		return R9_DEPOSITS_EXCLU_FCA_AMOUNT;
+	}
+	public void setR9_DEPOSITS_EXCLU_FCA_AMOUNT(BigDecimal r9_DEPOSITS_EXCLU_FCA_AMOUNT) {
+		R9_DEPOSITS_EXCLU_FCA_AMOUNT = r9_DEPOSITS_EXCLU_FCA_AMOUNT;
+	}
+	public BigDecimal getR9_FOREIGN_CURR_DEPOS_NO_OF_ACCOUNTS() {
+		return R9_FOREIGN_CURR_DEPOS_NO_OF_ACCOUNTS;
+	}
+	public void setR9_FOREIGN_CURR_DEPOS_NO_OF_ACCOUNTS(BigDecimal r9_FOREIGN_CURR_DEPOS_NO_OF_ACCOUNTS) {
+		R9_FOREIGN_CURR_DEPOS_NO_OF_ACCOUNTS = r9_FOREIGN_CURR_DEPOS_NO_OF_ACCOUNTS;
+	}
+	public BigDecimal getR9_FOREIGN_CURR_DEPOS_AMOUNT() {
+		return R9_FOREIGN_CURR_DEPOS_AMOUNT;
+	}
+	public void setR9_FOREIGN_CURR_DEPOS_AMOUNT(BigDecimal r9_FOREIGN_CURR_DEPOS_AMOUNT) {
+		R9_FOREIGN_CURR_DEPOS_AMOUNT = r9_FOREIGN_CURR_DEPOS_AMOUNT;
+	}
+	public BigDecimal getR9_TOTAL_NO_OF_ACCOUNTS() {
+		return R9_TOTAL_NO_OF_ACCOUNTS;
+	}
+	public void setR9_TOTAL_NO_OF_ACCOUNTS(BigDecimal r9_TOTAL_NO_OF_ACCOUNTS) {
+		R9_TOTAL_NO_OF_ACCOUNTS = r9_TOTAL_NO_OF_ACCOUNTS;
+	}
+	public BigDecimal getR9_TOTAL_AMOUNT() {
+		return R9_TOTAL_AMOUNT;
+	}
+	public void setR9_TOTAL_AMOUNT(BigDecimal r9_TOTAL_AMOUNT) {
+		R9_TOTAL_AMOUNT = r9_TOTAL_AMOUNT;
+	}
+	public String getR10_EXCLUSIONS() {
+		return R10_EXCLUSIONS;
+	}
+	public void setR10_EXCLUSIONS(String r10_EXCLUSIONS) {
+		R10_EXCLUSIONS = r10_EXCLUSIONS;
+	}
+	public BigDecimal getR10_DEPOSITS_EXCLU_FCA_NO_OF_ACCOUNTS() {
+		return R10_DEPOSITS_EXCLU_FCA_NO_OF_ACCOUNTS;
+	}
+	public void setR10_DEPOSITS_EXCLU_FCA_NO_OF_ACCOUNTS(BigDecimal r10_DEPOSITS_EXCLU_FCA_NO_OF_ACCOUNTS) {
+		R10_DEPOSITS_EXCLU_FCA_NO_OF_ACCOUNTS = r10_DEPOSITS_EXCLU_FCA_NO_OF_ACCOUNTS;
+	}
+	public BigDecimal getR10_DEPOSITS_EXCLU_FCA_AMOUNT() {
+		return R10_DEPOSITS_EXCLU_FCA_AMOUNT;
+	}
+	public void setR10_DEPOSITS_EXCLU_FCA_AMOUNT(BigDecimal r10_DEPOSITS_EXCLU_FCA_AMOUNT) {
+		R10_DEPOSITS_EXCLU_FCA_AMOUNT = r10_DEPOSITS_EXCLU_FCA_AMOUNT;
+	}
+	public BigDecimal getR10_FOREIGN_CURR_DEPOS_NO_OF_ACCOUNTS() {
+		return R10_FOREIGN_CURR_DEPOS_NO_OF_ACCOUNTS;
+	}
+	public void setR10_FOREIGN_CURR_DEPOS_NO_OF_ACCOUNTS(BigDecimal r10_FOREIGN_CURR_DEPOS_NO_OF_ACCOUNTS) {
+		R10_FOREIGN_CURR_DEPOS_NO_OF_ACCOUNTS = r10_FOREIGN_CURR_DEPOS_NO_OF_ACCOUNTS;
+	}
+	public BigDecimal getR10_FOREIGN_CURR_DEPOS_AMOUNT() {
+		return R10_FOREIGN_CURR_DEPOS_AMOUNT;
+	}
+	public void setR10_FOREIGN_CURR_DEPOS_AMOUNT(BigDecimal r10_FOREIGN_CURR_DEPOS_AMOUNT) {
+		R10_FOREIGN_CURR_DEPOS_AMOUNT = r10_FOREIGN_CURR_DEPOS_AMOUNT;
+	}
+	public BigDecimal getR10_TOTAL_NO_OF_ACCOUNTS() {
+		return R10_TOTAL_NO_OF_ACCOUNTS;
+	}
+	public void setR10_TOTAL_NO_OF_ACCOUNTS(BigDecimal r10_TOTAL_NO_OF_ACCOUNTS) {
+		R10_TOTAL_NO_OF_ACCOUNTS = r10_TOTAL_NO_OF_ACCOUNTS;
+	}
+	public BigDecimal getR10_TOTAL_AMOUNT() {
+		return R10_TOTAL_AMOUNT;
+	}
+	public void setR10_TOTAL_AMOUNT(BigDecimal r10_TOTAL_AMOUNT) {
+		R10_TOTAL_AMOUNT = r10_TOTAL_AMOUNT;
+	}
+	public String getR11_EXCLUSIONS() {
+		return R11_EXCLUSIONS;
+	}
+	public void setR11_EXCLUSIONS(String r11_EXCLUSIONS) {
+		R11_EXCLUSIONS = r11_EXCLUSIONS;
+	}
+	public BigDecimal getR11_DEPOSITS_EXCLU_FCA_NO_OF_ACCOUNTS() {
+		return R11_DEPOSITS_EXCLU_FCA_NO_OF_ACCOUNTS;
+	}
+	public void setR11_DEPOSITS_EXCLU_FCA_NO_OF_ACCOUNTS(BigDecimal r11_DEPOSITS_EXCLU_FCA_NO_OF_ACCOUNTS) {
+		R11_DEPOSITS_EXCLU_FCA_NO_OF_ACCOUNTS = r11_DEPOSITS_EXCLU_FCA_NO_OF_ACCOUNTS;
+	}
+	public BigDecimal getR11_DEPOSITS_EXCLU_FCA_AMOUNT() {
+		return R11_DEPOSITS_EXCLU_FCA_AMOUNT;
+	}
+	public void setR11_DEPOSITS_EXCLU_FCA_AMOUNT(BigDecimal r11_DEPOSITS_EXCLU_FCA_AMOUNT) {
+		R11_DEPOSITS_EXCLU_FCA_AMOUNT = r11_DEPOSITS_EXCLU_FCA_AMOUNT;
+	}
+	public BigDecimal getR11_FOREIGN_CURR_DEPOS_NO_OF_ACCOUNTS() {
+		return R11_FOREIGN_CURR_DEPOS_NO_OF_ACCOUNTS;
+	}
+	public void setR11_FOREIGN_CURR_DEPOS_NO_OF_ACCOUNTS(BigDecimal r11_FOREIGN_CURR_DEPOS_NO_OF_ACCOUNTS) {
+		R11_FOREIGN_CURR_DEPOS_NO_OF_ACCOUNTS = r11_FOREIGN_CURR_DEPOS_NO_OF_ACCOUNTS;
+	}
+	public BigDecimal getR11_FOREIGN_CURR_DEPOS_AMOUNT() {
+		return R11_FOREIGN_CURR_DEPOS_AMOUNT;
+	}
+	public void setR11_FOREIGN_CURR_DEPOS_AMOUNT(BigDecimal r11_FOREIGN_CURR_DEPOS_AMOUNT) {
+		R11_FOREIGN_CURR_DEPOS_AMOUNT = r11_FOREIGN_CURR_DEPOS_AMOUNT;
+	}
+	public BigDecimal getR11_TOTAL_NO_OF_ACCOUNTS() {
+		return R11_TOTAL_NO_OF_ACCOUNTS;
+	}
+	public void setR11_TOTAL_NO_OF_ACCOUNTS(BigDecimal r11_TOTAL_NO_OF_ACCOUNTS) {
+		R11_TOTAL_NO_OF_ACCOUNTS = r11_TOTAL_NO_OF_ACCOUNTS;
+	}
+	public BigDecimal getR11_TOTAL_AMOUNT() {
+		return R11_TOTAL_AMOUNT;
+	}
+	public void setR11_TOTAL_AMOUNT(BigDecimal r11_TOTAL_AMOUNT) {
+		R11_TOTAL_AMOUNT = r11_TOTAL_AMOUNT;
+	}
+	public String getR12_EXCLUSIONS() {
+		return R12_EXCLUSIONS;
+	}
+	public void setR12_EXCLUSIONS(String r12_EXCLUSIONS) {
+		R12_EXCLUSIONS = r12_EXCLUSIONS;
+	}
+	public BigDecimal getR12_DEPOSITS_EXCLU_FCA_NO_OF_ACCOUNTS() {
+		return R12_DEPOSITS_EXCLU_FCA_NO_OF_ACCOUNTS;
+	}
+	public void setR12_DEPOSITS_EXCLU_FCA_NO_OF_ACCOUNTS(BigDecimal r12_DEPOSITS_EXCLU_FCA_NO_OF_ACCOUNTS) {
+		R12_DEPOSITS_EXCLU_FCA_NO_OF_ACCOUNTS = r12_DEPOSITS_EXCLU_FCA_NO_OF_ACCOUNTS;
+	}
+	public BigDecimal getR12_DEPOSITS_EXCLU_FCA_AMOUNT() {
+		return R12_DEPOSITS_EXCLU_FCA_AMOUNT;
+	}
+	public void setR12_DEPOSITS_EXCLU_FCA_AMOUNT(BigDecimal r12_DEPOSITS_EXCLU_FCA_AMOUNT) {
+		R12_DEPOSITS_EXCLU_FCA_AMOUNT = r12_DEPOSITS_EXCLU_FCA_AMOUNT;
+	}
+	public BigDecimal getR12_FOREIGN_CURR_DEPOS_NO_OF_ACCOUNTS() {
+		return R12_FOREIGN_CURR_DEPOS_NO_OF_ACCOUNTS;
+	}
+	public void setR12_FOREIGN_CURR_DEPOS_NO_OF_ACCOUNTS(BigDecimal r12_FOREIGN_CURR_DEPOS_NO_OF_ACCOUNTS) {
+		R12_FOREIGN_CURR_DEPOS_NO_OF_ACCOUNTS = r12_FOREIGN_CURR_DEPOS_NO_OF_ACCOUNTS;
+	}
+	public BigDecimal getR12_FOREIGN_CURR_DEPOS_AMOUNT() {
+		return R12_FOREIGN_CURR_DEPOS_AMOUNT;
+	}
+	public void setR12_FOREIGN_CURR_DEPOS_AMOUNT(BigDecimal r12_FOREIGN_CURR_DEPOS_AMOUNT) {
+		R12_FOREIGN_CURR_DEPOS_AMOUNT = r12_FOREIGN_CURR_DEPOS_AMOUNT;
+	}
+	public BigDecimal getR12_TOTAL_NO_OF_ACCOUNTS() {
+		return R12_TOTAL_NO_OF_ACCOUNTS;
+	}
+	public void setR12_TOTAL_NO_OF_ACCOUNTS(BigDecimal r12_TOTAL_NO_OF_ACCOUNTS) {
+		R12_TOTAL_NO_OF_ACCOUNTS = r12_TOTAL_NO_OF_ACCOUNTS;
+	}
+	public BigDecimal getR12_TOTAL_AMOUNT() {
+		return R12_TOTAL_AMOUNT;
+	}
+	public void setR12_TOTAL_AMOUNT(BigDecimal r12_TOTAL_AMOUNT) {
+		R12_TOTAL_AMOUNT = r12_TOTAL_AMOUNT;
+	}
+	public Date getReportDate() {
+		return reportDate;
+	}
+	public void setReportDate(Date reportDate) {
+		this.reportDate = reportDate;
+	}
+	public String getReportVersion() {
+		return reportVersion;
+	}
+	public void setReportVersion(String reportVersion) {
+		this.reportVersion = reportVersion;
+	}
+	public String getREPORT_FREQUENCY() {
+		return REPORT_FREQUENCY;
+	}
+	public void setREPORT_FREQUENCY(String rEPORT_FREQUENCY) {
+		REPORT_FREQUENCY = rEPORT_FREQUENCY;
+	}
+	public String getREPORT_CODE() {
+		return REPORT_CODE;
+	}
+	public void setREPORT_CODE(String rEPORT_CODE) {
+		REPORT_CODE = rEPORT_CODE;
+	}
+	public String getREPORT_DESC() {
+		return REPORT_DESC;
+	}
+	public void setREPORT_DESC(String rEPORT_DESC) {
+		REPORT_DESC = rEPORT_DESC;
+	}
+	public String getENTITY_FLG() {
+		return ENTITY_FLG;
+	}
+	public void setENTITY_FLG(String eNTITY_FLG) {
+		ENTITY_FLG = eNTITY_FLG;
+	}
+	public String getMODIFY_FLG() {
+		return MODIFY_FLG;
+	}
+	public void setMODIFY_FLG(String mODIFY_FLG) {
+		MODIFY_FLG = mODIFY_FLG;
+	}
+	public String getDELETE_FLG() {
+		return DELETE_FLG;
+	}
+	public void setDELETE_FLG(String dELETE_FLG) {
+		DELETE_FLG = dELETE_FLG;
+	}
+	
+	
+	
+	
+	
+	public MDISB4_Archival_Summary_Entity() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+    
+    
+
+}
