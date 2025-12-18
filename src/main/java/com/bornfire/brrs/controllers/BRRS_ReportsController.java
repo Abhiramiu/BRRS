@@ -42,8 +42,12 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.bornfire.brrs.dto.ReportLineItemDTO;
 import com.bornfire.brrs.entities.*;
-import com.bornfire.brrs.services.BRRS_M_AIDP_ReportService;
+import com.bornfire.brrs.services.BRRS_ADISB1_ReportService;
 import com.bornfire.brrs.services.BRRS_BDISB1_ReportService;
+import com.bornfire.brrs.services.BRRS_BDISB2_ReportService;
+import com.bornfire.brrs.services.BRRS_BDISB3_ReportService;
+import com.bornfire.brrs.services.BRRS_MDISB5_ReportService;
+import com.bornfire.brrs.services.BRRS_M_AIDP_ReportService;
 import com.bornfire.brrs.services.BRRS_M_BOP_ReportService;
 import com.bornfire.brrs.services.BRRS_M_CA2_ReportService;
 import com.bornfire.brrs.services.BRRS_M_CA3_ReportService;
@@ -53,6 +57,7 @@ import com.bornfire.brrs.services.BRRS_M_CA6_ReportService;
 import com.bornfire.brrs.services.BRRS_M_CA7_ReportService;
 import com.bornfire.brrs.services.BRRS_M_CR_ReportService;
 import com.bornfire.brrs.services.BRRS_M_DEP3_ReportService;
+import com.bornfire.brrs.services.BRRS_M_DEP4_ReportService;
 import com.bornfire.brrs.services.BRRS_M_EPR_ReportService;
 import com.bornfire.brrs.services.BRRS_M_FAS_ReportService;
 import com.bornfire.brrs.services.BRRS_M_FXR_ReportService;
@@ -75,6 +80,8 @@ import com.bornfire.brrs.services.BRRS_M_OB_ReportService;
 import com.bornfire.brrs.services.BRRS_M_OPTR_ReportService;
 import com.bornfire.brrs.services.BRRS_M_OR1_ReportService;
 import com.bornfire.brrs.services.BRRS_M_OR2_ReportService;
+import com.bornfire.brrs.services.BRRS_M_PD_ReportService;
+import com.bornfire.brrs.services.BRRS_M_PI_ReportService;
 import com.bornfire.brrs.services.BRRS_M_PLL_ReportService;
 import com.bornfire.brrs.services.BRRS_M_RPD_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SCI_E_ReportService;
@@ -98,13 +105,7 @@ import com.bornfire.brrs.services.BRRS_Q_RLFA1_ReportService;
 import com.bornfire.brrs.services.BRRS_Q_RLFA2_ReportService;
 import com.bornfire.brrs.services.BRRS_Q_SMME_DEP_ReportService;
 import com.bornfire.brrs.services.BRRS_Q_STAFF_Report_Service;
-import com.bornfire.brrs.services.BRRS_M_DEP4_ReportService;
-import com.bornfire.brrs.services.BRRS_M_PD_ReportService;
-import com.bornfire.brrs.services.BRRS_M_PI_ReportService;
-import com.bornfire.brrs.services.BRRS_BDISB2_ReportService;
-import com.bornfire.brrs.services.BRRS_BDISB3_ReportService;
-import com.bornfire.brrs.services.BRRS_MDISB5_ReportService;
-import com.bornfire.brrs.services.BRRS_ADISB1_ReportService;
+import com.bornfire.brrs.services.BRRS_SCH_17_ReportService;
 import com.bornfire.brrs.services.RegulatoryReportServices;
 import com.bornfire.brrs.services.ReportCodeMappingService;
 
@@ -2114,6 +2115,39 @@ return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 		}
 	}
 
+	
+	@Autowired
+	BRRS_SCH_17_ReportService brrs_sch_17_reportservice;
+	
+	@RequestMapping(value = "/SCH_17updateAll", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<String> updateReport(
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+			@ModelAttribute SCH_17_Manual_Summary_Entity request) {
+
+		try {
+			System.out.println("came to single controller");
+
+			// ? set the asondate into entity
+			request.setReport_date(asondate);
+
+			// call services
+			brrs_sch_17_reportservice.updateReport(request);
+
+			return ResponseEntity.ok("Updated Successfully.");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Update Failed: " + e.getMessage());
+		}
+	}
+	
+	
+	
+	
+	
+	
+	
 	@Autowired
 	BRRS_Q_SMME_DEP_ReportService BRRS_Q_SMME_DEP_ReportService;
 

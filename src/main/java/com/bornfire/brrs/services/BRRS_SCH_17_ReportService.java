@@ -3,6 +3,7 @@ package com.bornfire.brrs.services;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -52,10 +53,15 @@ import org.springframework.web.servlet.ModelAndView;
 import com.bornfire.brrs.entities.BRRS_SCH_17_Archival_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_SCH_17_Archival_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_SCH_17_Detail_Repo;
+import com.bornfire.brrs.entities.BRRS_SCH_17_Manual_Archival_Summary_Repo;
+import com.bornfire.brrs.entities.BRRS_SCH_17_Manual_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_SCH_17_Summary_Repo;
+import com.bornfire.brrs.entities.M_SCI_E_Manual_Summary_Entity;
 import com.bornfire.brrs.entities.SCH_17_Archival_Detail_Entity;
+import com.bornfire.brrs.entities.SCH_17_Archival_Manual_Summary_Entity;
 import com.bornfire.brrs.entities.SCH_17_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.SCH_17_Detail_Entity;
+import com.bornfire.brrs.entities.SCH_17_Manual_Summary_Entity;
 import com.bornfire.brrs.entities.SCH_17_Summary_Entity;
 
 @Component
@@ -84,6 +90,14 @@ public class BRRS_SCH_17_ReportService {
 		
 	    @Autowired 
 	    BRRS_SCH_17_Archival_Detail_Repo             SCH_17_Archival_Detail_Repo;
+	    
+	    
+	    @Autowired 
+	    BRRS_SCH_17_Manual_Summary_Repo                     SCH_17_Manual_summary_repo;
+	 
+		@Autowired
+		BRRS_SCH_17_Manual_Archival_Summary_Repo            SCH_17_Manual_Archival_Summary_Repo;
+		
 	  
 	 
 
@@ -110,6 +124,7 @@ public class BRRS_SCH_17_ReportService {
 		    System.out.println("version = " + version);
 
 		    List<SCH_17_Archival_Summary_Entity> T1Master = new ArrayList<>();
+		    List<SCH_17_Archival_Manual_Summary_Entity> T2Master = new ArrayList<>();
 		 
 		    try {
 		        Date dt = dateformat.parse(todate);
@@ -118,16 +133,22 @@ public class BRRS_SCH_17_ReportService {
 
 		        System.out.println("T1Master size = " + T1Master.size());
 		      
+		        
+		        T2Master = SCH_17_Manual_Archival_Summary_Repo.getdatabydateListarchival(dt, version);
+
+		        System.out.println("T2Master size = " + T2Master.size());
 
 		    } catch (ParseException e) {
 		        e.printStackTrace();
 		    }
 
 		    mv.addObject("reportsummary", T1Master);
+		    mv.addObject("reportsummary1", T2Master);
 		 
 		} else {
 
 			List<SCH_17_Summary_Entity> T1Master = new ArrayList<SCH_17_Summary_Entity>();
+			List<SCH_17_Manual_Summary_Entity> T2Master = new ArrayList<SCH_17_Manual_Summary_Entity>();
 		
 			try {
 				Date d1 = dateformat.parse(todate);
@@ -135,12 +156,17 @@ public class BRRS_SCH_17_ReportService {
 				T1Master = SCH_17_summary_repo.getdatabydateList(dateformat.parse(todate));
 			
 				System.out.println("T1Master size " + T1Master.size());
+				T2Master = SCH_17_Manual_summary_repo.getdatabydateList(dateformat.parse(todate));
+				
+				System.out.println("T2Master size " + T2Master.size());
+				
 				mv.addObject("report_date", dateformat.format(d1));
 
 			} catch (ParseException e) {
 				e.printStackTrace();
 			}
 			mv.addObject("reportsummary", T1Master);
+			 mv.addObject("reportsummary1", T2Master);
 			
 		}
 
@@ -852,7 +878,7 @@ public class BRRS_SCH_17_ReportService {
 
 			if (reportData != null && !reportData.isEmpty()) {
 				int rowIndex = 1;
-				for (SCH_17_Detail_Entity item : reportData) {
+				for (SCH_17_Detail_Entity item : reportData) { 
 					XSSFRow row = sheet.createRow(rowIndex++);
 
 					row.createCell(0).setCellValue(item.getCustId());
@@ -1128,7 +1154,82 @@ public class BRRS_SCH_17_ReportService {
 		}
 	}
 	
-	
+	public void updateReport(SCH_17_Manual_Summary_Entity updatedEntity) {
+	    System.out.println("Came to services");
+	    System.out.println("Report Date: " + updatedEntity.getReport_date());
+
+	    //  Use your query to fetch by date
+	    List<SCH_17_Manual_Summary_Entity> list = SCH_17_Manual_summary_repo
+	        .getdatabydateList(updatedEntity.getReport_date());
+
+	    SCH_17_Manual_Summary_Entity existing;
+	    if (list.isEmpty()) {
+	        // Record not found — optionally create it
+	        System.out.println("No record found for REPORT_DATE: " + updatedEntity.getReport_date());
+	        existing = new SCH_17_Manual_Summary_Entity();
+	        existing.setReport_date(updatedEntity.getReport_date());
+	    } else {
+	        existing = list.get(0);
+	    }
+
+	    try {
+	        //  Only for specific row numbers
+	        int[] rows = {10, 11, 12, /*13 excluded*/ 14, 15, 16, 17, 18, 19, 20};
+
+	        for (int row : rows) {
+	            String prefix = "R" + row + "_";
+
+	            // Fields to update
+	            String[] fields = { "product",
+	            	    "31_3_25_amt",
+	            	    "30_9_25_amt"};
+
+	            for (String field : fields) {
+	                String getterName = "get" + prefix + field; 
+	                String setterName = "set" + prefix + field;
+
+	                try {
+	                    Method getter = SCH_17_Manual_Summary_Entity.class.getMethod(getterName);
+	                    Method setter = SCH_17_Manual_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+
+	                    Object newValue = getter.invoke(updatedEntity);
+	                    setter.invoke(existing, newValue);
+
+	                } catch (NoSuchMethodException e) {
+	                    // Skip missing fields gracefully
+	                    continue;
+	                }
+	            }
+	        }
+
+	        // Metadata
+	        existing.setReport_version(updatedEntity.getReport_version());
+	        existing.setReport_frequency(updatedEntity.getReport_frequency());
+	        existing.setReport_code(updatedEntity.getReport_code());
+	        existing.setReport_desc(updatedEntity.getReport_desc());
+	        existing.setEntity_flg(updatedEntity.getEntity_flg());
+	        existing.setModify_flg(updatedEntity.getModify_flg());
+	        existing.setDel_flg(updatedEntity.getDel_flg());
+
+	    } catch (Exception e) {
+	        throw new RuntimeException("Error while updating SCH_17 Summary fields", e);
+	    }
+
+	    //  FIRST COMMIT — forces immediate commit
+	    SCH_17_Manual_summary_repo.saveAndFlush(existing);
+	    System.out.println("SCH_17 Summary updated and COMMITTED");
+
+	    //  Execute procedure with updated data
+	    String oracleDate = new SimpleDateFormat("dd-MM-yyyy")
+	            .format(updatedEntity.getReport_date())
+	            .toUpperCase();
+
+	    String sql = "BEGIN BRRS.BRRS_SCH_17_SUMMARY_PROCEDURE ('" + oracleDate + "'); END;";
+	    jdbcTemplate.execute(sql);
+
+	    System.out.println("Procedure executed for date: " + oracleDate);
+	}
+
 	
 	
 

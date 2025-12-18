@@ -892,11 +892,51 @@ function showdetailsbyRowAndColumn(a) {
 	// Show Modify (enable inputs & dropdowns)
 function showmodify(btn) {
     // IDs that should always remain readonly
-  $(".Show_input").removeAttr("readonly").removeAttr("disabled");
-    
-    
-    
+ // Fields to keep readonly
+var readonlyIds = [];
 
+// 1️⃣ Product fields R10 → R20 (except R13)
+for (var i = 10; i <= 20; i++) {
+    if (i !== 13) { // exclude R13
+        readonlyIds.push("r" + i + "_product");
+    }
+}
+
+// 2️⃣ Amount fields — only R17 and R20
+readonlyIds.push(
+    "r17_31_3_25_amt",
+    "r17_30_9_25_amt",
+    "r20_31_3_25_amt",
+    "r20_30_9_25_amt"
+);
+
+// Make all .Show_input editable except the ones in readonlyIds
+$(".Show_input").each(function () {
+    if (!readonlyIds.includes(this.id)) {
+        $(this).removeAttr("readonly").removeAttr("disabled");
+    }
+});
+
+    
+    
+    
+//Apply gray background for r10–r19 (except r13, r17) for 31_3_25 and 30_9_25 amounts
+  [
+      "#r10_31_3_25_amt", "#r10_30_9_25_amt",
+      "#r11_31_3_25_amt", "#r11_30_9_25_amt",
+      "#r12_31_3_25_amt", "#r12_30_9_25_amt",
+      // r13 excluded
+      "#r14_31_3_25_amt", "#r14_30_9_25_amt",
+      "#r15_31_3_25_amt", "#r15_30_9_25_amt",
+      "#r16_31_3_25_amt", "#r16_30_9_25_amt",
+      // r17 excluded
+      "#r18_31_3_25_amt", "#r18_30_9_25_amt",
+      "#r19_31_3_25_amt", "#r19_30_9_25_amt"
+  ].forEach(selector => {
+      if ($(selector).length) {
+          $(selector).css("background-color", "#d3d3d3");
+      }
+  });
 
 
 
@@ -945,6 +985,192 @@ function cancelModify() {
 
 
 
+<script>
+    //--------------------------------------
+    // COMMON VALUE GETTER
+    //--------------------------------------
+    function getCellValue(selector) {
+        let el = $(selector);
+        if (!el.length) return 0;
+
+        let val = el.is("input") ? el.val() : el.text();
+        return parseFloat((val || "0").replace(/,/g, "")) || 0;
+    }
+
+    //--------------------------------------
+    // COMMON VALUE SETTER (US FORMAT)
+    //--------------------------------------
+    function setCellValue(selector, value) {
+        let el = $(selector);
+        if (!el.length) return;
+
+        const formatted = Number(value).toLocaleString("en-US", {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+        });
+
+        if (el.is("input")) {
+            el.val(formatted);
+        } else {
+            el.text(formatted);
+        }
+    }
+
+    //--------------------------------------
+    // TOTAL CALCULATION FUNCTION
+    //--------------------------------------
+    function calculateTotals() {
+
+        // ---------------- R17 (SUM R9–R16) ----------------
+        let c17 =
+            getCellValue("#r9_31_3_25_amt") +
+            getCellValue("#r10_31_3_25_amt") +
+            getCellValue("#r11_31_3_25_amt") +
+            getCellValue("#r12_31_3_25_amt") +
+            getCellValue("#r13_31_3_25_amt") +
+            getCellValue("#r14_31_3_25_amt") +
+            getCellValue("#r15_31_3_25_amt") +
+            getCellValue("#r16_31_3_25_amt");
+
+        setCellValue("#r17_31_3_25_amt", c17);
+
+        let d17 =
+            getCellValue("#r9_30_9_25_amt") +
+            getCellValue("#r10_30_9_25_amt") +
+            getCellValue("#r11_30_9_25_amt") +
+            getCellValue("#r12_30_9_25_amt") +
+            getCellValue("#r13_30_9_25_amt") +
+            getCellValue("#r14_30_9_25_amt") +
+            getCellValue("#r15_30_9_25_amt") +
+            getCellValue("#r16_30_9_25_amt");
+
+        setCellValue("#r17_30_9_25_amt", d17);
+
+        // ---------------- R20 = R17 − R18 − R19 ----------------
+        let c20 =
+            getCellValue("#r17_31_3_25_amt") -
+            getCellValue("#r18_31_3_25_amt") -
+            getCellValue("#r19_31_3_25_amt");
+
+        setCellValue("#r20_31_3_25_amt", c20);
+
+        let d20 =
+            getCellValue("#r17_30_9_25_amt") -
+            getCellValue("#r18_30_9_25_amt") -
+            getCellValue("#r19_30_9_25_amt");
+
+        setCellValue("#r20_30_9_25_amt", d20);
+    }
+
+    //--------------------------------------
+    // EVENT LISTENERS
+    //--------------------------------------
+    $(document).ready(function () {
+
+        calculateTotals(); // initial load
+
+        $(
+            // R9–R16
+            "#r9_31_3_25_amt, #r10_31_3_25_amt, #r11_31_3_25_amt, #r12_31_3_25_amt, #r13_31_3_25_amt, #r14_31_3_25_amt, #r15_31_3_25_amt, #r16_31_3_25_amt," +
+            "#r9_30_9_25_amt, #r10_30_9_25_amt, #r11_30_9_25_amt, #r12_30_9_25_amt, #r13_30_9_25_amt, #r14_30_9_25_amt, #r15_30_9_25_amt, #r16_30_9_25_amt," +
+            // Manual rows R18, R19
+            "#r18_31_3_25_amt, #r19_31_3_25_amt," +
+            "#r18_30_9_25_amt, #r19_30_9_25_amt"
+        ).on("input change keyup", calculateTotals);
+
+    });
+</script>
+
+
+
+<script>
+	
+
+	// This function is for closing the modal after an action is complete.
+	// It hides the result and loader modals and reloads the page.
+	function closemodel() {
+	    $("#resultModal").modal("hide");
+	    $('#loader').modal('hide');
+
+	    // Reload the page after a short delay to ensure the modal animation completes smoothly.
+	    setTimeout(function () {
+	        location.reload();
+	    }, 300);
+	}
+
+	function fileuploads(btn) {
+	    const asondate = btn.getAttribute("data-todate");
+	    const type = btn.getAttribute("data-type");
+
+	    // Show loader
+	    $('#loader').modal('show');
+
+	    try {
+	        // ✅ Step 1: Calculate totals
+	       /*  calculateR14Totals(); */
+	       calculateTotals();
+	    
+	        // ✅ Step 2: Remove commas from all text inputs
+	        $("#fileupload input[type='text']").each(function () {
+	            $(this).val($(this).val().replace(/,/g, ''));
+	        });
+
+	        // ✅ Step 3: Validate form
+	        if (!$("#fileupload").valid()) {
+	            $('#loader').modal('hide');
+	            return;
+	        }
+
+	        // ✅ Step 4: Build FormData
+	        const formData = new FormData();
+	        formData.append("asondate", asondate);
+	        formData.append("type", type);
+
+	        $('#fileupload').find(':input').each(function () {
+	            const name = $(this).attr('name');
+	            if (name) {
+	                formData.append(name, $(this).val());
+	            }
+	        });
+
+	        // ✅ Step 5: AJAX submission
+	        $.ajax({
+	            url: './SCH_17updateAll',
+	            type: 'POST',
+	            data: formData,
+	            processData: false,
+	            contentType: false,
+	            dataType: 'text',
+	            success: function () {
+	                $("#resultModalLabel").text("BRRS");
+	                $("#resultModalBody").text(" Updated Successfully.");
+	                $("#resultModal").modal("show");
+	            },
+	            error: function (jqXHR) {
+	                console.error("Error response:", jqXHR.responseText);
+	                $("#resultModalLabel").text("Error");
+	                $("#resultModalBody").text("Update failed. Check console for details.");
+	                $("#resultModal").modal("show");
+	            },
+	            complete: function () {
+	                $('#loader').modal('hide');
+	            }
+	        });
+
+	    } catch (error) {
+	        console.error("Error in fileuploads function:", error);
+	        $('#loader').modal('hide');
+	        $("#resultModalLabel").text("Error");
+	        $("#resultModalBody").text("Unexpected error occurred. Check console.");
+	        $("#resultModal").modal("show");
+	    }
+	}
+
+
+
+
+
+	</script>
 
 
 
@@ -1009,15 +1235,15 @@ function cancelModify() {
 							
 							
 								<!-- Modify button -->
-					<!-- 	<button type="button" class="custom-tab-btn"
+				 	<button type="button" class="custom-tab-btn"
 							onclick="showmodify(this);" title="Click to EDIT Records"
 							th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
-							th:if="${type != 'ARCHIVAL'}" id="addRecord">Modify</button> -->
+							th:if="${type != 'ARCHIVAL'}" id="addRecord">Modify</button> 
 
 						<!-- Cancel button (hidden initially) -->
-					<!-- 	<button type="button" class="custom-tab-btn"
+						<button type="button" class="custom-tab-btn"
 							title="Cancel editing" id="cancelRecord"
-							onclick="cancelModify();" style="display: none;">Cancel</button> -->
+							onclick="cancelModify();" style="display: none;">Cancel</button> 
 							
 							
 							
@@ -1093,12 +1319,12 @@ function cancelModify() {
 							</div>
 
 
-									<tbody th:each="report: ${reportsummary}"
+									<tbody  
 										style="font-family: Arial;">
      
      
      
-                    					<tr >
+                    				<tr  th:each="report: ${reportsummary}">
 										
 										         <td    style="text-align: center;  "
 											  
@@ -1111,12 +1337,14 @@ function cancelModify() {
 												></td>
 												
 												
-													<td style="text-align: right; padding-right:10px; "  
+													<td  id="r9_31_3_25_amt" 
+													 style="text-align: right; padding-right:10px; "  
 												th:text="${report?.r9_31_3_25_amt ?: ''}"
 												th:attr="RowId='R9', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 												
-												<td style="text-align: right; padding-right:10px; "  
+												<td id="r9_30_9_25_amt" 
+												 style="text-align: right; padding-right:10px; "  
 												th:text="${report?.r9_30_9_25_amt ?: ''}"
 												th:attr="RowId='R9', ColumnId='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
@@ -1125,242 +1353,399 @@ function cancelModify() {
 										</tr>
 										
 										<!-- R10 -->
-<tr>
-    <td style="text-align: center; ">(b)</td>
+										
+										
+ 	                       <tr th:each="report : ${reportsummary1}" >
+                                  <td style="text-align: center;  width:30px; ">(b)</td>
+    
+    				
+													<td id="ROW10"
+													style=" font-weight: bold; text-align: left; "><input
+													class="display-input Show_input" type="text"
+													th:value="'Adhoc provision for weak standard Assets (BIFR) Accounts'"
+													id="r10_product" name="r10_product"
+													style="background-color: #FFFFFF;  width: -webkit-fill-available; border-color: transparent; text-align: left;"
+													readonly /></td>
 
-    <td style="text-align: left;"
-        th:text="${report?.r10_product ?: ''}">
+
+                                                   <td id="ROW10"
+													style=" font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width: 200px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r10_31_3_25_amt != null ? #numbers.formatDecimal(report.r10_31_3_25_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r10_31_3_25_amt" name="r10_31_3_25_amt"
+													style="background-color: #FFFFFF;  width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+													
+													<td id="ROW10"
+													style=" font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width: 200px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r10_30_9_25_amt != null ? #numbers.formatDecimal(report.r10_30_9_25_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r10_30_9_25_amt" name="r10_30_9_25_amt"
+													style="background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+   
+
+    
+
+    
+</tr> 
+										
+										
+										<tr th:each="report : ${reportsummary1}">
+    <td style="text-align: center; width:30px;">(c)</td>
+
+    <td id="ROW11"
+        style="font-weight: bold; text-align: left; width:200px;">
+        <input
+            class="display-input Show_input"
+            type="text"
+            th:value="'Adhoc General Provision for 90 days delinquency norms'"
+            id="r11_product"
+            name="r11_product"
+            style="background-color:#FFFFFF; width:-webkit-fill-available; border-color:transparent; text-align:left;"
+            readonly />
     </td>
 
-    <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r10_31_3_25_amt ?: ''}"
-        th:attr="RowId='R10', ColumnId='C2'"
-        onclick="showdetailsbyRowAndColumn(this)">
+    <td id="ROW11"
+        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;">
+        <input
+            class="display-input Show_input"
+            type="text"
+            th:value="${report.r11_31_3_25_amt != null ? #numbers.formatDecimal(report.r11_31_3_25_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+            id="r11_31_3_25_amt"
+            name="r11_31_3_25_amt"
+            style="background-color:#FFFFFF; width:-webkit-fill-available; height:28px; border-color:transparent; text-align:right;"
+            readonly />
     </td>
 
-    <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r10_30_9_25_amt ?: ''}"
-        th:attr="RowId='R10', ColumnId='C3'"
-        onclick="showdetailsbyRowAndColumn(this)">
+    <td id="ROW11"
+        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;">
+        <input
+            class="display-input Show_input"
+            type="text"
+            th:value="${report.r11_30_9_25_amt != null ? #numbers.formatDecimal(report.r11_30_9_25_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+            id="r11_30_9_25_amt"
+            name="r11_30_9_25_amt"
+            style="background-color:#FFFFFF; width:-webkit-fill-available; height:28px; border-color:transparent; text-align:right;"
+            readonly />
     </td>
 </tr>
+		
+		
+		<tr th:each="report : ${reportsummary1}">
+    <td style="text-align: center; width:30px;">(d)</td>
 
-
-<!-- R11 -->
-<tr>
-    <td style="text-align: center; ">(c)</td>
-
-    <td style="text-align: left;"
-        th:text="${report?.r11_product ?: ''}">
+    <td id="ROW12"
+        style="font-weight: bold; text-align: left;  width:200px;">
+        <input
+            class="display-input Show_input"
+            type="text"
+            th:value="'Provision towards sacrifice of interest in restructured standard and sub-standard accounts'"
+            id="r12_product"
+            name="r12_product"
+            style="background-color:#FFFFFF; width:-webkit-fill-available; border-color:transparent; text-align:left;"
+            readonly />
     </td>
 
-    <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r11_31_3_25_amt ?: ''}"
-        th:attr="RowId='R11', ColumnId='C2'"
-        onclick="showdetailsbyRowAndColumn(this)">
+    <td id="ROW12"
+        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;">
+        <input
+            class="display-input Show_input"
+            type="text"
+            th:value="${report.r12_31_3_25_amt != null ? #numbers.formatDecimal(report.r12_31_3_25_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+            id="r12_31_3_25_amt"
+            name="r12_31_3_25_amt"
+            style="background-color:#FFFFFF; width:-webkit-fill-available; height:28px; border-color:transparent; text-align:right;"
+            readonly />
     </td>
 
-    <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r11_30_9_25_amt ?: ''}"
-        th:attr="RowId='R11', ColumnId='C3'"
-        onclick="showdetailsbyRowAndColumn(this)">
-    </td>
-</tr>
-
-
-<!-- R12 -->
-<tr>
-    <td style="text-align: center; ">(d)</td>
-
-    <td style="text-align: left;"
-        th:text="${report?.r12_product ?: ''}">
-    </td>
-
-    <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r12_31_3_25_amt ?: ''}"
-        th:attr="RowId='R12', ColumnId='C2'"
-        onclick="showdetailsbyRowAndColumn(this)">
-    </td>
-
-    <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r12_30_9_25_amt ?: ''}"
-        th:attr="RowId='R12', ColumnId='C3'"
-        onclick="showdetailsbyRowAndColumn(this)">
+    <td id="ROW12"
+        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;">
+        <input
+            class="display-input Show_input"
+            type="text"
+            th:value="${report.r12_30_9_25_amt != null ? #numbers.formatDecimal(report.r12_30_9_25_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+            id="r12_30_9_25_amt"
+            name="r12_30_9_25_amt"
+            style="background-color:#FFFFFF; width:-webkit-fill-available; height:28px; border-color:transparent; text-align:right;"
+            readonly />
     </td>
 </tr>
-
-
+										
+	
 <!-- R13 -->
-<tr>
+<tr th:each="report: ${reportsummary}">
     <td style="text-align: center; ">(e)</td>
 
     <td style="text-align: left;"
         th:text="${report?.r13_product ?: ''}">
     </td>
 
-    <td style="text-align: right; padding-right:10px;"
+    <td id="r13_31_3_25_amt" 
+    
+     style="text-align: right; padding-right:10px;"
         th:text="${report?.r13_31_3_25_amt ?: ''}"
         th:attr="RowId='R13', ColumnId='C2'"
         onclick="showdetailsbyRowAndColumn(this)">
     </td>
 
-    <td style="text-align: right; padding-right:10px;"
+    <td  id="r13_30_9_25_amt" 
+    style="text-align: right; padding-right:10px;"
         th:text="${report?.r13_30_9_25_amt ?: ''}"
         th:attr="RowId='R13', ColumnId='C3'"
         onclick="showdetailsbyRowAndColumn(this)">
     </td>
 </tr>
 
+<tr th:each="report : ${reportsummary1}">
+    <td style="text-align: center; width:30px;">(f)</td>
 
-<!-- R14 -->
-<tr>
-    <td style="text-align: center; ">(f)</td>
-
-    <td style="text-align: left;"
-        th:text="${report?.r14_product ?: ''}">
+    <td id="ROW14"
+        style="font-weight: bold; text-align: left;  width:200px;">
+        <input
+            class="display-input Show_input"
+            type="text"
+            th:value="'Provision for depreciation on investment (incl. matured securities)'"
+            id="r14_product"
+            name="r14_product"
+            style="background-color:#FFFFFF; width:-webkit-fill-available; border-color:transparent; text-align:left;"
+            readonly />
     </td>
 
-    <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r14_31_3_25_amt ?: ''}"
-        th:attr="RowId='R14', ColumnId='C2'"
-        onclick="showdetailsbyRowAndColumn(this)">
+    <td id="ROW14"
+        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;">
+        <input
+            class="display-input Show_input"
+            type="text"
+            th:value="${report.r14_31_3_25_amt != null ? #numbers.formatDecimal(report.r14_31_3_25_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+            id="r14_31_3_25_amt"
+            name="r14_31_3_25_amt"
+            style="background-color:#FFFFFF; width:-webkit-fill-available; height:28px; border-color:transparent; text-align:right;"
+            readonly />
     </td>
 
-    <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r14_30_9_25_amt ?: ''}"
-        th:attr="RowId='R14', ColumnId='C3'"
-        onclick="showdetailsbyRowAndColumn(this)">
+    <td id="ROW14"
+        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;">
+        <input
+            class="display-input Show_input"
+            type="text"
+            th:value="${report.r14_30_9_25_amt != null ? #numbers.formatDecimal(report.r14_30_9_25_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+            id="r14_30_9_25_amt"
+            name="r14_30_9_25_amt"
+            style="background-color:#FFFFFF; width:-webkit-fill-available; height:28px; border-color:transparent; text-align:right;"
+            readonly />
+    </td>
+</tr>
+
+<tr th:each="report : ${reportsummary1}">
+    <td style="text-align: center; width:30px;">(g)</td>
+
+    <td id="ROW15"
+        style="font-weight: bold; text-align: left;  width:200px;">
+        <input
+            class="display-input Show_input"
+            type="text"
+            th:value="'Provision for Standard Assets '"
+            id="r15_product"
+            name="r15_product"
+            style="background-color:#FFFFFF; width:-webkit-fill-available; border-color:transparent; text-align:left;"
+            readonly />
+    </td>
+
+    <td id="ROW15"
+        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;">
+        <input
+            class="display-input Show_input"
+            type="text"
+            th:value="${report.r15_31_3_25_amt != null ? #numbers.formatDecimal(report.r15_31_3_25_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+            id="r15_31_3_25_amt"
+            name="r15_31_3_25_amt"
+            style="background-color:#FFFFFF; width:-webkit-fill-available; height:28px; border-color:transparent; text-align:right;"
+            readonly />
+    </td>
+
+    <td id="ROW15"
+        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;">
+        <input
+            class="display-input Show_input"
+            type="text"
+            th:value="${report.r15_30_9_25_amt != null ? #numbers.formatDecimal(report.r15_30_9_25_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+            id="r15_30_9_25_amt"
+            name="r15_30_9_25_amt"
+            style="background-color:#FFFFFF; width:-webkit-fill-available; height:28px; border-color:transparent; text-align:right;"
+            readonly />
+    </td>
+</tr>
+
+<tr th:each="report : ${reportsummary1}">
+    <td style="text-align: center; width:30px;">(h)</td>
+
+    <td id="ROW16"
+        style="font-weight: bold; text-align: left;  width:200px;">
+        <input
+            class="display-input Show_input"
+            type="text"
+            th:value="'Others provisions( Interim Dividend)'"
+            id="r16_product"
+            name="r16_product"
+            style="background-color:#FFFFFF; width:-webkit-fill-available; border-color:transparent; text-align:left;"
+            readonly />
+    </td>
+
+    <td id="ROW16"
+        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;">
+        <input
+            class="display-input Show_input"
+            type="text"
+            th:value="${report.r16_31_3_25_amt != null ? #numbers.formatDecimal(report.r16_31_3_25_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+            id="r16_31_3_25_amt"
+            name="r16_31_3_25_amt"
+            style="background-color:#FFFFFF; width:-webkit-fill-available; height:28px; border-color:transparent; text-align:right;"
+            readonly />
+    </td>
+
+    <td id="ROW16"
+        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;">
+        <input
+            class="display-input Show_input"
+            type="text"
+            th:value="${report.r16_30_9_25_amt != null ? #numbers.formatDecimal(report.r16_30_9_25_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+            id="r16_30_9_25_amt"
+            name="r16_30_9_25_amt"
+            style="background-color:#FFFFFF; width:-webkit-fill-available; height:28px; border-color:transparent; text-align:right;"
+            readonly />
+    </td>
+</tr>
+
+<tr th:each="report : ${reportsummary1}">
+    <td style="text-align: center; width:30px;"></td>
+
+    <td id="ROW17"
+        style="font-weight: bold; text-align: left;  width:200px;  " >
+        <input class="display-input Show_input " type="text"
+            th:value="'Total'"
+            id="r17_product" name="r17_product"
+            style="background-color:#FFFFFF; width:-webkit-fill-available; border-color:transparent; text-align:left; font-weight:bold;"
+            readonly />
+    </td>
+
+    <td id="ROW17"
+        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+            th:value="${report.r17_31_3_25_amt }"
+            id="r17_31_3_25_amt" name="r17_31_3_25_amt"
+            style="background-color:#FFFFFF; width:-webkit-fill-available; height:28px; border-color:transparent; text-align:right;"
+            readonly />
+    </td>
+
+    <td id="ROW17"
+        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+            th:value="${report.r17_30_9_25_amt != null ? #numbers.formatDecimal(report.r17_30_9_25_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+            id="r17_30_9_25_amt" name="r17_30_9_25_amt"
+            style="background-color:#FFFFFF; width:-webkit-fill-available; height:28px; border-color:transparent; text-align:right;"
+            readonly />
     </td>
 </tr>
 
 
-<!-- R15 -->
-<tr>
-    <td style="text-align: center; ">(g)</td>
+<tr th:each="report : ${reportsummary1}">
+    <td style="text-align: center; width:30px;"></td>
 
-    <td style="text-align: left;"
-        th:text="${report?.r15_product ?: ''}">
+    <td id="ROW18"
+        style="font-weight: bold; text-align: left;  width:200px;">
+        <input class="display-input Show_input" type="text"
+            th:value="'Less: Excess Provision for Depreciation on Investments'"
+            id="r18_product" name="r18_product"
+            style="background-color:#FFFFFF; width:-webkit-fill-available; border-color:transparent; text-align:left;"
+            readonly />
     </td>
 
-    <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r15_31_3_25_amt ?: ''}"
-        th:attr="RowId='R15', ColumnId='C2'"
-        onclick="showdetailsbyRowAndColumn(this)">
+    <td id="ROW18"
+        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;">
+        <input class="display-input Show_input" type="text"
+            th:value="${report.r18_31_3_25_amt != null ? #numbers.formatDecimal(report.r18_31_3_25_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+            id="r18_31_3_25_amt" name="r18_31_3_25_amt"
+            style="background-color:#FFFFFF; width:-webkit-fill-available; height:28px; border-color:transparent; text-align:right;"
+            readonly />
     </td>
 
-    <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r15_30_9_25_amt ?: ''}"
-        th:attr="RowId='R15', ColumnId='C3'"
-        onclick="showdetailsbyRowAndColumn(this)">
-    </td>
-</tr>
-
-
-<!-- R16 -->
-<tr>
-    <td style="text-align: center; ">(h)</td>
-
-    <td style="text-align: left;"
-        th:text="${report?.r16_product ?: ''}">
-    </td>
-
-    <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r16_31_3_25_amt ?: ''}"
-        th:attr="RowId='R16', ColumnId='C2'"
-        onclick="showdetailsbyRowAndColumn(this)">
-    </td>
-
-    <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r16_30_9_25_amt ?: ''}"
-        th:attr="RowId='R16', ColumnId='C3'"
-        onclick="showdetailsbyRowAndColumn(this)">
+    <td id="ROW18"
+        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;">
+        <input class="display-input Show_input" type="text"
+            th:value="${report.r18_30_9_25_amt != null ? #numbers.formatDecimal(report.r18_30_9_25_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+            id="r18_30_9_25_amt" name="r18_30_9_25_amt"
+            style="background-color:#FFFFFF; width:-webkit-fill-available; height:28px; border-color:transparent; text-align:right;"
+            readonly />
     </td>
 </tr>
 
 
-<!-- R17 -->
-<tr>
-    <td style="text-align: center; "></td>
+<tr th:each="report : ${reportsummary1}">
+    <td style="text-align: center; width:30px;"></td>
 
-    <td style="text-align: left; font-weight:bold;"
-        th:text="${report?.r17_product ?: ''}">
+    <td id="ROW19"
+        style="font-weight: bold; text-align: left; padding-right:20px; width:200px;">
+        <input class="display-input Show_input" type="text"
+            th:value="'         Excess provision –Others'"
+            id="r19_product" name="r19_product"
+            style="background-color:#FFFFFF; width:-webkit-fill-available; border-color:transparent; text-align:left;"
+            readonly />
     </td>
 
-    <td class="green-cell" style="text-align: right; padding-right:10px; font-weight:bold;"
-        th:text="${report?.r17_31_3_25_amt ?: ''}"
-        >
+    <td id="ROW19"
+        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;">
+        <input class="display-input Show_input" type="text"
+            th:value="${report.r19_31_3_25_amt != null ? #numbers.formatDecimal(report.r19_31_3_25_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+            id="r19_31_3_25_amt" name="r19_31_3_25_amt"
+            style="background-color:#FFFFFF; width:-webkit-fill-available; height:28px; border-color:transparent; text-align:right;"
+            readonly />
     </td>
 
-    <td class="green-cell" style="text-align: right; padding-right:10px; font-weight:bold;"
-        th:text="${report?.r17_30_9_25_amt ?: ''}"
-       >
+    <td id="ROW19"
+        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;">
+        <input class="display-input Show_input" type="text"
+            th:value="${report.r19_30_9_25_amt != null ? #numbers.formatDecimal(report.r19_30_9_25_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+            id="r19_30_9_25_amt" name="r19_30_9_25_amt"
+            style="background-color:#FFFFFF; width:-webkit-fill-available; height:28px; border-color:transparent; text-align:right;"
+            readonly />
+    </td>
+</tr>
+
+<tr th:each="report : ${reportsummary1}">
+    <td style="text-align: center; width:30px;"></td>
+
+    <td id="ROW20"
+        style="font-weight: bold; text-align: left;  width:200px;">
+        <input class="display-input Show_input" type="text"
+            th:value="' TOTAL'"
+            id="r20_product" name="r20_product"
+            style="background-color:#FFFFFF; width:-webkit-fill-available; border-color:transparent; text-align:left; font-weight:bold;"
+            readonly />
+    </td>
+
+    <td id="ROW20"
+        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+            th:value="${report.r20_31_3_25_amt != null ? #numbers.formatDecimal(report.r20_31_3_25_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+            id="r20_31_3_25_amt" name="r20_31_3_25_amt"
+            style="background-color:#FFFFFF; width:-webkit-fill-available; height:28px; border-color:transparent; text-align:right;"
+            readonly />
+    </td>
+
+    <td id="ROW20"
+        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+            th:value="${report.r20_30_9_25_amt != null ? #numbers.formatDecimal(report.r20_30_9_25_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+            id="r20_30_9_25_amt" name="r20_30_9_25_amt"
+            style="background-color:#FFFFFF; width:-webkit-fill-available; height:28px; border-color:transparent; text-align:right;"
+            readonly />
     </td>
 </tr>
 
 
-<!-- R18 -->
-<tr>
-    <td style="text-align: center; font-weight:bold;"></td>
-
-    <td style="text-align: left;"
-        th:text="${report?.r18_product ?: ''}">
-    </td>
-
-    <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r18_31_3_25_amt ?: ''}"
-        th:attr="RowId='R18', ColumnId='C2'"
-        onclick="showdetailsbyRowAndColumn(this)">
-    </td>
-
-    <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r18_30_9_25_amt ?: ''}"
-        th:attr="RowId='R18', ColumnId='C3'"
-        onclick="showdetailsbyRowAndColumn(this)">
-    </td>
-</tr>
 
 
-<!-- R19 -->
-<tr>
-    <td style="text-align: center; font-weight:bold;"></td>
-
-    <td style="text-align: left;"
-        th:text="${report?.r19_product ?: ''}">
-    </td>
-
-    <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r19_31_3_25_amt ?: ''}"
-        th:attr="RowId='R19', ColumnId='C2'"
-        onclick="showdetailsbyRowAndColumn(this)">
-    </td>
-
-    <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r19_30_9_25_amt ?: ''}"
-        th:attr="RowId='R19', ColumnId='C3'"
-        onclick="showdetailsbyRowAndColumn(this)">
-    </td>
-</tr>
-
-
-<!-- R20 -->
-<tr>
-    <td style="text-align: center; font-weight:bold;"></td>
-
-    <td style="text-align: left; font-weight:bold;"
-        th:text="${report?.r20_product ?: ''}">
-    </td>
-
-    <td class="green-cell" style="text-align: right; padding-right:10px; font-weight:bold;"
-        th:text="${report?.r20_31_3_25_amt ?: ''}"
-       >
-    </td>
-
-    <td  class="green-cell" style="text-align: right; padding-right:10px; font-weight:bold;"
-        th:text="${report?.r20_30_9_25_amt ?: ''}"
-       >
-    </td>
-</tr>
-										
 										
 										
 										
