@@ -298,6 +298,9 @@ public class RegulatoryReportServices {
 	BRRS_FSI_ReportService BRRS_FSI_ReportService;
 	
 	@Autowired
+	BRRS_EXPOSURES_ReportService BRRS_EXPOSURES_ReportService;
+	
+	@Autowired
 	BRRS_FORMAT_NEW_CPR_ReportService BRRS_FORMAT_NEW_CPR_ReportService;
 
 	@Autowired
@@ -837,6 +840,13 @@ public class RegulatoryReportServices {
 
 				break;
 				
+			case "EXPOSURES":
+				repsummary = BRRS_EXPOSURES_ReportService.getEXPOSURESView(reportId, fromdate, todate, currency,
+						dtltype,
+						pageable, type, version);
+
+				break;
+				
 			case "FORMAT_NEW_CPR":
 				repsummary = BRRS_FORMAT_NEW_CPR_ReportService.getFORMAT_NEW_CPRView(reportId, fromdate, todate, currency,
 						dtltype,
@@ -1195,6 +1205,13 @@ public class RegulatoryReportServices {
 			case "FSI":
 
 				repdetail = BRRS_FSI_ReportService.getFSIcurrentDtl(reportId, fromdate, todate, currency,
+						dtltype,
+						pageable, Filter, type, version);
+				break;
+				
+			case "EXPOSURES":
+
+				repdetail = BRRS_EXPOSURES_ReportService.getEXPOSUREScurrentDtl(reportId, fromdate, todate, currency,
 						dtltype,
 						pageable, Filter, type, version);
 				break;
@@ -2136,6 +2153,17 @@ public class RegulatoryReportServices {
 				}
 				break;
 				
+			case "EXPOSURES":
+				try {
+					repfile = BRRS_EXPOSURES_ReportService.getEXPOSURESExcel(filename, reportId, fromdate, todate,
+							currency, dtltype, type, version);
+
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+				
 			case "FORMAT_NEW_CPR":
 				try {
 					repfile = BRRS_FORMAT_NEW_CPR_ReportService.getFORMAT_NEW_CPRExcel(filename, reportId, fromdate, todate,
@@ -2369,6 +2397,9 @@ public class RegulatoryReportServices {
 					filename, fromdate, todate, currency, dtltype, type, version);
 		} else if ("FSIDetail".equals(filename)) {
 			return BRRS_FSI_ReportService.getFSIDetailExcel(
+					filename, fromdate, todate, currency, dtltype, type, version);
+		} else if ("EXPOSURESDetail".equals(filename)) {
+			return BRRS_EXPOSURES_ReportService.getEXPOSURESDetailExcel(
 					filename, fromdate, todate, currency, dtltype, type, version);
 		} else if ("FNCDetail".equals(filename)) {
 			return BRRS_FORMAT_NEW_CPR_ReportService.getFORMAT_NEW_CPRDetailExcel(
@@ -3206,6 +3237,15 @@ public class RegulatoryReportServices {
 				}
 				break;
 				
+			case "EXPOSURES":
+				try {
+					archivalData = BRRS_EXPOSURES_ReportService.getEXPOSURESArchival();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+				
 			case "FORMAT_NEW_CPR":
 				try {
 					archivalData = BRRS_FORMAT_NEW_CPR_ReportService.getFNCArchival();
@@ -3463,6 +3503,12 @@ public class RegulatoryReportServices {
 		else if ("FSIDetail".equals(filename)) {
 
 			fileData = BRRS_FSI_ReportService.getFSIDetailExcel(filename, fromdate, todate, currency,
+					dtltype, type, version);
+		}
+		
+		else if ("EXPOSURESDetail".equals(filename)) {
+
+			fileData = BRRS_EXPOSURES_ReportService.getEXPOSURESDetailExcel(filename, fromdate, todate, currency,
 					dtltype, type, version);
 		}
 		
@@ -3750,6 +3796,11 @@ public class RegulatoryReportServices {
 							request.getParameter("formmode"));
 					break;
 					
+				case "EXPOSURES":
+					modelAndView = BRRS_EXPOSURES_ReportService.getViewOrEditPage(request.getParameter("acctNo"),
+							request.getParameter("formmode"));
+					break;
+					
 				case "FORMAT_NEW_CPR":
 					modelAndView = BRRS_FORMAT_NEW_CPR_ReportService.getViewOrEditPage(request.getParameter("acctNo"),
 							request.getParameter("formmode"));
@@ -3951,6 +4002,10 @@ public class RegulatoryReportServices {
 
 				case "FSI":
 					response = BRRS_FSI_ReportService.updateDetailEdit(request);
+					break;
+					
+				case "EXPOSURES":
+					response = BRRS_EXPOSURES_ReportService.updateDetailEdit(request);
 					break;
 					
 				case "FORMAT_NEW_CPR":
