@@ -205,7 +205,7 @@ public class BRRS_MDISB1_ReportService {
 				if (rowId != null && columnId != null) {
 					T1Dt1 = BRRS_MDISB1_Detail_Repo.GetDataByRowIdAndColumnId(rowId, columnId, parsedDate);
 				} else {
-					T1Dt1 = BRRS_MDISB1_Detail_Repo.getdatabydateList(parsedDate, currentPage, pageSize);
+					T1Dt1 = BRRS_MDISB1_Detail_Repo.getdatabydateList(parsedDate);
 					totalPages = BRRS_MDISB1_Detail_Repo.getdatacount(parsedDate);
 					mv.addObject("pagination", "YES");
 				}
@@ -351,8 +351,8 @@ public class BRRS_MDISB1_ReportService {
 
 					// Column F
 					Cell cell4 = row.createCell(5);
-					if (record.getR7_deposit_foreign_number() != null) {
-						cell4.setCellValue(record.getR7_deposit_foreign_number().doubleValue());
+					if (record.getR7_deposit_foreign_amount() != null) {
+						cell4.setCellValue(record.getR7_deposit_foreign_amount().doubleValue());
 						cell4.setCellStyle(numberStyle);
 					} else {
 						cell4.setCellValue("");
@@ -393,8 +393,8 @@ public class BRRS_MDISB1_ReportService {
 
 					// Column F
 					Cell R8cell4 = row.createCell(5);
-					if (record.getR8_deposit_foreign_number() != null) {
-						R8cell4.setCellValue(record.getR8_deposit_foreign_number().doubleValue());
+					if (record.getR8_deposit_foreign_amount() != null) {
+						R8cell4.setCellValue(record.getR8_deposit_foreign_amount().doubleValue());
 						R8cell4.setCellStyle(numberStyle);
 					} else {
 						R8cell4.setCellValue("");
@@ -435,8 +435,8 @@ public class BRRS_MDISB1_ReportService {
 
 					// Column F
 					Cell R9cell4 = row.createCell(5);
-					if (record.getR9_deposit_foreign_number() != null) {
-						R9cell4.setCellValue(record.getR9_deposit_foreign_number().doubleValue());
+					if (record.getR9_deposit_foreign_amount() != null) {
+						R9cell4.setCellValue(record.getR9_deposit_foreign_amount().doubleValue());
 						R9cell4.setCellStyle(numberStyle);
 					} else {
 						R9cell4.setCellValue("");
@@ -477,8 +477,8 @@ public class BRRS_MDISB1_ReportService {
 
 					// Column F
 					Cell R10cell4 = row.createCell(5);
-					if (record.getR10_deposit_foreign_number() != null) {
-						R10cell4.setCellValue(record.getR10_deposit_foreign_number().doubleValue());
+					if (record.getR10_deposit_foreign_amount() != null) {
+						R10cell4.setCellValue(record.getR10_deposit_foreign_amount().doubleValue());
 						R10cell4.setCellStyle(numberStyle);
 					} else {
 						R10cell4.setCellValue("");
@@ -519,8 +519,8 @@ public class BRRS_MDISB1_ReportService {
 
 					// Column F
 					Cell R11cell4 = row.createCell(5);
-					if (record.getR11_deposit_foreign_number() != null) {
-						R11cell4.setCellValue(record.getR11_deposit_foreign_number().doubleValue());
+					if (record.getR11_deposit_foreign_amount() != null) {
+						R11cell4.setCellValue(record.getR11_deposit_foreign_amount().doubleValue());
 						R11cell4.setCellStyle(numberStyle);
 					} else {
 						R11cell4.setCellValue("");
@@ -561,8 +561,8 @@ public class BRRS_MDISB1_ReportService {
 
 					// Column F
 					Cell R12cell4 = row.createCell(5);
-					if (record.getR12_deposit_foreign_number() != null) {
-						R12cell4.setCellValue(record.getR12_deposit_foreign_number().doubleValue());
+					if (record.getR12_deposit_foreign_amount() != null) {
+						R12cell4.setCellValue(record.getR12_deposit_foreign_amount().doubleValue());
 						R12cell4.setCellStyle(numberStyle);
 					} else {
 						R12cell4.setCellValue("");
@@ -603,8 +603,8 @@ public class BRRS_MDISB1_ReportService {
 
 					// Column F
 					Cell R15cell4 = row.createCell(5);
-					if (record.getR15_deposit_foreign_number() != null) {
-						R15cell4.setCellValue(record.getR15_deposit_foreign_number().doubleValue());
+					if (record.getR15_deposit_foreign_amount() != null) {
+						R15cell4.setCellValue(record.getR15_deposit_foreign_amount().doubleValue());
 						R15cell4.setCellStyle(numberStyle);
 					} else {
 						R15cell4.setCellValue("");
@@ -645,8 +645,8 @@ public class BRRS_MDISB1_ReportService {
 
 					// Column F
 					Cell R16cell4 = row.createCell(5);
-					if (record.getR16_deposit_foreign_number() != null) {
-						R16cell4.setCellValue(record.getR16_deposit_foreign_number().doubleValue());
+					if (record.getR16_deposit_foreign_amount() != null) {
+						R16cell4.setCellValue(record.getR16_deposit_foreign_amount().doubleValue());
 						R16cell4.setCellStyle(numberStyle);
 					} else {
 						R16cell4.setCellValue("");
@@ -687,8 +687,8 @@ public class BRRS_MDISB1_ReportService {
 
 					// Column F
 					Cell R17cell4 = row.createCell(5);
-					if (record.getR17_deposit_foreign_number() != null) {
-						R17cell4.setCellValue(record.getR17_deposit_foreign_number().doubleValue());
+					if (record.getR17_deposit_foreign_amount() != null) {
+						R17cell4.setCellValue(record.getR17_deposit_foreign_amount().doubleValue());
 						R17cell4.setCellStyle(numberStyle);
 					} else {
 						R17cell4.setCellValue("");
@@ -729,8 +729,8 @@ public class BRRS_MDISB1_ReportService {
 
 					// Column F
 					Cell R18cell4 = row.createCell(5);
-					if (record.getR18_deposit_foreign_number() != null) {
-						R18cell4.setCellValue(record.getR18_deposit_foreign_number().doubleValue());
+					if (record.getR18_deposit_foreign_amount() != null) {
+						R18cell4.setCellValue(record.getR18_deposit_foreign_amount().doubleValue());
 						R18cell4.setCellStyle(numberStyle);
 					} else {
 						R18cell4.setCellValue("");
@@ -771,8 +771,8 @@ public class BRRS_MDISB1_ReportService {
 
 					// Column F
 					Cell R19cell4 = row.createCell(5);
-					if (record.getR19_deposit_foreign_number() != null) {
-						R19cell4.setCellValue(record.getR19_deposit_foreign_number().doubleValue());
+					if (record.getR19_deposit_foreign_amount() != null) {
+						R19cell4.setCellValue(record.getR19_deposit_foreign_amount().doubleValue());
 						R19cell4.setCellStyle(numberStyle);
 					} else {
 						R19cell4.setCellValue("");
@@ -813,8 +813,8 @@ public class BRRS_MDISB1_ReportService {
 
 					// Column F
 					Cell R20cell4 = row.createCell(5);
-					if (record.getR20_deposit_foreign_number() != null) {
-						R20cell4.setCellValue(record.getR20_deposit_foreign_number().doubleValue());
+					if (record.getR20_deposit_foreign_amount() != null) {
+						R20cell4.setCellValue(record.getR20_deposit_foreign_amount().doubleValue());
 						R20cell4.setCellStyle(numberStyle);
 					} else {
 						R20cell4.setCellValue("");
@@ -855,8 +855,8 @@ public class BRRS_MDISB1_ReportService {
 
 					// Column F
 					Cell R23cell4 = row.createCell(5);
-					if (record.getR23_deposit_foreign_number() != null) {
-						R23cell4.setCellValue(record.getR23_deposit_foreign_number().doubleValue());
+					if (record.getR23_deposit_foreign_amount() != null) {
+						R23cell4.setCellValue(record.getR23_deposit_foreign_amount().doubleValue());
 						R23cell4.setCellStyle(numberStyle);
 					} else {
 						R23cell4.setCellValue("");
@@ -897,8 +897,8 @@ public class BRRS_MDISB1_ReportService {
 
 					// Column F
 					Cell R24cell4 = row.createCell(5);
-					if (record.getR24_deposit_foreign_number() != null) {
-						R24cell4.setCellValue(record.getR24_deposit_foreign_number().doubleValue());
+					if (record.getR24_deposit_foreign_amount() != null) {
+						R24cell4.setCellValue(record.getR24_deposit_foreign_amount().doubleValue());
 						R24cell4.setCellStyle(numberStyle);
 					} else {
 						R24cell4.setCellValue("");
@@ -939,8 +939,8 @@ public class BRRS_MDISB1_ReportService {
 
 					// Column F
 					Cell R25cell4 = row.createCell(5);
-					if (record.getR25_deposit_foreign_number() != null) {
-						R25cell4.setCellValue(record.getR25_deposit_foreign_number().doubleValue());
+					if (record.getR25_deposit_foreign_amount() != null) {
+						R25cell4.setCellValue(record.getR25_deposit_foreign_amount().doubleValue());
 						R25cell4.setCellStyle(numberStyle);
 					} else {
 						R25cell4.setCellValue("");
@@ -981,8 +981,8 @@ public class BRRS_MDISB1_ReportService {
 
 					// Column F
 					Cell R26cell4 = row.createCell(5);
-					if (record.getR26_deposit_foreign_number() != null) {
-						R26cell4.setCellValue(record.getR26_deposit_foreign_number().doubleValue());
+					if (record.getR26_deposit_foreign_amount() != null) {
+						R26cell4.setCellValue(record.getR26_deposit_foreign_amount().doubleValue());
 						R26cell4.setCellStyle(numberStyle);
 					} else {
 						R26cell4.setCellValue("");
@@ -1023,8 +1023,8 @@ public class BRRS_MDISB1_ReportService {
 
 					// Column F
 					Cell R27cell4 = row.createCell(5);
-					if (record.getR27_deposit_foreign_number() != null) {
-						R27cell4.setCellValue(record.getR27_deposit_foreign_number().doubleValue());
+					if (record.getR27_deposit_foreign_amount() != null) {
+						R27cell4.setCellValue(record.getR27_deposit_foreign_amount().doubleValue());
 						R27cell4.setCellStyle(numberStyle);
 					} else {
 						R27cell4.setCellValue("");
@@ -1064,8 +1064,8 @@ public class BRRS_MDISB1_ReportService {
 
 					// Column F
 					Cell R28cell4 = row.createCell(5);
-					if (record.getR28_deposit_foreign_number() != null) {
-						R28cell4.setCellValue(record.getR28_deposit_foreign_number().doubleValue());
+					if (record.getR28_deposit_foreign_amount() != null) {
+						R28cell4.setCellValue(record.getR28_deposit_foreign_amount().doubleValue());
 						R28cell4.setCellStyle(numberStyle);
 					} else {
 						R28cell4.setCellValue("");
@@ -1106,8 +1106,8 @@ public class BRRS_MDISB1_ReportService {
 
 					// Column F
 					Cell R31cell4 = row.createCell(5);
-					if (record.getR31_deposit_foreign_number() != null) {
-						R31cell4.setCellValue(record.getR31_deposit_foreign_number().doubleValue());
+					if (record.getR31_deposit_foreign_amount() != null) {
+						R31cell4.setCellValue(record.getR31_deposit_foreign_amount().doubleValue());
 						R31cell4.setCellStyle(numberStyle);
 					} else {
 						R31cell4.setCellValue("");
@@ -1148,8 +1148,8 @@ public class BRRS_MDISB1_ReportService {
 
 					// Column F
 					Cell R32cell4 = row.createCell(5);
-					if (record.getR32_deposit_foreign_number() != null) {
-						R32cell4.setCellValue(record.getR32_deposit_foreign_number().doubleValue());
+					if (record.getR32_deposit_foreign_amount() != null) {
+						R32cell4.setCellValue(record.getR32_deposit_foreign_amount().doubleValue());
 						R32cell4.setCellStyle(numberStyle);
 					} else {
 						R32cell4.setCellValue("");
@@ -1190,8 +1190,8 @@ public class BRRS_MDISB1_ReportService {
 
 					// Column F
 					Cell R33cell4 = row.createCell(5);
-					if (record.getR33_deposit_foreign_number() != null) {
-						R33cell4.setCellValue(record.getR33_deposit_foreign_number().doubleValue());
+					if (record.getR33_deposit_foreign_amount() != null) {
+						R33cell4.setCellValue(record.getR33_deposit_foreign_amount().doubleValue());
 						R33cell4.setCellStyle(numberStyle);
 					} else {
 						R33cell4.setCellValue("");
@@ -1232,8 +1232,8 @@ public class BRRS_MDISB1_ReportService {
 
 					// Column F
 					Cell R34cell4 = row.createCell(5);
-					if (record.getR34_deposit_foreign_number() != null) {
-						R34cell4.setCellValue(record.getR34_deposit_foreign_number().doubleValue());
+					if (record.getR34_deposit_foreign_amount() != null) {
+						R34cell4.setCellValue(record.getR34_deposit_foreign_amount().doubleValue());
 						R34cell4.setCellStyle(numberStyle);
 					} else {
 						R34cell4.setCellValue("");
@@ -1274,8 +1274,8 @@ public class BRRS_MDISB1_ReportService {
 
 					// Column F
 					Cell R35cell4 = row.createCell(5);
-					if (record.getR35_deposit_foreign_number() != null) {
-						R35cell4.setCellValue(record.getR35_deposit_foreign_number().doubleValue());
+					if (record.getR35_deposit_foreign_amount() != null) {
+						R35cell4.setCellValue(record.getR35_deposit_foreign_amount().doubleValue());
 						R35cell4.setCellStyle(numberStyle);
 					} else {
 						R35cell4.setCellValue("");
@@ -1316,8 +1316,8 @@ public class BRRS_MDISB1_ReportService {
 
 					// Column F
 					Cell R36cell4 = row.createCell(5);
-					if (record.getR36_deposit_foreign_number() != null) {
-						R36cell4.setCellValue(record.getR36_deposit_foreign_number().doubleValue());
+					if (record.getR36_deposit_foreign_amount() != null) {
+						R36cell4.setCellValue(record.getR36_deposit_foreign_amount().doubleValue());
 						R36cell4.setCellStyle(numberStyle);
 					} else {
 						R36cell4.setCellValue("");
@@ -1358,8 +1358,8 @@ public class BRRS_MDISB1_ReportService {
 
 					// Column F
 					Cell R39cell4 = row.createCell(5);
-					if (record.getR39_deposit_foreign_number() != null) {
-						R39cell4.setCellValue(record.getR39_deposit_foreign_number().doubleValue());
+					if (record.getR39_deposit_foreign_amount() != null) {
+						R39cell4.setCellValue(record.getR39_deposit_foreign_amount().doubleValue());
 						R39cell4.setCellStyle(numberStyle);
 					} else {
 						R39cell4.setCellValue("");
@@ -1400,8 +1400,8 @@ public class BRRS_MDISB1_ReportService {
 
 					// Column F
 					Cell R40cell4 = row.createCell(5);
-					if (record.getR40_deposit_foreign_number() != null) {
-						R40cell4.setCellValue(record.getR40_deposit_foreign_number().doubleValue());
+					if (record.getR40_deposit_foreign_amount() != null) {
+						R40cell4.setCellValue(record.getR40_deposit_foreign_amount().doubleValue());
 						R40cell4.setCellStyle(numberStyle);
 					} else {
 						R40cell4.setCellValue("");
@@ -1442,8 +1442,8 @@ public class BRRS_MDISB1_ReportService {
 
 					// Column F
 					Cell R41cell4 = row.createCell(5);
-					if (record.getR41_deposit_foreign_number() != null) {
-						R41cell4.setCellValue(record.getR41_deposit_foreign_number().doubleValue());
+					if (record.getR41_deposit_foreign_amount() != null) {
+						R41cell4.setCellValue(record.getR41_deposit_foreign_amount().doubleValue());
 						R41cell4.setCellStyle(numberStyle);
 					} else {
 						R41cell4.setCellValue("");
@@ -1484,8 +1484,8 @@ public class BRRS_MDISB1_ReportService {
 
 					// Column F
 					Cell R42cell4 = row.createCell(5);
-					if (record.getR42_deposit_foreign_number() != null) {
-						R42cell4.setCellValue(record.getR42_deposit_foreign_number().doubleValue());
+					if (record.getR42_deposit_foreign_amount() != null) {
+						R42cell4.setCellValue(record.getR42_deposit_foreign_amount().doubleValue());
 						R42cell4.setCellStyle(numberStyle);
 					} else {
 						R42cell4.setCellValue("");
@@ -1526,8 +1526,8 @@ public class BRRS_MDISB1_ReportService {
 
 					// Column F
 					Cell R43cell4 = row.createCell(5);
-					if (record.getR43_deposit_foreign_number() != null) {
-						R43cell4.setCellValue(record.getR43_deposit_foreign_number().doubleValue());
+					if (record.getR43_deposit_foreign_amount() != null) {
+						R43cell4.setCellValue(record.getR43_deposit_foreign_amount().doubleValue());
 						R43cell4.setCellStyle(numberStyle);
 					} else {
 						R43cell4.setCellValue("");
@@ -1568,8 +1568,8 @@ public class BRRS_MDISB1_ReportService {
 
 					// Column F
 					Cell R44cell4 = row.createCell(5);
-					if (record.getR44_deposit_foreign_number() != null) {
-						R44cell4.setCellValue(record.getR44_deposit_foreign_number().doubleValue());
+					if (record.getR44_deposit_foreign_amount() != null) {
+						R44cell4.setCellValue(record.getR44_deposit_foreign_amount().doubleValue());
 						R44cell4.setCellStyle(numberStyle);
 					} else {
 						R44cell4.setCellValue("");
@@ -1610,8 +1610,8 @@ public class BRRS_MDISB1_ReportService {
 
 					// Column F
 					Cell R47cell4 = row.createCell(5);
-					if (record.getR47_deposit_foreign_number() != null) {
-						R47cell4.setCellValue(record.getR47_deposit_foreign_number().doubleValue());
+					if (record.getR47_deposit_foreign_amount() != null) {
+						R47cell4.setCellValue(record.getR47_deposit_foreign_amount().doubleValue());
 						R47cell4.setCellStyle(numberStyle);
 					} else {
 						R47cell4.setCellValue("");
@@ -1652,8 +1652,8 @@ public class BRRS_MDISB1_ReportService {
 
 					// Column F
 					Cell R48cell4 = row.createCell(5);
-					if (record.getR48_deposit_foreign_number() != null) {
-						R48cell4.setCellValue(record.getR48_deposit_foreign_number().doubleValue());
+					if (record.getR48_deposit_foreign_amount() != null) {
+						R48cell4.setCellValue(record.getR48_deposit_foreign_amount().doubleValue());
 						R48cell4.setCellStyle(numberStyle);
 					} else {
 						R48cell4.setCellValue("");
@@ -1694,8 +1694,8 @@ public class BRRS_MDISB1_ReportService {
 
 					// Column F
 					Cell R49cell4 = row.createCell(5);
-					if (record.getR49_deposit_foreign_number() != null) {
-						R49cell4.setCellValue(record.getR49_deposit_foreign_number().doubleValue());
+					if (record.getR49_deposit_foreign_amount() != null) {
+						R49cell4.setCellValue(record.getR49_deposit_foreign_amount().doubleValue());
 						R49cell4.setCellStyle(numberStyle);
 					} else {
 						R49cell4.setCellValue("");
@@ -1736,8 +1736,8 @@ public class BRRS_MDISB1_ReportService {
 
 					// Column F
 					Cell R50cell4 = row.createCell(5);
-					if (record.getR50_deposit_foreign_number() != null) {
-						R50cell4.setCellValue(record.getR50_deposit_foreign_number().doubleValue());
+					if (record.getR50_deposit_foreign_amount() != null) {
+						R50cell4.setCellValue(record.getR50_deposit_foreign_amount().doubleValue());
 						R50cell4.setCellStyle(numberStyle);
 					} else {
 						R50cell4.setCellValue("");
@@ -1778,8 +1778,8 @@ public class BRRS_MDISB1_ReportService {
 
 					// Column F
 					Cell R51cell4 = row.createCell(5);
-					if (record.getR51_deposit_foreign_number() != null) {
-						R51cell4.setCellValue(record.getR51_deposit_foreign_number().doubleValue());
+					if (record.getR51_deposit_foreign_amount() != null) {
+						R51cell4.setCellValue(record.getR51_deposit_foreign_amount().doubleValue());
 						R51cell4.setCellStyle(numberStyle);
 					} else {
 						R51cell4.setCellValue("");
@@ -1820,8 +1820,8 @@ public class BRRS_MDISB1_ReportService {
 
 					// Column F
 					Cell R52cell4 = row.createCell(5);
-					if (record.getR52_deposit_foreign_number() != null) {
-						R52cell4.setCellValue(record.getR52_deposit_foreign_number().doubleValue());
+					if (record.getR52_deposit_foreign_amount() != null) {
+						R52cell4.setCellValue(record.getR52_deposit_foreign_amount().doubleValue());
 						R52cell4.setCellStyle(numberStyle);
 					} else {
 						R52cell4.setCellValue("");
@@ -1862,8 +1862,8 @@ public class BRRS_MDISB1_ReportService {
 
 					// Column F
 					Cell R55cell4 = row.createCell(5);
-					if (record.getR55_deposit_foreign_number() != null) {
-						R55cell4.setCellValue(record.getR55_deposit_foreign_number().doubleValue());
+					if (record.getR55_deposit_foreign_amount() != null) {
+						R55cell4.setCellValue(record.getR55_deposit_foreign_amount().doubleValue());
 						R55cell4.setCellStyle(numberStyle);
 					} else {
 						R55cell4.setCellValue("");
@@ -1904,8 +1904,8 @@ public class BRRS_MDISB1_ReportService {
 
 					// Column F
 					Cell R56cell4 = row.createCell(5);
-					if (record.getR56_deposit_foreign_number() != null) {
-						R56cell4.setCellValue(record.getR56_deposit_foreign_number().doubleValue());
+					if (record.getR56_deposit_foreign_amount() != null) {
+						R56cell4.setCellValue(record.getR56_deposit_foreign_amount().doubleValue());
 						R56cell4.setCellStyle(numberStyle);
 					} else {
 						R56cell4.setCellValue("");
@@ -1946,8 +1946,8 @@ public class BRRS_MDISB1_ReportService {
 
 					// Column F
 					Cell R57cell4 = row.createCell(5);
-					if (record.getR57_deposit_foreign_number() != null) {
-						R57cell4.setCellValue(record.getR57_deposit_foreign_number().doubleValue());
+					if (record.getR57_deposit_foreign_amount() != null) {
+						R57cell4.setCellValue(record.getR57_deposit_foreign_amount().doubleValue());
 						R57cell4.setCellStyle(numberStyle);
 					} else {
 						R57cell4.setCellValue("");
@@ -1988,8 +1988,8 @@ public class BRRS_MDISB1_ReportService {
 
 					// Column F
 					Cell R58cell4 = row.createCell(5);
-					if (record.getR58_deposit_foreign_number() != null) {
-						R58cell4.setCellValue(record.getR58_deposit_foreign_number().doubleValue());
+					if (record.getR58_deposit_foreign_amount() != null) {
+						R58cell4.setCellValue(record.getR58_deposit_foreign_amount().doubleValue());
 						R58cell4.setCellStyle(numberStyle);
 					} else {
 						R58cell4.setCellValue("");
@@ -2030,8 +2030,8 @@ public class BRRS_MDISB1_ReportService {
 
 					// Column F
 					Cell R59cell4 = row.createCell(5);
-					if (record.getR59_deposit_foreign_number() != null) {
-						R59cell4.setCellValue(record.getR59_deposit_foreign_number().doubleValue());
+					if (record.getR59_deposit_foreign_amount() != null) {
+						R59cell4.setCellValue(record.getR59_deposit_foreign_amount().doubleValue());
 						R59cell4.setCellStyle(numberStyle);
 					} else {
 						R59cell4.setCellValue("");
@@ -2072,8 +2072,8 @@ public class BRRS_MDISB1_ReportService {
 
 					// Column F
 					Cell R60cell4 = row.createCell(5);
-					if (record.getR60_deposit_foreign_number() != null) {
-						R60cell4.setCellValue(record.getR60_deposit_foreign_number().doubleValue());
+					if (record.getR60_deposit_foreign_amount() != null) {
+						R60cell4.setCellValue(record.getR60_deposit_foreign_amount().doubleValue());
 						R60cell4.setCellStyle(numberStyle);
 					} else {
 						R60cell4.setCellValue("");
@@ -2114,8 +2114,8 @@ public class BRRS_MDISB1_ReportService {
 
 					// Column F
 					Cell R63cell4 = row.createCell(5);
-					if (record.getR63_deposit_foreign_number() != null) {
-						R63cell4.setCellValue(record.getR63_deposit_foreign_number().doubleValue());
+					if (record.getR63_deposit_foreign_amount() != null) {
+						R63cell4.setCellValue(record.getR63_deposit_foreign_amount().doubleValue());
 						R63cell4.setCellStyle(numberStyle);
 					} else {
 						R63cell4.setCellValue("");
@@ -2156,8 +2156,8 @@ public class BRRS_MDISB1_ReportService {
 
 					// Column F
 					Cell R64cell4 = row.createCell(5);
-					if (record.getR64_deposit_foreign_number() != null) {
-						R64cell4.setCellValue(record.getR64_deposit_foreign_number().doubleValue());
+					if (record.getR64_deposit_foreign_amount() != null) {
+						R64cell4.setCellValue(record.getR64_deposit_foreign_amount().doubleValue());
 						R64cell4.setCellStyle(numberStyle);
 					} else {
 						R64cell4.setCellValue("");
@@ -2198,8 +2198,8 @@ public class BRRS_MDISB1_ReportService {
 
 					// Column F
 					Cell R65cell4 = row.createCell(5);
-					if (record.getR65_deposit_foreign_number() != null) {
-						R65cell4.setCellValue(record.getR65_deposit_foreign_number().doubleValue());
+					if (record.getR65_deposit_foreign_amount() != null) {
+						R65cell4.setCellValue(record.getR65_deposit_foreign_amount().doubleValue());
 						R65cell4.setCellStyle(numberStyle);
 					} else {
 						R65cell4.setCellValue("");
@@ -2240,8 +2240,8 @@ public class BRRS_MDISB1_ReportService {
 
 					// Column F
 					Cell R66cell4 = row.createCell(5);
-					if (record.getR66_deposit_foreign_number() != null) {
-						R66cell4.setCellValue(record.getR66_deposit_foreign_number().doubleValue());
+					if (record.getR66_deposit_foreign_amount() != null) {
+						R66cell4.setCellValue(record.getR66_deposit_foreign_amount().doubleValue());
 						R66cell4.setCellStyle(numberStyle);
 					} else {
 						R66cell4.setCellValue("");
@@ -2282,8 +2282,8 @@ public class BRRS_MDISB1_ReportService {
 
 					// Column F
 					Cell R67cell4 = row.createCell(5);
-					if (record.getR67_deposit_foreign_number() != null) {
-						R67cell4.setCellValue(record.getR67_deposit_foreign_number().doubleValue());
+					if (record.getR67_deposit_foreign_amount() != null) {
+						R67cell4.setCellValue(record.getR67_deposit_foreign_amount().doubleValue());
 						R67cell4.setCellStyle(numberStyle);
 					} else {
 						R67cell4.setCellValue("");
@@ -2324,8 +2324,8 @@ public class BRRS_MDISB1_ReportService {
 
 					// Column F
 					Cell R68cell4 = row.createCell(5);
-					if (record.getR68_deposit_foreign_number() != null) {
-						R68cell4.setCellValue(record.getR68_deposit_foreign_number().doubleValue());
+					if (record.getR68_deposit_foreign_amount() != null) {
+						R68cell4.setCellValue(record.getR68_deposit_foreign_amount().doubleValue());
 						R68cell4.setCellStyle(numberStyle);
 					} else {
 						R68cell4.setCellValue("");
@@ -2366,8 +2366,8 @@ public class BRRS_MDISB1_ReportService {
 
 					// Column F
 					Cell R71cell4 = row.createCell(5);
-					if (record.getR71_deposit_foreign_number() != null) {
-						R71cell4.setCellValue(record.getR71_deposit_foreign_number().doubleValue());
+					if (record.getR71_deposit_foreign_amount() != null) {
+						R71cell4.setCellValue(record.getR71_deposit_foreign_amount().doubleValue());
 						R71cell4.setCellStyle(numberStyle);
 					} else {
 						R71cell4.setCellValue("");
@@ -2408,8 +2408,8 @@ public class BRRS_MDISB1_ReportService {
 
 					// Column F
 					Cell R72cell4 = row.createCell(5);
-					if (record.getR72_deposit_foreign_number() != null) {
-						R72cell4.setCellValue(record.getR72_deposit_foreign_number().doubleValue());
+					if (record.getR72_deposit_foreign_amount() != null) {
+						R72cell4.setCellValue(record.getR72_deposit_foreign_amount().doubleValue());
 						R72cell4.setCellStyle(numberStyle);
 					} else {
 						R72cell4.setCellValue("");
@@ -2450,8 +2450,8 @@ public class BRRS_MDISB1_ReportService {
 
 					// Column F
 					Cell R73cell4 = row.createCell(5);
-					if (record.getR73_deposit_foreign_number() != null) {
-						R73cell4.setCellValue(record.getR73_deposit_foreign_number().doubleValue());
+					if (record.getR73_deposit_foreign_amount() != null) {
+						R73cell4.setCellValue(record.getR73_deposit_foreign_amount().doubleValue());
 						R73cell4.setCellStyle(numberStyle);
 					} else {
 						R73cell4.setCellValue("");
@@ -2492,8 +2492,8 @@ public class BRRS_MDISB1_ReportService {
 
 					// Column F
 					Cell R74cell4 = row.createCell(5);
-					if (record.getR74_deposit_foreign_number() != null) {
-						R74cell4.setCellValue(record.getR74_deposit_foreign_number().doubleValue());
+					if (record.getR74_deposit_foreign_amount() != null) {
+						R74cell4.setCellValue(record.getR74_deposit_foreign_amount().doubleValue());
 						R74cell4.setCellStyle(numberStyle);
 					} else {
 						R74cell4.setCellValue("");
@@ -2534,8 +2534,8 @@ public class BRRS_MDISB1_ReportService {
 
 					// Column F
 					Cell R75cell4 = row.createCell(5);
-					if (record.getR75_deposit_foreign_number() != null) {
-						R75cell4.setCellValue(record.getR75_deposit_foreign_number().doubleValue());
+					if (record.getR75_deposit_foreign_amount() != null) {
+						R75cell4.setCellValue(record.getR75_deposit_foreign_amount().doubleValue());
 						R75cell4.setCellStyle(numberStyle);
 					} else {
 						R75cell4.setCellValue("");
@@ -2576,8 +2576,8 @@ public class BRRS_MDISB1_ReportService {
 
 					// Column F
 					Cell R76cell4 = row.createCell(5);
-					if (record.getR76_deposit_foreign_number() != null) {
-						R76cell4.setCellValue(record.getR76_deposit_foreign_number().doubleValue());
+					if (record.getR76_deposit_foreign_amount() != null) {
+						R76cell4.setCellValue(record.getR76_deposit_foreign_amount().doubleValue());
 						R76cell4.setCellStyle(numberStyle);
 					} else {
 						R76cell4.setCellValue("");
@@ -2618,8 +2618,8 @@ public class BRRS_MDISB1_ReportService {
 
 					// Column F
 					Cell R79cell4 = row.createCell(5);
-					if (record.getR79_deposit_foreign_number() != null) {
-						R79cell4.setCellValue(record.getR79_deposit_foreign_number().doubleValue());
+					if (record.getR79_deposit_foreign_amount() != null) {
+						R79cell4.setCellValue(record.getR79_deposit_foreign_amount().doubleValue());
 						R79cell4.setCellStyle(numberStyle);
 					} else {
 						R79cell4.setCellValue("");
@@ -2660,8 +2660,8 @@ public class BRRS_MDISB1_ReportService {
 
 					// Column F
 					Cell R80cell4 = row.createCell(5);
-					if (record.getR80_deposit_foreign_number() != null) {
-						R80cell4.setCellValue(record.getR80_deposit_foreign_number().doubleValue());
+					if (record.getR80_deposit_foreign_amount() != null) {
+						R80cell4.setCellValue(record.getR80_deposit_foreign_amount().doubleValue());
 						R80cell4.setCellStyle(numberStyle);
 					} else {
 						R80cell4.setCellValue("");
@@ -2702,8 +2702,8 @@ public class BRRS_MDISB1_ReportService {
 
 					// Column F
 					Cell R81cell4 = row.createCell(5);
-					if (record.getR81_deposit_foreign_number() != null) {
-						R81cell4.setCellValue(record.getR81_deposit_foreign_number().doubleValue());
+					if (record.getR81_deposit_foreign_amount() != null) {
+						R81cell4.setCellValue(record.getR81_deposit_foreign_amount().doubleValue());
 						R81cell4.setCellStyle(numberStyle);
 					} else {
 						R81cell4.setCellValue("");
@@ -2744,8 +2744,8 @@ public class BRRS_MDISB1_ReportService {
 
 					// Column F
 					Cell R82cell4 = row.createCell(5);
-					if (record.getR82_deposit_foreign_number() != null) {
-						R82cell4.setCellValue(record.getR82_deposit_foreign_number().doubleValue());
+					if (record.getR82_deposit_foreign_amount() != null) {
+						R82cell4.setCellValue(record.getR82_deposit_foreign_amount().doubleValue());
 						R82cell4.setCellStyle(numberStyle);
 					} else {
 						R82cell4.setCellValue("");
@@ -2786,8 +2786,8 @@ public class BRRS_MDISB1_ReportService {
 
 					// Column F
 					Cell R83cell4 = row.createCell(5);
-					if (record.getR83_deposit_foreign_number() != null) {
-						R83cell4.setCellValue(record.getR83_deposit_foreign_number().doubleValue());
+					if (record.getR83_deposit_foreign_amount() != null) {
+						R83cell4.setCellValue(record.getR83_deposit_foreign_amount().doubleValue());
 						R83cell4.setCellStyle(numberStyle);
 					} else {
 						R83cell4.setCellValue("");
@@ -2828,8 +2828,8 @@ public class BRRS_MDISB1_ReportService {
 
 					// Column F
 					Cell R84cell4 = row.createCell(5);
-					if (record.getR84_deposit_foreign_number() != null) {
-						R84cell4.setCellValue(record.getR84_deposit_foreign_number().doubleValue());
+					if (record.getR84_deposit_foreign_amount() != null) {
+						R84cell4.setCellValue(record.getR84_deposit_foreign_amount().doubleValue());
 						R84cell4.setCellStyle(numberStyle);
 					} else {
 						R84cell4.setCellValue("");
@@ -2870,8 +2870,8 @@ public class BRRS_MDISB1_ReportService {
 
 					// Column F
 					Cell R87cell4 = row.createCell(5);
-					if (record1.getR87_deposit_foreign_number() != null) {
-						R87cell4.setCellValue(record1.getR87_deposit_foreign_number().doubleValue());
+					if (record1.getR87_deposit_foreign_amount() != null) {
+						R87cell4.setCellValue(record1.getR87_deposit_foreign_amount().doubleValue());
 						R87cell4.setCellStyle(numberStyle);
 					} else {
 						R87cell4.setCellValue("");
@@ -2912,8 +2912,8 @@ public class BRRS_MDISB1_ReportService {
 
 					// Column F
 					Cell R88cell4 = row.createCell(5);
-					if (record1.getR88_deposit_foreign_number() != null) {
-						R88cell4.setCellValue(record1.getR88_deposit_foreign_number().doubleValue());
+					if (record1.getR88_deposit_foreign_amount() != null) {
+						R88cell4.setCellValue(record1.getR88_deposit_foreign_amount().doubleValue());
 						R88cell4.setCellStyle(numberStyle);
 					} else {
 						R88cell4.setCellValue("");
@@ -2954,8 +2954,8 @@ public class BRRS_MDISB1_ReportService {
 
 					// Column F
 					Cell R89cell4 = row.createCell(5);
-					if (record1.getR89_deposit_foreign_number() != null) {
-						R89cell4.setCellValue(record1.getR89_deposit_foreign_number().doubleValue());
+					if (record1.getR89_deposit_foreign_amount() != null) {
+						R89cell4.setCellValue(record1.getR89_deposit_foreign_amount().doubleValue());
 						R89cell4.setCellStyle(numberStyle);
 					} else {
 						R89cell4.setCellValue("");
@@ -2996,8 +2996,8 @@ public class BRRS_MDISB1_ReportService {
 
 					// Column F
 					Cell R90cell4 = row.createCell(5);
-					if (record1.getR90_deposit_foreign_number() != null) {
-						R90cell4.setCellValue(record1.getR90_deposit_foreign_number().doubleValue());
+					if (record1.getR90_deposit_foreign_amount() != null) {
+						R90cell4.setCellValue(record1.getR90_deposit_foreign_amount().doubleValue());
 						R90cell4.setCellStyle(numberStyle);
 					} else {
 						R90cell4.setCellValue("");
@@ -3038,8 +3038,8 @@ public class BRRS_MDISB1_ReportService {
 
 					// Column F
 					Cell R91cell4 = row.createCell(5);
-					if (record1.getR91_deposit_foreign_number() != null) {
-						R91cell4.setCellValue(record1.getR91_deposit_foreign_number().doubleValue());
+					if (record1.getR91_deposit_foreign_amount() != null) {
+						R91cell4.setCellValue(record1.getR91_deposit_foreign_amount().doubleValue());
 						R91cell4.setCellStyle(numberStyle);
 					} else {
 						R91cell4.setCellValue("");
@@ -3080,8 +3080,8 @@ public class BRRS_MDISB1_ReportService {
 
 					// Column F
 					Cell R92cell4 = row.createCell(5);
-					if (record1.getR92_deposit_foreign_number() != null) {
-						R92cell4.setCellValue(record1.getR92_deposit_foreign_number().doubleValue());
+					if (record1.getR92_deposit_foreign_amount() != null) {
+						R92cell4.setCellValue(record1.getR92_deposit_foreign_amount().doubleValue());
 						R92cell4.setCellStyle(numberStyle);
 					} else {
 						R92cell4.setCellValue("");
@@ -3122,8 +3122,8 @@ public class BRRS_MDISB1_ReportService {
 
 					// Column F
 					Cell R95cell4 = row.createCell(5);
-					if (record1.getR95_deposit_foreign_number() != null) {
-						R95cell4.setCellValue(record1.getR95_deposit_foreign_number().doubleValue());
+					if (record1.getR95_deposit_foreign_amount() != null) {
+						R95cell4.setCellValue(record1.getR95_deposit_foreign_amount().doubleValue());
 						R95cell4.setCellStyle(numberStyle);
 					} else {
 						R95cell4.setCellValue("");
@@ -3164,8 +3164,8 @@ public class BRRS_MDISB1_ReportService {
 
 					// Column F
 					Cell R96cell4 = row.createCell(5);
-					if (record1.getR96_deposit_foreign_number() != null) {
-						R96cell4.setCellValue(record1.getR96_deposit_foreign_number().doubleValue());
+					if (record1.getR96_deposit_foreign_amount() != null) {
+						R96cell4.setCellValue(record1.getR96_deposit_foreign_amount().doubleValue());
 						R96cell4.setCellStyle(numberStyle);
 					} else {
 						R96cell4.setCellValue("");
@@ -3206,8 +3206,8 @@ public class BRRS_MDISB1_ReportService {
 
 					// Column F
 					Cell R97cell4 = row.createCell(5);
-					if (record1.getR97_deposit_foreign_number() != null) {
-						R97cell4.setCellValue(record1.getR97_deposit_foreign_number().doubleValue());
+					if (record1.getR97_deposit_foreign_amount() != null) {
+						R97cell4.setCellValue(record1.getR97_deposit_foreign_amount().doubleValue());
 						R97cell4.setCellStyle(numberStyle);
 					} else {
 						R97cell4.setCellValue("");
@@ -3248,8 +3248,8 @@ public class BRRS_MDISB1_ReportService {
 
 					// Column F
 					Cell R98cell4 = row.createCell(5);
-					if (record1.getR98_deposit_foreign_number() != null) {
-						R98cell4.setCellValue(record1.getR98_deposit_foreign_number().doubleValue());
+					if (record1.getR98_deposit_foreign_amount() != null) {
+						R98cell4.setCellValue(record1.getR98_deposit_foreign_amount().doubleValue());
 						R98cell4.setCellStyle(numberStyle);
 					} else {
 						R98cell4.setCellValue("");
@@ -3290,8 +3290,8 @@ public class BRRS_MDISB1_ReportService {
 
 					// Column F
 					Cell R99cell4 = row.createCell(5);
-					if (record1.getR99_deposit_foreign_number() != null) {
-						R99cell4.setCellValue(record1.getR99_deposit_foreign_number().doubleValue());
+					if (record1.getR99_deposit_foreign_amount() != null) {
+						R99cell4.setCellValue(record1.getR99_deposit_foreign_amount().doubleValue());
 						R99cell4.setCellStyle(numberStyle);
 					} else {
 						R99cell4.setCellValue("");
@@ -3332,8 +3332,8 @@ public class BRRS_MDISB1_ReportService {
 
 					// Column F
 					Cell R100cell4 = row.createCell(5);
-					if (record1.getR100_deposit_foreign_number() != null) {
-						R100cell4.setCellValue(record1.getR100_deposit_foreign_number().doubleValue());
+					if (record1.getR100_deposit_foreign_amount() != null) {
+						R100cell4.setCellValue(record1.getR100_deposit_foreign_amount().doubleValue());
 						R100cell4.setCellStyle(numberStyle);
 					} else {
 						R100cell4.setCellValue("");
@@ -3374,8 +3374,8 @@ public class BRRS_MDISB1_ReportService {
 
 					// Column F
 					Cell R103cell4 = row.createCell(5);
-					if (record1.getR103_deposit_foreign_number() != null) {
-						R103cell4.setCellValue(record1.getR103_deposit_foreign_number().doubleValue());
+					if (record1.getR103_deposit_foreign_amount() != null) {
+						R103cell4.setCellValue(record1.getR103_deposit_foreign_amount().doubleValue());
 						R103cell4.setCellStyle(numberStyle);
 					} else {
 						R103cell4.setCellValue("");
@@ -3416,8 +3416,8 @@ public class BRRS_MDISB1_ReportService {
 
 					// Column F
 					Cell R104cell4 = row.createCell(5);
-					if (record1.getR104_deposit_foreign_number() != null) {
-						R104cell4.setCellValue(record1.getR104_deposit_foreign_number().doubleValue());
+					if (record1.getR104_deposit_foreign_amount() != null) {
+						R104cell4.setCellValue(record1.getR104_deposit_foreign_amount().doubleValue());
 						R104cell4.setCellStyle(numberStyle);
 					} else {
 						R104cell4.setCellValue("");
@@ -3458,8 +3458,8 @@ public class BRRS_MDISB1_ReportService {
 
 					// Column F
 					Cell R105cell4 = row.createCell(5);
-					if (record1.getR105_deposit_foreign_number() != null) {
-						R105cell4.setCellValue(record1.getR105_deposit_foreign_number().doubleValue());
+					if (record1.getR105_deposit_foreign_amount() != null) {
+						R105cell4.setCellValue(record1.getR105_deposit_foreign_amount().doubleValue());
 						R105cell4.setCellStyle(numberStyle);
 					} else {
 						R105cell4.setCellValue("");
@@ -3500,8 +3500,8 @@ public class BRRS_MDISB1_ReportService {
 
 					// Column F
 					Cell R106cell4 = row.createCell(5);
-					if (record1.getR106_deposit_foreign_number() != null) {
-						R106cell4.setCellValue(record1.getR106_deposit_foreign_number().doubleValue());
+					if (record1.getR106_deposit_foreign_amount() != null) {
+						R106cell4.setCellValue(record1.getR106_deposit_foreign_amount().doubleValue());
 						R106cell4.setCellStyle(numberStyle);
 					} else {
 						R106cell4.setCellValue("");
@@ -3542,8 +3542,8 @@ public class BRRS_MDISB1_ReportService {
 
 					// Column F
 					Cell R107cell4 = row.createCell(5);
-					if (record1.getR107_deposit_foreign_number() != null) {
-						R107cell4.setCellValue(record1.getR107_deposit_foreign_number().doubleValue());
+					if (record1.getR107_deposit_foreign_amount() != null) {
+						R107cell4.setCellValue(record1.getR107_deposit_foreign_amount().doubleValue());
 						R107cell4.setCellStyle(numberStyle);
 					} else {
 						R107cell4.setCellValue("");
@@ -3584,8 +3584,8 @@ public class BRRS_MDISB1_ReportService {
 
 					// Column F
 					Cell R108cell4 = row.createCell(5);
-					if (record1.getR108_deposit_foreign_number() != null) {
-						R108cell4.setCellValue(record1.getR108_deposit_foreign_number().doubleValue());
+					if (record1.getR108_deposit_foreign_amount() != null) {
+						R108cell4.setCellValue(record1.getR108_deposit_foreign_amount().doubleValue());
 						R108cell4.setCellStyle(numberStyle);
 					} else {
 						R108cell4.setCellValue("");
@@ -3687,24 +3687,24 @@ public class BRRS_MDISB1_ReportService {
 				for (MDISB1_Detail_Entity item : reportData) {
 					XSSFRow row = sheet.createRow(rowIndex++);
 
-					row.createCell(0).setCellValue(item.getCust_id());
-					row.createCell(1).setCellValue(item.getAcct_number());
-					row.createCell(2).setCellValue(item.getAcct_name());
+					row.createCell(0).setCellValue(item.getCustId());
+					row.createCell(1).setCellValue(item.getAcctNumber());
+					row.createCell(2).setCellValue(item.getAcctName());
 
 					// ACCT BALANCE (right aligned, 3 decimal places)
 					Cell balanceCell = row.createCell(3);
-					if (item.getAcct_balance_in_pula() != null) {
-						balanceCell.setCellValue(item.getAcct_balance_in_pula().doubleValue());
+					if (item.getAcctBalanceInPula() != null) {
+						balanceCell.setCellValue(item.getAcctBalanceInPula().doubleValue());
 					} else {
 						balanceCell.setCellValue(0);
 					}
 					balanceCell.setCellStyle(balanceStyle);
 
-					row.createCell(4).setCellValue(item.getReport_label());
-					row.createCell(5).setCellValue(item.getReport_addl_criteria_1());
+					row.createCell(4).setCellValue(item.getReportLable());
+					row.createCell(5).setCellValue(item.getReportAddlCriteria1());
 					row.createCell(6)
-							.setCellValue(item.getReport_date() != null
-									? new SimpleDateFormat("dd-MM-yyyy").format(item.getReport_date())
+							.setCellValue(item.getReportDate() != null
+									? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
 									: "");
 
 					// Apply data style for all other cells
@@ -3734,10 +3734,9 @@ public class BRRS_MDISB1_ReportService {
 
 	public List<Object> getMDISB1Archival() {
 		List<Object> MDISB1Archivallist = new ArrayList<>();
-		List<Object> MDISB1Archivallist1 = new ArrayList<>();
+		//List<Object> MDISB1Archivallist1 = new ArrayList<>();
 		try {
 			MDISB1Archivallist = brrs_MDISB1_Archival_Summary_Repo1.getMDISB1archival();
-			MDISB1Archivallist1 = brrs_MDISB1_Archival_Summary_Repo2.getMDISB1archival();
 			System.out.println("countser" + MDISB1Archivallist.size());
 		} catch (Exception e) {
 			// Log the exception
@@ -4006,8 +4005,8 @@ public class BRRS_MDISB1_ReportService {
 
 		if (acctNo != null) {
 			MDISB1_Detail_Entity Entity = MDISB1_Detail_Repo.findByAcctNumber(acctNo);
-			if (Entity != null && Entity.getReport_date() != null) {
-				String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(Entity.getReport_date());
+			if (Entity != null && Entity.getReportDate() != null) {
+				String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(Entity.getReportDate());
 				mv.addObject("asondate", formattedDate);
 			}
 			mv.addObject("Data", Entity);
@@ -4037,8 +4036,8 @@ public class BRRS_MDISB1_ReportService {
 			boolean isChanged = false;
 
 			if (acctName != null && !acctName.isEmpty()) {
-				if (existing.getAcct_name() == null || !existing.getAcct_name().equals(acctName)) {
-					existing.setAcct_name(acctName);
+				if (existing.getAcctName() == null || !existing.getAcctName().equals(acctName)) {
+					existing.setAcctName(acctName);
 					isChanged = true;
 					logger.info("Account name updated to {}", acctName);
 				}
@@ -4046,9 +4045,9 @@ public class BRRS_MDISB1_ReportService {
 
 			if (provisionStr != null && !provisionStr.isEmpty()) {
 				BigDecimal newProvision = new BigDecimal(provisionStr);
-				if (existing.getAcct_balance_in_pula() == null
-						|| existing.getAcct_balance_in_pula().compareTo(newProvision) != 0) {
-					existing.setAcct_balance_in_pula(newProvision);
+				if (existing.getAcctBalanceInPula() == null
+						|| existing.getAcctBalanceInPula().compareTo(newProvision) != 0) {
+					existing.setAcctBalanceInPula(newProvision);
 					isChanged = true;
 					logger.info("Provision updated to {}", newProvision);
 				}

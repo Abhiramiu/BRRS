@@ -3,7 +3,6 @@ package com.bornfire.brrs.services;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -14,7 +13,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
@@ -31,6 +29,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -50,12 +49,10 @@ import org.springframework.transaction.support.TransactionSynchronizationAdapter
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.bornfire.brrs.entities.BRRS_M_SCI_E_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_Q_ATF_Archival_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_Q_ATF_Archival_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_Q_ATF_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_Q_ATF_Summary_Repo;
-import com.bornfire.brrs.entities.M_SCI_E_Detail_Entity;
 import com.bornfire.brrs.entities.Q_ATF_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.Q_ATF_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.Q_ATF_Detail_Entity;
@@ -2397,6 +2394,7 @@ public class BRRS_Q_ATF_ReportService {
 	
 
 	
+<<<<<<< Updated upstream
 	public byte[] getQ_ATFDetailExcel(String filename, String fromdate, String todate,
 	        String currency, String dtltype, String type, String version) {
 
@@ -2407,6 +2405,26 @@ public class BRRS_Q_ATF_ReportService {
 	    try {
 	        logger.info("Generating Excel for Q_ATF Details...");
 	        System.out.println("came to Detail download service");
+=======
+	
+	public byte[] getQ_ATFDetailExcel(String filename, String fromdate, String todate, String currency, String dtltype,
+			String type, String version) {
+		try {
+			logger.info("Generating Excel for Q_ATF Details...");
+			System.out.println("came to Detail download service");
+			logger.info("step 2");
+			if (type.equals("ARCHIVAL") & version != null) {
+				byte[] ARCHIVALreport = getQ_ATFDetailExcelARCHIVAL(filename, fromdate, todate, currency, dtltype, type,
+						version);
+				logger.info("step 3");
+				return ARCHIVALreport;
+			
+			}
+			logger.info("step 4");
+			XSSFWorkbook workbook = new XSSFWorkbook();
+			logger.info("step 5");
+			XSSFSheet sheet = workbook.createSheet("Q_ATFDetails");
+>>>>>>> Stashed changes
 
 	        // ARCHIVAL routing
 	        if ("ARCHIVAL".equals(type) && version != null) {
@@ -2554,8 +2572,11 @@ public class BRRS_Q_ATF_ReportService {
 	        return new byte[0];
 	    }
 	}
+<<<<<<< Updated upstream
 
 	
+=======
+>>>>>>> Stashed changes
 	
 	
 	public byte[] getQ_ATFDetailExcelARCHIVAL(String filename, String fromdate, String todate, String currency,
