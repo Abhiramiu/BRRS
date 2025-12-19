@@ -96,6 +96,8 @@ public class BLBF_Services {
 	    int savedCount = 0, skippedCount = 0;
 	    int batchSize = 500;
 	    
+	    logger.info("Came to main method for Upload for Loan book(BLBF)");
+	    
 	    try (InputStream is = file.getInputStream();
 	         Workbook workbook = WorkbookFactory.create(is);
 	         Connection conn = dataSource.getConnection()) {

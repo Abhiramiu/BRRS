@@ -106,6 +106,9 @@ public class MCBL_Services {
 	        return "Error: Uploaded file is empty!";
 	    }
 	    
+	    logger.info("Came to main method for Upload for MCBL(MCBL)");
+	    
+	    
 	    try (InputStream is = file.getInputStream(); Connection conn = dataSource.getConnection()) {
 	        Workbook workbook;
 	        String fileName = file.getOriginalFilename();

@@ -204,6 +204,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_CA2_ReportSe
 				System.out.println("ARCHIVAL COUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
 
 			} else {
+				System.out.println("row id is: "+rowId +" column id is : "+columnId+" date parsed is : "+parsedDate);
 				// 🔹 Current branch
 				List<M_CA2_Detail_Entity> T1Dt1;
 				if (rowId != null && columnId != null) {

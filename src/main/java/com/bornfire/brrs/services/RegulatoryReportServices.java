@@ -342,6 +342,9 @@ public class RegulatoryReportServices {
 	
 	
 
+	@Autowired
+	BRRS_BDISB3_ReportService BRRS_BDISB3_ReportService;
+	
 	private static final Logger logger = LoggerFactory.getLogger(RegulatoryReportServices.class);
 
 	public ModelAndView getReportView(String reportId, String reportDate, String fromdate, String todate,
@@ -981,6 +984,11 @@ public class RegulatoryReportServices {
 
 			case "M_CA2":
 				repdetail = BRRS_M_CA2_reportservice.getM_CA2currentDtl(reportId, fromdate, todate, currency, dtltype,
+						pageable, Filter, type, version);
+				break;
+			
+			case "BDISB3":
+				repdetail = BRRS_BDISB3_ReportService.getBDISB3currentDtl(reportId, fromdate, todate, currency, dtltype,
 						pageable, Filter, type, version);
 				break;
 

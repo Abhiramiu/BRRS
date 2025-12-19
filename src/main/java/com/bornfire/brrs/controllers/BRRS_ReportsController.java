@@ -10,6 +10,7 @@ import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -34,6 +35,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -106,6 +108,7 @@ import com.bornfire.brrs.services.BRRS_Q_RLFA2_ReportService;
 import com.bornfire.brrs.services.BRRS_Q_SMME_DEP_ReportService;
 import com.bornfire.brrs.services.BRRS_Q_STAFF_Report_Service;
 import com.bornfire.brrs.services.BRRS_SCH_17_ReportService;
+
 import com.bornfire.brrs.services.RegulatoryReportServices;
 import com.bornfire.brrs.services.ReportCodeMappingService;
 
@@ -1152,7 +1155,7 @@ return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 	@Autowired
 	private BRRS_BDISB3_ReportService BDISB3reportService;
 
-	@RequestMapping(value = "/BDISB3updateAll", method = { RequestMethod.GET, RequestMethod.POST })
+	/*@RequestMapping(value = "/BDISB3updateAll", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public ResponseEntity<String> updateAllReports(
 			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
@@ -1174,7 +1177,24 @@ return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
 		}
 	}
-	
+	*/
+	@PostMapping("/BDISB3updateAll")
+	@ResponseBody
+	public ResponseEntity<String> updateAllReports(
+	        @RequestParam @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+	        @RequestParam Map<String, String> allParams
+	) {
+	    try {
+	    	System.out.println("came to Controller for updating values");
+	    	BDISB3reportService.updateDetailFromForm(asondate, allParams);
+	        return ResponseEntity.ok("Detail Updated Successfully");
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                .body("Update Failed: " + e.getMessage());
+	    }
+	}
+
 	@RequestMapping(value = "/UpdateBDISB3_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public ResponseEntity<String> updateReportReSubAll(

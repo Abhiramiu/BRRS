@@ -343,8 +343,12 @@ PURPOSE		: BWRBRREPORT
 
 		//to fetch summary from the database - called from the summary button
 		function showdetails() {
-		    isDetailsModal = true; // mark that this modal is from Details
-			 showResultModal('BRRS',' Details page not available for Manual Report');
+			var Callurl;
+	    	$('#loader').modal('show');
+	        Callurl = /*[[@{'/Reports/'+${reportid}+'/Details'(asondate=${asondate},fromdate=${fromdate},todate=${todate},currency=${currency},dtltype=${dtltype},type=${type},version=${version})}]]*/ 
+	        location.href = Callurl;
+	        	console.log(Callurl);
+			
 		}
 
 		function showsummary() {
@@ -458,38 +462,6 @@ function showmodify(btn) {
     $(".Show_input").not(".nonEditable").removeAttr("readonly").removeAttr("disabled");
     
     const readonlyIds = [
-    	"R11_RISK_WEIGHTED_AMT",
-    	"R12_RISK_WEIGHTED_AMT",
-    	"R13_RISK_WEIGHTED_AMT",
-    	"R14_RISK_WEIGHTED_AMT",
-    	"R15_RISK_WEIGHTED_AMT",
-    	"R16_RISK_WEIGHTED_AMT",
-    	"R17_RISK_WEIGHTED_AMT",
-    	"R18_RISK_WEIGHTED_AMT",
-    	"R19_RISK_WEIGHTED_AMT",
-    	"R20_RISK_WEIGHTED_AMT",
-    	"R21_RISK_WEIGHTED_AMT",
-    	"R22_RISK_WEIGHTED_AMT",
-    	"R23_RISK_WEIGHTED_AMT",
-    	"R24_RISK_WEIGHTED_AMT",
-    	"R25_RISK_WEIGHTED_AMT",
-    	"R26_RISK_WEIGHTED_AMT",
-    	"R27_RISK_WEIGHTED_AMT",
-    	"R28_RISK_WEIGHTED_AMT",
-    	"R29_RISK_WEIGHTED_AMT",
-    	"R30_RISK_WEIGHTED_AMT",
-    	"R31_RISK_WEIGHTED_AMT",
-    	"R32_RISK_WEIGHTED_AMT",
-    	"R33_RISK_WEIGHTED_AMT",
-    	"R34_RISK_WEIGHTED_AMT",
-    	"R35_RISK_WEIGHTED_AMT",
-    	"R36_RISK_WEIGHTED_AMT",
-    	"R37_RISK_WEIGHTED_AMT",
-    	"R37_CREDIT_RATING",
-	    "R37_RATING_AGENCY",
-	    "R37_EXPOSURE_AMT",
-	    "R37_RISK_WEIGHT",
-	    "R37_NAME_OF_CORPORATE"
       
     ];
 
@@ -562,141 +534,7 @@ function cancelModify() {
 
 	</script>
 	
-	
-	<SCRIPT>
-	
-	function calculateAll_RISK_WEIGHTED_AMT() {
-	    function getVal(id) {
-	        let el = $("#" + id);
-	        if (el.length === 0) return 0;
-	        let val = el.val() || el.text();
-	        // Remove commas, spaces, and any non-numeric symbols
-	        val = val.replace(/[^0-9.\-]/g, "");
-	        return parseFloat(val) || 0;
-	    }
 
-	    for (let i = 11; i <= 36; i++) {
-	        let expId = "R" + i + "_EXPOSURE_AMT";
-	        let riskId = "R" + i + "_RISK_WEIGHT";
-	        let resId = "R" + i + "_RISK_WEIGHTED_AMT";
-
-	        let exposure = getVal(expId);
-	        let riskWeight = getVal(riskId);
-
-	        // Formula (no divide by 100)
-	        let weightedAmt = Math.round(exposure * riskWeight);
-
-	        // Format and set the result with commas
-	        $("#" + resId).val(
-	            weightedAmt.toLocaleString("en-US", { maximumFractionDigits: 0 })
-	        );
-
-	        // Also reformat exposure & risk weight inputs to show commas
-	        if (exposure > 0)
-	            $("#" + expId).val(
-	                exposure.toLocaleString("en-US", { maximumFractionDigits: 0 })
-	            );
-
-	        if (riskWeight > 0)
-	            $("#" + riskId).val(
-	                riskWeight.toLocaleString("en-US", { maximumFractionDigits: 0 })
-	            );
-	    }
-	}
-
-	$(document).ready(function () {
-	    calculateAll_RISK_WEIGHTED_AMT();
-
-	    for (let i = 11; i <= 36; i++) {
-	        $("#R" + i + "_EXPOSURE_AMT, #R" + i + "_RISK_WEIGHT").on("input", function () {
-	            // Remove commas while typing for proper numeric parsing
-	            let cleanVal = $(this).val().replace(/[^0-9.\-]/g, "");
-	            $(this).val(cleanVal);
-	            calculateAll_RISK_WEIGHTED_AMT();
-	        });
-
-	        // On blur, reformat the value with commas
-	        $("#R" + i + "_EXPOSURE_AMT, #R" + i + "_RISK_WEIGHT").on("blur", function () {
-	            let num = parseFloat($(this).val().replace(/,/g, ""));
-	            if (!isNaN(num))
-	                $(this).val(num.toLocaleString("en-US", { maximumFractionDigits: 0 }));
-	        });
-	    }
-	});
-
-	
-
-	function calculateR37_EXPOSURE_AMT() {
-	    function getVal(id) {
-	        let el = $("#" + id);
-	        if (el.length === 0) {
-	            console.warn("Missing element:", id);
-	            return 0;
-	        }
-	        let val = el.val() || el.text();
-	        return parseFloat(val.replace(/,/g, "")) || 0;
-	    }
-
-	    let TOTAL = 0;
-	    for (let i = 11; i <= 36; i++) {
-	        TOTAL += getVal("R" + i + "_EXPOSURE_AMT");
-	    }
-
-	    $("#R37_EXPOSURE_AMT").val(
-	        TOTAL.toLocaleString("en-US", { maximumFractionDigits: 0 })
-	    );
-	}
-
-	$(document).ready(function () {
-	    calculateR37_EXPOSURE_AMT();
-
-	    // Trigger recalculation whenever any input changes
-	    for (let i = 11; i <= 36; i++) {
-	        $("#R" + i + "_EXPOSURE_AMT").on("input", calculateR37_EXPOSURE_AMT);
-	    }
-	});
-
-
-	
-	function calculateR37_RISK_WEIGHTED_AMT() {
-	    function getVal(id) {
-	        const el = $("#" + id);
-	        if (el.length === 0) {
-	            console.warn("Missing element:", id);
-	            return 0;
-	        }
-	        const val = el.val() || "0";
-	        return parseFloat(val.replace(/,/g, "")) || 0;
-	    }
-
-	    // Sum of R11_RISK_WEIGHTED_AMT to R36_RISK_WEIGHTED_AMT
-	    let total = 0;
-	    for (let i = 11; i <= 36; i++) {
-	        total += getVal("R" + i + "_RISK_WEIGHTED_AMT");
-	    }
-
-	    // Display total in R37_RISK_WEIGHTED_AMT
-	    $("#R37_RISK_WEIGHTED_AMT").val(
-	        total.toLocaleString("en-US", { maximumFractionDigits: 0 })
-	    );
-	}
-
-	$(document).ready(function () {
-	    // Run on load
-	    calculateR37_RISK_WEIGHTED_AMT();
-
-	    // Auto update whenever any source input changes
-	    for (let i = 11; i <= 36; i++) {
-	        $("#R" + i + "_RISK_WEIGHTED_AMT").on("input change keyup", calculateR37_RISK_WEIGHTED_AMT);
-	    }
-	});
-	
-
-
-	
-
-
-</SCRIPT>
 
 
 
@@ -732,13 +570,7 @@ function fileuploads(btn) {
     
     
     $('#loader').modal('show');
-    
-	    // ✅ Step 1: Calculate TOTALs
-	    calculateAll_RISK_WEIGHTED_AMT();
-	    calculateR37_EXPOSURE_AMT();
-	    calculateR37_RISK_WEIGHTED_AMT();
-	    
-	    
+     
 	    
 	 // Remove commas from numeric inputs
 	    $("#fileupload input[type='text']").each(function () {
@@ -1079,7 +911,7 @@ function fileuploads(btn) {
                type="text"
                th:value="${report.R5_AGGREGATE_BALANCE != null ? #numbers.formatDecimal(report.R5_AGGREGATE_BALANCE, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R5_AGGREGATE_BALANCE"
-               name="R5_AGGREGATE_BALANCE"
+               name="R5_C2_AGGREGATE_BALANCE"
                style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -1089,7 +921,7 @@ function fileuploads(btn) {
                type="text"
                th:value="${report.R5_COMPENSATABLE_AMOUNT != null ? #numbers.formatDecimal(report.R5_COMPENSATABLE_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R5_COMPENSATABLE_AMOUNT"
-               name="R5_COMPENSATABLE_AMOUNT"
+               name="R5_C3_COMPENSATABLE_AMOUNT"
                style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -1105,7 +937,7 @@ function fileuploads(btn) {
                type="text"
                th:value="${report.R6_AGGREGATE_BALANCE != null ? #numbers.formatDecimal(report.R6_AGGREGATE_BALANCE, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R6_AGGREGATE_BALANCE"
-               name="R6_AGGREGATE_BALANCE"
+               name="R6_C2_AGGREGATE_BALANCE"
                style="background-color:#FFFFFF; height:28px; border-color:transparent; text-align:right;"
                readonly />
     </td>
@@ -1115,7 +947,7 @@ function fileuploads(btn) {
                type="text"
                th:value="${report.R6_COMPENSATABLE_AMOUNT != null ? #numbers.formatDecimal(report.R6_COMPENSATABLE_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R6_COMPENSATABLE_AMOUNT"
-               name="R6_COMPENSATABLE_AMOUNT"
+               name="R6_C3_COMPENSATABLE_AMOUNT"
                style="background-color:#FFFFFF; height:28px; border-color:transparent; text-align:right;"
                readonly />
     </td>
@@ -1131,7 +963,7 @@ function fileuploads(btn) {
                type="text"
                th:value="${report.R7_AGGREGATE_BALANCE != null ? #numbers.formatDecimal(report.R7_AGGREGATE_BALANCE, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R7_AGGREGATE_BALANCE"
-               name="R7_AGGREGATE_BALANCE"
+               name="R7_C2_AGGREGATE_BALANCE"
                style="background-color:#FFFFFF; height:28px; border-color:transparent; text-align:right;"
                readonly />
     </td>
@@ -1141,7 +973,7 @@ function fileuploads(btn) {
                type="text"
                th:value="${report.R7_COMPENSATABLE_AMOUNT != null ? #numbers.formatDecimal(report.R7_COMPENSATABLE_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R7_COMPENSATABLE_AMOUNT"
-               name="R7_COMPENSATABLE_AMOUNT"
+               name="R7_C3_COMPENSATABLE_AMOUNT"
                style="background-color:#FFFFFF; height:28px; border-color:transparent; text-align:right;"
                readonly />
     </td>
@@ -1157,7 +989,7 @@ function fileuploads(btn) {
                type="text"
                th:value="${report.R8_AGGREGATE_BALANCE != null ? #numbers.formatDecimal(report.R8_AGGREGATE_BALANCE, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R8_AGGREGATE_BALANCE"
-               name="R8_AGGREGATE_BALANCE"
+               name="R8_C2_AGGREGATE_BALANCE"
                style="background-color:#FFFFFF; height:28px; border-color:transparent; text-align:right;"
                readonly />
     </td>
@@ -1167,7 +999,7 @@ function fileuploads(btn) {
                type="text"
                th:value="${report.R8_COMPENSATABLE_AMOUNT != null ? #numbers.formatDecimal(report.R8_COMPENSATABLE_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R8_COMPENSATABLE_AMOUNT"
-               name="R8_COMPENSATABLE_AMOUNT"
+               name="R8_C3_COMPENSATABLE_AMOUNT"
                style="background-color:#FFFFFF; height:28px; border-color:transparent; text-align:right;"
                readonly />
     </td>
@@ -1183,7 +1015,7 @@ function fileuploads(btn) {
                type="text"
                th:value="${report.R9_AGGREGATE_BALANCE != null ? #numbers.formatDecimal(report.R9_AGGREGATE_BALANCE, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R9_AGGREGATE_BALANCE"
-               name="R9_AGGREGATE_BALANCE"
+               name="R9_C2_AGGREGATE_BALANCE"
                style="background-color:#FFFFFF; height:28px; border-color:transparent; text-align:right;"
                readonly />
     </td>
@@ -1193,7 +1025,7 @@ function fileuploads(btn) {
                type="text"
                th:value="${report.R9_COMPENSATABLE_AMOUNT != null ? #numbers.formatDecimal(report.R9_COMPENSATABLE_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R9_COMPENSATABLE_AMOUNT"
-               name="R9_COMPENSATABLE_AMOUNT"
+               name="R9_C3_COMPENSATABLE_AMOUNT"
                style="background-color:#FFFFFF; height:28px; border-color:transparent; text-align:right;"
                readonly />
     </td>
@@ -1209,7 +1041,7 @@ function fileuploads(btn) {
                type="text"
                th:value="${report.R10_AGGREGATE_BALANCE != null ? #numbers.formatDecimal(report.R10_AGGREGATE_BALANCE, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R10_AGGREGATE_BALANCE"
-               name="R10_AGGREGATE_BALANCE"
+               name="R10_C2_AGGREGATE_BALANCE"
                style="background-color:#FFFFFF; height:28px; border-color:transparent; text-align:right;"
                readonly />
     </td>
@@ -1219,7 +1051,7 @@ function fileuploads(btn) {
                type="text"
                th:value="${report.R10_COMPENSATABLE_AMOUNT != null ? #numbers.formatDecimal(report.R10_COMPENSATABLE_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R10_COMPENSATABLE_AMOUNT"
-               name="R10_COMPENSATABLE_AMOUNT"
+               name="R10_C3_COMPENSATABLE_AMOUNT"
                style="background-color:#FFFFFF; height:28px; border-color:transparent; text-align:right;"
                readonly />
     </td>
@@ -1246,6 +1078,72 @@ function fileuploads(btn) {
 							</div>
 						</div>
 					</div>
+					
+		<div th:if="${displaymode == 'Details'}">
+			<div class="row">
+				<div class="col-sm-12" >
+		<div class="table-container" style="border-right: 1px solid #dee2e6;">
+							<table class="table table-striped table-bordered table-hover" id="reportdetail">
+							 <thead class="thead-light">
+            <tr>
+               <!-- <th></th> -->
+		<th style="width: 60px; text-align:center;">S No</th>
+		<th>CUST ID</th>
+		<th>ACCT NO</th>
+		<th>ACCT NAME</th>
+		<th style="text-align:right !important;">AGGREGATE BALANCE</th>
+		<th style="text-align:right !important;">COMPENSATABLE AMOUNT</th>
+		<th style="text-align:left;">REPORT LABEL</th>
+		<th>REPORT ADDL CRITERIA 1</th>
+		<th>REPORT DATE</th>
+
+            </tr>
+        </thead>
+
+        <tbody style="font-family: Arial;">
+            <tr th:each="report, srlno: ${reportdetails}">
+                <!-- <td>
+                    <a data-toggle="tooltip" class="editrec" title="Click to Edit this Record">
+                        <i class="fas fa-edit" style="color: black; cursor:pointer;"
+                            th:attr="data-acctNo=${report.acctNumber},
+                            data-asondate=${#dates.format(report.reportDate, 'dd-MM-yyyy')},
+                            data-type=${type}"
+                            onclick="openDetail(this, 'edit')"></i>
+                    </a>
+                </td> -->
+	
+				<td style="text-align:center;" th:text="${srlno.index + 1}"></td>
+	                <td th:text="${report.custId}"></td>
+
+                <td  th:text="${report.acctNumber}"></td>
+
+                <td th:text="${report.acctName}"></td>
+
+<td style="text-align:right !important;"
+    th:text="${#numbers.formatDecimal(report.AGGREGATE_BALANCE, 1, 'COMMA', 0, 'POINT')}">
+</td>
+
+<td style="text-align:right !important;"
+    th:text="${#numbers.formatDecimal(report.COMPENSATABLE_AMOUNT, 1, 'COMMA', 0, 'POINT')}">
+</td>
+
+                <td style="text-align:left;" th:text="${report.reportLable}"></td>
+
+                <td th:text="${report.reportAddlCriteria1}"></td>
+
+                <td th:text="${#dates.format(report.reportDate,'dd-MM-yyyy')}"></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+							
+							
+
+						</div>
+					</div>
+				</div>
+				
 				</div>
 				
 			</div>

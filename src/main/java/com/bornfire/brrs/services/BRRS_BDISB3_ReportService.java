@@ -1,68 +1,54 @@
 package com.bornfire.brrs.services;
 
 import java.io.ByteArrayOutputStream;
-
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.CallableStatement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CreationHelper;
-import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.Font;
-import org.apache.poi.ss.usermodel.HorizontalAlignment;
-import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.bornfire.brrs.entities.BDISB2_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.BDISB2_Summary_Entity;
 import com.bornfire.brrs.entities.BDISB3_Archival_Summary_Entity;
+import com.bornfire.brrs.entities.BDISB3_Detail_Entity;
+import com.bornfire.brrs.entities.BDISB3_Detail_Entity_Archival;
+import com.bornfire.brrs.entities.BDISB3_Detail_Repo;
+import com.bornfire.brrs.entities.BDISB3_Detail_Repo_Archival;
 import com.bornfire.brrs.entities.BDISB3_Summary_Entity;
-import com.bornfire.brrs.entities.BRRS_BDISB1_Archival_Summary_Repo;
-import com.bornfire.brrs.entities.BRRS_BDISB1_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_BDISB3_Archival_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_BDISB3_Summary_Repo;
-import com.bornfire.brrs.entities.BRRS_M_SRWA_12F_Archival_Summary_Repo;
-import com.bornfire.brrs.entities.M_SRWA_12F_Summary_Entity;
-import com.bornfire.brrs.entities.M_SRWA_12G_Summary_Entity;
-import com.bornfire.brrs.entities.M_SRWA_12H_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.BRRS_M_SRWA_12F_Summary_Repo;
-import com.bornfire.brrs.entities.M_BDISB1_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.M_BDISB1_Summary_Entity;
-import com.bornfire.brrs.entities.M_CA5_Summary_Entity1;
-import com.bornfire.brrs.entities.M_SRWA_12F_Archival_Summary_Entity;
-
-import java.math.BigDecimal;
+import com.bornfire.brrs.entities.BRRS_M_CA2_Archival_Detail_Repo;
+import com.bornfire.brrs.entities.M_CA2_Archival_Detail_Entity;
 
 @Component
 @Service
@@ -80,7 +66,17 @@ public class BRRS_BDISB3_ReportService {
 	BRRS_BDISB3_Summary_Repo BDISB3_Summary_Repo;
 
 	@Autowired
+    private BDISB3_Detail_Repo repo;
+	
+	@Autowired
 	BRRS_BDISB3_Archival_Summary_Repo BDISB3_Archival_Summary_Repo;
+
+	@Autowired
+	BDISB3_Detail_Repo_Archival BDISB3_Detail_Repo_Archival;
+
+	
+	@Autowired
+	private JdbcTemplate jdbcTemplate;
 
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
@@ -131,6 +127,154 @@ public class BRRS_BDISB3_ReportService {
 		return mv;
 	}
 	
+	
+	
+	
+	
+	public ModelAndView getBDISB3currentDtl(String reportId, String fromdate, String todate, String currency,
+			  String dtltype, Pageable pageable, String Filter, String type, String version) {
+
+	int pageSize = pageable != null ? pageable.getPageSize() : 10;
+	int currentPage = pageable != null ? pageable.getPageNumber() : 0;
+	int totalPages = 0;
+
+	ModelAndView mv = new ModelAndView();
+	//Session hs = sessionFactory.getCurrentSession();
+
+	try {
+		Date parsedDate = null;
+		if (todate != null && !todate.isEmpty()) {
+			parsedDate = dateformat.parse(todate);
+		}
+
+		String rowId = null;
+		String columnId = null;
+
+		// ✅ Split filter string into rowId & columnId
+		if (Filter != null && Filter.contains(",")) {
+			String[] parts = Filter.split(",");
+			if (parts.length >= 2) {
+				rowId = parts[0];
+				columnId = parts[1];
+			}
+		}
+		System.out.println(type);
+		if ("ARCHIVAL".equals(type) && version != null) {
+			System.out.println(type);
+			// 🔹 Archival branch
+			List<BDISB3_Detail_Entity_Archival> T1Dt1;
+			if (rowId != null && columnId != null) {
+				T1Dt1 = BDISB3_Detail_Repo_Archival.GetDataByRowIdAndColumnId(rowId, columnId, parsedDate, version);
+			} else {
+				T1Dt1 = BDISB3_Detail_Repo_Archival.getdatabydateList(parsedDate, version);
+			}
+
+			mv.addObject("reportdetails", T1Dt1);
+			mv.addObject("reportmaster12", T1Dt1);
+			System.out.println("ARCHIVAL COUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
+
+		} else {
+			System.out.println("row id is: "+rowId +" column id is : "+columnId+" date parsed is : "+parsedDate);
+			// 🔹 Current branch
+			List<BDISB3_Detail_Entity> T1Dt1;
+			if (rowId != null && columnId != null) {
+				T1Dt1 = repo.GetDataByRowIdAndColumnId(rowId, columnId, parsedDate);
+			} else {
+				T1Dt1 = repo.getdatabydateList(parsedDate, currentPage, pageSize);
+				totalPages = repo.getdatacount(parsedDate);
+				mv.addObject("pagination", "YES");
+			}
+
+			mv.addObject("reportdetails", T1Dt1);
+			mv.addObject("reportmaster12", T1Dt1);
+			System.out.println("LISTCOUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
+		}
+
+	} catch (ParseException e) {
+		e.printStackTrace();
+		mv.addObject("errorMessage", "Invalid date format: " + todate);
+	} catch (Exception e) {
+		e.printStackTrace();
+		mv.addObject("errorMessage", "Unexpected error: " + e.getMessage());
+	}
+
+	// ✅ Common attributes
+	mv.setViewName("BRRS/BDISB3");
+	mv.addObject("displaymode", "Details");
+	mv.addObject("currentPage", currentPage);
+	System.out.println("totalPages: " + (int) Math.ceil((double) totalPages / 100));
+	mv.addObject("totalPages", (int) Math.ceil((double) totalPages / 100));
+	mv.addObject("reportsflag", "reportsflag");
+	mv.addObject("menu", reportId);
+
+	return mv;
+}
+
+	public void updateDetailFromForm(Date reportDate, Map<String, String> params) {
+
+	    System.out.println("came to service for update ");
+
+	    for (Map.Entry<String, String> entry : params.entrySet()) {
+
+	        String key = entry.getKey();
+	        String value = entry.getValue();
+
+	        if (!key.matches("R\\d+_C\\d+_(AGGREGATE_BALANCE|COMPENSATABLE_AMOUNT)")) {
+	            continue;
+	        }
+
+	        String[] parts = key.split("_");
+	        String reportLabel = parts[0];
+	        String addlCriteria = parts[1];
+	        String column = String.join("_",
+	                Arrays.copyOfRange(parts, 2, parts.length));
+
+	        BigDecimal amount = new BigDecimal(value);
+
+	        List<BDISB3_Detail_Entity> rows =
+	            repo.findByReportDateAndReportLableAndReportAddlCriteria1(
+	                reportDate, reportLabel, addlCriteria
+	            );
+
+	        for (BDISB3_Detail_Entity row : rows) {
+	            if ("AGGREGATE_BALANCE".equals(column)) {
+	                row.setAGGREGATE_BALANCE(amount);
+	            } else if ("COMPENSATABLE_AMOUNT".equals(column)) {
+	                row.setCOMPENSATABLE_AMOUNT(amount);
+	            }
+	        }
+
+	        repo.saveAll(rows);
+	    }
+
+	    // ✅ CALL ORACLE PROCEDURE AFTER ALL UPDATES
+	    callSummaryProcedure(reportDate);
+	}
+
+
+	private void callSummaryProcedure(Date reportDate) {
+
+	    String sql = "{ call BRRS_BDISB3_SUMMARY_PROCEDURE(?) }";
+
+	    jdbcTemplate.update(connection -> {
+	        CallableStatement cs = connection.prepareCall(sql);
+
+	        // Force exact format expected by procedure
+	        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+	        sdf.setLenient(false);
+
+	        String formattedDate = sdf.format(reportDate);
+
+	        cs.setString(1, formattedDate);  // 🔥 THIS IS MANDATORY
+	        return cs;
+	    });
+
+	    System.out.println("✅ Summary procedure executed for date: " +
+	            new SimpleDateFormat("dd-MM-yyyy").format(reportDate));
+	}
+
+
+    
 	public void updateReport(BDISB3_Summary_Entity updatedEntity) {
 
 	    System.out.println("Came to services");

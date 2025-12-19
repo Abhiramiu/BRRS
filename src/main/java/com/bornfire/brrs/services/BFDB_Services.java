@@ -117,7 +117,7 @@ public class BFDB_Services {
 	    PreparedStatement stmtSoftDeleteMasterSrc = null; // NEW
 	    InputStream is = null;
 	    Workbook workbook = null;
-
+	    logger.info("Came to main method for Upload for Deposit book(BFDB)");
 	    try {
 	        is = file.getInputStream();
 	        workbook = WorkbookFactory.create(is);
