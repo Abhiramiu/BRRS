@@ -1,9 +1,9 @@
 package com.bornfire.brrs.services;
 
 import java.io.ByteArrayOutputStream;
-
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -13,9 +13,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.transaction.Transactional;
 
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
@@ -32,6 +32,7 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,17 +44,25 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.servlet.ModelAndView;
 import com.bornfire.brrs.entities.PL_SCHS_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.PL_SCHS_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.PL_SCHS_Detail_Entity;
+import com.bornfire.brrs.entities.PL_SCHS_Manual_Archival_Summary_Entity;
+import com.bornfire.brrs.entities.PL_SCHS_Manual_Summary_Entity;
 import com.bornfire.brrs.entities.PL_SCHS_Summary_Entity;
 import com.bornfire.brrs.entities.BRRS_PL_SCHS_Archival_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_PL_SCHS_Archival_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_PL_SCHS_Detail_Repo;
+import com.bornfire.brrs.entities.BRRS_PL_SCHS_Manual_Archival_Summary_Repo;
+import com.bornfire.brrs.entities.BRRS_PL_SCHS_Manual_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_PL_SCHS_Summary_Repo;
+import com.bornfire.brrs.entities.M_FAS_Manual_Archival_Summary_Entity;
+import com.bornfire.brrs.entities.M_FAS_Manual_Summary_Entity;
 
 @Component
 @Service
@@ -76,68 +85,126 @@ public class BRRS_PL_SCHS_ReportService {
     @Autowired
     BRRS_PL_SCHS_Detail_Repo PL_SCHS_detail_repo;
 
+
     @Autowired
     BRRS_PL_SCHS_Archival_Detail_Repo PL_SCHS_Archival_Detail_Repo;
 
+    @Autowired
+    BRRS_PL_SCHS_Manual_Summary_Repo PL_SCHS_Manual_Summary_Repo;
+
+    @Autowired
+    BRRS_PL_SCHS_Manual_Archival_Summary_Repo PL_SCHS_Manual_Archival_Summary_Repo;
+
     SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
-    public ModelAndView getPL_SCHSView(String reportId, String fromdate, String todate, String currency,
-            String dtltype,
-            Pageable pageable, String type, String version) {
+     public ModelAndView getPL_SCHSView(String reportId, String fromdate, String todate,
+            String currency, String dtltype, Pageable pageable,
+            String type, String version) {
 
         ModelAndView mv = new ModelAndView();
+        Session hs = sessionFactory.getCurrentSession();
 
-        System.out.println("testing");
-        System.out.println(version);
+        int pageSize = pageable.getPageSize();
+        int currentPage = pageable.getPageNumber();
+        int startItem = currentPage * pageSize;
 
-        if ("ARCHIVAL".equals(type) && version != null && !version.isEmpty()) {
+        try {
+            Date d1 = dateformat.parse(todate);
 
-            System.out.println("ARCHIVAL MODE");
-            System.out.println("version = " + version);
+            // ---------- CASE 1: ARCHIVAL ----------
+            if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
+                List<PL_SCHS_Archival_Summary_Entity> T1Master = PL_SCHS_Archival_Summary_Repo
+                        .getdatabydateListarchival(d1, version);
+                List<PL_SCHS_Manual_Archival_Summary_Entity> T2Master = PL_SCHS_Manual_Archival_Summary_Repo
+                        .getdatabydateListarchival(d1, version);
+                mv.addObject("reportsummary", T1Master);
+                mv.addObject("reportsummary1", T2Master);
+                System.out.println("T1Master Size " + T1Master.size());
+                System.out.println("T2Master Size " + T2Master.size());
 
-            List<PL_SCHS_Archival_Summary_Entity> T1Master = new ArrayList<>();
-
-            try {
-                Date dt = dateformat.parse(todate);
-
-                T1Master = PL_SCHS_Archival_Summary_Repo.getdatabydateListarchival(dt, version);
-
-                System.out.println("T1Master size = " + T1Master.size());
-
-            } catch (ParseException e) {
-                e.printStackTrace();
             }
 
-            mv.addObject("reportsummary", T1Master);
+            // ---------- CASE 3: NORMAL ----------
+            else {
+                List<PL_SCHS_Summary_Entity> T1Master = PL_SCHS_summary_repo.getdatabydateList(dateformat.parse(todate));
+                List<PL_SCHS_Manual_Summary_Entity> T2Master = PL_SCHS_Manual_Summary_Repo
+                        .getdatabydateList(dateformat.parse(todate));
 
-        } else {
-
-            List<PL_SCHS_Summary_Entity> T1Master = new ArrayList<PL_SCHS_Summary_Entity>();
-
-            try {
-                Date d1 = dateformat.parse(todate);
-
-                T1Master = PL_SCHS_summary_repo.getdatabydateList(dateformat.parse(todate));
-
-                System.out.println("T1Master size " + T1Master.size());
-                mv.addObject("report_date", dateformat.format(d1));
-
-            } catch (ParseException e) {
-                e.printStackTrace();
+                mv.addObject("reportsummary", T1Master);
+                mv.addObject("reportsummary1", T2Master);
+                System.out.println("T1Master Size " + T1Master.size());
+                System.out.println("T2Master Size " + T2Master.size());
             }
-            mv.addObject("reportsummary", T1Master);
 
+        } catch (ParseException e) {
+            e.printStackTrace();
         }
 
         mv.setViewName("BRRS/PL_SCHS");
-
         mv.addObject("displaymode", "summary");
-
-        System.out.println("scv" + mv.getViewName());
-
+        System.out.println("View set to: " + mv.getViewName());
         return mv;
-
     }
+
+public void updateReport(PL_SCHS_Manual_Summary_Entity updatedEntity) {
+
+    PL_SCHS_Manual_Summary_Entity existing =
+            PL_SCHS_Manual_Summary_Repo.findById(updatedEntity.getReport_date())
+            .orElseThrow(() ->
+                new RuntimeException("Record not found for REPORT_DATE: "
+                        + updatedEntity.getReport_date()));
+
+    int[] rows = {
+        12,
+        20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
+        42,
+        54,
+        61
+    };
+
+    String[] fields = {
+        "intrest_div",
+        "other_income",
+        "operating_expenses",
+        "fig_bal_sheet",
+        "fig_bal_sheet_bwp",
+        "amt_statement_adj",
+        "amt_statement_adj_bwp",
+        "net_amt",
+        "net_amt_bwp",
+        "bal_sub",
+        "bal_sub_bwp",
+        "bal_sub_diaries",
+        "bal_sub_diaries_bwp"
+    };
+
+    try {
+        for (int i : rows) {
+            for (String field : fields) {
+
+                String getterName = "getR" + i + "_" + field;
+                String setterName = "setR" + i + "_" + field;
+
+                try {
+                    Method getter = PL_SCHS_Manual_Summary_Entity.class
+                            .getMethod(getterName);
+                    Method setter = PL_SCHS_Manual_Summary_Entity.class
+                            .getMethod(setterName, getter.getReturnType());
+
+                    Object newValue = getter.invoke(updatedEntity);
+                    setter.invoke(existing, newValue);
+
+                } catch (NoSuchMethodException e) {
+                    // Field not applicable for this row → skip safely
+                }
+            }
+        }
+    } catch (Exception e) {
+        throw new RuntimeException("Error while updating report fields", e);
+    }
+
+    PL_SCHS_Manual_Summary_Repo.save(existing);
+}
 
     public ModelAndView getPL_SCHScurrentDtl(String reportId, String fromdate, String todate, String currency,
             String dtltype, Pageable pageable, String filter, String type, String version) {
@@ -238,6 +305,8 @@ public class BRRS_PL_SCHS_ReportService {
 
         List<PL_SCHS_Summary_Entity> dataList = PL_SCHS_summary_repo
                 .getdatabydateList(dateformat.parse(todate));
+                List<PL_SCHS_Manual_Summary_Entity> dataList1 = PL_SCHS_Manual_Summary_Repo
+                .getdatabydateList(dateformat.parse(todate));
 
         if (dataList.isEmpty()) {
             logger.warn("Service: No data found for  PL_SCHS report. Returning empty result.");
@@ -305,6 +374,7 @@ public class BRRS_PL_SCHS_ReportService {
             if (!dataList.isEmpty()) {
                 for (int i = 0; i < dataList.size(); i++) {
                     PL_SCHS_Summary_Entity record = dataList.get(i);
+                    PL_SCHS_Manual_Summary_Entity record1 = dataList1.get(i);
 
                     System.out.println("rownumber=" + startRow + i);
                     Row row = sheet.getRow(startRow + i);
@@ -588,7 +658,7 @@ public class BRRS_PL_SCHS_ReportService {
                     }
                        row = sheet.getRow(11);
                      Cell R12Cell1 = row.createCell(3);
-                    if (record.getR12_fig_bal_sheet() != null) {
+                    if (record1.getR12_fig_bal_sheet() != null) {
                         R12Cell1.setCellValue(record.getR12_fig_bal_sheet().doubleValue());
                         R12Cell1.setCellStyle(numberStyle);
                     } else {
@@ -598,7 +668,7 @@ public class BRRS_PL_SCHS_ReportService {
 
                     // R12 Col E
                     Cell R12Cell2 = row.createCell(4);
-                    if (record.getR12_fig_bal_sheet_bwp() != null) {
+                    if (record1.getR12_fig_bal_sheet_bwp() != null) {
                         R12Cell2.setCellValue(record.getR12_fig_bal_sheet_bwp().doubleValue());
                         R12Cell2.setCellStyle(numberStyle);
                     } else {
@@ -608,7 +678,7 @@ public class BRRS_PL_SCHS_ReportService {
 
                     // R12 Col F
                     Cell R12Cell3 = row.createCell(5);
-                    if (record.getR12_amt_statement_adj() != null) {
+                    if (record1.getR12_amt_statement_adj() != null) {
                         R12Cell3.setCellValue(record.getR12_amt_statement_adj().doubleValue());
                         R12Cell3.setCellStyle(numberStyle);
                     } else {
@@ -617,7 +687,7 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R12 Col G
                     Cell R12Cell4 = row.createCell(6);
-                    if (record.getR12_amt_statement_adj_bwp() != null) {
+                    if (record1.getR12_amt_statement_adj_bwp() != null) {
                         R12Cell4.setCellValue(record.getR12_amt_statement_adj_bwp().doubleValue());
                         R12Cell4.setCellStyle(numberStyle);
                     } else {
@@ -626,7 +696,7 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R12 Col H
                     Cell R12Cell5 = row.createCell(7);
-                    if (record.getR12_net_amt() != null) {
+                    if (record1.getR12_net_amt() != null) {
                         R12Cell5.setCellValue(record.getR12_net_amt().doubleValue());
                         R12Cell5.setCellStyle(numberStyle);
                     } else {
@@ -635,7 +705,7 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R12 Col I
                     Cell R12Cell6 = row.createCell(8);
-                    if (record.getR12_net_amt_bwp() != null) {
+                    if (record1.getR12_net_amt_bwp() != null) {
                         R12Cell6.setCellValue(record.getR12_net_amt_bwp().doubleValue());
                         R12Cell6.setCellStyle(numberStyle);
                     } else {
@@ -644,7 +714,7 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R12 Col J
                     Cell R12Cell7 = row.createCell(9);
-                    if (record.getR12_bal_sub() != null) {
+                    if (record1.getR12_bal_sub() != null) {
                         R12Cell7.setCellValue(record.getR12_bal_sub().doubleValue());
                         R12Cell7.setCellStyle(numberStyle);
                     } else {
@@ -653,7 +723,7 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R12 Col K
                     Cell R12Cell8 = row.createCell(10);
-                    if (record.getR12_bal_sub_bwp() != null) {
+                    if (record1.getR12_bal_sub_bwp() != null) {
                         R12Cell8.setCellValue(record.getR12_bal_sub_bwp().doubleValue());
                         R12Cell8.setCellStyle(numberStyle);
                     } else {
@@ -662,7 +732,7 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R12 Col L
                     Cell R12Cell9 = row.createCell(11);
-                    if (record.getR12_bal_sub_diaries() != null) {
+                    if (record1.getR12_bal_sub_diaries() != null) {
                         R12Cell9.setCellValue(record.getR12_bal_sub_diaries().doubleValue());
                         R12Cell9.setCellStyle(numberStyle);
                     } else {
@@ -673,7 +743,7 @@ public class BRRS_PL_SCHS_ReportService {
                     
 					// R12 Col M
                     Cell R12Cell10 = row.createCell(12);
-                    if (record.getR12_bal_sub_diaries_bwp() != null) {
+                    if (record1.getR12_bal_sub_diaries_bwp() != null) {
                         R12Cell10.setCellValue(record.getR12_bal_sub_diaries_bwp().doubleValue());
                         R12Cell10.setCellStyle(numberStyle);
                     } else {
@@ -1053,8 +1123,8 @@ public class BRRS_PL_SCHS_ReportService {
 
                        row = sheet.getRow(19);
                      Cell R20Cell1 = row.createCell(3);
-                    if (record.getR20_fig_bal_sheet() != null) {
-                        R20Cell1.setCellValue(record.getR20_fig_bal_sheet().doubleValue());
+                    if (record1.getR20_fig_bal_sheet() != null) {
+                        R20Cell1.setCellValue(record1.getR20_fig_bal_sheet().doubleValue());
                         R20Cell1.setCellStyle(numberStyle);
                     } else {
                         R20Cell1.setCellValue("");
@@ -1063,8 +1133,8 @@ public class BRRS_PL_SCHS_ReportService {
 
                     // R20 Col E
                     Cell R20Cell2 = row.createCell(4);
-                    if (record.getR20_fig_bal_sheet_bwp() != null) {
-                        R20Cell2.setCellValue(record.getR20_fig_bal_sheet_bwp().doubleValue());
+                    if (record1.getR20_fig_bal_sheet_bwp() != null) {
+                        R20Cell2.setCellValue(record1.getR20_fig_bal_sheet_bwp().doubleValue());
                         R20Cell2.setCellStyle(numberStyle);
                     } else {
                         R20Cell2.setCellValue("");
@@ -1073,8 +1143,8 @@ public class BRRS_PL_SCHS_ReportService {
 
                     // R20 Col F
                     Cell R20Cell3 = row.createCell(5);
-                    if (record.getR20_amt_statement_adj() != null) {
-                        R20Cell3.setCellValue(record.getR20_amt_statement_adj().doubleValue());
+                    if (record1.getR20_amt_statement_adj() != null) {
+                        R20Cell3.setCellValue(record1.getR20_amt_statement_adj().doubleValue());
                         R20Cell3.setCellStyle(numberStyle);
                     } else {
                         R20Cell3.setCellValue("");
@@ -1082,8 +1152,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R20 Col G
                     Cell R20Cell4 = row.createCell(6);
-                    if (record.getR20_amt_statement_adj_bwp() != null) {
-                        R20Cell4.setCellValue(record.getR20_amt_statement_adj_bwp().doubleValue());
+                    if (record1.getR20_amt_statement_adj_bwp() != null) {
+                        R20Cell4.setCellValue(record1.getR20_amt_statement_adj_bwp().doubleValue());
                         R20Cell4.setCellStyle(numberStyle);
                     } else {
                         R20Cell4.setCellValue("");
@@ -1091,8 +1161,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R20 Col H
                     Cell R20Cell5 = row.createCell(7);
-                    if (record.getR20_net_amt() != null) {
-                        R20Cell5.setCellValue(record.getR20_net_amt().doubleValue());
+                    if (record1.getR20_net_amt() != null) {
+                        R20Cell5.setCellValue(record1.getR20_net_amt().doubleValue());
                         R20Cell5.setCellStyle(numberStyle);
                     } else {
                         R20Cell5.setCellValue("");
@@ -1100,8 +1170,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R20 Col I
                     Cell R20Cell6 = row.createCell(8);
-                    if (record.getR20_net_amt_bwp() != null) {
-                        R20Cell6.setCellValue(record.getR20_net_amt_bwp().doubleValue());
+                    if (record1.getR20_net_amt_bwp() != null) {
+                        R20Cell6.setCellValue(record1.getR20_net_amt_bwp().doubleValue());
                         R20Cell6.setCellStyle(numberStyle);
                     } else {
                         R20Cell6.setCellValue("");
@@ -1109,8 +1179,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R20 Col J
                     Cell R20Cell7 = row.createCell(9);
-                    if (record.getR20_bal_sub() != null) {
-                        R20Cell7.setCellValue(record.getR20_bal_sub().doubleValue());
+                    if (record1.getR20_bal_sub() != null) {
+                        R20Cell7.setCellValue(record1.getR20_bal_sub().doubleValue());
                         R20Cell7.setCellStyle(numberStyle);
                     } else {
                         R20Cell7.setCellValue("");
@@ -1118,8 +1188,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R20 Col K
                     Cell R20Cell8 = row.createCell(10);
-                    if (record.getR20_bal_sub_bwp() != null) {
-                        R20Cell8.setCellValue(record.getR20_bal_sub_bwp().doubleValue());
+                    if (record1.getR20_bal_sub_bwp() != null) {
+                        R20Cell8.setCellValue(record1.getR20_bal_sub_bwp().doubleValue());
                         R20Cell8.setCellStyle(numberStyle);
                     } else {
                         R20Cell8.setCellValue("");
@@ -1127,8 +1197,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R20 Col L
                     Cell R20Cell9 = row.createCell(11);
-                    if (record.getR20_bal_sub_diaries() != null) {
-                        R20Cell9.setCellValue(record.getR20_bal_sub_diaries().doubleValue());
+                    if (record1.getR20_bal_sub_diaries() != null) {
+                        R20Cell9.setCellValue(record1.getR20_bal_sub_diaries().doubleValue());
                         R20Cell9.setCellStyle(numberStyle);
                     } else {
                         R20Cell9.setCellValue("");
@@ -1136,8 +1206,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R20 Col M
                     Cell R20Cell10 = row.createCell(12);
-                    if (record.getR20_bal_sub_diaries_bwp() != null) {
-                        R20Cell10.setCellValue(record.getR20_bal_sub_diaries_bwp().doubleValue());
+                    if (record1.getR20_bal_sub_diaries_bwp() != null) {
+                        R20Cell10.setCellValue(record1.getR20_bal_sub_diaries_bwp().doubleValue());
                         R20Cell10.setCellStyle(numberStyle);
                     } else {
                         R20Cell10.setCellValue("");
@@ -1146,8 +1216,8 @@ public class BRRS_PL_SCHS_ReportService {
 
                        row = sheet.getRow(20);
                      Cell R21Cell1 = row.createCell(3);
-                    if (record.getR21_fig_bal_sheet() != null) {
-                        R21Cell1.setCellValue(record.getR21_fig_bal_sheet().doubleValue());
+                    if (record1.getR21_fig_bal_sheet() != null) {
+                        R21Cell1.setCellValue(record1.getR21_fig_bal_sheet().doubleValue());
                         R21Cell1.setCellStyle(numberStyle);
                     } else {
                         R21Cell1.setCellValue("");
@@ -1156,8 +1226,8 @@ public class BRRS_PL_SCHS_ReportService {
 
                     // R21 Col E
                     Cell R21Cell2 = row.createCell(4);
-                    if (record.getR21_fig_bal_sheet_bwp() != null) {
-                        R21Cell2.setCellValue(record.getR21_fig_bal_sheet_bwp().doubleValue());
+                    if (record1.getR21_fig_bal_sheet_bwp() != null) {
+                        R21Cell2.setCellValue(record1.getR21_fig_bal_sheet_bwp().doubleValue());
                         R21Cell2.setCellStyle(numberStyle);
                     } else {
                         R21Cell2.setCellValue("");
@@ -1166,8 +1236,8 @@ public class BRRS_PL_SCHS_ReportService {
 
                     // R21 Col F
                     Cell R21Cell3 = row.createCell(5);
-                    if (record.getR21_amt_statement_adj() != null) {
-                        R21Cell3.setCellValue(record.getR21_amt_statement_adj().doubleValue());
+                    if (record1.getR21_amt_statement_adj() != null) {
+                        R21Cell3.setCellValue(record1.getR21_amt_statement_adj().doubleValue());
                         R21Cell3.setCellStyle(numberStyle);
                     } else {
                         R21Cell3.setCellValue("");
@@ -1175,8 +1245,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R21 Col G
                     Cell R21Cell4 = row.createCell(6);
-                    if (record.getR21_amt_statement_adj_bwp() != null) {
-                        R21Cell4.setCellValue(record.getR21_amt_statement_adj_bwp().doubleValue());
+                    if (record1.getR21_amt_statement_adj_bwp() != null) {
+                        R21Cell4.setCellValue(record1.getR21_amt_statement_adj_bwp().doubleValue());
                         R21Cell4.setCellStyle(numberStyle);
                     } else {
                         R21Cell4.setCellValue("");
@@ -1184,8 +1254,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R21 Col H
                     Cell R21Cell5 = row.createCell(7);
-                    if (record.getR21_net_amt() != null) {
-                        R21Cell5.setCellValue(record.getR21_net_amt().doubleValue());
+                    if (record1.getR21_net_amt() != null) {
+                        R21Cell5.setCellValue(record1.getR21_net_amt().doubleValue());
                         R21Cell5.setCellStyle(numberStyle);
                     } else {
                         R21Cell5.setCellValue("");
@@ -1193,8 +1263,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R21 Col I
                     Cell R21Cell6 = row.createCell(8);
-                    if (record.getR21_net_amt_bwp() != null) {
-                        R21Cell6.setCellValue(record.getR21_net_amt_bwp().doubleValue());
+                    if (record1.getR21_net_amt_bwp() != null) {
+                        R21Cell6.setCellValue(record1.getR21_net_amt_bwp().doubleValue());
                         R21Cell6.setCellStyle(numberStyle);
                     } else {
                         R21Cell6.setCellValue("");
@@ -1202,8 +1272,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R21 Col J
                     Cell R21Cell7 = row.createCell(9);
-                    if (record.getR21_bal_sub() != null) {
-                        R21Cell7.setCellValue(record.getR21_bal_sub().doubleValue());
+                    if (record1.getR21_bal_sub() != null) {
+                        R21Cell7.setCellValue(record1.getR21_bal_sub().doubleValue());
                         R21Cell7.setCellStyle(numberStyle);
                     } else {
                         R21Cell7.setCellValue("");
@@ -1211,8 +1281,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R21 Col K
                     Cell R21Cell8 = row.createCell(10);
-                    if (record.getR21_bal_sub_bwp() != null) {
-                        R21Cell8.setCellValue(record.getR21_bal_sub_bwp().doubleValue());
+                    if (record1.getR21_bal_sub_bwp() != null) {
+                        R21Cell8.setCellValue(record1.getR21_bal_sub_bwp().doubleValue());
                         R21Cell8.setCellStyle(numberStyle);
                     } else {
                         R21Cell8.setCellValue("");
@@ -1220,8 +1290,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R21 Col L
                     Cell R21Cell9 = row.createCell(11);
-                    if (record.getR21_bal_sub_diaries() != null) {
-                        R21Cell9.setCellValue(record.getR21_bal_sub_diaries().doubleValue());
+                    if (record1.getR21_bal_sub_diaries() != null) {
+                        R21Cell9.setCellValue(record1.getR21_bal_sub_diaries().doubleValue());
                         R21Cell9.setCellStyle(numberStyle);
                     } else {
                         R21Cell9.setCellValue("");
@@ -1229,8 +1299,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R21 Col M
                     Cell R21Cell10 = row.createCell(12);
-                    if (record.getR21_bal_sub_diaries_bwp() != null) {
-                        R21Cell10.setCellValue(record.getR21_bal_sub_diaries_bwp().doubleValue());
+                    if (record1.getR21_bal_sub_diaries_bwp() != null) {
+                        R21Cell10.setCellValue(record1.getR21_bal_sub_diaries_bwp().doubleValue());
                         R21Cell10.setCellStyle(numberStyle);
                     } else {
                         R21Cell10.setCellValue("");
@@ -1238,8 +1308,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
                      row = sheet.getRow(21);
                      Cell R22Cell1 = row.createCell(3);
-                    if (record.getR22_fig_bal_sheet() != null) {
-                        R22Cell1.setCellValue(record.getR22_fig_bal_sheet().doubleValue());
+                    if (record1.getR22_fig_bal_sheet() != null) {
+                        R22Cell1.setCellValue(record1.getR22_fig_bal_sheet().doubleValue());
                         R22Cell1.setCellStyle(numberStyle);
                     } else {
                         R22Cell1.setCellValue("");
@@ -1248,8 +1318,8 @@ public class BRRS_PL_SCHS_ReportService {
 
                     // R22 Col E
                     Cell R22Cell2 = row.createCell(4);
-                    if (record.getR22_fig_bal_sheet_bwp() != null) {
-                        R22Cell2.setCellValue(record.getR22_fig_bal_sheet_bwp().doubleValue());
+                    if (record1.getR22_fig_bal_sheet_bwp() != null) {
+                        R22Cell2.setCellValue(record1.getR22_fig_bal_sheet_bwp().doubleValue());
                         R22Cell2.setCellStyle(numberStyle);
                     } else {
                         R22Cell2.setCellValue("");
@@ -1258,8 +1328,8 @@ public class BRRS_PL_SCHS_ReportService {
 
                     // R22 Col F
                     Cell R22Cell3 = row.createCell(5);
-                    if (record.getR22_amt_statement_adj() != null) {
-                        R22Cell3.setCellValue(record.getR22_amt_statement_adj().doubleValue());
+                    if (record1.getR22_amt_statement_adj() != null) {
+                        R22Cell3.setCellValue(record1.getR22_amt_statement_adj().doubleValue());
                         R22Cell3.setCellStyle(numberStyle);
                     } else {
                         R22Cell3.setCellValue("");
@@ -1267,8 +1337,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R22 Col G
                     Cell R22Cell4 = row.createCell(6);
-                    if (record.getR22_amt_statement_adj_bwp() != null) {
-                        R22Cell4.setCellValue(record.getR22_amt_statement_adj_bwp().doubleValue());
+                    if (record1.getR22_amt_statement_adj_bwp() != null) {
+                        R22Cell4.setCellValue(record1.getR22_amt_statement_adj_bwp().doubleValue());
                         R22Cell4.setCellStyle(numberStyle);
                     } else {
                         R22Cell4.setCellValue("");
@@ -1276,8 +1346,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R22 Col H
                     Cell R22Cell5 = row.createCell(7);
-                    if (record.getR22_net_amt() != null) {
-                        R22Cell5.setCellValue(record.getR22_net_amt().doubleValue());
+                    if (record1.getR22_net_amt() != null) {
+                        R22Cell5.setCellValue(record1.getR22_net_amt().doubleValue());
                         R22Cell5.setCellStyle(numberStyle);
                     } else {
                         R22Cell5.setCellValue("");
@@ -1285,8 +1355,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R22 Col I
                     Cell R22Cell6 = row.createCell(8);
-                    if (record.getR22_net_amt_bwp() != null) {
-                        R22Cell6.setCellValue(record.getR22_net_amt_bwp().doubleValue());
+                    if (record1.getR22_net_amt_bwp() != null) {
+                        R22Cell6.setCellValue(record1.getR22_net_amt_bwp().doubleValue());
                         R22Cell6.setCellStyle(numberStyle);
                     } else {
                         R22Cell6.setCellValue("");
@@ -1294,8 +1364,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R22 Col J
                     Cell R22Cell7 = row.createCell(9);
-                    if (record.getR22_bal_sub() != null) {
-                        R22Cell7.setCellValue(record.getR22_bal_sub().doubleValue());
+                    if (record1.getR22_bal_sub() != null) {
+                        R22Cell7.setCellValue(record1.getR22_bal_sub().doubleValue());
                         R22Cell7.setCellStyle(numberStyle);
                     } else {
                         R22Cell7.setCellValue("");
@@ -1303,8 +1373,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R22 Col K
                     Cell R22Cell8 = row.createCell(10);
-                    if (record.getR22_bal_sub_bwp() != null) {
-                        R22Cell8.setCellValue(record.getR22_bal_sub_bwp().doubleValue());
+                    if (record1.getR22_bal_sub_bwp() != null) {
+                        R22Cell8.setCellValue(record1.getR22_bal_sub_bwp().doubleValue());
                         R22Cell8.setCellStyle(numberStyle);
                     } else {
                         R22Cell8.setCellValue("");
@@ -1312,8 +1382,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R22 Col L
                     Cell R22Cell9 = row.createCell(11);
-                    if (record.getR22_bal_sub_diaries() != null) {
-                        R22Cell9.setCellValue(record.getR22_bal_sub_diaries().doubleValue());
+                    if (record1.getR22_bal_sub_diaries() != null) {
+                        R22Cell9.setCellValue(record1.getR22_bal_sub_diaries().doubleValue());
                         R22Cell9.setCellStyle(numberStyle);
                     } else {
                         R22Cell9.setCellValue("");
@@ -1321,8 +1391,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R22 Col M
                     Cell R22Cell10 = row.createCell(12);
-                    if (record.getR22_bal_sub_diaries_bwp() != null) {
-                        R22Cell10.setCellValue(record.getR22_bal_sub_diaries_bwp().doubleValue());
+                    if (record1.getR22_bal_sub_diaries_bwp() != null) {
+                        R22Cell10.setCellValue(record1.getR22_bal_sub_diaries_bwp().doubleValue());
                         R22Cell10.setCellStyle(numberStyle);
                     } else {
                         R22Cell10.setCellValue("");
@@ -1330,8 +1400,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
                      row = sheet.getRow(22);
                      Cell R23Cell1 = row.createCell(3);
-                    if (record.getR23_fig_bal_sheet() != null) {
-                        R23Cell1.setCellValue(record.getR23_fig_bal_sheet().doubleValue());
+                    if (record1.getR23_fig_bal_sheet() != null) {
+                        R23Cell1.setCellValue(record1.getR23_fig_bal_sheet().doubleValue());
                         R23Cell1.setCellStyle(numberStyle);
                     } else {
                         R23Cell1.setCellValue("");
@@ -1340,8 +1410,8 @@ public class BRRS_PL_SCHS_ReportService {
 
                     // R23 Col E
                     Cell R23Cell2 = row.createCell(4);
-                    if (record.getR23_fig_bal_sheet_bwp() != null) {
-                        R23Cell2.setCellValue(record.getR23_fig_bal_sheet_bwp().doubleValue());
+                    if (record1.getR23_fig_bal_sheet_bwp() != null) {
+                        R23Cell2.setCellValue(record1.getR23_fig_bal_sheet_bwp().doubleValue());
                         R23Cell2.setCellStyle(numberStyle);
                     } else {
                         R23Cell2.setCellValue("");
@@ -1350,8 +1420,8 @@ public class BRRS_PL_SCHS_ReportService {
 
                     // R23 Col F
                     Cell R23Cell3 = row.createCell(5);
-                    if (record.getR23_amt_statement_adj() != null) {
-                        R23Cell3.setCellValue(record.getR23_amt_statement_adj().doubleValue());
+                    if (record1.getR23_amt_statement_adj() != null) {
+                        R23Cell3.setCellValue(record1.getR23_amt_statement_adj().doubleValue());
                         R23Cell3.setCellStyle(numberStyle);
                     } else {
                         R23Cell3.setCellValue("");
@@ -1359,8 +1429,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R23 Col G
                     Cell R23Cell4 = row.createCell(6);
-                    if (record.getR23_amt_statement_adj_bwp() != null) {
-                        R23Cell4.setCellValue(record.getR23_amt_statement_adj_bwp().doubleValue());
+                    if (record1.getR23_amt_statement_adj_bwp() != null) {
+                        R23Cell4.setCellValue(record1.getR23_amt_statement_adj_bwp().doubleValue());
                         R23Cell4.setCellStyle(numberStyle);
                     } else {
                         R23Cell4.setCellValue("");
@@ -1368,8 +1438,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R23 Col H
                     Cell R23Cell5 = row.createCell(7);
-                    if (record.getR23_net_amt() != null) {
-                        R23Cell5.setCellValue(record.getR23_net_amt().doubleValue());
+                    if (record1.getR23_net_amt() != null) {
+                        R23Cell5.setCellValue(record1.getR23_net_amt().doubleValue());
                         R23Cell5.setCellStyle(numberStyle);
                     } else {
                         R23Cell5.setCellValue("");
@@ -1377,8 +1447,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R23 Col I
                     Cell R23Cell6 = row.createCell(8);
-                    if (record.getR23_net_amt_bwp() != null) {
-                        R23Cell6.setCellValue(record.getR23_net_amt_bwp().doubleValue());
+                    if (record1.getR23_net_amt_bwp() != null) {
+                        R23Cell6.setCellValue(record1.getR23_net_amt_bwp().doubleValue());
                         R23Cell6.setCellStyle(numberStyle);
                     } else {
                         R23Cell6.setCellValue("");
@@ -1386,8 +1456,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R23 Col J
                     Cell R23Cell7 = row.createCell(9);
-                    if (record.getR23_bal_sub() != null) {
-                        R23Cell7.setCellValue(record.getR23_bal_sub().doubleValue());
+                    if (record1.getR23_bal_sub() != null) {
+                        R23Cell7.setCellValue(record1.getR23_bal_sub().doubleValue());
                         R23Cell7.setCellStyle(numberStyle);
                     } else {
                         R23Cell7.setCellValue("");
@@ -1395,8 +1465,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R23 Col K
                     Cell R23Cell8 = row.createCell(10);
-                    if (record.getR23_bal_sub_bwp() != null) {
-                        R23Cell8.setCellValue(record.getR23_bal_sub_bwp().doubleValue());
+                    if (record1.getR23_bal_sub_bwp() != null) {
+                        R23Cell8.setCellValue(record1.getR23_bal_sub_bwp().doubleValue());
                         R23Cell8.setCellStyle(numberStyle);
                     } else {
                         R23Cell8.setCellValue("");
@@ -1404,8 +1474,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R23 Col L
                     Cell R23Cell9 = row.createCell(11);
-                    if (record.getR23_bal_sub_diaries() != null) {
-                        R23Cell9.setCellValue(record.getR23_bal_sub_diaries().doubleValue());
+                    if (record1.getR23_bal_sub_diaries() != null) {
+                        R23Cell9.setCellValue(record1.getR23_bal_sub_diaries().doubleValue());
                         R23Cell9.setCellStyle(numberStyle);
                     } else {
                         R23Cell9.setCellValue("");
@@ -1413,8 +1483,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R23 Col M
                     Cell R23Cell10 = row.createCell(12);
-                    if (record.getR23_bal_sub_diaries_bwp() != null) {
-                        R23Cell10.setCellValue(record.getR23_bal_sub_diaries_bwp().doubleValue());
+                    if (record1.getR23_bal_sub_diaries_bwp() != null) {
+                        R23Cell10.setCellValue(record1.getR23_bal_sub_diaries_bwp().doubleValue());
                         R23Cell10.setCellStyle(numberStyle);
                     } else {
                         R23Cell10.setCellValue("");
@@ -1422,8 +1492,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
                      row = sheet.getRow(23);
                      Cell R24Cell1 = row.createCell(3);
-                    if (record.getR24_fig_bal_sheet() != null) {
-                        R24Cell1.setCellValue(record.getR24_fig_bal_sheet().doubleValue());
+                    if (record1.getR24_fig_bal_sheet() != null) {
+                        R24Cell1.setCellValue(record1.getR24_fig_bal_sheet().doubleValue());
                         R24Cell1.setCellStyle(numberStyle);
                     } else {
                         R24Cell1.setCellValue("");
@@ -1432,8 +1502,8 @@ public class BRRS_PL_SCHS_ReportService {
 
                     // R24 Col E
                     Cell R24Cell2 = row.createCell(4);
-                    if (record.getR24_fig_bal_sheet_bwp() != null) {
-                        R24Cell2.setCellValue(record.getR24_fig_bal_sheet_bwp().doubleValue());
+                    if (record1.getR24_fig_bal_sheet_bwp() != null) {
+                        R24Cell2.setCellValue(record1.getR24_fig_bal_sheet_bwp().doubleValue());
                         R24Cell2.setCellStyle(numberStyle);
                     } else {
                         R24Cell2.setCellValue("");
@@ -1442,8 +1512,8 @@ public class BRRS_PL_SCHS_ReportService {
 
                     // R24 Col F
                     Cell R24Cell3 = row.createCell(5);
-                    if (record.getR24_amt_statement_adj() != null) {
-                        R24Cell3.setCellValue(record.getR24_amt_statement_adj().doubleValue());
+                    if (record1.getR24_amt_statement_adj() != null) {
+                        R24Cell3.setCellValue(record1.getR24_amt_statement_adj().doubleValue());
                         R24Cell3.setCellStyle(numberStyle);
                     } else {
                         R24Cell3.setCellValue("");
@@ -1451,8 +1521,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R24 Col G
                     Cell R24Cell4 = row.createCell(6);
-                    if (record.getR24_amt_statement_adj_bwp() != null) {
-                        R24Cell4.setCellValue(record.getR24_amt_statement_adj_bwp().doubleValue());
+                    if (record1.getR24_amt_statement_adj_bwp() != null) {
+                        R24Cell4.setCellValue(record1.getR24_amt_statement_adj_bwp().doubleValue());
                         R24Cell4.setCellStyle(numberStyle);
                     } else {
                         R24Cell4.setCellValue("");
@@ -1460,8 +1530,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R24 Col H
                     Cell R24Cell5 = row.createCell(7);
-                    if (record.getR24_net_amt() != null) {
-                        R24Cell5.setCellValue(record.getR24_net_amt().doubleValue());
+                    if (record1.getR24_net_amt() != null) {
+                        R24Cell5.setCellValue(record1.getR24_net_amt().doubleValue());
                         R24Cell5.setCellStyle(numberStyle);
                     } else {
                         R24Cell5.setCellValue("");
@@ -1469,8 +1539,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R24 Col I
                     Cell R24Cell6 = row.createCell(8);
-                    if (record.getR24_net_amt_bwp() != null) {
-                        R24Cell6.setCellValue(record.getR24_net_amt_bwp().doubleValue());
+                    if (record1.getR24_net_amt_bwp() != null) {
+                        R24Cell6.setCellValue(record1.getR24_net_amt_bwp().doubleValue());
                         R24Cell6.setCellStyle(numberStyle);
                     } else {
                         R24Cell6.setCellValue("");
@@ -1478,8 +1548,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R24 Col J
                     Cell R24Cell7 = row.createCell(9);
-                    if (record.getR24_bal_sub() != null) {
-                        R24Cell7.setCellValue(record.getR24_bal_sub().doubleValue());
+                    if (record1.getR24_bal_sub() != null) {
+                        R24Cell7.setCellValue(record1.getR24_bal_sub().doubleValue());
                         R24Cell7.setCellStyle(numberStyle);
                     } else {
                         R24Cell7.setCellValue("");
@@ -1487,8 +1557,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R24 Col K
                     Cell R24Cell8 = row.createCell(10);
-                    if (record.getR24_bal_sub_bwp() != null) {
-                        R24Cell8.setCellValue(record.getR24_bal_sub_bwp().doubleValue());
+                    if (record1.getR24_bal_sub_bwp() != null) {
+                        R24Cell8.setCellValue(record1.getR24_bal_sub_bwp().doubleValue());
                         R24Cell8.setCellStyle(numberStyle);
                     } else {
                         R24Cell8.setCellValue("");
@@ -1496,8 +1566,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R24 Col L
                     Cell R24Cell9 = row.createCell(11);
-                    if (record.getR24_bal_sub_diaries() != null) {
-                        R24Cell9.setCellValue(record.getR24_bal_sub_diaries().doubleValue());
+                    if (record1.getR24_bal_sub_diaries() != null) {
+                        R24Cell9.setCellValue(record1.getR24_bal_sub_diaries().doubleValue());
                         R24Cell9.setCellStyle(numberStyle);
                     } else {
                         R24Cell9.setCellValue("");
@@ -1505,8 +1575,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R24 Col M
                     Cell R24Cell10 = row.createCell(12);
-                    if (record.getR24_bal_sub_diaries_bwp() != null) {
-                        R24Cell10.setCellValue(record.getR24_bal_sub_diaries_bwp().doubleValue());
+                    if (record1.getR24_bal_sub_diaries_bwp() != null) {
+                        R24Cell10.setCellValue(record1.getR24_bal_sub_diaries_bwp().doubleValue());
                         R24Cell10.setCellStyle(numberStyle);
                     } else {
                         R24Cell10.setCellValue("");
@@ -1514,8 +1584,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
                      row = sheet.getRow(24);
                      Cell R25Cell1 = row.createCell(3);
-                    if (record.getR25_fig_bal_sheet() != null) {
-                        R25Cell1.setCellValue(record.getR25_fig_bal_sheet().doubleValue());
+                    if (record1.getR25_fig_bal_sheet() != null) {
+                        R25Cell1.setCellValue(record1.getR25_fig_bal_sheet().doubleValue());
                         R25Cell1.setCellStyle(numberStyle);
                     } else {
                         R25Cell1.setCellValue("");
@@ -1524,8 +1594,8 @@ public class BRRS_PL_SCHS_ReportService {
 
                     // R25 Col E
                     Cell R25Cell2 = row.createCell(4);
-                    if (record.getR25_fig_bal_sheet_bwp() != null) {
-                        R25Cell2.setCellValue(record.getR25_fig_bal_sheet_bwp().doubleValue());
+                    if (record1.getR25_fig_bal_sheet_bwp() != null) {
+                        R25Cell2.setCellValue(record1.getR25_fig_bal_sheet_bwp().doubleValue());
                         R25Cell2.setCellStyle(numberStyle);
                     } else {
                         R25Cell2.setCellValue("");
@@ -1534,8 +1604,8 @@ public class BRRS_PL_SCHS_ReportService {
 
                     // R25 Col F
                     Cell R25Cell3 = row.createCell(5);
-                    if (record.getR25_amt_statement_adj() != null) {
-                        R25Cell3.setCellValue(record.getR25_amt_statement_adj().doubleValue());
+                    if (record1.getR25_amt_statement_adj() != null) {
+                        R25Cell3.setCellValue(record1.getR25_amt_statement_adj().doubleValue());
                         R25Cell3.setCellStyle(numberStyle);
                     } else {
                         R25Cell3.setCellValue("");
@@ -1543,8 +1613,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R25 Col G
                     Cell R25Cell4 = row.createCell(6);
-                    if (record.getR25_amt_statement_adj_bwp() != null) {
-                        R25Cell4.setCellValue(record.getR25_amt_statement_adj_bwp().doubleValue());
+                    if (record1.getR25_amt_statement_adj_bwp() != null) {
+                        R25Cell4.setCellValue(record1.getR25_amt_statement_adj_bwp().doubleValue());
                         R25Cell4.setCellStyle(numberStyle);
                     } else {
                         R25Cell4.setCellValue("");
@@ -1552,8 +1622,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R25 Col H
                     Cell R25Cell5 = row.createCell(7);
-                    if (record.getR25_net_amt() != null) {
-                        R25Cell5.setCellValue(record.getR25_net_amt().doubleValue());
+                    if (record1.getR25_net_amt() != null) {
+                        R25Cell5.setCellValue(record1.getR25_net_amt().doubleValue());
                         R25Cell5.setCellStyle(numberStyle);
                     } else {
                         R25Cell5.setCellValue("");
@@ -1561,8 +1631,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R25 Col I
                     Cell R25Cell6 = row.createCell(8);
-                    if (record.getR25_net_amt_bwp() != null) {
-                        R25Cell6.setCellValue(record.getR25_net_amt_bwp().doubleValue());
+                    if (record1.getR25_net_amt_bwp() != null) {
+                        R25Cell6.setCellValue(record1.getR25_net_amt_bwp().doubleValue());
                         R25Cell6.setCellStyle(numberStyle);
                     } else {
                         R25Cell6.setCellValue("");
@@ -1570,8 +1640,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R25 Col J
                     Cell R25Cell7 = row.createCell(9);
-                    if (record.getR25_bal_sub() != null) {
-                        R25Cell7.setCellValue(record.getR25_bal_sub().doubleValue());
+                    if (record1.getR25_bal_sub() != null) {
+                        R25Cell7.setCellValue(record1.getR25_bal_sub().doubleValue());
                         R25Cell7.setCellStyle(numberStyle);
                     } else {
                         R25Cell7.setCellValue("");
@@ -1579,8 +1649,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R25 Col K
                     Cell R25Cell8 = row.createCell(10);
-                    if (record.getR25_bal_sub_bwp() != null) {
-                        R25Cell8.setCellValue(record.getR25_bal_sub_bwp().doubleValue());
+                    if (record1.getR25_bal_sub_bwp() != null) {
+                        R25Cell8.setCellValue(record1.getR25_bal_sub_bwp().doubleValue());
                         R25Cell8.setCellStyle(numberStyle);
                     } else {
                         R25Cell8.setCellValue("");
@@ -1588,8 +1658,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R25 Col L
                     Cell R25Cell9 = row.createCell(11);
-                    if (record.getR25_bal_sub_diaries() != null) {
-                        R25Cell9.setCellValue(record.getR25_bal_sub_diaries().doubleValue());
+                    if (record1.getR25_bal_sub_diaries() != null) {
+                        R25Cell9.setCellValue(record1.getR25_bal_sub_diaries().doubleValue());
                         R25Cell9.setCellStyle(numberStyle);
                     } else {
                         R25Cell9.setCellValue("");
@@ -1597,8 +1667,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R25 Col M
                     Cell R25Cell10 = row.createCell(12);
-                    if (record.getR25_bal_sub_diaries_bwp() != null) {
-                        R25Cell10.setCellValue(record.getR25_bal_sub_diaries_bwp().doubleValue());
+                    if (record1.getR25_bal_sub_diaries_bwp() != null) {
+                        R25Cell10.setCellValue(record1.getR25_bal_sub_diaries_bwp().doubleValue());
                         R25Cell10.setCellStyle(numberStyle);
                     } else {
                         R25Cell10.setCellValue("");
@@ -1606,8 +1676,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
                      row = sheet.getRow(25);
                      Cell R26Cell1 = row.createCell(3);
-                    if (record.getR26_fig_bal_sheet() != null) {
-                        R26Cell1.setCellValue(record.getR26_fig_bal_sheet().doubleValue());
+                    if (record1.getR26_fig_bal_sheet() != null) {
+                        R26Cell1.setCellValue(record1.getR26_fig_bal_sheet().doubleValue());
                         R26Cell1.setCellStyle(numberStyle);
                     } else {
                         R26Cell1.setCellValue("");
@@ -1616,8 +1686,8 @@ public class BRRS_PL_SCHS_ReportService {
 
                     // R26 Col E
                     Cell R26Cell2 = row.createCell(4);
-                    if (record.getR26_fig_bal_sheet_bwp() != null) {
-                        R26Cell2.setCellValue(record.getR26_fig_bal_sheet_bwp().doubleValue());
+                    if (record1.getR26_fig_bal_sheet_bwp() != null) {
+                        R26Cell2.setCellValue(record1.getR26_fig_bal_sheet_bwp().doubleValue());
                         R26Cell2.setCellStyle(numberStyle);
                     } else {
                         R26Cell2.setCellValue("");
@@ -1626,8 +1696,8 @@ public class BRRS_PL_SCHS_ReportService {
 
                     // R26 Col F
                     Cell R26Cell3 = row.createCell(5);
-                    if (record.getR26_amt_statement_adj() != null) {
-                        R26Cell3.setCellValue(record.getR26_amt_statement_adj().doubleValue());
+                    if (record1.getR26_amt_statement_adj() != null) {
+                        R26Cell3.setCellValue(record1.getR26_amt_statement_adj().doubleValue());
                         R26Cell3.setCellStyle(numberStyle);
                     } else {
                         R26Cell3.setCellValue("");
@@ -1635,8 +1705,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R26 Col G
                     Cell R26Cell4 = row.createCell(6);
-                    if (record.getR26_amt_statement_adj_bwp() != null) {
-                        R26Cell4.setCellValue(record.getR26_amt_statement_adj_bwp().doubleValue());
+                    if (record1.getR26_amt_statement_adj_bwp() != null) {
+                        R26Cell4.setCellValue(record1.getR26_amt_statement_adj_bwp().doubleValue());
                         R26Cell4.setCellStyle(numberStyle);
                     } else {
                         R26Cell4.setCellValue("");
@@ -1644,8 +1714,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R26 Col H
                     Cell R26Cell5 = row.createCell(7);
-                    if (record.getR26_net_amt() != null) {
-                        R26Cell5.setCellValue(record.getR26_net_amt().doubleValue());
+                    if (record1.getR26_net_amt() != null) {
+                        R26Cell5.setCellValue(record1.getR26_net_amt().doubleValue());
                         R26Cell5.setCellStyle(numberStyle);
                     } else {
                         R26Cell5.setCellValue("");
@@ -1653,8 +1723,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R26 Col I
                     Cell R26Cell6 = row.createCell(8);
-                    if (record.getR26_net_amt_bwp() != null) {
-                        R26Cell6.setCellValue(record.getR26_net_amt_bwp().doubleValue());
+                    if (record1.getR26_net_amt_bwp() != null) {
+                        R26Cell6.setCellValue(record1.getR26_net_amt_bwp().doubleValue());
                         R26Cell6.setCellStyle(numberStyle);
                     } else {
                         R26Cell6.setCellValue("");
@@ -1662,8 +1732,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R26 Col J
                     Cell R26Cell7 = row.createCell(9);
-                    if (record.getR26_bal_sub() != null) {
-                        R26Cell7.setCellValue(record.getR26_bal_sub().doubleValue());
+                    if (record1.getR26_bal_sub() != null) {
+                        R26Cell7.setCellValue(record1.getR26_bal_sub().doubleValue());
                         R26Cell7.setCellStyle(numberStyle);
                     } else {
                         R26Cell7.setCellValue("");
@@ -1671,8 +1741,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R26 Col K
                     Cell R26Cell8 = row.createCell(10);
-                    if (record.getR26_bal_sub_bwp() != null) {
-                        R26Cell8.setCellValue(record.getR26_bal_sub_bwp().doubleValue());
+                    if (record1.getR26_bal_sub_bwp() != null) {
+                        R26Cell8.setCellValue(record1.getR26_bal_sub_bwp().doubleValue());
                         R26Cell8.setCellStyle(numberStyle);
                     } else {
                         R26Cell8.setCellValue("");
@@ -1680,8 +1750,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R26 Col L
                     Cell R26Cell9 = row.createCell(11);
-                    if (record.getR26_bal_sub_diaries() != null) {
-                        R26Cell9.setCellValue(record.getR26_bal_sub_diaries().doubleValue());
+                    if (record1.getR26_bal_sub_diaries() != null) {
+                        R26Cell9.setCellValue(record1.getR26_bal_sub_diaries().doubleValue());
                         R26Cell9.setCellStyle(numberStyle);
                     } else {
                         R26Cell9.setCellValue("");
@@ -1689,8 +1759,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R26 Col M
                     Cell R26Cell10 = row.createCell(12);
-                    if (record.getR26_bal_sub_diaries_bwp() != null) {
-                        R26Cell10.setCellValue(record.getR26_bal_sub_diaries_bwp().doubleValue());
+                    if (record1.getR26_bal_sub_diaries_bwp() != null) {
+                        R26Cell10.setCellValue(record1.getR26_bal_sub_diaries_bwp().doubleValue());
                         R26Cell10.setCellStyle(numberStyle);
                     } else {
                         R26Cell10.setCellValue("");
@@ -1698,8 +1768,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
                      row = sheet.getRow(26);
                      Cell R27Cell1 = row.createCell(3);
-                    if (record.getR27_fig_bal_sheet() != null) {
-                        R27Cell1.setCellValue(record.getR27_fig_bal_sheet().doubleValue());
+                    if (record1.getR27_fig_bal_sheet() != null) {
+                        R27Cell1.setCellValue(record1.getR27_fig_bal_sheet().doubleValue());
                         R27Cell1.setCellStyle(numberStyle);
                     } else {
                         R27Cell1.setCellValue("");
@@ -1708,8 +1778,8 @@ public class BRRS_PL_SCHS_ReportService {
 
                     // R27 Col E
                     Cell R27Cell2 = row.createCell(4);
-                    if (record.getR27_fig_bal_sheet_bwp() != null) {
-                        R27Cell2.setCellValue(record.getR27_fig_bal_sheet_bwp().doubleValue());
+                    if (record1.getR27_fig_bal_sheet_bwp() != null) {
+                        R27Cell2.setCellValue(record1.getR27_fig_bal_sheet_bwp().doubleValue());
                         R27Cell2.setCellStyle(numberStyle);
                     } else {
                         R27Cell2.setCellValue("");
@@ -1718,8 +1788,8 @@ public class BRRS_PL_SCHS_ReportService {
 
                     // R27 Col F
                     Cell R27Cell3 = row.createCell(5);
-                    if (record.getR27_amt_statement_adj() != null) {
-                        R27Cell3.setCellValue(record.getR27_amt_statement_adj().doubleValue());
+                    if (record1.getR27_amt_statement_adj() != null) {
+                        R27Cell3.setCellValue(record1.getR27_amt_statement_adj().doubleValue());
                         R27Cell3.setCellStyle(numberStyle);
                     } else {
                         R27Cell3.setCellValue("");
@@ -1727,8 +1797,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R27 Col G
                     Cell R27Cell4 = row.createCell(6);
-                    if (record.getR27_amt_statement_adj_bwp() != null) {
-                        R27Cell4.setCellValue(record.getR27_amt_statement_adj_bwp().doubleValue());
+                    if (record1.getR27_amt_statement_adj_bwp() != null) {
+                        R27Cell4.setCellValue(record1.getR27_amt_statement_adj_bwp().doubleValue());
                         R27Cell4.setCellStyle(numberStyle);
                     } else {
                         R27Cell4.setCellValue("");
@@ -1736,8 +1806,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R27 Col H
                     Cell R27Cell5 = row.createCell(7);
-                    if (record.getR27_net_amt() != null) {
-                        R27Cell5.setCellValue(record.getR27_net_amt().doubleValue());
+                    if (record1.getR27_net_amt() != null) {
+                        R27Cell5.setCellValue(record1.getR27_net_amt().doubleValue());
                         R27Cell5.setCellStyle(numberStyle);
                     } else {
                         R27Cell5.setCellValue("");
@@ -1745,8 +1815,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R27 Col I
                     Cell R27Cell6 = row.createCell(8);
-                    if (record.getR27_net_amt_bwp() != null) {
-                        R27Cell6.setCellValue(record.getR27_net_amt_bwp().doubleValue());
+                    if (record1.getR27_net_amt_bwp() != null) {
+                        R27Cell6.setCellValue(record1.getR27_net_amt_bwp().doubleValue());
                         R27Cell6.setCellStyle(numberStyle);
                     } else {
                         R27Cell6.setCellValue("");
@@ -1754,8 +1824,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R27 Col J
                     Cell R27Cell7 = row.createCell(9);
-                    if (record.getR27_bal_sub() != null) {
-                        R27Cell7.setCellValue(record.getR27_bal_sub().doubleValue());
+                    if (record1.getR27_bal_sub() != null) {
+                        R27Cell7.setCellValue(record1.getR27_bal_sub().doubleValue());
                         R27Cell7.setCellStyle(numberStyle);
                     } else {
                         R27Cell7.setCellValue("");
@@ -1763,8 +1833,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R27 Col K
                     Cell R27Cell8 = row.createCell(10);
-                    if (record.getR27_bal_sub_bwp() != null) {
-                        R27Cell8.setCellValue(record.getR27_bal_sub_bwp().doubleValue());
+                    if (record1.getR27_bal_sub_bwp() != null) {
+                        R27Cell8.setCellValue(record1.getR27_bal_sub_bwp().doubleValue());
                         R27Cell8.setCellStyle(numberStyle);
                     } else {
                         R27Cell8.setCellValue("");
@@ -1772,8 +1842,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R27 Col L
                     Cell R27Cell9 = row.createCell(11);
-                    if (record.getR27_bal_sub_diaries() != null) {
-                        R27Cell9.setCellValue(record.getR27_bal_sub_diaries().doubleValue());
+                    if (record1.getR27_bal_sub_diaries() != null) {
+                        R27Cell9.setCellValue(record1.getR27_bal_sub_diaries().doubleValue());
                         R27Cell9.setCellStyle(numberStyle);
                     } else {
                         R27Cell9.setCellValue("");
@@ -1781,8 +1851,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R27 Col M
                     Cell R27Cell10 = row.createCell(12);
-                    if (record.getR27_bal_sub_diaries_bwp() != null) {
-                        R27Cell10.setCellValue(record.getR27_bal_sub_diaries_bwp().doubleValue());
+                    if (record1.getR27_bal_sub_diaries_bwp() != null) {
+                        R27Cell10.setCellValue(record1.getR27_bal_sub_diaries_bwp().doubleValue());
                         R27Cell10.setCellStyle(numberStyle);
                     } else {
                         R27Cell10.setCellValue("");
@@ -1790,8 +1860,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
                      row = sheet.getRow(27);
                      Cell R28Cell1 = row.createCell(3);
-                    if (record.getR28_fig_bal_sheet() != null) {
-                        R28Cell1.setCellValue(record.getR28_fig_bal_sheet().doubleValue());
+                    if (record1.getR28_fig_bal_sheet() != null) {
+                        R28Cell1.setCellValue(record1.getR28_fig_bal_sheet().doubleValue());
                         R28Cell1.setCellStyle(numberStyle);
                     } else {
                         R28Cell1.setCellValue("");
@@ -1800,8 +1870,8 @@ public class BRRS_PL_SCHS_ReportService {
 
                     // R28 Col E
                     Cell R28Cell2 = row.createCell(4);
-                    if (record.getR28_fig_bal_sheet_bwp() != null) {
-                        R28Cell2.setCellValue(record.getR28_fig_bal_sheet_bwp().doubleValue());
+                    if (record1.getR28_fig_bal_sheet_bwp() != null) {
+                        R28Cell2.setCellValue(record1.getR28_fig_bal_sheet_bwp().doubleValue());
                         R28Cell2.setCellStyle(numberStyle);
                     } else {
                         R28Cell2.setCellValue("");
@@ -1810,8 +1880,8 @@ public class BRRS_PL_SCHS_ReportService {
 
                     // R28 Col F
                     Cell R28Cell3 = row.createCell(5);
-                    if (record.getR28_amt_statement_adj() != null) {
-                        R28Cell3.setCellValue(record.getR28_amt_statement_adj().doubleValue());
+                    if (record1.getR28_amt_statement_adj() != null) {
+                        R28Cell3.setCellValue(record1.getR28_amt_statement_adj().doubleValue());
                         R28Cell3.setCellStyle(numberStyle);
                     } else {
                         R28Cell3.setCellValue("");
@@ -1819,8 +1889,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R28 Col G
                     Cell R28Cell4 = row.createCell(6);
-                    if (record.getR28_amt_statement_adj_bwp() != null) {
-                        R28Cell4.setCellValue(record.getR28_amt_statement_adj_bwp().doubleValue());
+                    if (record1.getR28_amt_statement_adj_bwp() != null) {
+                        R28Cell4.setCellValue(record1.getR28_amt_statement_adj_bwp().doubleValue());
                         R28Cell4.setCellStyle(numberStyle);
                     } else {
                         R28Cell4.setCellValue("");
@@ -1828,8 +1898,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R28 Col H
                     Cell R28Cell5 = row.createCell(7);
-                    if (record.getR28_net_amt() != null) {
-                        R28Cell5.setCellValue(record.getR28_net_amt().doubleValue());
+                    if (record1.getR28_net_amt() != null) {
+                        R28Cell5.setCellValue(record1.getR28_net_amt().doubleValue());
                         R28Cell5.setCellStyle(numberStyle);
                     } else {
                         R28Cell5.setCellValue("");
@@ -1837,8 +1907,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R28 Col I
                     Cell R28Cell6 = row.createCell(8);
-                    if (record.getR28_net_amt_bwp() != null) {
-                        R28Cell6.setCellValue(record.getR28_net_amt_bwp().doubleValue());
+                    if (record1.getR28_net_amt_bwp() != null) {
+                        R28Cell6.setCellValue(record1.getR28_net_amt_bwp().doubleValue());
                         R28Cell6.setCellStyle(numberStyle);
                     } else {
                         R28Cell6.setCellValue("");
@@ -1846,8 +1916,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R28 Col J
                     Cell R28Cell7 = row.createCell(9);
-                    if (record.getR28_bal_sub() != null) {
-                        R28Cell7.setCellValue(record.getR28_bal_sub().doubleValue());
+                    if (record1.getR28_bal_sub() != null) {
+                        R28Cell7.setCellValue(record1.getR28_bal_sub().doubleValue());
                         R28Cell7.setCellStyle(numberStyle);
                     } else {
                         R28Cell7.setCellValue("");
@@ -1855,8 +1925,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R28 Col K
                     Cell R28Cell8 = row.createCell(10);
-                    if (record.getR28_bal_sub_bwp() != null) {
-                        R28Cell8.setCellValue(record.getR28_bal_sub_bwp().doubleValue());
+                    if (record1.getR28_bal_sub_bwp() != null) {
+                        R28Cell8.setCellValue(record1.getR28_bal_sub_bwp().doubleValue());
                         R28Cell8.setCellStyle(numberStyle);
                     } else {
                         R28Cell8.setCellValue("");
@@ -1864,8 +1934,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R28 Col L
                     Cell R28Cell9 = row.createCell(11);
-                    if (record.getR28_bal_sub_diaries() != null) {
-                        R28Cell9.setCellValue(record.getR28_bal_sub_diaries().doubleValue());
+                    if (record1.getR28_bal_sub_diaries() != null) {
+                        R28Cell9.setCellValue(record1.getR28_bal_sub_diaries().doubleValue());
                         R28Cell9.setCellStyle(numberStyle);
                     } else {
                         R28Cell9.setCellValue("");
@@ -1873,8 +1943,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R28 Col M
                     Cell R28Cell10 = row.createCell(12);
-                    if (record.getR28_bal_sub_diaries_bwp() != null) {
-                        R28Cell10.setCellValue(record.getR28_bal_sub_diaries_bwp().doubleValue());
+                    if (record1.getR28_bal_sub_diaries_bwp() != null) {
+                        R28Cell10.setCellValue(record1.getR28_bal_sub_diaries_bwp().doubleValue());
                         R28Cell10.setCellStyle(numberStyle);
                     } else {
                         R28Cell10.setCellValue("");
@@ -1882,8 +1952,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
                      row = sheet.getRow(28);
                      Cell R29Cell1 = row.createCell(3);
-                    if (record.getR29_fig_bal_sheet() != null) {
-                        R29Cell1.setCellValue(record.getR29_fig_bal_sheet().doubleValue());
+                    if (record1.getR29_fig_bal_sheet() != null) {
+                        R29Cell1.setCellValue(record1.getR29_fig_bal_sheet().doubleValue());
                         R29Cell1.setCellStyle(numberStyle);
                     } else {
                         R29Cell1.setCellValue("");
@@ -1892,8 +1962,8 @@ public class BRRS_PL_SCHS_ReportService {
 
                     // R29 Col E
                     Cell R29Cell2 = row.createCell(4);
-                    if (record.getR29_fig_bal_sheet_bwp() != null) {
-                        R29Cell2.setCellValue(record.getR29_fig_bal_sheet_bwp().doubleValue());
+                    if (record1.getR29_fig_bal_sheet_bwp() != null) {
+                        R29Cell2.setCellValue(record1.getR29_fig_bal_sheet_bwp().doubleValue());
                         R29Cell2.setCellStyle(numberStyle);
                     } else {
                         R29Cell2.setCellValue("");
@@ -1902,8 +1972,8 @@ public class BRRS_PL_SCHS_ReportService {
 
                     // R29 Col F
                     Cell R29Cell3 = row.createCell(5);
-                    if (record.getR29_amt_statement_adj() != null) {
-                        R29Cell3.setCellValue(record.getR29_amt_statement_adj().doubleValue());
+                    if (record1.getR29_amt_statement_adj() != null) {
+                        R29Cell3.setCellValue(record1.getR29_amt_statement_adj().doubleValue());
                         R29Cell3.setCellStyle(numberStyle);
                     } else {
                         R29Cell3.setCellValue("");
@@ -1911,8 +1981,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R29 Col G
                     Cell R29Cell4 = row.createCell(6);
-                    if (record.getR29_amt_statement_adj_bwp() != null) {
-                        R29Cell4.setCellValue(record.getR29_amt_statement_adj_bwp().doubleValue());
+                    if (record1.getR29_amt_statement_adj_bwp() != null) {
+                        R29Cell4.setCellValue(record1.getR29_amt_statement_adj_bwp().doubleValue());
                         R29Cell4.setCellStyle(numberStyle);
                     } else {
                         R29Cell4.setCellValue("");
@@ -1920,8 +1990,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R29 Col H
                     Cell R29Cell5 = row.createCell(7);
-                    if (record.getR29_net_amt() != null) {
-                        R29Cell5.setCellValue(record.getR29_net_amt().doubleValue());
+                    if (record1.getR29_net_amt() != null) {
+                        R29Cell5.setCellValue(record1.getR29_net_amt().doubleValue());
                         R29Cell5.setCellStyle(numberStyle);
                     } else {
                         R29Cell5.setCellValue("");
@@ -1929,8 +1999,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R29 Col I
                     Cell R29Cell6 = row.createCell(8);
-                    if (record.getR29_net_amt_bwp() != null) {
-                        R29Cell6.setCellValue(record.getR29_net_amt_bwp().doubleValue());
+                    if (record1.getR29_net_amt_bwp() != null) {
+                        R29Cell6.setCellValue(record1.getR29_net_amt_bwp().doubleValue());
                         R29Cell6.setCellStyle(numberStyle);
                     } else {
                         R29Cell6.setCellValue("");
@@ -1938,8 +2008,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R29 Col J
                     Cell R29Cell7 = row.createCell(9);
-                    if (record.getR29_bal_sub() != null) {
-                        R29Cell7.setCellValue(record.getR29_bal_sub().doubleValue());
+                    if (record1.getR29_bal_sub() != null) {
+                        R29Cell7.setCellValue(record1.getR29_bal_sub().doubleValue());
                         R29Cell7.setCellStyle(numberStyle);
                     } else {
                         R29Cell7.setCellValue("");
@@ -1947,8 +2017,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R29 Col K
                     Cell R29Cell8 = row.createCell(10);
-                    if (record.getR29_bal_sub_bwp() != null) {
-                        R29Cell8.setCellValue(record.getR29_bal_sub_bwp().doubleValue());
+                    if (record1.getR29_bal_sub_bwp() != null) {
+                        R29Cell8.setCellValue(record1.getR29_bal_sub_bwp().doubleValue());
                         R29Cell8.setCellStyle(numberStyle);
                     } else {
                         R29Cell8.setCellValue("");
@@ -1956,8 +2026,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R29 Col L
                     Cell R29Cell9 = row.createCell(11);
-                    if (record.getR29_bal_sub_diaries() != null) {
-                        R29Cell9.setCellValue(record.getR29_bal_sub_diaries().doubleValue());
+                    if (record1.getR29_bal_sub_diaries() != null) {
+                        R29Cell9.setCellValue(record1.getR29_bal_sub_diaries().doubleValue());
                         R29Cell9.setCellStyle(numberStyle);
                     } else {
                         R29Cell9.setCellValue("");
@@ -1965,8 +2035,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R29 Col M
                     Cell R29Cell10 = row.createCell(12);
-                    if (record.getR29_bal_sub_diaries_bwp() != null) {
-                        R29Cell10.setCellValue(record.getR29_bal_sub_diaries_bwp().doubleValue());
+                    if (record1.getR29_bal_sub_diaries_bwp() != null) {
+                        R29Cell10.setCellValue(record1.getR29_bal_sub_diaries_bwp().doubleValue());
                         R29Cell10.setCellStyle(numberStyle);
                     } else {
                         R29Cell10.setCellValue("");
@@ -1974,8 +2044,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
                      row = sheet.getRow(29);
                      Cell R30Cell1 = row.createCell(3);
-                    if (record.getR30_fig_bal_sheet() != null) {
-                        R30Cell1.setCellValue(record.getR30_fig_bal_sheet().doubleValue());
+                    if (record1.getR30_fig_bal_sheet() != null) {
+                        R30Cell1.setCellValue(record1.getR30_fig_bal_sheet().doubleValue());
                         R30Cell1.setCellStyle(numberStyle);
                     } else {
                         R30Cell1.setCellValue("");
@@ -1984,8 +2054,8 @@ public class BRRS_PL_SCHS_ReportService {
 
                     // R30 Col E
                     Cell R30Cell2 = row.createCell(4);
-                    if (record.getR30_fig_bal_sheet_bwp() != null) {
-                        R30Cell2.setCellValue(record.getR30_fig_bal_sheet_bwp().doubleValue());
+                    if (record1.getR30_fig_bal_sheet_bwp() != null) {
+                        R30Cell2.setCellValue(record1.getR30_fig_bal_sheet_bwp().doubleValue());
                         R30Cell2.setCellStyle(numberStyle);
                     } else {
                         R30Cell2.setCellValue("");
@@ -1994,8 +2064,8 @@ public class BRRS_PL_SCHS_ReportService {
 
                     // R30 Col F
                     Cell R30Cell3 = row.createCell(5);
-                    if (record.getR30_amt_statement_adj() != null) {
-                        R30Cell3.setCellValue(record.getR30_amt_statement_adj().doubleValue());
+                    if (record1.getR30_amt_statement_adj() != null) {
+                        R30Cell3.setCellValue(record1.getR30_amt_statement_adj().doubleValue());
                         R30Cell3.setCellStyle(numberStyle);
                     } else {
                         R30Cell3.setCellValue("");
@@ -2003,8 +2073,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R30 Col G
                     Cell R30Cell4 = row.createCell(6);
-                    if (record.getR30_amt_statement_adj_bwp() != null) {
-                        R30Cell4.setCellValue(record.getR30_amt_statement_adj_bwp().doubleValue());
+                    if (record1.getR30_amt_statement_adj_bwp() != null) {
+                        R30Cell4.setCellValue(record1.getR30_amt_statement_adj_bwp().doubleValue());
                         R30Cell4.setCellStyle(numberStyle);
                     } else {
                         R30Cell4.setCellValue("");
@@ -2012,8 +2082,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R30 Col H
                     Cell R30Cell5 = row.createCell(7);
-                    if (record.getR30_net_amt() != null) {
-                        R30Cell5.setCellValue(record.getR30_net_amt().doubleValue());
+                    if (record1.getR30_net_amt() != null) {
+                        R30Cell5.setCellValue(record1.getR30_net_amt().doubleValue());
                         R30Cell5.setCellStyle(numberStyle);
                     } else {
                         R30Cell5.setCellValue("");
@@ -2021,8 +2091,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R30 Col I
                     Cell R30Cell6 = row.createCell(8);
-                    if (record.getR30_net_amt_bwp() != null) {
-                        R30Cell6.setCellValue(record.getR30_net_amt_bwp().doubleValue());
+                    if (record1.getR30_net_amt_bwp() != null) {
+                        R30Cell6.setCellValue(record1.getR30_net_amt_bwp().doubleValue());
                         R30Cell6.setCellStyle(numberStyle);
                     } else {
                         R30Cell6.setCellValue("");
@@ -2030,8 +2100,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R30 Col J
                     Cell R30Cell7 = row.createCell(9);
-                    if (record.getR30_bal_sub() != null) {
-                        R30Cell7.setCellValue(record.getR30_bal_sub().doubleValue());
+                    if (record1.getR30_bal_sub() != null) {
+                        R30Cell7.setCellValue(record1.getR30_bal_sub().doubleValue());
                         R30Cell7.setCellStyle(numberStyle);
                     } else {
                         R30Cell7.setCellValue("");
@@ -2039,8 +2109,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R30 Col K
                     Cell R30Cell8 = row.createCell(10);
-                    if (record.getR30_bal_sub_bwp() != null) {
-                        R30Cell8.setCellValue(record.getR30_bal_sub_bwp().doubleValue());
+                    if (record1.getR30_bal_sub_bwp() != null) {
+                        R30Cell8.setCellValue(record1.getR30_bal_sub_bwp().doubleValue());
                         R30Cell8.setCellStyle(numberStyle);
                     } else {
                         R30Cell8.setCellValue("");
@@ -2048,8 +2118,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R30 Col L
                     Cell R30Cell9 = row.createCell(11);
-                    if (record.getR30_bal_sub_diaries() != null) {
-                        R30Cell9.setCellValue(record.getR30_bal_sub_diaries().doubleValue());
+                    if (record1.getR30_bal_sub_diaries() != null) {
+                        R30Cell9.setCellValue(record1.getR30_bal_sub_diaries().doubleValue());
                         R30Cell9.setCellStyle(numberStyle);
                     } else {
                         R30Cell9.setCellValue("");
@@ -2057,8 +2127,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R30 Col M
                     Cell R30Cell10 = row.createCell(12);
-                    if (record.getR30_bal_sub_diaries_bwp() != null) {
-                        R30Cell10.setCellValue(record.getR30_bal_sub_diaries_bwp().doubleValue());
+                    if (record1.getR30_bal_sub_diaries_bwp() != null) {
+                        R30Cell10.setCellValue(record1.getR30_bal_sub_diaries_bwp().doubleValue());
                         R30Cell10.setCellStyle(numberStyle);
                     } else {
                         R30Cell10.setCellValue("");
@@ -2342,8 +2412,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
                      row = sheet.getRow(41);
                      Cell R42Cell1 = row.createCell(3);
-                    if (record.getR42_fig_bal_sheet() != null) {
-                        R42Cell1.setCellValue(record.getR42_fig_bal_sheet().doubleValue());
+                    if (record1.getR42_fig_bal_sheet() != null) {
+                        R42Cell1.setCellValue(record1.getR42_fig_bal_sheet().doubleValue());
                         R42Cell1.setCellStyle(numberStyle);
                     } else {
                         R42Cell1.setCellValue("");
@@ -2352,8 +2422,8 @@ public class BRRS_PL_SCHS_ReportService {
 
                     // R42 Col E
                     Cell R42Cell2 = row.createCell(4);
-                    if (record.getR42_fig_bal_sheet_bwp() != null) {
-                        R42Cell2.setCellValue(record.getR42_fig_bal_sheet_bwp().doubleValue());
+                    if (record1.getR42_fig_bal_sheet_bwp() != null) {
+                        R42Cell2.setCellValue(record1.getR42_fig_bal_sheet_bwp().doubleValue());
                         R42Cell2.setCellStyle(numberStyle);
                     } else {
                         R42Cell2.setCellValue("");
@@ -2362,8 +2432,8 @@ public class BRRS_PL_SCHS_ReportService {
 
                     // R42 Col F
                     Cell R42Cell3 = row.createCell(5);
-                    if (record.getR42_amt_statement_adj() != null) {
-                        R42Cell3.setCellValue(record.getR42_amt_statement_adj().doubleValue());
+                    if (record1.getR42_amt_statement_adj() != null) {
+                        R42Cell3.setCellValue(record1.getR42_amt_statement_adj().doubleValue());
                         R42Cell3.setCellStyle(numberStyle);
                     } else {
                         R42Cell3.setCellValue("");
@@ -2371,8 +2441,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R42 Col G
                     Cell R42Cell4 = row.createCell(6);
-                    if (record.getR42_amt_statement_adj_bwp() != null) {
-                        R42Cell4.setCellValue(record.getR42_amt_statement_adj_bwp().doubleValue());
+                    if (record1.getR42_amt_statement_adj_bwp() != null) {
+                        R42Cell4.setCellValue(record1.getR42_amt_statement_adj_bwp().doubleValue());
                         R42Cell4.setCellStyle(numberStyle);
                     } else {
                         R42Cell4.setCellValue("");
@@ -2380,8 +2450,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R42 Col H
                     Cell R42Cell5 = row.createCell(7);
-                    if (record.getR42_net_amt() != null) {
-                        R42Cell5.setCellValue(record.getR42_net_amt().doubleValue());
+                    if (record1.getR42_net_amt() != null) {
+                        R42Cell5.setCellValue(record1.getR42_net_amt().doubleValue());
                         R42Cell5.setCellStyle(numberStyle);
                     } else {
                         R42Cell5.setCellValue("");
@@ -2389,8 +2459,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R42 Col I
                     Cell R42Cell6 = row.createCell(8);
-                    if (record.getR42_net_amt_bwp() != null) {
-                        R42Cell6.setCellValue(record.getR42_net_amt_bwp().doubleValue());
+                    if (record1.getR42_net_amt_bwp() != null) {
+                        R42Cell6.setCellValue(record1.getR42_net_amt_bwp().doubleValue());
                         R42Cell6.setCellStyle(numberStyle);
                     } else {
                         R42Cell6.setCellValue("");
@@ -2398,8 +2468,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R42 Col J
                     Cell R42Cell7 = row.createCell(9);
-                    if (record.getR42_bal_sub() != null) {
-                        R42Cell7.setCellValue(record.getR42_bal_sub().doubleValue());
+                    if (record1.getR42_bal_sub() != null) {
+                        R42Cell7.setCellValue(record1.getR42_bal_sub().doubleValue());
                         R42Cell7.setCellStyle(numberStyle);
                     } else {
                         R42Cell7.setCellValue("");
@@ -2407,8 +2477,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R42 Col K
                     Cell R42Cell8 = row.createCell(10);
-                    if (record.getR42_bal_sub_bwp() != null) {
-                        R42Cell8.setCellValue(record.getR42_bal_sub_bwp().doubleValue());
+                    if (record1.getR42_bal_sub_bwp() != null) {
+                        R42Cell8.setCellValue(record1.getR42_bal_sub_bwp().doubleValue());
                         R42Cell8.setCellStyle(numberStyle);
                     } else {
                         R42Cell8.setCellValue("");
@@ -2416,8 +2486,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R42 Col L
                     Cell R42Cell9 = row.createCell(11);
-                    if (record.getR42_bal_sub_diaries() != null) {
-                        R42Cell9.setCellValue(record.getR42_bal_sub_diaries().doubleValue());
+                    if (record1.getR42_bal_sub_diaries() != null) {
+                        R42Cell9.setCellValue(record1.getR42_bal_sub_diaries().doubleValue());
                         R42Cell9.setCellStyle(numberStyle);
                     } else {
                         R42Cell9.setCellValue("");
@@ -2425,8 +2495,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R42 Col M
                     Cell R42Cell10 = row.createCell(12);
-                    if (record.getR42_bal_sub_diaries_bwp() != null) {
-                        R42Cell10.setCellValue(record.getR42_bal_sub_diaries_bwp().doubleValue());
+                    if (record1.getR42_bal_sub_diaries_bwp() != null) {
+                        R42Cell10.setCellValue(record1.getR42_bal_sub_diaries_bwp().doubleValue());
                         R42Cell10.setCellStyle(numberStyle);
                     } else {
                         R42Cell10.setCellValue("");
@@ -3079,8 +3149,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
                      row = sheet.getRow(53);
                      Cell R54Cell1 = row.createCell(3);
-                    if (record.getR54_fig_bal_sheet() != null) {
-                        R54Cell1.setCellValue(record.getR54_fig_bal_sheet().doubleValue());
+                    if (record1.getR54_fig_bal_sheet() != null) {
+                        R54Cell1.setCellValue(record1.getR54_fig_bal_sheet().doubleValue());
                         R54Cell1.setCellStyle(numberStyle);
                     } else {
                         R54Cell1.setCellValue("");
@@ -3089,8 +3159,8 @@ public class BRRS_PL_SCHS_ReportService {
 
                     // R54 Col E
                     Cell R54Cell2 = row.createCell(4);
-                    if (record.getR54_fig_bal_sheet_bwp() != null) {
-                        R54Cell2.setCellValue(record.getR54_fig_bal_sheet_bwp().doubleValue());
+                    if (record1.getR54_fig_bal_sheet_bwp() != null) {
+                        R54Cell2.setCellValue(record1.getR54_fig_bal_sheet_bwp().doubleValue());
                         R54Cell2.setCellStyle(numberStyle);
                     } else {
                         R54Cell2.setCellValue("");
@@ -3099,8 +3169,8 @@ public class BRRS_PL_SCHS_ReportService {
 
                     // R54 Col F
                     Cell R54Cell3 = row.createCell(5);
-                    if (record.getR54_amt_statement_adj() != null) {
-                        R54Cell3.setCellValue(record.getR54_amt_statement_adj().doubleValue());
+                    if (record1.getR54_amt_statement_adj() != null) {
+                        R54Cell3.setCellValue(record1.getR54_amt_statement_adj().doubleValue());
                         R54Cell3.setCellStyle(numberStyle);
                     } else {
                         R54Cell3.setCellValue("");
@@ -3108,8 +3178,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R54 Col G
                     Cell R54Cell4 = row.createCell(6);
-                    if (record.getR54_amt_statement_adj_bwp() != null) {
-                        R54Cell4.setCellValue(record.getR54_amt_statement_adj_bwp().doubleValue());
+                    if (record1.getR54_amt_statement_adj_bwp() != null) {
+                        R54Cell4.setCellValue(record1.getR54_amt_statement_adj_bwp().doubleValue());
                         R54Cell4.setCellStyle(numberStyle);
                     } else {
                         R54Cell4.setCellValue("");
@@ -3117,8 +3187,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R54 Col H
                     Cell R54Cell5 = row.createCell(7);
-                    if (record.getR54_net_amt() != null) {
-                        R54Cell5.setCellValue(record.getR54_net_amt().doubleValue());
+                    if (record1.getR54_net_amt() != null) {
+                        R54Cell5.setCellValue(record1.getR54_net_amt().doubleValue());
                         R54Cell5.setCellStyle(numberStyle);
                     } else {
                         R54Cell5.setCellValue("");
@@ -3126,8 +3196,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R54 Col I
                     Cell R54Cell6 = row.createCell(8);
-                    if (record.getR54_net_amt_bwp() != null) {
-                        R54Cell6.setCellValue(record.getR54_net_amt_bwp().doubleValue());
+                    if (record1.getR54_net_amt_bwp() != null) {
+                        R54Cell6.setCellValue(record1.getR54_net_amt_bwp().doubleValue());
                         R54Cell6.setCellStyle(numberStyle);
                     } else {
                         R54Cell6.setCellValue("");
@@ -3135,8 +3205,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R54 Col J
                     Cell R54Cell7 = row.createCell(9);
-                    if (record.getR54_bal_sub() != null) {
-                        R54Cell7.setCellValue(record.getR54_bal_sub().doubleValue());
+                    if (record1.getR54_bal_sub() != null) {
+                        R54Cell7.setCellValue(record1.getR54_bal_sub().doubleValue());
                         R54Cell7.setCellStyle(numberStyle);
                     } else {
                         R54Cell7.setCellValue("");
@@ -3144,8 +3214,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R54 Col K
                     Cell R54Cell8 = row.createCell(10);
-                    if (record.getR54_bal_sub_bwp() != null) {
-                        R54Cell8.setCellValue(record.getR54_bal_sub_bwp().doubleValue());
+                    if (record1.getR54_bal_sub_bwp() != null) {
+                        R54Cell8.setCellValue(record1.getR54_bal_sub_bwp().doubleValue());
                         R54Cell8.setCellStyle(numberStyle);
                     } else {
                         R54Cell8.setCellValue("");
@@ -3153,8 +3223,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R54 Col L
                     Cell R54Cell9 = row.createCell(11);
-                    if (record.getR54_bal_sub_diaries() != null) {
-                        R54Cell9.setCellValue(record.getR54_bal_sub_diaries().doubleValue());
+                    if (record1.getR54_bal_sub_diaries() != null) {
+                        R54Cell9.setCellValue(record1.getR54_bal_sub_diaries().doubleValue());
                         R54Cell9.setCellStyle(numberStyle);
                     } else {
                         R54Cell9.setCellValue("");
@@ -3162,8 +3232,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R54 Col M
                     Cell R54Cell10 = row.createCell(12);
-                    if (record.getR54_bal_sub_diaries_bwp() != null) {
-                        R54Cell10.setCellValue(record.getR54_bal_sub_diaries_bwp().doubleValue());
+                    if (record1.getR54_bal_sub_diaries_bwp() != null) {
+                        R54Cell10.setCellValue(record1.getR54_bal_sub_diaries_bwp().doubleValue());
                         R54Cell10.setCellStyle(numberStyle);
                     } else {
                         R54Cell10.setCellValue("");
@@ -3723,8 +3793,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
                      row = sheet.getRow(60);
                      Cell R61Cell1 = row.createCell(3);
-                    if (record.getR61_fig_bal_sheet() != null) {
-                        R61Cell1.setCellValue(record.getR61_fig_bal_sheet().doubleValue());
+                    if (record1.getR61_fig_bal_sheet() != null) {
+                        R61Cell1.setCellValue(record1.getR61_fig_bal_sheet().doubleValue());
                         R61Cell1.setCellStyle(numberStyle);
                     } else {
                         R61Cell1.setCellValue("");
@@ -3733,8 +3803,8 @@ public class BRRS_PL_SCHS_ReportService {
 
                     // R61 Col E
                     Cell R61Cell2 = row.createCell(4);
-                    if (record.getR61_fig_bal_sheet_bwp() != null) {
-                        R61Cell2.setCellValue(record.getR61_fig_bal_sheet_bwp().doubleValue());
+                    if (record1.getR61_fig_bal_sheet_bwp() != null) {
+                        R61Cell2.setCellValue(record1.getR61_fig_bal_sheet_bwp().doubleValue());
                         R61Cell2.setCellStyle(numberStyle);
                     } else {
                         R61Cell2.setCellValue("");
@@ -3743,8 +3813,8 @@ public class BRRS_PL_SCHS_ReportService {
 
                     // R61 Col F
                     Cell R61Cell3 = row.createCell(5);
-                    if (record.getR61_amt_statement_adj() != null) {
-                        R61Cell3.setCellValue(record.getR61_amt_statement_adj().doubleValue());
+                    if (record1.getR61_amt_statement_adj() != null) {
+                        R61Cell3.setCellValue(record1.getR61_amt_statement_adj().doubleValue());
                         R61Cell3.setCellStyle(numberStyle);
                     } else {
                         R61Cell3.setCellValue("");
@@ -3752,8 +3822,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R61 Col G
                     Cell R61Cell4 = row.createCell(6);
-                    if (record.getR61_amt_statement_adj_bwp() != null) {
-                        R61Cell4.setCellValue(record.getR61_amt_statement_adj_bwp().doubleValue());
+                    if (record1.getR61_amt_statement_adj_bwp() != null) {
+                        R61Cell4.setCellValue(record1.getR61_amt_statement_adj_bwp().doubleValue());
                         R61Cell4.setCellStyle(numberStyle);
                     } else {
                         R61Cell4.setCellValue("");
@@ -3761,8 +3831,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R61 Col H
                     Cell R61Cell5 = row.createCell(7);
-                    if (record.getR61_net_amt() != null) {
-                        R61Cell5.setCellValue(record.getR61_net_amt().doubleValue());
+                    if (record1.getR61_net_amt() != null) {
+                        R61Cell5.setCellValue(record1.getR61_net_amt().doubleValue());
                         R61Cell5.setCellStyle(numberStyle);
                     } else {
                         R61Cell5.setCellValue("");
@@ -3770,8 +3840,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R61 Col I
                     Cell R61Cell6 = row.createCell(8);
-                    if (record.getR61_net_amt_bwp() != null) {
-                        R61Cell6.setCellValue(record.getR61_net_amt_bwp().doubleValue());
+                    if (record1.getR61_net_amt_bwp() != null) {
+                        R61Cell6.setCellValue(record1.getR61_net_amt_bwp().doubleValue());
                         R61Cell6.setCellStyle(numberStyle);
                     } else {
                         R61Cell6.setCellValue("");
@@ -3779,8 +3849,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R61 Col J
                     Cell R61Cell7 = row.createCell(9);
-                    if (record.getR61_bal_sub() != null) {
-                        R61Cell7.setCellValue(record.getR61_bal_sub().doubleValue());
+                    if (record1.getR61_bal_sub() != null) {
+                        R61Cell7.setCellValue(record1.getR61_bal_sub().doubleValue());
                         R61Cell7.setCellStyle(numberStyle);
                     } else {
                         R61Cell7.setCellValue("");
@@ -3788,8 +3858,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R61 Col K
                     Cell R61Cell8 = row.createCell(10);
-                    if (record.getR61_bal_sub_bwp() != null) {
-                        R61Cell8.setCellValue(record.getR61_bal_sub_bwp().doubleValue());
+                    if (record1.getR61_bal_sub_bwp() != null) {
+                        R61Cell8.setCellValue(record1.getR61_bal_sub_bwp().doubleValue());
                         R61Cell8.setCellStyle(numberStyle);
                     } else {
                         R61Cell8.setCellValue("");
@@ -3797,8 +3867,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R61 Col L
                     Cell R61Cell9 = row.createCell(11);
-                    if (record.getR61_bal_sub_diaries() != null) {
-                        R61Cell9.setCellValue(record.getR61_bal_sub_diaries().doubleValue());
+                    if (record1.getR61_bal_sub_diaries() != null) {
+                        R61Cell9.setCellValue(record1.getR61_bal_sub_diaries().doubleValue());
                         R61Cell9.setCellStyle(numberStyle);
                     } else {
                         R61Cell9.setCellValue("");
@@ -3806,8 +3876,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R61 Col M
                     Cell R61Cell10 = row.createCell(12);
-                    if (record.getR61_bal_sub_diaries_bwp() != null) {
-                        R61Cell10.setCellValue(record.getR61_bal_sub_diaries_bwp().doubleValue());
+                    if (record1.getR61_bal_sub_diaries_bwp() != null) {
+                        R61Cell10.setCellValue(record1.getR61_bal_sub_diaries_bwp().doubleValue());
                         R61Cell10.setCellStyle(numberStyle);
                     } else {
                         R61Cell10.setCellValue("");
@@ -4025,6 +4095,8 @@ public class BRRS_PL_SCHS_ReportService {
 
         List<PL_SCHS_Archival_Summary_Entity> dataList = PL_SCHS_Archival_Summary_Repo
                 .getdatabydateListarchival(dateformat.parse(todate), version);
+                  List<PL_SCHS_Manual_Archival_Summary_Entity> dataList1 = PL_SCHS_Manual_Archival_Summary_Repo
+                .getdatabydateListarchival(dateformat.parse(todate), version);
 
         if (dataList.isEmpty()) {
             logger.warn("Service: No data found for PL_SCHS report. Returning empty result.");
@@ -4092,6 +4164,7 @@ public class BRRS_PL_SCHS_ReportService {
             if (!dataList.isEmpty()) {
                 for (int i = 0; i < dataList.size(); i++) {
                     PL_SCHS_Archival_Summary_Entity record = dataList.get(i);
+                    PL_SCHS_Manual_Archival_Summary_Entity record1=dataList1.get(i);
 
                     System.out.println("rownumber=" + startRow + i);
                     Row row = sheet.getRow(startRow + i);
@@ -4840,8 +4913,8 @@ public class BRRS_PL_SCHS_ReportService {
 
                        row = sheet.getRow(19);
                      Cell R20Cell1 = row.createCell(3);
-                    if (record.getR20_fig_bal_sheet() != null) {
-                        R20Cell1.setCellValue(record.getR20_fig_bal_sheet().doubleValue());
+                    if (record1.getR20_fig_bal_sheet() != null) {
+                        R20Cell1.setCellValue(record1.getR20_fig_bal_sheet().doubleValue());
                         R20Cell1.setCellStyle(numberStyle);
                     } else {
                         R20Cell1.setCellValue("");
@@ -4850,8 +4923,8 @@ public class BRRS_PL_SCHS_ReportService {
 
                     // R20 Col E
                     Cell R20Cell2 = row.createCell(4);
-                    if (record.getR20_fig_bal_sheet_bwp() != null) {
-                        R20Cell2.setCellValue(record.getR20_fig_bal_sheet_bwp().doubleValue());
+                    if (record1.getR20_fig_bal_sheet_bwp() != null) {
+                        R20Cell2.setCellValue(record1.getR20_fig_bal_sheet_bwp().doubleValue());
                         R20Cell2.setCellStyle(numberStyle);
                     } else {
                         R20Cell2.setCellValue("");
@@ -4860,8 +4933,8 @@ public class BRRS_PL_SCHS_ReportService {
 
                     // R20 Col F
                     Cell R20Cell3 = row.createCell(5);
-                    if (record.getR20_amt_statement_adj() != null) {
-                        R20Cell3.setCellValue(record.getR20_amt_statement_adj().doubleValue());
+                    if (record1.getR20_amt_statement_adj() != null) {
+                        R20Cell3.setCellValue(record1.getR20_amt_statement_adj().doubleValue());
                         R20Cell3.setCellStyle(numberStyle);
                     } else {
                         R20Cell3.setCellValue("");
@@ -4869,8 +4942,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R20 Col G
                     Cell R20Cell4 = row.createCell(6);
-                    if (record.getR20_amt_statement_adj_bwp() != null) {
-                        R20Cell4.setCellValue(record.getR20_amt_statement_adj_bwp().doubleValue());
+                    if (record1.getR20_amt_statement_adj_bwp() != null) {
+                        R20Cell4.setCellValue(record1.getR20_amt_statement_adj_bwp().doubleValue());
                         R20Cell4.setCellStyle(numberStyle);
                     } else {
                         R20Cell4.setCellValue("");
@@ -4878,8 +4951,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R20 Col H
                     Cell R20Cell5 = row.createCell(7);
-                    if (record.getR20_net_amt() != null) {
-                        R20Cell5.setCellValue(record.getR20_net_amt().doubleValue());
+                    if (record1.getR20_net_amt() != null) {
+                        R20Cell5.setCellValue(record1.getR20_net_amt().doubleValue());
                         R20Cell5.setCellStyle(numberStyle);
                     } else {
                         R20Cell5.setCellValue("");
@@ -4887,8 +4960,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R20 Col I
                     Cell R20Cell6 = row.createCell(8);
-                    if (record.getR20_net_amt_bwp() != null) {
-                        R20Cell6.setCellValue(record.getR20_net_amt_bwp().doubleValue());
+                    if (record1.getR20_net_amt_bwp() != null) {
+                        R20Cell6.setCellValue(record1.getR20_net_amt_bwp().doubleValue());
                         R20Cell6.setCellStyle(numberStyle);
                     } else {
                         R20Cell6.setCellValue("");
@@ -4896,8 +4969,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R20 Col J
                     Cell R20Cell7 = row.createCell(9);
-                    if (record.getR20_bal_sub() != null) {
-                        R20Cell7.setCellValue(record.getR20_bal_sub().doubleValue());
+                    if (record1.getR20_bal_sub() != null) {
+                        R20Cell7.setCellValue(record1.getR20_bal_sub().doubleValue());
                         R20Cell7.setCellStyle(numberStyle);
                     } else {
                         R20Cell7.setCellValue("");
@@ -4905,8 +4978,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R20 Col K
                     Cell R20Cell8 = row.createCell(10);
-                    if (record.getR20_bal_sub_bwp() != null) {
-                        R20Cell8.setCellValue(record.getR20_bal_sub_bwp().doubleValue());
+                    if (record1.getR20_bal_sub_bwp() != null) {
+                        R20Cell8.setCellValue(record1.getR20_bal_sub_bwp().doubleValue());
                         R20Cell8.setCellStyle(numberStyle);
                     } else {
                         R20Cell8.setCellValue("");
@@ -4914,8 +4987,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R20 Col L
                     Cell R20Cell9 = row.createCell(11);
-                    if (record.getR20_bal_sub_diaries() != null) {
-                        R20Cell9.setCellValue(record.getR20_bal_sub_diaries().doubleValue());
+                    if (record1.getR20_bal_sub_diaries() != null) {
+                        R20Cell9.setCellValue(record1.getR20_bal_sub_diaries().doubleValue());
                         R20Cell9.setCellStyle(numberStyle);
                     } else {
                         R20Cell9.setCellValue("");
@@ -4923,8 +4996,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R20 Col M
                     Cell R20Cell10 = row.createCell(12);
-                    if (record.getR20_bal_sub_diaries_bwp() != null) {
-                        R20Cell10.setCellValue(record.getR20_bal_sub_diaries_bwp().doubleValue());
+                    if (record1.getR20_bal_sub_diaries_bwp() != null) {
+                        R20Cell10.setCellValue(record1.getR20_bal_sub_diaries_bwp().doubleValue());
                         R20Cell10.setCellStyle(numberStyle);
                     } else {
                         R20Cell10.setCellValue("");
@@ -4933,8 +5006,8 @@ public class BRRS_PL_SCHS_ReportService {
 
                        row = sheet.getRow(20);
                      Cell R21Cell1 = row.createCell(3);
-                    if (record.getR21_fig_bal_sheet() != null) {
-                        R21Cell1.setCellValue(record.getR21_fig_bal_sheet().doubleValue());
+                    if (record1.getR21_fig_bal_sheet() != null) {
+                        R21Cell1.setCellValue(record1.getR21_fig_bal_sheet().doubleValue());
                         R21Cell1.setCellStyle(numberStyle);
                     } else {
                         R21Cell1.setCellValue("");
@@ -4943,8 +5016,8 @@ public class BRRS_PL_SCHS_ReportService {
 
                     // R21 Col E
                     Cell R21Cell2 = row.createCell(4);
-                    if (record.getR21_fig_bal_sheet_bwp() != null) {
-                        R21Cell2.setCellValue(record.getR21_fig_bal_sheet_bwp().doubleValue());
+                    if (record1.getR21_fig_bal_sheet_bwp() != null) {
+                        R21Cell2.setCellValue(record1.getR21_fig_bal_sheet_bwp().doubleValue());
                         R21Cell2.setCellStyle(numberStyle);
                     } else {
                         R21Cell2.setCellValue("");
@@ -4953,8 +5026,8 @@ public class BRRS_PL_SCHS_ReportService {
 
                     // R21 Col F
                     Cell R21Cell3 = row.createCell(5);
-                    if (record.getR21_amt_statement_adj() != null) {
-                        R21Cell3.setCellValue(record.getR21_amt_statement_adj().doubleValue());
+                    if (record1.getR21_amt_statement_adj() != null) {
+                        R21Cell3.setCellValue(record1.getR21_amt_statement_adj().doubleValue());
                         R21Cell3.setCellStyle(numberStyle);
                     } else {
                         R21Cell3.setCellValue("");
@@ -4962,8 +5035,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R21 Col G
                     Cell R21Cell4 = row.createCell(6);
-                    if (record.getR21_amt_statement_adj_bwp() != null) {
-                        R21Cell4.setCellValue(record.getR21_amt_statement_adj_bwp().doubleValue());
+                    if (record1.getR21_amt_statement_adj_bwp() != null) {
+                        R21Cell4.setCellValue(record1.getR21_amt_statement_adj_bwp().doubleValue());
                         R21Cell4.setCellStyle(numberStyle);
                     } else {
                         R21Cell4.setCellValue("");
@@ -4971,8 +5044,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R21 Col H
                     Cell R21Cell5 = row.createCell(7);
-                    if (record.getR21_net_amt() != null) {
-                        R21Cell5.setCellValue(record.getR21_net_amt().doubleValue());
+                    if (record1.getR21_net_amt() != null) {
+                        R21Cell5.setCellValue(record1.getR21_net_amt().doubleValue());
                         R21Cell5.setCellStyle(numberStyle);
                     } else {
                         R21Cell5.setCellValue("");
@@ -4980,8 +5053,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R21 Col I
                     Cell R21Cell6 = row.createCell(8);
-                    if (record.getR21_net_amt_bwp() != null) {
-                        R21Cell6.setCellValue(record.getR21_net_amt_bwp().doubleValue());
+                    if (record1.getR21_net_amt_bwp() != null) {
+                        R21Cell6.setCellValue(record1.getR21_net_amt_bwp().doubleValue());
                         R21Cell6.setCellStyle(numberStyle);
                     } else {
                         R21Cell6.setCellValue("");
@@ -4989,8 +5062,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R21 Col J
                     Cell R21Cell7 = row.createCell(9);
-                    if (record.getR21_bal_sub() != null) {
-                        R21Cell7.setCellValue(record.getR21_bal_sub().doubleValue());
+                    if (record1.getR21_bal_sub() != null) {
+                        R21Cell7.setCellValue(record1.getR21_bal_sub().doubleValue());
                         R21Cell7.setCellStyle(numberStyle);
                     } else {
                         R21Cell7.setCellValue("");
@@ -4998,8 +5071,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R21 Col K
                     Cell R21Cell8 = row.createCell(10);
-                    if (record.getR21_bal_sub_bwp() != null) {
-                        R21Cell8.setCellValue(record.getR21_bal_sub_bwp().doubleValue());
+                    if (record1.getR21_bal_sub_bwp() != null) {
+                        R21Cell8.setCellValue(record1.getR21_bal_sub_bwp().doubleValue());
                         R21Cell8.setCellStyle(numberStyle);
                     } else {
                         R21Cell8.setCellValue("");
@@ -5007,8 +5080,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R21 Col L
                     Cell R21Cell9 = row.createCell(11);
-                    if (record.getR21_bal_sub_diaries() != null) {
-                        R21Cell9.setCellValue(record.getR21_bal_sub_diaries().doubleValue());
+                    if (record1.getR21_bal_sub_diaries() != null) {
+                        R21Cell9.setCellValue(record1.getR21_bal_sub_diaries().doubleValue());
                         R21Cell9.setCellStyle(numberStyle);
                     } else {
                         R21Cell9.setCellValue("");
@@ -5016,8 +5089,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R21 Col M
                     Cell R21Cell10 = row.createCell(12);
-                    if (record.getR21_bal_sub_diaries_bwp() != null) {
-                        R21Cell10.setCellValue(record.getR21_bal_sub_diaries_bwp().doubleValue());
+                    if (record1.getR21_bal_sub_diaries_bwp() != null) {
+                        R21Cell10.setCellValue(record1.getR21_bal_sub_diaries_bwp().doubleValue());
                         R21Cell10.setCellStyle(numberStyle);
                     } else {
                         R21Cell10.setCellValue("");
@@ -5025,8 +5098,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
                      row = sheet.getRow(21);
                      Cell R22Cell1 = row.createCell(3);
-                    if (record.getR22_fig_bal_sheet() != null) {
-                        R22Cell1.setCellValue(record.getR22_fig_bal_sheet().doubleValue());
+                    if (record1.getR22_fig_bal_sheet() != null) {
+                        R22Cell1.setCellValue(record1.getR22_fig_bal_sheet().doubleValue());
                         R22Cell1.setCellStyle(numberStyle);
                     } else {
                         R22Cell1.setCellValue("");
@@ -5035,8 +5108,8 @@ public class BRRS_PL_SCHS_ReportService {
 
                     // R22 Col E
                     Cell R22Cell2 = row.createCell(4);
-                    if (record.getR22_fig_bal_sheet_bwp() != null) {
-                        R22Cell2.setCellValue(record.getR22_fig_bal_sheet_bwp().doubleValue());
+                    if (record1.getR22_fig_bal_sheet_bwp() != null) {
+                        R22Cell2.setCellValue(record1.getR22_fig_bal_sheet_bwp().doubleValue());
                         R22Cell2.setCellStyle(numberStyle);
                     } else {
                         R22Cell2.setCellValue("");
@@ -5045,8 +5118,8 @@ public class BRRS_PL_SCHS_ReportService {
 
                     // R22 Col F
                     Cell R22Cell3 = row.createCell(5);
-                    if (record.getR22_amt_statement_adj() != null) {
-                        R22Cell3.setCellValue(record.getR22_amt_statement_adj().doubleValue());
+                    if (record1.getR22_amt_statement_adj() != null) {
+                        R22Cell3.setCellValue(record1.getR22_amt_statement_adj().doubleValue());
                         R22Cell3.setCellStyle(numberStyle);
                     } else {
                         R22Cell3.setCellValue("");
@@ -5054,8 +5127,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R22 Col G
                     Cell R22Cell4 = row.createCell(6);
-                    if (record.getR22_amt_statement_adj_bwp() != null) {
-                        R22Cell4.setCellValue(record.getR22_amt_statement_adj_bwp().doubleValue());
+                    if (record1.getR22_amt_statement_adj_bwp() != null) {
+                        R22Cell4.setCellValue(record1.getR22_amt_statement_adj_bwp().doubleValue());
                         R22Cell4.setCellStyle(numberStyle);
                     } else {
                         R22Cell4.setCellValue("");
@@ -5063,8 +5136,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R22 Col H
                     Cell R22Cell5 = row.createCell(7);
-                    if (record.getR22_net_amt() != null) {
-                        R22Cell5.setCellValue(record.getR22_net_amt().doubleValue());
+                    if (record1.getR22_net_amt() != null) {
+                        R22Cell5.setCellValue(record1.getR22_net_amt().doubleValue());
                         R22Cell5.setCellStyle(numberStyle);
                     } else {
                         R22Cell5.setCellValue("");
@@ -5072,8 +5145,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R22 Col I
                     Cell R22Cell6 = row.createCell(8);
-                    if (record.getR22_net_amt_bwp() != null) {
-                        R22Cell6.setCellValue(record.getR22_net_amt_bwp().doubleValue());
+                    if (record1.getR22_net_amt_bwp() != null) {
+                        R22Cell6.setCellValue(record1.getR22_net_amt_bwp().doubleValue());
                         R22Cell6.setCellStyle(numberStyle);
                     } else {
                         R22Cell6.setCellValue("");
@@ -5081,8 +5154,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R22 Col J
                     Cell R22Cell7 = row.createCell(9);
-                    if (record.getR22_bal_sub() != null) {
-                        R22Cell7.setCellValue(record.getR22_bal_sub().doubleValue());
+                    if (record1.getR22_bal_sub() != null) {
+                        R22Cell7.setCellValue(record1.getR22_bal_sub().doubleValue());
                         R22Cell7.setCellStyle(numberStyle);
                     } else {
                         R22Cell7.setCellValue("");
@@ -5090,8 +5163,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R22 Col K
                     Cell R22Cell8 = row.createCell(10);
-                    if (record.getR22_bal_sub_bwp() != null) {
-                        R22Cell8.setCellValue(record.getR22_bal_sub_bwp().doubleValue());
+                    if (record1.getR22_bal_sub_bwp() != null) {
+                        R22Cell8.setCellValue(record1.getR22_bal_sub_bwp().doubleValue());
                         R22Cell8.setCellStyle(numberStyle);
                     } else {
                         R22Cell8.setCellValue("");
@@ -5099,8 +5172,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R22 Col L
                     Cell R22Cell9 = row.createCell(11);
-                    if (record.getR22_bal_sub_diaries() != null) {
-                        R22Cell9.setCellValue(record.getR22_bal_sub_diaries().doubleValue());
+                    if (record1.getR22_bal_sub_diaries() != null) {
+                        R22Cell9.setCellValue(record1.getR22_bal_sub_diaries().doubleValue());
                         R22Cell9.setCellStyle(numberStyle);
                     } else {
                         R22Cell9.setCellValue("");
@@ -5108,8 +5181,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R22 Col M
                     Cell R22Cell10 = row.createCell(12);
-                    if (record.getR22_bal_sub_diaries_bwp() != null) {
-                        R22Cell10.setCellValue(record.getR22_bal_sub_diaries_bwp().doubleValue());
+                    if (record1.getR22_bal_sub_diaries_bwp() != null) {
+                        R22Cell10.setCellValue(record1.getR22_bal_sub_diaries_bwp().doubleValue());
                         R22Cell10.setCellStyle(numberStyle);
                     } else {
                         R22Cell10.setCellValue("");
@@ -5117,8 +5190,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
                      row = sheet.getRow(22);
                      Cell R23Cell1 = row.createCell(3);
-                    if (record.getR23_fig_bal_sheet() != null) {
-                        R23Cell1.setCellValue(record.getR23_fig_bal_sheet().doubleValue());
+                    if (record1.getR23_fig_bal_sheet() != null) {
+                        R23Cell1.setCellValue(record1.getR23_fig_bal_sheet().doubleValue());
                         R23Cell1.setCellStyle(numberStyle);
                     } else {
                         R23Cell1.setCellValue("");
@@ -5127,8 +5200,8 @@ public class BRRS_PL_SCHS_ReportService {
 
                     // R23 Col E
                     Cell R23Cell2 = row.createCell(4);
-                    if (record.getR23_fig_bal_sheet_bwp() != null) {
-                        R23Cell2.setCellValue(record.getR23_fig_bal_sheet_bwp().doubleValue());
+                    if (record1.getR23_fig_bal_sheet_bwp() != null) {
+                        R23Cell2.setCellValue(record1.getR23_fig_bal_sheet_bwp().doubleValue());
                         R23Cell2.setCellStyle(numberStyle);
                     } else {
                         R23Cell2.setCellValue("");
@@ -5137,8 +5210,8 @@ public class BRRS_PL_SCHS_ReportService {
 
                     // R23 Col F
                     Cell R23Cell3 = row.createCell(5);
-                    if (record.getR23_amt_statement_adj() != null) {
-                        R23Cell3.setCellValue(record.getR23_amt_statement_adj().doubleValue());
+                    if (record1.getR23_amt_statement_adj() != null) {
+                        R23Cell3.setCellValue(record1.getR23_amt_statement_adj().doubleValue());
                         R23Cell3.setCellStyle(numberStyle);
                     } else {
                         R23Cell3.setCellValue("");
@@ -5146,8 +5219,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R23 Col G
                     Cell R23Cell4 = row.createCell(6);
-                    if (record.getR23_amt_statement_adj_bwp() != null) {
-                        R23Cell4.setCellValue(record.getR23_amt_statement_adj_bwp().doubleValue());
+                    if (record1.getR23_amt_statement_adj_bwp() != null) {
+                        R23Cell4.setCellValue(record1.getR23_amt_statement_adj_bwp().doubleValue());
                         R23Cell4.setCellStyle(numberStyle);
                     } else {
                         R23Cell4.setCellValue("");
@@ -5155,8 +5228,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R23 Col H
                     Cell R23Cell5 = row.createCell(7);
-                    if (record.getR23_net_amt() != null) {
-                        R23Cell5.setCellValue(record.getR23_net_amt().doubleValue());
+                    if (record1.getR23_net_amt() != null) {
+                        R23Cell5.setCellValue(record1.getR23_net_amt().doubleValue());
                         R23Cell5.setCellStyle(numberStyle);
                     } else {
                         R23Cell5.setCellValue("");
@@ -5164,8 +5237,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R23 Col I
                     Cell R23Cell6 = row.createCell(8);
-                    if (record.getR23_net_amt_bwp() != null) {
-                        R23Cell6.setCellValue(record.getR23_net_amt_bwp().doubleValue());
+                    if (record1.getR23_net_amt_bwp() != null) {
+                        R23Cell6.setCellValue(record1.getR23_net_amt_bwp().doubleValue());
                         R23Cell6.setCellStyle(numberStyle);
                     } else {
                         R23Cell6.setCellValue("");
@@ -5173,8 +5246,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R23 Col J
                     Cell R23Cell7 = row.createCell(9);
-                    if (record.getR23_bal_sub() != null) {
-                        R23Cell7.setCellValue(record.getR23_bal_sub().doubleValue());
+                    if (record1.getR23_bal_sub() != null) {
+                        R23Cell7.setCellValue(record1.getR23_bal_sub().doubleValue());
                         R23Cell7.setCellStyle(numberStyle);
                     } else {
                         R23Cell7.setCellValue("");
@@ -5182,8 +5255,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R23 Col K
                     Cell R23Cell8 = row.createCell(10);
-                    if (record.getR23_bal_sub_bwp() != null) {
-                        R23Cell8.setCellValue(record.getR23_bal_sub_bwp().doubleValue());
+                    if (record1.getR23_bal_sub_bwp() != null) {
+                        R23Cell8.setCellValue(record1.getR23_bal_sub_bwp().doubleValue());
                         R23Cell8.setCellStyle(numberStyle);
                     } else {
                         R23Cell8.setCellValue("");
@@ -5191,8 +5264,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R23 Col L
                     Cell R23Cell9 = row.createCell(11);
-                    if (record.getR23_bal_sub_diaries() != null) {
-                        R23Cell9.setCellValue(record.getR23_bal_sub_diaries().doubleValue());
+                    if (record1.getR23_bal_sub_diaries() != null) {
+                        R23Cell9.setCellValue(record1.getR23_bal_sub_diaries().doubleValue());
                         R23Cell9.setCellStyle(numberStyle);
                     } else {
                         R23Cell9.setCellValue("");
@@ -5200,8 +5273,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R23 Col M
                     Cell R23Cell10 = row.createCell(12);
-                    if (record.getR23_bal_sub_diaries_bwp() != null) {
-                        R23Cell10.setCellValue(record.getR23_bal_sub_diaries_bwp().doubleValue());
+                    if (record1.getR23_bal_sub_diaries_bwp() != null) {
+                        R23Cell10.setCellValue(record1.getR23_bal_sub_diaries_bwp().doubleValue());
                         R23Cell10.setCellStyle(numberStyle);
                     } else {
                         R23Cell10.setCellValue("");
@@ -5209,8 +5282,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
                      row = sheet.getRow(23);
                      Cell R24Cell1 = row.createCell(3);
-                    if (record.getR24_fig_bal_sheet() != null) {
-                        R24Cell1.setCellValue(record.getR24_fig_bal_sheet().doubleValue());
+                    if (record1.getR24_fig_bal_sheet() != null) {
+                        R24Cell1.setCellValue(record1.getR24_fig_bal_sheet().doubleValue());
                         R24Cell1.setCellStyle(numberStyle);
                     } else {
                         R24Cell1.setCellValue("");
@@ -5219,8 +5292,8 @@ public class BRRS_PL_SCHS_ReportService {
 
                     // R24 Col E
                     Cell R24Cell2 = row.createCell(4);
-                    if (record.getR24_fig_bal_sheet_bwp() != null) {
-                        R24Cell2.setCellValue(record.getR24_fig_bal_sheet_bwp().doubleValue());
+                    if (record1.getR24_fig_bal_sheet_bwp() != null) {
+                        R24Cell2.setCellValue(record1.getR24_fig_bal_sheet_bwp().doubleValue());
                         R24Cell2.setCellStyle(numberStyle);
                     } else {
                         R24Cell2.setCellValue("");
@@ -5229,8 +5302,8 @@ public class BRRS_PL_SCHS_ReportService {
 
                     // R24 Col F
                     Cell R24Cell3 = row.createCell(5);
-                    if (record.getR24_amt_statement_adj() != null) {
-                        R24Cell3.setCellValue(record.getR24_amt_statement_adj().doubleValue());
+                    if (record1.getR24_amt_statement_adj() != null) {
+                        R24Cell3.setCellValue(record1.getR24_amt_statement_adj().doubleValue());
                         R24Cell3.setCellStyle(numberStyle);
                     } else {
                         R24Cell3.setCellValue("");
@@ -5238,8 +5311,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R24 Col G
                     Cell R24Cell4 = row.createCell(6);
-                    if (record.getR24_amt_statement_adj_bwp() != null) {
-                        R24Cell4.setCellValue(record.getR24_amt_statement_adj_bwp().doubleValue());
+                    if (record1.getR24_amt_statement_adj_bwp() != null) {
+                        R24Cell4.setCellValue(record1.getR24_amt_statement_adj_bwp().doubleValue());
                         R24Cell4.setCellStyle(numberStyle);
                     } else {
                         R24Cell4.setCellValue("");
@@ -5247,8 +5320,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R24 Col H
                     Cell R24Cell5 = row.createCell(7);
-                    if (record.getR24_net_amt() != null) {
-                        R24Cell5.setCellValue(record.getR24_net_amt().doubleValue());
+                    if (record1.getR24_net_amt() != null) {
+                        R24Cell5.setCellValue(record1.getR24_net_amt().doubleValue());
                         R24Cell5.setCellStyle(numberStyle);
                     } else {
                         R24Cell5.setCellValue("");
@@ -5256,8 +5329,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R24 Col I
                     Cell R24Cell6 = row.createCell(8);
-                    if (record.getR24_net_amt_bwp() != null) {
-                        R24Cell6.setCellValue(record.getR24_net_amt_bwp().doubleValue());
+                    if (record1.getR24_net_amt_bwp() != null) {
+                        R24Cell6.setCellValue(record1.getR24_net_amt_bwp().doubleValue());
                         R24Cell6.setCellStyle(numberStyle);
                     } else {
                         R24Cell6.setCellValue("");
@@ -5265,8 +5338,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R24 Col J
                     Cell R24Cell7 = row.createCell(9);
-                    if (record.getR24_bal_sub() != null) {
-                        R24Cell7.setCellValue(record.getR24_bal_sub().doubleValue());
+                    if (record1.getR24_bal_sub() != null) {
+                        R24Cell7.setCellValue(record1.getR24_bal_sub().doubleValue());
                         R24Cell7.setCellStyle(numberStyle);
                     } else {
                         R24Cell7.setCellValue("");
@@ -5274,8 +5347,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R24 Col K
                     Cell R24Cell8 = row.createCell(10);
-                    if (record.getR24_bal_sub_bwp() != null) {
-                        R24Cell8.setCellValue(record.getR24_bal_sub_bwp().doubleValue());
+                    if (record1.getR24_bal_sub_bwp() != null) {
+                        R24Cell8.setCellValue(record1.getR24_bal_sub_bwp().doubleValue());
                         R24Cell8.setCellStyle(numberStyle);
                     } else {
                         R24Cell8.setCellValue("");
@@ -5283,8 +5356,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R24 Col L
                     Cell R24Cell9 = row.createCell(11);
-                    if (record.getR24_bal_sub_diaries() != null) {
-                        R24Cell9.setCellValue(record.getR24_bal_sub_diaries().doubleValue());
+                    if (record1.getR24_bal_sub_diaries() != null) {
+                        R24Cell9.setCellValue(record1.getR24_bal_sub_diaries().doubleValue());
                         R24Cell9.setCellStyle(numberStyle);
                     } else {
                         R24Cell9.setCellValue("");
@@ -5292,8 +5365,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R24 Col M
                     Cell R24Cell10 = row.createCell(12);
-                    if (record.getR24_bal_sub_diaries_bwp() != null) {
-                        R24Cell10.setCellValue(record.getR24_bal_sub_diaries_bwp().doubleValue());
+                    if (record1.getR24_bal_sub_diaries_bwp() != null) {
+                        R24Cell10.setCellValue(record1.getR24_bal_sub_diaries_bwp().doubleValue());
                         R24Cell10.setCellStyle(numberStyle);
                     } else {
                         R24Cell10.setCellValue("");
@@ -5301,8 +5374,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
                      row = sheet.getRow(24);
                      Cell R25Cell1 = row.createCell(3);
-                    if (record.getR25_fig_bal_sheet() != null) {
-                        R25Cell1.setCellValue(record.getR25_fig_bal_sheet().doubleValue());
+                    if (record1.getR25_fig_bal_sheet() != null) {
+                        R25Cell1.setCellValue(record1.getR25_fig_bal_sheet().doubleValue());
                         R25Cell1.setCellStyle(numberStyle);
                     } else {
                         R25Cell1.setCellValue("");
@@ -5311,8 +5384,8 @@ public class BRRS_PL_SCHS_ReportService {
 
                     // R25 Col E
                     Cell R25Cell2 = row.createCell(4);
-                    if (record.getR25_fig_bal_sheet_bwp() != null) {
-                        R25Cell2.setCellValue(record.getR25_fig_bal_sheet_bwp().doubleValue());
+                    if (record1.getR25_fig_bal_sheet_bwp() != null) {
+                        R25Cell2.setCellValue(record1.getR25_fig_bal_sheet_bwp().doubleValue());
                         R25Cell2.setCellStyle(numberStyle);
                     } else {
                         R25Cell2.setCellValue("");
@@ -5321,8 +5394,8 @@ public class BRRS_PL_SCHS_ReportService {
 
                     // R25 Col F
                     Cell R25Cell3 = row.createCell(5);
-                    if (record.getR25_amt_statement_adj() != null) {
-                        R25Cell3.setCellValue(record.getR25_amt_statement_adj().doubleValue());
+                    if (record1.getR25_amt_statement_adj() != null) {
+                        R25Cell3.setCellValue(record1.getR25_amt_statement_adj().doubleValue());
                         R25Cell3.setCellStyle(numberStyle);
                     } else {
                         R25Cell3.setCellValue("");
@@ -5330,8 +5403,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R25 Col G
                     Cell R25Cell4 = row.createCell(6);
-                    if (record.getR25_amt_statement_adj_bwp() != null) {
-                        R25Cell4.setCellValue(record.getR25_amt_statement_adj_bwp().doubleValue());
+                    if (record1.getR25_amt_statement_adj_bwp() != null) {
+                        R25Cell4.setCellValue(record1.getR25_amt_statement_adj_bwp().doubleValue());
                         R25Cell4.setCellStyle(numberStyle);
                     } else {
                         R25Cell4.setCellValue("");
@@ -5339,8 +5412,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R25 Col H
                     Cell R25Cell5 = row.createCell(7);
-                    if (record.getR25_net_amt() != null) {
-                        R25Cell5.setCellValue(record.getR25_net_amt().doubleValue());
+                    if (record1.getR25_net_amt() != null) {
+                        R25Cell5.setCellValue(record1.getR25_net_amt().doubleValue());
                         R25Cell5.setCellStyle(numberStyle);
                     } else {
                         R25Cell5.setCellValue("");
@@ -5348,8 +5421,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R25 Col I
                     Cell R25Cell6 = row.createCell(8);
-                    if (record.getR25_net_amt_bwp() != null) {
-                        R25Cell6.setCellValue(record.getR25_net_amt_bwp().doubleValue());
+                    if (record1.getR25_net_amt_bwp() != null) {
+                        R25Cell6.setCellValue(record1.getR25_net_amt_bwp().doubleValue());
                         R25Cell6.setCellStyle(numberStyle);
                     } else {
                         R25Cell6.setCellValue("");
@@ -5357,8 +5430,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R25 Col J
                     Cell R25Cell7 = row.createCell(9);
-                    if (record.getR25_bal_sub() != null) {
-                        R25Cell7.setCellValue(record.getR25_bal_sub().doubleValue());
+                    if (record1.getR25_bal_sub() != null) {
+                        R25Cell7.setCellValue(record1.getR25_bal_sub().doubleValue());
                         R25Cell7.setCellStyle(numberStyle);
                     } else {
                         R25Cell7.setCellValue("");
@@ -5366,8 +5439,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R25 Col K
                     Cell R25Cell8 = row.createCell(10);
-                    if (record.getR25_bal_sub_bwp() != null) {
-                        R25Cell8.setCellValue(record.getR25_bal_sub_bwp().doubleValue());
+                    if (record1.getR25_bal_sub_bwp() != null) {
+                        R25Cell8.setCellValue(record1.getR25_bal_sub_bwp().doubleValue());
                         R25Cell8.setCellStyle(numberStyle);
                     } else {
                         R25Cell8.setCellValue("");
@@ -5375,8 +5448,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R25 Col L
                     Cell R25Cell9 = row.createCell(11);
-                    if (record.getR25_bal_sub_diaries() != null) {
-                        R25Cell9.setCellValue(record.getR25_bal_sub_diaries().doubleValue());
+                    if (record1.getR25_bal_sub_diaries() != null) {
+                        R25Cell9.setCellValue(record1.getR25_bal_sub_diaries().doubleValue());
                         R25Cell9.setCellStyle(numberStyle);
                     } else {
                         R25Cell9.setCellValue("");
@@ -5384,8 +5457,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R25 Col M
                     Cell R25Cell10 = row.createCell(12);
-                    if (record.getR25_bal_sub_diaries_bwp() != null) {
-                        R25Cell10.setCellValue(record.getR25_bal_sub_diaries_bwp().doubleValue());
+                    if (record1.getR25_bal_sub_diaries_bwp() != null) {
+                        R25Cell10.setCellValue(record1.getR25_bal_sub_diaries_bwp().doubleValue());
                         R25Cell10.setCellStyle(numberStyle);
                     } else {
                         R25Cell10.setCellValue("");
@@ -5393,8 +5466,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
                      row = sheet.getRow(25);
                      Cell R26Cell1 = row.createCell(3);
-                    if (record.getR26_fig_bal_sheet() != null) {
-                        R26Cell1.setCellValue(record.getR26_fig_bal_sheet().doubleValue());
+                    if (record1.getR26_fig_bal_sheet() != null) {
+                        R26Cell1.setCellValue(record1.getR26_fig_bal_sheet().doubleValue());
                         R26Cell1.setCellStyle(numberStyle);
                     } else {
                         R26Cell1.setCellValue("");
@@ -5403,8 +5476,8 @@ public class BRRS_PL_SCHS_ReportService {
 
                     // R26 Col E
                     Cell R26Cell2 = row.createCell(4);
-                    if (record.getR26_fig_bal_sheet_bwp() != null) {
-                        R26Cell2.setCellValue(record.getR26_fig_bal_sheet_bwp().doubleValue());
+                    if (record1.getR26_fig_bal_sheet_bwp() != null) {
+                        R26Cell2.setCellValue(record1.getR26_fig_bal_sheet_bwp().doubleValue());
                         R26Cell2.setCellStyle(numberStyle);
                     } else {
                         R26Cell2.setCellValue("");
@@ -5413,8 +5486,8 @@ public class BRRS_PL_SCHS_ReportService {
 
                     // R26 Col F
                     Cell R26Cell3 = row.createCell(5);
-                    if (record.getR26_amt_statement_adj() != null) {
-                        R26Cell3.setCellValue(record.getR26_amt_statement_adj().doubleValue());
+                    if (record1.getR26_amt_statement_adj() != null) {
+                        R26Cell3.setCellValue(record1.getR26_amt_statement_adj().doubleValue());
                         R26Cell3.setCellStyle(numberStyle);
                     } else {
                         R26Cell3.setCellValue("");
@@ -5422,8 +5495,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R26 Col G
                     Cell R26Cell4 = row.createCell(6);
-                    if (record.getR26_amt_statement_adj_bwp() != null) {
-                        R26Cell4.setCellValue(record.getR26_amt_statement_adj_bwp().doubleValue());
+                    if (record1.getR26_amt_statement_adj_bwp() != null) {
+                        R26Cell4.setCellValue(record1.getR26_amt_statement_adj_bwp().doubleValue());
                         R26Cell4.setCellStyle(numberStyle);
                     } else {
                         R26Cell4.setCellValue("");
@@ -5431,8 +5504,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R26 Col H
                     Cell R26Cell5 = row.createCell(7);
-                    if (record.getR26_net_amt() != null) {
-                        R26Cell5.setCellValue(record.getR26_net_amt().doubleValue());
+                    if (record1.getR26_net_amt() != null) {
+                        R26Cell5.setCellValue(record1.getR26_net_amt().doubleValue());
                         R26Cell5.setCellStyle(numberStyle);
                     } else {
                         R26Cell5.setCellValue("");
@@ -5440,8 +5513,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R26 Col I
                     Cell R26Cell6 = row.createCell(8);
-                    if (record.getR26_net_amt_bwp() != null) {
-                        R26Cell6.setCellValue(record.getR26_net_amt_bwp().doubleValue());
+                    if (record1.getR26_net_amt_bwp() != null) {
+                        R26Cell6.setCellValue(record1.getR26_net_amt_bwp().doubleValue());
                         R26Cell6.setCellStyle(numberStyle);
                     } else {
                         R26Cell6.setCellValue("");
@@ -5449,8 +5522,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R26 Col J
                     Cell R26Cell7 = row.createCell(9);
-                    if (record.getR26_bal_sub() != null) {
-                        R26Cell7.setCellValue(record.getR26_bal_sub().doubleValue());
+                    if (record1.getR26_bal_sub() != null) {
+                        R26Cell7.setCellValue(record1.getR26_bal_sub().doubleValue());
                         R26Cell7.setCellStyle(numberStyle);
                     } else {
                         R26Cell7.setCellValue("");
@@ -5458,8 +5531,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R26 Col K
                     Cell R26Cell8 = row.createCell(10);
-                    if (record.getR26_bal_sub_bwp() != null) {
-                        R26Cell8.setCellValue(record.getR26_bal_sub_bwp().doubleValue());
+                    if (record1.getR26_bal_sub_bwp() != null) {
+                        R26Cell8.setCellValue(record1.getR26_bal_sub_bwp().doubleValue());
                         R26Cell8.setCellStyle(numberStyle);
                     } else {
                         R26Cell8.setCellValue("");
@@ -5467,8 +5540,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R26 Col L
                     Cell R26Cell9 = row.createCell(11);
-                    if (record.getR26_bal_sub_diaries() != null) {
-                        R26Cell9.setCellValue(record.getR26_bal_sub_diaries().doubleValue());
+                    if (record1.getR26_bal_sub_diaries() != null) {
+                        R26Cell9.setCellValue(record1.getR26_bal_sub_diaries().doubleValue());
                         R26Cell9.setCellStyle(numberStyle);
                     } else {
                         R26Cell9.setCellValue("");
@@ -5476,8 +5549,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R26 Col M
                     Cell R26Cell10 = row.createCell(12);
-                    if (record.getR26_bal_sub_diaries_bwp() != null) {
-                        R26Cell10.setCellValue(record.getR26_bal_sub_diaries_bwp().doubleValue());
+                    if (record1.getR26_bal_sub_diaries_bwp() != null) {
+                        R26Cell10.setCellValue(record1.getR26_bal_sub_diaries_bwp().doubleValue());
                         R26Cell10.setCellStyle(numberStyle);
                     } else {
                         R26Cell10.setCellValue("");
@@ -5485,8 +5558,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
                      row = sheet.getRow(26);
                      Cell R27Cell1 = row.createCell(3);
-                    if (record.getR27_fig_bal_sheet() != null) {
-                        R27Cell1.setCellValue(record.getR27_fig_bal_sheet().doubleValue());
+                    if (record1.getR27_fig_bal_sheet() != null) {
+                        R27Cell1.setCellValue(record1.getR27_fig_bal_sheet().doubleValue());
                         R27Cell1.setCellStyle(numberStyle);
                     } else {
                         R27Cell1.setCellValue("");
@@ -5495,8 +5568,8 @@ public class BRRS_PL_SCHS_ReportService {
 
                     // R27 Col E
                     Cell R27Cell2 = row.createCell(4);
-                    if (record.getR27_fig_bal_sheet_bwp() != null) {
-                        R27Cell2.setCellValue(record.getR27_fig_bal_sheet_bwp().doubleValue());
+                    if (record1.getR27_fig_bal_sheet_bwp() != null) {
+                        R27Cell2.setCellValue(record1.getR27_fig_bal_sheet_bwp().doubleValue());
                         R27Cell2.setCellStyle(numberStyle);
                     } else {
                         R27Cell2.setCellValue("");
@@ -5505,8 +5578,8 @@ public class BRRS_PL_SCHS_ReportService {
 
                     // R27 Col F
                     Cell R27Cell3 = row.createCell(5);
-                    if (record.getR27_amt_statement_adj() != null) {
-                        R27Cell3.setCellValue(record.getR27_amt_statement_adj().doubleValue());
+                    if (record1.getR27_amt_statement_adj() != null) {
+                        R27Cell3.setCellValue(record1.getR27_amt_statement_adj().doubleValue());
                         R27Cell3.setCellStyle(numberStyle);
                     } else {
                         R27Cell3.setCellValue("");
@@ -5514,8 +5587,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R27 Col G
                     Cell R27Cell4 = row.createCell(6);
-                    if (record.getR27_amt_statement_adj_bwp() != null) {
-                        R27Cell4.setCellValue(record.getR27_amt_statement_adj_bwp().doubleValue());
+                    if (record1.getR27_amt_statement_adj_bwp() != null) {
+                        R27Cell4.setCellValue(record1.getR27_amt_statement_adj_bwp().doubleValue());
                         R27Cell4.setCellStyle(numberStyle);
                     } else {
                         R27Cell4.setCellValue("");
@@ -5523,8 +5596,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R27 Col H
                     Cell R27Cell5 = row.createCell(7);
-                    if (record.getR27_net_amt() != null) {
-                        R27Cell5.setCellValue(record.getR27_net_amt().doubleValue());
+                    if (record1.getR27_net_amt() != null) {
+                        R27Cell5.setCellValue(record1.getR27_net_amt().doubleValue());
                         R27Cell5.setCellStyle(numberStyle);
                     } else {
                         R27Cell5.setCellValue("");
@@ -5532,8 +5605,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R27 Col I
                     Cell R27Cell6 = row.createCell(8);
-                    if (record.getR27_net_amt_bwp() != null) {
-                        R27Cell6.setCellValue(record.getR27_net_amt_bwp().doubleValue());
+                    if (record1.getR27_net_amt_bwp() != null) {
+                        R27Cell6.setCellValue(record1.getR27_net_amt_bwp().doubleValue());
                         R27Cell6.setCellStyle(numberStyle);
                     } else {
                         R27Cell6.setCellValue("");
@@ -5541,8 +5614,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R27 Col J
                     Cell R27Cell7 = row.createCell(9);
-                    if (record.getR27_bal_sub() != null) {
-                        R27Cell7.setCellValue(record.getR27_bal_sub().doubleValue());
+                    if (record1.getR27_bal_sub() != null) {
+                        R27Cell7.setCellValue(record1.getR27_bal_sub().doubleValue());
                         R27Cell7.setCellStyle(numberStyle);
                     } else {
                         R27Cell7.setCellValue("");
@@ -5550,8 +5623,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R27 Col K
                     Cell R27Cell8 = row.createCell(10);
-                    if (record.getR27_bal_sub_bwp() != null) {
-                        R27Cell8.setCellValue(record.getR27_bal_sub_bwp().doubleValue());
+                    if (record1.getR27_bal_sub_bwp() != null) {
+                        R27Cell8.setCellValue(record1.getR27_bal_sub_bwp().doubleValue());
                         R27Cell8.setCellStyle(numberStyle);
                     } else {
                         R27Cell8.setCellValue("");
@@ -5559,8 +5632,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R27 Col L
                     Cell R27Cell9 = row.createCell(11);
-                    if (record.getR27_bal_sub_diaries() != null) {
-                        R27Cell9.setCellValue(record.getR27_bal_sub_diaries().doubleValue());
+                    if (record1.getR27_bal_sub_diaries() != null) {
+                        R27Cell9.setCellValue(record1.getR27_bal_sub_diaries().doubleValue());
                         R27Cell9.setCellStyle(numberStyle);
                     } else {
                         R27Cell9.setCellValue("");
@@ -5568,8 +5641,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R27 Col M
                     Cell R27Cell10 = row.createCell(12);
-                    if (record.getR27_bal_sub_diaries_bwp() != null) {
-                        R27Cell10.setCellValue(record.getR27_bal_sub_diaries_bwp().doubleValue());
+                    if (record1.getR27_bal_sub_diaries_bwp() != null) {
+                        R27Cell10.setCellValue(record1.getR27_bal_sub_diaries_bwp().doubleValue());
                         R27Cell10.setCellStyle(numberStyle);
                     } else {
                         R27Cell10.setCellValue("");
@@ -5577,8 +5650,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
                      row = sheet.getRow(27);
                      Cell R28Cell1 = row.createCell(3);
-                    if (record.getR28_fig_bal_sheet() != null) {
-                        R28Cell1.setCellValue(record.getR28_fig_bal_sheet().doubleValue());
+                    if (record1.getR28_fig_bal_sheet() != null) {
+                        R28Cell1.setCellValue(record1.getR28_fig_bal_sheet().doubleValue());
                         R28Cell1.setCellStyle(numberStyle);
                     } else {
                         R28Cell1.setCellValue("");
@@ -5587,8 +5660,8 @@ public class BRRS_PL_SCHS_ReportService {
 
                     // R28 Col E
                     Cell R28Cell2 = row.createCell(4);
-                    if (record.getR28_fig_bal_sheet_bwp() != null) {
-                        R28Cell2.setCellValue(record.getR28_fig_bal_sheet_bwp().doubleValue());
+                    if (record1.getR28_fig_bal_sheet_bwp() != null) {
+                        R28Cell2.setCellValue(record1.getR28_fig_bal_sheet_bwp().doubleValue());
                         R28Cell2.setCellStyle(numberStyle);
                     } else {
                         R28Cell2.setCellValue("");
@@ -5597,8 +5670,8 @@ public class BRRS_PL_SCHS_ReportService {
 
                     // R28 Col F
                     Cell R28Cell3 = row.createCell(5);
-                    if (record.getR28_amt_statement_adj() != null) {
-                        R28Cell3.setCellValue(record.getR28_amt_statement_adj().doubleValue());
+                    if (record1.getR28_amt_statement_adj() != null) {
+                        R28Cell3.setCellValue(record1.getR28_amt_statement_adj().doubleValue());
                         R28Cell3.setCellStyle(numberStyle);
                     } else {
                         R28Cell3.setCellValue("");
@@ -5606,8 +5679,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R28 Col G
                     Cell R28Cell4 = row.createCell(6);
-                    if (record.getR28_amt_statement_adj_bwp() != null) {
-                        R28Cell4.setCellValue(record.getR28_amt_statement_adj_bwp().doubleValue());
+                    if (record1.getR28_amt_statement_adj_bwp() != null) {
+                        R28Cell4.setCellValue(record1.getR28_amt_statement_adj_bwp().doubleValue());
                         R28Cell4.setCellStyle(numberStyle);
                     } else {
                         R28Cell4.setCellValue("");
@@ -5615,8 +5688,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R28 Col H
                     Cell R28Cell5 = row.createCell(7);
-                    if (record.getR28_net_amt() != null) {
-                        R28Cell5.setCellValue(record.getR28_net_amt().doubleValue());
+                    if (record1.getR28_net_amt() != null) {
+                        R28Cell5.setCellValue(record1.getR28_net_amt().doubleValue());
                         R28Cell5.setCellStyle(numberStyle);
                     } else {
                         R28Cell5.setCellValue("");
@@ -5624,8 +5697,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R28 Col I
                     Cell R28Cell6 = row.createCell(8);
-                    if (record.getR28_net_amt_bwp() != null) {
-                        R28Cell6.setCellValue(record.getR28_net_amt_bwp().doubleValue());
+                    if (record1.getR28_net_amt_bwp() != null) {
+                        R28Cell6.setCellValue(record1.getR28_net_amt_bwp().doubleValue());
                         R28Cell6.setCellStyle(numberStyle);
                     } else {
                         R28Cell6.setCellValue("");
@@ -5633,8 +5706,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R28 Col J
                     Cell R28Cell7 = row.createCell(9);
-                    if (record.getR28_bal_sub() != null) {
-                        R28Cell7.setCellValue(record.getR28_bal_sub().doubleValue());
+                    if (record1.getR28_bal_sub() != null) {
+                        R28Cell7.setCellValue(record1.getR28_bal_sub().doubleValue());
                         R28Cell7.setCellStyle(numberStyle);
                     } else {
                         R28Cell7.setCellValue("");
@@ -5642,8 +5715,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R28 Col K
                     Cell R28Cell8 = row.createCell(10);
-                    if (record.getR28_bal_sub_bwp() != null) {
-                        R28Cell8.setCellValue(record.getR28_bal_sub_bwp().doubleValue());
+                    if (record1.getR28_bal_sub_bwp() != null) {
+                        R28Cell8.setCellValue(record1.getR28_bal_sub_bwp().doubleValue());
                         R28Cell8.setCellStyle(numberStyle);
                     } else {
                         R28Cell8.setCellValue("");
@@ -5651,8 +5724,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R28 Col L
                     Cell R28Cell9 = row.createCell(11);
-                    if (record.getR28_bal_sub_diaries() != null) {
-                        R28Cell9.setCellValue(record.getR28_bal_sub_diaries().doubleValue());
+                    if (record1.getR28_bal_sub_diaries() != null) {
+                        R28Cell9.setCellValue(record1.getR28_bal_sub_diaries().doubleValue());
                         R28Cell9.setCellStyle(numberStyle);
                     } else {
                         R28Cell9.setCellValue("");
@@ -5660,8 +5733,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R28 Col M
                     Cell R28Cell10 = row.createCell(12);
-                    if (record.getR28_bal_sub_diaries_bwp() != null) {
-                        R28Cell10.setCellValue(record.getR28_bal_sub_diaries_bwp().doubleValue());
+                    if (record1.getR28_bal_sub_diaries_bwp() != null) {
+                        R28Cell10.setCellValue(record1.getR28_bal_sub_diaries_bwp().doubleValue());
                         R28Cell10.setCellStyle(numberStyle);
                     } else {
                         R28Cell10.setCellValue("");
@@ -5669,8 +5742,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
                      row = sheet.getRow(28);
                      Cell R29Cell1 = row.createCell(3);
-                    if (record.getR29_fig_bal_sheet() != null) {
-                        R29Cell1.setCellValue(record.getR29_fig_bal_sheet().doubleValue());
+                    if (record1.getR29_fig_bal_sheet() != null) {
+                        R29Cell1.setCellValue(record1.getR29_fig_bal_sheet().doubleValue());
                         R29Cell1.setCellStyle(numberStyle);
                     } else {
                         R29Cell1.setCellValue("");
@@ -5679,8 +5752,8 @@ public class BRRS_PL_SCHS_ReportService {
 
                     // R29 Col E
                     Cell R29Cell2 = row.createCell(4);
-                    if (record.getR29_fig_bal_sheet_bwp() != null) {
-                        R29Cell2.setCellValue(record.getR29_fig_bal_sheet_bwp().doubleValue());
+                    if (record1.getR29_fig_bal_sheet_bwp() != null) {
+                        R29Cell2.setCellValue(record1.getR29_fig_bal_sheet_bwp().doubleValue());
                         R29Cell2.setCellStyle(numberStyle);
                     } else {
                         R29Cell2.setCellValue("");
@@ -5689,8 +5762,8 @@ public class BRRS_PL_SCHS_ReportService {
 
                     // R29 Col F
                     Cell R29Cell3 = row.createCell(5);
-                    if (record.getR29_amt_statement_adj() != null) {
-                        R29Cell3.setCellValue(record.getR29_amt_statement_adj().doubleValue());
+                    if (record1.getR29_amt_statement_adj() != null) {
+                        R29Cell3.setCellValue(record1.getR29_amt_statement_adj().doubleValue());
                         R29Cell3.setCellStyle(numberStyle);
                     } else {
                         R29Cell3.setCellValue("");
@@ -5698,8 +5771,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R29 Col G
                     Cell R29Cell4 = row.createCell(6);
-                    if (record.getR29_amt_statement_adj_bwp() != null) {
-                        R29Cell4.setCellValue(record.getR29_amt_statement_adj_bwp().doubleValue());
+                    if (record1.getR29_amt_statement_adj_bwp() != null) {
+                        R29Cell4.setCellValue(record1.getR29_amt_statement_adj_bwp().doubleValue());
                         R29Cell4.setCellStyle(numberStyle);
                     } else {
                         R29Cell4.setCellValue("");
@@ -5707,8 +5780,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R29 Col H
                     Cell R29Cell5 = row.createCell(7);
-                    if (record.getR29_net_amt() != null) {
-                        R29Cell5.setCellValue(record.getR29_net_amt().doubleValue());
+                    if (record1.getR29_net_amt() != null) {
+                        R29Cell5.setCellValue(record1.getR29_net_amt().doubleValue());
                         R29Cell5.setCellStyle(numberStyle);
                     } else {
                         R29Cell5.setCellValue("");
@@ -5716,8 +5789,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R29 Col I
                     Cell R29Cell6 = row.createCell(8);
-                    if (record.getR29_net_amt_bwp() != null) {
-                        R29Cell6.setCellValue(record.getR29_net_amt_bwp().doubleValue());
+                    if (record1.getR29_net_amt_bwp() != null) {
+                        R29Cell6.setCellValue(record1.getR29_net_amt_bwp().doubleValue());
                         R29Cell6.setCellStyle(numberStyle);
                     } else {
                         R29Cell6.setCellValue("");
@@ -5725,8 +5798,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R29 Col J
                     Cell R29Cell7 = row.createCell(9);
-                    if (record.getR29_bal_sub() != null) {
-                        R29Cell7.setCellValue(record.getR29_bal_sub().doubleValue());
+                    if (record1.getR29_bal_sub() != null) {
+                        R29Cell7.setCellValue(record1.getR29_bal_sub().doubleValue());
                         R29Cell7.setCellStyle(numberStyle);
                     } else {
                         R29Cell7.setCellValue("");
@@ -5734,8 +5807,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R29 Col K
                     Cell R29Cell8 = row.createCell(10);
-                    if (record.getR29_bal_sub_bwp() != null) {
-                        R29Cell8.setCellValue(record.getR29_bal_sub_bwp().doubleValue());
+                    if (record1.getR29_bal_sub_bwp() != null) {
+                        R29Cell8.setCellValue(record1.getR29_bal_sub_bwp().doubleValue());
                         R29Cell8.setCellStyle(numberStyle);
                     } else {
                         R29Cell8.setCellValue("");
@@ -5743,8 +5816,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R29 Col L
                     Cell R29Cell9 = row.createCell(11);
-                    if (record.getR29_bal_sub_diaries() != null) {
-                        R29Cell9.setCellValue(record.getR29_bal_sub_diaries().doubleValue());
+                    if (record1.getR29_bal_sub_diaries() != null) {
+                        R29Cell9.setCellValue(record1.getR29_bal_sub_diaries().doubleValue());
                         R29Cell9.setCellStyle(numberStyle);
                     } else {
                         R29Cell9.setCellValue("");
@@ -5752,8 +5825,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R29 Col M
                     Cell R29Cell10 = row.createCell(12);
-                    if (record.getR29_bal_sub_diaries_bwp() != null) {
-                        R29Cell10.setCellValue(record.getR29_bal_sub_diaries_bwp().doubleValue());
+                    if (record1.getR29_bal_sub_diaries_bwp() != null) {
+                        R29Cell10.setCellValue(record1.getR29_bal_sub_diaries_bwp().doubleValue());
                         R29Cell10.setCellStyle(numberStyle);
                     } else {
                         R29Cell10.setCellValue("");
@@ -5761,8 +5834,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
                      row = sheet.getRow(29);
                      Cell R30Cell1 = row.createCell(3);
-                    if (record.getR30_fig_bal_sheet() != null) {
-                        R30Cell1.setCellValue(record.getR30_fig_bal_sheet().doubleValue());
+                    if (record1.getR30_fig_bal_sheet() != null) {
+                        R30Cell1.setCellValue(record1.getR30_fig_bal_sheet().doubleValue());
                         R30Cell1.setCellStyle(numberStyle);
                     } else {
                         R30Cell1.setCellValue("");
@@ -5771,8 +5844,8 @@ public class BRRS_PL_SCHS_ReportService {
 
                     // R30 Col E
                     Cell R30Cell2 = row.createCell(4);
-                    if (record.getR30_fig_bal_sheet_bwp() != null) {
-                        R30Cell2.setCellValue(record.getR30_fig_bal_sheet_bwp().doubleValue());
+                    if (record1.getR30_fig_bal_sheet_bwp() != null) {
+                        R30Cell2.setCellValue(record1.getR30_fig_bal_sheet_bwp().doubleValue());
                         R30Cell2.setCellStyle(numberStyle);
                     } else {
                         R30Cell2.setCellValue("");
@@ -5781,8 +5854,8 @@ public class BRRS_PL_SCHS_ReportService {
 
                     // R30 Col F
                     Cell R30Cell3 = row.createCell(5);
-                    if (record.getR30_amt_statement_adj() != null) {
-                        R30Cell3.setCellValue(record.getR30_amt_statement_adj().doubleValue());
+                    if (record1.getR30_amt_statement_adj() != null) {
+                        R30Cell3.setCellValue(record1.getR30_amt_statement_adj().doubleValue());
                         R30Cell3.setCellStyle(numberStyle);
                     } else {
                         R30Cell3.setCellValue("");
@@ -5790,8 +5863,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R30 Col G
                     Cell R30Cell4 = row.createCell(6);
-                    if (record.getR30_amt_statement_adj_bwp() != null) {
-                        R30Cell4.setCellValue(record.getR30_amt_statement_adj_bwp().doubleValue());
+                    if (record1.getR30_amt_statement_adj_bwp() != null) {
+                        R30Cell4.setCellValue(record1.getR30_amt_statement_adj_bwp().doubleValue());
                         R30Cell4.setCellStyle(numberStyle);
                     } else {
                         R30Cell4.setCellValue("");
@@ -5799,8 +5872,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R30 Col H
                     Cell R30Cell5 = row.createCell(7);
-                    if (record.getR30_net_amt() != null) {
-                        R30Cell5.setCellValue(record.getR30_net_amt().doubleValue());
+                    if (record1.getR30_net_amt() != null) {
+                        R30Cell5.setCellValue(record1.getR30_net_amt().doubleValue());
                         R30Cell5.setCellStyle(numberStyle);
                     } else {
                         R30Cell5.setCellValue("");
@@ -5808,8 +5881,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R30 Col I
                     Cell R30Cell6 = row.createCell(8);
-                    if (record.getR30_net_amt_bwp() != null) {
-                        R30Cell6.setCellValue(record.getR30_net_amt_bwp().doubleValue());
+                    if (record1.getR30_net_amt_bwp() != null) {
+                        R30Cell6.setCellValue(record1.getR30_net_amt_bwp().doubleValue());
                         R30Cell6.setCellStyle(numberStyle);
                     } else {
                         R30Cell6.setCellValue("");
@@ -5817,8 +5890,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R30 Col J
                     Cell R30Cell7 = row.createCell(9);
-                    if (record.getR30_bal_sub() != null) {
-                        R30Cell7.setCellValue(record.getR30_bal_sub().doubleValue());
+                    if (record1.getR30_bal_sub() != null) {
+                        R30Cell7.setCellValue(record1.getR30_bal_sub().doubleValue());
                         R30Cell7.setCellStyle(numberStyle);
                     } else {
                         R30Cell7.setCellValue("");
@@ -5826,8 +5899,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R30 Col K
                     Cell R30Cell8 = row.createCell(10);
-                    if (record.getR30_bal_sub_bwp() != null) {
-                        R30Cell8.setCellValue(record.getR30_bal_sub_bwp().doubleValue());
+                    if (record1.getR30_bal_sub_bwp() != null) {
+                        R30Cell8.setCellValue(record1.getR30_bal_sub_bwp().doubleValue());
                         R30Cell8.setCellStyle(numberStyle);
                     } else {
                         R30Cell8.setCellValue("");
@@ -5835,8 +5908,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R30 Col L
                     Cell R30Cell9 = row.createCell(11);
-                    if (record.getR30_bal_sub_diaries() != null) {
-                        R30Cell9.setCellValue(record.getR30_bal_sub_diaries().doubleValue());
+                    if (record1.getR30_bal_sub_diaries() != null) {
+                        R30Cell9.setCellValue(record1.getR30_bal_sub_diaries().doubleValue());
                         R30Cell9.setCellStyle(numberStyle);
                     } else {
                         R30Cell9.setCellValue("");
@@ -5844,8 +5917,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R30 Col M
                     Cell R30Cell10 = row.createCell(12);
-                    if (record.getR30_bal_sub_diaries_bwp() != null) {
-                        R30Cell10.setCellValue(record.getR30_bal_sub_diaries_bwp().doubleValue());
+                    if (record1.getR30_bal_sub_diaries_bwp() != null) {
+                        R30Cell10.setCellValue(record1.getR30_bal_sub_diaries_bwp().doubleValue());
                         R30Cell10.setCellStyle(numberStyle);
                     } else {
                         R30Cell10.setCellValue("");
@@ -6129,8 +6202,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
                      row = sheet.getRow(41);
                      Cell R42Cell1 = row.createCell(3);
-                    if (record.getR42_fig_bal_sheet() != null) {
-                        R42Cell1.setCellValue(record.getR42_fig_bal_sheet().doubleValue());
+                    if (record1.getR42_fig_bal_sheet() != null) {
+                        R42Cell1.setCellValue(record1.getR42_fig_bal_sheet().doubleValue());
                         R42Cell1.setCellStyle(numberStyle);
                     } else {
                         R42Cell1.setCellValue("");
@@ -6139,8 +6212,8 @@ public class BRRS_PL_SCHS_ReportService {
 
                     // R42 Col E
                     Cell R42Cell2 = row.createCell(4);
-                    if (record.getR42_fig_bal_sheet_bwp() != null) {
-                        R42Cell2.setCellValue(record.getR42_fig_bal_sheet_bwp().doubleValue());
+                    if (record1.getR42_fig_bal_sheet_bwp() != null) {
+                        R42Cell2.setCellValue(record1.getR42_fig_bal_sheet_bwp().doubleValue());
                         R42Cell2.setCellStyle(numberStyle);
                     } else {
                         R42Cell2.setCellValue("");
@@ -6149,8 +6222,8 @@ public class BRRS_PL_SCHS_ReportService {
 
                     // R42 Col F
                     Cell R42Cell3 = row.createCell(5);
-                    if (record.getR42_amt_statement_adj() != null) {
-                        R42Cell3.setCellValue(record.getR42_amt_statement_adj().doubleValue());
+                    if (record1.getR42_amt_statement_adj() != null) {
+                        R42Cell3.setCellValue(record1.getR42_amt_statement_adj().doubleValue());
                         R42Cell3.setCellStyle(numberStyle);
                     } else {
                         R42Cell3.setCellValue("");
@@ -6158,8 +6231,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R42 Col G
                     Cell R42Cell4 = row.createCell(6);
-                    if (record.getR42_amt_statement_adj_bwp() != null) {
-                        R42Cell4.setCellValue(record.getR42_amt_statement_adj_bwp().doubleValue());
+                    if (record1.getR42_amt_statement_adj_bwp() != null) {
+                        R42Cell4.setCellValue(record1.getR42_amt_statement_adj_bwp().doubleValue());
                         R42Cell4.setCellStyle(numberStyle);
                     } else {
                         R42Cell4.setCellValue("");
@@ -6167,8 +6240,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R42 Col H
                     Cell R42Cell5 = row.createCell(7);
-                    if (record.getR42_net_amt() != null) {
-                        R42Cell5.setCellValue(record.getR42_net_amt().doubleValue());
+                    if (record1.getR42_net_amt() != null) {
+                        R42Cell5.setCellValue(record1.getR42_net_amt().doubleValue());
                         R42Cell5.setCellStyle(numberStyle);
                     } else {
                         R42Cell5.setCellValue("");
@@ -6176,8 +6249,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R42 Col I
                     Cell R42Cell6 = row.createCell(8);
-                    if (record.getR42_net_amt_bwp() != null) {
-                        R42Cell6.setCellValue(record.getR42_net_amt_bwp().doubleValue());
+                    if (record1.getR42_net_amt_bwp() != null) {
+                        R42Cell6.setCellValue(record1.getR42_net_amt_bwp().doubleValue());
                         R42Cell6.setCellStyle(numberStyle);
                     } else {
                         R42Cell6.setCellValue("");
@@ -6185,8 +6258,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R42 Col J
                     Cell R42Cell7 = row.createCell(9);
-                    if (record.getR42_bal_sub() != null) {
-                        R42Cell7.setCellValue(record.getR42_bal_sub().doubleValue());
+                    if (record1.getR42_bal_sub() != null) {
+                        R42Cell7.setCellValue(record1.getR42_bal_sub().doubleValue());
                         R42Cell7.setCellStyle(numberStyle);
                     } else {
                         R42Cell7.setCellValue("");
@@ -6194,8 +6267,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R42 Col K
                     Cell R42Cell8 = row.createCell(10);
-                    if (record.getR42_bal_sub_bwp() != null) {
-                        R42Cell8.setCellValue(record.getR42_bal_sub_bwp().doubleValue());
+                    if (record1.getR42_bal_sub_bwp() != null) {
+                        R42Cell8.setCellValue(record1.getR42_bal_sub_bwp().doubleValue());
                         R42Cell8.setCellStyle(numberStyle);
                     } else {
                         R42Cell8.setCellValue("");
@@ -6203,8 +6276,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R42 Col L
                     Cell R42Cell9 = row.createCell(11);
-                    if (record.getR42_bal_sub_diaries() != null) {
-                        R42Cell9.setCellValue(record.getR42_bal_sub_diaries().doubleValue());
+                    if (record1.getR42_bal_sub_diaries() != null) {
+                        R42Cell9.setCellValue(record1.getR42_bal_sub_diaries().doubleValue());
                         R42Cell9.setCellStyle(numberStyle);
                     } else {
                         R42Cell9.setCellValue("");
@@ -6212,8 +6285,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R42 Col M
                     Cell R42Cell10 = row.createCell(12);
-                    if (record.getR42_bal_sub_diaries_bwp() != null) {
-                        R42Cell10.setCellValue(record.getR42_bal_sub_diaries_bwp().doubleValue());
+                    if (record1.getR42_bal_sub_diaries_bwp() != null) {
+                        R42Cell10.setCellValue(record1.getR42_bal_sub_diaries_bwp().doubleValue());
                         R42Cell10.setCellStyle(numberStyle);
                     } else {
                         R42Cell10.setCellValue("");
@@ -6866,8 +6939,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
                      row = sheet.getRow(53);
                      Cell R54Cell1 = row.createCell(3);
-                    if (record.getR54_fig_bal_sheet() != null) {
-                        R54Cell1.setCellValue(record.getR54_fig_bal_sheet().doubleValue());
+                    if (record1.getR54_fig_bal_sheet() != null) {
+                        R54Cell1.setCellValue(record1.getR54_fig_bal_sheet().doubleValue());
                         R54Cell1.setCellStyle(numberStyle);
                     } else {
                         R54Cell1.setCellValue("");
@@ -6876,8 +6949,8 @@ public class BRRS_PL_SCHS_ReportService {
 
                     // R54 Col E
                     Cell R54Cell2 = row.createCell(4);
-                    if (record.getR54_fig_bal_sheet_bwp() != null) {
-                        R54Cell2.setCellValue(record.getR54_fig_bal_sheet_bwp().doubleValue());
+                    if (record1.getR54_fig_bal_sheet_bwp() != null) {
+                        R54Cell2.setCellValue(record1.getR54_fig_bal_sheet_bwp().doubleValue());
                         R54Cell2.setCellStyle(numberStyle);
                     } else {
                         R54Cell2.setCellValue("");
@@ -6886,8 +6959,8 @@ public class BRRS_PL_SCHS_ReportService {
 
                     // R54 Col F
                     Cell R54Cell3 = row.createCell(5);
-                    if (record.getR54_amt_statement_adj() != null) {
-                        R54Cell3.setCellValue(record.getR54_amt_statement_adj().doubleValue());
+                    if (record1.getR54_amt_statement_adj() != null) {
+                        R54Cell3.setCellValue(record1.getR54_amt_statement_adj().doubleValue());
                         R54Cell3.setCellStyle(numberStyle);
                     } else {
                         R54Cell3.setCellValue("");
@@ -6895,8 +6968,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R54 Col G
                     Cell R54Cell4 = row.createCell(6);
-                    if (record.getR54_amt_statement_adj_bwp() != null) {
-                        R54Cell4.setCellValue(record.getR54_amt_statement_adj_bwp().doubleValue());
+                    if (record1.getR54_amt_statement_adj_bwp() != null) {
+                        R54Cell4.setCellValue(record1.getR54_amt_statement_adj_bwp().doubleValue());
                         R54Cell4.setCellStyle(numberStyle);
                     } else {
                         R54Cell4.setCellValue("");
@@ -6904,8 +6977,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R54 Col H
                     Cell R54Cell5 = row.createCell(7);
-                    if (record.getR54_net_amt() != null) {
-                        R54Cell5.setCellValue(record.getR54_net_amt().doubleValue());
+                    if (record1.getR54_net_amt() != null) {
+                        R54Cell5.setCellValue(record1.getR54_net_amt().doubleValue());
                         R54Cell5.setCellStyle(numberStyle);
                     } else {
                         R54Cell5.setCellValue("");
@@ -6913,8 +6986,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R54 Col I
                     Cell R54Cell6 = row.createCell(8);
-                    if (record.getR54_net_amt_bwp() != null) {
-                        R54Cell6.setCellValue(record.getR54_net_amt_bwp().doubleValue());
+                    if (record1.getR54_net_amt_bwp() != null) {
+                        R54Cell6.setCellValue(record1.getR54_net_amt_bwp().doubleValue());
                         R54Cell6.setCellStyle(numberStyle);
                     } else {
                         R54Cell6.setCellValue("");
@@ -6922,8 +6995,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R54 Col J
                     Cell R54Cell7 = row.createCell(9);
-                    if (record.getR54_bal_sub() != null) {
-                        R54Cell7.setCellValue(record.getR54_bal_sub().doubleValue());
+                    if (record1.getR54_bal_sub() != null) {
+                        R54Cell7.setCellValue(record1.getR54_bal_sub().doubleValue());
                         R54Cell7.setCellStyle(numberStyle);
                     } else {
                         R54Cell7.setCellValue("");
@@ -6931,8 +7004,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R54 Col K
                     Cell R54Cell8 = row.createCell(10);
-                    if (record.getR54_bal_sub_bwp() != null) {
-                        R54Cell8.setCellValue(record.getR54_bal_sub_bwp().doubleValue());
+                    if (record1.getR54_bal_sub_bwp() != null) {
+                        R54Cell8.setCellValue(record1.getR54_bal_sub_bwp().doubleValue());
                         R54Cell8.setCellStyle(numberStyle);
                     } else {
                         R54Cell8.setCellValue("");
@@ -6940,8 +7013,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R54 Col L
                     Cell R54Cell9 = row.createCell(11);
-                    if (record.getR54_bal_sub_diaries() != null) {
-                        R54Cell9.setCellValue(record.getR54_bal_sub_diaries().doubleValue());
+                    if (record1.getR54_bal_sub_diaries() != null) {
+                        R54Cell9.setCellValue(record1.getR54_bal_sub_diaries().doubleValue());
                         R54Cell9.setCellStyle(numberStyle);
                     } else {
                         R54Cell9.setCellValue("");
@@ -6949,8 +7022,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R54 Col M
                     Cell R54Cell10 = row.createCell(12);
-                    if (record.getR54_bal_sub_diaries_bwp() != null) {
-                        R54Cell10.setCellValue(record.getR54_bal_sub_diaries_bwp().doubleValue());
+                    if (record1.getR54_bal_sub_diaries_bwp() != null) {
+                        R54Cell10.setCellValue(record1.getR54_bal_sub_diaries_bwp().doubleValue());
                         R54Cell10.setCellStyle(numberStyle);
                     } else {
                         R54Cell10.setCellValue("");
@@ -7510,8 +7583,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
                      row = sheet.getRow(60);
                      Cell R61Cell1 = row.createCell(3);
-                    if (record.getR61_fig_bal_sheet() != null) {
-                        R61Cell1.setCellValue(record.getR61_fig_bal_sheet().doubleValue());
+                    if (record1.getR61_fig_bal_sheet() != null) {
+                        R61Cell1.setCellValue(record1.getR61_fig_bal_sheet().doubleValue());
                         R61Cell1.setCellStyle(numberStyle);
                     } else {
                         R61Cell1.setCellValue("");
@@ -7520,8 +7593,8 @@ public class BRRS_PL_SCHS_ReportService {
 
                     // R61 Col E
                     Cell R61Cell2 = row.createCell(4);
-                    if (record.getR61_fig_bal_sheet_bwp() != null) {
-                        R61Cell2.setCellValue(record.getR61_fig_bal_sheet_bwp().doubleValue());
+                    if (record1.getR61_fig_bal_sheet_bwp() != null) {
+                        R61Cell2.setCellValue(record1.getR61_fig_bal_sheet_bwp().doubleValue());
                         R61Cell2.setCellStyle(numberStyle);
                     } else {
                         R61Cell2.setCellValue("");
@@ -7530,8 +7603,8 @@ public class BRRS_PL_SCHS_ReportService {
 
                     // R61 Col F
                     Cell R61Cell3 = row.createCell(5);
-                    if (record.getR61_amt_statement_adj() != null) {
-                        R61Cell3.setCellValue(record.getR61_amt_statement_adj().doubleValue());
+                    if (record1.getR61_amt_statement_adj() != null) {
+                        R61Cell3.setCellValue(record1.getR61_amt_statement_adj().doubleValue());
                         R61Cell3.setCellStyle(numberStyle);
                     } else {
                         R61Cell3.setCellValue("");
@@ -7539,8 +7612,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R61 Col G
                     Cell R61Cell4 = row.createCell(6);
-                    if (record.getR61_amt_statement_adj_bwp() != null) {
-                        R61Cell4.setCellValue(record.getR61_amt_statement_adj_bwp().doubleValue());
+                    if (record1.getR61_amt_statement_adj_bwp() != null) {
+                        R61Cell4.setCellValue(record1.getR61_amt_statement_adj_bwp().doubleValue());
                         R61Cell4.setCellStyle(numberStyle);
                     } else {
                         R61Cell4.setCellValue("");
@@ -7548,8 +7621,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R61 Col H
                     Cell R61Cell5 = row.createCell(7);
-                    if (record.getR61_net_amt() != null) {
-                        R61Cell5.setCellValue(record.getR61_net_amt().doubleValue());
+                    if (record1.getR61_net_amt() != null) {
+                        R61Cell5.setCellValue(record1.getR61_net_amt().doubleValue());
                         R61Cell5.setCellStyle(numberStyle);
                     } else {
                         R61Cell5.setCellValue("");
@@ -7557,8 +7630,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R61 Col I
                     Cell R61Cell6 = row.createCell(8);
-                    if (record.getR61_net_amt_bwp() != null) {
-                        R61Cell6.setCellValue(record.getR61_net_amt_bwp().doubleValue());
+                    if (record1.getR61_net_amt_bwp() != null) {
+                        R61Cell6.setCellValue(record1.getR61_net_amt_bwp().doubleValue());
                         R61Cell6.setCellStyle(numberStyle);
                     } else {
                         R61Cell6.setCellValue("");
@@ -7566,8 +7639,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R61 Col J
                     Cell R61Cell7 = row.createCell(9);
-                    if (record.getR61_bal_sub() != null) {
-                        R61Cell7.setCellValue(record.getR61_bal_sub().doubleValue());
+                    if (record1.getR61_bal_sub() != null) {
+                        R61Cell7.setCellValue(record1.getR61_bal_sub().doubleValue());
                         R61Cell7.setCellStyle(numberStyle);
                     } else {
                         R61Cell7.setCellValue("");
@@ -7575,8 +7648,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R61 Col K
                     Cell R61Cell8 = row.createCell(10);
-                    if (record.getR61_bal_sub_bwp() != null) {
-                        R61Cell8.setCellValue(record.getR61_bal_sub_bwp().doubleValue());
+                    if (record1.getR61_bal_sub_bwp() != null) {
+                        R61Cell8.setCellValue(record1.getR61_bal_sub_bwp().doubleValue());
                         R61Cell8.setCellStyle(numberStyle);
                     } else {
                         R61Cell8.setCellValue("");
@@ -7584,8 +7657,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R61 Col L
                     Cell R61Cell9 = row.createCell(11);
-                    if (record.getR61_bal_sub_diaries() != null) {
-                        R61Cell9.setCellValue(record.getR61_bal_sub_diaries().doubleValue());
+                    if (record1.getR61_bal_sub_diaries() != null) {
+                        R61Cell9.setCellValue(record1.getR61_bal_sub_diaries().doubleValue());
                         R61Cell9.setCellStyle(numberStyle);
                     } else {
                         R61Cell9.setCellValue("");
@@ -7593,8 +7666,8 @@ public class BRRS_PL_SCHS_ReportService {
                     }
 					// R61 Col M
                     Cell R61Cell10 = row.createCell(12);
-                    if (record.getR61_bal_sub_diaries_bwp() != null) {
-                        R61Cell10.setCellValue(record.getR61_bal_sub_diaries_bwp().doubleValue());
+                    if (record1.getR61_bal_sub_diaries_bwp() != null) {
+                        R61Cell10.setCellValue(record1.getR61_bal_sub_diaries_bwp().doubleValue());
                         R61Cell10.setCellStyle(numberStyle);
                     } else {
                         R61Cell10.setCellValue("");

@@ -946,58 +946,40 @@ PURPOSE		: BRRSREPORT
 
     });
 
-    function showmodify(btn) {
-      // ✅ List of IDs that should ALWAYS remain readonly
-      var readonlyIds = [
-        "r10_net_book_value", "r11_net_book_value", "r12_net_book_value", "r13_net_book_value",
-        "r14_net_book_value", "r15_net_book_value", "r16_net_book_value", "r17_net_book_value",
-        "r17_cost", "r17_fix_ass", "r17_add", "r17_disposals", "r17_depreciation",
-        "r10_fix_ass", "r12_fix_ass", "r13_fix_ass", "r14_fix_ass", "r15_fix_ass", "r16_fix_ass",
-        "r28_close_bal", "r28_acc_amort_amt", "r28_month_amort", "r28_res_value", "r28_intangible_ass",
-        "r28_useful_life", "r28_cost_rev"
-      ];
+   function showmodify(btn) {
+    // ✅ List of IDs that should ALWAYS remain readonly
+    var readonlyIds = [
+        // keep empty or add any fields you want to remain readonly
+    ];
 
-      // ✅ Make all .Show_input editable except readonly IDs
-      $(".Show_input").each(function () {
+    // ✅ Make all .Show_input editable except readonly IDs
+    $(".Show_input").each(function () {
         if (!readonlyIds.includes(this.id)) {
-          $(this).prop("readonly", false).prop("disabled", false);
+            $(this).prop("readonly", false).prop("disabled", false);
         }
-      });
+    });
 
-      // ✅ Change background color for R23-R27 fields
-      for (let i = 23; i <= 27; i++) {
+    // ✅ Change background color for numeric fields
+    for (let i = 12; i <= 61; i++) {
         let fields = [
-          "_cost_rev",
-          "_month_amort",
-          "_acc_amort_amt",
-          "_close_bal",
-          "_useful_life",
-          "_res_value"
+            "_fig_bal_sheet", "_fig_bal_sheet_bwp", "_amt_statement_adj", "_amt_statement_adj_bwp",
+            "_net_amt", "_net_amt_bwp", "_bal_sub", "_bal_sub_bwp", "_bal_sub_diaries", "_bal_sub_diaries_bwp"
         ];
 
         fields.forEach(field => {
-          let selector = `#r${i}${field}`;
-          if ($(selector).length) {
-            $(selector).css("background-color", "#d3d3d3");
-          }
+            let selector = `#r${i}${field}`;
+            if ($(selector).length) {
+                $(selector).css("background-color", "#d3d3d3"); // grey
+            }
         });
-      }
-
-      // ✅ Prepare R12 fields for editing
-      let r12Fields = ["_cost", "_add", "_disposals", "_depreciation"];
-      r12Fields.forEach(field => {
-        let selector = `#r12${field}`;
-        if ($(selector).length) {
-          $(selector).prop("readonly", false).prop("disabled", false)
-            .css("background-color", "#d3d3d3");
-        }
-      });
-
-      // ✅ Toggle buttons visibility
-      $("#submitButton").show();
-      $("#cancelRecord").show();
-      $(btn).hide(); // hide the clicked Modify button
     }
+
+    // ✅ Toggle buttons visibility
+    $("#submitButton").show();
+    $("#cancelRecord").show();
+    $(btn).hide(); // hide the clicked Modify button
+}
+
 
     
     function fileuploads(btn) {

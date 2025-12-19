@@ -102,6 +102,7 @@ import com.bornfire.brrs.services.BRRS_M_SRWA_12H_ReportService;
 import com.bornfire.brrs.services.BRRS_M_TBS_ReportService;
 import com.bornfire.brrs.services.BRRS_M_TOP_100_BORROWER_ReportService;
 import com.bornfire.brrs.services.BRRS_M_UNCONS_INVEST_ReportService;
+import com.bornfire.brrs.services.BRRS_PL_SCHS_ReportService;
 import com.bornfire.brrs.services.BRRS_Q_BRANCHNET_ReportService;
 import com.bornfire.brrs.services.BRRS_Q_RLFA1_ReportService;
 import com.bornfire.brrs.services.BRRS_Q_RLFA2_ReportService;
@@ -3618,6 +3619,31 @@ public ResponseEntity<String> updateReport(
 
 		// call services
 		BRRS_ADISB1_ReportService.updateReport(request);
+
+		return ResponseEntity.ok("Updated Successfully.");
+	} catch (Exception e) {
+		e.printStackTrace();
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
+	}
+}
+
+@Autowired
+BRRS_PL_SCHS_ReportService BRRS_PL_SCHS_ReportService;
+
+@RequestMapping(value = "/PL_SCHSupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
+@ResponseBody
+public ResponseEntity<String> updateReport(
+		@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+		@ModelAttribute PL_SCHS_Manual_Summary_Entity request) {
+
+	try {
+		System.out.println("came to single controller");
+
+		// ✅ set the asondate into entity
+		request.setReport_date(asondate);
+
+		// call services
+		BRRS_PL_SCHS_ReportService.updateReport(request);
 
 		return ResponseEntity.ok("Updated Successfully.");
 	} catch (Exception e) {
