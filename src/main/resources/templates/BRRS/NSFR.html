@@ -1,0 +1,2657 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
+
+<!-- 
+CREATED BY : HARIHARAN M V
+CREATED ON : 17.12.2025
+PURPOSE  : BRRSREPORT
+-->
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+   xmlns:th="http://www.thymeleaf.org">
+<head>
+ <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+ <meta name="viewport" content="width=device-width, initial-scale=1">
+
+ <!-- CSS -->
+ <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}">
+ <link rel="stylesheet" type="text/css" th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}">
+ <link rel="stylesheet" type="text/css" th:href="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.css}">
+ <link rel="stylesheet" type="text/css" th:href="@{/webjars/datatables/1.10.19/css/jquery.dataTables.min.css}">
+ <link rel="stylesheet" th:href="@{/css/CustomButton.css}" />
+ <link rel="icon" th:href="@{/favicon.ico}" type="image/x-icon" />
+
+ <!-- JavaScript -->
+ <!-- jQuery core (required first) -->
+ 
+
+ <!-- ✅ Your manually placed jQuery validation
+ <script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+  <script th:src="/jquery/jquery.validate.min.js"></script>
+  -->
+ 
+ <!-- jQuery (required first) -->
+ <script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+<!-- <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script> -->
+
+<!-- ✅ jQuery Validation -->
+<script src="/webjars/jquery-validation/1.19.0/jquery.validate.min.js"
+ th:src="@{/webjars/jquery-validation/1.19.0/jquery.validate.min.js}"></script>
+ 
+ <!-- Bootstrap + Others -->
+ <script th:src="@{/webjars/popper.js/1.14.7/umd/popper.min.js}"></script>
+ <script th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
+ <script th:src="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.js}"></script>
+ <script th:src="@{/webjars/jquery-form/4.2.2/jquery.form.min.js}"></script>
+ <script th:src="@{/webjars/datatables/1.10.19/js/jquery.dataTables.min.js}"></script>
+ <script th:src="@{/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js}"></script>
+
+
+<style>
+.btns {
+ float: right;
+ margin: 5px;
+}
+
+.col-sm-5 {
+ padding-bottom: 15px;
+}
+
+.list-body {
+ padding: 0px;
+}
+
+.error {
+ color: red;
+ padding-left: 10px;
+}
+
+.formline {
+ padding-bottom: 15px;
+}
+
+.btn-primary {
+ background-color: #E77400;
+ border-color: #0c0c0c;
+}
+
+.btn-primary:not (:disabled ):not (.disabled ).active, .btn-primary:not
+  (:disabled ):not (.disabled ):active, .show>.btn-primary.dropdown-toggle
+ {
+ color: #fff;
+ background-color: #cc000000;
+ border-color: #161617;
+}
+
+#finusertb {
+ width: 460px;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+ padding: 0px;
+}
+</style>
+ 
+  
+ 
+ 
+ <style>
+  div span {
+    font-weight: bold;
+    color: white !important;
+ }
+  .card {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    border-radius: 8px;
+  }
+
+  .card-header h5 {
+    font-size: 22px;
+    color: #fff;
+    font-weight: 600;
+  }
+
+  .nav-tabs .nav-link {
+    font-weight: 500;
+    border: 1px solid #dee2e6;
+    border-bottom: none;
+    border-radius: 4px 4px 0 0;
+    background-color: #f1f1f1;
+    margin-right: 5px;
+  }
+
+  .nav-tabs .nav-link.active {
+    background-color: #ffffff;
+    border-color: #dee2e6 #dee2e6 #ffffff;
+  }
+
+  .table-responsive {
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+  }
+
+  .table-hover tbody tr:hover {
+    background-color: #f3f6f9;
+  }
+
+  thead th {
+    position: sticky;
+    top: 0;
+    background-color: #e9ecf0;
+    z-index: 1;
+  }
+  
+.table td{
+ background-color: #FFFFFF;
+
+}
+  
+  
+
+  .card-footer {
+    padding: 10px;
+    border-top: 1px solid #ccc;
+  }
+
+  .btn-xs {
+    padding: 4px 12px;
+    font-size: 14px;
+    border-radius: 4px;
+  }
+
+  #BRFvalidation th, #usertable td {
+    vertical-align: middle;
+    text-align: left;
+    font-size: 16px;
+    font-family: Arial;
+  }
+
+  .fa-edit:hover {
+    color: #28a745;
+    transform: scale(1.1);
+  }
+
+
+
+td {
+  border: 1px solid rgb(0,164,166);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+</style>
+ 
+
+<style>
+        .form-group {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-control {
+            width: 100%;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            font-size: 1rem;
+            outline: none;
+            background: transparent;
+            transition: border-color 0.3s ease, padding-top 0.3s ease;
+        }
+        .error {
+      color: red;
+      padding-top: 15px;
+   }
+        
+        
+
+        .form-control:focus {
+            border-color: #007bff;
+        }
+
+        .form-legend {
+            position: absolute;
+            top: 50%;
+            left: 15px;
+            transform: translateY(-50%);
+            font-size: 1rem;
+            color: #aaa;
+            background: white;
+            padding: 0 5px;
+            pointer-events: none;
+            transition: 0.3s ease;
+        }
+
+        /* When input or select is focused or has a value, move the label up */
+        .form-control:focus ~ .form-legend,
+        .form-control:not(:placeholder-shown) ~ .form-legend {
+            top: -8px;
+            font-size: 1rem;
+            color: #007bff;
+        }
+
+        /* Hover effect when the input/select is focused */
+        .form-control:focus:hover ~ .form-legend {
+            color: #0056b3; /* Darker shade of blue on hover */
+        }
+
+        /* Ensure the label returns to the normal color after focus or hover is removed */
+        .form-control:not(:focus) ~ .form-legend {
+            color: #aaa; /* Normal label color */
+        }
+    </style>
+   
+    <style>
+/* Red border for invalid inputs */
+input.error, select.error {
+  border: 2px solid red !important;
+}
+
+/* Error message style */
+label.error {
+  color: red;
+  font-size: 0.85em;
+  margin-top: 5px;
+  display: block;
+}
+.underline {
+    text-decoration: underline;
+    color: #08a6f1;
+    cursor: pointer;
+}
+.left-arrow-circle {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background-color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 10px;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.left-arrow-circle i {
+    color: rgb(107, 122, 143);
+}
+
+.left-arrow-circle:hover {
+    background-color: rgb(107, 122, 143);
+    cursor: pointer;
+    transform: scale(1.05);
+    border: 2px solid white;
+}
+
+.left-arrow-circle:hover i {
+    color: white;
+}
+
+.white-text span {
+ color: white !important;
+}
+.table-cell tbody td:hover {
+ background-color: #f0f0f0;
+ /* Hover color for cell */
+ cursor: pointer;
+ /* Optional: pointer cursor */
+}
+
+
+
+</style>
+<style>
+  #reports, 
+  #reports th, 
+  #reports td {
+    border: 1px solid black !important;
+  }
+
+  #reports {
+    border-collapse: collapse;
+  }
+</style>
+
+<style>
+   .header-bar {
+     display: flex;
+     align-items: center;
+     flex-wrap: wrap; /* ✅ allows wrapping on smaller screens */
+     gap: 10px; /* spacing between elements */
+     cursor: pointer;
+   }
+
+   /* 🔘 Circular arrow */
+   .left-arrow-circle {
+     width: 35px;
+   
+     height: 35px;
+     border-radius: 50%;
+     background-color: white;
+     color: #1f3a93;
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     margin-right: 10px;
+   }
+
+   .left-arrow-circle i {
+     font-size: 18px;
+   }
+
+   /* 🏷️ Title */
+   .header-title {
+     font-family: Arial, sans-serif;
+     font-size: 20px;
+     font-weight: bold;
+     color: white;
+     margin: 0;
+     flex-shrink: 0;
+   }
+
+   /* 🚌 Bus display style box */
+   .boards {
+    
+    transform: translateY(6px);
+     background-color: rgb(107, 122, 143);
+     color: white;
+     padding: 5px 5px;
+     border-radius: 8px;
+     overflow: hidden;
+     white-space: nowrap;
+     flex: 1; /* ✅ makes it take available space dynamically */
+     min-width: 190px;
+     box-shadow: 0 0 10px rgb(107, 122, 143);
+     position: relative;
+   }
+
+   /* ✨ Scrolling animation */
+   .scrolling-text {
+     display: inline-block;
+     font-family: "Courier New", monospace;
+     font-weight: bold;
+     letter-spacing: 1px;
+     animation: scroll-left 10s linear infinite;
+   }
+
+   @keyframes scroll-left {
+     0% {
+       transform: translateX(100%);
+     }
+     100% {
+       transform: translateX(-100%);
+     }
+   }
+
+   </style>
+
+
+
+ <script th:inline="javascript">
+
+  $(document).ready(function () {
+   // hide loader on normal load
+   $('#loader').modal('hide');
+  });
+
+  $(window).on('pageshow', function () {
+   // hide loader on back/forward nav
+   $('#loader').modal('hide');
+  });
+
+  $(window).on('beforeunload', function () {
+   // hide loader on leaving page
+   $('#loader').modal('hide');
+  });
+
+    
+  $(document).ready(function() {
+   Maker_Checker_Function(); 
+  });
+
+  // if logged user is a Checker, checker cannot modify, if user is maker , then maker cant download
+  function Maker_Checker_Function() {
+   $.ajax({
+    url: "/BRRS/getUserRole",    
+    type: "GET",
+    success: function(roleId) {
+     // console.log("User Role ID:", roleId);
+    
+     if (roleId === "ADM-C" || roleId === "USR-C"  || roleId === "USER-AUDIT") {
+      const modifyBtn = document.getElementById("addRecord");
+      if (modifyBtn) modifyBtn.style.display = "none";
+     }
+
+     if (roleId === "ADM-M" || roleId === "USR-M") {
+        const button = document.getElementById("custom-tab-btnAdd");
+        if (button) button.style.display = "none";
+       }
+
+    },
+    error: function(err) {
+     console.error("Error fetching role:", err);
+       }
+      });
+  }
+
+
+
+
+  function home() {
+   $("#loader").modal("toggle");
+   location.href = 'Dashboard'
+  }
+
+  function back() {
+   $("#loader").modal("toggle");
+
+   window.history.back();
+  }
+
+  //to fetch summary from the database - called from the summary button
+  function showdetails() {
+
+   var Callurl;
+   $('#loader').modal('show');
+   Callurl = /*[[@{'/Reports/'+${reportid}+'/Details'(asondate=${asondate},fromdate=${fromdate},todate=${todate},currency=${currency},dtltype=${dtltype},type=${type},version=${version})}]]*/
+    location.href = Callurl;
+   console.log(Callurl);
+
+  }
+
+  function showsummary() {
+   $('#loader').modal('show');
+   var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type},version=${version}, asondate=${asondate})}]]*/
+    location.href = Callurl;
+
+  }
+ </script>
+
+ <script>
+
+  function activateTab(tabName) {
+   // Remove 'active' from all buttons
+   document.querySelectorAll('.custom-tab-btn').forEach(btn => {
+    btn.classList.remove('active');
+   });
+
+   // Add 'active' to selected button
+   if (tabName === 'summary') {
+    document.getElementById('custom-tab-btnSummary').classList.add('active');
+   } else if (tabName === 'Details') {
+    document.getElementById('custom-tab-btnDetails').classList.add('active');
+   }
+  }
+
+  window.onload = function () {
+   /* setTimeout(function() {
+    var selectedTab = document.getElementById("selectedTab").value;
+    alert(selectedTab);
+    activateTab(selectedTab);
+   }, 10000); */ // 10,000 milliseconds = 10 seconds
+
+   var selectedTab = document.getElementById("selectedTab").value;
+   activateTab(selectedTab);
+  };
+
+
+  function downloadfile(button) {
+      var reportid = button.getAttribute('data-reportid');
+      var asondate = button.getAttribute('data-asondate');
+      var fromdate = button.getAttribute('data-fromdate');
+      var todate = button.getAttribute('data-todate');
+      var currency = button.getAttribute('data-currency');
+      var subreportid = button.getAttribute('data-subreportid');
+      var secid = button.getAttribute('data-secid');
+      var dtltype = button.getAttribute('data-dtltype');
+      var filename = button.getAttribute('data-filename');
+   var type = button.getAttribute('data-type');
+   var version = button.getAttribute('data-version');
+
+      $('#loader').modal('show');
+
+      $.ajax({
+          url: './downloadExcel?reportid=' + reportid +
+              '&fromdate=' + fromdate +
+              '&asondate=' + asondate +
+              '&todate=' + todate +
+              '&currency=' + currency +
+              '&subreportid=' + subreportid +
+              '&secid=' + secid +
+              '&filename=' + filename +
+     '&type=' + type +
+     '&version=' + version,
+          type: 'GET',
+          xhrFields: { responseType: 'blob' },
+
+          success: function (data) {
+              if (data && data.size > 100) {
+                  const blob = new Blob([data], { type: 'application/vnd.ms-excel' });
+                  const url = window.URL.createObjectURL(blob);
+                  const a = document.createElement('a');
+
+                  a.style.display = 'none';
+                  a.href = url;
+                  a.download = filename;
+
+                  document.body.appendChild(a);
+                  a.click();
+
+                  window.URL.revokeObjectURL(url);
+                  document.body.removeChild(a);
+
+                  showResultModal('BRRS', filename + ' downloaded successfully.');
+              } else {
+                  showResultModal('Information', 'No data was available to create a download.');
+              }
+          },
+
+          error: function (jqXHR, textStatus, errorThrown) {
+              console.error("Download failed:", textStatus, errorThrown);
+              showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
+          },
+
+          complete: function () {
+              // 🔥 THIS ALWAYS RUNS (success or error or exceptions)
+              $('#loader').modal('hide');
+          }
+      });
+  }
+
+
+  function closemodel() {
+   // Hide the modals
+   $('#alert').modal('hide');
+   $('#resultModal').modal('hide');
+
+  }
+
+
+  function showResultModal(title, message) {
+   // Set the text for the modal elements
+   $('#resultModalLabel').text(title);
+   $('#resultModalBody').text(message);
+
+   // Show the modal
+   $('#resultModal').modal('show');
+  }
+
+ </script>
+ <script>
+
+  function startReport(button) {
+   const alertMsg = document.getElementById("alertMessage");
+   const filename = button.getAttribute('data-filename');
+   const fromdate = button.getAttribute('data-fromdate');
+   const todate = button.getAttribute('data-todate');
+   const currency = button.getAttribute('data-currency');
+   const dtltype = button.getAttribute('data-dtltype');
+   const type = button.getAttribute('data-type');
+   const version = button.getAttribute('data-version');
+   const sessionfilename = sessionStorage.getItem("filename");
+
+   if (sessionfilename == filename) {
+    alertMsg.innerHTML = 'Download request already Processing...';
+    showAlert();
+    return;
+   }
+
+   alertMsg.innerHTML = 'Download request Processing...';
+   showAlert();
+
+   const baseUrl = '/BRRS/Reports/startreport';
+   const downloadUrl = baseUrl +
+    '?filename=' + encodeURIComponent(filename) +
+    '&fromdate=' + encodeURIComponent(fromdate) +
+    '&todate=' + encodeURIComponent(todate) +
+    '&currency=' + encodeURIComponent(currency) +
+    '&dtltype=' + encodeURIComponent(dtltype) +
+    '&type=' + encodeURIComponent(type) +
+    '&version=' + encodeURIComponent(version);
+   fetch(downloadUrl)  // ✅ no invalid characters now
+    .then(res => res.text())
+    .then(jobId => {
+
+     alertMsg.innerHTML = 'Download request received...' + jobId;
+     showAlert();
+     sessionStorage.setItem("jobId", jobId);
+     sessionStorage.setItem("filename", filename);
+     checkReport(jobId);
+    });
+  }
+
+  function checkReport(jobId) {
+   const alertMsg = document.getElementById("alertMessage");
+   fetch('/BRRS/Reports/checkreport?jobId=' + encodeURIComponent(jobId))
+    .then(res => res.text())
+    .then(status => {
+     if (status === "READY") {
+      alertMsg.innerHTML = 'Report is ready! Downloaded';
+      showAlert();
+      const filename = sessionStorage.getItem("filename");
+      downloadDetailfile(jobId, filename)
+      sessionStorage.removeItem("jobId");
+      sessionStorage.removeItem("filename");
+
+     } else if (status === "PROCESSING") {
+      alertMsg.innerHTML = 'Download Is Processing…';
+      showAlert();
+      setTimeout(() => checkReport(jobId), 5000);
+     }
+     else if (status === "ERROR") {
+      alertMsg.innerHTML = 'No data was available to create a download.';
+      showAlert();
+      sessionStorage.removeItem("jobId");
+      sessionStorage.removeItem("filename");
+     }
+    });
+  }
+
+
+
+  function downloadDetailfile(jobId, filename) {
+
+   //$('#loader').modal('show');
+
+   $.ajax({
+    url: '/BRRS/Reports/downloaddetailExcel?jobId=' + jobId +
+     '&filename=' + filename,
+    type: 'GET',
+    xhrFields: {
+     responseType: 'blob'
+    },
+    success: function (data) {
+     $('#loader').modal('hide');
+
+     if (data && data.size > 100) {
+      const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.style.display = 'none';
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+
+      showResultModal('BRRS', filename + ' downloaded successfully');
+     } else {
+      showResultModal('Information', 'No data was available to create a download.');
+     }
+    },
+    error: function (jqXHR, textStatus, errorThrown) {
+     $('#loader').modal('hide');
+     console.error("Download failed:", textStatus, errorThrown);
+     showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
+    }
+   });
+  }
+
+
+ </script>
+
+     <script th:inline="javascript">
+  function showdetailsbyRowAndColumn(a) {
+   var reportLable = a.getAttribute('reportLable');
+   var reportAddlCriteria1 = a.getAttribute('reportAddlCriteria1');
+   var cellValue = a.textContent || a.innerText;
+
+   if (cellValue !== '0') {
+    // Set dynamic message in modal (instead of confirm)
+    document.getElementById("cellresultModalLabel").innerText =
+     "Do you want to open details for Report Lable: " + reportLable + " and Report Addl Criteria1: " + reportAddlCriteria1 + "?";
+
+    // Show custom Bootstrap modal
+    $('#cellresultModal').modal('show');
+
+    // Handle Yes button
+    document.querySelector('.yes-btn').onclick = function () {
+     $('#cellresultModal').modal('hide');
+
+     // Show loader
+     const loader = bootstrap.Modal.getOrCreateInstance(document.getElementById('loader'), {
+      backdrop: 'static',
+      keyboard: false
+     });
+     $('#loader').modal('show');
+
+     // Build dynamic URL
+     var Callurl = /*[[@{'/Reports/' + ${reportid} + '/Details'(asondate=${asondate}, fromdate=${fromdate}, todate=${todate}, currency=${currency}, dtltype=${dtltype},type=${type},version=${version})}]]*/ "";
+     Callurl += "&filter=" + encodeURIComponent(reportLable + "," + reportAddlCriteria1);
+
+     location.href = Callurl;
+    };
+   } else {
+    // Use your custom alert modal instead of window.alert
+    showResultModal("Alert", "No Records available for this selected cell.");
+   }
+  }
+ </script>
+
+
+  
+
+ <!-- 
+<script>
+function showmodify(btn) {
+    // Enable editable fields
+    $(".Show_input").not(".nonEditable").removeAttr("readonly").removeAttr("disabled");
+
+    // ===== GROUP 1 =====
+    let rows1 = [23,25,26,30,35,42,43,44,46];
+    let fields1 = ["total_value", "total_no_of_acct"];
+
+    rows1.forEach(r => {
+        fields1.forEach(f => {
+            const selector = `#r${r}_${f}`;
+            if ($(selector).length) $(selector).css("background-color", "#d3d3d3");
+        });
+    });
+
+
+
+    // Show buttons
+    $("#submitButton").show();
+    $("#cancelRecord").show();
+
+    // Hide the modify button clicked
+    $(btn).hide();
+}
+
+
+//Cancel / Reset function
+function cancelModify() {
+    if (confirm("Are you sure you want to cancel changes? Page will reload.")) {
+        // ✅ Only when user clicks YES
+        location.reload();
+        
+        $(".Show_input").attr("readonly", true).attr("disabled", true);
+
+        $("#submitButton, #btnBack_edit").hide();
+        $("#btnBack").show();
+
+        // Hide Cancel button again
+        $("#cancelRecord").hide();
+
+        // Show all Modify buttons
+        $("#addRecord").show();
+    }
+    // ❌ If user clicks CANCEL, nothing happens
+}
+
+</script>
+
+ -->
+
+
+
+<script>
+ 
+
+ // This function is for closing the modal after an action is complete.
+ // It hides the result and loader modals and reloads the page.
+ function closemodels() {
+     $("#resultModal").modal("hide");
+     $('#loader').modal('hide');
+
+  // Reload the page after a short delay to ensure the modal animation completes smoothly.
+      setTimeout(function () {
+          location.reload();
+      }, 300);
+ }
+
+ <!-- 
+ function fileuploads(btn) {
+     const asondate = btn.getAttribute("data-todate");
+     const type = btn.getAttribute("data-type");
+
+     // Show loader
+     $('#loader').modal('show');
+
+     try {
+         // ✅ Step 1: Calculate totals
+
+         // ✅ Step 2: Remove commas from all text inputs
+         $("#fileupload input[type='text']").each(function () {
+             $(this).val($(this).val().replace(/,/g, ''));
+         });
+
+         // ✅ Step 3: Validate form
+         if (!$("#fileupload").valid()) {
+             $('#loader').modal('hide');
+             return;
+         }
+
+         // ✅ Step 4: Build FormData
+         const formData = new FormData();
+         formData.append("asondate", asondate);
+         formData.append("type", type);
+
+         $('#fileupload').find(':input').each(function () {
+             const name = $(this).attr('name');
+             if (name) {
+                 formData.append(name, $(this).val());
+             }
+         });
+
+         // ✅ Step 5: AJAX submission
+         $.ajax({
+             url: './NSFRupdateAll',
+             type: 'POST',
+             data: formData,
+             processData: false,
+             contentType: false,
+             dataType: 'text',
+             success: function () {
+                 $("#resultModalLabel").text("BRRS");
+                 $("#resultModalBody").text(" Updated Successfully.");
+                 $("#resultModal").modal("show");
+             },
+             error: function (jqXHR) {
+                 console.error("Error response:", jqXHR.responseText);
+                 $("#resultModalLabel").text("Error");
+                 $("#resultModalBody").text("Update failed. Check console for details.");
+                 $("#resultModal").modal("show");
+             },
+             complete: function () {
+                 $('#loader').modal('hide');
+             }
+         });
+
+     } catch (error) {
+         console.error("Error in fileuploads function:", error);
+         $('#loader').modal('hide');
+         $("#resultModalLabel").text("Error");
+         $("#resultModalBody").text("Unexpected error occurred. Check console.");
+         $("#resultModal").modal("show");
+     }
+ }
+ </script>
+ 
+   <script th:inline="javascript">
+       /*<![CDATA[*/
+       const reportId = /*[[${reportid}]]*/ null;
+       /*]]>*/
+   </script>
+
+  <script>
+   function openDetail(elem, mode) {
+    
+    var type = elem.getAttribute('data-type');   
+
+               if (type === "ARCHIVAL") {
+                   showResultModal('BRRS',"Archived Data cannot be modified");
+                   return;
+               } 
+    const acctNo = elem.getAttribute("data-acctNo");
+     const asondate = elem.getAttribute("data-asondate");
+    location.href = `/BRRS/Reports/${reportId}/Detailspage?formmode=${mode}&acctNo=${acctNo}&asondate=${asondate}`;
+   }
+  </script>
+     
+   <style>
+       
+
+   
+    /* Keep the header fixed and aligned */
+    .dataTables_scrollHeadInner,
+    .dataTables_scrollBody table {
+      width: 100% !important;
+    }
+
+    /* Prevent thead shrinking at zoom */
+    .dataTables_scrollHeadInner table {
+      width: 100% !important;
+      min-width: 100% !important;
+    }
+
+    #reportdetails {
+      width: 100% !important;
+      table-layout: fixed !important;
+    }
+
+    #reportdetails th, 
+    #reportdetails td {
+      white-space: nowrap;
+    }
+    table.dataTable th.dt-type-numeric,
+     table.dataTable th.dt-type-date,
+     table.dataTable td.dt-type-numeric,
+     table.dataTable td.dt-type-date {
+         text-align: left !important;
+     }
+       
+     /* Right-align header (6th column = ACCT BALANCE) */
+              table.dataTable th.dt-type-numeric:nth-child(6) {
+                text-align: right !important;
+              }
+              
+          
+              
+              /* Right-align data (6th column = ACCT BALANCE) */
+                        #reportdetails td:nth-child(6),
+                        .dataTables_scrollHeadInner table th:nth-child(6) {
+                         text-align: right !important;
+                         padding-right: 10px !important;
+                         }
+                         
+      
+
+           
+         </style>
+         
+       <script th:inline="javascript">
+         $(document).ready(function () {
+           var table = $('#reportdetails').DataTable({
+             scrollY: "550px",
+             scrollX: true,
+             scrollCollapse: true,
+             autoWidth: false,
+             paging: true,
+             searching: true,
+             lengthChange: false,
+             ordering: true,
+             pageLength: 100,
+             fixedHeader: true, // ✅ You can simply set it to true
+          // ✅ Column width settings
+           columnDefs: [
+             { width: "60px", targets: 0 },   // Edit icon column
+             { width: "180px", targets: 1 }  ,  // S No column
+          { width: "250px", targets: 5 },
+          { width: "250px", targets: 7 }// S No column
+           ],
+
+             dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t'
+           });
+
+           // ✅ Fix alignment on resize / zoom
+           $(window).on('resize', function () {
+             table.columns.adjust().draw(false);
+           });
+
+           // ✅ Fix initial misalignment if loaded at non-100% zoom
+           setTimeout(function () {
+             table.columns.adjust().draw(false);
+           }, 500);
+         });
+       </script>
+    
+  <script>
+    function submitUpdate() {
+        const formData = $('#DetailForm').serialize(); // Ensure correct form ID
+
+        // ✅ Store the previous page URL
+        const previousUrl = document.referrer; // same as going back once in history
+
+        // Show loader while processing
+        $('#loader').modal('show');
+
+        $.ajax({
+            url: `/BRRS/Reports/${reportId}/update`,
+            type: 'POST',
+            data: formData,
+            success: function (response) {
+                $('#loader').modal('hide');
+
+                // ✅ Handle SUCCESS & NON-SUCCESS (Information)
+                if (response && response.toLowerCase().includes('success')) {
+                 showResultModal('BRRS', response);
+                } else {
+                 showResultModal('Information', response || 'No data updated.');
+                }
+
+                // Redirect after 1.5 sec
+                setTimeout(() => {
+                    if (previousUrl) {
+                        window.location.href = previousUrl;
+                    } else {
+                        window.history.back(); // fallback
+                    }
+                }, 1500);
+            },
+
+            error: function (xhr, status, error) {
+                $('#loader').modal('hide');
+                console.error("Update error:", error);
+
+                // ✅ Handle ERROR
+                showResultModal('Error', 'Failed to update record. Please try again.');
+
+                // Redirect back after delay even on error
+                setTimeout(() => {
+                    if (previousUrl) {
+                        window.location.href = previousUrl;
+                    } else {
+                        window.history.back();
+                    }
+                }, 1500);
+            }
+        });
+    }
+</script>
+
+</head>
+
+
+
+<title>BRRS</title>
+<body> 
+<div class="container-fluid" style="padding-left:10px; padding-right:0px;">
+  <div class="row">
+  
+   <div th:insert="HeaderMenu :: header"></div>
+
+   
+   
+   <div class="card"  >
+    <div class="card-header" style="background-color: rgb(107, 122, 143); display: flex; align-items: center; justify-content: space-between;">
+     <div class="header-bar" onclick="back();">
+       <!-- ⬅️ Left circular arrow -->
+       <div class="left-arrow-circle">
+         <i class="fa fa-arrow-left"></i>
+       </div>
+
+       <!-- Title -->
+       <h5 class="header-title">
+         Net Stable Funding Ratio
+       </h5>
+
+       <!-- 🚌 Bus display box -->
+       <div class="boards">
+         <p class="scrolling-text">BANK OF BOTSWANA - BANKING SUPERVISION DEPARTMENT</p>
+       </div>
+     </div>
+
+
+    <div class="custom-tab-btn-group nav-buttons" style="display: flex; color: white; align-items: center;">
+        <!-- 📅 Date -->
+        <span class="white-text" style="color:white !important; font-size: 17px; margin-right: 5px;margin-left: 10px;">Report Date:
+            <span th:text="${#strings.replace(asondate, '/', '-')}"></span>
+        </span>
+
+
+        <!-- Summary / Details -->
+        <button class="custom-tab-btn" th:if="${displaymode == 'Details'}" onclick="showsummary();">
+            Summary
+        </button>
+
+        <button class="custom-tab-btn" th:if="${displaymode == 'summary'}" onclick="showdetails();">
+            Details
+        </button>
+
+       <!-- Modify -->
+   <!--      <button class="custom-tab-btn"
+                onclick="showmodify(this);"
+                title="Click to EDIT Records"
+                th:if="${type != 'ARCHIVAL' and displaymode == 'summary'}"
+                th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit"
+                id="addRecord">Modify</button>
+
+        Cancel
+        <button class="custom-tab-btn"
+                style="display:none;"
+                title="Cancel editing"
+                id="cancelRecord"
+                onclick="cancelModify();">
+            Cancel
+        </button> -->
+ 
+        <!-- Download button - Summary -->
+        <button type="button" class="custom-tab-btn"
+            th:if="${displaymode == 'summary'}"
+            th:attr="data-reportid=${reportid}, 
+                     data-asondate=${asondate}, 
+                     data-fromdate=${fromdate}, 
+                     data-todate=${todate}, 
+                     data-currency=${currency},  
+                     data-dtltype=${dtltype}, 
+                     data-filename='NSFR.xlsx',
+                     data-type=${type},
+                     data-version=${version}"
+            onclick="downloadfile(this);">
+            <i class="fa fa-download"></i>
+        </button>
+
+        <!-- Download button - Details -->
+        <button type="button" class="custom-tab-btn"
+            th:if="${displaymode == 'Details'}"
+            th:attr="data-reportid=${reportid}, 
+                     data-asondate=${asondate}, 
+                     data-fromdate=${fromdate}, 
+                     data-todate=${todate}, 
+                     data-currency=${currency},  
+                     data-dtltype=${dtltype}, 
+                     data-filename='NSFRDetail',
+                     data-type=${type},
+                     data-version=${version}"
+            onclick="startReport(this)">
+            <i class="fa fa-download"></i>
+        </button>
+
+    </div>
+</div>
+
+</div>
+
+
+<div th:if="${displaymode == 'summary'}">
+     <div class="row">
+      <div class="col-sm-12">
+       <form action="#" method="POST" id="fileupload">
+      <!-- <h5 style = "font-weight:bold;color:black;">BANK OF BOTSWANA - BANKING SUPERVISION DEPARTMENT<br>(1) MONTHLY SCHEDULE M-SP: STATEMENT OF FINANCIAL POSITION AS AT<br>(P'000)<br> </h5> -->
+       <div
+        class="table-wrapper table-responsive scrollable-table-container"
+        style="border-right: 1px solid #dee2e6;max-height:90vh; overflow-y: auto;">
+        <table
+         class="sticky-header-table table table-bordered table-cell table-sm table-condensed"
+         id="reports">
+   <thead class="thead-light" style="position: sticky; top: 0;border:2px solid black;  z-index: 1;">
+        <!-- <colgroup>
+        <col style="width: 400px;">  Col 1
+        <col style="width: 200px;">  Col 2
+        </colgroup> -->
+    <tr>
+         <th colspan = "2">Month ended SEPTEMBER 30, 2024</th>
+         <th style="background-color:grey; width:190px;"></th> 
+         <th colspan = "3" style="text-align:center;">Amount (P'000)</th>
+    </tr>
+    <tr>
+         <th colspan = "1" style="text-align:center;">Line no.</th>
+         <th style="text-align:center;">Item</th>
+         <th style="background-color:grey; width:190px;"></th> 
+         <th colspan = "3" style="text-align:center;">BANK OF BARODA</th>
+    </tr>
+    <tr>
+         <th colspan = "1" style="text-align:center;"></th>
+         <th style="text-align:center;"></th>
+         <th style="background-color:grey; width:190px;"></th> 
+         <th colspan = "1" style="text-align:right;">Factor (to be multiplied against total amount)</th>
+         <th colspan = "1" style="text-align:right;">Total Amount P'000</th>
+         <th colspan = "1" style="text-align:right;">With Factor Applied</th>
+    </tr>
+    </thead>
+  <tbody style="font-family: Arial"th:each="reportsummary: ${reportsummary}">
+      <!-- R10 -->
+    <tr>
+       <td style="text-align:center;vertical-align: middle;background-color:lightgrey;">1</td>
+       <td style="text-align:left; font-weight:bold;background-color:lightgrey;">A.  AVAILABLE STABLE FUNDING FACTORS  (ASF)</td>
+       <td style="background-color:grey; width:190px;"></td>
+       <td style="text-align:left; font-weight:bold;background-color:lightgrey;"></td>
+       <td style="text-align:left; font-weight:bold;background-color:lightgrey;"></td>
+       <td style="text-align:left; font-weight:bold;background-color:lightgrey;"></td>
+    </tr>
+    <!-- R11 -->
+    <tr>
+       <td style="text-align:center;vertical-align: middle;">2</td>
+       <td style="text-align:left; font-weight:bold;">Components of ASF (Liability Categories)</td>
+       <td style="background-color:grey; width:190px;"></td>
+       <td style="text-align:left; font-weight:bold;background-color:lightgrey;"></td>
+       <td style="text-align:left; font-weight:bold;background-color:lightgrey;"></td>
+       <td style="text-align:left; font-weight:bold;background-color:lightgrey;"></td>
+    </tr> 
+      <!-- R12 -->
+    <tr>
+       <td style="text-align:center;vertical-align: middle;">3</td>
+       <td style="text-align:left;">Total regulatory capital before the application of capital<br> 
+         deductions as defined in paragraph 4.2 of the Directive on the Revised International Convergence of Capital<br>
+         Measurement and Capital Standards for Botswana (Basel II Directive) (excluding Tier 2 instruments with residual<br>
+         maturity of less than one year)</td>
+       <td style="background-color:grey; width:190px;"></td>
+       <td id="R12_FACTOR_BOB"
+         th:text="${#numbers.formatDecimal(reportsummary.R12_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R12', reportAddlCriteria1='C2'">
+       </td>
+       <td id="R12_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R12_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R12', reportAddlCriteria1='C3'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+       <td id="R12_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R12_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
+         th:attr="reportLable='R12', reportAddlCriteria1='C4'">
+       </td>
+   </tr>
+    <!-- R13 -->
+    <tr>
+       <td style="text-align:center;vertical-align: middle;">4</td>
+       <td style="text-align:left;">Other capital instruments and
+        liabilities with effective residual maturity of one year or more </td>
+       <td style="background-color:grey; width:190px;"></td>
+       <td id="R13_FACTOR_BOB"
+         th:text="${#numbers.formatDecimal(reportsummary.R13_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R13', reportAddlCriteria1='C2'">
+       </td>
+       <td id="R13_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R13_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R13', reportAddlCriteria1='C3'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+       <td id="R13_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R13_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
+         th:attr="reportLable='R13', reportAddlCriteria1='C4'">
+       </td>
+   </tr>
+   <!-- R14 -->
+    <tr>
+       <td style="text-align:center;vertical-align: middle;">5</td>
+       <td style="text-align:left;">Stable* non-maturity (demand) deposits and term deposits with residual maturity of<br>
+        less than one year provided by retail and small business customers</td>
+       <td style="background-color:grey; width:190px;"></td>
+       <td id="R14_FACTOR_BOB"
+         th:text="${#numbers.formatDecimal(reportsummary.R14_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R14', reportAddlCriteria1='C2'">
+       </td>
+       <td id="R14_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R14_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R14', reportAddlCriteria1='C3'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+       <td id="R14_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R14_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
+         th:attr="reportLable='R14', reportAddlCriteria1='C4'">
+       </td>
+   </tr>
+   <!-- R15 -->
+    <tr>
+       <td style="text-align:center;vertical-align: middle;">6</td>
+       <td style="text-align:left;">Less stable* non-maturity deposits and term deposits with residual maturity of<br>
+        less than one year provided by retail and small business customers</td>
+       <td style="background-color:grey; width:190px;"></td>
+       <td id="R15_FACTOR_BOB"
+         th:text="${#numbers.formatDecimal(reportsummary.R15_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R15', reportAddlCriteria1='C2'">
+       </td>
+       <td id="R15_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R15_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R15', reportAddlCriteria1='C3'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+       <td id="R15_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R15_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
+         th:attr="reportLable='R15', reportAddlCriteria1='C4'">
+       </td>
+   </tr>
+   <!-- R16 -->
+    <tr>
+       <td style="text-align:center;vertical-align: middle;">7</td>
+       <td style="text-align:left;">Funding with residual maturity of less than one year provided by non-financial corporate customers </td>
+       <td style="background-color:grey; width:190px;"></td>
+       <td id="R16_FACTOR_BOB"
+         th:text="${#numbers.formatDecimal(reportsummary.R16_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R16', reportAddlCriteria1='C2'">
+       </td>
+       <td id="R16_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R16_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R16', reportAddlCriteria1='C3'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+       <td id="R16_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R16_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
+         th:attr="reportLable='R16', reportAddlCriteria1='C4'">
+       </td>
+   </tr>
+   <!-- R17 -->
+    <tr>
+       <td style="text-align:center;vertical-align: middle;"></td>
+       <td style="text-align:left;">Operational deposits*</td>
+       <td style="background-color:grey; width:190px;"></td>
+       <td id="R17_FACTOR_BOB"
+         th:text="${#numbers.formatDecimal(reportsummary.R17_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R17', reportAddlCriteria1='C2'">
+       </td>
+       <td id="R17_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R17_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R17', reportAddlCriteria1='C3'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+       <td id="R17_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R17_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
+         th:attr="reportLable='R17', reportAddlCriteria1='C4'">
+       </td>
+   </tr>
+   <!-- R18 -->
+    <tr>
+       <td style="text-align:center;vertical-align: middle;"></td>
+       <td style="text-align:left;">Funding from sovereigns, public sector entities, and multilateral and<br>
+        national development banks with residual maturity of less than one year </td>
+       <td style="background-color:grey; width:190px;"></td>
+       <td id="R18_FACTOR_BOB"
+         th:text="${#numbers.formatDecimal(reportsummary.R18_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R18', reportAddlCriteria1='C2'">
+       </td>
+       <td id="R18_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R18_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R18', reportAddlCriteria1='C3'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+       <td id="R18_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R18_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
+         th:attr="reportLable='R18', reportAddlCriteria1='C4'">
+       </td>
+   </tr>
+   <!-- R19 -->
+    <tr>
+       <td style="text-align:center;vertical-align: middle;"></td>
+       <td style="text-align:left;">Other funding with residual maturity between six months and less than one year not included in the above categories,<br>
+        including funding provided by central banks and financial institutions  </td>
+       <td style="background-color:grey; width:190px;"></td>
+       <td id="R19_FACTOR_BOB"
+         th:text="${#numbers.formatDecimal(reportsummary.R19_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R19', reportAddlCriteria1='C2'">
+       </td>
+       <td id="R19_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R19_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R19', reportAddlCriteria1='C3'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+       <td id="R19_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R19_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
+         th:attr="reportLable='R19', reportAddlCriteria1='C4'">
+       </td>
+   </tr>
+   <!-- R20 -->
+    <tr>
+       <td style="text-align:center;vertical-align: middle;"></td>
+       <td style="text-align:left;">All other liabilities and equity not included in the above categories, including liabilities without a stated maturity (with a specific<br> 
+       treatment for deferred tax liabilities and minority interests) </td>
+       <td style="background-color:grey; width:190px;"></td>
+       <td id="R20_FACTOR_BOB"
+         th:text="${#numbers.formatDecimal(reportsummary.R20_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R20', reportAddlCriteria1='C2'">
+       </td>
+       <td id="R20_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R20_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R20', reportAddlCriteria1='C3'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+       <td id="R20_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R20_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
+         th:attr="reportLable='R20', reportAddlCriteria1='C4'">
+       </td>
+   </tr>
+   <!-- R21 -->
+    <tr>
+       <td style="text-align:center;vertical-align: middle;"></td>
+       <td style="text-align:left;">NSFR derivative liabilities net of NSFR derivative assets if NSFR derivative liabilities are greater than NSFR derivative assets</td><br>
+       <td style="background-color:grey; width:190px;"></td>
+       <td id="R21_FACTOR_BOB"
+         th:text="${#numbers.formatDecimal(reportsummary.R21_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R21', reportAddlCriteria1='C2'">
+       </td>
+       <td id="R21_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R21_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R21', reportAddlCriteria1='C3'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+       <td id="R21_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R21_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
+         th:attr="reportLable='R21', reportAddlCriteria1='C4'">
+       </td>
+   </tr>
+   <!-- R22 -->
+    <tr>
+       <td style="text-align:center;vertical-align: middle;"></td>
+       <td style="text-align:left;">“Trade date” payables arising from purchases of financial instruments, foreign currencies and commodities.</td>
+       <td style="background-color:grey; width:190px;"></td>
+       <td id="R22_FACTOR_BOB"
+         th:text="${#numbers.formatDecimal(reportsummary.R22_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R22', reportAddlCriteria1='C2'">
+       </td>
+       <td id="R22_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R22_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R22', reportAddlCriteria1='C3'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+       <td id="R22_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R22_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
+         th:attr="reportLable='R22', reportAddlCriteria1='C4'">
+       </td>
+   </tr>
+   <!-- R23 -->
+    <tr>
+       <td style="text-align:center;vertical-align: middle;"></td>
+       <td style="text-align:left; font-weight:bold;">Total ASF</td>
+       <td style="background-color:grey; width:190px;"></td>
+       <td id="R23_FACTOR_BOB" style="text-align: right;vertical-align:bottom; width: 200px;">
+         <!-- th:text="${#numbers.formatDecimal(reportsummary.R23_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'" -->
+         
+       </td>
+       <td id="R23_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R23_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom;font-weight:bold; width: 200px;background-color: rgb(107, 122, 143);color: white;"
+         th:attr="reportLable='R23', reportAddlCriteria1='C3'">
+       </td>
+       <td id="R23_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R23_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom;font-weight:bold; width: 200px;background-color: rgb(107, 122, 143);color: white;"
+         th:attr="reportLable='R23', reportAddlCriteria1='C4'">
+       </td>
+   </tr>
+   <!-- R24 -->
+    <tr>
+       <td style="text-align:center;vertical-align: middle;"></td>
+       <td style="text-align:left; font-weight:bold;">B.  REQUIRED STABLE FUNDING FACTORS (RSF)</td>
+       <td style="background-color:grey; width:190px;"></td>
+       <td style="background-color:lightgrey; "></td>
+       <td style="background-color:lightgrey; "></td>
+       <td style="background-color:lightgrey; "></td>
+    </tr>
+    <!-- R25 -->
+    <tr>
+       <td style="text-align:center;vertical-align: middle;">6</td>
+       <td style="text-align:left; font-weight:bold;">Components of RSF (On-Balance Sheet Assets Category)</td>
+       <td style="background-color:grey; width:190px;"></td>
+       <td style="background-color:lightgrey; "></td>
+       <td style="background-color:lightgrey; "></td>
+       <td style="background-color:lightgrey; "></td>
+    </tr>
+    <!-- R26 -->
+    <tr>
+       <td style="text-align:center;vertical-align: middle;">9</td>
+       <td style="text-align:left;">Coins and bank notes</td>
+       <td style="background-color:grey; width:190px;"></td>
+       <td id="R26_FACTOR_BOB"
+         th:text="${#numbers.formatDecimal(reportsummary.R26_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R26', reportAddlCriteria1='C2'">
+       </td>
+       <td id="R26_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R26_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R26', reportAddlCriteria1='C3'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+       <td id="R26_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R26_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
+         th:attr="reportLable='R26', reportAddlCriteria1='C4'">
+       </td>
+   </tr>
+   <!-- R27 -->
+    <tr>
+       <td style="text-align:center;vertical-align: middle;"></td>
+       <td style="text-align:left;">All central bank reserves</td>
+       <td style="background-color:grey; width:190px;"></td>
+       <td id="R27_FACTOR_BOB"
+         th:text="${#numbers.formatDecimal(reportsummary.R27_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R27', reportAddlCriteria1='C2'">
+       </td>
+       <td id="R27_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R27_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R27', reportAddlCriteria1='C3'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+       <td id="R27_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R27_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
+         th:attr="reportLable='R27', reportAddlCriteria1='C4'">
+       </td>
+   </tr>
+   <!-- R28 -->
+    <tr>
+       <td style="text-align:center;vertical-align: middle;"></td>
+       <td style="text-align:left;">All claims on central banks with residual maturities of less than six months</td>
+       <td style="background-color:grey; width:190px;"></td>
+       <td id="R28_FACTOR_BOB"
+         th:text="${#numbers.formatDecimal(reportsummary.R28_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R28', reportAddlCriteria1='C2'">
+       </td>
+       <td id="R28_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R28_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R28', reportAddlCriteria1='C3'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+       <td id="R28_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R28_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
+         th:attr="reportLable='R28', reportAddlCriteria1='C4'">
+       </td>
+   </tr>
+   <!-- R29 -->
+    <tr>
+       <td style="text-align:center;vertical-align: middle;"></td>
+       <td style="text-align:left;">Trade date receivables arising from sales of financial instruments, foreign currencies and commodities</td>
+       <td style="background-color:grey; width:190px;"></td>
+       <td id="R29_FACTOR_BOB"
+         th:text="${#numbers.formatDecimal(reportsummary.R29_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R29', reportAddlCriteria1='C2'">
+       </td>
+       <td id="R29_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R29_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R29', reportAddlCriteria1='C3'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+       <td id="R29_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R29_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
+         th:attr="reportLable='R29', reportAddlCriteria1='C4'">
+       </td>
+   </tr>
+   <!-- R30 -->
+    <tr>
+       <td style="text-align:center;vertical-align: middle;"></td>
+       <td style="text-align:left;">Unencumbered level 1 assets, excluding coins, banknotes and central bank reserves *</td>
+       <td style="background-color:grey; width:190px;"></td>
+       <td id="R30_FACTOR_BOB"
+         th:text="${#numbers.formatDecimal(reportsummary.R30_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R30', reportAddlCriteria1='C2'">
+       </td>
+       <td id="R30_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R30_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R30', reportAddlCriteria1='C3'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+       <td id="R30_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R30_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
+         th:attr="reportLable='R30', reportAddlCriteria1='C4'">
+       </td>
+   </tr>
+   <!-- R31 -->
+    <tr>
+       <td style="text-align:center;vertical-align: middle;"></td>
+       <td style="text-align:left;">Unencumbered loans to financial institutions with residual maturities of less than six months,<br>
+        where the loan is secured against level 1 assets as defined in LCR, and where the bank has the ability to<br>
+         freely re-hypothecate the received collateral for the life of the loan</td>
+       <td style="background-color:grey; width:190px;"></td>
+       <td id="R31_FACTOR_BOB"
+         th:text="${#numbers.formatDecimal(reportsummary.R31_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R31', reportAddlCriteria1='C2'">
+       </td>
+       <td id="R31_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R31_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R31', reportAddlCriteria1='C3'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+       <td id="R31_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R31_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
+         th:attr="reportLable='R31', reportAddlCriteria1='C4'">
+       </td>
+   </tr>
+   <!-- R32 -->
+    <tr>
+       <td style="text-align:center;vertical-align: middle;"></td>
+       <td style="text-align:left;">All other unencumbered loans to financial institutions with residual maturities of less than six months not included in the above categories</td>
+       <td style="background-color:grey; width:190px;"></td>
+       <td id="R32_FACTOR_BOB"
+         th:text="${#numbers.formatDecimal(reportsummary.R32_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R32', reportAddlCriteria1='C2'">
+       </td>
+       <td id="R32_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R32_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R32', reportAddlCriteria1='C3'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+       <td id="R32_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R32_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
+         th:attr="reportLable='R32', reportAddlCriteria1='C4'">
+       </td>
+   </tr>
+   <!-- R33 -->
+    <tr>
+       <td style="text-align:center;vertical-align: middle;"></td>
+       <td style="text-align:left;">Unencumbered level 2A assets** </td>
+       <td style="background-color:grey; width:190px;"></td>
+       <td id="R33_FACTOR_BOB"
+         th:text="${#numbers.formatDecimal(reportsummary.R33_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R33', reportAddlCriteria1='C2'">
+       </td>
+       <td id="R33_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R33_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R33', reportAddlCriteria1='C3'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+       <td id="R33_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R33_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
+         th:attr="reportLable='R33', reportAddlCriteria1='C4'">
+       </td>
+   </tr>
+   <!-- R34 -->
+    <tr>
+       <td style="text-align:center;vertical-align: middle;"></td>
+       <td style="text-align:left;">HQLA encumbered for a period of six months or more and less than one year </td>
+       <td style="background-color:grey; width:190px;"></td>
+       <td id="R34_FACTOR_BOB"
+         th:text="${#numbers.formatDecimal(reportsummary.R34_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R34', reportAddlCriteria1='C2'">
+       </td>
+       <td id="R34_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R34_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R34', reportAddlCriteria1='C3'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+       <td id="R34_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R34_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
+         th:attr="reportLable='R34', reportAddlCriteria1='C4'">
+       </td>
+   </tr>
+   <!-- R35 -->
+    <tr>
+       <td style="text-align:center;vertical-align: middle;"></td>
+       <td style="text-align:left;">Loans to banks supervised by Bank of Botswanas with residual maturities six months or more and less than one year </td>
+       <td style="background-color:grey; width:190px;"></td>
+       <td id="R35_FACTOR_BOB"
+         th:text="${#numbers.formatDecimal(reportsummary.R35_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R35', reportAddlCriteria1='C2'">
+       </td>
+       <td id="R35_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R35_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R35', reportAddlCriteria1='C3'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+       <td id="R35_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R35_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
+         th:attr="reportLable='R35', reportAddlCriteria1='C4'">
+       </td>
+   </tr>
+   <!-- R36 -->
+    <tr>
+       <td style="text-align:center;vertical-align: middle;"></td>
+       <td style="text-align:left;">Deposits held at other financial institutions for operational purposes </td>
+       <td style="background-color:grey; width:190px;"></td>
+       <td id="R36_FACTOR_BOB"
+         th:text="${#numbers.formatDecimal(reportsummary.R36_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R36', reportAddlCriteria1='C2'">
+       </td>
+       <td id="R36_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R36_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R36', reportAddlCriteria1='C3'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+       <td id="R36_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R36_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
+         th:attr="reportLable='R36', reportAddlCriteria1='C4'">
+       </td>
+   </tr>
+   <!-- R37 -->
+    <tr>
+       <td style="text-align:center;vertical-align: middle;">10</td>
+       <td style="text-align:left;">All other assets not included in the above categories<br>
+        with residual maturity of less than one year, including loans to non-bank financial<br>
+         institutions, loans to non-financial corporate clients, loans to retail and small business customers,<br>
+        and loans to sovereigns, central banks and public sector entities (PSEs)</td>
+       <td style="background-color:grey; width:190px;"></td>
+       <td id="R37_FACTOR_BOB"
+         th:text="${#numbers.formatDecimal(reportsummary.R37_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R37', reportAddlCriteria1='C2'">
+       </td>
+       <td id="R37_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R37_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R37', reportAddlCriteria1='C3'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+       <td id="R37_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R37_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
+         th:attr="reportLable='R37', reportAddlCriteria1='C4'">
+       </td>
+   </tr>
+   <!-- R38 -->
+    <tr>
+       <td style="text-align:center;vertical-align: middle;">11</td>
+       <td style="text-align:left;">Unencumbered residential mortgages with a residual maturity of one year or more and with a risk weight of less than or equal to 35 percent</td>
+       <td style="background-color:grey; width:190px;"></td>
+       <td id="R38_FACTOR_BOB"
+         th:text="${#numbers.formatDecimal(reportsummary.R38_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R38', reportAddlCriteria1='C2'">
+       </td>
+       <td id="R38_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R38_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R38', reportAddlCriteria1='C3'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+       <td id="R38_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R38_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
+         th:attr="reportLable='R38', reportAddlCriteria1='C4'">
+       </td>
+   </tr>
+   <!-- R39 -->
+    <tr>
+       <td style="text-align:center;vertical-align: middle;"></td>
+       <td style="text-align:left;">Other unencumbered loans not included in the above categories, excluding loans to financial institutions,<br>
+        with a residual maturity of one year or more and with a risk weight of less than or equal to 35 percent
+         under the standardised approach </td>
+       <td style="background-color:grey; width:190px;"></td>
+       <td id="R39_FACTOR_BOB"
+         th:text="${#numbers.formatDecimal(reportsummary.R39_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R39', reportAddlCriteria1='C2'">
+       </td>
+       <td id="R39_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R39_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R39', reportAddlCriteria1='C3'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+       <td id="R39_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R39_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
+         th:attr="reportLable='R39', reportAddlCriteria1='C4'">
+       </td>
+   </tr>
+   <!-- R40 -->
+    <tr>
+       <td style="text-align:center;vertical-align: middle;"></td>
+       <td style="text-align:left;">Cash, securities or other assets posted as initial margin for derivative contracts and cash or other assets
+        provided to contribute to the default fund of a CCP</td>
+       <td style="background-color:grey; width:190px;"></td>
+       <td id="R40_FACTOR_BOB"
+         th:text="${#numbers.formatDecimal(reportsummary.R40_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R40', reportAddlCriteria1='C2'">
+       </td>
+       <td id="R40_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R40_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R40', reportAddlCriteria1='C3'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+       <td id="R40_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R40_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
+         th:attr="reportLable='R40', reportAddlCriteria1='C4'">
+       </td>
+   </tr>
+   <!-- R41 -->
+    <tr>
+       <td style="text-align:center;vertical-align: middle;"></td>
+       <td style="text-align:left;">Other unencumbered performing loans with risk weights greater than 35 percent under the standardised <br>approach and 
+       residual maturities of one year or more, excluding loans to financial institutions </td>
+       <td style="background-color:grey; width:190px;"></td>
+       <td id="R41_FACTOR_BOB"
+         th:text="${#numbers.formatDecimal(reportsummary.R41_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R41', reportAddlCriteria1='C2'">
+       </td>
+       <td id="R41_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R41_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R41', reportAddlCriteria1='C3'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+       <td id="R41_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R41_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
+         th:attr="reportLable='R41', reportAddlCriteria1='C4'">
+       </td>
+   </tr>
+   <!-- R42 -->
+    <tr>
+       <td style="text-align:center;vertical-align: middle;"></td>
+       <td style="text-align:left;">Unencumbered securities that are not in default and do not qualify as HQLA, including exchange-traded equities </td>
+       <td style="background-color:grey; width:190px;"></td>
+       <td id="R42_FACTOR_BOB"
+         th:text="${#numbers.formatDecimal(reportsummary.R42_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R42', reportAddlCriteria1='C2'">
+       </td>
+       <td id="R42_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R42_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R42', reportAddlCriteria1='C3'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+       <td id="R42_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R42_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R42', reportAddlCriteria1='C4'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+   </tr>
+   <!-- R43 -->
+    <tr>
+       <td style="text-align:center;vertical-align: middle;"></td>
+       <td style="text-align:left;">Physical traded commodities, including gold </td>
+       <td style="background-color:grey; width:190px;"></td>
+       <td id="R43_FACTOR_BOB"
+         th:text="${#numbers.formatDecimal(reportsummary.R43_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R43', reportAddlCriteria1='C2'">
+       </td>
+       <td id="R43_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R43_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R43', reportAddlCriteria1='C3'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+       <td id="R43_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R43_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
+         th:attr="reportLable='R43', reportAddlCriteria1='C4'">
+       </td>
+   </tr>
+   <!-- R44 -->
+    <tr>
+       <td style="text-align:center;vertical-align: middle;"></td>
+       <td style="text-align:left;">All assets that are encumbered for a period of one year or more</td>
+       <td style="background-color:grey; width:190px;"></td>
+       <td id="R44_FACTOR_BOB"
+         th:text="${#numbers.formatDecimal(reportsummary.R44_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R44', reportAddlCriteria1='C2'">
+       </td>
+       <td id="R44_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R44_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R44', reportAddlCriteria1='C3'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+       <td id="R44_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R44_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
+         th:attr="reportLable='R44', reportAddlCriteria1='C4'">
+       </td>
+   </tr>
+   <!-- R45 -->
+    <tr>
+       <td style="text-align:center;vertical-align: middle;"></td>
+       <td style="text-align:left;">NSFR derivative assets net of NSFR derivative liabilities if NSFR derivative assets are greater than NSFR derivative liabilities</td>
+       <td style="background-color:grey; width:190px;"></td>
+       <td id="R45_FACTOR_BOB"
+         th:text="${#numbers.formatDecimal(reportsummary.R45_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R45', reportAddlCriteria1='C2'">
+       </td>
+       <td id="R45_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R45_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R45', reportAddlCriteria1='C3'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+       <td id="R45_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R45_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
+         th:attr="reportLable='R45', reportAddlCriteria1='C4'">
+       </td>
+   </tr>
+   <!-- R46 -->
+    <tr>
+       <td style="text-align:center;vertical-align: middle;"></td>
+       <td style="text-align:left;">20 percent of derivative liabilities as calculated according to paragraph 19 of the Basel III: the net stable funding ratio</td>
+       <td style="background-color:grey; width:190px;"></td>
+       <td id="R46_FACTOR_BOB"
+         th:text="${#numbers.formatDecimal(reportsummary.R46_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R46', reportAddlCriteria1='C2'">
+       </td>
+       <td id="R46_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R46_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R46', reportAddlCriteria1='C3'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+       <td id="R46_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R46_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
+         th:attr="reportLable='R46', reportAddlCriteria1='C4'">
+       </td>
+   </tr>
+   <!-- R47 -->
+    <tr>
+       <td style="text-align:center;vertical-align: middle;"></td>
+       <td style="text-align:left;">All other assets not included in the above categories,
+        including non-performing loans,<br> loans to financial institutions with a residual
+         maturity of one year or more, non-exchange-traded equities, fixed assets, pension 
+         assets, intangibles,<br> deferred tax assets, retained interest, insurance assets,
+          subsidiary interests, and defaulted securities </td>
+       <td style="background-color:grey; width:190px;"></td>
+       <td id="R47_FACTOR_BOB"
+         th:text="${#numbers.formatDecimal(reportsummary.R47_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R47', reportAddlCriteria1='C2'">
+       </td>
+       <td id="R47_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R47_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R47', reportAddlCriteria1='C3'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+       <td id="R47_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R47_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
+         th:attr="reportLable='R47', reportAddlCriteria1='C4'">
+       </td>
+   </tr>
+   <!-- R48 -->
+    <tr>
+       <td style="text-align:center;vertical-align: middle;">12</td>
+       <td style="text-align:left; font-weight:bold;">Total On-balance Sheet RSF</td>
+       <td style="background-color:grey; width:190px;"></td>
+       <td id="R48_FACTOR_BOB" style="text-align: right;vertical-align:bottom; width: 200px;">
+         <!-- th:text="${#numbers.formatDecimal(reportsummary.R48_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'" -->
+         
+       </td>
+       <td id="R48_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R48_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom;font-weight:bold; width: 200px;background-color: rgb(107, 122, 143);color: white;"
+         th:attr="reportLable='R48', reportAddlCriteria1='C3'">
+       </td>
+       <td id="R48_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R48_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom;font-weight:bold; width: 200px;background-color: rgb(107, 122, 143);color: white;"
+         th:attr="reportLable='R48', reportAddlCriteria1='C4'">
+       </td>
+   </tr>
+   <!-- R49 -->
+    <tr>
+       <td style="text-align:center;vertical-align: middle;"></td>
+       <td style="text-align:left; font-weight:bold;">Components of RSF (Off-Balance Sheet Assets Category)</td>
+       <td style="background-color:grey; width:190px;"></td>
+       <td id="R49_FACTOR_BOB" style="text-align: right;vertical-align:bottom; width: 200px;">
+         <!-- th:text="${#numbers.formatDecimal(reportsummary.R49_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
+         
+         th:attr="reportLable='R49', reportAddlCriteria1='C2'"> -->
+       </td>
+       <td id="R49_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R49_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R49', reportAddlCriteria1='C3'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+       <td id="R49_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R49_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R49', reportAddlCriteria1='C4'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+   </tr>
+   <!-- R50 -->
+    <tr>
+       <td style="text-align:center;vertical-align: middle;"></td>
+       <td style="text-align:left;">Irrevocable or conditionally revocable liquidity facilities</td>
+       <td style="background-color:grey; width:190px;"></td>
+       <td id="R50_FACTOR_BOB"
+         th:text="${#numbers.formatDecimal(reportsummary.R50_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R50', reportAddlCriteria1='C2'">
+       </td>
+       <td id="R50_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R50_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R50', reportAddlCriteria1='C3'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+       <td id="R50_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R50_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R50', reportAddlCriteria1='C4'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+   </tr>
+   <!-- R51 -->
+    <tr>
+       <td style="text-align:center;vertical-align: middle;"></td>
+       <td style="text-align:left;">Irrevocable or conditionally revocable credit facilities</td>
+       <td style="background-color:grey; width:190px;"></td>
+       <td id="R51_FACTOR_BOB"
+         th:text="${#numbers.formatDecimal(reportsummary.R51_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R51', reportAddlCriteria1='C2'">
+       </td>
+       <td id="R51_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R51_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R51', reportAddlCriteria1='C3'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+       <td id="R51_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R51_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
+         th:attr="reportLable='R51', reportAddlCriteria1='C4'">
+       </td>
+   </tr>
+   <!-- R52 -->
+    <tr>
+       <td style="text-align:center;vertical-align: middle;"></td>
+       <td style="text-align:left;">Unconditionally revocable liquidity facilities</td>
+       <td style="background-color:grey; width:190px;"></td>
+       <td id="R52_FACTOR_BOB"
+         th:text="${#numbers.formatDecimal(reportsummary.R52_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R52', reportAddlCriteria1='C2'">
+       </td>
+       <td id="R52_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R52_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R52', reportAddlCriteria1='C3'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+       <td id="R52_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R52_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
+         th:attr="reportLable='R52', reportAddlCriteria1='C4'">
+       </td>
+   </tr>
+   <!-- R53 -->
+    <tr>
+       <td style="text-align:center;vertical-align: middle;"></td>
+       <td style="text-align:left;">Unconditionally revocable credit facilities</td>
+       <td style="background-color:grey; width:190px;"></td>
+       <td id="R53_FACTOR_BOB"
+         th:text="${#numbers.formatDecimal(reportsummary.R53_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R53', reportAddlCriteria1='C2'">
+       </td>
+       <td id="R53_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R53_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R53', reportAddlCriteria1='C3'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+       <td id="R53_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R53_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
+         th:attr="reportLable='R53', reportAddlCriteria1='C4'">
+       </td>
+   </tr>
+   <!-- R54 -->
+    <tr>
+       <td style="text-align:center;vertical-align: middle;"></td>
+       <td style="text-align:left;">Trade finance-related obligations (including guarantees and letters of credit)</td>
+       <td style="background-color:grey; width:190px;"></td>
+       <td id="R54_FACTOR_BOB"
+         th:text="${#numbers.formatDecimal(reportsummary.R54_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R54', reportAddlCriteria1='C2'">
+       </td>
+       <td id="R54_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R54_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R54', reportAddlCriteria1='C3'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+       <td id="R54_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R54_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
+         th:attr="reportLable='R54', reportAddlCriteria1='C4'">
+       </td>
+   </tr>
+   <!-- R55 -->
+    <tr>
+       <td style="text-align:center;vertical-align: middle;"></td>
+       <td style="text-align:left;">Guarantees and letters of credit unrelated to trade finance obligations</td>
+       <td style="background-color:grey; width:190px;"></td>
+       <td id="R55_FACTOR_BOB"
+         th:text="${#numbers.formatDecimal(reportsummary.R55_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R55', reportAddlCriteria1='C2'">
+       </td>
+       <td id="R55_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R55_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R55', reportAddlCriteria1='C3'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+       <td id="R55_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R55_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
+         th:attr="reportLable='R55', reportAddlCriteria1='C4'">
+       </td>
+   </tr>
+   <!-- R56 -->
+    <tr>
+       <td style="text-align:center;vertical-align: middle;"></td>
+       <td style="text-align:left;">Non-contractual obligations</td>
+       <td style="background-color:grey; width:190px;"></td>
+       <td id="R56_FACTOR_BOB"
+         th:text="${#numbers.formatDecimal(reportsummary.R56_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R56', reportAddlCriteria1='C2'">
+       </td>
+       <td id="R56_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R56_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R56', reportAddlCriteria1='C3'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+       <td id="R56_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R56_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
+         th:attr="reportLable='R56', reportAddlCriteria1='C4'">
+       </td>
+   </tr>
+   <!-- R57 -->
+    <tr>
+       <td style="text-align:center;vertical-align: middle;"></td>
+       <td style="text-align:left;">Debt-buy back requests(including related conduits)</td>
+       <td style="background-color:grey; width:190px;"></td>
+       <td id="R57_FACTOR_BOB"
+         th:text="${#numbers.formatDecimal(reportsummary.R57_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R57', reportAddlCriteria1='C2'">
+       </td>
+       <td id="R57_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R57_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R57', reportAddlCriteria1='C3'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+       <td id="R57_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R57_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
+         th:attr="reportLable='R57', reportAddlCriteria1='C4'">
+       </td>
+   </tr>
+   <!-- R58 -->
+    <tr>
+       <td style="text-align:center;vertical-align: middle;"></td>
+       <td style="text-align:left;">Structured products</td>
+       <td style="background-color:grey; width:190px;"></td>
+       <td id="R58_FACTOR_BOB"
+         th:text="${#numbers.formatDecimal(reportsummary.R58_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R58', reportAddlCriteria1='C2'">
+       </td>
+       <td id="R58_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R58_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R58', reportAddlCriteria1='C3'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+       <td id="R58_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R58_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
+         th:attr="reportLable='R58', reportAddlCriteria1='C4'">
+       </td>
+   </tr>
+   <!-- R59 -->
+    <tr>
+       <td style="text-align:center;vertical-align: middle;"></td>
+       <td style="text-align:left;">Managed funds</td>
+       <td style="background-color:grey; width:190px;"></td>
+       <td id="R59_FACTOR_BOB"
+         th:text="${#numbers.formatDecimal(reportsummary.R59_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R59', reportAddlCriteria1='C2'">
+       </td>
+       <td id="R59_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R59_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R59', reportAddlCriteria1='C3'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+       <td id="R59_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R59_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
+         th:attr="reportLable='R59', reportAddlCriteria1='C4'">
+       </td>
+   </tr>
+   <!-- R60 -->
+    <tr>
+       <td style="text-align:center;vertical-align: middle;"></td>
+       <td style="text-align:left;">Other non-contractual obligations</td>
+       <td style="background-color:grey; width:190px;"></td>
+       <td id="R60_FACTOR_BOB"
+         th:text="${#numbers.formatDecimal(reportsummary.R60_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R60', reportAddlCriteria1='C2'">
+       </td>
+       <td id="R60_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R60_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R60', reportAddlCriteria1='C3'"
+         onclick="showdetailsbyRowAndColumn(this)">
+       </td>
+       <td id="R60_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R60_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom; width: 200px;background-color: rgb(107, 122, 143);color: white;"
+         th:attr="reportLable='R60', reportAddlCriteria1='C4'">
+       </td>
+   </tr>
+   <!-- R61 -->
+    <tr>
+       <td style="text-align:center;vertical-align: middle;"></td>
+       <td style="text-align:left;font-weight:bold;">Total Off-balance Sheet RSF</td>
+       <td style="background-color:grey; width:190px;"></td>
+       <td id="R61_FACTOR_BOB" style="text-align: right;vertical-align:bottom; width: 200px;">
+         <!-- th:text="${#numbers.formatDecimal(reportsummary.R61_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R61', reportAddlCriteria1='C2'"> -->
+       </td>
+       <td id="R61_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R61_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom;font-weight:bold; width: 200px;background-color: rgb(107, 122, 143);color: white;"
+         th:attr="reportLable='R61', reportAddlCriteria1='C3'">
+       </td>
+       <td id="R61_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R61_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom;font-weight:bold;color:red; width: 200px;background-color: rgb(107, 122, 143);color: white;"
+         th:attr="reportLable='R61', reportAddlCriteria1='C4'">
+       </td>
+   </tr>
+   <!-- R62 -->
+    <tr>
+       <td style="text-align:center;vertical-align: middle;"></td>
+       <td style="text-align:left; font-weight:bold;">Total RSF</td>
+       <td style="background-color:grey; width:190px;"></td>
+       <td id="R62_FACTOR_BOB" style="text-align: right;vertical-align:bottom; width: 200px;">
+         <!-- th:text="${#numbers.formatDecimal(reportsummary.R62_FACTOR_BOB,1,'COMMA',0,'POINT')} + '%'"
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         th:attr="reportLable='R62', reportAddlCriteria1='C2'"> -->
+       </td>
+       <td id="R62_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R62_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom;font-weight:bold;color:red; width: 200px;background-color: rgb(107, 122, 143);color: white;"
+         th:attr="reportLable='R62', reportAddlCriteria1='C3'">
+       </td>
+       <td id="R62_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R62_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom;font-weight:bold;color:red; width: 200px;background-color: rgb(107, 122, 143);color: white;"
+         th:attr="reportLable='R62', reportAddlCriteria1='C4'">
+       </td>
+   </tr>
+   <!-- R63 -->
+    <tr>
+       <td style="text-align:center;vertical-align: middle;"></td>
+       <td style="text-align:left; font-weight:bold;">Calculating the NSFR</td>
+       <td style="background-color:grey; width:190px;"></td>
+       <td style="background-color:lightgrey; "></td>
+       <td style="background-color:lightgrey; "></td>
+       <td style="background-color:lightgrey; "></td>
+    </tr>
+    <!-- R64 -->
+    <tr>
+       <td style="text-align:center;vertical-align: middle;"></td>
+       <td style="text-align:left; font-weight:bold;">Total ASF</td>
+       <td style="background-color:grey; width:190px;"></td>
+       <td id="R64_FACTOR_BOB"
+         style="text-align: right;vertical-align:bottom; width: 200px;">
+       </td>
+       <td id="R64_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R64_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom;font-weight:bold; width: 200px;background-color: rgb(107, 122, 143);color: white;"
+         th:attr="reportLable='R64', reportAddlCriteria1='C3'">
+       </td>
+       <td id="R64_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R64_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom;font-weight:bold; width: 200px;background-color: rgb(107, 122, 143);color: white;"
+         th:attr="reportLable='R64', reportAddlCriteria1='C4'">
+       </td>
+   </tr>
+   <!-- R65 -->
+    <tr>
+       <td style="text-align:center;vertical-align: middle;"></td>
+       <td style="text-align:left; font-weight:bold;">Total RSF</td>
+       <td style="background-color:grey; width:190px;"></td>
+       <td id="R65_FACTOR_BOB"
+         
+         style="text-align: right;vertical-align:bottom; width: 200px;"
+         >
+       </td>
+       <td id="R65_TOTAL_AMOUNT_BOB" th:text="${#numbers.formatDecimal(reportsummary.R65_TOTAL_AMOUNT_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom;font-weight:bold; width: 200px;background-color: rgb(107, 122, 143);color: white;"
+         th:attr="reportLable='R65', reportAddlCriteria1='C3'">
+       </td>
+       <td id="R65_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R65_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom;font-weight:bold; width: 200px;background-color: rgb(107, 122, 143);color: white;"
+         th:attr="reportLable='R65', reportAddlCriteria1='C4'">
+       </td>
+   </tr>
+   <!-- R66 -->
+    <tr>
+       <td style="text-align:center;vertical-align: middle;"></td>
+       <td style="text-align:left; font-weight:bold;">NSFR (ASF/RSF*100)</td>
+       <td style="background-color:grey; width:190px;"></td>
+       <td id="R66_FACTOR_BOB"
+         style="text-align: right;vertical-align:bottom; width: 200px;">
+       </td>
+       <td id="R66_TOTAL_AMOUNT_BOB" 
+         style="text-align: right;vertical-align:bottom; width: 200px;">
+       </td>
+       <td id="R66_WITH_FACTOR_APPLIED_BOB" th:text="${#numbers.formatDecimal(reportsummary.R66_WITH_FACTOR_APPLIED_BOB,1,'COMMA',0,'POINT')}"
+         style="text-align: right;vertical-align:bottom;font-weight:bold; width: 200px;background-color: rgb(107, 122, 143);color: white;"
+         th:attr="reportLable='R66', reportAddlCriteria1='C4'">
+       </td>
+   </tr>
+
+    
+      
+   </tbody>
+</table>
+
+       </div>
+       </div>
+  <!--     <div style="text-align: center;  background-color: white;  padding:15px;">
+
+        <button id="submitButton" type="button"
+         class="custom-tab-btn Show_input" form="fileupload"
+         th:attr="data-todate=${asondate}" onclick="fileuploads(this);"
+         style="display: none;">Submit</button>
+       </div> -->
+    </form>
+  </div>
+ </div>
+</div>
+
+
+        
+        
+<!-- ------------------- -->
+<!--  DETAIL -->
+            <div th:if="${displaymode == 'Details'}">
+             <div class="row">
+              <div class="col-sm-12" style="max-height:90vh; overflow-y: auto; ">
+               <div class="table-container" 
+                style="border-right: 1px solid #dee2e6; ">
+                <table class="table table-striped table-bordered table-hover"
+                 id="reportdetails">
+                 <thead class="thead-light">
+                  
+                  <tr>
+                   <th> </th>
+                   <th>S No</th>
+                   <th>CUST ID</th>
+                   <th>ACCT NUMBER</th>
+                   <th>ACCT NAME</th>
+                   <th>ACCT BALANCE IN PULA</th>
+                   
+                   <th style="text-align:left;">REPORT LABLE</th>
+                   <th>REPORT ADDL CRITERIA 1</th>
+                   <th>REPORT DATE</th>
+                  </tr>
+
+                 </thead>
+
+                 <tbody style="font-family: Arial;">
+                  <tr th:each="report, srlno : ${reportdetails}">
+                   <td>
+                    <a data-toggle="tooltip" class="editrec"
+                     title="Click to Edit this Record">
+                     <i class="fas fa-edit" style="color: black; cursor:pointer;"
+                      th:attr="data-acctNo=${report.acctNumber},
+                      data-asondate=${#dates.format(report.reportDate, 'dd-MM-yyyy')},data-type=${type}"
+                      onclick="openDetail(this, 'edit')"></i>
+
+                    </a>
+                   </td>
+                   <td th:text="${srlno.index + 1}"></td>
+                   <td th:text="${report.custId != null ? report.custId : '-'}"></td>
+                   <td th:text="${report.acctNumber != null ? report.acctNumber : '-'}"></td>
+                   <td th:text="${report.acctName != null ? report.acctName : '-'}"></td>
+                   
+                   <td style="text-align:right;" th:text="${#numbers.formatDecimal(report.acctBalanceInpula,1,'COMMA',0,'POINT')}"></td>
+                   
+                   <td style="text-align:left;" th:text="${report.reportLable != null ? report.reportLable : '-'}">
+                   </td>
+                   <td
+                    th:text="${report.reportAddlCriteria1 != null ? report.reportAddlCriteria1 : '-'}">
+                   </td>
+                   <td th:text="${report.reportDate != null ? #dates.format(report.reportDate, 'dd-MM-yyyy') : '-'}"></td>
+                  </tr>
+                 </tbody>
+                </table>
+
+               </div>
+
+               <!-- Submit Button -->
+               <div style="text-align: center; margin-top: 15px; background-color: white;">
+                <button id="submitButton" type="button" class="custom-tab-btn Show_input"
+                 onclick="updateform();" style="display: none;">
+                 Submit
+                </button>
+               </div>
+              </div>
+             </div>
+
+   </div>
+
+   <!-- NSFR Detail Form Screen -->
+   <div th:if="${formmode == 'edit'}" class="card">
+     <div class="card-body">
+       <form th:object="${Data}" method="post" id="DetailForm">
+
+         <!-- Row 1 -->
+         <div class="row formline" style="margin-top:10px;">
+           <label class="col-sm-2">Customer ID</label>
+           <div class="col-sm-3">
+             <input type="text" th:field="*{custId}" class="form-control form-control-sm" readonly />
+           </div>
+
+           <div class="col-sm-1"></div>
+
+           <label class="col-sm-2">Account Number</label>
+           <div class="col-sm-3">
+             <input type="text" th:field="*{acctNumber}" class="form-control form-control-sm" readonly />
+           </div>
+         </div>
+
+         <!-- Row 2 -->
+         <div class="row formline" style="margin-top:10px;">
+           <label class="col-sm-2">Account Name</label>
+           <div class="col-sm-3">
+             <input type="text" th:field="*{acctName}" class="form-control form-control-sm" readonly />
+           </div>
+
+           <div class="col-sm-1"></div>
+
+           <label class="col-sm-2">Acct Balance</label>
+           <div class="col-sm-3">
+             <input type="number" step="0.01" th:field="*{acctBalanceInpula}" class="form-control form-control-sm" style="text-align:right;" />
+           </div>
+         </div>
+
+         <!-- Row 3 -->
+         <div class="row formline" style="margin-top:10px;">
+           <label class="col-sm-2">Report Lable</label>
+           <div class="col-sm-3">
+             <input type="text" th:field="*{reportLable}" class="form-control form-control-sm" readonly />
+           </div>
+
+           <div class="col-sm-1"></div>
+
+           <label class="col-sm-2">Report Addl Criteria 1</label>
+           <div class="col-sm-3">
+             <input type="text" th:field="*{reportAddlCriteria1}" class="form-control form-control-sm" readonly />
+           </div>
+         </div>
+
+         <!-- Row 4 -->
+         <div class="row formline" style="margin-top:10px;">
+           <label class="col-sm-2">Report Date</label>
+           <div class="col-sm-3">
+             <input type="date" name="reportDate" class="form-control form-control-sm"
+                    th:value="${#dates.format(Data.reportDate, 'yyyy-MM-dd')}" readonly/>
+           </div>
+         </div>
+
+             <!-- Update Button -->
+             <div style="text-align:center; margin-top:20px;">
+               <button type="button" class="custom-tab-btn" 
+               th:if="${formmode == 'edit'}" onclick="submitUpdate()">Update</button>
+             </div>
+           </form>
+         </div>
+       </div>
+
+  </div>
+
+
+
+ </div>
+
+
+
+ <div class="modal fade" id="loader" data-backdrop="static"
+  data-keyboard="false">
+  <div
+   class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+   <div class="modal-content" style="background: transparent;">
+    <div class="modal-body" style="text-align: center">
+     <div>
+      <img th:src=@{/images/loader.gif} id="bfirelogo"
+       style="width: 153px; height: auto; margin-left: 18px; background-color: transparent; border-color: transparent;"
+       alt="Bornfire">
+     </div>
+    </div>
+   </div>
+  </div>
+ </div>
+
+
+
+ <!-- Custom Alert/Result Modal (Matches your existing style) For Modify in Summary -->
+ <div class="modal fade" id="resultModal">
+  <div class="modal-dialog modal-dialog-centered">
+   <div class="modal-content">
+    <!-- Your custom styled header -->
+    <div class="menu-title-header">
+     <div class="modal-title" id="resultModalLabel"
+      style="text-align: center; color: white;">
+      <!-- Title will be set by JavaScript -->
+     </div>
+    </div>
+    <div class="modal-body"
+     style="text-align: center; font-size: 1.1rem;">
+     <p id="resultModalBody"></p>
+     <!-- Your custom styled button -->
+     <button type="button" class="custom-tab-btn" onclick="closemodels()"
+      data-dismiss="modal">ok</button>
+    </div>
+   </div>
+  </div>
+ </div>
+ <!-- For Edit in Detail page -->
+ <div class="modal fade" id="resultModal1">
+  <div class="modal-dialog modal-dialog-centered">
+   <div class="modal-content">
+    <!-- Your custom styled header -->
+     <div class="menu-title-header">
+     <div class="modal-title" id="resultModalLabel1"
+      style="text-align: center; color: white;">
+      <!-- Title will be set by JavaScript--> 
+     </div>
+    </div>
+    <div class="modal-body"
+     style="text-align: center; font-size: 1.1rem;">
+     <p id="resultModalBody1"></p>
+      
+     <button type="button" class="custom-tab-btn" onclick="closemodel()"
+      data-dismiss="modal">OK</button>
+    </div>
+   </div>
+  </div>
+ </div> 
+ 
+<!-- Custom Cellresult Modal -->
+  <div class="modal fade" id="cellresultModal">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        
+        <!-- Custom header -->
+        <div class="menu-title-header" style="background-color:#6c7a91; padding: 8px; border-radius:5px 5px 0 0;">
+          <div class="modal-title" id="cellresultModalLabel" style="text-align: center; color: white;">
+            Do you want to open the report?
+          </div>
+        </div>
+
+        <div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+          <button type="button" class="custom-tab-btn cancel-btn" data-bs-dismiss="modal"  style="margin-right:10px; border:2px solid #6c7a91; background:white; color:black; border-radius:20px; padding:5px 15px;">
+            Cancel
+          </button>
+          <button type="button" class="custom-tab-btn yes-btn" style="background:#6c7a91; color:white; border:none; border-radius:20px; padding:5px 20px;">
+            Yes
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>        
+
+
+<style>
+/* Your existing CSS - this is the correct approach */
+.scrollable-table-container {
+ /* This is the key: it creates the scroll context */
+ max-height: 620px;
+ /* Or a suitable height like 80vh for responsive design */
+ overflow-y: auto;
+ border: 1px solid #ccc;
+}
+
+/* Your existing sticky header CSS, targeting the tr elements within the thead */
+.scrollable-table-container thead tr:nth-child(1) {
+ position: sticky;
+ top: 0;
+ background-color: #b3b6b9;
+ z-index: 5;
+}
+
+.scrollable-table-container thead tr:nth-child(2) {
+ position: sticky;
+ top: 36px; /* adjust based on row height */
+ background-color: #b3b6b9;
+ z-index: 4;
+}
+
+.scrollable-table-container thead tr:nth-child(3) {
+ position: sticky;
+ top: 72px; /* Adjust based on row height */
+ background-color: #b3b6b9;
+ z-index: 3;
+}
+
+.scrollable-table-container thead tr:nth-child(4) {
+ position: sticky;
+ top: 100px; /* Adjust based on row height */
+ background-color: #b3b6b9;
+ z-index: 2;
+}
+
+.scrollable-table-container thead tr:nth-child(5) {
+ position: sticky;
+ top: 135px; /* Adjust based on row height */
+ background-color: #b3b6b9;
+ z-index: 1;
+}
+</style>
+
+
+<style>
+.inner {
+ max-height: 600px; /* Adjust height as needed */
+ overflow: auto;
+ border: 1px solid #dee2e6;
+}
+
+/* Sticky thead */
+#reports thead th {
+ position: sticky;
+ top: 0;
+ background-color: #D8D8D8; /* Match Bootstrap thead-light */
+ z-index: 2;
+}
+
+div.dataTables_wrapper div.dataTables_paginate {
+ text-align: right !important;
+ float: right !important;
+ width: auto;
+ margin-top: 10px;
+}
+
+/* Ensure info text (e.g., "Showing 1 to X") stays on the left */
+div.dataTables_wrapper div.dataTables_info {
+ float: left !important;
+ margin-top: 10px;
+}
+
+.pagination {
+ margin: 0;
+}
+
+.page-item.active .page-link {
+ background-color: #386276;
+ border-color: #386276;
+}
+
+.page-link {
+ color: #386276;
+}
+
+.page-link:hover {
+ color: #2a4a5c;
+}
+
+.form-select {
+ display: inline-block;
+ width: auto;
+}
+
+.scrollable-table-container thead tr:nth-child(1),
+.scrollable-table-container thead tr:nth-child(2),
+.scrollable-table-container thead tr:nth-child(3),
+.scrollable-table-container thead tr:nth-child(4),
+.scrollable-table-container thead tr:nth-child(5) {
+    background-color: #D8D8D8; /* set header color */
+}
+
+  .noborder td, tr {
+    border: none !important;
+    background-color:white;
+  }
+  
+  .empty-row td {
+    height: 30px;
+}
+/* 1. Force table to obey colgroup */
+/* #reports {
+    table-layout: fixed !important;
+     position: sticky;
+ top: 0;
+ background-color: #b3b6b9;
+}
+
+/* 2. Make header cells follow colgroup width */
+/* #reports th {
+    width: inherit !important;
+    background-color: #D8D8D8; /* set header color */
+    
+}
+ */
+ */  
+</style>
+
+</html>
