@@ -12,8 +12,8 @@ public interface BRRS_MDISB1_Detail_Repo extends JpaRepository<MDISB1_Detail_Ent
 	@Query(value = "select * from BRRS_MDISB1_DETAILTABLE where REPORT_DATE=?1 ", nativeQuery = true)
 	List<MDISB1_Detail_Entity> getdatabydateList(Date reportdate);
 
-	@Query(value = "select * from BRRS_MDISB1_DETAILTABLE  where ROW_ID =?1 and COLUMN_ID=?2 and REPORT_DATE=?3", nativeQuery = true)
-	List<MDISB1_Detail_Entity> GetDataByRowIdAndColumnId(String rowId,String ColumnId,Date reportdate);
+	@Query(value = "select * from BRRS_MDISB1_DETAILTABLE  where REPORT_LABEL =?1 and REPORT_ADDL_CRITERIA_1=?2 and REPORT_DATE=?3", nativeQuery = true)
+	List<MDISB1_Detail_Entity> GetDataByRowIdAndColumnId(String report_label,String report_addl_criteria_1,Date reportdate);
 	
 	@Query(value = "select * from BRRS_MDISB1_DETAILTABLE where REPORT_DATE=?1 offset ?2 rows fetch next ?3 rows only", nativeQuery = true)
 	List<MDISB1_Detail_Entity> getdatabydateList(Date reportdate,int startpage,int endpage);
@@ -21,10 +21,16 @@ public interface BRRS_MDISB1_Detail_Repo extends JpaRepository<MDISB1_Detail_Ent
 	@Query(value = "select count(*) from BRRS_MDISB1_DETAILTABLE where REPORT_DATE=?1", nativeQuery = true)
 	int getdatacount(Date reportdate);
 	
+//	 @Query(value = "SELECT * FROM MDISB1_Detail_Entity WHERE ACCT_NUMBER = :acct_number", nativeQuery = true)
+//	 MDISB1_Detail_Entity findByAcctnumber(@Param("acctNo") String acct_number);
 	
-	@Query(value = "SELECT * FROM MDISB1_Detail_Entity WHERE ACCT_NUMBER = :acct_number", nativeQuery = true)
-	MDISB1_Detail_Entity findByAcctnumber(@Param("acct_number") String acct_number);
+	 @Query(value = "SELECT * FROM MDISB1_Detail_Entity WHERE ACCT_NUMBER = :acctNumber", nativeQuery = true)
+	 MDISB1_Detail_Entity findByAcctnumber(@Param("acctNumber") String acctNumber);
+
+	
+//	@Query(value = "SELECT * FROM MDISB1_Detail_Entity WHERE ACCT_NUMBER = :acct_number", nativeQuery = true)
+//	MDISB1_Detail_Entity findByAcctnumber(@Param("acct_number") String acct_number);
 		
-		
+		 
 }
 

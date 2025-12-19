@@ -3687,24 +3687,24 @@ public class BRRS_MDISB1_ReportService {
 				for (MDISB1_Detail_Entity item : reportData) {
 					XSSFRow row = sheet.createRow(rowIndex++);
 
-					row.createCell(0).setCellValue(item.getCustId());
-					row.createCell(1).setCellValue(item.getAcctNumber());
-					row.createCell(2).setCellValue(item.getAcctName());
+					row.createCell(0).setCellValue(item.getCust_id());
+					row.createCell(1).setCellValue(item.getAcct_number());
+					row.createCell(2).setCellValue(item.getAcct_name());
 
 					// ACCT BALANCE (right aligned, 3 decimal places)
 					Cell balanceCell = row.createCell(3);
-					if (item.getAcctBalanceInPula() != null) {
-						balanceCell.setCellValue(item.getAcctBalanceInPula().doubleValue());
+					if (item.getAcct_balance_in_pula() != null) {
+						balanceCell.setCellValue(item.getAcct_balance_in_pula().doubleValue());
 					} else {
 						balanceCell.setCellValue(0);
 					}
 					balanceCell.setCellStyle(balanceStyle);
 
-					row.createCell(4).setCellValue(item.getReportLable());
-					row.createCell(5).setCellValue(item.getReportAddlCriteria1());
+					row.createCell(4).setCellValue(item.getReport_label());
+					row.createCell(5).setCellValue(item.getReport_addl_criteria_1());
 					row.createCell(6)
-							.setCellValue(item.getReportDate() != null
-									? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
+							.setCellValue(item.getReport_date() != null
+									? new SimpleDateFormat("dd-MM-yyyy").format(item.getReport_date())
 									: "");
 
 					// Apply data style for all other cells
@@ -4004,9 +4004,9 @@ public class BRRS_MDISB1_ReportService {
 		ModelAndView mv = new ModelAndView("BRRS/MDISB1");
 
 		if (acctNo != null) {
-			MDISB1_Detail_Entity Entity = MDISB1_Detail_Repo.findByAcctNumber(acctNo);
-			if (Entity != null && Entity.getReportDate() != null) {
-				String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(Entity.getReportDate());
+			MDISB1_Detail_Entity Entity = MDISB1_Detail_Repo.findByAcctnumber(acctNo);
+			if (Entity != null && Entity.getReport_date() != null) {
+				String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(Entity.getReport_date());
 				mv.addObject("asondate", formattedDate);
 			}
 			mv.addObject("Data", Entity);
@@ -4027,7 +4027,7 @@ public class BRRS_MDISB1_ReportService {
 
 			logger.info("Received update for ACCT_NO: {}", acctNo);
 
-			MDISB1_Detail_Entity existing = MDISB1_Detail_Repo.findByAcctNumber(acctNo);
+			MDISB1_Detail_Entity existing = MDISB1_Detail_Repo.findByAcctnumber(acctNo);
 			if (existing == null) {
 				logger.warn("No record found for ACCT_NO: {}", acctNo);
 				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Record not found for update.");
@@ -4036,8 +4036,8 @@ public class BRRS_MDISB1_ReportService {
 			boolean isChanged = false;
 
 			if (acctName != null && !acctName.isEmpty()) {
-				if (existing.getAcctName() == null || !existing.getAcctName().equals(acctName)) {
-					existing.setAcctName(acctName);
+				if (existing.getAcct_name() == null || !existing.getAcct_name().equals(acctName)) {
+					existing.setAcct_name(acctName);
 					isChanged = true;
 					logger.info("Account name updated to {}", acctName);
 				}
@@ -4045,9 +4045,9 @@ public class BRRS_MDISB1_ReportService {
 
 			if (provisionStr != null && !provisionStr.isEmpty()) {
 				BigDecimal newProvision = new BigDecimal(provisionStr);
-				if (existing.getAcctBalanceInPula() == null
-						|| existing.getAcctBalanceInPula().compareTo(newProvision) != 0) {
-					existing.setAcctBalanceInPula(newProvision);
+				if (existing.getAcct_balance_in_pula() == null
+						|| existing.getAcct_balance_in_pula().compareTo(newProvision) != 0) {
+					existing.setAcct_balance_in_pula(newProvision);
 					isChanged = true;
 					logger.info("Provision updated to {}", newProvision);
 				}

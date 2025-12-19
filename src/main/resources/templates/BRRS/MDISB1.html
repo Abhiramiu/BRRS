@@ -1,7 +1,7 @@
 <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
 
 <!-- 
-CREATED BY	: PRAVEEN KUMAR M
+CREATED BY	: NISHANTHINI M
 CREATED ON	: 31.08.2025
 PURPOSE		: BRRSREPORT
 -->
@@ -4280,9 +4280,10 @@ PURPOSE		: BRRSREPORT
 											<th>S No</th>
 											<th>CUST ID</th>
 											<th style="text-align:left;">ACCT NUMBER</th>
-											<th>SCHM DESC</th>
+											
 											<th style="text-align:right;">ACCT BALANCE IN PULA</th>
-											<th style="text-align:right;">APPROVED LIMIT</th>
+										<!---	<th style="text-align:right;">APPROVED LIMIT</th> -->
+										
 											<th style="text-align:left;">REPORT LABEL</th>
 											<th>REPORT ADDL CRITERIA 1</th>
 											<th>REPORT ADDL CRITERIA 2</th>
@@ -4312,17 +4313,17 @@ PURPOSE		: BRRSREPORT
 												th:text="${report.acct_number != null ? report.acct_number : '-'}">
 											</td>
 
-											<td th:text="${report.schm_desc != null ? report.schm_desc : '-'}"></td>
+											
 
 											<td style="text-align:right;" th:text="${report.acct_balance_in_pula != null 
                                         ? #numbers.formatDecimal(report.acct_balance_in_pula,1,'COMMA',0,'POINT') 
                                         : '0'}">
 											</td>
 
-											<td style="text-align:right;" th:text="${report.sanction_limit != null 
+									<!---		<td style="text-align:right;" th:text="${report.sanction_limit != null 
                                         ? #numbers.formatDecimal(report.sanction_limit,1,'COMMA',0,'POINT') 
                                         : '0'}">
-											</td>
+											</td> -->
 
 											<td style="text-align:left;"
 												th:text="${report.report_label != null ? report.report_label : '-'}">
