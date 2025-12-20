@@ -2394,191 +2394,136 @@ public class BRRS_Q_ATF_ReportService {
 	
 
 	
-<<<<<<< Updated upstream
+
 	public byte[] getQ_ATFDetailExcel(String filename, String fromdate, String todate,
-	        String currency, String dtltype, String type, String version) {
+            String currency, String dtltype, String type, String version) {
+try {
+logger.info("Generating Excel for Q_ATF Details...");
 
-	    logger.info("▶ Entered getQ_ATFDetailExcel()");
-	    logger.info("Input Params → filename={}, fromdate={}, todate={}, currency={}, dtltype={}, type={}, version={}",
-	            filename, fromdate, todate, currency, dtltype, type, version);
+// ===== ARCHIVAL ROUTING (ONLY ONCE) =====
+if ("ARCHIVAL".equals(type) && version != null) {
+logger.info("ARCHIVAL request detected → Redirecting to ARCHIVAL Excel method");
+return getQ_ATFDetailExcelARCHIVAL(
+filename, fromdate, todate, currency, dtltype, type, version);
+}
 
-	    try {
-	        logger.info("Generating Excel for Q_ATF Details...");
-	        System.out.println("came to Detail download service");
-=======
-	
-	public byte[] getQ_ATFDetailExcel(String filename, String fromdate, String todate, String currency, String dtltype,
-			String type, String version) {
-		try {
-			logger.info("Generating Excel for Q_ATF Details...");
-			System.out.println("came to Detail download service");
-			logger.info("step 2");
-			if (type.equals("ARCHIVAL") & version != null) {
-				byte[] ARCHIVALreport = getQ_ATFDetailExcelARCHIVAL(filename, fromdate, todate, currency, dtltype, type,
-						version);
-				logger.info("step 3");
-				return ARCHIVALreport;
-			
-			}
-			logger.info("step 4");
-			XSSFWorkbook workbook = new XSSFWorkbook();
-			logger.info("step 5");
-			XSSFSheet sheet = workbook.createSheet("Q_ATFDetails");
->>>>>>> Stashed changes
+logger.info("Proceeding with NON-ARCHIVAL Excel generation");
 
-	        // ARCHIVAL routing
-	        if ("ARCHIVAL".equals(type) && version != null) {
-	            logger.info("ARCHIVAL request detected → Redirecting to ARCHIVAL Excel method");
-	            byte[] archivalReport = getQ_ATFDetailExcelARCHIVAL(
-	                    filename, fromdate, todate, currency, dtltype, type, version);
-	            logger.info("ARCHIVAL Excel generated successfully, bytes={}", archivalReport.length);
-	            return archivalReport;
-	        }
+// ===== WORKBOOK & SHEET =====
+XSSFWorkbook workbook = new XSSFWorkbook();
+XSSFSheet sheet = workbook.createSheet("Q_ATFDetails");
 
-	        logger.info("Proceeding with NON-ARCHIVAL Excel generation");
+BorderStyle border = BorderStyle.THIN;
 
-	        // Workbook & Sheet
-	        logger.info("Creating XSSFWorkbook");
-	        XSSFWorkbook workbook = new XSSFWorkbook();
+// ===== HEADER STYLE =====
+CellStyle headerStyle = workbook.createCellStyle();
+Font headerFont = workbook.createFont();
+headerFont.setBold(true);
+headerFont.setFontHeightInPoints((short) 10);
+headerStyle.setFont(headerFont);
+headerStyle.setAlignment(HorizontalAlignment.LEFT);
+headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+headerStyle.setBorderTop(border);
+headerStyle.setBorderBottom(border);
+headerStyle.setBorderLeft(border);
+headerStyle.setBorderRight(border);
 
-	        logger.info("Creating sheet: Q_ATFDetails");
-	        XSSFSheet sheet = workbook.createSheet("Q_ATFDetails");
+CellStyle rightAlignedHeaderStyle = workbook.createCellStyle();
+rightAlignedHeaderStyle.cloneStyleFrom(headerStyle);
+rightAlignedHeaderStyle.setAlignment(HorizontalAlignment.RIGHT);
 
-	        // Border style
-	        logger.debug("Initializing common border style");
-	        BorderStyle border = BorderStyle.THIN;
+// ===== DATA STYLE =====
+CellStyle dataStyle = workbook.createCellStyle();
+dataStyle.setAlignment(HorizontalAlignment.LEFT);
+dataStyle.setBorderTop(border);
+dataStyle.setBorderBottom(border);
+dataStyle.setBorderLeft(border);
+dataStyle.setBorderRight(border);
 
-	        // Header style
-	        logger.debug("Creating header cell style");
-	        CellStyle headerStyle = workbook.createCellStyle();
-	        Font headerFont = workbook.createFont();
-	        headerFont.setBold(true);
-	        headerFont.setFontHeightInPoints((short) 10);
-	        headerStyle.setFont(headerFont);
-	        headerStyle.setAlignment(HorizontalAlignment.LEFT);
-	        headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
-	        headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-	        headerStyle.setBorderTop(border);
-	        headerStyle.setBorderBottom(border);
-	        headerStyle.setBorderLeft(border);
-	        headerStyle.setBorderRight(border);
+CellStyle balanceStyle = workbook.createCellStyle();
+balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
+balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0.000"));
+balanceStyle.setBorderTop(border);
+balanceStyle.setBorderBottom(border);
+balanceStyle.setBorderLeft(border);
+balanceStyle.setBorderRight(border);
 
-	        // Right-aligned header
-	        logger.debug("Creating right-aligned header style for ACCT BALANCE");
-	        CellStyle rightAlignedHeaderStyle = workbook.createCellStyle();
-	        rightAlignedHeaderStyle.cloneStyleFrom(headerStyle);
-	        rightAlignedHeaderStyle.setAlignment(HorizontalAlignment.RIGHT);
+// ===== HEADER ROW =====
+String[] headers = {
+"CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE",
+"REPORT LABLE", "REPORT ADDL CRITERIA1", "REPORT_DATE"
+};
 
-	        // Data style
-	        logger.debug("Creating default data style");
-	        CellStyle dataStyle = workbook.createCellStyle();
-	        dataStyle.setAlignment(HorizontalAlignment.LEFT);
-	        dataStyle.setBorderTop(border);
-	        dataStyle.setBorderBottom(border);
-	        dataStyle.setBorderLeft(border);
-	        dataStyle.setBorderRight(border);
+XSSFRow headerRow = sheet.createRow(0);
+for (int i = 0; i < headers.length; i++) {
+Cell cell = headerRow.createCell(i);
+cell.setCellValue(headers[i]);
+cell.setCellStyle(i == 3 ? rightAlignedHeaderStyle : headerStyle);
+sheet.setColumnWidth(i, 5000);
+}
 
-	        // Balance style
-	        logger.debug("Creating balance style with 3 decimal format");
-	        CellStyle balanceStyle = workbook.createCellStyle();
-	        balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
-	        balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0.000"));
-	        balanceStyle.setBorderTop(border);
-	        balanceStyle.setBorderBottom(border);
-	        balanceStyle.setBorderLeft(border);
-	        balanceStyle.setBorderRight(border);
+// ===== FETCH DATA =====
+Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
+List<Q_ATF_Detail_Entity> reportData =
+brrs_q_atf_detail_repo.getdatabydateList(parsedToDate);
 
-	        // Header row
-	        logger.info("Creating header row");
-	        String[] headers = {
-	                "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE",
-	                "REPORT LABLE", "REPORT ADDL CRITERIA1", "REPORT_DATE"
-	        };
+logger.info("Repository returned {} records",
+reportData != null ? reportData.size() : 0);
 
-	        XSSFRow headerRow = sheet.createRow(0);
-	        for (int i = 0; i < headers.length; i++) {
-	            Cell cell = headerRow.createCell(i);
-	            cell.setCellValue(headers[i]);
-	            cell.setCellStyle(i == 3 ? rightAlignedHeaderStyle : headerStyle);
-	            sheet.setColumnWidth(i, 5000);
-	        }
+// ===== POPULATE DATA =====
+if (reportData != null && !reportData.isEmpty()) {
+int rowIndex = 1;
 
-	        logger.info("Header row created successfully");
+for (Q_ATF_Detail_Entity item : reportData) {
+XSSFRow row = sheet.createRow(rowIndex++);
 
-	        // Fetch data
-	        logger.info("Parsing todate={}", todate);
-	        Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
+row.createCell(0).setCellValue(item.getCustId());
+row.createCell(1).setCellValue(item.getAcctNumber());
+row.createCell(2).setCellValue(item.getAcctName());
 
-	        logger.info("Fetching Q_ATF Detail data from repository for date={}", parsedToDate);
-	        List<Q_ATF_Detail_Entity> reportData =
-	                brrs_q_atf_detail_repo.getdatabydateList(parsedToDate);
+Cell balanceCell = row.createCell(3);
+balanceCell.setCellValue(
+   item.getAcctBalanceInpula() != null
+           ? item.getAcctBalanceInpula().doubleValue()
+           : 0.000
+);
+balanceCell.setCellStyle(balanceStyle);
 
-	        logger.info("Repository returned {} records",
-	                reportData != null ? reportData.size() : 0);
+row.createCell(4).setCellValue(item.getReportLabel());
+row.createCell(5).setCellValue(item.getReportAddlCriteria_1());
+row.createCell(6).setCellValue(
+   item.getReportDate() != null
+           ? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
+           : ""
+);
 
-	        // Populate rows
-	        if (reportData != null && !reportData.isEmpty()) {
-	            int rowIndex = 1;
+for (int j = 0; j < 7; j++) {
+if (j != 3) {
+   row.getCell(j).setCellStyle(dataStyle);
+}
+}
+}
+} else {
+logger.warn("No data found for Q_ATF — only header written");
+}
 
-	            for (Q_ATF_Detail_Entity item : reportData) {
-	                logger.debug("Writing row {} → CustId={}, AcctNo={}",
-	                        rowIndex, item.getCustId(), item.getAcctNumber());
+// ===== WRITE OUTPUT =====
+ByteArrayOutputStream bos = new ByteArrayOutputStream();
+workbook.write(bos);
+workbook.close();
 
-	                XSSFRow row = sheet.createRow(rowIndex++);
+logger.info("✔ Q_ATF Excel generated successfully");
 
-	                row.createCell(0).setCellValue(item.getCustId());
-	                row.createCell(1).setCellValue(item.getAcctNumber());
-	                row.createCell(2).setCellValue(item.getAcctName());
+return bos.toByteArray();
 
-	                Cell balanceCell = row.createCell(3);
-	                if (item.getAcctBalanceInpula() != null) {
-	                    balanceCell.setCellValue(item.getAcctBalanceInpula().doubleValue());
-	                } else {
-	                    balanceCell.setCellValue(0.000);
-	                }
-	                balanceCell.setCellStyle(balanceStyle);
+} catch (Exception e) {
+logger.error("❌ Error generating Q_ATF Excel", e);
+return new byte[0];
+}
+}
 
-	                row.createCell(4).setCellValue(item.getReportLabel());
-	                row.createCell(5).setCellValue(item.getReportAddlCriteria_1());
-	                row.createCell(6).setCellValue(
-	                        item.getReportDate() != null
-	                                ? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
-	                                : ""
-	                );
 
-	                for (int j = 0; j < 7; j++) {
-	                    if (j != 3) {
-	                        row.getCell(j).setCellStyle(dataStyle);
-	                    }
-	                }
-	            }
-	        } else {
-	            logger.warn("No data found for Q_ATF — only header written");
-	        }
-
-	        // Write output
-	        logger.info("Writing workbook to ByteArrayOutputStream");
-	        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-	        workbook.write(bos);
-	        workbook.close();
-
-	        logger.info("✔ Q_ATF Excel generation completed successfully. Total rows={}",
-	                reportData != null ? reportData.size() : 0);
-
-	        return bos.toByteArray();
-
-	    } catch (Exception e) {
-	        logger.error("❌ Error generating Q_ATF Excel", e);
-	        return new byte[0];
-	    }
-	}
-<<<<<<< Updated upstream
-
-	
-=======
->>>>>>> Stashed changes
-	
-	
 	public byte[] getQ_ATFDetailExcelARCHIVAL(String filename, String fromdate, String todate, String currency,
 			String dtltype, String type, String version) {
 		try {
