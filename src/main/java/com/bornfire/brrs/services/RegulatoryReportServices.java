@@ -301,6 +301,9 @@ public class RegulatoryReportServices {
 	BRRS_FSI_ReportService BRRS_FSI_ReportService;
 	
 	@Autowired
+	BRRS_RWA_ReportService BRRS_RWA_ReportService;
+	
+	@Autowired
 	BRRS_CPR_STRUCT_LIQ_ReportService BRRS_CPR_STRUCT_LIQ_ReportService;
 	
 	@Autowired
@@ -858,6 +861,13 @@ public class RegulatoryReportServices {
 
 				break;
 				
+			case "RWA":
+				repsummary = BRRS_RWA_ReportService.getRWAView(reportId, fromdate, todate, currency,
+						dtltype,
+						pageable, type, version);
+
+				break;
+				
 			case "CPR_STRUCT_LIQ":
 				repsummary = BRRS_CPR_STRUCT_LIQ_ReportService.getCPR_STRUCT_LIQView(reportId, fromdate, todate, currency,
 						dtltype,
@@ -1247,6 +1257,13 @@ public class RegulatoryReportServices {
 			case "FSI":
 
 				repdetail = BRRS_FSI_ReportService.getFSIcurrentDtl(reportId, fromdate, todate, currency,
+						dtltype,
+						pageable, Filter, type, version);
+				break;
+				
+			case "RWA":
+
+				repdetail = BRRS_RWA_ReportService.getRWAcurrentDtl(reportId, fromdate, todate, currency,
 						dtltype,
 						pageable, Filter, type, version);
 				break;
@@ -2220,6 +2237,17 @@ public class RegulatoryReportServices {
 				}
 				break;
 				
+			case "RWA":
+				try {
+					repfile = BRRS_RWA_ReportService.getRWAExcel(filename, reportId, fromdate, todate,
+							currency, dtltype, type, version);
+
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+				
 			case "CPR_STRUCT_LIQ":
 				try {
 					repfile = BRRS_CPR_STRUCT_LIQ_ReportService.getCPR_STRUCT_LIQExcel(filename, reportId, fromdate, todate,
@@ -2490,6 +2518,9 @@ public class RegulatoryReportServices {
 					filename, fromdate, todate, currency, dtltype, type, version);
 		} else if ("FSIDetail".equals(filename)) {
 			return BRRS_FSI_ReportService.getFSIDetailExcel(
+					filename, fromdate, todate, currency, dtltype, type, version);
+		} else if ("RWADetail".equals(filename)) {
+			return BRRS_RWA_ReportService.getRWADetailExcel(
 					filename, fromdate, todate, currency, dtltype, type, version);
 		} else if ("CPR_STRUCT_LIQDetail".equals(filename)) {
 			return BRRS_CPR_STRUCT_LIQ_ReportService.getCPR_STRUCT_LIQDetailExcel(
@@ -3347,6 +3378,15 @@ public class RegulatoryReportServices {
 				}
 				break;
 				
+			case "RWA":
+				try {
+					archivalData = BRRS_RWA_ReportService.getRWAArchival();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+				
 			case "CPR_STRUCT_LIQ":
 				try {
 					archivalData = BRRS_CPR_STRUCT_LIQ_ReportService.getCPR_STRUCT_LIQArchival();
@@ -3634,6 +3674,12 @@ public class RegulatoryReportServices {
 		else if ("FSIDetail".equals(filename)) {
 
 			fileData = BRRS_FSI_ReportService.getFSIDetailExcel(filename, fromdate, todate, currency,
+					dtltype, type, version);
+		}
+		
+		else if ("RWADetail".equals(filename)) {
+
+			fileData = BRRS_RWA_ReportService.getRWADetailExcel(filename, fromdate, todate, currency,
 					dtltype, type, version);
 		}
 		
@@ -3944,6 +3990,11 @@ public class RegulatoryReportServices {
 							request.getParameter("formmode"));
 					break;
 					
+				case "RWA":
+					modelAndView = BRRS_RWA_ReportService.getViewOrEditPage(request.getParameter("acctNo"),
+							request.getParameter("formmode"));
+					break;
+					
 				case "CPR_STRUCT_LIQ":
 					modelAndView = BRRS_CPR_STRUCT_LIQ_ReportService.getViewOrEditPage(request.getParameter("acctNo"),
 							request.getParameter("formmode"));
@@ -4164,6 +4215,10 @@ public class RegulatoryReportServices {
 
 				case "FSI":
 					response = BRRS_FSI_ReportService.updateDetailEdit(request);
+					break;
+					
+				case "RWA":
+					response = BRRS_RWA_ReportService.updateDetailEdit(request);
 					break;
 					
 				case "CPR_STRUCT_LIQ":
