@@ -410,21 +410,31 @@ public class MCBL_Services {
 	}
 
 	private BigDecimal getCellDecimal(Cell cell) {
-		if (cell == null)
-			return BigDecimal.ZERO;
-		switch (cell.getCellType()) {
-		case NUMERIC:
-			return BigDecimal.valueOf(cell.getNumericCellValue());
-		case STRING:
-			try {
-				return new BigDecimal(cell.getStringCellValue().trim());
-			} catch (Exception e) {
-				return BigDecimal.ZERO;
-			}
-		default:
-			return BigDecimal.ZERO;
-		}
+
+	    if (cell == null) {
+	        return BigDecimal.ZERO;
+	    }
+
+	    switch (cell.getCellType()) {
+
+	        case Cell.CELL_TYPE_NUMERIC:
+	            return BigDecimal.valueOf(cell.getNumericCellValue());
+
+	        case Cell.CELL_TYPE_STRING:
+	            try {
+	                String value = cell.getStringCellValue();
+	                return (value == null || value.trim().isEmpty())
+	                        ? BigDecimal.ZERO
+	                        : new BigDecimal(value.trim());
+	            } catch (Exception e) {
+	                return BigDecimal.ZERO;
+	            }
+
+	        default:
+	            return BigDecimal.ZERO;
+	    }
 	}
+
 
 	private final ConcurrentHashMap<String, byte[]> jobStorage = new ConcurrentHashMap<>();
 

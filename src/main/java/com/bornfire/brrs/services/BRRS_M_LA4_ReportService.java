@@ -294,14 +294,19 @@ public class BRRS_M_LA4_ReportService {
 		Row row = sheet.getRow(excelRowIndex);
 		if (row == null) continue; // skip if row missing in template
 		
-		// Helper to set value without overriding style
-		BiConsumer<Cell, BigDecimal> setValuePreserveStyle = (cell, value) -> {
-		if (value != null) {
-		  cell.setCellValue(value.doubleValue());
-		} else {
-		  cell.setBlank();
-		}
+	
+		
+		BiConsumer<Cell, BigDecimal> setValuePreserveStyle = new BiConsumer<Cell, BigDecimal>() {
+		    @Override
+		    public void accept(Cell cell, BigDecimal value) {
+		        if (value != null) {
+		            cell.setCellValue(value.doubleValue());
+		        } else {
+		            cell.setCellType(Cell.CELL_TYPE_BLANK);
+		        }
+		    }
 		};
+
 		
 		// 🟩 Col1 → From Entity2 (FactoringDebtors)
 		Cell c1 = row.getCell(1);
@@ -2765,13 +2770,17 @@ public class BRRS_M_LA4_ReportService {
 		if (row == null) continue; // skip if row missing in template
 		
 		// Helper to set value without overriding style
-		BiConsumer<Cell, BigDecimal> setValuePreserveStyle = (cell, value) -> {
-		if (value != null) {
-		  cell.setCellValue(value.doubleValue());
-		} else {
-		  cell.setBlank();
-		}
+		BiConsumer<Cell, BigDecimal> setValuePreserveStyle = new BiConsumer<Cell, BigDecimal>() {
+		    @Override
+		    public void accept(Cell cell, BigDecimal value) {
+		        if (value != null) {
+		            cell.setCellValue(value.doubleValue());
+		        } else {
+		            cell.setCellType(Cell.CELL_TYPE_BLANK);
+		        }
+		    }
 		};
+
 		
 		// 🟩 Col1 → From Entity2 (FactoringDebtors)
 		Cell c1 = row.getCell(1);

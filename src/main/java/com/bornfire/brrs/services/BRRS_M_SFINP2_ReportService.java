@@ -3087,7 +3087,7 @@ public class BRRS_M_SFINP2_ReportService {
 
 			Cell fieldDescCell = row.getCell(0);
 
-			if (fieldDescCell == null || fieldDescCell.getCellType() == CellType.BLANK) {
+			if (fieldDescCell == null || fieldDescCell.getCellType() == Cell.CELL_TYPE_BLANK) {
 				continue;
 			}
 
@@ -3099,16 +3099,16 @@ public class BRRS_M_SFINP2_ReportService {
 				FormulaEvaluator evaluator = workbook.getCreationHelper().createFormulaEvaluator();
 				CellValue cellValue = evaluator.evaluate(fieldDescCell);
 				if (cellValue != null) {
-					if (cellValue.getCellType() == CellType.STRING) {
+					if (cellValue.getCellType() == Cell.CELL_TYPE_STRING) {
 						fieldDesc = cellValue.getStringValue();
-					} else if (cellValue.getCellType() == CellType.NUMERIC) {
+					} else if (cellValue.getCellType() == Cell.CELL_TYPE_NUMERIC) {
 						fieldDesc = String.valueOf(cellValue.getNumberValue());
-					} else if (cellValue.getCellType() == CellType.BOOLEAN) {
+					} else if (cellValue.getCellType() == Cell.CELL_TYPE_BOOLEAN) {
 						fieldDesc = String.valueOf(cellValue.getBooleanValue());
 					}
 
 				}
-				if (fieldDesc.isEmpty() && fieldDescCell.getCellType() == CellType.FORMULA) {
+				if (fieldDesc.isEmpty() && fieldDescCell.getCellType() == Cell.CELL_TYPE_FORMULA) {
 
 					fieldDesc = fieldDescCell.getCellFormula();
 				}
@@ -3130,7 +3130,7 @@ public class BRRS_M_SFINP2_ReportService {
 			boolean hasFormula = false;
 			for (int i = 0; i < row.getLastCellNum(); i++) {
 				Cell cell = row.getCell(i);
-				if (cell != null && cell.getCellType() == CellType.FORMULA) {
+				if (cell != null && cell.getCellType() == Cell.CELL_TYPE_FORMULA) {
 					hasFormula = true;
 					break;
 				}

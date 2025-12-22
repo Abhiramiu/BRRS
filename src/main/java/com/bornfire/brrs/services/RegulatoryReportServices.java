@@ -4863,43 +4863,50 @@ public class RegulatoryReportServices {
 				Cell destCell = destRow.createCell(i);
 
 				// Copy cell type and value
-				CellType cellType = srcCell.getCellType();
+				CellType cellType = srcCell.getCellTypeEnum();
 				if (cellType == null) {
 					destCell.setCellValue(""); // fallback
 					continue;
 				}
 
-				switch (cellType) {
-					case STRING:
-						destCell.setCellValue(srcCell.getStringCellValue());
-						break;
-					case NUMERIC:
-						if (DateUtil.isCellDateFormatted(srcCell)) {
-							destCell.setCellValue(srcCell.getDateCellValue());
-							// Optionally copy data format:
-							CellStyle newStyle = dest.getWorkbook().createCellStyle();
-							newStyle.cloneStyleFrom(srcCell.getCellStyle());
-							destCell.setCellStyle(newStyle);
-						} else {
-							destCell.setCellValue(srcCell.getNumericCellValue());
-						}
-						break;
-					case BOOLEAN:
-						destCell.setCellValue(srcCell.getBooleanCellValue());
-						break;
-					case FORMULA:
-						// copy formula (note: formula may refer to sheet names that change)
-						destCell.setCellFormula(srcCell.getCellFormula());
-						break;
-					case BLANK:
-						destCell.setBlank();
-						break;
-					case ERROR:
-						destCell.setCellErrorValue(srcCell.getErrorCellValue());
-						break;
-					default:
-						// fallback to string representation
-						destCell.setCellValue(srcCell.toString());
+				int cellType1 = srcCell.getCellType();   // ✔ POI 3.x returns int
+
+				switch (cellType1) {
+
+				    case Cell.CELL_TYPE_STRING:
+				        destCell.setCellValue(srcCell.getStringCellValue());
+				        break;
+
+				    case Cell.CELL_TYPE_NUMERIC:
+				        if (DateUtil.isCellDateFormatted(srcCell)) {
+				            destCell.setCellValue(srcCell.getDateCellValue());
+
+				            CellStyle newStyle = dest.getWorkbook().createCellStyle();
+				            newStyle.cloneStyleFrom(srcCell.getCellStyle());
+				            destCell.setCellStyle(newStyle);
+				        } else {
+				            destCell.setCellValue(srcCell.getNumericCellValue());
+				        }
+				        break;
+
+				    case Cell.CELL_TYPE_BOOLEAN:
+				        destCell.setCellValue(srcCell.getBooleanCellValue());
+				        break;
+
+				    case Cell.CELL_TYPE_FORMULA:
+				        destCell.setCellFormula(srcCell.getCellFormula());
+				        break;
+
+				    case Cell.CELL_TYPE_BLANK:
+				        destCell.setCellValue("");
+				        break;
+
+				    case Cell.CELL_TYPE_ERROR:
+				        destCell.setCellErrorValue(srcCell.getErrorCellValue());
+				        break;
+
+				    default:
+				        destCell.setCellValue(srcCell.toString());
 				}
 
 				// Optionally copy style (recommended if you want formatting preserved)
@@ -5016,36 +5023,44 @@ public class RegulatoryReportServices {
 				}
 
 				// ✅ Safe switch for Apache POI 4.x / 5.x
-				switch (srcCell.getCellType()) {
-					case STRING:
-						destCell.setCellValue(srcCell.getRichStringCellValue().getString());
-						break;
+				int cellType = srcCell.getCellType();
 
-					case NUMERIC:
-						if (DateUtil.isCellDateFormatted(srcCell)) {
-							destCell.setCellValue(srcCell.getDateCellValue());
-						} else {
-							destCell.setCellValue(srcCell.getNumericCellValue());
-						}
-						break;
+				switch (cellType) {
 
-					case BOOLEAN:
-						destCell.setCellValue(srcCell.getBooleanCellValue());
-						break;
+				    case Cell.CELL_TYPE_STRING:
+				        destCell.setCellValue(srcCell.getRichStringCellValue().getString());
+				        break;
 
-					case FORMULA:
-						// Copy the formula text directly
-						destCell.setCellFormula(srcCell.getCellFormula());
-						break;
+				    case Cell.CELL_TYPE_NUMERIC:
+				        if (DateUtil.isCellDateFormatted(srcCell)) {
+				            destCell.setCellValue(srcCell.getDateCellValue());
+				        } else {
+				            destCell.setCellValue(srcCell.getNumericCellValue());
+				        }
+				        break;
 
-					case BLANK:
-						destCell.setBlank();
-						break;
+				    case Cell.CELL_TYPE_BOOLEAN:
+				        destCell.setCellValue(srcCell.getBooleanCellValue());
+				        break;
 
-					default:
-						destCell.setCellValue("");
-						break;
+				    case Cell.CELL_TYPE_FORMULA:
+				        // Copy formula
+				        destCell.setCellFormula(srcCell.getCellFormula());
+				        break;
+
+				    case Cell.CELL_TYPE_BLANK:
+				        destCell.setCellValue("");
+				        break;
+
+				    case Cell.CELL_TYPE_ERROR:
+				        destCell.setCellErrorValue(srcCell.getErrorCellValue());
+				        break;
+
+				    default:
+				        destCell.setCellValue("");
+				        break;
 				}
+
 			}
 		}
 	}

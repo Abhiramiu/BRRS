@@ -2392,7 +2392,7 @@ public class BRRS_M_SFINP1_ReportService {
 				// Check if there is at least one non-empty cell
 				for (int c = lastCol; c < lastCell; c++) {
 					Cell cell = row.getCell(c);
-					if (cell != null && cell.getCellType() != CellType.BLANK && !cell.toString().trim().isEmpty()) {
+					if (cell != null && cell.getCellType() != Cell.CELL_TYPE_BLANK && !cell.toString().trim().isEmpty()) {
 						lastCol = lastCell;
 						break;
 					}
@@ -2420,7 +2420,7 @@ public class BRRS_M_SFINP1_ReportService {
 			columnUsed = false;
 			for (Row row : sheet) {
 				Cell cell = (row == null) ? null : row.getCell(col);
-				if (cell != null && cell.getCellType() != CellType.BLANK
+				if (cell != null && cell.getCellType() != Cell.CELL_TYPE_BLANK
 						&& !new DataFormatter().formatCellValue(cell).trim().isEmpty()) {
 					columnUsed = true;
 					break;

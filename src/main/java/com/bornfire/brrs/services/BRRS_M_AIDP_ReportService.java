@@ -1308,7 +1308,7 @@ private int getUsedColumnCount(Sheet sheet) {
         columnUsed = false;
         for (Row row : sheet) {
             Cell cell = (row == null) ? null : row.getCell(col);
-            if (cell != null && cell.getCellType() != CellType.BLANK &&
+            if (cell != null && cell.getCellType() != Cell.CELL_TYPE_BLANK &&
                 !new DataFormatter().formatCellValue(cell).trim().isEmpty()) {
                 columnUsed = true;
                 break;

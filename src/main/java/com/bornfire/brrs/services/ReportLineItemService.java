@@ -277,7 +277,7 @@ public class ReportLineItemService {
 	            Cell cell = row.getCell(col);
 	            if (cell == null) continue;
 
-	            if (cell.getCellType() == CellType.FORMULA) {
+	            if (cell.getCellType() == Cell.CELL_TYPE_FORMULA) {
 
 	                boolean formulaRepeatsBelow = true;
 
@@ -290,7 +290,7 @@ public class ReportLineItemService {
 
 	                    Cell nextCell = nextRow.getCell(col);
 
-	                    if (nextCell == null || nextCell.getCellType() != CellType.FORMULA) {
+	                    if (nextCell == null || nextCell.getCellType() != Cell.CELL_TYPE_FORMULA) {
 	                        formulaRepeatsBelow = false;
 	                        break;
 	                    }
@@ -314,7 +314,7 @@ public class ReportLineItemService {
 	        Cell cell = row.getCell(c);
 	        if (cell == null) continue;
 
-	        if (cell.getCellType() == CellType.FORMULA) {
+	        if (cell.getCellType() == Cell.CELL_TYPE_FORMULA) {
 
 	            boolean formulaRepeatsBelow = true;
 
@@ -327,7 +327,7 @@ public class ReportLineItemService {
 
 	                Cell nextCell = nextRow.getCell(c);
 
-	                if (nextCell == null || nextCell.getCellType() != CellType.FORMULA) {
+	                if (nextCell == null || nextCell.getCellType() != Cell.CELL_TYPE_FORMULA) {
 	                    formulaRepeatsBelow = false;
 	                    break;
 	                }
@@ -347,14 +347,17 @@ public class ReportLineItemService {
 	//////////////////////////////////////////////////////////////
 
 	private boolean hasBorder(Cell cell) {
+	    if (cell == null) return false;
+
 	    CellStyle style = cell.getCellStyle();
 	    if (style == null) return false;
 
-	    return style.getBorderTop()    != BorderStyle.NONE ||
-	           style.getBorderBottom() != BorderStyle.NONE ||
-	           style.getBorderLeft()   != BorderStyle.NONE ||
-	           style.getBorderRight()  != BorderStyle.NONE;
+	    return style.getBorderTop()    != 0 ||
+	           style.getBorderBottom() != 0 ||
+	           style.getBorderLeft()   != 0 ||
+	           style.getBorderRight()  != 0;
 	}
+
 
 	//////////////////////////////////////////////////////////////
 //	      Detect Start Row (first row with border in DESC col)

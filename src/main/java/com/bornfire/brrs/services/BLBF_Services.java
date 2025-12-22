@@ -488,7 +488,7 @@ public class BLBF_Services {
 			if (cell == null)
 				return null;
 
-			if (cell.getCellType() == CellType.NUMERIC && DateUtil.isCellDateFormatted(cell)) {
+			if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC && DateUtil.isCellDateFormatted(cell)) {
 				return new java.sql.Date(cell.getDateCellValue().getTime());
 			} else {
 				// Parse text in dd-MM-yyyy format
@@ -533,7 +533,7 @@ public class BLBF_Services {
 		try {
 			if (cell == null)
 				return null;
-			if (cell.getCellType() == CellType.NUMERIC && DateUtil.isCellDateFormatted(cell))
+			if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC && DateUtil.isCellDateFormatted(cell))
 				return cell.getDateCellValue();
 			String text = f.formatCellValue(cell, e);
 			if (text.isEmpty())

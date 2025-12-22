@@ -461,7 +461,7 @@ public class BFDB_Services {
 			if (cell == null)
 				return null;
 
-			if (cell.getCellType() == CellType.NUMERIC && DateUtil.isCellDateFormatted(cell)) {
+			if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC && DateUtil.isCellDateFormatted(cell)) {
 				return new java.sql.Date(cell.getDateCellValue().getTime());
 			} else {
 				// Parse text in dd-MM-yyyy format
@@ -515,9 +515,9 @@ public class BFDB_Services {
 		// fallback to numeric evaluation
 		try {
 			CellValue cv = evaluator.evaluate(cell);
-			if (cv != null && cv.getCellType() == CellType.NUMERIC) {
+			if (cv != null && cv.getCellType() == Cell.CELL_TYPE_NUMERIC) {
 				return BigDecimal.valueOf(cv.getNumberValue());
-			} else if (cell.getCellType() == CellType.NUMERIC) {
+			} else if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
 				return BigDecimal.valueOf(cell.getNumericCellValue());
 			}
 		} catch (Exception ignored) {
@@ -531,7 +531,7 @@ public class BFDB_Services {
 
 		try {
 			// 1) Numeric cell with Excel date
-			if (cell.getCellType() == CellType.NUMERIC && DateUtil.isCellDateFormatted(cell)) {
+			if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC && DateUtil.isCellDateFormatted(cell)) {
 				java.util.Date d = cell.getDateCellValue();
 				if (d != null && d.getYear() + 1900 >= 1900) { // Ensure year >= 1900
 					return new java.sql.Date(d.getTime());
@@ -541,7 +541,7 @@ public class BFDB_Services {
 
 			// 2) Formula evaluation
 			CellValue cv = evaluator.evaluate(cell);
-			if (cv != null && cv.getCellType() == CellType.NUMERIC) {
+			if (cv != null && cv.getCellType() == Cell.CELL_TYPE_NUMERIC) {
 				double num = cv.getNumberValue();
 				if (DateUtil.isValidExcelDate(num)) {
 					java.util.Date d = DateUtil.getJavaDate(num, false);

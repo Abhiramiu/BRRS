@@ -433,9 +433,12 @@ public class BDGF_Services {
 			if (cell == null)
 				return null;
 
-			if (cell.getCellType() == CellType.NUMERIC && DateUtil.isCellDateFormatted(cell)) {
-				return new java.sql.Date(cell.getDateCellValue().getTime());
-			} else {
+			if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC &&
+				    DateUtil.isCellDateFormatted(cell)) {
+
+				    return new java.sql.Date(cell.getDateCellValue().getTime());
+				}
+ else {
 				// Parse text in dd-MM-yyyy format
 				String text = formatter.formatCellValue(cell, evaluator).trim();
 				if (text.isEmpty())
@@ -478,7 +481,8 @@ public class BDGF_Services {
 		try {
 			if (cell == null)
 				return null;
-			if (cell.getCellType() == CellType.NUMERIC && DateUtil.isCellDateFormatted(cell))
+			if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC &&
+				    DateUtil.isCellDateFormatted(cell)) 
 				return cell.getDateCellValue();
 			String text = f.formatCellValue(cell, e);
 			if (text.isEmpty())
@@ -501,7 +505,7 @@ public class BDGF_Services {
 		if (cell == null)
 			return null;
 		try {
-			if (cell.getCellType() == CellType.NUMERIC) {
+			if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
 				return BigDecimal.valueOf(cell.getNumericCellValue());
 			} else {
 				String str = cell.toString().trim();
@@ -516,7 +520,7 @@ public class BDGF_Services {
 		if (cell == null)
 			return null;
 		try {
-			if (cell.getCellType() == CellType.NUMERIC) {
+			if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
 				return (long) cell.getNumericCellValue();
 			} else {
 				String str = cell.toString().trim();
@@ -530,7 +534,7 @@ public class BDGF_Services {
 	private Date getDate(Cell cell) {
 		if (cell == null)
 			return null;
-		if (cell.getCellType() == CellType.NUMERIC && DateUtil.isCellDateFormatted(cell)) {
+		if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC && DateUtil.isCellDateFormatted(cell)) {
 			return cell.getDateCellValue();
 		} else {
 			try {
@@ -550,7 +554,7 @@ public class BDGF_Services {
 			return true;
 		for (int c = row.getFirstCellNum(); c < row.getLastCellNum(); c++) {
 			Cell cell = row.getCell(c);
-			if (cell != null && cell.getCellType() != CellType.BLANK) {
+			if (cell != null && cell.getCellType() != Cell.CELL_TYPE_BLANK) {
 				String value = cell.toString().trim();
 				if (!value.isEmpty())
 					return false;
