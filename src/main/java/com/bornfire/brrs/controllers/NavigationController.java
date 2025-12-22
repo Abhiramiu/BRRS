@@ -32,6 +32,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -47,6 +49,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.bornfire.brrs.entities.AccessAndRoles;
 import com.bornfire.brrs.entities.AccessandRolesRepository;
@@ -78,6 +81,7 @@ import com.bornfire.brrs.services.AccessAndRolesServices;
 import com.bornfire.brrs.services.BDGF_Services;
 import com.bornfire.brrs.services.BFDB_Services;
 import com.bornfire.brrs.services.BLBF_Services;
+import com.bornfire.brrs.services.BRRS_SLS_INPUT_SHT_ReportService;
 import com.bornfire.brrs.services.BankBranchService;
 import com.bornfire.brrs.services.CommonMappingService;
 import com.bornfire.brrs.services.LoginServices;
@@ -668,6 +672,44 @@ public class NavigationController {
 
 		return "Source_Data_Mapping";
 	}
+	
+//	@RequestMapping(value = "SLSREPORT", method = {RequestMethod.GET, RequestMethod.POST})
+//	public ModelAndView SLSREPORT(
+//	        @RequestParam(required = false) String currency,
+//	        @RequestParam(required = false) String reportdate,
+//	        @RequestParam(required = false) String formmode,
+//	        @RequestParam(defaultValue = "0") int page,
+//	        @RequestParam(defaultValue = "100") int size) {
+//
+//	    return getRT_SLSView(currency, reportdate, formmode, page, size);
+//	}
+
+	@Autowired
+	private BRRS_SLS_INPUT_SHT_ReportService BRRS_SLS_INPUT_SHT_reportservice;
+
+	@RequestMapping(value = "SLSREPORT", method = {RequestMethod.GET, RequestMethod.POST})
+	public ModelAndView SLSREPORT(
+	        @RequestParam(required = false) String reportId,
+	        @RequestParam(required = false) String fromdate,
+	        @RequestParam(required = false) String todate,
+	        @RequestParam(required = false) String currency,
+	        @RequestParam(required = false) String formmode,
+	        @RequestParam(defaultValue = "0") int page,
+	        @RequestParam(defaultValue = "100") int size) {
+
+	    Pageable pageable = PageRequest.of(page, size);
+
+	    return BRRS_SLS_INPUT_SHT_reportservice.getRT_SLSView(
+	            reportId,
+	            fromdate,
+	            todate,
+	            currency,
+	            formmode,
+	            pageable
+	    );
+	}
+
+
 
 	@RequestMapping(value = "ReferCodeMast", method = { RequestMethod.GET, RequestMethod.POST })
 	public String ReferCodeMast(@RequestParam(required = false) String formmode,

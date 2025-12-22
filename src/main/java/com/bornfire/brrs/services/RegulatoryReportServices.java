@@ -145,6 +145,9 @@ public class RegulatoryReportServices {
 
 	@Autowired
 	BRRS_M_LCR_ReportService BRRS_M_LCR_reportservice;
+	
+	@Autowired
+	BRRS_SLS_INPUT_SHT_ReportService BRRS_SLS_INPUT_SHT_reportservice;
 
 	@Autowired
 	BRRS_M_TOP_100_BORROWER_ReportService BRRS_M_TOP_100_BORROWER_reportservice;
@@ -598,6 +601,14 @@ public class RegulatoryReportServices {
 				repsummary = BRRS_M_LCR_reportservice.getM_LCRView(reportId, fromdate, todate, currency, dtltype,
 						pageable,
 						type, version);
+				break;
+				
+			case "SLS":
+				System.out.println("Enter into Service");
+				repsummary = BRRS_SLS_INPUT_SHT_reportservice.getRT_SLSView(reportId, fromdate, todate, currency, dtltype,
+						pageable);
+				
+				System.out.println("Enter into Method");
 				break;
 
 			case "M_TOP_100_BORROWER":
@@ -3622,11 +3633,11 @@ public class RegulatoryReportServices {
 
 		}
 
-		else if ("Q_ATF_Detail".equals(filename)) {
-			logger.info("Getting Inside Q_ATF_Detail");
-			fileData = brrs_q_atf_reportservice.getQ_ATFDetailExcel(filename, fromdate, todate, currency,
-					dtltype, type, version);
-		}
+//		else if ("Q_ATF_Detail".equals(filename)) {
+//			logger.info("Getting Inside Q_ATF_Detail");
+//			fileData = brrs_q_atf_reportservice.getQ_ATFDetailExcel(filename, fromdate, todate, currency,
+//					dtltype, type, version);
+//		}
 
 		else if ("M_SCI_E".equals(filename)) {
 
