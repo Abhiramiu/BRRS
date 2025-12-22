@@ -48,6 +48,7 @@ import com.bornfire.brrs.services.BRRS_ADISB1_ReportService;
 import com.bornfire.brrs.services.BRRS_BDISB1_ReportService;
 import com.bornfire.brrs.services.BRRS_BDISB2_ReportService;
 import com.bornfire.brrs.services.BRRS_BDISB3_ReportService;
+import com.bornfire.brrs.services.BRRS_FORMAT_II_ReportService;
 import com.bornfire.brrs.services.BRRS_MDISB5_ReportService;
 import com.bornfire.brrs.services.BRRS_M_AIDP_ReportService;
 import com.bornfire.brrs.services.BRRS_M_BOP_ReportService;
@@ -109,7 +110,6 @@ import com.bornfire.brrs.services.BRRS_Q_RLFA2_ReportService;
 import com.bornfire.brrs.services.BRRS_Q_SMME_DEP_ReportService;
 import com.bornfire.brrs.services.BRRS_Q_STAFF_Report_Service;
 import com.bornfire.brrs.services.BRRS_SCH_17_ReportService;
-
 import com.bornfire.brrs.services.RegulatoryReportServices;
 import com.bornfire.brrs.services.ReportCodeMappingService;
 
@@ -2156,6 +2156,31 @@ return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 	
 	
 	
+	@Autowired
+	BRRS_FORMAT_II_ReportService brrs_FORMAT_II_reportservice;
+	
+	@RequestMapping(value = "/FORMAT_IIupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<String> updateReport(
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+			@ModelAttribute FORMAT_II_Manual_Summary_Entity request) {
+
+		try {
+			System.out.println("came to single controller");
+
+			// ? set the asondate into entity
+			request.setReport_date(asondate);
+
+			// call services
+			brrs_FORMAT_II_reportservice.updateReport(request);
+
+			return ResponseEntity.ok("Updated Successfully.");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Update Failed: " + e.getMessage());
+		}
+	}
 	
 	
 	

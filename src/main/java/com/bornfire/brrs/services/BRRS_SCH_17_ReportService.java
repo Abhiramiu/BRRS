@@ -56,7 +56,7 @@ import com.bornfire.brrs.entities.BRRS_SCH_17_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_SCH_17_Manual_Archival_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_SCH_17_Manual_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_SCH_17_Summary_Repo;
-import com.bornfire.brrs.entities.M_SCI_E_Manual_Summary_Entity;
+
 import com.bornfire.brrs.entities.SCH_17_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.SCH_17_Archival_Manual_Summary_Entity;
 import com.bornfire.brrs.entities.SCH_17_Archival_Summary_Entity;

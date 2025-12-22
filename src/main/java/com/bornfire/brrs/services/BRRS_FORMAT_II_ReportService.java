@@ -3,6 +3,7 @@ package com.bornfire.brrs.services;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -49,16 +50,19 @@ import org.springframework.transaction.support.TransactionSynchronizationAdapter
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.servlet.ModelAndView;
 
-
 import com.bornfire.brrs.entities.BRRS_FORMAT_II_Archival_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_FORMAT_II_Archival_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_FORMAT_II_Detail_Repo;
+import com.bornfire.brrs.entities.BRRS_FORMAT_II_Manual_Archival_Summary_Repo;
+import com.bornfire.brrs.entities.BRRS_FORMAT_II_Manual_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_FORMAT_II_Summary_Repo;
-
 import com.bornfire.brrs.entities.FORMAT_II_Archival_Detail_Entity;
+import com.bornfire.brrs.entities.FORMAT_II_Archival_Manual_Summary_Entity;
 import com.bornfire.brrs.entities.FORMAT_II_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.FORMAT_II_Detail_Entity;
+import com.bornfire.brrs.entities.FORMAT_II_Manual_Summary_Entity;
 import com.bornfire.brrs.entities.FORMAT_II_Summary_Entity;
+import com.bornfire.brrs.entities.SCH_17_Manual_Summary_Entity;
 
 @Component
 @Service
@@ -87,7 +91,12 @@ public class BRRS_FORMAT_II_ReportService {
 	    @Autowired 
 	    BRRS_FORMAT_II_Archival_Detail_Repo     FORMAT_II_Archival_Detail_Repo;
 	 
-
+	    @Autowired 
+	    BRRS_FORMAT_II_Manual_Summary_Repo                     FORMAT_II_Manual_summary_repo;
+	 
+		@Autowired
+		BRRS_FORMAT_II_Manual_Archival_Summary_Repo            FORMAT_II_Manual_Archival_Summary_Repo;
+		
 	
 	
 	
@@ -111,6 +120,7 @@ public class BRRS_FORMAT_II_ReportService {
 		    System.out.println("version = " + version);
 
 		    List<FORMAT_II_Archival_Summary_Entity> T1Master = new ArrayList<>();
+		    List<FORMAT_II_Archival_Manual_Summary_Entity> T2Master = new ArrayList<>();
 		 
 		    try {
 		        Date dt = dateformat.parse(todate);
@@ -118,6 +128,10 @@ public class BRRS_FORMAT_II_ReportService {
 		        T1Master = FORMAT_II_Archival_Summary_Repo.getdatabydateListarchival(dt, version);
 
 		        System.out.println("T1Master size = " + T1Master.size());
+		        
+		        T2Master = FORMAT_II_Manual_Archival_Summary_Repo.getdatabydateListarchival(dt, version);
+
+		        System.out.println("T2Master size = " + T2Master.size());
 		      
 
 		    } catch (ParseException e) {
@@ -125,23 +139,31 @@ public class BRRS_FORMAT_II_ReportService {
 		    }
 
 		    mv.addObject("reportsummary", T1Master);
+		    mv.addObject("reportsummary1", T2Master);
 		 
 		} else {
 
 			List<FORMAT_II_Summary_Entity> T1Master = new ArrayList<FORMAT_II_Summary_Entity>();
-		
+			List<FORMAT_II_Manual_Summary_Entity> T2Master = new ArrayList<FORMAT_II_Manual_Summary_Entity>();
 			try {
 				Date d1 = dateformat.parse(todate);
 				
 				T1Master = FORMAT_II_summary_repo.getdatabydateList(dateformat.parse(todate));
+				
 			
 				System.out.println("T1Master size " + T1Master.size());
+           T2Master = FORMAT_II_Manual_summary_repo.getdatabydateList(dateformat.parse(todate));
+				
+				System.out.println("T2Master size " + T2Master.size());
 				mv.addObject("report_date", dateformat.format(d1));
 
 			} catch (ParseException e) {
 				e.printStackTrace();
 			}
 			mv.addObject("reportsummary", T1Master);
+			
+			mv.addObject("reportsummary1", T2Master);
+			
 			
 		}
 
@@ -2117,6 +2139,87 @@ public class BRRS_FORMAT_II_ReportService {
 	}
 	
 	
+	public void updateReport(FORMAT_II_Manual_Summary_Entity updatedEntity) {
+	    System.out.println("Came to services");
+	    System.out.println("Report Date: " + updatedEntity.getReport_date());
+
+	    //  Use your query to fetch by date
+	    List<FORMAT_II_Manual_Summary_Entity> list = FORMAT_II_Manual_summary_repo
+	        .getdatabydateList(updatedEntity.getReport_date());
+
+	    FORMAT_II_Manual_Summary_Entity existing;
+	    if (list.isEmpty()) {
+	        // Record not found — optionally create it
+	        System.out.println("No record found for REPORT_DATE: " + updatedEntity.getReport_date());
+	        existing = new FORMAT_II_Manual_Summary_Entity();
+	        existing.setReport_date(updatedEntity.getReport_date());
+	    } else {
+	        existing = list.get(0);
+	    }
+
+	    try {
+	        //  Only for specific row numbers
+	    	int[] rows = {21, 25};
+
+	    	for (int row : rows) {
+	    	    String prefix = "R" + row + "_";
+
+	    	    String[] fields;
+
+	    	    if (row == 21) {
+	    	        fields = new String[] { "amt" };             // R21_amt only
+	    	    } else if (row == 25) {
+	    	        fields = new String[] { "amt_sub_del" };     // R25_amt_sub_del only
+	    	    } else {
+	    	        continue;
+	    	    }
+
+	            for (String field : fields) {
+	                String getterName = "get" + prefix + field; 
+	                String setterName = "set" + prefix + field;
+
+	                try {
+	                    Method getter = FORMAT_II_Manual_Summary_Entity.class.getMethod(getterName);
+	                    Method setter = FORMAT_II_Manual_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+
+	                    Object newValue = getter.invoke(updatedEntity);
+	                    setter.invoke(existing, newValue);
+
+	                } catch (NoSuchMethodException e) {
+	                    // Skip missing fields gracefully
+	                    continue;
+	                }
+	            }
+	        }
+
+	        // Metadata
+	        existing.setReport_version(updatedEntity.getReport_version());
+	        existing.setReport_frequency(updatedEntity.getReport_frequency());
+	        existing.setReport_code(updatedEntity.getReport_code());
+	        existing.setReport_desc(updatedEntity.getReport_desc());
+	        existing.setEntity_flg(updatedEntity.getEntity_flg());
+	        existing.setModify_flg(updatedEntity.getModify_flg());
+	        existing.setDel_flg(updatedEntity.getDel_flg());
+
+	    } catch (Exception e) {
+	        throw new RuntimeException("Error while updating FORMAT_II Summary fields", e);
+	    }
+
+	    //  FIRST COMMIT — forces immediate commit
+	    FORMAT_II_Manual_summary_repo.saveAndFlush(existing);
+	    System.out.println("FORMAT_II Summary updated and COMMITTED");
+
+	    //  Execute procedure with updated data
+	    String oracleDate = new SimpleDateFormat("dd-MM-yyyy")
+	            .format(updatedEntity.getReport_date())
+	            .toUpperCase();
+
+	    String sql = "BEGIN BRRS.BRRS_FORMAT_II_SUMMARY_PROCEDURE ('" + oracleDate + "'); END;";
+	    jdbcTemplate.execute(sql);
+
+	    System.out.println("Procedure executed for date: " + oracleDate);
+	}
+
 	
 	
 

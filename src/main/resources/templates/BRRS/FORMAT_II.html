@@ -898,7 +898,14 @@ function showmodify(btn) {
     
     
     
-
+//Apply gray background 
+  [
+      "#r21_amt", "#r25_amt_sub_del"
+  ].forEach(selector => {
+      if ($(selector).length) {
+          $(selector).css("background-color", "#d3d3d3");
+      }
+  });
 
 
 
@@ -942,6 +949,184 @@ function cancelModify() {
     }
 
 	
+
+	</script>
+
+
+<script>
+    //--------------------------------------
+    // COMMON VALUE GETTER
+    //--------------------------------------
+    function getCellValue(selector) {
+        let el = $(selector);
+        if (!el.length) return 0;
+
+        let val = el.is("input") ? el.val() : el.text();
+        return parseFloat((val || "0").replace(/,/g, "")) || 0;
+    }
+
+    //--------------------------------------
+    // COMMON VALUE SETTER (US FORMAT)
+    //--------------------------------------
+    function setCellValue(selector, value) {
+        let el = $(selector);
+        if (!el.length) return;
+
+        const formatted = Number(value).toLocaleString("en-US", {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+        });
+
+        if (el.is("input")) {
+            el.val(formatted);
+        } else {
+            el.text(formatted);
+        }
+    }
+
+    //--------------------------------------
+    // TOTAL CALCULATION FUNCTION
+    //--------------------------------------
+    function calculateTotals() {
+
+        /* ================= G COLUMN ================= */
+
+        // G23 = G25
+        let g23 = getCellValue("#r25_amt_sub_del");
+        setCellValue("#r23_amt_sub_del", g23);
+
+        // G28 = G24 + G25 + G26 - G27
+        let g28 =
+            getCellValue("#r24_amt_sub_del") +
+            getCellValue("#r25_amt_sub_del") +
+            getCellValue("#r26_amt_sub_del") -
+            getCellValue("#r27_amt_sub_del");
+
+        setCellValue("#r28_amt_sub_del", g28);
+
+        /* ================= H COLUMN ================= */
+
+        // H25 = E25 + F25 - G25
+        let h25 =
+            getCellValue("#r25_amt") +
+            getCellValue("#r25_amt_sub_add") -
+            getCellValue("#r25_amt_sub_del");
+
+        setCellValue("#r25_amt_total", h25);
+    }
+
+    //--------------------------------------
+    // EVENT LISTENERS
+    //--------------------------------------
+    $(document).ready(function () {
+
+        calculateTotals(); // initial load
+
+        $(
+            // Row 25 drivers
+            "#r25_amt, " +
+            "#r25_amt_sub_add, " +
+            "#r25_amt_sub_del, " +
+            // G-column dependencies
+            "#r24_amt_sub_del, #r26_amt_sub_del, #r27_amt_sub_del"
+        ).on("input change keyup", calculateTotals);
+
+    });
+</script>
+
+
+
+
+
+
+
+
+<script>
+	
+
+	// This function is for closing the modal after an action is complete.
+	// It hides the result and loader modals and reloads the page.
+	function closemodel() {
+	    $("#resultModal").modal("hide");
+	    $('#loader').modal('hide');
+
+	    // Reload the page after a short delay to ensure the modal animation completes smoothly.
+	    setTimeout(function () {
+	        location.reload();
+	    }, 300);
+	}
+
+	function fileuploads(btn) {
+	    const asondate = btn.getAttribute("data-todate");
+	    const type = btn.getAttribute("data-type");
+
+	    // Show loader
+	    $('#loader').modal('show');
+
+	    try {
+	        // ✅ Step 1: Calculate totals
+	       /*  calculateR14Totals(); */
+	        calculateTotals();
+	    
+	        // ✅ Step 2: Remove commas from all text inputs
+	        $("#fileupload input[type='text']").each(function () {
+	            $(this).val($(this).val().replace(/,/g, ''));
+	        });
+
+	        // ✅ Step 3: Validate form
+	        if (!$("#fileupload").valid()) {
+	            $('#loader').modal('hide');
+	            return;
+	        }
+
+	        // ✅ Step 4: Build FormData
+	        const formData = new FormData();
+	        formData.append("asondate", asondate);
+	        formData.append("type", type);
+
+	        $('#fileupload').find(':input').each(function () {
+	            const name = $(this).attr('name');
+	            if (name) {
+	                formData.append(name, $(this).val());
+	            }
+	        });
+
+	        // ✅ Step 5: AJAX submission
+	        $.ajax({
+	            url: './FORMAT_IIupdateAll',
+	            type: 'POST',
+	            data: formData,
+	            processData: false,
+	            contentType: false,
+	            dataType: 'text',
+	            success: function () {
+	                $("#resultModalLabel").text("BRRS");
+	                $("#resultModalBody").text(" Updated Successfully.");
+	                $("#resultModal").modal("show");
+	            },
+	            error: function (jqXHR) {
+	                console.error("Error response:", jqXHR.responseText);
+	                $("#resultModalLabel").text("Error");
+	                $("#resultModalBody").text("Update failed. Check console for details.");
+	                $("#resultModal").modal("show");
+	            },
+	            complete: function () {
+	                $('#loader').modal('hide');
+	            }
+	        });
+
+	    } catch (error) {
+	        console.error("Error in fileuploads function:", error);
+	        $('#loader').modal('hide');
+	        $("#resultModalLabel").text("Error");
+	        $("#resultModalBody").text("Unexpected error occurred. Check console.");
+	        $("#resultModal").modal("show");
+	    }
+	}
+
+
+
+
 
 	</script>
 
@@ -1011,15 +1196,14 @@ function cancelModify() {
 							
 							
 								<!-- Modify button -->
-					<!-- 	<button type="button" class="custom-tab-btn"
+					<button type="button" class="custom-tab-btn"
 							onclick="showmodify(this);" title="Click to EDIT Records"
 							th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
-							th:if="${type != 'ARCHIVAL'}" id="addRecord">Modify</button> -->
-
+							th:if="${type != 'ARCHIVAL'}" id="addRecord">Modify</button> 
 						<!-- Cancel button (hidden initially) -->
-					<!-- 	<button type="button" class="custom-tab-btn"
+				<button type="button" class="custom-tab-btn"
 							title="Cancel editing" id="cancelRecord"
-							onclick="cancelModify();" style="display: none;">Cancel</button> -->
+							onclick="cancelModify();" style="display: none;">Cancel</button> 
 							
 							
 							
@@ -1360,14 +1544,26 @@ function cancelModify() {
 </tr>
 
 <!-- R21 -->
-<tr>
+<tr  th:each="report1 : ${reportsummary1}">
     <td style="text-align: left; padding-left:40px;"
         th:text="${report?.r21_product ?: ''}"></td>
 
-    <td style="text-align: right;"
+    <!-- <td style="text-align: right;"
         th:text="${report?.r21_amt ?: ''}"
         th:attr="RowId='R21', ColumnId='C2'"
-        onclick="showdetailsbyRowAndColumn(this)"></td>
+        onclick="showdetailsbyRowAndColumn(this)"></td> -->
+        
+        
+												<td id="ROW21"
+													style=" font-weight: bold; text-align: right;   width: 200px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report1.r21_amt != null ? #numbers.formatDecimal(report1.r21_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r21_amt" name="r21_amt"
+													style="background-color: #FFFFFF; width:180px; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+												
+        
+        
 
     <td style="text-align: right; padding-right:10px;"
         th:text="${report?.r21_amt_sub_add ?: ''}"
@@ -1424,7 +1620,7 @@ function cancelModify() {
         th:text="${report?.r23_amt_sub_add ?: ''}"
         ></td>
 
-    <td class="green-cell"  style="text-align: right; padding-right:10px;"
+    <td id="r23_amt_sub_del"  class="green-cell"  style="text-align: right; padding-right:10px;"
         th:text="${report?.r23_amt_sub_del ?: ''}"
         ></td>
 
@@ -1448,7 +1644,7 @@ function cancelModify() {
         th:attr="RowId='R24', ColumnId='C3'"
         onclick="showdetailsbyRowAndColumn(this)"></td>
 
-    <td style="text-align: right; padding-right:10px;"
+    <td id="r24_amt_sub_del" style="text-align: right; padding-right:10px;"
         th:text="${report?.r24_amt_sub_del ?: ''}"
         th:attr="RowId='R24', ColumnId='C4'"
         onclick="showdetailsbyRowAndColumn(this)"></td>
@@ -1459,26 +1655,36 @@ function cancelModify() {
 </tr>
 
 <!-- R25 -->
-<tr>
+<tr th:each="report1 : ${reportsummary1}">
     <td style="text-align: left; padding-left:40px;"
         th:text="${report?.r25_product ?: ''}"></td>
 
-    <td style="text-align: right;"
+    <td  id="r25_amt" style="text-align: right;"
         th:text="${report?.r25_amt ?: ''}"
         th:attr="RowId='R25', ColumnId='C2'"
         onclick="showdetailsbyRowAndColumn(this)"></td>
 
-    <td style="text-align: right; padding-right:10px;"
+    <td id="r25_amt_sub_add" style="text-align: right; padding-right:10px;"
         th:text="${report?.r25_amt_sub_add ?: ''}"
         th:attr="RowId='R25', ColumnId='C3'"
         onclick="showdetailsbyRowAndColumn(this)"></td>
 
-    <td style="text-align: right; padding-right:10px;"
+   <!--  <td style="text-align: right; padding-right:10px;"
         th:text="${report?.r25_amt_sub_del ?: ''}"
         th:attr="RowId='R25', ColumnId='C4'"
-        onclick="showdetailsbyRowAndColumn(this)"></td>
+        onclick="showdetailsbyRowAndColumn(this)"></td> -->
+        
+        
+												<td id="ROW25"
+													style=" font-weight: bold; text-align: right; width: 200px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report1.r25_amt_sub_del != null ? #numbers.formatDecimal(report1.r25_amt_sub_del, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r25_amt_sub_del" name="r25_amt_sub_del"
+													style="background-color: #FFFFFF; width:180px; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+												
 
-    <td class="green-cell"  style="text-align: right; padding-right:10px;"
+    <td  id="r25_amt_total" class="green-cell"  style="text-align: right; padding-right:10px;"
         th:text="${report?.r25_amt_total ?: ''}"
        ></td>
 </tr>
@@ -1498,7 +1704,7 @@ function cancelModify() {
         th:attr="RowId='R26', ColumnId='C3'"
         onclick="showdetailsbyRowAndColumn(this)"></td>
 
-    <td style="text-align: right; padding-right:10px;"
+    <td  id="r26_amt_sub_del" style="text-align: right; padding-right:10px;"
         th:text="${report?.r26_amt_sub_del ?: ''}"
         th:attr="RowId='R26', ColumnId='C4'"
         onclick="showdetailsbyRowAndColumn(this)"></td>
@@ -1524,7 +1730,7 @@ function cancelModify() {
         th:attr="RowId='R27', ColumnId='C3'"
         onclick="showdetailsbyRowAndColumn(this)"></td>
 
-    <td style="text-align: right; padding-right:10px;"
+    <td id="r27_amt_sub_del" style="text-align: right; padding-right:10px;"
         th:text="${report?.r27_amt_sub_del ?: ''}"
         th:attr="RowId='R27', ColumnId='C4'"
         onclick="showdetailsbyRowAndColumn(this)"></td>
@@ -1548,11 +1754,11 @@ function cancelModify() {
         th:text="${report?.r28_amt_sub_add ?: ''}"
        ></td>
 
-    <td  class="green-cell" style="text-align: right; padding-right:10px;"
+    <td id="r28_amt_sub_del"  class="green-cell" style="text-align: right; padding-right:10px;"
         th:text="${report?.r28_amt_sub_del ?: ''}"
        ></td>
 
-    <td class="green-cell"  style="text-align: right; padding-right:10px;"
+    <td  class="green-cell"  style="text-align: right; padding-right:10px;"
         th:text="${report?.r28_amt_total ?: ''}"
         ></td>
 </tr>
@@ -1568,7 +1774,13 @@ function cancelModify() {
 
 							</div>
 
+<div style="text-align: center; margin-top: 10px;">
 
+									<button id="submitButton" type="button"
+										class="custom-tab-btn Show_input" form="fileupload"
+										th:attr="data-todate=${asondate}" onclick="fileuploads(this);"
+										style="display: none;">Submit</button>
+								</div>
 
 
                   </form>
