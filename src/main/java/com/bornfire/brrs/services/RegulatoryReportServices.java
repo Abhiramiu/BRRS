@@ -1106,6 +1106,11 @@ public class RegulatoryReportServices {
 				repdetail = BRRS_M_PLL_reportservice.getM_PLLcurrentDtl(reportId, fromdate, todate, currency, dtltype,
 						pageable, Filter, type, version);
 				break;
+				
+			case "M_LA2":
+				repdetail = BRRS_M_LA2_reportservice.getM_La2currentDtl(reportId, fromdate, todate, currency, dtltype,
+						pageable, Filter, type, version);
+				break;
 
 			case "M_DEP3":
 				repdetail = BRRS_M_DEP3_reportservice.getM_DEP3currentDtl(reportId, fromdate, todate, currency, dtltype,

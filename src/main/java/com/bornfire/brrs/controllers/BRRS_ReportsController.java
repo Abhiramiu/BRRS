@@ -126,6 +126,9 @@ public class BRRS_ReportsController {
 	private BRRS_M_AIDP_ReportService AIDPreportService;
 
 	@Autowired
+	private BRRS_M_LA2_ReportService LA2reportService;
+	
+	@Autowired
 	BRRS_M_LA4_ReportService BRRS_M_LA4_ReportService;
 
 	@Autowired
@@ -720,40 +723,28 @@ public class BRRS_ReportsController {
 	}
 	
 
-	@Autowired
-	private BRRS_M_LA2_ReportService LA2reportService;
 
-	@RequestMapping(value = "/LA2updateAll", method = { RequestMethod.GET, RequestMethod.POST })
+
+	@PostMapping("/LA2updateAll")
 	@ResponseBody
 	public ResponseEntity<String> updateLA2AllReports(
-			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+	        @RequestParam @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+	        @RequestParam Map<String, String> allParams
+	) {
+	    try {
+	        System.out.println("Came to LA2 controller");
 
-			@RequestParam(required = false) String type, @ModelAttribute M_LA2_Summary_Entity request) {
-		try {
-			System.out.println("Came to single controller");
-			System.out.println(type);
+	        LA2reportService.updateDetailFromForm(asondate, allParams);
 
-			// set date into all 4 entities
-			request.setREPORT_DATE(asondate);
-
-			if (type.equals("ARCHIVAL")) {
-				M_LA2_Archival_Summary_Entity Archivalrequest = new M_LA2_Archival_Summary_Entity();
-				BeanUtils.copyProperties(request, Archivalrequest);
-
-				LA2reportService.updateArchivalReport(Archivalrequest);
-
-			} else {
-				// call services
-				LA2reportService.updateReport(request);
-
-			}
-
-			return ResponseEntity.ok("Updated Successfully.");
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
-		}
+	        return ResponseEntity.ok("Detail Updated Successfully");
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return ResponseEntity
+	                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                .body("Update Failed: " + e.getMessage());
+	    }
 	}
+
 
 	@Autowired
 	private BRRS_M_CA3_ReportService CA3reportService;
@@ -1188,7 +1179,7 @@ return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 	    try {
 	    	System.out.println("came to Controller for updating values");
 	    	BDISB3reportService.updateDetailFromForm(asondate, allParams);
-	        return ResponseEntity.ok("Detail Updated Successfully");
+	        return ResponseEntity.ok("Updated Successfully");
 	    } catch (Exception e) {
 	        e.printStackTrace();
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

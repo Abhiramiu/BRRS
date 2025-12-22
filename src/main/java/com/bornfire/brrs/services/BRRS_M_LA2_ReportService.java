@@ -4,14 +4,17 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.CallableStatement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
@@ -30,14 +33,21 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.bornfire.brrs.entities.BRRS_M_LA2_Archival_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_M_LA2_Summary_Repo;
+import com.bornfire.brrs.entities.BRRS_M_PLL_Detail_Repo;
+import com.bornfire.brrs.entities.M_LA2_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.M_LA2_Archival_Summary_Entity;
+import com.bornfire.brrs.entities.M_LA2_Detail_Entity;
+import com.bornfire.brrs.entities.M_LA2_Detail_Repo;
+import com.bornfire.brrs.entities.M_LA2_Detail_Repo_Archival;
 import com.bornfire.brrs.entities.M_LA2_Summary_Entity;
+import com.bornfire.brrs.entities.M_PLL_Detail_Entity;
 
 
 @Component
@@ -47,6 +57,15 @@ public class BRRS_M_LA2_ReportService {
 
 	private static final Logger logger = LoggerFactory.getLogger(BRRS_M_LA2_ReportService.class);
 
+	@Autowired
+	private M_LA2_Detail_Repo repo;
+
+	@Autowired
+	private M_LA2_Detail_Repo_Archival ArchivalDetailrepo;
+	
+	@Autowired
+	private JdbcTemplate jdbcTemplate;
+	
 	@Autowired
 	private Environment env;
 
@@ -115,8 +134,148 @@ public class BRRS_M_LA2_ReportService {
 		return mv;
 	}
 
+	public ModelAndView getM_La2currentDtl(String reportId, String fromdate, String todate, String currency,
+			String dtltype, Pageable pageable, String Filter, String type, String version) {
+
+		int pageSize = pageable != null ? pageable.getPageSize() : 10;
+		int currentPage = pageable != null ? pageable.getPageNumber() : 0;
+		int totalPages = 0;
+
+		ModelAndView mv = new ModelAndView();
+		Session hs = sessionFactory.getCurrentSession();
+
+		try {
+			Date parsedDate = null;
+			if (todate != null && !todate.isEmpty()) {
+				parsedDate = dateformat.parse(todate);
+			}
+
+			String rowId = null;
+			String columnId = null;
+
+			// ✅ Split filter string into rowId & columnId
+			if (Filter != null && Filter.contains(",")) {
+				String[] parts = Filter.split(",");
+				if (parts.length >= 2) {
+					rowId = parts[0];
+					columnId = parts[1];
+				}
+			}
+			System.out.println(type);
+			if ("ARCHIVAL".equals(type) && version != null) {
+				System.out.println(type);
+				// 🔹 Archival branch
+				List<M_LA2_Archival_Detail_Entity> T1Dt1;
+				if (rowId != null && columnId != null) {
+					T1Dt1 = ArchivalDetailrepo.GetDataByRowIdAndColumnId(rowId, columnId, parsedDate,
+							version);
+				} else {
+					T1Dt1 = ArchivalDetailrepo.getdatabydateList(parsedDate, version);
+				}
+
+				mv.addObject("reportdetails", T1Dt1);
+				mv.addObject("reportmaster12", T1Dt1);
+				System.out.println("ARCHIVAL COUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
+
+			} else {
+				// 🔹 Current branch
+				List<M_LA2_Detail_Entity> T1Dt1;
+				if (rowId != null && columnId != null) {
+					T1Dt1 = repo.GetDataByRowIdAndColumnId(rowId, columnId, parsedDate);
+				} else {
+					T1Dt1 = repo.getdatabydateList(parsedDate, currentPage, pageSize);
+					System.out.println("la1 size is : "+ T1Dt1.size());
+					totalPages = repo.getdatacount(parsedDate);
+					mv.addObject("pagination", "YES");
+				}
+
+				mv.addObject("reportdetails", T1Dt1);
+				mv.addObject("reportmaster12", T1Dt1);
+				System.out.println("LISTCOUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
+			}
+
+		} catch (ParseException e) {
+			e.printStackTrace();
+			mv.addObject("errorMessage", "Invalid date format: " + todate);
+		} catch (Exception e) {
+			e.printStackTrace();
+			mv.addObject("errorMessage", "Unexpected error: " + e.getMessage());
+		}
+
+		// ✅ Common attributes
+		mv.setViewName("BRRS/M_LA2");
+		mv.addObject("displaymode", "Details");
+		mv.addObject("currentPage", currentPage);
+		System.out.println("totalPages: " + (int) Math.ceil((double) totalPages / 100));
+		mv.addObject("totalPages", (int) Math.ceil((double) totalPages / 100));
+		mv.addObject("reportsflag", "reportsflag");
+		mv.addObject("menu", reportId);
+
+		return mv;
+	}
 	
-	public void updateReport(M_LA2_Summary_Entity updatedEntity) {
+
+	public void updateDetailFromForm(Date reportDate, Map<String, String> params) {
+
+	    System.out.println("Updating LA2 detail table");
+
+	    for (Map.Entry<String, String> entry : params.entrySet()) {
+
+	        String key = entry.getKey();
+	        String value = entry.getValue();
+
+	        // Only process TOTAL fields
+	        if (!key.matches("R\\d+_C\\d+_TOTAL")) {
+	            continue;
+	        }
+
+	        String[] parts = key.split("_");
+	        String reportLabel = parts[0];          // R12
+	        String addlCriteria = parts[1];         // C2
+
+	        BigDecimal amount =
+	                (value == null || value.isEmpty())
+	                        ? BigDecimal.ZERO
+	                        : new BigDecimal(value);
+
+	        List<M_LA2_Detail_Entity> rows =
+	                repo.findByReportDateAndReportLableAndReportAddlCriteria1(
+	                        reportDate, reportLabel, addlCriteria
+	                );
+
+	        for (M_LA2_Detail_Entity row : rows) {
+	            row.setAcctBalanceInPula(amount);
+	            row.setModifyFlg("Y");
+	        }
+
+	        repo.saveAll(rows);
+	    }
+	    
+	    callSummaryProcedure(reportDate);
+	}
+
+	private void callSummaryProcedure(Date reportDate) {
+
+	    String sql = "{ call BRRS_M_LA2_SUMMARY_PROCEDURE(?) }";
+
+	    jdbcTemplate.update(connection -> {
+	        CallableStatement cs = connection.prepareCall(sql);
+
+	        // Force exact format expected by procedure
+	        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+	        sdf.setLenient(false);
+
+	        String formattedDate = sdf.format(reportDate);
+
+	        cs.setString(1, formattedDate);  // 🔥 THIS IS MANDATORY
+	        return cs;
+	    });
+
+	    System.out.println("✅ Summary procedure executed for date: " +
+	            new SimpleDateFormat("dd-MM-yyyy").format(reportDate));
+	}
+
+	/*public void updateReport(M_LA2_Summary_Entity updatedEntity) {
 	    System.out.println("Came to services");
 	    System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
 
@@ -175,7 +334,7 @@ public class BRRS_M_LA2_ReportService {
 	    // 3️⃣ Save updated entity
 	    BRRS_M_LA2_Summary_Repo.save(existing);
 	
-	}
+	}*/
 	
 	public List<Object> getM_LA2Archival() {
 		List<Object> M_LA2Archivallist = new ArrayList<>();
