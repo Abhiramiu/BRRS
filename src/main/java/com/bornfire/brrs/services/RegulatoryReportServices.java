@@ -346,6 +346,9 @@ public class RegulatoryReportServices {
 	@Autowired
 	BRRS_NSFR_ReportService BRRS_NSFR_ReportService;
 	
+	@Autowired
+	BRRS_TIER_1_2_CFS_ReportService BRRS_TIER_1_2_CFS_ReportService;
+	
 	
 	
 	
@@ -970,6 +973,13 @@ public class RegulatoryReportServices {
 						pageable, type, version);
 
 				break;
+				
+			case "TIER_1_2_CFS":
+				repsummary = BRRS_TIER_1_2_CFS_ReportService.getTIER_1_2_CFSView(reportId, fromdate, todate, currency,
+						dtltype,
+						pageable, type, version);
+
+				break;
 
 		}
 
@@ -1339,6 +1349,13 @@ public class RegulatoryReportServices {
 			case "NSFR":
 
 				repdetail = BRRS_NSFR_ReportService.getNSFRcurrentDtl(reportId, fromdate, todate, currency,
+						dtltype,
+						pageable, Filter, type, version);
+				break;
+				
+			case "TIER_1_2_CFS":
+
+				repdetail = BRRS_TIER_1_2_CFS_ReportService.getTIER_1_2_CFScurrentDtl(reportId, fromdate, todate, currency,
 						dtltype,
 						pageable, Filter, type, version);
 				break;
@@ -2416,6 +2433,18 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
+				
+			case "TIER_1_2_CFS":
+				try {
+					repfile = BRRS_TIER_1_2_CFS_ReportService.getTIER_1_2_CFSExcel(filename, reportId,
+							fromdate,
+							todate,
+							currency, dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
 		}
 		return repfile;
@@ -2542,6 +2571,11 @@ public class RegulatoryReportServices {
 		}
 		else if ("NSFRDetail".equals(filename)) {
 			return BRRS_NSFR_ReportService.getNSFRDetailExcel(
+					filename, fromdate, todate, currency, dtltype, type, version);
+		}
+		
+		else if ("TIER_1_2_CFSDetail".equals(filename)) {
+			return BRRS_TIER_1_2_CFS_ReportService.getTIER_1_2_CFSDetailExcel(
 					filename, fromdate, todate, currency, dtltype, type, version);
 		}
 		return new byte[0];
@@ -3436,6 +3470,15 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
+				
+			case "TIER_1_2_CFS":
+				try {
+					archivalData = BRRS_TIER_1_2_CFS_ReportService.getTIER_1_2_CFSArchival();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
 			default:
 				System.out.println("No archival logic defined for report: " + rptcode);
@@ -3709,6 +3752,12 @@ public class RegulatoryReportServices {
 		else if ("NSFRDetail".equals(filename)) {
 
 			fileData = BRRS_NSFR_ReportService.getNSFRDetailExcel(filename, fromdate, todate, currency,
+					dtltype, type, version);
+		}		
+
+		else if ("TIER_1_2_CFSDetail".equals(filename)) {
+
+			fileData = BRRS_TIER_1_2_CFS_ReportService.getTIER_1_2_CFSDetailExcel(filename, fromdate, todate, currency,
 					dtltype, type, version);
 		}		
 		
@@ -4031,6 +4080,11 @@ public class RegulatoryReportServices {
 					modelAndView = BRRS_NSFR_ReportService.getViewOrEditPage(request.getParameter("acctNo"),
 							request.getParameter("formmode"));
 					break;
+					
+				case "TIER_1_2_CFS":
+					modelAndView = BRRS_TIER_1_2_CFS_ReportService.getViewOrEditPage(request.getParameter("acctNo"),
+							request.getParameter("formmode"));
+					break;
 			}
 		} catch (Exception e) {
 			logger.error("Error processing details for reportId: {}", reportId, e);
@@ -4248,6 +4302,10 @@ public class RegulatoryReportServices {
 					
 				case "NSFR":
 					response = BRRS_NSFR_ReportService.updateDetailEdit(request);
+					break;
+					
+				case "TIER_1_2_CFS":
+					response = BRRS_TIER_1_2_CFS_ReportService.updateDetailEdit(request);
 					break;
 					
 				default:
