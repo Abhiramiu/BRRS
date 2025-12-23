@@ -39,142 +39,145 @@ public class BDISB2_Archival_Summary_Entity{
     @Temporal(TemporalType.TIMESTAMP)
     private Date reportResubDate;	
 	
-	public String report_frequency;
-	public String report_code;
-	public String report_desc;
-	public String entity_flg;
-	public String modify_flg;
-	public String del_flg;
+    public String REPORT_FREQUENCY;
+	public String REPORT_CODE;
+	public String REPORT_DESC;
+	public String ENTITY_FLG;
+	public String MODIFY_FLG;
+	public String DEL_FLG;
 
+	private BigDecimal R6_BANK_SPEC_SINGLE_CUST_REC_NUM;
+	private String R6_COMPANY_NAME;
+	private BigDecimal R6_COMPANY_REG_NUM;
+	private String R6_BUSINEES_PHY_ADDRESS;
+	private String R6_POSTAL_ADDRESS;
+	private String R6_COUNTRY_OF_REG;
+	private String R6_COMPANY_EMAIL;
+	private String R6_COMPANY_LANDLINE;
+	private String R6_COMPANY_MOB_PHONE_NUM;
+	private String R6_PRODUCT_TYPE;
+	private BigDecimal R6_ACCT_NUM;
+	private String R6_STATUS_OF_ACCT;
+	private String R6_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT;
+	private String R6_ACCT_BRANCH;
+	private BigDecimal R6_ACCT_BALANCE_PULA;
+	private String R6_CURRENCY_OF_ACCT;
+	private BigDecimal R6_EXCHANGE_RATE;
 
-	private BigDecimal r6_bank_spec_single_cust_rec_num;
-	private String r6_company_name;
-	private BigDecimal r6_company_reg_num;
-	private String r6_businees_phy_address;
-	private String r6_postal_address;
-	private String r6_country_of_reg;
-	private String r6_company_email;
-	private String r6_company_landline;
-	private String r6_company_mob_phone_num;
-	private String r6_product_type;
-	private BigDecimal r6_acct_num;
-	private String r6_status_of_acct;
-	private String r6_acct_status_fit_or_not_fit_for_straight_throu_payout;
-	private String r6_acct_branch;
-	private BigDecimal r6_acct_balance_pula;
-	private String r6_currency_of_acct;
-	private BigDecimal r6_exchange_rate;
-	private BigDecimal r7_bank_spec_single_cust_rec_num;
-	private String r7_company_name;
-	private BigDecimal r7_company_reg_num;
-	private String r7_businees_phy_address;
-	private String r7_postal_address;
-	private String r7_country_of_reg;
-	private String r7_company_email;
-	private String r7_company_landline;
-	private String r7_company_mob_phone_num;
-	private String r7_product_type;
-	private BigDecimal r7_acct_num;
-	private String r7_status_of_acct;
-	private String r7_acct_status_fit_or_not_fit_for_straight_throu_payout;
-	private String r7_acct_branch;
-	private BigDecimal r7_acct_balance_pula;
-	private String r7_currency_of_acct;
-	private BigDecimal r7_exchange_rate;
-	private BigDecimal r8_bank_spec_single_cust_rec_num;
-	private String r8_company_name;
-	private BigDecimal r8_company_reg_num;
-	private String r8_businees_phy_address;
-	private String r8_postal_address;
-	private String r8_country_of_reg;
-	private String r8_company_email;
-	private String r8_company_landline;
-	private String r8_company_mob_phone_num;
-	private String r8_product_type;
-	private BigDecimal r8_acct_num;
-	private String r8_status_of_acct;
-	private String r8_acct_status_fit_or_not_fit_for_straight_throu_payout;
-	private String r8_acct_branch;
-	private BigDecimal r8_acct_balance_pula;
-	private String r8_currency_of_acct;
-	private BigDecimal r8_exchange_rate;
-	private BigDecimal r9_bank_spec_single_cust_rec_num;
-	private String r9_company_name;
-	private BigDecimal r9_company_reg_num;
-	private String r9_businees_phy_address;
-	private String r9_postal_address;
-	private String r9_country_of_reg;
-	private String r9_company_email;
-	private String r9_company_landline;
-	private String r9_company_mob_phone_num;
-	private String r9_product_type;
-	private BigDecimal r9_acct_num;
-	private String r9_status_of_acct;
-	private String r9_acct_status_fit_or_not_fit_for_straight_throu_payout;
-	private String r9_acct_branch;
-	private BigDecimal r9_acct_balance_pula;
-	private String r9_currency_of_acct;
-	private BigDecimal r9_exchange_rate;
-	private BigDecimal r10_bank_spec_single_cust_rec_num;
-	private String r10_company_name;
-	private BigDecimal r10_company_reg_num;
-	private String r10_businees_phy_address;
-	private String r10_postal_address;
-	private String r10_country_of_reg;
-	private String r10_company_email;
-	private String r10_company_landline;
-	private String r10_company_mob_phone_num;
-	private String r10_product_type;
-	private BigDecimal r10_acct_num;
-	private String r10_status_of_acct;
-	private String r10_acct_status_fit_or_not_fit_for_straight_throu_payout;
-	private String r10_acct_branch;
-	private BigDecimal r10_acct_balance_pula;
-	private String r10_currency_of_acct;
-	private BigDecimal r10_exchange_rate;
-	private BigDecimal r11_bank_spec_single_cust_rec_num;
-	private String r11_company_name;
-	private BigDecimal r11_company_reg_num;
-	private String r11_businees_phy_address;
-	private String r11_postal_address;
-	private String r11_country_of_reg;
-	private String r11_company_email;
-	private String r11_company_landline;
-	private String r11_company_mob_phone_num;
-	private String r11_product_type;
-	private BigDecimal r11_acct_num;
-	private String r11_status_of_acct;
-	private String r11_acct_status_fit_or_not_fit_for_straight_throu_payout;
-	private String r11_acct_branch;
-	private BigDecimal r11_acct_balance_pula;
-	private String r11_currency_of_acct;
-	private BigDecimal r11_exchange_rate;
-	private BigDecimal r12_bank_spec_single_cust_rec_num;
-	private String r12_company_name;
-	private BigDecimal r12_company_reg_num;
-	private String r12_businees_phy_address;
-	private String r12_postal_address;
-	private String r12_country_of_reg;
-	private String r12_company_email;
-	private String r12_company_landline;
-	private String r12_company_mob_phone_num;
-	private String r12_product_type;
-	private BigDecimal r12_acct_num;
-	private String r12_status_of_acct;
-	private String r12_acct_status_fit_or_not_fit_for_straight_throu_payout;
-	private String r12_acct_branch;
-	private BigDecimal r12_acct_balance_pula;
-	private String r12_currency_of_acct;
-	private BigDecimal r12_exchange_rate;
+	private BigDecimal R7_BANK_SPEC_SINGLE_CUST_REC_NUM;
+	private String R7_COMPANY_NAME;
+	private BigDecimal R7_COMPANY_REG_NUM;
+	private String R7_BUSINEES_PHY_ADDRESS;
+	private String R7_POSTAL_ADDRESS;
+	private String R7_COUNTRY_OF_REG;
+	private String R7_COMPANY_EMAIL;
+	private String R7_COMPANY_LANDLINE;
+	private String R7_COMPANY_MOB_PHONE_NUM;
+	private String R7_PRODUCT_TYPE;
+	private BigDecimal R7_ACCT_NUM;
+	private String R7_STATUS_OF_ACCT;
+	private String R7_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT;
+	private String R7_ACCT_BRANCH;
+	private BigDecimal R7_ACCT_BALANCE_PULA;
+	private String R7_CURRENCY_OF_ACCT;
+	private BigDecimal R7_EXCHANGE_RATE;
+
+	private BigDecimal R8_BANK_SPEC_SINGLE_CUST_REC_NUM;
+	private String R8_COMPANY_NAME;
+	private BigDecimal R8_COMPANY_REG_NUM;
+	private String R8_BUSINEES_PHY_ADDRESS;
+	private String R8_POSTAL_ADDRESS;
+	private String R8_COUNTRY_OF_REG;
+	private String R8_COMPANY_EMAIL;
+	private String R8_COMPANY_LANDLINE;
+	private String R8_COMPANY_MOB_PHONE_NUM;
+	private String R8_PRODUCT_TYPE;
+	private BigDecimal R8_ACCT_NUM;
+	private String R8_STATUS_OF_ACCT;
+	private String R8_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT;
+	private String R8_ACCT_BRANCH;
+	private BigDecimal R8_ACCT_BALANCE_PULA;
+	private String R8_CURRENCY_OF_ACCT;
+	private BigDecimal R8_EXCHANGE_RATE;
+
+	private BigDecimal R9_BANK_SPEC_SINGLE_CUST_REC_NUM;
+	private String R9_COMPANY_NAME;
+	private BigDecimal R9_COMPANY_REG_NUM;
+	private String R9_BUSINEES_PHY_ADDRESS;
+	private String R9_POSTAL_ADDRESS;
+	private String R9_COUNTRY_OF_REG;
+	private String R9_COMPANY_EMAIL;
+	private String R9_COMPANY_LANDLINE;
+	private String R9_COMPANY_MOB_PHONE_NUM;
+	private String R9_PRODUCT_TYPE;
+	private BigDecimal R9_ACCT_NUM;
+	private String R9_STATUS_OF_ACCT;
+	private String R9_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT;
+	private String R9_ACCT_BRANCH;
+	private BigDecimal R9_ACCT_BALANCE_PULA;
+	private String R9_CURRENCY_OF_ACCT;
+	private BigDecimal R9_EXCHANGE_RATE;
+
+	private BigDecimal R10_BANK_SPEC_SINGLE_CUST_REC_NUM;
+	private String R10_COMPANY_NAME;
+	private BigDecimal R10_COMPANY_REG_NUM;
+	private String R10_BUSINEES_PHY_ADDRESS;
+	private String R10_POSTAL_ADDRESS;
+	private String R10_COUNTRY_OF_REG;
+	private String R10_COMPANY_EMAIL;
+	private String R10_COMPANY_LANDLINE;
+	private String R10_COMPANY_MOB_PHONE_NUM;
+	private String R10_PRODUCT_TYPE;
+	private BigDecimal R10_ACCT_NUM;
+	private String R10_STATUS_OF_ACCT;
+	private String R10_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT;
+	private String R10_ACCT_BRANCH;
+	private BigDecimal R10_ACCT_BALANCE_PULA;
+	private String R10_CURRENCY_OF_ACCT;
+	private BigDecimal R10_EXCHANGE_RATE;
+
+	private BigDecimal R11_BANK_SPEC_SINGLE_CUST_REC_NUM;
+	private String R11_COMPANY_NAME;
+	private BigDecimal R11_COMPANY_REG_NUM;
+	private String R11_BUSINEES_PHY_ADDRESS;
+	private String R11_POSTAL_ADDRESS;
+	private String R11_COUNTRY_OF_REG;
+	private String R11_COMPANY_EMAIL;
+	private String R11_COMPANY_LANDLINE;
+	private String R11_COMPANY_MOB_PHONE_NUM;
+	private String R11_PRODUCT_TYPE;
+	private BigDecimal R11_ACCT_NUM;
+	private String R11_STATUS_OF_ACCT;
+	private String R11_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT;
+	private String R11_ACCT_BRANCH;
+	private BigDecimal R11_ACCT_BALANCE_PULA;
+	private String R11_CURRENCY_OF_ACCT;
+	private BigDecimal R11_EXCHANGE_RATE;
+
+	private BigDecimal R12_BANK_SPEC_SINGLE_CUST_REC_NUM;
+	private String R12_COMPANY_NAME;
+	private BigDecimal R12_COMPANY_REG_NUM;
+	private String R12_BUSINEES_PHY_ADDRESS;
+	private String R12_POSTAL_ADDRESS;
+	private String R12_COUNTRY_OF_REG;
+	private String R12_COMPANY_EMAIL;
+	private String R12_COMPANY_LANDLINE;
+	private String R12_COMPANY_MOB_PHONE_NUM;
+	private String R12_PRODUCT_TYPE;
+	private BigDecimal R12_ACCT_NUM;
+	private String R12_STATUS_OF_ACCT;
+	private String R12_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT;
+	private String R12_ACCT_BRANCH;
+	private BigDecimal R12_ACCT_BALANCE_PULA;
+	private String R12_CURRENCY_OF_ACCT;
+	private BigDecimal R12_EXCHANGE_RATE;
 
 	
-
 
 
 	public Date getReportDate() {
 		return reportDate;
 	}
-
 
 
 
@@ -186,11 +189,9 @@ public class BDISB2_Archival_Summary_Entity{
 
 
 
-
 	public String getReportVersion() {
 		return reportVersion;
 	}
-
 
 
 
@@ -203,6 +204,1762 @@ public class BDISB2_Archival_Summary_Entity{
 
 
 
+	public String getREPORT_FREQUENCY() {
+		return REPORT_FREQUENCY;
+	}
+
+
+
+
+	public void setREPORT_FREQUENCY(String rEPORT_FREQUENCY) {
+		REPORT_FREQUENCY = rEPORT_FREQUENCY;
+	}
+
+
+
+
+	public String getREPORT_CODE() {
+		return REPORT_CODE;
+	}
+
+
+
+
+	public void setREPORT_CODE(String rEPORT_CODE) {
+		REPORT_CODE = rEPORT_CODE;
+	}
+
+
+
+
+	public String getREPORT_DESC() {
+		return REPORT_DESC;
+	}
+
+
+
+
+	public void setREPORT_DESC(String rEPORT_DESC) {
+		REPORT_DESC = rEPORT_DESC;
+	}
+
+
+
+
+	public String getENTITY_FLG() {
+		return ENTITY_FLG;
+	}
+
+
+
+
+	public void setENTITY_FLG(String eNTITY_FLG) {
+		ENTITY_FLG = eNTITY_FLG;
+	}
+
+
+
+
+	public String getMODIFY_FLG() {
+		return MODIFY_FLG;
+	}
+
+
+
+
+	public void setMODIFY_FLG(String mODIFY_FLG) {
+		MODIFY_FLG = mODIFY_FLG;
+	}
+
+
+
+
+	public String getDEL_FLG() {
+		return DEL_FLG;
+	}
+
+
+
+
+	public void setDEL_FLG(String dEL_FLG) {
+		DEL_FLG = dEL_FLG;
+	}
+
+
+
+
+	public BigDecimal getR6_BANK_SPEC_SINGLE_CUST_REC_NUM() {
+		return R6_BANK_SPEC_SINGLE_CUST_REC_NUM;
+	}
+
+
+
+
+	public void setR6_BANK_SPEC_SINGLE_CUST_REC_NUM(BigDecimal r6_BANK_SPEC_SINGLE_CUST_REC_NUM) {
+		R6_BANK_SPEC_SINGLE_CUST_REC_NUM = r6_BANK_SPEC_SINGLE_CUST_REC_NUM;
+	}
+
+
+
+
+	public String getR6_COMPANY_NAME() {
+		return R6_COMPANY_NAME;
+	}
+
+
+
+
+	public void setR6_COMPANY_NAME(String r6_COMPANY_NAME) {
+		R6_COMPANY_NAME = r6_COMPANY_NAME;
+	}
+
+
+
+
+	public BigDecimal getR6_COMPANY_REG_NUM() {
+		return R6_COMPANY_REG_NUM;
+	}
+
+
+
+
+	public void setR6_COMPANY_REG_NUM(BigDecimal r6_COMPANY_REG_NUM) {
+		R6_COMPANY_REG_NUM = r6_COMPANY_REG_NUM;
+	}
+
+
+
+
+	public String getR6_BUSINEES_PHY_ADDRESS() {
+		return R6_BUSINEES_PHY_ADDRESS;
+	}
+
+
+
+
+	public void setR6_BUSINEES_PHY_ADDRESS(String r6_BUSINEES_PHY_ADDRESS) {
+		R6_BUSINEES_PHY_ADDRESS = r6_BUSINEES_PHY_ADDRESS;
+	}
+
+
+
+
+	public String getR6_POSTAL_ADDRESS() {
+		return R6_POSTAL_ADDRESS;
+	}
+
+
+
+
+	public void setR6_POSTAL_ADDRESS(String r6_POSTAL_ADDRESS) {
+		R6_POSTAL_ADDRESS = r6_POSTAL_ADDRESS;
+	}
+
+
+
+
+	public String getR6_COUNTRY_OF_REG() {
+		return R6_COUNTRY_OF_REG;
+	}
+
+
+
+
+	public void setR6_COUNTRY_OF_REG(String r6_COUNTRY_OF_REG) {
+		R6_COUNTRY_OF_REG = r6_COUNTRY_OF_REG;
+	}
+
+
+
+
+	public String getR6_COMPANY_EMAIL() {
+		return R6_COMPANY_EMAIL;
+	}
+
+
+
+
+	public void setR6_COMPANY_EMAIL(String r6_COMPANY_EMAIL) {
+		R6_COMPANY_EMAIL = r6_COMPANY_EMAIL;
+	}
+
+
+
+
+	public String getR6_COMPANY_LANDLINE() {
+		return R6_COMPANY_LANDLINE;
+	}
+
+
+
+
+	public void setR6_COMPANY_LANDLINE(String r6_COMPANY_LANDLINE) {
+		R6_COMPANY_LANDLINE = r6_COMPANY_LANDLINE;
+	}
+
+
+
+
+	public String getR6_COMPANY_MOB_PHONE_NUM() {
+		return R6_COMPANY_MOB_PHONE_NUM;
+	}
+
+
+
+
+	public void setR6_COMPANY_MOB_PHONE_NUM(String r6_COMPANY_MOB_PHONE_NUM) {
+		R6_COMPANY_MOB_PHONE_NUM = r6_COMPANY_MOB_PHONE_NUM;
+	}
+
+
+
+
+	public String getR6_PRODUCT_TYPE() {
+		return R6_PRODUCT_TYPE;
+	}
+
+
+
+
+	public void setR6_PRODUCT_TYPE(String r6_PRODUCT_TYPE) {
+		R6_PRODUCT_TYPE = r6_PRODUCT_TYPE;
+	}
+
+
+
+
+	public BigDecimal getR6_ACCT_NUM() {
+		return R6_ACCT_NUM;
+	}
+
+
+
+
+	public void setR6_ACCT_NUM(BigDecimal r6_ACCT_NUM) {
+		R6_ACCT_NUM = r6_ACCT_NUM;
+	}
+
+
+
+
+	public String getR6_STATUS_OF_ACCT() {
+		return R6_STATUS_OF_ACCT;
+	}
+
+
+
+
+	public void setR6_STATUS_OF_ACCT(String r6_STATUS_OF_ACCT) {
+		R6_STATUS_OF_ACCT = r6_STATUS_OF_ACCT;
+	}
+
+
+
+
+	public String getR6_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT() {
+		return R6_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT;
+	}
+
+
+
+
+	public void setR6_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT(
+			String r6_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT) {
+		R6_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT = r6_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT;
+	}
+
+
+
+
+	public String getR6_ACCT_BRANCH() {
+		return R6_ACCT_BRANCH;
+	}
+
+
+
+
+	public void setR6_ACCT_BRANCH(String r6_ACCT_BRANCH) {
+		R6_ACCT_BRANCH = r6_ACCT_BRANCH;
+	}
+
+
+
+
+	public BigDecimal getR6_ACCT_BALANCE_PULA() {
+		return R6_ACCT_BALANCE_PULA;
+	}
+
+
+
+
+	public void setR6_ACCT_BALANCE_PULA(BigDecimal r6_ACCT_BALANCE_PULA) {
+		R6_ACCT_BALANCE_PULA = r6_ACCT_BALANCE_PULA;
+	}
+
+
+
+
+	public String getR6_CURRENCY_OF_ACCT() {
+		return R6_CURRENCY_OF_ACCT;
+	}
+
+
+
+
+	public void setR6_CURRENCY_OF_ACCT(String r6_CURRENCY_OF_ACCT) {
+		R6_CURRENCY_OF_ACCT = r6_CURRENCY_OF_ACCT;
+	}
+
+
+
+
+	public BigDecimal getR6_EXCHANGE_RATE() {
+		return R6_EXCHANGE_RATE;
+	}
+
+
+
+
+	public void setR6_EXCHANGE_RATE(BigDecimal r6_EXCHANGE_RATE) {
+		R6_EXCHANGE_RATE = r6_EXCHANGE_RATE;
+	}
+
+
+
+
+	public BigDecimal getR7_BANK_SPEC_SINGLE_CUST_REC_NUM() {
+		return R7_BANK_SPEC_SINGLE_CUST_REC_NUM;
+	}
+
+
+
+
+	public void setR7_BANK_SPEC_SINGLE_CUST_REC_NUM(BigDecimal r7_BANK_SPEC_SINGLE_CUST_REC_NUM) {
+		R7_BANK_SPEC_SINGLE_CUST_REC_NUM = r7_BANK_SPEC_SINGLE_CUST_REC_NUM;
+	}
+
+
+
+
+	public String getR7_COMPANY_NAME() {
+		return R7_COMPANY_NAME;
+	}
+
+
+
+
+	public void setR7_COMPANY_NAME(String r7_COMPANY_NAME) {
+		R7_COMPANY_NAME = r7_COMPANY_NAME;
+	}
+
+
+
+
+	public BigDecimal getR7_COMPANY_REG_NUM() {
+		return R7_COMPANY_REG_NUM;
+	}
+
+
+
+
+	public void setR7_COMPANY_REG_NUM(BigDecimal r7_COMPANY_REG_NUM) {
+		R7_COMPANY_REG_NUM = r7_COMPANY_REG_NUM;
+	}
+
+
+
+
+	public String getR7_BUSINEES_PHY_ADDRESS() {
+		return R7_BUSINEES_PHY_ADDRESS;
+	}
+
+
+
+
+	public void setR7_BUSINEES_PHY_ADDRESS(String r7_BUSINEES_PHY_ADDRESS) {
+		R7_BUSINEES_PHY_ADDRESS = r7_BUSINEES_PHY_ADDRESS;
+	}
+
+
+
+
+	public String getR7_POSTAL_ADDRESS() {
+		return R7_POSTAL_ADDRESS;
+	}
+
+
+
+
+	public void setR7_POSTAL_ADDRESS(String r7_POSTAL_ADDRESS) {
+		R7_POSTAL_ADDRESS = r7_POSTAL_ADDRESS;
+	}
+
+
+
+
+	public String getR7_COUNTRY_OF_REG() {
+		return R7_COUNTRY_OF_REG;
+	}
+
+
+
+
+	public void setR7_COUNTRY_OF_REG(String r7_COUNTRY_OF_REG) {
+		R7_COUNTRY_OF_REG = r7_COUNTRY_OF_REG;
+	}
+
+
+
+
+	public String getR7_COMPANY_EMAIL() {
+		return R7_COMPANY_EMAIL;
+	}
+
+
+
+
+	public void setR7_COMPANY_EMAIL(String r7_COMPANY_EMAIL) {
+		R7_COMPANY_EMAIL = r7_COMPANY_EMAIL;
+	}
+
+
+
+
+	public String getR7_COMPANY_LANDLINE() {
+		return R7_COMPANY_LANDLINE;
+	}
+
+
+
+
+	public void setR7_COMPANY_LANDLINE(String r7_COMPANY_LANDLINE) {
+		R7_COMPANY_LANDLINE = r7_COMPANY_LANDLINE;
+	}
+
+
+
+
+	public String getR7_COMPANY_MOB_PHONE_NUM() {
+		return R7_COMPANY_MOB_PHONE_NUM;
+	}
+
+
+
+
+	public void setR7_COMPANY_MOB_PHONE_NUM(String r7_COMPANY_MOB_PHONE_NUM) {
+		R7_COMPANY_MOB_PHONE_NUM = r7_COMPANY_MOB_PHONE_NUM;
+	}
+
+
+
+
+	public String getR7_PRODUCT_TYPE() {
+		return R7_PRODUCT_TYPE;
+	}
+
+
+
+
+	public void setR7_PRODUCT_TYPE(String r7_PRODUCT_TYPE) {
+		R7_PRODUCT_TYPE = r7_PRODUCT_TYPE;
+	}
+
+
+
+
+	public BigDecimal getR7_ACCT_NUM() {
+		return R7_ACCT_NUM;
+	}
+
+
+
+
+	public void setR7_ACCT_NUM(BigDecimal r7_ACCT_NUM) {
+		R7_ACCT_NUM = r7_ACCT_NUM;
+	}
+
+
+
+
+	public String getR7_STATUS_OF_ACCT() {
+		return R7_STATUS_OF_ACCT;
+	}
+
+
+
+
+	public void setR7_STATUS_OF_ACCT(String r7_STATUS_OF_ACCT) {
+		R7_STATUS_OF_ACCT = r7_STATUS_OF_ACCT;
+	}
+
+
+
+
+	public String getR7_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT() {
+		return R7_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT;
+	}
+
+
+
+
+	public void setR7_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT(
+			String r7_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT) {
+		R7_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT = r7_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT;
+	}
+
+
+
+
+	public String getR7_ACCT_BRANCH() {
+		return R7_ACCT_BRANCH;
+	}
+
+
+
+
+	public void setR7_ACCT_BRANCH(String r7_ACCT_BRANCH) {
+		R7_ACCT_BRANCH = r7_ACCT_BRANCH;
+	}
+
+
+
+
+	public BigDecimal getR7_ACCT_BALANCE_PULA() {
+		return R7_ACCT_BALANCE_PULA;
+	}
+
+
+
+
+	public void setR7_ACCT_BALANCE_PULA(BigDecimal r7_ACCT_BALANCE_PULA) {
+		R7_ACCT_BALANCE_PULA = r7_ACCT_BALANCE_PULA;
+	}
+
+
+
+
+	public String getR7_CURRENCY_OF_ACCT() {
+		return R7_CURRENCY_OF_ACCT;
+	}
+
+
+
+
+	public void setR7_CURRENCY_OF_ACCT(String r7_CURRENCY_OF_ACCT) {
+		R7_CURRENCY_OF_ACCT = r7_CURRENCY_OF_ACCT;
+	}
+
+
+
+
+	public BigDecimal getR7_EXCHANGE_RATE() {
+		return R7_EXCHANGE_RATE;
+	}
+
+
+
+
+	public void setR7_EXCHANGE_RATE(BigDecimal r7_EXCHANGE_RATE) {
+		R7_EXCHANGE_RATE = r7_EXCHANGE_RATE;
+	}
+
+
+
+
+	public BigDecimal getR8_BANK_SPEC_SINGLE_CUST_REC_NUM() {
+		return R8_BANK_SPEC_SINGLE_CUST_REC_NUM;
+	}
+
+
+
+
+	public void setR8_BANK_SPEC_SINGLE_CUST_REC_NUM(BigDecimal r8_BANK_SPEC_SINGLE_CUST_REC_NUM) {
+		R8_BANK_SPEC_SINGLE_CUST_REC_NUM = r8_BANK_SPEC_SINGLE_CUST_REC_NUM;
+	}
+
+
+
+
+	public String getR8_COMPANY_NAME() {
+		return R8_COMPANY_NAME;
+	}
+
+
+
+
+	public void setR8_COMPANY_NAME(String r8_COMPANY_NAME) {
+		R8_COMPANY_NAME = r8_COMPANY_NAME;
+	}
+
+
+
+
+	public BigDecimal getR8_COMPANY_REG_NUM() {
+		return R8_COMPANY_REG_NUM;
+	}
+
+
+
+
+	public void setR8_COMPANY_REG_NUM(BigDecimal r8_COMPANY_REG_NUM) {
+		R8_COMPANY_REG_NUM = r8_COMPANY_REG_NUM;
+	}
+
+
+
+
+	public String getR8_BUSINEES_PHY_ADDRESS() {
+		return R8_BUSINEES_PHY_ADDRESS;
+	}
+
+
+
+
+	public void setR8_BUSINEES_PHY_ADDRESS(String r8_BUSINEES_PHY_ADDRESS) {
+		R8_BUSINEES_PHY_ADDRESS = r8_BUSINEES_PHY_ADDRESS;
+	}
+
+
+
+
+	public String getR8_POSTAL_ADDRESS() {
+		return R8_POSTAL_ADDRESS;
+	}
+
+
+
+
+	public void setR8_POSTAL_ADDRESS(String r8_POSTAL_ADDRESS) {
+		R8_POSTAL_ADDRESS = r8_POSTAL_ADDRESS;
+	}
+
+
+
+
+	public String getR8_COUNTRY_OF_REG() {
+		return R8_COUNTRY_OF_REG;
+	}
+
+
+
+
+	public void setR8_COUNTRY_OF_REG(String r8_COUNTRY_OF_REG) {
+		R8_COUNTRY_OF_REG = r8_COUNTRY_OF_REG;
+	}
+
+
+
+
+	public String getR8_COMPANY_EMAIL() {
+		return R8_COMPANY_EMAIL;
+	}
+
+
+
+
+	public void setR8_COMPANY_EMAIL(String r8_COMPANY_EMAIL) {
+		R8_COMPANY_EMAIL = r8_COMPANY_EMAIL;
+	}
+
+
+
+
+	public String getR8_COMPANY_LANDLINE() {
+		return R8_COMPANY_LANDLINE;
+	}
+
+
+
+
+	public void setR8_COMPANY_LANDLINE(String r8_COMPANY_LANDLINE) {
+		R8_COMPANY_LANDLINE = r8_COMPANY_LANDLINE;
+	}
+
+
+
+
+	public String getR8_COMPANY_MOB_PHONE_NUM() {
+		return R8_COMPANY_MOB_PHONE_NUM;
+	}
+
+
+
+
+	public void setR8_COMPANY_MOB_PHONE_NUM(String r8_COMPANY_MOB_PHONE_NUM) {
+		R8_COMPANY_MOB_PHONE_NUM = r8_COMPANY_MOB_PHONE_NUM;
+	}
+
+
+
+
+	public String getR8_PRODUCT_TYPE() {
+		return R8_PRODUCT_TYPE;
+	}
+
+
+
+
+	public void setR8_PRODUCT_TYPE(String r8_PRODUCT_TYPE) {
+		R8_PRODUCT_TYPE = r8_PRODUCT_TYPE;
+	}
+
+
+
+
+	public BigDecimal getR8_ACCT_NUM() {
+		return R8_ACCT_NUM;
+	}
+
+
+
+
+	public void setR8_ACCT_NUM(BigDecimal r8_ACCT_NUM) {
+		R8_ACCT_NUM = r8_ACCT_NUM;
+	}
+
+
+
+
+	public String getR8_STATUS_OF_ACCT() {
+		return R8_STATUS_OF_ACCT;
+	}
+
+
+
+
+	public void setR8_STATUS_OF_ACCT(String r8_STATUS_OF_ACCT) {
+		R8_STATUS_OF_ACCT = r8_STATUS_OF_ACCT;
+	}
+
+
+
+
+	public String getR8_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT() {
+		return R8_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT;
+	}
+
+
+
+
+	public void setR8_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT(
+			String r8_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT) {
+		R8_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT = r8_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT;
+	}
+
+
+
+
+	public String getR8_ACCT_BRANCH() {
+		return R8_ACCT_BRANCH;
+	}
+
+
+
+
+	public void setR8_ACCT_BRANCH(String r8_ACCT_BRANCH) {
+		R8_ACCT_BRANCH = r8_ACCT_BRANCH;
+	}
+
+
+
+
+	public BigDecimal getR8_ACCT_BALANCE_PULA() {
+		return R8_ACCT_BALANCE_PULA;
+	}
+
+
+
+
+	public void setR8_ACCT_BALANCE_PULA(BigDecimal r8_ACCT_BALANCE_PULA) {
+		R8_ACCT_BALANCE_PULA = r8_ACCT_BALANCE_PULA;
+	}
+
+
+
+
+	public String getR8_CURRENCY_OF_ACCT() {
+		return R8_CURRENCY_OF_ACCT;
+	}
+
+
+
+
+	public void setR8_CURRENCY_OF_ACCT(String r8_CURRENCY_OF_ACCT) {
+		R8_CURRENCY_OF_ACCT = r8_CURRENCY_OF_ACCT;
+	}
+
+
+
+
+	public BigDecimal getR8_EXCHANGE_RATE() {
+		return R8_EXCHANGE_RATE;
+	}
+
+
+
+
+	public void setR8_EXCHANGE_RATE(BigDecimal r8_EXCHANGE_RATE) {
+		R8_EXCHANGE_RATE = r8_EXCHANGE_RATE;
+	}
+
+
+
+
+	public BigDecimal getR9_BANK_SPEC_SINGLE_CUST_REC_NUM() {
+		return R9_BANK_SPEC_SINGLE_CUST_REC_NUM;
+	}
+
+
+
+
+	public void setR9_BANK_SPEC_SINGLE_CUST_REC_NUM(BigDecimal r9_BANK_SPEC_SINGLE_CUST_REC_NUM) {
+		R9_BANK_SPEC_SINGLE_CUST_REC_NUM = r9_BANK_SPEC_SINGLE_CUST_REC_NUM;
+	}
+
+
+
+
+	public String getR9_COMPANY_NAME() {
+		return R9_COMPANY_NAME;
+	}
+
+
+
+
+	public void setR9_COMPANY_NAME(String r9_COMPANY_NAME) {
+		R9_COMPANY_NAME = r9_COMPANY_NAME;
+	}
+
+
+
+
+	public BigDecimal getR9_COMPANY_REG_NUM() {
+		return R9_COMPANY_REG_NUM;
+	}
+
+
+
+
+	public void setR9_COMPANY_REG_NUM(BigDecimal r9_COMPANY_REG_NUM) {
+		R9_COMPANY_REG_NUM = r9_COMPANY_REG_NUM;
+	}
+
+
+
+
+	public String getR9_BUSINEES_PHY_ADDRESS() {
+		return R9_BUSINEES_PHY_ADDRESS;
+	}
+
+
+
+
+	public void setR9_BUSINEES_PHY_ADDRESS(String r9_BUSINEES_PHY_ADDRESS) {
+		R9_BUSINEES_PHY_ADDRESS = r9_BUSINEES_PHY_ADDRESS;
+	}
+
+
+
+
+	public String getR9_POSTAL_ADDRESS() {
+		return R9_POSTAL_ADDRESS;
+	}
+
+
+
+
+	public void setR9_POSTAL_ADDRESS(String r9_POSTAL_ADDRESS) {
+		R9_POSTAL_ADDRESS = r9_POSTAL_ADDRESS;
+	}
+
+
+
+
+	public String getR9_COUNTRY_OF_REG() {
+		return R9_COUNTRY_OF_REG;
+	}
+
+
+
+
+	public void setR9_COUNTRY_OF_REG(String r9_COUNTRY_OF_REG) {
+		R9_COUNTRY_OF_REG = r9_COUNTRY_OF_REG;
+	}
+
+
+
+
+	public String getR9_COMPANY_EMAIL() {
+		return R9_COMPANY_EMAIL;
+	}
+
+
+
+
+	public void setR9_COMPANY_EMAIL(String r9_COMPANY_EMAIL) {
+		R9_COMPANY_EMAIL = r9_COMPANY_EMAIL;
+	}
+
+
+
+
+	public String getR9_COMPANY_LANDLINE() {
+		return R9_COMPANY_LANDLINE;
+	}
+
+
+
+
+	public void setR9_COMPANY_LANDLINE(String r9_COMPANY_LANDLINE) {
+		R9_COMPANY_LANDLINE = r9_COMPANY_LANDLINE;
+	}
+
+
+
+
+	public String getR9_COMPANY_MOB_PHONE_NUM() {
+		return R9_COMPANY_MOB_PHONE_NUM;
+	}
+
+
+
+
+	public void setR9_COMPANY_MOB_PHONE_NUM(String r9_COMPANY_MOB_PHONE_NUM) {
+		R9_COMPANY_MOB_PHONE_NUM = r9_COMPANY_MOB_PHONE_NUM;
+	}
+
+
+
+
+	public String getR9_PRODUCT_TYPE() {
+		return R9_PRODUCT_TYPE;
+	}
+
+
+
+
+	public void setR9_PRODUCT_TYPE(String r9_PRODUCT_TYPE) {
+		R9_PRODUCT_TYPE = r9_PRODUCT_TYPE;
+	}
+
+
+
+
+	public BigDecimal getR9_ACCT_NUM() {
+		return R9_ACCT_NUM;
+	}
+
+
+
+
+	public void setR9_ACCT_NUM(BigDecimal r9_ACCT_NUM) {
+		R9_ACCT_NUM = r9_ACCT_NUM;
+	}
+
+
+
+
+	public String getR9_STATUS_OF_ACCT() {
+		return R9_STATUS_OF_ACCT;
+	}
+
+
+
+
+	public void setR9_STATUS_OF_ACCT(String r9_STATUS_OF_ACCT) {
+		R9_STATUS_OF_ACCT = r9_STATUS_OF_ACCT;
+	}
+
+
+
+
+	public String getR9_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT() {
+		return R9_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT;
+	}
+
+
+
+
+	public void setR9_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT(
+			String r9_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT) {
+		R9_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT = r9_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT;
+	}
+
+
+
+
+	public String getR9_ACCT_BRANCH() {
+		return R9_ACCT_BRANCH;
+	}
+
+
+
+
+	public void setR9_ACCT_BRANCH(String r9_ACCT_BRANCH) {
+		R9_ACCT_BRANCH = r9_ACCT_BRANCH;
+	}
+
+
+
+
+	public BigDecimal getR9_ACCT_BALANCE_PULA() {
+		return R9_ACCT_BALANCE_PULA;
+	}
+
+
+
+
+	public void setR9_ACCT_BALANCE_PULA(BigDecimal r9_ACCT_BALANCE_PULA) {
+		R9_ACCT_BALANCE_PULA = r9_ACCT_BALANCE_PULA;
+	}
+
+
+
+
+	public String getR9_CURRENCY_OF_ACCT() {
+		return R9_CURRENCY_OF_ACCT;
+	}
+
+
+
+
+	public void setR9_CURRENCY_OF_ACCT(String r9_CURRENCY_OF_ACCT) {
+		R9_CURRENCY_OF_ACCT = r9_CURRENCY_OF_ACCT;
+	}
+
+
+
+
+	public BigDecimal getR9_EXCHANGE_RATE() {
+		return R9_EXCHANGE_RATE;
+	}
+
+
+
+
+	public void setR9_EXCHANGE_RATE(BigDecimal r9_EXCHANGE_RATE) {
+		R9_EXCHANGE_RATE = r9_EXCHANGE_RATE;
+	}
+
+
+
+
+	public BigDecimal getR10_BANK_SPEC_SINGLE_CUST_REC_NUM() {
+		return R10_BANK_SPEC_SINGLE_CUST_REC_NUM;
+	}
+
+
+
+
+	public void setR10_BANK_SPEC_SINGLE_CUST_REC_NUM(BigDecimal r10_BANK_SPEC_SINGLE_CUST_REC_NUM) {
+		R10_BANK_SPEC_SINGLE_CUST_REC_NUM = r10_BANK_SPEC_SINGLE_CUST_REC_NUM;
+	}
+
+
+
+
+	public String getR10_COMPANY_NAME() {
+		return R10_COMPANY_NAME;
+	}
+
+
+
+
+	public void setR10_COMPANY_NAME(String r10_COMPANY_NAME) {
+		R10_COMPANY_NAME = r10_COMPANY_NAME;
+	}
+
+
+
+
+	public BigDecimal getR10_COMPANY_REG_NUM() {
+		return R10_COMPANY_REG_NUM;
+	}
+
+
+
+
+	public void setR10_COMPANY_REG_NUM(BigDecimal r10_COMPANY_REG_NUM) {
+		R10_COMPANY_REG_NUM = r10_COMPANY_REG_NUM;
+	}
+
+
+
+
+	public String getR10_BUSINEES_PHY_ADDRESS() {
+		return R10_BUSINEES_PHY_ADDRESS;
+	}
+
+
+
+
+	public void setR10_BUSINEES_PHY_ADDRESS(String r10_BUSINEES_PHY_ADDRESS) {
+		R10_BUSINEES_PHY_ADDRESS = r10_BUSINEES_PHY_ADDRESS;
+	}
+
+
+
+
+	public String getR10_POSTAL_ADDRESS() {
+		return R10_POSTAL_ADDRESS;
+	}
+
+
+
+
+	public void setR10_POSTAL_ADDRESS(String r10_POSTAL_ADDRESS) {
+		R10_POSTAL_ADDRESS = r10_POSTAL_ADDRESS;
+	}
+
+
+
+
+	public String getR10_COUNTRY_OF_REG() {
+		return R10_COUNTRY_OF_REG;
+	}
+
+
+
+
+	public void setR10_COUNTRY_OF_REG(String r10_COUNTRY_OF_REG) {
+		R10_COUNTRY_OF_REG = r10_COUNTRY_OF_REG;
+	}
+
+
+
+
+	public String getR10_COMPANY_EMAIL() {
+		return R10_COMPANY_EMAIL;
+	}
+
+
+
+
+	public void setR10_COMPANY_EMAIL(String r10_COMPANY_EMAIL) {
+		R10_COMPANY_EMAIL = r10_COMPANY_EMAIL;
+	}
+
+
+
+
+	public String getR10_COMPANY_LANDLINE() {
+		return R10_COMPANY_LANDLINE;
+	}
+
+
+
+
+	public void setR10_COMPANY_LANDLINE(String r10_COMPANY_LANDLINE) {
+		R10_COMPANY_LANDLINE = r10_COMPANY_LANDLINE;
+	}
+
+
+
+
+	public String getR10_COMPANY_MOB_PHONE_NUM() {
+		return R10_COMPANY_MOB_PHONE_NUM;
+	}
+
+
+
+
+	public void setR10_COMPANY_MOB_PHONE_NUM(String r10_COMPANY_MOB_PHONE_NUM) {
+		R10_COMPANY_MOB_PHONE_NUM = r10_COMPANY_MOB_PHONE_NUM;
+	}
+
+
+
+
+	public String getR10_PRODUCT_TYPE() {
+		return R10_PRODUCT_TYPE;
+	}
+
+
+
+
+	public void setR10_PRODUCT_TYPE(String r10_PRODUCT_TYPE) {
+		R10_PRODUCT_TYPE = r10_PRODUCT_TYPE;
+	}
+
+
+
+
+	public BigDecimal getR10_ACCT_NUM() {
+		return R10_ACCT_NUM;
+	}
+
+
+
+
+	public void setR10_ACCT_NUM(BigDecimal r10_ACCT_NUM) {
+		R10_ACCT_NUM = r10_ACCT_NUM;
+	}
+
+
+
+
+	public String getR10_STATUS_OF_ACCT() {
+		return R10_STATUS_OF_ACCT;
+	}
+
+
+
+
+	public void setR10_STATUS_OF_ACCT(String r10_STATUS_OF_ACCT) {
+		R10_STATUS_OF_ACCT = r10_STATUS_OF_ACCT;
+	}
+
+
+
+
+	public String getR10_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT() {
+		return R10_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT;
+	}
+
+
+
+
+	public void setR10_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT(
+			String r10_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT) {
+		R10_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT = r10_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT;
+	}
+
+
+
+
+	public String getR10_ACCT_BRANCH() {
+		return R10_ACCT_BRANCH;
+	}
+
+
+
+
+	public void setR10_ACCT_BRANCH(String r10_ACCT_BRANCH) {
+		R10_ACCT_BRANCH = r10_ACCT_BRANCH;
+	}
+
+
+
+
+	public BigDecimal getR10_ACCT_BALANCE_PULA() {
+		return R10_ACCT_BALANCE_PULA;
+	}
+
+
+
+
+	public void setR10_ACCT_BALANCE_PULA(BigDecimal r10_ACCT_BALANCE_PULA) {
+		R10_ACCT_BALANCE_PULA = r10_ACCT_BALANCE_PULA;
+	}
+
+
+
+
+	public String getR10_CURRENCY_OF_ACCT() {
+		return R10_CURRENCY_OF_ACCT;
+	}
+
+
+
+
+	public void setR10_CURRENCY_OF_ACCT(String r10_CURRENCY_OF_ACCT) {
+		R10_CURRENCY_OF_ACCT = r10_CURRENCY_OF_ACCT;
+	}
+
+
+
+
+	public BigDecimal getR10_EXCHANGE_RATE() {
+		return R10_EXCHANGE_RATE;
+	}
+
+
+
+
+	public void setR10_EXCHANGE_RATE(BigDecimal r10_EXCHANGE_RATE) {
+		R10_EXCHANGE_RATE = r10_EXCHANGE_RATE;
+	}
+
+
+
+
+	public BigDecimal getR11_BANK_SPEC_SINGLE_CUST_REC_NUM() {
+		return R11_BANK_SPEC_SINGLE_CUST_REC_NUM;
+	}
+
+
+
+
+	public void setR11_BANK_SPEC_SINGLE_CUST_REC_NUM(BigDecimal r11_BANK_SPEC_SINGLE_CUST_REC_NUM) {
+		R11_BANK_SPEC_SINGLE_CUST_REC_NUM = r11_BANK_SPEC_SINGLE_CUST_REC_NUM;
+	}
+
+
+
+
+	public String getR11_COMPANY_NAME() {
+		return R11_COMPANY_NAME;
+	}
+
+
+
+
+	public void setR11_COMPANY_NAME(String r11_COMPANY_NAME) {
+		R11_COMPANY_NAME = r11_COMPANY_NAME;
+	}
+
+
+
+
+	public BigDecimal getR11_COMPANY_REG_NUM() {
+		return R11_COMPANY_REG_NUM;
+	}
+
+
+
+
+	public void setR11_COMPANY_REG_NUM(BigDecimal r11_COMPANY_REG_NUM) {
+		R11_COMPANY_REG_NUM = r11_COMPANY_REG_NUM;
+	}
+
+
+
+
+	public String getR11_BUSINEES_PHY_ADDRESS() {
+		return R11_BUSINEES_PHY_ADDRESS;
+	}
+
+
+
+
+	public void setR11_BUSINEES_PHY_ADDRESS(String r11_BUSINEES_PHY_ADDRESS) {
+		R11_BUSINEES_PHY_ADDRESS = r11_BUSINEES_PHY_ADDRESS;
+	}
+
+
+
+
+	public String getR11_POSTAL_ADDRESS() {
+		return R11_POSTAL_ADDRESS;
+	}
+
+
+
+
+	public void setR11_POSTAL_ADDRESS(String r11_POSTAL_ADDRESS) {
+		R11_POSTAL_ADDRESS = r11_POSTAL_ADDRESS;
+	}
+
+
+
+
+	public String getR11_COUNTRY_OF_REG() {
+		return R11_COUNTRY_OF_REG;
+	}
+
+
+
+
+	public void setR11_COUNTRY_OF_REG(String r11_COUNTRY_OF_REG) {
+		R11_COUNTRY_OF_REG = r11_COUNTRY_OF_REG;
+	}
+
+
+
+
+	public String getR11_COMPANY_EMAIL() {
+		return R11_COMPANY_EMAIL;
+	}
+
+
+
+
+	public void setR11_COMPANY_EMAIL(String r11_COMPANY_EMAIL) {
+		R11_COMPANY_EMAIL = r11_COMPANY_EMAIL;
+	}
+
+
+
+
+	public String getR11_COMPANY_LANDLINE() {
+		return R11_COMPANY_LANDLINE;
+	}
+
+
+
+
+	public void setR11_COMPANY_LANDLINE(String r11_COMPANY_LANDLINE) {
+		R11_COMPANY_LANDLINE = r11_COMPANY_LANDLINE;
+	}
+
+
+
+
+	public String getR11_COMPANY_MOB_PHONE_NUM() {
+		return R11_COMPANY_MOB_PHONE_NUM;
+	}
+
+
+
+
+	public void setR11_COMPANY_MOB_PHONE_NUM(String r11_COMPANY_MOB_PHONE_NUM) {
+		R11_COMPANY_MOB_PHONE_NUM = r11_COMPANY_MOB_PHONE_NUM;
+	}
+
+
+
+
+	public String getR11_PRODUCT_TYPE() {
+		return R11_PRODUCT_TYPE;
+	}
+
+
+
+
+	public void setR11_PRODUCT_TYPE(String r11_PRODUCT_TYPE) {
+		R11_PRODUCT_TYPE = r11_PRODUCT_TYPE;
+	}
+
+
+
+
+	public BigDecimal getR11_ACCT_NUM() {
+		return R11_ACCT_NUM;
+	}
+
+
+
+
+	public void setR11_ACCT_NUM(BigDecimal r11_ACCT_NUM) {
+		R11_ACCT_NUM = r11_ACCT_NUM;
+	}
+
+
+
+
+	public String getR11_STATUS_OF_ACCT() {
+		return R11_STATUS_OF_ACCT;
+	}
+
+
+
+
+	public void setR11_STATUS_OF_ACCT(String r11_STATUS_OF_ACCT) {
+		R11_STATUS_OF_ACCT = r11_STATUS_OF_ACCT;
+	}
+
+
+
+
+	public String getR11_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT() {
+		return R11_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT;
+	}
+
+
+
+
+	public void setR11_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT(
+			String r11_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT) {
+		R11_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT = r11_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT;
+	}
+
+
+
+
+	public String getR11_ACCT_BRANCH() {
+		return R11_ACCT_BRANCH;
+	}
+
+
+
+
+	public void setR11_ACCT_BRANCH(String r11_ACCT_BRANCH) {
+		R11_ACCT_BRANCH = r11_ACCT_BRANCH;
+	}
+
+
+
+
+	public BigDecimal getR11_ACCT_BALANCE_PULA() {
+		return R11_ACCT_BALANCE_PULA;
+	}
+
+
+
+
+	public void setR11_ACCT_BALANCE_PULA(BigDecimal r11_ACCT_BALANCE_PULA) {
+		R11_ACCT_BALANCE_PULA = r11_ACCT_BALANCE_PULA;
+	}
+
+
+
+
+	public String getR11_CURRENCY_OF_ACCT() {
+		return R11_CURRENCY_OF_ACCT;
+	}
+
+
+
+
+	public void setR11_CURRENCY_OF_ACCT(String r11_CURRENCY_OF_ACCT) {
+		R11_CURRENCY_OF_ACCT = r11_CURRENCY_OF_ACCT;
+	}
+
+
+
+
+	public BigDecimal getR11_EXCHANGE_RATE() {
+		return R11_EXCHANGE_RATE;
+	}
+
+
+
+
+	public void setR11_EXCHANGE_RATE(BigDecimal r11_EXCHANGE_RATE) {
+		R11_EXCHANGE_RATE = r11_EXCHANGE_RATE;
+	}
+
+
+
+
+	public BigDecimal getR12_BANK_SPEC_SINGLE_CUST_REC_NUM() {
+		return R12_BANK_SPEC_SINGLE_CUST_REC_NUM;
+	}
+
+
+
+
+	public void setR12_BANK_SPEC_SINGLE_CUST_REC_NUM(BigDecimal r12_BANK_SPEC_SINGLE_CUST_REC_NUM) {
+		R12_BANK_SPEC_SINGLE_CUST_REC_NUM = r12_BANK_SPEC_SINGLE_CUST_REC_NUM;
+	}
+
+
+
+
+	public String getR12_COMPANY_NAME() {
+		return R12_COMPANY_NAME;
+	}
+
+
+
+
+	public void setR12_COMPANY_NAME(String r12_COMPANY_NAME) {
+		R12_COMPANY_NAME = r12_COMPANY_NAME;
+	}
+
+
+
+
+	public BigDecimal getR12_COMPANY_REG_NUM() {
+		return R12_COMPANY_REG_NUM;
+	}
+
+
+
+
+	public void setR12_COMPANY_REG_NUM(BigDecimal r12_COMPANY_REG_NUM) {
+		R12_COMPANY_REG_NUM = r12_COMPANY_REG_NUM;
+	}
+
+
+
+
+	public String getR12_BUSINEES_PHY_ADDRESS() {
+		return R12_BUSINEES_PHY_ADDRESS;
+	}
+
+
+
+
+	public void setR12_BUSINEES_PHY_ADDRESS(String r12_BUSINEES_PHY_ADDRESS) {
+		R12_BUSINEES_PHY_ADDRESS = r12_BUSINEES_PHY_ADDRESS;
+	}
+
+
+
+
+	public String getR12_POSTAL_ADDRESS() {
+		return R12_POSTAL_ADDRESS;
+	}
+
+
+
+
+	public void setR12_POSTAL_ADDRESS(String r12_POSTAL_ADDRESS) {
+		R12_POSTAL_ADDRESS = r12_POSTAL_ADDRESS;
+	}
+
+
+
+
+	public String getR12_COUNTRY_OF_REG() {
+		return R12_COUNTRY_OF_REG;
+	}
+
+
+
+
+	public void setR12_COUNTRY_OF_REG(String r12_COUNTRY_OF_REG) {
+		R12_COUNTRY_OF_REG = r12_COUNTRY_OF_REG;
+	}
+
+
+
+
+	public String getR12_COMPANY_EMAIL() {
+		return R12_COMPANY_EMAIL;
+	}
+
+
+
+
+	public void setR12_COMPANY_EMAIL(String r12_COMPANY_EMAIL) {
+		R12_COMPANY_EMAIL = r12_COMPANY_EMAIL;
+	}
+
+
+
+
+	public String getR12_COMPANY_LANDLINE() {
+		return R12_COMPANY_LANDLINE;
+	}
+
+
+
+
+	public void setR12_COMPANY_LANDLINE(String r12_COMPANY_LANDLINE) {
+		R12_COMPANY_LANDLINE = r12_COMPANY_LANDLINE;
+	}
+
+
+
+
+	public String getR12_COMPANY_MOB_PHONE_NUM() {
+		return R12_COMPANY_MOB_PHONE_NUM;
+	}
+
+
+
+
+	public void setR12_COMPANY_MOB_PHONE_NUM(String r12_COMPANY_MOB_PHONE_NUM) {
+		R12_COMPANY_MOB_PHONE_NUM = r12_COMPANY_MOB_PHONE_NUM;
+	}
+
+
+
+
+	public String getR12_PRODUCT_TYPE() {
+		return R12_PRODUCT_TYPE;
+	}
+
+
+
+
+	public void setR12_PRODUCT_TYPE(String r12_PRODUCT_TYPE) {
+		R12_PRODUCT_TYPE = r12_PRODUCT_TYPE;
+	}
+
+
+
+
+	public BigDecimal getR12_ACCT_NUM() {
+		return R12_ACCT_NUM;
+	}
+
+
+
+
+	public void setR12_ACCT_NUM(BigDecimal r12_ACCT_NUM) {
+		R12_ACCT_NUM = r12_ACCT_NUM;
+	}
+
+
+
+
+	public String getR12_STATUS_OF_ACCT() {
+		return R12_STATUS_OF_ACCT;
+	}
+
+
+
+
+	public void setR12_STATUS_OF_ACCT(String r12_STATUS_OF_ACCT) {
+		R12_STATUS_OF_ACCT = r12_STATUS_OF_ACCT;
+	}
+
+
+
+
+	public String getR12_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT() {
+		return R12_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT;
+	}
+
+
+
+
+	public void setR12_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT(
+			String r12_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT) {
+		R12_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT = r12_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT;
+	}
+
+
+
+
+	public String getR12_ACCT_BRANCH() {
+		return R12_ACCT_BRANCH;
+	}
+
+
+
+
+	public void setR12_ACCT_BRANCH(String r12_ACCT_BRANCH) {
+		R12_ACCT_BRANCH = r12_ACCT_BRANCH;
+	}
+
+
+
+
+	public BigDecimal getR12_ACCT_BALANCE_PULA() {
+		return R12_ACCT_BALANCE_PULA;
+	}
+
+
+
+
+	public void setR12_ACCT_BALANCE_PULA(BigDecimal r12_ACCT_BALANCE_PULA) {
+		R12_ACCT_BALANCE_PULA = r12_ACCT_BALANCE_PULA;
+	}
+
+
+
+
+	public String getR12_CURRENCY_OF_ACCT() {
+		return R12_CURRENCY_OF_ACCT;
+	}
+
+
+
+
+	public void setR12_CURRENCY_OF_ACCT(String r12_CURRENCY_OF_ACCT) {
+		R12_CURRENCY_OF_ACCT = r12_CURRENCY_OF_ACCT;
+	}
+
+
+
+
+	public BigDecimal getR12_EXCHANGE_RATE() {
+		return R12_EXCHANGE_RATE;
+	}
+
+
+
+
+	public void setR12_EXCHANGE_RATE(BigDecimal r12_EXCHANGE_RATE) {
+		R12_EXCHANGE_RATE = r12_EXCHANGE_RATE;
+	}
+
+
+
 	public Date getReportResubDate() {
 		return reportResubDate;
 	}
@@ -210,2018 +1967,9 @@ public class BDISB2_Archival_Summary_Entity{
 
 
 
-
 	public void setReportResubDate(Date reportResubDate) {
 		this.reportResubDate = reportResubDate;
 	}
-
-
-
-
-
-	public String getReport_frequency() {
-		return report_frequency;
-	}
-
-
-
-
-
-	public void setReport_frequency(String report_frequency) {
-		this.report_frequency = report_frequency;
-	}
-
-
-
-
-
-	public String getReport_code() {
-		return report_code;
-	}
-
-
-
-
-
-	public void setReport_code(String report_code) {
-		this.report_code = report_code;
-	}
-
-
-
-
-
-	public String getReport_desc() {
-		return report_desc;
-	}
-
-
-
-
-
-	public void setReport_desc(String report_desc) {
-		this.report_desc = report_desc;
-	}
-
-
-
-
-
-	public String getEntity_flg() {
-		return entity_flg;
-	}
-
-
-
-
-
-	public void setEntity_flg(String entity_flg) {
-		this.entity_flg = entity_flg;
-	}
-
-
-
-
-
-	public String getModify_flg() {
-		return modify_flg;
-	}
-
-
-
-
-
-	public void setModify_flg(String modify_flg) {
-		this.modify_flg = modify_flg;
-	}
-
-
-
-
-
-	public String getDel_flg() {
-		return del_flg;
-	}
-
-
-
-
-
-	public void setDel_flg(String del_flg) {
-		this.del_flg = del_flg;
-	}
-
-
-
-
-
-	public BigDecimal getR6_bank_spec_single_cust_rec_num() {
-		return r6_bank_spec_single_cust_rec_num;
-	}
-
-
-
-
-
-	public void setR6_bank_spec_single_cust_rec_num(BigDecimal r6_bank_spec_single_cust_rec_num) {
-		this.r6_bank_spec_single_cust_rec_num = r6_bank_spec_single_cust_rec_num;
-	}
-
-
-
-
-
-	public String getR6_company_name() {
-		return r6_company_name;
-	}
-
-
-
-
-
-	public void setR6_company_name(String r6_company_name) {
-		this.r6_company_name = r6_company_name;
-	}
-
-
-
-
-
-	public BigDecimal getR6_company_reg_num() {
-		return r6_company_reg_num;
-	}
-
-
-
-
-
-	public void setR6_company_reg_num(BigDecimal r6_company_reg_num) {
-		this.r6_company_reg_num = r6_company_reg_num;
-	}
-
-
-
-
-
-	public String getR6_businees_phy_address() {
-		return r6_businees_phy_address;
-	}
-
-
-
-
-
-	public void setR6_businees_phy_address(String r6_businees_phy_address) {
-		this.r6_businees_phy_address = r6_businees_phy_address;
-	}
-
-
-
-
-
-	public String getR6_postal_address() {
-		return r6_postal_address;
-	}
-
-
-
-
-
-	public void setR6_postal_address(String r6_postal_address) {
-		this.r6_postal_address = r6_postal_address;
-	}
-
-
-
-
-
-	public String getR6_country_of_reg() {
-		return r6_country_of_reg;
-	}
-
-
-
-
-
-	public void setR6_country_of_reg(String r6_country_of_reg) {
-		this.r6_country_of_reg = r6_country_of_reg;
-	}
-
-
-
-
-
-	public String getR6_company_email() {
-		return r6_company_email;
-	}
-
-
-
-
-
-	public void setR6_company_email(String r6_company_email) {
-		this.r6_company_email = r6_company_email;
-	}
-
-
-
-
-
-	public String getR6_company_landline() {
-		return r6_company_landline;
-	}
-
-
-
-
-
-	public void setR6_company_landline(String r6_company_landline) {
-		this.r6_company_landline = r6_company_landline;
-	}
-
-
-
-
-
-	public String getR6_company_mob_phone_num() {
-		return r6_company_mob_phone_num;
-	}
-
-
-
-
-
-	public void setR6_company_mob_phone_num(String r6_company_mob_phone_num) {
-		this.r6_company_mob_phone_num = r6_company_mob_phone_num;
-	}
-
-
-
-
-
-	public String getR6_product_type() {
-		return r6_product_type;
-	}
-
-
-
-
-
-	public void setR6_product_type(String r6_product_type) {
-		this.r6_product_type = r6_product_type;
-	}
-
-
-
-
-
-	public BigDecimal getR6_acct_num() {
-		return r6_acct_num;
-	}
-
-
-
-
-
-	public void setR6_acct_num(BigDecimal r6_acct_num) {
-		this.r6_acct_num = r6_acct_num;
-	}
-
-
-
-
-
-	public String getR6_status_of_acct() {
-		return r6_status_of_acct;
-	}
-
-
-
-
-
-	public void setR6_status_of_acct(String r6_status_of_acct) {
-		this.r6_status_of_acct = r6_status_of_acct;
-	}
-
-
-
-
-
-	public String getR6_acct_status_fit_or_not_fit_for_straight_throu_payout() {
-		return r6_acct_status_fit_or_not_fit_for_straight_throu_payout;
-	}
-
-
-
-
-
-	public void setR6_acct_status_fit_or_not_fit_for_straight_throu_payout(
-			String r6_acct_status_fit_or_not_fit_for_straight_throu_payout) {
-		this.r6_acct_status_fit_or_not_fit_for_straight_throu_payout = r6_acct_status_fit_or_not_fit_for_straight_throu_payout;
-	}
-
-
-
-
-
-	public String getR6_acct_branch() {
-		return r6_acct_branch;
-	}
-
-
-
-
-
-	public void setR6_acct_branch(String r6_acct_branch) {
-		this.r6_acct_branch = r6_acct_branch;
-	}
-
-
-
-
-
-	public BigDecimal getR6_acct_balance_pula() {
-		return r6_acct_balance_pula;
-	}
-
-
-
-
-
-	public void setR6_acct_balance_pula(BigDecimal r6_acct_balance_pula) {
-		this.r6_acct_balance_pula = r6_acct_balance_pula;
-	}
-
-
-
-
-
-	public String getR6_currency_of_acct() {
-		return r6_currency_of_acct;
-	}
-
-
-
-
-
-	public void setR6_currency_of_acct(String r6_currency_of_acct) {
-		this.r6_currency_of_acct = r6_currency_of_acct;
-	}
-
-
-
-
-
-	public BigDecimal getR6_exchange_rate() {
-		return r6_exchange_rate;
-	}
-
-
-
-
-
-	public void setR6_exchange_rate(BigDecimal r6_exchange_rate) {
-		this.r6_exchange_rate = r6_exchange_rate;
-	}
-
-
-
-
-
-	public BigDecimal getR7_bank_spec_single_cust_rec_num() {
-		return r7_bank_spec_single_cust_rec_num;
-	}
-
-
-
-
-
-	public void setR7_bank_spec_single_cust_rec_num(BigDecimal r7_bank_spec_single_cust_rec_num) {
-		this.r7_bank_spec_single_cust_rec_num = r7_bank_spec_single_cust_rec_num;
-	}
-
-
-
-
-
-	public String getR7_company_name() {
-		return r7_company_name;
-	}
-
-
-
-
-
-	public void setR7_company_name(String r7_company_name) {
-		this.r7_company_name = r7_company_name;
-	}
-
-
-
-
-
-	public BigDecimal getR7_company_reg_num() {
-		return r7_company_reg_num;
-	}
-
-
-
-
-
-	public void setR7_company_reg_num(BigDecimal r7_company_reg_num) {
-		this.r7_company_reg_num = r7_company_reg_num;
-	}
-
-
-
-
-
-	public String getR7_businees_phy_address() {
-		return r7_businees_phy_address;
-	}
-
-
-
-
-
-	public void setR7_businees_phy_address(String r7_businees_phy_address) {
-		this.r7_businees_phy_address = r7_businees_phy_address;
-	}
-
-
-
-
-
-	public String getR7_postal_address() {
-		return r7_postal_address;
-	}
-
-
-
-
-
-	public void setR7_postal_address(String r7_postal_address) {
-		this.r7_postal_address = r7_postal_address;
-	}
-
-
-
-
-
-	public String getR7_country_of_reg() {
-		return r7_country_of_reg;
-	}
-
-
-
-
-
-	public void setR7_country_of_reg(String r7_country_of_reg) {
-		this.r7_country_of_reg = r7_country_of_reg;
-	}
-
-
-
-
-
-	public String getR7_company_email() {
-		return r7_company_email;
-	}
-
-
-
-
-
-	public void setR7_company_email(String r7_company_email) {
-		this.r7_company_email = r7_company_email;
-	}
-
-
-
-
-
-	public String getR7_company_landline() {
-		return r7_company_landline;
-	}
-
-
-
-
-
-	public void setR7_company_landline(String r7_company_landline) {
-		this.r7_company_landline = r7_company_landline;
-	}
-
-
-
-
-
-	public String getR7_company_mob_phone_num() {
-		return r7_company_mob_phone_num;
-	}
-
-
-
-
-
-	public void setR7_company_mob_phone_num(String r7_company_mob_phone_num) {
-		this.r7_company_mob_phone_num = r7_company_mob_phone_num;
-	}
-
-
-
-
-
-	public String getR7_product_type() {
-		return r7_product_type;
-	}
-
-
-
-
-
-	public void setR7_product_type(String r7_product_type) {
-		this.r7_product_type = r7_product_type;
-	}
-
-
-
-
-
-	public BigDecimal getR7_acct_num() {
-		return r7_acct_num;
-	}
-
-
-
-
-
-	public void setR7_acct_num(BigDecimal r7_acct_num) {
-		this.r7_acct_num = r7_acct_num;
-	}
-
-
-
-
-
-	public String getR7_status_of_acct() {
-		return r7_status_of_acct;
-	}
-
-
-
-
-
-	public void setR7_status_of_acct(String r7_status_of_acct) {
-		this.r7_status_of_acct = r7_status_of_acct;
-	}
-
-
-
-
-
-	public String getR7_acct_status_fit_or_not_fit_for_straight_throu_payout() {
-		return r7_acct_status_fit_or_not_fit_for_straight_throu_payout;
-	}
-
-
-
-
-
-	public void setR7_acct_status_fit_or_not_fit_for_straight_throu_payout(
-			String r7_acct_status_fit_or_not_fit_for_straight_throu_payout) {
-		this.r7_acct_status_fit_or_not_fit_for_straight_throu_payout = r7_acct_status_fit_or_not_fit_for_straight_throu_payout;
-	}
-
-
-
-
-
-	public String getR7_acct_branch() {
-		return r7_acct_branch;
-	}
-
-
-
-
-
-	public void setR7_acct_branch(String r7_acct_branch) {
-		this.r7_acct_branch = r7_acct_branch;
-	}
-
-
-
-
-
-	public BigDecimal getR7_acct_balance_pula() {
-		return r7_acct_balance_pula;
-	}
-
-
-
-
-
-	public void setR7_acct_balance_pula(BigDecimal r7_acct_balance_pula) {
-		this.r7_acct_balance_pula = r7_acct_balance_pula;
-	}
-
-
-
-
-
-	public String getR7_currency_of_acct() {
-		return r7_currency_of_acct;
-	}
-
-
-
-
-
-	public void setR7_currency_of_acct(String r7_currency_of_acct) {
-		this.r7_currency_of_acct = r7_currency_of_acct;
-	}
-
-
-
-
-
-	public BigDecimal getR7_exchange_rate() {
-		return r7_exchange_rate;
-	}
-
-
-
-
-
-	public void setR7_exchange_rate(BigDecimal r7_exchange_rate) {
-		this.r7_exchange_rate = r7_exchange_rate;
-	}
-
-
-
-
-
-	public BigDecimal getR8_bank_spec_single_cust_rec_num() {
-		return r8_bank_spec_single_cust_rec_num;
-	}
-
-
-
-
-
-	public void setR8_bank_spec_single_cust_rec_num(BigDecimal r8_bank_spec_single_cust_rec_num) {
-		this.r8_bank_spec_single_cust_rec_num = r8_bank_spec_single_cust_rec_num;
-	}
-
-
-
-
-
-	public String getR8_company_name() {
-		return r8_company_name;
-	}
-
-
-
-
-
-	public void setR8_company_name(String r8_company_name) {
-		this.r8_company_name = r8_company_name;
-	}
-
-
-
-
-
-	public BigDecimal getR8_company_reg_num() {
-		return r8_company_reg_num;
-	}
-
-
-
-
-
-	public void setR8_company_reg_num(BigDecimal r8_company_reg_num) {
-		this.r8_company_reg_num = r8_company_reg_num;
-	}
-
-
-
-
-
-	public String getR8_businees_phy_address() {
-		return r8_businees_phy_address;
-	}
-
-
-
-
-
-	public void setR8_businees_phy_address(String r8_businees_phy_address) {
-		this.r8_businees_phy_address = r8_businees_phy_address;
-	}
-
-
-
-
-
-	public String getR8_postal_address() {
-		return r8_postal_address;
-	}
-
-
-
-
-
-	public void setR8_postal_address(String r8_postal_address) {
-		this.r8_postal_address = r8_postal_address;
-	}
-
-
-
-
-
-	public String getR8_country_of_reg() {
-		return r8_country_of_reg;
-	}
-
-
-
-
-
-	public void setR8_country_of_reg(String r8_country_of_reg) {
-		this.r8_country_of_reg = r8_country_of_reg;
-	}
-
-
-
-
-
-	public String getR8_company_email() {
-		return r8_company_email;
-	}
-
-
-
-
-
-	public void setR8_company_email(String r8_company_email) {
-		this.r8_company_email = r8_company_email;
-	}
-
-
-
-
-
-	public String getR8_company_landline() {
-		return r8_company_landline;
-	}
-
-
-
-
-
-	public void setR8_company_landline(String r8_company_landline) {
-		this.r8_company_landline = r8_company_landline;
-	}
-
-
-
-
-
-	public String getR8_company_mob_phone_num() {
-		return r8_company_mob_phone_num;
-	}
-
-
-
-
-
-	public void setR8_company_mob_phone_num(String r8_company_mob_phone_num) {
-		this.r8_company_mob_phone_num = r8_company_mob_phone_num;
-	}
-
-
-
-
-
-	public String getR8_product_type() {
-		return r8_product_type;
-	}
-
-
-
-
-
-	public void setR8_product_type(String r8_product_type) {
-		this.r8_product_type = r8_product_type;
-	}
-
-
-
-
-
-	public BigDecimal getR8_acct_num() {
-		return r8_acct_num;
-	}
-
-
-
-
-
-	public void setR8_acct_num(BigDecimal r8_acct_num) {
-		this.r8_acct_num = r8_acct_num;
-	}
-
-
-
-
-
-	public String getR8_status_of_acct() {
-		return r8_status_of_acct;
-	}
-
-
-
-
-
-	public void setR8_status_of_acct(String r8_status_of_acct) {
-		this.r8_status_of_acct = r8_status_of_acct;
-	}
-
-
-
-
-
-	public String getR8_acct_status_fit_or_not_fit_for_straight_throu_payout() {
-		return r8_acct_status_fit_or_not_fit_for_straight_throu_payout;
-	}
-
-
-
-
-
-	public void setR8_acct_status_fit_or_not_fit_for_straight_throu_payout(
-			String r8_acct_status_fit_or_not_fit_for_straight_throu_payout) {
-		this.r8_acct_status_fit_or_not_fit_for_straight_throu_payout = r8_acct_status_fit_or_not_fit_for_straight_throu_payout;
-	}
-
-
-
-
-
-	public String getR8_acct_branch() {
-		return r8_acct_branch;
-	}
-
-
-
-
-
-	public void setR8_acct_branch(String r8_acct_branch) {
-		this.r8_acct_branch = r8_acct_branch;
-	}
-
-
-
-
-
-	public BigDecimal getR8_acct_balance_pula() {
-		return r8_acct_balance_pula;
-	}
-
-
-
-
-
-	public void setR8_acct_balance_pula(BigDecimal r8_acct_balance_pula) {
-		this.r8_acct_balance_pula = r8_acct_balance_pula;
-	}
-
-
-
-
-
-	public String getR8_currency_of_acct() {
-		return r8_currency_of_acct;
-	}
-
-
-
-
-
-	public void setR8_currency_of_acct(String r8_currency_of_acct) {
-		this.r8_currency_of_acct = r8_currency_of_acct;
-	}
-
-
-
-
-
-	public BigDecimal getR8_exchange_rate() {
-		return r8_exchange_rate;
-	}
-
-
-
-
-
-	public void setR8_exchange_rate(BigDecimal r8_exchange_rate) {
-		this.r8_exchange_rate = r8_exchange_rate;
-	}
-
-
-
-
-
-	public BigDecimal getR9_bank_spec_single_cust_rec_num() {
-		return r9_bank_spec_single_cust_rec_num;
-	}
-
-
-
-
-
-	public void setR9_bank_spec_single_cust_rec_num(BigDecimal r9_bank_spec_single_cust_rec_num) {
-		this.r9_bank_spec_single_cust_rec_num = r9_bank_spec_single_cust_rec_num;
-	}
-
-
-
-
-
-	public String getR9_company_name() {
-		return r9_company_name;
-	}
-
-
-
-
-
-	public void setR9_company_name(String r9_company_name) {
-		this.r9_company_name = r9_company_name;
-	}
-
-
-
-
-
-	public BigDecimal getR9_company_reg_num() {
-		return r9_company_reg_num;
-	}
-
-
-
-
-
-	public void setR9_company_reg_num(BigDecimal r9_company_reg_num) {
-		this.r9_company_reg_num = r9_company_reg_num;
-	}
-
-
-
-
-
-	public String getR9_businees_phy_address() {
-		return r9_businees_phy_address;
-	}
-
-
-
-
-
-	public void setR9_businees_phy_address(String r9_businees_phy_address) {
-		this.r9_businees_phy_address = r9_businees_phy_address;
-	}
-
-
-
-
-
-	public String getR9_postal_address() {
-		return r9_postal_address;
-	}
-
-
-
-
-
-	public void setR9_postal_address(String r9_postal_address) {
-		this.r9_postal_address = r9_postal_address;
-	}
-
-
-
-
-
-	public String getR9_country_of_reg() {
-		return r9_country_of_reg;
-	}
-
-
-
-
-
-	public void setR9_country_of_reg(String r9_country_of_reg) {
-		this.r9_country_of_reg = r9_country_of_reg;
-	}
-
-
-
-
-
-	public String getR9_company_email() {
-		return r9_company_email;
-	}
-
-
-
-
-
-	public void setR9_company_email(String r9_company_email) {
-		this.r9_company_email = r9_company_email;
-	}
-
-
-
-
-
-	public String getR9_company_landline() {
-		return r9_company_landline;
-	}
-
-
-
-
-
-	public void setR9_company_landline(String r9_company_landline) {
-		this.r9_company_landline = r9_company_landline;
-	}
-
-
-
-
-
-	public String getR9_company_mob_phone_num() {
-		return r9_company_mob_phone_num;
-	}
-
-
-
-
-
-	public void setR9_company_mob_phone_num(String r9_company_mob_phone_num) {
-		this.r9_company_mob_phone_num = r9_company_mob_phone_num;
-	}
-
-
-
-
-
-	public String getR9_product_type() {
-		return r9_product_type;
-	}
-
-
-
-
-
-	public void setR9_product_type(String r9_product_type) {
-		this.r9_product_type = r9_product_type;
-	}
-
-
-
-
-
-	public BigDecimal getR9_acct_num() {
-		return r9_acct_num;
-	}
-
-
-
-
-
-	public void setR9_acct_num(BigDecimal r9_acct_num) {
-		this.r9_acct_num = r9_acct_num;
-	}
-
-
-
-
-
-	public String getR9_status_of_acct() {
-		return r9_status_of_acct;
-	}
-
-
-
-
-
-	public void setR9_status_of_acct(String r9_status_of_acct) {
-		this.r9_status_of_acct = r9_status_of_acct;
-	}
-
-
-
-
-
-	public String getR9_acct_status_fit_or_not_fit_for_straight_throu_payout() {
-		return r9_acct_status_fit_or_not_fit_for_straight_throu_payout;
-	}
-
-
-
-
-
-	public void setR9_acct_status_fit_or_not_fit_for_straight_throu_payout(
-			String r9_acct_status_fit_or_not_fit_for_straight_throu_payout) {
-		this.r9_acct_status_fit_or_not_fit_for_straight_throu_payout = r9_acct_status_fit_or_not_fit_for_straight_throu_payout;
-	}
-
-
-
-
-
-	public String getR9_acct_branch() {
-		return r9_acct_branch;
-	}
-
-
-
-
-
-	public void setR9_acct_branch(String r9_acct_branch) {
-		this.r9_acct_branch = r9_acct_branch;
-	}
-
-
-
-
-
-	public BigDecimal getR9_acct_balance_pula() {
-		return r9_acct_balance_pula;
-	}
-
-
-
-
-
-	public void setR9_acct_balance_pula(BigDecimal r9_acct_balance_pula) {
-		this.r9_acct_balance_pula = r9_acct_balance_pula;
-	}
-
-
-
-
-
-	public String getR9_currency_of_acct() {
-		return r9_currency_of_acct;
-	}
-
-
-
-
-
-	public void setR9_currency_of_acct(String r9_currency_of_acct) {
-		this.r9_currency_of_acct = r9_currency_of_acct;
-	}
-
-
-
-
-
-	public BigDecimal getR9_exchange_rate() {
-		return r9_exchange_rate;
-	}
-
-
-
-
-
-	public void setR9_exchange_rate(BigDecimal r9_exchange_rate) {
-		this.r9_exchange_rate = r9_exchange_rate;
-	}
-
-
-
-
-
-	public BigDecimal getR10_bank_spec_single_cust_rec_num() {
-		return r10_bank_spec_single_cust_rec_num;
-	}
-
-
-
-
-
-	public void setR10_bank_spec_single_cust_rec_num(BigDecimal r10_bank_spec_single_cust_rec_num) {
-		this.r10_bank_spec_single_cust_rec_num = r10_bank_spec_single_cust_rec_num;
-	}
-
-
-
-
-
-	public String getR10_company_name() {
-		return r10_company_name;
-	}
-
-
-
-
-
-	public void setR10_company_name(String r10_company_name) {
-		this.r10_company_name = r10_company_name;
-	}
-
-
-
-
-
-	public BigDecimal getR10_company_reg_num() {
-		return r10_company_reg_num;
-	}
-
-
-
-
-
-	public void setR10_company_reg_num(BigDecimal r10_company_reg_num) {
-		this.r10_company_reg_num = r10_company_reg_num;
-	}
-
-
-
-
-
-	public String getR10_businees_phy_address() {
-		return r10_businees_phy_address;
-	}
-
-
-
-
-
-	public void setR10_businees_phy_address(String r10_businees_phy_address) {
-		this.r10_businees_phy_address = r10_businees_phy_address;
-	}
-
-
-
-
-
-	public String getR10_postal_address() {
-		return r10_postal_address;
-	}
-
-
-
-
-
-	public void setR10_postal_address(String r10_postal_address) {
-		this.r10_postal_address = r10_postal_address;
-	}
-
-
-
-
-
-	public String getR10_country_of_reg() {
-		return r10_country_of_reg;
-	}
-
-
-
-
-
-	public void setR10_country_of_reg(String r10_country_of_reg) {
-		this.r10_country_of_reg = r10_country_of_reg;
-	}
-
-
-
-
-
-	public String getR10_company_email() {
-		return r10_company_email;
-	}
-
-
-
-
-
-	public void setR10_company_email(String r10_company_email) {
-		this.r10_company_email = r10_company_email;
-	}
-
-
-
-
-
-	public String getR10_company_landline() {
-		return r10_company_landline;
-	}
-
-
-
-
-
-	public void setR10_company_landline(String r10_company_landline) {
-		this.r10_company_landline = r10_company_landline;
-	}
-
-
-
-
-
-	public String getR10_company_mob_phone_num() {
-		return r10_company_mob_phone_num;
-	}
-
-
-
-
-
-	public void setR10_company_mob_phone_num(String r10_company_mob_phone_num) {
-		this.r10_company_mob_phone_num = r10_company_mob_phone_num;
-	}
-
-
-
-
-
-	public String getR10_product_type() {
-		return r10_product_type;
-	}
-
-
-
-
-
-	public void setR10_product_type(String r10_product_type) {
-		this.r10_product_type = r10_product_type;
-	}
-
-
-
-
-
-	public BigDecimal getR10_acct_num() {
-		return r10_acct_num;
-	}
-
-
-
-
-
-	public void setR10_acct_num(BigDecimal r10_acct_num) {
-		this.r10_acct_num = r10_acct_num;
-	}
-
-
-
-
-
-	public String getR10_status_of_acct() {
-		return r10_status_of_acct;
-	}
-
-
-
-
-
-	public void setR10_status_of_acct(String r10_status_of_acct) {
-		this.r10_status_of_acct = r10_status_of_acct;
-	}
-
-
-
-
-
-	public String getR10_acct_status_fit_or_not_fit_for_straight_throu_payout() {
-		return r10_acct_status_fit_or_not_fit_for_straight_throu_payout;
-	}
-
-
-
-
-
-	public void setR10_acct_status_fit_or_not_fit_for_straight_throu_payout(
-			String r10_acct_status_fit_or_not_fit_for_straight_throu_payout) {
-		this.r10_acct_status_fit_or_not_fit_for_straight_throu_payout = r10_acct_status_fit_or_not_fit_for_straight_throu_payout;
-	}
-
-
-
-
-
-	public String getR10_acct_branch() {
-		return r10_acct_branch;
-	}
-
-
-
-
-
-	public void setR10_acct_branch(String r10_acct_branch) {
-		this.r10_acct_branch = r10_acct_branch;
-	}
-
-
-
-
-
-	public BigDecimal getR10_acct_balance_pula() {
-		return r10_acct_balance_pula;
-	}
-
-
-
-
-
-	public void setR10_acct_balance_pula(BigDecimal r10_acct_balance_pula) {
-		this.r10_acct_balance_pula = r10_acct_balance_pula;
-	}
-
-
-
-
-
-	public String getR10_currency_of_acct() {
-		return r10_currency_of_acct;
-	}
-
-
-
-
-
-	public void setR10_currency_of_acct(String r10_currency_of_acct) {
-		this.r10_currency_of_acct = r10_currency_of_acct;
-	}
-
-
-
-
-
-	public BigDecimal getR10_exchange_rate() {
-		return r10_exchange_rate;
-	}
-
-
-
-
-
-	public void setR10_exchange_rate(BigDecimal r10_exchange_rate) {
-		this.r10_exchange_rate = r10_exchange_rate;
-	}
-
-
-
-
-
-	public BigDecimal getR11_bank_spec_single_cust_rec_num() {
-		return r11_bank_spec_single_cust_rec_num;
-	}
-
-
-
-
-
-	public void setR11_bank_spec_single_cust_rec_num(BigDecimal r11_bank_spec_single_cust_rec_num) {
-		this.r11_bank_spec_single_cust_rec_num = r11_bank_spec_single_cust_rec_num;
-	}
-
-
-
-
-
-	public String getR11_company_name() {
-		return r11_company_name;
-	}
-
-
-
-
-
-	public void setR11_company_name(String r11_company_name) {
-		this.r11_company_name = r11_company_name;
-	}
-
-
-
-
-
-	public BigDecimal getR11_company_reg_num() {
-		return r11_company_reg_num;
-	}
-
-
-
-
-
-	public void setR11_company_reg_num(BigDecimal r11_company_reg_num) {
-		this.r11_company_reg_num = r11_company_reg_num;
-	}
-
-
-
-
-
-	public String getR11_businees_phy_address() {
-		return r11_businees_phy_address;
-	}
-
-
-
-
-
-	public void setR11_businees_phy_address(String r11_businees_phy_address) {
-		this.r11_businees_phy_address = r11_businees_phy_address;
-	}
-
-
-
-
-
-	public String getR11_postal_address() {
-		return r11_postal_address;
-	}
-
-
-
-
-
-	public void setR11_postal_address(String r11_postal_address) {
-		this.r11_postal_address = r11_postal_address;
-	}
-
-
-
-
-
-	public String getR11_country_of_reg() {
-		return r11_country_of_reg;
-	}
-
-
-
-
-
-	public void setR11_country_of_reg(String r11_country_of_reg) {
-		this.r11_country_of_reg = r11_country_of_reg;
-	}
-
-
-
-
-
-	public String getR11_company_email() {
-		return r11_company_email;
-	}
-
-
-
-
-
-	public void setR11_company_email(String r11_company_email) {
-		this.r11_company_email = r11_company_email;
-	}
-
-
-
-
-
-	public String getR11_company_landline() {
-		return r11_company_landline;
-	}
-
-
-
-
-
-	public void setR11_company_landline(String r11_company_landline) {
-		this.r11_company_landline = r11_company_landline;
-	}
-
-
-
-
-
-	public String getR11_company_mob_phone_num() {
-		return r11_company_mob_phone_num;
-	}
-
-
-
-
-
-	public void setR11_company_mob_phone_num(String r11_company_mob_phone_num) {
-		this.r11_company_mob_phone_num = r11_company_mob_phone_num;
-	}
-
-
-
-
-
-	public String getR11_product_type() {
-		return r11_product_type;
-	}
-
-
-
-
-
-	public void setR11_product_type(String r11_product_type) {
-		this.r11_product_type = r11_product_type;
-	}
-
-
-
-
-
-	public BigDecimal getR11_acct_num() {
-		return r11_acct_num;
-	}
-
-
-
-
-
-	public void setR11_acct_num(BigDecimal r11_acct_num) {
-		this.r11_acct_num = r11_acct_num;
-	}
-
-
-
-
-
-	public String getR11_status_of_acct() {
-		return r11_status_of_acct;
-	}
-
-
-
-
-
-	public void setR11_status_of_acct(String r11_status_of_acct) {
-		this.r11_status_of_acct = r11_status_of_acct;
-	}
-
-
-
-
-
-	public String getR11_acct_status_fit_or_not_fit_for_straight_throu_payout() {
-		return r11_acct_status_fit_or_not_fit_for_straight_throu_payout;
-	}
-
-
-
-
-
-	public void setR11_acct_status_fit_or_not_fit_for_straight_throu_payout(
-			String r11_acct_status_fit_or_not_fit_for_straight_throu_payout) {
-		this.r11_acct_status_fit_or_not_fit_for_straight_throu_payout = r11_acct_status_fit_or_not_fit_for_straight_throu_payout;
-	}
-
-
-
-
-
-	public String getR11_acct_branch() {
-		return r11_acct_branch;
-	}
-
-
-
-
-
-	public void setR11_acct_branch(String r11_acct_branch) {
-		this.r11_acct_branch = r11_acct_branch;
-	}
-
-
-
-
-
-	public BigDecimal getR11_acct_balance_pula() {
-		return r11_acct_balance_pula;
-	}
-
-
-
-
-
-	public void setR11_acct_balance_pula(BigDecimal r11_acct_balance_pula) {
-		this.r11_acct_balance_pula = r11_acct_balance_pula;
-	}
-
-
-
-
-
-	public String getR11_currency_of_acct() {
-		return r11_currency_of_acct;
-	}
-
-
-
-
-
-	public void setR11_currency_of_acct(String r11_currency_of_acct) {
-		this.r11_currency_of_acct = r11_currency_of_acct;
-	}
-
-
-
-
-
-	public BigDecimal getR11_exchange_rate() {
-		return r11_exchange_rate;
-	}
-
-
-
-
-
-	public void setR11_exchange_rate(BigDecimal r11_exchange_rate) {
-		this.r11_exchange_rate = r11_exchange_rate;
-	}
-
-
-
-
-
-	public BigDecimal getR12_bank_spec_single_cust_rec_num() {
-		return r12_bank_spec_single_cust_rec_num;
-	}
-
-
-
-
-
-	public void setR12_bank_spec_single_cust_rec_num(BigDecimal r12_bank_spec_single_cust_rec_num) {
-		this.r12_bank_spec_single_cust_rec_num = r12_bank_spec_single_cust_rec_num;
-	}
-
-
-
-
-
-	public String getR12_company_name() {
-		return r12_company_name;
-	}
-
-
-
-
-
-	public void setR12_company_name(String r12_company_name) {
-		this.r12_company_name = r12_company_name;
-	}
-
-
-
-
-
-	public BigDecimal getR12_company_reg_num() {
-		return r12_company_reg_num;
-	}
-
-
-
-
-
-	public void setR12_company_reg_num(BigDecimal r12_company_reg_num) {
-		this.r12_company_reg_num = r12_company_reg_num;
-	}
-
-
-
-
-
-	public String getR12_businees_phy_address() {
-		return r12_businees_phy_address;
-	}
-
-
-
-
-
-	public void setR12_businees_phy_address(String r12_businees_phy_address) {
-		this.r12_businees_phy_address = r12_businees_phy_address;
-	}
-
-
-
-
-
-	public String getR12_postal_address() {
-		return r12_postal_address;
-	}
-
-
-
-
-
-	public void setR12_postal_address(String r12_postal_address) {
-		this.r12_postal_address = r12_postal_address;
-	}
-
-
-
-
-
-	public String getR12_country_of_reg() {
-		return r12_country_of_reg;
-	}
-
-
-
-
-
-	public void setR12_country_of_reg(String r12_country_of_reg) {
-		this.r12_country_of_reg = r12_country_of_reg;
-	}
-
-
-
-
-
-	public String getR12_company_email() {
-		return r12_company_email;
-	}
-
-
-
-
-
-	public void setR12_company_email(String r12_company_email) {
-		this.r12_company_email = r12_company_email;
-	}
-
-
-
-
-
-	public String getR12_company_landline() {
-		return r12_company_landline;
-	}
-
-
-
-
-
-	public void setR12_company_landline(String r12_company_landline) {
-		this.r12_company_landline = r12_company_landline;
-	}
-
-
-
-
-
-	public String getR12_company_mob_phone_num() {
-		return r12_company_mob_phone_num;
-	}
-
-
-
-
-
-	public void setR12_company_mob_phone_num(String r12_company_mob_phone_num) {
-		this.r12_company_mob_phone_num = r12_company_mob_phone_num;
-	}
-
-
-
-
-
-	public String getR12_product_type() {
-		return r12_product_type;
-	}
-
-
-
-
-
-	public void setR12_product_type(String r12_product_type) {
-		this.r12_product_type = r12_product_type;
-	}
-
-
-
-
-
-	public BigDecimal getR12_acct_num() {
-		return r12_acct_num;
-	}
-
-
-
-
-
-	public void setR12_acct_num(BigDecimal r12_acct_num) {
-		this.r12_acct_num = r12_acct_num;
-	}
-
-
-
-
-
-	public String getR12_status_of_acct() {
-		return r12_status_of_acct;
-	}
-
-
-
-
-
-	public void setR12_status_of_acct(String r12_status_of_acct) {
-		this.r12_status_of_acct = r12_status_of_acct;
-	}
-
-
-
-
-
-	public String getR12_acct_status_fit_or_not_fit_for_straight_throu_payout() {
-		return r12_acct_status_fit_or_not_fit_for_straight_throu_payout;
-	}
-
-
-
-
-
-	public void setR12_acct_status_fit_or_not_fit_for_straight_throu_payout(
-			String r12_acct_status_fit_or_not_fit_for_straight_throu_payout) {
-		this.r12_acct_status_fit_or_not_fit_for_straight_throu_payout = r12_acct_status_fit_or_not_fit_for_straight_throu_payout;
-	}
-
-
-
-
-
-	public String getR12_acct_branch() {
-		return r12_acct_branch;
-	}
-
-
-
-
-
-	public void setR12_acct_branch(String r12_acct_branch) {
-		this.r12_acct_branch = r12_acct_branch;
-	}
-
-
-
-
-
-	public BigDecimal getR12_acct_balance_pula() {
-		return r12_acct_balance_pula;
-	}
-
-
-
-
-
-	public void setR12_acct_balance_pula(BigDecimal r12_acct_balance_pula) {
-		this.r12_acct_balance_pula = r12_acct_balance_pula;
-	}
-
-
-
-
-
-	public String getR12_currency_of_acct() {
-		return r12_currency_of_acct;
-	}
-
-
-
-
-
-	public void setR12_currency_of_acct(String r12_currency_of_acct) {
-		this.r12_currency_of_acct = r12_currency_of_acct;
-	}
-
-
-
-
-
-	public BigDecimal getR12_exchange_rate() {
-		return r12_exchange_rate;
-	}
-
-
-
-
-
-	public void setR12_exchange_rate(BigDecimal r12_exchange_rate) {
-		this.r12_exchange_rate = r12_exchange_rate;
-	}
-
 
 
 
