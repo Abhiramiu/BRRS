@@ -4002,6 +4002,8 @@ public class BRRS_MDISB1_ReportService {
 
 	public ModelAndView getViewOrEditPage(String acctNo, String formMode) {
 		ModelAndView mv = new ModelAndView("BRRS/MDISB1");
+		
+		System.out.println("Came to view method");
 
 		if (acctNo != null) {
 			MDISB1_Detail_Entity Entity = MDISB1_Detail_Repo.findByAcctnumber(acctNo);
@@ -4011,19 +4013,26 @@ public class BRRS_MDISB1_ReportService {
 			}
 			mv.addObject("Data", Entity);
 		}
+		
+		else {
+			System.out.println(acctNo);
+		}
+
 
 		mv.addObject("displaymode", "edit");
 		mv.addObject("formmode", formMode != null ? formMode : "edit");
 		return mv;
 	}
-
+	
 	@Transactional
 	public ResponseEntity<?> updateDetailEdit(HttpServletRequest request) {
 		try {
-			String acctNo = request.getParameter("acctNumber");
-			String provisionStr = request.getParameter("provision");
-			String acctName = request.getParameter("acctName");
-			String reportDateStr = request.getParameter("reportDate");
+			String acctNo = request.getParameter("acct_number");
+			String provisionStr = request.getParameter("acct_balance_in_pula");
+			String acctName = request.getParameter("acct_name");
+			String reportDateStr = request.getParameter("report_date");
+			
+			System.out.println(reportDateStr);
 
 			logger.info("Received update for ACCT_NO: {}", acctNo);
 

@@ -4365,118 +4365,87 @@ PURPOSE		: BRRSREPORT
 
 				<!-- MDISB1 Detail Form Screen -->
 				<div th:if="${formmode == 'edit'}" class="card">
-					<div class="card-body">
-						<form th:object="${Data}" method="post" id="DetailForm">
+				    <div class="card-body">
+				        <form th:object="${Data}" method="post" id="DetailForm">
 
-							<!-- Row 1 -->
-							<div class="row formline" style="margin-top:10px;">
-								<label class="col-sm-2">Customer ID</label>
-								<div class="col-sm-3">
-									<input type="text" th:field="*{cust_id}" class="form-control form-control-sm"
-										readonly />
-								</div>
+				            <!-- Row 1 -->
+				            <div class="row formline mt-2">
+				                <label class="col-sm-2 col-form-label">Customer ID</label>
+				                <div class="col-sm-3">
+				                    <input type="text"
+				                           th:field="*{cust_id}"
+				                           class="form-control form-control-sm"
+				                           readonly />
+				                </div>
 
+				                <div class="col-sm-1"></div>
 
-								<div class="col-sm-1"></div>
+				                <label class="col-sm-2 col-form-label">Account Number</label>
+				                <div class="col-sm-3">
+				                    <input type="text"
+				                           th:field="*{acct_number}"
+				                           class="form-control form-control-sm"
+				                           readonly />
+				                </div>
+				            </div>
 
-								<label class="col-sm-2">Account Number</label>
-								<div class="col-sm-3">
-									<input type="text" th:field="*{acct_number}" class="form-control form-control-sm"
-										readonly />
-								</div>
-							</div>
+				            <!-- Row 2 -->
+				            <div class="row formline mt-2">
+				                <label class="col-sm-2 col-form-label">Acct Balance</label>
+				                <div class="col-sm-3">
+				                    <input type="number"
+				                           step="0.01"
+				                           th:field="*{acct_balance_in_pula}"
+				                           class="form-control form-control-sm"
+				                           style="text-align:right;" />
+				                </div>
 
-							<!-- Row 2 -->
-							<div class="row formline" style="margin-top:10px;">
-								<label class="col-sm-2">Schm Desc</label>
-								<div class="col-sm-3">
-									<input type="text" th:field="*{schm_desc}" class="form-control form-control-sm"
-										readonly />
-								</div>
-								<!--<label class="col-sm-2">Account Name</label>
-				        <div class="col-sm-3">
-				          <input type="text" th:field="*{acct_name}" class="form-control form-control-sm" readonly />
-				        </div>-->
+				                <div class="col-sm-1"></div>
 
+				                <label class="col-sm-2 col-form-label">Report Label</label>
+				                <div class="col-sm-3">
+				                    <input type="text"
+				                           th:field="*{report_label}"
+				                           class="form-control form-control-sm"
+				                           readonly />
+				                </div>
+				            </div>
 
-								<div class="col-sm-1"></div>
+				            <!-- Row 3 -->
+				            <div class="row formline mt-2">
+				                <label class="col-sm-2 col-form-label">Report Addl Criteria 1</label>
+				                <div class="col-sm-3">
+				                    <input type="text"
+				                           th:field="*{report_addl_criteria_1}"
+				                           class="form-control form-control-sm"
+				                           readonly />
+				                </div>
 
-								<label class="col-sm-2">Acct Balance</label>
-								<div class="col-sm-3">
-									<input type="number" step="0.01" th:field="*{acct_balance_in_pula}"
-										class="form-control form-control-sm" style="text-align:right;" />
-								</div>
-							</div>
+				                <div class="col-sm-1"></div>
 
-							<!-- Row 3 -->
-							<div class="row formline" style="margin-top:10px;">
-								<label class="col-sm-2">Sanction Limit</label>
-								<div class="col-sm-3">
-									<input type="number" step="0.01" th:field="*{sanction_limit}"
-										class="form-control form-control-sm" style="text-align:right;" />
-								</div>
+				                <label class="col-sm-2 col-form-label">Report Date</label>
+				                <div class="col-sm-3">
+				                    <input type="date"
+				                           name="report_date"
+				                           class="form-control form-control-sm"
+				                           th:value="${#dates.format(Data.report_date, 'yyyy-MM-dd')}"
+				                           readonly />
+				                </div>
+				            </div>
 
-								<div class="col-sm-1"></div>
+				            <!-- Update Button -->
+				            <div class="text-center mt-4">
+				                <button type="button"
+				                        class="custom-tab-btn"
+				                        th:if="${formmode == 'edit'}"
+				                        onclick="submitUpdate()">
+				                    Update
+				                </button>
+				            </div>
 
-								<label class="col-sm-2">Report Label</label>
-								<div class="col-sm-3">
-									<input type="text" th:field="*{report_label}" class="form-control form-control-sm"
-										readonly />
-								</div>
-							</div>
-
-							<!-- Row 4 -->
-							<div class="row formline" style="margin-top:10px;">
-								<label class="col-sm-2">Report Addl Criteria 1</label>
-								<div class="col-sm-3">
-									<input type="text" th:field="*{report_addl_criteria_1}"
-										class="form-control form-control-sm" readonly />
-								</div>
-
-								<div class="col-sm-1"></div>
-
-								<label class="col-sm-2">Report Addl Criteria 2</label>
-								<div class="col-sm-3">
-									<input type="text" th:field="*{report_addl_criteria_2}"
-										class="form-control form-control-sm" readonly />
-								</div>
-							</div>
-
-							<!-- Row 5 -->
-							<div class="row formline" style="margin-top:10px;">
-								<label class="col-sm-2">Report Addl Criteria 3</label>
-								<div class="col-sm-3">
-									<input type="text" th:field="*{report_addl_criteria_3}"
-										class="form-control form-control-sm" readonly />
-								</div>
-
-								<div class="col-sm-1"></div>
-
-								<label class="col-sm-2">Report Date</label>
-								<div class="col-sm-3">
-									<input type="date" name="report_Date" class="form-control form-control-sm"
-										th:value="${#dates.format(Data.report_date, 'yyyy-MM-dd')}" readonly />
-								</div>
-							</div>
-
-
-							<!-- Update Button -->
-							<div style="text-align:center; margin-top:20px;">
-								<button type="button" class="custom-tab-btn" th:if="${formmode == 'edit'}"
-									onclick="submitUpdate()">Update</button>
-							</div>
-						</form>
-					</div>
+				        </form>
+				    </div>
 				</div>
-
-
-
-			</div>
-
-
-
-		</div>
-
 
 
 
