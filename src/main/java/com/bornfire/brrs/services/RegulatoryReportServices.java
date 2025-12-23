@@ -353,7 +353,8 @@ public class RegulatoryReportServices {
 	BRRS_TIER_1_2_CFS_ReportService BRRS_TIER_1_2_CFS_ReportService;
 	
 	
-	
+	@Autowired
+	BRRS_SCOPE_OF_APP_ReportService brrs_SCOPE_OF_APP_reportservice;
 	
 	
 
@@ -985,6 +986,16 @@ public class RegulatoryReportServices {
 
 				break;
 				
+				
+			case "SCOPE_OF_APP":
+
+				repsummary = brrs_SCOPE_OF_APP_reportservice.getSCOPE_OF_APPView(reportId, fromdate, todate, currency, dtltype,
+						pageable, type, version);
+
+				break;
+				
+				
+				
 			case "TIER_1_2_CFS":
 				repsummary = BRRS_TIER_1_2_CFS_ReportService.getTIER_1_2_CFSView(reportId, fromdate, todate, currency,
 						dtltype,
@@ -1367,6 +1378,14 @@ public class RegulatoryReportServices {
 			case "TIER_1_2_CFS":
 
 				repdetail = BRRS_TIER_1_2_CFS_ReportService.getTIER_1_2_CFScurrentDtl(reportId, fromdate, todate, currency,
+						dtltype,
+						pageable, Filter, type, version);
+				break;
+				
+				
+			case "SCOPE_OF_APP":
+
+				repdetail = brrs_SCOPE_OF_APP_reportservice.getSCOPE_OF_APPcurrentDtl(reportId, fromdate, todate, currency,
 						dtltype,
 						pageable, Filter, type, version);
 				break;
@@ -2445,6 +2464,21 @@ public class RegulatoryReportServices {
 				}
 				break;
 				
+				
+			case "SCOPE_OF_APP":
+				try {
+
+					repfile = brrs_SCOPE_OF_APP_reportservice.getSCOPE_OF_APPExcel(filename, reportId, fromdate,
+							todate, currency,
+							dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+
+				
+				
 			case "TIER_1_2_CFS":
 				try {
 					repfile = BRRS_TIER_1_2_CFS_ReportService.getTIER_1_2_CFSExcel(filename, reportId,
@@ -3077,6 +3111,20 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
+				
+				
+				
+				
+			case "SCOPE_OF_APP":
+				try {
+					archivalData = brrs_SCOPE_OF_APP_reportservice.getSCOPE_OF_APPArchival();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+				
+				
 
 			case "Recon_Of_FS":
 				try {
@@ -3764,7 +3812,20 @@ public class RegulatoryReportServices {
 
 			fileData = BRRS_NSFR_ReportService.getNSFRDetailExcel(filename, fromdate, todate, currency,
 					dtltype, type, version);
-		}		
+		}	
+		
+		
+		
+		else if ("SCOPE_OF_APP".equals(filename)) {
+
+			fileData = brrs_SCOPE_OF_APP_reportservice.getSCOPE_OF_APPDetailExcel(filename, fromdate, todate,
+					currency,
+					dtltype, type, version);
+		}
+		
+		
+		
+		
 
 		else if ("TIER_1_2_CFSDetail".equals(filename)) {
 
@@ -4092,6 +4153,12 @@ public class RegulatoryReportServices {
 							request.getParameter("formmode"));
 					break;
 					
+				case "SCOPE_OF_APP":
+					modelAndView = brrs_SCOPE_OF_APP_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
+							request.getParameter("formmode"));
+					break;
+					
+					
 				case "TIER_1_2_CFS":
 					modelAndView = BRRS_TIER_1_2_CFS_ReportService.getViewOrEditPage(request.getParameter("acctNo"),
 							request.getParameter("formmode"));
@@ -4317,6 +4384,11 @@ public class RegulatoryReportServices {
 					
 				case "TIER_1_2_CFS":
 					response = BRRS_TIER_1_2_CFS_ReportService.updateDetailEdit(request);
+					break;
+					
+					
+				case "SCOPE_OF_APP":
+					response = brrs_SCOPE_OF_APP_reportservice.updateDetailEdit(request);
 					break;
 					
 				default:

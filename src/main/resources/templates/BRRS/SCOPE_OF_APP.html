@@ -2,8 +2,8 @@
 
 <!-- 
 CREATED BY	: ISHWARYA 
-CREATED ON	: 16.12.2025
-PURPOSE		: BRRS FORMAT_II  REPORT
+CREATED ON	: 23.12.2025
+PURPOSE		: BRRS scope_of_app  REPORT
 -->
 
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml"
@@ -345,8 +345,6 @@ td {
 .table-bordered td, .table-bordered th {
 	border: 1px solid #000 !important;
 }
-
-
 </style>
 
 <style>
@@ -541,7 +539,7 @@ $(window).on('beforeunload', function() {
 	</script>
 
 	<script>
-	    function openformat_IIDetail(elem, mode) { 
+	    function openSCOPE_OF_APPDetail(elem, mode) { 
 			
 			var type = elem.getAttribute('data-type');   
 
@@ -563,8 +561,8 @@ $(window).on('beforeunload', function() {
 
 
 	<script>
-		function submitFROMAT_IIUpdate() {
-			const formData = $('#format_IIDetailForm').serialize(); // Ensure correct form ID
+		function submitSCOPE_OF_APPUpdate() {
+			const formData = $('#scope_of_appDetailForm').serialize(); // Ensure correct form ID
 
 			// ✅ Store the previous page URL
 			const previousUrl = document.referrer; // same as going back once in history
@@ -898,14 +896,7 @@ function showmodify(btn) {
     
     
     
-//Apply gray background 
-  [
-      "#r21_amt", "#r25_amt_sub_del"
-  ].forEach(selector => {
-      if ($(selector).length) {
-          $(selector).css("background-color", "#d3d3d3");
-      }
-  });
+
 
 
 
@@ -953,184 +944,6 @@ function cancelModify() {
 	</script>
 
 
-<script>
-    //--------------------------------------
-    // COMMON VALUE GETTER
-    //--------------------------------------
-    function getCellValue(selector) {
-        let el = $(selector);
-        if (!el.length) return 0;
-
-        let val = el.is("input") ? el.val() : el.text();
-        return parseFloat((val || "0").replace(/,/g, "")) || 0;
-    }
-
-    //--------------------------------------
-    // COMMON VALUE SETTER (US FORMAT)
-    //--------------------------------------
-    function setCellValue(selector, value) {
-        let el = $(selector);
-        if (!el.length) return;
-
-        const formatted = Number(value).toLocaleString("en-US", {
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0
-        });
-
-        if (el.is("input")) {
-            el.val(formatted);
-        } else {
-            el.text(formatted);
-        }
-    }
-
-    //--------------------------------------
-    // TOTAL CALCULATION FUNCTION
-    //--------------------------------------
-    function calculateTotals() {
-
-        /* ================= G COLUMN ================= */
-
-        // G23 = G25
-        let g23 = getCellValue("#r25_amt_sub_del");
-        setCellValue("#r23_amt_sub_del", g23);
-
-        // G28 = G24 + G25 + G26 - G27
-        let g28 =
-            getCellValue("#r24_amt_sub_del") +
-            getCellValue("#r25_amt_sub_del") +
-            getCellValue("#r26_amt_sub_del") -
-            getCellValue("#r27_amt_sub_del");
-
-        setCellValue("#r28_amt_sub_del", g28);
-
-        /* ================= H COLUMN ================= */
-
-        // H25 = E25 + F25 - G25
-        let h25 =
-            getCellValue("#r25_amt") +
-            getCellValue("#r25_amt_sub_add") -
-            getCellValue("#r25_amt_sub_del");
-
-        setCellValue("#r25_amt_total", h25);
-    }
-
-    //--------------------------------------
-    // EVENT LISTENERS
-    //--------------------------------------
-    $(document).ready(function () {
-
-        calculateTotals(); // initial load
-
-        $(
-            // Row 25 drivers
-            "#r25_amt, " +
-            "#r25_amt_sub_add, " +
-            "#r25_amt_sub_del, " +
-            // G-column dependencies
-            "#r24_amt_sub_del, #r26_amt_sub_del, #r27_amt_sub_del"
-        ).on("input change keyup", calculateTotals);
-
-    });
-</script>
-
-
-
-
-
-
-
-
-<script>
-	
-
-	// This function is for closing the modal after an action is complete.
-	// It hides the result and loader modals and reloads the page.
-	function closemodel() {
-	    $("#resultModal").modal("hide");
-	    $('#loader').modal('hide');
-
-	    // Reload the page after a short delay to ensure the modal animation completes smoothly.
-	    setTimeout(function () {
-	        location.reload();
-	    }, 300);
-	}
-
-	function fileuploads(btn) {
-	    const asondate = btn.getAttribute("data-todate");
-	    const type = btn.getAttribute("data-type");
-
-	    // Show loader
-	    $('#loader').modal('show');
-
-	    try {
-	        // ✅ Step 1: Calculate totals
-	       /*  calculateR14Totals(); */
-	        calculateTotals();
-	    
-	        // ✅ Step 2: Remove commas from all text inputs
-	        $("#fileupload input[type='text']").each(function () {
-	            $(this).val($(this).val().replace(/,/g, ''));
-	        });
-
-	        // ✅ Step 3: Validate form
-	        if (!$("#fileupload").valid()) {
-	            $('#loader').modal('hide');
-	            return;
-	        }
-
-	        // ✅ Step 4: Build FormData
-	        const formData = new FormData();
-	        formData.append("asondate", asondate);
-	        formData.append("type", type);
-
-	        $('#fileupload').find(':input').each(function () {
-	            const name = $(this).attr('name');
-	            if (name) {
-	                formData.append(name, $(this).val());
-	            }
-	        });
-
-	        // ✅ Step 5: AJAX submission
-	        $.ajax({
-	            url: './FORMAT_IIupdateAll',
-	            type: 'POST',
-	            data: formData,
-	            processData: false,
-	            contentType: false,
-	            dataType: 'text',
-	            success: function () {
-	                $("#resultModalLabel").text("BRRS");
-	                $("#resultModalBody").text(" Updated Successfully.");
-	                $("#resultModal").modal("show");
-	            },
-	            error: function (jqXHR) {
-	                console.error("Error response:", jqXHR.responseText);
-	                $("#resultModalLabel").text("Error");
-	                $("#resultModalBody").text("Update failed. Check console for details.");
-	                $("#resultModal").modal("show");
-	            },
-	            complete: function () {
-	                $('#loader').modal('hide');
-	            }
-	        });
-
-	    } catch (error) {
-	        console.error("Error in fileuploads function:", error);
-	        $('#loader').modal('hide');
-	        $("#resultModalLabel").text("Error");
-	        $("#resultModalBody").text("Unexpected error occurred. Check console.");
-	        $("#resultModal").modal("show");
-	    }
-	}
-
-
-
-
-
-	</script>
-
-
 
 
 
@@ -1161,7 +974,7 @@ function cancelModify() {
 						<!-- Title -->
 						<h5
 							style="font-family: arial; font-size: 20px; font-weight: bold; color: white; margin: 0 10px; ">
-						 STATEMENT OF CAPITAL INVESTED BY BANK OF BARODA IN ITS SUBSIDIARIES</h5>
+							Scope of application </h5>
 							
 							
 							<!-- Moving bus-board text -->
@@ -1196,14 +1009,15 @@ function cancelModify() {
 							
 							
 								<!-- Modify button -->
-					<button type="button" class="custom-tab-btn"
+					<!-- 	<button type="button" class="custom-tab-btn"
 							onclick="showmodify(this);" title="Click to EDIT Records"
 							th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
-							th:if="${type != 'ARCHIVAL'}" id="addRecord">Modify</button> 
+							th:if="${type != 'ARCHIVAL'}" id="addRecord">Modify</button> -->
+
 						<!-- Cancel button (hidden initially) -->
-				<button type="button" class="custom-tab-btn"
+					<!-- 	<button type="button" class="custom-tab-btn"
 							title="Cancel editing" id="cancelRecord"
-							onclick="cancelModify();" style="display: none;">Cancel</button> 
+							onclick="cancelModify();" style="display: none;">Cancel</button> -->
 							
 							
 							
@@ -1217,7 +1031,7 @@ function cancelModify() {
                      				 data-todate=${todate}, 
                      				 data-currency=${currency},  
                      				 data-dtltype=${dtltype}, 
-                     				 data-filename='FORMAT_II.xlsx',
+                     				 data-filename='B_III_CETD.xlsx',
 					 				 data-type=${type},
 					    			 data-version=${version}"
 							onclick="downloadfile(this);">
@@ -1229,7 +1043,7 @@ function cancelModify() {
 							th:attr="
 						    data-fromdate=${fromdate},
 						    data-todate=${todate},
-						    data-filename='FORMAT_II',
+						    data-filename='B_III_CETD',
 						 data-type=${type},
 					data-version=${version}  ">
 							<i class="fa fa-download"></i>
@@ -1252,52 +1066,8 @@ function cancelModify() {
 								<table
 									class="sticky-header-table table table-bordered table-cell table-sm table-condensed"
 									id="reports">
-									<thead class="thead-light"   style="position: sticky; top: 0; z-index: 20;">
-										<tr style="background-color: #b3b6b9">
-											<th rowspan="3"
-												style="text-align: center; background-color: #D8D8D8;  padding: 10px; font-weight:bold;  color: #000000;">Particulars
-											</th>
-											
-											<th colspan="4"
-												style="text-align: center;  background-color: #D8D8D8;  padding: 10px; font-weight:bold;  color: #000000;"> Amount As On  				
-											</th>
-											
-											
-											
-												
-										</tr>
+									<thead class="thead-light">
 										
-										<tr style="background-color: #b3b6b9">
-											
-											<th rowspan="2"
-												style="text-align: center; background-color: #D8D8D8;  padding: 10px; font-weight:bold;  color: #000000;">01.04.2025
-											</th>
-											<th  colspan="2"
-												style="text-align: center;  background-color: #D8D8D8;  padding: 10px; font-weight:bold;  color: #000000;">Subsequent 				
-											</th>
-											
-											<th rowspan="2"
-												style="text-align: center; background-color: #D8D8D8;  padding: 10px; font-weight:bold;  color: #000000;">Total as at 30.06.2025
-											</th>
-											
-											
-												
-										</tr>
-										
-									
-										
-										<tr style="background-color: #b3b6b9">
-											
-											<th 
-												style="text-align: center; background-color: #D8D8D8;  padding: 10px; font-weight:bold;  color: #000000;">Addition As on  30.06.2025
-											</th>
-											<th  
-												style="text-align: center;  background-color: #D8D8D8;  padding: 10px; font-weight:bold;  color: #000000;">Deletion As on   30.06.2025				
-											</th>
-											
-											
-												
-										</tr>
 
 
 									</thead>
@@ -1308,463 +1078,87 @@ function cancelModify() {
 
 										
                                    
-                              	<tr >
+                                   	<tr >
 
 
-                                        
+                                           <td   rowspan="3"  style="text-align: center;   padding-top: 40px; font-weight:bold;  color: #000000;"
+												th:text="${report?.r6_qua_name?: ''}"
+												>1</td>
 
-											<td    style="text-align: left; font-weight:bold;   "
-												th:text="${report?.r13_product ?: ''}"
+											
+												<td    style="text-align: left; "
+												th:text="${report?.r6_product ?: ''}"
 												></td>
+
+										<td    style="text-align: left; "
+												th:text="${report?.r6_bank_name ?: ''}"
+												></td>
+
+										
 												
-													<td    style="text-align: right; "
-												th:text="${report?.r13_amt ?: ''}"
-												th:attr="RowId='R13', ColumnId='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-												
-												
-													<td style="text-align: right; padding-right:10px; "  
-												th:text="${report?.r13_amt_sub_add ?: ''}"
-												th:attr="RowId='R13', ColumnId='C3'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-												
-												
-												<td style="text-align: right; padding-right:10px; "  
-												th:text="${report?.r13_amt_sub_del ?: ''}"
-												th:attr="RowId='R13', ColumnId='C4'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-												
-												<td style="text-align: right; padding-right:10px; "  
-												th:text="${report?.r13_amt_total ?: ''}"
-												th:attr="RowId='R13', ColumnId='C5'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
 												
 
 
 										</tr>
-										
-										
-										<tr >
-
-
-                                        
-
-											<td    style="text-align: left;  padding-left:40px;  "
-												th:text="${report?.r14_product ?: ''}"
-												></td>
-												
-													<td    style="text-align: right; "
-												th:text="${report?.r14_amt ?: ''}"
-												th:attr="RowId='R14', ColumnId='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-												
-												
-													<td style="text-align: right; padding-right:10px; "  
-												th:text="${report?.r14_amt_sub_add ?: ''}"
-												th:attr="RowId='R14', ColumnId='C3'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-												
-												
-												<td style="text-align: right; padding-right:10px; "  
-												th:text="${report?.r14_amt_sub_del ?: ''}"
-												th:attr="RowId='R14', ColumnId='C4'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-												
-												<td  class="green-cell" style="text-align: right; padding-right:10px; "  
-												th:text="${report?.r14_amt_total ?: ''}"
-												></td>
-												
-
-
-										</tr>
-										
                                    
-  <tr>
-
-    <td style="text-align: left; padding-left:70px;"
-        th:text="${report?.r15_product ?: ''}">
-    </td>
-
-    <td style="text-align: right;"
-        th:text="${report?.r15_amt ?: ''}"
-        th:attr="RowId='R15', ColumnId='C2'"
-        onclick="showdetailsbyRowAndColumn(this)">
-    </td>
-
-    <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r15_amt_sub_add ?: ''}"
-        th:attr="RowId='R15', ColumnId='C3'"
-        onclick="showdetailsbyRowAndColumn(this)">
-    </td>
-
-    <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r15_amt_sub_del ?: ''}"
-        th:attr="RowId='R15', ColumnId='C4'"
-        onclick="showdetailsbyRowAndColumn(this)">
-    </td>
-
-    <td  class="green-cell" style="text-align: right; padding-right:10px;"
-        th:text="${report?.r15_amt_total ?: ''}"
-        >
-    </td>
-
-</tr>
-
-
+                                  
 <tr>
-
-    <td style="text-align: left; padding-left:40px;"
-        th:text="${report?.r16_product ?: ''}">
-    </td>
-
-    <td style="text-align: right;"
-        th:text="${report?.r16_amt ?: ''}"
-        th:attr="RowId='R16', ColumnId='C2'"
-        onclick="showdetailsbyRowAndColumn(this)">
-    </td>
-
-    <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r16_amt_sub_add ?: ''}"
-        th:attr="RowId='R16', ColumnId='C3'"
-        onclick="showdetailsbyRowAndColumn(this)">
-    </td>
-
-    <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r16_amt_sub_del ?: ''}"
-        th:attr="RowId='R16', ColumnId='C4'"
-        onclick="showdetailsbyRowAndColumn(this)">
-    </td>
-
-    <td class="green-cell" style="text-align: right; padding-right:10px;"
-        th:text="${report?.r16_amt_total ?: ''}"
-       >
-    </td>
-
-</tr>
-
-
-<!-- R17 -->
-<tr>
-    <td  style="text-align: left;  font-weight:bold;"
-        th:text="${report?.r17_product ?: ''}"></td>
-
-    <td style="text-align: right;"
-        th:text="${report?.r17_amt ?: ''}"
-        th:attr="RowId='R17', ColumnId='C2'"
-        onclick="showdetailsbyRowAndColumn(this)"></td>
-
-    <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r17_amt_sub_add ?: ''}"
-        th:attr="RowId='R17', ColumnId='C3'"
-        onclick="showdetailsbyRowAndColumn(this)"></td>
-
-    <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r17_amt_sub_del ?: ''}"
-        th:attr="RowId='R17', ColumnId='C4'"
-        onclick="showdetailsbyRowAndColumn(this)"></td>
-
-    <td class="green-cell"  style="text-align: right; padding-right:10px;"
-        th:text="${report?.r17_amt_total ?: ''}"
-        ></td>
-</tr>
-
-<!-- R18 -->
-<tr>
-    <td style="text-align: left; padding-left:40px;"
-        th:text="${report?.r18_product ?: ''}"></td>
-
-    <td style="text-align: right;"
-        th:text="${report?.r18_amt ?: ''}"
-        th:attr="RowId='R18', ColumnId='C2'"
-        onclick="showdetailsbyRowAndColumn(this)"></td>
-
-    <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r18_amt_sub_add ?: ''}"
-        th:attr="RowId='R18', ColumnId='C3'"
-        onclick="showdetailsbyRowAndColumn(this)"></td>
-
-    <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r18_amt_sub_del ?: ''}"
-        th:attr="RowId='R18', ColumnId='C4'"
-        onclick="showdetailsbyRowAndColumn(this)"></td>
-
-    <td class="green-cell" style="text-align: right; padding-right:10px;"
-        th:text="${report?.r18_amt_total ?: ''}"
-       ></td>
-</tr>
-
-<!-- R19 -->
-<tr>
-    <td style="text-align: left; padding-left:40px;"
-        th:text="${report?.r19_product ?: ''}"></td>
-
-    <td style="text-align: right;"
-        th:text="${report?.r19_amt ?: ''}"
-        th:attr="RowId='R19', ColumnId='C2'"
-        onclick="showdetailsbyRowAndColumn(this)"></td>
-
-    <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r19_amt_sub_add ?: ''}"
-        th:attr="RowId='R19', ColumnId='C3'"
-        onclick="showdetailsbyRowAndColumn(this)"></td>
-
-    <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r19_amt_sub_del ?: ''}"
-        th:attr="RowId='R19', ColumnId='C4'"
-        onclick="showdetailsbyRowAndColumn(this)"></td>
-
-    <td  class="green-cell" style="text-align: right; padding-right:10px;"
-        th:text="${report?.r19_amt_total ?: ''}"
-        ></td>
-</tr>
-
-<!-- R20 -->
-<tr>
-    <td style="text-align: left; padding-left:40px;"
-        th:text="${report?.r20_product ?: ''}"></td>
-
-    <td style="text-align: right;"
-        th:text="${report?.r20_amt ?: ''}"
-        th:attr="RowId='R20', ColumnId='C2'"
-        onclick="showdetailsbyRowAndColumn(this)"></td>
-
-    <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r20_amt_sub_add ?: ''}"
-        th:attr="RowId='R20', ColumnId='C3'"
-        onclick="showdetailsbyRowAndColumn(this)"></td>
-
-    <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r20_amt_sub_del ?: ''}"
-        th:attr="RowId='R20', ColumnId='C4'"
-        onclick="showdetailsbyRowAndColumn(this)"></td>
-
-    <td class="green-cell" style="text-align: right; padding-right:10px;"
-        th:text="${report?.r20_amt_total ?: ''}"
-       ></td>
-</tr>
-
-<!-- R21 -->
-<tr  th:each="report1 : ${reportsummary1}">
-    <td style="text-align: left; padding-left:40px;"
-        th:text="${report?.r21_product ?: ''}"></td>
-
-    <!-- <td style="text-align: right;"
-        th:text="${report?.r21_amt ?: ''}"
-        th:attr="RowId='R21', ColumnId='C2'"
-        onclick="showdetailsbyRowAndColumn(this)"></td> -->
-        
-        
-												<td id="ROW21"
-													style=" font-weight: bold; text-align: right;   width: 200px;"><input
-													class="display-input Show_input" type="text"
-													th:value="${report1.r21_amt != null ? #numbers.formatDecimal(report1.r21_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
-													id="r21_amt" name="r21_amt"
-													style="background-color: #FFFFFF; width:180px; height: 28px; border-color: transparent; text-align: right;"
-													readonly /></td>
+                                               <td    style="text-align: left; "
+												th:text="${report?.r7_product ?: ''}"
+												></td>
 												
-        
-        
-
-    <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r21_amt_sub_add ?: ''}"
-        th:attr="RowId='R21', ColumnId='C3'"
-        onclick="showdetailsbyRowAndColumn(this)"></td>
-
-    <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r21_amt_sub_del ?: ''}"
-        th:attr="RowId='R21', ColumnId='C4'"
-        onclick="showdetailsbyRowAndColumn(this)"></td>
-
-    <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r21_amt_total ?: ''}"
-        th:attr="RowId='R21', ColumnId='C5'"
-        onclick="showdetailsbyRowAndColumn(this)"></td>
-</tr>
-
-<!-- R22 -->
-<tr>
-    <td style="text-align: left; padding-left:70px;"
-        th:text="${report?.r22_product ?: ''}"></td>
-
-    <td style="text-align: right;"
-        th:text="${report?.r22_amt ?: ''}"
-        th:attr="RowId='R22', ColumnId='C2'"
-        onclick="showdetailsbyRowAndColumn(this)"></td>
-
-    <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r22_amt_sub_add ?: ''}"
-        th:attr="RowId='R22', ColumnId='C3'"
-        onclick="showdetailsbyRowAndColumn(this)"></td>
-
-    <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r22_amt_sub_del ?: ''}"
-        th:attr="RowId='R22', ColumnId='C4'"
-        onclick="showdetailsbyRowAndColumn(this)"></td>
-
-    <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r22_amt_total ?: ''}"
-        th:attr="RowId='R22', ColumnId='C5'"
-        onclick="showdetailsbyRowAndColumn(this)"></td>
-</tr>
-
-<!-- R23 -->
-<tr>
-    <td style="text-align: left; font-weight:bold;"
-        th:text="${report?.r23_product ?: ''}"></td>
-
-    <td class="green-cell" style="text-align: right;"
-        th:text="${report?.r23_amt ?: ''}"
-       ></td>
-
-    <td  class="green-cell" style="text-align: right; padding-right:10px;"
-        th:text="${report?.r23_amt_sub_add ?: ''}"
-        ></td>
-
-    <td id="r23_amt_sub_del"  class="green-cell"  style="text-align: right; padding-right:10px;"
-        th:text="${report?.r23_amt_sub_del ?: ''}"
-        ></td>
-
-    <td  class="green-cell" style="text-align: right; padding-right:10px;"
-        th:text="${report?.r23_amt_total ?: ''}"
-       ></td>
-</tr>
-
-<!-- R24 -->
-<tr>
-    <td style="text-align: left; padding-left:40px;"
-        th:text="${report?.r24_product ?: ''}"></td>
-
-    <td style="text-align: right;"
-        th:text="${report?.r24_amt ?: ''}"
-        th:attr="RowId='R24', ColumnId='C2'"
-        onclick="showdetailsbyRowAndColumn(this)"></td>
-
-    <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r24_amt_sub_add ?: ''}"
-        th:attr="RowId='R24', ColumnId='C3'"
-        onclick="showdetailsbyRowAndColumn(this)"></td>
-
-    <td id="r24_amt_sub_del" style="text-align: right; padding-right:10px;"
-        th:text="${report?.r24_amt_sub_del ?: ''}"
-        th:attr="RowId='R24', ColumnId='C4'"
-        onclick="showdetailsbyRowAndColumn(this)"></td>
-
-    <td class="green-cell"  style="text-align: right; padding-right:10px;"
-        th:text="${report?.r24_amt_total ?: ''}"
-       ></td>
-</tr>
-
-<!-- R25 -->
-<tr th:each="report1 : ${reportsummary1}">
-    <td style="text-align: left; padding-left:40px;"
-        th:text="${report?.r25_product ?: ''}"></td>
-
-    <td  id="r25_amt" style="text-align: right;"
-        th:text="${report?.r25_amt ?: ''}"
-        th:attr="RowId='R25', ColumnId='C2'"
-        onclick="showdetailsbyRowAndColumn(this)"></td>
-
-    <td id="r25_amt_sub_add" style="text-align: right; padding-right:10px;"
-        th:text="${report?.r25_amt_sub_add ?: ''}"
-        th:attr="RowId='R25', ColumnId='C3'"
-        onclick="showdetailsbyRowAndColumn(this)"></td>
-
-   <!--  <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r25_amt_sub_del ?: ''}"
-        th:attr="RowId='R25', ColumnId='C4'"
-        onclick="showdetailsbyRowAndColumn(this)"></td> -->
-        
-        
-												<td id="ROW25"
-													style=" font-weight: bold; text-align: right; width: 200px;"><input
-													class="display-input Show_input" type="text"
-													th:value="${report1.r25_amt_sub_del != null ? #numbers.formatDecimal(report1.r25_amt_sub_del, 1, 'COMMA', 0, 'POINT') : '0'}"
-													id="r25_amt_sub_del" name="r25_amt_sub_del"
-													style="background-color: #FFFFFF; width:180px; height: 28px; border-color: transparent; text-align: right;"
-													readonly /></td>
 												
-
-    <td  id="r25_amt_total" class="green-cell"  style="text-align: right; padding-right:10px;"
-        th:text="${report?.r25_amt_total ?: ''}"
-       ></td>
+      <td style="text-align: left; padding-right:10px;"
+       
+       >NA</td>
 </tr>
 
-<!-- R26 -->
 <tr>
-    <td style="text-align: left; padding-left:40px;"
-        th:text="${report?.r26_product ?: ''}"></td>
-
-    <td style="text-align: right;"
-        th:text="${report?.r26_amt ?: ''}"
-        th:attr="RowId='R26', ColumnId='C2'"
-        onclick="showdetailsbyRowAndColumn(this)"></td>
-
-    <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r26_amt_sub_add ?: ''}"
-        th:attr="RowId='R26', ColumnId='C3'"
-        onclick="showdetailsbyRowAndColumn(this)"></td>
-
-    <td  id="r26_amt_sub_del" style="text-align: right; padding-right:10px;"
-        th:text="${report?.r26_amt_sub_del ?: ''}"
-        th:attr="RowId='R26', ColumnId='C4'"
-        onclick="showdetailsbyRowAndColumn(this)"></td>
-
-    <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r26_amt_total ?: ''}"
-        th:attr="RowId='R26', ColumnId='C5'"
-        onclick="showdetailsbyRowAndColumn(this)"></td>
+                                               <td    style="text-align: left; "
+												th:text="${report?.r8_product ?: ''}"
+												></td>
+												
+												
+      <td style="text-align: left; padding-right:10px;"
+       
+       >NA</td>
 </tr>
 
-<!-- R27 -->
+
+ 	<tr >
+
+
+                                           <td   rowspan="2"  style="text-align: center;    padding-top: 20px; font-weight:bold;  color: #000000;"
+												th:text="${report?.r9_qua_name?: ''}"
+												>1</td>
+
+											
+												<td    style="text-align: left; "
+												th:text="${report?.r9_product ?: ''}"
+												></td>
+
+										 <td style="text-align: left; padding-right:10px;"
+        th:text="${report?.r9_amt ?: ''}"
+        th:attr="RowId='R9', ColumnId='C2'" 
+        onclick="showdetailsbyRowAndColumn(this)"></td>
+
+										</tr>
+                                   
+
+
 <tr>
-    <td style="text-align: left; padding-left:40px;"
-        th:text="${report?.r27_product ?: ''}"></td>
-
-    <td style="text-align: right;"
-        th:text="${report?.r27_amt ?: ''}"
-        th:attr="RowId='R27', ColumnId='C2'"
-        onclick="showdetailsbyRowAndColumn(this)"></td>
-
-    <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r27_amt_sub_add ?: ''}"
-        th:attr="RowId='R27', ColumnId='C3'"
-        onclick="showdetailsbyRowAndColumn(this)"></td>
-
-    <td id="r27_amt_sub_del" style="text-align: right; padding-right:10px;"
-        th:text="${report?.r27_amt_sub_del ?: ''}"
-        th:attr="RowId='R27', ColumnId='C4'"
-        onclick="showdetailsbyRowAndColumn(this)"></td>
-
-    <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r27_amt_total ?: ''}"
-        th:attr="RowId='R27', ColumnId='C5'"
+                                               <td    style="text-align: left; "
+												th:text="${report?.r10_product ?: ''}"
+												></td>
+												
+												
+      <td style="text-align: left; padding-right:10px;"
+        th:text="${report?.r10_amt ?: ''}"
+        th:attr="RowId='R10', ColumnId='C2'"
         onclick="showdetailsbyRowAndColumn(this)"></td>
 </tr>
+         
 
-<!-- R28 -->
-<tr>
-    <td style="text-align: left; font-weight:bold; padding-left:40px;"
-        th:text="${report?.r28_product ?: ''}"></td>
-
-    <td  class="green-cell" style="text-align: right;"
-        th:text="${report?.r28_amt ?: ''}"
-       ></td>
-
-    <td  class="green-cell" style="text-align: right; padding-right:10px;"
-        th:text="${report?.r28_amt_sub_add ?: ''}"
-       ></td>
-
-    <td id="r28_amt_sub_del"  class="green-cell" style="text-align: right; padding-right:10px;"
-        th:text="${report?.r28_amt_sub_del ?: ''}"
-       ></td>
-
-    <td  class="green-cell"  style="text-align: right; padding-right:10px;"
-        th:text="${report?.r28_amt_total ?: ''}"
-        ></td>
-</tr>
-
-
-  
 										
 
 									</tbody>
@@ -1792,7 +1186,7 @@ function cancelModify() {
 				<div th:if="${displaymode == 'Details'}" >
 					<div class="row"  >
 						<div class="col-sm-12" >
-							<div class="table-responsive "
+							<div class="table-responsive scrollable-table-container"
 								style="border-right: 1px solid #dee2e6;">
 								<table class="table table-striped table-hover" id="reportdetails">
 								<thead class="thead-light">
@@ -1818,7 +1212,7 @@ function cancelModify() {
 													<i class="fas fa-edit" style="color: black; cursor:pointer;"
 														th:attr="data-acctNo=${report.acctNumber},
 																							data-asondate=${#dates.format(report.reportDate, 'dd-MM-yyyy')},data-type=${type}"
-														onclick="openformat_IIDetail(this, 'edit')"></i>
+														onclick="openSCOPE_OF_APPDetail(this, 'edit')"></i>
 
 												</a>
 											</td>
@@ -1855,12 +1249,12 @@ function cancelModify() {
 				</div>
 				
 				
-				<!-- FORMATE II Detail Form Screen -->
+				<!-- scope_of_app -->
 			<div th:if="${formmode == 'edit'}" class="card">
 
 
 				<div class="card-body">
-					<form th:object="${formate_IIData}" method="post" id="format_IIDetailForm">
+					<form th:object="${scope_of_appData}" method="post" id="scope_of_appDetailForm">
 						<div class="row formline" style="margin-top:10px;">
 							<label class="col-sm-2">Customer ID</label>
 							<div class="col-sm-3">
@@ -1910,18 +1304,35 @@ function cancelModify() {
 							<label class="col-sm-2">Report Date</label>
 							<div class="col-sm-3">
 								<input type="date" name="reportDate" class="form-control form-control-sm"readonly
-									th:value="${#dates.format(formate_IIData.reportDate, 'yyyy-MM-dd')}" />
+									th:value="${#dates.format(scope_of_appData.reportDate, 'yyyy-MM-dd')}" />
 							</div>
 						</div>
 
 						<div style="text-align:center; margin-top:20px;">
 							<button type="button" class="custom-tab-btn" th:if="${formmode == 'edit'}"
-								onclick="submitFROMAT_IIUpdate()">Update</button>
+								onclick="submitSCOPE_OF_APPUpdate()">Update</button>
 
 						</div>
 					</form>
 				</div>
 			</div>
+			
+			
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
 				
 			</div>
 
