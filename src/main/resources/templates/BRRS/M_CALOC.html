@@ -813,9 +813,9 @@ PURPOSE		: BWRBRREPORT
 			});
 
 			// Step 5: Select API endpoint dynamically
-			let apiUrl = './UpdateM_SRWA_12H'; // normal update
+			let apiUrl = './UpdateCALOC'; // normal update
 			if (type && type.toUpperCase() === 'RESUB') {
-				apiUrl = './UpdateM_SRWA_12H_ReSub'; // Resubmission endpoint
+				apiUrl = './UpdateCALOC_ReSub'; // Resubmission endpoint
 			}
 
 			// Step 6: AJAX call
