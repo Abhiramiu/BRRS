@@ -359,6 +359,12 @@ public class RegulatoryReportServices {
 
 	@Autowired
 	BRRS_Main_Features_ReportService BRRS_Main_Features_Reportservice;
+	
+	
+ 	@Autowired
+	BRRS_OPER_RISK_DIS_ReportService brrs_OPER_RISK_DIS_reportservice;
+ 	
+ 	
 
 	private static final Logger logger = LoggerFactory.getLogger(RegulatoryReportServices.class);
 
@@ -937,6 +943,16 @@ public class RegulatoryReportServices {
 						pageable, type, version);
 
 				break;
+				
+				
+				
+			case "OPER_RISK_DIS":
+
+				repsummary = brrs_OPER_RISK_DIS_reportservice.getOPER_RISK_DISView(reportId, fromdate, todate, currency, dtltype,
+						pageable, type, version);
+
+				break;
+				
 
 			case "B_III_CETD":
 
@@ -1322,6 +1338,13 @@ public class RegulatoryReportServices {
 			case "B_III_CETD":
 
 				repdetail = b_III_cetd_ReportService.getB_III_CETDcurrentDtl(reportId, fromdate, todate, currency,
+						dtltype,
+						pageable, Filter, type, version);
+				break;
+				
+			case "OPER_RISK_DIS":
+
+				repdetail = brrs_OPER_RISK_DIS_reportservice.getOPER_RISK_DIScurrentDtl(reportId, fromdate, todate, currency,
 						dtltype,
 						pageable, Filter, type, version);
 				break;
@@ -2434,6 +2457,19 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
+				
+				
+			case "OPER_RISK_DIS":
+				try {
+
+					repfile = brrs_OPER_RISK_DIS_reportservice.getOPER_RISK_DISExcel(filename, reportId, fromdate,
+							todate, currency,
+							dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
 			case "MDISB1":
 				try {
@@ -3095,6 +3131,16 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
+				
+			case "OPER_RISK_DIS":
+				try {
+					archivalData = brrs_OPER_RISK_DIS_reportservice.getOPER_RISK_DISArchival();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+				
 
 			case "SCOPE_OF_APP":
 				try {
@@ -3730,6 +3776,15 @@ public class RegulatoryReportServices {
 			fileData = b_III_cetd_ReportService.getB_III_CETDDetailExcel(filename, fromdate, todate, currency, dtltype,
 					type, version);
 		}
+		
+		else if ("OPER_RISK_DIS".equals(filename)) {
+
+			fileData = brrs_OPER_RISK_DIS_reportservice.getOPER_RISK_DISDetailExcel(filename, fromdate, todate,
+					currency,
+					dtltype, type, version);
+		}
+		
+		
 
 		else if (filename.equals("MDISB1Detail")) {
 			fileData = brrs_mdisb1_reportservice.getMDISB1DetailExcel(filename, fromdate, todate, currency, dtltype,
@@ -4064,6 +4119,12 @@ public class RegulatoryReportServices {
 					modelAndView = b_III_cetd_ReportService.getViewOrEditPage(request.getParameter("acctNo"),
 							request.getParameter("formmode"));
 					break;
+					
+					
+				case "OPER_RISK_DIS":
+					modelAndView = brrs_OPER_RISK_DIS_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
+							request.getParameter("formmode"));
+					break;
 
 				case "CAP_ADEQ":
 					modelAndView = brrs_cap_adeq_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
@@ -4305,6 +4366,11 @@ public class RegulatoryReportServices {
 				case "B_III_CETD":
 					response = b_III_cetd_ReportService.updateDetailEdit(request);
 					break;
+					
+				case "OPER_RISK_DIS":
+					response = brrs_OPER_RISK_DIS_reportservice.updateDetailEdit(request);
+					break;
+					
 
 				case "CAP_ADEQ":
 					response = brrs_cap_adeq_reportservice.updateDetailEdit(request);
