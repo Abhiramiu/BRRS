@@ -329,6 +329,12 @@ public class RegulatoryReportServices {
 
 	@Autowired
 	BRRS_MDISB1_ReportService brrs_mdisb1_reportservice;
+	
+	@Autowired
+	BRRS_MDISB2_ReportService brrs_mdisb2_reportservice;
+	
+	@Autowired
+	BRRS_MDISB3_ReportService brrs_mdisb3_reportservice;
 
 	@Autowired
 	BRRS_Market_Risk_ReportService BRRS_Market_Risk_Reportservice;
@@ -990,6 +996,22 @@ public class RegulatoryReportServices {
 						pageable, type, version);
 
 				break;
+				
+			case "MDISB2":
+
+				repsummary = brrs_mdisb2_reportservice.getMDISB2View(reportId, fromdate, todate, currency, dtltype,
+
+						pageable, type, version);
+
+				break;
+				
+			case "MDISB3":
+
+				repsummary = brrs_mdisb3_reportservice.getMDISB3View(reportId, fromdate, todate, currency, dtltype,
+
+						pageable, type, version);
+
+				break;
 
 			case "NSFR":
 				repsummary = BRRS_NSFR_ReportService.getNSFRView(reportId, fromdate, todate, currency, dtltype,
@@ -1371,6 +1393,18 @@ public class RegulatoryReportServices {
 			case "MDISB1":
 
 				repdetail = brrs_mdisb1_reportservice.getMDISB1currentDtl(reportId, fromdate, todate, currency, dtltype,
+						pageable, Filter, type, version);
+				break;
+				
+			case "MDISB2":
+
+				repdetail = brrs_mdisb2_reportservice.getMDISB2currentDtl(reportId, fromdate, todate, currency, dtltype,
+						pageable, Filter, type, version);
+				break;
+				
+			case "MDISB3":
+
+				repdetail = brrs_mdisb3_reportservice.getMDISB3currentDtl(reportId, fromdate, todate, currency, dtltype,
 						pageable, Filter, type, version);
 				break;
 
@@ -2480,6 +2514,26 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
+				
+			case "MDISB2":
+				try {
+					repfile = brrs_mdisb2_reportservice.getMDISB2Excel(filename, reportId, fromdate, todate, currency,
+							dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+				
+			case "MDISB3":
+				try {
+					repfile = brrs_mdisb3_reportservice.getMDISB3Excel(filename, reportId, fromdate, todate, currency,
+							dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
 			case "NSFR":
 				try {
@@ -2634,6 +2688,12 @@ public class RegulatoryReportServices {
 					dtltype, type, version);
 		} else if ("MDISB1".equals(filename)) {
 			return brrs_mdisb1_reportservice.getMDISB1DetailExcel(filename, fromdate, todate, currency, dtltype, type,
+					version);
+		}else if ("MDISB2".equals(filename)) {
+			return brrs_mdisb2_reportservice.getMDISB2DetailExcel(filename, fromdate, todate, currency, dtltype, type,
+					version);
+		}else if ("MDISB3".equals(filename)) {
+			return brrs_mdisb3_reportservice.getMDISB3DetailExcel(filename, fromdate, todate, currency, dtltype, type,
 					version);
 		} else if ("NSFRDetail".equals(filename)) {
 			return BRRS_NSFR_ReportService.getNSFRDetailExcel(filename, fromdate, todate, currency, dtltype, type,
@@ -3552,6 +3612,24 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
+				
+			case "MDISB2":
+				try {
+					archivalData = brrs_mdisb2_reportservice.getMDISB2Archival();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+				
+			case "MDISB3":
+				try {
+					archivalData = brrs_mdisb3_reportservice.getMDISB3Archival();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
 			case "NSFR":
 				try {
@@ -3788,6 +3866,14 @@ public class RegulatoryReportServices {
 
 		else if (filename.equals("MDISB1Detail")) {
 			fileData = brrs_mdisb1_reportservice.getMDISB1DetailExcel(filename, fromdate, todate, currency, dtltype,
+					type, version);
+
+		}else if (filename.equals("MDISB2Detail")) {
+			fileData = brrs_mdisb2_reportservice.getMDISB2DetailExcel(filename, fromdate, todate, currency, dtltype,
+					type, version);
+
+		}else if (filename.equals("MDISB1Detail")) {
+			fileData = brrs_mdisb3_reportservice.getMDISB3DetailExcel(filename, fromdate, todate, currency, dtltype,
 					type, version);
 
 		} else if ("CAP_ADEQ".equals(filename)) {
@@ -4182,6 +4268,16 @@ public class RegulatoryReportServices {
 					modelAndView = brrs_mdisb1_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
 							request.getParameter("formmode"));
 					break;
+					
+				case "MDISB2":
+					modelAndView = brrs_mdisb2_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
+							request.getParameter("formmode"));
+					break;
+					
+				case "MDISB3":
+					modelAndView = brrs_mdisb3_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
+							request.getParameter("formmode"));
+					break;
 
 				case "NSFR":
 					modelAndView = BRRS_NSFR_ReportService.getViewOrEditPage(request.getParameter("acctNo"),
@@ -4221,6 +4317,14 @@ public class RegulatoryReportServices {
 
 				case "MDISB1":
 					response = brrs_mdisb1_reportservice.updateDetailEdit(request);
+					break;
+					
+				case "MDISB2":
+					response = brrs_mdisb2_reportservice.updateDetailEdit(request);
+					break;
+					
+				case "MDISB3":
+					response = brrs_mdisb3_reportservice.updateDetailEdit(request);
 					break;
 
 				case "M_LA1":

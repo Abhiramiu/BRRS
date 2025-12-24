@@ -47,24 +47,25 @@ import org.springframework.transaction.support.TransactionSynchronizationAdapter
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.bornfire.brrs.entities.BRRS_MDISB1_Archival_Detail_Repo;
-import com.bornfire.brrs.entities.BRRS_MDISB1_Archival_Summary_Repo1;
-import com.bornfire.brrs.entities.BRRS_MDISB1_Archival_Summary_Repo2;
-import com.bornfire.brrs.entities.BRRS_MDISB1_Detail_Repo;
-import com.bornfire.brrs.entities.MDISB1_Archival_Detail_Entity;
-import com.bornfire.brrs.entities.MDISB1_Archival_Summary_Entity1;
-import com.bornfire.brrs.entities.MDISB1_Archival_Summary_Entity2;
-import com.bornfire.brrs.entities.MDISB1_Detail_Entity;
-import com.bornfire.brrs.entities.MDISB1_Summary_Entity1;
-import com.bornfire.brrs.entities.MDISB1_Summary_Entity2;
-import com.bornfire.brrs.entities.MDISB1_Summary_Repo1;
-import com.bornfire.brrs.entities.MDISB1_Summary_Repo2;
+import com.bornfire.brrs.entities.BRRS_MDISB2_Archival_Detail_Repo;
+import com.bornfire.brrs.entities.BRRS_MDISB2_Archival_Summary_Repo1;
+import com.bornfire.brrs.entities.BRRS_MDISB2_Archival_Summary_Repo2;
+import com.bornfire.brrs.entities.BRRS_MDISB2_Detail_Repo;
+import com.bornfire.brrs.entities.MDISB2_Detail_Entity;
+import com.bornfire.brrs.entities.MDISB2_Archival_Detail_Entity;
+import com.bornfire.brrs.entities.MDISB2_Archival_Summary_Entity1;
+import com.bornfire.brrs.entities.MDISB2_Archival_Summary_Entity2;
+import com.bornfire.brrs.entities.MDISB2_Detail_Entity;
+import com.bornfire.brrs.entities.MDISB2_Summary_Entity1;
+import com.bornfire.brrs.entities.MDISB2_Summary_Entity2;
+import com.bornfire.brrs.entities.MDISB2_Summary_Repo1;
+import com.bornfire.brrs.entities.MDISB2_Summary_Repo2;
 
 @Component
 @Service
 
-public class BRRS_MDISB1_ReportService {
-	private static final Logger logger = LoggerFactory.getLogger(BRRS_MDISB1_ReportService.class);
+public class BRRS_MDISB2_ReportService {
+	private static final Logger logger = LoggerFactory.getLogger(BRRS_MDISB2_ReportService.class);
 
 	@Autowired
 	private Environment env;
@@ -73,26 +74,26 @@ public class BRRS_MDISB1_ReportService {
 	SessionFactory sessionFactory;
 
 	@Autowired
-	BRRS_MDISB1_Detail_Repo BRRS_MDISB1_Detail_Repo;
+	BRRS_MDISB2_Detail_Repo BRRS_MDISB2_Detail_Repo;
 
 	@Autowired
-	MDISB1_Summary_Repo1 MDISB1_Summary_repo1;
+	MDISB2_Summary_Repo1 MDISB2_Summary_repo1;
 
 	@Autowired
-	MDISB1_Summary_Repo2 MDISB1_Summary_repo2;
+	MDISB2_Summary_Repo2 MDISB2_Summary_repo2;
 
 	@Autowired
-	BRRS_MDISB1_Archival_Summary_Repo1 brrs_MDISB1_Archival_Summary_Repo1;
+	BRRS_MDISB2_Archival_Summary_Repo1 brrs_MDISB2_Archival_Summary_Repo1;
 
 	@Autowired
-	BRRS_MDISB1_Archival_Summary_Repo2 brrs_MDISB1_Archival_Summary_Repo2;
+	BRRS_MDISB2_Archival_Summary_Repo2 brrs_MDISB2_Archival_Summary_Repo2;
 
 	@Autowired
-	BRRS_MDISB1_Archival_Detail_Repo brrs_MDISB1_Archival_Detail_Repo;
+	BRRS_MDISB2_Archival_Detail_Repo brrs_MDISB2_Archival_Detail_Repo;
 
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
-	public ModelAndView getMDISB1View(String reportId, String fromdate, String todate, String currency, String dtltype,
+	public ModelAndView getMDISB2View(String reportId, String fromdate, String todate, String currency, String dtltype,
 			Pageable pageable, String type, String version) {
 		ModelAndView mv = new ModelAndView();
 		Session hs = sessionFactory.getCurrentSession();
@@ -105,8 +106,8 @@ public class BRRS_MDISB1_ReportService {
 
 		if (type.equals("ARCHIVAL") & version != null) {
 			System.out.println(type);
-			List<MDISB1_Archival_Summary_Entity1> T1Master = new ArrayList<MDISB1_Archival_Summary_Entity1>();
-			List<MDISB1_Archival_Summary_Entity2> T1Master1 = new ArrayList<MDISB1_Archival_Summary_Entity2>();
+			List<MDISB2_Archival_Summary_Entity1> T1Master = new ArrayList<MDISB2_Archival_Summary_Entity1>();
+			List<MDISB2_Archival_Summary_Entity2> T1Master1 = new ArrayList<MDISB2_Archival_Summary_Entity2>();
 			System.out.println(version);
 			try {
 				Date d1 = dateformat.parse(todate);
@@ -114,10 +115,10 @@ public class BRRS_MDISB1_ReportService {
 				// T1Master = hs.createQuery("from BRF1_REPORT_ENTITY a where a.report_date = ?1
 				// ", BRF1_REPORT_ENTITY.class)
 				// .setParameter(1, df.parse(todate)).getResultList();
-				T1Master = brrs_MDISB1_Archival_Summary_Repo1.getdatabydateListarchival(dateformat.parse(todate),
+				T1Master = brrs_MDISB2_Archival_Summary_Repo1.getdatabydateListarchival(dateformat.parse(todate),
 						version);
 
-				T1Master1 = brrs_MDISB1_Archival_Summary_Repo2.getdatabydateListarchival(dateformat.parse(todate),
+				T1Master1 = brrs_MDISB2_Archival_Summary_Repo2.getdatabydateListarchival(dateformat.parse(todate),
 						version);
 
 			} catch (ParseException e) {
@@ -128,8 +129,8 @@ public class BRRS_MDISB1_ReportService {
 			mv.addObject("reportsummary1", T1Master1);
 		} else {
 
-			List<MDISB1_Summary_Entity1> T1Master = new ArrayList<MDISB1_Summary_Entity1>();
-			List<MDISB1_Summary_Entity2> T1Master1 = new ArrayList<MDISB1_Summary_Entity2>();
+			List<MDISB2_Summary_Entity1> T1Master = new ArrayList<MDISB2_Summary_Entity1>();
+			List<MDISB2_Summary_Entity2> T1Master1 = new ArrayList<MDISB2_Summary_Entity2>();
 			try {
 				Date d1 = dateformat.parse(todate);
 				// T1rep = t1CurProdServiceRepo.getT1CurProdServices(d1);
@@ -137,8 +138,8 @@ public class BRRS_MDISB1_ReportService {
 				// T1Master = hs.createQuery("from BRF1_REPORT_ENTITY a where a.report_date = ?1
 				// ", BRF1_REPORT_ENTITY.class)
 				// .setParameter(1, df.parse(todate)).getResultList();
-				T1Master = MDISB1_Summary_repo1.getdatabydateList(dateformat.parse(todate));
-				T1Master1 = MDISB1_Summary_repo2.getdatabydateList(dateformat.parse(todate));
+				T1Master = MDISB2_Summary_repo1.getdatabydateList(dateformat.parse(todate));
+				T1Master1 = MDISB2_Summary_repo2.getdatabydateList(dateformat.parse(todate));
 
 			} catch (ParseException e) {
 				e.printStackTrace();
@@ -149,14 +150,14 @@ public class BRRS_MDISB1_ReportService {
 
 		// T1rep = t1CurProdServiceRepo.getT1CurProdServices(d1);
 
-		mv.setViewName("BRRS/MDISB1");
+		mv.setViewName("BRRS/MDISB2");
 
 		mv.addObject("displaymode", "summary");
 		System.out.println("scv" + mv.getViewName());
 		return mv;
 	}
 
-	public ModelAndView getMDISB1currentDtl(String reportId, String fromdate, String todate, String currency,
+	public ModelAndView getMDISB2currentDtl(String reportId, String fromdate, String todate, String currency,
 			String dtltype, Pageable pageable, String Filter, String type, String version) {
 
 		int pageSize = pageable != null ? pageable.getPageSize() : 10;
@@ -187,12 +188,12 @@ public class BRRS_MDISB1_ReportService {
 			if ("ARCHIVAL".equals(type) && version != null) {
 				System.out.println(type);
 				// 🔹 Archival branch
-				List<MDISB1_Archival_Detail_Entity> T1Dt1;
+				List<MDISB2_Archival_Detail_Entity> T1Dt1;
 				if (rowId != null && columnId != null) {
-					T1Dt1 = brrs_MDISB1_Archival_Detail_Repo.GetDataByRowIdAndColumnId(rowId, columnId, parsedDate,
+					T1Dt1 = brrs_MDISB2_Archival_Detail_Repo.GetDataByRowIdAndColumnId(rowId, columnId, parsedDate,
 							version);
 				} else {
-					T1Dt1 = brrs_MDISB1_Archival_Detail_Repo.getdatabydateList(parsedDate, version);
+					T1Dt1 = brrs_MDISB2_Archival_Detail_Repo.getdatabydateList(parsedDate, version);
 				}
 
 				mv.addObject("reportdetails", T1Dt1);
@@ -201,12 +202,12 @@ public class BRRS_MDISB1_ReportService {
 
 			} else {
 				// 🔹 Current branch
-				List<MDISB1_Detail_Entity> T1Dt1;
+				List<MDISB2_Detail_Entity> T1Dt1;
 				if (rowId != null && columnId != null) {
-					T1Dt1 = BRRS_MDISB1_Detail_Repo.GetDataByRowIdAndColumnId(rowId, columnId, parsedDate);
+					T1Dt1 = BRRS_MDISB2_Detail_Repo.GetDataByRowIdAndColumnId(rowId, columnId, parsedDate);
 				} else {
-					T1Dt1 = BRRS_MDISB1_Detail_Repo.getdatabydateList(parsedDate);
-					totalPages = BRRS_MDISB1_Detail_Repo.getdatacount(parsedDate);
+					T1Dt1 = BRRS_MDISB2_Detail_Repo.getdatabydateList(parsedDate);
+					totalPages = BRRS_MDISB2_Detail_Repo.getdatacount(parsedDate);
 					mv.addObject("pagination", "YES");
 				}
 
@@ -224,7 +225,7 @@ public class BRRS_MDISB1_ReportService {
 		}
 
 		// ✅ Common attributes
-		mv.setViewName("BRRS/MDISB1");
+		mv.setViewName("BRRS/MDISB2");
 		mv.addObject("displaymode", "Details");
 		mv.addObject("currentPage", currentPage);
 		System.out.println("totalPages: " + (int) Math.ceil((double) totalPages / 100));
@@ -235,22 +236,22 @@ public class BRRS_MDISB1_ReportService {
 		return mv;
 	}
 
-	public byte[] getMDISB1Excel(String filename, String reportId, String fromdate, String todate, String currency,
+	public byte[] getMDISB2Excel(String filename, String reportId, String fromdate, String todate, String currency,
 			String dtltype, String type, String version) throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.");
 
 		// ARCHIVAL check
 		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && !version.trim().isEmpty()) {
 			logger.info("Service: Generating ARCHIVAL report for version {}", version);
-			return getExcelMDISB1ARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
+			return getExcelMDISB2ARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
 		}
 
 		// Fetch data
-		List<MDISB1_Summary_Entity1> dataList = MDISB1_Summary_repo1.getdatabydateList(dateformat.parse(todate));
-		List<MDISB1_Summary_Entity2> dataList1 = MDISB1_Summary_repo2.getdatabydateList(dateformat.parse(todate));
+		List<MDISB2_Summary_Entity1> dataList = MDISB2_Summary_repo1.getdatabydateList(dateformat.parse(todate));
+		List<MDISB2_Summary_Entity2> dataList1 = MDISB2_Summary_repo2.getdatabydateList(dateformat.parse(todate));
 
 		if (dataList.isEmpty()) {
-			logger.warn("Service: No data found for MDISB1 report. Returning empty result.");
+			logger.warn("Service: No data found for MDISB2 report. Returning empty result.");
 			return new byte[0];
 		}
 
@@ -310,8 +311,8 @@ public class BRRS_MDISB1_ReportService {
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
-					MDISB1_Summary_Entity1 record = dataList.get(i);
-					MDISB1_Summary_Entity2 record1 = dataList1.get(i);
+					MDISB2_Summary_Entity1 record = dataList.get(i);
+					MDISB2_Summary_Entity2 record1 = dataList1.get(i);
 					System.out.println("rownumber=" + startRow + i);
 					Row row = sheet.getRow(startRow + i);
 					if (row == null) {
@@ -3606,10 +3607,10 @@ public class BRRS_MDISB1_ReportService {
 		}
 	}
 
-	public byte[] getMDISB1DetailExcel(String filename, String fromdate, String todate, String currency, String dtltype,
+	public byte[] getMDISB2DetailExcel(String filename, String fromdate, String todate, String currency, String dtltype,
 			String type, String version) {
 		try {
-			logger.info("Generating Excel for MDISB1 Details...");
+			logger.info("Generating Excel for MDISB2 Details...");
 			System.out.println("came to Detail download service");
 
 			if (type.equals("ARCHIVAL") & version != null) {
@@ -3619,7 +3620,7 @@ public class BRRS_MDISB1_ReportService {
 			}
 
 			XSSFWorkbook workbook = new XSSFWorkbook();
-			XSSFSheet sheet = workbook.createSheet("MDISB1Details");
+			XSSFSheet sheet = workbook.createSheet("MDISB2Details");
 
 			// Common border style
 			BorderStyle border = BorderStyle.THIN;
@@ -3680,11 +3681,11 @@ public class BRRS_MDISB1_ReportService {
 
 			// Get data
 			Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
-			List<MDISB1_Detail_Entity> reportData = BRRS_MDISB1_Detail_Repo.getdatabydateList(parsedToDate);
+			List<MDISB2_Detail_Entity> reportData = BRRS_MDISB2_Detail_Repo.getdatabydateList(parsedToDate);
 
 			if (reportData != null && !reportData.isEmpty()) {
 				int rowIndex = 1;
-				for (MDISB1_Detail_Entity item : reportData) {
+				for (MDISB2_Detail_Entity item : reportData) {
 					XSSFRow row = sheet.createRow(rowIndex++);
 
 					row.createCell(0).setCellValue(item.getCust_id());
@@ -3715,7 +3716,7 @@ public class BRRS_MDISB1_ReportService {
 					}
 				}
 			} else {
-				logger.info("No data found for MDISB1 — only header will be written.");
+				logger.info("No data found for MDISB2 — only header will be written.");
 			}
 
 			// Write to byte[]
@@ -3727,42 +3728,42 @@ public class BRRS_MDISB1_ReportService {
 			return bos.toByteArray();
 
 		} catch (Exception e) {
-			logger.error("Error generating MDISB1 Excel", e);
+			logger.error("Error generating MDISB2 Excel", e);
 			return new byte[0];
 		}
 	}
 
-	public List<Object> getMDISB1Archival() {
-		List<Object> MDISB1Archivallist = new ArrayList<>();
-		//List<Object> MDISB1Archivallist1 = new ArrayList<>();
+	public List<Object> getMDISB2Archival() {
+		List<Object> MDISB2Archivallist = new ArrayList<>();
+		//List<Object> MDISB2Archivallist1 = new ArrayList<>();
 		try {
-			MDISB1Archivallist = brrs_MDISB1_Archival_Summary_Repo1.getMDISB1archival();
-			System.out.println("countser" + MDISB1Archivallist.size());
+			MDISB2Archivallist = brrs_MDISB2_Archival_Summary_Repo1.getMDISB2archival();
+			System.out.println("countser" + MDISB2Archivallist.size());
 		} catch (Exception e) {
 			// Log the exception
-			System.err.println("Error fetching MDISB1 Archival data: " + e.getMessage());
+			System.err.println("Error fetching MDISB2 Archival data: " + e.getMessage());
 			e.printStackTrace();
 
 			// Optionally, you can rethrow it or return empty list
 			// throw new RuntimeException("Failed to fetch data", e);
 		}
-		return MDISB1Archivallist;
+		return MDISB2Archivallist;
 	}
 
-	public byte[] getExcelMDISB1ARCHIVAL(String filename, String reportId, String fromdate, String todate,
+	public byte[] getExcelMDISB2ARCHIVAL(String filename, String reportId, String fromdate, String todate,
 			String currency, String dtltype, String type, String version) throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.");
 		if (type.equals("ARCHIVAL") & version != null) {
 
 		}
-		List<MDISB1_Archival_Summary_Entity1> dataList = brrs_MDISB1_Archival_Summary_Repo1
+		List<MDISB2_Archival_Summary_Entity1> dataList = brrs_MDISB2_Archival_Summary_Repo1
 				.getdatabydateListarchival(dateformat.parse(todate), version);
 
-		List<MDISB1_Archival_Summary_Entity2> dataList1 = brrs_MDISB1_Archival_Summary_Repo2
+		List<MDISB2_Archival_Summary_Entity2> dataList1 = brrs_MDISB2_Archival_Summary_Repo2
 				.getdatabydateListarchival(dateformat.parse(todate), version);
 
 		if (dataList.isEmpty()) {
-			logger.warn("Service: No data found for MDISB1 report. Returning empty result.");
+			logger.warn("Service: No data found for MDISB2 report. Returning empty result.");
 			return new byte[0];
 		}
 
@@ -3825,7 +3826,7 @@ public class BRRS_MDISB1_ReportService {
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
-					MDISB1_Archival_Summary_Entity1 record = dataList.get(i);
+					MDISB2_Archival_Summary_Entity1 record = dataList.get(i);
 					System.out.println("rownumber=" + startRow + i);
 					Row row = sheet.getRow(startRow + i);
 					if (row == null) {
@@ -3850,13 +3851,13 @@ public class BRRS_MDISB1_ReportService {
 	public byte[] getDetailExcelARCHIVAL(String filename, String fromdate, String todate, String currency,
 			String dtltype, String type, String version) {
 		try {
-			logger.info("Generating Excel for BRRS_MDISB1 ARCHIVAL Details...");
+			logger.info("Generating Excel for BRRS_MDISB2 ARCHIVAL Details...");
 			System.out.println("came to Detail download service");
 			if (type.equals("ARCHIVAL") & version != null) {
 
 			}
 			XSSFWorkbook workbook = new XSSFWorkbook();
-			XSSFSheet sheet = workbook.createSheet("MDISB1Details");
+			XSSFSheet sheet = workbook.createSheet("MDISB2Details");
 
 			// Common border style
 			BorderStyle border = BorderStyle.THIN;
@@ -3917,12 +3918,12 @@ public class BRRS_MDISB1_ReportService {
 
 			// Get data
 			Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
-			List<MDISB1_Archival_Detail_Entity> reportData = brrs_MDISB1_Archival_Detail_Repo
+			List<MDISB2_Archival_Detail_Entity> reportData = brrs_MDISB2_Archival_Detail_Repo
 					.getdatabydateList(parsedToDate, version);
 
 			if (reportData != null && !reportData.isEmpty()) {
 				int rowIndex = 1;
-				for (MDISB1_Archival_Detail_Entity item : reportData) {
+				for (MDISB2_Archival_Detail_Entity item : reportData) {
 					XSSFRow row = sheet.createRow(rowIndex++);
 
 					row.createCell(0).setCellValue(item.getCust_id());
@@ -3953,7 +3954,7 @@ public class BRRS_MDISB1_ReportService {
 					}
 				}
 			} else {
-				logger.info("No data found for MDISB1 — only header will be written.");
+				logger.info("No data found for MDISB2 — only header will be written.");
 			}
 
 			// Write to byte[]
@@ -3965,7 +3966,7 @@ public class BRRS_MDISB1_ReportService {
 			return bos.toByteArray();
 
 		} catch (Exception e) {
-			logger.error("Error generating MDISB1 Excel", e);
+			logger.error("Error generating MDISB2 Excel", e);
 			return new byte[0];
 		}
 	}
@@ -3973,39 +3974,31 @@ public class BRRS_MDISB1_ReportService {
 
 
 	@Autowired
-	private BRRS_MDISB1_Detail_Repo MDISB1_Detail_Repo;
+	private BRRS_MDISB2_Detail_Repo MDISB2_Detail_Repo;
 
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
 	public ModelAndView getViewOrEditPage(String acctNo, String formMode) {
-		ModelAndView mv = new ModelAndView("BRRS/MDISB1");
-		
-		System.out.println("Came to view method");
+		ModelAndView mv = new ModelAndView("BRRS/MDISB2");
 
 		if (acctNo != null) {
-			MDISB1_Detail_Entity Entity = MDISB1_Detail_Repo.findByAcctnumber(acctNo);
+			MDISB2_Detail_Entity Entity = MDISB2_Detail_Repo.findByAcctnumber(acctNo);
 			if (Entity != null && Entity.getReport_date() != null) {
 				String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(Entity.getReport_date());
 				mv.addObject("asondate", formattedDate);
 			}
 			mv.addObject("Data", Entity);
 		}
-		
-		else {
-			System.out.println(acctNo);
-		}
-
 
 		mv.addObject("displaymode", "edit");
 		mv.addObject("formmode", formMode != null ? formMode : "edit");
 		return mv;
 	}
-	
+
 	@Transactional
 	public ResponseEntity<?> updateDetailEdit(HttpServletRequest request) {
 		try {
-
 			String acctNo = request.getParameter("acct_number");
 			String provisionStr = request.getParameter("acct_balance_in_pula");
 			String acctName = request.getParameter("acct_name");
@@ -4016,7 +4009,7 @@ public class BRRS_MDISB1_ReportService {
 
 			logger.info("Received update for ACCT_NO: {}", acctNo);
 
-			MDISB1_Detail_Entity existing = MDISB1_Detail_Repo.findByAcctnumber(acctNo);
+			MDISB2_Detail_Entity existing = MDISB2_Detail_Repo.findByAcctnumber(acctNo);
 			if (existing == null) {
 				logger.warn("No record found for ACCT_NO: {}", acctNo);
 				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Record not found for update.");
@@ -4042,7 +4035,7 @@ public class BRRS_MDISB1_ReportService {
 				}
 			}
 			if (isChanged) {
-				MDISB1_Detail_Repo.save(existing);
+				MDISB2_Detail_Repo.save(existing);
 				logger.info("Record updated successfully for account {}", acctNo);
 
 				// Format date for procedure
@@ -4054,9 +4047,9 @@ public class BRRS_MDISB1_ReportService {
 					@Override
 					public void afterCommit() {
 						try {
-							logger.info("Transaction committed — calling BRRS_MDISB1_SUMMARY_PROCEDURE({})",
+							logger.info("Transaction committed — calling BRRS_MDISB2_SUMMARY_PROCEDURE({})",
 									formattedDate);
-							jdbcTemplate.update("BEGIN BRRS_MDISB1_SUMMARY_PROCEDURE(?); END;", formattedDate);
+							jdbcTemplate.update("BEGIN BRRS_MDISB2_SUMMARY_PROCEDURE(?); END;", formattedDate);
 							logger.info("Procedure executed successfully after commit.");
 						} catch (Exception e) {
 							logger.error("Error executing procedure after commit", e);
@@ -4071,10 +4064,11 @@ public class BRRS_MDISB1_ReportService {
 			}
 
 		} catch (Exception e) {
-			logger.error("Error updating MDISB1 record", e);
+			logger.error("Error updating MDISB2 record", e);
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 					.body("Error updating record: " + e.getMessage());
 		}
 	}
+
 
 }
