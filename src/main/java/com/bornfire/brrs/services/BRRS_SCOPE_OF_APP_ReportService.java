@@ -312,18 +312,22 @@ public class BRRS_SCOPE_OF_APP_ReportService {
 					}
 					
 					
+					// R9
+					row = sheet.getRow(8);
+					Cell  cellC = row.getCell(4);
+					if (cellC == null) cellC = row.createCell(4);
+					cellC.setCellValue(record.getR9_amt() != null ? record.getR9_amt().doubleValue() : 0);
 					
-					 // R9 
-					row = sheet.getRow(8); 
-					Cell cellC = row.getCell(4); if (cellC == null)
-					  cellC = row.createCell(4); cellC.setCellValue(record.getR9_amt() != null
-					  ? record.getR9_amt().doubleValue() : 0);
-					  
 					// R10
-						row = sheet.getRow(9); 
-						 cellC = row.getCell(4); if (cellC == null)
-						  cellC = row.createCell(4); cellC.setCellValue(record.getR10_amt() != null
-						  ? record.getR10_amt().doubleValue() : 0);
+					row = sheet.getRow(9);
+					  cellC = row.getCell(4);
+					if (cellC == null) cellC = row.createCell(4);
+					cellC.setCellValue(record.getR10_amt() != null ? record.getR10_amt().doubleValue() : 0);
+
+					
+					
+					  
+					
 					  
 
 				}
@@ -429,18 +433,17 @@ public class BRRS_SCOPE_OF_APP_ReportService {
 					}
 
 					
-					  
-					  // R9 
-					row = sheet.getRow(8); 
-					Cell cellC = row.getCell(4); if (cellC == null)
-					  cellC = row.createCell(4); cellC.setCellValue(record.getR9_amt() != null
-					  ? record.getR9_amt().doubleValue() : 0);
-					  
+					// R9
+					row = sheet.getRow(8);
+					Cell  cellC = row.getCell(4);
+					if (cellC == null) cellC = row.createCell(4);
+					cellC.setCellValue(record.getR9_amt() != null ? record.getR9_amt().doubleValue() : 0);
+					
 					// R10
-						row = sheet.getRow(9); 
-						 cellC = row.getCell(4); if (cellC == null)
-						  cellC = row.createCell(4); cellC.setCellValue(record.getR10_amt() != null
-						  ? record.getR10_amt().doubleValue() : 0);
+					row = sheet.getRow(9);
+					  cellC = row.getCell(4);
+					if (cellC == null) cellC = row.createCell(4);
+					cellC.setCellValue(record.getR10_amt() != null ? record.getR10_amt().doubleValue() : 0);
 					  
 					 
 
