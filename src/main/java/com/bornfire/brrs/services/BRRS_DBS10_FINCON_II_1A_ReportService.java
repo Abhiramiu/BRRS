@@ -51,15 +51,8 @@ import com.bornfire.brrs.entities.BRRS_DBS10_FINCON_II_1A_Archival_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_DBS10_FINCON_II_1A_Archival_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_DBS10_FINCON_II_1A_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_DBS10_FINCON_II_1A_Summary_Repo;
-import com.bornfire.brrs.entities.BRRS_M_LCR_Detail_Repo;
-import com.bornfire.brrs.entities.Common_Disclosure_Archival_Detail_Entity;
-import com.bornfire.brrs.entities.Common_Disclosure_Detail_Entity;
 import com.bornfire.brrs.entities.DBS10_FINCON_II_1A_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.DBS10_FINCON_II_1A_Summary_Entity;
-import com.bornfire.brrs.entities.M_LCR_Archival_Detail_Entity;
-import com.bornfire.brrs.entities.M_LCR_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.M_LCR_Detail_Entity;
-import com.bornfire.brrs.entities.M_LCR_Summary_Entity;
 import com.bornfire.brrs.entities.DBS10_FINCON_II_1A_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.DBS10_FINCON_II_1A_Detail_Entity;
 
@@ -67,7 +60,7 @@ import com.bornfire.brrs.entities.DBS10_FINCON_II_1A_Detail_Entity;
 @Service
 
 public class BRRS_DBS10_FINCON_II_1A_ReportService {
-	private static final Logger logger = LoggerFactory.getLogger(BRRS_M_LCR_ReportService.class);
+	private static final Logger logger = LoggerFactory.getLogger(BRRS_DBS10_FINCON_II_1A_ReportService.class);
 
 	@Autowired
 	private Environment env;

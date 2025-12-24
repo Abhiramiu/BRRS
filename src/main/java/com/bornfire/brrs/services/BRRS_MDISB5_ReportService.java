@@ -48,16 +48,7 @@ import com.bornfire.brrs.entities.MDISB5_Archival_Summary_Entity3;
 import com.bornfire.brrs.entities.MDISB5_Summary_Entity1;
 import com.bornfire.brrs.entities.MDISB5_Summary_Entity2;
 import com.bornfire.brrs.entities.MDISB5_Summary_Entity3;
-import com.bornfire.brrs.entities.M_SRWA_12G_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.M_SRWA_12G_Summary_Entity;
-import com.bornfire.brrs.entities.Q_BRANCHNET_Archival_Summary_Entity1;
-import com.bornfire.brrs.entities.Q_BRANCHNET_Archival_Summary_Entity2;
-import com.bornfire.brrs.entities.Q_BRANCHNET_Archival_Summary_Entity3;
-import com.bornfire.brrs.entities.Q_BRANCHNET_Archival_Summary_Entity4;
-import com.bornfire.brrs.entities.Q_BRANCHNET_Summary_Entity1;
-import com.bornfire.brrs.entities.Q_BRANCHNET_Summary_Entity2;
-import com.bornfire.brrs.entities.Q_BRANCHNET_Summary_Entity3;
-import com.bornfire.brrs.entities.Q_BRANCHNET_Summary_Entity4;
+
 
 @Component
 @Service

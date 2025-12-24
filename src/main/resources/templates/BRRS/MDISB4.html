@@ -608,7 +608,7 @@ PURPOSE		: BRRS_MDISB4REPORT
 						window.URL.revokeObjectURL(url);
 						document.body.removeChild(a);
 
-						showResultModal('BRRS', filename + ' downloaded successfully');
+						showResultModal('BRRS', filename + ' downloaded successfully.');
 					} else {
 						showResultModal('Information', 'No data was available to create a download.');
 					}
@@ -980,24 +980,25 @@ PURPOSE		: BRRS_MDISB4REPORT
 								id="reports">
 
 								<thead border="1" cellspacing="0" cellpadding="6"
-									style="border-collapse: collapse; text-align:center; font-family: Arial;">
-									
-								
-									<tr>
-										<th rowspan="2" style="background-color:#8EA9DB; text-align: left; vertical-align: bottom;"> EXCLUSIONS </th>
-										<th colspan="2" style="background-color:#8EA9DB; text-align: center;">DEPOSITS EXCLUDING FCA's</th>
-										<th colspan="2" style="background-color:#8EA9DB; text-align: center;">FOREIGN CURRENCY DEPOSITS</th>
-										<th colspan="2" style="background-color:#8EA9DB; text-align: center;">TOTAL</th>
-									</tr>
-									
-									<tr>
-										<th style="background-color:#8EA9DB; text-align: center;">Number of Accounts</th>
-										<th style="background-color:#8EA9DB; text-align: right;">Amount P'000</th>
-										<th style="background-color:#8EA9DB; text-align: center;">Number of Accounts</th>
-										<th style="background-color:#8EA9DB; text-align: right;">Amount P'000</th>
-										<th style="background-color:#8EA9DB; text-align: center;">Number of Accounts</th>
-										<th style="background-color:#8EA9DB; text-align: right;">Amount P'000</th>
-									</tr>
+																	style="border-collapse: collapse; text-align:center; font-family: Arial;">
+																	
+																	
+																
+																	<tr>
+																		<th rowspan="2" style="background-color:#D8D8D8; text-align: left; vertical-align: bottom;"> EXCLUSIONS </th>
+																		<th colspan="2" style="background-color:#D8D8D8; text-align: center;">DEPOSITS EXCLUDING FCA's</th>
+																		<th colspan="2" style="background-color:#D8D8D8; text-align: center;">FOREIGN CURRENCY DEPOSITS</th>
+																		<th colspan="2" style="background-color:#D8D8D8; text-align: center;">TOTAL</th>
+																	</tr>
+																	
+																	<tr>
+																		<th style="background-color:#D8D8D8; text-align: center;">Number of Accounts</th>
+																		<th style="background-color:#D8D8D8; text-align: right;">Amount P'000</th>
+																		<th style="background-color:#D8D8D8; text-align: center;">Number of Accounts</th>
+																		<th style="background-color:#D8D8D8; text-align: right;">Amount P'000</th>
+																		<th style="background-color:#D8D8D8; text-align: center;">Number of Accounts</th>
+																		<th style="background-color:#D8D8D8; text-align: right;">Amount P'000</th>
+																	</tr>
 
 
 								</thead>
@@ -1005,216 +1006,216 @@ PURPOSE		: BRRS_MDISB4REPORT
 
 
 								<tbody th:each="report: ${reportsummary}" style="font-family: Arial;">								
-									<tr>
-										<td style="background-color:#D9E1F2;" th:text="${report.R6_EXCLUSIONS}"> </td>
-										
-										<td style=" text-align: center; background-color:#D9E1F2;" th:text="${#numbers.formatDecimal(report.R6_DEPOSITS_EXCLU_FCA_NO_OF_ACCOUNTS ,1,'COMMA',0,'POINT')}"
-										th:attr="reportLable='R6', reportAddlCriteria1='C2'"
-										onclick="showdetailsbyRowAndColumn(this)"></td>
-										
-										<td style=" text-align: right; background-color:#D9E1F2;" th:text="${#numbers.formatDecimal(report.R6_DEPOSITS_EXCLU_FCA_AMOUNT ,1,'COMMA',0,'POINT')}"
-										th:attr="reportLable='R6', reportAddlCriteria1='C3'"
-										onclick="showdetailsbyRowAndColumn(this)"></td>
-										
-										<td style=" text-align: center; background-color:#D9E1F2;"
-										th:text="${#numbers.formatDecimal(report.R6_FOREIGN_CURR_DEPOS_NO_OF_ACCOUNTS ,1,'COMMA',0,'POINT')}"
-										th:attr="reportLable='R6', reportAddlCriteria1='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										
-										<td style=" text-align: right; background-color:#D9E1F2;"
-											th:text="${#numbers.formatDecimal(report.R6_FOREIGN_CURR_DEPOS_AMOUNT ,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R6', reportAddlCriteria1='C5'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										
-										<td style=" text-align: center; background-color:#D9E1F2;"
-											th:text="${#numbers.formatDecimal(report.R6_TOTAL_NO_OF_ACCOUNTS ,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R6', reportAddlCriteria1='C6'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										
-										<td style=" text-align: right; background-color:#D9E1F2;"
-											th:text="${#numbers.formatDecimal(report.R6_TOTAL_AMOUNT ,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R6', reportAddlCriteria1='C7'" onclick="showdetailsbyRowAndColumn(this)"></td>
-									</tr>
-									
-									
-									
-									<tr>
-										<td style="background-color:#D9E1F2;" th:text="${report.R7_EXCLUSIONS}"> </td>
-										
-										<td style=" text-align: center; background-color:#D9E1F2;" th:text="${#numbers.formatDecimal(report.R7_DEPOSITS_EXCLU_FCA_NO_OF_ACCOUNTS ,1,'COMMA',0,'POINT')}"
-										th:attr="reportLable='R7', reportAddlCriteria1='C2'"
-										onclick="showdetailsbyRowAndColumn(this)"></td>
-										
-										<td style=" text-align: right; background-color:#D9E1F2;" th:text="${#numbers.formatDecimal(report.R7_DEPOSITS_EXCLU_FCA_AMOUNT ,1,'COMMA',0,'POINT')}"
-										th:attr="reportLable='R7', reportAddlCriteria1='C3'"
-										onclick="showdetailsbyRowAndColumn(this)"></td>
-										
-										<td style=" text-align: center; background-color:#D9E1F2;"
-										th:text="${#numbers.formatDecimal(report.R7_FOREIGN_CURR_DEPOS_NO_OF_ACCOUNTS ,1,'COMMA',0,'POINT')}"
-										th:attr="reportLable='R7', reportAddlCriteria1='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										
-										<td style=" text-align: right; background-color:#D9E1F2;"
-											th:text="${#numbers.formatDecimal(report.R7_FOREIGN_CURR_DEPOS_AMOUNT ,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R7', reportAddlCriteria1='C5'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										
-										<td style=" text-align: center; background-color:#D9E1F2;"
-											th:text="${#numbers.formatDecimal(report.R7_TOTAL_NO_OF_ACCOUNTS ,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R7', reportAddlCriteria1='C6'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										
-										<td style=" text-align: right; background-color:#D9E1F2;"
-											th:text="${#numbers.formatDecimal(report.R7_TOTAL_AMOUNT ,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R7', reportAddlCriteria1='C7'" onclick="showdetailsbyRowAndColumn(this)"></td>
-									</tr>
+																	<tr>
+																		<td style="background-color:rgb(255, 255, 255);" th:text="${report.R6_EXCLUSIONS}"> </td>
+																		
+																		<td style=" text-align: center; background-color:rgb(255, 255, 255);" th:text="${#numbers.formatDecimal(report.R6_DEPOSITS_EXCLU_FCA_NO_OF_ACCOUNTS ,1,'COMMA',0,'POINT')}"
+																		th:attr="reportLable='R6', reportAddlCriteria1='C2'"
+																		onclick="showdetailsbyRowAndColumn(this)"></td>
+																		
+																		<td style=" text-align: right; background-color:rgb(255, 255, 255);" th:text="${#numbers.formatDecimal(report.R6_DEPOSITS_EXCLU_FCA_AMOUNT ,1,'COMMA',0,'POINT')}"
+																		th:attr="reportLable='R6', reportAddlCriteria1='C3'"
+																		onclick="showdetailsbyRowAndColumn(this)"></td>
+																		
+																		<td style=" text-align: center; background-color:rgb(255, 255, 255);"
+																		th:text="${#numbers.formatDecimal(report.R6_FOREIGN_CURR_DEPOS_NO_OF_ACCOUNTS ,1,'COMMA',0,'POINT')}"
+																		th:attr="reportLable='R6', reportAddlCriteria1='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
+																		
+																		<td style=" text-align: right; background-color:rgb(255, 255, 255);"
+																			th:text="${#numbers.formatDecimal(report.R6_FOREIGN_CURR_DEPOS_AMOUNT ,1,'COMMA',0,'POINT')}"
+																			th:attr="reportLable='R6', reportAddlCriteria1='C5'" onclick="showdetailsbyRowAndColumn(this)"></td>
+																		
+																		<td style=" text-align: center; background-color:rgb(255, 255, 255);"
+																			th:text="${#numbers.formatDecimal(report.R6_TOTAL_NO_OF_ACCOUNTS ,1,'COMMA',0,'POINT')}"
+																			th:attr="reportLable='R6', reportAddlCriteria1='C6'" onclick="showdetailsbyRowAndColumn(this)"></td>
+																		
+																		<td style=" text-align: right; background-color:rgb(255, 255, 255);"
+																			th:text="${#numbers.formatDecimal(report.R6_TOTAL_AMOUNT ,1,'COMMA',0,'POINT')}"
+																			th:attr="reportLable='R6', reportAddlCriteria1='C7'" onclick="showdetailsbyRowAndColumn(this)"></td>
+																	</tr>
+																	
+																	
+																	
+																	<tr>
+																		<td style="background-color:rgb(255, 255, 255);" th:text="${report.R7_EXCLUSIONS}"> </td>
+																		
+																		<td style=" text-align: center; background-color:rgb(255, 255, 255);" th:text="${#numbers.formatDecimal(report.R7_DEPOSITS_EXCLU_FCA_NO_OF_ACCOUNTS ,1,'COMMA',0,'POINT')}"
+																		th:attr="reportLable='R7', reportAddlCriteria1='C2'"
+																		onclick="showdetailsbyRowAndColumn(this)"></td>
+																		
+																		<td style=" text-align: right; background-color:rgb(255, 255, 255);" th:text="${#numbers.formatDecimal(report.R7_DEPOSITS_EXCLU_FCA_AMOUNT ,1,'COMMA',0,'POINT')}"
+																		th:attr="reportLable='R7', reportAddlCriteria1='C3'"
+																		onclick="showdetailsbyRowAndColumn(this)"></td>
+																		
+																		<td style=" text-align: center; background-color:rgb(255, 255, 255);"
+																		th:text="${#numbers.formatDecimal(report.R7_FOREIGN_CURR_DEPOS_NO_OF_ACCOUNTS ,1,'COMMA',0,'POINT')}"
+																		th:attr="reportLable='R7', reportAddlCriteria1='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
+																		
+																		<td style=" text-align: right; background-color:rgb(255, 255, 255);"
+																			th:text="${#numbers.formatDecimal(report.R7_FOREIGN_CURR_DEPOS_AMOUNT ,1,'COMMA',0,'POINT')}"
+																			th:attr="reportLable='R7', reportAddlCriteria1='C5'" onclick="showdetailsbyRowAndColumn(this)"></td>
+																		
+																		<td style=" text-align: center; background-color:rgb(255, 255, 255);"
+																			th:text="${#numbers.formatDecimal(report.R7_TOTAL_NO_OF_ACCOUNTS ,1,'COMMA',0,'POINT')}"
+																			th:attr="reportLable='R7', reportAddlCriteria1='C6'" onclick="showdetailsbyRowAndColumn(this)"></td>
+																		
+																		<td style=" text-align: right; background-color:rgb(255, 255, 255);"
+																			th:text="${#numbers.formatDecimal(report.R7_TOTAL_AMOUNT ,1,'COMMA',0,'POINT')}"
+																			th:attr="reportLable='R7', reportAddlCriteria1='C7'" onclick="showdetailsbyRowAndColumn(this)"></td>
+																	</tr>
 
-									
-									
-									<tr>
-										<td style="background-color:#D9E1F2;" th:text="${report.R8_EXCLUSIONS}"> </td>
-										
-										<td style=" text-align: center; background-color:#D9E1F2;" th:text="${#numbers.formatDecimal(report.R8_DEPOSITS_EXCLU_FCA_NO_OF_ACCOUNTS ,1,'COMMA',0,'POINT')}"
-										th:attr="reportLable='R8', reportAddlCriteria1='C2'"
-										onclick="showdetailsbyRowAndColumn(this)"></td>
-										
-										<td style=" text-align: right; background-color:#D9E1F2;" th:text="${#numbers.formatDecimal(report.R8_DEPOSITS_EXCLU_FCA_AMOUNT ,1,'COMMA',0,'POINT')}"
-										th:attr="reportLable='R8', reportAddlCriteria1='C3'"
-										onclick="showdetailsbyRowAndColumn(this)"></td>
-										
-										<td style=" text-align: center; background-color:#D9E1F2;"
-										th:text="${#numbers.formatDecimal(report.R8_FOREIGN_CURR_DEPOS_NO_OF_ACCOUNTS ,1,'COMMA',0,'POINT')}"
-										th:attr="reportLable='R8', reportAddlCriteria1='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										
-										<td style=" text-align: right; background-color:#D9E1F2;"
-											th:text="${#numbers.formatDecimal(report.R8_FOREIGN_CURR_DEPOS_AMOUNT ,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R8', reportAddlCriteria1='C5'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										
-										<td style=" text-align: center; background-color:#D9E1F2;"
-											th:text="${#numbers.formatDecimal(report.R8_TOTAL_NO_OF_ACCOUNTS ,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R8', reportAddlCriteria1='C6'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										
-										<td style=" text-align: right; background-color:#D9E1F2;"
-											th:text="${#numbers.formatDecimal(report.R8_TOTAL_AMOUNT ,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R8', reportAddlCriteria1='C7'" onclick="showdetailsbyRowAndColumn(this)"></td>
-									</tr>
+																	
+																	
+																	<tr>
+																		<td style="background-color:rgb(255, 255, 255);" th:text="${report.R8_EXCLUSIONS}"> </td>
+																		
+																		<td style=" text-align: center; background-color:rgb(255, 255, 255);" th:text="${#numbers.formatDecimal(report.R8_DEPOSITS_EXCLU_FCA_NO_OF_ACCOUNTS ,1,'COMMA',0,'POINT')}"
+																		th:attr="reportLable='R8', reportAddlCriteria1='C2'"
+																		onclick="showdetailsbyRowAndColumn(this)"></td>
+																		
+																		<td style=" text-align: right; background-color:rgb(255, 255, 255);" th:text="${#numbers.formatDecimal(report.R8_DEPOSITS_EXCLU_FCA_AMOUNT ,1,'COMMA',0,'POINT')}"
+																		th:attr="reportLable='R8', reportAddlCriteria1='C3'"
+																		onclick="showdetailsbyRowAndColumn(this)"></td>
+																		
+																		<td style=" text-align: center; background-color:rgb(255, 255, 255);"
+																		th:text="${#numbers.formatDecimal(report.R8_FOREIGN_CURR_DEPOS_NO_OF_ACCOUNTS ,1,'COMMA',0,'POINT')}"
+																		th:attr="reportLable='R8', reportAddlCriteria1='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
+																		
+																		<td style=" text-align: right; background-color:rgb(255, 255, 255);"
+																			th:text="${#numbers.formatDecimal(report.R8_FOREIGN_CURR_DEPOS_AMOUNT ,1,'COMMA',0,'POINT')}"
+																			th:attr="reportLable='R8', reportAddlCriteria1='C5'" onclick="showdetailsbyRowAndColumn(this)"></td>
+																		
+																		<td style=" text-align: center; background-color:rgb(255, 255, 255);"
+																			th:text="${#numbers.formatDecimal(report.R8_TOTAL_NO_OF_ACCOUNTS ,1,'COMMA',0,'POINT')}"
+																			th:attr="reportLable='R8', reportAddlCriteria1='C6'" onclick="showdetailsbyRowAndColumn(this)"></td>
+																		
+																		<td style=" text-align: right; background-color:rgb(255, 255, 255);"
+																			th:text="${#numbers.formatDecimal(report.R8_TOTAL_AMOUNT ,1,'COMMA',0,'POINT')}"
+																			th:attr="reportLable='R8', reportAddlCriteria1='C7'" onclick="showdetailsbyRowAndColumn(this)"></td>
+																	</tr>
 
-									
-									
-									
-									<tr>
-										<td style="background-color:#D9E1F2;" th:text="${report.R9_EXCLUSIONS}"> </td>
-										
-										<td style=" text-align: center; background-color:#D9E1F2;" th:text="${#numbers.formatDecimal(report.R9_DEPOSITS_EXCLU_FCA_NO_OF_ACCOUNTS ,1,'COMMA',0,'POINT')}"
-										th:attr="reportLable='R9', reportAddlCriteria1='C2'"
-										onclick="showdetailsbyRowAndColumn(this)"></td>
-										
-										<td style=" text-align: right; background-color:#D9E1F2;" th:text="${#numbers.formatDecimal(report.R9_DEPOSITS_EXCLU_FCA_AMOUNT ,1,'COMMA',0,'POINT')}"
-										th:attr="reportLable='R9', reportAddlCriteria1='C3'"
-										onclick="showdetailsbyRowAndColumn(this)"></td>
-										
-										<td style=" text-align: center; background-color:#D9E1F2;"
-										th:text="${#numbers.formatDecimal(report.R9_FOREIGN_CURR_DEPOS_NO_OF_ACCOUNTS ,1,'COMMA',0,'POINT')}"
-										th:attr="reportLable='R9', reportAddlCriteria1='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										
-										<td style=" text-align: right; background-color:#D9E1F2;"
-											th:text="${#numbers.formatDecimal(report.R9_FOREIGN_CURR_DEPOS_AMOUNT ,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R9', reportAddlCriteria1='C5'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										
-										<td style=" text-align: center; background-color:#D9E1F2;"
-											th:text="${#numbers.formatDecimal(report.R9_TOTAL_NO_OF_ACCOUNTS ,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R9', reportAddlCriteria1='C6'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										
-										<td style=" text-align: right; background-color:#D9E1F2;"
-											th:text="${#numbers.formatDecimal(report.R9_TOTAL_AMOUNT ,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R9', reportAddlCriteria1='C7'" onclick="showdetailsbyRowAndColumn(this)"></td>
-									</tr>
+																	
+																	
+																	
+																	<tr>
+																		<td style="background-color:rgb(255, 255, 255);" th:text="${report.R9_EXCLUSIONS}"> </td>
+																		
+																		<td style=" text-align: center; background-color:rgb(255, 255, 255);" th:text="${#numbers.formatDecimal(report.R9_DEPOSITS_EXCLU_FCA_NO_OF_ACCOUNTS ,1,'COMMA',0,'POINT')}"
+																		th:attr="reportLable='R9', reportAddlCriteria1='C2'"
+																		onclick="showdetailsbyRowAndColumn(this)"></td>
+																		
+																		<td style=" text-align: right; background-color:rgb(255, 255, 255);" th:text="${#numbers.formatDecimal(report.R9_DEPOSITS_EXCLU_FCA_AMOUNT ,1,'COMMA',0,'POINT')}"
+																		th:attr="reportLable='R9', reportAddlCriteria1='C3'"
+																		onclick="showdetailsbyRowAndColumn(this)"></td>
+																		
+																		<td style=" text-align: center; background-color:rgb(255, 255, 255);"
+																		th:text="${#numbers.formatDecimal(report.R9_FOREIGN_CURR_DEPOS_NO_OF_ACCOUNTS ,1,'COMMA',0,'POINT')}"
+																		th:attr="reportLable='R9', reportAddlCriteria1='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
+																		
+																		<td style=" text-align: right; background-color:rgb(255, 255, 255);"
+																			th:text="${#numbers.formatDecimal(report.R9_FOREIGN_CURR_DEPOS_AMOUNT ,1,'COMMA',0,'POINT')}"
+																			th:attr="reportLable='R9', reportAddlCriteria1='C5'" onclick="showdetailsbyRowAndColumn(this)"></td>
+																		
+																		<td style=" text-align: center; background-color:rgb(255, 255, 255);"
+																			th:text="${#numbers.formatDecimal(report.R9_TOTAL_NO_OF_ACCOUNTS ,1,'COMMA',0,'POINT')}"
+																			th:attr="reportLable='R9', reportAddlCriteria1='C6'" onclick="showdetailsbyRowAndColumn(this)"></td>
+																		
+																		<td style=" text-align: right; background-color:rgb(255, 255, 255);"
+																			th:text="${#numbers.formatDecimal(report.R9_TOTAL_AMOUNT ,1,'COMMA',0,'POINT')}"
+																			th:attr="reportLable='R9', reportAddlCriteria1='C7'" onclick="showdetailsbyRowAndColumn(this)"></td>
+																	</tr>
 
-									
-									
-									<tr>
-										<td style="background-color:#D9E1F2;" th:text="${report.R10_EXCLUSIONS}"> </td>
-										
-										<td style=" text-align: center; background-color:#D9E1F2;" th:text="${#numbers.formatDecimal(report.R10_DEPOSITS_EXCLU_FCA_NO_OF_ACCOUNTS ,1,'COMMA',0,'POINT')}"
-										th:attr="reportLable='R10', reportAddlCriteria1='C2'"
-										onclick="showdetailsbyRowAndColumn(this)"></td>
-										
-										<td style=" text-align: right; background-color:#D9E1F2;" th:text="${#numbers.formatDecimal(report.R10_DEPOSITS_EXCLU_FCA_AMOUNT ,1,'COMMA',0,'POINT')}"
-										th:attr="reportLable='R10', reportAddlCriteria1='C3'"
-										onclick="showdetailsbyRowAndColumn(this)"></td>
-										
-										<td style=" text-align: center; background-color:#D9E1F2;"
-										th:text="${#numbers.formatDecimal(report.R10_FOREIGN_CURR_DEPOS_NO_OF_ACCOUNTS ,1,'COMMA',0,'POINT')}"
-										th:attr="reportLable='R10', reportAddlCriteria1='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										
-										<td style=" text-align: right; background-color:#D9E1F2;"
-											th:text="${#numbers.formatDecimal(report.R10_FOREIGN_CURR_DEPOS_AMOUNT ,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R10', reportAddlCriteria1='C5'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										
-										<td style=" text-align: center; background-color:#D9E1F2;"
-											th:text="${#numbers.formatDecimal(report.R10_TOTAL_NO_OF_ACCOUNTS ,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R10', reportAddlCriteria1='C6'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										
-										<td style=" text-align: right; background-color:#D9E1F2;"
-											th:text="${#numbers.formatDecimal(report.R10_TOTAL_AMOUNT ,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R10', reportAddlCriteria1='C7'" onclick="showdetailsbyRowAndColumn(this)"></td>
-									</tr>
+																	
+																	
+																	<tr>
+																		<td style="background-color:rgb(255, 255, 255);" th:text="${report.R10_EXCLUSIONS}"> </td>
+																		
+																		<td style=" text-align: center; background-color:rgb(255, 255, 255);" th:text="${#numbers.formatDecimal(report.R10_DEPOSITS_EXCLU_FCA_NO_OF_ACCOUNTS ,1,'COMMA',0,'POINT')}"
+																		th:attr="reportLable='R10', reportAddlCriteria1='C2'"
+																		onclick="showdetailsbyRowAndColumn(this)"></td>
+																		
+																		<td style=" text-align: right; background-color:rgb(255, 255, 255);" th:text="${#numbers.formatDecimal(report.R10_DEPOSITS_EXCLU_FCA_AMOUNT ,1,'COMMA',0,'POINT')}"
+																		th:attr="reportLable='R10', reportAddlCriteria1='C3'"
+																		onclick="showdetailsbyRowAndColumn(this)"></td>
+																		
+																		<td style=" text-align: center; background-color:rgb(255, 255, 255);"
+																		th:text="${#numbers.formatDecimal(report.R10_FOREIGN_CURR_DEPOS_NO_OF_ACCOUNTS ,1,'COMMA',0,'POINT')}"
+																		th:attr="reportLable='R10', reportAddlCriteria1='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
+																		
+																		<td style=" text-align: right; background-color:rgb(255, 255, 255);"
+																			th:text="${#numbers.formatDecimal(report.R10_FOREIGN_CURR_DEPOS_AMOUNT ,1,'COMMA',0,'POINT')}"
+																			th:attr="reportLable='R10', reportAddlCriteria1='C5'" onclick="showdetailsbyRowAndColumn(this)"></td>
+																		
+																		<td style=" text-align: center; background-color:rgb(255, 255, 255);"
+																			th:text="${#numbers.formatDecimal(report.R10_TOTAL_NO_OF_ACCOUNTS ,1,'COMMA',0,'POINT')}"
+																			th:attr="reportLable='R10', reportAddlCriteria1='C6'" onclick="showdetailsbyRowAndColumn(this)"></td>
+																		
+																		<td style=" text-align: right; background-color:rgb(255, 255, 255);"
+																			th:text="${#numbers.formatDecimal(report.R10_TOTAL_AMOUNT ,1,'COMMA',0,'POINT')}"
+																			th:attr="reportLable='R10', reportAddlCriteria1='C7'" onclick="showdetailsbyRowAndColumn(this)"></td>
+																	</tr>
 
-									
-									
-									<tr>
-										<td style="background-color:#D9E1F2;" th:text="${report.R11_EXCLUSIONS}"> </td>
-										
-										<td style=" text-align: center; background-color:#D9E1F2;" th:text="${#numbers.formatDecimal(report.R11_DEPOSITS_EXCLU_FCA_NO_OF_ACCOUNTS ,1,'COMMA',0,'POINT')}"
-										th:attr="reportLable='R11', reportAddlCriteria1='C2'"
-										onclick="showdetailsbyRowAndColumn(this)"></td>
-										
-										<td style=" text-align: right; background-color:#D9E1F2;" th:text="${#numbers.formatDecimal(report.R11_DEPOSITS_EXCLU_FCA_AMOUNT ,1,'COMMA',0,'POINT')}"
-										th:attr="reportLable='R11', reportAddlCriteria1='C3'"
-										onclick="showdetailsbyRowAndColumn(this)"></td>
-										
-										<td style=" text-align: center; background-color:#D9E1F2;"
-										th:text="${#numbers.formatDecimal(report.R11_FOREIGN_CURR_DEPOS_NO_OF_ACCOUNTS ,1,'COMMA',0,'POINT')}"
-										th:attr="reportLable='R11', reportAddlCriteria1='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										
-										<td style=" text-align: right; background-color:#D9E1F2;"
-											th:text="${#numbers.formatDecimal(report.R11_FOREIGN_CURR_DEPOS_AMOUNT ,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R11', reportAddlCriteria1='C5'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										
-										<td style=" text-align: center; background-color:#D9E1F2;"
-											th:text="${#numbers.formatDecimal(report.R11_TOTAL_NO_OF_ACCOUNTS ,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R11', reportAddlCriteria1='C6'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										
-										<td style=" text-align: right; background-color:#D9E1F2;"
-											th:text="${#numbers.formatDecimal(report.R11_TOTAL_AMOUNT ,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R11', reportAddlCriteria1='C7'" onclick="showdetailsbyRowAndColumn(this)"></td>
-									</tr>
+																	
+																	
+																	<tr>
+																		<td style="background-color:rgb(255, 255, 255);" th:text="${report.R11_EXCLUSIONS}"> </td>
+																		
+																		<td style=" text-align: center; background-color:rgb(255, 255, 255);" th:text="${#numbers.formatDecimal(report.R11_DEPOSITS_EXCLU_FCA_NO_OF_ACCOUNTS ,1,'COMMA',0,'POINT')}"
+																		th:attr="reportLable='R11', reportAddlCriteria1='C2'"
+																		onclick="showdetailsbyRowAndColumn(this)"></td>
+																		
+																		<td style=" text-align: right; background-color:rgb(255, 255, 255);" th:text="${#numbers.formatDecimal(report.R11_DEPOSITS_EXCLU_FCA_AMOUNT ,1,'COMMA',0,'POINT')}"
+																		th:attr="reportLable='R11', reportAddlCriteria1='C3'"
+																		onclick="showdetailsbyRowAndColumn(this)"></td>
+																		
+																		<td style=" text-align: center; background-color:rgb(255, 255, 255);"
+																		th:text="${#numbers.formatDecimal(report.R11_FOREIGN_CURR_DEPOS_NO_OF_ACCOUNTS ,1,'COMMA',0,'POINT')}"
+																		th:attr="reportLable='R11', reportAddlCriteria1='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
+																		
+																		<td style=" text-align: right; background-color:rgb(255, 255, 255);"
+																			th:text="${#numbers.formatDecimal(report.R11_FOREIGN_CURR_DEPOS_AMOUNT ,1,'COMMA',0,'POINT')}"
+																			th:attr="reportLable='R11', reportAddlCriteria1='C5'" onclick="showdetailsbyRowAndColumn(this)"></td>
+																		
+																		<td style=" text-align: center; background-color:rgb(255, 255, 255);"
+																			th:text="${#numbers.formatDecimal(report.R11_TOTAL_NO_OF_ACCOUNTS ,1,'COMMA',0,'POINT')}"
+																			th:attr="reportLable='R11', reportAddlCriteria1='C6'" onclick="showdetailsbyRowAndColumn(this)"></td>
+																		
+																		<td style=" text-align: right; background-color:rgb(255, 255, 255);"
+																			th:text="${#numbers.formatDecimal(report.R11_TOTAL_AMOUNT ,1,'COMMA',0,'POINT')}"
+																			th:attr="reportLable='R11', reportAddlCriteria1='C7'" onclick="showdetailsbyRowAndColumn(this)"></td>
+																	</tr>
 
-									
-									<tr>
-										<td style="background-color:#D9E1F2;" th:text="${report.R12_EXCLUSIONS}"> </td>
-										
-										<td style=" text-align: center; background-color:#D9E1F2;" th:text="${#numbers.formatDecimal(report.R12_DEPOSITS_EXCLU_FCA_NO_OF_ACCOUNTS ,1,'COMMA',0,'POINT')}"
-										th:attr="reportLable='R12', reportAddlCriteria1='C2'"
-										onclick="showdetailsbyRowAndColumn(this)"></td>
-										
-										<td style=" text-align: right; background-color:#D9E1F2;" th:text="${#numbers.formatDecimal(report.R12_DEPOSITS_EXCLU_FCA_AMOUNT ,1,'COMMA',0,'POINT')}"
-										th:attr="reportLable='R12', reportAddlCriteria1='C3'"
-										onclick="showdetailsbyRowAndColumn(this)"></td>
-										
-										<td style=" text-align: center; background-color:#D9E1F2;"
-										th:text="${#numbers.formatDecimal(report.R12_FOREIGN_CURR_DEPOS_NO_OF_ACCOUNTS ,1,'COMMA',0,'POINT')}"
-										th:attr="reportLable='R12', reportAddlCriteria1='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										
-										<td style=" text-align: right; background-color:#D9E1F2;"
-											th:text="${#numbers.formatDecimal(report.R12_FOREIGN_CURR_DEPOS_AMOUNT ,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R12', reportAddlCriteria1='C5'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										
-										<td style=" text-align: center; background-color:#D9E1F2;"
-											th:text="${#numbers.formatDecimal(report.R12_TOTAL_NO_OF_ACCOUNTS ,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R12', reportAddlCriteria1='C6'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										
-										<td style=" text-align: right; background-color:#D9E1F2;"
-											th:text="${#numbers.formatDecimal(report.R12_TOTAL_AMOUNT ,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R12', reportAddlCriteria1='C7'" onclick="showdetailsbyRowAndColumn(this)"></td>
-									</tr>
+																	
+																	<tr>
+																		<td style="background-color:rgb(255, 255, 255);" th:text="${report.R12_EXCLUSIONS}"> </td>
+																		
+																		<td style=" text-align: center; background-color:rgb(255, 255, 255);" th:text="${#numbers.formatDecimal(report.R12_DEPOSITS_EXCLU_FCA_NO_OF_ACCOUNTS ,1,'COMMA',0,'POINT')}"
+																		th:attr="reportLable='R12', reportAddlCriteria1='C2'"
+																		onclick="showdetailsbyRowAndColumn(this)"></td>
+																		
+																		<td style=" text-align: right; background-color:rgb(255, 255, 255);" th:text="${#numbers.formatDecimal(report.R12_DEPOSITS_EXCLU_FCA_AMOUNT ,1,'COMMA',0,'POINT')}"
+																		th:attr="reportLable='R12', reportAddlCriteria1='C3'"
+																		onclick="showdetailsbyRowAndColumn(this)"></td>
+																		
+																		<td style=" text-align: center; background-color:rgb(255, 255, 255);"
+																		th:text="${#numbers.formatDecimal(report.R12_FOREIGN_CURR_DEPOS_NO_OF_ACCOUNTS ,1,'COMMA',0,'POINT')}"
+																		th:attr="reportLable='R12', reportAddlCriteria1='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
+																		
+																		<td style=" text-align: right; background-color:rgb(255, 255, 255);"
+																			th:text="${#numbers.formatDecimal(report.R12_FOREIGN_CURR_DEPOS_AMOUNT ,1,'COMMA',0,'POINT')}"
+																			th:attr="reportLable='R12', reportAddlCriteria1='C5'" onclick="showdetailsbyRowAndColumn(this)"></td>
+																		
+																		<td style=" text-align: center; background-color:rgb(255, 255, 255);"
+																			th:text="${#numbers.formatDecimal(report.R12_TOTAL_NO_OF_ACCOUNTS ,1,'COMMA',0,'POINT')}"
+																			th:attr="reportLable='R12', reportAddlCriteria1='C6'" onclick="showdetailsbyRowAndColumn(this)"></td>
+																		
+																		<td style=" text-align: right; background-color:rgb(255, 255, 255);"
+																			th:text="${#numbers.formatDecimal(report.R12_TOTAL_AMOUNT ,1,'COMMA',0,'POINT')}"
+																			th:attr="reportLable='R12', reportAddlCriteria1='C7'" onclick="showdetailsbyRowAndColumn(this)"></td>
+																	</tr>
 
-									
-								</tbody>
+																	
+																</tbody>
 
 							</table>
 						</div>

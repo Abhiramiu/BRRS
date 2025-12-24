@@ -608,7 +608,7 @@ PURPOSE		: BRRS_DBS10_FINCON_II_1AREPORT
 						window.URL.revokeObjectURL(url);
 						document.body.removeChild(a);
 
-						showResultModal('BRRS', filename + ' downloaded successfully');
+						showResultModal('BRRS', filename + ' downloaded successfully.');
 					} else {
 						showResultModal('Information', 'No data was available to create a download.');
 					}
@@ -980,25 +980,25 @@ PURPOSE		: BRRS_DBS10_FINCON_II_1AREPORT
 								id="reports">
 
 								<thead border="1" cellspacing="0" cellpadding="6"
-									style="border-collapse: collapse; text-align:center; font-family: Arial;">
-									
-									
-									<tr>
-										<th style="background-color:rgb(255, 255, 255);"> </th>
-										<th colspan="3" style="background-color:rgb(254, 212, 3); text-align: left;">(1) (a) Important financial information of SFIs (On Balance Sheet Items)  </th>
-									</tr>
-									
-									<tr>
-										<th style="background-color:rgb(255, 255, 255); border-left: none !important; border-color: transparent;"> </th>
-										<th rowspan="2" style="background-color:rgb(254, 212, 3); width:60%; text-align: center; vertical-align: middle;"> Particulars</th>
-										<th rowspan="2" style="background-color:rgb(254, 212, 3); width:200px; text-align: center;"></th>
-										<th style="background-color:rgb(254, 212, 3); text-align: right;">Amount</th>
-									</tr>
-									
-									<tr>
-										<th style="background-color:rgb(254, 212, 3); text-align: center;">Entity</th>
-										<th style="background-color:rgb(254, 212, 3); text-align: right;">X010</th>
-									</tr>
+																	style="border-collapse: collapse; text-align:center; font-family: Arial;">
+																	
+																	
+																	<tr>
+																		<th style="background-color:rgb(255, 255, 255);"> </th>
+																		<th colspan="3" style="background-color:#D8D8D8; text-align: left;">(1) (a) Important financial information of SFIs (On Balance Sheet Items)  </th>
+																	</tr>
+																	
+																	<tr>
+																		<th style="background-color:rgb(255, 255, 255); border-left: none !important; border-color: transparent;"> </th>
+																		<th rowspan="2" style="background-color:#D8D8D8; width:60%; text-align: center; vertical-align: middle;"> Particulars</th>
+																		<th rowspan="2" style="background-color:#D8D8D8; width:200px; text-align: center;"></th>
+																		<th style="background-color:#D8D8D8;  text-align: right;">Amount</th>
+																	</tr>
+																	
+																	<tr>
+																		<th style="background-color:#D8D8D8; text-align: center;">Entity</th>
+																		<th style="background-color:#D8D8D8; text-align: right;">X010</th>
+																	</tr>
 
 
 								</thead>
@@ -1007,7 +1007,7 @@ PURPOSE		: BRRS_DBS10_FINCON_II_1AREPORT
 
 								<tbody th:each="report: ${reportsummary}" style="font-family: Arial;">								
 									<tr>
-										<td style="background-color:rgb(255, 255, 0);"> </td>
+										<td> </td>
 										<td style=" font-weight: bold;" th:text="${report.R5_PARTICULARS}"></td>
 										<td style=" font-weight: bold; text-align: center;" th:text="${report.R5_Y_SERIES_COLUMN}"></td>
 										<td style=" text-align: right;" th:text="${#numbers.formatDecimal(report.R5_AMOUNT_X010,1,'COMMA',0,'POINT')}"
@@ -1016,7 +1016,7 @@ PURPOSE		: BRRS_DBS10_FINCON_II_1AREPORT
 									</tr>
 									
 									<tr>
-										<td style="background-color:rgb(255, 255, 0);"> </td>
+										<td> </td>
 										<td style=" font-weight: bold;" th:text="${report.R6_PARTICULARS}"></td>
 										<td style=" font-weight: bold; text-align: center;" th:text="${report.R6_Y_SERIES_COLUMN}"></td>
 										<td style=" text-align: right;" th:text="${#numbers.formatDecimal(report.R6_AMOUNT_X010,1,'COMMA',0,'POINT')}"
@@ -1025,7 +1025,7 @@ PURPOSE		: BRRS_DBS10_FINCON_II_1AREPORT
 									</tr>
 									
 									<tr>
-										<td style="background-color:rgb(255, 255, 0);"> </td>
+										<td> </td>
 										<td style=" font-weight: bold;" th:text="${report.R7_PARTICULARS}"></td>
 										<td style=" font-weight: bold; text-align: center;" th:text="${report.R7_Y_SERIES_COLUMN}"></td>
 										<td style=" text-align: right;" th:text="${#numbers.formatDecimal(report.R7_AMOUNT_X010,1,'COMMA',0,'POINT')}"
@@ -1034,7 +1034,7 @@ PURPOSE		: BRRS_DBS10_FINCON_II_1AREPORT
 									</tr>
 									
 									<tr>
-										<td style="background-color:rgb(255, 255, 0);"> </td>
+										<td> </td>
 										<td style=" font-weight: bold;" th:text="${report.R8_PARTICULARS}"></td>
 										<td style=" font-weight: bold; text-align: center;" th:text="${report.R8_Y_SERIES_COLUMN}"></td>
 										<td style=" text-align: right;" th:text="${#numbers.formatDecimal(report.R8_AMOUNT_X010,1,'COMMA',0,'POINT')}"
@@ -1043,7 +1043,7 @@ PURPOSE		: BRRS_DBS10_FINCON_II_1AREPORT
 									</tr>
 									
 									<tr>
-										<td style="background-color:rgb(255, 255, 0);"> </td>
+										<td> </td>
 										<td style=" font-weight: bold;" th:text="${report.R9_PARTICULARS}"></td>
 										<td style=" font-weight: bold; text-align: center;" th:text="${report.R9_Y_SERIES_COLUMN}"></td>
 										<td style=" text-align: right;" th:text="${#numbers.formatDecimal(report.R9_AMOUNT_X010,1,'COMMA',0,'POINT')}"
@@ -1052,7 +1052,7 @@ PURPOSE		: BRRS_DBS10_FINCON_II_1AREPORT
 									</tr>
 									
 									<tr>
-										<td style="background-color:rgb(255, 255, 0);"> </td>
+										<td> </td>
 										<td style=" font-weight: bold;" th:text="${report.R10_PARTICULARS}"></td>
 										<td style=" font-weight: bold; text-align: center;" th:text="${report.R10_Y_SERIES_COLUMN}"></td>
 										<td style=" text-align: right;" th:text="${#numbers.formatDecimal(report.R10_AMOUNT_X010,1,'COMMA',0,'POINT')}"
@@ -1062,7 +1062,7 @@ PURPOSE		: BRRS_DBS10_FINCON_II_1AREPORT
 									</tr>
 									
 									<tr>
-										<td style="background-color:rgb(255, 255, 0);"> </td>
+										<td> </td>
 										<td style=" font-weight: bold;" th:text="${report.R11_PARTICULARS}"></td>
 										<td style=" font-weight: bold; text-align: center;" th:text="${report.R11_Y_SERIES_COLUMN}"></td>
 										<td style=" text-align: right;" th:text="${#numbers.formatDecimal(report.R11_AMOUNT_X010,1,'COMMA',0,'POINT')}"
@@ -1072,7 +1072,7 @@ PURPOSE		: BRRS_DBS10_FINCON_II_1AREPORT
 									</tr>
 									
 									<tr>
-										<td style="background-color:rgb(255, 255, 0);"> </td>
+										<td> </td>
 										<td style=" font-weight: bold;" th:text="${report.R12_PARTICULARS}"></td>
 										<td style=" font-weight: bold; text-align: center;" th:text="${report.R12_Y_SERIES_COLUMN}"></td>
 										<td style=" text-align: right;" th:text="${#numbers.formatDecimal(report.R12_AMOUNT_X010,1,'COMMA',0,'POINT')}"
@@ -1082,14 +1082,14 @@ PURPOSE		: BRRS_DBS10_FINCON_II_1AREPORT
 									</tr>
 									
 									<tr>
-										<td style="background-color:rgb(255, 255, 0);"> </td>
+										<td> </td>
 										<td style=" font-weight: bold;" th:text="${report.R13_PARTICULARS}"></td>
 										<td style=" font-weight: bold; text-align: center;" th:text="${report.R13_Y_SERIES_COLUMN}"></td>
 										<td style=" text-align: right; background-color:rgb(192, 192, 192);"></td>
 									</tr>
 									
 									<tr>
-										<td style="background-color:rgb(255, 255, 0);"> </td>
+										<td> </td>
 										<td style=" font-weight: bold; padding-left: 25px;" th:text="${report.R14_PARTICULARS}"></td>
 										<td style=" font-weight: bold; text-align: center;" th:text="${report.R14_Y_SERIES_COLUMN}"></td>
 										<td style=" text-align: right;" th:text="${#numbers.formatDecimal(report.R14_AMOUNT_X010,1,'COMMA',0,'POINT')}"
@@ -1099,7 +1099,7 @@ PURPOSE		: BRRS_DBS10_FINCON_II_1AREPORT
 									</tr>
 									
 									<tr>
-										<td style="background-color:rgb(255, 255, 0);"> </td>
+										<td> </td>
 										<td style=" font-weight: bold; padding-left: 25px;" th:text="${report.R15_PARTICULARS}"></td>
 										<td style=" font-weight: bold; text-align: center;" th:text="${report.R15_Y_SERIES_COLUMN}"></td>
 										<td style=" text-align: right;" th:text="${#numbers.formatDecimal(report.R15_AMOUNT_X010,1,'COMMA',0,'POINT')}"
@@ -1109,7 +1109,7 @@ PURPOSE		: BRRS_DBS10_FINCON_II_1AREPORT
 									</tr>
 
 									<tr>
-										<td style="background-color:rgb(255, 255, 0);"> </td>
+										<td> </td>
 										<td style=" font-weight: bold; padding-left: 25px;" th:text="${report.R16_PARTICULARS}"></td>
 										<td style=" font-weight: bold; text-align: center;" th:text="${report.R16_Y_SERIES_COLUMN}"></td>
 										<td style=" text-align: right;" th:text="${#numbers.formatDecimal(report.R16_AMOUNT_X010,1,'COMMA',0,'POINT')}"
@@ -1119,7 +1119,7 @@ PURPOSE		: BRRS_DBS10_FINCON_II_1AREPORT
 									</tr>
 									
 									<tr>
-										<td style="background-color:rgb(255, 255, 0);"> </td>
+										<td> </td>
 										<td style=" font-weight: bold;" th:text="${report.R17_PARTICULARS}"></td>
 										<td style=" font-weight: bold; text-align: center;" th:text="${report.R17_Y_SERIES_COLUMN}"></td>
 										<td style=" text-align: right;" th:text="${#numbers.formatDecimal(report.R17_AMOUNT_X010,1,'COMMA',0,'POINT')}"
@@ -1129,7 +1129,7 @@ PURPOSE		: BRRS_DBS10_FINCON_II_1AREPORT
 									</tr>
 									
 									<tr>
-										<td style="background-color:rgb(255, 255, 0);"> </td>
+										<td> </td>
 										<td style=" font-weight: bold;" th:text="${report.R18_PARTICULARS}"></td>
 										<td style=" font-weight: bold; text-align: center;" th:text="${report.R18_Y_SERIES_COLUMN}"></td>
 										<td style=" text-align: right;" th:text="${#numbers.formatDecimal(report.R18_AMOUNT_X010,1,'COMMA',0,'POINT')}"
@@ -1140,7 +1140,7 @@ PURPOSE		: BRRS_DBS10_FINCON_II_1AREPORT
 									
 									
 									<tr>
-										<td style="background-color:rgb(255, 255, 0);"> </td>
+										<td> </td>
 										<td style=" font-weight: bold;" th:text="${report.R19_PARTICULARS}"></td>
 										<td style=" font-weight: bold; text-align: center;" th:text="${report.R19_Y_SERIES_COLUMN}"></td>
 										<td style=" text-align: right;" th:text="${#numbers.formatDecimal(report.R19_AMOUNT_X010,1,'COMMA',0,'POINT')}"
@@ -1150,7 +1150,7 @@ PURPOSE		: BRRS_DBS10_FINCON_II_1AREPORT
 									</tr>
 									
 									<tr>
-										<td style="background-color:rgb(255, 255, 0);"> </td>
+										<td> </td>
 										<td style=" font-weight: bold;" th:text="${report.R20_PARTICULARS}"></td>
 										<td style=" font-weight: bold; text-align: center;" th:text="${report.R20_Y_SERIES_COLUMN}"></td>
 										<td style=" text-align: right;" th:text="${#numbers.formatDecimal(report.R20_AMOUNT_X010,1,'COMMA',0,'POINT')}"
@@ -1160,7 +1160,7 @@ PURPOSE		: BRRS_DBS10_FINCON_II_1AREPORT
 									</tr>
 									
 									<tr>
-										<td style="background-color:rgb(255, 255, 0);"> </td>
+										<td> </td>
 										<td style=" font-weight: bold;" th:text="${report.R21_PARTICULARS}"></td>
 										<td style=" font-weight: bold; text-align: center;" th:text="${report.R21_Y_SERIES_COLUMN}"></td>
 										<td style=" text-align: right;" th:text="${#numbers.formatDecimal(report.R21_AMOUNT_X010,1,'COMMA',0,'POINT')}"
@@ -1170,7 +1170,7 @@ PURPOSE		: BRRS_DBS10_FINCON_II_1AREPORT
 									</tr>
 											
 									<tr>
-										<td style="background-color:rgb(255, 255, 0);"> </td>
+										<td> </td>
 										<td style=" font-weight: bold; padding-left: 25px;" th:text="${report.R22_PARTICULARS}"></td>
 										<td style=" font-weight: bold; text-align: center;" th:text="${report.R22_Y_SERIES_COLUMN}"></td>
 										<td style=" text-align: right;" th:text="${#numbers.formatDecimal(report.R22_AMOUNT_X010,1,'COMMA',0,'POINT')}"
@@ -1180,7 +1180,7 @@ PURPOSE		: BRRS_DBS10_FINCON_II_1AREPORT
 									</tr>
 									
 									<tr>
-										<td style="background-color:rgb(255, 255, 0);"> </td>
+										<td> </td>
 										<td style=" font-weight: bold; padding-left: 25px;" th:text="${report.R23_PARTICULARS}"></td>
 										<td style=" font-weight: bold; text-align: center;" th:text="${report.R23_Y_SERIES_COLUMN}"></td>
 										<td style=" text-align: right;" th:text="${#numbers.formatDecimal(report.R23_AMOUNT_X010,1,'COMMA',0,'POINT')}"
@@ -1190,7 +1190,7 @@ PURPOSE		: BRRS_DBS10_FINCON_II_1AREPORT
 									</tr>
 																												
 									<tr>
-										<td style="background-color:rgb(255, 255, 0);"> </td>
+										<td> </td>
 										<td style=" font-weight: bold; padding-left: 25px;" th:text="${report.R24_PARTICULARS}"></td>
 										<td style=" font-weight: bold; text-align: center;" th:text="${report.R24_Y_SERIES_COLUMN}"></td>
 										<td style=" text-align: right;" th:text="${#numbers.formatDecimal(report.R24_AMOUNT_X010,1,'COMMA',0,'POINT')}"
@@ -1200,7 +1200,7 @@ PURPOSE		: BRRS_DBS10_FINCON_II_1AREPORT
 									</tr>
 									
 									<tr>
-										<td style="background-color:rgb(255, 255, 0);"> </td>
+										<td> </td>
 										<td style=" font-weight: bold; padding-left: 25px;" th:text="${report.R25_PARTICULARS}"></td>
 										<td style=" font-weight: bold; text-align: center;" th:text="${report.R25_Y_SERIES_COLUMN}"></td>
 										<td style=" text-align: right;" th:text="${#numbers.formatDecimal(report.R25_AMOUNT_X010,1,'COMMA',0,'POINT')}"
@@ -1210,7 +1210,7 @@ PURPOSE		: BRRS_DBS10_FINCON_II_1AREPORT
 									</tr>
 									
 									<tr>
-										<td style="background-color:rgb(255, 255, 0);"> </td>
+										<td> </td>
 										<td style=" font-weight: bold; padding-left: 25px;" th:text="${report.R26_PARTICULARS}"></td>
 										<td style=" font-weight: bold; text-align: center;" th:text="${report.R26_Y_SERIES_COLUMN}"></td>
 										<td style=" text-align: right;" th:text="${#numbers.formatDecimal(report.R26_AMOUNT_X010,1,'COMMA',0,'POINT')}"
@@ -1220,7 +1220,7 @@ PURPOSE		: BRRS_DBS10_FINCON_II_1AREPORT
 									</tr>
 									
 									<tr>
-										<td style="background-color:rgb(255, 255, 0);"> </td>
+										<td> </td>
 										<td style=" font-weight: bold; padding-left: 25px;" th:text="${report.R27_PARTICULARS}"></td>
 										<td style=" font-weight: bold; text-align: center;" th:text="${report.R27_Y_SERIES_COLUMN}"></td>
 										<td style=" text-align: right;" th:text="${#numbers.formatDecimal(report.R27_AMOUNT_X010,1,'COMMA',0,'POINT')}"
@@ -1230,7 +1230,7 @@ PURPOSE		: BRRS_DBS10_FINCON_II_1AREPORT
 									</tr>
 									
 									<tr>
-										<td style="background-color:rgb(255, 255, 0);"> </td>
+										<td> </td>
 										<td style=" font-weight: bold; padding-left: 25px;" th:text="${report.R28_PARTICULARS}"></td>
 										<td style=" font-weight: bold; text-align: center;" th:text="${report.R28_Y_SERIES_COLUMN}"></td>
 										<td style=" text-align: right;" th:text="${#numbers.formatDecimal(report.R28_AMOUNT_X010,1,'COMMA',0,'POINT')}"
@@ -1240,23 +1240,23 @@ PURPOSE		: BRRS_DBS10_FINCON_II_1AREPORT
 									</tr>
 									
 									<tr>
-										<td style="background-color:rgb(255, 255, 0);"> </td>
+										<td> </td>
 										<td style=" font-weight: bold;" th:text="${report.R29_PARTICULARS}"></td>
 										<td style=" font-weight: bold; text-align: center;" th:text="${report.R29_Y_SERIES_COLUMN}"></td>
-										<td style=" text-align: right; background-color: rgb(153, 204, 255);" th:text="${#numbers.formatDecimal(report.R29_AMOUNT_X010,1,'COMMA',0,'POINT')}">
+										<td style=" text-align: right; background-color: rgb(107, 122, 143); color: white;" th:text="${#numbers.formatDecimal(report.R29_AMOUNT_X010,1,'COMMA',0,'POINT')}">
 										</td>
 									</tr>
 									
 									<tr>
-										<td style="background-color:rgb(255, 255, 0);"> </td>
+										<td> </td>
 										<td style=" font-weight: bold; padding-left: 25px;" th:text="${report.R30_PARTICULARS}"></td>
 										<td style=" font-weight: bold; text-align: center;" th:text="${report.R30_Y_SERIES_COLUMN}"></td>
-										<td style=" text-align: right; background-color: rgb(153, 204, 255);" th:text="${#numbers.formatDecimal(report.R30_AMOUNT_X010,1,'COMMA',0,'POINT')}">
+										<td style=" text-align: right; background-color: rgb(107, 122, 143); color: white;" th:text="${#numbers.formatDecimal(report.R30_AMOUNT_X010,1,'COMMA',0,'POINT')}">
 										</td>
 									</tr>
 									
 									<tr>
-										<td style="background-color:rgb(255, 255, 0);"> </td>
+										<td> </td>
 										<td style=" font-weight: bold; padding-left: 45px;" th:text="${report.R31_PARTICULARS}"></td>
 										<td style=" font-weight: bold; text-align: center;" th:text="${report.R31_Y_SERIES_COLUMN}"></td>
 										<td style=" text-align: right;" th:text="${#numbers.formatDecimal(report.R31_AMOUNT_X010,1,'COMMA',0,'POINT')}"
@@ -1266,7 +1266,7 @@ PURPOSE		: BRRS_DBS10_FINCON_II_1AREPORT
 									</tr>
 									
 									<tr>
-										<td style="background-color:rgb(255, 255, 0);"> </td>
+										<td> </td>
 										<td style=" font-weight: bold; padding-left: 45px;" th:text="${report.R32_PARTICULARS}"></td>
 										<td style=" font-weight: bold; text-align: center;" th:text="${report.R32_Y_SERIES_COLUMN}"></td>
 										<td style=" text-align: right;" th:text="${#numbers.formatDecimal(report.R32_AMOUNT_X010,1,'COMMA',0,'POINT')}"
@@ -1276,15 +1276,15 @@ PURPOSE		: BRRS_DBS10_FINCON_II_1AREPORT
 									</tr>
 											
 									<tr>
-										<td style="background-color:rgb(255, 255, 0);"> </td>
+										<td> </td>
 										<td style=" font-weight: bold; padding-left: 25px;" th:text="${report.R33_PARTICULARS}"></td>
 										<td style=" font-weight: bold; text-align: center;" th:text="${report.R33_Y_SERIES_COLUMN}"></td>
-										<td style=" text-align: right;  background-color: rgb(153, 204, 255);" th:text="${#numbers.formatDecimal(report.R33_AMOUNT_X010,1,'COMMA',0,'POINT')}">
+										<td style=" text-align: right;  background-color: rgb(107, 122, 143); color: white;" th:text="${#numbers.formatDecimal(report.R33_AMOUNT_X010,1,'COMMA',0,'POINT')}">
 										</td>
 									</tr>
 									
 									<tr>
-										<td style="background-color:rgb(255, 255, 0);"> </td>
+										<td> </td>
 										<td style=" font-weight: bold; padding-left: 45px;" th:text="${report.R34_PARTICULARS}"></td>
 										<td style=" font-weight: bold; text-align: center;" th:text="${report.R34_Y_SERIES_COLUMN}"></td>
 										<td style=" text-align: right;" th:text="${#numbers.formatDecimal(report.R34_AMOUNT_X010,1,'COMMA',0,'POINT')}"
@@ -1294,7 +1294,7 @@ PURPOSE		: BRRS_DBS10_FINCON_II_1AREPORT
 									</tr>
 									
 									<tr>
-										<td style="background-color:rgb(255, 255, 0);"> </td>
+										<td> </td>
 										<td style=" font-weight: bold; padding-left: 45px;" th:text="${report.R35_PARTICULARS}"></td>
 										<td style=" font-weight: bold; text-align: center;" th:text="${report.R35_Y_SERIES_COLUMN}"></td>
 										<td style=" text-align: right;" th:text="${#numbers.formatDecimal(report.R35_AMOUNT_X010,1,'COMMA',0,'POINT')}"
@@ -1304,7 +1304,7 @@ PURPOSE		: BRRS_DBS10_FINCON_II_1AREPORT
 									</tr>
 									
 									<tr>
-										<td style="background-color:rgb(255, 255, 0);"> </td>
+										<td> </td>
 										<td style=" font-weight: bold; padding-left: 25px;" th:text="${report.R36_PARTICULARS}"></td>
 										<td style=" font-weight: bold; text-align: center;" th:text="${report.R36_Y_SERIES_COLUMN}"></td>
 										<td style=" text-align: right;" th:text="${#numbers.formatDecimal(report.R36_AMOUNT_X010,1,'COMMA',0,'POINT')}"
@@ -1314,7 +1314,7 @@ PURPOSE		: BRRS_DBS10_FINCON_II_1AREPORT
 									</tr>
 									
 									<tr>
-										<td style="background-color:rgb(255, 255, 0);"> </td>
+										<td> </td>
 										<td style=" font-weight: bold; padding-left: 25px;" th:text="${report.R37_PARTICULARS}"></td>
 										<td style=" font-weight: bold; text-align: center;" th:text="${report.R37_Y_SERIES_COLUMN}"></td>
 										<td style=" text-align: right;" th:text="${#numbers.formatDecimal(report.R37_AMOUNT_X010,1,'COMMA',0,'POINT')}"
@@ -1324,7 +1324,7 @@ PURPOSE		: BRRS_DBS10_FINCON_II_1AREPORT
 									</tr>
 									
 									<tr>
-										<td style="background-color:rgb(255, 255, 0);"> </td>
+										<td> </td>
 										<td style=" font-weight: bold;" th:text="${report.R38_PARTICULARS}"></td>
 										<td style=" font-weight: bold; text-align: center;" th:text="${report.R38_Y_SERIES_COLUMN}"></td>
 										<td style=" text-align: right;" th:text="${#numbers.formatDecimal(report.R38_AMOUNT_X010,1,'COMMA',0,'POINT')}"
@@ -1334,7 +1334,7 @@ PURPOSE		: BRRS_DBS10_FINCON_II_1AREPORT
 									</tr>
 									
 									<tr>
-										<td style="background-color:rgb(255, 255, 0);"> </td>
+										<td> </td>
 										<td style=" font-weight: bold;" th:text="${report.R39_PARTICULARS}"></td>
 										<td style=" font-weight: bold; text-align: center;" th:text="${report.R39_Y_SERIES_COLUMN}"></td>
 										<td style=" text-align: right;" th:text="${#numbers.formatDecimal(report.R39_AMOUNT_X010,1,'COMMA',0,'POINT')}"
@@ -1344,7 +1344,7 @@ PURPOSE		: BRRS_DBS10_FINCON_II_1AREPORT
 									</tr>
 									
 									<tr>
-										<td style="background-color:rgb(255, 255, 0);"> </td>
+										<td> </td>
 										<td style=" font-weight: bold;" th:text="${report.R40_PARTICULARS}"></td>
 										<td style=" font-weight: bold; text-align: center;" th:text="${report.R40_Y_SERIES_COLUMN}"></td>
 										<td style=" text-align: right;" th:text="${#numbers.formatDecimal(report.R40_AMOUNT_X010,1,'COMMA',0,'POINT')}"
@@ -1354,7 +1354,7 @@ PURPOSE		: BRRS_DBS10_FINCON_II_1AREPORT
 									</tr>
 									
 									<tr>
-										<td style="background-color:rgb(255, 255, 0);"> </td>
+										<td> </td>
 										<td style=" font-weight: bold;" th:text="${report.R41_PARTICULARS}"></td>
 										<td style=" font-weight: bold; text-align: center;" th:text="${report.R41_Y_SERIES_COLUMN}"></td>
 										<td style=" text-align: right;" th:text="${#numbers.formatDecimal(report.R41_AMOUNT_X010,1,'COMMA',0,'POINT')}"
@@ -1364,7 +1364,7 @@ PURPOSE		: BRRS_DBS10_FINCON_II_1AREPORT
 									</tr>
 									
 									<tr>
-										<td style="background-color:rgb(255, 255, 0);"> </td>
+										<td> </td>
 										<td style=" font-weight: bold;" th:text="${report.R42_PARTICULARS}"></td>
 										<td style=" font-weight: bold; text-align: center;" th:text="${report.R42_Y_SERIES_COLUMN}"></td>
 										<td style=" text-align: right;" th:text="${#numbers.formatDecimal(report.R42_AMOUNT_X010,1,'COMMA',0,'POINT')}"
