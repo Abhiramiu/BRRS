@@ -312,125 +312,471 @@ public class BRRS_Main_Features_ReportService {
                         row = sheet.createRow(startRow + i);
                     }
 
-                    // // R5
-                    // row = sheet.getRow(4);
-                    // Cell cellC = row.getCell(4);
-                    // if (cellC == null)
-                    // cellC = row.createCell(4);
+                    // R3
+                    row = sheet.getRow(2);
+                    Cell cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
 
-                    // if (record.getR5_QUAN_DIS() != null) {
-                    // cellC.setCellValue(record.getR5_QUAN_DIS().doubleValue());
-                    // } else {
-                    // cellC.setCellValue(0);
-                    // }
+                    if (record.getR3_AMT() != null) {
+                        cellC.setCellValue(record.getR3_AMT().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
 
-                    // // R6
-                    // row = sheet.getRow(5);
-                    // cellC = row.getCell(4);
-                    // if (cellC == null)
-                    // cellC = row.createCell(4);
+                    // R4
+                    row = sheet.getRow(3);
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
 
-                    // if (record.getR6_QUAN_DIS() != null) {
-                    // cellC.setCellValue(record.getR6_QUAN_DIS().doubleValue());
-                    // } else {
-                    // cellC.setCellValue(0);
-                    // }
+                    if (record.getR4_AMT() != null) {
+                        cellC.setCellValue(record.getR4_AMT().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
 
-                    // // R11
-                    // row = sheet.getRow(10);
-                    // cellC = row.getCell(4);
-                    // if (cellC == null)
-                    // cellC = row.createCell(4);
+                    // R5
+                    row = sheet.getRow(4);
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
 
-                    // if (record.getR11_QUAN_DIS() != null) {
-                    // cellC.setCellValue(record.getR11_QUAN_DIS().doubleValue());
-                    // } else {
-                    // cellC.setCellValue(0);
-                    // }
+                    if (record.getR5_AMT() != null) {
+                        cellC.setCellValue(record.getR5_AMT().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
 
-                    // // R12
-                    // row = sheet.getRow(11);
-                    // cellC = row.getCell(4);
-                    // if (cellC == null)
-                    // cellC = row.createCell(4);
+                    // R6
+                    row = sheet.getRow(5);
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
 
-                    // if (record.getR12_QUAN_DIS() != null) {
-                    // cellC.setCellValue(record.getR12_QUAN_DIS().doubleValue());
-                    // } else {
-                    // cellC.setCellValue(0);
-                    // }
+                    if (record.getR6_AMT() != null) {
+                        cellC.setCellValue(record.getR6_AMT().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
 
-                    // // R13
-                    // row = sheet.getRow(12);
-                    // cellC = row.getCell(4);
-                    // if (cellC == null)
-                    // cellC = row.createCell(4);
+                    // R7
+                    row = sheet.getRow(6);
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
 
-                    // if (record.getR13_QUAN_DIS() != null) {
-                    // cellC.setCellValue(record.getR13_QUAN_DIS().doubleValue());
-                    // } else {
-                    // cellC.setCellValue(0);
-                    // }
+                    if (record.getR7_AMT() != null) {
+                        cellC.setCellValue(record.getR7_AMT().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
 
-                    // // R14
-                    // row = sheet.getRow(13);
-                    // cellC = row.getCell(4);
-                    // if (cellC == null)
-                    // cellC = row.createCell(4);
+                    // R8
+                    row = sheet.getRow(7);
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
 
-                    // if (record.getR14_QUAN_DIS() != null) {
-                    // cellC.setCellValue(record.getR14_QUAN_DIS().doubleValue());
-                    // } else {
-                    // cellC.setCellValue(0);
-                    // }
+                    if (record.getR8_AMT() != null) {
+                        cellC.setCellValue(record.getR8_AMT().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
 
-                    // // R15
-                    // row = sheet.getRow(14);
-                    // cellC = row.getCell(4);
-                    // if (cellC == null)
-                    // cellC = row.createCell(4);
+                    // R9
+                    row = sheet.getRow(8);
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
 
-                    // if (record.getR15_QUAN_DIS() != null) {
-                    // cellC.setCellValue(record.getR15_QUAN_DIS().doubleValue());
-                    // } else {
-                    // cellC.setCellValue(0);
-                    // }
+                    if (record.getR9_AMT() != null) {
+                        cellC.setCellValue(record.getR9_AMT().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
 
-                    // // R16
-                    // row = sheet.getRow(15);
-                    // cellC = row.getCell(4);
-                    // if (cellC == null)
-                    // cellC = row.createCell(4);
+                    // R10
+                    row = sheet.getRow(9);
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
 
-                    // if (record.getR16_QUAN_DIS() != null) {
-                    // cellC.setCellValue(record.getR16_QUAN_DIS().doubleValue());
-                    // } else {
-                    // cellC.setCellValue(0);
-                    // }
+                    if (record.getR10_AMT() != null) {
+                        cellC.setCellValue(record.getR10_AMT().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+                    // R11
+                    row = sheet.getRow(10);
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
 
-                    // // R20
-                    // row = sheet.getRow(19);
-                    // cellC = row.getCell(4);
-                    // if (cellC == null)
-                    // cellC = row.createCell(4);
+                    if (record.getR11_AMT() != null) {
+                        cellC.setCellValue(record.getR11_AMT().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
 
-                    // if (record.getR20_QUAN_DIS() != null) {
-                    // cellC.setCellValue(record.getR20_QUAN_DIS().doubleValue());
-                    // } else {
-                    // cellC.setCellValue(0);
-                    // }
+                    // R12
+                    row = sheet.getRow(11);
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
 
-                    // // R21
-                    // row = sheet.getRow(20);
-                    // cellC = row.getCell(4);
-                    // if (cellC == null)
-                    // cellC = row.createCell(4);
+                    if (record.getR12_AMT() != null) {
+                        cellC.setCellValue(record.getR12_AMT().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
 
-                    // if (record.getR21_QUAN_DIS() != null) {
-                    // cellC.setCellValue(record.getR21_QUAN_DIS().doubleValue());
-                    // } else {
-                    // cellC.setCellValue(0);
-                    // }
+                    // R13
+                    row = sheet.getRow(12);
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+
+                    if (record.getR13_AMT() != null) {
+                        cellC.setCellValue(record.getR13_AMT().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    // R14
+                    row = sheet.getRow(13);
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+
+                    if (record.getR14_AMT() != null) {
+                        cellC.setCellValue(record.getR14_AMT().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    // R15
+                    row = sheet.getRow(14);
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+
+                    if (record.getR15_AMT() != null) {
+                        cellC.setCellValue(record.getR15_AMT().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    // R16
+                    row = sheet.getRow(15);
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+
+                    if (record.getR16_AMT() != null) {
+                        cellC.setCellValue(record.getR16_AMT().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    // R17
+                    row = sheet.getRow(16);
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+
+                    if (record.getR17_AMT() != null) {
+                        cellC.setCellValue(record.getR17_AMT().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    // R18
+                    row = sheet.getRow(17);
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+
+                    if (record.getR18_AMT() != null) {
+                        cellC.setCellValue(record.getR18_AMT().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    // R19
+                    row = sheet.getRow(18);
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+
+                    if (record.getR19_AMT() != null) {
+                        cellC.setCellValue(record.getR19_AMT().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    // R20
+                    row = sheet.getRow(19);
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+
+                    if (record.getR20_AMT() != null) {
+                        cellC.setCellValue(record.getR20_AMT().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    // R21
+                    row = sheet.getRow(20);
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+
+                    if (record.getR21_AMT() != null) {
+                        cellC.setCellValue(record.getR21_AMT().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    // R22
+                    row = sheet.getRow(21);
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+
+                    if (record.getR22_AMT() != null) {
+                        cellC.setCellValue(record.getR22_AMT().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    // R23
+                    row = sheet.getRow(22);
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+
+                    if (record.getR23_AMT() != null) {
+                        cellC.setCellValue(record.getR23_AMT().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    // R24
+                    row = sheet.getRow(23);
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+
+                    if (record.getR24_AMT() != null) {
+                        cellC.setCellValue(record.getR24_AMT().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    // R25
+                    row = sheet.getRow(24);
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+
+                    if (record.getR25_AMT() != null) {
+                        cellC.setCellValue(record.getR25_AMT().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    // R26
+                    row = sheet.getRow(25);
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+
+                    if (record.getR26_AMT() != null) {
+                        cellC.setCellValue(record.getR26_AMT().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    // R27
+                    row = sheet.getRow(26);
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+
+                    if (record.getR27_AMT() != null) {
+                        cellC.setCellValue(record.getR27_AMT().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    // R28
+                    row = sheet.getRow(27);
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+
+                    if (record.getR28_AMT() != null) {
+                        cellC.setCellValue(record.getR28_AMT().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    // R29
+                    row = sheet.getRow(28);
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+
+                    if (record.getR29_AMT() != null) {
+                        cellC.setCellValue(record.getR29_AMT().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    // R30
+                    row = sheet.getRow(29);
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+
+                    if (record.getR30_AMT() != null) {
+                        cellC.setCellValue(record.getR30_AMT().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+                    // R31
+                    row = sheet.getRow(30);
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+
+                    if (record.getR31_AMT() != null) {
+                        cellC.setCellValue(record.getR31_AMT().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    // R32
+                    row = sheet.getRow(31);
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+
+                    if (record.getR32_AMT() != null) {
+                        cellC.setCellValue(record.getR32_AMT().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    // R33
+                    row = sheet.getRow(32);
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+
+                    if (record.getR33_AMT() != null) {
+                        cellC.setCellValue(record.getR33_AMT().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    // R34
+                    row = sheet.getRow(33);
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+
+                    if (record.getR34_AMT() != null) {
+                        cellC.setCellValue(record.getR34_AMT().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    // R35
+                    row = sheet.getRow(34);
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+
+                    if (record.getR35_AMT() != null) {
+                        cellC.setCellValue(record.getR35_AMT().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    // R36
+                    row = sheet.getRow(35);
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+
+                    if (record.getR36_AMT() != null) {
+                        cellC.setCellValue(record.getR36_AMT().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    // R37
+                    row = sheet.getRow(36);
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+
+                    if (record.getR37_AMT() != null) {
+                        cellC.setCellValue(record.getR37_AMT().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    // R38
+                    row = sheet.getRow(37);
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+
+                    if (record.getR38_AMT() != null) {
+                        cellC.setCellValue(record.getR38_AMT().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    // R39
+                    row = sheet.getRow(38);
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+
+                    if (record.getR39_AMT() != null) {
+                        cellC.setCellValue(record.getR39_AMT().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    // R40
+                    row = sheet.getRow(39);
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+
+                    if (record.getR40_AMT() != null) {
+                        cellC.setCellValue(record.getR40_AMT().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    // R41
+                    row = sheet.getRow(40);
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+
+                    if (record.getR41_AMT() != null) {
+                        cellC.setCellValue(record.getR41_AMT().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
 
                 }
 
@@ -533,125 +879,471 @@ public class BRRS_Main_Features_ReportService {
                     if (row == null) {
                         row = sheet.createRow(startRow + i);
                     }
+                      // R3
+                    row = sheet.getRow(2);
+                    Cell cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+
+                    if (record.getR3_AMT() != null) {
+                        cellC.setCellValue(record.getR3_AMT().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    // R4
+                    row = sheet.getRow(3);
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+
+                    if (record.getR4_AMT() != null) {
+                        cellC.setCellValue(record.getR4_AMT().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
                     // R5
-                    // row = sheet.getRow(4);
-                    // Cell cellC = row.getCell(4);
-                    // if (cellC == null)
-                    // cellC = row.createCell(4);
+                    row = sheet.getRow(4);
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
 
-                    // if (record.getR5_QUAN_DIS() != null) {
-                    // cellC.setCellValue(record.getR5_QUAN_DIS().doubleValue());
-                    // } else {
-                    // cellC.setCellValue(0);
-                    // }
+                    if (record.getR5_AMT() != null) {
+                        cellC.setCellValue(record.getR5_AMT().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
 
-                    // // R6
-                    // row = sheet.getRow(5);
-                    // cellC = row.getCell(4);
-                    // if (cellC == null)
-                    // cellC = row.createCell(4);
+                    // R6
+                    row = sheet.getRow(5);
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
 
-                    // if (record.getR6_QUAN_DIS() != null) {
-                    // cellC.setCellValue(record.getR6_QUAN_DIS().doubleValue());
-                    // } else {
-                    // cellC.setCellValue(0);
-                    // }
+                    if (record.getR6_AMT() != null) {
+                        cellC.setCellValue(record.getR6_AMT().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
 
-                    // // R11
-                    // row = sheet.getRow(10);
-                    // cellC = row.getCell(4);
-                    // if (cellC == null)
-                    // cellC = row.createCell(4);
+                    // R7
+                    row = sheet.getRow(6);
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
 
-                    // if (record.getR11_QUAN_DIS() != null) {
-                    // cellC.setCellValue(record.getR11_QUAN_DIS().doubleValue());
-                    // } else {
-                    // cellC.setCellValue(0);
-                    // }
+                    if (record.getR7_AMT() != null) {
+                        cellC.setCellValue(record.getR7_AMT().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
 
-                    // // R12
-                    // row = sheet.getRow(11);
-                    // cellC = row.getCell(4);
-                    // if (cellC == null)
-                    // cellC = row.createCell(4);
+                    // R8
+                    row = sheet.getRow(7);
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
 
-                    // if (record.getR12_QUAN_DIS() != null) {
-                    // cellC.setCellValue(record.getR12_QUAN_DIS().doubleValue());
-                    // } else {
-                    // cellC.setCellValue(0);
-                    // }
+                    if (record.getR8_AMT() != null) {
+                        cellC.setCellValue(record.getR8_AMT().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
 
-                    // // R13
-                    // row = sheet.getRow(12);
-                    // cellC = row.getCell(4);
-                    // if (cellC == null)
-                    // cellC = row.createCell(4);
+                    // R9
+                    row = sheet.getRow(8);
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
 
-                    // if (record.getR13_QUAN_DIS() != null) {
-                    // cellC.setCellValue(record.getR13_QUAN_DIS().doubleValue());
-                    // } else {
-                    // cellC.setCellValue(0);
-                    // }
+                    if (record.getR9_AMT() != null) {
+                        cellC.setCellValue(record.getR9_AMT().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
 
-                    // // R14
-                    // row = sheet.getRow(13);
-                    // cellC = row.getCell(4);
-                    // if (cellC == null)
-                    // cellC = row.createCell(4);
+                    // R10
+                    row = sheet.getRow(9);
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
 
-                    // if (record.getR14_QUAN_DIS() != null) {
-                    // cellC.setCellValue(record.getR14_QUAN_DIS().doubleValue());
-                    // } else {
-                    // cellC.setCellValue(0);
-                    // }
+                    if (record.getR10_AMT() != null) {
+                        cellC.setCellValue(record.getR10_AMT().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+                    // R11
+                    row = sheet.getRow(10);
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
 
-                    // // R15
-                    // row = sheet.getRow(14);
-                    // cellC = row.getCell(4);
-                    // if (cellC == null)
-                    // cellC = row.createCell(4);
+                    if (record.getR11_AMT() != null) {
+                        cellC.setCellValue(record.getR11_AMT().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
 
-                    // if (record.getR15_QUAN_DIS() != null) {
-                    // cellC.setCellValue(record.getR15_QUAN_DIS().doubleValue());
-                    // } else {
-                    // cellC.setCellValue(0);
-                    // }
+                    // R12
+                    row = sheet.getRow(11);
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
 
-                    // // R16
-                    // row = sheet.getRow(15);
-                    // cellC = row.getCell(4);
-                    // if (cellC == null)
-                    // cellC = row.createCell(4);
+                    if (record.getR12_AMT() != null) {
+                        cellC.setCellValue(record.getR12_AMT().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
 
-                    // if (record.getR16_QUAN_DIS() != null) {
-                    // cellC.setCellValue(record.getR16_QUAN_DIS().doubleValue());
-                    // } else {
-                    // cellC.setCellValue(0);
-                    // }
+                    // R13
+                    row = sheet.getRow(12);
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
 
-                    // // R20
-                    // row = sheet.getRow(19);
-                    // cellC = row.getCell(4);
-                    // if (cellC == null)
-                    // cellC = row.createCell(4);
+                    if (record.getR13_AMT() != null) {
+                        cellC.setCellValue(record.getR13_AMT().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
 
-                    // if (record.getR20_QUAN_DIS() != null) {
-                    // cellC.setCellValue(record.getR20_QUAN_DIS().doubleValue());
-                    // } else {
-                    // cellC.setCellValue(0);
-                    // }
+                    // R14
+                    row = sheet.getRow(13);
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
 
-                    // // R21
-                    // row = sheet.getRow(20);
-                    // cellC = row.getCell(4);
-                    // if (cellC == null)
-                    // cellC = row.createCell(4);
+                    if (record.getR14_AMT() != null) {
+                        cellC.setCellValue(record.getR14_AMT().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
 
-                    // if (record.getR21_QUAN_DIS() != null) {
-                    // cellC.setCellValue(record.getR21_QUAN_DIS().doubleValue());
-                    // } else {
-                    // cellC.setCellValue(0);
-                    // }
+                    // R15
+                    row = sheet.getRow(14);
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+
+                    if (record.getR15_AMT() != null) {
+                        cellC.setCellValue(record.getR15_AMT().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    // R16
+                    row = sheet.getRow(15);
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+
+                    if (record.getR16_AMT() != null) {
+                        cellC.setCellValue(record.getR16_AMT().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    // R17
+                    row = sheet.getRow(16);
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+
+                    if (record.getR17_AMT() != null) {
+                        cellC.setCellValue(record.getR17_AMT().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    // R18
+                    row = sheet.getRow(17);
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+
+                    if (record.getR18_AMT() != null) {
+                        cellC.setCellValue(record.getR18_AMT().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    // R19
+                    row = sheet.getRow(18);
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+
+                    if (record.getR19_AMT() != null) {
+                        cellC.setCellValue(record.getR19_AMT().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    // R20
+                    row = sheet.getRow(19);
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+
+                    if (record.getR20_AMT() != null) {
+                        cellC.setCellValue(record.getR20_AMT().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    // R21
+                    row = sheet.getRow(20);
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+
+                    if (record.getR21_AMT() != null) {
+                        cellC.setCellValue(record.getR21_AMT().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    // R22
+                    row = sheet.getRow(21);
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+
+                    if (record.getR22_AMT() != null) {
+                        cellC.setCellValue(record.getR22_AMT().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    // R23
+                    row = sheet.getRow(22);
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+
+                    if (record.getR23_AMT() != null) {
+                        cellC.setCellValue(record.getR23_AMT().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    // R24
+                    row = sheet.getRow(23);
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+
+                    if (record.getR24_AMT() != null) {
+                        cellC.setCellValue(record.getR24_AMT().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    // R25
+                    row = sheet.getRow(24);
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+
+                    if (record.getR25_AMT() != null) {
+                        cellC.setCellValue(record.getR25_AMT().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    // R26
+                    row = sheet.getRow(25);
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+
+                    if (record.getR26_AMT() != null) {
+                        cellC.setCellValue(record.getR26_AMT().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    // R27
+                    row = sheet.getRow(26);
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+
+                    if (record.getR27_AMT() != null) {
+                        cellC.setCellValue(record.getR27_AMT().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    // R28
+                    row = sheet.getRow(27);
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+
+                    if (record.getR28_AMT() != null) {
+                        cellC.setCellValue(record.getR28_AMT().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    // R29
+                    row = sheet.getRow(28);
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+
+                    if (record.getR29_AMT() != null) {
+                        cellC.setCellValue(record.getR29_AMT().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    // R30
+                    row = sheet.getRow(29);
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+
+                    if (record.getR30_AMT() != null) {
+                        cellC.setCellValue(record.getR30_AMT().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+                    // R31
+                    row = sheet.getRow(30);
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+
+                    if (record.getR31_AMT() != null) {
+                        cellC.setCellValue(record.getR31_AMT().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    // R32
+                    row = sheet.getRow(31);
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+
+                    if (record.getR32_AMT() != null) {
+                        cellC.setCellValue(record.getR32_AMT().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    // R33
+                    row = sheet.getRow(32);
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+
+                    if (record.getR33_AMT() != null) {
+                        cellC.setCellValue(record.getR33_AMT().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    // R34
+                    row = sheet.getRow(33);
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+
+                    if (record.getR34_AMT() != null) {
+                        cellC.setCellValue(record.getR34_AMT().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    // R35
+                    row = sheet.getRow(34);
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+
+                    if (record.getR35_AMT() != null) {
+                        cellC.setCellValue(record.getR35_AMT().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    // R36
+                    row = sheet.getRow(35);
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+
+                    if (record.getR36_AMT() != null) {
+                        cellC.setCellValue(record.getR36_AMT().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    // R37
+                    row = sheet.getRow(36);
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+
+                    if (record.getR37_AMT() != null) {
+                        cellC.setCellValue(record.getR37_AMT().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    // R38
+                    row = sheet.getRow(37);
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+
+                    if (record.getR38_AMT() != null) {
+                        cellC.setCellValue(record.getR38_AMT().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    // R39
+                    row = sheet.getRow(38);
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+
+                    if (record.getR39_AMT() != null) {
+                        cellC.setCellValue(record.getR39_AMT().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    // R40
+                    row = sheet.getRow(39);
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+
+                    if (record.getR40_AMT() != null) {
+                        cellC.setCellValue(record.getR40_AMT().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
+
+                    // R41
+                    row = sheet.getRow(40);
+                    cellC = row.getCell(2);
+                    if (cellC == null)
+                        cellC = row.createCell(2);
+
+                    if (record.getR41_AMT() != null) {
+                        cellC.setCellValue(record.getR41_AMT().doubleValue());
+                    } else {
+                        cellC.setCellValue(0);
+                    }
 
                 }
 
