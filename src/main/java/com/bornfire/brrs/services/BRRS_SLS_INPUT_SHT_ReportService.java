@@ -135,80 +135,67 @@ public class BRRS_SLS_INPUT_SHT_ReportService {
 //	}
 	
 	
-	public ModelAndView getRT_SLSView(
-	        String reportId,
-	        String fromdate,
-	        String todate,
-	        String currency,
-	        String dtltype,
-	        Pageable pageable) {
-
+	public ModelAndView getRT_SLSView(String reportId, String fromdate, String todate, String currency, String dtltype, Pageable pageable) {
 	    ModelAndView mv = new ModelAndView();
-
 	    Date reportDate = null;
-	    System.out.println("Entered to the view method");
+	    
+	    // Use the format seen in your logs: 31-May-2025
+	    // Adding Locale.ENGLISH is critical for month names like 'May' or 'Oct'
+	    SimpleDateFormat logSdf = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
+	    // Fallback for the standard 31/05/2025 format
+	    SimpleDateFormat standardSdf = new SimpleDateFormat("dd/MM/yyyy");
+
+	    // 1. ROUTING: If coming from Validations page
+	    if ("report".equalsIgnoreCase(dtltype)) {
+	        List<SLS_INPUT_SHT_Summary_Entity> slslist = BRRS_SLS_INPUT_SHT_Summary_Repo.rtslslist();
+	        mv.addObject("slslist", slslist);
+	        mv.setViewName("BRRS/SLS"); 
+	        return mv;
+	    }
+
+	    // 2. DATA LOADING: Parse the todate
 	    try {
 	        if (todate != null && !todate.trim().isEmpty()) {
-	            reportDate = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH)
-	                    .parse(todate.trim());
-	            System.out.println("Entered to the view 1");
+	            if (todate.contains("-")) {
+	                reportDate = logSdf.parse(todate.trim());
+	            } else {
+	                reportDate = standardSdf.parse(todate.trim());
+	            }
 	        }
-	    } catch (ParseException e) {
-	        throw new RuntimeException("Invalid date format. Expected dd-MMM-yyyy but got: " + todate, e);
+	    } catch (Exception e) {
+	        logger.error("Date parse error for: " + todate);
 	    }
-	    System.out.println("Entered to the view 2");
-	    
-	    System.out.println("dtltype value = [" + dtltype + "]");
 
-
-	    /* ================= FIRST STAGE (SUMMARY) ================= */
-	     {
-	    	
-	    	System.out.println("Entered to the view 3");
-
-	        List<SLS_INPUT_SHT_Summary_Entity> slslist =
-	                BRRS_SLS_INPUT_SHT_Summary_Repo.rtslslistbydate(reportDate, currency);
-
-	        List<SLS_INPUT_SHT_Summary_Entity> currencylist =
-	                BRRS_SLS_INPUT_SHT_Summary_Repo.rtslslistonlydate(reportDate);
-
-	        
+	    // CRITICAL: If parsing failed, don't execute query (prevents ORA-00932)
+	    if (reportDate == null) {
+	        logger.warn("Report Date is null, redirecting to date selection list.");
+	        List<SLS_INPUT_SHT_Summary_Entity> slslist = BRRS_SLS_INPUT_SHT_Summary_Repo.rtslslist();
 	        mv.addObject("slslist", slslist);
-	        mv.addObject("currencylist", currencylist);
-	        mv.addObject("currency", currency);
-	        mv.addObject("reportdate", todate);
-	        mv.addObject("formmode", "summary");
-
-	        System.out.println("Entered to the view html");
 	        mv.setViewName("BRRS/SLS");
+	        return mv;
 	    }
 
-	    /* ================= SECOND STAGE (DETAIL) ================= */
-	     if ("detail".equalsIgnoreCase(dtltype)) {
+	    mv.addObject("reportdate", todate);
+	    mv.addObject("currency", currency);
 
-	        int page = pageable.getPageNumber();
-	        int size = pageable.getPageSize();
-
-	        List<SLS_INPUT_SHT_Detail_Entity> detailList =
-	                BRRS_SLS_INPUT_SHT_Detail_Repo.slsdetaillist(reportDate, page, size);
-
-	        int totalCount =
-	                BRRS_SLS_INPUT_SHT_Detail_Repo.slsdetaillistcount(reportDate);
-
-	        int totalPages = (int) Math.ceil((double) totalCount / size);
-
+	    if ("Detail".equalsIgnoreCase(dtltype)) {
+	        List<SLS_INPUT_SHT_Detail_Entity> detailList = BRRS_SLS_INPUT_SHT_Detail_Repo.slsdetaillist(
+	                reportDate, (pageable.getPageNumber() * pageable.getPageSize()), pageable.getPageSize());
+	        int totalCount = BRRS_SLS_INPUT_SHT_Detail_Repo.slsdetaillistcount(reportDate);
 	        mv.addObject("slsdetaillist", detailList);
-	        mv.addObject("reportdate", todate);
+	        mv.addObject("currentPage", pageable.getPageNumber());
+	        mv.addObject("totalPages", (int) Math.ceil((double) totalCount / pageable.getPageSize()));
 	        mv.addObject("formmode", "Detail");
-	        mv.addObject("currentPage", page + 1); // UI-friendly
-	        mv.addObject("totalPages", totalPages);
-
-	        mv.setViewName("BRRS/SLS_REPORT");
+	    } else {
+	        // This is where ORA-00932 was happening
+	        mv.addObject("slslist", BRRS_SLS_INPUT_SHT_Summary_Repo.rtslslistbydate(reportDate, currency));
+	        mv.addObject("currencylist", BRRS_SLS_INPUT_SHT_Summary_Repo.rtslslistonlydate(reportDate));
+	        mv.addObject("formmode", "summary");
 	    }
 
+	    mv.setViewName("BRRS/SLS_REPORT");
 	    return mv;
 	}
-
 	
 	public byte[] getSlsExcel(String filename,String reportdate, String currency,String version) throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.");

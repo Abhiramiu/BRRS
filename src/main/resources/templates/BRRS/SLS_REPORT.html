@@ -1,4 +1,4 @@
-@ -0,0 +1,1790 @@
+
 <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
 
 <!-- 
@@ -416,21 +416,22 @@ div.dataTables_wrapper div.dataTables_info {
 </script>
 
 <script>
-function getreport(){
-	var reportdate = document.getElementById("reportDate").innerText;
-	var currency= document.getElementById("currency").value;
-	location.href = 'SLSREPORT?currency='+currency+'&reportdate='+reportdate+'&formmode=summary'
-	
-}
+	function getreport(){
+	    var reportdate = document.getElementById("reportDate").innerText.trim();
+	    var currency = document.getElementById("currency").value;
+	    
+	    location.href = 'SLS?asondate=' + reportdate + '&fromdate=' + reportdate + 
+	                    '&todate=' + reportdate + '&currency=' + currency + '&dtltype=summary';
+	}
 
-function getdetails(){
-	var reportdate = document.getElementById("reportDate").innerText;
-	location.href = 'SLSREPORT?reportdate='+reportdate+'&formmode=Detail'
-	
-}
-
-
-
+	function getdetails(){
+	    var reportdate = document.getElementById("reportDate").innerText.trim();
+	    // Use AED as default if currency dropdown is missing in detail mode
+	    var currency = document.getElementById("currency") ? document.getElementById("currency").value : "ONLY_AED";
+	    
+	    location.href = 'SLS?asondate=' + reportdate + '&fromdate=' + reportdate + 
+	                    '&todate=' + reportdate + '&currency=' + currency + '&dtltype=Detail';
+	}
 </script>
   
 <!-- <script>
@@ -1753,20 +1754,18 @@ function getdetails(){
 										
 										</tbody>		
 									</table>
-									
-									<div style="margin-top:20px; text-align:center;">
-									   
-									    <a th:if="${currentPage > 0}"
-									       th:href="@{/SLSREPORT(page=${currentPage - 100}, size=100, reportdate=${reportdate}, formmode='Detail')}">
-									       Previous
-									    </a>
-									
-									    
-									    <span>Page [[${currentPage / 100 + 1}]] of [[${totalPages}]]</span>
-									
-									    
-									    <a th:if="${currentPage < (totalPages - 1) * 100}"
-									       th:href="@{/SLSREPORT(page=${currentPage + 100}, size=100, reportdate=${reportdate}, formmode='Detail')}">
+									<div style="margin-top:20px; text-align:center;" th:if="${totalPages > 0}">
+									    <!-- Previous Link -->
+										<a th:if="${currentPage > 0}"
+										   th:href="@{'/BRRS/Reports/SLS'(page=${currentPage - 1}, asondate=${reportdate}, fromdate=${reportdate}, todate=${reportdate}, dtltype='Detail')}">
+										   Previous
+										</a>
+
+									    <span>Page [[${currentPage + 1}]] of [[${totalPages}]]</span>
+
+									    <!-- Next Link -->
+									    <a th:if="${currentPage < totalPages - 1}"
+									       th:href="@{/SLSREPORT(page=${currentPage + 1}, asondate=${reportdate}, todate=${reportdate}, formmode='Detail')}">
 									       Next
 									    </a>
 									</div>

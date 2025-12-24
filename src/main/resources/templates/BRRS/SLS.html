@@ -411,13 +411,20 @@ div.dataTables_wrapper div.dataTables_info {
 </script>
 
 <script>
-function getreport(a){
-	var reportdate=a.getAttribute('data-reportdate');
-	var currency=a.getAttribute('data-currency');
-	location.href = 'SLSREPORT?currency='+currency+'&reportdate='+reportdate+'&formmode=summary'
-	
-}
-
+	function getreport(a) {
+	    var rdate = a.getAttribute('data-reportdate'); // Now correctly formatted as 31/05/2025
+	    var curr = a.getAttribute('data-currency');
+	    
+	    // We call 'SLS' which hits the fixed {reportid} mapping in the controller
+	    var url = 'SLS' 
+	            + '?asondate=' + rdate 
+	            + '&fromdate=' + rdate 
+	            + '&todate=' + rdate 
+	            + '&currency=' + curr 
+	            + '&dtltype=summary';
+	    
+	    location.href = url;
+	}
 </script>
   
 <!-- <script>
@@ -485,13 +492,14 @@ function getreport(a){
 			  								</tr>
 			  							</thead>
 			  							<tbody>
-			  								<tr th:each="slsdata :${slslist}">
-			  								<td class="underline" th:attr="data-reportdate=${#dates.format(slsdata.REPORT_DATE,'dd/MM/yyyy')},
-								 				data-currency=${slsdata.REPORT_CURRENCY}" onclick="getreport(this)"
-												style="color: #08a6f1;" th:text="${#dates.format(slsdata.REPORT_DATE,'dd/MM/yyyy')}"></td>
-			  								<td th:text="${slsdata.REPORT_CURRENCY}"></td>
-			  								
-			  								</tr>
+											<tr th:each="slsdata :${slslist}">
+												<td class="underline" 
+												    th:attr="data-reportdate=${#dates.format(slsdata.REPORT_DATE,'dd/MM/yyyy')}, 
+												             data-currency=${slsdata.REPORT_CURRENCY}" 
+												    onclick="getreport(this)"
+												    th:text="${#dates.format(slsdata.REPORT_DATE,'dd/MM/yyyy')}">
+												</td>
+											</tr>
 			  								
 			  							</tbody>
 			  							

@@ -900,7 +900,56 @@ PURPOSE		: BRRS_M_PLLREPORT
 		}
 
 	</script>
+	<script th:inline="javascript">
+	    function triggerReportGeneration() {
+	        // 1. Prompt the user for the report date
+	        const defaultDate = new Date();
+	        const formattedDefault = ('0' + defaultDate.getDate()).slice(-2) + '-' + ('0' + (defaultDate.getMonth())).slice(-2) + '-' + defaultDate.getFullYear();
+	        const reportDate = prompt("Please enter the report date to generate:", formattedDefault);
 
+	        // 2. Stop if the user cancels
+	        if (reportDate === null || reportDate.trim() === "") {
+	            return;
+	        }
+
+	        // 3. Simple validation for the date format
+	        const dateFormat = /^\d{2}-\d{2}-\d{4}$/;
+	        if (!dateFormat.test(reportDate)) {
+	            showResultModal('Error', 'Invalid date format. Please use DD-MM-YYYY.');
+	            return;
+	        }
+	        
+	        // 4. Confirm with the user
+	        if (!confirm("Are you sure you want to generate the M-PLL report for " + reportDate + "? This will overwrite existing data for that date.")) {
+	            return;
+	        }
+
+	        // 5. Show loader and make the AJAX call to the backend
+	        $('#loader').modal('show');
+	        
+	        $.ajax({
+	            type: "POST",
+	            url: "/BRRS/Reports/M-PLL/trigger",
+	            data: {
+	                reportDate: reportDate // Send the date as a request parameter
+	            },
+	            success: function(response) {
+	                showResultModal('Success', response);
+	                // Optionally, refresh the page after a delay to show the new data
+	                setTimeout(() => { location.reload(); }, 2000);
+	            },
+	            error: function(xhr, status, error) {
+	                // Use the error message from the server if available
+	                const errorMessage = xhr.responseText || "An unknown error occurred.";
+	                showResultModal('Error', 'Failed to trigger report generation: ' + errorMessage);
+	            },
+	            complete: function() {
+	                // Always hide the loader
+	                $('#loader').modal('hide');
+	            }
+	        });
+	    }
+	</script>
 </head>
 
 
@@ -942,6 +991,11 @@ PURPOSE		: BRRS_M_PLLREPORT
 							style="color: white !important; font-size: 16px; margin-right: 20px;">Report
 							Date: <span th:text="${#strings.replace(asondate, '/', '-')}">2025-09-18</span>
 						</span>
+						<button type="button" class="custom-tab-btn" id="triggerReportBtn"
+						           onclick="triggerReportGeneration();"
+						           >
+						       <i class="fa fa-play"></i> Trigger
+						   </button>
 
 						<!-- Buttons -->
 						<input type="hidden" id="selectedTab" th:value="${displaymode}">

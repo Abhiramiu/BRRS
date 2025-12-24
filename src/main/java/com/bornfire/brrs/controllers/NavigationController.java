@@ -689,9 +689,7 @@ public class NavigationController {
 
 	@RequestMapping(value = "SLSREPORT", method = {RequestMethod.GET, RequestMethod.POST})
 	public ModelAndView SLSREPORT(
-	        @RequestParam(required = false) String reportId,
-	        @RequestParam(required = false) String fromdate,
-	        @RequestParam(required = false) String todate,
+	        @RequestParam(required = false) String todate, // Key changed from fromdate/asondate to todate
 	        @RequestParam(required = false) String currency,
 	        @RequestParam(required = false) String formmode,
 	        @RequestParam(defaultValue = "0") int page,
@@ -699,16 +697,11 @@ public class NavigationController {
 
 	    Pageable pageable = PageRequest.of(page, size);
 
+	    // Call service. formmode (summary/Detail) maps to dtltype
 	    return BRRS_SLS_INPUT_SHT_reportservice.getRT_SLSView(
-	            reportId,
-	            fromdate,
-	            todate,
-	            currency,
-	            formmode,
-	            pageable
+	            "SLS", null, todate, currency, formmode, pageable
 	    );
 	}
-
 
 
 	@RequestMapping(value = "ReferCodeMast", method = { RequestMethod.GET, RequestMethod.POST })
