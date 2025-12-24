@@ -27,7 +27,7 @@ public class M_TOP_100_BORROWER_Archival_Detail_Entity {
     @Column(name = "DATA_TYPE", length = 100)
     private String dataType;
    	    
-    @Column(name = "REPORT_LABEL")
+    @Column(name = "REPORT_LABLE")
     private String reportLable;
 
     @Column(name = "REPORT_ADDL_CRITERIA_1")

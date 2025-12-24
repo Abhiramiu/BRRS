@@ -28,7 +28,7 @@ public class M_LCR_Archival_Detail_Entity {
     @Column(name = "DATA_TYPE", length = 100)
     private String dataType;
    	    
-    @Column(name = "REPORT_LABLE")
+    @Column(name = "REPORT_LABEL")
     private String reportLable;
 
     @Column(name = "REPORT_ADDL_CRITERIA_1")
