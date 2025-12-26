@@ -485,43 +485,115 @@ public class BLBF_Services {
 	}
 
 	// ===== Helper methods =====
+	private String getCellValueSafe(Cell cell, DataFormatter formatter, FormulaEvaluator evaluator) {
+	    if (cell == null) return "";
+	    
+	    try {
+	        // Try to format the cell value
+	        return formatter.formatCellValue(cell, evaluator);
+	    } catch (Exception e) {
+	        // If formula evaluation fails (e.g., DATEDIF not supported), try to get cached value
+	        if (cell.getCellType() == Cell.CELL_TYPE_FORMULA) {
+	            try {
+	                int cachedType = cell.getCachedFormulaResultType();
+	                switch (cachedType) {
+	                    case Cell.CELL_TYPE_NUMERIC:
+	                        if (DateUtil.isCellDateFormatted(cell)) {
+	                            return formatter.formatCellValue(cell);
+	                        }
+	                        return String.valueOf(cell.getNumericCellValue());
+	                    case Cell.CELL_TYPE_STRING:
+	                        return cell.getRichStringCellValue().getString();
+	                    case Cell.CELL_TYPE_BOOLEAN:
+	                        return String.valueOf(cell.getBooleanCellValue());
+	                    default:
+	                        return "";
+	                }
+	            } catch (Exception ex) {
+	                logger.warn("Could not get cached formula value for cell: {}", ex.getMessage());
+	                return "";
+	            }
+	        }
+	        return "";
+	    }
+	}
+	
 	private String getCellStringSafe(Row row, int index, DataFormatter formatter, FormulaEvaluator evaluator) {
-		Cell cell = row.getCell(index);
-		if (cell == null)
-			return null;
-		return formatter.formatCellValue(cell, evaluator).trim();
+	    Cell cell = row.getCell(index);
+	    if (cell == null) return null;
+	    
+	    String value = getCellValueSafe(cell, formatter, evaluator).trim();
+	    return value.isEmpty() ? null : value;
 	}
 
 	private java.sql.Date getCellDateSafe(Row row, int colIndex, DataFormatter formatter, FormulaEvaluator evaluator) {
-		try {
-			Cell cell = row.getCell(colIndex);
-			if (cell == null)
-				return null;
-
-			if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC && DateUtil.isCellDateFormatted(cell)) {
-				return new java.sql.Date(cell.getDateCellValue().getTime());
-			} else {
-				// Parse text in dd-MM-yyyy format
-				String text = formatter.formatCellValue(cell, evaluator).trim();
-				if (text.isEmpty())
-					return null;
-				SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy"); // match Excel format
-				return new java.sql.Date(sdf.parse(text).getTime());
-			}
-		} catch (Exception e) {
-			return null;
-		}
+	    try {
+	        Cell cell = row.getCell(colIndex);
+	        if (cell == null) return null;
+	        
+	        // First try: if it's a numeric date cell
+	        if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC && DateUtil.isCellDateFormatted(cell)) {
+	            return new java.sql.Date(cell.getDateCellValue().getTime());
+	        }
+	        
+	        // Second try: if it's a formula that returns a date
+	        if (cell.getCellType() == Cell.CELL_TYPE_FORMULA) {
+	            try {
+	                int cachedType = cell.getCachedFormulaResultType();
+	                if (cachedType == Cell.CELL_TYPE_NUMERIC && DateUtil.isCellDateFormatted(cell)) {
+	                    return new java.sql.Date(cell.getDateCellValue().getTime());
+	                }
+	            } catch (Exception e) {
+	                // Fall through to text parsing
+	            }
+	        }
+	        
+	        // Third try: parse as text in dd-MM-yyyy format
+	        String text = getCellValueSafe(cell, formatter, evaluator).trim();
+	        if (text.isEmpty()) return null;
+	        
+	        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+	        sdf.setLenient(false);
+	        return new java.sql.Date(sdf.parse(text).getTime());
+	        
+	    } catch (Exception e) {
+	        logger.warn("Could not parse date at column {}: {}", colIndex, e.getMessage());
+	        return null;
+	    }
 	}
 
 	private BigDecimal getCellDecimalSafe(Row row, int index, DataFormatter formatter, FormulaEvaluator evaluator) {
-		Cell cell = row.getCell(index);
-		if (cell == null)
-			return null;
-		try {
-			return new BigDecimal(formatter.formatCellValue(cell, evaluator).replaceAll(",", "").trim());
-		} catch (Exception e) {
-			return null;
-		}
+	    Cell cell = row.getCell(index);
+	    if (cell == null) return null;
+	    
+	    try {
+	        // For numeric cells, get the value directly
+	        if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
+	            return BigDecimal.valueOf(cell.getNumericCellValue());
+	        }
+	        
+	        // For formula cells, try to get cached numeric value
+	        if (cell.getCellType() == Cell.CELL_TYPE_FORMULA) {
+	            try {
+	                int cachedType = cell.getCachedFormulaResultType();
+	                if (cachedType == Cell.CELL_TYPE_NUMERIC) {
+	                    return BigDecimal.valueOf(cell.getNumericCellValue());
+	                }
+	            } catch (Exception e) {
+	                // Fall through to text parsing
+	            }
+	        }
+	        
+	        // Otherwise, format and parse as text
+	        String text = getCellValueSafe(cell, formatter, evaluator).replaceAll(",", "").trim();
+	        if (text.isEmpty()) return null;
+	        
+	        return new BigDecimal(text);
+	        
+	    } catch (Exception e) {
+	        logger.warn("Could not parse decimal at column {}: {}", index, e.getMessage());
+	        return null;
+	    }
 	}
 
 	private String getCellString(Cell cell, DataFormatter f, FormulaEvaluator e) {

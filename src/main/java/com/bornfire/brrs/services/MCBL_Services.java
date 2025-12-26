@@ -472,9 +472,7 @@ public String addMCBL(MultipartFile file, String userid, String username, String
 	        conn.commit();
 	        
 	        long duration = System.currentTimeMillis() - startTime;
-	        return "✅ MCBL upload completed in " + duration + " ms. " +
-	            "Inserted: " + count + ", Skipped Excel duplicates: " + skippedExcelDupes +
-	            ", Skipped existing DB duplicates: " + skippedExistingDupes;
+	        return "✅  Inserted: " + count + " Records";
 	            
 	    } catch (Exception e) {
 	        logger.error("Error while processing MCBL Excel: {}", e.getMessage(), e);
