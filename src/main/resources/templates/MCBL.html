@@ -1988,6 +1988,9 @@ function UploadhideAlert() {
 </script>
 <script>
 function submitFileUpload(uploadType, formId, branchId, fileId, startUrl, checkUrl) {
+
+    const displayName = getUploadDisplayName(uploadType);
+
     const requiredFields = ["#" + branchId, "#" + fileId];
     const isValid = validateFields(requiredFields);
     if (!isValid) return false;
@@ -1996,15 +1999,16 @@ function submitFileUpload(uploadType, formId, branchId, fileId, startUrl, checkU
 
     // Prevent duplicate upload
     if (sessionStorage.getItem(storageKey)) {
-        showUploadAlert(`${uploadType} upload is already processing. Please wait.`, "warning");
+        showUploadAlert(`${displayName} upload is already processing. Please wait.`, "warning");
         return;
     }
 
     const form = document.getElementById(formId);
     const formData = new FormData(form);
+
     sessionStorage.setItem(storageKey, "TEMP_LOCK");
 
-    showUploadAlert(`${uploadType} file upload initiated...`, "warning");
+    showUploadAlert(`${displayName} file upload initiated...`, "warning");
 
     $.ajax({
         url: startUrl,
@@ -2012,24 +2016,35 @@ function submitFileUpload(uploadType, formId, branchId, fileId, startUrl, checkU
         data: formData,
         processData: false,
         contentType: false,
+
         success: function(jobId) {
-            if (jobId && jobId.length > 20 && jobId !== "ERROR_STARTING_JOB") {
+            if (jobId && jobId !== "ERROR_STARTING_JOB") {
+
                 sessionStorage.setItem(storageKey, jobId);
-                showUploadAlert(`${uploadType} Upload Job ID: ${jobId}. Processing...`, "warning");
+
+                showUploadAlert(
+                    `${displayName} upload is processing...`,
+                    "warning"
+                );
+
                 checkFileUploadStatus(uploadType, jobId, checkUrl);
+
             } else {
                 sessionStorage.removeItem(storageKey);
-                handleUploadError(uploadType, "Failed to start the upload job.");
+                handleUploadError(displayName, "Failed to start the upload job.");
             }
         },
+
         error: function() {
             sessionStorage.removeItem(storageKey);
-            handleUploadError(uploadType, "Network or server error during job initiation.");
+            handleUploadError(displayName, "Network or server error during job initiation.");
         }
     });
 }
 
 function checkFileUploadStatus(uploadType, jobId, checkUrl) {
+
+    const displayName = getUploadDisplayName(uploadType);
     const storageKey = "current" + uploadType + "JobId";
 
     $.ajax({
@@ -2037,42 +2052,80 @@ function checkFileUploadStatus(uploadType, jobId, checkUrl) {
         type: "GET",
         dataType: "text",
         timeout: 10000,
+
         success: function(status) {
+
             if (status.startsWith("COMPLETED:")) {
+
                 sessionStorage.removeItem(storageKey);
                 const resultMsg = status.substring("COMPLETED:".length);
-                showUploadAlert(`${uploadType} File Processed Successfully ✅ ${resultMsg}`, "success");
+
+                showUploadAlert(
+                    `${displayName} file processed successfully ✅ ${resultMsg}`,
+                    "success"
+                );
+
                 showResultModal('Success', resultMsg);
+
             } else if (status === "PROCESSING") {
-                showUploadAlert(`${uploadType} Upload is processing... (Job ID: ${jobId})`, "warning");
-                setTimeout(() => checkFileUploadStatus(uploadType, jobId, checkUrl), 5000);
+
+                showUploadAlert(
+                    `${displayName} upload is processing...`,
+                    "warning"
+                );
+
+                setTimeout(() =>
+                    checkFileUploadStatus(uploadType, jobId, checkUrl),
+                    5000
+                );
+
             } else if (status.startsWith("ERROR:") || status === "NOT_FOUND") {
+
                 const errorMsg = status.startsWith("ERROR:")
                     ? status.substring("ERROR:".length)
                     : "The processing job could not be found or encountered a fatal error.";
-                showUploadAlert(`${uploadType} Upload failed: ${errorMsg}`, "error");
+
+                showUploadAlert(
+                    `${displayName} upload failed: ${errorMsg}`,
+                    "error"
+                );
+
                 showResultModal('Job Status', errorMsg);
                 sessionStorage.removeItem(storageKey);
+
             } else {
-                handleUploadError(uploadType, "Unexpected status received: " + status);
+                handleUploadError(displayName, "Unexpected status received: " + status);
             }
         },
+
         error: function(jqXHR, textStatus) {
+
             if (textStatus === "timeout" || jqXHR.status === 0) {
-                showUploadAlert(`${uploadType} Upload is processing... (Temporary Connection Issue)`, "warning");
-                setTimeout(() => checkFileUploadStatus(uploadType, jobId, checkUrl), 5000);
+
+                showUploadAlert(
+                    `${displayName} upload is processing... (temporary connection issue)`,
+                    "warning"
+                );
+
+                setTimeout(() =>
+                    checkFileUploadStatus(uploadType, jobId, checkUrl),
+                    5000
+                );
+
             } else {
-                handleUploadError(uploadType, 'Fatal error while checking upload status: ' + textStatus);
+                handleUploadError(displayName, 'Fatal error while checking upload status.');
             }
         }
     });
 }
 
-function handleUploadError(uploadType, message) {
-    console.error(`${uploadType} Upload Error:`, message);
-    showUploadAlert(`${uploadType} Upload Error: ${message}`, "error");
+
+function handleUploadError(displayName, message) {
+    console.error(`${displayName} Upload Error:`, message);
+    showUploadAlert(`${displayName} Upload Error: ${message}`, "error");
     showResultModal('Error', message);
 }
+
 </script>
 
 <script>
@@ -2093,6 +2146,22 @@ function submitformBLBF() {
 
 
 </script>
+
+<script>
+function getUploadDisplayName(uploadType) {
+    switch (uploadType) {
+        case "BLBF":
+            return "Loan Book";
+        case "BDGF":
+            return "Deposit General";
+        case "BFDB":
+            return "Deposit Book";
+        default:
+            return uploadType;
+    }
+}
+</script>
+
 <script>
 // === MCBL Upload Logic ===
 function submitMCBLUpload() {

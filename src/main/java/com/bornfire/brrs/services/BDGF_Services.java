@@ -11,7 +11,10 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
+import javax.annotation.PreDestroy;
 import javax.sql.DataSource;
 
 import org.apache.poi.ss.usermodel.BorderStyle;
@@ -62,22 +65,25 @@ public class BDGF_Services {
 	private static final Logger logger = LoggerFactory.getLogger(BDGF_Services.class);
 
 	private final ConcurrentHashMap<String, String> jobStatusStorage = new ConcurrentHashMap<>();
+	private final ExecutorService executorService = Executors.newFixedThreadPool(5);
 
-	@Async
+	// This method returns IMMEDIATELY
 	public void initializeJobStatus(String jobId, MultipartFile file, String userid, String username) {
 	    jobStatusStorage.put(jobId, "PROCESSING");
-	    startBDGFUploadAsync(jobId, file, userid, username);
+	    // Submit task to background thread - RETURNS IMMEDIATELY
+	    executorService.submit(() -> {
+	        startBDGFUploadAsync(jobId, file, userid, username);
+	    });
 	}
 
+	// This runs in background thread
 	public String startBDGFUploadAsync(String jobId, MultipartFile file, String userid, String username) {
 	    logger.info("Starting BDGF upload job: {}", jobId);
-
 	    try {
 	        String resultMsg = addBDGF(file, userid, username);
 	        jobStatusStorage.put(jobId, "COMPLETED:" + resultMsg);
 	        logger.info("Job {} completed successfully.", jobId);
 	        return resultMsg;
-
 	    } catch (Exception e) {
 	        String errorMessage = "ERROR:" + e.getMessage();
 	        jobStatusStorage.put(jobId, errorMessage);
@@ -88,6 +94,12 @@ public class BDGF_Services {
 
 	public String getJobStatus(String jobId) {
 	    return jobStatusStorage.getOrDefault(jobId, "NOT_FOUND");
+	}
+
+	@PreDestroy
+	public void shutdown() {
+	    executorService.shutdown();
+	    logger.info("BDGF ExecutorService shutdown initiated");
 	}
 
 	@Transactional
@@ -107,6 +119,21 @@ public class BDGF_Services {
 	        DataFormatter formatter = new DataFormatter();
 	        FormulaEvaluator evaluator = workbook.getCreationHelper().createFormulaEvaluator();
 	        
+	        // 🔍 Get max version for DEP_GENERAL
+	        String getMaxVersionBDGF = "SELECT COALESCE(MAX(VERSION), 0) FROM DEP_GENERAL " +
+	                "WHERE ACCOUNT_NO = ? AND REPORT_DATE = ? AND DEL_FLG = 'N'";
+	        PreparedStatement stmtGetMaxVersionBDGF = conn.prepareStatement(getMaxVersionBDGF);
+	        
+	        // 🔍 Get max version for GENERAL_MASTER_TABLE
+	        String getMaxVersionMaster = "SELECT COALESCE(MAX(VERSION), 0) FROM GENERAL_MASTER_TABLE " +
+	                "WHERE ACCOUNT_NO = ? AND REPORT_DATE = ? AND DEL_FLG = 'N' AND REPORT_CODE='DEPG'";
+	        PreparedStatement stmtGetMaxVersionMaster = conn.prepareStatement(getMaxVersionMaster);
+	        
+	        // 🔍 Get max version for GENERAL_MASTER_SRC
+	        String getMaxVersionSrc = "SELECT COALESCE(MAX(VERSION), 0) FROM GENERAL_MASTER_SRC " +
+	                "WHERE ACCOUNT_NO = ? AND REPORT_DATE = ? AND DEL_FLG = 'N' AND REPORT_CODE='DEPG'";
+	        PreparedStatement stmtGetMaxVersionSrc = conn.prepareStatement(getMaxVersionSrc);
+	        
 	        // 🔄 Soft delete existing records in DEP_GENERAL
 	        String softDeleteBDGF = "UPDATE DEP_GENERAL SET DEL_FLG = 'Y', DEL_USER = ?, " +
 	                "MODIFY_DATE = ?, MODIFY_USER = ? " +
@@ -116,29 +143,14 @@ public class BDGF_Services {
 	        // 🔄 Soft delete existing records in GENERAL_MASTER_TABLE
 	        String softDeleteMaster = "UPDATE GENERAL_MASTER_TABLE SET DEL_FLG = 'Y', DEL_USER = ?, " +
 	                "MODIFY_TIME = ?, MODIFY_USER = ? " +
-	                "WHERE ACCOUNT_NO = ? AND REPORT_DATE = ? AND DEL_FLG = 'N'";
+	                "WHERE ACCOUNT_NO = ? AND REPORT_DATE = ? AND DEL_FLG = 'N' AND REPORT_CODE='DEPG'";
 	        PreparedStatement stmtSoftDeleteMaster = conn.prepareStatement(softDeleteMaster);
 	        
 	        // 🔄 Soft delete existing records in GENERAL_MASTER_SRC
 	        String softDeleteSrc = "UPDATE GENERAL_MASTER_SRC SET DEL_FLG = 'Y', DEL_USER = ?, " +
 	                "MODIFY_TIME = ?, MODIFY_USER = ? " +
-	                "WHERE ACCOUNT_NO = ? AND REPORT_DATE = ? AND DEL_FLG = 'N'";
+	                "WHERE ACCOUNT_NO = ? AND REPORT_DATE = ? AND DEL_FLG = 'N' AND REPORT_CODE='DEPG'";
 	        PreparedStatement stmtSoftDeleteSrc = conn.prepareStatement(softDeleteSrc);
-	        
-	        // 🔍 Get max version for DEP_GENERAL
-	        String getMaxVersionBDGF = "SELECT COALESCE(MAX(VERSION), 0) FROM DEP_GENERAL " +
-	                "WHERE ACCOUNT_NO = ? AND REPORT_DATE = ?";
-	        PreparedStatement stmtGetMaxVersionBDGF = conn.prepareStatement(getMaxVersionBDGF);
-	        
-	        // 🔍 Get max version for GENERAL_MASTER_TABLE
-	        String getMaxVersionMaster = "SELECT COALESCE(MAX(VERSION), 0) FROM GENERAL_MASTER_TABLE " +
-	                "WHERE ACCOUNT_NO = ? AND REPORT_DATE = ?";
-	        PreparedStatement stmtGetMaxVersionMaster = conn.prepareStatement(getMaxVersionMaster);
-	        
-	        // 🔍 Get max version for GENERAL_MASTER_SRC
-	        String getMaxVersionSrc = "SELECT COALESCE(MAX(VERSION), 0) FROM GENERAL_MASTER_SRC " +
-	                "WHERE ACCOUNT_NO = ? AND REPORT_DATE = ?";
-	        PreparedStatement stmtGetMaxVersionSrc = conn.prepareStatement(getMaxVersionSrc);
 	        
 	        // 🟢 Insert new record in GENERAL_MASTER_TABLE with VERSION
 	        String insertMaster = "INSERT INTO GENERAL_MASTER_TABLE (SOL_ID, CUSTOMER_ID, CUSTOMER_NAME, ACCOUNT_NO, " +
@@ -185,7 +197,7 @@ public class BDGF_Services {
 	            
 	            boolean emptyRow = true;
 	            for (int cn = 0; cn < row.getLastCellNum(); cn++) {
-	                if (!formatter.formatCellValue(row.getCell(cn), evaluator).trim().isEmpty()) {
+	                if (!getCellValueSafe(row.getCell(cn), formatter, evaluator).trim().isEmpty()) {
 	                    emptyRow = false;
 	                    break;
 	                }
@@ -197,58 +209,67 @@ public class BDGF_Services {
 	                java.sql.Date reportDate = getCellDateSafe(row, 26, formatter, evaluator);
 	                java.sql.Date currentDate = new java.sql.Date(System.currentTimeMillis());
 	                
-	                // 🔄 Step 1: Soft delete existing active records in DEP_GENERAL
-	                stmtSoftDeleteBDGF.setString(1, userid);
-	                stmtSoftDeleteBDGF.setDate(2, currentDate);
-	                stmtSoftDeleteBDGF.setString(3, userid);
-	                stmtSoftDeleteBDGF.setString(4, accountNo);
-	                stmtSoftDeleteBDGF.setDate(5, reportDate);
-	                stmtSoftDeleteBDGF.executeUpdate();
-	                
-	                // 🔄 Step 2: Soft delete existing active records in GENERAL_MASTER_TABLE
-	                stmtSoftDeleteMaster.setString(1, userid);
-	                stmtSoftDeleteMaster.setDate(2, currentDate);
-	                stmtSoftDeleteMaster.setString(3, userid);
-	                stmtSoftDeleteMaster.setString(4, accountNo);
-	                stmtSoftDeleteMaster.setDate(5, reportDate);
-	                stmtSoftDeleteMaster.executeUpdate();
-	                
-	                // 🔄 Step 3: Soft delete existing active records in GENERAL_MASTER_SRC
-	                stmtSoftDeleteSrc.setString(1, userid);
-	                stmtSoftDeleteSrc.setDate(2, currentDate);
-	                stmtSoftDeleteSrc.setString(3, userid);
-	                stmtSoftDeleteSrc.setString(4, accountNo);
-	                stmtSoftDeleteSrc.setDate(5, reportDate);
-	                stmtSoftDeleteSrc.executeUpdate();
-	                
-	                // 🔍 Step 4: Get max version for DEP_GENERAL
+	                // 🔍 Step 1: Get max version for DEP_GENERAL
 	                stmtGetMaxVersionBDGF.setString(1, accountNo);
 	                stmtGetMaxVersionBDGF.setDate(2, reportDate);
-	                int newVersionBDGF = 1;
+	                int currentMaxVersionBDGF = 0;
 	                try (ResultSet rs = stmtGetMaxVersionBDGF.executeQuery()) {
 	                    if (rs.next()) {
-	                        newVersionBDGF = rs.getInt(1) + 1;
+	                        currentMaxVersionBDGF = rs.getInt(1);
 	                    }
 	                }
+	                int newVersionBDGF = currentMaxVersionBDGF + 1;
 	                
-	                // 🔍 Step 5: Get max version for GENERAL_MASTER_TABLE
+	                // 🔍 Step 2: Get max version for GENERAL_MASTER_TABLE
 	                stmtGetMaxVersionMaster.setString(1, accountNo);
 	                stmtGetMaxVersionMaster.setDate(2, reportDate);
-	                int newVersionMaster = 1;
+	                int currentMaxVersionMaster = 0;
 	                try (ResultSet rs = stmtGetMaxVersionMaster.executeQuery()) {
 	                    if (rs.next()) {
-	                        newVersionMaster = rs.getInt(1) + 1;
+	                        currentMaxVersionMaster = rs.getInt(1);
 	                    }
 	                }
+	                int newVersionMaster = currentMaxVersionMaster + 1;
 	                
-	                // 🔍 Step 6: Get max version for GENERAL_MASTER_SRC
+	                // 🔍 Step 3: Get max version for GENERAL_MASTER_SRC
 	                stmtGetMaxVersionSrc.setString(1, accountNo);
 	                stmtGetMaxVersionSrc.setDate(2, reportDate);
-	                int newVersionSrc = 1;
+	                int currentMaxVersionSrc = 0;
 	                try (ResultSet rs = stmtGetMaxVersionSrc.executeQuery()) {
 	                    if (rs.next()) {
-	                        newVersionSrc = rs.getInt(1) + 1;
+	                        currentMaxVersionSrc = rs.getInt(1);
 	                    }
+	                }
+	                int newVersionSrc = currentMaxVersionSrc + 1;
+	                
+	                // 🔄 Step 4: Soft delete ONLY if existing records found in DEP_GENERAL
+	                if (currentMaxVersionBDGF > 0) {
+	                    stmtSoftDeleteBDGF.setString(1, userid);
+	                    stmtSoftDeleteBDGF.setDate(2, currentDate);
+	                    stmtSoftDeleteBDGF.setString(3, userid);
+	                    stmtSoftDeleteBDGF.setString(4, accountNo);
+	                    stmtSoftDeleteBDGF.setDate(5, reportDate);
+	                    stmtSoftDeleteBDGF.executeUpdate();
+	                }
+	                
+	                // 🔄 Step 5: Soft delete ONLY if existing records found in GENERAL_MASTER_TABLE
+	                if (currentMaxVersionMaster > 0) {
+	                    stmtSoftDeleteMaster.setString(1, userid);
+	                    stmtSoftDeleteMaster.setDate(2, currentDate);
+	                    stmtSoftDeleteMaster.setString(3, userid);
+	                    stmtSoftDeleteMaster.setString(4, accountNo);
+	                    stmtSoftDeleteMaster.setDate(5, reportDate);
+	                    stmtSoftDeleteMaster.executeUpdate();
+	                }
+	                
+	                // 🔄 Step 6: Soft delete ONLY if existing records found in GENERAL_MASTER_SRC
+	                if (currentMaxVersionSrc > 0) {
+	                    stmtSoftDeleteSrc.setString(1, userid);
+	                    stmtSoftDeleteSrc.setDate(2, currentDate);
+	                    stmtSoftDeleteSrc.setString(3, userid);
+	                    stmtSoftDeleteSrc.setString(4, accountNo);
+	                    stmtSoftDeleteSrc.setDate(5, reportDate);
+	                    stmtSoftDeleteSrc.executeUpdate();
 	                }
 	                
 	                // 🟩 Step 7: Insert new record into DEP_GENERAL
@@ -393,7 +414,7 @@ public class BDGF_Services {
 	                if (count % batchSize == 0) {
 	                    stmtInsertBDGF.executeBatch();
 	                    stmtInsertMaster.executeBatch();
-	                    stmtInsertSrc.executeBatch();  // Execute batch for SRC table
+	                    stmtInsertSrc.executeBatch();
 	                    conn.commit();
 	                    evaluator.clearAllCachedResultValues();
 	                }
@@ -407,60 +428,136 @@ public class BDGF_Services {
 	        // Execute remaining batches
 	        stmtInsertBDGF.executeBatch();
 	        stmtInsertMaster.executeBatch();
-	        stmtInsertSrc.executeBatch();  // Execute final batch for SRC table
+	        stmtInsertSrc.executeBatch();
 	        conn.commit();
 	        
 	        long duration = System.currentTimeMillis() - startTime;
-	        return String.format("✅ BDGF Upload complete. Saved: %d (Inserted: %d), Skipped: %d. Time: %d ms",
+	       /* return String.format("✅ BDGF Upload complete. Saved: %d (Inserted: %d), Skipped: %d. Time: %d ms",
 	                savedCount, insertedCount, skippedCount, duration);
-	                
+	        */
+	        return String.format("Inserted: %d Records",
+	                insertedCount);
+	        
 	    } catch (Exception e) {
 	        logger.error("❌ Error while processing BDGF Excel: {}", e.getMessage(), e);
 	        return "Error while reading Excel: " + e.getMessage();
 	    }
 	}
-	
+	/**
+	 * Helper method to safely get cell value, handling formula errors gracefully
+	 */
+	private String getCellValueSafe(Cell cell, DataFormatter formatter, FormulaEvaluator evaluator) {
+	    if (cell == null) return "";
+	    
+	    try {
+	        // Try to format the cell value
+	        return formatter.formatCellValue(cell, evaluator);
+	    } catch (Exception e) {
+	        // If formula evaluation fails (e.g., DATEDIF not supported), try to get cached value
+	        if (cell.getCellType() == Cell.CELL_TYPE_FORMULA) {
+	            try {
+	                int cachedType = cell.getCachedFormulaResultType();
+	                switch (cachedType) {
+	                    case Cell.CELL_TYPE_NUMERIC:
+	                        if (DateUtil.isCellDateFormatted(cell)) {
+	                            return formatter.formatCellValue(cell);
+	                        }
+	                        return String.valueOf(cell.getNumericCellValue());
+	                    case Cell.CELL_TYPE_STRING:
+	                        return cell.getRichStringCellValue().getString();
+	                    case Cell.CELL_TYPE_BOOLEAN:
+	                        return String.valueOf(cell.getBooleanCellValue());
+	                    default:
+	                        return "";
+	                }
+	            } catch (Exception ex) {
+	                logger.warn("Could not get cached formula value for cell: {}", ex.getMessage());
+	                return "";
+	            }
+	        }
+	        return "";
+	    }
+	}
+
 	private String getCellStringSafe(Row row, int index, DataFormatter formatter, FormulaEvaluator evaluator) {
-		Cell cell = row.getCell(index);
-		if (cell == null)
-			return null;
-		return formatter.formatCellValue(cell, evaluator).trim();
+	    Cell cell = row.getCell(index);
+	    if (cell == null) return null;
+	    
+	    String value = getCellValueSafe(cell, formatter, evaluator).trim();
+	    return value.isEmpty() ? null : value;
 	}
 
 	private java.sql.Date getCellDateSafe(Row row, int colIndex, DataFormatter formatter, FormulaEvaluator evaluator) {
-		try {
-			Cell cell = row.getCell(colIndex);
-			if (cell == null)
-				return null;
-
-			if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC &&
-				    DateUtil.isCellDateFormatted(cell)) {
-
-				    return new java.sql.Date(cell.getDateCellValue().getTime());
-				}
- else {
-				// Parse text in dd-MM-yyyy format
-				String text = formatter.formatCellValue(cell, evaluator).trim();
-				if (text.isEmpty())
-					return null;
-				SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy"); // match Excel format
-				return new java.sql.Date(sdf.parse(text).getTime());
-			}
-		} catch (Exception e) {
-			return null;
-		}
+	    try {
+	        Cell cell = row.getCell(colIndex);
+	        if (cell == null) return null;
+	        
+	        // First try: if it's a numeric date cell
+	        if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC && DateUtil.isCellDateFormatted(cell)) {
+	            return new java.sql.Date(cell.getDateCellValue().getTime());
+	        }
+	        
+	        // Second try: if it's a formula that returns a date
+	        if (cell.getCellType() == Cell.CELL_TYPE_FORMULA) {
+	            try {
+	                int cachedType = cell.getCachedFormulaResultType();
+	                if (cachedType == Cell.CELL_TYPE_NUMERIC && DateUtil.isCellDateFormatted(cell)) {
+	                    return new java.sql.Date(cell.getDateCellValue().getTime());
+	                }
+	            } catch (Exception e) {
+	                // Fall through to text parsing
+	            }
+	        }
+	        
+	        // Third try: parse as text in dd-MM-yyyy format
+	        String text = getCellValueSafe(cell, formatter, evaluator).trim();
+	        if (text.isEmpty()) return null;
+	        
+	        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+	        sdf.setLenient(false);
+	        return new java.sql.Date(sdf.parse(text).getTime());
+	        
+	    } catch (Exception e) {
+	        logger.warn("Could not parse date at column {}: {}", colIndex, e.getMessage());
+	        return null;
+	    }
 	}
 
 	private BigDecimal getCellDecimalSafe(Row row, int index, DataFormatter formatter, FormulaEvaluator evaluator) {
-		Cell cell = row.getCell(index);
-		if (cell == null)
-			return null;
-		try {
-			return new BigDecimal(formatter.formatCellValue(cell, evaluator).replaceAll(",", "").trim());
-		} catch (Exception e) {
-			return null;
-		}
+	    Cell cell = row.getCell(index);
+	    if (cell == null) return null;
+	    
+	    try {
+	        // For numeric cells, get the value directly
+	        if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
+	            return BigDecimal.valueOf(cell.getNumericCellValue());
+	        }
+	        
+	        // For formula cells, try to get cached numeric value
+	        if (cell.getCellType() == Cell.CELL_TYPE_FORMULA) {
+	            try {
+	                int cachedType = cell.getCachedFormulaResultType();
+	                if (cachedType == Cell.CELL_TYPE_NUMERIC) {
+	                    return BigDecimal.valueOf(cell.getNumericCellValue());
+	                }
+	            } catch (Exception e) {
+	                // Fall through to text parsing
+	            }
+	        }
+	        
+	        // Otherwise, format and parse as text
+	        String text = getCellValueSafe(cell, formatter, evaluator).replaceAll(",", "").trim();
+	        if (text.isEmpty()) return null;
+	        
+	        return new BigDecimal(text);
+	        
+	    } catch (Exception e) {
+	        logger.warn("Could not parse decimal at column {}: {}", index, e.getMessage());
+	        return null;
+	    }
 	}
+
+	
 
 	private String getCellString(Cell cell, DataFormatter f, FormulaEvaluator e) {
 		if (cell == null)
@@ -481,8 +578,7 @@ public class BDGF_Services {
 		try {
 			if (cell == null)
 				return null;
-			if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC &&
-				    DateUtil.isCellDateFormatted(cell)) 
+			if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC && DateUtil.isCellDateFormatted(cell))
 				return cell.getDateCellValue();
 			String text = f.formatCellValue(cell, e);
 			if (text.isEmpty())
@@ -610,7 +706,7 @@ public class BDGF_Services {
 			dataCellStyle.setBorderRight(BorderStyle.THIN);
 
 			// ================= Header Row =================
-			String[] headers = {"SOL ID", "Account No", "Customer ID", "Customer Name", "Open Date",
+			String[] headers = { "SOL ID", "Account No", "Customer ID", "Customer Name", "Open Date",
 					"Amount Deposited", "Currency", "Period", "Rate of Interest", "100%", "Bal Equiv to BWP",
 					"Outstanding Balance", "Outstanding Balance UGX", "Maturity Date", "Maturity Amount", "Scheme",
 					"CR Pref Int Rate", "Segment", "Reference Date", "Difference", "Days", "Period Days",
@@ -636,7 +732,7 @@ public class BDGF_Services {
 					int col = 0;
 
 					// All numeric/text/date cells use either numericStyle or dataCellStyle
-					//createNumericCell(row, col++, rec.getS_no(), dataCellStyle);
+					// createNumericCell(row, col++, rec.getS_no(), dataCellStyle);
 					createTextCell(row, col++, rec.getSolId(), dataCellStyle);
 					createTextCell(row, col++, rec.getAccountNo(), dataCellStyle);
 					createTextCell(row, col++, rec.getCustomerId(), dataCellStyle);
