@@ -1,293 +1,324 @@
 <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
 <!--
-CREATED BY	: INFANT JONES J 
-CREATED ON	: 10.09.2025
-PURPOSE		: BWRBRREPORT
+CREATED BY	: INFANT JONES J
+CREATED ON	: 8.12.2025
+PURPOSE		: BDISB1 BRRSREPORT
 -->
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<!-- CSS -->
-	
-	
-	<link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}">
-	<link rel="stylesheet" type="text/css" th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}">
-	<link rel="stylesheet" type="text/css" th:href="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.css}">
-	<link rel="stylesheet" type="text/css" th:href="@{/webjars/datatables/1.10.19/css/jquery.dataTables.min.css}">
-	<link rel="stylesheet" th:href="@{/css/CustomButton.css}" />
-	<link rel="icon" th:href="@{/favicon.ico}" type="image/x-icon" />
-	<!-- JavaScript -->
-	<!-- jQuery core (required first) -->
-	<!-- ✅ Your manually placed jQuery validation
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- CSS -->
+
+
+<link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}">
+<link rel="stylesheet" type="text/css" th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}">
+<link rel="stylesheet" type="text/css" th:href="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.css}">
+<link rel="stylesheet" type="text/css" th:href="@{/webjars/datatables/1.10.19/css/jquery.dataTables.min.css}">
+<link rel="stylesheet" th:href="@{/css/CustomButton.css}" />
+<link rel="icon" th:href="@{/favicon.ico}" type="image/x-icon" />
+<!-- JavaScript -->
+<!-- jQuery core (required first) -->
+<!-- ✅ Your manually placed jQuery validation
 	<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
 	 <script th:src="/jquery/jquery.validate.min.js"></script>
 	 -->
-	<!-- jQuery (required first) -->
-	<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
-	<!-- <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script> -->
-	<!-- ✅ jQuery Validation -->
-	<script src="/webjars/jquery-validation/1.19.0/jquery.validate.min.js"
-		th:src="@{/webjars/jquery-validation/1.19.0/jquery.validate.min.js}"></script>
-	<!-- Bootstrap + Others -->
-	<script th:src="@{/webjars/popper.js/1.14.7/umd/popper.min.js}"></script>
-	<script th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
-	<script th:src="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.js}"></script>
-	<script th:src="@{/webjars/jquery-form/4.2.2/jquery.form.min.js}"></script>
-	<script th:src="@{/webjars/datatables/1.10.19/js/jquery.dataTables.min.js}"></script>
-	<script th:src="@{/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js}"></script>
-	<style>
-		.btns {
-			float: right;
-			margin: 5px;
-		}
+<!-- jQuery (required first) -->
+<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+<!-- <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script> -->
+<!-- ✅ jQuery Validation -->
+<script src="/webjars/jquery-validation/1.19.0/jquery.validate.min.js"
+ th:src="@{/webjars/jquery-validation/1.19.0/jquery.validate.min.js}"></script>
+<!-- Bootstrap + Others -->
+<script th:src="@{/webjars/popper.js/1.14.7/umd/popper.min.js}"></script>
+<script th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
+<script th:src="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.js}"></script>
+<script th:src="@{/webjars/jquery-form/4.2.2/jquery.form.min.js}"></script>
+<script th:src="@{/webjars/datatables/1.10.19/js/jquery.dataTables.min.js}"></script>
+<script th:src="@{/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js}"></script>
+<style>
+.btns {
+	float: right;
+	margin: 5px;
+}
 
-		.col-sm-5 {
-			padding-bottom: 15px;
-		}
+.col-sm-5 {
+	padding-bottom: 15px;
+}
 
-		.list-body {
-			padding: 0px;
-		}
+.list-body {
+	padding: 0px;
+}
 
-		.error {
-			color: red;
-			padding-left: 10px;
-		}
+.error {
+	color: red;
+	padding-left: 10px;
+}
 
-		.formline {
-			padding-bottom: 15px;
-		}
+.formline {
+	padding-bottom: 15px;
+}
 
-		.btn-primary {
-			background-color: #E77400;
-			border-color: #0c0c0c;
-		}
+.btn-primary {
+	background-color: #E77400;
+	border-color: #0c0c0c;
+}
 
-		.btn-primary:not (:disabled):not (.disabled).active,
-		.btn-primary:not (:disabled):not (.disabled):active,
-		.show>.btn-primary.dropdown-toggle {
-			color: #fff;
-			background-color: #cc000000;
-			border-color: #161617;
-		}
+.btn-primary:not (:disabled ):not (.disabled ).active, .btn-primary:not 
+	 (:disabled ):not (.disabled ):active, .show>.btn-primary.dropdown-toggle
+	{
+	color: #fff;
+	background-color: #cc000000;
+	border-color: #161617;
+}
 
-		#finusertb {
-			width: 460px;
-		}
+#finusertb {
+	width: 460px;
+}
 
-		.dataTables_wrapper .dataTables_paginate .paginate_button {
-			padding: 0px;
-		}
-	</style>
-	<style>
-		div span {
-			font-weight: bold;
-			color: white !important;
-		}
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+	padding: 0px;
+}
+</style>
+<style>
+div span {
+	font-weight: bold;
+	color: white !important;
+}
 
-		.card {
-			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-			border-radius: 8px;
-		}
+.card {
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	border-radius: 8px;
+}
 
-		.card-header h5 {
-			font-size: 22px;
-			color: #fff;
-			font-weight: 600;
-		}
+.card-header h5 {
+	font-size: 22px;
+	color: #fff;
+	font-weight: 600;
+}
 
-		.nav-tabs .nav-link {
-			font-weight: 500;
-			border: 1px solid #dee2e6;
-			border-bottom: none;
-			border-radius: 4px 4px 0 0;
-			background-color: #f1f1f1;
-			margin-right: 5px;
-		}
+.nav-tabs .nav-link {
+	font-weight: 500;
+	border: 1px solid #dee2e6;
+	border-bottom: none;
+	border-radius: 4px 4px 0 0;
+	background-color: #f1f1f1;
+	margin-right: 5px;
+}
 
-		.nav-tabs .nav-link.active {
-			background-color: #ffffff;
-			border-color: #dee2e6 #dee2e6 #ffffff;
-		}
+.nav-tabs .nav-link.active {
+	background-color: #ffffff;
+	border-color: #dee2e6 #dee2e6 #ffffff;
+}
 
-		.table-responsive {
-			border: 1px solid #dee2e6;
-			border-radius: 4px;
-		}
+.table-responsive {
+	border: 1px solid #dee2e6;
+	border-radius: 4px;
+}
 
-		.table-hover tbody tr:hover {
-			background-color: #f3f6f9;
-		}
+.table-hover tbody tr:hover {
+	background-color: #f3f6f9;
+}
 
-		thead th {
-			position: sticky;
-			top: 0;
-			background-color: #e9ecf0;
-			z-index: 1;
-		}
+thead th {
+	position: sticky;
+	top: 0;
+	background-color: #e9ecf0;
+	z-index: 1;
+}
 
-		.table td {
-			background-color: #FFFFFF;
-		}
+.table td {
+	background-color: #FFFFFF;
+}
 
-		.card-footer {
-			padding: 10px;
-			border-top: 1px solid #ccc;
-		}
+.card-footer {
+	padding: 10px;
+	border-top: 1px solid #ccc;
+}
 
-		.btn-xs {
-			padding: 4px 12px;
-			font-size: 14px;
-			border-radius: 4px;
-		}
+.btn-xs {
+	padding: 4px 12px;
+	font-size: 14px;
+	border-radius: 4px;
+}
 
-		#BRRSvalidation th,
-		#usertable td {
-			vertical-align: middle;
-			text-align: left;
-			font-size: 16px;
-			font-family: Arial;
-		}
+#BRRSvalidation th, #usertable td {
+	vertical-align: middle;
+	text-align: left;
+	font-size: 16px;
+	font-family: Arial;
+}
 
-		.fa-edit:hover {
-			color: #28a745;
-			transform: scale(1.1);
-		}
+.fa-edit:hover {
+	color: #28a745;
+	transform: scale(1.1);
+}
 
-		td {
-			border: 1px solid rgb(0, 164, 166);
-			overflow: hidden;
-			white-space: nowrap;
-			text-overflow: ellipsis;
-		}
-	</style>
-	<style>
-		.form-group {
-			position: relative;
-			margin-bottom: 1.5rem;
-		}
+td {
+	border: 1px solid rgb(0, 164, 166);
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+</style>
+<style>
+.form-group {
+	position: relative;
+	margin-bottom: 1.5rem;
+}
 
-		.form-control {
-			width: 100%;
-			border: 2px solid #ccc;
-			border-radius: 8px;
-			font-size: 1rem;
-			outline: none;
-			background: transparent;
-			transition: border-color 0.3s ease, padding-top 0.3s ease;
-		}
+.form-control {
+	width: 100%;
+	border: 2px solid #ccc;
+	border-radius: 8px;
+	font-size: 1rem;
+	outline: none;
+	background: transparent;
+	transition: border-color 0.3s ease, padding-top 0.3s ease;
+}
 
-		.error {
-			color: red;
-			padding-top: 15px;
-		}
+.error {
+	color: red;
+	padding-top: 15px;
+}
 
-		.form-control:focus {
-			border-color: #007bff;
-		}
+.form-control:focus {
+	border-color: #007bff;
+}
 
-		.form-legend {
-			position: absolute;
-			top: 50%;
-			left: 15px;
-			transform: translateY(-50%);
-			font-size: 1rem;
-			color: #aaa;
-			background: white;
-			padding: 0 5px;
-			pointer-events: none;
-			transition: 0.3s ease;
-		}
+.form-legend {
+	position: absolute;
+	top: 50%;
+	left: 15px;
+	transform: translateY(-50%);
+	font-size: 1rem;
+	color: #aaa;
+	background: white;
+	padding: 0 5px;
+	pointer-events: none;
+	transition: 0.3s ease;
+}
+/* 🚌 Bus display style box */
+.boards {
+	transform: translateY(6px);
+	background-color: rgb(107, 122, 143);
+	color: white;
+	padding: 5px 5px;
+	border-radius: 8px;
+	overflow: hidden;
+	white-space: nowrap;
+	flex: 1; /* ✅ makes it take available space dynamically */
+	min-width: 200px;
+	box-shadow: 0 0 10px rgb(107, 122, 143);
+	position: relative;
+}
 
-		/* When input or select is focused or has a value, move the label up */
-		.form-control:focus~.form-legend,
-		.form-control:not (:placeholder-shown)~.form-legend {
-			top: -8px;
-			font-size: 1rem;
-			color: #007bff;
-		}
+/* ✨ Scrolling animation */
+.scrolling-text {
+	display: inline-block;
+	font-family: "Courier New", monospace;
+	font-weight: bold;
+	letter-spacing: 1px;
+	animation: scroll-left 10s linear infinite;
+}
 
-		/* Hover effect when the input/select is focused */
-		.form-control:focus:hover~.form-legend {
-			color: #0056b3;
-			/* Darker shade of blue on hover */
-		}
+@keyframes scroll-left {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
 
-		/* Ensure the label returns to the normal color after focus or hover is removed */
-		.form-control:not (:focus)~.form-legend {
-			color: #aaa;
-			/* Normal label color */
-		}
-	</style>
-	<style>
-		/* Red border for invalid inputs */
-		input.error,
-		select.error {
-			border: 2px solid red !important;
-		}
 
-		/* Error message style */
-		label.error {
-			color: red;
-			font-size: 0.85em;
-			margin-top: 5px;
-			display: block;
-		}
+/* When input or select is focused or has a value, move the label up */
+.form-control:focus ~.form-legend, .form-control:not (:placeholder-shown
+	 )~.form-legend {
+	top: -8px;
+	font-size: 1rem;
+	color: #007bff;
+}
 
-		.underline {
-			text-decoration: underline;
-			color: #08a6f1;
-			cursor: pointer;
-		}
+/* Hover effect when the input/select is focused */
+.form-control:focus:hover ~.form-legend {
+	color: #0056b3;
+	/* Darker shade of blue on hover */
+}
 
-		.left-arrow-circle {
-			width: 35px;
-			height: 35px;
-			border-radius: 50%;
-			background-color: white;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			margin-right: 10px;
-			transition: background-color 0.3s, transform 0.2s;
-		}
+/* Ensure the label returns to the normal color after focus or hover is removed */
+.form-control:not (:focus )~.form-legend {
+	color: #aaa;
+	/* Normal label color */
+}
+</style>
+<style>
+/* Red border for invalid inputs */
+input.error, select.error {
+	border: 2px solid red !important;
+}
 
-		.left-arrow-circle i {
-			color: rgb(107, 122, 143);
-		}
+/* Error message style */
+label.error {
+	color: red;
+	font-size: 0.85em;
+	margin-top: 5px;
+	display: block;
+}
 
-		.left-arrow-circle:hover {
-			background-color: rgb(107, 122, 143);
-			cursor: pointer;
-			transform: scale(1.05);
-			border: 2px solid white;
-		}
+.underline {
+	text-decoration: underline;
+	color: #08a6f1;
+	cursor: pointer;
+}
 
-		.left-arrow-circle:hover i {
-			color: white;
-		}
+.left-arrow-circle {
+	width: 35px;
+	height: 35px;
+	border-radius: 50%;
+	background-color: white;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-right: 10px;
+	transition: background-color 0.3s, transform 0.2s;
+}
 
-		.white-text span {
-			color: white !important;
-		}
+.left-arrow-circle i {
+	color: rgb(107, 122, 143);
+}
 
-		.table-cell tbody td:hover {
-			background-color: #f0f0f0;
-			/* Hover color for cell */
-			cursor: pointer;
-			/* Optional: pointer cursor */
-		}
+.left-arrow-circle:hover {
+	background-color: rgb(107, 122, 143);
+	cursor: pointer;
+	transform: scale(1.05);
+	border: 2px solid white;
+}
 
-		.table-bordered td,
-		.table-bordered th {
-			border: 1px solid #000 !important;
-		}
-	</style>
-	<script th:inline="javascript">
+.left-arrow-circle:hover i {
+	color: white;
+}
+
+.white-text span {
+	color: white !important;
+}
+
+.table-cell tbody td:hover {
+	background-color: #f0f0f0;
+	/* Hover color for cell */
+	cursor: pointer;
+	/* Optional: pointer cursor */
+}
+
+.table-bordered td, .table-bordered th {
+	border: 1px solid #000 !important;
+}
+</style>
+
+<script th:inline="javascript">
+	let isDetailsModal = false;
 		$(document).ready(function () {
-			let isDetailsModal = false;
 			// hide loader on normal load
 			$('#loader').modal('hide');
 		});
@@ -300,8 +331,8 @@ PURPOSE		: BWRBRREPORT
 			$('#loader').modal('hide');
 		});
 
-		
-		
+              
+				
 		$(document).ready(function() {
 			Maker_Checker_Function(); 
 		});
@@ -314,7 +345,7 @@ PURPOSE		: BWRBRREPORT
 				success: function(roleId) {
 					// console.log("User Role ID:", roleId);
 				
-					if (roleId === "ADM-C" || roleId === "USR-C" || roleId === "USER-AUDIT") {
+					if (roleId === "ADM-C" || roleId === "USR-C"  || roleId === "USER-AUDIT") {
 						const modifyBtn = document.getElementById("addRecord");
 						if (modifyBtn) modifyBtn.style.display = "none";
 					}
@@ -330,7 +361,8 @@ PURPOSE		: BWRBRREPORT
 		     }
 		    });
 		}
-		
+
+
 
 		function home() {
 			$("#loader").modal("toggle");
@@ -342,20 +374,32 @@ PURPOSE		: BWRBRREPORT
 		}
 
 		//to fetch summary from the database - called from the summary button
-		function showdetails() {
+		//function showdetails() {
+			// alert("Details page not available for Manual Report");
+		//}
+		/* function showdetails() {
 		    isDetailsModal = true; // mark that this modal is from Details
-			 showResultModal('BRRS',' Details page not available for Manual Report');
+			 showResultModal('BRRS',' Details page not available for Manual Report');
+		} */
+		//to fetch summary from the database - called from the summary button
+		function showdetails() {
+			var Callurl;
+			$('#loader').modal('show');
+			Callurl = /*[[@{'/Reports/'+${reportid}+'/Details'(asondate=${asondate},fromdate=${fromdate},todate=${todate},currency=${currency},dtltype=${dtltype},type=${type},version=${version})}]]*/
+				location.href = Callurl;
+			console.log(Callurl);
+
 		}
 
 		function showsummary() {
 			$('#loader').modal('show');
-			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/;
 			location.href = Callurl;
 		}
 
 
 	</script>
-	<script>
+<script>
 		function activateTab(tabName) {
 			// Remove 'active' from all buttons
 			document.querySelectorAll('.custom-tab-btn').forEach(btn => {
@@ -419,7 +463,7 @@ PURPOSE		: BWRBRREPORT
 						a.click();
 						window.URL.revokeObjectURL(url);
 						document.body.removeChild(a);
-						showResultModal('BRRS', filename + ' downloaded successfully.');
+						showResultModal('BRRS', 'BDISB2.xlsx downloaded successfully.');
 					} else {
 						showResultModal('Information', 'No data was available to create a download.');
 					}
@@ -431,7 +475,6 @@ PURPOSE		: BWRBRREPORT
 				}
 			});
 		}
-		
 		function editRecord() {
 			showResultModal('Alert', 'Development in progress');
 
@@ -449,8 +492,8 @@ PURPOSE		: BWRBRREPORT
 			$('#resultModal').modal('show');
 		}
 	</script>
-	
-	
+
+
 	<script>
 	// Show Modify (enable inputs & dropdowns)
 function showmodify(btn) {
@@ -803,7 +846,7 @@ function fileuploads(btn) {
 		//Select API endpoint dynamically
 		let apiUrl = './BDISB1updateAll'; // normal update
 		if (type && type.toUpperCase() === 'RESUB') {
-			apiUrl = './UpdateM_BDISB1_ReSub'; // Resubmission endpoint
+			apiUrl = './UpdateBDISB1_ReSub'; // Resubmission endpoint
 		}
 	    
 
@@ -840,151 +883,6 @@ function fileuploads(btn) {
 	}
 
 </script>
-
-<style>
-		.left-arrow-circle {
-			background-color: white;
-			color: #007bff;
-			border-radius: 50%;
-			padding: 8px;
-			margin-right: 10px;
-			cursor: pointer;
-		}
-
-		/* 🚌 Bus display style box */
-		/* 🚌 Bus display style box */
-					.boards {
-						transform: translateY(6px);
-					  background-color: rgb(107, 122, 143);
-					  color: white;
-					  padding: 5px 80px;
-					  border-radius: 8px;
-					  overflow: hidden;
-					  white-space: nowrap;
-					  flex: 1; /* ✅ makes it take available space dynamically */
-					  min-width: 200px;
-					  box-shadow: 0 0 10px rgb(107, 122, 143);
-					  position: relative;
-					}
-
-		/* ✨ Scrolling animation */
-		.scrolling-text {
-			display: inline-block;
-			font-family: "Courier New", monospace;
-			font-weight: bold;
-			letter-spacing: 1px;
-			animation: scroll-left 10s linear infinite;
-		}
-
-		/* Animation keyframes */
-		@keyframes scroll-left {
-			0% {
-				transform: translateX(100%);
-			}
-
-			100% {
-				transform: translateX(-100%);
-			}
-		}
-	</style>
-
-
-
-
-	<style>
-		/* Keep the header fixed and aligned */
-		.dataTables_scrollHeadInner,
-		.dataTables_scrollBody table {
-			width: 100% !important;
-		}
-
-		/* Prevent thead shrinking at zoom */
-		.dataTables_scrollHeadInner table {
-			width: 100% !important;
-			min-width: 100% !important;
-		}
-
-		#reportdetails {
-			width: 100% !important;
-			table-layout: fixed !important;
-		}
-
-		#reportdetails th,
-		#reportdetails td {
-			white-space: nowrap;
-		}
-
-		table.dataTable th.dt-type-numeric,
-		table.dataTable th.dt-type-date,
-		table.dataTable td.dt-type-numeric,
-		table.dataTable td.dt-type-date {
-			text-align: left !important;
-		}
-
-		table.dataTable th.dt-type-numeric:nth-child(6) {
-			text-align: right !important;
-		}
-
-		/* ✅ Right-align both header and data (6th column = ACCT BALANCE) */
-		#reportdetails th.dt-type-numeric:nth-child(6),
-		#reportdetails td:nth-child(6),
-		.dataTables_scrollHeadInner table th:nth-child(6) {
-			text-align: right !important;
-			padding-right: 10px !important;
-		}
-	</style>
-	<style>
-		#reportdetails,
-		#reportdetails th,
-		#reportdetails td {
-			
-		}
-
-		#reportdetails {
-			border-collapse: collapse;
-		}
-	</style>
-	<script th:inline="javascript">
-				  $(document).ready(function () {
-				    var table = $('#reportdetails').DataTable({
-				      scrollY: "550px",
-				      scrollX: true,
-				      scrollCollapse: true,
-				      autoWidth: false,
-				      paging: true,
-				      searching: true,
-				      lengthChange: false,
-				      ordering: true,
-				      pageLength: 100,
-				      fixedHeader: true, // ✅ You can simply set it to true
-					  // ✅ Column width settings
-					   columnDefs: [
-					     { width: "60px", targets: 0 },   // Edit icon column
-					     { width: "150px", targets: 1 }  ,  // S No column
-						 { width: "300px", targets: 7 }    // S No column
-					   ],
-
-				      dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t'
-				    });
-
-				    // ✅ Fix alignment on resize / zoom
-				    $(window).on('resize', function () {
-				      table.columns.adjust().draw(false);
-				    });
-
-				    // ✅ Fix initial misalignment if loaded at non-100% zoom
-				    setTimeout(function () {
-				      table.columns.adjust().draw(false);
-				    }, 500);
-				  });
-				</script>
-
-	<script th:inline="javascript">
-		/*<![CDATA[*/
-		const reportId = /*[[${reportid}]]*/ null;
-		/*]]>*/
-	</script>
-
 
 
 
@@ -1048,7 +946,7 @@ function fileuploads(btn) {
                     				 data-todate=${todate},
                     				 data-currency=${currency}, 
                     				 data-dtltype=${dtltype},
-                    				 data-filename='M_BDISB1.xlsx',
+                    				 data-filename='BDISB1.xlsx',
 					 				 data-type=${type},
 					    			 data-version=${version}"
 									  onclick="downloadfile(this);">
@@ -1061,7 +959,7 @@ function fileuploads(btn) {
 								    data-todate=${todate},
 									data-currency=${currency},  
 												data-dtltype=${dtltype}, 
-								    data-filename='M_BDISB1Detail',
+								    data-filename='BDISB1Detail',
 									data-type=${type},
 												data-version=${version}
 								  ">
@@ -1163,227 +1061,227 @@ function fileuploads(btn) {
 	<tr>
 
 
-<td id="ROW5" style="text-align: right; background-color:#FFFFFF; font-weight: bold; padding-left: 20px;">
+<td id="ROW5" style="text-align: right; background-color:#FFFFFF; font-weight: bold;">
         <input class="display-input Show_input"
                type="text"
                th:value="${report.R5_RECORD_NUMBER != null ? #numbers.formatDecimal(report.R5_RECORD_NUMBER, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R5_RECORD_NUMBER"
-               name="R5_RECORD_NUMBER"
+               name="R5_C1_RECORD_NUMBER"
                style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
 
-<td id="ROW5" style="text-align:left;background-color:#FFFFFF;font-weight:bold; padding-right: 20px;">
+<td id="ROW5" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R5_TITLE, 'N/A')}"
-           id="R5_TITLE" name="R5_TITLE"
+           id="R5_TITLE" name="R5_C2_TITLE"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
 
 
-<td id="ROW5" style="text-align:left;background-color:#FFFFFF;font-weight:bold; padding-right: 20px;">
+<td id="ROW5" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R5_FIRST_NAME, 'N/A')}"
-           id="R5_FIRST_NAME" name="R5_FIRST_NAME"
+           id="R5_FIRST_NAME" name="R5_C3_FIRST_NAME"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
 
-<td id="ROW5" style="text-align:left;background-color:#FFFFFF;font-weight:bold; padding-right: 20px;">
+<td id="ROW5" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R5_MIDDLE_NAME, 'N/A')}"
-           id="R5_MIDDLE_NAME" name="R5_MIDDLE_NAME"
+           id="R5_MIDDLE_NAME" name="R5_C4_MIDDLE_NAME"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
 
-<td id="ROW5" style="text-align:left;background-color:#FFFFFF;font-weight:bold; padding-right: 20px;">
+<td id="ROW5" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R5_SURNAME, 'N/A')}"
-           id="R5_SURNAME" name="R5_SURNAME"
+           id="R5_SURNAME" name="R5_C5_SURNAME"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
 
-<td id="ROW5" style="text-align:left;background-color:#FFFFFF;font-weight:bold; padding-right: 20px;">
+<td id="ROW5" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R5_PREVIOUS_NAME, 'N/A')}"
-           id="R5_PREVIOUS_NAME" name="R5_PREVIOUS_NAME"
+           id="R5_PREVIOUS_NAME" name="R5_C6_PREVIOUS_NAME"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
 
-<td id="ROW5" style="text-align:left;background-color:#FFFFFF;font-weight:bold; padding-right: 20px;">
+<td id="ROW5" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R5_GENDER, 'N/A')}"
-           id="R5_GENDER" name="R5_GENDER"
+           id="R5_GENDER" name="R5_C7_GENDER"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
 
-<td id="ROW5" style="text-align:left;background-color:#FFFFFF;font-weight:bold; padding-right: 20px;">
+<td id="ROW5" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R5_IDENTIFICATION_TYPE, 'N/A')}"
-           id="R5_IDENTIFICATION_TYPE" name="R5_IDENTIFICATION_TYPE"
+           id="R5_IDENTIFICATION_TYPE" name="R5_C8_IDENTIFICATION_TYPE"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
 
-<td id="ROW5" style="text-align:left;background-color:#FFFFFF;font-weight:bold; padding-right: 20px;">
+<td id="ROW5" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R5_PASSPORT_NUMBER, 'N/A')}"
-           id="R5_PASSPORT_NUMBER" name="R5_PASSPORT_NUMBER"
+           id="R5_PASSPORT_NUMBER" name="R5_C9_PASSPORT_NUMBER"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
 
-<td style="text-align: left; padding-right: 20px;">
+<td style="text-align: left;">
         <input type="date"
                class="display-input show_input date-field"
                th:value="${#dates.format(report.R5_DATE_OF_BIRTH, 'yyyy-MM-dd')}"
                id="R5_DATE_OF_BIRTH"
-               name="R5_DATE_OF_BIRTH"
+               name="R5_C10_DATE_OF_BIRTH"
                readonly
                style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;" />
     </td>
 
-<td id="ROW5" style="text-align:left;background-color:#FFFFFF;font-weight:bold; padding-right: 20px;">
+<td id="ROW5" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R5_HOME_ADDRESS, 'N/A')}"
-           id="R5_HOME_ADDRESS" name="R5_HOME_ADDRESS"
+           id="R5_HOME_ADDRESS" name="R5_C11_HOME_ADDRESS"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
 
-<td id="ROW5" style="text-align:left;background-color:#FFFFFF;font-weight:bold; padding-right: 20px;">
+<td id="ROW5" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R5_POSTAL_ADDRESS, 'N/A')}"
-           id="R5_POSTAL_ADDRESS" name="R5_POSTAL_ADDRESS"
+           id="R5_POSTAL_ADDRESS" name="R5_C12_POSTAL_ADDRESS"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
 
-<td id="ROW5" style="text-align:left;background-color:#FFFFFF;font-weight:bold; padding-right: 20px;">
+<td id="ROW5" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R5_RESIDENCE, 'N/A')}"
-           id="R5_RESIDENCE" name="R5_RESIDENCE"
+           id="R5_RESIDENCE" name="R5_C13_RESIDENCE"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
 
-<td id="ROW5" style="text-align:left;background-color:#FFFFFF;font-weight:bold; padding-right: 20px;">
+<td id="ROW5" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R5_EMAIL, 'N/A')}"
-           id="R5_EMAIL" name="R5_EMAIL"
+           id="R5_EMAIL" name="R5_C14_EMAIL"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
 
-<td id="ROW5" style="text-align:left;background-color:#FFFFFF;font-weight:bold; padding-right: 20px;">
+<td id="ROW5" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R5_LANDLINE, 'N/A')}"
-           id="R5_LANDLINE" name="R5_LANDLINE"
+           id="R5_LANDLINE" name="R5_C15_LANDLINE"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
 
-<td id="ROW5" style="text-align:left;background-color:#FFFFFF;font-weight:bold; padding-right: 20px;">
+<td id="ROW5" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R5_MOBILE_PHONE_NUMBER, 'N/A')}"
-           id="R5_MOBILE_PHONE_NUMBER" name="R5_MOBILE_PHONE_NUMBER"
+           id="R5_MOBILE_PHONE_NUMBER" name="R5_C15_MOBILE_PHONE_NUMBER"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
 
-<td id="ROW5" style="text-align:left;background-color:#FFFFFF;font-weight:bold; padding-right: 20px;">
+<td id="ROW5" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R5_MOBILE_MONEY_NUMBER, 'N/A')}"
-           id="R5_MOBILE_MONEY_NUMBER" name="R5_MOBILE_MONEY_NUMBER"
+           id="R5_MOBILE_MONEY_NUMBER" name="R5_C16_MOBILE_MONEY_NUMBER"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
 
-<td id="ROW5" style="text-align:left;background-color:#FFFFFF;font-weight:bold; padding-right: 20px;">
+<td id="ROW5" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R5_PRODUCT_TYPE, 'N/A')}"
-           id="R5_PRODUCT_TYPE" name="R5_PRODUCT_TYPE"
+           id="R5_PRODUCT_TYPE" name="R5_C17_PRODUCT_TYPE"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
 
-<td id="ROW5" style="text-align:left;background-color:#FFFFFF;font-weight:bold; padding-right: 20px;">
+<td id="ROW5" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R5_ACCOUNT_BY_OWNERSHIP, 'N/A')}"
-           id="R5_ACCOUNT_BY_OWNERSHIP" name="R5_ACCOUNT_BY_OWNERSHIP"
+           id="R5_ACCOUNT_BY_OWNERSHIP" name="R5_C18_ACCOUNT_BY_OWNERSHIP"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
 
-<td id="ROW5" style="text-align:left;background-color:#FFFFFF;font-weight:bold; padding-right: 20px;">
+<td id="ROW5" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R5_ACCOUNT_NUMBER, 'N/A')}"
-           id="R5_ACCOUNT_NUMBER" name="R5_ACCOUNT_NUMBER"
+           id="R5_ACCOUNT_NUMBER" name="R5_C19_ACCOUNT_NUMBER"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
 
-<td id="ROW5" style="text-align:left;background-color:#FFFFFF;font-weight:bold; padding-right: 20px;">
+<td id="ROW5" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R5_ACCOUNT_HOLDER_INDICATOR, 'N/A')}"
-           id="R5_ACCOUNT_HOLDER_INDICATOR" name="R5_ACCOUNT_HOLDER_INDICATOR"
+           id="R5_ACCOUNT_HOLDER_INDICATOR" name="R5_C20_ACCOUNT_HOLDER_INDICATOR"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
 
-<td id="ROW5" style="text-align:left;background-color:#FFFFFF;font-weight:bold; padding-right: 20px;">
+<td id="ROW5" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R5_STATUS_OF_ACCOUNT, 'N/A')}"
-           id="R5_STATUS_OF_ACCOUNT" name="R5_STATUS_OF_ACCOUNT"
+           id="R5_STATUS_OF_ACCOUNT" name="R5_C21_STATUS_OF_ACCOUNT"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
 
-<td id="ROW5" style="text-align:left;background-color:#FFFFFF;font-weight:bold; padding-right: 20px;">
+<td id="ROW5" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R5_NOT_FIT_FOR_STP, 'N/A')}"
-           id="R5_NOT_FIT_FOR_STP" name="R5_NOT_FIT_FOR_STP"
+           id="R5_NOT_FIT_FOR_STP" name="R5_C22_NOT_FIT_FOR_STP"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
 
-<td id="ROW5" style="text-align:left;background-color:#FFFFFF;font-weight:bold; padding-right: 20px;">
+<td id="ROW5" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R5_BRANCH_CODE_AND_NAME, 'N/A')}"
-           id="R5_BRANCH_CODE_AND_NAME" name="R5_BRANCH_CODE_AND_NAME"
+           id="R5_BRANCH_CODE_AND_NAME" name="R5_C23_BRANCH_CODE_AND_NAME"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
 
-<td id="ROW5" style="text-align: right; background-color:#FFFFFF; font-weight: bold; padding-left: 20px;">
+<td id="ROW5" style="text-align: right; background-color:#FFFFFF; font-weight: bold;">
         <input class="display-input Show_input"
                type="text"
                th:value="${report.R5_ACCOUNT_BALANCE_IN_PULA != null ? #numbers.formatDecimal(report.R5_ACCOUNT_BALANCE_IN_PULA, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R5_ACCOUNT_BALANCE_IN_PULA"
-               name="R5_ACCOUNT_BALANCE_IN_PULA"
+               name="R5_C24_ACCOUNT_BALANCE_IN_PULA"
                style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
 
-<td id="ROW5" style="text-align:left;background-color:#FFFFFF;font-weight:bold; padding-right: 20px;">
+<td id="ROW5" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R5_CURRENCY_OF_ACCOUNT, 'N/A')}"
-           id="R5_CURRENCY_OF_ACCOUNT" name="R5_CURRENCY_OF_ACCOUNT"
+           id="R5_CURRENCY_OF_ACCOUNT" name="R5_C25_CURRENCY_OF_ACCOUNT"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
 
-<td id="ROW5" style="text-align: right; background-color:#FFFFFF; font-weight: bold; padding-left: 20px;">
+<td id="ROW5" style="text-align: right; background-color:#FFFFFF; font-weight: bold;">
         <input class="display-input Show_input"
                type="text"
                th:value="${report.R5_EXCHANGE_RATE != null ? #numbers.formatDecimal(report.R5_EXCHANGE_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R5_EXCHANGE_RATE"
-               name="R5_EXCHANGE_RATE"
+               name="R5_C26_EXCHANGE_RATE"
                style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -1398,7 +1296,7 @@ function fileuploads(btn) {
                type="text"
                th:value="${report.R6_RECORD_NUMBER != null ? #numbers.formatDecimal(report.R6_RECORD_NUMBER, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R6_RECORD_NUMBER"
-               name="R6_RECORD_NUMBER"
+               name="R6_C1_RECORD_NUMBER"
                style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -1406,7 +1304,7 @@ function fileuploads(btn) {
 <td id="ROW6" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R6_TITLE, 'N/A')}"
-           id="R6_TITLE" name="R6_TITLE"
+           id="R6_TITLE" name="R6_C2_TITLE"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1415,7 +1313,7 @@ function fileuploads(btn) {
 <td id="ROW6" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R6_FIRST_NAME, 'N/A')}"
-           id="R6_FIRST_NAME" name="R6_FIRST_NAME"
+           id="R6_FIRST_NAME" name="R6_C3_FIRST_NAME"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1423,7 +1321,7 @@ function fileuploads(btn) {
 <td id="ROW6" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R6_MIDDLE_NAME, 'N/A')}"
-           id="R6_MIDDLE_NAME" name="R6_MIDDLE_NAME"
+           id="R6_MIDDLE_NAME" name="R6_C4_MIDDLE_NAME"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1431,7 +1329,7 @@ function fileuploads(btn) {
 <td id="ROW6" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R6_SURNAME, 'N/A')}"
-           id="R6_SURNAME" name="R6_SURNAME"
+           id="R6_SURNAME" name="R6_C5_SURNAME"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1439,7 +1337,7 @@ function fileuploads(btn) {
 <td id="ROW6" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R6_PREVIOUS_NAME, 'N/A')}"
-           id="R6_PREVIOUS_NAME" name="R6_PREVIOUS_NAME"
+           id="R6_PREVIOUS_NAME" name="R6_C6_PREVIOUS_NAME"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1447,7 +1345,7 @@ function fileuploads(btn) {
 <td id="ROW6" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R6_GENDER, 'N/A')}"
-           id="R6_GENDER" name="R6_GENDER"
+           id="R6_GENDER" name="R6_C7_GENDER"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1455,7 +1353,7 @@ function fileuploads(btn) {
 <td id="ROW6" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R6_IDENTIFICATION_TYPE, 'N/A')}"
-           id="R6_IDENTIFICATION_TYPE" name="R6_IDENTIFICATION_TYPE"
+           id="R6_IDENTIFICATION_TYPE" name="R6_C8_IDENTIFICATION_TYPE"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1463,7 +1361,7 @@ function fileuploads(btn) {
 <td id="ROW6" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R6_PASSPORT_NUMBER, 'N/A')}"
-           id="R6_PASSPORT_NUMBER" name="R6_PASSPORT_NUMBER"
+           id="R6_PASSPORT_NUMBER" name="R6_C9_PASSPORT_NUMBER"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1473,7 +1371,7 @@ function fileuploads(btn) {
                class="display-input show_input date-field"
                th:value="${#dates.format(report.R6_DATE_OF_BIRTH, 'yyyy-MM-dd')}"
                id="R6_DATE_OF_BIRTH"
-               name="R6_DATE_OF_BIRTH"
+               name="R6_C10_DATE_OF_BIRTH"
                readonly
                style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;" />
     </td>
@@ -1481,7 +1379,7 @@ function fileuploads(btn) {
 <td id="ROW6" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R6_HOME_ADDRESS, 'N/A')}"
-           id="R6_HOME_ADDRESS" name="R6_HOME_ADDRESS"
+           id="R6_HOME_ADDRESS" name="R6_C11_HOME_ADDRESS"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1489,7 +1387,7 @@ function fileuploads(btn) {
 <td id="ROW6" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R6_POSTAL_ADDRESS, 'N/A')}"
-           id="R6_POSTAL_ADDRESS" name="R6_POSTAL_ADDRESS"
+           id="R6_POSTAL_ADDRESS" name="R6_C12_POSTAL_ADDRESS"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1497,7 +1395,7 @@ function fileuploads(btn) {
 <td id="ROW6" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R6_RESIDENCE, 'N/A')}"
-           id="R6_RESIDENCE" name="R6_RESIDENCE"
+           id="R6_RESIDENCE" name="R6_C13_RESIDENCE"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1505,7 +1403,7 @@ function fileuploads(btn) {
 <td id="ROW6" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R6_EMAIL, 'N/A')}"
-           id="R6_EMAIL" name="R6_EMAIL"
+           id="R6_EMAIL" name="R6_C14_EMAIL"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1513,7 +1411,7 @@ function fileuploads(btn) {
 <td id="ROW6" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R6_LANDLINE, 'N/A')}"
-           id="R6_LANDLINE" name="R6_LANDLINE"
+           id="R6_LANDLINE" name="R6_C15_LANDLINE"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1521,7 +1419,7 @@ function fileuploads(btn) {
 <td id="ROW6" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R6_MOBILE_PHONE_NUMBER, 'N/A')}"
-           id="R6_MOBILE_PHONE_NUMBER" name="R6_MOBILE_PHONE_NUMBER"
+           id="R6_MOBILE_PHONE_NUMBER" name="R6_C15_MOBILE_PHONE_NUMBER"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1529,7 +1427,7 @@ function fileuploads(btn) {
 <td id="ROW6" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R6_MOBILE_MONEY_NUMBER, 'N/A')}"
-           id="R6_MOBILE_MONEY_NUMBER" name="R6_MOBILE_MONEY_NUMBER"
+           id="R6_MOBILE_MONEY_NUMBER" name="R6_C16_MOBILE_MONEY_NUMBER"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1537,7 +1435,7 @@ function fileuploads(btn) {
 <td id="ROW6" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R6_PRODUCT_TYPE, 'N/A')}"
-           id="R6_PRODUCT_TYPE" name="R6_PRODUCT_TYPE"
+           id="R6_PRODUCT_TYPE" name="R6_C17_PRODUCT_TYPE"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1545,7 +1443,7 @@ function fileuploads(btn) {
 <td id="ROW6" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R6_ACCOUNT_BY_OWNERSHIP, 'N/A')}"
-           id="R6_ACCOUNT_BY_OWNERSHIP" name="R6_ACCOUNT_BY_OWNERSHIP"
+           id="R6_ACCOUNT_BY_OWNERSHIP" name="R6_C18_ACCOUNT_BY_OWNERSHIP"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1553,7 +1451,7 @@ function fileuploads(btn) {
 <td id="ROW6" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R6_ACCOUNT_NUMBER, 'N/A')}"
-           id="R6_ACCOUNT_NUMBER" name="R6_ACCOUNT_NUMBER"
+           id="R6_ACCOUNT_NUMBER" name="R6_C19_ACCOUNT_NUMBER"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1561,7 +1459,7 @@ function fileuploads(btn) {
 <td id="ROW6" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R6_ACCOUNT_HOLDER_INDICATOR, 'N/A')}"
-           id="R6_ACCOUNT_HOLDER_INDICATOR" name="R6_ACCOUNT_HOLDER_INDICATOR"
+           id="R6_ACCOUNT_HOLDER_INDICATOR" name="R6_C20_ACCOUNT_HOLDER_INDICATOR"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1569,7 +1467,7 @@ function fileuploads(btn) {
 <td id="ROW6" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R6_STATUS_OF_ACCOUNT, 'N/A')}"
-           id="R6_STATUS_OF_ACCOUNT" name="R6_STATUS_OF_ACCOUNT"
+           id="R6_STATUS_OF_ACCOUNT" name="R6_C21_STATUS_OF_ACCOUNT"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1577,7 +1475,7 @@ function fileuploads(btn) {
 <td id="ROW6" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R6_NOT_FIT_FOR_STP, 'N/A')}"
-           id="R6_NOT_FIT_FOR_STP" name="R6_NOT_FIT_FOR_STP"
+           id="R6_NOT_FIT_FOR_STP" name="R6_C22_NOT_FIT_FOR_STP"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1585,7 +1483,7 @@ function fileuploads(btn) {
 <td id="ROW6" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R6_BRANCH_CODE_AND_NAME, 'N/A')}"
-           id="R6_BRANCH_CODE_AND_NAME" name="R6_BRANCH_CODE_AND_NAME"
+           id="R6_BRANCH_CODE_AND_NAME" name="R6_C23_BRANCH_CODE_AND_NAME"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1595,7 +1493,7 @@ function fileuploads(btn) {
                type="text"
                th:value="${report.R6_ACCOUNT_BALANCE_IN_PULA != null ? #numbers.formatDecimal(report.R6_ACCOUNT_BALANCE_IN_PULA, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R6_ACCOUNT_BALANCE_IN_PULA"
-               name="R6_ACCOUNT_BALANCE_IN_PULA"
+               name="R6_C24_ACCOUNT_BALANCE_IN_PULA"
                style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -1603,7 +1501,7 @@ function fileuploads(btn) {
 <td id="ROW6" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R6_CURRENCY_OF_ACCOUNT, 'N/A')}"
-           id="R6_CURRENCY_OF_ACCOUNT" name="R6_CURRENCY_OF_ACCOUNT"
+           id="R6_CURRENCY_OF_ACCOUNT" name="R6_C25_CURRENCY_OF_ACCOUNT"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1613,13 +1511,14 @@ function fileuploads(btn) {
                type="text"
                th:value="${report.R6_EXCHANGE_RATE != null ? #numbers.formatDecimal(report.R6_EXCHANGE_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R6_EXCHANGE_RATE"
-               name="R6_EXCHANGE_RATE"
+               name="R6_C26_EXCHANGE_RATE"
                style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
 
 </tr>
-
+	
+	
 	<tr>
 
 
@@ -1628,7 +1527,7 @@ function fileuploads(btn) {
                type="text"
                th:value="${report.R7_RECORD_NUMBER != null ? #numbers.formatDecimal(report.R7_RECORD_NUMBER, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R7_RECORD_NUMBER"
-               name="R7_RECORD_NUMBER"
+               name="R7_C1_RECORD_NUMBER"
                style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -1636,7 +1535,7 @@ function fileuploads(btn) {
 <td id="ROW7" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R7_TITLE, 'N/A')}"
-           id="R7_TITLE" name="R7_TITLE"
+           id="R7_TITLE" name="R7_C2_TITLE"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1645,7 +1544,7 @@ function fileuploads(btn) {
 <td id="ROW7" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R7_FIRST_NAME, 'N/A')}"
-           id="R7_FIRST_NAME" name="R7_FIRST_NAME"
+           id="R7_FIRST_NAME" name="R7_C3_FIRST_NAME"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1653,7 +1552,7 @@ function fileuploads(btn) {
 <td id="ROW7" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R7_MIDDLE_NAME, 'N/A')}"
-           id="R7_MIDDLE_NAME" name="R7_MIDDLE_NAME"
+           id="R7_MIDDLE_NAME" name="R7_C4_MIDDLE_NAME"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1661,7 +1560,7 @@ function fileuploads(btn) {
 <td id="ROW7" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R7_SURNAME, 'N/A')}"
-           id="R7_SURNAME" name="R7_SURNAME"
+           id="R7_SURNAME" name="R7_C5_SURNAME"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1669,7 +1568,7 @@ function fileuploads(btn) {
 <td id="ROW7" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R7_PREVIOUS_NAME, 'N/A')}"
-           id="R7_PREVIOUS_NAME" name="R7_PREVIOUS_NAME"
+           id="R7_PREVIOUS_NAME" name="R7_C6_PREVIOUS_NAME"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1677,7 +1576,7 @@ function fileuploads(btn) {
 <td id="ROW7" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R7_GENDER, 'N/A')}"
-           id="R7_GENDER" name="R7_GENDER"
+           id="R7_GENDER" name="R7_C7_GENDER"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1685,7 +1584,7 @@ function fileuploads(btn) {
 <td id="ROW7" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R7_IDENTIFICATION_TYPE, 'N/A')}"
-           id="R7_IDENTIFICATION_TYPE" name="R7_IDENTIFICATION_TYPE"
+           id="R7_IDENTIFICATION_TYPE" name="R7_C8_IDENTIFICATION_TYPE"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1693,7 +1592,7 @@ function fileuploads(btn) {
 <td id="ROW7" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R7_PASSPORT_NUMBER, 'N/A')}"
-           id="R7_PASSPORT_NUMBER" name="R7_PASSPORT_NUMBER"
+           id="R7_PASSPORT_NUMBER" name="R7_C9_PASSPORT_NUMBER"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1703,7 +1602,7 @@ function fileuploads(btn) {
                class="display-input show_input date-field"
                th:value="${#dates.format(report.R7_DATE_OF_BIRTH, 'yyyy-MM-dd')}"
                id="R7_DATE_OF_BIRTH"
-               name="R7_DATE_OF_BIRTH"
+               name="R7_C10_DATE_OF_BIRTH"
                readonly
                style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;" />
     </td>
@@ -1711,7 +1610,7 @@ function fileuploads(btn) {
 <td id="ROW7" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R7_HOME_ADDRESS, 'N/A')}"
-           id="R7_HOME_ADDRESS" name="R7_HOME_ADDRESS"
+           id="R7_HOME_ADDRESS" name="R7_C11_HOME_ADDRESS"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1719,7 +1618,7 @@ function fileuploads(btn) {
 <td id="ROW7" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R7_POSTAL_ADDRESS, 'N/A')}"
-           id="R7_POSTAL_ADDRESS" name="R7_POSTAL_ADDRESS"
+           id="R7_POSTAL_ADDRESS" name="R7_C12_POSTAL_ADDRESS"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1727,7 +1626,7 @@ function fileuploads(btn) {
 <td id="ROW7" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R7_RESIDENCE, 'N/A')}"
-           id="R7_RESIDENCE" name="R7_RESIDENCE"
+           id="R7_RESIDENCE" name="R7_C13_RESIDENCE"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1735,7 +1634,7 @@ function fileuploads(btn) {
 <td id="ROW7" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R7_EMAIL, 'N/A')}"
-           id="R7_EMAIL" name="R7_EMAIL"
+           id="R7_EMAIL" name="R7_C14_EMAIL"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1743,7 +1642,7 @@ function fileuploads(btn) {
 <td id="ROW7" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R7_LANDLINE, 'N/A')}"
-           id="R7_LANDLINE" name="R7_LANDLINE"
+           id="R7_LANDLINE" name="R7_C15_LANDLINE"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1751,7 +1650,7 @@ function fileuploads(btn) {
 <td id="ROW7" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R7_MOBILE_PHONE_NUMBER, 'N/A')}"
-           id="R7_MOBILE_PHONE_NUMBER" name="R7_MOBILE_PHONE_NUMBER"
+           id="R7_MOBILE_PHONE_NUMBER" name="R7_C15_MOBILE_PHONE_NUMBER"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1759,7 +1658,7 @@ function fileuploads(btn) {
 <td id="ROW7" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R7_MOBILE_MONEY_NUMBER, 'N/A')}"
-           id="R7_MOBILE_MONEY_NUMBER" name="R7_MOBILE_MONEY_NUMBER"
+           id="R7_MOBILE_MONEY_NUMBER" name="R7_C16_MOBILE_MONEY_NUMBER"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1767,7 +1666,7 @@ function fileuploads(btn) {
 <td id="ROW7" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R7_PRODUCT_TYPE, 'N/A')}"
-           id="R7_PRODUCT_TYPE" name="R7_PRODUCT_TYPE"
+           id="R7_PRODUCT_TYPE" name="R7_C17_PRODUCT_TYPE"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1775,7 +1674,7 @@ function fileuploads(btn) {
 <td id="ROW7" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R7_ACCOUNT_BY_OWNERSHIP, 'N/A')}"
-           id="R7_ACCOUNT_BY_OWNERSHIP" name="R7_ACCOUNT_BY_OWNERSHIP"
+           id="R7_ACCOUNT_BY_OWNERSHIP" name="R7_C18_ACCOUNT_BY_OWNERSHIP"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1783,7 +1682,7 @@ function fileuploads(btn) {
 <td id="ROW7" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R7_ACCOUNT_NUMBER, 'N/A')}"
-           id="R7_ACCOUNT_NUMBER" name="R7_ACCOUNT_NUMBER"
+           id="R7_ACCOUNT_NUMBER" name="R7_C19_ACCOUNT_NUMBER"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1791,7 +1690,7 @@ function fileuploads(btn) {
 <td id="ROW7" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R7_ACCOUNT_HOLDER_INDICATOR, 'N/A')}"
-           id="R7_ACCOUNT_HOLDER_INDICATOR" name="R7_ACCOUNT_HOLDER_INDICATOR"
+           id="R7_ACCOUNT_HOLDER_INDICATOR" name="R7_C20_ACCOUNT_HOLDER_INDICATOR"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1799,7 +1698,7 @@ function fileuploads(btn) {
 <td id="ROW7" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R7_STATUS_OF_ACCOUNT, 'N/A')}"
-           id="R7_STATUS_OF_ACCOUNT" name="R7_STATUS_OF_ACCOUNT"
+           id="R7_STATUS_OF_ACCOUNT" name="R7_C21_STATUS_OF_ACCOUNT"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1807,7 +1706,7 @@ function fileuploads(btn) {
 <td id="ROW7" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R7_NOT_FIT_FOR_STP, 'N/A')}"
-           id="R7_NOT_FIT_FOR_STP" name="R7_NOT_FIT_FOR_STP"
+           id="R7_NOT_FIT_FOR_STP" name="R7_C22_NOT_FIT_FOR_STP"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1815,7 +1714,7 @@ function fileuploads(btn) {
 <td id="ROW7" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R7_BRANCH_CODE_AND_NAME, 'N/A')}"
-           id="R7_BRANCH_CODE_AND_NAME" name="R7_BRANCH_CODE_AND_NAME"
+           id="R7_BRANCH_CODE_AND_NAME" name="R7_C23_BRANCH_CODE_AND_NAME"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1825,7 +1724,7 @@ function fileuploads(btn) {
                type="text"
                th:value="${report.R7_ACCOUNT_BALANCE_IN_PULA != null ? #numbers.formatDecimal(report.R7_ACCOUNT_BALANCE_IN_PULA, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R7_ACCOUNT_BALANCE_IN_PULA"
-               name="R7_ACCOUNT_BALANCE_IN_PULA"
+               name="R7_C24_ACCOUNT_BALANCE_IN_PULA"
                style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -1833,7 +1732,7 @@ function fileuploads(btn) {
 <td id="ROW7" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R7_CURRENCY_OF_ACCOUNT, 'N/A')}"
-           id="R7_CURRENCY_OF_ACCOUNT" name="R7_CURRENCY_OF_ACCOUNT"
+           id="R7_CURRENCY_OF_ACCOUNT" name="R7_C25_CURRENCY_OF_ACCOUNT"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1843,13 +1742,14 @@ function fileuploads(btn) {
                type="text"
                th:value="${report.R7_EXCHANGE_RATE != null ? #numbers.formatDecimal(report.R7_EXCHANGE_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R7_EXCHANGE_RATE"
-               name="R7_EXCHANGE_RATE"
+               name="R7_C26_EXCHANGE_RATE"
                style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
 
 </tr>
-
+	
+	
 	<tr>
 
 
@@ -1858,7 +1758,7 @@ function fileuploads(btn) {
                type="text"
                th:value="${report.R8_RECORD_NUMBER != null ? #numbers.formatDecimal(report.R8_RECORD_NUMBER, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R8_RECORD_NUMBER"
-               name="R8_RECORD_NUMBER"
+               name="R8_C1_RECORD_NUMBER"
                style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -1866,7 +1766,7 @@ function fileuploads(btn) {
 <td id="ROW8" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R8_TITLE, 'N/A')}"
-           id="R8_TITLE" name="R8_TITLE"
+           id="R8_TITLE" name="R8_C2_TITLE"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1875,7 +1775,7 @@ function fileuploads(btn) {
 <td id="ROW8" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R8_FIRST_NAME, 'N/A')}"
-           id="R8_FIRST_NAME" name="R8_FIRST_NAME"
+           id="R8_FIRST_NAME" name="R8_C3_FIRST_NAME"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1883,7 +1783,7 @@ function fileuploads(btn) {
 <td id="ROW8" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R8_MIDDLE_NAME, 'N/A')}"
-           id="R8_MIDDLE_NAME" name="R8_MIDDLE_NAME"
+           id="R8_MIDDLE_NAME" name="R8_C4_MIDDLE_NAME"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1891,7 +1791,7 @@ function fileuploads(btn) {
 <td id="ROW8" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R8_SURNAME, 'N/A')}"
-           id="R8_SURNAME" name="R8_SURNAME"
+           id="R8_SURNAME" name="R8_C5_SURNAME"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1899,7 +1799,7 @@ function fileuploads(btn) {
 <td id="ROW8" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R8_PREVIOUS_NAME, 'N/A')}"
-           id="R8_PREVIOUS_NAME" name="R8_PREVIOUS_NAME"
+           id="R8_PREVIOUS_NAME" name="R8_C6_PREVIOUS_NAME"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1907,7 +1807,7 @@ function fileuploads(btn) {
 <td id="ROW8" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R8_GENDER, 'N/A')}"
-           id="R8_GENDER" name="R8_GENDER"
+           id="R8_GENDER" name="R8_C7_GENDER"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1915,7 +1815,7 @@ function fileuploads(btn) {
 <td id="ROW8" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R8_IDENTIFICATION_TYPE, 'N/A')}"
-           id="R8_IDENTIFICATION_TYPE" name="R8_IDENTIFICATION_TYPE"
+           id="R8_IDENTIFICATION_TYPE" name="R8_C8_IDENTIFICATION_TYPE"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1923,7 +1823,7 @@ function fileuploads(btn) {
 <td id="ROW8" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R8_PASSPORT_NUMBER, 'N/A')}"
-           id="R8_PASSPORT_NUMBER" name="R8_PASSPORT_NUMBER"
+           id="R8_PASSPORT_NUMBER" name="R8_C9_PASSPORT_NUMBER"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1933,7 +1833,7 @@ function fileuploads(btn) {
                class="display-input show_input date-field"
                th:value="${#dates.format(report.R8_DATE_OF_BIRTH, 'yyyy-MM-dd')}"
                id="R8_DATE_OF_BIRTH"
-               name="R8_DATE_OF_BIRTH"
+               name="R8_C10_DATE_OF_BIRTH"
                readonly
                style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;" />
     </td>
@@ -1941,7 +1841,7 @@ function fileuploads(btn) {
 <td id="ROW8" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R8_HOME_ADDRESS, 'N/A')}"
-           id="R8_HOME_ADDRESS" name="R8_HOME_ADDRESS"
+           id="R8_HOME_ADDRESS" name="R8_C11_HOME_ADDRESS"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1949,7 +1849,7 @@ function fileuploads(btn) {
 <td id="ROW8" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R8_POSTAL_ADDRESS, 'N/A')}"
-           id="R8_POSTAL_ADDRESS" name="R8_POSTAL_ADDRESS"
+           id="R8_POSTAL_ADDRESS" name="R8_C12_POSTAL_ADDRESS"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1957,7 +1857,7 @@ function fileuploads(btn) {
 <td id="ROW8" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R8_RESIDENCE, 'N/A')}"
-           id="R8_RESIDENCE" name="R8_RESIDENCE"
+           id="R8_RESIDENCE" name="R8_C13_RESIDENCE"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1965,7 +1865,7 @@ function fileuploads(btn) {
 <td id="ROW8" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R8_EMAIL, 'N/A')}"
-           id="R8_EMAIL" name="R8_EMAIL"
+           id="R8_EMAIL" name="R8_C14_EMAIL"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1973,7 +1873,7 @@ function fileuploads(btn) {
 <td id="ROW8" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R8_LANDLINE, 'N/A')}"
-           id="R8_LANDLINE" name="R8_LANDLINE"
+           id="R8_LANDLINE" name="R8_C15_LANDLINE"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1981,7 +1881,7 @@ function fileuploads(btn) {
 <td id="ROW8" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R8_MOBILE_PHONE_NUMBER, 'N/A')}"
-           id="R8_MOBILE_PHONE_NUMBER" name="R8_MOBILE_PHONE_NUMBER"
+           id="R8_MOBILE_PHONE_NUMBER" name="R8_C15_MOBILE_PHONE_NUMBER"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1989,7 +1889,7 @@ function fileuploads(btn) {
 <td id="ROW8" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R8_MOBILE_MONEY_NUMBER, 'N/A')}"
-           id="R8_MOBILE_MONEY_NUMBER" name="R8_MOBILE_MONEY_NUMBER"
+           id="R8_MOBILE_MONEY_NUMBER" name="R8_C16_MOBILE_MONEY_NUMBER"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1997,7 +1897,7 @@ function fileuploads(btn) {
 <td id="ROW8" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R8_PRODUCT_TYPE, 'N/A')}"
-           id="R8_PRODUCT_TYPE" name="R8_PRODUCT_TYPE"
+           id="R8_PRODUCT_TYPE" name="R8_C17_PRODUCT_TYPE"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2005,7 +1905,7 @@ function fileuploads(btn) {
 <td id="ROW8" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R8_ACCOUNT_BY_OWNERSHIP, 'N/A')}"
-           id="R8_ACCOUNT_BY_OWNERSHIP" name="R8_ACCOUNT_BY_OWNERSHIP"
+           id="R8_ACCOUNT_BY_OWNERSHIP" name="R8_C18_ACCOUNT_BY_OWNERSHIP"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2013,7 +1913,7 @@ function fileuploads(btn) {
 <td id="ROW8" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R8_ACCOUNT_NUMBER, 'N/A')}"
-           id="R8_ACCOUNT_NUMBER" name="R8_ACCOUNT_NUMBER"
+           id="R8_ACCOUNT_NUMBER" name="R8_C19_ACCOUNT_NUMBER"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2021,7 +1921,7 @@ function fileuploads(btn) {
 <td id="ROW8" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R8_ACCOUNT_HOLDER_INDICATOR, 'N/A')}"
-           id="R8_ACCOUNT_HOLDER_INDICATOR" name="R8_ACCOUNT_HOLDER_INDICATOR"
+           id="R8_ACCOUNT_HOLDER_INDICATOR" name="R8_C20_ACCOUNT_HOLDER_INDICATOR"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2029,7 +1929,7 @@ function fileuploads(btn) {
 <td id="ROW8" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R8_STATUS_OF_ACCOUNT, 'N/A')}"
-           id="R8_STATUS_OF_ACCOUNT" name="R8_STATUS_OF_ACCOUNT"
+           id="R8_STATUS_OF_ACCOUNT" name="R8_C21_STATUS_OF_ACCOUNT"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2037,7 +1937,7 @@ function fileuploads(btn) {
 <td id="ROW8" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R8_NOT_FIT_FOR_STP, 'N/A')}"
-           id="R8_NOT_FIT_FOR_STP" name="R8_NOT_FIT_FOR_STP"
+           id="R8_NOT_FIT_FOR_STP" name="R8_C22_NOT_FIT_FOR_STP"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2045,7 +1945,7 @@ function fileuploads(btn) {
 <td id="ROW8" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R8_BRANCH_CODE_AND_NAME, 'N/A')}"
-           id="R8_BRANCH_CODE_AND_NAME" name="R8_BRANCH_CODE_AND_NAME"
+           id="R8_BRANCH_CODE_AND_NAME" name="R8_C23_BRANCH_CODE_AND_NAME"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2055,7 +1955,7 @@ function fileuploads(btn) {
                type="text"
                th:value="${report.R8_ACCOUNT_BALANCE_IN_PULA != null ? #numbers.formatDecimal(report.R8_ACCOUNT_BALANCE_IN_PULA, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R8_ACCOUNT_BALANCE_IN_PULA"
-               name="R8_ACCOUNT_BALANCE_IN_PULA"
+               name="R8_C24_ACCOUNT_BALANCE_IN_PULA"
                style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -2063,7 +1963,7 @@ function fileuploads(btn) {
 <td id="ROW8" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R8_CURRENCY_OF_ACCOUNT, 'N/A')}"
-           id="R8_CURRENCY_OF_ACCOUNT" name="R8_CURRENCY_OF_ACCOUNT"
+           id="R8_CURRENCY_OF_ACCOUNT" name="R8_C25_CURRENCY_OF_ACCOUNT"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2073,13 +1973,14 @@ function fileuploads(btn) {
                type="text"
                th:value="${report.R8_EXCHANGE_RATE != null ? #numbers.formatDecimal(report.R8_EXCHANGE_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R8_EXCHANGE_RATE"
-               name="R8_EXCHANGE_RATE"
+               name="R8_C26_EXCHANGE_RATE"
                style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
 
 </tr>
-
+	
+	
 	<tr>
 
 
@@ -2088,7 +1989,7 @@ function fileuploads(btn) {
                type="text"
                th:value="${report.R9_RECORD_NUMBER != null ? #numbers.formatDecimal(report.R9_RECORD_NUMBER, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R9_RECORD_NUMBER"
-               name="R9_RECORD_NUMBER"
+               name="R9_C1_RECORD_NUMBER"
                style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -2096,7 +1997,7 @@ function fileuploads(btn) {
 <td id="ROW9" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R9_TITLE, 'N/A')}"
-           id="R9_TITLE" name="R9_TITLE"
+           id="R9_TITLE" name="R9_C2_TITLE"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2105,7 +2006,7 @@ function fileuploads(btn) {
 <td id="ROW9" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R9_FIRST_NAME, 'N/A')}"
-           id="R9_FIRST_NAME" name="R9_FIRST_NAME"
+           id="R9_FIRST_NAME" name="R9_C3_FIRST_NAME"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2113,7 +2014,7 @@ function fileuploads(btn) {
 <td id="ROW9" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R9_MIDDLE_NAME, 'N/A')}"
-           id="R9_MIDDLE_NAME" name="R9_MIDDLE_NAME"
+           id="R9_MIDDLE_NAME" name="R9_C4_MIDDLE_NAME"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2121,7 +2022,7 @@ function fileuploads(btn) {
 <td id="ROW9" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R9_SURNAME, 'N/A')}"
-           id="R9_SURNAME" name="R9_SURNAME"
+           id="R9_SURNAME" name="R9_C5_SURNAME"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2129,7 +2030,7 @@ function fileuploads(btn) {
 <td id="ROW9" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R9_PREVIOUS_NAME, 'N/A')}"
-           id="R9_PREVIOUS_NAME" name="R9_PREVIOUS_NAME"
+           id="R9_PREVIOUS_NAME" name="R9_C6_PREVIOUS_NAME"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2137,7 +2038,7 @@ function fileuploads(btn) {
 <td id="ROW9" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R9_GENDER, 'N/A')}"
-           id="R9_GENDER" name="R9_GENDER"
+           id="R9_GENDER" name="R9_C7_GENDER"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2145,7 +2046,7 @@ function fileuploads(btn) {
 <td id="ROW9" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R9_IDENTIFICATION_TYPE, 'N/A')}"
-           id="R9_IDENTIFICATION_TYPE" name="R9_IDENTIFICATION_TYPE"
+           id="R9_IDENTIFICATION_TYPE" name="R9_C8_IDENTIFICATION_TYPE"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2153,7 +2054,7 @@ function fileuploads(btn) {
 <td id="ROW9" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R9_PASSPORT_NUMBER, 'N/A')}"
-           id="R9_PASSPORT_NUMBER" name="R9_PASSPORT_NUMBER"
+           id="R9_PASSPORT_NUMBER" name="R9_C9_PASSPORT_NUMBER"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2163,7 +2064,7 @@ function fileuploads(btn) {
                class="display-input show_input date-field"
                th:value="${#dates.format(report.R9_DATE_OF_BIRTH, 'yyyy-MM-dd')}"
                id="R9_DATE_OF_BIRTH"
-               name="R9_DATE_OF_BIRTH"
+               name="R9_C10_DATE_OF_BIRTH"
                readonly
                style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;" />
     </td>
@@ -2171,7 +2072,7 @@ function fileuploads(btn) {
 <td id="ROW9" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R9_HOME_ADDRESS, 'N/A')}"
-           id="R9_HOME_ADDRESS" name="R9_HOME_ADDRESS"
+           id="R9_HOME_ADDRESS" name="R9_C11_HOME_ADDRESS"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2179,7 +2080,7 @@ function fileuploads(btn) {
 <td id="ROW9" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R9_POSTAL_ADDRESS, 'N/A')}"
-           id="R9_POSTAL_ADDRESS" name="R9_POSTAL_ADDRESS"
+           id="R9_POSTAL_ADDRESS" name="R9_C12_POSTAL_ADDRESS"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2187,7 +2088,7 @@ function fileuploads(btn) {
 <td id="ROW9" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R9_RESIDENCE, 'N/A')}"
-           id="R9_RESIDENCE" name="R9_RESIDENCE"
+           id="R9_RESIDENCE" name="R9_C13_RESIDENCE"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2195,7 +2096,7 @@ function fileuploads(btn) {
 <td id="ROW9" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R9_EMAIL, 'N/A')}"
-           id="R9_EMAIL" name="R9_EMAIL"
+           id="R9_EMAIL" name="R9_C14_EMAIL"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2203,7 +2104,7 @@ function fileuploads(btn) {
 <td id="ROW9" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R9_LANDLINE, 'N/A')}"
-           id="R9_LANDLINE" name="R9_LANDLINE"
+           id="R9_LANDLINE" name="R9_C15_LANDLINE"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2211,7 +2112,7 @@ function fileuploads(btn) {
 <td id="ROW9" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R9_MOBILE_PHONE_NUMBER, 'N/A')}"
-           id="R9_MOBILE_PHONE_NUMBER" name="R9_MOBILE_PHONE_NUMBER"
+           id="R9_MOBILE_PHONE_NUMBER" name="R9_C15_MOBILE_PHONE_NUMBER"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2219,7 +2120,7 @@ function fileuploads(btn) {
 <td id="ROW9" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R9_MOBILE_MONEY_NUMBER, 'N/A')}"
-           id="R9_MOBILE_MONEY_NUMBER" name="R9_MOBILE_MONEY_NUMBER"
+           id="R9_MOBILE_MONEY_NUMBER" name="R9_C16_MOBILE_MONEY_NUMBER"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2227,7 +2128,7 @@ function fileuploads(btn) {
 <td id="ROW9" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R9_PRODUCT_TYPE, 'N/A')}"
-           id="R9_PRODUCT_TYPE" name="R9_PRODUCT_TYPE"
+           id="R9_PRODUCT_TYPE" name="R9_C17_PRODUCT_TYPE"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2235,7 +2136,7 @@ function fileuploads(btn) {
 <td id="ROW9" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R9_ACCOUNT_BY_OWNERSHIP, 'N/A')}"
-           id="R9_ACCOUNT_BY_OWNERSHIP" name="R9_ACCOUNT_BY_OWNERSHIP"
+           id="R9_ACCOUNT_BY_OWNERSHIP" name="R9_C18_ACCOUNT_BY_OWNERSHIP"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2243,7 +2144,7 @@ function fileuploads(btn) {
 <td id="ROW9" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R9_ACCOUNT_NUMBER, 'N/A')}"
-           id="R9_ACCOUNT_NUMBER" name="R9_ACCOUNT_NUMBER"
+           id="R9_ACCOUNT_NUMBER" name="R9_C19_ACCOUNT_NUMBER"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2251,7 +2152,7 @@ function fileuploads(btn) {
 <td id="ROW9" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R9_ACCOUNT_HOLDER_INDICATOR, 'N/A')}"
-           id="R9_ACCOUNT_HOLDER_INDICATOR" name="R9_ACCOUNT_HOLDER_INDICATOR"
+           id="R9_ACCOUNT_HOLDER_INDICATOR" name="R9_C20_ACCOUNT_HOLDER_INDICATOR"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2259,7 +2160,7 @@ function fileuploads(btn) {
 <td id="ROW9" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R9_STATUS_OF_ACCOUNT, 'N/A')}"
-           id="R9_STATUS_OF_ACCOUNT" name="R9_STATUS_OF_ACCOUNT"
+           id="R9_STATUS_OF_ACCOUNT" name="R9_C21_STATUS_OF_ACCOUNT"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2267,7 +2168,7 @@ function fileuploads(btn) {
 <td id="ROW9" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R9_NOT_FIT_FOR_STP, 'N/A')}"
-           id="R9_NOT_FIT_FOR_STP" name="R9_NOT_FIT_FOR_STP"
+           id="R9_NOT_FIT_FOR_STP" name="R9_C22_NOT_FIT_FOR_STP"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2275,7 +2176,7 @@ function fileuploads(btn) {
 <td id="ROW9" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R9_BRANCH_CODE_AND_NAME, 'N/A')}"
-           id="R9_BRANCH_CODE_AND_NAME" name="R9_BRANCH_CODE_AND_NAME"
+           id="R9_BRANCH_CODE_AND_NAME" name="R9_C23_BRANCH_CODE_AND_NAME"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2285,7 +2186,7 @@ function fileuploads(btn) {
                type="text"
                th:value="${report.R9_ACCOUNT_BALANCE_IN_PULA != null ? #numbers.formatDecimal(report.R9_ACCOUNT_BALANCE_IN_PULA, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R9_ACCOUNT_BALANCE_IN_PULA"
-               name="R9_ACCOUNT_BALANCE_IN_PULA"
+               name="R9_C24_ACCOUNT_BALANCE_IN_PULA"
                style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -2293,7 +2194,7 @@ function fileuploads(btn) {
 <td id="ROW9" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R9_CURRENCY_OF_ACCOUNT, 'N/A')}"
-           id="R9_CURRENCY_OF_ACCOUNT" name="R9_CURRENCY_OF_ACCOUNT"
+           id="R9_CURRENCY_OF_ACCOUNT" name="R9_C25_CURRENCY_OF_ACCOUNT"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2303,13 +2204,13 @@ function fileuploads(btn) {
                type="text"
                th:value="${report.R9_EXCHANGE_RATE != null ? #numbers.formatDecimal(report.R9_EXCHANGE_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R9_EXCHANGE_RATE"
-               name="R9_EXCHANGE_RATE"
+               name="R9_C26_EXCHANGE_RATE"
                style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
 
 </tr>
-
+	
 	<tr>
 
 
@@ -2318,7 +2219,7 @@ function fileuploads(btn) {
                type="text"
                th:value="${report.R10_RECORD_NUMBER != null ? #numbers.formatDecimal(report.R10_RECORD_NUMBER, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R10_RECORD_NUMBER"
-               name="R10_RECORD_NUMBER"
+               name="R10_C1_RECORD_NUMBER"
                style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -2326,7 +2227,7 @@ function fileuploads(btn) {
 <td id="ROW10" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R10_TITLE, 'N/A')}"
-           id="R10_TITLE" name="R10_TITLE"
+           id="R10_TITLE" name="R10_C2_TITLE"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2335,7 +2236,7 @@ function fileuploads(btn) {
 <td id="ROW10" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R10_FIRST_NAME, 'N/A')}"
-           id="R10_FIRST_NAME" name="R10_FIRST_NAME"
+           id="R10_FIRST_NAME" name="R10_C3_FIRST_NAME"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2343,7 +2244,7 @@ function fileuploads(btn) {
 <td id="ROW10" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R10_MIDDLE_NAME, 'N/A')}"
-           id="R10_MIDDLE_NAME" name="R10_MIDDLE_NAME"
+           id="R10_MIDDLE_NAME" name="R10_C4_MIDDLE_NAME"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2351,7 +2252,7 @@ function fileuploads(btn) {
 <td id="ROW10" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R10_SURNAME, 'N/A')}"
-           id="R10_SURNAME" name="R10_SURNAME"
+           id="R10_SURNAME" name="R10_C5_SURNAME"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2359,7 +2260,7 @@ function fileuploads(btn) {
 <td id="ROW10" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R10_PREVIOUS_NAME, 'N/A')}"
-           id="R10_PREVIOUS_NAME" name="R10_PREVIOUS_NAME"
+           id="R10_PREVIOUS_NAME" name="R10_C6_PREVIOUS_NAME"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2367,7 +2268,7 @@ function fileuploads(btn) {
 <td id="ROW10" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R10_GENDER, 'N/A')}"
-           id="R10_GENDER" name="R10_GENDER"
+           id="R10_GENDER" name="R10_C7_GENDER"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2375,7 +2276,7 @@ function fileuploads(btn) {
 <td id="ROW10" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R10_IDENTIFICATION_TYPE, 'N/A')}"
-           id="R10_IDENTIFICATION_TYPE" name="R10_IDENTIFICATION_TYPE"
+           id="R10_IDENTIFICATION_TYPE" name="R10_C8_IDENTIFICATION_TYPE"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2383,7 +2284,7 @@ function fileuploads(btn) {
 <td id="ROW10" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R10_PASSPORT_NUMBER, 'N/A')}"
-           id="R10_PASSPORT_NUMBER" name="R10_PASSPORT_NUMBER"
+           id="R10_PASSPORT_NUMBER" name="R10_C9_PASSPORT_NUMBER"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2393,7 +2294,7 @@ function fileuploads(btn) {
                class="display-input show_input date-field"
                th:value="${#dates.format(report.R10_DATE_OF_BIRTH, 'yyyy-MM-dd')}"
                id="R10_DATE_OF_BIRTH"
-               name="R10_DATE_OF_BIRTH"
+               name="R10_C10_DATE_OF_BIRTH"
                readonly
                style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;" />
     </td>
@@ -2401,7 +2302,7 @@ function fileuploads(btn) {
 <td id="ROW10" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R10_HOME_ADDRESS, 'N/A')}"
-           id="R10_HOME_ADDRESS" name="R10_HOME_ADDRESS"
+           id="R10_HOME_ADDRESS" name="R10_C11_HOME_ADDRESS"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2409,7 +2310,7 @@ function fileuploads(btn) {
 <td id="ROW10" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R10_POSTAL_ADDRESS, 'N/A')}"
-           id="R10_POSTAL_ADDRESS" name="R10_POSTAL_ADDRESS"
+           id="R10_POSTAL_ADDRESS" name="R10_C12_POSTAL_ADDRESS"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2417,7 +2318,7 @@ function fileuploads(btn) {
 <td id="ROW10" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R10_RESIDENCE, 'N/A')}"
-           id="R10_RESIDENCE" name="R10_RESIDENCE"
+           id="R10_RESIDENCE" name="R10_C13_RESIDENCE"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2425,7 +2326,7 @@ function fileuploads(btn) {
 <td id="ROW10" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R10_EMAIL, 'N/A')}"
-           id="R10_EMAIL" name="R10_EMAIL"
+           id="R10_EMAIL" name="R10_C14_EMAIL"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2433,7 +2334,7 @@ function fileuploads(btn) {
 <td id="ROW10" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R10_LANDLINE, 'N/A')}"
-           id="R10_LANDLINE" name="R10_LANDLINE"
+           id="R10_LANDLINE" name="R10_C15_LANDLINE"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2441,7 +2342,7 @@ function fileuploads(btn) {
 <td id="ROW10" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R10_MOBILE_PHONE_NUMBER, 'N/A')}"
-           id="R10_MOBILE_PHONE_NUMBER" name="R10_MOBILE_PHONE_NUMBER"
+           id="R10_MOBILE_PHONE_NUMBER" name="R10_C15_MOBILE_PHONE_NUMBER"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2449,7 +2350,7 @@ function fileuploads(btn) {
 <td id="ROW10" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R10_MOBILE_MONEY_NUMBER, 'N/A')}"
-           id="R10_MOBILE_MONEY_NUMBER" name="R10_MOBILE_MONEY_NUMBER"
+           id="R10_MOBILE_MONEY_NUMBER" name="R10_C16_MOBILE_MONEY_NUMBER"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2457,7 +2358,7 @@ function fileuploads(btn) {
 <td id="ROW10" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R10_PRODUCT_TYPE, 'N/A')}"
-           id="R10_PRODUCT_TYPE" name="R10_PRODUCT_TYPE"
+           id="R10_PRODUCT_TYPE" name="R10_C17_PRODUCT_TYPE"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2465,7 +2366,7 @@ function fileuploads(btn) {
 <td id="ROW10" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R10_ACCOUNT_BY_OWNERSHIP, 'N/A')}"
-           id="R10_ACCOUNT_BY_OWNERSHIP" name="R10_ACCOUNT_BY_OWNERSHIP"
+           id="R10_ACCOUNT_BY_OWNERSHIP" name="R10_C18_ACCOUNT_BY_OWNERSHIP"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2473,7 +2374,7 @@ function fileuploads(btn) {
 <td id="ROW10" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R10_ACCOUNT_NUMBER, 'N/A')}"
-           id="R10_ACCOUNT_NUMBER" name="R10_ACCOUNT_NUMBER"
+           id="R10_ACCOUNT_NUMBER" name="R10_C19_ACCOUNT_NUMBER"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2481,7 +2382,7 @@ function fileuploads(btn) {
 <td id="ROW10" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R10_ACCOUNT_HOLDER_INDICATOR, 'N/A')}"
-           id="R10_ACCOUNT_HOLDER_INDICATOR" name="R10_ACCOUNT_HOLDER_INDICATOR"
+           id="R10_ACCOUNT_HOLDER_INDICATOR" name="R10_C20_ACCOUNT_HOLDER_INDICATOR"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2489,7 +2390,7 @@ function fileuploads(btn) {
 <td id="ROW10" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R10_STATUS_OF_ACCOUNT, 'N/A')}"
-           id="R10_STATUS_OF_ACCOUNT" name="R10_STATUS_OF_ACCOUNT"
+           id="R10_STATUS_OF_ACCOUNT" name="R10_C21_STATUS_OF_ACCOUNT"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2497,7 +2398,7 @@ function fileuploads(btn) {
 <td id="ROW10" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R10_NOT_FIT_FOR_STP, 'N/A')}"
-           id="R10_NOT_FIT_FOR_STP" name="R10_NOT_FIT_FOR_STP"
+           id="R10_NOT_FIT_FOR_STP" name="R10_C22_NOT_FIT_FOR_STP"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2505,7 +2406,7 @@ function fileuploads(btn) {
 <td id="ROW10" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R10_BRANCH_CODE_AND_NAME, 'N/A')}"
-           id="R10_BRANCH_CODE_AND_NAME" name="R10_BRANCH_CODE_AND_NAME"
+           id="R10_BRANCH_CODE_AND_NAME" name="R10_C23_BRANCH_CODE_AND_NAME"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2515,7 +2416,7 @@ function fileuploads(btn) {
                type="text"
                th:value="${report.R10_ACCOUNT_BALANCE_IN_PULA != null ? #numbers.formatDecimal(report.R10_ACCOUNT_BALANCE_IN_PULA, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R10_ACCOUNT_BALANCE_IN_PULA"
-               name="R10_ACCOUNT_BALANCE_IN_PULA"
+               name="R10_C24_ACCOUNT_BALANCE_IN_PULA"
                style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -2523,7 +2424,7 @@ function fileuploads(btn) {
 <td id="ROW10" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R10_CURRENCY_OF_ACCOUNT, 'N/A')}"
-           id="R10_CURRENCY_OF_ACCOUNT" name="R10_CURRENCY_OF_ACCOUNT"
+           id="R10_CURRENCY_OF_ACCOUNT" name="R10_C25_CURRENCY_OF_ACCOUNT"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2533,13 +2434,13 @@ function fileuploads(btn) {
                type="text"
                th:value="${report.R10_EXCHANGE_RATE != null ? #numbers.formatDecimal(report.R10_EXCHANGE_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R10_EXCHANGE_RATE"
-               name="R10_EXCHANGE_RATE"
+               name="R10_C26_EXCHANGE_RATE"
                style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
 
 </tr>
-
+	
 	<tr>
 
 
@@ -2548,7 +2449,7 @@ function fileuploads(btn) {
                type="text"
                th:value="${report.R11_RECORD_NUMBER != null ? #numbers.formatDecimal(report.R11_RECORD_NUMBER, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R11_RECORD_NUMBER"
-               name="R11_RECORD_NUMBER"
+               name="R11_C1_RECORD_NUMBER"
                style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -2556,7 +2457,7 @@ function fileuploads(btn) {
 <td id="ROW11" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R11_TITLE, 'N/A')}"
-           id="R11_TITLE" name="R11_TITLE"
+           id="R11_TITLE" name="R11_C2_TITLE"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2565,7 +2466,7 @@ function fileuploads(btn) {
 <td id="ROW11" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R11_FIRST_NAME, 'N/A')}"
-           id="R11_FIRST_NAME" name="R11_FIRST_NAME"
+           id="R11_FIRST_NAME" name="R11_C3_FIRST_NAME"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2573,7 +2474,7 @@ function fileuploads(btn) {
 <td id="ROW11" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R11_MIDDLE_NAME, 'N/A')}"
-           id="R11_MIDDLE_NAME" name="R11_MIDDLE_NAME"
+           id="R11_MIDDLE_NAME" name="R11_C4_MIDDLE_NAME"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2581,7 +2482,7 @@ function fileuploads(btn) {
 <td id="ROW11" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R11_SURNAME, 'N/A')}"
-           id="R11_SURNAME" name="R11_SURNAME"
+           id="R11_SURNAME" name="R11_C5_SURNAME"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2589,7 +2490,7 @@ function fileuploads(btn) {
 <td id="ROW11" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R11_PREVIOUS_NAME, 'N/A')}"
-           id="R11_PREVIOUS_NAME" name="R11_PREVIOUS_NAME"
+           id="R11_PREVIOUS_NAME" name="R11_C6_PREVIOUS_NAME"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2597,7 +2498,7 @@ function fileuploads(btn) {
 <td id="ROW11" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R11_GENDER, 'N/A')}"
-           id="R11_GENDER" name="R11_GENDER"
+           id="R11_GENDER" name="R11_C7_GENDER"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2605,7 +2506,7 @@ function fileuploads(btn) {
 <td id="ROW11" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R11_IDENTIFICATION_TYPE, 'N/A')}"
-           id="R11_IDENTIFICATION_TYPE" name="R11_IDENTIFICATION_TYPE"
+           id="R11_IDENTIFICATION_TYPE" name="R11_C8_IDENTIFICATION_TYPE"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2613,7 +2514,7 @@ function fileuploads(btn) {
 <td id="ROW11" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R11_PASSPORT_NUMBER, 'N/A')}"
-           id="R11_PASSPORT_NUMBER" name="R11_PASSPORT_NUMBER"
+           id="R11_PASSPORT_NUMBER" name="R11_C9_PASSPORT_NUMBER"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2623,7 +2524,7 @@ function fileuploads(btn) {
                class="display-input show_input date-field"
                th:value="${#dates.format(report.R11_DATE_OF_BIRTH, 'yyyy-MM-dd')}"
                id="R11_DATE_OF_BIRTH"
-               name="R11_DATE_OF_BIRTH"
+               name="R11_C10_DATE_OF_BIRTH"
                readonly
                style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;" />
     </td>
@@ -2631,7 +2532,7 @@ function fileuploads(btn) {
 <td id="ROW11" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R11_HOME_ADDRESS, 'N/A')}"
-           id="R11_HOME_ADDRESS" name="R11_HOME_ADDRESS"
+           id="R11_HOME_ADDRESS" name="R11_C11_HOME_ADDRESS"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2639,7 +2540,7 @@ function fileuploads(btn) {
 <td id="ROW11" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R11_POSTAL_ADDRESS, 'N/A')}"
-           id="R11_POSTAL_ADDRESS" name="R11_POSTAL_ADDRESS"
+           id="R11_POSTAL_ADDRESS" name="R11_C12_POSTAL_ADDRESS"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2647,7 +2548,7 @@ function fileuploads(btn) {
 <td id="ROW11" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R11_RESIDENCE, 'N/A')}"
-           id="R11_RESIDENCE" name="R11_RESIDENCE"
+           id="R11_RESIDENCE" name="R11_C13_RESIDENCE"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2655,7 +2556,7 @@ function fileuploads(btn) {
 <td id="ROW11" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R11_EMAIL, 'N/A')}"
-           id="R11_EMAIL" name="R11_EMAIL"
+           id="R11_EMAIL" name="R11_C14_EMAIL"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2663,7 +2564,7 @@ function fileuploads(btn) {
 <td id="ROW11" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R11_LANDLINE, 'N/A')}"
-           id="R11_LANDLINE" name="R11_LANDLINE"
+           id="R11_LANDLINE" name="R11_C15_LANDLINE"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2671,7 +2572,7 @@ function fileuploads(btn) {
 <td id="ROW11" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R11_MOBILE_PHONE_NUMBER, 'N/A')}"
-           id="R11_MOBILE_PHONE_NUMBER" name="R11_MOBILE_PHONE_NUMBER"
+           id="R11_MOBILE_PHONE_NUMBER" name="R11_C15_MOBILE_PHONE_NUMBER"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2679,7 +2580,7 @@ function fileuploads(btn) {
 <td id="ROW11" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R11_MOBILE_MONEY_NUMBER, 'N/A')}"
-           id="R11_MOBILE_MONEY_NUMBER" name="R11_MOBILE_MONEY_NUMBER"
+           id="R11_MOBILE_MONEY_NUMBER" name="R11_C16_MOBILE_MONEY_NUMBER"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2687,7 +2588,7 @@ function fileuploads(btn) {
 <td id="ROW11" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R11_PRODUCT_TYPE, 'N/A')}"
-           id="R11_PRODUCT_TYPE" name="R11_PRODUCT_TYPE"
+           id="R11_PRODUCT_TYPE" name="R11_C17_PRODUCT_TYPE"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2695,7 +2596,7 @@ function fileuploads(btn) {
 <td id="ROW11" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R11_ACCOUNT_BY_OWNERSHIP, 'N/A')}"
-           id="R11_ACCOUNT_BY_OWNERSHIP" name="R11_ACCOUNT_BY_OWNERSHIP"
+           id="R11_ACCOUNT_BY_OWNERSHIP" name="R11_C18_ACCOUNT_BY_OWNERSHIP"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2703,7 +2604,7 @@ function fileuploads(btn) {
 <td id="ROW11" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R11_ACCOUNT_NUMBER, 'N/A')}"
-           id="R11_ACCOUNT_NUMBER" name="R11_ACCOUNT_NUMBER"
+           id="R11_ACCOUNT_NUMBER" name="R11_C19_ACCOUNT_NUMBER"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2711,7 +2612,7 @@ function fileuploads(btn) {
 <td id="ROW11" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R11_ACCOUNT_HOLDER_INDICATOR, 'N/A')}"
-           id="R11_ACCOUNT_HOLDER_INDICATOR" name="R11_ACCOUNT_HOLDER_INDICATOR"
+           id="R11_ACCOUNT_HOLDER_INDICATOR" name="R11_C20_ACCOUNT_HOLDER_INDICATOR"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2719,7 +2620,7 @@ function fileuploads(btn) {
 <td id="ROW11" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R11_STATUS_OF_ACCOUNT, 'N/A')}"
-           id="R11_STATUS_OF_ACCOUNT" name="R11_STATUS_OF_ACCOUNT"
+           id="R11_STATUS_OF_ACCOUNT" name="R11_C21_STATUS_OF_ACCOUNT"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2727,7 +2628,7 @@ function fileuploads(btn) {
 <td id="ROW11" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R11_NOT_FIT_FOR_STP, 'N/A')}"
-           id="R11_NOT_FIT_FOR_STP" name="R11_NOT_FIT_FOR_STP"
+           id="R11_NOT_FIT_FOR_STP" name="R11_C22_NOT_FIT_FOR_STP"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2735,7 +2636,7 @@ function fileuploads(btn) {
 <td id="ROW11" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R11_BRANCH_CODE_AND_NAME, 'N/A')}"
-           id="R11_BRANCH_CODE_AND_NAME" name="R11_BRANCH_CODE_AND_NAME"
+           id="R11_BRANCH_CODE_AND_NAME" name="R11_C23_BRANCH_CODE_AND_NAME"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2745,7 +2646,7 @@ function fileuploads(btn) {
                type="text"
                th:value="${report.R11_ACCOUNT_BALANCE_IN_PULA != null ? #numbers.formatDecimal(report.R11_ACCOUNT_BALANCE_IN_PULA, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R11_ACCOUNT_BALANCE_IN_PULA"
-               name="R11_ACCOUNT_BALANCE_IN_PULA"
+               name="R11_C24_ACCOUNT_BALANCE_IN_PULA"
                style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -2753,7 +2654,7 @@ function fileuploads(btn) {
 <td id="ROW11" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R11_CURRENCY_OF_ACCOUNT, 'N/A')}"
-           id="R11_CURRENCY_OF_ACCOUNT" name="R11_CURRENCY_OF_ACCOUNT"
+           id="R11_CURRENCY_OF_ACCOUNT" name="R11_C25_CURRENCY_OF_ACCOUNT"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2763,33 +2664,76 @@ function fileuploads(btn) {
                type="text"
                th:value="${report.R11_EXCHANGE_RATE != null ? #numbers.formatDecimal(report.R11_EXCHANGE_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R11_EXCHANGE_RATE"
-               name="R11_EXCHANGE_RATE"
+               name="R11_C26_EXCHANGE_RATE"
                style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
 
 </tr>
 
-</tbody>	
-										
-</table>
-		</div>
-							<div style="text-align: center; margin-top: 10px;">
-								
-    <button id="submitButton" 
-            type="button"
-            class="custom-tab-btn Show_input" 
-            form="fileupload"
-            th:attr="data-todate=${asondate}, data-type=${type}"
-            onclick="fileuploads(this);" 
-            style="display: none;">
-        Submit
-    </button>
+  </tbody>
+         </table>
+
+
+
+ </div>
+        <div style="text-align: center; margin-top: 10px;">
+
+         <button id="submitButton" type="button" class="custom-tab-btn Show_input" form="fileupload"
+          th:attr="data-todate=${asondate}, data-type=${type}" onclick="fileuploads(this);" style="display: none;">
+          Submit</button>
+        </div>
+       </form>
+      </div>
+     </div>
+    </div>
+   <div th:if="${displaymode == 'Details'}">
+			<div class="row">
+				<div class="col-sm-12" >
+		<div class="table-container" style="border-right: 1px solid #dee2e6;">
+							<table class="table table-striped table-bordered table-hover" id="reportdetail">
+							 <thead class="thead-light">
+            <tr>
+               <!-- <th></th> -->
+		<th style="width: 60px; text-align:center;">S No</th>
+		<th>CUST ID</th>
+		<th>ACCT NO</th>
+		<th>ACCT NAME</th>
+		<th style="text-align:left;">REPORT LABEL</th>
+		<th>REPORT ADDL CRITERIA 1</th>
+		<th>REPORT DATE</th>
+
+            </tr>
+        </thead>
+
+      <tbody style="font-family: Arial;">
+<tr th:each="report, srlno : ${reportdetails}">
+
+    <td style="text-align:center;"
+        th:text="${srlno.index + 1}"></td>
+
+    <td th:text="${report.custId}"></td>
+    <td th:text="${report.acctNumber}"></td>
+    <td th:text="${report.acctName}"></td>
+    <td style="text-align:left;"
+        th:text="${report.reportLable}"></td>
+    <td th:text="${report.reportAddlCriteria1}"></td>
+    <td th:text="${#dates.format(report.reportDate,'dd-MM-yyyy')}"></td>
+
+</tr>
+</tbody>
+
+
+    </table>
 </div>
-							</form>
-							</div>
+
+							
+							
+
 						</div>
 					</div>
+				</div>
+				
 				</div>
 				
 			</div>
@@ -2994,6 +2938,27 @@ function fileuploads(btn) {
 
 </html>
 
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+    
 					
 					
 					

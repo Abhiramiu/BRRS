@@ -3,16 +3,16 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
 
-public class M_BDISB1_Archival_Summary_PK implements Serializable {
+public class BDISB1_Archival_Summary_PK implements Serializable {
 
     private Date reportDate;
     private String reportVersion;
 
     // default constructor
-    public M_BDISB1_Archival_Summary_PK() {}
+    public BDISB1_Archival_Summary_PK() {}
 
     // parameterized constructor
-    public M_BDISB1_Archival_Summary_PK(Date reportDate, String reportVersion) {
+    public BDISB1_Archival_Summary_PK(Date reportDate, String reportVersion) {
         this.reportDate = reportDate;
         this.reportVersion = reportVersion;
     }
@@ -21,8 +21,8 @@ public class M_BDISB1_Archival_Summary_PK implements Serializable {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof M_BDISB1_Archival_Summary_PK)) return false;
-        M_BDISB1_Archival_Summary_PK that = (M_BDISB1_Archival_Summary_PK) o;
+        if (!(o instanceof BDISB1_Archival_Summary_PK)) return false;
+        BDISB1_Archival_Summary_PK that = (BDISB1_Archival_Summary_PK) o;
         return Objects.equals(reportDate, that.reportDate) &&
                Objects.equals(reportVersion, that.reportVersion);
     }

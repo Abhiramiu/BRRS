@@ -16,7 +16,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
 @Table(name = "BRRS_BDISB1_SUMMARYTABLE")
-public class M_BDISB1_Summary_Entity {
+public class BDISB1_Summary_Entity {
 	
 	@Temporal(TemporalType.DATE)
 	@DateTimeFormat(pattern = "dd/MM/yyyy")
@@ -1437,7 +1437,7 @@ public class M_BDISB1_Summary_Entity {
 	public void setR11_EXCHANGE_RATE(BigDecimal r11_EXCHANGE_RATE) {
 		R11_EXCHANGE_RATE = r11_EXCHANGE_RATE;
 	}
-	public M_BDISB1_Summary_Entity() {
+	public BDISB1_Summary_Entity() {
 		super();
 		// TODO Auto-generated constructor stub
 	}

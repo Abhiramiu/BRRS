@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -31,14 +33,20 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.bornfire.brrs.entities.BDISB1_Archival_Summary_Entity;
+import com.bornfire.brrs.entities.BDISB1_Summary_Entity;
 import com.bornfire.brrs.entities.BDISB3_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.BDISB3_Detail_Entity;
 import com.bornfire.brrs.entities.BDISB3_Detail_Entity_Archival;
@@ -808,15 +816,12 @@ return out.toByteArray();
 public List<Object[]> getBDISB3Resub() {
 List<Object[]> resubList = new ArrayList<>();
 try {
-List<BDISB3_Archival_Summary_Entity> latestArchivalList = 
-BDISB3_Archival_Summary_Repo.getdatabydateListWithVersionAll();
+List<BDISB3_Archival_Summary_Entity> latestArchivalList = BDISB3_Archival_Summary_Repo
+.getdatabydateListWithVersionAll();
 
 if (latestArchivalList != null && !latestArchivalList.isEmpty()) {
 for (BDISB3_Archival_Summary_Entity entity : latestArchivalList) {
-Object[] row = new Object[] {
-entity.getReportDate(),
-entity.getReportVersion()
-};
+Object[] row = new Object[] { entity.getReportDate(), entity.getReportVersion() };
 resubList.add(row);
 }
 System.out.println("Fetched " + resubList.size() + " record(s)");
@@ -824,12 +829,11 @@ System.out.println("Fetched " + resubList.size() + " record(s)");
 System.out.println("No archival data found.");
 }
 } catch (Exception e) {
-System.err.println("Error fetching BDISB3 Resub data: " + e.getMessage());
+System.err.println("Error fetching BDISB1 Resub data: " + e.getMessage());
 e.printStackTrace();
 }
 return resubList;
 }
-
 
 //Archival View
 public List<Object[]> getBDISB3Archival() {
@@ -841,10 +845,7 @@ List<BDISB3_Archival_Summary_Entity> repoData = BDISB3_Archival_Summary_Repo
 
 if (repoData != null && !repoData.isEmpty()) {
 for (BDISB3_Archival_Summary_Entity entity : repoData) {
-Object[] row = new Object[] {
-entity.getReportDate(), 
-entity.getReportVersion() 
-};
+Object[] row = new Object[] { entity.getReportDate(), entity.getReportVersion() };
 archivalList.add(row);
 }
 
@@ -856,68 +857,152 @@ System.out.println("No archival data found.");
 }
 
 } catch (Exception e) {
-System.err.println("Error fetching BDISB2 Archival data: " + e.getMessage());
+System.err.println("Error fetching BDISB3 Archival data: " + e.getMessage());
 e.printStackTrace();
 }
 
 return archivalList;
 }
 
-
-// Resubmit the values , latest version and Resub Date
+@Transactional
 public void updateReportReSub(BDISB3_Summary_Entity updatedEntity) {
+
 System.out.println("Came to Resub Service");
-System.out.println("Report Date: " + updatedEntity.getReportDate());
 
 Date reportDate = updatedEntity.getReportDate();
-int newVersion = 1;
+System.out.println("Report Date: " + reportDate);
 
 try {
-// Fetch the latest archival version for this report date
-Optional<BDISB3_Archival_Summary_Entity> latestArchivalOpt = BDISB3_Archival_Summary_Repo
+/* =========================================================
+* 1️⃣ FETCH LATEST ARCHIVAL VERSION
+* ========================================================= */
+Optional<BDISB3_Archival_Summary_Entity> latestArchivalOpt =
+BDISB3_Archival_Summary_Repo
 .getLatestArchivalVersionByDate(reportDate);
 
-// Determine next version number
+int newVersion = 1;
 if (latestArchivalOpt.isPresent()) {
-BDISB3_Archival_Summary_Entity latestArchival = latestArchivalOpt.get();
 try {
-newVersion = Integer.parseInt(latestArchival.getReportVersion()) + 1;
+newVersion =
+Integer.parseInt(latestArchivalOpt.get().getReportVersion()) + 1;
 } catch (NumberFormatException e) {
-System.err.println("Invalid version format. Defaulting to version 1");
 newVersion = 1;
 }
-} else {
-System.out.println("No previous archival found for date: " + reportDate);
 }
 
-// Prevent duplicate version number
-boolean exists = BDISB3_Archival_Summary_Repo
-.findByReportDateAndReportVersion(reportDate, String.valueOf(newVersion))
+boolean exists =
+BDISB3_Archival_Summary_Repo
+.findByReportDateAndReportVersion(
+reportDate, String.valueOf(newVersion))
 .isPresent();
 
 if (exists) {
-throw new RuntimeException("Version " + newVersion + " already exists for report date " + reportDate);
+throw new RuntimeException(
+"Version " + newVersion + " already exists for report date " + reportDate);
 }
 
-// Copy summary entity to archival entity
-BDISB3_Archival_Summary_Entity archivalEntity = new BDISB3_Archival_Summary_Entity();
-org.springframework.beans.BeanUtils.copyProperties(updatedEntity, archivalEntity);
+/* =========================================================
+* 2️⃣ CREATE NEW ARCHIVAL ENTITY (BASE COPY)
+* ========================================================= */
+BDISB3_Archival_Summary_Entity archivalEntity =
+new BDISB3_Archival_Summary_Entity();
 
+if (latestArchivalOpt.isPresent()) {
+BeanUtils.copyProperties(latestArchivalOpt.get(), archivalEntity);
+}
+
+/* =========================================================
+* 3️⃣ READ RAW REQUEST PARAMETERS (CRITICAL FIX)
+* ========================================================= */
+HttpServletRequest request =
+((ServletRequestAttributes) RequestContextHolder
+.getRequestAttributes()).getRequest();
+
+Map<String, String[]> parameterMap = request.getParameterMap();
+
+for (Map.Entry<String, String[]> entry : parameterMap.entrySet()) {
+
+String key = entry.getKey();              // R6_C11_ACCT_NUM
+String value = entry.getValue()[0];
+
+//Ignore non-field params
+if ("asondate".equalsIgnoreCase(key) || "type".equalsIgnoreCase(key)) {
+continue;
+}
+
+//Normalize: R6_C11_ACCT_NUM → R6_ACCT_NUM
+String normalizedKey = key.replaceFirst("_C\\d+_", "_");
+
+/* =====================================================
+* 4️⃣ APPLY VALUES (EXPLICIT, SAFE, NO REFLECTION)
+* ===================================================== */
+//======================= R5 – R11 =======================
+
+if ("R5_AGGREGATE_BALANCE".equals(normalizedKey)) {
+    archivalEntity.setR5_AGGREGATE_BALANCE(parseBigDecimal(value));
+
+} else if ("R5_COMPENSATABLE_AMOUNT".equals(normalizedKey)) {
+    archivalEntity.setR5_COMPENSATABLE_AMOUNT(parseBigDecimal(value));
+
+} else if ("R6_AGGREGATE_BALANCE".equals(normalizedKey)) {
+    archivalEntity.setR6_AGGREGATE_BALANCE(parseBigDecimal(value));
+
+} else if ("R6_COMPENSATABLE_AMOUNT".equals(normalizedKey)) {
+    archivalEntity.setR6_COMPENSATABLE_AMOUNT(parseBigDecimal(value));
+
+} else if ("R7_AGGREGATE_BALANCE".equals(normalizedKey)) {
+    archivalEntity.setR7_AGGREGATE_BALANCE(parseBigDecimal(value));
+
+} else if ("R7_COMPENSATABLE_AMOUNT".equals(normalizedKey)) {
+    archivalEntity.setR7_COMPENSATABLE_AMOUNT(parseBigDecimal(value));
+
+} else if ("R8_AGGREGATE_BALANCE".equals(normalizedKey)) {
+    archivalEntity.setR8_AGGREGATE_BALANCE(parseBigDecimal(value));
+
+} else if ("R8_COMPENSATABLE_AMOUNT".equals(normalizedKey)) {
+    archivalEntity.setR8_COMPENSATABLE_AMOUNT(parseBigDecimal(value));
+
+} else if ("R9_AGGREGATE_BALANCE".equals(normalizedKey)) {
+    archivalEntity.setR9_AGGREGATE_BALANCE(parseBigDecimal(value));
+
+} else if ("R9_COMPENSATABLE_AMOUNT".equals(normalizedKey)) {
+    archivalEntity.setR9_COMPENSATABLE_AMOUNT(parseBigDecimal(value));
+
+} else if ("R10_AGGREGATE_BALANCE".equals(normalizedKey)) {
+    archivalEntity.setR10_AGGREGATE_BALANCE(parseBigDecimal(value));
+
+} else if ("R10_COMPENSATABLE_AMOUNT".equals(normalizedKey)) {
+    archivalEntity.setR10_COMPENSATABLE_AMOUNT(parseBigDecimal(value));
+}
+
+
+}
+
+/* =========================================================
+* 5️⃣ SET RESUB METADATA
+* ========================================================= */
 archivalEntity.setReportDate(reportDate);
 archivalEntity.setReportVersion(String.valueOf(newVersion));
 archivalEntity.setReportResubDate(new Date());
 
-System.out.println("Saving new archival version: " + newVersion);
-
-// Save new version to repository
+/* =========================================================
+* 6️⃣ SAVE NEW ARCHIVAL VERSION
+* ========================================================= */
 BDISB3_Archival_Summary_Repo.save(archivalEntity);
 
-System.out.println(" Saved archival version successfully: " + newVersion);
+System.out.println("✅ RESUB saved successfully. Version = " + newVersion);
 
 } catch (Exception e) {
 e.printStackTrace();
-throw new RuntimeException("Error while creating archival resubmission record", e);
+throw new RuntimeException(
+"Error while creating archival resubmission record", e);
 }
+}
+
+private BigDecimal parseBigDecimal(String value) {
+return (value == null || value.trim().isEmpty())
+? BigDecimal.ZERO
+: new BigDecimal(value.replace(",", ""));
 }
 
 /// Downloaded for Archival & Resub

@@ -18,9 +18,9 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
 @Table(name = "BRRS_BDISB1_ARCHIVALTABLE_SUMMARY")
-@IdClass(M_BDISB1_Archival_Summary_PK.class)
+@IdClass(BDISB1_Archival_Summary_PK.class)
 
-public class M_BDISB1_Archival_Summary_Entity{	
+public class BDISB1_Archival_Summary_Entity{	
 
 
 
@@ -1451,7 +1451,7 @@ public class M_BDISB1_Archival_Summary_Entity{
 	public void setR11_EXCHANGE_RATE(BigDecimal r11_EXCHANGE_RATE) {
 		R11_EXCHANGE_RATE = r11_EXCHANGE_RATE;
 	}
-	public M_BDISB1_Archival_Summary_Entity() {
+	public BDISB1_Archival_Summary_Entity() {
 		super();
 		// TODO Auto-generated constructor stub
 	}

@@ -9,12 +9,16 @@ import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.CallableStatement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.BorderStyle;
@@ -40,19 +44,32 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.bornfire.brrs.entities.BDISB1_Archival_Detail_Entity;
+import com.bornfire.brrs.entities.BDISB1_Detail_Entity;
+import com.bornfire.brrs.entities.BRRS_BDISB1_Archival_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_BDISB1_Archival_Summary_Repo;
+import com.bornfire.brrs.entities.BRRS_BDISB1_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_BDISB1_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_M_SRWA_12F_Archival_Summary_Repo;
 import com.bornfire.brrs.entities.M_SRWA_12F_Summary_Entity;
 import com.bornfire.brrs.entities.M_SRWA_12G_Summary_Entity;
 import com.bornfire.brrs.entities.M_SRWA_12H_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.BRRS_M_SRWA_12F_Summary_Repo;
-import com.bornfire.brrs.entities.M_BDISB1_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.M_BDISB1_Summary_Entity;
+import com.bornfire.brrs.entities.BDISB1_Archival_Summary_Entity;
+import com.bornfire.brrs.entities.BDISB1_Archival_Summary_PK;
+import com.bornfire.brrs.entities.BDISB1_Summary_Entity;
+import com.bornfire.brrs.entities.BDISB2_Archival_Detail_Entity;
+import com.bornfire.brrs.entities.BDISB2_Archival_Summary_Entity;
+import com.bornfire.brrs.entities.BDISB2_Detail_Entity;
+import com.bornfire.brrs.entities.BDISB2_Summary_Entity;
 import com.bornfire.brrs.entities.M_CA5_Summary_Entity1;
 import com.bornfire.brrs.entities.M_SRWA_12F_Archival_Summary_Entity;
 
@@ -66,24 +83,32 @@ public class BRRS_BDISB1_ReportService {
 
 	@Autowired
 	private Environment env;
+	
+	@Autowired
+	private JdbcTemplate jdbcTemplate;
 
 	@Autowired
 	SessionFactory sessionFactory;
 
 	@Autowired
-	BRRS_BDISB1_Summary_Repo M_BDISB1_Summary_Repo;
+	BRRS_BDISB1_Summary_Repo BDISB1_Summary_Repo;
 
 	@Autowired
-	BRRS_BDISB1_Archival_Summary_Repo M_BDISB1_Archival_Summary_Repo;
+	BRRS_BDISB1_Archival_Summary_Repo BDISB1_Archival_Summary_Repo;
+	
+	@Autowired
+	private BRRS_BDISB1_Detail_Repo BDISB1_Detail_Repo;
+
+	@Autowired
+	private BRRS_BDISB1_Archival_Detail_Repo BDISB1_Archival_Detail_Repo;
 
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
-	public ModelAndView getM_BDISB1View(String reportId, String fromdate, String todate, 
-			String currency, String dtltype, Pageable pageable, String type, String version) 
-	{
+	public ModelAndView getBDISB1View(String reportId, String fromdate, String todate, String currency, String dtltype,
+			Pageable pageable, String type, String version) {
 		ModelAndView mv = new ModelAndView();
 		Session hs = sessionFactory.getCurrentSession();
-		
+
 		int pageSize = pageable.getPageSize();
 		int currentPage = pageable.getPageNumber();
 		int startItem = currentPage * pageSize;
@@ -91,29 +116,29 @@ public class BRRS_BDISB1_ReportService {
 		try {
 			Date d1 = dateformat.parse(todate);
 
-	 // ---------- CASE 1: ARCHIVAL ----------
-        if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
-            List<M_BDISB1_Archival_Summary_Entity> T1Master = 
-                M_BDISB1_Archival_Summary_Repo.getdatabydateListarchival(d1, version);
-            
-            mv.addObject("reportsummary", T1Master);
-        }
+			// ---------- CASE 1: ARCHIVAL ----------
+			if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
+				List<BDISB1_Archival_Summary_Entity> T1Master = BDISB1_Archival_Summary_Repo
+						.getdatabydateListarchival(d1, version);
 
-        // ---------- CASE 2: RESUB ----------
-        else if ("RESUB".equalsIgnoreCase(type) && version != null) {
-            List<M_BDISB1_Archival_Summary_Entity> T1Master =
-            		M_BDISB1_Archival_Summary_Repo.getdatabydateListarchival(d1, version);
-            
-            mv.addObject("reportsummary", T1Master);
-        }
+				mv.addObject("reportsummary", T1Master);
+			}
 
-        // ---------- CASE 3: NORMAL ----------
-        else {
-            List<M_BDISB1_Summary_Entity> T1Master = 
-                M_BDISB1_Summary_Repo.getdatabydateListWithVersion(todate);
-            System.out.println("T1Master Size "+T1Master.size());
-            mv.addObject("reportsummary", T1Master);
-        }
+			// ---------- CASE 2: RESUB ----------
+			else if ("RESUB".equalsIgnoreCase(type) && version != null) {
+				List<BDISB1_Archival_Summary_Entity> T1Master = BDISB1_Archival_Summary_Repo
+						.getdatabydateListarchival(d1, version);
+
+				mv.addObject("reportsummary", T1Master);
+			}
+
+			// ---------- CASE 3: NORMAL ----------
+			else {
+				List<BDISB1_Summary_Entity> T1Master = BDISB1_Summary_Repo
+						.getdatabydateList(dateformat.parse(todate));
+				System.out.println("T1Master Size " + T1Master.size());
+				mv.addObject("reportsummary", T1Master);
+			}
 
 		} catch (ParseException e) {
 			e.printStackTrace();
@@ -124,72 +149,303 @@ public class BRRS_BDISB1_ReportService {
 		System.out.println("View set to: " + mv.getViewName());
 		return mv;
 	}
+
 	
-	public void updateReport(M_BDISB1_Summary_Entity updatedEntity) {
-	    System.out.println("Came to services");
-	    System.out.println("Report Date: " + updatedEntity.getReportDate());
+	public ModelAndView getBDISB1currentDtl(String reportId, String fromdate, String todate, String currency,
+			String dtltype, Pageable pageable, String Filter, String type, String version) {
 
-	    M_BDISB1_Summary_Entity existing = M_BDISB1_Summary_Repo.findById(updatedEntity.getReportDate())
-	            .orElseThrow(() -> new RuntimeException(
-	                    "Record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
+		int pageSize = pageable != null ? pageable.getPageSize() : 10;
+		int currentPage = pageable != null ? pageable.getPageNumber() : 0;
+		int totalPages = 0;
 
-	    try {
-	        // 1️⃣ Loop through R14 to R100
-	        for (int i = 5; i <= 11; i++) {
-	            String prefix = "R" + i + "_";
+		ModelAndView mv = new ModelAndView();
+		Session hs = sessionFactory.getCurrentSession();
 
-	            String[] fields = {
-	            		"RECORD_NUMBER",
-	            		"TITLE",
-	            		"FIRST_NAME",
-	            		"MIDDLE_NAME",
-	            		"SURNAME",
-	            		"PREVIOUS_NAME",
-	            		"GENDER",
-	            		"IDENTIFICATION_TYPE",
-	            		"PASSPORT_NUMBER",
-	            		"DATE_OF_BIRTH",
-	            		"HOME_ADDRESS",
-	            		"POSTAL_ADDRESS",
-	            		"RESIDENCE",
-	            		"EMAIL",
-	            		"LANDLINE",
-	            		"MOBILE_PHONE_NUMBER",
-	            		"MOBILE_MONEY_NUMBER",
-	            		"PRODUCT_TYPE",
-	            		"ACCOUNT_BY_OWNERSHIP",
-	            		"ACCOUNT_NUMBER",
-	            		"ACCOUNT_HOLDER_INDICATOR",
-	            		"STATUS_OF_ACCOUNT",
-	            		"NOT_FIT_FOR_STP",
-	            		"BRANCH_CODE_AND_NAME",
-	            		"ACCOUNT_BALANCE_IN_PULA",
-	            		"CURRENCY_OF_ACCOUNT",
-	            		"EXCHANGE_RATE"
+		try {
+			Date parsedDate = null;
+			if (todate != null && !todate.isEmpty()) {
+				parsedDate = dateformat.parse(todate);
+			}
 
-	            };
+			String rowId = null;
+			String columnId = null;
 
-	            for (String field : fields) {
-	                String getterName = "get" + prefix + field;
-	                String setterName = "set" + prefix + field;
+			// ✅ Split filter string into rowId & columnId
+			if (Filter != null && Filter.contains(",")) {
+				String[] parts = Filter.split(",");
+				if (parts.length >= 2) {
+					rowId = parts[0];
+					columnId = parts[1];
+				}
+			}
+			System.out.println(type);
+			if ("ARCHIVAL".equals(type) && version != null) {
+				System.out.println(type);
+				// 🔹 Archival branch
+				List<BDISB1_Archival_Detail_Entity> T1Dt1;
+				if (rowId != null && columnId != null) {
+					T1Dt1 = BDISB1_Archival_Detail_Repo.GetDataByRowIdAndColumnId(rowId, columnId, parsedDate,
+							version);
+				} else {
+					T1Dt1 = BDISB1_Archival_Detail_Repo.getdatabydateList(parsedDate, version);
+				}
 
-	                try {
-	                    Method getter = M_BDISB1_Summary_Entity.class.getMethod(getterName);
-	                    Method setter = M_BDISB1_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+				mv.addObject("reportdetails", T1Dt1);
+				mv.addObject("reportmaster12", T1Dt1);
+				System.out.println("ARCHIVAL COUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
 
-	                    Object newValue = getter.invoke(updatedEntity);
-	                    setter.invoke(existing, newValue);
+			} else {
+				// 🔹 Current branch
+				List<BDISB1_Detail_Entity> T1Dt1;
+				if (rowId != null && columnId != null) {
+					T1Dt1 = BDISB1_Detail_Repo.GetDataByRowIdAndColumnId(rowId, columnId, parsedDate);
+				} else {
+					T1Dt1 = BDISB1_Detail_Repo.getdatabydateList(parsedDate, currentPage, pageSize);
+					System.out.println("la1 size is : "+ T1Dt1.size());
+					totalPages = BDISB1_Detail_Repo.getdatacount(parsedDate);
+					mv.addObject("pagination", "YES");
+				}
 
-	                } catch (NoSuchMethodException e) {
-	                    // Skip missing fields
-	                    continue;
-	                }
-	            }
+				mv.addObject("reportdetails", T1Dt1);
+				mv.addObject("reportmaster12", T1Dt1);
+				System.out.println("LISTCOUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
+			}
+
+		} catch (ParseException e) {
+			e.printStackTrace();
+			mv.addObject("errorMessage", "Invalid date format: " + todate);
+		} catch (Exception e) {
+			e.printStackTrace();
+			mv.addObject("errorMessage", "Unexpected error: " + e.getMessage());
+		}
+
+		// ✅ Common attributes
+		mv.setViewName("BRRS/BDISB1");
+		mv.addObject("displaymode", "Details");
+		mv.addObject("currentPage", currentPage);
+		System.out.println("totalPages: " + (int) Math.ceil((double) totalPages / 100));
+		mv.addObject("totalPages", (int) Math.ceil((double) totalPages / 100));
+		mv.addObject("reportsflag", "reportsflag");
+		mv.addObject("menu", reportId);
+
+		return mv;
+	}
+	
+	
+	
+	@Transactional
+	public void updateDetailFromForm(Date reportDate, Map<String, String> params) {
+
+	    System.out.println("Updating BDISB1 detail table");
+
+	    for (Map.Entry<String, String> entry : params.entrySet()) {
+
+	        String key = entry.getKey();
+	        String value = entry.getValue();
+
+	        // ✅ Allow ONLY valid BDISB1 keys
+	        if (!key.matches(
+	                "R\\d+_C\\d+_(" +
+	                        "RECORD_NUMBER|" +
+	                        "TITLE|" +
+	                        "FIRST_NAME|" +
+	                        "MIDDLE_NAME|" +
+	                        "SURNAME|" +
+	                        "PREVIOUS_NAME|" +
+	                        "GENDER|" +
+	                        "IDENTIFICATION_TYPE|" +
+	                        "PASSPORT_NUMBER|" +
+	                        "DATE_OF_BIRTH|" +
+	                        "HOME_ADDRESS|" +
+	                        "POSTAL_ADDRESS|" +
+	                        "RESIDENCE|" +
+	                        "EMAIL|" +
+	                        "LANDLINE|" +
+	                        "MOBILE_PHONE_NUMBER|" +
+	                        "MOBILE_MONEY_NUMBER|" +
+	                        "PRODUCT_TYPE|" +
+	                        "ACCOUNT_BY_OWNERSHIP|" +
+	                        "ACCOUNT_NUMBER|" +
+	                        "ACCOUNT_HOLDER_INDICATOR|" +
+	                        "STATUS_OF_ACCOUNT|" +
+	                        "NOT_FIT_FOR_STP|" +
+	                        "BRANCH_CODE_AND_NAME|" +
+	                        "ACCOUNT_BALANCE_IN_PULA|" +
+	                        "CURRENCY_OF_ACCOUNT|" +
+	                        "EXCHANGE_RATE" +
+	                        ")"
+	        )) {
+	            continue;
 	        }
 
-	        // 2️⃣ Handle R100 total fields using same structure
-	        String prefix = "R11_";
-	        String[] totalFields = {
+	        // ---------- Parse key ----------
+	        String[] parts = key.split("_");
+	        String reportLable  = parts[0];   // R6
+	        String addlCriteria = parts[1];   // C1
+	        String columnName   = key.replaceFirst("R\\d+_C\\d+_", "");
+
+	        // ---------- Fetch rows ----------
+	        List<BDISB1_Detail_Entity> rows =
+	                BDISB1_Detail_Repo
+	                        .findByReportDateAndReportLableAndReportAddlCriteria1(
+	                                reportDate, reportLable, addlCriteria
+	                        );
+
+	        if (rows == null || rows.isEmpty()) {
+	            continue;
+	        }
+
+	        for (BDISB1_Detail_Entity row : rows) {
+
+	            if (row == null) continue;
+
+	            // ---------- NUMERIC ----------
+	            if ("RECORD_NUMBER".equals(columnName)) {
+	                row.setRECORD_NUMBER(BigDecimal(value));
+
+	            } else if ("ACCOUNT_BALANCE_IN_PULA".equals(columnName)) {
+	                row.setACCOUNT_BALANCE_IN_PULA(BigDecimal(value));
+
+	            } else if ("EXCHANGE_RATE".equals(columnName)) {
+	                row.setEXCHANGE_RATE(BigDecimal(value));
+
+	            // ---------- STRING ----------
+	            } else if ("TITLE".equals(columnName)) {
+	                row.setTITLE(value);
+
+	            } else if ("FIRST_NAME".equals(columnName)) {
+	                row.setFIRST_NAME(value);
+
+	            } else if ("MIDDLE_NAME".equals(columnName)) {
+	                row.setMIDDLE_NAME(value);
+
+	            } else if ("SURNAME".equals(columnName)) {
+	                row.setSURNAME(value);
+
+	            } else if ("PREVIOUS_NAME".equals(columnName)) {
+	                row.setPREVIOUS_NAME(value);
+
+	            } else if ("GENDER".equals(columnName)) {
+	                row.setGENDER(value);
+
+	            } else if ("IDENTIFICATION_TYPE".equals(columnName)) {
+	                row.setIDENTIFICATION_TYPE(value);
+
+	            } else if ("PASSPORT_NUMBER".equals(columnName)) {
+	                row.setPASSPORT_NUMBER(value);
+
+	            } else if ("HOME_ADDRESS".equals(columnName)) {
+	                row.setHOME_ADDRESS(value);
+
+	            } else if ("POSTAL_ADDRESS".equals(columnName)) {
+	                row.setPOSTAL_ADDRESS(value);
+
+	            } else if ("RESIDENCE".equals(columnName)) {
+	                row.setRESIDENCE(value);
+
+	            } else if ("EMAIL".equals(columnName)) {
+	                row.setEMAIL(value);
+
+	            } else if ("LANDLINE".equals(columnName)) {
+	                row.setLANDLINE(value);
+
+	            } else if ("MOBILE_PHONE_NUMBER".equals(columnName)) {
+	                row.setMOBILE_PHONE_NUMBER(value);
+
+	            } else if ("MOBILE_MONEY_NUMBER".equals(columnName)) {
+	                row.setMOBILE_MONEY_NUMBER(value);
+
+	            } else if ("PRODUCT_TYPE".equals(columnName)) {
+	                row.setPRODUCT_TYPE(value);
+
+	            } else if ("ACCOUNT_BY_OWNERSHIP".equals(columnName)) {
+	                row.setACCOUNT_BY_OWNERSHIP(value);
+
+	            } else if ("ACCOUNT_NUMBER".equals(columnName)) {
+	                row.setACCOUNT_NUMBER(value);
+
+	            } else if ("ACCOUNT_HOLDER_INDICATOR".equals(columnName)) {
+	                row.setACCOUNT_HOLDER_INDICATOR(value);
+
+	            } else if ("STATUS_OF_ACCOUNT".equals(columnName)) {
+	                row.setSTATUS_OF_ACCOUNT(value);
+
+	            } else if ("NOT_FIT_FOR_STP".equals(columnName)) {
+	                row.setNOT_FIT_FOR_STP(value);
+
+	            } else if ("BRANCH_CODE_AND_NAME".equals(columnName)) {
+	                row.setBRANCH_CODE_AND_NAME(value);
+
+	            } else if ("CURRENCY_OF_ACCOUNT".equals(columnName)) {
+	                row.setCURRENCY_OF_ACCOUNT(value);
+
+	            // ---------- DATE ----------
+	            } else if ("DATE_OF_BIRTH".equals(columnName)) {
+	                row.setDATE_OF_BIRTH(Date(value));
+	            }
+
+	            // ✅ mark modified
+	            row.setModifyFlg("Y");
+
+	            // 🔥 SAVE EACH ROW (IMPORTANT)
+	            BDISB1_Detail_Repo.save(row);
+	        }
+	    }
+
+	    // 🔥 Run summary after commit
+	    callSummaryProcedure(reportDate);
+	}
+	
+	private BigDecimal BigDecimal(String value) {
+	    return (value == null || value.trim().isEmpty())
+	            ? BigDecimal.ZERO
+	            : new BigDecimal(value.replace(",", ""));
+	}
+
+	private Date Date(String value) {
+	    if (value == null || value.trim().isEmpty()) return null;
+	    try {
+	        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+	        sdf.setLenient(false);
+	        return sdf.parse(value);
+	    } catch (ParseException e) {
+	        throw new RuntimeException("Invalid DATE format: " + value);
+	    }
+	}
+	
+	private void callSummaryProcedure(Date reportDate) {
+
+	    String sql = "{ call BRRS_BDISB1_SUMMARY_PROCEDURE(?) }";
+
+	    jdbcTemplate.update(connection -> {
+	        CallableStatement cs = connection.prepareCall(sql);
+
+	        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+	        sdf.setLenient(false);
+
+	        cs.setString(1, sdf.format(reportDate));
+	        return cs;
+	    });
+
+	    System.out.println("✅ Summary procedure executed for date: " +
+	            new SimpleDateFormat("dd-MM-yyyy").format(reportDate));
+	}
+	
+	
+	public void updateReport(BDISB1_Summary_Entity updatedEntity) {
+	    System.out.println("Came to services");
+		    System.out.println("Report Date: " + updatedEntity.getReportDate());
+
+		    BDISB1_Summary_Entity existing = BDISB1_Summary_Repo.findById(updatedEntity.getReportDate())
+		            .orElseThrow(() -> new RuntimeException(
+	                    "Record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
+
+	try {
+	    // 1️⃣ Loop through R14 to R100
+	    for (int i = 5; i <= 11; i++) {
+	        String prefix = "R" + i + "_";
+
+	        String[] fields = {
 	        		"RECORD_NUMBER",
 	        		"TITLE",
 	        		"FIRST_NAME",
@@ -220,50 +476,201 @@ public class BRRS_BDISB1_ReportService {
 
 	        };
 
-	        for (String field : totalFields) {
+	        for (String field : fields) {
 	            String getterName = "get" + prefix + field;
 	            String setterName = "set" + prefix + field;
 
 	            try {
-	                Method getter = M_BDISB1_Summary_Entity.class.getMethod(getterName);
-	                Method setter = M_BDISB1_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+	                Method getter = BDISB1_Summary_Entity.class.getMethod(getterName);
+	                Method setter = BDISB1_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
 
 	                Object newValue = getter.invoke(updatedEntity);
 	                setter.invoke(existing, newValue);
 
 	            } catch (NoSuchMethodException e) {
-	                // Skip missing total fields
+	                // Skip missing fields
 	                continue;
 	            }
 	        }
-
-	    } catch (Exception e) {
-	        throw new RuntimeException("Error while updating report fields", e);
 	    }
-	    
-	    try {
-	    	existing.setR5_DATE_OF_BIRTH(updatedEntity.getR5_DATE_OF_BIRTH());
-	    	existing.setR6_DATE_OF_BIRTH(updatedEntity.getR6_DATE_OF_BIRTH());
-	    	existing.setR7_DATE_OF_BIRTH(updatedEntity.getR7_DATE_OF_BIRTH());
-	    	existing.setR8_DATE_OF_BIRTH(updatedEntity.getR8_DATE_OF_BIRTH());
-	    	existing.setR9_DATE_OF_BIRTH(updatedEntity.getR9_DATE_OF_BIRTH());
-	    	existing.setR10_DATE_OF_BIRTH(updatedEntity.getR10_DATE_OF_BIRTH());
-	    	existing.setR11_DATE_OF_BIRTH(updatedEntity.getR11_DATE_OF_BIRTH());
-	    	
 
-	    	
-	        
-	    } catch (Exception e) {
-	        throw new RuntimeException("Error while updating date fields", e);
-	    }
-	    
-	   
-	    // 3️⃣ Save updated entity
-	    M_BDISB1_Summary_Repo.save(existing);
-	}
+	    // 2️⃣ Handle R100 total fields using same structure
+	      String prefix = "R11_";
+	      String[] totalFields = {
+	      		"TITLE",
+	      		"FIRST_NAME",
+	      		"MIDDLE_NAME",
+	      		"SURNAME",
+	      		"PREVIOUS_NAME",
+	      		"GENDER",
+	      		"IDENTIFICATION_TYPE",
+	      		"PASSPORT_NUMBER",
+	      		"DATE_OF_BIRTH",
+	      		"HOME_ADDRESS",
+	      		"POSTAL_ADDRESS",
+	      		"RESIDENCE",
+	      		"EMAIL",
+	      		"LANDLINE",
+	      		"MOBILE_PHONE_NUMBER",
+	      		"MOBILE_MONEY_NUMBER",
+	      		"PRODUCT_TYPE",
+	      		"ACCOUNT_BY_OWNERSHIP",
+	      		"ACCOUNT_NUMBER",
+	      		"ACCOUNT_HOLDER_INDICATOR",
+	      		"STATUS_OF_ACCOUNT",
+	      		"NOT_FIT_FOR_STP",
+	      		"BRANCH_CODE_AND_NAME",
+	      		"ACCOUNT_BALANCE_IN_PULA",
+	      		"CURRENCY_OF_ACCOUNT",
+	      		"EXCHANGE_RATE"
+
+	      };
+
+	      for (String field : totalFields) {
+	          String getterName = "get" + prefix + field;
+	          String setterName = "set" + prefix + field;
+
+	          try {
+	              Method getter = BDISB1_Summary_Entity.class.getMethod(getterName);
+	              Method setter = BDISB1_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+
+	              Object newValue = getter.invoke(updatedEntity);
+	              setter.invoke(existing, newValue);
+
+	          } catch (NoSuchMethodException e) {
+	              // Skip missing total fields
+	              continue;
+	          }
+	      }
+
+	  } catch (Exception e) {
+	      throw new RuntimeException("Error while updating report fields", e);
+	  }
+
+	  try {
+	  	existing.setR5_DATE_OF_BIRTH(updatedEntity.getR5_DATE_OF_BIRTH());
+	  	existing.setR6_DATE_OF_BIRTH(updatedEntity.getR6_DATE_OF_BIRTH());
+	  	existing.setR7_DATE_OF_BIRTH(updatedEntity.getR7_DATE_OF_BIRTH());
+	  	existing.setR8_DATE_OF_BIRTH(updatedEntity.getR8_DATE_OF_BIRTH());
+	  	existing.setR9_DATE_OF_BIRTH(updatedEntity.getR9_DATE_OF_BIRTH());
+	  	existing.setR10_DATE_OF_BIRTH(updatedEntity.getR10_DATE_OF_BIRTH());
+	  	existing.setR11_DATE_OF_BIRTH(updatedEntity.getR11_DATE_OF_BIRTH());
+		
+
+		    	
+		        
+		    } catch (Exception e) {
+		        throw new RuntimeException("Error while updating date fields", e);
+		    }
+		    
+		   
+		    // 3️⃣ Save updated entity
+		    BDISB1_Summary_Repo.save(existing);
+		}
+
+
+
 	
+
+
+	//public void updateArchivalReport(BDISB1_Archival_Summary_Entity updatedEntity) {
+
+	//    System.out.println("Came to services 1");
+	//    System.out.println("Report Date: " + updatedEntity.getReportDate());
+	//    System.out.println("Report Version: " + updatedEntity.getReportVersion());
+
+	    // Composite PK
+	//    BDISB1_Archival_Summary_PK pk =
+	//            new BDISB1_Archival_Summary_PK(
+	//                    updatedEntity.getReportDate(),
+	//                    updatedEntity.getReportVersion()
+	//            );
+
+	//    BDISB1_Archival_Summary_Entity existing =
+	//            BDISB1_Archival_Summary_Repo.findById(pk)
+	//            .orElseThrow(() -> new RuntimeException(
+	//                    "Record not found for REPORT_DATE: "
+	//                            + updatedEntity.getReportDate()
+	//                            + " and REPORT_VERSION: "
+	//                            + updatedEntity.getReportVersion()
+	//            ));
+
+	//    try {
+	 //       for (int i = 5; i <= 11; i++) {
+
+	 //           String prefix = "R" + i + "_";
+
+	 //          String[] fields = {
+	//                "RECORD_NUMBER",
+	//                "TITLE",
+	//                "FIRST_NAME",
+	//                "MIDDLE_NAME",
+	//                "SURNAME",
+	//                "PREVIOUS_NAME",
+	//                "GENDER",
+	//                "IDENTIFICATION_TYPE",
+	//                "PASSPORT_NUMBER",
+	//                "DATE_OF_BIRTH",
+	//                "HOME_ADDRESS",
+	//                "POSTAL_ADDRESS",
+	//                "RESIDENCE",
+	//                "EMAIL",
+	//                "LANDLINE",
+	//                "MOBILE_PHONE_NUMBER",
+	//                "MOBILE_MONEY_NUMBER",
+	//                "PRODUCT_TYPE",
+	//                "ACCOUNT_BY_OWNERSHIP",
+	//                "ACCOUNT_NUMBER",
+	//                "ACCOUNT_HOLDER_INDICATOR",
+	//                "STATUS_OF_ACCOUNT",
+	//                "NOT_FIT_FOR_STP",
+	//                "BRANCH_CODE_AND_NAME",
+	//                "ACCOUNT_BALANCE_IN_PULA",
+	//                "CURRENCY_OF_ACCOUNT",
+	//                "EXCHANGE_RATE"
+	//            };
+
+	//           for (String field : fields) {
+
+	//                String getterName = "get" + prefix + field;
+	//               String setterName = "set" + prefix + field;
+
+	//              try {
+	//                    Method getter =
+	//                            BDISB1_Archival_Summary_Entity.class.getMethod(getterName);
+
+	//                    Method setter =
+	//                            BDISB1_Archival_Summary_Entity.class
+	//                                    .getMethod(setterName, getter.getReturnType());
+
+	//                   Object newValue = getter.invoke(updatedEntity);
+
+	                    // ✅ DO NOT overwrite with null
+	//                    if (newValue != null) {
+	//                        setter.invoke(existing, newValue);
+	//                   }
+
+	//              } catch (NoSuchMethodException e) {
+	//                   System.out.println("Missing field: " + getterName);
+	//                }
+//           }
+	//       }
+
+	        // Safety log
+	//       System.out.println("Before Save → VERSION = " + existing.getReportVersion());
+
+	//      BDISB1_Archival_Summary_Repo.save(existing);
+
+	//   } catch (Exception e) {
+	//       throw new RuntimeException("Error while updating report fields", e);
+	        //    }
+	//}
+
 	
-	public byte[] getM_BDISB1Excel(String filename, String reportId, String fromdate, String todate, String currency,
+
+
+	
+	public byte[] getBDISB1Excel(String filename, String reportId, String fromdate, String todate, String currency,
 			 String dtltype, String type, String version) throws Exception {
 logger.info("Service: Starting Excel generation process in memory.");
 logger.info("DownloadFile: reportId={}, filename={}", reportId, filename, type, version);
@@ -274,25 +681,25 @@ Date reportDate = dateformat.parse(todate);
 // ARCHIVAL check
 if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && !version.trim().isEmpty()) {
 logger.info("Service: Generating ARCHIVAL report for version {}", version);
-return getExcelM_BDISB1ARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
+return getExcelBDISB1ARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
 }
 // RESUB check
 else if ("RESUB".equalsIgnoreCase(type) && version != null && !version.trim().isEmpty()) {
 logger.info("Service: Generating RESUB report for version {}", version);
 
 
-List<M_BDISB1_Archival_Summary_Entity> T1Master =
-M_BDISB1_Archival_Summary_Repo.getdatabydateListarchival(reportDate, version);
+List<BDISB1_Archival_Summary_Entity> T1Master =
+BDISB1_Archival_Summary_Repo.getdatabydateListarchival(reportDate, version);
 
 // Generate Excel for RESUB
-return BRRS_M_BDISB1ResubExcel(filename, reportId, fromdate, todate, currency, dtltype, type, version);
+return BRRSBDISB1ResubExcel(filename, reportId, fromdate, todate, currency, dtltype, type, version);
 }
 
 
 
 
 // Default (LIVE) case
-List<M_BDISB1_Summary_Entity> dataList1 = M_BDISB1_Summary_Repo.getdatabydateList(reportDate);
+List<BDISB1_Summary_Entity> dataList1 = BDISB1_Summary_Repo.getdatabydateList(reportDate);
 
 String templateDir = env.getProperty("output.exportpathtemp");
 String templateFileName = filename;
@@ -355,7 +762,7 @@ int startRow = 4;
 if (!dataList1.isEmpty()) {
 for (int i = 0; i < dataList1.size(); i++) {
 
-M_BDISB1_Summary_Entity record = dataList1.get(i);
+BDISB1_Summary_Entity record = dataList1.get(i);
 System.out.println("rownumber=" + startRow + i);
 Row row = sheet.getRow(startRow + i);
 if (row == null) {
@@ -2294,13 +2701,13 @@ return out.toByteArray();
 }
 
 	
-	public byte[] getExcelM_BDISB1ARCHIVAL(String filename, String reportId, String fromdate,
+	public byte[] getExcelBDISB1ARCHIVAL(String filename, String reportId, String fromdate,
 			String todate,
 			String currency, String dtltype, String type, String version) throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.");
 		if ("ARCHIVAL".equals(type) && version != null) {
 		}
-			List<M_BDISB1_Archival_Summary_Entity> dataList1 = M_BDISB1_Archival_Summary_Repo
+			List<BDISB1_Archival_Summary_Entity> dataList1 = BDISB1_Archival_Summary_Repo
 					.getdatabydateListarchival(dateformat.parse(todate), version);
 		
 
@@ -2370,7 +2777,7 @@ return out.toByteArray();
 			if (!dataList1.isEmpty()) {
 				for (int i = 0; i < dataList1.size(); i++) {
 
-					M_BDISB1_Archival_Summary_Entity record1 = dataList1.get(i);
+					BDISB1_Archival_Summary_Entity record1 = dataList1.get(i);
 					System.out.println("rownumber=" + startRow + i);
 					Row row = sheet.getRow(startRow + i);
 					if (row == null) {
@@ -4306,134 +4713,537 @@ return out.toByteArray();
 	}
 	
 	
-/////////////////////////////////////////RESUBMISSION///////////////////////////////////////////////////////////////////	
+//////////////////////////////////////////RESUBMISSION///////////////////////////////////////////////////////////////////	
 /// Report Date | Report Version | Domain
 /// RESUB VIEW
-	public List<Object[]> getM_BDISB1Resub() {
-	    List<Object[]> resubList = new ArrayList<>();
+public List<Object[]> getBDISB1Resub() {
+List<Object[]> resubList = new ArrayList<>();
+try {
+List<BDISB1_Archival_Summary_Entity> latestArchivalList = BDISB1_Archival_Summary_Repo
+.getdatabydateListWithVersionAll();
 
-	    try {
-	        List<M_BDISB1_Archival_Summary_Entity> list =
-	                M_BDISB1_Archival_Summary_Repo.getdatabydateListWithVersion();
+if (latestArchivalList != null && !latestArchivalList.isEmpty()) {
+for (BDISB1_Archival_Summary_Entity entity : latestArchivalList) {
+Object[] row = new Object[] { entity.getReportDate(), entity.getReportVersion() };
+resubList.add(row);
+}
+System.out.println("Fetched " + resubList.size() + " record(s)");
+} else {
+System.out.println("No archival data found.");
+}
+} catch (Exception e) {
+System.err.println("Error fetching BDISB1 Resub data: " + e.getMessage());
+e.printStackTrace();
+}
+return resubList;
+}
 
-	        if (list == null || list.isEmpty()) {
-	            System.out.println("No archival data found.");
-	            return resubList;
-	        }
+// Archival View
+public List<Object[]> getBDISB1Archival() {
+List<Object[]> archivalList = new ArrayList<>();
 
-	        list.forEach(entity ->
-	                resubList.add(new Object[]{
-	                        entity.getReportDate(),
-	                        entity.getReportVersion()
-	                })
-	        );
+try {
+List<BDISB1_Archival_Summary_Entity> repoData = BDISB1_Archival_Summary_Repo
+.getdatabydateListWithVersionAll();
 
-	        System.out.println("Fetched " + resubList.size() + " record(s)");
+if (repoData != null && !repoData.isEmpty()) {
+for (BDISB1_Archival_Summary_Entity entity : repoData) {
+Object[] row = new Object[] { entity.getReportDate(), entity.getReportVersion() };
+archivalList.add(row);
+}
 
-	    } catch (Exception e) {
-	        System.err.println("Error fetching M_BDISB1 Resub data: " + e.getMessage());
-	        e.printStackTrace();
-	    }
-	    return resubList;
-	}
+System.out.println("Fetched " + archivalList.size() + " archival records");
+BDISB1_Archival_Summary_Entity first = repoData.get(0);
+System.out.println("Latest archival version: " + first.getReportVersion());
+} else {
+System.out.println("No archival data found.");
+}
+
+} catch (Exception e) {
+System.err.println("Error fetching BDISB1 Archival data: " + e.getMessage());
+e.printStackTrace();
+}
+
+return archivalList;
+}
+
+@Transactional
+public void updateReportReSub(BDISB1_Summary_Entity updatedEntity) {
+
+System.out.println("Came to Resub Service");
+
+Date reportDate = updatedEntity.getReportDate();
+System.out.println("Report Date: " + reportDate);
+
+try {
+/* =========================================================
+* 1️⃣ FETCH LATEST ARCHIVAL VERSION
+* ========================================================= */
+Optional<BDISB1_Archival_Summary_Entity> latestArchivalOpt =
+BDISB1_Archival_Summary_Repo
+.getLatestArchivalVersionByDate(reportDate);
+
+int newVersion = 1;
+if (latestArchivalOpt.isPresent()) {
+try {
+newVersion =
+Integer.parseInt(latestArchivalOpt.get().getReportVersion()) + 1;
+} catch (NumberFormatException e) {
+newVersion = 1;
+}
+}
+
+boolean exists =
+BDISB1_Archival_Summary_Repo
+.findByReportDateAndReportVersion(
+reportDate, String.valueOf(newVersion))
+.isPresent();
+
+if (exists) {
+throw new RuntimeException(
+"Version " + newVersion + " already exists for report date " + reportDate);
+}
+
+/* =========================================================
+* 2️⃣ CREATE NEW ARCHIVAL ENTITY (BASE COPY)
+* ========================================================= */
+BDISB1_Archival_Summary_Entity archivalEntity =
+new BDISB1_Archival_Summary_Entity();
+
+if (latestArchivalOpt.isPresent()) {
+BeanUtils.copyProperties(latestArchivalOpt.get(), archivalEntity);
+}
+
+/* =========================================================
+* 3️⃣ READ RAW REQUEST PARAMETERS (CRITICAL FIX)
+* ========================================================= */
+HttpServletRequest request =
+((ServletRequestAttributes) RequestContextHolder
+.getRequestAttributes()).getRequest();
+
+Map<String, String[]> parameterMap = request.getParameterMap();
+
+for (Map.Entry<String, String[]> entry : parameterMap.entrySet()) {
+
+String key = entry.getKey();              // R6_C11_ACCT_NUM
+String value = entry.getValue()[0];
+
+// Ignore non-field params
+if ("asondate".equalsIgnoreCase(key) || "type".equalsIgnoreCase(key)) {
+continue;
+}
+
+// Normalize: R6_C11_ACCT_NUM → R6_ACCT_NUM
+String normalizedKey = key.replaceFirst("_C\\d+_", "_");
+
+/* =====================================================
+* 4️⃣ APPLY VALUES (EXPLICIT, SAFE, NO REFLECTION)
+* ===================================================== */
+//======================= R5 – R11 =======================
+
+if ("R5_RECORD_NUMBER".equals(normalizedKey)) {
+ archivalEntity.setR5_RECORD_NUMBER(parseBigDecimal(value));
+} else if ("R5_TITLE".equals(normalizedKey)) {
+ archivalEntity.setR5_TITLE(value);
+} else if ("R5_FIRST_NAME".equals(normalizedKey)) {
+ archivalEntity.setR5_FIRST_NAME(value);
+} else if ("R5_MIDDLE_NAME".equals(normalizedKey)) {
+ archivalEntity.setR5_MIDDLE_NAME(value);
+} else if ("R5_SURNAME".equals(normalizedKey)) {
+ archivalEntity.setR5_SURNAME(value);
+} else if ("R5_PREVIOUS_NAME".equals(normalizedKey)) {
+ archivalEntity.setR5_PREVIOUS_NAME(value);
+} else if ("R5_GENDER".equals(normalizedKey)) {
+ archivalEntity.setR5_GENDER(value);
+} else if ("R5_IDENTIFICATION_TYPE".equals(normalizedKey)) {
+ archivalEntity.setR5_IDENTIFICATION_TYPE(value);
+} else if ("R5_PASSPORT_NUMBER".equals(normalizedKey)) {
+ archivalEntity.setR5_PASSPORT_NUMBER(value);
+} else if ("R5_HOME_ADDRESS".equals(normalizedKey)) {
+ archivalEntity.setR5_HOME_ADDRESS(value);
+} else if ("R5_POSTAL_ADDRESS".equals(normalizedKey)) {
+ archivalEntity.setR5_POSTAL_ADDRESS(value);
+} else if ("R5_RESIDENCE".equals(normalizedKey)) {
+ archivalEntity.setR5_RESIDENCE(value);
+} else if ("R5_EMAIL".equals(normalizedKey)) {
+ archivalEntity.setR5_EMAIL(value);
+} else if ("R5_LANDLINE".equals(normalizedKey)) {
+ archivalEntity.setR5_LANDLINE(value);
+} else if ("R5_MOBILE_PHONE_NUMBER".equals(normalizedKey)) {
+ archivalEntity.setR5_MOBILE_PHONE_NUMBER(value);
+} else if ("R5_MOBILE_MONEY_NUMBER".equals(normalizedKey)) {
+ archivalEntity.setR5_MOBILE_MONEY_NUMBER(value);
+} else if ("R5_PRODUCT_TYPE".equals(normalizedKey)) {
+ archivalEntity.setR5_PRODUCT_TYPE(value);
+} else if ("R5_ACCOUNT_BY_OWNERSHIP".equals(normalizedKey)) {
+ archivalEntity.setR5_ACCOUNT_BY_OWNERSHIP(value);
+} else if ("R5_ACCOUNT_NUMBER".equals(normalizedKey)) {
+ archivalEntity.setR5_ACCOUNT_NUMBER(value);
+} else if ("R5_ACCOUNT_HOLDER_INDICATOR".equals(normalizedKey)) {
+ archivalEntity.setR5_ACCOUNT_HOLDER_INDICATOR(value);
+} else if ("R5_STATUS_OF_ACCOUNT".equals(normalizedKey)) {
+ archivalEntity.setR5_STATUS_OF_ACCOUNT(value);
+} else if ("R5_NOT_FIT_FOR_STP".equals(normalizedKey)) {
+ archivalEntity.setR5_NOT_FIT_FOR_STP(value);
+} else if ("R5_BRANCH_CODE_AND_NAME".equals(normalizedKey)) {
+ archivalEntity.setR5_BRANCH_CODE_AND_NAME(value);
+} else if ("R5_ACCOUNT_BALANCE_IN_PULA".equals(normalizedKey)) {
+ archivalEntity.setR5_ACCOUNT_BALANCE_IN_PULA(parseBigDecimal(value));
+} else if ("R5_CURRENCY_OF_ACCOUNT".equals(normalizedKey)) {
+ archivalEntity.setR5_CURRENCY_OF_ACCOUNT(value);
+} else if ("R5_EXCHANGE_RATE".equals(normalizedKey)) {
+ archivalEntity.setR5_EXCHANGE_RATE(parseBigDecimal(value));
+
+} else if ("R6_RECORD_NUMBER".equals(normalizedKey)) {
+ archivalEntity.setR6_RECORD_NUMBER(parseBigDecimal(value));
+} else if ("R6_TITLE".equals(normalizedKey)) {
+ archivalEntity.setR6_TITLE(value);
+} else if ("R6_FIRST_NAME".equals(normalizedKey)) {
+ archivalEntity.setR6_FIRST_NAME(value);
+} else if ("R6_MIDDLE_NAME".equals(normalizedKey)) {
+ archivalEntity.setR6_MIDDLE_NAME(value);
+} else if ("R6_SURNAME".equals(normalizedKey)) {
+ archivalEntity.setR6_SURNAME(value);
+} else if ("R6_PREVIOUS_NAME".equals(normalizedKey)) {
+ archivalEntity.setR6_PREVIOUS_NAME(value);
+} else if ("R6_GENDER".equals(normalizedKey)) {
+ archivalEntity.setR6_GENDER(value);
+} else if ("R6_IDENTIFICATION_TYPE".equals(normalizedKey)) {
+ archivalEntity.setR6_IDENTIFICATION_TYPE(value);
+} else if ("R6_PASSPORT_NUMBER".equals(normalizedKey)) {
+ archivalEntity.setR6_PASSPORT_NUMBER(value);
+} else if ("R6_HOME_ADDRESS".equals(normalizedKey)) {
+ archivalEntity.setR6_HOME_ADDRESS(value);
+} else if ("R6_POSTAL_ADDRESS".equals(normalizedKey)) {
+ archivalEntity.setR6_POSTAL_ADDRESS(value);
+} else if ("R6_RESIDENCE".equals(normalizedKey)) {
+ archivalEntity.setR6_RESIDENCE(value);
+} else if ("R6_EMAIL".equals(normalizedKey)) {
+ archivalEntity.setR6_EMAIL(value);
+} else if ("R6_LANDLINE".equals(normalizedKey)) {
+ archivalEntity.setR6_LANDLINE(value);
+} else if ("R6_MOBILE_PHONE_NUMBER".equals(normalizedKey)) {
+ archivalEntity.setR6_MOBILE_PHONE_NUMBER(value);
+} else if ("R6_MOBILE_MONEY_NUMBER".equals(normalizedKey)) {
+ archivalEntity.setR6_MOBILE_MONEY_NUMBER(value);
+} else if ("R6_PRODUCT_TYPE".equals(normalizedKey)) {
+ archivalEntity.setR6_PRODUCT_TYPE(value);
+} else if ("R6_ACCOUNT_BY_OWNERSHIP".equals(normalizedKey)) {
+ archivalEntity.setR6_ACCOUNT_BY_OWNERSHIP(value);
+} else if ("R6_ACCOUNT_NUMBER".equals(normalizedKey)) {
+ archivalEntity.setR6_ACCOUNT_NUMBER(value);
+} else if ("R6_ACCOUNT_HOLDER_INDICATOR".equals(normalizedKey)) {
+ archivalEntity.setR6_ACCOUNT_HOLDER_INDICATOR(value);
+} else if ("R6_STATUS_OF_ACCOUNT".equals(normalizedKey)) {
+ archivalEntity.setR6_STATUS_OF_ACCOUNT(value);
+} else if ("R6_NOT_FIT_FOR_STP".equals(normalizedKey)) {
+ archivalEntity.setR6_NOT_FIT_FOR_STP(value);
+} else if ("R6_BRANCH_CODE_AND_NAME".equals(normalizedKey)) {
+ archivalEntity.setR6_BRANCH_CODE_AND_NAME(value);
+} else if ("R6_ACCOUNT_BALANCE_IN_PULA".equals(normalizedKey)) {
+ archivalEntity.setR6_ACCOUNT_BALANCE_IN_PULA(parseBigDecimal(value));
+} else if ("R6_CURRENCY_OF_ACCOUNT".equals(normalizedKey)) {
+ archivalEntity.setR6_CURRENCY_OF_ACCOUNT(value);
+} else if ("R6_EXCHANGE_RATE".equals(normalizedKey)) {
+ archivalEntity.setR6_EXCHANGE_RATE(parseBigDecimal(value));
+
+} else if ("R7_RECORD_NUMBER".equals(normalizedKey)) {
+ archivalEntity.setR7_RECORD_NUMBER(parseBigDecimal(value));
+} else if ("R7_TITLE".equals(normalizedKey)) {
+ archivalEntity.setR7_TITLE(value);
+} else if ("R7_FIRST_NAME".equals(normalizedKey)) {
+ archivalEntity.setR7_FIRST_NAME(value);
+} else if ("R7_MIDDLE_NAME".equals(normalizedKey)) {
+ archivalEntity.setR7_MIDDLE_NAME(value);
+} else if ("R7_SURNAME".equals(normalizedKey)) {
+ archivalEntity.setR7_SURNAME(value);
+} else if ("R7_PREVIOUS_NAME".equals(normalizedKey)) {
+ archivalEntity.setR7_PREVIOUS_NAME(value);
+} else if ("R7_GENDER".equals(normalizedKey)) {
+ archivalEntity.setR7_GENDER(value);
+} else if ("R7_IDENTIFICATION_TYPE".equals(normalizedKey)) {
+ archivalEntity.setR7_IDENTIFICATION_TYPE(value);
+} else if ("R7_PASSPORT_NUMBER".equals(normalizedKey)) {
+ archivalEntity.setR7_PASSPORT_NUMBER(value);
+} else if ("R7_HOME_ADDRESS".equals(normalizedKey)) {
+ archivalEntity.setR7_HOME_ADDRESS(value);
+} else if ("R7_POSTAL_ADDRESS".equals(normalizedKey)) {
+ archivalEntity.setR7_POSTAL_ADDRESS(value);
+} else if ("R7_RESIDENCE".equals(normalizedKey)) {
+ archivalEntity.setR7_RESIDENCE(value);
+} else if ("R7_EMAIL".equals(normalizedKey)) {
+ archivalEntity.setR7_EMAIL(value);
+} else if ("R7_LANDLINE".equals(normalizedKey)) {
+ archivalEntity.setR7_LANDLINE(value);
+} else if ("R7_MOBILE_PHONE_NUMBER".equals(normalizedKey)) {
+ archivalEntity.setR7_MOBILE_PHONE_NUMBER(value);
+} else if ("R7_MOBILE_MONEY_NUMBER".equals(normalizedKey)) {
+ archivalEntity.setR7_MOBILE_MONEY_NUMBER(value);
+} else if ("R7_PRODUCT_TYPE".equals(normalizedKey)) {
+ archivalEntity.setR7_PRODUCT_TYPE(value);
+} else if ("R7_ACCOUNT_BY_OWNERSHIP".equals(normalizedKey)) {
+ archivalEntity.setR7_ACCOUNT_BY_OWNERSHIP(value);
+} else if ("R7_ACCOUNT_NUMBER".equals(normalizedKey)) {
+ archivalEntity.setR7_ACCOUNT_NUMBER(value);
+} else if ("R7_ACCOUNT_HOLDER_INDICATOR".equals(normalizedKey)) {
+ archivalEntity.setR7_ACCOUNT_HOLDER_INDICATOR(value);
+} else if ("R7_STATUS_OF_ACCOUNT".equals(normalizedKey)) {
+ archivalEntity.setR7_STATUS_OF_ACCOUNT(value);
+} else if ("R7_NOT_FIT_FOR_STP".equals(normalizedKey)) {
+ archivalEntity.setR7_NOT_FIT_FOR_STP(value);
+} else if ("R7_BRANCH_CODE_AND_NAME".equals(normalizedKey)) {
+ archivalEntity.setR7_BRANCH_CODE_AND_NAME(value);
+} else if ("R7_ACCOUNT_BALANCE_IN_PULA".equals(normalizedKey)) {
+ archivalEntity.setR7_ACCOUNT_BALANCE_IN_PULA(parseBigDecimal(value));
+} else if ("R7_CURRENCY_OF_ACCOUNT".equals(normalizedKey)) {
+ archivalEntity.setR7_CURRENCY_OF_ACCOUNT(value);
+} else if ("R7_EXCHANGE_RATE".equals(normalizedKey)) {
+ archivalEntity.setR7_EXCHANGE_RATE(parseBigDecimal(value));
 
 
+} else if ("R8_RECORD_NUMBER".equals(normalizedKey)) {
+    archivalEntity.setR8_RECORD_NUMBER(parseBigDecimal(value));
+} else if ("R8_TITLE".equals(normalizedKey)) {
+    archivalEntity.setR8_TITLE(value);
+} else if ("R8_FIRST_NAME".equals(normalizedKey)) {
+    archivalEntity.setR8_FIRST_NAME(value);
+} else if ("R8_MIDDLE_NAME".equals(normalizedKey)) {
+    archivalEntity.setR8_MIDDLE_NAME(value);
+} else if ("R8_SURNAME".equals(normalizedKey)) {
+    archivalEntity.setR8_SURNAME(value);
+} else if ("R8_PREVIOUS_NAME".equals(normalizedKey)) {
+    archivalEntity.setR8_PREVIOUS_NAME(value);
+} else if ("R8_GENDER".equals(normalizedKey)) {
+    archivalEntity.setR8_GENDER(value);
+} else if ("R8_IDENTIFICATION_TYPE".equals(normalizedKey)) {
+    archivalEntity.setR8_IDENTIFICATION_TYPE(value);
+} else if ("R8_PASSPORT_NUMBER".equals(normalizedKey)) {
+    archivalEntity.setR8_PASSPORT_NUMBER(value);
+} else if ("R8_HOME_ADDRESS".equals(normalizedKey)) {
+    archivalEntity.setR8_HOME_ADDRESS(value);
+} else if ("R8_POSTAL_ADDRESS".equals(normalizedKey)) {
+    archivalEntity.setR8_POSTAL_ADDRESS(value);
+} else if ("R8_RESIDENCE".equals(normalizedKey)) {
+    archivalEntity.setR8_RESIDENCE(value);
+} else if ("R8_EMAIL".equals(normalizedKey)) {
+    archivalEntity.setR8_EMAIL(value);
+} else if ("R8_LANDLINE".equals(normalizedKey)) {
+    archivalEntity.setR8_LANDLINE(value);
+} else if ("R8_MOBILE_PHONE_NUMBER".equals(normalizedKey)) {
+    archivalEntity.setR8_MOBILE_PHONE_NUMBER(value);
+} else if ("R8_MOBILE_MONEY_NUMBER".equals(normalizedKey)) {
+    archivalEntity.setR8_MOBILE_MONEY_NUMBER(value);
+} else if ("R8_PRODUCT_TYPE".equals(normalizedKey)) {
+    archivalEntity.setR8_PRODUCT_TYPE(value);
+} else if ("R8_ACCOUNT_BY_OWNERSHIP".equals(normalizedKey)) {
+    archivalEntity.setR8_ACCOUNT_BY_OWNERSHIP(value);
+} else if ("R8_ACCOUNT_NUMBER".equals(normalizedKey)) {
+    archivalEntity.setR8_ACCOUNT_NUMBER(value);
+} else if ("R8_ACCOUNT_HOLDER_INDICATOR".equals(normalizedKey)) {
+    archivalEntity.setR8_ACCOUNT_HOLDER_INDICATOR(value);
+} else if ("R8_STATUS_OF_ACCOUNT".equals(normalizedKey)) {
+    archivalEntity.setR8_STATUS_OF_ACCOUNT(value);
+} else if ("R8_NOT_FIT_FOR_STP".equals(normalizedKey)) {
+    archivalEntity.setR8_NOT_FIT_FOR_STP(value);
+} else if ("R8_BRANCH_CODE_AND_NAME".equals(normalizedKey)) {
+    archivalEntity.setR8_BRANCH_CODE_AND_NAME(value);
+} else if ("R8_ACCOUNT_BALANCE_IN_PULA".equals(normalizedKey)) {
+    archivalEntity.setR8_ACCOUNT_BALANCE_IN_PULA(parseBigDecimal(value));
+} else if ("R8_CURRENCY_OF_ACCOUNT".equals(normalizedKey)) {
+    archivalEntity.setR8_CURRENCY_OF_ACCOUNT(value);
+} else if ("R8_EXCHANGE_RATE".equals(normalizedKey)) {
+    archivalEntity.setR8_EXCHANGE_RATE(parseBigDecimal(value));
 
-//Archival View
-	public List<Object[]> getM_BDISB1Archival() {
-	    List<Object[]> archivalList = new ArrayList<>();
+} else if ("R9_RECORD_NUMBER".equals(normalizedKey)) {
+    archivalEntity.setR9_RECORD_NUMBER(parseBigDecimal(value));
+} else if ("R9_TITLE".equals(normalizedKey)) {
+    archivalEntity.setR9_TITLE(value);
+} else if ("R9_FIRST_NAME".equals(normalizedKey)) {
+    archivalEntity.setR9_FIRST_NAME(value);
+} else if ("R9_MIDDLE_NAME".equals(normalizedKey)) {
+    archivalEntity.setR9_MIDDLE_NAME(value);
+} else if ("R9_SURNAME".equals(normalizedKey)) {
+    archivalEntity.setR9_SURNAME(value);
+} else if ("R9_PREVIOUS_NAME".equals(normalizedKey)) {
+    archivalEntity.setR9_PREVIOUS_NAME(value);
+} else if ("R9_GENDER".equals(normalizedKey)) {
+    archivalEntity.setR9_GENDER(value);
+} else if ("R9_IDENTIFICATION_TYPE".equals(normalizedKey)) {
+    archivalEntity.setR9_IDENTIFICATION_TYPE(value);
+} else if ("R9_PASSPORT_NUMBER".equals(normalizedKey)) {
+    archivalEntity.setR9_PASSPORT_NUMBER(value);
+} else if ("R9_HOME_ADDRESS".equals(normalizedKey)) {
+    archivalEntity.setR9_HOME_ADDRESS(value);
+} else if ("R9_POSTAL_ADDRESS".equals(normalizedKey)) {
+    archivalEntity.setR9_POSTAL_ADDRESS(value);
+} else if ("R9_RESIDENCE".equals(normalizedKey)) {
+    archivalEntity.setR9_RESIDENCE(value);
+} else if ("R9_EMAIL".equals(normalizedKey)) {
+    archivalEntity.setR9_EMAIL(value);
+} else if ("R9_LANDLINE".equals(normalizedKey)) {
+    archivalEntity.setR9_LANDLINE(value);
+} else if ("R9_MOBILE_PHONE_NUMBER".equals(normalizedKey)) {
+    archivalEntity.setR9_MOBILE_PHONE_NUMBER(value);
+} else if ("R9_MOBILE_MONEY_NUMBER".equals(normalizedKey)) {
+    archivalEntity.setR9_MOBILE_MONEY_NUMBER(value);
+} else if ("R9_PRODUCT_TYPE".equals(normalizedKey)) {
+    archivalEntity.setR9_PRODUCT_TYPE(value);
+} else if ("R9_ACCOUNT_BY_OWNERSHIP".equals(normalizedKey)) {
+    archivalEntity.setR9_ACCOUNT_BY_OWNERSHIP(value);
+} else if ("R9_ACCOUNT_NUMBER".equals(normalizedKey)) {
+    archivalEntity.setR9_ACCOUNT_NUMBER(value);
+} else if ("R9_ACCOUNT_HOLDER_INDICATOR".equals(normalizedKey)) {
+    archivalEntity.setR9_ACCOUNT_HOLDER_INDICATOR(value);
+} else if ("R9_STATUS_OF_ACCOUNT".equals(normalizedKey)) {
+    archivalEntity.setR9_STATUS_OF_ACCOUNT(value);
+} else if ("R9_NOT_FIT_FOR_STP".equals(normalizedKey)) {
+    archivalEntity.setR9_NOT_FIT_FOR_STP(value);
+} else if ("R9_BRANCH_CODE_AND_NAME".equals(normalizedKey)) {
+    archivalEntity.setR9_BRANCH_CODE_AND_NAME(value);
+} else if ("R9_ACCOUNT_BALANCE_IN_PULA".equals(normalizedKey)) {
+    archivalEntity.setR9_ACCOUNT_BALANCE_IN_PULA(parseBigDecimal(value));
+} else if ("R9_CURRENCY_OF_ACCOUNT".equals(normalizedKey)) {
+    archivalEntity.setR9_CURRENCY_OF_ACCOUNT(value);
+} else if ("R9_EXCHANGE_RATE".equals(normalizedKey)) {
+    archivalEntity.setR9_EXCHANGE_RATE(parseBigDecimal(value));
 
-	    try {
-	        List<M_BDISB1_Archival_Summary_Entity> repoData =
-	                M_BDISB1_Archival_Summary_Repo.getdatabydateListWithVersion();
+} else if ("R10_RECORD_NUMBER".equals(normalizedKey)) {
+    archivalEntity.setR10_RECORD_NUMBER(parseBigDecimal(value));
+} else if ("R10_TITLE".equals(normalizedKey)) {
+    archivalEntity.setR10_TITLE(value);
+} else if ("R10_FIRST_NAME".equals(normalizedKey)) {
+    archivalEntity.setR10_FIRST_NAME(value);
+} else if ("R10_MIDDLE_NAME".equals(normalizedKey)) {
+    archivalEntity.setR10_MIDDLE_NAME(value);
+} else if ("R10_SURNAME".equals(normalizedKey)) {
+    archivalEntity.setR10_SURNAME(value);
+} else if ("R10_PREVIOUS_NAME".equals(normalizedKey)) {
+    archivalEntity.setR10_PREVIOUS_NAME(value);
+} else if ("R10_GENDER".equals(normalizedKey)) {
+    archivalEntity.setR10_GENDER(value);
+} else if ("R10_IDENTIFICATION_TYPE".equals(normalizedKey)) {
+    archivalEntity.setR10_IDENTIFICATION_TYPE(value);
+} else if ("R10_PASSPORT_NUMBER".equals(normalizedKey)) {
+    archivalEntity.setR10_PASSPORT_NUMBER(value);
+} else if ("R10_HOME_ADDRESS".equals(normalizedKey)) {
+    archivalEntity.setR10_HOME_ADDRESS(value);
+} else if ("R10_POSTAL_ADDRESS".equals(normalizedKey)) {
+    archivalEntity.setR10_POSTAL_ADDRESS(value);
+} else if ("R10_RESIDENCE".equals(normalizedKey)) {
+    archivalEntity.setR10_RESIDENCE(value);
+} else if ("R10_EMAIL".equals(normalizedKey)) {
+    archivalEntity.setR10_EMAIL(value);
+} else if ("R10_LANDLINE".equals(normalizedKey)) {
+    archivalEntity.setR10_LANDLINE(value);
+} else if ("R10_MOBILE_PHONE_NUMBER".equals(normalizedKey)) {
+    archivalEntity.setR10_MOBILE_PHONE_NUMBER(value);
+} else if ("R10_MOBILE_MONEY_NUMBER".equals(normalizedKey)) {
+    archivalEntity.setR10_MOBILE_MONEY_NUMBER(value);
+} else if ("R10_PRODUCT_TYPE".equals(normalizedKey)) {
+    archivalEntity.setR10_PRODUCT_TYPE(value);
+} else if ("R10_ACCOUNT_BY_OWNERSHIP".equals(normalizedKey)) {
+    archivalEntity.setR10_ACCOUNT_BY_OWNERSHIP(value);
+} else if ("R10_ACCOUNT_NUMBER".equals(normalizedKey)) {
+    archivalEntity.setR10_ACCOUNT_NUMBER(value);
+} else if ("R10_ACCOUNT_HOLDER_INDICATOR".equals(normalizedKey)) {
+    archivalEntity.setR10_ACCOUNT_HOLDER_INDICATOR(value);
+} else if ("R10_STATUS_OF_ACCOUNT".equals(normalizedKey)) {
+    archivalEntity.setR10_STATUS_OF_ACCOUNT(value);
+} else if ("R10_NOT_FIT_FOR_STP".equals(normalizedKey)) {
+    archivalEntity.setR10_NOT_FIT_FOR_STP(value);
+} else if ("R10_BRANCH_CODE_AND_NAME".equals(normalizedKey)) {
+    archivalEntity.setR10_BRANCH_CODE_AND_NAME(value);
+} else if ("R10_ACCOUNT_BALANCE_IN_PULA".equals(normalizedKey)) {
+    archivalEntity.setR10_ACCOUNT_BALANCE_IN_PULA(parseBigDecimal(value));
+} else if ("R10_CURRENCY_OF_ACCOUNT".equals(normalizedKey)) {
+    archivalEntity.setR10_CURRENCY_OF_ACCOUNT(value);
+} else if ("R10_EXCHANGE_RATE".equals(normalizedKey)) {
+    archivalEntity.setR10_EXCHANGE_RATE(parseBigDecimal(value));
 
-	        if (repoData == null || repoData.isEmpty()) {
-	            System.out.println("No archival data found.");
-	            return archivalList;
-	        }
+} else if ("R11_RECORD_NUMBER".equals(normalizedKey)) {
+    archivalEntity.setR11_RECORD_NUMBER(parseBigDecimal(value));
+} else if ("R11_TITLE".equals(normalizedKey)) {
+    archivalEntity.setR11_TITLE(value);
+} else if ("R11_FIRST_NAME".equals(normalizedKey)) {
+    archivalEntity.setR11_FIRST_NAME(value);
+} else if ("R11_MIDDLE_NAME".equals(normalizedKey)) {
+    archivalEntity.setR11_MIDDLE_NAME(value);
+} else if ("R11_SURNAME".equals(normalizedKey)) {
+    archivalEntity.setR11_SURNAME(value);
+} else if ("R11_PREVIOUS_NAME".equals(normalizedKey)) {
+    archivalEntity.setR11_PREVIOUS_NAME(value);
+} else if ("R11_GENDER".equals(normalizedKey)) {
+    archivalEntity.setR11_GENDER(value);
+} else if ("R11_IDENTIFICATION_TYPE".equals(normalizedKey)) {
+    archivalEntity.setR11_IDENTIFICATION_TYPE(value);
+} else if ("R11_PASSPORT_NUMBER".equals(normalizedKey)) {
+    archivalEntity.setR11_PASSPORT_NUMBER(value);
+} else if ("R11_HOME_ADDRESS".equals(normalizedKey)) {
+    archivalEntity.setR11_HOME_ADDRESS(value);
+} else if ("R11_POSTAL_ADDRESS".equals(normalizedKey)) {
+    archivalEntity.setR11_POSTAL_ADDRESS(value);
+} else if ("R11_RESIDENCE".equals(normalizedKey)) {
+    archivalEntity.setR11_RESIDENCE(value);
+} else if ("R11_EMAIL".equals(normalizedKey)) {
+    archivalEntity.setR11_EMAIL(value);
+} else if ("R11_LANDLINE".equals(normalizedKey)) {
+    archivalEntity.setR11_LANDLINE(value);
+} else if ("R11_MOBILE_PHONE_NUMBER".equals(normalizedKey)) {
+    archivalEntity.setR11_MOBILE_PHONE_NUMBER(value);
+} else if ("R11_MOBILE_MONEY_NUMBER".equals(normalizedKey)) {
+    archivalEntity.setR11_MOBILE_MONEY_NUMBER(value);
+} else if ("R11_PRODUCT_TYPE".equals(normalizedKey)) {
+    archivalEntity.setR11_PRODUCT_TYPE(value);
+} else if ("R11_ACCOUNT_BY_OWNERSHIP".equals(normalizedKey)) {
+    archivalEntity.setR11_ACCOUNT_BY_OWNERSHIP(value);
+} else if ("R11_ACCOUNT_NUMBER".equals(normalizedKey)) {
+    archivalEntity.setR11_ACCOUNT_NUMBER(value);
+} else if ("R11_ACCOUNT_HOLDER_INDICATOR".equals(normalizedKey)) {
+    archivalEntity.setR11_ACCOUNT_HOLDER_INDICATOR(value);
+} else if ("R11_STATUS_OF_ACCOUNT".equals(normalizedKey)) {
+    archivalEntity.setR11_STATUS_OF_ACCOUNT(value);
+} else if ("R11_NOT_FIT_FOR_STP".equals(normalizedKey)) {
+    archivalEntity.setR11_NOT_FIT_FOR_STP(value);
+} else if ("R11_BRANCH_CODE_AND_NAME".equals(normalizedKey)) {
+    archivalEntity.setR11_BRANCH_CODE_AND_NAME(value);
+} else if ("R11_ACCOUNT_BALANCE_IN_PULA".equals(normalizedKey)) {
+    archivalEntity.setR11_ACCOUNT_BALANCE_IN_PULA(parseBigDecimal(value));
+} else if ("R11_CURRENCY_OF_ACCOUNT".equals(normalizedKey)) {
+    archivalEntity.setR11_CURRENCY_OF_ACCOUNT(value);
+} else if ("R11_EXCHANGE_RATE".equals(normalizedKey)) {
+    archivalEntity.setR11_EXCHANGE_RATE(parseBigDecimal(value));
+}
+}
 
-	        repoData.forEach(entity ->
-	                archivalList.add(new Object[]{
-	                        entity.getReportDate(),
-	                        entity.getReportVersion()
-	                })
-	        );
+/* =========================================================
+* 5️⃣ SET RESUB METADATA
+* ========================================================= */
+archivalEntity.setReportDate(reportDate);
+archivalEntity.setReportVersion(String.valueOf(newVersion));
+archivalEntity.setReportResubDate(new Date());
 
-	        System.out.println("Fetched " + archivalList.size() + " archival records");
+/* =========================================================
+* 6️⃣ SAVE NEW ARCHIVAL VERSION
+* ========================================================= */BDISB1_Archival_Summary_Repo.save(archivalEntity);
 
-	        M_BDISB1_Archival_Summary_Entity latest = repoData.get(0);
-	        System.out.println("Latest archival version: " + latest.getReportVersion());
+System.out.println("✅ RESUB saved successfully. Version = " + newVersion);
 
-	    } catch (Exception e) {
-	        System.err.println("Error fetching M_BDISB1 Archival data: " + e.getMessage());
-	        e.printStackTrace();
-	    }
+} catch (Exception e) {
+e.printStackTrace();
+throw new RuntimeException(
+"Error while creating archival resubmission record", e);
+}
+}
 
-	    return archivalList;
-	}
-
-
-
-//Resubmit the values , latest version and Resub Date
-	public void updateReportReSub(M_BDISB1_Summary_Entity updatedEntity) {
-	    System.out.println("Came to Resub Service");
-	    System.out.println("Report Date: " + updatedEntity.getReportDate());
-
-	    Date reportDate = updatedEntity.getReportDate();
-
-	    try {
-	        // 1) Fetch latest version for this date
-	        Optional<M_BDISB1_Archival_Summary_Entity> latestOpt =
-	                M_BDISB1_Archival_Summary_Repo.getLatestArchivalVersionByDate(reportDate);
-
-	        int newVersion = latestOpt.map(a -> {
-	            try {
-	                return Integer.parseInt(a.getReportVersion()) + 1;
-	            } catch (NumberFormatException e) {
-	                System.err.println("Invalid version format. Resetting to version 1.");
-	                return 1;
-	            }
-	        }).orElse(1);
-
-	        System.out.println("Computed Next Version: " + newVersion);
-
-	        // 2) Prevent duplicate version
-	        boolean exists = M_BDISB1_Archival_Summary_Repo
-	                .findByReportDateAndReportVersion(reportDate, String.valueOf(newVersion))
-	                .isPresent();
-
-	        if (exists) {
-	            throw new RuntimeException(
-	                    "Version " + newVersion + " already exists for report date " + reportDate
-	            );
-	        }
-
-	        // 3) Copy Summary → Archival object
-	        M_BDISB1_Archival_Summary_Entity archivalEntity =
-	                new M_BDISB1_Archival_Summary_Entity();
-
-	        BeanUtils.copyProperties(updatedEntity, archivalEntity);
-
-	        archivalEntity.setReportDate(reportDate);
-	        archivalEntity.setReportVersion(String.valueOf(newVersion));
-	        archivalEntity.setReportResubDate(new Date());
-
-	        System.out.println("Saving new archival version: " + newVersion);
-
-	        // 4) Save to DB
-	        M_BDISB1_Archival_Summary_Repo.save(archivalEntity);
-
-	        System.out.println("Saved archival version successfully: " + newVersion);
-
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        throw new RuntimeException("Error while creating archival resubmission record", e);
-	    }
-	}
+private BigDecimal parseBigDecimal(String value) {
+return (value == null || value.trim().isEmpty())
+? BigDecimal.ZERO
+: new BigDecimal(value.replace(",", ""));
+}
 
 
 /// Downloaded for Archival & Resub
-public byte[] BRRS_M_BDISB1ResubExcel(String filename, String reportId, String fromdate,
+public byte[] BRRSBDISB1ResubExcel(String filename, String reportId, String fromdate,
 String todate, String currency, String dtltype,
 String type, String version) throws Exception {
 
@@ -4443,8 +5253,8 @@ if (type.equals("RESUB") & version != null) {
 
 }
 
-List<M_BDISB1_Archival_Summary_Entity> dataList1 =
-M_BDISB1_Archival_Summary_Repo.getdatabydateListarchival(dateformat.parse(todate), version);
+List<BDISB1_Archival_Summary_Entity> dataList1 =
+BDISB1_Archival_Summary_Repo.getdatabydateListarchival(dateformat.parse(todate), version);
 
 if (dataList1.isEmpty()) {
 logger.warn("Service: No data found for M_BDISB1 report. Returning empty result.");
@@ -4511,7 +5321,7 @@ int startRow = 4;
 if (!dataList1.isEmpty()) {
 	for (int i = 0; i < dataList1.size(); i++) {
 
-		M_BDISB1_Archival_Summary_Entity record1 = dataList1.get(i);
+		BDISB1_Archival_Summary_Entity record1 = dataList1.get(i);
 		System.out.println("rownumber=" + startRow + i);
 		Row row = sheet.getRow(startRow + i);
 		if (row == null) {
