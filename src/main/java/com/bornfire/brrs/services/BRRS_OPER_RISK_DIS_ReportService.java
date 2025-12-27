@@ -335,12 +335,157 @@ public class BRRS_OPER_RISK_DIS_ReportService {
 
   
 					
-					
 
-					  
+					// R3
+					row = sheet.getRow(2);
+					Cell  cellC = row.getCell(2);
+					if (cellC == null) cellC = row.createCell(2);
+					cellC.setCellValue(record.getR3_amt() != null ? record.getR3_amt().doubleValue() : 0);
+
+					// R4
+					row = sheet.getRow(3);
+					  cellC = row.getCell(2);
+					if (cellC == null) cellC = row.createCell(2);
+					cellC.setCellValue(record.getR4_amt() != null ? record.getR4_amt().doubleValue() : 0);
 					 
+					// R9
+					row = sheet.getRow(8);
+					  cellC = row.getCell(2);
+					if (cellC == null) cellC = row.createCell(2);
+					cellC.setCellValue(record.getR9_amt() != null ? record.getR9_amt().doubleValue() : 0);
+					
+					// R10
+					row = sheet.getRow(9);
+					  cellC = row.getCell(2);
+					if (cellC == null) cellC = row.createCell(2);
+					cellC.setCellValue(record.getR10_amt() != null ? record.getR10_amt().doubleValue() : 0);
 					
 					
+					// R11
+					row = sheet.getRow(10);
+					  cellC = row.getCell(2);
+					if (cellC == null) cellC = row.createCell(2);
+					cellC.setCellValue(record.getR11_amt() != null ? record.getR11_amt().doubleValue() : 0);
+					
+					
+					// R12
+					row = sheet.getRow(11);
+					  cellC = row.getCell(2);
+					if (cellC == null) cellC = row.createCell(2);
+					cellC.setCellValue(record.getR12_amt() != null ? record.getR12_amt().doubleValue() : 0);
+					
+					
+					// R18 B
+					row = sheet.getRow(17);
+					Cell  cellB = row.getCell(1);
+					if (cellB == null) cellB = row.createCell(1);
+					cellB.setCellValue(record.getR18_unrestricted() != null ? record.getR18_unrestricted().doubleValue() : 0);
+
+
+
+					// R18 C
+					row = sheet.getRow(17);
+					  cellC = row.getCell(2);
+					if (cellC == null) cellC = row.createCell(2);
+					cellC.setCellValue(record.getR18_deferred() != null ? record.getR18_deferred().doubleValue() : 0);
+					
+					
+					// R19 B
+					row = sheet.getRow(18);
+				 cellB = row.getCell(1);
+					if (cellB == null) cellB = row.createCell(1);
+					cellB.setCellValue(record.getR19_unrestricted() != null ? record.getR19_unrestricted().doubleValue() : 0);
+
+					// R19 C
+					row = sheet.getRow(18);
+					 cellC = row.getCell(2);
+					if (cellC == null) cellC = row.createCell(2);
+					cellC.setCellValue(record.getR19_deferred() != null ? record.getR19_deferred().doubleValue() : 0);
+					
+					
+					
+					
+					// R20 B
+					row = sheet.getRow(19);
+					cellB = row.getCell(1);
+					if (cellB == null) cellB = row.createCell(1);
+					cellB.setCellValue(record.getR20_unrestricted() != null ? record.getR20_unrestricted().doubleValue() : 0);
+
+					// R20 C
+					row = sheet.getRow(19);
+					cellC = row.getCell(2);
+					if (cellC == null) cellC = row.createCell(2);
+					cellC.setCellValue(record.getR20_deferred() != null ? record.getR20_deferred().doubleValue() : 0);
+
+					
+					
+					// R21 B
+					row = sheet.getRow(20);
+					cellB = row.getCell(1);
+					if (cellB == null) cellB = row.createCell(1);
+					cellB.setCellValue(record.getR21_unrestricted() != null ? record.getR21_unrestricted().doubleValue() : 0);
+
+					// R21 C
+					row = sheet.getRow(20);
+					cellC = row.getCell(2);
+					if (cellC == null) cellC = row.createCell(2);
+					cellC.setCellValue(record.getR21_deferred() != null ? record.getR21_deferred().doubleValue() : 0);
+
+					
+					
+					// R22 B
+					row = sheet.getRow(21);
+					cellB = row.getCell(1);
+					if (cellB == null) cellB = row.createCell(1);
+					cellB.setCellValue(record.getR22_unrestricted() != null ? record.getR22_unrestricted().doubleValue() : 0);
+
+					// R22 C
+					row = sheet.getRow(21);
+					cellC = row.getCell(2);
+					if (cellC == null) cellC = row.createCell(2);
+					cellC.setCellValue(record.getR22_deferred() != null ? record.getR22_deferred().doubleValue() : 0);
+
+					
+					
+					// R23 B
+					row = sheet.getRow(22);
+					cellB = row.getCell(1);
+					if (cellB == null) cellB = row.createCell(1);
+					cellB.setCellValue(record.getR23_unrestricted() != null ? record.getR23_unrestricted().doubleValue() : 0);
+
+					// R23 C
+					row = sheet.getRow(22);
+					cellC = row.getCell(2);
+					if (cellC == null) cellC = row.createCell(2);
+					cellC.setCellValue(record.getR23_deferred() != null ? record.getR23_deferred().doubleValue() : 0);
+
+					
+					
+					// R24 B
+					row = sheet.getRow(23);
+					cellB = row.getCell(1);
+					if (cellB == null) cellB = row.createCell(1);
+					cellB.setCellValue(record.getR24_unrestricted() != null ? record.getR24_unrestricted().doubleValue() : 0);
+
+					// R24 C
+					row = sheet.getRow(23);
+					cellC = row.getCell(2);
+					if (cellC == null) cellC = row.createCell(2);
+					cellC.setCellValue(record.getR24_deferred() != null ? record.getR24_deferred().doubleValue() : 0);
+
+					
+					// R25 B
+					row = sheet.getRow(24);
+					cellB = row.getCell(1);
+					if (cellB == null) cellB = row.createCell(1);
+					cellB.setCellValue(record.getR25_unrestricted() != null ? record.getR25_unrestricted().doubleValue() : 0);
+
+					// R25 C
+					row = sheet.getRow(24);
+					cellC = row.getCell(2);
+					if (cellC == null) cellC = row.createCell(2);
+					cellC.setCellValue(record.getR25_deferred() != null ? record.getR25_deferred().doubleValue() : 0);
+
 
 					
 				
@@ -450,7 +595,155 @@ public class BRRS_OPER_RISK_DIS_ReportService {
 						row = sheet.createRow(startRow + i);
 					}
 
+					// R3
+					row = sheet.getRow(2);
+					Cell  cellC = row.getCell(2);
+					if (cellC == null) cellC = row.createCell(2);
+					cellC.setCellValue(record.getR3_amt() != null ? record.getR3_amt().doubleValue() : 0);
 
+					// R4
+					row = sheet.getRow(3);
+					  cellC = row.getCell(2);
+					if (cellC == null) cellC = row.createCell(2);
+					cellC.setCellValue(record.getR4_amt() != null ? record.getR4_amt().doubleValue() : 0);
+					 
+					// R9
+					row = sheet.getRow(8);
+					  cellC = row.getCell(2);
+					if (cellC == null) cellC = row.createCell(2);
+					cellC.setCellValue(record.getR9_amt() != null ? record.getR9_amt().doubleValue() : 0);
+					
+					// R10
+					row = sheet.getRow(9);
+					  cellC = row.getCell(2);
+					if (cellC == null) cellC = row.createCell(2);
+					cellC.setCellValue(record.getR10_amt() != null ? record.getR10_amt().doubleValue() : 0);
+					
+					
+					// R11
+					row = sheet.getRow(10);
+					  cellC = row.getCell(2);
+					if (cellC == null) cellC = row.createCell(2);
+					cellC.setCellValue(record.getR11_amt() != null ? record.getR11_amt().doubleValue() : 0);
+					
+					
+					// R12
+					row = sheet.getRow(11);
+					  cellC = row.getCell(2);
+					if (cellC == null) cellC = row.createCell(2);
+					cellC.setCellValue(record.getR12_amt() != null ? record.getR12_amt().doubleValue() : 0);
+					
+					
+					// R18 B
+					row = sheet.getRow(17);
+					Cell  cellB = row.getCell(1);
+					if (cellB == null) cellB = row.createCell(1);
+					cellB.setCellValue(record.getR18_unrestricted() != null ? record.getR18_unrestricted().doubleValue() : 0);
+
+
+
+					// R18 C
+					row = sheet.getRow(17);
+					  cellC = row.getCell(2);
+					if (cellC == null) cellC = row.createCell(2);
+					cellC.setCellValue(record.getR18_deferred() != null ? record.getR18_deferred().doubleValue() : 0);
+					
+					
+					// R19 B
+					row = sheet.getRow(18);
+				 cellB = row.getCell(1);
+					if (cellB == null) cellB = row.createCell(1);
+					cellB.setCellValue(record.getR19_unrestricted() != null ? record.getR19_unrestricted().doubleValue() : 0);
+
+					// R19 C
+					row = sheet.getRow(18);
+					 cellC = row.getCell(2);
+					if (cellC == null) cellC = row.createCell(2);
+					cellC.setCellValue(record.getR19_deferred() != null ? record.getR19_deferred().doubleValue() : 0);
+					
+					
+					
+					
+					// R20 B
+					row = sheet.getRow(19);
+					cellB = row.getCell(1);
+					if (cellB == null) cellB = row.createCell(1);
+					cellB.setCellValue(record.getR20_unrestricted() != null ? record.getR20_unrestricted().doubleValue() : 0);
+
+					// R20 C
+					row = sheet.getRow(19);
+					cellC = row.getCell(2);
+					if (cellC == null) cellC = row.createCell(2);
+					cellC.setCellValue(record.getR20_deferred() != null ? record.getR20_deferred().doubleValue() : 0);
+
+					
+					
+					// R21 B
+					row = sheet.getRow(20);
+					cellB = row.getCell(1);
+					if (cellB == null) cellB = row.createCell(1);
+					cellB.setCellValue(record.getR21_unrestricted() != null ? record.getR21_unrestricted().doubleValue() : 0);
+
+					// R21 C
+					row = sheet.getRow(20);
+					cellC = row.getCell(2);
+					if (cellC == null) cellC = row.createCell(2);
+					cellC.setCellValue(record.getR21_deferred() != null ? record.getR21_deferred().doubleValue() : 0);
+
+					
+					
+					// R22 B
+					row = sheet.getRow(21);
+					cellB = row.getCell(1);
+					if (cellB == null) cellB = row.createCell(1);
+					cellB.setCellValue(record.getR22_unrestricted() != null ? record.getR22_unrestricted().doubleValue() : 0);
+
+					// R22 C
+					row = sheet.getRow(21);
+					cellC = row.getCell(2);
+					if (cellC == null) cellC = row.createCell(2);
+					cellC.setCellValue(record.getR22_deferred() != null ? record.getR22_deferred().doubleValue() : 0);
+
+					
+					
+					// R23 B
+					row = sheet.getRow(22);
+					cellB = row.getCell(1);
+					if (cellB == null) cellB = row.createCell(1);
+					cellB.setCellValue(record.getR23_unrestricted() != null ? record.getR23_unrestricted().doubleValue() : 0);
+
+					// R23 C
+					row = sheet.getRow(22);
+					cellC = row.getCell(2);
+					if (cellC == null) cellC = row.createCell(2);
+					cellC.setCellValue(record.getR23_deferred() != null ? record.getR23_deferred().doubleValue() : 0);
+
+					
+					
+					// R24 B
+					row = sheet.getRow(23);
+					cellB = row.getCell(1);
+					if (cellB == null) cellB = row.createCell(1);
+					cellB.setCellValue(record.getR24_unrestricted() != null ? record.getR24_unrestricted().doubleValue() : 0);
+
+					// R24 C
+					row = sheet.getRow(23);
+					cellC = row.getCell(2);
+					if (cellC == null) cellC = row.createCell(2);
+					cellC.setCellValue(record.getR24_deferred() != null ? record.getR24_deferred().doubleValue() : 0);
+
+					
+					// R25 B
+					row = sheet.getRow(24);
+					cellB = row.getCell(1);
+					if (cellB == null) cellB = row.createCell(1);
+					cellB.setCellValue(record.getR25_unrestricted() != null ? record.getR25_unrestricted().doubleValue() : 0);
+
+					// R25 C
+					row = sheet.getRow(24);
+					cellC = row.getCell(2);
+					if (cellC == null) cellC = row.createCell(2);
+					cellC.setCellValue(record.getR25_deferred() != null ? record.getR25_deferred().doubleValue() : 0);
 					
 
    

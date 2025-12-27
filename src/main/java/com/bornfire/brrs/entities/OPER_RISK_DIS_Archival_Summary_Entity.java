@@ -71,6 +71,8 @@ public class OPER_RISK_DIS_Archival_Summary_Entity {
 	private BigDecimal	r24_deferred;
 	private String	r25_tot_remu_cur_yr;
 	private BigDecimal	r25_unrestricted;
+	private BigDecimal	r25_deferred;
+
 
 	
 	@Temporal(TemporalType.DATE)
@@ -320,6 +322,12 @@ public class OPER_RISK_DIS_Archival_Summary_Entity {
 	public void setR25_unrestricted(BigDecimal r25_unrestricted) {
 		this.r25_unrestricted = r25_unrestricted;
 	}
+	public BigDecimal getR25_deferred() {
+		return r25_deferred;
+	}
+	public void setR25_deferred(BigDecimal r25_deferred) {
+		this.r25_deferred = r25_deferred;
+	}
 	public Date getReport_date() {
 		return report_date;
 	}
@@ -372,6 +380,8 @@ public class OPER_RISK_DIS_Archival_Summary_Entity {
 		super();
 		// TODO Auto-generated constructor stub
 	}
+	
+	
 	
 	
 	
