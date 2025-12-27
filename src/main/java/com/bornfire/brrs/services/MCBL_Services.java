@@ -322,6 +322,10 @@ public String addMCBL(MultipartFile file, String userid, String username, String
 	            String description = formatter.formatCellValue(row.getCell(3)).trim();
 	            String currency = formatter.formatCellValue(row.getCell(5)).trim();
 	            
+	            if (glCode.contains("-") || glSubCode.contains("-")) {
+	                continue;
+	            }
+	            
 	            if (glCode.isEmpty() || glSubCode.isEmpty() || headAccNo.isEmpty() || currency.isEmpty())
 	                continue;
 	            
