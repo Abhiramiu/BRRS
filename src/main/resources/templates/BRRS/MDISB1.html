@@ -4286,8 +4286,6 @@ PURPOSE		: BRRSREPORT
 										
 											<th style="text-align:left;">REPORT LABEL</th>
 											<th>REPORT ADDL CRITERIA 1</th>
-											<th>REPORT ADDL CRITERIA 2</th>
-											<th>REPORT ADDL CRITERIA 3</th>
 											<th>REPORT DATE</th>
 										</tr>
 									</thead>
@@ -4333,14 +4331,7 @@ PURPOSE		: BRRSREPORT
 												th:text="${report.report_addl_criteria_1 != null ? report.report_addl_criteria_1 : '-'}">
 											</td>
 
-											<td
-												th:text="${report.report_addl_criteria_2 != null ? report.report_addl_criteria_2 : '-'}">
-											</td>
-
-											<td
-												th:text="${report.report_addl_criteria_3 != null ? report.report_addl_criteria_3 : '-'}">
-											</td>
-
+											
 											<td th:text="${report.report_date != null 
                                         ? #dates.format(report.report_date, 'dd-MM-yyyy') 
                                         : '-'}"></td>
