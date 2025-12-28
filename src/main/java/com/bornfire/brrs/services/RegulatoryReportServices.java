@@ -1440,6 +1440,12 @@ public class RegulatoryReportServices {
 						pageable, Filter, type, version);
 				break;
 
+			case "MDISB5":
+
+				repdetail = BRRS_MDISB5_ReportService.getMDISB5currentDtl(reportId, fromdate, todate, currency, dtltype,
+						pageable, Filter, type, version);
+				break;
+				
 		}
 		return repdetail;
 	}

@@ -57,8 +57,7 @@ import com.bornfire.brrs.entities.BRRS_ADISB2_Archival_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_ADISB2_Archival_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_ADISB2_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_ADISB2_Summary_Repo;
-import com.bornfire.brrs.entities.M_BDISB1_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.M_BDISB1_Summary_Entity;
+
 import com.bornfire.brrs.entities.ADISB1_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.ADISB1_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.ADISB1_Detail_Entity;
