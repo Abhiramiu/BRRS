@@ -173,7 +173,7 @@ public class GeneralMasterEntity {
     private BigDecimal eclProvision;
 
     @Column(name = "MAT_BUCKET")
-    private BigDecimal matBucket;
+    private String matBucket;
 
     @Column(name = "EMI")
     private BigDecimal emi;
@@ -882,13 +882,17 @@ public class GeneralMasterEntity {
 
 
 
-	public BigDecimal getMatBucket() {
+	
+
+
+
+	public String getMatBucket() {
 		return matBucket;
 	}
 
 
 
-	public void setMatBucket(BigDecimal matBucket) {
+	public void setMatBucket(String matBucket) {
 		this.matBucket = matBucket;
 	}
 

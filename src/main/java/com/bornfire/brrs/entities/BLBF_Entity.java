@@ -73,14 +73,9 @@ public class BLBF_Entity {
     private String stage;
     private BigDecimal ecl_provision;
 
-    private BigDecimal mat_bucket;
+    private String mat_bucket;
     
-    public BigDecimal getMat_bucket() {
-		return mat_bucket;
-	}
-	public void setMat_bucket(BigDecimal mat_bucket) {
-		this.mat_bucket = mat_bucket;
-	}
+   
 	private String branch_name;
     private String branch_code;
     
@@ -382,6 +377,13 @@ public class BLBF_Entity {
 	}
 	public void setBranch_name(String branch_name) {
 		this.branch_name = branch_name;
+	}
+	
+	public String getMat_bucket() {
+		return mat_bucket;
+	}
+	public void setMat_bucket(String mat_bucket) {
+		this.mat_bucket = mat_bucket;
 	}
 	public String getBranch_code() {
 		return branch_code;
