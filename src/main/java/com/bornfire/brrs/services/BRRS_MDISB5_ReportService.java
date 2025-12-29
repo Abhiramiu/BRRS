@@ -4225,13 +4225,13 @@ public class BRRS_MDISB5_ReportService {
 			                archival1.setR5_NAME_OF_SHAREHOLDER(value);
 
 			            else if ("R5_PERCENTAGE_SHAREHOLDING".equals(normalizedKey))
-			                archival1.setR5_PERCENTAGE_SHAREHOLDING(parseDouble(value));
+			                archival1.setR5_PERCENTAGE_SHAREHOLDING(parseBigDecimal(value));
 
 			            else if ("R5_NUMBER_OF_ACCOUNTS".equals(normalizedKey))
-			                archival1.setR5_NUMBER_OF_ACCOUNTS(parseDouble(value));
+			                archival1.setR5_NUMBER_OF_ACCOUNTS(parseBigDecimal(value));
 
 			            else if ("R5_AMOUNT".equals(normalizedKey))
-			                archival1.setR5_AMOUNT(parseDouble(value));
+			                archival1.setR5_AMOUNT(parseBigDecimal(value));
 
 
 			            // -------- R6 --------
@@ -4239,13 +4239,13 @@ public class BRRS_MDISB5_ReportService {
 			                archival1.setR6_NAME_OF_SHAREHOLDER(value);
 
 			            else if ("R6_PERCENTAGE_SHAREHOLDING".equals(normalizedKey))
-			                archival1.setR6_PERCENTAGE_SHAREHOLDING(parseDouble(value));
+			                archival1.setR6_PERCENTAGE_SHAREHOLDING(parseBigDecimal(value));
 
 			            else if ("R6_NUMBER_OF_ACCOUNTS".equals(normalizedKey))
-			                archival1.setR6_NUMBER_OF_ACCOUNTS(parseDouble(value));
+			                archival1.setR6_NUMBER_OF_ACCOUNTS(parseBigDecimal(value));
 
 			            else if ("R6_AMOUNT".equals(normalizedKey))
-			                archival1.setR6_AMOUNT(parseDouble(value));
+			                archival1.setR6_AMOUNT(parseBigDecimal(value));
 
 
 			         // -------- R7 --------
@@ -4253,13 +4253,13 @@ public class BRRS_MDISB5_ReportService {
 			                archival1.setR7_NAME_OF_SHAREHOLDER(value);
 
 			            else if ("R7_PERCENTAGE_SHAREHOLDING".equals(normalizedKey))
-			                archival1.setR7_PERCENTAGE_SHAREHOLDING(parseDouble(value));
+			                archival1.setR7_PERCENTAGE_SHAREHOLDING(parseBigDecimal(value));
 
 			            else if ("R7_NUMBER_OF_ACCOUNTS".equals(normalizedKey))
-			                archival1.setR7_NUMBER_OF_ACCOUNTS(parseDouble(value));
+			                archival1.setR7_NUMBER_OF_ACCOUNTS(parseBigDecimal(value));
 
 			            else if ("R7_AMOUNT".equals(normalizedKey))
-			                archival1.setR7_AMOUNT(parseDouble(value));
+			                archival1.setR7_AMOUNT(parseBigDecimal(value));
 
 
 			            // -------- R8 --------
@@ -4267,13 +4267,13 @@ public class BRRS_MDISB5_ReportService {
 			                archival1.setR8_NAME_OF_SHAREHOLDER(value);
 
 			            else if ("R8_PERCENTAGE_SHAREHOLDING".equals(normalizedKey))
-			                archival1.setR8_PERCENTAGE_SHAREHOLDING(parseDouble(value));
+			                archival1.setR8_PERCENTAGE_SHAREHOLDING(parseBigDecimal(value));
 
 			            else if ("R8_NUMBER_OF_ACCOUNTS".equals(normalizedKey))
-			                archival1.setR8_NUMBER_OF_ACCOUNTS(parseDouble(value));
+			                archival1.setR8_NUMBER_OF_ACCOUNTS(parseBigDecimal(value));
 
 			            else if ("R8_AMOUNT".equals(normalizedKey))
-			                archival1.setR8_AMOUNT(parseDouble(value));
+			                archival1.setR8_AMOUNT(parseBigDecimal(value));
 
 
 			            // -------- R9 --------
@@ -4281,13 +4281,13 @@ public class BRRS_MDISB5_ReportService {
 			                archival1.setR9_NAME_OF_SHAREHOLDER(value);
 
 			            else if ("R9_PERCENTAGE_SHAREHOLDING".equals(normalizedKey))
-			                archival1.setR9_PERCENTAGE_SHAREHOLDING(parseDouble(value));
+			                archival1.setR9_PERCENTAGE_SHAREHOLDING(parseBigDecimal(value));
 
 			            else if ("R9_NUMBER_OF_ACCOUNTS".equals(normalizedKey))
-			                archival1.setR9_NUMBER_OF_ACCOUNTS(parseDouble(value));
+			                archival1.setR9_NUMBER_OF_ACCOUNTS(parseBigDecimal(value));
 
 			            else if ("R9_AMOUNT".equals(normalizedKey))
-			                archival1.setR9_AMOUNT(parseDouble(value));
+			                archival1.setR9_AMOUNT(parseBigDecimal(value));
 
 
 			            // -------- R10 --------
@@ -4295,13 +4295,13 @@ public class BRRS_MDISB5_ReportService {
 			                archival1.setR10_NAME_OF_SHAREHOLDER(value);
 
 			            else if ("R10_PERCENTAGE_SHAREHOLDING".equals(normalizedKey))
-			                archival1.setR10_PERCENTAGE_SHAREHOLDING(parseDouble(value));
+			                archival1.setR10_PERCENTAGE_SHAREHOLDING(parseBigDecimal(value));
 
 			            else if ("R10_NUMBER_OF_ACCOUNTS".equals(normalizedKey))
-			                archival1.setR10_NUMBER_OF_ACCOUNTS(parseDouble(value));
+			                archival1.setR10_NUMBER_OF_ACCOUNTS(parseBigDecimal(value));
 
 			            else if ("R10_AMOUNT".equals(normalizedKey))
-			                archival1.setR10_AMOUNT(parseDouble(value));
+			                archival1.setR10_AMOUNT(parseBigDecimal(value));
 
 
 			            // -------- R11 --------
@@ -4309,13 +4309,13 @@ public class BRRS_MDISB5_ReportService {
 			                archival1.setR11_NAME_OF_SHAREHOLDER(value);
 
 			            else if ("R11_PERCENTAGE_SHAREHOLDING".equals(normalizedKey))
-			                archival1.setR11_PERCENTAGE_SHAREHOLDING(parseDouble(value));
+			                archival1.setR11_PERCENTAGE_SHAREHOLDING(parseBigDecimal(value));
 
 			            else if ("R11_NUMBER_OF_ACCOUNTS".equals(normalizedKey))
-			                archival1.setR11_NUMBER_OF_ACCOUNTS(parseDouble(value));
+			                archival1.setR11_NUMBER_OF_ACCOUNTS(parseBigDecimal(value));
 
 			            else if ("R11_AMOUNT".equals(normalizedKey))
-			                archival1.setR11_AMOUNT(parseDouble(value));
+			                archival1.setR11_AMOUNT(parseBigDecimal(value));
 
 
 			            // -------- R12 --------
@@ -4323,13 +4323,13 @@ public class BRRS_MDISB5_ReportService {
 			                archival1.setR12_NAME_OF_SHAREHOLDER(value);
 
 			            else if ("R12_PERCENTAGE_SHAREHOLDING".equals(normalizedKey))
-			                archival1.setR12_PERCENTAGE_SHAREHOLDING(parseDouble(value));
+			                archival1.setR12_PERCENTAGE_SHAREHOLDING(parseBigDecimal(value));
 
 			            else if ("R12_NUMBER_OF_ACCOUNTS".equals(normalizedKey))
-			                archival1.setR12_NUMBER_OF_ACCOUNTS(parseDouble(value));
+			                archival1.setR12_NUMBER_OF_ACCOUNTS(parseBigDecimal(value));
 
 			            else if ("R12_AMOUNT".equals(normalizedKey))
-			                archival1.setR12_AMOUNT(parseDouble(value));
+			                archival1.setR12_AMOUNT(parseBigDecimal(value));
 
 
 			            // -------- R13 --------
@@ -4337,13 +4337,13 @@ public class BRRS_MDISB5_ReportService {
 			                archival1.setR13_NAME_OF_SHAREHOLDER(value);
 
 			            else if ("R13_PERCENTAGE_SHAREHOLDING".equals(normalizedKey))
-			                archival1.setR13_PERCENTAGE_SHAREHOLDING(parseDouble(value));
+			                archival1.setR13_PERCENTAGE_SHAREHOLDING(parseBigDecimal(value));
 
 			            else if ("R13_NUMBER_OF_ACCOUNTS".equals(normalizedKey))
-			                archival1.setR13_NUMBER_OF_ACCOUNTS(parseDouble(value));
+			                archival1.setR13_NUMBER_OF_ACCOUNTS(parseBigDecimal(value));
 
 			            else if ("R13_AMOUNT".equals(normalizedKey))
-			                archival1.setR13_AMOUNT(parseDouble(value));
+			                archival1.setR13_AMOUNT(parseBigDecimal(value));
 
 
 			            // -------- R14 --------
@@ -4351,13 +4351,13 @@ public class BRRS_MDISB5_ReportService {
 			                archival1.setR14_NAME_OF_SHAREHOLDER(value);
 
 			            else if ("R14_PERCENTAGE_SHAREHOLDING".equals(normalizedKey))
-			                archival1.setR14_PERCENTAGE_SHAREHOLDING(parseDouble(value));
+			                archival1.setR14_PERCENTAGE_SHAREHOLDING(parseBigDecimal(value));
 
 			            else if ("R14_NUMBER_OF_ACCOUNTS".equals(normalizedKey))
-			                archival1.setR14_NUMBER_OF_ACCOUNTS(parseDouble(value));
+			                archival1.setR14_NUMBER_OF_ACCOUNTS(parseBigDecimal(value));
 
 			            else if ("R14_AMOUNT".equals(normalizedKey))
-			                archival1.setR14_AMOUNT(parseDouble(value));
+			                archival1.setR14_AMOUNT(parseBigDecimal(value));
 
 
 			            // -------- R15 --------
@@ -4365,13 +4365,13 @@ public class BRRS_MDISB5_ReportService {
 			                archival1.setR15_NAME_OF_SHAREHOLDER(value);
 
 			            else if ("R15_PERCENTAGE_SHAREHOLDING".equals(normalizedKey))
-			                archival1.setR15_PERCENTAGE_SHAREHOLDING(parseDouble(value));
+			                archival1.setR15_PERCENTAGE_SHAREHOLDING(parseBigDecimal(value));
 
 			            else if ("R15_NUMBER_OF_ACCOUNTS".equals(normalizedKey))
-			                archival1.setR15_NUMBER_OF_ACCOUNTS(parseDouble(value));
+			                archival1.setR15_NUMBER_OF_ACCOUNTS(parseBigDecimal(value));
 
 			            else if ("R15_AMOUNT".equals(normalizedKey))
-			                archival1.setR15_AMOUNT(parseDouble(value));
+			                archival1.setR15_AMOUNT(parseBigDecimal(value));
 
 
 
@@ -4386,10 +4386,10 @@ public class BRRS_MDISB5_ReportService {
 			                archival2.setR20_EXECUTIVE_OR_NONEXECUTIVE(value);
 
 			            else if ("R20_NUMBER_OF_ACCOUNTS".equals(normalizedKey))
-			                archival2.setR20_NUMBER_OF_ACCOUNTS(parseDouble(value));
+			                archival2.setR20_NUMBER_OF_ACCOUNTS(parseBigDecimal(value));
 
 			            else if ("R20_AMOUNT".equals(normalizedKey))
-			                archival2.setR20_AMOUNT(parseDouble(value));
+			                archival2.setR20_AMOUNT(parseBigDecimal(value));
 
 			         // -------- R21 --------
 			            else if ("R21_NAME_OF_BOARD_MEMBERS".equals(normalizedKey))
@@ -4399,10 +4399,10 @@ public class BRRS_MDISB5_ReportService {
 			                archival2.setR21_EXECUTIVE_OR_NONEXECUTIVE(value);
 
 			            else if ("R21_NUMBER_OF_ACCOUNTS".equals(normalizedKey))
-			                archival2.setR21_NUMBER_OF_ACCOUNTS(parseDouble(value));
+			                archival2.setR21_NUMBER_OF_ACCOUNTS(parseBigDecimal(value));
 
 			            else if ("R21_AMOUNT".equals(normalizedKey))
-			                archival2.setR21_AMOUNT(parseDouble(value));
+			                archival2.setR21_AMOUNT(parseBigDecimal(value));
 
 
 			            // -------- R22 --------
@@ -4413,10 +4413,10 @@ public class BRRS_MDISB5_ReportService {
 			                archival2.setR22_EXECUTIVE_OR_NONEXECUTIVE(value);
 
 			            else if ("R22_NUMBER_OF_ACCOUNTS".equals(normalizedKey))
-			                archival2.setR22_NUMBER_OF_ACCOUNTS(parseDouble(value));
+			                archival2.setR22_NUMBER_OF_ACCOUNTS(parseBigDecimal(value));
 
 			            else if ("R22_AMOUNT".equals(normalizedKey))
-			                archival2.setR22_AMOUNT(parseDouble(value));
+			                archival2.setR22_AMOUNT(parseBigDecimal(value));
 
 
 			            // -------- R23 --------
@@ -4427,10 +4427,10 @@ public class BRRS_MDISB5_ReportService {
 			                archival2.setR23_EXECUTIVE_OR_NONEXECUTIVE(value);
 
 			            else if ("R23_NUMBER_OF_ACCOUNTS".equals(normalizedKey))
-			                archival2.setR23_NUMBER_OF_ACCOUNTS(parseDouble(value));
+			                archival2.setR23_NUMBER_OF_ACCOUNTS(parseBigDecimal(value));
 
 			            else if ("R23_AMOUNT".equals(normalizedKey))
-			                archival2.setR23_AMOUNT(parseDouble(value));
+			                archival2.setR23_AMOUNT(parseBigDecimal(value));
 
 
 			            // -------- R24 --------
@@ -4441,10 +4441,10 @@ public class BRRS_MDISB5_ReportService {
 			                archival2.setR24_EXECUTIVE_OR_NONEXECUTIVE(value);
 
 			            else if ("R24_NUMBER_OF_ACCOUNTS".equals(normalizedKey))
-			                archival2.setR24_NUMBER_OF_ACCOUNTS(parseDouble(value));
+			                archival2.setR24_NUMBER_OF_ACCOUNTS(parseBigDecimal(value));
 
 			            else if ("R24_AMOUNT".equals(normalizedKey))
-			                archival2.setR24_AMOUNT(parseDouble(value));
+			                archival2.setR24_AMOUNT(parseBigDecimal(value));
 
 
 			            // -------- R25 --------
@@ -4455,10 +4455,10 @@ public class BRRS_MDISB5_ReportService {
 			                archival2.setR25_EXECUTIVE_OR_NONEXECUTIVE(value);
 
 			            else if ("R25_NUMBER_OF_ACCOUNTS".equals(normalizedKey))
-			                archival2.setR25_NUMBER_OF_ACCOUNTS(parseDouble(value));
+			                archival2.setR25_NUMBER_OF_ACCOUNTS(parseBigDecimal(value));
 
 			            else if ("R25_AMOUNT".equals(normalizedKey))
-			                archival2.setR25_AMOUNT(parseDouble(value));
+			                archival2.setR25_AMOUNT(parseBigDecimal(value));
 
 
 			            // -------- R26 --------
@@ -4469,10 +4469,10 @@ public class BRRS_MDISB5_ReportService {
 			                archival2.setR26_EXECUTIVE_OR_NONEXECUTIVE(value);
 
 			            else if ("R26_NUMBER_OF_ACCOUNTS".equals(normalizedKey))
-			                archival2.setR26_NUMBER_OF_ACCOUNTS(parseDouble(value));
+			                archival2.setR26_NUMBER_OF_ACCOUNTS(parseBigDecimal(value));
 
 			            else if ("R26_AMOUNT".equals(normalizedKey))
-			                archival2.setR26_AMOUNT(parseDouble(value));
+			                archival2.setR26_AMOUNT(parseBigDecimal(value));
 
 
 			            // -------- R27 --------
@@ -4483,10 +4483,10 @@ public class BRRS_MDISB5_ReportService {
 			                archival2.setR27_EXECUTIVE_OR_NONEXECUTIVE(value);
 
 			            else if ("R27_NUMBER_OF_ACCOUNTS".equals(normalizedKey))
-			                archival2.setR27_NUMBER_OF_ACCOUNTS(parseDouble(value));
+			                archival2.setR27_NUMBER_OF_ACCOUNTS(parseBigDecimal(value));
 
 			            else if ("R27_AMOUNT".equals(normalizedKey))
-			                archival2.setR27_AMOUNT(parseDouble(value));
+			                archival2.setR27_AMOUNT(parseBigDecimal(value));
 
 
 			            // -------- R28 --------
@@ -4497,10 +4497,10 @@ public class BRRS_MDISB5_ReportService {
 			                archival2.setR28_EXECUTIVE_OR_NONEXECUTIVE(value);
 
 			            else if ("R28_NUMBER_OF_ACCOUNTS".equals(normalizedKey))
-			                archival2.setR28_NUMBER_OF_ACCOUNTS(parseDouble(value));
+			                archival2.setR28_NUMBER_OF_ACCOUNTS(parseBigDecimal(value));
 
 			            else if ("R28_AMOUNT".equals(normalizedKey))
-			                archival2.setR28_AMOUNT(parseDouble(value));
+			                archival2.setR28_AMOUNT(parseBigDecimal(value));
 
 
 			            // -------- R29 --------
@@ -4511,10 +4511,10 @@ public class BRRS_MDISB5_ReportService {
 			                archival2.setR29_EXECUTIVE_OR_NONEXECUTIVE(value);
 
 			            else if ("R29_NUMBER_OF_ACCOUNTS".equals(normalizedKey))
-			                archival2.setR29_NUMBER_OF_ACCOUNTS(parseDouble(value));
+			                archival2.setR29_NUMBER_OF_ACCOUNTS(parseBigDecimal(value));
 
 			            else if ("R29_AMOUNT".equals(normalizedKey))
-			                archival2.setR29_AMOUNT(parseDouble(value));
+			                archival2.setR29_AMOUNT(parseBigDecimal(value));
 
 
 			            // -------- R30 --------
@@ -4525,10 +4525,10 @@ public class BRRS_MDISB5_ReportService {
 			                archival2.setR30_EXECUTIVE_OR_NONEXECUTIVE(value);
 
 			            else if ("R30_NUMBER_OF_ACCOUNTS".equals(normalizedKey))
-			                archival2.setR30_NUMBER_OF_ACCOUNTS(parseDouble(value));
+			                archival2.setR30_NUMBER_OF_ACCOUNTS(parseBigDecimal(value));
 
 			            else if ("R30_AMOUNT".equals(normalizedKey))
-			                archival2.setR30_AMOUNT(parseDouble(value));
+			                archival2.setR30_AMOUNT(parseBigDecimal(value));
 
 
 			            // -------- R31 --------
@@ -4539,10 +4539,10 @@ public class BRRS_MDISB5_ReportService {
 			                archival2.setR31_EXECUTIVE_OR_NONEXECUTIVE(value);
 
 			            else if ("R31_NUMBER_OF_ACCOUNTS".equals(normalizedKey))
-			                archival2.setR31_NUMBER_OF_ACCOUNTS(parseDouble(value));
+			                archival2.setR31_NUMBER_OF_ACCOUNTS(parseBigDecimal(value));
 
 			            else if ("R31_AMOUNT".equals(normalizedKey))
-			                archival2.setR31_AMOUNT(parseDouble(value));
+			                archival2.setR31_AMOUNT(parseBigDecimal(value));
 
 
 			            // -------- R32 --------
@@ -4553,10 +4553,10 @@ public class BRRS_MDISB5_ReportService {
 			                archival2.setR32_EXECUTIVE_OR_NONEXECUTIVE(value);
 
 			            else if ("R32_NUMBER_OF_ACCOUNTS".equals(normalizedKey))
-			                archival2.setR32_NUMBER_OF_ACCOUNTS(parseDouble(value));
+			                archival2.setR32_NUMBER_OF_ACCOUNTS(parseBigDecimal(value));
 
 			            else if ("R32_AMOUNT".equals(normalizedKey))
-			                archival2.setR32_AMOUNT(parseDouble(value));
+			                archival2.setR32_AMOUNT(parseBigDecimal(value));
 
 
 			            // -------- R33 --------
@@ -4567,10 +4567,10 @@ public class BRRS_MDISB5_ReportService {
 			                archival2.setR33_EXECUTIVE_OR_NONEXECUTIVE(value);
 
 			            else if ("R33_NUMBER_OF_ACCOUNTS".equals(normalizedKey))
-			                archival2.setR33_NUMBER_OF_ACCOUNTS(parseDouble(value));
+			                archival2.setR33_NUMBER_OF_ACCOUNTS(parseBigDecimal(value));
 
 			            else if ("R33_AMOUNT".equals(normalizedKey))
-			                archival2.setR33_AMOUNT(parseDouble(value));
+			                archival2.setR33_AMOUNT(parseBigDecimal(value));
 
 
 
@@ -4586,10 +4586,10 @@ public class BRRS_MDISB5_ReportService {
 			                archival3.setR37_DESIGNATION_OR_POSITION(value);
 
 			            else if ("R37_NUMBER_OF_ACCOUNTS".equals(normalizedKey))
-			                archival3.setR37_NUMBER_OF_ACCOUNTS(parseDouble(value));
+			                archival3.setR37_NUMBER_OF_ACCOUNTS(parseBigDecimal(value));
 
 			            else if ("R37_AMOUNT".equals(normalizedKey))
-			                archival3.setR37_AMOUNT(parseDouble(value));
+			                archival3.setR37_AMOUNT(parseBigDecimal(value));
 
 			         // -------- R38 --------
 			            else if ("R38_NAME".equals(normalizedKey))
@@ -4599,10 +4599,10 @@ public class BRRS_MDISB5_ReportService {
 			                archival3.setR38_DESIGNATION_OR_POSITION(value);
 
 			            else if ("R38_NUMBER_OF_ACCOUNTS".equals(normalizedKey))
-			                archival3.setR38_NUMBER_OF_ACCOUNTS(parseDouble(value));
+			                archival3.setR38_NUMBER_OF_ACCOUNTS(parseBigDecimal(value));
 
 			            else if ("R38_AMOUNT".equals(normalizedKey))
-			                archival3.setR38_AMOUNT(parseDouble(value));
+			                archival3.setR38_AMOUNT(parseBigDecimal(value));
 
 
 			            // -------- R39 --------
@@ -4613,10 +4613,10 @@ public class BRRS_MDISB5_ReportService {
 			                archival3.setR39_DESIGNATION_OR_POSITION(value);
 
 			            else if ("R39_NUMBER_OF_ACCOUNTS".equals(normalizedKey))
-			                archival3.setR39_NUMBER_OF_ACCOUNTS(parseDouble(value));
+			                archival3.setR39_NUMBER_OF_ACCOUNTS(parseBigDecimal(value));
 
 			            else if ("R39_AMOUNT".equals(normalizedKey))
-			                archival3.setR39_AMOUNT(parseDouble(value));
+			                archival3.setR39_AMOUNT(parseBigDecimal(value));
 
 
 			            // -------- R40 --------
@@ -4627,10 +4627,10 @@ public class BRRS_MDISB5_ReportService {
 			                archival3.setR40_DESIGNATION_OR_POSITION(value);
 
 			            else if ("R40_NUMBER_OF_ACCOUNTS".equals(normalizedKey))
-			                archival3.setR40_NUMBER_OF_ACCOUNTS(parseDouble(value));
+			                archival3.setR40_NUMBER_OF_ACCOUNTS(parseBigDecimal(value));
 
 			            else if ("R40_AMOUNT".equals(normalizedKey))
-			                archival3.setR40_AMOUNT(parseDouble(value));
+			                archival3.setR40_AMOUNT(parseBigDecimal(value));
 
 
 			            // -------- R41 --------
@@ -4641,10 +4641,10 @@ public class BRRS_MDISB5_ReportService {
 			                archival3.setR41_DESIGNATION_OR_POSITION(value);
 
 			            else if ("R41_NUMBER_OF_ACCOUNTS".equals(normalizedKey))
-			                archival3.setR41_NUMBER_OF_ACCOUNTS(parseDouble(value));
+			                archival3.setR41_NUMBER_OF_ACCOUNTS(parseBigDecimal(value));
 
 			            else if ("R41_AMOUNT".equals(normalizedKey))
-			                archival3.setR41_AMOUNT(parseDouble(value));
+			                archival3.setR41_AMOUNT(parseBigDecimal(value));
 
 
 			            // -------- R42 --------
@@ -4655,10 +4655,10 @@ public class BRRS_MDISB5_ReportService {
 			                archival3.setR42_DESIGNATION_OR_POSITION(value);
 
 			            else if ("R42_NUMBER_OF_ACCOUNTS".equals(normalizedKey))
-			                archival3.setR42_NUMBER_OF_ACCOUNTS(parseDouble(value));
+			                archival3.setR42_NUMBER_OF_ACCOUNTS(parseBigDecimal(value));
 
 			            else if ("R42_AMOUNT".equals(normalizedKey))
-			                archival3.setR42_AMOUNT(parseDouble(value));
+			                archival3.setR42_AMOUNT(parseBigDecimal(value));
 
 
 			            // -------- R43 --------
@@ -4669,10 +4669,10 @@ public class BRRS_MDISB5_ReportService {
 			                archival3.setR43_DESIGNATION_OR_POSITION(value);
 
 			            else if ("R43_NUMBER_OF_ACCOUNTS".equals(normalizedKey))
-			                archival3.setR43_NUMBER_OF_ACCOUNTS(parseDouble(value));
+			                archival3.setR43_NUMBER_OF_ACCOUNTS(parseBigDecimal(value));
 
 			            else if ("R43_AMOUNT".equals(normalizedKey))
-			                archival3.setR43_AMOUNT(parseDouble(value));
+			                archival3.setR43_AMOUNT(parseBigDecimal(value));
 
 
 			            // -------- R44 --------
@@ -4683,10 +4683,10 @@ public class BRRS_MDISB5_ReportService {
 			                archival3.setR44_DESIGNATION_OR_POSITION(value);
 
 			            else if ("R44_NUMBER_OF_ACCOUNTS".equals(normalizedKey))
-			                archival3.setR44_NUMBER_OF_ACCOUNTS(parseDouble(value));
+			                archival3.setR44_NUMBER_OF_ACCOUNTS(parseBigDecimal(value));
 
 			            else if ("R44_AMOUNT".equals(normalizedKey))
-			                archival3.setR44_AMOUNT(parseDouble(value));
+			                archival3.setR44_AMOUNT(parseBigDecimal(value));
 
 			        }
 
@@ -4725,10 +4725,11 @@ public class BRRS_MDISB5_ReportService {
 			    }
 			}
 			
-			private Double parseDouble(String value) {
-			    return (value == null || value.trim().isEmpty())
-			            ? 0.0
-			            : Double.valueOf(value.replace(",", ""));
+			private BigDecimal parseBigDecimal(String value) {
+			    if (value == null || value.trim().isEmpty()) {
+			        return BigDecimal.ZERO;
+			    }
+			    return new BigDecimal(value.replace(",", ""));
 			}
 
 
