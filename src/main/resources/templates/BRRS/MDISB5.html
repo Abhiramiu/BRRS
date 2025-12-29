@@ -372,7 +372,8 @@ PURPOSE		: BRRS_MDISB5REPORT
 
 		function showsummary() {
 			$('#loader').modal('show');
-			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/			location.href = Callurl;
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/;
+			location.href = Callurl;
 		}
 
 
@@ -720,7 +721,7 @@ function cancelModify() {
 						</div>
 						<!-- Title -->
 						<h5
-							style="font-family: arial; font-size: 20px; font-weight: bold; color: white; margin: 0 10px;">
+							style="font-family: arial; font-size: 20px; font-weight: bold; color: white; margin-right:10px;">
 
 							Deposit liabilities to Shareholders, Directors, Key <br> Management Personnel and Other Related Persons - MDISB5 </h5>
 
@@ -733,7 +734,7 @@ function cancelModify() {
 						style="display: flex; color: white; align-items: center;">
 						<!-- 📅 Date -->
 						<span class="white-text"
-							style="color: white !important; font-size: 16px; margin-right: 20px;">Report Date: <span
+							style="color: white !important; font-size: 16px; margin-right: 20px;margin-left:10px;">Report Date: <span
 								th:text="${#strings.replace(asondate, '/', '-')}">2025-07-04</span>
 						</span>
 						<!-- Buttons -->
