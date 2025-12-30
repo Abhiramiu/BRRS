@@ -370,6 +370,9 @@ public class RegulatoryReportServices {
  	@Autowired
 	BRRS_OPER_RISK_DIS_ReportService brrs_OPER_RISK_DIS_reportservice;
  	
+ 	@Autowired
+	BRRS_M_P_L_ReportService BRRS_M_P_L_ReportService;
+ 	
  	
 
 	private static final Logger logger = LoggerFactory.getLogger(RegulatoryReportServices.class);
@@ -1032,6 +1035,12 @@ public class RegulatoryReportServices {
 						dtltype, pageable, type, version);
 
 				break;
+				
+			case "M_P_L":
+				repsummary = BRRS_M_P_L_ReportService.getM_P_LView(reportId, fromdate, todate, currency,
+						dtltype, pageable, type, version);
+
+				break;
 
 		}
 
@@ -1443,6 +1452,12 @@ public class RegulatoryReportServices {
 			case "MDISB5":
 
 				repdetail = BRRS_MDISB5_ReportService.getMDISB5currentDtl(reportId, fromdate, todate, currency, dtltype,
+						pageable, Filter, type, version);
+				break;
+				
+			case "M_P_L":
+
+				repdetail = BRRS_M_P_L_ReportService.getM_P_LcurrentDtl(reportId, fromdate, todate, currency, dtltype,
 						pageable, Filter, type, version);
 				break;
 				
@@ -2578,6 +2593,16 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
+				
+			case "M_P_L":
+				try {
+					repfile = BRRS_M_P_L_ReportService.getM_P_LExcel(filename, reportId, fromdate, todate,
+							currency, dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
 		}
 		return repfile;
@@ -2714,6 +2739,11 @@ public class RegulatoryReportServices {
 
 		else if ("TIER_1_2_CFSDetail".equals(filename)) {
 			return BRRS_TIER_1_2_CFS_ReportService.getTIER_1_2_CFSDetailExcel(filename, fromdate, todate, currency,
+					dtltype, type, version);
+		}
+		
+		else if ("M_P_LDetail".equals(filename)) {
+			return BRRS_M_P_L_ReportService.getM_P_LDetailExcel(filename, fromdate, todate, currency,
 					dtltype, type, version);
 		}
 		return new byte[0];
@@ -3660,6 +3690,15 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
+				
+			case "M_P_L":
+				try {
+					archivalData = BRRS_M_P_L_ReportService.getM_P_LArchival();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
 			default:
 				System.out.println("No archival logic defined for report: " + rptcode);
@@ -3957,6 +3996,12 @@ public class RegulatoryReportServices {
 		else if ("TIER_1_2_CFSDetail".equals(filename)) {
 
 			fileData = BRRS_TIER_1_2_CFS_ReportService.getTIER_1_2_CFSDetailExcel(filename, fromdate, todate, currency,
+					dtltype, type, version);
+		}
+		
+		else if ("M_P_LDetail".equals(filename)) {
+
+			fileData = BRRS_M_P_L_ReportService.getM_P_LDetailExcel(filename, fromdate, todate, currency,
 					dtltype, type, version);
 		}
 
@@ -4305,6 +4350,11 @@ public class RegulatoryReportServices {
 					modelAndView = BRRS_TIER_1_2_CFS_ReportService.getViewOrEditPage(request.getParameter("acctNo"),
 							request.getParameter("formmode"));
 					break;
+					
+				case "M_P_L":
+					modelAndView = BRRS_M_P_L_ReportService.getViewOrEditPage(request.getParameter("acctNo"),
+							request.getParameter("formmode"));
+					break;
 			}
 		} catch (Exception e) {
 			logger.error("Error processing details for reportId: {}", reportId, e);
@@ -4546,6 +4596,10 @@ public class RegulatoryReportServices {
 
 				case "SCOPE_OF_APP":
 					response = brrs_SCOPE_OF_APP_reportservice.updateDetailEdit(request);
+					break;
+					
+				case "M_P_L":
+					response = BRRS_M_P_L_ReportService.updateDetailEdit(request);
 					break;
 
 				default:
