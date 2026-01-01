@@ -119,7 +119,7 @@ public class BRRS_Expanded_Regu_BS_ReportService<BBRS_Expanded_Regu_BS_Detail_Re
             mv.addObject("reportsummary", T1Master);
         }
 
-       mv.setViewName("BRRS/EXPANDED_REGU_BS");
+        mv.setViewName("BRRS/EXPANDED_REGU_BS");
         mv.addObject("displaymode", "summary");
         System.out.println("scv" + mv.getViewName());
         return mv;
@@ -287,779 +287,456 @@ public class BRRS_Expanded_Regu_BS_ReportService<BBRS_Expanded_Regu_BS_Detail_Re
                     }
                     row = sheet.getRow(6);
                     // ================= R7 =================
+                    Cell R7cell2 = row.getCell(1);
+                    if (R7cell2 == null) {
+                        R7cell2 = row.createCell(1); // ⚠ only OK if cell exists in template
+                    }
 
-                    Cell R7cell2 = row.createCell(1);
                     if (record.getR7_BAL_SHEET_PUB_FS() != null) {
                         R7cell2.setCellValue(record.getR7_BAL_SHEET_PUB_FS().doubleValue());
-                        R7cell2.setCellStyle(numberStyle);
                     } else {
-                        R7cell2.setCellValue("");
-                        R7cell2.setCellStyle(textStyle);
-                    }
-                    Cell R7cell3 = row.createCell(2);
-                    if (record.getR7_UNDER_REG_SOC() != null) {
-                        R7cell3.setCellValue(record.getR7_UNDER_REG_SOC().doubleValue());
-                        R7cell3.setCellStyle(numberStyle);
-                    } else {
-                        R7cell3.setCellValue("");
-                        R7cell3.setCellStyle(textStyle);
+                         R7cell2.setCellValue(0); // or ""
                     }
 
-                    // ================= R8 =================
+                    Cell R7cell3 = row.getCell(2);
+                    if (R7cell3 == null) {
+                        R7cell3 = row.createCell(2);
+                    }
+
+                    if (record.getR7_UNDER_REG_SOC() != null) {
+                        R7cell3.setCellValue(record.getR7_UNDER_REG_SOC().doubleValue());
+                    } else {
+                        R7cell3.setCellValue(0);
+                    }
+
+               // ================= R8 =================
                     row = sheet.getRow(7);
-                    Cell R8cell2 = row.createCell(1);
+                    if (row == null) row = sheet.createRow(7);
+
+                    Cell R8cell2 = row.getCell(1);
+                    if (R8cell2 == null) R8cell2 = row.createCell(1);
                     if (record.getR8_BAL_SHEET_PUB_FS() != null) {
                         R8cell2.setCellValue(record.getR8_BAL_SHEET_PUB_FS().doubleValue());
-                        R8cell2.setCellStyle(numberStyle);
                     } else {
-                        R8cell2.setCellValue("");
-                        R8cell2.setCellStyle(textStyle);
+                        R8cell2.setCellValue(0);
                     }
-                    Cell R8cell3 = row.createCell(2);
+
+                    Cell R8cell3 = row.getCell(2);
+                    if (R8cell3 == null) R8cell3 = row.createCell(2);
                     if (record.getR8_UNDER_REG_SOC() != null) {
                         R8cell3.setCellValue(record.getR8_UNDER_REG_SOC().doubleValue());
-                        R8cell3.setCellStyle(numberStyle);
                     } else {
-                        R8cell3.setCellValue("");
-                        R8cell3.setCellStyle(textStyle);
+                        R8cell3.setCellValue(0);
                     }
 
                     // ================= R9 =================
                     row = sheet.getRow(8);
-                    Cell R9cell2 = row.createCell(1);
+                    if (row == null) row = sheet.createRow(8);
+
+                    Cell R9cell2 = row.getCell(1);
+                    if (R9cell2 == null) R9cell2 = row.createCell(1);
                     if (record.getR9_BAL_SHEET_PUB_FS() != null) {
                         R9cell2.setCellValue(record.getR9_BAL_SHEET_PUB_FS().doubleValue());
-                        R9cell2.setCellStyle(numberStyle);
                     } else {
-                        R9cell2.setCellValue("");
-                        R9cell2.setCellStyle(textStyle);
+                        R9cell2.setCellValue(0);
                     }
-                    Cell R9cell3 = row.createCell(2);
+
+                    Cell R9cell3 = row.getCell(2);
+                    if (R9cell3 == null) R9cell3 = row.createCell(2);
                     if (record.getR9_UNDER_REG_SOC() != null) {
                         R9cell3.setCellValue(record.getR9_UNDER_REG_SOC().doubleValue());
-                        R9cell3.setCellStyle(numberStyle);
                     } else {
-                        R9cell3.setCellValue("");
-                        R9cell3.setCellStyle(textStyle);
+                        R9cell3.setCellValue(0);
                     }
 
                     // ================= R10 =================
                     row = sheet.getRow(9);
-                    Cell R10cell2 = row.createCell(1);
+                    if (row == null) row = sheet.createRow(9);
+
+                    Cell R10cell2 = row.getCell(1);
+                    if (R10cell2 == null) R10cell2 = row.createCell(1);
                     if (record.getR10_BAL_SHEET_PUB_FS() != null) {
                         R10cell2.setCellValue(record.getR10_BAL_SHEET_PUB_FS().doubleValue());
-                        R10cell2.setCellStyle(numberStyle);
                     } else {
-                        R10cell2.setCellValue("");
-                        R10cell2.setCellStyle(textStyle);
+                        R10cell2.setCellValue(0);
                     }
-                    Cell R10cell3 = row.createCell(2);
+
+                    Cell R10cell3 = row.getCell(2);
+                    if (R10cell3 == null) R10cell3 = row.createCell(2);
                     if (record.getR10_UNDER_REG_SOC() != null) {
                         R10cell3.setCellValue(record.getR10_UNDER_REG_SOC().doubleValue());
-                        R10cell3.setCellStyle(numberStyle);
                     } else {
-                        R10cell3.setCellValue("");
-                        R10cell3.setCellStyle(textStyle);
+                        R10cell3.setCellValue(0);
                     }
 
                     // ================= R11 =================
                     row = sheet.getRow(10);
-                    Cell R11cell2 = row.createCell(1);
-                    if (record.getR11_BAL_SHEET_PUB_FS() != null) {
-                        R11cell2.setCellValue(record.getR11_BAL_SHEET_PUB_FS().doubleValue());
-                        R11cell2.setCellStyle(numberStyle);
-                    } else {
-                        R11cell2.setCellValue("");
-                        R11cell2.setCellStyle(textStyle);
-                    }
-                    Cell R11cell3 = row.createCell(2);
-                    if (record.getR11_UNDER_REG_SOC() != null) {
-                        R11cell3.setCellValue(record.getR11_UNDER_REG_SOC().doubleValue());
-                        R11cell3.setCellStyle(numberStyle);
-                    } else {
-                        R11cell3.setCellValue("");
-                        R11cell3.setCellStyle(textStyle);
-                    }
+                    if (row == null) row = sheet.createRow(10);
+                    Cell R11cell2 = row.getCell(1);
+                    if (R11cell2 == null) R11cell2 = row.createCell(1);
+                    R11cell2.setCellValue(record.getR11_BAL_SHEET_PUB_FS() != null ? record.getR11_BAL_SHEET_PUB_FS().doubleValue() : 0);
+                    Cell R11cell3 = row.getCell(2);
+                    if (R11cell3 == null) R11cell3 = row.createCell(2);
+                    R11cell3.setCellValue(record.getR11_UNDER_REG_SOC() != null ? record.getR11_UNDER_REG_SOC().doubleValue() : 0);
 
                     // ================= R12 =================
                     row = sheet.getRow(11);
-                    Cell R12cell2 = row.createCell(1);
-                    if (record.getR12_BAL_SHEET_PUB_FS() != null) {
-                        R12cell2.setCellValue(record.getR12_BAL_SHEET_PUB_FS().doubleValue());
-                        R12cell2.setCellStyle(numberStyle);
-                    } else {
-                        R12cell2.setCellValue("");
-                        R12cell2.setCellStyle(textStyle);
-                    }
-                    Cell R12cell3 = row.createCell(2);
-                    if (record.getR12_UNDER_REG_SOC() != null) {
-                        R12cell3.setCellValue(record.getR12_UNDER_REG_SOC().doubleValue());
-                        R12cell3.setCellStyle(numberStyle);
-                    } else {
-                        R12cell3.setCellValue("");
-                        R12cell3.setCellStyle(textStyle);
-                    }
+                    if (row == null) row = sheet.createRow(11);
+                    Cell R12cell2 = row.getCell(1);
+                    if (R12cell2 == null) R12cell2 = row.createCell(1);
+                    R12cell2.setCellValue(record.getR12_BAL_SHEET_PUB_FS() != null ? record.getR12_BAL_SHEET_PUB_FS().doubleValue() : 0);
+                    Cell R12cell3 = row.getCell(2);
+                    if (R12cell3 == null) R12cell3 = row.createCell(2);
+                    R12cell3.setCellValue(record.getR12_UNDER_REG_SOC() != null ? record.getR12_UNDER_REG_SOC().doubleValue() : 0);
 
                     // ================= R13 =================
                     row = sheet.getRow(12);
-                    Cell R13cell2 = row.createCell(1);
-                    if (record.getR13_BAL_SHEET_PUB_FS() != null) {
-                        R13cell2.setCellValue(record.getR13_BAL_SHEET_PUB_FS().doubleValue());
-                        R13cell2.setCellStyle(numberStyle);
-                    } else {
-                        R13cell2.setCellValue("");
-                        R13cell2.setCellStyle(textStyle);
-                    }
-                    Cell R13cell3 = row.createCell(2);
-                    if (record.getR13_UNDER_REG_SOC() != null) {
-                        R13cell3.setCellValue(record.getR13_UNDER_REG_SOC().doubleValue());
-                        R13cell3.setCellStyle(numberStyle);
-                    } else {
-                        R13cell3.setCellValue("");
-                        R13cell3.setCellStyle(textStyle);
-                    }
+                    if (row == null) row = sheet.createRow(12);
+                    Cell R13cell2 = row.getCell(1);
+                    if (R13cell2 == null) R13cell2 = row.createCell(1);
+                    R13cell2.setCellValue(record.getR13_BAL_SHEET_PUB_FS() != null ? record.getR13_BAL_SHEET_PUB_FS().doubleValue() : 0);
+                    Cell R13cell3 = row.getCell(2);
+                    if (R13cell3 == null) R13cell3 = row.createCell(2);
+                    R13cell3.setCellValue(record.getR13_UNDER_REG_SOC() != null ? record.getR13_UNDER_REG_SOC().doubleValue() : 0);
 
                     // ================= R14 =================
                     row = sheet.getRow(13);
-                    Cell R14cell2 = row.createCell(1);
-                    if (record.getR14_BAL_SHEET_PUB_FS() != null) {
-                        R14cell2.setCellValue(record.getR14_BAL_SHEET_PUB_FS().doubleValue());
-                        R14cell2.setCellStyle(numberStyle);
-                    } else {
-                        R14cell2.setCellValue("");
-                        R14cell2.setCellStyle(textStyle);
-                    }
-                    Cell R14cell3 = row.createCell(2);
-                    if (record.getR14_UNDER_REG_SOC() != null) {
-                        R14cell3.setCellValue(record.getR14_UNDER_REG_SOC().doubleValue());
-                        R14cell3.setCellStyle(numberStyle);
-                    } else {
-                        R14cell3.setCellValue("");
-                        R14cell3.setCellStyle(textStyle);
-                    }
+                    if (row == null) row = sheet.createRow(13);
+                    Cell R14cell2 = row.getCell(1);
+                    if (R14cell2 == null) R14cell2 = row.createCell(1);
+                    R14cell2.setCellValue(record.getR14_BAL_SHEET_PUB_FS() != null ? record.getR14_BAL_SHEET_PUB_FS().doubleValue() : 0);
+                    Cell R14cell3 = row.getCell(2);
+                    if (R14cell3 == null) R14cell3 = row.createCell(2);
+                    R14cell3.setCellValue(record.getR14_UNDER_REG_SOC() != null ? record.getR14_UNDER_REG_SOC().doubleValue() : 0);
 
                     // ================= R15 =================
                     row = sheet.getRow(14);
-                    Cell R15cell2 = row.createCell(1);
-                    if (record.getR15_BAL_SHEET_PUB_FS() != null) {
-                        R15cell2.setCellValue(record.getR15_BAL_SHEET_PUB_FS().doubleValue());
-                        R15cell2.setCellStyle(numberStyle);
-                    } else {
-                        R15cell2.setCellValue("");
-                        R15cell2.setCellStyle(textStyle);
-                    }
-                    Cell R15cell3 = row.createCell(2);
-                    if (record.getR15_UNDER_REG_SOC() != null) {
-                        R15cell3.setCellValue(record.getR15_UNDER_REG_SOC().doubleValue());
-                        R15cell3.setCellStyle(numberStyle);
-                    } else {
-                        R15cell3.setCellValue("");
-                        R15cell3.setCellStyle(textStyle);
-                    }
+                    if (row == null) row = sheet.createRow(14);
+                    Cell R15cell2 = row.getCell(1);
+                    if (R15cell2 == null) R15cell2 = row.createCell(1);
+                    R15cell2.setCellValue(record.getR15_BAL_SHEET_PUB_FS() != null ? record.getR15_BAL_SHEET_PUB_FS().doubleValue() : 0);
+                    Cell R15cell3 = row.getCell(2);
+                    if (R15cell3 == null) R15cell3 = row.createCell(2);
+                    R15cell3.setCellValue(record.getR15_UNDER_REG_SOC() != null ? record.getR15_UNDER_REG_SOC().doubleValue() : 0);
 
                     // ================= R16 =================
                     row = sheet.getRow(15);
-                    Cell R16cell2 = row.createCell(1);
-                    if (record.getR16_BAL_SHEET_PUB_FS() != null) {
-                        R16cell2.setCellValue(record.getR16_BAL_SHEET_PUB_FS().doubleValue());
-                        R16cell2.setCellStyle(numberStyle);
-                    } else {
-                        R16cell2.setCellValue("");
-                        R16cell2.setCellStyle(textStyle);
-                    }
-                    Cell R16cell3 = row.createCell(2);
-                    if (record.getR16_UNDER_REG_SOC() != null) {
-                        R16cell3.setCellValue(record.getR16_UNDER_REG_SOC().doubleValue());
-                        R16cell3.setCellStyle(numberStyle);
-                    } else {
-                        R16cell3.setCellValue("");
-                        R16cell3.setCellStyle(textStyle);
-                    }
+                    if (row == null) row = sheet.createRow(15);
+                    Cell R16cell2 = row.getCell(1);
+                    if (R16cell2 == null) R16cell2 = row.createCell(1);
+                    R16cell2.setCellValue(record.getR16_BAL_SHEET_PUB_FS() != null ? record.getR16_BAL_SHEET_PUB_FS().doubleValue() : 0);
+                    Cell R16cell3 = row.getCell(2);
+                    if (R16cell3 == null) R16cell3 = row.createCell(2);
+                    R16cell3.setCellValue(record.getR16_UNDER_REG_SOC() != null ? record.getR16_UNDER_REG_SOC().doubleValue() : 0);
 
                     // ================= R17 =================
                     row = sheet.getRow(16);
-                    Cell R17cell2 = row.createCell(1);
-                    if (record.getR17_BAL_SHEET_PUB_FS() != null) {
-                        R17cell2.setCellValue(record.getR17_BAL_SHEET_PUB_FS().doubleValue());
-                        R17cell2.setCellStyle(numberStyle);
-                    } else {
-                        R17cell2.setCellValue("");
-                        R17cell2.setCellStyle(textStyle);
-                    }
-                    Cell R17cell3 = row.createCell(2);
-                    if (record.getR17_UNDER_REG_SOC() != null) {
-                        R17cell3.setCellValue(record.getR17_UNDER_REG_SOC().doubleValue());
-                        R17cell3.setCellStyle(numberStyle);
-                    } else {
-                        R17cell3.setCellValue("");
-                        R17cell3.setCellStyle(textStyle);
-                    }
+                    if (row == null) row = sheet.createRow(16);
+                    Cell R17cell2 = row.getCell(1);
+                    if (R17cell2 == null) R17cell2 = row.createCell(1);
+                    R17cell2.setCellValue(record.getR17_BAL_SHEET_PUB_FS() != null ? record.getR17_BAL_SHEET_PUB_FS().doubleValue() : 0);
+                    Cell R17cell3 = row.getCell(2);
+                    if (R17cell3 == null) R17cell3 = row.createCell(2);
+                    R17cell3.setCellValue(record.getR17_UNDER_REG_SOC() != null ? record.getR17_UNDER_REG_SOC().doubleValue() : 0);
 
                     // ================= R18 =================
                     row = sheet.getRow(17);
-                    Cell R18cell2 = row.createCell(1);
-                    if (record.getR18_BAL_SHEET_PUB_FS() != null) {
-                        R18cell2.setCellValue(record.getR18_BAL_SHEET_PUB_FS().doubleValue());
-                        R18cell2.setCellStyle(numberStyle);
-                    } else {
-                        R18cell2.setCellValue("");
-                        R18cell2.setCellStyle(textStyle);
-                    }
-                    Cell R18cell3 = row.createCell(2);
-                    if (record.getR18_UNDER_REG_SOC() != null) {
-                        R18cell3.setCellValue(record.getR18_UNDER_REG_SOC().doubleValue());
-                        R18cell3.setCellStyle(numberStyle);
-                    } else {
-                        R18cell3.setCellValue("");
-                        R18cell3.setCellStyle(textStyle);
-                    }
+                    if (row == null) row = sheet.createRow(17);
+                    Cell R18cell2 = row.getCell(1);
+                    if (R18cell2 == null) R18cell2 = row.createCell(1);
+                    R18cell2.setCellValue(record.getR18_BAL_SHEET_PUB_FS() != null ? record.getR18_BAL_SHEET_PUB_FS().doubleValue() : 0);
+                    Cell R18cell3 = row.getCell(2);
+                    if (R18cell3 == null) R18cell3 = row.createCell(2);
+                    R18cell3.setCellValue(record.getR18_UNDER_REG_SOC() != null ? record.getR18_UNDER_REG_SOC().doubleValue() : 0);
 
                     // ================= R19 =================
                     row = sheet.getRow(18);
-                    Cell R19cell2 = row.createCell(1);
-                    if (record.getR19_BAL_SHEET_PUB_FS() != null) {
-                        R19cell2.setCellValue(record.getR19_BAL_SHEET_PUB_FS().doubleValue());
-                        R19cell2.setCellStyle(numberStyle);
-                    } else {
-                        R19cell2.setCellValue("");
-                        R19cell2.setCellStyle(textStyle);
-                    }
-                    Cell R19cell3 = row.createCell(2);
-                    if (record.getR19_UNDER_REG_SOC() != null) {
-                        R19cell3.setCellValue(record.getR19_UNDER_REG_SOC().doubleValue());
-                        R19cell3.setCellStyle(numberStyle);
-                    } else {
-                        R19cell3.setCellValue("");
-                        R19cell3.setCellStyle(textStyle);
-                    }
+                    if (row == null) row = sheet.createRow(18);
+                    Cell R19cell2 = row.getCell(1);
+                    if (R19cell2 == null) R19cell2 = row.createCell(1);
+                    R19cell2.setCellValue(record.getR19_BAL_SHEET_PUB_FS() != null ? record.getR19_BAL_SHEET_PUB_FS().doubleValue() : 0);
+                    Cell R19cell3 = row.getCell(2);
+                    if (R19cell3 == null) R19cell3 = row.createCell(2);
+                    R19cell3.setCellValue(record.getR19_UNDER_REG_SOC() != null ? record.getR19_UNDER_REG_SOC().doubleValue() : 0);
 
                     // ================= R20 =================
                     row = sheet.getRow(19);
-                    Cell R20cell2 = row.createCell(1);
-                    if (record.getR20_BAL_SHEET_PUB_FS() != null) {
-                        R20cell2.setCellValue(record.getR20_BAL_SHEET_PUB_FS().doubleValue());
-                        R20cell2.setCellStyle(numberStyle);
-                    } else {
-                        R20cell2.setCellValue("");
-                        R20cell2.setCellStyle(textStyle);
-                    }
-                    Cell R20cell3 = row.createCell(2);
-                    if (record.getR20_UNDER_REG_SOC() != null) {
-                        R20cell3.setCellValue(record.getR20_UNDER_REG_SOC().doubleValue());
-                        R20cell3.setCellStyle(numberStyle);
-                    } else {
-                        R20cell3.setCellValue("");
-                        R20cell3.setCellStyle(textStyle);
-                    }
+                    if (row == null) row = sheet.createRow(19);
+                    Cell R20cell2 = row.getCell(1);
+                    if (R20cell2 == null) R20cell2 = row.createCell(1);
+                    R20cell2.setCellValue(record.getR20_BAL_SHEET_PUB_FS() != null ? record.getR20_BAL_SHEET_PUB_FS().doubleValue() : 0);
+                    Cell R20cell3 = row.getCell(2);
+                    if (R20cell3 == null) R20cell3 = row.createCell(2);
+                    R20cell3.setCellValue(record.getR20_UNDER_REG_SOC() != null ? record.getR20_UNDER_REG_SOC().doubleValue() : 0);
 
                     // ================= R21 =================
                     row = sheet.getRow(20);
-                    Cell R21cell2 = row.createCell(1);
-                    if (record.getR21_BAL_SHEET_PUB_FS() != null) {
-                        R21cell2.setCellValue(record.getR21_BAL_SHEET_PUB_FS().doubleValue());
-                        R21cell2.setCellStyle(numberStyle);
-                    } else {
-                        R21cell2.setCellValue("");
-                        R21cell2.setCellStyle(textStyle);
-                    }
-                    Cell R21cell3 = row.createCell(2);
-                    if (record.getR21_UNDER_REG_SOC() != null) {
-                        R21cell3.setCellValue(record.getR21_UNDER_REG_SOC().doubleValue());
-                        R21cell3.setCellStyle(numberStyle);
-                    } else {
-                        R21cell3.setCellValue("");
-                        R21cell3.setCellStyle(textStyle);
-                    }
+                    if (row == null) row = sheet.createRow(20);
+                    Cell R21cell2 = row.getCell(1);
+                    if (R21cell2 == null) R21cell2 = row.createCell(1);
+                    R21cell2.setCellValue(record.getR21_BAL_SHEET_PUB_FS() != null ? record.getR21_BAL_SHEET_PUB_FS().doubleValue() : 0);
+                    Cell R21cell3 = row.getCell(2);
+                    if (R21cell3 == null) R21cell3 = row.createCell(2);
+                    R21cell3.setCellValue(record.getR21_UNDER_REG_SOC() != null ? record.getR21_UNDER_REG_SOC().doubleValue() : 0);
+
                     // ================= R22 =================
                     row = sheet.getRow(21);
-                    Cell R22cell2 = row.createCell(1);
-                    if (record.getR22_BAL_SHEET_PUB_FS() != null) {
-                        R22cell2.setCellValue(record.getR22_BAL_SHEET_PUB_FS().doubleValue());
-                        R22cell2.setCellStyle(numberStyle);
-                    } else {
-                        R22cell2.setCellValue("");
-                        R22cell2.setCellStyle(textStyle);
-                    }
-                    Cell R22cell3 = row.createCell(2);
-                    if (record.getR22_UNDER_REG_SOC() != null) {
-                        R22cell3.setCellValue(record.getR22_UNDER_REG_SOC().doubleValue());
-                        R22cell3.setCellStyle(numberStyle);
-                    } else {
-                        R22cell3.setCellValue("");
-                        R22cell3.setCellStyle(textStyle);
-                    }
+                    if (row == null) row = sheet.createRow(21);
+                    Cell R22cell2 = row.getCell(1);
+                    if (R22cell2 == null) R22cell2 = row.createCell(1);
+                    R22cell2.setCellValue(record.getR22_BAL_SHEET_PUB_FS() != null ? record.getR22_BAL_SHEET_PUB_FS().doubleValue() : 0);
+                    Cell R22cell3 = row.getCell(2);
+                    if (R22cell3 == null) R22cell3 = row.createCell(2);
+                    R22cell3.setCellValue(record.getR22_UNDER_REG_SOC() != null ? record.getR22_UNDER_REG_SOC().doubleValue() : 0);
+
                     // ================= R23 =================
                     row = sheet.getRow(22);
-                    Cell R23cell2 = row.createCell(1);
-                    if (record.getR23_BAL_SHEET_PUB_FS() != null) {
-                        R23cell2.setCellValue(record.getR23_BAL_SHEET_PUB_FS().doubleValue());
-                        R23cell2.setCellStyle(numberStyle);
-                    } else {
-                        R23cell2.setCellValue("");
-                        R23cell2.setCellStyle(textStyle);
-                    }
-                    Cell R23cell3 = row.createCell(2);
-                    if (record.getR23_UNDER_REG_SOC() != null) {
-                        R23cell3.setCellValue(record.getR23_UNDER_REG_SOC().doubleValue());
-                        R23cell3.setCellStyle(numberStyle);
-                    } else {
-                        R23cell3.setCellValue("");
-                        R23cell3.setCellStyle(textStyle);
-                    }
+                    if (row == null) row = sheet.createRow(22);
+                    Cell R23cell2 = row.getCell(1);
+                    if (R23cell2 == null) R23cell2 = row.createCell(1);
+                    R23cell2.setCellValue(record.getR23_BAL_SHEET_PUB_FS() != null ? record.getR23_BAL_SHEET_PUB_FS().doubleValue() : 0);
+                    Cell R23cell3 = row.getCell(2);
+                    if (R23cell3 == null) R23cell3 = row.createCell(2);
+                    R23cell3.setCellValue(record.getR23_UNDER_REG_SOC() != null ? record.getR23_UNDER_REG_SOC().doubleValue() : 0);
 
                     // ================= R24 =================
                     row = sheet.getRow(23);
-                    Cell R24cell2 = row.createCell(1);
-                    if (record.getR24_BAL_SHEET_PUB_FS() != null) {
-                        R24cell2.setCellValue(record.getR24_BAL_SHEET_PUB_FS().doubleValue());
-                        R24cell2.setCellStyle(numberStyle);
-                    } else {
-                        R24cell2.setCellValue("");
-                        R24cell2.setCellStyle(textStyle);
-                    }
-                    Cell R24cell3 = row.createCell(2);
-                    if (record.getR24_UNDER_REG_SOC() != null) {
-                        R24cell3.setCellValue(record.getR24_UNDER_REG_SOC().doubleValue());
-                        R24cell3.setCellStyle(numberStyle);
-                    } else {
-                        R24cell3.setCellValue("");
-                        R24cell3.setCellStyle(textStyle);
-                    }
-
-                    // ================= R26 =================
+                    if (row == null) row = sheet.createRow(23);
+                    Cell R24cell2 = row.getCell(1);
+                    if (R24cell2 == null) R24cell2 = row.createCell(1);
+                    R24cell2.setCellValue(record.getR24_BAL_SHEET_PUB_FS() != null ? record.getR24_BAL_SHEET_PUB_FS().doubleValue() : 0);
+                    Cell R24cell3 = row.getCell(2);
+                    if (R24cell3 == null) R24cell3 = row.createCell(2);
+                    R24cell3.setCellValue(record.getR24_UNDER_REG_SOC() != null ? record.getR24_UNDER_REG_SOC().doubleValue() : 0);
+                   // ================= R26 =================
                     row = sheet.getRow(25);
-                    Cell R26cell2 = row.createCell(1);
-                    if (record.getR26_BAL_SHEET_PUB_FS() != null) {
-                        R26cell2.setCellValue(record.getR26_BAL_SHEET_PUB_FS().doubleValue());
-                        R26cell2.setCellStyle(numberStyle);
-                    } else {
-                        R26cell2.setCellValue("");
-                        R26cell2.setCellStyle(textStyle);
-                    }
-                    Cell R26cell3 = row.createCell(2);
-                    if (record.getR26_UNDER_REG_SOC() != null) {
-                        R26cell3.setCellValue(record.getR26_UNDER_REG_SOC().doubleValue());
-                        R26cell3.setCellStyle(numberStyle);
-                    } else {
-                        R26cell3.setCellValue("");
-                        R26cell3.setCellStyle(textStyle);
-                    }
+                    if (row == null) row = sheet.createRow(25);
+                    Cell R26cell2 = row.getCell(1);
+                    if (R26cell2 == null) R26cell2 = row.createCell(1);
+                    R26cell2.setCellValue(record.getR26_BAL_SHEET_PUB_FS() != null ? record.getR26_BAL_SHEET_PUB_FS().doubleValue() : 0);
+                    Cell R26cell3 = row.getCell(2);
+                    if (R26cell3 == null) R26cell3 = row.createCell(2);
+                    R26cell3.setCellValue(record.getR26_UNDER_REG_SOC() != null ? record.getR26_UNDER_REG_SOC().doubleValue() : 0);
 
                     // ================= R27 =================
                     row = sheet.getRow(26);
-                    Cell R27cell2 = row.createCell(1);
-                    if (record.getR27_BAL_SHEET_PUB_FS() != null) {
-                        R27cell2.setCellValue(record.getR27_BAL_SHEET_PUB_FS().doubleValue());
-                        R27cell2.setCellStyle(numberStyle);
-                    } else {
-                        R27cell2.setCellValue("");
-                        R27cell2.setCellStyle(textStyle);
-                    }
-                    Cell R27cell3 = row.createCell(2);
-                    if (record.getR27_UNDER_REG_SOC() != null) {
-                        R27cell3.setCellValue(record.getR27_UNDER_REG_SOC().doubleValue());
-                        R27cell3.setCellStyle(numberStyle);
-                    } else {
-                        R27cell3.setCellValue("");
-                        R27cell3.setCellStyle(textStyle);
-                    }
+                    if (row == null) row = sheet.createRow(26);
+                    Cell R27cell2 = row.getCell(1);
+                    if (R27cell2 == null) R27cell2 = row.createCell(1);
+                    R27cell2.setCellValue(record.getR27_BAL_SHEET_PUB_FS() != null ? record.getR27_BAL_SHEET_PUB_FS().doubleValue() : 0);
+                    Cell R27cell3 = row.getCell(2);
+                    if (R27cell3 == null) R27cell3 = row.createCell(2);
+                    R27cell3.setCellValue(record.getR27_UNDER_REG_SOC() != null ? record.getR27_UNDER_REG_SOC().doubleValue() : 0);
 
                     // ================= R28 =================
                     row = sheet.getRow(27);
-                    Cell R28cell2 = row.createCell(1);
-                    if (record.getR28_BAL_SHEET_PUB_FS() != null) {
-                        R28cell2.setCellValue(record.getR28_BAL_SHEET_PUB_FS().doubleValue());
-                        R28cell2.setCellStyle(numberStyle);
-                    } else {
-                        R28cell2.setCellValue("");
-                        R28cell2.setCellStyle(textStyle);
-                    }
-                    Cell R28cell3 = row.createCell(2);
-                    if (record.getR28_UNDER_REG_SOC() != null) {
-                        R28cell3.setCellValue(record.getR28_UNDER_REG_SOC().doubleValue());
-                        R28cell3.setCellStyle(numberStyle);
-                    } else {
-                        R28cell3.setCellValue("");
-                        R28cell3.setCellStyle(textStyle);
-                    }
+                    if (row == null) row = sheet.createRow(27);
+                    Cell R28cell2 = row.getCell(1);
+                    if (R28cell2 == null) R28cell2 = row.createCell(1);
+                    R28cell2.setCellValue(record.getR28_BAL_SHEET_PUB_FS() != null ? record.getR28_BAL_SHEET_PUB_FS().doubleValue() : 0);
+                    Cell R28cell3 = row.getCell(2);
+                    if (R28cell3 == null) R28cell3 = row.createCell(2);
+                    R28cell3.setCellValue(record.getR28_UNDER_REG_SOC() != null ? record.getR28_UNDER_REG_SOC().doubleValue() : 0);
 
                     // ================= R29 =================
                     row = sheet.getRow(28);
-                    Cell R29cell2 = row.createCell(1);
-                    if (record.getR29_BAL_SHEET_PUB_FS() != null) {
-                        R29cell2.setCellValue(record.getR29_BAL_SHEET_PUB_FS().doubleValue());
-                        R29cell2.setCellStyle(numberStyle);
-                    } else {
-                        R29cell2.setCellValue("");
-                        R29cell2.setCellStyle(textStyle);
-                    }
-                    Cell R29cell3 = row.createCell(2);
-                    if (record.getR29_UNDER_REG_SOC() != null) {
-                        R29cell3.setCellValue(record.getR29_UNDER_REG_SOC().doubleValue());
-                        R29cell3.setCellStyle(numberStyle);
-                    } else {
-                        R29cell3.setCellValue("");
-                        R29cell3.setCellStyle(textStyle);
-                    }
+                    if (row == null) row = sheet.createRow(28);
+                    Cell R29cell2 = row.getCell(1);
+                    if (R29cell2 == null) R29cell2 = row.createCell(1);
+                    R29cell2.setCellValue(record.getR29_BAL_SHEET_PUB_FS() != null ? record.getR29_BAL_SHEET_PUB_FS().doubleValue() : 0);
+                    Cell R29cell3 = row.getCell(2);
+                    if (R29cell3 == null) R29cell3 = row.createCell(2);
+                    R29cell3.setCellValue(record.getR29_UNDER_REG_SOC() != null ? record.getR29_UNDER_REG_SOC().doubleValue() : 0);
 
                     // ================= R30 =================
                     row = sheet.getRow(29);
-                    Cell R30cell2 = row.createCell(1);
-                    if (record.getR30_BAL_SHEET_PUB_FS() != null) {
-                        R30cell2.setCellValue(record.getR30_BAL_SHEET_PUB_FS().doubleValue());
-                        R30cell2.setCellStyle(numberStyle);
-                    } else {
-                        R30cell2.setCellValue("");
-                        R30cell2.setCellStyle(textStyle);
-                    }
-                    Cell R30cell3 = row.createCell(2);
-                    if (record.getR30_UNDER_REG_SOC() != null) {
-                        R30cell3.setCellValue(record.getR30_UNDER_REG_SOC().doubleValue());
-                        R30cell3.setCellStyle(numberStyle);
-                    } else {
-                        R30cell3.setCellValue("");
-                        R30cell3.setCellStyle(textStyle);
-                    }
+                    if (row == null) row = sheet.createRow(29);
+                    Cell R30cell2 = row.getCell(1);
+                    if (R30cell2 == null) R30cell2 = row.createCell(1);
+                    R30cell2.setCellValue(record.getR30_BAL_SHEET_PUB_FS() != null ? record.getR30_BAL_SHEET_PUB_FS().doubleValue() : 0);
+                    Cell R30cell3 = row.getCell(2);
+                    if (R30cell3 == null) R30cell3 = row.createCell(2);
+                    R30cell3.setCellValue(record.getR30_UNDER_REG_SOC() != null ? record.getR30_UNDER_REG_SOC().doubleValue() : 0);
 
                     // ================= R31 =================
                     row = sheet.getRow(30);
-                    Cell R31cell2 = row.createCell(1);
-                    if (record.getR31_BAL_SHEET_PUB_FS() != null) {
-                        R31cell2.setCellValue(record.getR31_BAL_SHEET_PUB_FS().doubleValue());
-                        R31cell2.setCellStyle(numberStyle);
-                    } else {
-                        R31cell2.setCellValue("");
-                        R31cell2.setCellStyle(textStyle);
-                    }
-                    Cell R31cell3 = row.createCell(2);
-                    if (record.getR31_UNDER_REG_SOC() != null) {
-                        R31cell3.setCellValue(record.getR31_UNDER_REG_SOC().doubleValue());
-                        R31cell3.setCellStyle(numberStyle);
-                    } else {
-                        R31cell3.setCellValue("");
-                        R31cell3.setCellStyle(textStyle);
-                    }
+                    if (row == null) row = sheet.createRow(30);
+                    Cell R31cell2 = row.getCell(1);
+                    if (R31cell2 == null) R31cell2 = row.createCell(1);
+                    R31cell2.setCellValue(record.getR31_BAL_SHEET_PUB_FS() != null ? record.getR31_BAL_SHEET_PUB_FS().doubleValue() : 0);
+                    Cell R31cell3 = row.getCell(2);
+                    if (R31cell3 == null) R31cell3 = row.createCell(2);
+                    R31cell3.setCellValue(record.getR31_UNDER_REG_SOC() != null ? record.getR31_UNDER_REG_SOC().doubleValue() : 0);
 
                     // ================= R32 =================
                     row = sheet.getRow(31);
-                    Cell R32cell2 = row.createCell(1);
-                    if (record.getR32_BAL_SHEET_PUB_FS() != null) {
-                        R32cell2.setCellValue(record.getR32_BAL_SHEET_PUB_FS().doubleValue());
-                        R32cell2.setCellStyle(numberStyle);
-                    } else {
-                        R32cell2.setCellValue("");
-                        R32cell2.setCellStyle(textStyle);
-                    }
-                    Cell R32cell3 = row.createCell(2);
-                    if (record.getR32_UNDER_REG_SOC() != null) {
-                        R32cell3.setCellValue(record.getR32_UNDER_REG_SOC().doubleValue());
-                        R32cell3.setCellStyle(numberStyle);
-                    } else {
-                        R32cell3.setCellValue("");
-                        R32cell3.setCellStyle(textStyle);
-                    }
+                    if (row == null) row = sheet.createRow(31);
+                    Cell R32cell2 = row.getCell(1);
+                    if (R32cell2 == null) R32cell2 = row.createCell(1);
+                    R32cell2.setCellValue(record.getR32_BAL_SHEET_PUB_FS() != null ? record.getR32_BAL_SHEET_PUB_FS().doubleValue() : 0);
+                    Cell R32cell3 = row.getCell(2);
+                    if (R32cell3 == null) R32cell3 = row.createCell(2);
+                    R32cell3.setCellValue(record.getR32_UNDER_REG_SOC() != null ? record.getR32_UNDER_REG_SOC().doubleValue() : 0);
 
                     // ================= R33 =================
                     row = sheet.getRow(32);
-                    Cell R33cell2 = row.createCell(1);
-                    if (record.getR33_BAL_SHEET_PUB_FS() != null) {
-                        R33cell2.setCellValue(record.getR33_BAL_SHEET_PUB_FS().doubleValue());
-                        R33cell2.setCellStyle(numberStyle);
-                    } else {
-                        R33cell2.setCellValue("");
-                        R33cell2.setCellStyle(textStyle);
-                    }
-                    Cell R33cell3 = row.createCell(2);
-                    if (record.getR33_UNDER_REG_SOC() != null) {
-                        R33cell3.setCellValue(record.getR33_UNDER_REG_SOC().doubleValue());
-                        R33cell3.setCellStyle(numberStyle);
-                    } else {
-                        R33cell3.setCellValue("");
-                        R33cell3.setCellStyle(textStyle);
-                    }
+                    if (row == null) row = sheet.createRow(32);
+                    Cell R33cell2 = row.getCell(1);
+                    if (R33cell2 == null) R33cell2 = row.createCell(1);
+                    R33cell2.setCellValue(record.getR33_BAL_SHEET_PUB_FS() != null ? record.getR33_BAL_SHEET_PUB_FS().doubleValue() : 0);
+                    Cell R33cell3 = row.getCell(2);
+                    if (R33cell3 == null) R33cell3 = row.createCell(2);
+                    R33cell3.setCellValue(record.getR33_UNDER_REG_SOC() != null ? record.getR33_UNDER_REG_SOC().doubleValue() : 0);
 
                     // ================= R34 =================
                     row = sheet.getRow(33);
-                    Cell R34cell2 = row.createCell(1);
-                    if (record.getR34_BAL_SHEET_PUB_FS() != null) {
-                        R34cell2.setCellValue(record.getR34_BAL_SHEET_PUB_FS().doubleValue());
-                        R34cell2.setCellStyle(numberStyle);
-                    } else {
-                        R34cell2.setCellValue("");
-                        R34cell2.setCellStyle(textStyle);
-                    }
-                    Cell R34cell3 = row.createCell(2);
-                    if (record.getR34_UNDER_REG_SOC() != null) {
-                        R34cell3.setCellValue(record.getR34_UNDER_REG_SOC().doubleValue());
-                        R34cell3.setCellStyle(numberStyle);
-                    } else {
-                        R34cell3.setCellValue("");
-                        R34cell3.setCellStyle(textStyle);
-                    }
+                    if (row == null) row = sheet.createRow(33);
+                    Cell R34cell2 = row.getCell(1);
+                    if (R34cell2 == null) R34cell2 = row.createCell(1);
+                    R34cell2.setCellValue(record.getR34_BAL_SHEET_PUB_FS() != null ? record.getR34_BAL_SHEET_PUB_FS().doubleValue() : 0);
+                    Cell R34cell3 = row.getCell(2);
+                    if (R34cell3 == null) R34cell3 = row.createCell(2);
+                    R34cell3.setCellValue(record.getR34_UNDER_REG_SOC() != null ? record.getR34_UNDER_REG_SOC().doubleValue() : 0);
 
                     // ================= R35 =================
                     row = sheet.getRow(34);
-                    Cell R35cell2 = row.createCell(1);
-                    if (record.getR35_BAL_SHEET_PUB_FS() != null) {
-                        R35cell2.setCellValue(record.getR35_BAL_SHEET_PUB_FS().doubleValue());
-                        R35cell2.setCellStyle(numberStyle);
-                    } else {
-                        R35cell2.setCellValue("");
-                        R35cell2.setCellStyle(textStyle);
-                    }
-                    Cell R35cell3 = row.createCell(2);
-                    if (record.getR35_UNDER_REG_SOC() != null) {
-                        R35cell3.setCellValue(record.getR35_UNDER_REG_SOC().doubleValue());
-                        R35cell3.setCellStyle(numberStyle);
-                    } else {
-                        R35cell3.setCellValue("");
-                        R35cell3.setCellStyle(textStyle);
-                    }
+                    if (row == null) row = sheet.createRow(34);
+                    Cell R35cell2 = row.getCell(1);
+                    if (R35cell2 == null) R35cell2 = row.createCell(1);
+                    R35cell2.setCellValue(record.getR35_BAL_SHEET_PUB_FS() != null ? record.getR35_BAL_SHEET_PUB_FS().doubleValue() : 0);
+                    Cell R35cell3 = row.getCell(2);
+                    if (R35cell3 == null) R35cell3 = row.createCell(2);
+                    R35cell3.setCellValue(record.getR35_UNDER_REG_SOC() != null ? record.getR35_UNDER_REG_SOC().doubleValue() : 0);
 
                     // ================= R36 =================
                     row = sheet.getRow(35);
-                    Cell R36cell2 = row.createCell(1);
-                    if (record.getR36_BAL_SHEET_PUB_FS() != null) {
-                        R36cell2.setCellValue(record.getR36_BAL_SHEET_PUB_FS().doubleValue());
-                        R36cell2.setCellStyle(numberStyle);
-                    } else {
-                        R36cell2.setCellValue("");
-                        R36cell2.setCellStyle(textStyle);
-                    }
-                    Cell R36cell3 = row.createCell(2);
-                    if (record.getR36_UNDER_REG_SOC() != null) {
-                        R36cell3.setCellValue(record.getR36_UNDER_REG_SOC().doubleValue());
-                        R36cell3.setCellStyle(numberStyle);
-                    } else {
-                        R36cell3.setCellValue("");
-                        R36cell3.setCellStyle(textStyle);
-                    }
+                    if (row == null) row = sheet.createRow(35);
+                    Cell R36cell2 = row.getCell(1);
+                    if (R36cell2 == null) R36cell2 = row.createCell(1);
+                    R36cell2.setCellValue(record.getR36_BAL_SHEET_PUB_FS() != null ? record.getR36_BAL_SHEET_PUB_FS().doubleValue() : 0);
+                    Cell R36cell3 = row.getCell(2);
+                    if (R36cell3 == null) R36cell3 = row.createCell(2);
+                    R36cell3.setCellValue(record.getR36_UNDER_REG_SOC() != null ? record.getR36_UNDER_REG_SOC().doubleValue() : 0);
+
                     // ================= R37 =================
                     row = sheet.getRow(36);
-                    Cell R37cell2 = row.createCell(1);
-                    if (record.getR37_BAL_SHEET_PUB_FS() != null) {
-                        R37cell2.setCellValue(record.getR37_BAL_SHEET_PUB_FS().doubleValue());
-                        R37cell2.setCellStyle(numberStyle);
-                    } else {
-                        R37cell2.setCellValue("");
-                        R37cell2.setCellStyle(textStyle);
-                    }
-                    Cell R37cell3 = row.createCell(2);
-                    if (record.getR37_UNDER_REG_SOC() != null) {
-                        R37cell3.setCellValue(record.getR37_UNDER_REG_SOC().doubleValue());
-                        R37cell3.setCellStyle(numberStyle);
-                    } else {
-                        R37cell3.setCellValue("");
-                        R37cell3.setCellStyle(textStyle);
-                    }
+                    if (row == null) row = sheet.createRow(36);
+                    Cell R37cell2 = row.getCell(1);
+                    if (R37cell2 == null) R37cell2 = row.createCell(1);
+                    R37cell2.setCellValue(record.getR37_BAL_SHEET_PUB_FS() != null ? record.getR37_BAL_SHEET_PUB_FS().doubleValue() : 0);
+                    Cell R37cell3 = row.getCell(2);
+                    if (R37cell3 == null) R37cell3 = row.createCell(2);
+                    R37cell3.setCellValue(record.getR37_UNDER_REG_SOC() != null ? record.getR37_UNDER_REG_SOC().doubleValue() : 0);
+
                     // ================= R38 =================
                     row = sheet.getRow(37);
-                    Cell R38cell2 = row.createCell(1);
-                    if (record.getR38_BAL_SHEET_PUB_FS() != null) {
-                        R38cell2.setCellValue(record.getR38_BAL_SHEET_PUB_FS().doubleValue());
-                        R38cell2.setCellStyle(numberStyle);
-                    } else {
-                        R38cell2.setCellValue("");
-                        R38cell2.setCellStyle(textStyle);
-                    }
-                    Cell R38cell3 = row.createCell(2);
-                    if (record.getR38_UNDER_REG_SOC() != null) {
-                        R38cell3.setCellValue(record.getR38_UNDER_REG_SOC().doubleValue());
-                        R38cell3.setCellStyle(numberStyle);
-                    } else {
-                        R38cell3.setCellValue("");
-                        R38cell3.setCellStyle(textStyle);
-                    }
+                    if (row == null) row = sheet.createRow(37);
+                    Cell R38cell2 = row.getCell(1);
+                    if (R38cell2 == null) R38cell2 = row.createCell(1);
+                    R38cell2.setCellValue(record.getR38_BAL_SHEET_PUB_FS() != null ? record.getR38_BAL_SHEET_PUB_FS().doubleValue() : 0);
+                    Cell R38cell3 = row.getCell(2);
+                    if (R38cell3 == null) R38cell3 = row.createCell(2);
+                    R38cell3.setCellValue(record.getR38_UNDER_REG_SOC() != null ? record.getR38_UNDER_REG_SOC().doubleValue() : 0);
 
                     // ================= R39 =================
                     row = sheet.getRow(38);
-                    Cell R39cell2 = row.createCell(1);
-                    if (record.getR39_BAL_SHEET_PUB_FS() != null) {
-                        R39cell2.setCellValue(record.getR39_BAL_SHEET_PUB_FS().doubleValue());
-                        R39cell2.setCellStyle(numberStyle);
-                    } else {
-                        R39cell2.setCellValue("");
-                        R39cell2.setCellStyle(textStyle);
-                    }
-                    Cell R39cell3 = row.createCell(2);
-                    if (record.getR39_UNDER_REG_SOC() != null) {
-                        R39cell3.setCellValue(record.getR39_UNDER_REG_SOC().doubleValue());
-                        R39cell3.setCellStyle(numberStyle);
-                    } else {
-                        R39cell3.setCellValue("");
-                        R39cell3.setCellStyle(textStyle);
-                    }
+                    if (row == null) row = sheet.createRow(38);
+                    Cell R39cell2 = row.getCell(1);
+                    if (R39cell2 == null) R39cell2 = row.createCell(1);
+                    R39cell2.setCellValue(record.getR39_BAL_SHEET_PUB_FS() != null ? record.getR39_BAL_SHEET_PUB_FS().doubleValue() : 0);
+                    Cell R39cell3 = row.getCell(2);
+                    if (R39cell3 == null) R39cell3 = row.createCell(2);
+                    R39cell3.setCellValue(record.getR39_UNDER_REG_SOC() != null ? record.getR39_UNDER_REG_SOC().doubleValue() : 0);
 
                     // ================= R40 =================
                     row = sheet.getRow(39);
-                    Cell R40cell2 = row.createCell(1);
-                    if (record.getR40_BAL_SHEET_PUB_FS() != null) {
-                        R40cell2.setCellValue(record.getR40_BAL_SHEET_PUB_FS().doubleValue());
-                        R40cell2.setCellStyle(numberStyle);
-                    } else {
-                        R40cell2.setCellValue("");
-                        R40cell2.setCellStyle(textStyle);
-                    }
-                    Cell R40cell3 = row.createCell(2);
-                    if (record.getR40_UNDER_REG_SOC() != null) {
-                        R40cell3.setCellValue(record.getR40_UNDER_REG_SOC().doubleValue());
-                        R40cell3.setCellStyle(numberStyle);
-                    } else {
-                        R40cell3.setCellValue("");
-                        R40cell3.setCellStyle(textStyle);
-                    }
+                    if (row == null) row = sheet.createRow(39);
+                    Cell R40cell2 = row.getCell(1);
+                    if (R40cell2 == null) R40cell2 = row.createCell(1);
+                    R40cell2.setCellValue(record.getR40_BAL_SHEET_PUB_FS() != null ? record.getR40_BAL_SHEET_PUB_FS().doubleValue() : 0);
+                    Cell R40cell3 = row.getCell(2);
+                    if (R40cell3 == null) R40cell3 = row.createCell(2);
+                    R40cell3.setCellValue(record.getR40_UNDER_REG_SOC() != null ? record.getR40_UNDER_REG_SOC().doubleValue() : 0);
 
                     // ================= R41 =================
                     row = sheet.getRow(40);
-                    Cell R41cell2 = row.createCell(1);
-                    if (record.getR41_BAL_SHEET_PUB_FS() != null) {
-                        R41cell2.setCellValue(record.getR41_BAL_SHEET_PUB_FS().doubleValue());
-                        R41cell2.setCellStyle(numberStyle);
-                    } else {
-                        R41cell2.setCellValue("");
-                        R41cell2.setCellStyle(textStyle);
-                    }
-                    Cell R41cell3 = row.createCell(2);
-                    if (record.getR41_UNDER_REG_SOC() != null) {
-                        R41cell3.setCellValue(record.getR41_UNDER_REG_SOC().doubleValue());
-                        R41cell3.setCellStyle(numberStyle);
-                    } else {
-                        R41cell3.setCellValue("");
-                        R41cell3.setCellStyle(textStyle);
-                    }
+                    if (row == null) row = sheet.createRow(40);
+                    Cell R41cell2 = row.getCell(1);
+                    if (R41cell2 == null) R41cell2 = row.createCell(1);
+                    R41cell2.setCellValue(record.getR41_BAL_SHEET_PUB_FS() != null ? record.getR41_BAL_SHEET_PUB_FS().doubleValue() : 0);
+                    Cell R41cell3 = row.getCell(2);
+                    if (R41cell3 == null) R41cell3 = row.createCell(2);
+                    R41cell3.setCellValue(record.getR41_UNDER_REG_SOC() != null ? record.getR41_UNDER_REG_SOC().doubleValue() : 0);
 
                     // ================= R42 =================
                     row = sheet.getRow(41);
-                    Cell R42cell2 = row.createCell(1);
-                    if (record.getR42_BAL_SHEET_PUB_FS() != null) {
-                        R42cell2.setCellValue(record.getR42_BAL_SHEET_PUB_FS().doubleValue());
-                        R42cell2.setCellStyle(numberStyle);
-                    } else {
-                        R42cell2.setCellValue("");
-                        R42cell2.setCellStyle(textStyle);
-                    }
-                    Cell R42cell3 = row.createCell(2);
-                    if (record.getR42_UNDER_REG_SOC() != null) {
-                        R42cell3.setCellValue(record.getR42_UNDER_REG_SOC().doubleValue());
-                        R42cell3.setCellStyle(numberStyle);
-                    } else {
-                        R42cell3.setCellValue("");
-                        R42cell3.setCellStyle(textStyle);
-                    }
+                    if (row == null) row = sheet.createRow(41);
+                    Cell R42cell2 = row.getCell(1);
+                    if (R42cell2 == null) R42cell2 = row.createCell(1);
+                    R42cell2.setCellValue(record.getR42_BAL_SHEET_PUB_FS() != null ? record.getR42_BAL_SHEET_PUB_FS().doubleValue() : 0);
+                    Cell R42cell3 = row.getCell(2);
+                    if (R42cell3 == null) R42cell3 = row.createCell(2);
+                    R42cell3.setCellValue(record.getR42_UNDER_REG_SOC() != null ? record.getR42_UNDER_REG_SOC().doubleValue() : 0);
 
-                    // ================= R44 =================
+                   // ================= R44 =================
                     row = sheet.getRow(43);
-                    Cell R44cell2 = row.createCell(1);
-                    if (record.getR44_BAL_SHEET_PUB_FS() != null) {
-                        R44cell2.setCellValue(record.getR44_BAL_SHEET_PUB_FS().doubleValue());
-                        R44cell2.setCellStyle(numberStyle);
-                    } else {
-                        R44cell2.setCellValue("");
-                        R44cell2.setCellStyle(textStyle);
-                    }
-                    Cell R44cell3 = row.createCell(2);
-                    if (record.getR44_UNDER_REG_SOC() != null) {
-                        R44cell3.setCellValue(record.getR44_UNDER_REG_SOC().doubleValue());
-                        R44cell3.setCellStyle(numberStyle);
-                    } else {
-                        R44cell3.setCellValue("");
-                        R44cell3.setCellStyle(textStyle);
-                    }
+                    if (row == null) row = sheet.createRow(43);
+                    Cell R44cell2 = row.getCell(1);
+                    if (R44cell2 == null) R44cell2 = row.createCell(1);
+                    R44cell2.setCellValue(record.getR44_BAL_SHEET_PUB_FS() != null ? record.getR44_BAL_SHEET_PUB_FS().doubleValue() : 0);
+                    Cell R44cell3 = row.getCell(2);
+                    if (R44cell3 == null) R44cell3 = row.createCell(2);
+                    R44cell3.setCellValue(record.getR44_UNDER_REG_SOC() != null ? record.getR44_UNDER_REG_SOC().doubleValue() : 0);
 
                     // ================= R45 =================
                     row = sheet.getRow(44);
-                    Cell R45cell2 = row.createCell(1);
-                    if (record.getR45_BAL_SHEET_PUB_FS() != null) {
-                        R45cell2.setCellValue(record.getR45_BAL_SHEET_PUB_FS().doubleValue());
-                        R45cell2.setCellStyle(numberStyle);
-                    } else {
-                        R45cell2.setCellValue("");
-                        R45cell2.setCellStyle(textStyle);
-                    }
-                    Cell R45cell3 = row.createCell(2);
-                    if (record.getR45_UNDER_REG_SOC() != null) {
-                        R45cell3.setCellValue(record.getR45_UNDER_REG_SOC().doubleValue());
-                        R45cell3.setCellStyle(numberStyle);
-                    } else {
-                        R45cell3.setCellValue("");
-                        R45cell3.setCellStyle(textStyle);
-                    }
+                    if (row == null) row = sheet.createRow(44);
+                    Cell R45cell2 = row.getCell(1);
+                    if (R45cell2 == null) R45cell2 = row.createCell(1);
+                    R45cell2.setCellValue(record.getR45_BAL_SHEET_PUB_FS() != null ? record.getR45_BAL_SHEET_PUB_FS().doubleValue() : 0);
+                    Cell R45cell3 = row.getCell(2);
+                    if (R45cell3 == null) R45cell3 = row.createCell(2);
+                    R45cell3.setCellValue(record.getR45_UNDER_REG_SOC() != null ? record.getR45_UNDER_REG_SOC().doubleValue() : 0);
 
                     // ================= R46 =================
                     row = sheet.getRow(45);
-                    Cell R46cell2 = row.createCell(1);
-                    if (record.getR46_BAL_SHEET_PUB_FS() != null) {
-                        R46cell2.setCellValue(record.getR46_BAL_SHEET_PUB_FS().doubleValue());
-                        R46cell2.setCellStyle(numberStyle);
-                    } else {
-                        R46cell2.setCellValue("");
-                        R46cell2.setCellStyle(textStyle);
-                    }
-                    Cell R46cell3 = row.createCell(2);
-                    if (record.getR46_UNDER_REG_SOC() != null) {
-                        R46cell3.setCellValue(record.getR46_UNDER_REG_SOC().doubleValue());
-                        R46cell3.setCellStyle(numberStyle);
-                    } else {
-                        R46cell3.setCellValue("");
-                        R46cell3.setCellStyle(textStyle);
-                    }
+                    if (row == null) row = sheet.createRow(45);
+                    Cell R46cell2 = row.getCell(1);
+                    if (R46cell2 == null) R46cell2 = row.createCell(1);
+                    R46cell2.setCellValue(record.getR46_BAL_SHEET_PUB_FS() != null ? record.getR46_BAL_SHEET_PUB_FS().doubleValue() : 0);
+                    Cell R46cell3 = row.getCell(2);
+                    if (R46cell3 == null) R46cell3 = row.createCell(2);
+                    R46cell3.setCellValue(record.getR46_UNDER_REG_SOC() != null ? record.getR46_UNDER_REG_SOC().doubleValue() : 0);
 
                     // ================= R47 =================
                     row = sheet.getRow(46);
-                    Cell R47cell2 = row.createCell(1);
-                    if (record.getR47_BAL_SHEET_PUB_FS() != null) {
-                        R47cell2.setCellValue(record.getR47_BAL_SHEET_PUB_FS().doubleValue());
-                        R47cell2.setCellStyle(numberStyle);
-                    } else {
-                        R47cell2.setCellValue("");
-                        R47cell2.setCellStyle(textStyle);
-                    }
-                    Cell R47cell3 = row.createCell(2);
-                    if (record.getR47_UNDER_REG_SOC() != null) {
-                        R47cell3.setCellValue(record.getR47_UNDER_REG_SOC().doubleValue());
-                        R47cell3.setCellStyle(numberStyle);
-                    } else {
-                        R47cell3.setCellValue("");
-                        R47cell3.setCellStyle(textStyle);
-                    }
+                    if (row == null) row = sheet.createRow(46);
+                    Cell R47cell2 = row.getCell(1);
+                    if (R47cell2 == null) R47cell2 = row.createCell(1);
+                    R47cell2.setCellValue(record.getR47_BAL_SHEET_PUB_FS() != null ? record.getR47_BAL_SHEET_PUB_FS().doubleValue() : 0);
+                    Cell R47cell3 = row.getCell(2);
+                    if (R47cell3 == null) R47cell3 = row.createCell(2);
+                    R47cell3.setCellValue(record.getR47_UNDER_REG_SOC() != null ? record.getR47_UNDER_REG_SOC().doubleValue() : 0);
 
                     // ================= R48 =================
                     row = sheet.getRow(47);
-                    Cell R48cell2 = row.createCell(1);
-                    if (record.getR48_BAL_SHEET_PUB_FS() != null) {
-                        R48cell2.setCellValue(record.getR48_BAL_SHEET_PUB_FS().doubleValue());
-                        R48cell2.setCellStyle(numberStyle);
-                    } else {
-                        R48cell2.setCellValue("");
-                        R48cell2.setCellStyle(textStyle);
-                    }
-                    Cell R48cell3 = row.createCell(2);
-                    if (record.getR48_UNDER_REG_SOC() != null) {
-                        R48cell3.setCellValue(record.getR48_UNDER_REG_SOC().doubleValue());
-                        R48cell3.setCellStyle(numberStyle);
-                    } else {
-                        R48cell3.setCellValue("");
-                        R48cell3.setCellStyle(textStyle);
-                    }
+                    if (row == null) row = sheet.createRow(47);
+                    Cell R48cell2 = row.getCell(1);
+                    if (R48cell2 == null) R48cell2 = row.createCell(1);
+                    R48cell2.setCellValue(record.getR48_BAL_SHEET_PUB_FS() != null ? record.getR48_BAL_SHEET_PUB_FS().doubleValue() : 0);
+                    Cell R48cell3 = row.getCell(2);
+                    if (R48cell3 == null) R48cell3 = row.createCell(2);
+                    R48cell3.setCellValue(record.getR48_UNDER_REG_SOC() != null ? record.getR48_UNDER_REG_SOC().doubleValue() : 0);
 
                     // ================= R49 =================
                     row = sheet.getRow(48);
-                    Cell R49cell2 = row.createCell(1);
-                    if (record.getR49_BAL_SHEET_PUB_FS() != null) {
-                        R49cell2.setCellValue(record.getR49_BAL_SHEET_PUB_FS().doubleValue());
-                        R49cell2.setCellStyle(numberStyle);
-                    } else {
-                        R49cell2.setCellValue("");
-                        R49cell2.setCellStyle(textStyle);
-                    }
-                    Cell R49cell3 = row.createCell(2);
-                    if (record.getR49_UNDER_REG_SOC() != null) {
-                        R49cell3.setCellValue(record.getR49_UNDER_REG_SOC().doubleValue());
-                        R49cell3.setCellStyle(numberStyle);
-                    } else {
-                        R49cell3.setCellValue("");
-                        R49cell3.setCellStyle(textStyle);
-                    }
+                    if (row == null) row = sheet.createRow(48);
+                    Cell R49cell2 = row.getCell(1);
+                    if (R49cell2 == null) R49cell2 = row.createCell(1);
+                    R49cell2.setCellValue(record.getR49_BAL_SHEET_PUB_FS() != null ? record.getR49_BAL_SHEET_PUB_FS().doubleValue() : 0);
+                    Cell R49cell3 = row.getCell(2);
+                    if (R49cell3 == null) R49cell3 = row.createCell(2);
+                    R49cell3.setCellValue(record.getR49_UNDER_REG_SOC() != null ? record.getR49_UNDER_REG_SOC().doubleValue() : 0);
 
                 }
                 workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
@@ -1285,781 +962,458 @@ public class BRRS_Expanded_Regu_BS_ReportService<BBRS_Expanded_Regu_BS_Detail_Re
                     if (row == null) {
                         row = sheet.createRow(startRow + i);
                     }
-                    row = sheet.getRow(6);
+                            row = sheet.getRow(6);
                     // ================= R7 =================
+                    Cell R7cell2 = row.getCell(1);
+                    if (R7cell2 == null) {
+                        R7cell2 = row.createCell(1); // ⚠ only OK if cell exists in template
+                    }
 
-                    Cell R7cell2 = row.createCell(1);
                     if (record.getR7_BAL_SHEET_PUB_FS() != null) {
                         R7cell2.setCellValue(record.getR7_BAL_SHEET_PUB_FS().doubleValue());
-                        R7cell2.setCellStyle(numberStyle);
                     } else {
-                        R7cell2.setCellValue("");
-                        R7cell2.setCellStyle(textStyle);
-                    }
-                    Cell R7cell3 = row.createCell(2);
-                    if (record.getR7_UNDER_REG_SOC() != null) {
-                        R7cell3.setCellValue(record.getR7_UNDER_REG_SOC().doubleValue());
-                        R7cell3.setCellStyle(numberStyle);
-                    } else {
-                        R7cell3.setCellValue("");
-                        R7cell3.setCellStyle(textStyle);
+                         R7cell2.setCellValue(0); // or ""
                     }
 
-                    // ================= R8 =================
+                    Cell R7cell3 = row.getCell(2);
+                    if (R7cell3 == null) {
+                        R7cell3 = row.createCell(2);
+                    }
+
+                    if (record.getR7_UNDER_REG_SOC() != null) {
+                        R7cell3.setCellValue(record.getR7_UNDER_REG_SOC().doubleValue());
+                    } else {
+                        R7cell3.setCellValue(0);
+                    }
+
+               // ================= R8 =================
                     row = sheet.getRow(7);
-                    Cell R8cell2 = row.createCell(1);
+                    if (row == null) row = sheet.createRow(7);
+
+                    Cell R8cell2 = row.getCell(1);
+                    if (R8cell2 == null) R8cell2 = row.createCell(1);
                     if (record.getR8_BAL_SHEET_PUB_FS() != null) {
                         R8cell2.setCellValue(record.getR8_BAL_SHEET_PUB_FS().doubleValue());
-                        R8cell2.setCellStyle(numberStyle);
                     } else {
-                        R8cell2.setCellValue("");
-                        R8cell2.setCellStyle(textStyle);
+                        R8cell2.setCellValue(0);
                     }
-                    Cell R8cell3 = row.createCell(2);
+
+                    Cell R8cell3 = row.getCell(2);
+                    if (R8cell3 == null) R8cell3 = row.createCell(2);
                     if (record.getR8_UNDER_REG_SOC() != null) {
                         R8cell3.setCellValue(record.getR8_UNDER_REG_SOC().doubleValue());
-                        R8cell3.setCellStyle(numberStyle);
                     } else {
-                        R8cell3.setCellValue("");
-                        R8cell3.setCellStyle(textStyle);
+                        R8cell3.setCellValue(0);
                     }
 
                     // ================= R9 =================
                     row = sheet.getRow(8);
-                    Cell R9cell2 = row.createCell(1);
+                    if (row == null) row = sheet.createRow(8);
+
+                    Cell R9cell2 = row.getCell(1);
+                    if (R9cell2 == null) R9cell2 = row.createCell(1);
                     if (record.getR9_BAL_SHEET_PUB_FS() != null) {
                         R9cell2.setCellValue(record.getR9_BAL_SHEET_PUB_FS().doubleValue());
-                        R9cell2.setCellStyle(numberStyle);
                     } else {
-                        R9cell2.setCellValue("");
-                        R9cell2.setCellStyle(textStyle);
+                        R9cell2.setCellValue(0);
                     }
-                    Cell R9cell3 = row.createCell(2);
+
+                    Cell R9cell3 = row.getCell(2);
+                    if (R9cell3 == null) R9cell3 = row.createCell(2);
                     if (record.getR9_UNDER_REG_SOC() != null) {
                         R9cell3.setCellValue(record.getR9_UNDER_REG_SOC().doubleValue());
-                        R9cell3.setCellStyle(numberStyle);
                     } else {
-                        R9cell3.setCellValue("");
-                        R9cell3.setCellStyle(textStyle);
+                        R9cell3.setCellValue(0);
                     }
 
                     // ================= R10 =================
                     row = sheet.getRow(9);
-                    Cell R10cell2 = row.createCell(1);
+                    if (row == null) row = sheet.createRow(9);
+
+                    Cell R10cell2 = row.getCell(1);
+                    if (R10cell2 == null) R10cell2 = row.createCell(1);
                     if (record.getR10_BAL_SHEET_PUB_FS() != null) {
                         R10cell2.setCellValue(record.getR10_BAL_SHEET_PUB_FS().doubleValue());
-                        R10cell2.setCellStyle(numberStyle);
                     } else {
-                        R10cell2.setCellValue("");
-                        R10cell2.setCellStyle(textStyle);
+                        R10cell2.setCellValue(0);
                     }
-                    Cell R10cell3 = row.createCell(2);
+
+                    Cell R10cell3 = row.getCell(2);
+                    if (R10cell3 == null) R10cell3 = row.createCell(2);
                     if (record.getR10_UNDER_REG_SOC() != null) {
                         R10cell3.setCellValue(record.getR10_UNDER_REG_SOC().doubleValue());
-                        R10cell3.setCellStyle(numberStyle);
                     } else {
-                        R10cell3.setCellValue("");
-                        R10cell3.setCellStyle(textStyle);
+                        R10cell3.setCellValue(0);
                     }
 
                     // ================= R11 =================
                     row = sheet.getRow(10);
-                    Cell R11cell2 = row.createCell(1);
-                    if (record.getR11_BAL_SHEET_PUB_FS() != null) {
-                        R11cell2.setCellValue(record.getR11_BAL_SHEET_PUB_FS().doubleValue());
-                        R11cell2.setCellStyle(numberStyle);
-                    } else {
-                        R11cell2.setCellValue("");
-                        R11cell2.setCellStyle(textStyle);
-                    }
-                    Cell R11cell3 = row.createCell(2);
-                    if (record.getR11_UNDER_REG_SOC() != null) {
-                        R11cell3.setCellValue(record.getR11_UNDER_REG_SOC().doubleValue());
-                        R11cell3.setCellStyle(numberStyle);
-                    } else {
-                        R11cell3.setCellValue("");
-                        R11cell3.setCellStyle(textStyle);
-                    }
+                    if (row == null) row = sheet.createRow(10);
+                    Cell R11cell2 = row.getCell(1);
+                    if (R11cell2 == null) R11cell2 = row.createCell(1);
+                    R11cell2.setCellValue(record.getR11_BAL_SHEET_PUB_FS() != null ? record.getR11_BAL_SHEET_PUB_FS().doubleValue() : 0);
+                    Cell R11cell3 = row.getCell(2);
+                    if (R11cell3 == null) R11cell3 = row.createCell(2);
+                    R11cell3.setCellValue(record.getR11_UNDER_REG_SOC() != null ? record.getR11_UNDER_REG_SOC().doubleValue() : 0);
 
                     // ================= R12 =================
                     row = sheet.getRow(11);
-                    Cell R12cell2 = row.createCell(1);
-                    if (record.getR12_BAL_SHEET_PUB_FS() != null) {
-                        R12cell2.setCellValue(record.getR12_BAL_SHEET_PUB_FS().doubleValue());
-                        R12cell2.setCellStyle(numberStyle);
-                    } else {
-                        R12cell2.setCellValue("");
-                        R12cell2.setCellStyle(textStyle);
-                    }
-                    Cell R12cell3 = row.createCell(2);
-                    if (record.getR12_UNDER_REG_SOC() != null) {
-                        R12cell3.setCellValue(record.getR12_UNDER_REG_SOC().doubleValue());
-                        R12cell3.setCellStyle(numberStyle);
-                    } else {
-                        R12cell3.setCellValue("");
-                        R12cell3.setCellStyle(textStyle);
-                    }
+                    if (row == null) row = sheet.createRow(11);
+                    Cell R12cell2 = row.getCell(1);
+                    if (R12cell2 == null) R12cell2 = row.createCell(1);
+                    R12cell2.setCellValue(record.getR12_BAL_SHEET_PUB_FS() != null ? record.getR12_BAL_SHEET_PUB_FS().doubleValue() : 0);
+                    Cell R12cell3 = row.getCell(2);
+                    if (R12cell3 == null) R12cell3 = row.createCell(2);
+                    R12cell3.setCellValue(record.getR12_UNDER_REG_SOC() != null ? record.getR12_UNDER_REG_SOC().doubleValue() : 0);
 
                     // ================= R13 =================
                     row = sheet.getRow(12);
-                    Cell R13cell2 = row.createCell(1);
-                    if (record.getR13_BAL_SHEET_PUB_FS() != null) {
-                        R13cell2.setCellValue(record.getR13_BAL_SHEET_PUB_FS().doubleValue());
-                        R13cell2.setCellStyle(numberStyle);
-                    } else {
-                        R13cell2.setCellValue("");
-                        R13cell2.setCellStyle(textStyle);
-                    }
-                    Cell R13cell3 = row.createCell(2);
-                    if (record.getR13_UNDER_REG_SOC() != null) {
-                        R13cell3.setCellValue(record.getR13_UNDER_REG_SOC().doubleValue());
-                        R13cell3.setCellStyle(numberStyle);
-                    } else {
-                        R13cell3.setCellValue("");
-                        R13cell3.setCellStyle(textStyle);
-                    }
+                    if (row == null) row = sheet.createRow(12);
+                    Cell R13cell2 = row.getCell(1);
+                    if (R13cell2 == null) R13cell2 = row.createCell(1);
+                    R13cell2.setCellValue(record.getR13_BAL_SHEET_PUB_FS() != null ? record.getR13_BAL_SHEET_PUB_FS().doubleValue() : 0);
+                    Cell R13cell3 = row.getCell(2);
+                    if (R13cell3 == null) R13cell3 = row.createCell(2);
+                    R13cell3.setCellValue(record.getR13_UNDER_REG_SOC() != null ? record.getR13_UNDER_REG_SOC().doubleValue() : 0);
 
                     // ================= R14 =================
                     row = sheet.getRow(13);
-                    Cell R14cell2 = row.createCell(1);
-                    if (record.getR14_BAL_SHEET_PUB_FS() != null) {
-                        R14cell2.setCellValue(record.getR14_BAL_SHEET_PUB_FS().doubleValue());
-                        R14cell2.setCellStyle(numberStyle);
-                    } else {
-                        R14cell2.setCellValue("");
-                        R14cell2.setCellStyle(textStyle);
-                    }
-                    Cell R14cell3 = row.createCell(2);
-                    if (record.getR14_UNDER_REG_SOC() != null) {
-                        R14cell3.setCellValue(record.getR14_UNDER_REG_SOC().doubleValue());
-                        R14cell3.setCellStyle(numberStyle);
-                    } else {
-                        R14cell3.setCellValue("");
-                        R14cell3.setCellStyle(textStyle);
-                    }
+                    if (row == null) row = sheet.createRow(13);
+                    Cell R14cell2 = row.getCell(1);
+                    if (R14cell2 == null) R14cell2 = row.createCell(1);
+                    R14cell2.setCellValue(record.getR14_BAL_SHEET_PUB_FS() != null ? record.getR14_BAL_SHEET_PUB_FS().doubleValue() : 0);
+                    Cell R14cell3 = row.getCell(2);
+                    if (R14cell3 == null) R14cell3 = row.createCell(2);
+                    R14cell3.setCellValue(record.getR14_UNDER_REG_SOC() != null ? record.getR14_UNDER_REG_SOC().doubleValue() : 0);
 
                     // ================= R15 =================
                     row = sheet.getRow(14);
-                    Cell R15cell2 = row.createCell(1);
-                    if (record.getR15_BAL_SHEET_PUB_FS() != null) {
-                        R15cell2.setCellValue(record.getR15_BAL_SHEET_PUB_FS().doubleValue());
-                        R15cell2.setCellStyle(numberStyle);
-                    } else {
-                        R15cell2.setCellValue("");
-                        R15cell2.setCellStyle(textStyle);
-                    }
-                    Cell R15cell3 = row.createCell(2);
-                    if (record.getR15_UNDER_REG_SOC() != null) {
-                        R15cell3.setCellValue(record.getR15_UNDER_REG_SOC().doubleValue());
-                        R15cell3.setCellStyle(numberStyle);
-                    } else {
-                        R15cell3.setCellValue("");
-                        R15cell3.setCellStyle(textStyle);
-                    }
+                    if (row == null) row = sheet.createRow(14);
+                    Cell R15cell2 = row.getCell(1);
+                    if (R15cell2 == null) R15cell2 = row.createCell(1);
+                    R15cell2.setCellValue(record.getR15_BAL_SHEET_PUB_FS() != null ? record.getR15_BAL_SHEET_PUB_FS().doubleValue() : 0);
+                    Cell R15cell3 = row.getCell(2);
+                    if (R15cell3 == null) R15cell3 = row.createCell(2);
+                    R15cell3.setCellValue(record.getR15_UNDER_REG_SOC() != null ? record.getR15_UNDER_REG_SOC().doubleValue() : 0);
 
                     // ================= R16 =================
                     row = sheet.getRow(15);
-                    Cell R16cell2 = row.createCell(1);
-                    if (record.getR16_BAL_SHEET_PUB_FS() != null) {
-                        R16cell2.setCellValue(record.getR16_BAL_SHEET_PUB_FS().doubleValue());
-                        R16cell2.setCellStyle(numberStyle);
-                    } else {
-                        R16cell2.setCellValue("");
-                        R16cell2.setCellStyle(textStyle);
-                    }
-                    Cell R16cell3 = row.createCell(2);
-                    if (record.getR16_UNDER_REG_SOC() != null) {
-                        R16cell3.setCellValue(record.getR16_UNDER_REG_SOC().doubleValue());
-                        R16cell3.setCellStyle(numberStyle);
-                    } else {
-                        R16cell3.setCellValue("");
-                        R16cell3.setCellStyle(textStyle);
-                    }
+                    if (row == null) row = sheet.createRow(15);
+                    Cell R16cell2 = row.getCell(1);
+                    if (R16cell2 == null) R16cell2 = row.createCell(1);
+                    R16cell2.setCellValue(record.getR16_BAL_SHEET_PUB_FS() != null ? record.getR16_BAL_SHEET_PUB_FS().doubleValue() : 0);
+                    Cell R16cell3 = row.getCell(2);
+                    if (R16cell3 == null) R16cell3 = row.createCell(2);
+                    R16cell3.setCellValue(record.getR16_UNDER_REG_SOC() != null ? record.getR16_UNDER_REG_SOC().doubleValue() : 0);
 
                     // ================= R17 =================
                     row = sheet.getRow(16);
-                    Cell R17cell2 = row.createCell(1);
-                    if (record.getR17_BAL_SHEET_PUB_FS() != null) {
-                        R17cell2.setCellValue(record.getR17_BAL_SHEET_PUB_FS().doubleValue());
-                        R17cell2.setCellStyle(numberStyle);
-                    } else {
-                        R17cell2.setCellValue("");
-                        R17cell2.setCellStyle(textStyle);
-                    }
-                    Cell R17cell3 = row.createCell(2);
-                    if (record.getR17_UNDER_REG_SOC() != null) {
-                        R17cell3.setCellValue(record.getR17_UNDER_REG_SOC().doubleValue());
-                        R17cell3.setCellStyle(numberStyle);
-                    } else {
-                        R17cell3.setCellValue("");
-                        R17cell3.setCellStyle(textStyle);
-                    }
+                    if (row == null) row = sheet.createRow(16);
+                    Cell R17cell2 = row.getCell(1);
+                    if (R17cell2 == null) R17cell2 = row.createCell(1);
+                    R17cell2.setCellValue(record.getR17_BAL_SHEET_PUB_FS() != null ? record.getR17_BAL_SHEET_PUB_FS().doubleValue() : 0);
+                    Cell R17cell3 = row.getCell(2);
+                    if (R17cell3 == null) R17cell3 = row.createCell(2);
+                    R17cell3.setCellValue(record.getR17_UNDER_REG_SOC() != null ? record.getR17_UNDER_REG_SOC().doubleValue() : 0);
 
                     // ================= R18 =================
                     row = sheet.getRow(17);
-                    Cell R18cell2 = row.createCell(1);
-                    if (record.getR18_BAL_SHEET_PUB_FS() != null) {
-                        R18cell2.setCellValue(record.getR18_BAL_SHEET_PUB_FS().doubleValue());
-                        R18cell2.setCellStyle(numberStyle);
-                    } else {
-                        R18cell2.setCellValue("");
-                        R18cell2.setCellStyle(textStyle);
-                    }
-                    Cell R18cell3 = row.createCell(2);
-                    if (record.getR18_UNDER_REG_SOC() != null) {
-                        R18cell3.setCellValue(record.getR18_UNDER_REG_SOC().doubleValue());
-                        R18cell3.setCellStyle(numberStyle);
-                    } else {
-                        R18cell3.setCellValue("");
-                        R18cell3.setCellStyle(textStyle);
-                    }
+                    if (row == null) row = sheet.createRow(17);
+                    Cell R18cell2 = row.getCell(1);
+                    if (R18cell2 == null) R18cell2 = row.createCell(1);
+                    R18cell2.setCellValue(record.getR18_BAL_SHEET_PUB_FS() != null ? record.getR18_BAL_SHEET_PUB_FS().doubleValue() : 0);
+                    Cell R18cell3 = row.getCell(2);
+                    if (R18cell3 == null) R18cell3 = row.createCell(2);
+                    R18cell3.setCellValue(record.getR18_UNDER_REG_SOC() != null ? record.getR18_UNDER_REG_SOC().doubleValue() : 0);
 
                     // ================= R19 =================
                     row = sheet.getRow(18);
-                    Cell R19cell2 = row.createCell(1);
-                    if (record.getR19_BAL_SHEET_PUB_FS() != null) {
-                        R19cell2.setCellValue(record.getR19_BAL_SHEET_PUB_FS().doubleValue());
-                        R19cell2.setCellStyle(numberStyle);
-                    } else {
-                        R19cell2.setCellValue("");
-                        R19cell2.setCellStyle(textStyle);
-                    }
-                    Cell R19cell3 = row.createCell(2);
-                    if (record.getR19_UNDER_REG_SOC() != null) {
-                        R19cell3.setCellValue(record.getR19_UNDER_REG_SOC().doubleValue());
-                        R19cell3.setCellStyle(numberStyle);
-                    } else {
-                        R19cell3.setCellValue("");
-                        R19cell3.setCellStyle(textStyle);
-                    }
+                    if (row == null) row = sheet.createRow(18);
+                    Cell R19cell2 = row.getCell(1);
+                    if (R19cell2 == null) R19cell2 = row.createCell(1);
+                    R19cell2.setCellValue(record.getR19_BAL_SHEET_PUB_FS() != null ? record.getR19_BAL_SHEET_PUB_FS().doubleValue() : 0);
+                    Cell R19cell3 = row.getCell(2);
+                    if (R19cell3 == null) R19cell3 = row.createCell(2);
+                    R19cell3.setCellValue(record.getR19_UNDER_REG_SOC() != null ? record.getR19_UNDER_REG_SOC().doubleValue() : 0);
 
                     // ================= R20 =================
                     row = sheet.getRow(19);
-                    Cell R20cell2 = row.createCell(1);
-                    if (record.getR20_BAL_SHEET_PUB_FS() != null) {
-                        R20cell2.setCellValue(record.getR20_BAL_SHEET_PUB_FS().doubleValue());
-                        R20cell2.setCellStyle(numberStyle);
-                    } else {
-                        R20cell2.setCellValue("");
-                        R20cell2.setCellStyle(textStyle);
-                    }
-                    Cell R20cell3 = row.createCell(2);
-                    if (record.getR20_UNDER_REG_SOC() != null) {
-                        R20cell3.setCellValue(record.getR20_UNDER_REG_SOC().doubleValue());
-                        R20cell3.setCellStyle(numberStyle);
-                    } else {
-                        R20cell3.setCellValue("");
-                        R20cell3.setCellStyle(textStyle);
-                    }
+                    if (row == null) row = sheet.createRow(19);
+                    Cell R20cell2 = row.getCell(1);
+                    if (R20cell2 == null) R20cell2 = row.createCell(1);
+                    R20cell2.setCellValue(record.getR20_BAL_SHEET_PUB_FS() != null ? record.getR20_BAL_SHEET_PUB_FS().doubleValue() : 0);
+                    Cell R20cell3 = row.getCell(2);
+                    if (R20cell3 == null) R20cell3 = row.createCell(2);
+                    R20cell3.setCellValue(record.getR20_UNDER_REG_SOC() != null ? record.getR20_UNDER_REG_SOC().doubleValue() : 0);
 
                     // ================= R21 =================
                     row = sheet.getRow(20);
-                    Cell R21cell2 = row.createCell(1);
-                    if (record.getR21_BAL_SHEET_PUB_FS() != null) {
-                        R21cell2.setCellValue(record.getR21_BAL_SHEET_PUB_FS().doubleValue());
-                        R21cell2.setCellStyle(numberStyle);
-                    } else {
-                        R21cell2.setCellValue("");
-                        R21cell2.setCellStyle(textStyle);
-                    }
-                    Cell R21cell3 = row.createCell(2);
-                    if (record.getR21_UNDER_REG_SOC() != null) {
-                        R21cell3.setCellValue(record.getR21_UNDER_REG_SOC().doubleValue());
-                        R21cell3.setCellStyle(numberStyle);
-                    } else {
-                        R21cell3.setCellValue("");
-                        R21cell3.setCellStyle(textStyle);
-                    }
+                    if (row == null) row = sheet.createRow(20);
+                    Cell R21cell2 = row.getCell(1);
+                    if (R21cell2 == null) R21cell2 = row.createCell(1);
+                    R21cell2.setCellValue(record.getR21_BAL_SHEET_PUB_FS() != null ? record.getR21_BAL_SHEET_PUB_FS().doubleValue() : 0);
+                    Cell R21cell3 = row.getCell(2);
+                    if (R21cell3 == null) R21cell3 = row.createCell(2);
+                    R21cell3.setCellValue(record.getR21_UNDER_REG_SOC() != null ? record.getR21_UNDER_REG_SOC().doubleValue() : 0);
+
                     // ================= R22 =================
                     row = sheet.getRow(21);
-                    Cell R22cell2 = row.createCell(1);
-                    if (record.getR22_BAL_SHEET_PUB_FS() != null) {
-                        R22cell2.setCellValue(record.getR22_BAL_SHEET_PUB_FS().doubleValue());
-                        R22cell2.setCellStyle(numberStyle);
-                    } else {
-                        R22cell2.setCellValue("");
-                        R22cell2.setCellStyle(textStyle);
-                    }
-                    Cell R22cell3 = row.createCell(2);
-                    if (record.getR22_UNDER_REG_SOC() != null) {
-                        R22cell3.setCellValue(record.getR22_UNDER_REG_SOC().doubleValue());
-                        R22cell3.setCellStyle(numberStyle);
-                    } else {
-                        R22cell3.setCellValue("");
-                        R22cell3.setCellStyle(textStyle);
-                    }
+                    if (row == null) row = sheet.createRow(21);
+                    Cell R22cell2 = row.getCell(1);
+                    if (R22cell2 == null) R22cell2 = row.createCell(1);
+                    R22cell2.setCellValue(record.getR22_BAL_SHEET_PUB_FS() != null ? record.getR22_BAL_SHEET_PUB_FS().doubleValue() : 0);
+                    Cell R22cell3 = row.getCell(2);
+                    if (R22cell3 == null) R22cell3 = row.createCell(2);
+                    R22cell3.setCellValue(record.getR22_UNDER_REG_SOC() != null ? record.getR22_UNDER_REG_SOC().doubleValue() : 0);
+
                     // ================= R23 =================
                     row = sheet.getRow(22);
-                    Cell R23cell2 = row.createCell(1);
-                    if (record.getR23_BAL_SHEET_PUB_FS() != null) {
-                        R23cell2.setCellValue(record.getR23_BAL_SHEET_PUB_FS().doubleValue());
-                        R23cell2.setCellStyle(numberStyle);
-                    } else {
-                        R23cell2.setCellValue("");
-                        R23cell2.setCellStyle(textStyle);
-                    }
-                    Cell R23cell3 = row.createCell(2);
-                    if (record.getR23_UNDER_REG_SOC() != null) {
-                        R23cell3.setCellValue(record.getR23_UNDER_REG_SOC().doubleValue());
-                        R23cell3.setCellStyle(numberStyle);
-                    } else {
-                        R23cell3.setCellValue("");
-                        R23cell3.setCellStyle(textStyle);
-                    }
+                    if (row == null) row = sheet.createRow(22);
+                    Cell R23cell2 = row.getCell(1);
+                    if (R23cell2 == null) R23cell2 = row.createCell(1);
+                    R23cell2.setCellValue(record.getR23_BAL_SHEET_PUB_FS() != null ? record.getR23_BAL_SHEET_PUB_FS().doubleValue() : 0);
+                    Cell R23cell3 = row.getCell(2);
+                    if (R23cell3 == null) R23cell3 = row.createCell(2);
+                    R23cell3.setCellValue(record.getR23_UNDER_REG_SOC() != null ? record.getR23_UNDER_REG_SOC().doubleValue() : 0);
 
                     // ================= R24 =================
                     row = sheet.getRow(23);
-                    Cell R24cell2 = row.createCell(1);
-                    if (record.getR24_BAL_SHEET_PUB_FS() != null) {
-                        R24cell2.setCellValue(record.getR24_BAL_SHEET_PUB_FS().doubleValue());
-                        R24cell2.setCellStyle(numberStyle);
-                    } else {
-                        R24cell2.setCellValue("");
-                        R24cell2.setCellStyle(textStyle);
-                    }
-                    Cell R24cell3 = row.createCell(2);
-                    if (record.getR24_UNDER_REG_SOC() != null) {
-                        R24cell3.setCellValue(record.getR24_UNDER_REG_SOC().doubleValue());
-                        R24cell3.setCellStyle(numberStyle);
-                    } else {
-                        R24cell3.setCellValue("");
-                        R24cell3.setCellStyle(textStyle);
-                    }
-
-                    // ================= R26 =================
+                    if (row == null) row = sheet.createRow(23);
+                    Cell R24cell2 = row.getCell(1);
+                    if (R24cell2 == null) R24cell2 = row.createCell(1);
+                    R24cell2.setCellValue(record.getR24_BAL_SHEET_PUB_FS() != null ? record.getR24_BAL_SHEET_PUB_FS().doubleValue() : 0);
+                    Cell R24cell3 = row.getCell(2);
+                    if (R24cell3 == null) R24cell3 = row.createCell(2);
+                    R24cell3.setCellValue(record.getR24_UNDER_REG_SOC() != null ? record.getR24_UNDER_REG_SOC().doubleValue() : 0);
+                   // ================= R26 =================
                     row = sheet.getRow(25);
-                    Cell R26cell2 = row.createCell(1);
-                    if (record.getR26_BAL_SHEET_PUB_FS() != null) {
-                        R26cell2.setCellValue(record.getR26_BAL_SHEET_PUB_FS().doubleValue());
-                        R26cell2.setCellStyle(numberStyle);
-                    } else {
-                        R26cell2.setCellValue("");
-                        R26cell2.setCellStyle(textStyle);
-                    }
-                    Cell R26cell3 = row.createCell(2);
-                    if (record.getR26_UNDER_REG_SOC() != null) {
-                        R26cell3.setCellValue(record.getR26_UNDER_REG_SOC().doubleValue());
-                        R26cell3.setCellStyle(numberStyle);
-                    } else {
-                        R26cell3.setCellValue("");
-                        R26cell3.setCellStyle(textStyle);
-                    }
+                    if (row == null) row = sheet.createRow(25);
+                    Cell R26cell2 = row.getCell(1);
+                    if (R26cell2 == null) R26cell2 = row.createCell(1);
+                    R26cell2.setCellValue(record.getR26_BAL_SHEET_PUB_FS() != null ? record.getR26_BAL_SHEET_PUB_FS().doubleValue() : 0);
+                    Cell R26cell3 = row.getCell(2);
+                    if (R26cell3 == null) R26cell3 = row.createCell(2);
+                    R26cell3.setCellValue(record.getR26_UNDER_REG_SOC() != null ? record.getR26_UNDER_REG_SOC().doubleValue() : 0);
 
                     // ================= R27 =================
                     row = sheet.getRow(26);
-                    Cell R27cell2 = row.createCell(1);
-                    if (record.getR27_BAL_SHEET_PUB_FS() != null) {
-                        R27cell2.setCellValue(record.getR27_BAL_SHEET_PUB_FS().doubleValue());
-                        R27cell2.setCellStyle(numberStyle);
-                    } else {
-                        R27cell2.setCellValue("");
-                        R27cell2.setCellStyle(textStyle);
-                    }
-                    Cell R27cell3 = row.createCell(2);
-                    if (record.getR27_UNDER_REG_SOC() != null) {
-                        R27cell3.setCellValue(record.getR27_UNDER_REG_SOC().doubleValue());
-                        R27cell3.setCellStyle(numberStyle);
-                    } else {
-                        R27cell3.setCellValue("");
-                        R27cell3.setCellStyle(textStyle);
-                    }
+                    if (row == null) row = sheet.createRow(26);
+                    Cell R27cell2 = row.getCell(1);
+                    if (R27cell2 == null) R27cell2 = row.createCell(1);
+                    R27cell2.setCellValue(record.getR27_BAL_SHEET_PUB_FS() != null ? record.getR27_BAL_SHEET_PUB_FS().doubleValue() : 0);
+                    Cell R27cell3 = row.getCell(2);
+                    if (R27cell3 == null) R27cell3 = row.createCell(2);
+                    R27cell3.setCellValue(record.getR27_UNDER_REG_SOC() != null ? record.getR27_UNDER_REG_SOC().doubleValue() : 0);
 
                     // ================= R28 =================
                     row = sheet.getRow(27);
-                    Cell R28cell2 = row.createCell(1);
-                    if (record.getR28_BAL_SHEET_PUB_FS() != null) {
-                        R28cell2.setCellValue(record.getR28_BAL_SHEET_PUB_FS().doubleValue());
-                        R28cell2.setCellStyle(numberStyle);
-                    } else {
-                        R28cell2.setCellValue("");
-                        R28cell2.setCellStyle(textStyle);
-                    }
-                    Cell R28cell3 = row.createCell(2);
-                    if (record.getR28_UNDER_REG_SOC() != null) {
-                        R28cell3.setCellValue(record.getR28_UNDER_REG_SOC().doubleValue());
-                        R28cell3.setCellStyle(numberStyle);
-                    } else {
-                        R28cell3.setCellValue("");
-                        R28cell3.setCellStyle(textStyle);
-                    }
+                    if (row == null) row = sheet.createRow(27);
+                    Cell R28cell2 = row.getCell(1);
+                    if (R28cell2 == null) R28cell2 = row.createCell(1);
+                    R28cell2.setCellValue(record.getR28_BAL_SHEET_PUB_FS() != null ? record.getR28_BAL_SHEET_PUB_FS().doubleValue() : 0);
+                    Cell R28cell3 = row.getCell(2);
+                    if (R28cell3 == null) R28cell3 = row.createCell(2);
+                    R28cell3.setCellValue(record.getR28_UNDER_REG_SOC() != null ? record.getR28_UNDER_REG_SOC().doubleValue() : 0);
 
                     // ================= R29 =================
                     row = sheet.getRow(28);
-                    Cell R29cell2 = row.createCell(1);
-                    if (record.getR29_BAL_SHEET_PUB_FS() != null) {
-                        R29cell2.setCellValue(record.getR29_BAL_SHEET_PUB_FS().doubleValue());
-                        R29cell2.setCellStyle(numberStyle);
-                    } else {
-                        R29cell2.setCellValue("");
-                        R29cell2.setCellStyle(textStyle);
-                    }
-                    Cell R29cell3 = row.createCell(2);
-                    if (record.getR29_UNDER_REG_SOC() != null) {
-                        R29cell3.setCellValue(record.getR29_UNDER_REG_SOC().doubleValue());
-                        R29cell3.setCellStyle(numberStyle);
-                    } else {
-                        R29cell3.setCellValue("");
-                        R29cell3.setCellStyle(textStyle);
-                    }
+                    if (row == null) row = sheet.createRow(28);
+                    Cell R29cell2 = row.getCell(1);
+                    if (R29cell2 == null) R29cell2 = row.createCell(1);
+                    R29cell2.setCellValue(record.getR29_BAL_SHEET_PUB_FS() != null ? record.getR29_BAL_SHEET_PUB_FS().doubleValue() : 0);
+                    Cell R29cell3 = row.getCell(2);
+                    if (R29cell3 == null) R29cell3 = row.createCell(2);
+                    R29cell3.setCellValue(record.getR29_UNDER_REG_SOC() != null ? record.getR29_UNDER_REG_SOC().doubleValue() : 0);
 
                     // ================= R30 =================
                     row = sheet.getRow(29);
-                    Cell R30cell2 = row.createCell(1);
-                    if (record.getR30_BAL_SHEET_PUB_FS() != null) {
-                        R30cell2.setCellValue(record.getR30_BAL_SHEET_PUB_FS().doubleValue());
-                        R30cell2.setCellStyle(numberStyle);
-                    } else {
-                        R30cell2.setCellValue("");
-                        R30cell2.setCellStyle(textStyle);
-                    }
-                    Cell R30cell3 = row.createCell(2);
-                    if (record.getR30_UNDER_REG_SOC() != null) {
-                        R30cell3.setCellValue(record.getR30_UNDER_REG_SOC().doubleValue());
-                        R30cell3.setCellStyle(numberStyle);
-                    } else {
-                        R30cell3.setCellValue("");
-                        R30cell3.setCellStyle(textStyle);
-                    }
+                    if (row == null) row = sheet.createRow(29);
+                    Cell R30cell2 = row.getCell(1);
+                    if (R30cell2 == null) R30cell2 = row.createCell(1);
+                    R30cell2.setCellValue(record.getR30_BAL_SHEET_PUB_FS() != null ? record.getR30_BAL_SHEET_PUB_FS().doubleValue() : 0);
+                    Cell R30cell3 = row.getCell(2);
+                    if (R30cell3 == null) R30cell3 = row.createCell(2);
+                    R30cell3.setCellValue(record.getR30_UNDER_REG_SOC() != null ? record.getR30_UNDER_REG_SOC().doubleValue() : 0);
 
                     // ================= R31 =================
                     row = sheet.getRow(30);
-                    Cell R31cell2 = row.createCell(1);
-                    if (record.getR31_BAL_SHEET_PUB_FS() != null) {
-                        R31cell2.setCellValue(record.getR31_BAL_SHEET_PUB_FS().doubleValue());
-                        R31cell2.setCellStyle(numberStyle);
-                    } else {
-                        R31cell2.setCellValue("");
-                        R31cell2.setCellStyle(textStyle);
-                    }
-                    Cell R31cell3 = row.createCell(2);
-                    if (record.getR31_UNDER_REG_SOC() != null) {
-                        R31cell3.setCellValue(record.getR31_UNDER_REG_SOC().doubleValue());
-                        R31cell3.setCellStyle(numberStyle);
-                    } else {
-                        R31cell3.setCellValue("");
-                        R31cell3.setCellStyle(textStyle);
-                    }
+                    if (row == null) row = sheet.createRow(30);
+                    Cell R31cell2 = row.getCell(1);
+                    if (R31cell2 == null) R31cell2 = row.createCell(1);
+                    R31cell2.setCellValue(record.getR31_BAL_SHEET_PUB_FS() != null ? record.getR31_BAL_SHEET_PUB_FS().doubleValue() : 0);
+                    Cell R31cell3 = row.getCell(2);
+                    if (R31cell3 == null) R31cell3 = row.createCell(2);
+                    R31cell3.setCellValue(record.getR31_UNDER_REG_SOC() != null ? record.getR31_UNDER_REG_SOC().doubleValue() : 0);
 
                     // ================= R32 =================
                     row = sheet.getRow(31);
-                    Cell R32cell2 = row.createCell(1);
-                    if (record.getR32_BAL_SHEET_PUB_FS() != null) {
-                        R32cell2.setCellValue(record.getR32_BAL_SHEET_PUB_FS().doubleValue());
-                        R32cell2.setCellStyle(numberStyle);
-                    } else {
-                        R32cell2.setCellValue("");
-                        R32cell2.setCellStyle(textStyle);
-                    }
-                    Cell R32cell3 = row.createCell(2);
-                    if (record.getR32_UNDER_REG_SOC() != null) {
-                        R32cell3.setCellValue(record.getR32_UNDER_REG_SOC().doubleValue());
-                        R32cell3.setCellStyle(numberStyle);
-                    } else {
-                        R32cell3.setCellValue("");
-                        R32cell3.setCellStyle(textStyle);
-                    }
+                    if (row == null) row = sheet.createRow(31);
+                    Cell R32cell2 = row.getCell(1);
+                    if (R32cell2 == null) R32cell2 = row.createCell(1);
+                    R32cell2.setCellValue(record.getR32_BAL_SHEET_PUB_FS() != null ? record.getR32_BAL_SHEET_PUB_FS().doubleValue() : 0);
+                    Cell R32cell3 = row.getCell(2);
+                    if (R32cell3 == null) R32cell3 = row.createCell(2);
+                    R32cell3.setCellValue(record.getR32_UNDER_REG_SOC() != null ? record.getR32_UNDER_REG_SOC().doubleValue() : 0);
 
                     // ================= R33 =================
                     row = sheet.getRow(32);
-                    Cell R33cell2 = row.createCell(1);
-                    if (record.getR33_BAL_SHEET_PUB_FS() != null) {
-                        R33cell2.setCellValue(record.getR33_BAL_SHEET_PUB_FS().doubleValue());
-                        R33cell2.setCellStyle(numberStyle);
-                    } else {
-                        R33cell2.setCellValue("");
-                        R33cell2.setCellStyle(textStyle);
-                    }
-                    Cell R33cell3 = row.createCell(2);
-                    if (record.getR33_UNDER_REG_SOC() != null) {
-                        R33cell3.setCellValue(record.getR33_UNDER_REG_SOC().doubleValue());
-                        R33cell3.setCellStyle(numberStyle);
-                    } else {
-                        R33cell3.setCellValue("");
-                        R33cell3.setCellStyle(textStyle);
-                    }
+                    if (row == null) row = sheet.createRow(32);
+                    Cell R33cell2 = row.getCell(1);
+                    if (R33cell2 == null) R33cell2 = row.createCell(1);
+                    R33cell2.setCellValue(record.getR33_BAL_SHEET_PUB_FS() != null ? record.getR33_BAL_SHEET_PUB_FS().doubleValue() : 0);
+                    Cell R33cell3 = row.getCell(2);
+                    if (R33cell3 == null) R33cell3 = row.createCell(2);
+                    R33cell3.setCellValue(record.getR33_UNDER_REG_SOC() != null ? record.getR33_UNDER_REG_SOC().doubleValue() : 0);
 
                     // ================= R34 =================
                     row = sheet.getRow(33);
-                    Cell R34cell2 = row.createCell(1);
-                    if (record.getR34_BAL_SHEET_PUB_FS() != null) {
-                        R34cell2.setCellValue(record.getR34_BAL_SHEET_PUB_FS().doubleValue());
-                        R34cell2.setCellStyle(numberStyle);
-                    } else {
-                        R34cell2.setCellValue("");
-                        R34cell2.setCellStyle(textStyle);
-                    }
-                    Cell R34cell3 = row.createCell(2);
-                    if (record.getR34_UNDER_REG_SOC() != null) {
-                        R34cell3.setCellValue(record.getR34_UNDER_REG_SOC().doubleValue());
-                        R34cell3.setCellStyle(numberStyle);
-                    } else {
-                        R34cell3.setCellValue("");
-                        R34cell3.setCellStyle(textStyle);
-                    }
+                    if (row == null) row = sheet.createRow(33);
+                    Cell R34cell2 = row.getCell(1);
+                    if (R34cell2 == null) R34cell2 = row.createCell(1);
+                    R34cell2.setCellValue(record.getR34_BAL_SHEET_PUB_FS() != null ? record.getR34_BAL_SHEET_PUB_FS().doubleValue() : 0);
+                    Cell R34cell3 = row.getCell(2);
+                    if (R34cell3 == null) R34cell3 = row.createCell(2);
+                    R34cell3.setCellValue(record.getR34_UNDER_REG_SOC() != null ? record.getR34_UNDER_REG_SOC().doubleValue() : 0);
 
                     // ================= R35 =================
                     row = sheet.getRow(34);
-                    Cell R35cell2 = row.createCell(1);
-                    if (record.getR35_BAL_SHEET_PUB_FS() != null) {
-                        R35cell2.setCellValue(record.getR35_BAL_SHEET_PUB_FS().doubleValue());
-                        R35cell2.setCellStyle(numberStyle);
-                    } else {
-                        R35cell2.setCellValue("");
-                        R35cell2.setCellStyle(textStyle);
-                    }
-                    Cell R35cell3 = row.createCell(2);
-                    if (record.getR35_UNDER_REG_SOC() != null) {
-                        R35cell3.setCellValue(record.getR35_UNDER_REG_SOC().doubleValue());
-                        R35cell3.setCellStyle(numberStyle);
-                    } else {
-                        R35cell3.setCellValue("");
-                        R35cell3.setCellStyle(textStyle);
-                    }
+                    if (row == null) row = sheet.createRow(34);
+                    Cell R35cell2 = row.getCell(1);
+                    if (R35cell2 == null) R35cell2 = row.createCell(1);
+                    R35cell2.setCellValue(record.getR35_BAL_SHEET_PUB_FS() != null ? record.getR35_BAL_SHEET_PUB_FS().doubleValue() : 0);
+                    Cell R35cell3 = row.getCell(2);
+                    if (R35cell3 == null) R35cell3 = row.createCell(2);
+                    R35cell3.setCellValue(record.getR35_UNDER_REG_SOC() != null ? record.getR35_UNDER_REG_SOC().doubleValue() : 0);
 
                     // ================= R36 =================
                     row = sheet.getRow(35);
-                    Cell R36cell2 = row.createCell(1);
-                    if (record.getR36_BAL_SHEET_PUB_FS() != null) {
-                        R36cell2.setCellValue(record.getR36_BAL_SHEET_PUB_FS().doubleValue());
-                        R36cell2.setCellStyle(numberStyle);
-                    } else {
-                        R36cell2.setCellValue("");
-                        R36cell2.setCellStyle(textStyle);
-                    }
-                    Cell R36cell3 = row.createCell(2);
-                    if (record.getR36_UNDER_REG_SOC() != null) {
-                        R36cell3.setCellValue(record.getR36_UNDER_REG_SOC().doubleValue());
-                        R36cell3.setCellStyle(numberStyle);
-                    } else {
-                        R36cell3.setCellValue("");
-                        R36cell3.setCellStyle(textStyle);
-                    }
+                    if (row == null) row = sheet.createRow(35);
+                    Cell R36cell2 = row.getCell(1);
+                    if (R36cell2 == null) R36cell2 = row.createCell(1);
+                    R36cell2.setCellValue(record.getR36_BAL_SHEET_PUB_FS() != null ? record.getR36_BAL_SHEET_PUB_FS().doubleValue() : 0);
+                    Cell R36cell3 = row.getCell(2);
+                    if (R36cell3 == null) R36cell3 = row.createCell(2);
+                    R36cell3.setCellValue(record.getR36_UNDER_REG_SOC() != null ? record.getR36_UNDER_REG_SOC().doubleValue() : 0);
+
                     // ================= R37 =================
                     row = sheet.getRow(36);
-                    Cell R37cell2 = row.createCell(1);
-                    if (record.getR37_BAL_SHEET_PUB_FS() != null) {
-                        R37cell2.setCellValue(record.getR37_BAL_SHEET_PUB_FS().doubleValue());
-                        R37cell2.setCellStyle(numberStyle);
-                    } else {
-                        R37cell2.setCellValue("");
-                        R37cell2.setCellStyle(textStyle);
-                    }
-                    Cell R37cell3 = row.createCell(2);
-                    if (record.getR37_UNDER_REG_SOC() != null) {
-                        R37cell3.setCellValue(record.getR37_UNDER_REG_SOC().doubleValue());
-                        R37cell3.setCellStyle(numberStyle);
-                    } else {
-                        R37cell3.setCellValue("");
-                        R37cell3.setCellStyle(textStyle);
-                    }
+                    if (row == null) row = sheet.createRow(36);
+                    Cell R37cell2 = row.getCell(1);
+                    if (R37cell2 == null) R37cell2 = row.createCell(1);
+                    R37cell2.setCellValue(record.getR37_BAL_SHEET_PUB_FS() != null ? record.getR37_BAL_SHEET_PUB_FS().doubleValue() : 0);
+                    Cell R37cell3 = row.getCell(2);
+                    if (R37cell3 == null) R37cell3 = row.createCell(2);
+                    R37cell3.setCellValue(record.getR37_UNDER_REG_SOC() != null ? record.getR37_UNDER_REG_SOC().doubleValue() : 0);
+
                     // ================= R38 =================
                     row = sheet.getRow(37);
-                    Cell R38cell2 = row.createCell(1);
-                    if (record.getR38_BAL_SHEET_PUB_FS() != null) {
-                        R38cell2.setCellValue(record.getR38_BAL_SHEET_PUB_FS().doubleValue());
-                        R38cell2.setCellStyle(numberStyle);
-                    } else {
-                        R38cell2.setCellValue("");
-                        R38cell2.setCellStyle(textStyle);
-                    }
-                    Cell R38cell3 = row.createCell(2);
-                    if (record.getR38_UNDER_REG_SOC() != null) {
-                        R38cell3.setCellValue(record.getR38_UNDER_REG_SOC().doubleValue());
-                        R38cell3.setCellStyle(numberStyle);
-                    } else {
-                        R38cell3.setCellValue("");
-                        R38cell3.setCellStyle(textStyle);
-                    }
+                    if (row == null) row = sheet.createRow(37);
+                    Cell R38cell2 = row.getCell(1);
+                    if (R38cell2 == null) R38cell2 = row.createCell(1);
+                    R38cell2.setCellValue(record.getR38_BAL_SHEET_PUB_FS() != null ? record.getR38_BAL_SHEET_PUB_FS().doubleValue() : 0);
+                    Cell R38cell3 = row.getCell(2);
+                    if (R38cell3 == null) R38cell3 = row.createCell(2);
+                    R38cell3.setCellValue(record.getR38_UNDER_REG_SOC() != null ? record.getR38_UNDER_REG_SOC().doubleValue() : 0);
 
                     // ================= R39 =================
                     row = sheet.getRow(38);
-                    Cell R39cell2 = row.createCell(1);
-                    if (record.getR39_BAL_SHEET_PUB_FS() != null) {
-                        R39cell2.setCellValue(record.getR39_BAL_SHEET_PUB_FS().doubleValue());
-                        R39cell2.setCellStyle(numberStyle);
-                    } else {
-                        R39cell2.setCellValue("");
-                        R39cell2.setCellStyle(textStyle);
-                    }
-                    Cell R39cell3 = row.createCell(2);
-                    if (record.getR39_UNDER_REG_SOC() != null) {
-                        R39cell3.setCellValue(record.getR39_UNDER_REG_SOC().doubleValue());
-                        R39cell3.setCellStyle(numberStyle);
-                    } else {
-                        R39cell3.setCellValue("");
-                        R39cell3.setCellStyle(textStyle);
-                    }
+                    if (row == null) row = sheet.createRow(38);
+                    Cell R39cell2 = row.getCell(1);
+                    if (R39cell2 == null) R39cell2 = row.createCell(1);
+                    R39cell2.setCellValue(record.getR39_BAL_SHEET_PUB_FS() != null ? record.getR39_BAL_SHEET_PUB_FS().doubleValue() : 0);
+                    Cell R39cell3 = row.getCell(2);
+                    if (R39cell3 == null) R39cell3 = row.createCell(2);
+                    R39cell3.setCellValue(record.getR39_UNDER_REG_SOC() != null ? record.getR39_UNDER_REG_SOC().doubleValue() : 0);
 
                     // ================= R40 =================
                     row = sheet.getRow(39);
-                    Cell R40cell2 = row.createCell(1);
-                    if (record.getR40_BAL_SHEET_PUB_FS() != null) {
-                        R40cell2.setCellValue(record.getR40_BAL_SHEET_PUB_FS().doubleValue());
-                        R40cell2.setCellStyle(numberStyle);
-                    } else {
-                        R40cell2.setCellValue("");
-                        R40cell2.setCellStyle(textStyle);
-                    }
-                    Cell R40cell3 = row.createCell(2);
-                    if (record.getR40_UNDER_REG_SOC() != null) {
-                        R40cell3.setCellValue(record.getR40_UNDER_REG_SOC().doubleValue());
-                        R40cell3.setCellStyle(numberStyle);
-                    } else {
-                        R40cell3.setCellValue("");
-                        R40cell3.setCellStyle(textStyle);
-                    }
+                    if (row == null) row = sheet.createRow(39);
+                    Cell R40cell2 = row.getCell(1);
+                    if (R40cell2 == null) R40cell2 = row.createCell(1);
+                    R40cell2.setCellValue(record.getR40_BAL_SHEET_PUB_FS() != null ? record.getR40_BAL_SHEET_PUB_FS().doubleValue() : 0);
+                    Cell R40cell3 = row.getCell(2);
+                    if (R40cell3 == null) R40cell3 = row.createCell(2);
+                    R40cell3.setCellValue(record.getR40_UNDER_REG_SOC() != null ? record.getR40_UNDER_REG_SOC().doubleValue() : 0);
 
                     // ================= R41 =================
                     row = sheet.getRow(40);
-                    Cell R41cell2 = row.createCell(1);
-                    if (record.getR41_BAL_SHEET_PUB_FS() != null) {
-                        R41cell2.setCellValue(record.getR41_BAL_SHEET_PUB_FS().doubleValue());
-                        R41cell2.setCellStyle(numberStyle);
-                    } else {
-                        R41cell2.setCellValue("");
-                        R41cell2.setCellStyle(textStyle);
-                    }
-                    Cell R41cell3 = row.createCell(2);
-                    if (record.getR41_UNDER_REG_SOC() != null) {
-                        R41cell3.setCellValue(record.getR41_UNDER_REG_SOC().doubleValue());
-                        R41cell3.setCellStyle(numberStyle);
-                    } else {
-                        R41cell3.setCellValue("");
-                        R41cell3.setCellStyle(textStyle);
-                    }
+                    if (row == null) row = sheet.createRow(40);
+                    Cell R41cell2 = row.getCell(1);
+                    if (R41cell2 == null) R41cell2 = row.createCell(1);
+                    R41cell2.setCellValue(record.getR41_BAL_SHEET_PUB_FS() != null ? record.getR41_BAL_SHEET_PUB_FS().doubleValue() : 0);
+                    Cell R41cell3 = row.getCell(2);
+                    if (R41cell3 == null) R41cell3 = row.createCell(2);
+                    R41cell3.setCellValue(record.getR41_UNDER_REG_SOC() != null ? record.getR41_UNDER_REG_SOC().doubleValue() : 0);
 
                     // ================= R42 =================
                     row = sheet.getRow(41);
-                    Cell R42cell2 = row.createCell(1);
-                    if (record.getR42_BAL_SHEET_PUB_FS() != null) {
-                        R42cell2.setCellValue(record.getR42_BAL_SHEET_PUB_FS().doubleValue());
-                        R42cell2.setCellStyle(numberStyle);
-                    } else {
-                        R42cell2.setCellValue("");
-                        R42cell2.setCellStyle(textStyle);
-                    }
-                    Cell R42cell3 = row.createCell(2);
-                    if (record.getR42_UNDER_REG_SOC() != null) {
-                        R42cell3.setCellValue(record.getR42_UNDER_REG_SOC().doubleValue());
-                        R42cell3.setCellStyle(numberStyle);
-                    } else {
-                        R42cell3.setCellValue("");
-                        R42cell3.setCellStyle(textStyle);
-                    }
+                    if (row == null) row = sheet.createRow(41);
+                    Cell R42cell2 = row.getCell(1);
+                    if (R42cell2 == null) R42cell2 = row.createCell(1);
+                    R42cell2.setCellValue(record.getR42_BAL_SHEET_PUB_FS() != null ? record.getR42_BAL_SHEET_PUB_FS().doubleValue() : 0);
+                    Cell R42cell3 = row.getCell(2);
+                    if (R42cell3 == null) R42cell3 = row.createCell(2);
+                    R42cell3.setCellValue(record.getR42_UNDER_REG_SOC() != null ? record.getR42_UNDER_REG_SOC().doubleValue() : 0);
 
-                    // ================= R44 =================
+                   // ================= R44 =================
                     row = sheet.getRow(43);
-                    Cell R44cell2 = row.createCell(1);
-                    if (record.getR44_BAL_SHEET_PUB_FS() != null) {
-                        R44cell2.setCellValue(record.getR44_BAL_SHEET_PUB_FS().doubleValue());
-                        R44cell2.setCellStyle(numberStyle);
-                    } else {
-                        R44cell2.setCellValue("");
-                        R44cell2.setCellStyle(textStyle);
-                    }
-                    Cell R44cell3 = row.createCell(2);
-                    if (record.getR44_UNDER_REG_SOC() != null) {
-                        R44cell3.setCellValue(record.getR44_UNDER_REG_SOC().doubleValue());
-                        R44cell3.setCellStyle(numberStyle);
-                    } else {
-                        R44cell3.setCellValue("");
-                        R44cell3.setCellStyle(textStyle);
-                    }
+                    if (row == null) row = sheet.createRow(43);
+                    Cell R44cell2 = row.getCell(1);
+                    if (R44cell2 == null) R44cell2 = row.createCell(1);
+                    R44cell2.setCellValue(record.getR44_BAL_SHEET_PUB_FS() != null ? record.getR44_BAL_SHEET_PUB_FS().doubleValue() : 0);
+                    Cell R44cell3 = row.getCell(2);
+                    if (R44cell3 == null) R44cell3 = row.createCell(2);
+                    R44cell3.setCellValue(record.getR44_UNDER_REG_SOC() != null ? record.getR44_UNDER_REG_SOC().doubleValue() : 0);
 
                     // ================= R45 =================
                     row = sheet.getRow(44);
-                    Cell R45cell2 = row.createCell(1);
-                    if (record.getR45_BAL_SHEET_PUB_FS() != null) {
-                        R45cell2.setCellValue(record.getR45_BAL_SHEET_PUB_FS().doubleValue());
-                        R45cell2.setCellStyle(numberStyle);
-                    } else {
-                        R45cell2.setCellValue("");
-                        R45cell2.setCellStyle(textStyle);
-                    }
-                    Cell R45cell3 = row.createCell(2);
-                    if (record.getR45_UNDER_REG_SOC() != null) {
-                        R45cell3.setCellValue(record.getR45_UNDER_REG_SOC().doubleValue());
-                        R45cell3.setCellStyle(numberStyle);
-                    } else {
-                        R45cell3.setCellValue("");
-                        R45cell3.setCellStyle(textStyle);
-                    }
+                    if (row == null) row = sheet.createRow(44);
+                    Cell R45cell2 = row.getCell(1);
+                    if (R45cell2 == null) R45cell2 = row.createCell(1);
+                    R45cell2.setCellValue(record.getR45_BAL_SHEET_PUB_FS() != null ? record.getR45_BAL_SHEET_PUB_FS().doubleValue() : 0);
+                    Cell R45cell3 = row.getCell(2);
+                    if (R45cell3 == null) R45cell3 = row.createCell(2);
+                    R45cell3.setCellValue(record.getR45_UNDER_REG_SOC() != null ? record.getR45_UNDER_REG_SOC().doubleValue() : 0);
 
                     // ================= R46 =================
                     row = sheet.getRow(45);
-                    Cell R46cell2 = row.createCell(1);
-                    if (record.getR46_BAL_SHEET_PUB_FS() != null) {
-                        R46cell2.setCellValue(record.getR46_BAL_SHEET_PUB_FS().doubleValue());
-                        R46cell2.setCellStyle(numberStyle);
-                    } else {
-                        R46cell2.setCellValue("");
-                        R46cell2.setCellStyle(textStyle);
-                    }
-                    Cell R46cell3 = row.createCell(2);
-                    if (record.getR46_UNDER_REG_SOC() != null) {
-                        R46cell3.setCellValue(record.getR46_UNDER_REG_SOC().doubleValue());
-                        R46cell3.setCellStyle(numberStyle);
-                    } else {
-                        R46cell3.setCellValue("");
-                        R46cell3.setCellStyle(textStyle);
-                    }
+                    if (row == null) row = sheet.createRow(45);
+                    Cell R46cell2 = row.getCell(1);
+                    if (R46cell2 == null) R46cell2 = row.createCell(1);
+                    R46cell2.setCellValue(record.getR46_BAL_SHEET_PUB_FS() != null ? record.getR46_BAL_SHEET_PUB_FS().doubleValue() : 0);
+                    Cell R46cell3 = row.getCell(2);
+                    if (R46cell3 == null) R46cell3 = row.createCell(2);
+                    R46cell3.setCellValue(record.getR46_UNDER_REG_SOC() != null ? record.getR46_UNDER_REG_SOC().doubleValue() : 0);
 
                     // ================= R47 =================
                     row = sheet.getRow(46);
-                    Cell R47cell2 = row.createCell(1);
-                    if (record.getR47_BAL_SHEET_PUB_FS() != null) {
-                        R47cell2.setCellValue(record.getR47_BAL_SHEET_PUB_FS().doubleValue());
-                        R47cell2.setCellStyle(numberStyle);
-                    } else {
-                        R47cell2.setCellValue("");
-                        R47cell2.setCellStyle(textStyle);
-                    }
-                    Cell R47cell3 = row.createCell(2);
-                    if (record.getR47_UNDER_REG_SOC() != null) {
-                        R47cell3.setCellValue(record.getR47_UNDER_REG_SOC().doubleValue());
-                        R47cell3.setCellStyle(numberStyle);
-                    } else {
-                        R47cell3.setCellValue("");
-                        R47cell3.setCellStyle(textStyle);
-                    }
+                    if (row == null) row = sheet.createRow(46);
+                    Cell R47cell2 = row.getCell(1);
+                    if (R47cell2 == null) R47cell2 = row.createCell(1);
+                    R47cell2.setCellValue(record.getR47_BAL_SHEET_PUB_FS() != null ? record.getR47_BAL_SHEET_PUB_FS().doubleValue() : 0);
+                    Cell R47cell3 = row.getCell(2);
+                    if (R47cell3 == null) R47cell3 = row.createCell(2);
+                    R47cell3.setCellValue(record.getR47_UNDER_REG_SOC() != null ? record.getR47_UNDER_REG_SOC().doubleValue() : 0);
 
                     // ================= R48 =================
                     row = sheet.getRow(47);
-                    Cell R48cell2 = row.createCell(1);
-                    if (record.getR48_BAL_SHEET_PUB_FS() != null) {
-                        R48cell2.setCellValue(record.getR48_BAL_SHEET_PUB_FS().doubleValue());
-                        R48cell2.setCellStyle(numberStyle);
-                    } else {
-                        R48cell2.setCellValue("");
-                        R48cell2.setCellStyle(textStyle);
-                    }
-                    Cell R48cell3 = row.createCell(2);
-                    if (record.getR48_UNDER_REG_SOC() != null) {
-                        R48cell3.setCellValue(record.getR48_UNDER_REG_SOC().doubleValue());
-                        R48cell3.setCellStyle(numberStyle);
-                    } else {
-                        R48cell3.setCellValue("");
-                        R48cell3.setCellStyle(textStyle);
-                    }
+                    if (row == null) row = sheet.createRow(47);
+                    Cell R48cell2 = row.getCell(1);
+                    if (R48cell2 == null) R48cell2 = row.createCell(1);
+                    R48cell2.setCellValue(record.getR48_BAL_SHEET_PUB_FS() != null ? record.getR48_BAL_SHEET_PUB_FS().doubleValue() : 0);
+                    Cell R48cell3 = row.getCell(2);
+                    if (R48cell3 == null) R48cell3 = row.createCell(2);
+                    R48cell3.setCellValue(record.getR48_UNDER_REG_SOC() != null ? record.getR48_UNDER_REG_SOC().doubleValue() : 0);
 
                     // ================= R49 =================
                     row = sheet.getRow(48);
-                    Cell R49cell2 = row.createCell(1);
-                    if (record.getR49_BAL_SHEET_PUB_FS() != null) {
-                        R49cell2.setCellValue(record.getR49_BAL_SHEET_PUB_FS().doubleValue());
-                        R49cell2.setCellStyle(numberStyle);
-                    } else {
-                        R49cell2.setCellValue("");
-                        R49cell2.setCellStyle(textStyle);
-                    }
-                    Cell R49cell3 = row.createCell(2);
-                    if (record.getR49_UNDER_REG_SOC() != null) {
-                        R49cell3.setCellValue(record.getR49_UNDER_REG_SOC().doubleValue());
-                        R49cell3.setCellStyle(numberStyle);
-                    } else {
-                        R49cell3.setCellValue("");
-                        R49cell3.setCellStyle(textStyle);
-                    }
+                    if (row == null) row = sheet.createRow(48);
+                    Cell R49cell2 = row.getCell(1);
+                    if (R49cell2 == null) R49cell2 = row.createCell(1);
+                    R49cell2.setCellValue(record.getR49_BAL_SHEET_PUB_FS() != null ? record.getR49_BAL_SHEET_PUB_FS().doubleValue() : 0);
+                    Cell R49cell3 = row.getCell(2);
+                    if (R49cell3 == null) R49cell3 = row.createCell(2);
+                    R49cell3.setCellValue(record.getR49_UNDER_REG_SOC() != null ? record.getR49_UNDER_REG_SOC().doubleValue() : 0);
 
                 }
                 workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();

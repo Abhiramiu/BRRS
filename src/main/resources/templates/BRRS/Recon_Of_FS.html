@@ -1242,150 +1242,150 @@ PURPOSE		: BRRSREPORT
                                         <tbody style="font-family: Arial" th:each="reportsummary: ${reportsummary}">
                                             <tr>
                                                 <td th:text="${reportsummary.R7_PRODUCT}"></td>
-                                                <td th:text="${reportsummary.R7_BAL_SHEET_PUB_FS}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R7_BAL_SHEET_PUB_FS, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right" th:attr="RowId='R7', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
-                                                <td th:text="${reportsummary.R7_UNDER_REG_SOC}" style="text-align:right;background-color: #D8D8D8;"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R7_UNDER_REG_SOC, 0, 'COMMA', 0, 'POINT')}" style="text-align:right;background-color: #D8D8D8;"
                                                     th:attr="RowId='R7', ColumnId='C3'"
                                                     onclick="showdetailsbyRowAndColumn(this)" ></td>
                                             </tr>
 
                                             <tr>
                                                 <td th:text="${reportsummary.R8_PRODUCT}"></td>
-                                                <td th:text="${reportsummary.R8_BAL_SHEET_PUB_FS}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R8_BAL_SHEET_PUB_FS, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right" th:attr="RowId='R8', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
-                                                <td th:text="${reportsummary.R8_UNDER_REG_SOC}" style="text-align:right;background-color: #D8D8D8;"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R8_UNDER_REG_SOC, 0, 'COMMA', 0, 'POINT')}" style="text-align:right;background-color: #D8D8D8;"
                                                     th:attr="RowId='R8', ColumnId='C3'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                             </tr>
 
                                             <tr>
                                                 <td th:text="${reportsummary.R9_PRODUCT}"></td>
-                                                <td th:text="${reportsummary.R9_BAL_SHEET_PUB_FS}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R9_BAL_SHEET_PUB_FS, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right" th:attr="RowId='R9', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
-                                                <td th:text="${reportsummary.R9_UNDER_REG_SOC}" style="text-align:right;background-color: #D8D8D8;"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R9_UNDER_REG_SOC, 0, 'COMMA', 0, 'POINT')}" style="text-align:right;background-color: #D8D8D8;"
                                                     th:attr="RowId='R9', ColumnId='C3'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                             </tr>
 
                                             <tr>
                                                 <td th:text="${reportsummary.R10_PRODUCT}"></td>
-                                                <td th:text="${reportsummary.R10_BAL_SHEET_PUB_FS}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R10_BAL_SHEET_PUB_FS, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right" th:attr="RowId='R10', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
-                                                <td th:text="${reportsummary.R10_UNDER_REG_SOC}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R10_UNDER_REG_SOC, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right;background-color: #D8D8D8;" th:attr="RowId='R10', ColumnId='C3'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                             </tr>
 
                                             <tr>
                                                 <td th:text="${reportsummary.R11_PRODUCT}"></td>
-                                                <td th:text="${reportsummary.R11_BAL_SHEET_PUB_FS}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R11_BAL_SHEET_PUB_FS, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right" th:attr="RowId='R11', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
-                                                <td th:text="${reportsummary.R11_UNDER_REG_SOC}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R11_UNDER_REG_SOC, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right;background-color: #D8D8D8;" th:attr="RowId='R11', ColumnId='C3'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                             </tr>
 
                                             <tr>
                                                 <td th:text="${reportsummary.R12_PRODUCT}"></td>
-                                                <td th:text="${reportsummary.R12_BAL_SHEET_PUB_FS}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R12_BAL_SHEET_PUB_FS, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right" th:attr="RowId='R12', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
-                                                <td th:text="${reportsummary.R12_UNDER_REG_SOC}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R12_UNDER_REG_SOC, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right;background-color: #D8D8D8;" th:attr="RowId='R12', ColumnId='C3'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                             </tr>
 
                                             <tr>
                                                 <td th:text="${reportsummary.R13_PRODUCT}"></td>
-                                                <td th:text="${reportsummary.R13_BAL_SHEET_PUB_FS}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R13_BAL_SHEET_PUB_FS, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right" th:attr="RowId='R13', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
-                                                <td th:text="${reportsummary.R13_UNDER_REG_SOC}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R13_UNDER_REG_SOC, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right;background-color: #D8D8D8;" th:attr="RowId='R13', ColumnId='C3'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                             </tr>
 
                                             <tr>
                                                 <td th:text="${reportsummary.R14_PRODUCT}"></td>
-                                                <td th:text="${reportsummary.R14_BAL_SHEET_PUB_FS}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R14_BAL_SHEET_PUB_FS, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right" th:attr="RowId='R14', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
-                                                <td th:text="${reportsummary.R14_UNDER_REG_SOC}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R14_UNDER_REG_SOC, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right;background-color: #D8D8D8;" th:attr="RowId='R14', ColumnId='C3'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                             </tr>
 
                                             <tr>
                                                 <td th:text="${reportsummary.R15_PRODUCT}"></td>
-                                                <td th:text="${reportsummary.R15_BAL_SHEET_PUB_FS}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R15_BAL_SHEET_PUB_FS, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right" th:attr="RowId='R15', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
-                                                <td th:text="${reportsummary.R15_UNDER_REG_SOC}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R15_UNDER_REG_SOC, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right;background-color: #D8D8D8;" th:attr="RowId='R15', ColumnId='C3'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                             </tr>
 
                                             <tr>
                                                 <td th:text="${reportsummary.R16_PRODUCT}"></td>
-                                                <td th:text="${reportsummary.R16_BAL_SHEET_PUB_FS}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R16_BAL_SHEET_PUB_FS, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right" th:attr="RowId='R16', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
-                                                <td th:text="${reportsummary.R16_UNDER_REG_SOC}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R16_UNDER_REG_SOC, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right;background-color: #D8D8D8;" th:attr="RowId='R16', ColumnId='C3'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                             </tr>
 
                                             <tr>
                                                 <td th:text="${reportsummary.R17_PRODUCT}"></td>
-                                                <td th:text="${reportsummary.R17_BAL_SHEET_PUB_FS}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R17_BAL_SHEET_PUB_FS, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right" th:attr="RowId='R17', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
-                                                <td th:text="${reportsummary.R17_UNDER_REG_SOC}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R17_UNDER_REG_SOC, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right;background-color: #D8D8D8;" th:attr="RowId='R17', ColumnId='C3'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                             </tr>
 
                                             <tr>
                                                 <td th:text="${reportsummary.R18_PRODUCT}"></td>
-                                                <td th:text="${reportsummary.R18_BAL_SHEET_PUB_FS}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R18_BAL_SHEET_PUB_FS, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right" th:attr="RowId='R18', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
-                                                <td th:text="${reportsummary.R18_UNDER_REG_SOC}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R18_UNDER_REG_SOC, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right;background-color: #D8D8D8;" th:attr="RowId='R18', ColumnId='C3'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                             </tr>
 
                                             <tr>
                                                 <td th:text="${reportsummary.R19_PRODUCT}"></td>
-                                                <td th:text="${reportsummary.R19_BAL_SHEET_PUB_FS}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R19_BAL_SHEET_PUB_FS, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right" th:attr="RowId='R19', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
-                                                <td th:text="${reportsummary.R19_UNDER_REG_SOC}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R19_UNDER_REG_SOC, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right;background-color: #D8D8D8;" th:attr="RowId='R19', ColumnId='C3'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                             </tr>
 
                                             <tr>
                                                 <td th:text="${reportsummary.R20_PRODUCT}"></td>
-                                                <td th:text="${reportsummary.R20_BAL_SHEET_PUB_FS}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R20_BAL_SHEET_PUB_FS, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right" th:attr="RowId='R20', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
-                                                <td th:text="${reportsummary.R20_UNDER_REG_SOC}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R20_UNDER_REG_SOC, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right;background-color: #D8D8D8;" th:attr="RowId='R20', ColumnId='C3'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                             </tr>
 
                                             <tr>
                                                 <td th:text="${reportsummary.R21_PRODUCT}"style="font-weight:bold"></td>
-                                                <td th:text="${reportsummary.R21_BAL_SHEET_PUB_FS}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R21_BAL_SHEET_PUB_FS, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right" th:attr="RowId='R21', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
-                                                <td th:text="${reportsummary.R21_UNDER_REG_SOC}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R21_UNDER_REG_SOC, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right;background-color: #D8D8D8;" th:attr="RowId='R21', ColumnId='C3'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                             </tr>
@@ -1396,139 +1396,139 @@ PURPOSE		: BRRSREPORT
                                             </tr>
                                             <tr>
                                                 <td th:text="${reportsummary.R23_PRODUCT}"></td>
-                                                <td th:text="${reportsummary.R23_BAL_SHEET_PUB_FS}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R23_BAL_SHEET_PUB_FS, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right" th:attr="RowId='R23', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
-                                                <td th:text="${reportsummary.R23_UNDER_REG_SOC}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R23_UNDER_REG_SOC, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right;background-color: #D8D8D8;" th:attr="RowId='R23', ColumnId='C3'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                             </tr>
 
                                             <tr>
                                                 <td th:text="${reportsummary.R24_PRODUCT}"></td>
-                                                <td th:text="${reportsummary.R24_BAL_SHEET_PUB_FS}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R24_BAL_SHEET_PUB_FS, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right" th:attr="RowId='R24', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
-                                                <td th:text="${reportsummary.R24_UNDER_REG_SOC}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R24_UNDER_REG_SOC, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right;background-color: #D8D8D8;" th:attr="RowId='R24', ColumnId='C3'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                             </tr>
 
                                             <tr>
                                                 <td th:text="${reportsummary.R25_PRODUCT}"></td>
-                                                <td th:text="${reportsummary.R25_BAL_SHEET_PUB_FS}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R25_BAL_SHEET_PUB_FS, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right" th:attr="RowId='R25', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
-                                                <td th:text="${reportsummary.R25_UNDER_REG_SOC}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R25_UNDER_REG_SOC, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right;background-color: #D8D8D8;" th:attr="RowId='R25', ColumnId='C3'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                             </tr>
 
                                             <tr>
                                                 <td th:text="${reportsummary.R26_PRODUCT}"></td>
-                                                <td th:text="${reportsummary.R26_BAL_SHEET_PUB_FS}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R26_BAL_SHEET_PUB_FS, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right" th:attr="RowId='R26', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
-                                                <td th:text="${reportsummary.R26_UNDER_REG_SOC}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R26_UNDER_REG_SOC, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right;background-color: #D8D8D8;" th:attr="RowId='R26', ColumnId='C3'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                             </tr>
 
                                             <tr>
                                                 <td th:text="${reportsummary.R27_PRODUCT}"></td>
-                                                <td th:text="${reportsummary.R27_BAL_SHEET_PUB_FS}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R27_BAL_SHEET_PUB_FS, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right" th:attr="RowId='R27', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
-                                                <td th:text="${reportsummary.R27_UNDER_REG_SOC}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R27_UNDER_REG_SOC, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right;background-color: #D8D8D8;" th:attr="RowId='R27', ColumnId='C3'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                             </tr>
 
                                             <tr>
                                                 <td th:text="${reportsummary.R28_PRODUCT}"></td>
-                                                <td th:text="${reportsummary.R28_BAL_SHEET_PUB_FS}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R28_BAL_SHEET_PUB_FS, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right" th:attr="RowId='R28', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
-                                                <td th:text="${reportsummary.R28_UNDER_REG_SOC}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R28_UNDER_REG_SOC, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right;background-color: #D8D8D8;" th:attr="RowId='R28', ColumnId='C3'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                             </tr>
 
                                             <tr>
                                                 <td th:text="${reportsummary.R29_PRODUCT}"></td>
-                                                <td th:text="${reportsummary.R29_BAL_SHEET_PUB_FS}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R29_BAL_SHEET_PUB_FS, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right" th:attr="RowId='R29', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
-                                                <td th:text="${reportsummary.R29_UNDER_REG_SOC}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R29_UNDER_REG_SOC, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right;background-color: #D8D8D8;" th:attr="RowId='R29', ColumnId='C3'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                             </tr>
 
                                             <tr>
                                                 <td th:text="${reportsummary.R30_PRODUCT}"></td>
-                                                <td th:text="${reportsummary.R30_BAL_SHEET_PUB_FS}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R30_BAL_SHEET_PUB_FS, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right" th:attr="RowId='R30', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
-                                                <td th:text="${reportsummary.R30_UNDER_REG_SOC}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R30_UNDER_REG_SOC, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right;background-color: #D8D8D8;" th:attr="RowId='R30', ColumnId='C3'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                             </tr>
 
                                             <tr>
                                                 <td th:text="${reportsummary.R31_PRODUCT}"></td>
-                                                <td th:text="${reportsummary.R31_BAL_SHEET_PUB_FS}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R31_BAL_SHEET_PUB_FS, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right" th:attr="RowId='R31', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
-                                                <td th:text="${reportsummary.R31_UNDER_REG_SOC}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R31_UNDER_REG_SOC, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right;background-color: #D8D8D8;" th:attr="RowId='R31', ColumnId='C3'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                             </tr>
 
                                             <tr>
                                                 <td th:text="${reportsummary.R32_PRODUCT}"></td>
-                                                <td th:text="${reportsummary.R32_BAL_SHEET_PUB_FS}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R32_BAL_SHEET_PUB_FS, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right" th:attr="RowId='R32', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
-                                                <td th:text="${reportsummary.R32_UNDER_REG_SOC}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R32_UNDER_REG_SOC, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right;background-color: #D8D8D8;" th:attr="RowId='R32', ColumnId='C3'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                             </tr>
 
                                             <tr>
                                                 <td th:text="${reportsummary.R33_PRODUCT}"></td>
-                                                <td th:text="${reportsummary.R33_BAL_SHEET_PUB_FS}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R33_BAL_SHEET_PUB_FS, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right" th:attr="RowId='R33', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
-                                                <td th:text="${reportsummary.R33_UNDER_REG_SOC}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R33_UNDER_REG_SOC, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right;background-color: #D8D8D8;" th:attr="RowId='R33', ColumnId='C3'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                             </tr>
 
                                             <tr>
                                                 <td th:text="${reportsummary.R34_PRODUCT}"></td>
-                                                <td th:text="${reportsummary.R34_BAL_SHEET_PUB_FS}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R34_BAL_SHEET_PUB_FS, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right" th:attr="RowId='R34', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
-                                                <td th:text="${reportsummary.R34_UNDER_REG_SOC}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R34_UNDER_REG_SOC, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right;background-color: #D8D8D8;" th:attr="RowId='R34', ColumnId='C3'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                             </tr>
 
                                             <tr>
                                                 <td th:text="${reportsummary.R35_PRODUCT}"></td>
-                                                <td th:text="${reportsummary.R35_BAL_SHEET_PUB_FS}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R35_BAL_SHEET_PUB_FS, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right" th:attr="RowId='R35', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
-                                                <td th:text="${reportsummary.R35_UNDER_REG_SOC}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R35_UNDER_REG_SOC, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right;background-color: #D8D8D8;" th:attr="RowId='R35', ColumnId='C3'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                             </tr>
                                             <tr>
                                                 <td th:text="${reportsummary.R36_PRODUCT}"style="font-weight:bold"></td>
-                                                <td th:text="${reportsummary.R36_BAL_SHEET_PUB_FS}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R36_BAL_SHEET_PUB_FS, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right" th:attr="RowId='R36', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
-                                                <td th:text="${reportsummary.R36_UNDER_REG_SOC}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R36_UNDER_REG_SOC, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right;background-color: #D8D8D8;" th:attr="RowId='R36', ColumnId='C3'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                             </tr>
@@ -1539,40 +1539,40 @@ PURPOSE		: BRRSREPORT
 
                                             <tr>
                                                 <td th:text="${reportsummary.R38_PRODUCT}"></td>
-                                                <td th:text="${reportsummary.R38_BAL_SHEET_PUB_FS}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R38_BAL_SHEET_PUB_FS, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right" th:attr="RowId='R38', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
-                                                <td th:text="${reportsummary.R38_UNDER_REG_SOC}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R38_UNDER_REG_SOC, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right;background-color: #D8D8D8;" th:attr="RowId='R38', ColumnId='C3'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                             </tr>
 
                                             <tr>
                                                 <td th:text="${reportsummary.R39_PRODUCT}"></td>
-                                                <td th:text="${reportsummary.R39_BAL_SHEET_PUB_FS}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R39_BAL_SHEET_PUB_FS, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right" th:attr="RowId='R39', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
-                                                <td th:text="${reportsummary.R39_UNDER_REG_SOC}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R39_UNDER_REG_SOC, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right;background-color: #D8D8D8;" th:attr="RowId='R39', ColumnId='C3'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                             </tr>
 
                                             <tr>
                                                 <td th:text="${reportsummary.R40_PRODUCT}"></td>
-                                                <td th:text="${reportsummary.R40_BAL_SHEET_PUB_FS}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R40_BAL_SHEET_PUB_FS, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right" th:attr="RowId='R40', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
-                                                <td th:text="${reportsummary.R40_UNDER_REG_SOC}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R40_UNDER_REG_SOC, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right;background-color: #D8D8D8;" th:attr="RowId='R40', ColumnId='C3'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                             </tr>
 
                                             <tr>
                                                 <td th:text="${reportsummary.R41_PRODUCT}"style="font-weight:bold"></td>
-                                                <td th:text="${reportsummary.R41_BAL_SHEET_PUB_FS}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R41_BAL_SHEET_PUB_FS, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right" th:attr="RowId='R41', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
-                                                <td th:text="${reportsummary.R41_UNDER_REG_SOC}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R41_UNDER_REG_SOC, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right;background-color: #D8D8D8;" th:attr="RowId='R41', ColumnId='C3'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                             </tr>
