@@ -708,7 +708,7 @@ PURPOSE		: BRRSREPORT
                     $('#loader').modal('hide');
 
                     if (response && response.toLowerCase().includes('success')) {
-                        showResultModal('Success', response);
+                        showResultModal('BRRS', response);
                     } else {
                         showResultModal('Information', response || 'No data updated.');
                     }
@@ -4728,7 +4728,7 @@ PURPOSE		: BRRSREPORT
                         <p id="resultModalBody"></p>
                         <!-- Your custom styled button -->
                         <button type="button" class="custom-tab-btn" onclick="closemodels()"
-                            data-dismiss="modal">okk</button>
+                            data-dismiss="modal">ok</button>
                     </div>
                 </div>
             </div>

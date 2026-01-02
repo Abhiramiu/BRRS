@@ -332,7 +332,17 @@ PURPOSE		: BRRS_MDISB5REPORT
 			}
 		}
 	</style>
-	<script th:inline="javascript">
+
+<script>
+    // Capture referrer ONCE when page loads
+    var previousUrl = document.referrer;
+    
+    
+    let isResubmissionUpdate = false;
+</script>
+
+
+<script th:inline="javascript">
 		let isDetailsModal = false;
 		$(document).ready(function () {
 			// hide loader on normal load
@@ -461,7 +471,7 @@ PURPOSE		: BRRS_MDISB5REPORT
 			showResultModal('Alert', 'Development in progress');
 
 		}
-		function closemodel() {
+		/* function closemodel() {
 			$("#resultModal").modal("hide");
 			$('#loader').modal('hide');
 
@@ -474,7 +484,7 @@ PURPOSE		: BRRS_MDISB5REPORT
 				// reset flag for next modal usage
 				isDetailsModal = false;
 			}
-		}
+		} */
 		function showResultModal(title, message) {
 			// Set the text for the modal elements
 			$('#resultModalLabel').text(title);
@@ -603,6 +613,10 @@ function cancelModify() {
 		function closemodel() {
 			$("#resultModal").modal("hide");
 			$('#loader').modal('hide');
+			
+			if (isResubmissionUpdate) {
+		        return;
+		    }
 
 			// Only reload if not from Details modal
 			if (!isDetailsModal) {
@@ -620,6 +634,9 @@ function cancelModify() {
 		function fileuploads(btn) {
 		    var asondate = btn.getAttribute("data-todate");
 		    const type = btn.getAttribute("data-type"); // MAIN / RESUB / ARCHIVAL
+		    
+		    // ✅ Mark RESUB once
+		    isResubmissionUpdate = (type && type.toUpperCase() === 'RESUB');
 		    
 		    $('#loader').modal('show');
 
@@ -682,8 +699,12 @@ function cancelModify() {
 			            $("#resultModal").modal("show");
 
 					    //  Wait for user to close the modal manually
-					    $("#resultModal").off("hidden.bs.modal").on("hidden.bs.modal", function () {
-					        location.reload(); // reload ONLY when modal is closed
+					     $("#resultModal").off("hidden.bs.modal").on("hidden.bs.modal", function () {
+					    	 if (isResubmissionUpdate) {
+					    		 window.location.href = previousUrl
+					    		 ? previousUrl 
+					    				 : "/BRRS/Resubmission?rptcode=MDISB5";
+					    	 } // reload ONLY when modal is closed
 					    });
 					},
 			        error: function (jqXHR) {
