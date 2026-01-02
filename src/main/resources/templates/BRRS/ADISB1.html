@@ -1261,13 +1261,13 @@ function cancelModify() {
                      </tr>
                      <!-- r18 -->
                      <tr>          
-                          <td style="text-align:left;">Other(Specify)</td>
+                          <td style="text-align:left;">Associations</td>
                           <td></td>
                          <td></td>
                      <tr>
                      <!-- r19 -->
                      <tr>          
-                          <td style="text-align:left;">Associations</td>
+                          <td style="text-align:left;">Other(Specify)</td>
                           <td></td>
                          <td></td>
                      </tr>
@@ -1369,7 +1369,7 @@ function cancelModify() {
                      </tr>
                      <!-- r30 --> 
                      <tr>
-                         <td style="text-align:left; padding-left:20px;">Accounts with beneficiaries disclosed*</td>
+                         <td style="text-align:left; padding-left:20px;">Accounts with beneficiaries disclosed</td>
                          <td th:each="report: ${reportsummary1}" id="r30" style="text-align: right; width: 200px; padding-left:10px; ">
                          <input class="display-input Show_input " type="text"
                                 th:value="${report.r30_total_no_of_acct != null ? #numbers.formatDecimal(report.r30_total_no_of_acct, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -1495,7 +1495,7 @@ function cancelModify() {
                      </tr>
                      <!-- r43 --> 
                      <tr>
-                         <td style="text-align:left; padding-left:20px;">Business(non-financial)</td>
+                         <td style="text-align:left; padding-left:20px;">Business(financial)</td>
                          <td th:each="report: ${reportsummary1}" id="r43" style="text-align: right; width: 200px; padding-left:10px; ">
                          <input class="display-input Show_input " type="text"
                                 th:value="${report.r43_total_no_of_acct != null ? #numbers.formatDecimal(report.r43_total_no_of_acct, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -1513,7 +1513,7 @@ function cancelModify() {
                      </tr>
                      <!-- r44 --> 
                      <tr>
-                         <td style="text-align:left; padding-left:20px;">Business(financial)</td>
+                         <td style="text-align:left; padding-left:20px;">Business(non-financial)</td>
                          <td th:each="report: ${reportsummary1}" id="r44" style="text-align: right; width: 200px; padding-left:10px; ">
                          <input class="display-input Show_input " type="text"
                                 th:value="${report.r44_total_no_of_acct != null ? #numbers.formatDecimal(report.r44_total_no_of_acct, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -1537,7 +1537,7 @@ function cancelModify() {
                      </tr>
                      <!-- r46 --> 
                      <tr>
-                         <td style="text-align:left; padding-left:20px; font-weight:bold;">Others (Please specify)</td>
+                         <td style="text-align:left; font-weight:bold;">Others (Please specify)</td>
                          <td th:each="report: ${reportsummary1}" id="r46" style="text-align: right; width: 200px; padding-left:10px; ">
                          <input class="display-input Show_input " type="text"
                                 th:value="${report.r46_total_no_of_acct != null ? #numbers.formatDecimal(report.r46_total_no_of_acct, 1, 'COMMA', 0, 'POINT') : '0'}"
