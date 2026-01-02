@@ -49,7 +49,7 @@ import com.bornfire.brrs.entities.BDISB1_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.BDISB1_Summary_Entity;
 import com.bornfire.brrs.entities.BDISB3_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.BDISB3_Detail_Entity;
-import com.bornfire.brrs.entities.BDISB3_Detail_Entity_Archival;
+import com.bornfire.brrs.entities.BDISB3_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.BDISB3_Detail_Repo;
 import com.bornfire.brrs.entities.BDISB3_Detail_Repo_Archival;
 import com.bornfire.brrs.entities.BDISB3_Summary_Entity;
@@ -170,7 +170,7 @@ public class BRRS_BDISB3_ReportService {
 		if ("ARCHIVAL".equals(type) && version != null) {
 			System.out.println(type);
 			// 🔹 Archival branch
-			List<BDISB3_Detail_Entity_Archival> T1Dt1;
+			List<BDISB3_Archival_Detail_Entity> T1Dt1;
 			if (rowId != null && columnId != null) {
 				T1Dt1 = BDISB3_Detail_Repo_Archival.GetDataByRowIdAndColumnId(rowId, columnId, parsedDate, version);
 			} else {

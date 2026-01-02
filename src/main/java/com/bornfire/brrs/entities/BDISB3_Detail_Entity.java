@@ -78,7 +78,12 @@ public class BDISB3_Detail_Entity {
 
 	    @Column(name = "COMPENSATABLE_AMOUNT")
 	    private BigDecimal COMPENSATABLE_AMOUNT;
+	    
+	    @Column(name = "DATA_ENTRY_VERSION", length = 100)
+	    private String dataEntryVersion;
 
+	    @Column(name = "ACCT_BALANCE_IN_PULA", precision = 24, scale = 3)
+	    private BigDecimal acctBalanceInPula;
 
 		public String getSno() {
 			return sno;
@@ -224,9 +229,6 @@ public class BDISB3_Detail_Entity {
 			this.delFlg = delFlg;
 		}
 
-		
-		
-
 		public BigDecimal getAGGREGATE_BALANCE() {
 			return AGGREGATE_BALANCE;
 		}
@@ -243,13 +245,28 @@ public class BDISB3_Detail_Entity {
 			COMPENSATABLE_AMOUNT = cOMPENSATABLE_AMOUNT;
 		}
 
+		public String getDataEntryVersion() {
+			return dataEntryVersion;
+		}
+
+		public void setDataEntryVersion(String dataEntryVersion) {
+			this.dataEntryVersion = dataEntryVersion;
+		}
+
+		public BigDecimal getAcctBalanceInPula() {
+			return acctBalanceInPula;
+		}
+
+		public void setAcctBalanceInPula(BigDecimal acctBalanceInPula) {
+			this.acctBalanceInPula = acctBalanceInPula;
+		}
+
 		public BDISB3_Detail_Entity() {
 			super();
 			// TODO Auto-generated constructor stub
 		}
-	    
-	    
-	    
-	    
+
+
+		
 }
 
