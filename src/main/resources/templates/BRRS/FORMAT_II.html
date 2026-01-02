@@ -1196,10 +1196,20 @@ function cancelModify() {
 							
 							
 								<!-- Modify button -->
-					<button type="button" class="custom-tab-btn"
+					<!-- <button type="button" class="custom-tab-btn"
 							onclick="showmodify(this);" title="Click to EDIT Records"
 							th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
-							th:if="${type != 'ARCHIVAL'}" id="addRecord">Modify</button> 
+							th:if="${type != 'ARCHIVAL'}" id="addRecord">Modify</button>  -->
+							<button type="button"
+        class="custom-tab-btn"
+        onclick="showmodify(this);"
+        title="Click to EDIT Records"
+        th:if="${type != 'ARCHIVAL'
+                and !#strings.contains(#httpServletRequest.requestURI, '/Details')}"
+        th:classappend="${session.PERMISSIONS == 'W' and dtltype == 'report'} ? 'addedit' : ''"
+        id="addRecord">
+    Modify
+</button>
 						<!-- Cancel button (hidden initially) -->
 				<button type="button" class="custom-tab-btn"
 							title="Cancel editing" id="cancelRecord"
@@ -1735,10 +1745,9 @@ function cancelModify() {
         th:attr="RowId='R27', ColumnId='C4'"
         onclick="showdetailsbyRowAndColumn(this)"></td>
 
-    <td style="text-align: right; padding-right:10px;"
+    <td class="green-cell" style="text-align: right; padding-right:10px;"
         th:text="${report?.r27_amt_total ?: ''}"
-        th:attr="RowId='R27', ColumnId='C5'"
-        onclick="showdetailsbyRowAndColumn(this)"></td>
+        ></td>
 </tr>
 
 <!-- R28 -->
