@@ -374,6 +374,11 @@ public class RegulatoryReportServices {
 	BRRS_M_P_L_ReportService BRRS_M_P_L_ReportService;
  	
  	
+ 	
+ 	@Autowired
+	BRRS_GL_SCH_ReportService brrs_gl_sch_reportservice;
+ 	
+ 	
 
 	private static final Logger logger = LoggerFactory.getLogger(RegulatoryReportServices.class);
 
@@ -1041,6 +1046,18 @@ public class RegulatoryReportServices {
 						dtltype, pageable, type, version);
 
 				break;
+				
+				
+			case "GL_SCH":
+
+				repsummary = brrs_gl_sch_reportservice.getGL_SCHView(reportId, fromdate, todate, currency, dtltype,
+						pageable, type, version);
+
+				break;
+				
+				
+				
+				
 
 		}
 
@@ -1458,6 +1475,15 @@ public class RegulatoryReportServices {
 			case "M_P_L":
 
 				repdetail = BRRS_M_P_L_ReportService.getM_P_LcurrentDtl(reportId, fromdate, todate, currency, dtltype,
+						pageable, Filter, type, version);
+				break;
+				
+				
+				
+			case "GL_SCH":
+
+				repdetail = brrs_gl_sch_reportservice.getGL_SCHcurrentDtl(reportId, fromdate, todate, currency,
+						dtltype,
 						pageable, Filter, type, version);
 				break;
 				
@@ -2603,6 +2629,24 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
+				
+				
+			case "GL_SCH":
+				try {
+
+					repfile = brrs_gl_sch_reportservice.getGL_SCHExcel(filename, reportId, fromdate,
+							todate, currency,
+							dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+				
+				
+				
+				
+				
 
 		}
 		return repfile;
@@ -2746,6 +2790,13 @@ public class RegulatoryReportServices {
 			return BRRS_M_P_L_ReportService.getM_P_LDetailExcel(filename, fromdate, todate, currency,
 					dtltype, type, version);
 		}
+		
+		
+		
+		
+		
+		
+		
 		return new byte[0];
 	}
 
@@ -3699,6 +3750,20 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
+				
+			case "GL_SCH":
+				try {
+					archivalData = brrs_gl_sch_reportservice.getGL_SCHArchival();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+				
+				
+				
+				
+				
 
 			default:
 				System.out.println("No archival logic defined for report: " + rptcode);
@@ -4004,6 +4069,16 @@ public class RegulatoryReportServices {
 			fileData = BRRS_M_P_L_ReportService.getM_P_LDetailExcel(filename, fromdate, todate, currency,
 					dtltype, type, version);
 		}
+		
+		
+		else if ("GL_SCH".equals(filename)) {
+
+			fileData = brrs_gl_sch_reportservice.getGL_SCHDetailExcel(filename, fromdate, todate,
+					currency,
+					dtltype, type, version);
+		}
+		
+		
 
 		if (fileData == null) {
 			// logger.warn("Excel generation failed or no data for jobId: {}", jobId);
@@ -4355,6 +4430,14 @@ public class RegulatoryReportServices {
 					modelAndView = BRRS_M_P_L_ReportService.getViewOrEditPage(request.getParameter("acctNo"),
 							request.getParameter("formmode"));
 					break;
+					
+					
+				case "GL_SCH":
+					modelAndView = brrs_gl_sch_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
+							request.getParameter("formmode"));
+					break;
+					
+					
 			}
 		} catch (Exception e) {
 			logger.error("Error processing details for reportId: {}", reportId, e);
@@ -4601,6 +4684,11 @@ public class RegulatoryReportServices {
 				case "M_P_L":
 					response = BRRS_M_P_L_ReportService.updateDetailEdit(request);
 					break;
+					
+				case "GL_SCH":
+					response = brrs_gl_sch_reportservice.updateDetailEdit(request);
+					break;
+					
 
 				default:
 					logger.warn("Unsupported report ID: {}", reportId);

@@ -3,6 +3,7 @@ package com.bornfire.brrs.services;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -46,18 +47,28 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.servlet.ModelAndView;
-import com.bornfire.brrs.entities.GL_SCH_Archival_Detail_Entity;
-import com.bornfire.brrs.entities.GL_SCH_Archival_Summary_Entity1;
-import com.bornfire.brrs.entities.GL_SCH_Archival_Summary_Entity2;
-import com.bornfire.brrs.entities.GL_SCH_Detail_Entity;
-import com.bornfire.brrs.entities.GL_SCH_Summary_Entity1;
-import com.bornfire.brrs.entities.GL_SCH_Summary_Entity2;
+
 import com.bornfire.brrs.entities.BRRS_GL_SCH_Archival_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_GL_SCH_Archival_Summary_Repo1;
 import com.bornfire.brrs.entities.BRRS_GL_SCH_Archival_Summary_Repo2;
+import com.bornfire.brrs.entities.BRRS_GL_SCH_Archival_Summary_Repo3;
 import com.bornfire.brrs.entities.BRRS_GL_SCH_Detail_Repo;
+import com.bornfire.brrs.entities.BRRS_GL_SCH_Manual_Archival_Summary_Repo;
+import com.bornfire.brrs.entities.BRRS_GL_SCH_Manual_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_GL_SCH_Summary_Repo1;
 import com.bornfire.brrs.entities.BRRS_GL_SCH_Summary_Repo2;
+import com.bornfire.brrs.entities.BRRS_GL_SCH_Summary_Repo3;
+import com.bornfire.brrs.entities.FORMAT_II_Manual_Summary_Entity;
+import com.bornfire.brrs.entities.GL_SCH_Archival_Detail_Entity;
+import com.bornfire.brrs.entities.GL_SCH_Archival_Summary_Entity1;
+import com.bornfire.brrs.entities.GL_SCH_Archival_Summary_Entity2;
+import com.bornfire.brrs.entities.GL_SCH_Archival_Summary_Entity3;
+import com.bornfire.brrs.entities.GL_SCH_Detail_Entity;
+import com.bornfire.brrs.entities.GL_SCH_Manual_Archival_Summary_Entity;
+import com.bornfire.brrs.entities.GL_SCH_Manual_Summary_Entity;
+import com.bornfire.brrs.entities.GL_SCH_Summary_Entity1;
+import com.bornfire.brrs.entities.GL_SCH_Summary_Entity2;
+import com.bornfire.brrs.entities.GL_SCH_Summary_Entity3;
 
 @Component
 @Service
@@ -82,6 +93,12 @@ public class BRRS_GL_SCH_ReportService {
 
     @Autowired
     BRRS_GL_SCH_Archival_Summary_Repo2 GL_SCH_Archival_Summary_Repo2;
+    
+    @Autowired
+    BRRS_GL_SCH_Summary_Repo3 GL_SCH_summary_repo3;
+
+    @Autowired
+    BRRS_GL_SCH_Archival_Summary_Repo3 GL_SCH_Archival_Summary_Repo3;
 
     @Autowired
     BRRS_GL_SCH_Detail_Repo GL_SCH_detail_repo;
@@ -89,12 +106,13 @@ public class BRRS_GL_SCH_ReportService {
     @Autowired
     BRRS_GL_SCH_Archival_Detail_Repo GL_SCH_Archival_Detail_Repo;
 
-    // @Autowired
-    // BRRS_GL_SCH_Manual_Summary_Repo GL_SCH_Manual_Summary_Repo1;
-
-    // @Autowired
-    // BRRS_GL_SCH_Manual_Archival_Summary_Repo1 GL_SCH_Manual_Archival_Summary_Repo1;
-
+    @Autowired 
+   	BRRS_GL_SCH_Manual_Summary_Repo                     GL_SCH_Manual_summary_repo;
+   	 
+   	@Autowired
+   	BRRS_GL_SCH_Manual_Archival_Summary_Repo            GL_SCH_Manual_Archival_Summary_Repo;
+   	
+   	
     SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
     public ModelAndView getGL_SCHView(String reportId, String fromdate, String todate,
@@ -117,12 +135,20 @@ public class BRRS_GL_SCH_ReportService {
                         .getdatabydateListarchival(d1, version);
                 List<GL_SCH_Archival_Summary_Entity2> T2Master = GL_SCH_Archival_Summary_Repo2
                         .getdatabydateListarchival(d1, version);
-                // List<GL_SCH_Manual_Archival_Summary_Entity> T3Master = GL_SCH_Manual_Archival_Summary_Repo
-                //         .getdatabydateListarchival(d1, version);
+                List<GL_SCH_Archival_Summary_Entity3> T3Master = GL_SCH_Archival_Summary_Repo3
+                        .getdatabydateListarchival(d1, version);
+                List<GL_SCH_Manual_Archival_Summary_Entity> T4Master = GL_SCH_Manual_Archival_Summary_Repo
+                        .getdatabydateListarchival(d1, version);
+               
                 mv.addObject("reportsummary", T1Master);
                 mv.addObject("reportsummary1", T2Master);
+                mv.addObject("reportsummary2", T3Master);
+                mv.addObject("reportsummary3", T4Master);
+                
                 System.out.println("T1Master Size " + T1Master.size());
                 System.out.println("T2Master Size " + T2Master.size());
+                System.out.println("T3Master Size " + T3Master.size());
+                System.out.println("T4Master Size " + T4Master.size());
 
             }
 
@@ -132,13 +158,21 @@ public class BRRS_GL_SCH_ReportService {
                         .getdatabydateList(dateformat.parse(todate));
                         List<GL_SCH_Summary_Entity2> T2Master = GL_SCH_summary_repo2
                         .getdatabydateList(dateformat.parse(todate));
-                // List<GL_SCH_Manual_Summary_Entity1> T2Master = GL_SCH_Manual_Summary_Repo1
-                //         .getdatabydateList(dateformat.parse(todate));
+                        List<GL_SCH_Summary_Entity3> T3Master = GL_SCH_summary_repo3
+                                .getdatabydateList(dateformat.parse(todate));
+                        List<GL_SCH_Manual_Summary_Entity> T4Master = GL_SCH_Manual_summary_repo
+                                .getdatabydateList(dateformat.parse(todate));
+          
 
-                mv.addObject("reportsummary", T1Master);
-                mv.addObject("reportsummary1", T2Master);
-                System.out.println("T1Master Size " + T1Master.size());
-                System.out.println("T2Master Size " + T2Master.size());
+                        mv.addObject("reportsummary", T1Master);
+                        mv.addObject("reportsummary1", T2Master);
+                        mv.addObject("reportsummary2", T3Master);
+                        mv.addObject("reportsummary3", T4Master);
+                        
+                        System.out.println("T1Master Size " + T1Master.size());
+                        System.out.println("T2Master Size " + T2Master.size());
+                        System.out.println("T3Master Size " + T3Master.size());
+                        System.out.println("T4Master Size " + T4Master.size());
             }
 
         } catch (ParseException e) {
@@ -151,63 +185,7 @@ public class BRRS_GL_SCH_ReportService {
         return mv;
     }
 
-    // public void updateReport(GL_SCH_Manual_Summary_Entity updatedEntity) {
-
-    //     GL_SCH_Manual_Summary_Entity existing = GL_SCH_Manual_Summary_Repo.findById(updatedEntity.getReport_date())
-    //             .orElseThrow(() -> new RuntimeException("Record not found for REPORT_DATE: "
-    //                     + updatedEntity.getReport_date()));
-
-    //     int[] rows = {
-    //             12,
-    //             18, 19, 21, 22, 23, 24, 25, 26, 27, 28, 29,
-    //             42,
-    //             54,
-    //             61
-    //     };
-
-    //     String[] fields = {
-    //             "intrest_div",
-    //             "other_income",
-    //             "operating_expenses",
-    //             "fig_bal_sheet",
-    //             "fig_bal_sheet_bwp",
-    //             "amt_statement_adj",
-    //             "amt_statement_adj_bwp",
-    //             "net_amt",
-    //             "net_amt_bwp",
-    //             "bal_sub",
-    //             "bal_sub_bwp",
-    //             "bal_sub_diaries",
-    //             "bal_sub_diaries_bwp"
-    //     };
-
-    //     try {
-    //         for (int i : rows) {
-    //             for (String field : fields) {
-
-    //                 String getterName = "getR" + i + "_" + field;
-    //                 String setterName = "setR" + i + "_" + field;
-
-    //                 try {
-    //                     Method getter = GL_SCH_Manual_Summary_Entity.class
-    //                             .getMethod(getterName);
-    //                     Method setter = GL_SCH_Manual_Summary_Entity.class
-    //                             .getMethod(setterName, getter.getReturnType());
-
-    //                     Object newValue = getter.invoke(updatedEntity);
-    //                     setter.invoke(existing, newValue);
-
-    //                 } catch (NoSuchMethodException e) {
-    //                     // Field not applicable for this row → skip safely
-    //                 }
-    //             }
-    //         }
-    //     } catch (Exception e) {
-    //         throw new RuntimeException("Error while updating report fields", e);
-    //     }
-
-    //     GL_SCH_Manual_Summary_Repo.save(existing);
-    // }
+   
 
     public ModelAndView getGL_SCHcurrentDtl(String reportId, String fromdate, String todate, String currency,
             String dtltype, Pageable pageable, String filter, String type, String version) {
@@ -311,11 +289,14 @@ public class BRRS_GL_SCH_ReportService {
                 .getdatabydateList(dateformat.parse(todate));
                  List<GL_SCH_Summary_Entity2> dataList1 = GL_SCH_summary_repo2
                 .getdatabydateList(dateformat.parse(todate));
-        // List<GL_SCH_Manual_Summary_Entity> dataList2 = GL_SCH_Manual_Summary_Repo
-        //         .getdatabydateList(dateformat.parse(todate));
+                 List<GL_SCH_Summary_Entity3>dataList2= GL_SCH_summary_repo3
+                         .getdatabydateList(dateformat.parse(todate));
+                 List<GL_SCH_Manual_Summary_Entity>dataList3= GL_SCH_Manual_summary_repo
+                         .getdatabydateList(dateformat.parse(todate));
+        
 
         if (dataList.isEmpty()) {
-            logger.warn("Service: No data found for brrs2.4 report. Returning empty result.");
+            logger.warn("Service: No data found for  GL_SCH report. Returning empty result.");
             return new byte[0];
         }
 
@@ -387,9 +368,16 @@ public class BRRS_GL_SCH_ReportService {
                 for (int i = 0; i < dataList.size(); i++) {
 
                     GL_SCH_Summary_Entity1 record = dataList.get(i);
-                     GL_SCH_Summary_Entity2 record1 = dataList1.get(i);
-                    // GL_SCH_Manual_Summary_Entity record2 = dataList2.get(i);
+                     GL_SCH_Summary_Entity2 record1 = dataList1.get(i); 
+                     GL_SCH_Summary_Entity3 record2 = dataList2.get(i);
+                     GL_SCH_Manual_Summary_Entity record3= dataList3.get(i);
                     System.out.println("rownumber=" + startRow + i);
+                    
+                    
+                    
+                    
+                    
+                    
                     Row row = sheet.getRow(startRow + i);
                     if (row == null) {
                         row = sheet.createRow(startRow + i);
@@ -430,8 +418,10 @@ public class BRRS_GL_SCH_ReportService {
                 .getdatabydateListarchival(dateformat.parse(todate), version);
            List<GL_SCH_Archival_Summary_Entity2> dataList1 = GL_SCH_Archival_Summary_Repo2
                 .getdatabydateListarchival(dateformat.parse(todate), version);        
-        // List<GL_SCH_Manual_Archival_Summary_Entity> dataList2 = GL_SCH_Manual_Archival_Summary_Repo
-        //         .getdatabydateListarchival(dateformat.parse(todate), version);
+           List<GL_SCH_Archival_Summary_Entity3>dataList2= GL_SCH_Archival_Summary_Repo3
+        		   .getdatabydateListarchival(dateformat.parse(todate), version);  
+           List<GL_SCH_Manual_Archival_Summary_Entity>dataList3= GL_SCH_Manual_Archival_Summary_Repo
+        		   .getdatabydateListarchival(dateformat.parse(todate), version);  
 
         if (dataList.isEmpty()) {
             logger.warn("Service: No data found for GL_SCH report. Returning empty result.");
@@ -500,7 +490,8 @@ public class BRRS_GL_SCH_ReportService {
                 for (int i = 0; i < dataList.size(); i++) {
                     GL_SCH_Archival_Summary_Entity1 record = dataList.get(i);
                     GL_SCH_Archival_Summary_Entity1 record1 = dataList.get(i);
-                    // GL_SCH_Manual_Archival_Summary_Entity record2 = dataList1.get(i);
+                    GL_SCH_Archival_Summary_Entity3 record2 = dataList2.get(i);
+                    GL_SCH_Manual_Archival_Summary_Entity record3= dataList3.get(i);
 
                     System.out.println("rownumber=" + startRow + i);
                     Row row = sheet.getRow(startRow + i);
@@ -538,6 +529,13 @@ public class BRRS_GL_SCH_ReportService {
         try {
             GL_SCHArchivallist = GL_SCH_Archival_Summary_Repo1.getGL_SCHarchival();
 GL_SCHArchivallist = GL_SCH_Archival_Summary_Repo2.getGL_SCHarchival();
+GL_SCHArchivallist = GL_SCH_Archival_Summary_Repo3.getGL_SCHarchival();
+GL_SCHArchivallist = GL_SCH_Manual_Archival_Summary_Repo.getGL_SCHarchival();
+
+
+
+
+
             System.out.println("countser" + GL_SCHArchivallist.size());
 
         } catch (Exception e) {
@@ -901,5 +899,109 @@ GL_SCHArchivallist = GL_SCH_Archival_Summary_Repo2.getGL_SCHarchival();
                     .body("Error updating record: " + e.getMessage());
         }
     }
+    
+    
+    
+    
+    
+    
+    public void updateReport(GL_SCH_Manual_Summary_Entity updatedEntity) {
+	    System.out.println("Came to services");
+	    System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
+
+	    //  Use your query to fetch by date
+	    List<GL_SCH_Manual_Summary_Entity> list = GL_SCH_Manual_summary_repo
+	        .getdatabydateList(updatedEntity.getREPORT_DATE());
+
+	    GL_SCH_Manual_Summary_Entity existing;
+	    if (list.isEmpty()) {
+	        // Record not found — optionally create it
+	        System.out.println("No record found for REPORT_DATE: " + updatedEntity.getREPORT_DATE());
+	        existing = new GL_SCH_Manual_Summary_Entity();
+	        existing.setREPORT_DATE(updatedEntity.getREPORT_DATE());
+	    } else {
+	        existing = list.get(0);
+	    }
+
+	    try {
+	        //  Only for specific row numbers
+	    	int[] rows = {61, 103, 130, 139, 241, 243,245};
+
+	    	// Common fields for all these rows
+	    	String[] fields = {
+	    	    "PRODUCT",
+	    	    "FIG_BAL_BWP1",
+	    	    "FIG_BAL_BWP2",
+	    	    "AMT_ADJ_BWP1",
+	    	    "AMT_ADJ_BWP2",
+	    	    "NET_AMT_BWP1",
+	    	    "NET_AMT_BWP2",
+	    	    "BAL_SUB_BWP1",
+	    	    "BAL_SUB_BWP2",
+	    	    "BAL_ACT_SUB_BWP1",
+	    	    "BAL_ACT_SUB_BWP2"
+	    	};
+	    	
+	    	for (int row : rows) {
+
+	    	    String prefix = "R" + row + "_";
+
+	            for (String field : fields) {
+	                String getterName = "get" + prefix + field; 
+	                String setterName = "set" + prefix + field;
+
+	                try {
+	                    Method getter = GL_SCH_Manual_Summary_Entity.class.getMethod(getterName);
+	                    Method setter = GL_SCH_Manual_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+
+	                    Object newValue = getter.invoke(updatedEntity);
+	                    setter.invoke(existing, newValue);
+
+	                } catch (NoSuchMethodException e) {
+	                    // Skip missing fields gracefully
+	                    continue;
+	                }
+	            }
+	        }
+
+	        // Metadata
+	        existing.setREPORT_VERSION(updatedEntity.getREPORT_VERSION());
+	        existing.setREPORT_FREQUENCY(updatedEntity.getREPORT_FREQUENCY());
+	        existing.setREPORT_CODE(updatedEntity.getREPORT_CODE());
+	        existing.setREPORT_DESC(updatedEntity.getREPORT_DESC());
+	        existing.setENTITY_FLG(updatedEntity.getENTITY_FLG());
+	        existing.setMODIFY_FLG(updatedEntity.getMODIFY_FLG());
+	        existing.setDEL_FLG(updatedEntity.getDEL_FLG());
+
+	    } catch (Exception e) {
+	        throw new RuntimeException("Error while updating GL_SCH Summary fields", e);
+	    }
+
+	    //  FIRST COMMIT — forces immediate commit
+	    GL_SCH_Manual_summary_repo.saveAndFlush(existing);
+	    System.out.println("GL_SCH Summary updated and COMMITTED");
+
+	    //  Execute procedure with updated data
+	    String oracleDate = new SimpleDateFormat("dd-MM-yyyy")
+	            .format(updatedEntity.getREPORT_DATE())
+	            .toUpperCase();
+
+	    String sql = "BEGIN BRRS.BRRS_GL_SCH_SUMMARY_PROCEDURE ('" + oracleDate + "'); END;";
+	    jdbcTemplate.execute(sql);
+
+	    System.out.println("Procedure executed for date: " + oracleDate);
+	}
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
 }
