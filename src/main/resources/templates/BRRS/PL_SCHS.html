@@ -691,54 +691,37 @@ PURPOSE		: BRRSREPORT
             }
         }
 
-        function submitPL_SCHSUpdate() {
-            const formData = $('#PL_SCHSDetailForm').serialize(); // Ensure correct form ID
+      let previousUrl = document.referrer;
 
+function submitPL_SCHSUpdate() {
 
+    const formData = $('#PL_SCHSDetailForm').serialize();
 
-            // Show loader while processing
-            $('#loader').modal('show');
+    $('#loader').modal('show');
 
-            $.ajax({
-                url: `/BRRS/Reports/${reportId}/update`,
-                type: 'POST',
-                data: formData,
-                success: function (response) {
-                    $('#loader').modal('hide');
+    $.ajax({
+        url: '/BRRS/Reports/' + reportId + '/update',
+        type: 'POST',
+        data: formData,
 
-                    // Show message via modal
-                    if (response && response.toLowerCase().includes('success')) {
-                        showResultModal('BRRS', response);
-                    } else {
-                        showResultModal('Information', response || 'No data updated.');
-                    }
+        success: function (response) {
+            $('#loader').modal('hide');
 
-                    // Redirect immediately
-                    if (previousUrl) {
-                        window.location.href = previousUrl;
-                    } else {
-                        window.history.back();
-                    }
-                },
-                error: function (xhr, status, error) {
-                    $('#loader').modal('hide');
-                    console.error("Update error:", error);
+            if (response && response.toLowerCase().includes('success')) {
+                showResultModal('Success', response);
+            } else {
+                showResultModal('Information', response || 'No data updated.');
+            }
+        },
 
-                    showResultModal('Error', 'Failed to update record. Please try again.');
-
-
-                }
-            });
+        error: function () {
+            $('#loader').modal('hide');
+            showResultModal('Error', 'Failed to update record. Please try again.');
         }
+    });
+}
 
-        function showResultModal(title, message) {
-            // Set the text for the modal elements
-            $('#resultModalLabel').text(title);
-            $('#resultModalBody').text(message);
-
-            // Show the modal
-            $('#resultModal').modal('show');
-        }
+        
 
         function startReport(button) {
             const alertMsg = document.getElementById("alertMessage");
@@ -1322,7 +1305,15 @@ PURPOSE		: BRRSREPORT
 
     <script>
 
+	function closemodels() {
+	    $("#resultModal").modal("hide");
+	    $('#loader').modal('hide');
 
+		// Reload the page after a short delay to ensure the modal animation completes smoothly.
+		    setTimeout(function () {
+		        location.reload();
+		    }, 300);
+	}
         function fileuploads(btn) {
             const asondate = btn.getAttribute("data-todate");
             const type = btn.getAttribute("data-type");
@@ -4702,134 +4693,134 @@ PURPOSE		: BRRSREPORT
                                 </div>
                             </div>
 
-                            <div style="text-align:center; margin-top:20px;">
-                                <button type="button" class="custom-tab-btn" th:if="${formmode == 'edit'}"
-                                    onclick="submitPL_SCHSUpdate()">Update</button>
-
-                            </div>
+                             <div style="text-align:center; margin-top:20px;">
+							        <button type="button" class="custom-tab-btn" 
+							        th:if="${formmode == 'edit'}" onclick="submitPL_SCHSUpdate()">Update</button>
+							      </div>
                         </form>
                     </div>
                 </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            </div>
-
-
-
-        </div>
-
-
-
-        <div class="modal fade" id="loader" data-backdrop="static" data-keyboard="false">
-            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-                <div class="modal-content" style="background: transparent;">
-                    <div class="modal-body" style="text-align: center">
-                        <div>
-                            <img th:src=@{/images/loader.gif} id="bfirelogo"
-                                style="width: 153px; height: auto; margin-left: 18px; background-color: transparent; border-color: transparent;"
-                                alt="Bornfire">
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
 
 
-
-        <!-- Custom Alert/Result Modal (Matches your existing style) -->
-        <div class="modal fade" id="resultModal">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <!-- Your custom styled header -->
-                    <div class="menu-title-header">
-                        <div class="modal-title" id="resultModalLabel" style="text-align: center; color: white;">
-                            <!-- Title will be set by JavaScript -->
-                        </div>
-                    </div>
-                    <div class="modal-body" style="text-align: center; font-size: 1.1rem;">
-                        <p id="resultModalBody"></p>
-                        <!-- Your custom styled button -->
-                        <button type="button" class="custom-tab-btn" onclick="closemodel()"
-                            data-dismiss="modal">OK</button>
-                    </div>
-                </div>
-            </div>
-        </div>
+	<div class="modal fade" id="loader" data-backdrop="static"
+		data-keyboard="false">
+		<div
+			class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+			<div class="modal-content" style="background: transparent;">
+				<div class="modal-body" style="text-align: center">
+					<div>
+						<img th:src=@{/images/loader.gif} id="bfirelogo"
+							style="width: 153px; height: auto; margin-left: 18px; background-color: transparent; border-color: transparent;"
+							alt="Bornfire">
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 
 
 
-        <!-- Custom Cellresult Modal -->
-        <div class="modal fade" id="cellresultModal">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
+	<!-- Custom Alert/Result Modal (Matches your existing style) For Modify in Summary -->
+	<div class="modal fade" id="resultModal">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<!-- Your custom styled header -->
+				<div class="menu-title-header">
+					<div class="modal-title" id="resultModalLabel"
+						style="text-align: center; color: white;">
+						<!-- Title will be set by JavaScript -->
+					</div>
+				</div>
+				<div class="modal-body"
+					style="text-align: center; font-size: 1.1rem;">
+					<p id="resultModalBody"></p>
+					<!-- Your custom styled button -->
+					<button type="button" class="custom-tab-btn" onclick="closemodels()"
+						data-dismiss="modal">okk</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- For Edit in Detail page -->
+<div class="modal fade" id="resultModal1" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="menu-title-header">
+        <div class="modal-title " id="resultModalLabel1"style="text-align: center; color: white;"></div>
+      </div>
+      <div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+        <p id="resultModalBody1"></p>
+        <button type="button" class="custom-tab-btn" onclick="redirectBack()">OK</button>
+      </div>
+    </div>
+  </div>
+</div>
 
-                    <!-- Custom header -->
-                    <div class="menu-title-header"
-                        style="background-color: #6c7a91; padding: 8px; border-radius: 5px 5px 0 0;">
-                        <div class="modal-title" id="cellresultModalLabel" style="text-align: center; color: white;">Do
-                            you want to
-                            open the report?</div>
-                    </div>
+	
+<!-- Custom Cellresult Modal -->
+		<div class="modal fade" id="cellresultModal">
+		  <div class="modal-dialog modal-dialog-centered">
+		    <div class="modal-content">
+		      
+		      <!-- Custom header -->
+		      <div class="menu-title-header" style="background-color:#6c7a91; padding: 8px; border-radius:5px 5px 0 0;">
+		        <div class="modal-title" id="cellresultModalLabel" style="text-align: center; color: white;">
+		          Do you want to open the report?
+		        </div>
+		      </div>
 
-                    <div class="modal-body" style="text-align: center; font-size: 1.1rem;">
-                        <button type="button" class="custom-tab-btn cancel-btn" data-bs-dismiss="modal"
-                            style="margin-right: 10px; border: 2px solid #6c7a91; background: white; color: black; border-radius: 20px; padding: 5px 15px;">
-                            Cancel</button>
-                        <button type="button" class="custom-tab-btn yes-btn"
-                            style="background: #6c7a91; color: white; border: none; border-radius: 20px; padding: 5px 20px;">
-                            Yes</button>
-                    </div>
-                </div>
-            </div>
-        </div>
+		      <div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+		        <button type="button" class="custom-tab-btn cancel-btn" data-bs-dismiss="modal"  style="margin-right:10px; border:2px solid #6c7a91; background:white; color:black; border-radius:20px; padding:5px 15px;">
+		          Cancel
+		        </button>
+		        <button type="button" class="custom-tab-btn yes-btn" style="background:#6c7a91; color:white; border:none; border-radius:20px; padding:5px 20px;">
+		          Yes
+		        </button>
+		      </div>
+		    </div>
+		  </div>
+		</div>
 
 
 
 </body>
 
 <script>
+  
+
+
     function closemodel() {
-        let previousUrl = document.referrer;
         $('#alert').modal('hide');
         $('#resultModal').modal('hide');
-        $('#loader').modal('hide');
 
-        // Navigate ONLY when OK is clicked
-        if (previousUrl) {
-            window.location.href = previousUrl;
-        } else {
-            window.history.back();
-        }
     }
+//    function showResultModal(title, message) {
+// 			// Set the text for the modal elements
+// 			$('#resultModalLabel').text(title);
+// 			$('#resultModalBody').text(message);
 
-    // function closemodel() {
-    //     $('#alert').modal('hide');
-    //     $('#resultModal').modal('hide');
+// 			// Show the modal
+// 			$('#resultModal').modal('show');
+// 		}
 
-    // }
-    // function closemodel() {
-    //     $("#resultModal").modal("hide");
-    //     $('#loader').modal('hide');
+function showResultModal(title, message) {
+    document.getElementById('resultModalLabel1').innerText = title;
+    document.getElementById('resultModalBody1').innerText = message;
 
-    //     // Reload the page after a short delay to ensure the modal animation completes smoothly.
-    //     setTimeout(function () {
-    //         location.reload();
-    //     }, 300);
-    // }
+    const modal = new bootstrap.Modal(document.getElementById('resultModal1'));
+    modal.show();
+}
+
+function redirectBack() {
+    if (previousUrl) {
+        window.location.href = previousUrl;
+    } else {
+        window.history.back();
+    }
+}
+
 </script>
 <style>
     /* Your existing CSS - this is the correct approach */
