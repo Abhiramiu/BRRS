@@ -373,6 +373,9 @@ public class RegulatoryReportServices {
  	@Autowired
 	BRRS_M_P_L_ReportService BRRS_M_P_L_ReportService;
  	
+ 	@Autowired
+	BRRS_BORR_UFCE_ReportService BRRS_BORR_UFCE_ReportService;
+ 	
  	
  	
  	@Autowired
@@ -1047,6 +1050,7 @@ public class RegulatoryReportServices {
 
 				break;
 				
+
 				
 			case "GL_SCH":
 
@@ -1058,6 +1062,13 @@ public class RegulatoryReportServices {
 				
 				
 				
+
+			case "BORR_UFCE":
+				repsummary = BRRS_BORR_UFCE_ReportService.getBORR_UFCEView(reportId, fromdate, todate, currency,
+						dtltype, pageable, type, version);
+
+				break;
+
 
 		}
 
@@ -1479,11 +1490,15 @@ public class RegulatoryReportServices {
 				break;
 				
 				
-				
 			case "GL_SCH":
 
-				repdetail = brrs_gl_sch_reportservice.getGL_SCHcurrentDtl(reportId, fromdate, todate, currency,
-						dtltype,
+				repdetail = brrs_gl_sch_reportservice.getGL_SCHcurrentDtl(reportId, fromdate, todate, currency, dtltype,
+						pageable, Filter, type, version);
+				break;
+
+			case "BORR_UFCE":
+
+				repdetail = BRRS_BORR_UFCE_ReportService.getBORR_UFCEcurrentDtl(reportId, fromdate, todate, currency, dtltype,
 						pageable, Filter, type, version);
 				break;
 				
@@ -2628,25 +2643,32 @@ public class RegulatoryReportServices {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				break;
-				
+				break;				
 				
 			case "GL_SCH":
 				try {
 
-					repfile = brrs_gl_sch_reportservice.getGL_SCHExcel(filename, reportId, fromdate,
-							todate, currency,
-							dtltype, type, version);
+					repfile = brrs_gl_sch_reportservice.getGL_SCHExcel(filename, reportId, fromdate, todate,
+							currency, dtltype, type, version);
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				break;
+					
+			case "BORR_UFCE":
+				try {
+					repfile = BRRS_BORR_UFCE_ReportService.getBORR_UFCEExcel(filename, reportId, fromdate, todate,
+							currency, dtltype, type, version);
+
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+
 				
-				
-				
-				
-				
+
 
 		}
 		return repfile;
@@ -2791,12 +2813,11 @@ public class RegulatoryReportServices {
 					dtltype, type, version);
 		}
 		
-		
-		
-		
-		
-		
-		
+		else if ("BORR_UFCEDetail".equals(filename)) {
+			return BRRS_BORR_UFCE_ReportService.getBORR_UFCEDetailExcel(filename, fromdate, todate, currency,
+					dtltype, type, version);
+		}
+
 		return new byte[0];
 	}
 
@@ -3751,6 +3772,7 @@ public class RegulatoryReportServices {
 				}
 				break;
 				
+
 			case "GL_SCH":
 				try {
 					archivalData = brrs_gl_sch_reportservice.getGL_SCHArchival();
@@ -3759,11 +3781,17 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
-				
-				
-				
-				
-				
+
+			case "BORR_UFCE":
+				try {
+					archivalData = BRRS_BORR_UFCE_ReportService.getBORR_UFCEArchival();
+
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+
 
 			default:
 				System.out.println("No archival logic defined for report: " + rptcode);
@@ -4077,8 +4105,14 @@ public class RegulatoryReportServices {
 					currency,
 					dtltype, type, version);
 		}
-		
-		
+				
+
+		else if ("BORR_UFCEDetail".equals(filename)) {
+
+			fileData = BRRS_BORR_UFCE_ReportService.getBORR_UFCEDetailExcel(filename, fromdate, todate, currency,
+					dtltype, type, version);
+		}
+
 
 		if (fileData == null) {
 			// logger.warn("Excel generation failed or no data for jobId: {}", jobId);
@@ -4431,13 +4465,15 @@ public class RegulatoryReportServices {
 							request.getParameter("formmode"));
 					break;
 					
-					
 				case "GL_SCH":
 					modelAndView = brrs_gl_sch_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
 							request.getParameter("formmode"));
 					break;
-					
-					
+			
+				case "BORR_UFCE":
+					modelAndView = BRRS_BORR_UFCE_ReportService.getViewOrEditPage(request.getParameter("acctNo"),
+							request.getParameter("formmode"));
+					break;
 			}
 		} catch (Exception e) {
 			logger.error("Error processing details for reportId: {}", reportId, e);
@@ -4689,6 +4725,9 @@ public class RegulatoryReportServices {
 					response = brrs_gl_sch_reportservice.updateDetailEdit(request);
 					break;
 					
+				case "BORR_UFCE":
+					response = BRRS_BORR_UFCE_ReportService.updateDetailEdit(request);
+					break;
 
 				default:
 					logger.warn("Unsupported report ID: {}", reportId);
