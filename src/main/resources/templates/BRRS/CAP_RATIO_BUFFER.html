@@ -1212,7 +1212,10 @@ function cancelModify() {
 										
 												
 													<td style="text-align: right; padding-right:10px; "  
-												th:text="${report?.r2_cap_ratio_buff_amt ?: ''}"
+												
+												 th:text="${report?.r2_cap_ratio_buff_amt != null 
+              ? #numbers.formatDecimal(report.r2_cap_ratio_buff_amt, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
 												th:attr="RowId='R2', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 
@@ -1236,7 +1239,9 @@ function cancelModify() {
 										
 												
 													<td style="text-align: right; padding-right:10px; "  
-												th:text="${report?.r3_cap_ratio_buff_amt ?: ''}"
+												 th:text="${report?.r3_cap_ratio_buff_amt != null 
+              ? #numbers.formatDecimal(report.r3_cap_ratio_buff_amt, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
 												th:attr="RowId='R3', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 
@@ -1259,7 +1264,9 @@ function cancelModify() {
 										
 												
 													<td style="text-align: right; padding-right:10px;  width:200px"  
-												th:text="${report?.r4_cap_ratio_buff_amt ?: ''}"
+												 th:text="${report?.r4_cap_ratio_buff_amt != null 
+              ? #numbers.formatDecimal(report.r4_cap_ratio_buff_amt, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
 												th:attr="RowId='R4', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 
@@ -1283,7 +1290,9 @@ function cancelModify() {
 										
 												
 													<td style="text-align: right; padding-right:10px; "  
-												th:text="${report?.r5_cap_ratio_buff_amt ?: ''}"
+												 th:text="${report?.r5_cap_ratio_buff_amt != null 
+              ? #numbers.formatDecimal(report.r5_cap_ratio_buff_amt, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
 												th:attr="RowId='R5', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 
@@ -1306,7 +1315,9 @@ function cancelModify() {
 										
 												
 													<td style="text-align: right; padding-right:10px; "  
-												th:text="${report?.r6_cap_ratio_buff_amt ?: ''}"
+												 th:text="${report?.r6_cap_ratio_buff_amt != null 
+              ? #numbers.formatDecimal(report.r6_cap_ratio_buff_amt, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
 												th:attr="RowId='R6', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 
@@ -1329,7 +1340,9 @@ function cancelModify() {
 										
 												
 													<td style="text-align: right; padding-right:10px; "  
-												th:text="${report?.r7_cap_ratio_buff_amt ?: ''}"
+												 th:text="${report?.r7_cap_ratio_buff_amt != null 
+              ? #numbers.formatDecimal(report.r7_cap_ratio_buff_amt, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
 												th:attr="RowId='R7', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 
@@ -1352,7 +1365,9 @@ function cancelModify() {
 										
 												
 													<td style="text-align: right; padding-right:10px; "  
-												th:text="${report?.r8_cap_ratio_buff_amt ?: ''}"
+												 th:text="${report?.r8_cap_ratio_buff_amt != null 
+              ? #numbers.formatDecimal(report.r8_cap_ratio_buff_amt, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
 												th:attr="RowId='R8', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 
@@ -1397,7 +1412,9 @@ function cancelModify() {
 										
 												
 													<td style="text-align: right; padding-right:10px; "  
-												th:text="${report?.r11_cap_ratio_buff_amt ?: ''}"
+												 th:text="${report?.r11_cap_ratio_buff_amt != null 
+              ? #numbers.formatDecimal(report.r11_cap_ratio_buff_amt, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
 												th:attr="RowId='R11', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 
@@ -1419,7 +1436,9 @@ function cancelModify() {
 										
 												
 													<td style="text-align: right; padding-right:10px; "  
-												th:text="${report?.r12_cap_ratio_buff_amt ?: ''}"
+												 th:text="${report?.r12_cap_ratio_buff_amt != null 
+              ? #numbers.formatDecimal(report.r12_cap_ratio_buff_amt, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
 												th:attr="RowId='R12', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 
@@ -1443,7 +1462,9 @@ function cancelModify() {
 										
 												
 													<td style="text-align: right; padding-right:10px; "  
-												th:text="${report?.r13_cap_ratio_buff_amt ?: ''}"
+												 th:text="${report?.r13_cap_ratio_buff_amt != null 
+              ? #numbers.formatDecimal(report.r13_cap_ratio_buff_amt, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
 												th:attr="RowId='R13', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 
@@ -1477,7 +1498,9 @@ function cancelModify() {
 										
 												
 													<td style="text-align: right; padding-right:10px; "  
-												th:text="${report?.r15_cap_ratio_buff_amt ?: ''}"
+												 th:text="${report?.r15_cap_ratio_buff_amt != null 
+              ? #numbers.formatDecimal(report.r15_cap_ratio_buff_amt, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
 												th:attr="RowId='R15', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 
@@ -1502,7 +1525,9 @@ function cancelModify() {
 										
 												
 													<td style="text-align: right; padding-right:10px; "  
-												th:text="${report?.r16_cap_ratio_buff_amt ?: ''}"
+												 th:text="${report?.r16_cap_ratio_buff_amt != null 
+              ? #numbers.formatDecimal(report.r16_cap_ratio_buff_amt, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
 												th:attr="RowId='R16', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 
@@ -1526,7 +1551,9 @@ function cancelModify() {
 										
 												
 													<td style="text-align: right; padding-right:10px; "  
-												th:text="${report?.r17_cap_ratio_buff_amt ?: ''}"
+												 th:text="${report?.r17_cap_ratio_buff_amt != null 
+              ? #numbers.formatDecimal(report.r17_cap_ratio_buff_amt, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
 												th:attr="RowId='R17', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 
@@ -1550,7 +1577,9 @@ function cancelModify() {
 										
 												
 													<td style="text-align: right; padding-right:10px; "  
-												th:text="${report?.r18_cap_ratio_buff_amt ?: ''}"
+												 th:text="${report?.r18_cap_ratio_buff_amt != null 
+              ? #numbers.formatDecimal(report.r18_cap_ratio_buff_amt, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
 												th:attr="RowId='R18', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 
@@ -1584,7 +1613,9 @@ function cancelModify() {
 										
 												
 													<td style="text-align: right; padding-right:10px; "  
-												th:text="${report?.r20_cap_ratio_buff_amt ?: ''}"
+												 th:text="${report?.r20_cap_ratio_buff_amt != null 
+              ? #numbers.formatDecimal(report.r20_cap_ratio_buff_amt, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
 												th:attr="RowId='R20', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 
@@ -1609,7 +1640,9 @@ function cancelModify() {
 										
 												
 													<td style="text-align: right; padding-right:10px; "  
-												th:text="${report?.r21_cap_ratio_buff_amt ?: ''}"
+												 th:text="${report?.r21_cap_ratio_buff_amt != null 
+              ? #numbers.formatDecimal(report.r21_cap_ratio_buff_amt, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
 												th:attr="RowId='R21', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 
@@ -1634,7 +1667,9 @@ function cancelModify() {
 										
 												
 													<td style="text-align: right; padding-right:10px; "  
-												th:text="${report?.r22_cap_ratio_buff_amt ?: ''}"
+											 th:text="${report?.r22_cap_ratio_buff_amt != null 
+              ? #numbers.formatDecimal(report.r22_cap_ratio_buff_amt, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
 												th:attr="RowId='R22', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 
@@ -1657,7 +1692,9 @@ function cancelModify() {
 										
 												
 													<td style="text-align: right; padding-right:10px; "  
-												th:text="${report?.r23_cap_ratio_buff_amt ?: ''}"
+											 th:text="${report?.r23_cap_ratio_buff_amt != null 
+              ? #numbers.formatDecimal(report.r23_cap_ratio_buff_amt, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
 												th:attr="RowId='R23', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 
@@ -1683,7 +1720,9 @@ function cancelModify() {
     </td>
 
     <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r25_cap_ratio_buff_amt ?: ''}"
+       th:text="${report?.r25_cap_ratio_buff_amt != null 
+              ? #numbers.formatDecimal(report.r25_cap_ratio_buff_amt, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
         th:attr="RowId='R25', ColumnId='C2'"
         onclick="showdetailsbyRowAndColumn(this)">
     </td>
@@ -1698,7 +1737,9 @@ function cancelModify() {
     </td>
 
     <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r26_cap_ratio_buff_amt ?: ''}"
+        th:text="${report?.r26_cap_ratio_buff_amt != null 
+              ? #numbers.formatDecimal(report.r26_cap_ratio_buff_amt, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
         th:attr="RowId='R26', ColumnId='C2'"
         onclick="showdetailsbyRowAndColumn(this)">
     </td>
@@ -1713,7 +1754,9 @@ function cancelModify() {
     </td>
 
     <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r27_cap_ratio_buff_amt ?: ''}"
+        th:text="${report?.r27_cap_ratio_buff_amt != null 
+              ? #numbers.formatDecimal(report.r27_cap_ratio_buff_amt, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
         th:attr="RowId='R27', ColumnId='C2'"
         onclick="showdetailsbyRowAndColumn(this)">
     </td>
@@ -1728,7 +1771,9 @@ function cancelModify() {
     </td>
 
     <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r28_cap_ratio_buff_amt ?: ''}"
+       th:text="${report?.r28_cap_ratio_buff_amt != null 
+              ? #numbers.formatDecimal(report.r28_cap_ratio_buff_amt, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
         th:attr="RowId='R28', ColumnId='C2'"
         onclick="showdetailsbyRowAndColumn(this)">
     </td>
@@ -1743,7 +1788,9 @@ function cancelModify() {
     </td>
 
     <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r29_cap_ratio_buff_amt ?: ''}"
+        th:text="${report?.r29_cap_ratio_buff_amt != null 
+              ? #numbers.formatDecimal(report.r29_cap_ratio_buff_amt, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
         th:attr="RowId='R29', ColumnId='C2'"
         onclick="showdetailsbyRowAndColumn(this)">
     </td>
@@ -1758,7 +1805,9 @@ function cancelModify() {
     </td>
 
     <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r30_cap_ratio_buff_amt ?: ''}"
+       th:text="${report?.r30_cap_ratio_buff_amt != null 
+              ? #numbers.formatDecimal(report.r30_cap_ratio_buff_amt, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
         th:attr="RowId='R30', ColumnId='C2'"
         onclick="showdetailsbyRowAndColumn(this)">
     </td>

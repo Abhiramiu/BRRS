@@ -92,110 +92,106 @@ PURPOSE		: BRRS Capital Adequacy  REPORT
 </style>
 
 <style>
-		.left-arrow-circle {
-			background-color: white;
-			color: #007bff;
-			border-radius: 50%;
-			padding: 8px;
-			margin-right: 10px;
-			cursor: pointer;
-		}
+.left-arrow-circle {
+	background-color: white;
+	color: #007bff;
+	border-radius: 50%;
+	padding: 8px;
+	margin-right: 10px;
+	cursor: pointer;
+}
 
-		/* 🚌 Bus display style box */
-		/* 🚌 Bus display style box */
-					.boards {
-						transform: translateY(6px);
-					  background-color: rgb(107, 122, 143);
-					  color: white;
-					  padding: 5px 80px;
-					  border-radius: 8px;
-					  overflow: hidden;
-					  white-space: nowrap;
-					  flex: 1; /* ✅ makes it take available space dynamically */
-					  min-width: 200px;
-					  box-shadow: 0 0 10px rgb(107, 122, 143);
-					  position: relative;
-					}
+/* 🚌 Bus display style box */
+/* 🚌 Bus display style box */
+.boards {
+	transform: translateY(6px);
+	background-color: rgb(107, 122, 143);
+	color: white;
+	padding: 5px 80px;
+	border-radius: 8px;
+	overflow: hidden;
+	white-space: nowrap;
+	flex: 1; /* ✅ makes it take available space dynamically */
+	min-width: 200px;
+	box-shadow: 0 0 10px rgb(107, 122, 143);
+	position: relative;
+}
 
-		/* ✨ Scrolling animation */
-		.scrolling-text {
-			display: inline-block;
-			font-family: "Courier New", monospace;
-			font-weight: bold;
-			letter-spacing: 1px;
-			animation: scroll-left 10s linear infinite;
-		}
+/* ✨ Scrolling animation */
+.scrolling-text {
+	display: inline-block;
+	font-family: "Courier New", monospace;
+	font-weight: bold;
+	letter-spacing: 1px;
+	animation: scroll-left 10s linear infinite;
+}
 
-		/* Animation keyframes */
-		@keyframes scroll-left {
-			0% {
-				transform: translateX(100%);
-			}
-
-			100% {
-				transform: translateX(-100%);
-			}
-		}
-	</style>
-	
-	
-	<style>
-					/* Keep the header fixed and aligned */
-					.dataTables_scrollHeadInner,
-					.dataTables_scrollBody table {
-					  width: 100% !important;
-					}
-
-					/* Prevent thead shrinking at zoom */
-					.dataTables_scrollHeadInner table {
-					  width: 100% !important;
-					  min-width: 100% !important;
-					}
-
-					#reportdetails {
-					  width: 100% !important;
-					  table-layout: fixed !important;
-					}
-
-					#reportdetails th, 
-					#reportdetails td {
-					  white-space: nowrap;
-					}
-					table.dataTable th.dt-type-numeric,
-						table.dataTable th.dt-type-date,
-						table.dataTable td.dt-type-numeric,
-						table.dataTable td.dt-type-date {
-						    text-align: left !important;
-						}
-						
-						/* Right-align header (6th column = ACCT BALANCE) */
-															table.dataTable th.dt-type-numeric:nth-child(6) {
-															  text-align: right !important;
-															}
-															
-															/* Right-align data (6th column = ACCT BALANCE) */
-																									#reportdetails td:nth-child(6),
-																									.dataTables_scrollHeadInner table th:nth-child(6) {
-																									 text-align: right !important;
-																									 padding-right: 10px !important;
-																										}
-						
-				
+/* Animation keyframes */
+@
+keyframes scroll-left { 0% {
+	transform: translateX(100%);
+}
+100
+%
+{
+transform
+:
+translateX(
+-100%
+);
+}
+}
+</style>
 
 
+<style>
+/* Keep the header fixed and aligned */
+.dataTables_scrollHeadInner, .dataTables_scrollBody table {
+	width: 100% !important;
+}
 
-						  
-						</style>
-				
-	
-	
-	
-	
-	
-	
-	
-	
-	
+/* Prevent thead shrinking at zoom */
+.dataTables_scrollHeadInner table {
+	width: 100% !important;
+	min-width: 100% !important;
+}
+
+#reportdetails {
+	width: 100% !important;
+	table-layout: fixed !important;
+}
+
+#reportdetails th, #reportdetails td {
+	white-space: nowrap;
+}
+
+table.dataTable th.dt-type-numeric, table.dataTable th.dt-type-date,
+	table.dataTable td.dt-type-numeric, table.dataTable td.dt-type-date {
+	text-align: left !important;
+}
+
+/* Right-align header (6th column = ACCT BALANCE) */
+table.dataTable th.dt-type-numeric:nth-child(6) {
+	text-align: right !important;
+}
+
+/* Right-align data (6th column = ACCT BALANCE) */
+#reportdetails td:nth-child(6), .dataTables_scrollHeadInner table th:nth-child(6)
+	{
+	text-align: right !important;
+	padding-right: 10px !important;
+}
+</style>
+
+
+
+
+
+
+
+
+
+
 
 
 <style>
@@ -399,8 +395,8 @@ label.error {
 }
 
 .green-cell {
-	 background-color: rgb(107, 122, 143) !important;
-    color: white !important;
+	background-color: rgb(107, 122, 143) !important;
+	color: white !important;
 }
 </style>
 
@@ -532,13 +528,13 @@ $(window).on('beforeunload', function() {
 
 
 	</script>
-	<script th:inline="javascript">
+<script th:inline="javascript">
 	    /*<![CDATA[*/
 	    const reportId = /*[[${reportid}]]*/ null;
 	    /*]]>*/
 	</script>
 
-	<script>
+<script>
 	    function opencap_adeqDetail(elem, mode) { 
 			
 			var type = elem.getAttribute('data-type');   
@@ -560,7 +556,7 @@ $(window).on('beforeunload', function() {
 
 
 
-	<script>
+<script>
 		function submitCAP_ADEQUpdate() {
 			const formData = $('#cap_adeqDetailForm').serialize(); // Ensure correct form ID
 
@@ -973,28 +969,30 @@ function cancelModify() {
 
 						<!-- Title -->
 						<h5
-							style="font-family: arial; font-size: 20px; font-weight: bold; color: white; margin: 0 10px; ">
-						  Capital Adequacy</h5>
-							
-							
-							<!-- Moving bus-board text -->
+							style="font-family: arial; font-size: 20px; font-weight: bold; color: white; margin: 0 10px;">
+							Capital Adequacy</h5>
+
+
+						<!-- Moving bus-board text -->
 						<div class="boards">
-							<p class="scrolling-text">BANK OF BOTSWANA - BANKING SUPERVISION DEPARTMENT </p>
+							<p class="scrolling-text">BANK OF BOTSWANA - BANKING
+								SUPERVISION DEPARTMENT</p>
 						</div>
-							
-							
-							
-							
-							
+
+
+
+
+
 					</div>
 
 					<div class="custom-tab-btn-group nav-buttons"
 						style="display: flex; color: white; align-items: center;">
 						<!-- 📅 Date -->
 						<span class="white-text"
-      style="color: white !important; font-size: 16px; margin-right: 20px;">
-    Report Date: <span th:text="${#strings.replace(asondate, '/', '-')}">2025-07-04</span>
-</span>
+							style="color: white !important; font-size: 16px; margin-right: 20px;">
+							Report Date: <span
+							th:text="${#strings.replace(asondate, '/', '-')}">2025-07-04</span>
+						</span>
 
 						<!-- Buttons -->
 						<input type="hidden" id="selectedTab" th:value="${displaymode}">
@@ -1004,25 +1002,25 @@ function cancelModify() {
 						<button type="button" class="custom-tab-btn"
 							id="custom-tab-btnDetails" onclick="showdetails();"
 							th:if="${displaymode == 'summary'}">Details</button>
-							
-							
-							
-							
-								<!-- Modify button -->
-					<!-- 	<button type="button" class="custom-tab-btn"
+
+
+
+
+						<!-- Modify button -->
+						<!-- 	<button type="button" class="custom-tab-btn"
 							onclick="showmodify(this);" title="Click to EDIT Records"
 							th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
 							th:if="${type != 'ARCHIVAL'}" id="addRecord">Modify</button> -->
 
 						<!-- Cancel button (hidden initially) -->
-					<!-- 	<button type="button" class="custom-tab-btn"
+						<!-- 	<button type="button" class="custom-tab-btn"
 							title="Cancel editing" id="cancelRecord"
 							onclick="cancelModify();" style="display: none;">Cancel</button> -->
-							
-							
-							
-							
-							
+
+
+
+
+
 						<button type="button" class="custom-tab-btn"
 							id="custom-tab-btnAdd" th:if="${displaymode == 'summary'}"
 							th:attr="data-reportid=${reportid}, 
@@ -1048,7 +1046,7 @@ function cancelModify() {
 					data-version=${version}  ">
 							<i class="fa fa-download"></i>
 						</button>
-						
+
 					</div>
 				</div>
 
@@ -1057,127 +1055,131 @@ function cancelModify() {
 				<div th:if="${displaymode == 'summary'}">
 					<div class="row">
 						<div class="col-sm-12">
-						
-						
-						<form action="#" method="POST" id="fileupload">
-							<div
-								class="table-wrapper table-responsive scrollable-table-container"
-								style="border-right: 1px solid #dee2e6;">
-								<table
-									class="sticky-header-table table table-bordered table-cell table-sm table-condensed"
-									id="reports">
-									<thead class="thead-light">
-										<tr style="background-color: #b3b6b9">
-											<th 
-												style="text-align: left; background-color: #D8D8D8;  padding: 10px; font-weight:bold;  color: #000000;">Qualitative Disclosures	
-											</th>
-											
-											<th 
-												style="text-align: left;  font-weight: normal;  color: #000000;">(a)Summary discussion of a bank’s approach	
-											</th>
-											
-											<th 
-												style="text-align: right; background-color: #D8D8D8;  padding: 10px;  width:400px;  color: #000000;">Standardised Approach
-											</th>
-											
-												
-										</tr>
 
 
-									</thead>
+							<form action="#" method="POST" id="fileupload">
+								<div
+									class="table-wrapper table-responsive scrollable-table-container"
+									style="border-right: 1px solid #dee2e6;">
+									<table
+										class="sticky-header-table table table-bordered table-cell table-sm table-condensed"
+										id="reports">
+										<thead class="thead-light">
+											<tr style="background-color: #b3b6b9">
+												<th
+													style="text-align: left; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">Qualitative
+													Disclosures</th>
+
+												<th
+													style="text-align: left; font-weight: normal; color: #000000;">(a)Summary
+													discussion of a bank’s approach</th>
+
+												<th
+													style="text-align: right; background-color: #D8D8D8; padding: 10px; width: 400px; color: #000000;">Standardised
+													Approach</th>
 
 
-									<tbody th:each="report: ${reportsummary}"
-										style="font-family: Arial;">
-
-										
-                                   
-                                   	<tr >
+											</tr>
 
 
-                                        
-
-											<td   rowspan="4" style="text-align: center; font-weight:bold;  padding-top:55px; "
-												th:text="${report?.r7_qualitive_disc ?: ''}"
-												></td>
-												
-													<td    style="text-align: left; "
-												th:text="${report?.r7_product ?: ''}"
-												></td>
-												
-												
-													<td style="text-align: right; padding-right:10px; "  
-												th:text="${report?.r7_stand_approach ?: ''}"
-												th:attr="RowId='R7', ColumnId='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
+										</thead>
 
 
-										</tr>
-										
-										
-										
-										<tr >
+										<tbody th:each="report: ${reportsummary}"
+											style="font-family: Arial;">
 
 
-                                        
 
-											
-												
-													<td    style="text-align: left; "
-												th:text="${report?.r8_product ?: ''}"
-												></td>
-												
-												
-													<td style="text-align: right; padding-right:10px; "  
-												th:text="${report?.r8_stand_approach ?: ''}"
-												th:attr="RowId='R8', ColumnId='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<tr>
 
 
-										</tr>
-										
-										
-									      	<tr >
-                                  	
-													<td    style="text-align: left; "
-												th:text="${report?.r9_product ?: ''}"
-												></td>
-												
-												
-													<td style="text-align: right; padding-right:10px; "  
-												th:text="${report?.r9_stand_approach ?: ''}"
-												th:attr="RowId='R9', ColumnId='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
 
 
-										</tr>
-										
-										<tr >
+												<td rowspan="4"
+													style="text-align: center; font-weight: bold; padding-top: 55px;"
+													th:text="${report?.r7_qualitive_disc ?: ''}"></td>
 
-                                 				<td    style="text-align: left; "
-												th:text="${report?.r10_product ?: ''}"
-												></td>
-												
-												
-													<td style="text-align: right; padding-right:10px; "  
-												th:text="${report?.r10_stand_approach ?: ''}"
-												th:attr="RowId='R10', ColumnId='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
+												<td style="text-align: left;"
+													th:text="${report?.r7_product ?: ''}"></td>
 
 
-										</tr>
-                                   
-  
-										
+												<td style="text-align: right; padding-right: 10px;"
+													th:text="${report?.r7_stand_approach != null 
+              ? #numbers.formatDecimal(report.r7_stand_approach, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
+													th:attr="RowId='R7', ColumnId='C2'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
 
-									</tbody>
+
+											</tr>
 
 
-								</table>
 
-							</div>
+											<tr>
 
-<div style="text-align: center; margin-top: 10px;">
+
+
+
+
+
+												<td style="text-align: left;"
+													th:text="${report?.r8_product ?: ''}"></td>
+
+
+												<td style="text-align: right; padding-right: 10px;"
+													th:text="${report?.r8_stand_approach != null 
+              ? #numbers.formatDecimal(report.r8_stand_approach, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
+													th:attr="RowId='R8', ColumnId='C2'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+
+
+											</tr>
+
+
+											<tr>
+
+												<td style="text-align: left;"
+													th:text="${report?.r9_product ?: ''}"></td>
+
+
+												<td style="text-align: right; padding-right: 10px;"
+													th:text="${report?.r9_stand_approach != null 
+              ? #numbers.formatDecimal(report.r9_stand_approach, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
+													th:attr="RowId='R9', ColumnId='C2'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+
+
+											</tr>
+
+											<tr>
+
+												<td style="text-align: left;"
+													th:text="${report?.r10_product ?: ''}"></td>
+
+
+												<td style="text-align: right; padding-right: 10px;"
+													th:text="${report?.r10_stand_approach != null 
+              ? #numbers.formatDecimal(report.r10_stand_approach, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
+													th:attr="RowId='R10', ColumnId='C2'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+
+
+											</tr>
+
+
+
+
+										</tbody>
+
+
+									</table>
+
+								</div>
+
+								<div style="text-align: center; margin-top: 10px;">
 
 									<button id="submitButton" type="button"
 										class="custom-tab-btn Show_input" form="fileupload"
@@ -1186,26 +1188,27 @@ function cancelModify() {
 								</div>
 
 
-                  </form>
+							</form>
 
 						</div>
 					</div>
 				</div>
 
-				<div th:if="${displaymode == 'Details'}" >
-					<div class="row"  >
-						<div class="col-sm-12" >
+				<div th:if="${displaymode == 'Details'}">
+					<div class="row">
+						<div class="col-sm-12">
 							<div class="table-responsive scrollable-table-container"
 								style="border-right: 1px solid #dee2e6;">
-								<table class="table table-striped table-hover" id="reportdetails">
-								<thead class="thead-light">
+								<table class="table table-striped table-hover"
+									id="reportdetails">
+									<thead class="thead-light">
 										<tr>
 											<th></th>
 											<th>S No</th>
 											<th>CUST_ID</th>
 											<th>ACCT_NUMBER</th>
 											<th>ACCT_NAME</th>
-											<th style="text-align:right;">ACCT_BALANCE_IN_PULA</th>
+											<th style="text-align: right;">ACCT_BALANCE_IN_PULA</th>
 											<th>REPORT LABEL</th>
 											<th>REPORT ADDL CRITERIA1</th>
 											<th>REPORT_DATE</th>
@@ -1215,16 +1218,14 @@ function cancelModify() {
 
 									<tbody style="font-family: Arial;">
 										<tr th:each="report, srlno : ${reportdetails}">
-											<td>
-												<a data-toggle="tooltip" class="editrec"
-													title="Click to Edit this Record">
-													<i class="fas fa-edit" style="color: black; cursor:pointer;"
-														th:attr="data-acctNo=${report.acctNumber},
+											<td><a data-toggle="tooltip" class="editrec"
+												title="Click to Edit this Record"> <i
+													class="fas fa-edit" style="color: black; cursor: pointer;"
+													th:attr="data-acctNo=${report.acctNumber},
 																							data-asondate=${#dates.format(report.reportDate, 'dd-MM-yyyy')},data-type=${type}"
-														onclick="opencap_adeqDetail(this, 'edit')"></i>
+													onclick="opencap_adeqDetail(this, 'edit')"></i>
 
-												</a>
-											</td>
+											</a></td>
 
 
 											<td th:text="${srlno.index + 1}"></td>
@@ -1232,14 +1233,15 @@ function cancelModify() {
 											<td th:text="${report.acctNumber}"></td>
 											<td th:text="${report.acctName}"></td>
 
-											<td style="text-align:right !important;"
-    th:text="${#numbers.formatDecimal(report.acctBalanceInpula, 1, 'COMMA', 0, 'POINT')}">
-</td>
+											<td style="text-align: right !important;"
+												th:text="${#numbers.formatDecimal(report.acctBalanceInpula, 1, 'COMMA', 0, 'POINT')}">
+											</td>
 
 
 											<td th:text="${report.reportLabel}"></td>
 											<td th:text="${report.reportAddlCriteria_1}"></td>
-											<td th:text="${#dates.format(report.reportDate, 'dd-MM-yyyy')}"></td>
+											<td
+												th:text="${#dates.format(report.reportDate, 'dd-MM-yyyy')}"></td>
 										</tr>
 									</tbody>
 								</table>
@@ -1247,102 +1249,109 @@ function cancelModify() {
 							</div>
 
 							<!-- Submit Button -->
-							<div style="text-align: center; margin-top: 15px; background-color: white;">
-								<button id="submitButton" type="button" class="custom-tab-btn Show_input"
-									onclick="updateform();" style="display: none;">
-									Submit
-								</button>
+							<div
+								style="text-align: center; margin-top: 15px; background-color: white;">
+								<button id="submitButton" type="button"
+									class="custom-tab-btn Show_input" onclick="updateform();"
+									style="display: none;">Submit</button>
 							</div>
 						</div>
 					</div>
 				</div>
-				
-				
+
+
 				<!-- BASEL_III_COM_EQUITY_DISC Detail Form Screen -->
-			<div th:if="${formmode == 'edit'}" class="card">
+				<div th:if="${formmode == 'edit'}" class="card">
 
 
-				<div class="card-body">
-					<form th:object="${cap_adeqData}" method="post" id="cap_adeqDetailForm">
-						<div class="row formline" style="margin-top:10px;">
-							<label class="col-sm-2">Customer ID</label>
-							<div class="col-sm-3">
-								<input type="text" th:field="*{custId}" class="form-control form-control-sm" readonly />
-							</div>
-
-							<div class="col-sm-1"></div>
-
-							<label class="col-sm-2">Account Number</label>
-							<div class="col-sm-3">
-								<input type="text" th:field="*{acctNumber}" name="acctNumber"
-									class="form-control form-control-sm" readonly />
-							</div>
-						</div>
-
-						<div class="row formline" style="margin-top:10px;">
-							<label class="col-sm-2">Account Name</label>
-							<div class="col-sm-3">
-								<input type="text" th:field="*{acctName}" class="form-control form-control-sm" readonly />
-							</div>
-
-							<div class="col-sm-1"></div>
-
-							<label class="col-sm-2">Acct Balance</label>
-							<div class="col-sm-3">
-									<input type="number" step="0.01" th:field="*{acctBalanceInpula}"
-										class="form-control form-control-sm" style="text-align:right;" />
+					<div class="card-body">
+						<form th:object="${cap_adeqData}" method="post"
+							id="cap_adeqDetailForm">
+							<div class="row formline" style="margin-top: 10px;">
+								<label class="col-sm-2">Customer ID</label>
+								<div class="col-sm-3">
+									<input type="text" th:field="*{custId}"
+										class="form-control form-control-sm" readonly />
 								</div>
-						</div>
 
-						<div class="row formline" style="margin-top:10px;">
-							<label class="col-sm-2">Report Label</label>
-							<div class="col-sm-3">
-								<input type="text" th:field="*{reportLabel}" class="form-control form-control-sm" readonly />
+								<div class="col-sm-1"></div>
+
+								<label class="col-sm-2">Account Number</label>
+								<div class="col-sm-3">
+									<input type="text" th:field="*{acctNumber}" name="acctNumber"
+										class="form-control form-control-sm" readonly />
+								</div>
 							</div>
 
-							<div class="col-sm-1"></div>
+							<div class="row formline" style="margin-top: 10px;">
+								<label class="col-sm-2">Account Name</label>
+								<div class="col-sm-3">
+									<input type="text" th:field="*{acctName}"
+										class="form-control form-control-sm" readonly />
+								</div>
 
-							<label class="col-sm-2">Report Addl Criteria 1</label>
-							<div class="col-sm-3">
-								<input type="text" th:field="*{reportAddlCriteria_1}" class="form-control form-control-sm"
-									readonly />
+								<div class="col-sm-1"></div>
+
+								<label class="col-sm-2">Acct Balance</label>
+								<div class="col-sm-3">
+									<input type="number" step="0.01"
+										th:field="*{acctBalanceInpula}"
+										class="form-control form-control-sm"
+										style="text-align: right;" />
+								</div>
 							</div>
-						</div>
 
-						<div class="row formline" style="margin-top:10px;">
-							<label class="col-sm-2">Report Date</label>
-							<div class="col-sm-3">
-								<input type="date" name="reportDate" class="form-control form-control-sm"readonly
-									th:value="${#dates.format(cap_adeqData.reportDate, 'yyyy-MM-dd')}" />
+							<div class="row formline" style="margin-top: 10px;">
+								<label class="col-sm-2">Report Label</label>
+								<div class="col-sm-3">
+									<input type="text" th:field="*{reportLabel}"
+										class="form-control form-control-sm" readonly />
+								</div>
+
+								<div class="col-sm-1"></div>
+
+								<label class="col-sm-2">Report Addl Criteria 1</label>
+								<div class="col-sm-3">
+									<input type="text" th:field="*{reportAddlCriteria_1}"
+										class="form-control form-control-sm" readonly />
+								</div>
 							</div>
-						</div>
 
-						<div style="text-align:center; margin-top:20px;">
-							<button type="button" class="custom-tab-btn" th:if="${formmode == 'edit'}"
-								onclick="submitCAP_ADEQUpdate()">Update</button>
+							<div class="row formline" style="margin-top: 10px;">
+								<label class="col-sm-2">Report Date</label>
+								<div class="col-sm-3">
+									<input type="date" name="reportDate"
+										class="form-control form-control-sm" readonly
+										th:value="${#dates.format(cap_adeqData.reportDate, 'yyyy-MM-dd')}" />
+								</div>
+							</div>
 
-						</div>
-					</form>
+							<div style="text-align: center; margin-top: 20px;">
+								<button type="button" class="custom-tab-btn"
+									th:if="${formmode == 'edit'}" onclick="submitCAP_ADEQUpdate()">Update</button>
+
+							</div>
+						</form>
+					</div>
 				</div>
-			</div>
-			
-			
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 			</div>
 
 
