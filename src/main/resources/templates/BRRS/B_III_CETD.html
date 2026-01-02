@@ -1104,7 +1104,9 @@ function cancelModify() {
 										
 												
 													<td style="text-align: right; padding-right:10px; "  
-												th:text="${report?.r7_amount ?: ''}"
+												th:text="${report?.r7_amount != null 
+              ? #numbers.formatDecimal(report.r7_amount, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
 												th:attr="RowId='R7', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 
@@ -1115,17 +1117,23 @@ function cancelModify() {
 <tr>
     <td style="text-align: right;">2</td>
     <td style="text-align: left;" th:text="${report?.r8_product ?: ''}"></td>
-    <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r8_amount ?: ''}"
-        th:attr="RowId='R8', ColumnId='C2'"
-        onclick="showdetailsbyRowAndColumn(this)"></td>
+   <td style="text-align: right; padding-right:10px;"
+    th:text="${report?.r8_amount != null 
+              ? #numbers.formatDecimal(report.r8_amount, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
+    th:attr="RowId='R8', ColumnId='C2'"
+    onclick="showdetailsbyRowAndColumn(this)">
+</td>
+
 </tr>
 
 <tr>
     <td style="text-align: right;">3</td>
     <td style="text-align: left;" th:text="${report?.r9_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r9_amount ?: ''}"
+        th:text="${report?.r9_amount != null 
+              ? #numbers.formatDecimal(report.r9_amount, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
         th:attr="RowId='R9', ColumnId='C2'"
         onclick="showdetailsbyRowAndColumn(this)"></td>
 </tr>
@@ -1134,7 +1142,9 @@ function cancelModify() {
     <td style="text-align: right;">4</td>
     <td style="text-align: left;" th:text="${report?.r10_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r10_amount ?: ''}"
+       th:text="${report?.r10_amount != null 
+              ? #numbers.formatDecimal(report.r10_amount, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
         th:attr="RowId='R10', ColumnId='C2'"
         onclick="showdetailsbyRowAndColumn(this)"></td>
 </tr>
@@ -1143,7 +1153,9 @@ function cancelModify() {
     <td style="text-align: right;">5</td>
     <td style="text-align: left;" th:text="${report?.r11_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r11_amount ?: ''}"
+      th:text="${report?.r11_amount != null 
+              ? #numbers.formatDecimal(report.r11_amount, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
         th:attr="RowId='R11', ColumnId='C2'"
         onclick="showdetailsbyRowAndColumn(this)"></td>
 </tr>
@@ -1152,7 +1164,9 @@ function cancelModify() {
     <td style="text-align: right;">6</td>
     <td style="text-align: left; font-weight:bold;" th:text="${report?.r12_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r12_amount ?: ''}"
+      th:text="${report?.r12_amount != null 
+              ? #numbers.formatDecimal(report.r12_amount, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
         th:attr="RowId='R12', ColumnId='C2'"
         onclick="showdetailsbyRowAndColumn(this)"></td>
 </tr>
@@ -1173,7 +1187,9 @@ function cancelModify() {
     <td style="text-align: right;">7</td>
     <td style="text-align: left;" th:text="${report?.r14_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r14_amount ?: ''}"
+        th:text="${report?.r14_amount != null 
+              ? #numbers.formatDecimal(report.r14_amount, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
         th:attr="RowId='R14', ColumnId='C2'"
         onclick="showdetailsbyRowAndColumn(this)"></td>
 </tr>
@@ -1182,7 +1198,9 @@ function cancelModify() {
     <td style="text-align: right;">8</td>
     <td style="text-align: left;" th:text="${report?.r15_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r15_amount ?: ''}"
+        th:text="${report?.r15_amount != null 
+              ? #numbers.formatDecimal(report.r15_amount, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
         th:attr="RowId='R15', ColumnId='C2'"
         onclick="showdetailsbyRowAndColumn(this)"></td>
 </tr>
@@ -1193,7 +1211,9 @@ function cancelModify() {
     <td style="text-align: right;">9</td>
     <td style="text-align: left;" th:text="${report?.r16_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r16_amount ?: ''}"
+       th:text="${report?.r16_amount != null 
+              ? #numbers.formatDecimal(report.r16_amount, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
         th:attr="RowId='R16', ColumnId='C2'"
         onclick="showdetailsbyRowAndColumn(this)"></td>
 </tr>
@@ -1203,7 +1223,9 @@ function cancelModify() {
     <td style="text-align: right;">10</td>
     <td style="text-align: left;" th:text="${report?.r17_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r17_amount ?: ''}"
+       th:text="${report?.r17_amount != null 
+              ? #numbers.formatDecimal(report.r17_amount, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
         th:attr="RowId='R17', ColumnId='C2'"
         onclick="showdetailsbyRowAndColumn(this)"></td>
 </tr>
@@ -1213,7 +1235,9 @@ function cancelModify() {
     <td style="text-align: right;">11</td>
     <td style="text-align: left;" th:text="${report?.r18_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r18_amount ?: ''}"
+       th:text="${report?.r18_amount != null 
+              ? #numbers.formatDecimal(report.r18_amount, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
         th:attr="RowId='R18', ColumnId='C2'"
         onclick="showdetailsbyRowAndColumn(this)"></td>
 </tr>
@@ -1223,7 +1247,9 @@ function cancelModify() {
     <td style="text-align: right;">12</td>
     <td style="text-align: left;" th:text="${report?.r19_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r19_amount ?: ''}"
+      th:text="${report?.r19_amount != null 
+              ? #numbers.formatDecimal(report.r19_amount, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
         th:attr="RowId='R19', ColumnId='C2'"
         onclick="showdetailsbyRowAndColumn(this)"></td>
 </tr>
@@ -1233,7 +1259,9 @@ function cancelModify() {
     <td style="text-align: right;">13</td>
     <td style="text-align: left;" th:text="${report?.r20_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r20_amount ?: ''}"
+      th:text="${report?.r20_amount != null 
+              ? #numbers.formatDecimal(report.r20_amount, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
         th:attr="RowId='R20', ColumnId='C2'"
         onclick="showdetailsbyRowAndColumn(this)"></td>
 </tr>
@@ -1243,7 +1271,9 @@ function cancelModify() {
     <td style="text-align: right;">14</td>
     <td style="text-align: left;" th:text="${report?.r21_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r21_amount ?: ''}"
+      th:text="${report?.r21_amount != null 
+              ? #numbers.formatDecimal(report.r21_amount, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
         th:attr="RowId='R21', ColumnId='C2'"
         onclick="showdetailsbyRowAndColumn(this)"></td>
 </tr>
@@ -1253,7 +1283,9 @@ function cancelModify() {
     <td style="text-align: right;">15</td>
     <td style="text-align: left;" th:text="${report?.r22_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r22_amount ?: ''}"
+       th:text="${report?.r22_amount != null 
+              ? #numbers.formatDecimal(report.r22_amount, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
         th:attr="RowId='R22', ColumnId='C2'"
         onclick="showdetailsbyRowAndColumn(this)"></td>
 </tr>
@@ -1263,7 +1295,9 @@ function cancelModify() {
     <td style="text-align: right;">16</td>
     <td style="text-align: left;" th:text="${report?.r23_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r23_amount ?: ''}"
+       th:text="${report?.r23_amount != null 
+              ? #numbers.formatDecimal(report.r23_amount, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
         th:attr="RowId='R23', ColumnId='C2'"
         onclick="showdetailsbyRowAndColumn(this)"></td>
 </tr>
@@ -1273,7 +1307,9 @@ function cancelModify() {
     <td style="text-align: right;">17</td>
     <td style="text-align: left;" th:text="${report?.r24_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r24_amount ?: ''}"
+       th:text="${report?.r24_amount != null 
+              ? #numbers.formatDecimal(report.r24_amount, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
         th:attr="RowId='R24', ColumnId='C2'"
         onclick="showdetailsbyRowAndColumn(this)"></td>
 </tr>
@@ -1293,7 +1329,9 @@ function cancelModify() {
     <td style="text-align: right;">19</td>
     <td style="text-align: left;" th:text="${report?.r26_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r26_amount ?: ''}"
+       th:text="${report?.r26_amount != null 
+              ? #numbers.formatDecimal(report.r26_amount, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
         th:attr="RowId='R26', ColumnId='C2'"
         onclick="showdetailsbyRowAndColumn(this)"></td>
 </tr>
@@ -1303,7 +1341,9 @@ function cancelModify() {
     <td style="text-align: right;">20</td>
     <td style="text-align: left;" th:text="${report?.r27_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r27_amount ?: ''}"
+       th:text="${report?.r27_amount != null 
+              ? #numbers.formatDecimal(report.r27_amount, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
         th:attr="RowId='R27', ColumnId='C2'"
         onclick="showdetailsbyRowAndColumn(this)"></td>
 </tr>
@@ -1313,7 +1353,9 @@ function cancelModify() {
     <td style="text-align: right;">21</td>
     <td style="text-align: left;" th:text="${report?.r28_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r28_amount ?: ''}"
+       th:text="${report?.r28_amount != null 
+              ? #numbers.formatDecimal(report.r28_amount, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
         th:attr="RowId='R28', ColumnId='C2'"
         onclick="showdetailsbyRowAndColumn(this)"></td>
 </tr>
@@ -1323,7 +1365,9 @@ function cancelModify() {
     <td style="text-align: right;">22</td>
     <td style="text-align: left;" th:text="${report?.r29_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r29_amount ?: ''}"
+       th:text="${report?.r29_amount != null 
+              ? #numbers.formatDecimal(report.r29_amount, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
         th:attr="RowId='R29', ColumnId='C2'"
         onclick="showdetailsbyRowAndColumn(this)"></td>
 </tr>
@@ -1333,7 +1377,9 @@ function cancelModify() {
     <td style="text-align: right;">23</td>
     <td style="text-align: left;" th:text="${report?.r30_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r30_amount ?: ''}"
+       th:text="${report?.r30_amount != null 
+              ? #numbers.formatDecimal(report.r30_amount, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
         th:attr="RowId='R30', ColumnId='C2'"
         onclick="showdetailsbyRowAndColumn(this)"></td>
 </tr>
@@ -1343,7 +1389,9 @@ function cancelModify() {
     <td style="text-align: right;">24</td>
     <td style="text-align: left;" th:text="${report?.r31_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r31_amount ?: ''}"
+     th:text="${report?.r31_amount != null 
+              ? #numbers.formatDecimal(report.r31_amount, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
         th:attr="RowId='R31', ColumnId='C2'"
         onclick="showdetailsbyRowAndColumn(this)"></td>
 </tr>
@@ -1353,7 +1401,9 @@ function cancelModify() {
     <td style="text-align: right;">25</td>
     <td style="text-align: left;" th:text="${report?.r32_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r32_amount ?: ''}"
+       th:text="${report?.r32_amount != null 
+              ? #numbers.formatDecimal(report.r32_amount, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
         th:attr="RowId='R32', ColumnId='C2'"
         onclick="showdetailsbyRowAndColumn(this)"></td>
 </tr>
@@ -1363,7 +1413,9 @@ function cancelModify() {
     <td style="text-align: right;">23</td>
     <td style="text-align: left;" th:text="${report?.r33_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r33_amount ?: ''}"
+       th:text="${report?.r33_amount != null 
+              ? #numbers.formatDecimal(report.r33_amount, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
         th:attr="RowId='R33', ColumnId='C2'"
         onclick="showdetailsbyRowAndColumn(this)"></td>
 </tr>
@@ -1373,7 +1425,9 @@ function cancelModify() {
     <td style="text-align: right;">24</td>
     <td style="text-align: left;" th:text="${report?.r34_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r34_amount ?: ''}"
+       th:text="${report?.r34_amount != null 
+              ? #numbers.formatDecimal(report.r34_amount, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
         th:attr="RowId='R34', ColumnId='C2'"
         onclick="showdetailsbyRowAndColumn(this)"></td>
 </tr>
@@ -1383,7 +1437,9 @@ function cancelModify() {
     <td style="text-align: right;">25</td>
     <td style="text-align: left ; font-weight:bold; " th:text="${report?.r35_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r35_amount ?: ''}"
+       th:text="${report?.r35_amount != null 
+              ? #numbers.formatDecimal(report.r35_amount, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
         th:attr="RowId='R35', ColumnId='C2'"
         onclick="showdetailsbyRowAndColumn(this)"></td>
 </tr>
@@ -1393,7 +1449,9 @@ function cancelModify() {
     <td style="text-align: right;">26</td>
     <td style="text-align: left; font-weight:bold; " th:text="${report?.r36_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r36_amount ?: ''}"
+       th:text="${report?.r36_amount != null 
+              ? #numbers.formatDecimal(report.r36_amount, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
         th:attr="RowId='R36', ColumnId='C2'"
         onclick="showdetailsbyRowAndColumn(this)"></td>
 </tr>
@@ -1414,7 +1472,9 @@ function cancelModify() {
     <td style="text-align: right;">30</td>
     <td style="text-align: left;" th:text="${report?.r38_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r38_amount ?: ''}"
+       th:text="${report?.r38_amount != null 
+              ? #numbers.formatDecimal(report.r38_amount, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
         th:attr="RowId='R38', ColumnId='C2'"
         onclick="showdetailsbyRowAndColumn(this)"></td>
 </tr>
@@ -1424,7 +1484,9 @@ function cancelModify() {
     <td style="text-align: right;">31</td>
     <td style="text-align: left;" th:text="${report?.r39_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r39_amount ?: ''}"
+       th:text="${report?.r39_amount != null 
+              ? #numbers.formatDecimal(report.r39_amount, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
         th:attr="RowId='R39', ColumnId='C2'"
         onclick="showdetailsbyRowAndColumn(this)"></td>
 </tr>
@@ -1434,7 +1496,9 @@ function cancelModify() {
     <td style="text-align: right;">32</td>
     <td style="text-align: left;" th:text="${report?.r40_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r40_amount ?: ''}"
+      th:text="${report?.r40_amount != null 
+              ? #numbers.formatDecimal(report.r40_amount, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
         th:attr="RowId='R40', ColumnId='C2'"
         onclick="showdetailsbyRowAndColumn(this)"></td>
 </tr>
@@ -1444,7 +1508,9 @@ function cancelModify() {
     <td style="text-align: right;">31</td>
     <td style="text-align: left;" th:text="${report?.r41_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r41_amount ?: ''}"
+       th:text="${report?.r41_amount != null 
+              ? #numbers.formatDecimal(report.r41_amount, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
         th:attr="RowId='R41', ColumnId='C2'"
         onclick="showdetailsbyRowAndColumn(this)"></td>
 </tr>
@@ -1454,7 +1520,9 @@ function cancelModify() {
     <td style="text-align: right;">32</td>
     <td style="text-align: left;" th:text="${report?.r42_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r42_amount ?: ''}"
+       th:text="${report?.r42_amount != null 
+              ? #numbers.formatDecimal(report.r42_amount, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
         th:attr="RowId='R42', ColumnId='C2'"
         onclick="showdetailsbyRowAndColumn(this)"></td>
 </tr>
@@ -1464,7 +1532,9 @@ function cancelModify() {
     <td style="text-align: right;">35</td>
     <td style="text-align: left;" th:text="${report?.r43_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r43_amount ?: ''}"
+     th:text="${report?.r43_amount != null 
+              ? #numbers.formatDecimal(report.r43_amount, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
         th:attr="RowId='R43', ColumnId='C2'"
         onclick="showdetailsbyRowAndColumn(this)"></td>
 </tr>
@@ -1474,7 +1544,9 @@ function cancelModify() {
     <td style="text-align: right;">33</td>
     <td style="text-align: left; font-weight:bold;" th:text="${report?.r44_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r44_amount ?: ''}"
+       th:text="${report?.r44_amount != null 
+              ? #numbers.formatDecimal(report.r44_amount, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
         th:attr="RowId='R44', ColumnId='C2'"
         onclick="showdetailsbyRowAndColumn(this)"></td>
 </tr>
@@ -1495,7 +1567,9 @@ function cancelModify() {
     <td style="text-align: right;">34</td>
     <td style="text-align: left;" th:text="${report?.r46_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r46_amount ?: ''}"
+       th:text="${report?.r46_amount != null 
+              ? #numbers.formatDecimal(report.r46_amount, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
         th:attr="RowId='R46', ColumnId='C2'"
         onclick="showdetailsbyRowAndColumn(this)"></td>
 </tr>
@@ -1505,7 +1579,9 @@ function cancelModify() {
     <td style="text-align: right;">35</td>
     <td style="text-align: left;" th:text="${report?.r47_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r47_amount ?: ''}"
+       th:text="${report?.r47_amount != null 
+              ? #numbers.formatDecimal(report.r47_amount, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
         th:attr="RowId='R47', ColumnId='C2'"
         onclick="showdetailsbyRowAndColumn(this)"></td>
 </tr>
@@ -1515,7 +1591,9 @@ function cancelModify() {
     <td style="text-align: right;">36</td>
     <td rowspan="2" style="text-align: left;" th:text="${report?.r48_product ?: ''}"></td>
     <td  rowspan="2" style="text-align: right; padding-right:10px;"
-        th:text="${report?.r48_amount ?: ''}"
+        th:text="${report?.r48_amount != null 
+              ? #numbers.formatDecimal(report.r48_amount, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
         th:attr="RowId='R48', ColumnId='C2'"
         onclick="showdetailsbyRowAndColumn(this)"></td>
 </tr>
@@ -1534,7 +1612,9 @@ function cancelModify() {
     <td style="text-align: right;">38</td>
     <td style="text-align: left;" th:text="${report?.r50_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r50_amount ?: ''}"
+       th:text="${report?.r50_amount != null 
+              ? #numbers.formatDecimal(report.r50_amount, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
         th:attr="RowId='R50', ColumnId='C2'"
         onclick="showdetailsbyRowAndColumn(this)"></td>
 </tr>
@@ -1544,7 +1624,9 @@ function cancelModify() {
     <td style="text-align: right;">39</td>
     <td style="text-align: left;" th:text="${report?.r51_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r51_amount ?: ''}"
+      th:text="${report?.r51_amount != null 
+              ? #numbers.formatDecimal(report.r51_amount, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
         th:attr="RowId='R51', ColumnId='C2'"
         onclick="showdetailsbyRowAndColumn(this)"></td>
 </tr>
@@ -1554,7 +1636,9 @@ function cancelModify() {
     <td style="text-align: right;">40</td>
     <td style="text-align: left;" th:text="${report?.r52_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r52_amount ?: ''}"
+      th:text="${report?.r52_amount != null 
+              ? #numbers.formatDecimal(report.r52_amount, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
         th:attr="RowId='R52', ColumnId='C2'"
         onclick="showdetailsbyRowAndColumn(this)"></td>
 </tr>
@@ -1564,7 +1648,9 @@ function cancelModify() {
     <td style="text-align: right;">41</td>
     <td style="text-align: left; font-weight:bold;" th:text="${report?.r53_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px; font-weight:bold;"
-        th:text="${report?.r53_amount ?: ''}"
+       th:text="${report?.r53_amount != null 
+              ? #numbers.formatDecimal(report.r53_amount, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
         th:attr="RowId='R53', ColumnId='C2'"
         onclick="showdetailsbyRowAndColumn(this)"></td>
 </tr>
@@ -1574,7 +1660,9 @@ function cancelModify() {
     <td style="text-align: right;">42</td>
     <td style="text-align: left; font-weight:bold;" th:text="${report?.r54_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px; font-weight:bold;"
-        th:text="${report?.r54_amount ?: ''}"
+      th:text="${report?.r54_amount != null 
+              ? #numbers.formatDecimal(report.r54_amount, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
         th:attr="RowId='R54', ColumnId='C2'"
         onclick="showdetailsbyRowAndColumn(this)"></td>
 </tr>
@@ -1584,7 +1672,9 @@ function cancelModify() {
     <td style="text-align: right;">43</td>
     <td style="text-align: left; font-weight:bold;" th:text="${report?.r55_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px; font-weight:bold;"
-        th:text="${report?.r55_amount ?: ''}"
+      th:text="${report?.r55_amount != null 
+              ? #numbers.formatDecimal(report.r55_amount, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
         th:attr="RowId='R55', ColumnId='C2'"
         onclick="showdetailsbyRowAndColumn(this)"></td>
 </tr>
@@ -1605,7 +1695,9 @@ function cancelModify() {
     <td style="text-align: right;">44</td>
     <td style="text-align: left;" th:text="${report?.r57_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r57_amount ?: ''}"
+       th:text="${report?.r57_amount != null 
+              ? #numbers.formatDecimal(report.r57_amount, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
         th:attr="RowId='R57', ColumnId='C2'"
         onclick="showdetailsbyRowAndColumn(this)"></td>
 </tr>
@@ -1615,7 +1707,9 @@ function cancelModify() {
     <td style="text-align: right;">45</td>
     <td style="text-align: left;" th:text="${report?.r58_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r58_amount ?: ''}"
+       th:text="${report?.r58_amount != null 
+              ? #numbers.formatDecimal(report.r58_amount, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
         th:attr="RowId='R58', ColumnId='C2'"
         onclick="showdetailsbyRowAndColumn(this)"></td>
 </tr>
@@ -1625,7 +1719,9 @@ function cancelModify() {
     <td style="text-align: right;">46</td>
     <td style="text-align: left;" th:text="${report?.r59_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r59_amount ?: ''}"
+       th:text="${report?.r59_amount != null 
+              ? #numbers.formatDecimal(report.r59_amount, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
         th:attr="RowId='R59', ColumnId='C2'"
         onclick="showdetailsbyRowAndColumn(this)"></td>
 </tr>
@@ -1635,7 +1731,9 @@ function cancelModify() {
     <td style="text-align: right;">49</td>
     <td style="text-align: left;" th:text="${report?.r60_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r60_amount ?: ''}"
+       th:text="${report?.r60_amount != null 
+              ? #numbers.formatDecimal(report.r60_amount, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
         th:attr="RowId='R60', ColumnId='C2'"
         onclick="showdetailsbyRowAndColumn(this)"></td>
 </tr>
@@ -1645,7 +1743,9 @@ function cancelModify() {
     <td style="text-align: right;">47</td>
     <td style="text-align: left;" th:text="${report?.r61_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r61_amount ?: ''}"
+       th:text="${report?.r61_amount != null 
+              ? #numbers.formatDecimal(report.r61_amount, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
         th:attr="RowId='R61', ColumnId='C2'"
         onclick="showdetailsbyRowAndColumn(this)"></td>
 </tr>
@@ -1655,7 +1755,9 @@ function cancelModify() {
     <td style="text-align: right;">48</td>
     <td style="text-align: left; font-weight:bold;" th:text="${report?.r62_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px; font-weight:bold;"
-        th:text="${report?.r62_amount ?: ''}"
+       th:text="${report?.r62_amount != null 
+              ? #numbers.formatDecimal(report.r62_amount, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
         th:attr="RowId='R62', ColumnId='C2'"
         onclick="showdetailsbyRowAndColumn(this)"></td>
 </tr>
@@ -1675,7 +1777,9 @@ function cancelModify() {
     <td style="text-align: right;">49</td>
     <td style="text-align: left;" th:text="${report?.r64_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r64_amount ?: ''}"
+       th:text="${report?.r64_amount != null 
+              ? #numbers.formatDecimal(report.r64_amount, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
         th:attr="RowId='R64', ColumnId='C2'"
         onclick="showdetailsbyRowAndColumn(this)"></td>
 </tr>
@@ -1685,7 +1789,9 @@ function cancelModify() {
     <td style="text-align: right;">50</td>
     <td style="text-align: left;" th:text="${report?.r65_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r65_amount ?: ''}"
+       th:text="${report?.r65_amount != null 
+              ? #numbers.formatDecimal(report.r65_amount, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
         th:attr="RowId='R65', ColumnId='C2'"
         onclick="showdetailsbyRowAndColumn(this)"></td>
 </tr>
@@ -1697,7 +1803,9 @@ function cancelModify() {
 
     </td>
     <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r66_amount ?: ''}"
+       th:text="${report?.r66_amount != null 
+              ? #numbers.formatDecimal(report.r66_amount, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
         th:attr="RowId='R66', ColumnId='C2'"
         onclick="showdetailsbyRowAndColumn(this)"></td>
 </tr>
@@ -1717,7 +1825,9 @@ function cancelModify() {
     <td style="text-align: right;">52</td>
     <td style="text-align: left;" th:text="${report?.r68_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r68_amount ?: ''}"
+      th:text="${report?.r68_amount != null 
+              ? #numbers.formatDecimal(report.r68_amount, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
         th:attr="RowId='R68', ColumnId='C2'"
         onclick="showdetailsbyRowAndColumn(this)"></td>
 </tr>
@@ -1727,7 +1837,9 @@ function cancelModify() {
     <td style="text-align: right;">53</td>
     <td style="text-align: left;" th:text="${report?.r69_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r69_amount ?: ''}"
+       th:text="${report?.r69_amount != null 
+              ? #numbers.formatDecimal(report.r69_amount, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
         th:attr="RowId='R69', ColumnId='C2'"
         onclick="showdetailsbyRowAndColumn(this)"></td>
 </tr>
@@ -1737,7 +1849,9 @@ function cancelModify() {
     <td style="text-align: right;">54</td>
     <td style="text-align: left; font-weight:bold;" th:text="${report?.r70_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r70_amount ?: ''}"
+      th:text="${report?.r70_amount != null 
+              ? #numbers.formatDecimal(report.r70_amount, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
         th:attr="RowId='R70', ColumnId='C2'"
         onclick="showdetailsbyRowAndColumn(this)"></td>
 </tr>
@@ -1747,7 +1861,9 @@ function cancelModify() {
     <td style="text-align: right;">55</td>
     <td style="text-align: left; font-weight:bold;" th:text="${report?.r71_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r71_amount ?: ''}"
+       th:text="${report?.r71_amount != null 
+              ? #numbers.formatDecimal(report.r71_amount, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
         th:attr="RowId='R71', ColumnId='C2'"
         onclick="showdetailsbyRowAndColumn(this)"></td>
 </tr>
@@ -1757,7 +1873,9 @@ function cancelModify() {
     <td style="text-align: right;">56</td>
     <td style="text-align: left; font-weight:bold;" th:text="${report?.r72_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r72_amount ?: ''}"
+      th:text="${report?.r72_amount != null 
+              ? #numbers.formatDecimal(report.r72_amount, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
         th:attr="RowId='R72', ColumnId='C2'"
         onclick="showdetailsbyRowAndColumn(this)"></td>
 </tr>
@@ -1767,7 +1885,9 @@ function cancelModify() {
     <td style="text-align: right;">57</td>
     <td style="text-align: left; font-weight:bold;" th:text="${report?.r73_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r73_amount ?: ''}"
+      th:text="${report?.r73_amount != null 
+              ? #numbers.formatDecimal(report.r73_amount, 1, 'COMMA', 0, 'POINT') 
+              : ''}"
         th:attr="RowId='R73', ColumnId='C2'"
         onclick="showdetailsbyRowAndColumn(this)"></td>
 </tr>
