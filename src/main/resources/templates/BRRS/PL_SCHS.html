@@ -1706,6 +1706,16 @@ function submitPL_SCHSUpdate() {
                                                 SCHEDULE - 13<br>
                                                 INTEREST AND DIVIDENDS EARNED
                                             </th>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
                                         </thead>
 
                                         <tbody style="font-family: Arial" th:each="reportsummary: ${reportsummary}">
@@ -1872,55 +1882,7 @@ function submitPL_SCHSUpdate() {
                                                     class="r11_bal_sub_diaries_bwp" style="text-align:right;width:390px"
                                                     th:attr="RowId='r11', ColumnId='C4'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
-                                                <td th:text="${#numbers.formatDecimal(reportsummary.r11_fig_bal_sheet, 0, 'COMMA', 0, 'POINT')}"
-                                                    id="r11_fig_bal_sheet" name="r11_fig_bal_sheet"
-                                                    style="text-align:right;width:390px" class="r11_fig_bal_sheet"
-                                                    th:attr="RowId='R11', ColumnId='C4'"
-                                                    onclick="showdetailsbyRowAndColumn(this)"></td>
-                                                <td th:text="${#numbers.formatDecimal(reportsummary.r11_fig_bal_sheet_bwp, 0, 'COMMA', 0, 'POINT')}"
-                                                    id="r11_fig_bal_sheet_bwp" name="r11_fig_bal_sheet_bwp"
-                                                    class="r11_fig_bal_sheet_bwp" style="text-align:right;width:390px"
-                                                    th:attr="RowId='R11', ColumnId='C4'"
-                                                    onclick="showdetailsbyRowAndColumn(this)"></td>
-                                                <td th:text="${#numbers.formatDecimal(reportsummary.r11_amt_statement_adj, 0, 'COMMA', 0, 'POINT')}"
-                                                    class="r11_amt_statement_adj" id="r11_amt_statement_adj"
-                                                    name="r11_amt_statement_adj" style="text-align:right;width:390px"
-                                                    th:attr="RowId='R11', ColumnId='C4'"
-                                                    onclick="showdetailsbyRowAndColumn(this)"></td>
-                                                <td th:text="${#numbers.formatDecimal(reportsummary.r11_amt_statement_adj_bwp, 0, 'COMMA', 0, 'POINT')}"
-                                                    class="r11_amt_statement_adj_bwp" id="r11_amt_statement_adj_bwp"
-                                                    name="r11_amt_statement_adj_bwp"
-                                                    style="text-align:right;width:390px"
-                                                    th:attr="RowId='R11', ColumnId='C4'"
-                                                    onclick="showdetailsbyRowAndColumn(this)"></td>
-                                                <td th:text="${#numbers.formatDecimal(reportsummary.r11_net_amt, 0, 'COMMA', 0, 'POINT')}"
-                                                    id="r11_net_amt" name="r11_net_amt" class="r11_net_amt"
-                                                    style="text-align:right;width:390px"></td>
-                                                <td th:text="${#numbers.formatDecimal(reportsummary.r11_net_amt_bwp, 0, 'COMMA', 0, 'POINT')}"
-                                                    id="r11_net_amt_bwp" name="r11_net_amt_bwp" class="r11_net_amt_bwp"
-                                                    style="text-align:right;width:390px"
-                                                    th:attr="RowId='R11', ColumnId='C4'"
-                                                    onclick="showdetailsbyRowAndColumn(this)"></td>
-                                                <td th:text="${#numbers.formatDecimal(reportsummary.r11_bal_sub, 0, 'COMMA', 0, 'POINT')}"
-                                                    id="r11_bal_sub" name="r11_bal_sub" class="r11_bal_sub"
-                                                    style="text-align:right;width:390px"
-                                                    th:attr="RowId='R11', ColumnId='C4'"
-                                                    onclick="showdetailsbyRowAndColumn(this)"></td>
-                                                <td th:text="${#numbers.formatDecimal(reportsummary.r11_bal_sub_bwp, 0, 'COMMA', 0, 'POINT')}"
-                                                    id="r11_bal_sub_bwp" name="r11_bal_sub_bwp" class="r11_bal_sub_bwp"
-                                                    style="text-align:right;width:390px"
-                                                    th:attr="RowId='R11', ColumnId='C4'"
-                                                    onclick="showdetailsbyRowAndColumn(this)"></td>
-                                                <td th:text="${#numbers.formatDecimal(reportsummary.r11_bal_sub_diaries, 0, 'COMMA', 0, 'POINT')}"
-                                                    id="r11_bal_sub_diaries" name="r11_bal_sub_diaries"
-                                                    class="r11_bal_sub_diaries" style="text-align:right;width:390px"
-                                                    th:attr="RowId='R11', ColumnId='C4'"
-                                                    onclick="showdetailsbyRowAndColumn(this)"></td>
-                                                <td th:text="${#numbers.formatDecimal(reportsummary.r11_bal_sub_diaries_bwp, 0, 'COMMA', 0, 'POINT')}"
-                                                    id="r11_bal_sub_diaries_bwp" name="r11_bal_sub_diaries_bwp"
-                                                    class="r11_bal_sub_diaries_bwp" style="text-align:right;width:390px"
-                                                    th:attr="RowId='R11', ColumnId='C4'"
-                                                    onclick="showdetailsbyRowAndColumn(this)"></td>
+                                               
                                             </tr>
                                             <tr th:each="rs : ${reportsummary1}">
                                                 <td>IV</td>
@@ -2067,10 +2029,20 @@ function submitPL_SCHSUpdate() {
                                                     th:attr="RowId='R13', ColumnId='C4'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                             </tr>
-                                            <th style="vertical-align: middle;" colspan="13">
+                                            <th style="vertical-align: middle;" colspan="2" >
                                                 SCHEDULE - 14<br>
                                                 OTHER INCOME
                                             </th>
+                                             <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
                                             <tr>
                                                 <td>I</td>
                                                 <td th:text="${reportsummary.r17_other_income}"
@@ -3335,6 +3307,16 @@ function submitPL_SCHSUpdate() {
                                                 SCHEDULE - 15<br>
                                                 INTEREST EXPENDED
                                             </th>
+                                             <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
                                         </thead>
                                         <tbody style="font-family: Arial" th:each="reportsummary: ${reportsummary}">
                                             <tr>
@@ -3592,10 +3574,20 @@ function submitPL_SCHSUpdate() {
                                                     th:attr="RowId='R43', ColumnId='C4'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                             </tr>
-                                            <th style="vertical-align: middle;" colspan="13">
+                                            <th style="vertical-align: middle;"colspan="2" >
                                                 SCHEDULE - 16<br>
                                                 OPERATING EXPENSES
                                             </th>
+                                             <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
                                             <tr>
                                                 <td style="width: 10px;">I</td>
                                                 <td th:text="${reportsummary.r48_operating_expenses}"
