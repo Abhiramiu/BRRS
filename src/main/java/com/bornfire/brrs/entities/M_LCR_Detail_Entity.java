@@ -91,6 +91,15 @@ public class M_LCR_Detail_Entity {
 
 	    @Column(name = "DEL_FLG", length = 1)
 	    private String delFlg;
+	    
+	    @Column(name = "DEBIT_EQUIVALENT", precision = 24, scale = 2)
+	    private BigDecimal debitequivalent;
+	    
+	    @Column(name = "EMI", precision = 24, scale = 2)
+	    private BigDecimal emi;
+	    
+	    @Column(name = "CREDIT_EQUIVALENT", precision = 24, scale = 2)
+	    private BigDecimal creditequivalent;
 
 		public String getCustId() {
 			return custId;
@@ -284,12 +293,36 @@ public class M_LCR_Detail_Entity {
 			this.delFlg = delFlg;
 		}
 
+		public BigDecimal getDebitequivalent() {
+			return debitequivalent;
+		}
+
+		public void setDebitequivalent(BigDecimal debitequivalent) {
+			this.debitequivalent = debitequivalent;
+		}
+
+		public BigDecimal getEmi() {
+			return emi;
+		}
+
+		public void setEmi(BigDecimal emi) {
+			this.emi = emi;
+		}
+
+		public BigDecimal getCreditequivalent() {
+			return creditequivalent;
+		}
+
+		public void setCreditequivalent(BigDecimal creditequivalent) {
+			this.creditequivalent = creditequivalent;
+		}
+
 		public M_LCR_Detail_Entity() {
 			super();
 			// TODO Auto-generated constructor stub
 		}
-	    
-	    
+
+		
 
 
 }

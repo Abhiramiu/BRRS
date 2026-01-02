@@ -192,13 +192,13 @@ public class BRRS_M_LCR_ReportService {
 				if (rowId != null && columnId != null) {
 					T1Dt1 = BRRS_M_LCR_Detail_Repo.GetDataByRowIdAndColumnId(rowId, columnId, parsedDate);
 				} else {
-					T1Dt1 = BRRS_M_LCR_Detail_Repo.getdatabydateList(parsedDate, currentPage, pageSize);
+					T1Dt1 = BRRS_M_LCR_Detail_Repo.getdatabydateList(parsedDate);
 					totalPages = BRRS_M_LCR_Detail_Repo.getdatacount(parsedDate);
 					mv.addObject("pagination", "YES");
 				}
 
 				mv.addObject("reportdetails", T1Dt1);
-				mv.addObject("reportmaster12", T1Dt1);
+				
 				System.out.println("LISTCOUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
 			}
 
@@ -1985,6 +1985,9 @@ public class BRRS_M_LCR_ReportService {
 		try {
 			String acctNo = request.getParameter("acctNumber");
 			String provisionStr = request.getParameter("acctBalanceInPula");
+			String provisionStr1 = request.getParameter("debitequivalent");
+			String provisionStr2 = request.getParameter("emi");
+			String provisionStr3 = request.getParameter("creditequivalent");
 			String acctName = request.getParameter("acctName");
 			String reportDateStr = request.getParameter("reportDate");
 
@@ -2014,6 +2017,35 @@ public class BRRS_M_LCR_ReportService {
 					logger.info("Provision updated to {}", newProvision);
 				}
 			}
+			
+			if (provisionStr1 != null && !provisionStr1.isEmpty()) {
+				BigDecimal newProvision = new BigDecimal(provisionStr1);
+				if (existing.getDebitequivalent() == null || existing.getDebitequivalent().compareTo(newProvision) != 0) {
+					existing.setDebitequivalent(newProvision);
+					isChanged = true;
+					logger.info("Provision updated to {}", newProvision);
+				}
+			}
+			
+			if (provisionStr2 != null && !provisionStr2.isEmpty()) {
+				BigDecimal newProvision = new BigDecimal(provisionStr2);
+				if (existing.getEmi() == null || existing.getEmi().compareTo(newProvision) != 0) {
+					existing.setEmi(newProvision);
+					isChanged = true;
+					logger.info("Provision updated to {}", newProvision);
+				}
+			}
+			
+			if (provisionStr3 != null && !provisionStr3.isEmpty()) {
+				BigDecimal newProvision = new BigDecimal(provisionStr3);
+				if (existing.getCreditequivalent() == null || existing.getCreditequivalent().compareTo(newProvision) != 0) {
+					existing.setCreditequivalent(newProvision);
+					isChanged = true;
+					logger.info("Provision updated to {}", newProvision);
+				}
+			}
+
+
 			if (isChanged) {
 				M_LCR_Detail_Repo.save(existing);
 				logger.info("Record updated successfully for account {}", acctNo);
