@@ -2193,7 +2193,7 @@ return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 	@Autowired
 	BRRS_SCH_17_ReportService brrs_sch_17_reportservice;
 	
-	@RequestMapping(value = "/SCH_17updateAll", method = { RequestMethod.GET, RequestMethod.POST })
+	/*@RequestMapping(value = "/SCH_17updateAll", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public ResponseEntity<String> updateReport(
 			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
@@ -2214,7 +2214,29 @@ return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 					.body("Update Failed: " + e.getMessage());
 		}
+	}*/
+	
+	
+	@PostMapping("/SCH_17updateAll")
+	@ResponseBody
+	public ResponseEntity<String> updateSCH17(
+	        @RequestParam @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+	        @RequestParam Map<String, String> allParams) {
+
+	    try {
+	        System.out.println("Came to SCH-17 controller");
+
+	        brrs_sch_17_reportservice.updateDetailFromForm(asondate, allParams);
+
+	        return ResponseEntity.ok("SCH-17 Detail Updated Successfully");
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return ResponseEntity
+	                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                .body("Update Failed: " + e.getMessage());
+	    }
 	}
+
 	
 	
 	

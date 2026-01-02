@@ -3,16 +3,17 @@ package com.bornfire.brrs.services;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.CallableStatement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
@@ -56,7 +57,6 @@ import com.bornfire.brrs.entities.BRRS_SCH_17_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_SCH_17_Manual_Archival_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_SCH_17_Manual_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_SCH_17_Summary_Repo;
-
 import com.bornfire.brrs.entities.SCH_17_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.SCH_17_Archival_Manual_Summary_Entity;
 import com.bornfire.brrs.entities.SCH_17_Archival_Summary_Entity;
@@ -78,7 +78,9 @@ public class BRRS_SCH_17_ReportService {
 	@Autowired
 	SessionFactory sessionFactory;
 
-	
+	 @Autowired
+	    private BRRS_SCH_17_Detail_Repo repo;
+
 	    @Autowired 
 	    BRRS_SCH_17_Summary_Repo                     SCH_17_summary_repo;
 	 
@@ -1154,7 +1156,7 @@ public class BRRS_SCH_17_ReportService {
 		}
 	}
 	
-	public void updateReport(SCH_17_Manual_Summary_Entity updatedEntity) {
+/*	public void updateReport(SCH_17_Manual_Summary_Entity updatedEntity) {
 	    System.out.println("Came to services");
 	    System.out.println("Report Date: " + updatedEntity.getReport_date());
 
@@ -1174,7 +1176,7 @@ public class BRRS_SCH_17_ReportService {
 
 	    try {
 	        //  Only for specific row numbers
-	        int[] rows = {10, 11, 12, /*13 excluded*/ 14, 15, 16, 17, 18, 19, 20};
+	        int[] rows = {10, 11, 12, /*13 excluded 14, 15, 16, 17, 18, 19, 20};
 
 	        for (int row : rows) {
 	            String prefix = "R" + row + "_";
@@ -1224,13 +1226,81 @@ public class BRRS_SCH_17_ReportService {
 	            .format(updatedEntity.getReport_date())
 	            .toUpperCase();
 
-	    String sql = "BEGIN BRRS.BRRS_SCH_17_SUMMARY_PROCEDURE ('" + oracleDate + "'); END;";
-	    jdbcTemplate.execute(sql);
+	    //String sql = "BEGIN BRRS.BRRS_SCH_17_SUMMARY_PROCEDURE ('" + oracleDate + "'); END;";
+	    //jdbcTemplate.execute(sql);
 
 	    System.out.println("Procedure executed for date: " + oracleDate);
 	}
+*/
+
+	    public void updateDetailFromForm(Date reportDate, Map<String, String> params) {
+
+	        System.out.println("Updating SCH-17 detail table");
+
+	        for (Map.Entry<String, String> entry : params.entrySet()) {
+
+	            String key = entry.getKey();
+	            String value = entry.getValue();
+
+	            // Expected: R10_C2_r10_31_3_25_amt
+	            if (!key.matches("R\\d+_C\\d+_.*")) {
+	                continue;
+	            }
+
+	            String[] parts = key.split("_");
+	            String reportLabel = parts[0];       // R10
+	            String addlCriteria = parts[1];      // C2 or C3
+
+	            BigDecimal amount =
+	                    (value == null || value.isEmpty())
+	                            ? BigDecimal.ZERO
+	                            : new BigDecimal(value);
+
+	            List<SCH_17_Detail_Entity> rows =
+	                    repo.findByReportDateAndReportLableAndReportAddlCriteria1(
+	                            reportDate, reportLabel, addlCriteria
+	                    );
+
+	            System.out.println("Rows fetching for Reportdate is : "+reportDate +" Report label is : " +reportLabel +" Column is : "+addlCriteria);
+	           System.out.println("data size is : "+rows.size());
+	          
+	           for (SCH_17_Detail_Entity row : rows) {
+
+	        	    //System.out.println("Row PK = " + row.getId());
+	        	    System.out.println("Before update acct = " + row.getAcctBalanceInpula());
+	        	    System.out.println("Before update modifyFlg = " + row.getModifyFlg());
+
+	        	    row.setAcctBalanceInpula(amount);
+	        	    row.setModifyFlg('Y');
+	        	}
+
+	            
+
+	            repo.saveAll(rows);
+	        }
+
+	        callSummaryProcedure(reportDate);
+	    }
+
+	    private void callSummaryProcedure(Date reportDate) {
+
+	        String sql = "{ call BRRS_SCH_17_SUMMARY_PROCEDURE(?) }";
+
+	        jdbcTemplate.update(connection -> {
+	            CallableStatement cs = connection.prepareCall(sql);
+
+	            SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+	            sdf.setLenient(false);
+
+	            cs.setString(1, sdf.format(reportDate));
+	            return cs;
+	        });
+
+	        System.out.println("✅ SCH-17 Summary procedure executed");
+	    }
+	    
+	    
+	}
 
 	
-	
 
-}

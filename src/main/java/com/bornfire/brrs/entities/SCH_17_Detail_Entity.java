@@ -15,11 +15,14 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Table(name = "BRRS_SCH_17_DETAILTABLE")
 public class SCH_17_Detail_Entity {
 
-   
+	 @Id
+	    @Column(name = "SNO")
+	    private Long sno;
 	
 	 @Column(name = "CUST_ID")
   private String custId;
-	 @Id
+
+
   @Column(name = "ACCT_NUMBER")
   private String acctNumber;
 
@@ -85,13 +88,14 @@ public class SCH_17_Detail_Entity {
   private Date verifyTime;
 
   @Column(name = "ENTITY_FLG")
-  private char entityFlg;
+  private Character entityFlg;
 
   @Column(name = "MODIFY_FLG")
-  private char modifyFlg;
+  private Character modifyFlg;
 
   @Column(name = "DEL_FLG")
-  private char delFlg;
+  private Character delFlg;
+
 
 public String getCustId() {
 	return custId;
@@ -237,28 +241,39 @@ public void setVerifyTime(Date verifyTime) {
 	this.verifyTime = verifyTime;
 }
 
-public char getEntityFlg() {
+
+
+public Character getEntityFlg() {
 	return entityFlg;
 }
 
-public void setEntityFlg(char entityFlg) {
+public void setEntityFlg(Character entityFlg) {
 	this.entityFlg = entityFlg;
 }
 
-public char getModifyFlg() {
+public Character getModifyFlg() {
 	return modifyFlg;
 }
 
-public void setModifyFlg(char modifyFlg) {
+public void setModifyFlg(Character modifyFlg) {
 	this.modifyFlg = modifyFlg;
 }
 
-public char getDelFlg() {
+public Character getDelFlg() {
 	return delFlg;
 }
 
-public void setDelFlg(char delFlg) {
+public void setDelFlg(Character delFlg) {
 	this.delFlg = delFlg;
+}
+
+
+public Long getSno() {
+	return sno;
+}
+
+public void setSno(Long sno) {
+	this.sno = sno;
 }
 
 public SCH_17_Detail_Entity() {

@@ -6,9 +6,21 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
+
+@Repository
 public interface BRRS_SCH_17_Detail_Repo extends JpaRepository<SCH_17_Detail_Entity, String> {
 
+	
+	@Query(value = "select * from BRRS_SCH_17_DETAILTABLE where REPORT_DATE = ?1 AND REPORT_LABEL= ?2 AND REPORT_ADDL_CRITERIA_1= ?3", nativeQuery = true)
+    List<SCH_17_Detail_Entity> findByReportDateAndReportLableAndReportAddlCriteria1(
+            Date reportDate,
+            String reportLabel,
+            String reportAddlCriteria1
+    );
+	
+	
 	// Fetch all records for a given date
 
 	@Query(value = "select * from BRRS_SCH_17_DETAILTABLE where REPORT_DATE = ?1", nativeQuery = true)

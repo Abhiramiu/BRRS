@@ -1098,7 +1098,7 @@ function cancelModify() {
 	    }, 300);
 	}
 
-	function fileuploads(btn) {
+	/*function fileuploads(btn) {
 	    const asondate = btn.getAttribute("data-todate");
 	    const type = btn.getAttribute("data-type");
 
@@ -1107,7 +1107,7 @@ function cancelModify() {
 
 	    try {
 	        // ✅ Step 1: Calculate totals
-	       /*  calculateR14Totals(); */
+	       /*  calculateR14Totals(); 
 	       calculateTotals();
 	    
 	        // ✅ Step 2: Remove commas from all text inputs
@@ -1166,6 +1166,48 @@ function cancelModify() {
 	    }
 	}
 
+*/
+
+function fileuploads(btn) {
+
+    const asondate = btn.getAttribute("data-todate");
+
+    $('#loader').modal('show');
+
+    // Remove commas before submit
+    $("#fileupload input[type='text']").each(function () {
+        $(this).val($(this).val().replace(/,/g, ''));
+    });
+
+    const formData = new FormData();
+    formData.append("asondate", asondate);
+
+    // append only inputs with name
+    $('#fileupload').find(':input[name]').each(function () {
+        formData.append(this.name, this.value);
+    });
+
+    $.ajax({
+        url: './SCH_17updateAll',
+        type: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function (response) {
+            $("#resultModalLabel").text("SCH-17");
+            $("#resultModalBody").text(response);
+            $("#resultModal").modal("show");
+        },
+        error: function (jqXHR) {
+            $("#resultModalLabel").text("Error");
+            $("#resultModalBody").text(jqXHR.responseText);
+            $("#resultModal").modal("show");
+        },
+        complete: function () {
+            $('#loader').modal('hide');
+        }
+    });
+}
 
 
 
@@ -1372,7 +1414,7 @@ function cancelModify() {
 													style=" font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width: 200px;"><input
 													class="display-input Show_input" type="text"
 													th:value="${report.r10_31_3_25_amt != null ? #numbers.formatDecimal(report.r10_31_3_25_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
-													id="r10_31_3_25_amt" name="r10_31_3_25_amt"
+													id="r10_31_3_25_amt" name="R10_C2_r10_31_3_25_amt"
 													style="background-color: #FFFFFF;  width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
 													readonly /></td>
 													
@@ -1380,7 +1422,7 @@ function cancelModify() {
 													style=" font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width: 200px;"><input
 													class="display-input Show_input" type="text"
 													th:value="${report.r10_30_9_25_amt != null ? #numbers.formatDecimal(report.r10_30_9_25_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
-													id="r10_30_9_25_amt" name="r10_30_9_25_amt"
+													id="r10_30_9_25_amt" name="R10_C3_r10_30_9_25_amt"
 													style="background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
 													readonly /></td>
    
@@ -1413,7 +1455,7 @@ function cancelModify() {
             type="text"
             th:value="${report.r11_31_3_25_amt != null ? #numbers.formatDecimal(report.r11_31_3_25_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
             id="r11_31_3_25_amt"
-            name="r11_31_3_25_amt"
+            name="R11_C2_r11_31_3_25_amt"
             style="background-color:#FFFFFF; width:-webkit-fill-available; height:28px; border-color:transparent; text-align:right;"
             readonly />
     </td>
@@ -1425,7 +1467,7 @@ function cancelModify() {
             type="text"
             th:value="${report.r11_30_9_25_amt != null ? #numbers.formatDecimal(report.r11_30_9_25_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
             id="r11_30_9_25_amt"
-            name="r11_30_9_25_amt"
+            name="R11_C3_r11_30_9_25_amt"
             style="background-color:#FFFFFF; width:-webkit-fill-available; height:28px; border-color:transparent; text-align:right;"
             readonly />
     </td>
@@ -1454,7 +1496,7 @@ function cancelModify() {
             type="text"
             th:value="${report.r12_31_3_25_amt != null ? #numbers.formatDecimal(report.r12_31_3_25_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
             id="r12_31_3_25_amt"
-            name="r12_31_3_25_amt"
+            name="R12_C2_r12_31_3_25_amt"
             style="background-color:#FFFFFF; width:-webkit-fill-available; height:28px; border-color:transparent; text-align:right;"
             readonly />
     </td>
@@ -1466,7 +1508,7 @@ function cancelModify() {
             type="text"
             th:value="${report.r12_30_9_25_amt != null ? #numbers.formatDecimal(report.r12_30_9_25_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
             id="r12_30_9_25_amt"
-            name="r12_30_9_25_amt"
+            name="R12_C3_r12_30_9_25_amt"
             style="background-color:#FFFFFF; width:-webkit-fill-available; height:28px; border-color:transparent; text-align:right;"
             readonly />
     </td>
@@ -1519,7 +1561,7 @@ function cancelModify() {
             type="text"
             th:value="${report.r14_31_3_25_amt != null ? #numbers.formatDecimal(report.r14_31_3_25_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
             id="r14_31_3_25_amt"
-            name="r14_31_3_25_amt"
+            name="R14_C2_r14_31_3_25_amt"
             style="background-color:#FFFFFF; width:-webkit-fill-available; height:28px; border-color:transparent; text-align:right;"
             readonly />
     </td>
@@ -1531,7 +1573,7 @@ function cancelModify() {
             type="text"
             th:value="${report.r14_30_9_25_amt != null ? #numbers.formatDecimal(report.r14_30_9_25_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
             id="r14_30_9_25_amt"
-            name="r14_30_9_25_amt"
+            name="R14_C3_r14_30_9_25_amt"
             style="background-color:#FFFFFF; width:-webkit-fill-available; height:28px; border-color:transparent; text-align:right;"
             readonly />
     </td>
@@ -1559,7 +1601,7 @@ function cancelModify() {
             type="text"
             th:value="${report.r15_31_3_25_amt != null ? #numbers.formatDecimal(report.r15_31_3_25_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
             id="r15_31_3_25_amt"
-            name="r15_31_3_25_amt"
+            name="R15_C2_r15_31_3_25_amt"
             style="background-color:#FFFFFF; width:-webkit-fill-available; height:28px; border-color:transparent; text-align:right;"
             readonly />
     </td>
@@ -1571,7 +1613,7 @@ function cancelModify() {
             type="text"
             th:value="${report.r15_30_9_25_amt != null ? #numbers.formatDecimal(report.r15_30_9_25_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
             id="r15_30_9_25_amt"
-            name="r15_30_9_25_amt"
+            name="R15_C3_r15_30_9_25_amt"
             style="background-color:#FFFFFF; width:-webkit-fill-available; height:28px; border-color:transparent; text-align:right;"
             readonly />
     </td>
@@ -1599,7 +1641,7 @@ function cancelModify() {
             type="text"
             th:value="${report.r16_31_3_25_amt != null ? #numbers.formatDecimal(report.r16_31_3_25_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
             id="r16_31_3_25_amt"
-            name="r16_31_3_25_amt"
+            name="R16_C2_r16_31_3_25_amt"
             style="background-color:#FFFFFF; width:-webkit-fill-available; height:28px; border-color:transparent; text-align:right;"
             readonly />
     </td>
@@ -1611,7 +1653,7 @@ function cancelModify() {
             type="text"
             th:value="${report.r16_30_9_25_amt != null ? #numbers.formatDecimal(report.r16_30_9_25_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
             id="r16_30_9_25_amt"
-            name="r16_30_9_25_amt"
+            name="R16_C3_r16_30_9_25_amt"
             style="background-color:#FFFFFF; width:-webkit-fill-available; height:28px; border-color:transparent; text-align:right;"
             readonly />
     </td>
@@ -1633,7 +1675,7 @@ function cancelModify() {
         style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;" class="green-cell">
         <input class="display-input Show_input green-cell" type="text"
             th:value="${report.r17_31_3_25_amt }"
-            id="r17_31_3_25_amt" name="r17_31_3_25_amt"
+            id="r17_31_3_25_amt" name="R17_C2_r17_31_3_25_amt"
             style="background-color:#FFFFFF; width:-webkit-fill-available; height:28px; border-color:transparent; text-align:right;"
             readonly />
     </td>
@@ -1642,7 +1684,7 @@ function cancelModify() {
         style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;" class="green-cell">
         <input class="display-input Show_input green-cell" type="text"
             th:value="${report.r17_30_9_25_amt != null ? #numbers.formatDecimal(report.r17_30_9_25_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
-            id="r17_30_9_25_amt" name="r17_30_9_25_amt"
+            id="r17_30_9_25_amt" name="R17_C3_r17_30_9_25_amt"
             style="background-color:#FFFFFF; width:-webkit-fill-available; height:28px; border-color:transparent; text-align:right;"
             readonly />
     </td>
@@ -1665,7 +1707,7 @@ function cancelModify() {
         style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;">
         <input class="display-input Show_input" type="text"
             th:value="${report.r18_31_3_25_amt != null ? #numbers.formatDecimal(report.r18_31_3_25_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
-            id="r18_31_3_25_amt" name="r18_31_3_25_amt"
+            id="r18_31_3_25_amt" name="R18_C2_r18_31_3_25_amt"
             style="background-color:#FFFFFF; width:-webkit-fill-available; height:28px; border-color:transparent; text-align:right;"
             readonly />
     </td>
@@ -1674,7 +1716,7 @@ function cancelModify() {
         style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;">
         <input class="display-input Show_input" type="text"
             th:value="${report.r18_30_9_25_amt != null ? #numbers.formatDecimal(report.r18_30_9_25_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
-            id="r18_30_9_25_amt" name="r18_30_9_25_amt"
+            id="r18_30_9_25_amt" name="R18_C3_r18_30_9_25_amt"
             style="background-color:#FFFFFF; width:-webkit-fill-available; height:28px; border-color:transparent; text-align:right;"
             readonly />
     </td>
@@ -1697,7 +1739,7 @@ function cancelModify() {
         style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;">
         <input class="display-input Show_input" type="text"
             th:value="${report.r19_31_3_25_amt != null ? #numbers.formatDecimal(report.r19_31_3_25_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
-            id="r19_31_3_25_amt" name="r19_31_3_25_amt"
+            id="r19_31_3_25_amt" name="R19_C2_r19_31_3_25_amt"
             style="background-color:#FFFFFF; width:-webkit-fill-available; height:28px; border-color:transparent; text-align:right;"
             readonly />
     </td>
@@ -1706,7 +1748,7 @@ function cancelModify() {
         style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;">
         <input class="display-input Show_input" type="text"
             th:value="${report.r19_30_9_25_amt != null ? #numbers.formatDecimal(report.r19_30_9_25_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
-            id="r19_30_9_25_amt" name="r19_30_9_25_amt"
+            id="r19_30_9_25_amt" name="R19_C3_r19_30_9_25_amt"
             style="background-color:#FFFFFF; width:-webkit-fill-available; height:28px; border-color:transparent; text-align:right;"
             readonly />
     </td>
@@ -1728,7 +1770,7 @@ function cancelModify() {
         style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;" class="green-cell">
         <input class="display-input Show_input green-cell" type="text"
             th:value="${report.r20_31_3_25_amt != null ? #numbers.formatDecimal(report.r20_31_3_25_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
-            id="r20_31_3_25_amt" name="r20_31_3_25_amt"
+            id="r20_31_3_25_amt" name="R20_C2_r20_31_3_25_amt"
             style="background-color:#FFFFFF; width:-webkit-fill-available; height:28px; border-color:transparent; text-align:right;"
             readonly />
     </td>
@@ -1737,7 +1779,7 @@ function cancelModify() {
         style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;" class="green-cell">
         <input class="display-input Show_input green-cell" type="text"
             th:value="${report.r20_30_9_25_amt != null ? #numbers.formatDecimal(report.r20_30_9_25_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
-            id="r20_30_9_25_amt" name="r20_30_9_25_amt"
+            id="r20_30_9_25_amt" name="R20_C3_r20_30_9_25_amt"
             style="background-color:#FFFFFF; width:-webkit-fill-available; height:28px; border-color:transparent; text-align:right;"
             readonly />
     </td>
