@@ -728,6 +728,889 @@ public class GL_SCH_Summary_Entity2 {
     @Column(name = "R142_BAL_ACT_SUB_BWP2")
     private BigDecimal R142_BAL_ACT_SUB_BWP2;
 
+    /* ================= R150 ================= */
+@Column(name = "R150_PRODUCT")
+private String R150_PRODUCT;
+
+@Column(name = "R150_FIG_BAL_BWP1")
+private BigDecimal R150_FIG_BAL_BWP1;
+
+@Column(name = "R150_FIG_BAL_BWP2")
+private BigDecimal R150_FIG_BAL_BWP2;
+
+@Column(name = "R150_AMT_ADJ_BWP1")
+private BigDecimal R150_AMT_ADJ_BWP1;
+
+@Column(name = "R150_AMT_ADJ_BWP2")
+private BigDecimal R150_AMT_ADJ_BWP2;
+
+@Column(name = "R150_NET_AMT_BWP1")
+private BigDecimal R150_NET_AMT_BWP1;
+
+@Column(name = "R150_NET_AMT_BWP2")
+private BigDecimal R150_NET_AMT_BWP2;
+
+@Column(name = "R150_BAL_SUB_BWP1")
+private BigDecimal R150_BAL_SUB_BWP1;
+
+@Column(name = "R150_BAL_SUB_BWP2")
+private BigDecimal R150_BAL_SUB_BWP2;
+
+@Column(name = "R150_BAL_ACT_SUB_BWP1")
+private BigDecimal R150_BAL_ACT_SUB_BWP1;
+
+@Column(name = "R150_BAL_ACT_SUB_BWP2")
+private BigDecimal R150_BAL_ACT_SUB_BWP2;
+/* ================= R151 ================= */
+@Column(name = "R151_PRODUCT")
+private String R151_PRODUCT;
+
+@Column(name = "R151_FIG_BAL_BWP1")
+private BigDecimal R151_FIG_BAL_BWP1;
+
+@Column(name = "R151_FIG_BAL_BWP2")
+private BigDecimal R151_FIG_BAL_BWP2;
+
+@Column(name = "R151_AMT_ADJ_BWP1")
+private BigDecimal R151_AMT_ADJ_BWP1;
+
+@Column(name = "R151_AMT_ADJ_BWP2")
+private BigDecimal R151_AMT_ADJ_BWP2;
+
+@Column(name = "R151_NET_AMT_BWP1")
+private BigDecimal R151_NET_AMT_BWP1;
+
+@Column(name = "R151_NET_AMT_BWP2")
+private BigDecimal R151_NET_AMT_BWP2;
+
+@Column(name = "R151_BAL_SUB_BWP1")
+private BigDecimal R151_BAL_SUB_BWP1;
+
+@Column(name = "R151_BAL_SUB_BWP2")
+private BigDecimal R151_BAL_SUB_BWP2;
+
+@Column(name = "R151_BAL_ACT_SUB_BWP1")
+private BigDecimal R151_BAL_ACT_SUB_BWP1;
+
+@Column(name = "R151_BAL_ACT_SUB_BWP2")
+private BigDecimal R151_BAL_ACT_SUB_BWP2;
+
+/* ================= R152 ================= */
+@Column(name = "R152_PRODUCT")
+private String R152_PRODUCT;
+
+@Column(name = "R152_FIG_BAL_BWP1")
+private BigDecimal R152_FIG_BAL_BWP1;
+
+@Column(name = "R152_FIG_BAL_BWP2")
+private BigDecimal R152_FIG_BAL_BWP2;
+
+@Column(name = "R152_AMT_ADJ_BWP1")
+private BigDecimal R152_AMT_ADJ_BWP1;
+
+@Column(name = "R152_AMT_ADJ_BWP2")
+private BigDecimal R152_AMT_ADJ_BWP2;
+
+@Column(name = "R152_NET_AMT_BWP1")
+private BigDecimal R152_NET_AMT_BWP1;
+
+@Column(name = "R152_NET_AMT_BWP2")
+private BigDecimal R152_NET_AMT_BWP2;
+
+@Column(name = "R152_BAL_SUB_BWP1")
+private BigDecimal R152_BAL_SUB_BWP1;
+
+@Column(name = "R152_BAL_SUB_BWP2")
+private BigDecimal R152_BAL_SUB_BWP2;
+
+@Column(name = "R152_BAL_ACT_SUB_BWP1")
+private BigDecimal R152_BAL_ACT_SUB_BWP1;
+
+@Column(name = "R152_BAL_ACT_SUB_BWP2")
+private BigDecimal R152_BAL_ACT_SUB_BWP2;
+
+/* ================= R153 ================= */
+@Column(name = "R153_PRODUCT")
+private String R153_PRODUCT;
+
+@Column(name = "R153_FIG_BAL_BWP1")
+private BigDecimal R153_FIG_BAL_BWP1;
+
+@Column(name = "R153_FIG_BAL_BWP2")
+private BigDecimal R153_FIG_BAL_BWP2;
+
+@Column(name = "R153_AMT_ADJ_BWP1")
+private BigDecimal R153_AMT_ADJ_BWP1;
+
+@Column(name = "R153_AMT_ADJ_BWP2")
+private BigDecimal R153_AMT_ADJ_BWP2;
+
+@Column(name = "R153_NET_AMT_BWP1")
+private BigDecimal R153_NET_AMT_BWP1;
+
+@Column(name = "R153_NET_AMT_BWP2")
+private BigDecimal R153_NET_AMT_BWP2;
+
+@Column(name = "R153_BAL_SUB_BWP1")
+private BigDecimal R153_BAL_SUB_BWP1;
+
+@Column(name = "R153_BAL_SUB_BWP2")
+private BigDecimal R153_BAL_SUB_BWP2;
+
+@Column(name = "R153_BAL_ACT_SUB_BWP1")
+private BigDecimal R153_BAL_ACT_SUB_BWP1;
+
+@Column(name = "R153_BAL_ACT_SUB_BWP2")
+private BigDecimal R153_BAL_ACT_SUB_BWP2;
+
+/* ================= R154 ================= */
+@Column(name = "R154_PRODUCT")
+private String R154_PRODUCT;
+
+@Column(name = "R154_FIG_BAL_BWP1")
+private BigDecimal R154_FIG_BAL_BWP1;
+
+@Column(name = "R154_FIG_BAL_BWP2")
+private BigDecimal R154_FIG_BAL_BWP2;
+
+@Column(name = "R154_AMT_ADJ_BWP1")
+private BigDecimal R154_AMT_ADJ_BWP1;
+
+@Column(name = "R154_AMT_ADJ_BWP2")
+private BigDecimal R154_AMT_ADJ_BWP2;
+
+@Column(name = "R154_NET_AMT_BWP1")
+private BigDecimal R154_NET_AMT_BWP1;
+
+@Column(name = "R154_NET_AMT_BWP2")
+private BigDecimal R154_NET_AMT_BWP2;
+
+@Column(name = "R154_BAL_SUB_BWP1")
+private BigDecimal R154_BAL_SUB_BWP1;
+
+@Column(name = "R154_BAL_SUB_BWP2")
+private BigDecimal R154_BAL_SUB_BWP2;
+
+@Column(name = "R154_BAL_ACT_SUB_BWP1")
+private BigDecimal R154_BAL_ACT_SUB_BWP1;
+
+@Column(name = "R154_BAL_ACT_SUB_BWP2")
+private BigDecimal R154_BAL_ACT_SUB_BWP2;
+
+/* ================= R155 ================= */
+@Column(name = "R155_PRODUCT")
+private String R155_PRODUCT;
+
+@Column(name = "R155_FIG_BAL_BWP1")
+private BigDecimal R155_FIG_BAL_BWP1;
+
+@Column(name = "R155_FIG_BAL_BWP2")
+private BigDecimal R155_FIG_BAL_BWP2;
+
+@Column(name = "R155_AMT_ADJ_BWP1")
+private BigDecimal R155_AMT_ADJ_BWP1;
+
+@Column(name = "R155_AMT_ADJ_BWP2")
+private BigDecimal R155_AMT_ADJ_BWP2;
+
+@Column(name = "R155_NET_AMT_BWP1")
+private BigDecimal R155_NET_AMT_BWP1;
+
+@Column(name = "R155_NET_AMT_BWP2")
+private BigDecimal R155_NET_AMT_BWP2;
+
+@Column(name = "R155_BAL_SUB_BWP1")
+private BigDecimal R155_BAL_SUB_BWP1;
+
+@Column(name = "R155_BAL_SUB_BWP2")
+private BigDecimal R155_BAL_SUB_BWP2;
+
+@Column(name = "R155_BAL_ACT_SUB_BWP1")
+private BigDecimal R155_BAL_ACT_SUB_BWP1;
+
+@Column(name = "R155_BAL_ACT_SUB_BWP2")
+private BigDecimal R155_BAL_ACT_SUB_BWP2;
+
+/* ================= R156 ================= */
+@Column(name = "R156_PRODUCT")
+private String R156_PRODUCT;
+
+@Column(name = "R156_FIG_BAL_BWP1")
+private BigDecimal R156_FIG_BAL_BWP1;
+
+@Column(name = "R156_FIG_BAL_BWP2")
+private BigDecimal R156_FIG_BAL_BWP2;
+
+@Column(name = "R156_AMT_ADJ_BWP1")
+private BigDecimal R156_AMT_ADJ_BWP1;
+
+@Column(name = "R156_AMT_ADJ_BWP2")
+private BigDecimal R156_AMT_ADJ_BWP2;
+
+@Column(name = "R156_NET_AMT_BWP1")
+private BigDecimal R156_NET_AMT_BWP1;
+
+@Column(name = "R156_NET_AMT_BWP2")
+private BigDecimal R156_NET_AMT_BWP2;
+
+@Column(name = "R156_BAL_SUB_BWP1")
+private BigDecimal R156_BAL_SUB_BWP1;
+
+@Column(name = "R156_BAL_SUB_BWP2")
+private BigDecimal R156_BAL_SUB_BWP2;
+
+@Column(name = "R156_BAL_ACT_SUB_BWP1")
+private BigDecimal R156_BAL_ACT_SUB_BWP1;
+
+@Column(name = "R156_BAL_ACT_SUB_BWP2")
+private BigDecimal R156_BAL_ACT_SUB_BWP2;
+
+/* ================= R157 ================= */
+@Column(name = "R157_PRODUCT")
+private String R157_PRODUCT;
+
+@Column(name = "R157_FIG_BAL_BWP1")
+private BigDecimal R157_FIG_BAL_BWP1;
+
+@Column(name = "R157_FIG_BAL_BWP2")
+private BigDecimal R157_FIG_BAL_BWP2;
+
+@Column(name = "R157_AMT_ADJ_BWP1")
+private BigDecimal R157_AMT_ADJ_BWP1;
+
+@Column(name = "R157_AMT_ADJ_BWP2")
+private BigDecimal R157_AMT_ADJ_BWP2;
+
+@Column(name = "R157_NET_AMT_BWP1")
+private BigDecimal R157_NET_AMT_BWP1;
+
+@Column(name = "R157_NET_AMT_BWP2")
+private BigDecimal R157_NET_AMT_BWP2;
+
+@Column(name = "R157_BAL_SUB_BWP1")
+private BigDecimal R157_BAL_SUB_BWP1;
+
+@Column(name = "R157_BAL_SUB_BWP2")
+private BigDecimal R157_BAL_SUB_BWP2;
+
+@Column(name = "R157_BAL_ACT_SUB_BWP1")
+private BigDecimal R157_BAL_ACT_SUB_BWP1;
+
+@Column(name = "R157_BAL_ACT_SUB_BWP2")
+private BigDecimal R157_BAL_ACT_SUB_BWP2;
+
+/* ================= R158 ================= */
+@Column(name = "R158_PRODUCT")
+private String R158_PRODUCT;
+
+@Column(name = "R158_FIG_BAL_BWP1")
+private BigDecimal R158_FIG_BAL_BWP1;
+
+@Column(name = "R158_FIG_BAL_BWP2")
+private BigDecimal R158_FIG_BAL_BWP2;
+
+@Column(name = "R158_AMT_ADJ_BWP1")
+private BigDecimal R158_AMT_ADJ_BWP1;
+
+@Column(name = "R158_AMT_ADJ_BWP2")
+private BigDecimal R158_AMT_ADJ_BWP2;
+
+@Column(name = "R158_NET_AMT_BWP1")
+private BigDecimal R158_NET_AMT_BWP1;
+
+@Column(name = "R158_NET_AMT_BWP2")
+private BigDecimal R158_NET_AMT_BWP2;
+
+@Column(name = "R158_BAL_SUB_BWP1")
+private BigDecimal R158_BAL_SUB_BWP1;
+
+@Column(name = "R158_BAL_SUB_BWP2")
+private BigDecimal R158_BAL_SUB_BWP2;
+
+@Column(name = "R158_BAL_ACT_SUB_BWP1")
+private BigDecimal R158_BAL_ACT_SUB_BWP1;
+
+@Column(name = "R158_BAL_ACT_SUB_BWP2")
+private BigDecimal R158_BAL_ACT_SUB_BWP2;
+
+/* ================= R159 ================= */
+@Column(name = "R159_PRODUCT")
+private String R159_PRODUCT;
+
+@Column(name = "R159_FIG_BAL_BWP1")
+private BigDecimal R159_FIG_BAL_BWP1;
+
+@Column(name = "R159_FIG_BAL_BWP2")
+private BigDecimal R159_FIG_BAL_BWP2;
+
+@Column(name = "R159_AMT_ADJ_BWP1")
+private BigDecimal R159_AMT_ADJ_BWP1;
+
+@Column(name = "R159_AMT_ADJ_BWP2")
+private BigDecimal R159_AMT_ADJ_BWP2;
+
+@Column(name = "R159_NET_AMT_BWP1")
+private BigDecimal R159_NET_AMT_BWP1;
+
+@Column(name = "R159_NET_AMT_BWP2")
+private BigDecimal R159_NET_AMT_BWP2;
+
+@Column(name = "R159_BAL_SUB_BWP1")
+private BigDecimal R159_BAL_SUB_BWP1;
+
+@Column(name = "R159_BAL_SUB_BWP2")
+private BigDecimal R159_BAL_SUB_BWP2;
+
+@Column(name = "R159_BAL_ACT_SUB_BWP1")
+private BigDecimal R159_BAL_ACT_SUB_BWP1;
+
+@Column(name = "R159_BAL_ACT_SUB_BWP2")
+private BigDecimal R159_BAL_ACT_SUB_BWP2;
+
+/* ================= R160 ================= */
+@Column(name = "R160_PRODUCT")
+private String R160_PRODUCT;
+
+@Column(name = "R160_FIG_BAL_BWP1")
+private BigDecimal R160_FIG_BAL_BWP1;
+
+@Column(name = "R160_FIG_BAL_BWP2")
+private BigDecimal R160_FIG_BAL_BWP2;
+
+@Column(name = "R160_AMT_ADJ_BWP1")
+private BigDecimal R160_AMT_ADJ_BWP1;
+
+@Column(name = "R160_AMT_ADJ_BWP2")
+private BigDecimal R160_AMT_ADJ_BWP2;
+
+@Column(name = "R160_NET_AMT_BWP1")
+private BigDecimal R160_NET_AMT_BWP1;
+
+@Column(name = "R160_NET_AMT_BWP2")
+private BigDecimal R160_NET_AMT_BWP2;
+
+@Column(name = "R160_BAL_SUB_BWP1")
+private BigDecimal R160_BAL_SUB_BWP1;
+
+@Column(name = "R160_BAL_SUB_BWP2")
+private BigDecimal R160_BAL_SUB_BWP2;
+
+@Column(name = "R160_BAL_ACT_SUB_BWP1")
+private BigDecimal R160_BAL_ACT_SUB_BWP1;
+
+@Column(name = "R160_BAL_ACT_SUB_BWP2")
+private BigDecimal R160_BAL_ACT_SUB_BWP2;
+
+/* ================= R161 ================= */
+@Column(name = "R161_PRODUCT")
+private String R161_PRODUCT;
+
+@Column(name = "R161_FIG_BAL_BWP1")
+private BigDecimal R161_FIG_BAL_BWP1;
+
+@Column(name = "R161_FIG_BAL_BWP2")
+private BigDecimal R161_FIG_BAL_BWP2;
+
+@Column(name = "R161_AMT_ADJ_BWP1")
+private BigDecimal R161_AMT_ADJ_BWP1;
+
+@Column(name = "R161_AMT_ADJ_BWP2")
+private BigDecimal R161_AMT_ADJ_BWP2;
+
+@Column(name = "R161_NET_AMT_BWP1")
+private BigDecimal R161_NET_AMT_BWP1;
+
+@Column(name = "R161_NET_AMT_BWP2")
+private BigDecimal R161_NET_AMT_BWP2;
+
+@Column(name = "R161_BAL_SUB_BWP1")
+private BigDecimal R161_BAL_SUB_BWP1;
+
+@Column(name = "R161_BAL_SUB_BWP2")
+private BigDecimal R161_BAL_SUB_BWP2;
+
+@Column(name = "R161_BAL_ACT_SUB_BWP1")
+private BigDecimal R161_BAL_ACT_SUB_BWP1;
+
+@Column(name = "R161_BAL_ACT_SUB_BWP2")
+private BigDecimal R161_BAL_ACT_SUB_BWP2;
+
+/* ================= R162 ================= */
+@Column(name = "R162_PRODUCT")
+private String R162_PRODUCT;
+
+@Column(name = "R162_FIG_BAL_BWP1")
+private BigDecimal R162_FIG_BAL_BWP1;
+
+@Column(name = "R162_FIG_BAL_BWP2")
+private BigDecimal R162_FIG_BAL_BWP2;
+
+@Column(name = "R162_AMT_ADJ_BWP1")
+private BigDecimal R162_AMT_ADJ_BWP1;
+
+@Column(name = "R162_AMT_ADJ_BWP2")
+private BigDecimal R162_AMT_ADJ_BWP2;
+
+@Column(name = "R162_NET_AMT_BWP1")
+private BigDecimal R162_NET_AMT_BWP1;
+
+@Column(name = "R162_NET_AMT_BWP2")
+private BigDecimal R162_NET_AMT_BWP2;
+
+@Column(name = "R162_BAL_SUB_BWP1")
+private BigDecimal R162_BAL_SUB_BWP1;
+
+@Column(name = "R162_BAL_SUB_BWP2")
+private BigDecimal R162_BAL_SUB_BWP2;
+
+@Column(name = "R162_BAL_ACT_SUB_BWP1")
+private BigDecimal R162_BAL_ACT_SUB_BWP1;
+
+@Column(name = "R162_BAL_ACT_SUB_BWP2")
+private BigDecimal R162_BAL_ACT_SUB_BWP2;
+
+/* ================= R163 ================= */
+@Column(name = "R163_PRODUCT")
+private String R163_PRODUCT;
+
+@Column(name = "R163_FIG_BAL_BWP1")
+private BigDecimal R163_FIG_BAL_BWP1;
+
+@Column(name = "R163_FIG_BAL_BWP2")
+private BigDecimal R163_FIG_BAL_BWP2;
+
+@Column(name = "R163_AMT_ADJ_BWP1")
+private BigDecimal R163_AMT_ADJ_BWP1;
+
+@Column(name = "R163_AMT_ADJ_BWP2")
+private BigDecimal R163_AMT_ADJ_BWP2;
+
+@Column(name = "R163_NET_AMT_BWP1")
+private BigDecimal R163_NET_AMT_BWP1;
+
+@Column(name = "R163_NET_AMT_BWP2")
+private BigDecimal R163_NET_AMT_BWP2;
+
+@Column(name = "R163_BAL_SUB_BWP1")
+private BigDecimal R163_BAL_SUB_BWP1;
+
+@Column(name = "R163_BAL_SUB_BWP2")
+private BigDecimal R163_BAL_SUB_BWP2;
+
+@Column(name = "R163_BAL_ACT_SUB_BWP1")
+private BigDecimal R163_BAL_ACT_SUB_BWP1;
+
+@Column(name = "R163_BAL_ACT_SUB_BWP2")
+private BigDecimal R163_BAL_ACT_SUB_BWP2;
+
+/* ================= R164 ================= */
+@Column(name = "R164_PRODUCT")
+private String R164_PRODUCT;
+
+@Column(name = "R164_FIG_BAL_BWP1")
+private BigDecimal R164_FIG_BAL_BWP1;
+
+@Column(name = "R164_FIG_BAL_BWP2")
+private BigDecimal R164_FIG_BAL_BWP2;
+
+@Column(name = "R164_AMT_ADJ_BWP1")
+private BigDecimal R164_AMT_ADJ_BWP1;
+
+@Column(name = "R164_AMT_ADJ_BWP2")
+private BigDecimal R164_AMT_ADJ_BWP2;
+
+@Column(name = "R164_NET_AMT_BWP1")
+private BigDecimal R164_NET_AMT_BWP1;
+
+@Column(name = "R164_NET_AMT_BWP2")
+private BigDecimal R164_NET_AMT_BWP2;
+
+@Column(name = "R164_BAL_SUB_BWP1")
+private BigDecimal R164_BAL_SUB_BWP1;
+
+@Column(name = "R164_BAL_SUB_BWP2")
+private BigDecimal R164_BAL_SUB_BWP2;
+
+@Column(name = "R164_BAL_ACT_SUB_BWP1")
+private BigDecimal R164_BAL_ACT_SUB_BWP1;
+
+@Column(name = "R164_BAL_ACT_SUB_BWP2")
+private BigDecimal R164_BAL_ACT_SUB_BWP2;
+
+/* ================= R165 ================= */
+@Column(name = "R165_PRODUCT")
+private String R165_PRODUCT;
+
+@Column(name = "R165_FIG_BAL_BWP1")
+private BigDecimal R165_FIG_BAL_BWP1;
+
+@Column(name = "R165_FIG_BAL_BWP2")
+private BigDecimal R165_FIG_BAL_BWP2;
+
+@Column(name = "R165_AMT_ADJ_BWP1")
+private BigDecimal R165_AMT_ADJ_BWP1;
+
+@Column(name = "R165_AMT_ADJ_BWP2")
+private BigDecimal R165_AMT_ADJ_BWP2;
+
+@Column(name = "R165_NET_AMT_BWP1")
+private BigDecimal R165_NET_AMT_BWP1;
+
+@Column(name = "R165_NET_AMT_BWP2")
+private BigDecimal R165_NET_AMT_BWP2;
+
+@Column(name = "R165_BAL_SUB_BWP1")
+private BigDecimal R165_BAL_SUB_BWP1;
+
+@Column(name = "R165_BAL_SUB_BWP2")
+private BigDecimal R165_BAL_SUB_BWP2;
+
+@Column(name = "R165_BAL_ACT_SUB_BWP1")
+private BigDecimal R165_BAL_ACT_SUB_BWP1;
+
+@Column(name = "R165_BAL_ACT_SUB_BWP2")
+private BigDecimal R165_BAL_ACT_SUB_BWP2;
+
+/* ================= R166 ================= */
+@Column(name = "R166_PRODUCT")
+private String R166_PRODUCT;
+
+@Column(name = "R166_FIG_BAL_BWP1")
+private BigDecimal R166_FIG_BAL_BWP1;
+
+@Column(name = "R166_FIG_BAL_BWP2")
+private BigDecimal R166_FIG_BAL_BWP2;
+
+@Column(name = "R166_AMT_ADJ_BWP1")
+private BigDecimal R166_AMT_ADJ_BWP1;
+
+@Column(name = "R166_AMT_ADJ_BWP2")
+private BigDecimal R166_AMT_ADJ_BWP2;
+
+@Column(name = "R166_NET_AMT_BWP1")
+private BigDecimal R166_NET_AMT_BWP1;
+
+@Column(name = "R166_NET_AMT_BWP2")
+private BigDecimal R166_NET_AMT_BWP2;
+
+@Column(name = "R166_BAL_SUB_BWP1")
+private BigDecimal R166_BAL_SUB_BWP1;
+
+@Column(name = "R166_BAL_SUB_BWP2")
+private BigDecimal R166_BAL_SUB_BWP2;
+
+@Column(name = "R166_BAL_ACT_SUB_BWP1")
+private BigDecimal R166_BAL_ACT_SUB_BWP1;
+
+@Column(name = "R166_BAL_ACT_SUB_BWP2")
+private BigDecimal R166_BAL_ACT_SUB_BWP2;
+
+/* ================= R167 ================= */
+@Column(name = "R167_PRODUCT")
+private String R167_PRODUCT;
+
+@Column(name = "R167_FIG_BAL_BWP1")
+private BigDecimal R167_FIG_BAL_BWP1;
+
+@Column(name = "R167_FIG_BAL_BWP2")
+private BigDecimal R167_FIG_BAL_BWP2;
+
+@Column(name = "R167_AMT_ADJ_BWP1")
+private BigDecimal R167_AMT_ADJ_BWP1;
+
+@Column(name = "R167_AMT_ADJ_BWP2")
+private BigDecimal R167_AMT_ADJ_BWP2;
+
+@Column(name = "R167_NET_AMT_BWP1")
+private BigDecimal R167_NET_AMT_BWP1;
+
+@Column(name = "R167_NET_AMT_BWP2")
+private BigDecimal R167_NET_AMT_BWP2;
+
+@Column(name = "R167_BAL_SUB_BWP1")
+private BigDecimal R167_BAL_SUB_BWP1;
+
+@Column(name = "R167_BAL_SUB_BWP2")
+private BigDecimal R167_BAL_SUB_BWP2;
+
+@Column(name = "R167_BAL_ACT_SUB_BWP1")
+private BigDecimal R167_BAL_ACT_SUB_BWP1;
+
+@Column(name = "R167_BAL_ACT_SUB_BWP2")
+private BigDecimal R167_BAL_ACT_SUB_BWP2;
+
+/* ================= R168 ================= */
+@Column(name = "R168_PRODUCT")
+private String R168_PRODUCT;
+
+@Column(name = "R168_FIG_BAL_BWP1")
+private BigDecimal R168_FIG_BAL_BWP1;
+
+@Column(name = "R168_FIG_BAL_BWP2")
+private BigDecimal R168_FIG_BAL_BWP2;
+
+@Column(name = "R168_AMT_ADJ_BWP1")
+private BigDecimal R168_AMT_ADJ_BWP1;
+
+@Column(name = "R168_AMT_ADJ_BWP2")
+private BigDecimal R168_AMT_ADJ_BWP2;
+
+@Column(name = "R168_NET_AMT_BWP1")
+private BigDecimal R168_NET_AMT_BWP1;
+
+@Column(name = "R168_NET_AMT_BWP2")
+private BigDecimal R168_NET_AMT_BWP2;
+
+@Column(name = "R168_BAL_SUB_BWP1")
+private BigDecimal R168_BAL_SUB_BWP1;
+
+@Column(name = "R168_BAL_SUB_BWP2")
+private BigDecimal R168_BAL_SUB_BWP2;
+
+@Column(name = "R168_BAL_ACT_SUB_BWP1")
+private BigDecimal R168_BAL_ACT_SUB_BWP1;
+
+@Column(name = "R168_BAL_ACT_SUB_BWP2")
+private BigDecimal R168_BAL_ACT_SUB_BWP2;
+
+/* ================= R169 ================= */
+@Column(name = "R169_PRODUCT")
+private String R169_PRODUCT;
+
+@Column(name = "R169_FIG_BAL_BWP1")
+private BigDecimal R169_FIG_BAL_BWP1;
+
+@Column(name = "R169_FIG_BAL_BWP2")
+private BigDecimal R169_FIG_BAL_BWP2;
+
+@Column(name = "R169_AMT_ADJ_BWP1")
+private BigDecimal R169_AMT_ADJ_BWP1;
+
+@Column(name = "R169_AMT_ADJ_BWP2")
+private BigDecimal R169_AMT_ADJ_BWP2;
+
+@Column(name = "R169_NET_AMT_BWP1")
+private BigDecimal R169_NET_AMT_BWP1;
+
+@Column(name = "R169_NET_AMT_BWP2")
+private BigDecimal R169_NET_AMT_BWP2;
+
+@Column(name = "R169_BAL_SUB_BWP1")
+private BigDecimal R169_BAL_SUB_BWP1;
+
+@Column(name = "R169_BAL_SUB_BWP2")
+private BigDecimal R169_BAL_SUB_BWP2;
+
+@Column(name = "R169_BAL_ACT_SUB_BWP1")
+private BigDecimal R169_BAL_ACT_SUB_BWP1;
+
+@Column(name = "R169_BAL_ACT_SUB_BWP2")
+private BigDecimal R169_BAL_ACT_SUB_BWP2;
+
+/* ================= R170 ================= */
+@Column(name = "R170_PRODUCT")
+private String R170_PRODUCT;
+
+@Column(name = "R170_FIG_BAL_BWP1")
+private BigDecimal R170_FIG_BAL_BWP1;
+
+@Column(name = "R170_FIG_BAL_BWP2")
+private BigDecimal R170_FIG_BAL_BWP2;
+
+@Column(name = "R170_AMT_ADJ_BWP1")
+private BigDecimal R170_AMT_ADJ_BWP1;
+
+@Column(name = "R170_AMT_ADJ_BWP2")
+private BigDecimal R170_AMT_ADJ_BWP2;
+
+@Column(name = "R170_NET_AMT_BWP1")
+private BigDecimal R170_NET_AMT_BWP1;
+
+@Column(name = "R170_NET_AMT_BWP2")
+private BigDecimal R170_NET_AMT_BWP2;
+
+@Column(name = "R170_BAL_SUB_BWP1")
+private BigDecimal R170_BAL_SUB_BWP1;
+
+@Column(name = "R170_BAL_SUB_BWP2")
+private BigDecimal R170_BAL_SUB_BWP2;
+
+@Column(name = "R170_BAL_ACT_SUB_BWP1")
+private BigDecimal R170_BAL_ACT_SUB_BWP1;
+
+@Column(name = "R170_BAL_ACT_SUB_BWP2")
+private BigDecimal R170_BAL_ACT_SUB_BWP2;
+
+/* ================= R171 ================= */
+@Column(name = "R171_PRODUCT")
+private String R171_PRODUCT;
+
+@Column(name = "R171_FIG_BAL_BWP1")
+private BigDecimal R171_FIG_BAL_BWP1;
+
+@Column(name = "R171_FIG_BAL_BWP2")
+private BigDecimal R171_FIG_BAL_BWP2;
+
+@Column(name = "R171_AMT_ADJ_BWP1")
+private BigDecimal R171_AMT_ADJ_BWP1;
+
+@Column(name = "R171_AMT_ADJ_BWP2")
+private BigDecimal R171_AMT_ADJ_BWP2;
+
+@Column(name = "R171_NET_AMT_BWP1")
+private BigDecimal R171_NET_AMT_BWP1;
+
+@Column(name = "R171_NET_AMT_BWP2")
+private BigDecimal R171_NET_AMT_BWP2;
+
+@Column(name = "R171_BAL_SUB_BWP1")
+private BigDecimal R171_BAL_SUB_BWP1;
+
+@Column(name = "R171_BAL_SUB_BWP2")
+private BigDecimal R171_BAL_SUB_BWP2;
+
+@Column(name = "R171_BAL_ACT_SUB_BWP1")
+private BigDecimal R171_BAL_ACT_SUB_BWP1;
+
+@Column(name = "R171_BAL_ACT_SUB_BWP2")
+private BigDecimal R171_BAL_ACT_SUB_BWP2;
+
+/* ================= R172 ================= */
+@Column(name = "R172_PRODUCT")
+private String R172_PRODUCT;
+
+@Column(name = "R172_FIG_BAL_BWP1")
+private BigDecimal R172_FIG_BAL_BWP1;
+
+@Column(name = "R172_FIG_BAL_BWP2")
+private BigDecimal R172_FIG_BAL_BWP2;
+
+@Column(name = "R172_AMT_ADJ_BWP1")
+private BigDecimal R172_AMT_ADJ_BWP1;
+
+@Column(name = "R172_AMT_ADJ_BWP2")
+private BigDecimal R172_AMT_ADJ_BWP2;
+
+@Column(name = "R172_NET_AMT_BWP1")
+private BigDecimal R172_NET_AMT_BWP1;
+
+@Column(name = "R172_NET_AMT_BWP2")
+private BigDecimal R172_NET_AMT_BWP2;
+
+@Column(name = "R172_BAL_SUB_BWP1")
+private BigDecimal R172_BAL_SUB_BWP1;
+
+@Column(name = "R172_BAL_SUB_BWP2")
+private BigDecimal R172_BAL_SUB_BWP2;
+
+@Column(name = "R172_BAL_ACT_SUB_BWP1")
+private BigDecimal R172_BAL_ACT_SUB_BWP1;
+
+@Column(name = "R172_BAL_ACT_SUB_BWP2")
+private BigDecimal R172_BAL_ACT_SUB_BWP2;
+
+/* ================= R173 ================= */
+@Column(name = "R173_PRODUCT")
+private String R173_PRODUCT;
+
+@Column(name = "R173_FIG_BAL_BWP1")
+private BigDecimal R173_FIG_BAL_BWP1;
+
+@Column(name = "R173_FIG_BAL_BWP2")
+private BigDecimal R173_FIG_BAL_BWP2;
+
+@Column(name = "R173_AMT_ADJ_BWP1")
+private BigDecimal R173_AMT_ADJ_BWP1;
+
+@Column(name = "R173_AMT_ADJ_BWP2")
+private BigDecimal R173_AMT_ADJ_BWP2;
+
+@Column(name = "R173_NET_AMT_BWP1")
+private BigDecimal R173_NET_AMT_BWP1;
+
+@Column(name = "R173_NET_AMT_BWP2")
+private BigDecimal R173_NET_AMT_BWP2;
+
+@Column(name = "R173_BAL_SUB_BWP1")
+private BigDecimal R173_BAL_SUB_BWP1;
+
+@Column(name = "R173_BAL_SUB_BWP2")
+private BigDecimal R173_BAL_SUB_BWP2;
+
+@Column(name = "R173_BAL_ACT_SUB_BWP1")
+private BigDecimal R173_BAL_ACT_SUB_BWP1;
+
+@Column(name = "R173_BAL_ACT_SUB_BWP2")
+private BigDecimal R173_BAL_ACT_SUB_BWP2;
+
+/* ================= R174 ================= */
+@Column(name = "R174_PRODUCT")
+private String R174_PRODUCT;
+
+@Column(name = "R174_FIG_BAL_BWP1")
+private BigDecimal R174_FIG_BAL_BWP1;
+
+@Column(name = "R174_FIG_BAL_BWP2")
+private BigDecimal R174_FIG_BAL_BWP2;
+
+@Column(name = "R174_AMT_ADJ_BWP1")
+private BigDecimal R174_AMT_ADJ_BWP1;
+
+@Column(name = "R174_AMT_ADJ_BWP2")
+private BigDecimal R174_AMT_ADJ_BWP2;
+
+@Column(name = "R174_NET_AMT_BWP1")
+private BigDecimal R174_NET_AMT_BWP1;
+
+@Column(name = "R174_NET_AMT_BWP2")
+private BigDecimal R174_NET_AMT_BWP2;
+
+@Column(name = "R174_BAL_SUB_BWP1")
+private BigDecimal R174_BAL_SUB_BWP1;
+
+@Column(name = "R174_BAL_SUB_BWP2")
+private BigDecimal R174_BAL_SUB_BWP2;
+
+@Column(name = "R174_BAL_ACT_SUB_BWP1")
+private BigDecimal R174_BAL_ACT_SUB_BWP1;
+
+@Column(name = "R174_BAL_ACT_SUB_BWP2")
+private BigDecimal R174_BAL_ACT_SUB_BWP2;
+    /* ================= R180 ================= */
+@Column(name = "R180_PRODUCT")
+private String R180_PRODUCT;
+
+@Column(name = "R180_FIG_BAL_BWP1")
+private BigDecimal R180_FIG_BAL_BWP1;
+
+@Column(name = "R180_FIG_BAL_BWP2")
+private BigDecimal R180_FIG_BAL_BWP2;
+
+@Column(name = "R180_AMT_ADJ_BWP1")
+private BigDecimal R180_AMT_ADJ_BWP1;
+
+@Column(name = "R180_AMT_ADJ_BWP2")
+private BigDecimal R180_AMT_ADJ_BWP2;
+
+@Column(name = "R180_NET_AMT_BWP1")
+private BigDecimal R180_NET_AMT_BWP1;
+
+@Column(name = "R180_NET_AMT_BWP2")
+private BigDecimal R180_NET_AMT_BWP2;
+
+@Column(name = "R180_BAL_SUB_BWP1")
+private BigDecimal R180_BAL_SUB_BWP1;
+
+@Column(name = "R180_BAL_SUB_BWP2")
+private BigDecimal R180_BAL_SUB_BWP2;
+
+@Column(name = "R180_BAL_ACT_SUB_BWP1")
+private BigDecimal R180_BAL_ACT_SUB_BWP1;
+
+@Column(name = "R180_BAL_ACT_SUB_BWP2")
+private BigDecimal R180_BAL_ACT_SUB_BWP2;
+
+
     /* ================= R181 ================= */
     @Column(name = "R181_PRODUCT")
     private String R181_PRODUCT;
@@ -5354,6 +6237,2294 @@ public class GL_SCH_Summary_Entity2 {
 
     public GL_SCH_Summary_Entity2() {
         super();
+    }
+
+    public String getR150_PRODUCT() {
+        return R150_PRODUCT;
+    }
+
+    public void setR150_PRODUCT(String r150_PRODUCT) {
+        R150_PRODUCT = r150_PRODUCT;
+    }
+
+    public BigDecimal getR150_FIG_BAL_BWP1() {
+        return R150_FIG_BAL_BWP1;
+    }
+
+    public void setR150_FIG_BAL_BWP1(BigDecimal r150_FIG_BAL_BWP1) {
+        R150_FIG_BAL_BWP1 = r150_FIG_BAL_BWP1;
+    }
+
+    public BigDecimal getR150_FIG_BAL_BWP2() {
+        return R150_FIG_BAL_BWP2;
+    }
+
+    public void setR150_FIG_BAL_BWP2(BigDecimal r150_FIG_BAL_BWP2) {
+        R150_FIG_BAL_BWP2 = r150_FIG_BAL_BWP2;
+    }
+
+    public BigDecimal getR150_AMT_ADJ_BWP1() {
+        return R150_AMT_ADJ_BWP1;
+    }
+
+    public void setR150_AMT_ADJ_BWP1(BigDecimal r150_AMT_ADJ_BWP1) {
+        R150_AMT_ADJ_BWP1 = r150_AMT_ADJ_BWP1;
+    }
+
+    public BigDecimal getR150_AMT_ADJ_BWP2() {
+        return R150_AMT_ADJ_BWP2;
+    }
+
+    public void setR150_AMT_ADJ_BWP2(BigDecimal r150_AMT_ADJ_BWP2) {
+        R150_AMT_ADJ_BWP2 = r150_AMT_ADJ_BWP2;
+    }
+
+    public BigDecimal getR150_NET_AMT_BWP1() {
+        return R150_NET_AMT_BWP1;
+    }
+
+    public void setR150_NET_AMT_BWP1(BigDecimal r150_NET_AMT_BWP1) {
+        R150_NET_AMT_BWP1 = r150_NET_AMT_BWP1;
+    }
+
+    public BigDecimal getR150_NET_AMT_BWP2() {
+        return R150_NET_AMT_BWP2;
+    }
+
+    public void setR150_NET_AMT_BWP2(BigDecimal r150_NET_AMT_BWP2) {
+        R150_NET_AMT_BWP2 = r150_NET_AMT_BWP2;
+    }
+
+    public BigDecimal getR150_BAL_SUB_BWP1() {
+        return R150_BAL_SUB_BWP1;
+    }
+
+    public void setR150_BAL_SUB_BWP1(BigDecimal r150_BAL_SUB_BWP1) {
+        R150_BAL_SUB_BWP1 = r150_BAL_SUB_BWP1;
+    }
+
+    public BigDecimal getR150_BAL_SUB_BWP2() {
+        return R150_BAL_SUB_BWP2;
+    }
+
+    public void setR150_BAL_SUB_BWP2(BigDecimal r150_BAL_SUB_BWP2) {
+        R150_BAL_SUB_BWP2 = r150_BAL_SUB_BWP2;
+    }
+
+    public BigDecimal getR150_BAL_ACT_SUB_BWP1() {
+        return R150_BAL_ACT_SUB_BWP1;
+    }
+
+    public void setR150_BAL_ACT_SUB_BWP1(BigDecimal r150_BAL_ACT_SUB_BWP1) {
+        R150_BAL_ACT_SUB_BWP1 = r150_BAL_ACT_SUB_BWP1;
+    }
+
+    public BigDecimal getR150_BAL_ACT_SUB_BWP2() {
+        return R150_BAL_ACT_SUB_BWP2;
+    }
+
+    public void setR150_BAL_ACT_SUB_BWP2(BigDecimal r150_BAL_ACT_SUB_BWP2) {
+        R150_BAL_ACT_SUB_BWP2 = r150_BAL_ACT_SUB_BWP2;
+    }
+
+    public String getR151_PRODUCT() {
+        return R151_PRODUCT;
+    }
+
+    public void setR151_PRODUCT(String r151_PRODUCT) {
+        R151_PRODUCT = r151_PRODUCT;
+    }
+
+    public BigDecimal getR151_FIG_BAL_BWP1() {
+        return R151_FIG_BAL_BWP1;
+    }
+
+    public void setR151_FIG_BAL_BWP1(BigDecimal r151_FIG_BAL_BWP1) {
+        R151_FIG_BAL_BWP1 = r151_FIG_BAL_BWP1;
+    }
+
+    public BigDecimal getR151_FIG_BAL_BWP2() {
+        return R151_FIG_BAL_BWP2;
+    }
+
+    public void setR151_FIG_BAL_BWP2(BigDecimal r151_FIG_BAL_BWP2) {
+        R151_FIG_BAL_BWP2 = r151_FIG_BAL_BWP2;
+    }
+
+    public BigDecimal getR151_AMT_ADJ_BWP1() {
+        return R151_AMT_ADJ_BWP1;
+    }
+
+    public void setR151_AMT_ADJ_BWP1(BigDecimal r151_AMT_ADJ_BWP1) {
+        R151_AMT_ADJ_BWP1 = r151_AMT_ADJ_BWP1;
+    }
+
+    public BigDecimal getR151_AMT_ADJ_BWP2() {
+        return R151_AMT_ADJ_BWP2;
+    }
+
+    public void setR151_AMT_ADJ_BWP2(BigDecimal r151_AMT_ADJ_BWP2) {
+        R151_AMT_ADJ_BWP2 = r151_AMT_ADJ_BWP2;
+    }
+
+    public BigDecimal getR151_NET_AMT_BWP1() {
+        return R151_NET_AMT_BWP1;
+    }
+
+    public void setR151_NET_AMT_BWP1(BigDecimal r151_NET_AMT_BWP1) {
+        R151_NET_AMT_BWP1 = r151_NET_AMT_BWP1;
+    }
+
+    public BigDecimal getR151_NET_AMT_BWP2() {
+        return R151_NET_AMT_BWP2;
+    }
+
+    public void setR151_NET_AMT_BWP2(BigDecimal r151_NET_AMT_BWP2) {
+        R151_NET_AMT_BWP2 = r151_NET_AMT_BWP2;
+    }
+
+    public BigDecimal getR151_BAL_SUB_BWP1() {
+        return R151_BAL_SUB_BWP1;
+    }
+
+    public void setR151_BAL_SUB_BWP1(BigDecimal r151_BAL_SUB_BWP1) {
+        R151_BAL_SUB_BWP1 = r151_BAL_SUB_BWP1;
+    }
+
+    public BigDecimal getR151_BAL_SUB_BWP2() {
+        return R151_BAL_SUB_BWP2;
+    }
+
+    public void setR151_BAL_SUB_BWP2(BigDecimal r151_BAL_SUB_BWP2) {
+        R151_BAL_SUB_BWP2 = r151_BAL_SUB_BWP2;
+    }
+
+    public BigDecimal getR151_BAL_ACT_SUB_BWP1() {
+        return R151_BAL_ACT_SUB_BWP1;
+    }
+
+    public void setR151_BAL_ACT_SUB_BWP1(BigDecimal r151_BAL_ACT_SUB_BWP1) {
+        R151_BAL_ACT_SUB_BWP1 = r151_BAL_ACT_SUB_BWP1;
+    }
+
+    public BigDecimal getR151_BAL_ACT_SUB_BWP2() {
+        return R151_BAL_ACT_SUB_BWP2;
+    }
+
+    public void setR151_BAL_ACT_SUB_BWP2(BigDecimal r151_BAL_ACT_SUB_BWP2) {
+        R151_BAL_ACT_SUB_BWP2 = r151_BAL_ACT_SUB_BWP2;
+    }
+
+    public String getR152_PRODUCT() {
+        return R152_PRODUCT;
+    }
+
+    public void setR152_PRODUCT(String r152_PRODUCT) {
+        R152_PRODUCT = r152_PRODUCT;
+    }
+
+    public BigDecimal getR152_FIG_BAL_BWP1() {
+        return R152_FIG_BAL_BWP1;
+    }
+
+    public void setR152_FIG_BAL_BWP1(BigDecimal r152_FIG_BAL_BWP1) {
+        R152_FIG_BAL_BWP1 = r152_FIG_BAL_BWP1;
+    }
+
+    public BigDecimal getR152_FIG_BAL_BWP2() {
+        return R152_FIG_BAL_BWP2;
+    }
+
+    public void setR152_FIG_BAL_BWP2(BigDecimal r152_FIG_BAL_BWP2) {
+        R152_FIG_BAL_BWP2 = r152_FIG_BAL_BWP2;
+    }
+
+    public BigDecimal getR152_AMT_ADJ_BWP1() {
+        return R152_AMT_ADJ_BWP1;
+    }
+
+    public void setR152_AMT_ADJ_BWP1(BigDecimal r152_AMT_ADJ_BWP1) {
+        R152_AMT_ADJ_BWP1 = r152_AMT_ADJ_BWP1;
+    }
+
+    public BigDecimal getR152_AMT_ADJ_BWP2() {
+        return R152_AMT_ADJ_BWP2;
+    }
+
+    public void setR152_AMT_ADJ_BWP2(BigDecimal r152_AMT_ADJ_BWP2) {
+        R152_AMT_ADJ_BWP2 = r152_AMT_ADJ_BWP2;
+    }
+
+    public BigDecimal getR152_NET_AMT_BWP1() {
+        return R152_NET_AMT_BWP1;
+    }
+
+    public void setR152_NET_AMT_BWP1(BigDecimal r152_NET_AMT_BWP1) {
+        R152_NET_AMT_BWP1 = r152_NET_AMT_BWP1;
+    }
+
+    public BigDecimal getR152_NET_AMT_BWP2() {
+        return R152_NET_AMT_BWP2;
+    }
+
+    public void setR152_NET_AMT_BWP2(BigDecimal r152_NET_AMT_BWP2) {
+        R152_NET_AMT_BWP2 = r152_NET_AMT_BWP2;
+    }
+
+    public BigDecimal getR152_BAL_SUB_BWP1() {
+        return R152_BAL_SUB_BWP1;
+    }
+
+    public void setR152_BAL_SUB_BWP1(BigDecimal r152_BAL_SUB_BWP1) {
+        R152_BAL_SUB_BWP1 = r152_BAL_SUB_BWP1;
+    }
+
+    public BigDecimal getR152_BAL_SUB_BWP2() {
+        return R152_BAL_SUB_BWP2;
+    }
+
+    public void setR152_BAL_SUB_BWP2(BigDecimal r152_BAL_SUB_BWP2) {
+        R152_BAL_SUB_BWP2 = r152_BAL_SUB_BWP2;
+    }
+
+    public BigDecimal getR152_BAL_ACT_SUB_BWP1() {
+        return R152_BAL_ACT_SUB_BWP1;
+    }
+
+    public void setR152_BAL_ACT_SUB_BWP1(BigDecimal r152_BAL_ACT_SUB_BWP1) {
+        R152_BAL_ACT_SUB_BWP1 = r152_BAL_ACT_SUB_BWP1;
+    }
+
+    public BigDecimal getR152_BAL_ACT_SUB_BWP2() {
+        return R152_BAL_ACT_SUB_BWP2;
+    }
+
+    public void setR152_BAL_ACT_SUB_BWP2(BigDecimal r152_BAL_ACT_SUB_BWP2) {
+        R152_BAL_ACT_SUB_BWP2 = r152_BAL_ACT_SUB_BWP2;
+    }
+
+    public String getR153_PRODUCT() {
+        return R153_PRODUCT;
+    }
+
+    public void setR153_PRODUCT(String r153_PRODUCT) {
+        R153_PRODUCT = r153_PRODUCT;
+    }
+
+    public BigDecimal getR153_FIG_BAL_BWP1() {
+        return R153_FIG_BAL_BWP1;
+    }
+
+    public void setR153_FIG_BAL_BWP1(BigDecimal r153_FIG_BAL_BWP1) {
+        R153_FIG_BAL_BWP1 = r153_FIG_BAL_BWP1;
+    }
+
+    public BigDecimal getR153_FIG_BAL_BWP2() {
+        return R153_FIG_BAL_BWP2;
+    }
+
+    public void setR153_FIG_BAL_BWP2(BigDecimal r153_FIG_BAL_BWP2) {
+        R153_FIG_BAL_BWP2 = r153_FIG_BAL_BWP2;
+    }
+
+    public BigDecimal getR153_AMT_ADJ_BWP1() {
+        return R153_AMT_ADJ_BWP1;
+    }
+
+    public void setR153_AMT_ADJ_BWP1(BigDecimal r153_AMT_ADJ_BWP1) {
+        R153_AMT_ADJ_BWP1 = r153_AMT_ADJ_BWP1;
+    }
+
+    public BigDecimal getR153_AMT_ADJ_BWP2() {
+        return R153_AMT_ADJ_BWP2;
+    }
+
+    public void setR153_AMT_ADJ_BWP2(BigDecimal r153_AMT_ADJ_BWP2) {
+        R153_AMT_ADJ_BWP2 = r153_AMT_ADJ_BWP2;
+    }
+
+    public BigDecimal getR153_NET_AMT_BWP1() {
+        return R153_NET_AMT_BWP1;
+    }
+
+    public void setR153_NET_AMT_BWP1(BigDecimal r153_NET_AMT_BWP1) {
+        R153_NET_AMT_BWP1 = r153_NET_AMT_BWP1;
+    }
+
+    public BigDecimal getR153_NET_AMT_BWP2() {
+        return R153_NET_AMT_BWP2;
+    }
+
+    public void setR153_NET_AMT_BWP2(BigDecimal r153_NET_AMT_BWP2) {
+        R153_NET_AMT_BWP2 = r153_NET_AMT_BWP2;
+    }
+
+    public BigDecimal getR153_BAL_SUB_BWP1() {
+        return R153_BAL_SUB_BWP1;
+    }
+
+    public void setR153_BAL_SUB_BWP1(BigDecimal r153_BAL_SUB_BWP1) {
+        R153_BAL_SUB_BWP1 = r153_BAL_SUB_BWP1;
+    }
+
+    public BigDecimal getR153_BAL_SUB_BWP2() {
+        return R153_BAL_SUB_BWP2;
+    }
+
+    public void setR153_BAL_SUB_BWP2(BigDecimal r153_BAL_SUB_BWP2) {
+        R153_BAL_SUB_BWP2 = r153_BAL_SUB_BWP2;
+    }
+
+    public BigDecimal getR153_BAL_ACT_SUB_BWP1() {
+        return R153_BAL_ACT_SUB_BWP1;
+    }
+
+    public void setR153_BAL_ACT_SUB_BWP1(BigDecimal r153_BAL_ACT_SUB_BWP1) {
+        R153_BAL_ACT_SUB_BWP1 = r153_BAL_ACT_SUB_BWP1;
+    }
+
+    public BigDecimal getR153_BAL_ACT_SUB_BWP2() {
+        return R153_BAL_ACT_SUB_BWP2;
+    }
+
+    public void setR153_BAL_ACT_SUB_BWP2(BigDecimal r153_BAL_ACT_SUB_BWP2) {
+        R153_BAL_ACT_SUB_BWP2 = r153_BAL_ACT_SUB_BWP2;
+    }
+
+    public String getR154_PRODUCT() {
+        return R154_PRODUCT;
+    }
+
+    public void setR154_PRODUCT(String r154_PRODUCT) {
+        R154_PRODUCT = r154_PRODUCT;
+    }
+
+    public BigDecimal getR154_FIG_BAL_BWP1() {
+        return R154_FIG_BAL_BWP1;
+    }
+
+    public void setR154_FIG_BAL_BWP1(BigDecimal r154_FIG_BAL_BWP1) {
+        R154_FIG_BAL_BWP1 = r154_FIG_BAL_BWP1;
+    }
+
+    public BigDecimal getR154_FIG_BAL_BWP2() {
+        return R154_FIG_BAL_BWP2;
+    }
+
+    public void setR154_FIG_BAL_BWP2(BigDecimal r154_FIG_BAL_BWP2) {
+        R154_FIG_BAL_BWP2 = r154_FIG_BAL_BWP2;
+    }
+
+    public BigDecimal getR154_AMT_ADJ_BWP1() {
+        return R154_AMT_ADJ_BWP1;
+    }
+
+    public void setR154_AMT_ADJ_BWP1(BigDecimal r154_AMT_ADJ_BWP1) {
+        R154_AMT_ADJ_BWP1 = r154_AMT_ADJ_BWP1;
+    }
+
+    public BigDecimal getR154_AMT_ADJ_BWP2() {
+        return R154_AMT_ADJ_BWP2;
+    }
+
+    public void setR154_AMT_ADJ_BWP2(BigDecimal r154_AMT_ADJ_BWP2) {
+        R154_AMT_ADJ_BWP2 = r154_AMT_ADJ_BWP2;
+    }
+
+    public BigDecimal getR154_NET_AMT_BWP1() {
+        return R154_NET_AMT_BWP1;
+    }
+
+    public void setR154_NET_AMT_BWP1(BigDecimal r154_NET_AMT_BWP1) {
+        R154_NET_AMT_BWP1 = r154_NET_AMT_BWP1;
+    }
+
+    public BigDecimal getR154_NET_AMT_BWP2() {
+        return R154_NET_AMT_BWP2;
+    }
+
+    public void setR154_NET_AMT_BWP2(BigDecimal r154_NET_AMT_BWP2) {
+        R154_NET_AMT_BWP2 = r154_NET_AMT_BWP2;
+    }
+
+    public BigDecimal getR154_BAL_SUB_BWP1() {
+        return R154_BAL_SUB_BWP1;
+    }
+
+    public void setR154_BAL_SUB_BWP1(BigDecimal r154_BAL_SUB_BWP1) {
+        R154_BAL_SUB_BWP1 = r154_BAL_SUB_BWP1;
+    }
+
+    public BigDecimal getR154_BAL_SUB_BWP2() {
+        return R154_BAL_SUB_BWP2;
+    }
+
+    public void setR154_BAL_SUB_BWP2(BigDecimal r154_BAL_SUB_BWP2) {
+        R154_BAL_SUB_BWP2 = r154_BAL_SUB_BWP2;
+    }
+
+    public BigDecimal getR154_BAL_ACT_SUB_BWP1() {
+        return R154_BAL_ACT_SUB_BWP1;
+    }
+
+    public void setR154_BAL_ACT_SUB_BWP1(BigDecimal r154_BAL_ACT_SUB_BWP1) {
+        R154_BAL_ACT_SUB_BWP1 = r154_BAL_ACT_SUB_BWP1;
+    }
+
+    public BigDecimal getR154_BAL_ACT_SUB_BWP2() {
+        return R154_BAL_ACT_SUB_BWP2;
+    }
+
+    public void setR154_BAL_ACT_SUB_BWP2(BigDecimal r154_BAL_ACT_SUB_BWP2) {
+        R154_BAL_ACT_SUB_BWP2 = r154_BAL_ACT_SUB_BWP2;
+    }
+
+    public String getR155_PRODUCT() {
+        return R155_PRODUCT;
+    }
+
+    public void setR155_PRODUCT(String r155_PRODUCT) {
+        R155_PRODUCT = r155_PRODUCT;
+    }
+
+    public BigDecimal getR155_FIG_BAL_BWP1() {
+        return R155_FIG_BAL_BWP1;
+    }
+
+    public void setR155_FIG_BAL_BWP1(BigDecimal r155_FIG_BAL_BWP1) {
+        R155_FIG_BAL_BWP1 = r155_FIG_BAL_BWP1;
+    }
+
+    public BigDecimal getR155_FIG_BAL_BWP2() {
+        return R155_FIG_BAL_BWP2;
+    }
+
+    public void setR155_FIG_BAL_BWP2(BigDecimal r155_FIG_BAL_BWP2) {
+        R155_FIG_BAL_BWP2 = r155_FIG_BAL_BWP2;
+    }
+
+    public BigDecimal getR155_AMT_ADJ_BWP1() {
+        return R155_AMT_ADJ_BWP1;
+    }
+
+    public void setR155_AMT_ADJ_BWP1(BigDecimal r155_AMT_ADJ_BWP1) {
+        R155_AMT_ADJ_BWP1 = r155_AMT_ADJ_BWP1;
+    }
+
+    public BigDecimal getR155_AMT_ADJ_BWP2() {
+        return R155_AMT_ADJ_BWP2;
+    }
+
+    public void setR155_AMT_ADJ_BWP2(BigDecimal r155_AMT_ADJ_BWP2) {
+        R155_AMT_ADJ_BWP2 = r155_AMT_ADJ_BWP2;
+    }
+
+    public BigDecimal getR155_NET_AMT_BWP1() {
+        return R155_NET_AMT_BWP1;
+    }
+
+    public void setR155_NET_AMT_BWP1(BigDecimal r155_NET_AMT_BWP1) {
+        R155_NET_AMT_BWP1 = r155_NET_AMT_BWP1;
+    }
+
+    public BigDecimal getR155_NET_AMT_BWP2() {
+        return R155_NET_AMT_BWP2;
+    }
+
+    public void setR155_NET_AMT_BWP2(BigDecimal r155_NET_AMT_BWP2) {
+        R155_NET_AMT_BWP2 = r155_NET_AMT_BWP2;
+    }
+
+    public BigDecimal getR155_BAL_SUB_BWP1() {
+        return R155_BAL_SUB_BWP1;
+    }
+
+    public void setR155_BAL_SUB_BWP1(BigDecimal r155_BAL_SUB_BWP1) {
+        R155_BAL_SUB_BWP1 = r155_BAL_SUB_BWP1;
+    }
+
+    public BigDecimal getR155_BAL_SUB_BWP2() {
+        return R155_BAL_SUB_BWP2;
+    }
+
+    public void setR155_BAL_SUB_BWP2(BigDecimal r155_BAL_SUB_BWP2) {
+        R155_BAL_SUB_BWP2 = r155_BAL_SUB_BWP2;
+    }
+
+    public BigDecimal getR155_BAL_ACT_SUB_BWP1() {
+        return R155_BAL_ACT_SUB_BWP1;
+    }
+
+    public void setR155_BAL_ACT_SUB_BWP1(BigDecimal r155_BAL_ACT_SUB_BWP1) {
+        R155_BAL_ACT_SUB_BWP1 = r155_BAL_ACT_SUB_BWP1;
+    }
+
+    public BigDecimal getR155_BAL_ACT_SUB_BWP2() {
+        return R155_BAL_ACT_SUB_BWP2;
+    }
+
+    public void setR155_BAL_ACT_SUB_BWP2(BigDecimal r155_BAL_ACT_SUB_BWP2) {
+        R155_BAL_ACT_SUB_BWP2 = r155_BAL_ACT_SUB_BWP2;
+    }
+
+    public String getR156_PRODUCT() {
+        return R156_PRODUCT;
+    }
+
+    public void setR156_PRODUCT(String r156_PRODUCT) {
+        R156_PRODUCT = r156_PRODUCT;
+    }
+
+    public BigDecimal getR156_FIG_BAL_BWP1() {
+        return R156_FIG_BAL_BWP1;
+    }
+
+    public void setR156_FIG_BAL_BWP1(BigDecimal r156_FIG_BAL_BWP1) {
+        R156_FIG_BAL_BWP1 = r156_FIG_BAL_BWP1;
+    }
+
+    public BigDecimal getR156_FIG_BAL_BWP2() {
+        return R156_FIG_BAL_BWP2;
+    }
+
+    public void setR156_FIG_BAL_BWP2(BigDecimal r156_FIG_BAL_BWP2) {
+        R156_FIG_BAL_BWP2 = r156_FIG_BAL_BWP2;
+    }
+
+    public BigDecimal getR156_AMT_ADJ_BWP1() {
+        return R156_AMT_ADJ_BWP1;
+    }
+
+    public void setR156_AMT_ADJ_BWP1(BigDecimal r156_AMT_ADJ_BWP1) {
+        R156_AMT_ADJ_BWP1 = r156_AMT_ADJ_BWP1;
+    }
+
+    public BigDecimal getR156_AMT_ADJ_BWP2() {
+        return R156_AMT_ADJ_BWP2;
+    }
+
+    public void setR156_AMT_ADJ_BWP2(BigDecimal r156_AMT_ADJ_BWP2) {
+        R156_AMT_ADJ_BWP2 = r156_AMT_ADJ_BWP2;
+    }
+
+    public BigDecimal getR156_NET_AMT_BWP1() {
+        return R156_NET_AMT_BWP1;
+    }
+
+    public void setR156_NET_AMT_BWP1(BigDecimal r156_NET_AMT_BWP1) {
+        R156_NET_AMT_BWP1 = r156_NET_AMT_BWP1;
+    }
+
+    public BigDecimal getR156_NET_AMT_BWP2() {
+        return R156_NET_AMT_BWP2;
+    }
+
+    public void setR156_NET_AMT_BWP2(BigDecimal r156_NET_AMT_BWP2) {
+        R156_NET_AMT_BWP2 = r156_NET_AMT_BWP2;
+    }
+
+    public BigDecimal getR156_BAL_SUB_BWP1() {
+        return R156_BAL_SUB_BWP1;
+    }
+
+    public void setR156_BAL_SUB_BWP1(BigDecimal r156_BAL_SUB_BWP1) {
+        R156_BAL_SUB_BWP1 = r156_BAL_SUB_BWP1;
+    }
+
+    public BigDecimal getR156_BAL_SUB_BWP2() {
+        return R156_BAL_SUB_BWP2;
+    }
+
+    public void setR156_BAL_SUB_BWP2(BigDecimal r156_BAL_SUB_BWP2) {
+        R156_BAL_SUB_BWP2 = r156_BAL_SUB_BWP2;
+    }
+
+    public BigDecimal getR156_BAL_ACT_SUB_BWP1() {
+        return R156_BAL_ACT_SUB_BWP1;
+    }
+
+    public void setR156_BAL_ACT_SUB_BWP1(BigDecimal r156_BAL_ACT_SUB_BWP1) {
+        R156_BAL_ACT_SUB_BWP1 = r156_BAL_ACT_SUB_BWP1;
+    }
+
+    public BigDecimal getR156_BAL_ACT_SUB_BWP2() {
+        return R156_BAL_ACT_SUB_BWP2;
+    }
+
+    public void setR156_BAL_ACT_SUB_BWP2(BigDecimal r156_BAL_ACT_SUB_BWP2) {
+        R156_BAL_ACT_SUB_BWP2 = r156_BAL_ACT_SUB_BWP2;
+    }
+
+    public String getR157_PRODUCT() {
+        return R157_PRODUCT;
+    }
+
+    public void setR157_PRODUCT(String r157_PRODUCT) {
+        R157_PRODUCT = r157_PRODUCT;
+    }
+
+    public BigDecimal getR157_FIG_BAL_BWP1() {
+        return R157_FIG_BAL_BWP1;
+    }
+
+    public void setR157_FIG_BAL_BWP1(BigDecimal r157_FIG_BAL_BWP1) {
+        R157_FIG_BAL_BWP1 = r157_FIG_BAL_BWP1;
+    }
+
+    public BigDecimal getR157_FIG_BAL_BWP2() {
+        return R157_FIG_BAL_BWP2;
+    }
+
+    public void setR157_FIG_BAL_BWP2(BigDecimal r157_FIG_BAL_BWP2) {
+        R157_FIG_BAL_BWP2 = r157_FIG_BAL_BWP2;
+    }
+
+    public BigDecimal getR157_AMT_ADJ_BWP1() {
+        return R157_AMT_ADJ_BWP1;
+    }
+
+    public void setR157_AMT_ADJ_BWP1(BigDecimal r157_AMT_ADJ_BWP1) {
+        R157_AMT_ADJ_BWP1 = r157_AMT_ADJ_BWP1;
+    }
+
+    public BigDecimal getR157_AMT_ADJ_BWP2() {
+        return R157_AMT_ADJ_BWP2;
+    }
+
+    public void setR157_AMT_ADJ_BWP2(BigDecimal r157_AMT_ADJ_BWP2) {
+        R157_AMT_ADJ_BWP2 = r157_AMT_ADJ_BWP2;
+    }
+
+    public BigDecimal getR157_NET_AMT_BWP1() {
+        return R157_NET_AMT_BWP1;
+    }
+
+    public void setR157_NET_AMT_BWP1(BigDecimal r157_NET_AMT_BWP1) {
+        R157_NET_AMT_BWP1 = r157_NET_AMT_BWP1;
+    }
+
+    public BigDecimal getR157_NET_AMT_BWP2() {
+        return R157_NET_AMT_BWP2;
+    }
+
+    public void setR157_NET_AMT_BWP2(BigDecimal r157_NET_AMT_BWP2) {
+        R157_NET_AMT_BWP2 = r157_NET_AMT_BWP2;
+    }
+
+    public BigDecimal getR157_BAL_SUB_BWP1() {
+        return R157_BAL_SUB_BWP1;
+    }
+
+    public void setR157_BAL_SUB_BWP1(BigDecimal r157_BAL_SUB_BWP1) {
+        R157_BAL_SUB_BWP1 = r157_BAL_SUB_BWP1;
+    }
+
+    public BigDecimal getR157_BAL_SUB_BWP2() {
+        return R157_BAL_SUB_BWP2;
+    }
+
+    public void setR157_BAL_SUB_BWP2(BigDecimal r157_BAL_SUB_BWP2) {
+        R157_BAL_SUB_BWP2 = r157_BAL_SUB_BWP2;
+    }
+
+    public BigDecimal getR157_BAL_ACT_SUB_BWP1() {
+        return R157_BAL_ACT_SUB_BWP1;
+    }
+
+    public void setR157_BAL_ACT_SUB_BWP1(BigDecimal r157_BAL_ACT_SUB_BWP1) {
+        R157_BAL_ACT_SUB_BWP1 = r157_BAL_ACT_SUB_BWP1;
+    }
+
+    public BigDecimal getR157_BAL_ACT_SUB_BWP2() {
+        return R157_BAL_ACT_SUB_BWP2;
+    }
+
+    public void setR157_BAL_ACT_SUB_BWP2(BigDecimal r157_BAL_ACT_SUB_BWP2) {
+        R157_BAL_ACT_SUB_BWP2 = r157_BAL_ACT_SUB_BWP2;
+    }
+
+    public String getR158_PRODUCT() {
+        return R158_PRODUCT;
+    }
+
+    public void setR158_PRODUCT(String r158_PRODUCT) {
+        R158_PRODUCT = r158_PRODUCT;
+    }
+
+    public BigDecimal getR158_FIG_BAL_BWP1() {
+        return R158_FIG_BAL_BWP1;
+    }
+
+    public void setR158_FIG_BAL_BWP1(BigDecimal r158_FIG_BAL_BWP1) {
+        R158_FIG_BAL_BWP1 = r158_FIG_BAL_BWP1;
+    }
+
+    public BigDecimal getR158_FIG_BAL_BWP2() {
+        return R158_FIG_BAL_BWP2;
+    }
+
+    public void setR158_FIG_BAL_BWP2(BigDecimal r158_FIG_BAL_BWP2) {
+        R158_FIG_BAL_BWP2 = r158_FIG_BAL_BWP2;
+    }
+
+    public BigDecimal getR158_AMT_ADJ_BWP1() {
+        return R158_AMT_ADJ_BWP1;
+    }
+
+    public void setR158_AMT_ADJ_BWP1(BigDecimal r158_AMT_ADJ_BWP1) {
+        R158_AMT_ADJ_BWP1 = r158_AMT_ADJ_BWP1;
+    }
+
+    public BigDecimal getR158_AMT_ADJ_BWP2() {
+        return R158_AMT_ADJ_BWP2;
+    }
+
+    public void setR158_AMT_ADJ_BWP2(BigDecimal r158_AMT_ADJ_BWP2) {
+        R158_AMT_ADJ_BWP2 = r158_AMT_ADJ_BWP2;
+    }
+
+    public BigDecimal getR158_NET_AMT_BWP1() {
+        return R158_NET_AMT_BWP1;
+    }
+
+    public void setR158_NET_AMT_BWP1(BigDecimal r158_NET_AMT_BWP1) {
+        R158_NET_AMT_BWP1 = r158_NET_AMT_BWP1;
+    }
+
+    public BigDecimal getR158_NET_AMT_BWP2() {
+        return R158_NET_AMT_BWP2;
+    }
+
+    public void setR158_NET_AMT_BWP2(BigDecimal r158_NET_AMT_BWP2) {
+        R158_NET_AMT_BWP2 = r158_NET_AMT_BWP2;
+    }
+
+    public BigDecimal getR158_BAL_SUB_BWP1() {
+        return R158_BAL_SUB_BWP1;
+    }
+
+    public void setR158_BAL_SUB_BWP1(BigDecimal r158_BAL_SUB_BWP1) {
+        R158_BAL_SUB_BWP1 = r158_BAL_SUB_BWP1;
+    }
+
+    public BigDecimal getR158_BAL_SUB_BWP2() {
+        return R158_BAL_SUB_BWP2;
+    }
+
+    public void setR158_BAL_SUB_BWP2(BigDecimal r158_BAL_SUB_BWP2) {
+        R158_BAL_SUB_BWP2 = r158_BAL_SUB_BWP2;
+    }
+
+    public BigDecimal getR158_BAL_ACT_SUB_BWP1() {
+        return R158_BAL_ACT_SUB_BWP1;
+    }
+
+    public void setR158_BAL_ACT_SUB_BWP1(BigDecimal r158_BAL_ACT_SUB_BWP1) {
+        R158_BAL_ACT_SUB_BWP1 = r158_BAL_ACT_SUB_BWP1;
+    }
+
+    public BigDecimal getR158_BAL_ACT_SUB_BWP2() {
+        return R158_BAL_ACT_SUB_BWP2;
+    }
+
+    public void setR158_BAL_ACT_SUB_BWP2(BigDecimal r158_BAL_ACT_SUB_BWP2) {
+        R158_BAL_ACT_SUB_BWP2 = r158_BAL_ACT_SUB_BWP2;
+    }
+
+    public String getR159_PRODUCT() {
+        return R159_PRODUCT;
+    }
+
+    public void setR159_PRODUCT(String r159_PRODUCT) {
+        R159_PRODUCT = r159_PRODUCT;
+    }
+
+    public BigDecimal getR159_FIG_BAL_BWP1() {
+        return R159_FIG_BAL_BWP1;
+    }
+
+    public void setR159_FIG_BAL_BWP1(BigDecimal r159_FIG_BAL_BWP1) {
+        R159_FIG_BAL_BWP1 = r159_FIG_BAL_BWP1;
+    }
+
+    public BigDecimal getR159_FIG_BAL_BWP2() {
+        return R159_FIG_BAL_BWP2;
+    }
+
+    public void setR159_FIG_BAL_BWP2(BigDecimal r159_FIG_BAL_BWP2) {
+        R159_FIG_BAL_BWP2 = r159_FIG_BAL_BWP2;
+    }
+
+    public BigDecimal getR159_AMT_ADJ_BWP1() {
+        return R159_AMT_ADJ_BWP1;
+    }
+
+    public void setR159_AMT_ADJ_BWP1(BigDecimal r159_AMT_ADJ_BWP1) {
+        R159_AMT_ADJ_BWP1 = r159_AMT_ADJ_BWP1;
+    }
+
+    public BigDecimal getR159_AMT_ADJ_BWP2() {
+        return R159_AMT_ADJ_BWP2;
+    }
+
+    public void setR159_AMT_ADJ_BWP2(BigDecimal r159_AMT_ADJ_BWP2) {
+        R159_AMT_ADJ_BWP2 = r159_AMT_ADJ_BWP2;
+    }
+
+    public BigDecimal getR159_NET_AMT_BWP1() {
+        return R159_NET_AMT_BWP1;
+    }
+
+    public void setR159_NET_AMT_BWP1(BigDecimal r159_NET_AMT_BWP1) {
+        R159_NET_AMT_BWP1 = r159_NET_AMT_BWP1;
+    }
+
+    public BigDecimal getR159_NET_AMT_BWP2() {
+        return R159_NET_AMT_BWP2;
+    }
+
+    public void setR159_NET_AMT_BWP2(BigDecimal r159_NET_AMT_BWP2) {
+        R159_NET_AMT_BWP2 = r159_NET_AMT_BWP2;
+    }
+
+    public BigDecimal getR159_BAL_SUB_BWP1() {
+        return R159_BAL_SUB_BWP1;
+    }
+
+    public void setR159_BAL_SUB_BWP1(BigDecimal r159_BAL_SUB_BWP1) {
+        R159_BAL_SUB_BWP1 = r159_BAL_SUB_BWP1;
+    }
+
+    public BigDecimal getR159_BAL_SUB_BWP2() {
+        return R159_BAL_SUB_BWP2;
+    }
+
+    public void setR159_BAL_SUB_BWP2(BigDecimal r159_BAL_SUB_BWP2) {
+        R159_BAL_SUB_BWP2 = r159_BAL_SUB_BWP2;
+    }
+
+    public BigDecimal getR159_BAL_ACT_SUB_BWP1() {
+        return R159_BAL_ACT_SUB_BWP1;
+    }
+
+    public void setR159_BAL_ACT_SUB_BWP1(BigDecimal r159_BAL_ACT_SUB_BWP1) {
+        R159_BAL_ACT_SUB_BWP1 = r159_BAL_ACT_SUB_BWP1;
+    }
+
+    public BigDecimal getR159_BAL_ACT_SUB_BWP2() {
+        return R159_BAL_ACT_SUB_BWP2;
+    }
+
+    public void setR159_BAL_ACT_SUB_BWP2(BigDecimal r159_BAL_ACT_SUB_BWP2) {
+        R159_BAL_ACT_SUB_BWP2 = r159_BAL_ACT_SUB_BWP2;
+    }
+
+    public String getR160_PRODUCT() {
+        return R160_PRODUCT;
+    }
+
+    public void setR160_PRODUCT(String r160_PRODUCT) {
+        R160_PRODUCT = r160_PRODUCT;
+    }
+
+    public BigDecimal getR160_FIG_BAL_BWP1() {
+        return R160_FIG_BAL_BWP1;
+    }
+
+    public void setR160_FIG_BAL_BWP1(BigDecimal r160_FIG_BAL_BWP1) {
+        R160_FIG_BAL_BWP1 = r160_FIG_BAL_BWP1;
+    }
+
+    public BigDecimal getR160_FIG_BAL_BWP2() {
+        return R160_FIG_BAL_BWP2;
+    }
+
+    public void setR160_FIG_BAL_BWP2(BigDecimal r160_FIG_BAL_BWP2) {
+        R160_FIG_BAL_BWP2 = r160_FIG_BAL_BWP2;
+    }
+
+    public BigDecimal getR160_AMT_ADJ_BWP1() {
+        return R160_AMT_ADJ_BWP1;
+    }
+
+    public void setR160_AMT_ADJ_BWP1(BigDecimal r160_AMT_ADJ_BWP1) {
+        R160_AMT_ADJ_BWP1 = r160_AMT_ADJ_BWP1;
+    }
+
+    public BigDecimal getR160_AMT_ADJ_BWP2() {
+        return R160_AMT_ADJ_BWP2;
+    }
+
+    public void setR160_AMT_ADJ_BWP2(BigDecimal r160_AMT_ADJ_BWP2) {
+        R160_AMT_ADJ_BWP2 = r160_AMT_ADJ_BWP2;
+    }
+
+    public BigDecimal getR160_NET_AMT_BWP1() {
+        return R160_NET_AMT_BWP1;
+    }
+
+    public void setR160_NET_AMT_BWP1(BigDecimal r160_NET_AMT_BWP1) {
+        R160_NET_AMT_BWP1 = r160_NET_AMT_BWP1;
+    }
+
+    public BigDecimal getR160_NET_AMT_BWP2() {
+        return R160_NET_AMT_BWP2;
+    }
+
+    public void setR160_NET_AMT_BWP2(BigDecimal r160_NET_AMT_BWP2) {
+        R160_NET_AMT_BWP2 = r160_NET_AMT_BWP2;
+    }
+
+    public BigDecimal getR160_BAL_SUB_BWP1() {
+        return R160_BAL_SUB_BWP1;
+    }
+
+    public void setR160_BAL_SUB_BWP1(BigDecimal r160_BAL_SUB_BWP1) {
+        R160_BAL_SUB_BWP1 = r160_BAL_SUB_BWP1;
+    }
+
+    public BigDecimal getR160_BAL_SUB_BWP2() {
+        return R160_BAL_SUB_BWP2;
+    }
+
+    public void setR160_BAL_SUB_BWP2(BigDecimal r160_BAL_SUB_BWP2) {
+        R160_BAL_SUB_BWP2 = r160_BAL_SUB_BWP2;
+    }
+
+    public BigDecimal getR160_BAL_ACT_SUB_BWP1() {
+        return R160_BAL_ACT_SUB_BWP1;
+    }
+
+    public void setR160_BAL_ACT_SUB_BWP1(BigDecimal r160_BAL_ACT_SUB_BWP1) {
+        R160_BAL_ACT_SUB_BWP1 = r160_BAL_ACT_SUB_BWP1;
+    }
+
+    public BigDecimal getR160_BAL_ACT_SUB_BWP2() {
+        return R160_BAL_ACT_SUB_BWP2;
+    }
+
+    public void setR160_BAL_ACT_SUB_BWP2(BigDecimal r160_BAL_ACT_SUB_BWP2) {
+        R160_BAL_ACT_SUB_BWP2 = r160_BAL_ACT_SUB_BWP2;
+    }
+
+    public String getR161_PRODUCT() {
+        return R161_PRODUCT;
+    }
+
+    public void setR161_PRODUCT(String r161_PRODUCT) {
+        R161_PRODUCT = r161_PRODUCT;
+    }
+
+    public BigDecimal getR161_FIG_BAL_BWP1() {
+        return R161_FIG_BAL_BWP1;
+    }
+
+    public void setR161_FIG_BAL_BWP1(BigDecimal r161_FIG_BAL_BWP1) {
+        R161_FIG_BAL_BWP1 = r161_FIG_BAL_BWP1;
+    }
+
+    public BigDecimal getR161_FIG_BAL_BWP2() {
+        return R161_FIG_BAL_BWP2;
+    }
+
+    public void setR161_FIG_BAL_BWP2(BigDecimal r161_FIG_BAL_BWP2) {
+        R161_FIG_BAL_BWP2 = r161_FIG_BAL_BWP2;
+    }
+
+    public BigDecimal getR161_AMT_ADJ_BWP1() {
+        return R161_AMT_ADJ_BWP1;
+    }
+
+    public void setR161_AMT_ADJ_BWP1(BigDecimal r161_AMT_ADJ_BWP1) {
+        R161_AMT_ADJ_BWP1 = r161_AMT_ADJ_BWP1;
+    }
+
+    public BigDecimal getR161_AMT_ADJ_BWP2() {
+        return R161_AMT_ADJ_BWP2;
+    }
+
+    public void setR161_AMT_ADJ_BWP2(BigDecimal r161_AMT_ADJ_BWP2) {
+        R161_AMT_ADJ_BWP2 = r161_AMT_ADJ_BWP2;
+    }
+
+    public BigDecimal getR161_NET_AMT_BWP1() {
+        return R161_NET_AMT_BWP1;
+    }
+
+    public void setR161_NET_AMT_BWP1(BigDecimal r161_NET_AMT_BWP1) {
+        R161_NET_AMT_BWP1 = r161_NET_AMT_BWP1;
+    }
+
+    public BigDecimal getR161_NET_AMT_BWP2() {
+        return R161_NET_AMT_BWP2;
+    }
+
+    public void setR161_NET_AMT_BWP2(BigDecimal r161_NET_AMT_BWP2) {
+        R161_NET_AMT_BWP2 = r161_NET_AMT_BWP2;
+    }
+
+    public BigDecimal getR161_BAL_SUB_BWP1() {
+        return R161_BAL_SUB_BWP1;
+    }
+
+    public void setR161_BAL_SUB_BWP1(BigDecimal r161_BAL_SUB_BWP1) {
+        R161_BAL_SUB_BWP1 = r161_BAL_SUB_BWP1;
+    }
+
+    public BigDecimal getR161_BAL_SUB_BWP2() {
+        return R161_BAL_SUB_BWP2;
+    }
+
+    public void setR161_BAL_SUB_BWP2(BigDecimal r161_BAL_SUB_BWP2) {
+        R161_BAL_SUB_BWP2 = r161_BAL_SUB_BWP2;
+    }
+
+    public BigDecimal getR161_BAL_ACT_SUB_BWP1() {
+        return R161_BAL_ACT_SUB_BWP1;
+    }
+
+    public void setR161_BAL_ACT_SUB_BWP1(BigDecimal r161_BAL_ACT_SUB_BWP1) {
+        R161_BAL_ACT_SUB_BWP1 = r161_BAL_ACT_SUB_BWP1;
+    }
+
+    public BigDecimal getR161_BAL_ACT_SUB_BWP2() {
+        return R161_BAL_ACT_SUB_BWP2;
+    }
+
+    public void setR161_BAL_ACT_SUB_BWP2(BigDecimal r161_BAL_ACT_SUB_BWP2) {
+        R161_BAL_ACT_SUB_BWP2 = r161_BAL_ACT_SUB_BWP2;
+    }
+
+    public String getR162_PRODUCT() {
+        return R162_PRODUCT;
+    }
+
+    public void setR162_PRODUCT(String r162_PRODUCT) {
+        R162_PRODUCT = r162_PRODUCT;
+    }
+
+    public BigDecimal getR162_FIG_BAL_BWP1() {
+        return R162_FIG_BAL_BWP1;
+    }
+
+    public void setR162_FIG_BAL_BWP1(BigDecimal r162_FIG_BAL_BWP1) {
+        R162_FIG_BAL_BWP1 = r162_FIG_BAL_BWP1;
+    }
+
+    public BigDecimal getR162_FIG_BAL_BWP2() {
+        return R162_FIG_BAL_BWP2;
+    }
+
+    public void setR162_FIG_BAL_BWP2(BigDecimal r162_FIG_BAL_BWP2) {
+        R162_FIG_BAL_BWP2 = r162_FIG_BAL_BWP2;
+    }
+
+    public BigDecimal getR162_AMT_ADJ_BWP1() {
+        return R162_AMT_ADJ_BWP1;
+    }
+
+    public void setR162_AMT_ADJ_BWP1(BigDecimal r162_AMT_ADJ_BWP1) {
+        R162_AMT_ADJ_BWP1 = r162_AMT_ADJ_BWP1;
+    }
+
+    public BigDecimal getR162_AMT_ADJ_BWP2() {
+        return R162_AMT_ADJ_BWP2;
+    }
+
+    public void setR162_AMT_ADJ_BWP2(BigDecimal r162_AMT_ADJ_BWP2) {
+        R162_AMT_ADJ_BWP2 = r162_AMT_ADJ_BWP2;
+    }
+
+    public BigDecimal getR162_NET_AMT_BWP1() {
+        return R162_NET_AMT_BWP1;
+    }
+
+    public void setR162_NET_AMT_BWP1(BigDecimal r162_NET_AMT_BWP1) {
+        R162_NET_AMT_BWP1 = r162_NET_AMT_BWP1;
+    }
+
+    public BigDecimal getR162_NET_AMT_BWP2() {
+        return R162_NET_AMT_BWP2;
+    }
+
+    public void setR162_NET_AMT_BWP2(BigDecimal r162_NET_AMT_BWP2) {
+        R162_NET_AMT_BWP2 = r162_NET_AMT_BWP2;
+    }
+
+    public BigDecimal getR162_BAL_SUB_BWP1() {
+        return R162_BAL_SUB_BWP1;
+    }
+
+    public void setR162_BAL_SUB_BWP1(BigDecimal r162_BAL_SUB_BWP1) {
+        R162_BAL_SUB_BWP1 = r162_BAL_SUB_BWP1;
+    }
+
+    public BigDecimal getR162_BAL_SUB_BWP2() {
+        return R162_BAL_SUB_BWP2;
+    }
+
+    public void setR162_BAL_SUB_BWP2(BigDecimal r162_BAL_SUB_BWP2) {
+        R162_BAL_SUB_BWP2 = r162_BAL_SUB_BWP2;
+    }
+
+    public BigDecimal getR162_BAL_ACT_SUB_BWP1() {
+        return R162_BAL_ACT_SUB_BWP1;
+    }
+
+    public void setR162_BAL_ACT_SUB_BWP1(BigDecimal r162_BAL_ACT_SUB_BWP1) {
+        R162_BAL_ACT_SUB_BWP1 = r162_BAL_ACT_SUB_BWP1;
+    }
+
+    public BigDecimal getR162_BAL_ACT_SUB_BWP2() {
+        return R162_BAL_ACT_SUB_BWP2;
+    }
+
+    public void setR162_BAL_ACT_SUB_BWP2(BigDecimal r162_BAL_ACT_SUB_BWP2) {
+        R162_BAL_ACT_SUB_BWP2 = r162_BAL_ACT_SUB_BWP2;
+    }
+
+    public String getR163_PRODUCT() {
+        return R163_PRODUCT;
+    }
+
+    public void setR163_PRODUCT(String r163_PRODUCT) {
+        R163_PRODUCT = r163_PRODUCT;
+    }
+
+    public BigDecimal getR163_FIG_BAL_BWP1() {
+        return R163_FIG_BAL_BWP1;
+    }
+
+    public void setR163_FIG_BAL_BWP1(BigDecimal r163_FIG_BAL_BWP1) {
+        R163_FIG_BAL_BWP1 = r163_FIG_BAL_BWP1;
+    }
+
+    public BigDecimal getR163_FIG_BAL_BWP2() {
+        return R163_FIG_BAL_BWP2;
+    }
+
+    public void setR163_FIG_BAL_BWP2(BigDecimal r163_FIG_BAL_BWP2) {
+        R163_FIG_BAL_BWP2 = r163_FIG_BAL_BWP2;
+    }
+
+    public BigDecimal getR163_AMT_ADJ_BWP1() {
+        return R163_AMT_ADJ_BWP1;
+    }
+
+    public void setR163_AMT_ADJ_BWP1(BigDecimal r163_AMT_ADJ_BWP1) {
+        R163_AMT_ADJ_BWP1 = r163_AMT_ADJ_BWP1;
+    }
+
+    public BigDecimal getR163_AMT_ADJ_BWP2() {
+        return R163_AMT_ADJ_BWP2;
+    }
+
+    public void setR163_AMT_ADJ_BWP2(BigDecimal r163_AMT_ADJ_BWP2) {
+        R163_AMT_ADJ_BWP2 = r163_AMT_ADJ_BWP2;
+    }
+
+    public BigDecimal getR163_NET_AMT_BWP1() {
+        return R163_NET_AMT_BWP1;
+    }
+
+    public void setR163_NET_AMT_BWP1(BigDecimal r163_NET_AMT_BWP1) {
+        R163_NET_AMT_BWP1 = r163_NET_AMT_BWP1;
+    }
+
+    public BigDecimal getR163_NET_AMT_BWP2() {
+        return R163_NET_AMT_BWP2;
+    }
+
+    public void setR163_NET_AMT_BWP2(BigDecimal r163_NET_AMT_BWP2) {
+        R163_NET_AMT_BWP2 = r163_NET_AMT_BWP2;
+    }
+
+    public BigDecimal getR163_BAL_SUB_BWP1() {
+        return R163_BAL_SUB_BWP1;
+    }
+
+    public void setR163_BAL_SUB_BWP1(BigDecimal r163_BAL_SUB_BWP1) {
+        R163_BAL_SUB_BWP1 = r163_BAL_SUB_BWP1;
+    }
+
+    public BigDecimal getR163_BAL_SUB_BWP2() {
+        return R163_BAL_SUB_BWP2;
+    }
+
+    public void setR163_BAL_SUB_BWP2(BigDecimal r163_BAL_SUB_BWP2) {
+        R163_BAL_SUB_BWP2 = r163_BAL_SUB_BWP2;
+    }
+
+    public BigDecimal getR163_BAL_ACT_SUB_BWP1() {
+        return R163_BAL_ACT_SUB_BWP1;
+    }
+
+    public void setR163_BAL_ACT_SUB_BWP1(BigDecimal r163_BAL_ACT_SUB_BWP1) {
+        R163_BAL_ACT_SUB_BWP1 = r163_BAL_ACT_SUB_BWP1;
+    }
+
+    public BigDecimal getR163_BAL_ACT_SUB_BWP2() {
+        return R163_BAL_ACT_SUB_BWP2;
+    }
+
+    public void setR163_BAL_ACT_SUB_BWP2(BigDecimal r163_BAL_ACT_SUB_BWP2) {
+        R163_BAL_ACT_SUB_BWP2 = r163_BAL_ACT_SUB_BWP2;
+    }
+
+    public String getR164_PRODUCT() {
+        return R164_PRODUCT;
+    }
+
+    public void setR164_PRODUCT(String r164_PRODUCT) {
+        R164_PRODUCT = r164_PRODUCT;
+    }
+
+    public BigDecimal getR164_FIG_BAL_BWP1() {
+        return R164_FIG_BAL_BWP1;
+    }
+
+    public void setR164_FIG_BAL_BWP1(BigDecimal r164_FIG_BAL_BWP1) {
+        R164_FIG_BAL_BWP1 = r164_FIG_BAL_BWP1;
+    }
+
+    public BigDecimal getR164_FIG_BAL_BWP2() {
+        return R164_FIG_BAL_BWP2;
+    }
+
+    public void setR164_FIG_BAL_BWP2(BigDecimal r164_FIG_BAL_BWP2) {
+        R164_FIG_BAL_BWP2 = r164_FIG_BAL_BWP2;
+    }
+
+    public BigDecimal getR164_AMT_ADJ_BWP1() {
+        return R164_AMT_ADJ_BWP1;
+    }
+
+    public void setR164_AMT_ADJ_BWP1(BigDecimal r164_AMT_ADJ_BWP1) {
+        R164_AMT_ADJ_BWP1 = r164_AMT_ADJ_BWP1;
+    }
+
+    public BigDecimal getR164_AMT_ADJ_BWP2() {
+        return R164_AMT_ADJ_BWP2;
+    }
+
+    public void setR164_AMT_ADJ_BWP2(BigDecimal r164_AMT_ADJ_BWP2) {
+        R164_AMT_ADJ_BWP2 = r164_AMT_ADJ_BWP2;
+    }
+
+    public BigDecimal getR164_NET_AMT_BWP1() {
+        return R164_NET_AMT_BWP1;
+    }
+
+    public void setR164_NET_AMT_BWP1(BigDecimal r164_NET_AMT_BWP1) {
+        R164_NET_AMT_BWP1 = r164_NET_AMT_BWP1;
+    }
+
+    public BigDecimal getR164_NET_AMT_BWP2() {
+        return R164_NET_AMT_BWP2;
+    }
+
+    public void setR164_NET_AMT_BWP2(BigDecimal r164_NET_AMT_BWP2) {
+        R164_NET_AMT_BWP2 = r164_NET_AMT_BWP2;
+    }
+
+    public BigDecimal getR164_BAL_SUB_BWP1() {
+        return R164_BAL_SUB_BWP1;
+    }
+
+    public void setR164_BAL_SUB_BWP1(BigDecimal r164_BAL_SUB_BWP1) {
+        R164_BAL_SUB_BWP1 = r164_BAL_SUB_BWP1;
+    }
+
+    public BigDecimal getR164_BAL_SUB_BWP2() {
+        return R164_BAL_SUB_BWP2;
+    }
+
+    public void setR164_BAL_SUB_BWP2(BigDecimal r164_BAL_SUB_BWP2) {
+        R164_BAL_SUB_BWP2 = r164_BAL_SUB_BWP2;
+    }
+
+    public BigDecimal getR164_BAL_ACT_SUB_BWP1() {
+        return R164_BAL_ACT_SUB_BWP1;
+    }
+
+    public void setR164_BAL_ACT_SUB_BWP1(BigDecimal r164_BAL_ACT_SUB_BWP1) {
+        R164_BAL_ACT_SUB_BWP1 = r164_BAL_ACT_SUB_BWP1;
+    }
+
+    public BigDecimal getR164_BAL_ACT_SUB_BWP2() {
+        return R164_BAL_ACT_SUB_BWP2;
+    }
+
+    public void setR164_BAL_ACT_SUB_BWP2(BigDecimal r164_BAL_ACT_SUB_BWP2) {
+        R164_BAL_ACT_SUB_BWP2 = r164_BAL_ACT_SUB_BWP2;
+    }
+
+    public String getR165_PRODUCT() {
+        return R165_PRODUCT;
+    }
+
+    public void setR165_PRODUCT(String r165_PRODUCT) {
+        R165_PRODUCT = r165_PRODUCT;
+    }
+
+    public BigDecimal getR165_FIG_BAL_BWP1() {
+        return R165_FIG_BAL_BWP1;
+    }
+
+    public void setR165_FIG_BAL_BWP1(BigDecimal r165_FIG_BAL_BWP1) {
+        R165_FIG_BAL_BWP1 = r165_FIG_BAL_BWP1;
+    }
+
+    public BigDecimal getR165_FIG_BAL_BWP2() {
+        return R165_FIG_BAL_BWP2;
+    }
+
+    public void setR165_FIG_BAL_BWP2(BigDecimal r165_FIG_BAL_BWP2) {
+        R165_FIG_BAL_BWP2 = r165_FIG_BAL_BWP2;
+    }
+
+    public BigDecimal getR165_AMT_ADJ_BWP1() {
+        return R165_AMT_ADJ_BWP1;
+    }
+
+    public void setR165_AMT_ADJ_BWP1(BigDecimal r165_AMT_ADJ_BWP1) {
+        R165_AMT_ADJ_BWP1 = r165_AMT_ADJ_BWP1;
+    }
+
+    public BigDecimal getR165_AMT_ADJ_BWP2() {
+        return R165_AMT_ADJ_BWP2;
+    }
+
+    public void setR165_AMT_ADJ_BWP2(BigDecimal r165_AMT_ADJ_BWP2) {
+        R165_AMT_ADJ_BWP2 = r165_AMT_ADJ_BWP2;
+    }
+
+    public BigDecimal getR165_NET_AMT_BWP1() {
+        return R165_NET_AMT_BWP1;
+    }
+
+    public void setR165_NET_AMT_BWP1(BigDecimal r165_NET_AMT_BWP1) {
+        R165_NET_AMT_BWP1 = r165_NET_AMT_BWP1;
+    }
+
+    public BigDecimal getR165_NET_AMT_BWP2() {
+        return R165_NET_AMT_BWP2;
+    }
+
+    public void setR165_NET_AMT_BWP2(BigDecimal r165_NET_AMT_BWP2) {
+        R165_NET_AMT_BWP2 = r165_NET_AMT_BWP2;
+    }
+
+    public BigDecimal getR165_BAL_SUB_BWP1() {
+        return R165_BAL_SUB_BWP1;
+    }
+
+    public void setR165_BAL_SUB_BWP1(BigDecimal r165_BAL_SUB_BWP1) {
+        R165_BAL_SUB_BWP1 = r165_BAL_SUB_BWP1;
+    }
+
+    public BigDecimal getR165_BAL_SUB_BWP2() {
+        return R165_BAL_SUB_BWP2;
+    }
+
+    public void setR165_BAL_SUB_BWP2(BigDecimal r165_BAL_SUB_BWP2) {
+        R165_BAL_SUB_BWP2 = r165_BAL_SUB_BWP2;
+    }
+
+    public BigDecimal getR165_BAL_ACT_SUB_BWP1() {
+        return R165_BAL_ACT_SUB_BWP1;
+    }
+
+    public void setR165_BAL_ACT_SUB_BWP1(BigDecimal r165_BAL_ACT_SUB_BWP1) {
+        R165_BAL_ACT_SUB_BWP1 = r165_BAL_ACT_SUB_BWP1;
+    }
+
+    public BigDecimal getR165_BAL_ACT_SUB_BWP2() {
+        return R165_BAL_ACT_SUB_BWP2;
+    }
+
+    public void setR165_BAL_ACT_SUB_BWP2(BigDecimal r165_BAL_ACT_SUB_BWP2) {
+        R165_BAL_ACT_SUB_BWP2 = r165_BAL_ACT_SUB_BWP2;
+    }
+
+    public String getR166_PRODUCT() {
+        return R166_PRODUCT;
+    }
+
+    public void setR166_PRODUCT(String r166_PRODUCT) {
+        R166_PRODUCT = r166_PRODUCT;
+    }
+
+    public BigDecimal getR166_FIG_BAL_BWP1() {
+        return R166_FIG_BAL_BWP1;
+    }
+
+    public void setR166_FIG_BAL_BWP1(BigDecimal r166_FIG_BAL_BWP1) {
+        R166_FIG_BAL_BWP1 = r166_FIG_BAL_BWP1;
+    }
+
+    public BigDecimal getR166_FIG_BAL_BWP2() {
+        return R166_FIG_BAL_BWP2;
+    }
+
+    public void setR166_FIG_BAL_BWP2(BigDecimal r166_FIG_BAL_BWP2) {
+        R166_FIG_BAL_BWP2 = r166_FIG_BAL_BWP2;
+    }
+
+    public BigDecimal getR166_AMT_ADJ_BWP1() {
+        return R166_AMT_ADJ_BWP1;
+    }
+
+    public void setR166_AMT_ADJ_BWP1(BigDecimal r166_AMT_ADJ_BWP1) {
+        R166_AMT_ADJ_BWP1 = r166_AMT_ADJ_BWP1;
+    }
+
+    public BigDecimal getR166_AMT_ADJ_BWP2() {
+        return R166_AMT_ADJ_BWP2;
+    }
+
+    public void setR166_AMT_ADJ_BWP2(BigDecimal r166_AMT_ADJ_BWP2) {
+        R166_AMT_ADJ_BWP2 = r166_AMT_ADJ_BWP2;
+    }
+
+    public BigDecimal getR166_NET_AMT_BWP1() {
+        return R166_NET_AMT_BWP1;
+    }
+
+    public void setR166_NET_AMT_BWP1(BigDecimal r166_NET_AMT_BWP1) {
+        R166_NET_AMT_BWP1 = r166_NET_AMT_BWP1;
+    }
+
+    public BigDecimal getR166_NET_AMT_BWP2() {
+        return R166_NET_AMT_BWP2;
+    }
+
+    public void setR166_NET_AMT_BWP2(BigDecimal r166_NET_AMT_BWP2) {
+        R166_NET_AMT_BWP2 = r166_NET_AMT_BWP2;
+    }
+
+    public BigDecimal getR166_BAL_SUB_BWP1() {
+        return R166_BAL_SUB_BWP1;
+    }
+
+    public void setR166_BAL_SUB_BWP1(BigDecimal r166_BAL_SUB_BWP1) {
+        R166_BAL_SUB_BWP1 = r166_BAL_SUB_BWP1;
+    }
+
+    public BigDecimal getR166_BAL_SUB_BWP2() {
+        return R166_BAL_SUB_BWP2;
+    }
+
+    public void setR166_BAL_SUB_BWP2(BigDecimal r166_BAL_SUB_BWP2) {
+        R166_BAL_SUB_BWP2 = r166_BAL_SUB_BWP2;
+    }
+
+    public BigDecimal getR166_BAL_ACT_SUB_BWP1() {
+        return R166_BAL_ACT_SUB_BWP1;
+    }
+
+    public void setR166_BAL_ACT_SUB_BWP1(BigDecimal r166_BAL_ACT_SUB_BWP1) {
+        R166_BAL_ACT_SUB_BWP1 = r166_BAL_ACT_SUB_BWP1;
+    }
+
+    public BigDecimal getR166_BAL_ACT_SUB_BWP2() {
+        return R166_BAL_ACT_SUB_BWP2;
+    }
+
+    public void setR166_BAL_ACT_SUB_BWP2(BigDecimal r166_BAL_ACT_SUB_BWP2) {
+        R166_BAL_ACT_SUB_BWP2 = r166_BAL_ACT_SUB_BWP2;
+    }
+
+    public String getR167_PRODUCT() {
+        return R167_PRODUCT;
+    }
+
+    public void setR167_PRODUCT(String r167_PRODUCT) {
+        R167_PRODUCT = r167_PRODUCT;
+    }
+
+    public BigDecimal getR167_FIG_BAL_BWP1() {
+        return R167_FIG_BAL_BWP1;
+    }
+
+    public void setR167_FIG_BAL_BWP1(BigDecimal r167_FIG_BAL_BWP1) {
+        R167_FIG_BAL_BWP1 = r167_FIG_BAL_BWP1;
+    }
+
+    public BigDecimal getR167_FIG_BAL_BWP2() {
+        return R167_FIG_BAL_BWP2;
+    }
+
+    public void setR167_FIG_BAL_BWP2(BigDecimal r167_FIG_BAL_BWP2) {
+        R167_FIG_BAL_BWP2 = r167_FIG_BAL_BWP2;
+    }
+
+    public BigDecimal getR167_AMT_ADJ_BWP1() {
+        return R167_AMT_ADJ_BWP1;
+    }
+
+    public void setR167_AMT_ADJ_BWP1(BigDecimal r167_AMT_ADJ_BWP1) {
+        R167_AMT_ADJ_BWP1 = r167_AMT_ADJ_BWP1;
+    }
+
+    public BigDecimal getR167_AMT_ADJ_BWP2() {
+        return R167_AMT_ADJ_BWP2;
+    }
+
+    public void setR167_AMT_ADJ_BWP2(BigDecimal r167_AMT_ADJ_BWP2) {
+        R167_AMT_ADJ_BWP2 = r167_AMT_ADJ_BWP2;
+    }
+
+    public BigDecimal getR167_NET_AMT_BWP1() {
+        return R167_NET_AMT_BWP1;
+    }
+
+    public void setR167_NET_AMT_BWP1(BigDecimal r167_NET_AMT_BWP1) {
+        R167_NET_AMT_BWP1 = r167_NET_AMT_BWP1;
+    }
+
+    public BigDecimal getR167_NET_AMT_BWP2() {
+        return R167_NET_AMT_BWP2;
+    }
+
+    public void setR167_NET_AMT_BWP2(BigDecimal r167_NET_AMT_BWP2) {
+        R167_NET_AMT_BWP2 = r167_NET_AMT_BWP2;
+    }
+
+    public BigDecimal getR167_BAL_SUB_BWP1() {
+        return R167_BAL_SUB_BWP1;
+    }
+
+    public void setR167_BAL_SUB_BWP1(BigDecimal r167_BAL_SUB_BWP1) {
+        R167_BAL_SUB_BWP1 = r167_BAL_SUB_BWP1;
+    }
+
+    public BigDecimal getR167_BAL_SUB_BWP2() {
+        return R167_BAL_SUB_BWP2;
+    }
+
+    public void setR167_BAL_SUB_BWP2(BigDecimal r167_BAL_SUB_BWP2) {
+        R167_BAL_SUB_BWP2 = r167_BAL_SUB_BWP2;
+    }
+
+    public BigDecimal getR167_BAL_ACT_SUB_BWP1() {
+        return R167_BAL_ACT_SUB_BWP1;
+    }
+
+    public void setR167_BAL_ACT_SUB_BWP1(BigDecimal r167_BAL_ACT_SUB_BWP1) {
+        R167_BAL_ACT_SUB_BWP1 = r167_BAL_ACT_SUB_BWP1;
+    }
+
+    public BigDecimal getR167_BAL_ACT_SUB_BWP2() {
+        return R167_BAL_ACT_SUB_BWP2;
+    }
+
+    public void setR167_BAL_ACT_SUB_BWP2(BigDecimal r167_BAL_ACT_SUB_BWP2) {
+        R167_BAL_ACT_SUB_BWP2 = r167_BAL_ACT_SUB_BWP2;
+    }
+
+    public String getR168_PRODUCT() {
+        return R168_PRODUCT;
+    }
+
+    public void setR168_PRODUCT(String r168_PRODUCT) {
+        R168_PRODUCT = r168_PRODUCT;
+    }
+
+    public BigDecimal getR168_FIG_BAL_BWP1() {
+        return R168_FIG_BAL_BWP1;
+    }
+
+    public void setR168_FIG_BAL_BWP1(BigDecimal r168_FIG_BAL_BWP1) {
+        R168_FIG_BAL_BWP1 = r168_FIG_BAL_BWP1;
+    }
+
+    public BigDecimal getR168_FIG_BAL_BWP2() {
+        return R168_FIG_BAL_BWP2;
+    }
+
+    public void setR168_FIG_BAL_BWP2(BigDecimal r168_FIG_BAL_BWP2) {
+        R168_FIG_BAL_BWP2 = r168_FIG_BAL_BWP2;
+    }
+
+    public BigDecimal getR168_AMT_ADJ_BWP1() {
+        return R168_AMT_ADJ_BWP1;
+    }
+
+    public void setR168_AMT_ADJ_BWP1(BigDecimal r168_AMT_ADJ_BWP1) {
+        R168_AMT_ADJ_BWP1 = r168_AMT_ADJ_BWP1;
+    }
+
+    public BigDecimal getR168_AMT_ADJ_BWP2() {
+        return R168_AMT_ADJ_BWP2;
+    }
+
+    public void setR168_AMT_ADJ_BWP2(BigDecimal r168_AMT_ADJ_BWP2) {
+        R168_AMT_ADJ_BWP2 = r168_AMT_ADJ_BWP2;
+    }
+
+    public BigDecimal getR168_NET_AMT_BWP1() {
+        return R168_NET_AMT_BWP1;
+    }
+
+    public void setR168_NET_AMT_BWP1(BigDecimal r168_NET_AMT_BWP1) {
+        R168_NET_AMT_BWP1 = r168_NET_AMT_BWP1;
+    }
+
+    public BigDecimal getR168_NET_AMT_BWP2() {
+        return R168_NET_AMT_BWP2;
+    }
+
+    public void setR168_NET_AMT_BWP2(BigDecimal r168_NET_AMT_BWP2) {
+        R168_NET_AMT_BWP2 = r168_NET_AMT_BWP2;
+    }
+
+    public BigDecimal getR168_BAL_SUB_BWP1() {
+        return R168_BAL_SUB_BWP1;
+    }
+
+    public void setR168_BAL_SUB_BWP1(BigDecimal r168_BAL_SUB_BWP1) {
+        R168_BAL_SUB_BWP1 = r168_BAL_SUB_BWP1;
+    }
+
+    public BigDecimal getR168_BAL_SUB_BWP2() {
+        return R168_BAL_SUB_BWP2;
+    }
+
+    public void setR168_BAL_SUB_BWP2(BigDecimal r168_BAL_SUB_BWP2) {
+        R168_BAL_SUB_BWP2 = r168_BAL_SUB_BWP2;
+    }
+
+    public BigDecimal getR168_BAL_ACT_SUB_BWP1() {
+        return R168_BAL_ACT_SUB_BWP1;
+    }
+
+    public void setR168_BAL_ACT_SUB_BWP1(BigDecimal r168_BAL_ACT_SUB_BWP1) {
+        R168_BAL_ACT_SUB_BWP1 = r168_BAL_ACT_SUB_BWP1;
+    }
+
+    public BigDecimal getR168_BAL_ACT_SUB_BWP2() {
+        return R168_BAL_ACT_SUB_BWP2;
+    }
+
+    public void setR168_BAL_ACT_SUB_BWP2(BigDecimal r168_BAL_ACT_SUB_BWP2) {
+        R168_BAL_ACT_SUB_BWP2 = r168_BAL_ACT_SUB_BWP2;
+    }
+
+    public String getR169_PRODUCT() {
+        return R169_PRODUCT;
+    }
+
+    public void setR169_PRODUCT(String r169_PRODUCT) {
+        R169_PRODUCT = r169_PRODUCT;
+    }
+
+    public BigDecimal getR169_FIG_BAL_BWP1() {
+        return R169_FIG_BAL_BWP1;
+    }
+
+    public void setR169_FIG_BAL_BWP1(BigDecimal r169_FIG_BAL_BWP1) {
+        R169_FIG_BAL_BWP1 = r169_FIG_BAL_BWP1;
+    }
+
+    public BigDecimal getR169_FIG_BAL_BWP2() {
+        return R169_FIG_BAL_BWP2;
+    }
+
+    public void setR169_FIG_BAL_BWP2(BigDecimal r169_FIG_BAL_BWP2) {
+        R169_FIG_BAL_BWP2 = r169_FIG_BAL_BWP2;
+    }
+
+    public BigDecimal getR169_AMT_ADJ_BWP1() {
+        return R169_AMT_ADJ_BWP1;
+    }
+
+    public void setR169_AMT_ADJ_BWP1(BigDecimal r169_AMT_ADJ_BWP1) {
+        R169_AMT_ADJ_BWP1 = r169_AMT_ADJ_BWP1;
+    }
+
+    public BigDecimal getR169_AMT_ADJ_BWP2() {
+        return R169_AMT_ADJ_BWP2;
+    }
+
+    public void setR169_AMT_ADJ_BWP2(BigDecimal r169_AMT_ADJ_BWP2) {
+        R169_AMT_ADJ_BWP2 = r169_AMT_ADJ_BWP2;
+    }
+
+    public BigDecimal getR169_NET_AMT_BWP1() {
+        return R169_NET_AMT_BWP1;
+    }
+
+    public void setR169_NET_AMT_BWP1(BigDecimal r169_NET_AMT_BWP1) {
+        R169_NET_AMT_BWP1 = r169_NET_AMT_BWP1;
+    }
+
+    public BigDecimal getR169_NET_AMT_BWP2() {
+        return R169_NET_AMT_BWP2;
+    }
+
+    public void setR169_NET_AMT_BWP2(BigDecimal r169_NET_AMT_BWP2) {
+        R169_NET_AMT_BWP2 = r169_NET_AMT_BWP2;
+    }
+
+    public BigDecimal getR169_BAL_SUB_BWP1() {
+        return R169_BAL_SUB_BWP1;
+    }
+
+    public void setR169_BAL_SUB_BWP1(BigDecimal r169_BAL_SUB_BWP1) {
+        R169_BAL_SUB_BWP1 = r169_BAL_SUB_BWP1;
+    }
+
+    public BigDecimal getR169_BAL_SUB_BWP2() {
+        return R169_BAL_SUB_BWP2;
+    }
+
+    public void setR169_BAL_SUB_BWP2(BigDecimal r169_BAL_SUB_BWP2) {
+        R169_BAL_SUB_BWP2 = r169_BAL_SUB_BWP2;
+    }
+
+    public BigDecimal getR169_BAL_ACT_SUB_BWP1() {
+        return R169_BAL_ACT_SUB_BWP1;
+    }
+
+    public void setR169_BAL_ACT_SUB_BWP1(BigDecimal r169_BAL_ACT_SUB_BWP1) {
+        R169_BAL_ACT_SUB_BWP1 = r169_BAL_ACT_SUB_BWP1;
+    }
+
+    public BigDecimal getR169_BAL_ACT_SUB_BWP2() {
+        return R169_BAL_ACT_SUB_BWP2;
+    }
+
+    public void setR169_BAL_ACT_SUB_BWP2(BigDecimal r169_BAL_ACT_SUB_BWP2) {
+        R169_BAL_ACT_SUB_BWP2 = r169_BAL_ACT_SUB_BWP2;
+    }
+
+    public String getR170_PRODUCT() {
+        return R170_PRODUCT;
+    }
+
+    public void setR170_PRODUCT(String r170_PRODUCT) {
+        R170_PRODUCT = r170_PRODUCT;
+    }
+
+    public BigDecimal getR170_FIG_BAL_BWP1() {
+        return R170_FIG_BAL_BWP1;
+    }
+
+    public void setR170_FIG_BAL_BWP1(BigDecimal r170_FIG_BAL_BWP1) {
+        R170_FIG_BAL_BWP1 = r170_FIG_BAL_BWP1;
+    }
+
+    public BigDecimal getR170_FIG_BAL_BWP2() {
+        return R170_FIG_BAL_BWP2;
+    }
+
+    public void setR170_FIG_BAL_BWP2(BigDecimal r170_FIG_BAL_BWP2) {
+        R170_FIG_BAL_BWP2 = r170_FIG_BAL_BWP2;
+    }
+
+    public BigDecimal getR170_AMT_ADJ_BWP1() {
+        return R170_AMT_ADJ_BWP1;
+    }
+
+    public void setR170_AMT_ADJ_BWP1(BigDecimal r170_AMT_ADJ_BWP1) {
+        R170_AMT_ADJ_BWP1 = r170_AMT_ADJ_BWP1;
+    }
+
+    public BigDecimal getR170_AMT_ADJ_BWP2() {
+        return R170_AMT_ADJ_BWP2;
+    }
+
+    public void setR170_AMT_ADJ_BWP2(BigDecimal r170_AMT_ADJ_BWP2) {
+        R170_AMT_ADJ_BWP2 = r170_AMT_ADJ_BWP2;
+    }
+
+    public BigDecimal getR170_NET_AMT_BWP1() {
+        return R170_NET_AMT_BWP1;
+    }
+
+    public void setR170_NET_AMT_BWP1(BigDecimal r170_NET_AMT_BWP1) {
+        R170_NET_AMT_BWP1 = r170_NET_AMT_BWP1;
+    }
+
+    public BigDecimal getR170_NET_AMT_BWP2() {
+        return R170_NET_AMT_BWP2;
+    }
+
+    public void setR170_NET_AMT_BWP2(BigDecimal r170_NET_AMT_BWP2) {
+        R170_NET_AMT_BWP2 = r170_NET_AMT_BWP2;
+    }
+
+    public BigDecimal getR170_BAL_SUB_BWP1() {
+        return R170_BAL_SUB_BWP1;
+    }
+
+    public void setR170_BAL_SUB_BWP1(BigDecimal r170_BAL_SUB_BWP1) {
+        R170_BAL_SUB_BWP1 = r170_BAL_SUB_BWP1;
+    }
+
+    public BigDecimal getR170_BAL_SUB_BWP2() {
+        return R170_BAL_SUB_BWP2;
+    }
+
+    public void setR170_BAL_SUB_BWP2(BigDecimal r170_BAL_SUB_BWP2) {
+        R170_BAL_SUB_BWP2 = r170_BAL_SUB_BWP2;
+    }
+
+    public BigDecimal getR170_BAL_ACT_SUB_BWP1() {
+        return R170_BAL_ACT_SUB_BWP1;
+    }
+
+    public void setR170_BAL_ACT_SUB_BWP1(BigDecimal r170_BAL_ACT_SUB_BWP1) {
+        R170_BAL_ACT_SUB_BWP1 = r170_BAL_ACT_SUB_BWP1;
+    }
+
+    public BigDecimal getR170_BAL_ACT_SUB_BWP2() {
+        return R170_BAL_ACT_SUB_BWP2;
+    }
+
+    public void setR170_BAL_ACT_SUB_BWP2(BigDecimal r170_BAL_ACT_SUB_BWP2) {
+        R170_BAL_ACT_SUB_BWP2 = r170_BAL_ACT_SUB_BWP2;
+    }
+
+    public String getR171_PRODUCT() {
+        return R171_PRODUCT;
+    }
+
+    public void setR171_PRODUCT(String r171_PRODUCT) {
+        R171_PRODUCT = r171_PRODUCT;
+    }
+
+    public BigDecimal getR171_FIG_BAL_BWP1() {
+        return R171_FIG_BAL_BWP1;
+    }
+
+    public void setR171_FIG_BAL_BWP1(BigDecimal r171_FIG_BAL_BWP1) {
+        R171_FIG_BAL_BWP1 = r171_FIG_BAL_BWP1;
+    }
+
+    public BigDecimal getR171_FIG_BAL_BWP2() {
+        return R171_FIG_BAL_BWP2;
+    }
+
+    public void setR171_FIG_BAL_BWP2(BigDecimal r171_FIG_BAL_BWP2) {
+        R171_FIG_BAL_BWP2 = r171_FIG_BAL_BWP2;
+    }
+
+    public BigDecimal getR171_AMT_ADJ_BWP1() {
+        return R171_AMT_ADJ_BWP1;
+    }
+
+    public void setR171_AMT_ADJ_BWP1(BigDecimal r171_AMT_ADJ_BWP1) {
+        R171_AMT_ADJ_BWP1 = r171_AMT_ADJ_BWP1;
+    }
+
+    public BigDecimal getR171_AMT_ADJ_BWP2() {
+        return R171_AMT_ADJ_BWP2;
+    }
+
+    public void setR171_AMT_ADJ_BWP2(BigDecimal r171_AMT_ADJ_BWP2) {
+        R171_AMT_ADJ_BWP2 = r171_AMT_ADJ_BWP2;
+    }
+
+    public BigDecimal getR171_NET_AMT_BWP1() {
+        return R171_NET_AMT_BWP1;
+    }
+
+    public void setR171_NET_AMT_BWP1(BigDecimal r171_NET_AMT_BWP1) {
+        R171_NET_AMT_BWP1 = r171_NET_AMT_BWP1;
+    }
+
+    public BigDecimal getR171_NET_AMT_BWP2() {
+        return R171_NET_AMT_BWP2;
+    }
+
+    public void setR171_NET_AMT_BWP2(BigDecimal r171_NET_AMT_BWP2) {
+        R171_NET_AMT_BWP2 = r171_NET_AMT_BWP2;
+    }
+
+    public BigDecimal getR171_BAL_SUB_BWP1() {
+        return R171_BAL_SUB_BWP1;
+    }
+
+    public void setR171_BAL_SUB_BWP1(BigDecimal r171_BAL_SUB_BWP1) {
+        R171_BAL_SUB_BWP1 = r171_BAL_SUB_BWP1;
+    }
+
+    public BigDecimal getR171_BAL_SUB_BWP2() {
+        return R171_BAL_SUB_BWP2;
+    }
+
+    public void setR171_BAL_SUB_BWP2(BigDecimal r171_BAL_SUB_BWP2) {
+        R171_BAL_SUB_BWP2 = r171_BAL_SUB_BWP2;
+    }
+
+    public BigDecimal getR171_BAL_ACT_SUB_BWP1() {
+        return R171_BAL_ACT_SUB_BWP1;
+    }
+
+    public void setR171_BAL_ACT_SUB_BWP1(BigDecimal r171_BAL_ACT_SUB_BWP1) {
+        R171_BAL_ACT_SUB_BWP1 = r171_BAL_ACT_SUB_BWP1;
+    }
+
+    public BigDecimal getR171_BAL_ACT_SUB_BWP2() {
+        return R171_BAL_ACT_SUB_BWP2;
+    }
+
+    public void setR171_BAL_ACT_SUB_BWP2(BigDecimal r171_BAL_ACT_SUB_BWP2) {
+        R171_BAL_ACT_SUB_BWP2 = r171_BAL_ACT_SUB_BWP2;
+    }
+
+    public String getR172_PRODUCT() {
+        return R172_PRODUCT;
+    }
+
+    public void setR172_PRODUCT(String r172_PRODUCT) {
+        R172_PRODUCT = r172_PRODUCT;
+    }
+
+    public BigDecimal getR172_FIG_BAL_BWP1() {
+        return R172_FIG_BAL_BWP1;
+    }
+
+    public void setR172_FIG_BAL_BWP1(BigDecimal r172_FIG_BAL_BWP1) {
+        R172_FIG_BAL_BWP1 = r172_FIG_BAL_BWP1;
+    }
+
+    public BigDecimal getR172_FIG_BAL_BWP2() {
+        return R172_FIG_BAL_BWP2;
+    }
+
+    public void setR172_FIG_BAL_BWP2(BigDecimal r172_FIG_BAL_BWP2) {
+        R172_FIG_BAL_BWP2 = r172_FIG_BAL_BWP2;
+    }
+
+    public BigDecimal getR172_AMT_ADJ_BWP1() {
+        return R172_AMT_ADJ_BWP1;
+    }
+
+    public void setR172_AMT_ADJ_BWP1(BigDecimal r172_AMT_ADJ_BWP1) {
+        R172_AMT_ADJ_BWP1 = r172_AMT_ADJ_BWP1;
+    }
+
+    public BigDecimal getR172_AMT_ADJ_BWP2() {
+        return R172_AMT_ADJ_BWP2;
+    }
+
+    public void setR172_AMT_ADJ_BWP2(BigDecimal r172_AMT_ADJ_BWP2) {
+        R172_AMT_ADJ_BWP2 = r172_AMT_ADJ_BWP2;
+    }
+
+    public BigDecimal getR172_NET_AMT_BWP1() {
+        return R172_NET_AMT_BWP1;
+    }
+
+    public void setR172_NET_AMT_BWP1(BigDecimal r172_NET_AMT_BWP1) {
+        R172_NET_AMT_BWP1 = r172_NET_AMT_BWP1;
+    }
+
+    public BigDecimal getR172_NET_AMT_BWP2() {
+        return R172_NET_AMT_BWP2;
+    }
+
+    public void setR172_NET_AMT_BWP2(BigDecimal r172_NET_AMT_BWP2) {
+        R172_NET_AMT_BWP2 = r172_NET_AMT_BWP2;
+    }
+
+    public BigDecimal getR172_BAL_SUB_BWP1() {
+        return R172_BAL_SUB_BWP1;
+    }
+
+    public void setR172_BAL_SUB_BWP1(BigDecimal r172_BAL_SUB_BWP1) {
+        R172_BAL_SUB_BWP1 = r172_BAL_SUB_BWP1;
+    }
+
+    public BigDecimal getR172_BAL_SUB_BWP2() {
+        return R172_BAL_SUB_BWP2;
+    }
+
+    public void setR172_BAL_SUB_BWP2(BigDecimal r172_BAL_SUB_BWP2) {
+        R172_BAL_SUB_BWP2 = r172_BAL_SUB_BWP2;
+    }
+
+    public BigDecimal getR172_BAL_ACT_SUB_BWP1() {
+        return R172_BAL_ACT_SUB_BWP1;
+    }
+
+    public void setR172_BAL_ACT_SUB_BWP1(BigDecimal r172_BAL_ACT_SUB_BWP1) {
+        R172_BAL_ACT_SUB_BWP1 = r172_BAL_ACT_SUB_BWP1;
+    }
+
+    public BigDecimal getR172_BAL_ACT_SUB_BWP2() {
+        return R172_BAL_ACT_SUB_BWP2;
+    }
+
+    public void setR172_BAL_ACT_SUB_BWP2(BigDecimal r172_BAL_ACT_SUB_BWP2) {
+        R172_BAL_ACT_SUB_BWP2 = r172_BAL_ACT_SUB_BWP2;
+    }
+
+    public String getR173_PRODUCT() {
+        return R173_PRODUCT;
+    }
+
+    public void setR173_PRODUCT(String r173_PRODUCT) {
+        R173_PRODUCT = r173_PRODUCT;
+    }
+
+    public BigDecimal getR173_FIG_BAL_BWP1() {
+        return R173_FIG_BAL_BWP1;
+    }
+
+    public void setR173_FIG_BAL_BWP1(BigDecimal r173_FIG_BAL_BWP1) {
+        R173_FIG_BAL_BWP1 = r173_FIG_BAL_BWP1;
+    }
+
+    public BigDecimal getR173_FIG_BAL_BWP2() {
+        return R173_FIG_BAL_BWP2;
+    }
+
+    public void setR173_FIG_BAL_BWP2(BigDecimal r173_FIG_BAL_BWP2) {
+        R173_FIG_BAL_BWP2 = r173_FIG_BAL_BWP2;
+    }
+
+    public BigDecimal getR173_AMT_ADJ_BWP1() {
+        return R173_AMT_ADJ_BWP1;
+    }
+
+    public void setR173_AMT_ADJ_BWP1(BigDecimal r173_AMT_ADJ_BWP1) {
+        R173_AMT_ADJ_BWP1 = r173_AMT_ADJ_BWP1;
+    }
+
+    public BigDecimal getR173_AMT_ADJ_BWP2() {
+        return R173_AMT_ADJ_BWP2;
+    }
+
+    public void setR173_AMT_ADJ_BWP2(BigDecimal r173_AMT_ADJ_BWP2) {
+        R173_AMT_ADJ_BWP2 = r173_AMT_ADJ_BWP2;
+    }
+
+    public BigDecimal getR173_NET_AMT_BWP1() {
+        return R173_NET_AMT_BWP1;
+    }
+
+    public void setR173_NET_AMT_BWP1(BigDecimal r173_NET_AMT_BWP1) {
+        R173_NET_AMT_BWP1 = r173_NET_AMT_BWP1;
+    }
+
+    public BigDecimal getR173_NET_AMT_BWP2() {
+        return R173_NET_AMT_BWP2;
+    }
+
+    public void setR173_NET_AMT_BWP2(BigDecimal r173_NET_AMT_BWP2) {
+        R173_NET_AMT_BWP2 = r173_NET_AMT_BWP2;
+    }
+
+    public BigDecimal getR173_BAL_SUB_BWP1() {
+        return R173_BAL_SUB_BWP1;
+    }
+
+    public void setR173_BAL_SUB_BWP1(BigDecimal r173_BAL_SUB_BWP1) {
+        R173_BAL_SUB_BWP1 = r173_BAL_SUB_BWP1;
+    }
+
+    public BigDecimal getR173_BAL_SUB_BWP2() {
+        return R173_BAL_SUB_BWP2;
+    }
+
+    public void setR173_BAL_SUB_BWP2(BigDecimal r173_BAL_SUB_BWP2) {
+        R173_BAL_SUB_BWP2 = r173_BAL_SUB_BWP2;
+    }
+
+    public BigDecimal getR173_BAL_ACT_SUB_BWP1() {
+        return R173_BAL_ACT_SUB_BWP1;
+    }
+
+    public void setR173_BAL_ACT_SUB_BWP1(BigDecimal r173_BAL_ACT_SUB_BWP1) {
+        R173_BAL_ACT_SUB_BWP1 = r173_BAL_ACT_SUB_BWP1;
+    }
+
+    public BigDecimal getR173_BAL_ACT_SUB_BWP2() {
+        return R173_BAL_ACT_SUB_BWP2;
+    }
+
+    public void setR173_BAL_ACT_SUB_BWP2(BigDecimal r173_BAL_ACT_SUB_BWP2) {
+        R173_BAL_ACT_SUB_BWP2 = r173_BAL_ACT_SUB_BWP2;
+    }
+
+    public String getR174_PRODUCT() {
+        return R174_PRODUCT;
+    }
+
+    public void setR174_PRODUCT(String r174_PRODUCT) {
+        R174_PRODUCT = r174_PRODUCT;
+    }
+
+    public BigDecimal getR174_FIG_BAL_BWP1() {
+        return R174_FIG_BAL_BWP1;
+    }
+
+    public void setR174_FIG_BAL_BWP1(BigDecimal r174_FIG_BAL_BWP1) {
+        R174_FIG_BAL_BWP1 = r174_FIG_BAL_BWP1;
+    }
+
+    public BigDecimal getR174_FIG_BAL_BWP2() {
+        return R174_FIG_BAL_BWP2;
+    }
+
+    public void setR174_FIG_BAL_BWP2(BigDecimal r174_FIG_BAL_BWP2) {
+        R174_FIG_BAL_BWP2 = r174_FIG_BAL_BWP2;
+    }
+
+    public BigDecimal getR174_AMT_ADJ_BWP1() {
+        return R174_AMT_ADJ_BWP1;
+    }
+
+    public void setR174_AMT_ADJ_BWP1(BigDecimal r174_AMT_ADJ_BWP1) {
+        R174_AMT_ADJ_BWP1 = r174_AMT_ADJ_BWP1;
+    }
+
+    public BigDecimal getR174_AMT_ADJ_BWP2() {
+        return R174_AMT_ADJ_BWP2;
+    }
+
+    public void setR174_AMT_ADJ_BWP2(BigDecimal r174_AMT_ADJ_BWP2) {
+        R174_AMT_ADJ_BWP2 = r174_AMT_ADJ_BWP2;
+    }
+
+    public BigDecimal getR174_NET_AMT_BWP1() {
+        return R174_NET_AMT_BWP1;
+    }
+
+    public void setR174_NET_AMT_BWP1(BigDecimal r174_NET_AMT_BWP1) {
+        R174_NET_AMT_BWP1 = r174_NET_AMT_BWP1;
+    }
+
+    public BigDecimal getR174_NET_AMT_BWP2() {
+        return R174_NET_AMT_BWP2;
+    }
+
+    public void setR174_NET_AMT_BWP2(BigDecimal r174_NET_AMT_BWP2) {
+        R174_NET_AMT_BWP2 = r174_NET_AMT_BWP2;
+    }
+
+    public BigDecimal getR174_BAL_SUB_BWP1() {
+        return R174_BAL_SUB_BWP1;
+    }
+
+    public void setR174_BAL_SUB_BWP1(BigDecimal r174_BAL_SUB_BWP1) {
+        R174_BAL_SUB_BWP1 = r174_BAL_SUB_BWP1;
+    }
+
+    public BigDecimal getR174_BAL_SUB_BWP2() {
+        return R174_BAL_SUB_BWP2;
+    }
+
+    public void setR174_BAL_SUB_BWP2(BigDecimal r174_BAL_SUB_BWP2) {
+        R174_BAL_SUB_BWP2 = r174_BAL_SUB_BWP2;
+    }
+
+    public BigDecimal getR174_BAL_ACT_SUB_BWP1() {
+        return R174_BAL_ACT_SUB_BWP1;
+    }
+
+    public void setR174_BAL_ACT_SUB_BWP1(BigDecimal r174_BAL_ACT_SUB_BWP1) {
+        R174_BAL_ACT_SUB_BWP1 = r174_BAL_ACT_SUB_BWP1;
+    }
+
+    public BigDecimal getR174_BAL_ACT_SUB_BWP2() {
+        return R174_BAL_ACT_SUB_BWP2;
+    }
+
+    public void setR174_BAL_ACT_SUB_BWP2(BigDecimal r174_BAL_ACT_SUB_BWP2) {
+        R174_BAL_ACT_SUB_BWP2 = r174_BAL_ACT_SUB_BWP2;
+    }
+
+    public String getR180_PRODUCT() {
+        return R180_PRODUCT;
+    }
+
+    public void setR180_PRODUCT(String r180_PRODUCT) {
+        R180_PRODUCT = r180_PRODUCT;
+    }
+
+    public BigDecimal getR180_FIG_BAL_BWP1() {
+        return R180_FIG_BAL_BWP1;
+    }
+
+    public void setR180_FIG_BAL_BWP1(BigDecimal r180_FIG_BAL_BWP1) {
+        R180_FIG_BAL_BWP1 = r180_FIG_BAL_BWP1;
+    }
+
+    public BigDecimal getR180_FIG_BAL_BWP2() {
+        return R180_FIG_BAL_BWP2;
+    }
+
+    public void setR180_FIG_BAL_BWP2(BigDecimal r180_FIG_BAL_BWP2) {
+        R180_FIG_BAL_BWP2 = r180_FIG_BAL_BWP2;
+    }
+
+    public BigDecimal getR180_AMT_ADJ_BWP1() {
+        return R180_AMT_ADJ_BWP1;
+    }
+
+    public void setR180_AMT_ADJ_BWP1(BigDecimal r180_AMT_ADJ_BWP1) {
+        R180_AMT_ADJ_BWP1 = r180_AMT_ADJ_BWP1;
+    }
+
+    public BigDecimal getR180_AMT_ADJ_BWP2() {
+        return R180_AMT_ADJ_BWP2;
+    }
+
+    public void setR180_AMT_ADJ_BWP2(BigDecimal r180_AMT_ADJ_BWP2) {
+        R180_AMT_ADJ_BWP2 = r180_AMT_ADJ_BWP2;
+    }
+
+    public BigDecimal getR180_NET_AMT_BWP1() {
+        return R180_NET_AMT_BWP1;
+    }
+
+    public void setR180_NET_AMT_BWP1(BigDecimal r180_NET_AMT_BWP1) {
+        R180_NET_AMT_BWP1 = r180_NET_AMT_BWP1;
+    }
+
+    public BigDecimal getR180_NET_AMT_BWP2() {
+        return R180_NET_AMT_BWP2;
+    }
+
+    public void setR180_NET_AMT_BWP2(BigDecimal r180_NET_AMT_BWP2) {
+        R180_NET_AMT_BWP2 = r180_NET_AMT_BWP2;
+    }
+
+    public BigDecimal getR180_BAL_SUB_BWP1() {
+        return R180_BAL_SUB_BWP1;
+    }
+
+    public void setR180_BAL_SUB_BWP1(BigDecimal r180_BAL_SUB_BWP1) {
+        R180_BAL_SUB_BWP1 = r180_BAL_SUB_BWP1;
+    }
+
+    public BigDecimal getR180_BAL_SUB_BWP2() {
+        return R180_BAL_SUB_BWP2;
+    }
+
+    public void setR180_BAL_SUB_BWP2(BigDecimal r180_BAL_SUB_BWP2) {
+        R180_BAL_SUB_BWP2 = r180_BAL_SUB_BWP2;
+    }
+
+    public BigDecimal getR180_BAL_ACT_SUB_BWP1() {
+        return R180_BAL_ACT_SUB_BWP1;
+    }
+
+    public void setR180_BAL_ACT_SUB_BWP1(BigDecimal r180_BAL_ACT_SUB_BWP1) {
+        R180_BAL_ACT_SUB_BWP1 = r180_BAL_ACT_SUB_BWP1;
+    }
+
+    public BigDecimal getR180_BAL_ACT_SUB_BWP2() {
+        return R180_BAL_ACT_SUB_BWP2;
+    }
+
+    public void setR180_BAL_ACT_SUB_BWP2(BigDecimal r180_BAL_ACT_SUB_BWP2) {
+        R180_BAL_ACT_SUB_BWP2 = r180_BAL_ACT_SUB_BWP2;
     }
 
     

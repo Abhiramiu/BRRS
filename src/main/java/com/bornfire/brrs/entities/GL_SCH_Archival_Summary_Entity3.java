@@ -11,7 +11,7 @@ import javax.persistence.Table;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
-@Table(name = "BRRS_GL_SCH_ARCHIVALTABLE_SUMMARY1", schema = "BRRS")
+@Table(name = "BRRS_GL_SCH_ARCHIVALTABLE_SUMMARY3", schema = "BRRS")
 
 public class GL_SCH_Archival_Summary_Entity3 {
 

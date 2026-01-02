@@ -1222,7 +1222,7 @@ PURPOSE		: BRRSREPORT
                 <div th:if="${displaymode == 'summary'}">
                     <div class="row">
 
-                        <div class="col-sm-6">
+                        <div class="col-sm-6 ">
                             <form action="#" method="POST" id="fileupload">
                                 <div class="table-wrapper table-responsive scrollable-table-container "
                                     style="border-right: 1px solid #ffffff;">
@@ -1239,15 +1239,16 @@ PURPOSE		: BRRSREPORT
                                                 <td th:text="${reportsummary.R5_QUALITATIVE_DISCLOSURES}"
                                                     style="padding-left: 20px;font-weight: bold; width: 400px;"></td>
                                                 <td th:text="${reportsummary.R5_PRODUCT}"style="width: 380px;"></td>
-                                                <td th:text="${reportsummary.R5_QUAN_DIS}"  style="text-align:right;width:390px"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R5_QUAN_DIS, 0, 'COMMA', 0, 'POINT')}"  style="text-align:right;width:390px"
                                                     th:attr="RowId='R5', ColumnId='C4'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                             </tr>
+                                            
                                             <tr>
                                                 <td th:text="${reportsummary.R6_QUALITATIVE_DISCLOSURES}"
                                                     style="padding-left: 20px;font-weight: bold;"></td>
                                                 <td th:text="${reportsummary.R6_PRODUCT}"></td>
-                                                <td th:text="${reportsummary.R6_QUAN_DIS}" style="text-align:right;"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R6_QUAN_DIS, 0, 'COMMA', 0, 'POINT')}" style="text-align:right;"
                                                     th:attr="RowId='R6', ColumnId='C4'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                             </tr>
@@ -1266,7 +1267,7 @@ PURPOSE		: BRRSREPORT
                                                 <td th:text="${reportsummary.R11_QUALITATIVE_DISCLOSURES}"
                                                     style="padding-left: 20px;font-weight: bold;width: 400px;"></td>
                                                 <td th:text="${reportsummary.R11_PRODUCT}" style="width: 380px;"></td>
-                                                <td th:text="${reportsummary.R11_QUAN_DIS}" style="text-align:right;width: 390px;"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R11_QUAN_DIS, 0, 'COMMA', 0, 'POINT')}" style="text-align:right;width: 390px;"
                                                     th:attr="RowId='R11', ColumnId='C4'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                             </tr>
@@ -1276,7 +1277,7 @@ PURPOSE		: BRRSREPORT
                                                     style="padding-left: 20px;text-align: left;font-weight: bold;padding-top: 70px;"
                                                     rowspan="5"></td>
                                                 <td th:text="${reportsummary.R12_PRODUCT}"></td>
-                                                <td th:text="${reportsummary.R12_QUAN_DIS}" style="text-align:right;"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R12_QUAN_DIS, 0, 'COMMA', 0, 'POINT')}" style="text-align:right;"
                                                     th:attr="RowId='R12', ColumnId='C4'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                             </tr>
@@ -1285,7 +1286,7 @@ PURPOSE		: BRRSREPORT
                                                 <!-- <td th:text="${reportsummary.R13_QUALITATIVE_DISCLOSURES}"
                                                     style="padding-left: 20px;"></td> -->
                                                 <td th:text="${reportsummary.R13_PRODUCT}"></td>
-                                                <td th:text="${reportsummary.R13_QUAN_DIS}" style="text-align:right;"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R13_QUAN_DIS, 0, 'COMMA', 0, 'POINT')}" style="text-align:right;"
                                                     th:attr="RowId='R13', ColumnId='C4'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                             </tr>
@@ -1294,7 +1295,7 @@ PURPOSE		: BRRSREPORT
                                                 <!-- <td th:text="${reportsummary.R14_QUALITATIVE_DISCLOSURES}"
                                                     style="padding-left: 20px;"></td> -->
                                                 <td th:text="${reportsummary.R14_PRODUCT}"></td>
-                                                <td th:text="${reportsummary.R14_QUAN_DIS}" style="text-align:right;"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R14_QUAN_DIS, 0, 'COMMA', 0, 'POINT')}" style="text-align:right;"
                                                     th:attr="RowId='R14', ColumnId='C4'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                             </tr>
@@ -1303,7 +1304,7 @@ PURPOSE		: BRRSREPORT
                                                 <!-- <td th:text="${reportsummary.R15_QUALITATIVE_DISCLOSURES}"
                                                     style="padding-left: 20px;"></td> -->
                                                 <td th:text="${reportsummary.R15_PRODUCT}"></td>
-                                                <td th:text="${reportsummary.R15_QUAN_DIS}" style="text-align:right;"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R15_QUAN_DIS, 0, 'COMMA', 0, 'POINT')}"style="text-align:right;"
                                                     th:attr="RowId='R15', ColumnId='C4'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                             </tr>
@@ -1312,7 +1313,7 @@ PURPOSE		: BRRSREPORT
                                                 <!-- <td th:text="${reportsummary.R16_QUALITATIVE_DISCLOSURES}"
                                                     style="padding-left: 20px;"></td> -->
                                                 <td th:text="${reportsummary.R16_PRODUCT}"></td>
-                                                <td th:text="${reportsummary.R16_QUAN_DIS}" style="text-align:right;"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R16_QUAN_DIS, 0, 'COMMA', 0, 'POINT')}" style="text-align:right;"
                                                     th:attr="RowId='R16', ColumnId='C4'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                             </tr>
@@ -1332,7 +1333,7 @@ PURPOSE		: BRRSREPORT
                                                 <td th:text="${reportsummary.R20_QUALITATIVE_DISCLOSURES}"
                                                     style="padding-left: 20px;font-weight: bold;width: 400px;"></td>
                                                 <td th:text="${reportsummary.R20_PRODUCT}" style="width: 380px;"></td>
-                                                <td th:text="${reportsummary.R20_QUAN_DIS}" style="text-align:right;"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R20_QUAN_DIS, 0, 'COMMA', 0, 'POINT')}" style="text-align:right;"
                                                     th:attr="RowId='R20', ColumnId='C4'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                             </tr>
@@ -1341,7 +1342,7 @@ PURPOSE		: BRRSREPORT
                                                 <td th:text="${reportsummary.R21_QUALITATIVE_DISCLOSURES}"
                                                     style="padding-left: 20px;font-weight: bold;"></td>
                                                 <td th:text="${reportsummary.R21_PRODUCT}" style="width: 180px;"></td>
-                                                <td th:text="${reportsummary.R21_QUAN_DIS}" style="text-align:right;width:390px"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R21_QUAN_DIS, 0, 'COMMA', 0, 'POINT')}" style="text-align:right;width:390px"
                                                     th:attr="RowId='R21', ColumnId='C4'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                             </tr>

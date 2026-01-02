@@ -1240,7 +1240,7 @@ PURPOSE		: BRRSREPORT
                                                 <td style="text-align:right;">1</td>
                                                 <td th:text="${reportsummary.R3_PRODUCT}" style="padding-left:20px;">
                                                 </td>
-                                                <td th:text="${reportsummary.R3_AMT}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R3_AMT, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right;width:390px;background-color: #D9D9D9; "
                                                     th:attr="RowId='R3', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
@@ -1250,7 +1250,7 @@ PURPOSE		: BRRSREPORT
                                                 <td style="text-align:right;">2</td>
                                                 <td th:text="${reportsummary.R4_PRODUCT}" style="padding-left:20px;">
                                                 </td>
-                                                <td th:text="${reportsummary.R4_AMT}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R4_AMT, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right;width:390px;background-color: #D9D9D9; "
                                                     th:attr="RowId='R4', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
@@ -1260,7 +1260,7 @@ PURPOSE		: BRRSREPORT
                                                 <td style="text-align:right;">3</td>
                                                 <td th:text="${reportsummary.R5_PRODUCT}" style="padding-left:20px;">
                                                 </td>
-                                                <td th:text="${reportsummary.R5_AMT}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R5_AMT, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right;width:390px"
                                                     th:attr="RowId='R5', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
@@ -1270,7 +1270,7 @@ PURPOSE		: BRRSREPORT
                                                 <td></td>
                                                 <td th:text="${reportsummary.R6_PRODUCT}" style="padding-left:20px;">
                                                 </td>
-                                                <td th:text="${reportsummary.R6_AMT}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R6_AMT, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right;width:390px"
                                                     th:attr="RowId='R6', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
@@ -1280,17 +1280,17 @@ PURPOSE		: BRRSREPORT
                                                 <td style="text-align:right;">4</td>
                                                 <td th:text="${reportsummary.R7_PRODUCT}" style="padding-left:50px;">
                                                 </td>
-                                                <td th:text="${reportsummary.R7_AMT}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R7_AMT, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right;width:390px;background-color: #D9D9D9; "
                                                     th:attr="RowId='R7', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                             </tr>
 
                                             <tr>
-                                                <td style="text-align:right;">5</td>
+                                                 <td style="text-align:right;">5</td>
                                                 <td th:text="${reportsummary.R8_PRODUCT}" style="padding-left:50px;">
                                                 </td>
-                                                <td th:text="${reportsummary.R8_AMT}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R8_AMT, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right;width:390px;background-color: #D9D9D9;"
                                                     th:attr="RowId='R8', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
@@ -1300,7 +1300,7 @@ PURPOSE		: BRRSREPORT
                                                 <td style="text-align:right;">6</td>
                                                 <td th:text="${reportsummary.R9_PRODUCT}" style="padding-left:50px;">
                                                 </td>
-                                                <td th:text="${reportsummary.R9_AMT}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R9_AMT, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right;width:390px;background-color: #D9D9D9;"
                                                     th:attr="RowId='R9', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
@@ -1310,7 +1310,7 @@ PURPOSE		: BRRSREPORT
                                                 <td style="text-align:right;">7</td>
                                                 <td th:text="${reportsummary.R10_PRODUCT}" style="padding-left:50px;">
                                                 </td>
-                                                <td th:text="${reportsummary.R10_AMT}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R10_AMT, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right;width:390px;background-color: #D9D9D9;"
                                                     th:attr="RowId='R10', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
@@ -1320,7 +1320,7 @@ PURPOSE		: BRRSREPORT
                                                 <td style="text-align:right;">8</td>
                                                 <td th:text="${reportsummary.R11_PRODUCT}" style="padding-left:20px;">
                                                 </td>
-                                                <td th:text="${reportsummary.R11_AMT}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R11_AMT, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right;width:390px;background-color: #D9D9D9;"
                                                     th:attr="RowId='R11', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
@@ -1330,7 +1330,7 @@ PURPOSE		: BRRSREPORT
                                                 <td style="text-align:right;">9</td>
                                                 <td th:text="${reportsummary.R12_PRODUCT}" style="padding-left:20px;">
                                                 </td>
-                                                <td th:text="${reportsummary.R12_AMT}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R12_AMT, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right;width:390px;background-color: #D9D9D9;"
                                                     th:attr="RowId='R12', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
@@ -1340,7 +1340,7 @@ PURPOSE		: BRRSREPORT
                                                 <td style="text-align:right;">10</td>
                                                 <td th:text="${reportsummary.R13_PRODUCT}" style="padding-left:20px;">
                                                 </td>
-                                                <td th:text="${reportsummary.R13_AMT}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R13_AMT, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right;width:390px;background-color: #D9D9D9;"
                                                     th:attr="RowId='R13', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
@@ -1350,7 +1350,7 @@ PURPOSE		: BRRSREPORT
                                                 <td style="text-align:right;">11</td>
                                                 <td th:text="${reportsummary.R14_PRODUCT}" style="padding-left:20px;">
                                                 </td>
-                                                <td th:text="${reportsummary.R14_AMT}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R14_AMT, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right;width:390px;background-color: #D9D9D9;"
                                                     th:attr="RowId='R14', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
@@ -1360,7 +1360,7 @@ PURPOSE		: BRRSREPORT
                                                 <td style="text-align:right;">12</td>
                                                 <td th:text="${reportsummary.R15_PRODUCT}" style="padding-left:20px;">
                                                 </td>
-                                                <td th:text="${reportsummary.R15_AMT}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R15_AMT, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right;width:390px;background-color: #D9D9D9;"
                                                     th:attr="RowId='R15', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
@@ -1370,7 +1370,7 @@ PURPOSE		: BRRSREPORT
                                                 <td style="text-align:right;">13</td>
                                                 <td th:text="${reportsummary.R16_PRODUCT}" style="padding-left:50px;">
                                                 </td>
-                                                <td th:text="${reportsummary.R16_AMT}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R16_AMT, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right;width:390px;background-color: #D9D9D9;"
                                                     th:attr="RowId='R16', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
@@ -1380,7 +1380,7 @@ PURPOSE		: BRRSREPORT
                                                 <td style="text-align:right;">14</td>
                                                 <td th:text="${reportsummary.R17_PRODUCT}" style="padding-left:20px;">
                                                 </td>
-                                                <td th:text="${reportsummary.R17_AMT}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R17_AMT, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right;width:390px;background-color: #D9D9D9;"
                                                     th:attr="RowId='R17', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
@@ -1390,7 +1390,7 @@ PURPOSE		: BRRSREPORT
                                                 <td style="text-align:right;">15</td>
                                                 <td th:text="${reportsummary.R18_PRODUCT}" style="padding-left:50px;">
                                                 </td>
-                                                <td th:text="${reportsummary.R18_AMT}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R18_AMT, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right;width:390px;background-color: #D9D9D9;"
                                                     th:attr="RowId='R18', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
@@ -1400,7 +1400,7 @@ PURPOSE		: BRRSREPORT
                                                 <td style="text-align:right;">16</td>
                                                 <td th:text="${reportsummary.R19_PRODUCT}" style="padding-left:50px;">
                                                 </td>
-                                                <td th:text="${reportsummary.R19_AMT}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R19_AMT, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right;width:390px;background-color: #D9D9D9;"
                                                     th:attr="RowId='R19', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
@@ -1410,7 +1410,7 @@ PURPOSE		: BRRSREPORT
                                                 <td style="text-align:right;"></td>
                                                 <td th:text="${reportsummary.R20_PRODUCT}" style="padding-left:20px;">
                                                 </td>
-                                                <td th:text="${reportsummary.R20_AMT}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R20_AMT, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right;width:390px"
                                                     th:attr="RowId='R20', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
@@ -1420,7 +1420,7 @@ PURPOSE		: BRRSREPORT
                                                 <td style="text-align:right;">17</td>
                                                 <td th:text="${reportsummary.R21_PRODUCT}" style="padding-left:50px;">
                                                 </td>
-                                                <td th:text="${reportsummary.R21_AMT}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R21_AMT, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right;width:390px;background-color: #D9D9D9;"
                                                     th:attr="RowId='R21', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
@@ -1430,7 +1430,7 @@ PURPOSE		: BRRSREPORT
                                                 <td style="text-align:right;">18</td>
                                                 <td th:text="${reportsummary.R22_PRODUCT}" style="padding-left:50px;">
                                                 </td>
-                                                <td th:text="${reportsummary.R22_AMT}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R22_AMT, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right;width:390px;background-color: #D9D9D9;"
                                                     th:attr="RowId='R22', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
@@ -1440,7 +1440,7 @@ PURPOSE		: BRRSREPORT
                                                 <td style="text-align:right;">19</td>
                                                 <td th:text="${reportsummary.R23_PRODUCT}" style="padding-left:50px;">
                                                 </td>
-                                                <td th:text="${reportsummary.R23_AMT}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R23_AMT, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right;width:390px;background-color: #D9D9D9;"
                                                     th:attr="RowId='R23', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
@@ -1450,7 +1450,7 @@ PURPOSE		: BRRSREPORT
                                                 <td style="text-align:right;">20</td>
                                                 <td th:text="${reportsummary.R24_PRODUCT}" style="padding-left:50px;">
                                                 </td>
-                                                <td th:text="${reportsummary.R24_AMT}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R24_AMT, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right;width:390px;background-color: #D9D9D9;"
                                                     th:attr="RowId='R24', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
@@ -1460,7 +1460,7 @@ PURPOSE		: BRRSREPORT
                                                 <td style="text-align:right;">21</td>
                                                 <td th:text="${reportsummary.R25_PRODUCT}" style="padding-left:50px;">
                                                 </td>
-                                                <td th:text="${reportsummary.R25_AMT}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R25_AMT, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right;width:390px;background-color: #D9D9D9;"
                                                     th:attr="RowId='R25', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
@@ -1470,7 +1470,7 @@ PURPOSE		: BRRSREPORT
                                                 <td style="text-align:right;">22</td>
                                                 <td th:text="${reportsummary.R26_PRODUCT}" style="padding-left:50px;">
                                                 </td>
-                                                <td th:text="${reportsummary.R26_AMT}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R26_AMT, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right;width:390px;background-color: #D9D9D9;"
                                                     th:attr="RowId='R26', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
@@ -1480,7 +1480,7 @@ PURPOSE		: BRRSREPORT
                                                 <td style="text-align:right;">23</td>
                                                 <td th:text="${reportsummary.R27_PRODUCT}" style="padding-left:20px;">
                                                 </td>
-                                                <td th:text="${reportsummary.R27_AMT}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R27_AMT, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right;width:390px;background-color: #D9D9D9;"
                                                     th:attr="RowId='R27', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
@@ -1490,7 +1490,7 @@ PURPOSE		: BRRSREPORT
                                                 <td style="text-align:right;">24</td>
                                                 <td th:text="${reportsummary.R28_PRODUCT}" style="padding-left:50px;">
                                                 </td>
-                                                <td th:text="${reportsummary.R28_AMT}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R28_AMT, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right;width:390px;background-color: #D9D9D9;"
                                                     th:attr="RowId='R28', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
@@ -1500,7 +1500,7 @@ PURPOSE		: BRRSREPORT
                                                 <td style="text-align:right;">25</td>
                                                 <td th:text="${reportsummary.R29_PRODUCT}" style="padding-left:50px;">
                                                 </td>
-                                                <td th:text="${reportsummary.R29_AMT}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R29_AMT, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right;width:390px;background-color: #D9D9D9;"
                                                     th:attr="RowId='R29', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
@@ -1510,7 +1510,7 @@ PURPOSE		: BRRSREPORT
                                                 <td style="text-align:right;">26</td>
                                                 <td th:text="${reportsummary.R30_PRODUCT}" style="padding-left:50px;">
                                                 </td>
-                                                <td th:text="${reportsummary.R30_AMT}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R30_AMT, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right;width:390px;background-color: #D9D9D9;"
                                                     th:attr="RowId='R30', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
@@ -1520,7 +1520,7 @@ PURPOSE		: BRRSREPORT
                                                 <td style="text-align:right;">27</td>
                                                 <td th:text="${reportsummary.R31_PRODUCT}" style="padding-left:50px;">
                                                 </td>
-                                                <td th:text="${reportsummary.R31_AMT}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R31_AMT, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right;width:390px;background-color: #D9D9D9;"
                                                     th:attr="RowId='R31', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
@@ -1530,7 +1530,7 @@ PURPOSE		: BRRSREPORT
                                                 <td style="text-align:right;">28</td>
                                                 <td th:text="${reportsummary.R32_PRODUCT}" style="padding-left:50px;">
                                                 </td>
-                                                <td th:text="${reportsummary.R32_AMT}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R32_AMT, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right;width:390px;background-color: #D9D9D9;"
                                                     th:attr="RowId='R32', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
@@ -1540,7 +1540,7 @@ PURPOSE		: BRRSREPORT
                                                 <td style="text-align:right;">29</td>
                                                 <td th:text="${reportsummary.R33_PRODUCT}" style="padding-left:50px;">
                                                 </td>
-                                                <td th:text="${reportsummary.R33_AMT}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R33_AMT, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right;width:390px;background-color: #D9D9D9;"
                                                     th:attr="RowId='R33', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
@@ -1550,7 +1550,7 @@ PURPOSE		: BRRSREPORT
                                                 <td style="text-align:right;">30</td>
                                                 <td th:text="${reportsummary.R34_PRODUCT}" style="padding-left:20px;">
                                                 </td>
-                                                <td th:text="${reportsummary.R34_AMT}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R34_AMT, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right;width:390px;background-color: #D9D9D9;"
                                                     th:attr="RowId='R34', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
@@ -1560,7 +1560,7 @@ PURPOSE		: BRRSREPORT
                                                 <td style="text-align:right;">31</td>
                                                 <td th:text="${reportsummary.R35_PRODUCT}" style="padding-left:50px;">
                                                 </td>
-                                                <td th:text="${reportsummary.R35_AMT}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R35_AMT, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right;width:390px;background-color: #D9D9D9;"
                                                     th:attr="RowId='R35', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
@@ -1570,7 +1570,7 @@ PURPOSE		: BRRSREPORT
                                                 <td style="text-align:right;">32</td>
                                                 <td th:text="${reportsummary.R36_PRODUCT}" style="padding-left:50px;">
                                                 </td>
-                                                <td th:text="${reportsummary.R36_AMT}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R36_AMT, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right;width:390px;background-color: #D9D9D9;"
                                                     th:attr="RowId='R36', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
@@ -1580,7 +1580,7 @@ PURPOSE		: BRRSREPORT
                                                 <td style="text-align:right;">33</td>
                                                 <td th:text="${reportsummary.R37_PRODUCT}" style="padding-left:50px;">
                                                 </td>
-                                                <td th:text="${reportsummary.R37_AMT}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R37_AMT, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right;width:390px;background-color: #D9D9D9;"
                                                     th:attr="RowId='R37', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
@@ -1590,7 +1590,7 @@ PURPOSE		: BRRSREPORT
                                                 <td style="text-align:right;">34</td>
                                                 <td th:text="${reportsummary.R38_PRODUCT}" style="padding-left:80px;">
                                                 </td>
-                                                <td th:text="${reportsummary.R38_AMT}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R38_AMT, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right;width:390px;background-color: #D9D9D9;"
                                                     th:attr="RowId='R38', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
@@ -1600,7 +1600,7 @@ PURPOSE		: BRRSREPORT
                                                 <td style="text-align:right;">35</td>
                                                 <td th:text="${reportsummary.R39_PRODUCT}" style="padding-left:20px;">
                                                 </td>
-                                                <td th:text="${reportsummary.R39_AMT}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R39_AMT, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right;width:390px;background-color: #D9D9D9;"
                                                     th:attr="RowId='R39', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
@@ -1610,7 +1610,7 @@ PURPOSE		: BRRSREPORT
                                                 <td style="text-align:right;">36</td>
                                                 <td th:text="${reportsummary.R40_PRODUCT}" style="padding-left:20px;">
                                                 </td>
-                                                <td th:text="${reportsummary.R40_AMT}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R40_AMT, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right;width:390px;background-color: #D9D9D9;"
                                                     th:attr="RowId='R40', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
@@ -1620,7 +1620,7 @@ PURPOSE		: BRRSREPORT
                                                 <td style="text-align:right;">37</td>
                                                 <td th:text="${reportsummary.R41_PRODUCT}" style="padding-left:20px;">
                                                 </td>
-                                                <td th:text="${reportsummary.R41_AMT}"
+                                                <td th:text="${#numbers.formatDecimal(reportsummary.R41_AMT, 0, 'COMMA', 0, 'POINT')}"
                                                     style="text-align:right;width:390px;background-color: #D9D9D9;"
                                                     th:attr="RowId='R41', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
@@ -1869,7 +1869,7 @@ PURPOSE		: BRRSREPORT
     /* Your existing CSS - this is the correct approach */
     .scrollable-table-container {
         /* This is the key: it creates the scroll context */
-        max-height: 750px;
+        max-height: 600px;
         /* Or a suitable height like 80vh for responsive design */
         overflow-y: auto;
         border: 1px solid #ccc;
