@@ -15,14 +15,14 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Table(name = "BRRS_SCH_17_DETAILTABLE")
 public class SCH_17_Detail_Entity {
 
-	 @Id
+	 
 	    @Column(name = "SNO")
 	    private Long sno;
 	
 	 @Column(name = "CUST_ID")
   private String custId;
 
-
+	 @Id
   @Column(name = "ACCT_NUMBER")
   private String acctNumber;
 
