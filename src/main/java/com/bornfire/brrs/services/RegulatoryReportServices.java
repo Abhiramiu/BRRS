@@ -1,21 +1,30 @@
 package com.bornfire.brrs.services;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.DateUtil;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,15 +37,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.ModelAndView;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.ss.usermodel.DateUtil;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.bornfire.brrs.dto.ReportLineItemDTO;
 
@@ -335,6 +335,9 @@ public class RegulatoryReportServices {
 	
 	@Autowired
 	BRRS_MDISB3_ReportService brrs_mdisb3_reportservice;
+	
+	@Autowired
+	BRRS_MASTER_ReportService brrs_master_reportservice;
 
 	@Autowired
 	BRRS_Market_Risk_ReportService BRRS_Market_Risk_Reportservice;
@@ -1023,6 +1026,14 @@ public class RegulatoryReportServices {
 						pageable, type, version);
 
 				break;
+				
+			case "MASTER":
+
+				repsummary = brrs_master_reportservice.getMASTERView(reportId, fromdate, todate, currency, dtltype,
+
+						pageable, type, version);
+
+				break;
 
 			case "NSFR":
 				repsummary = BRRS_NSFR_ReportService.getNSFRView(reportId, fromdate, todate, currency, dtltype,
@@ -1442,6 +1453,12 @@ public class RegulatoryReportServices {
 			case "MDISB3":
 
 				repdetail = brrs_mdisb3_reportservice.getMDISB3currentDtl(reportId, fromdate, todate, currency, dtltype,
+						pageable, Filter, type, version);
+				break;
+				
+			case "MASTER":
+
+				repdetail = brrs_master_reportservice.getMASTERcurrentDtl(reportId, fromdate, todate, currency, dtltype,
 						pageable, Filter, type, version);
 				break;
 
@@ -2602,6 +2619,16 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
+				
+			case "MASTER":
+				try {
+					repfile = brrs_master_reportservice.getMASTERExcel(filename, reportId, fromdate, todate, currency,
+							dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
 			case "NSFR":
 				try {
@@ -2797,6 +2824,9 @@ public class RegulatoryReportServices {
 					version);
 		}else if ("MDISB3".equals(filename)) {
 			return brrs_mdisb3_reportservice.getMDISB3DetailExcel(filename, fromdate, todate, currency, dtltype, type,
+					version);
+		} else if ("MASTER".equals(filename)) {
+			return brrs_master_reportservice.getMASTERDetailExcel(filename, fromdate, todate, currency, dtltype, type,
 					version);
 		} else if ("NSFRDetail".equals(filename)) {
 			return BRRS_NSFR_ReportService.getNSFRDetailExcel(filename, fromdate, todate, currency, dtltype, type,
@@ -3744,6 +3774,15 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
+				
+			case "MASTER":
+				try {
+					archivalData = brrs_master_reportservice.getMASTERArchival();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
 			case "NSFR":
 				try {
@@ -4018,6 +4057,10 @@ public class RegulatoryReportServices {
 
 		}else if (filename.equals("MDISB1Detail")) {
 			fileData = brrs_mdisb3_reportservice.getMDISB3DetailExcel(filename, fromdate, todate, currency, dtltype,
+					type, version);
+
+		}else if (filename.equals("MASTERDetail")) {
+			fileData = brrs_master_reportservice.getMASTERDetailExcel(filename, fromdate, todate, currency, dtltype,
 					type, version);
 
 		} else if ("CAP_ADEQ".equals(filename)) {
@@ -4444,6 +4487,11 @@ public class RegulatoryReportServices {
 					modelAndView = brrs_mdisb3_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
 							request.getParameter("formmode"));
 					break;
+					
+				case "MASTER":
+					modelAndView = brrs_master_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
+							request.getParameter("formmode"));
+					break;
 
 				case "NSFR":
 					modelAndView = BRRS_NSFR_ReportService.getViewOrEditPage(request.getParameter("acctNo"),
@@ -4506,6 +4554,10 @@ public class RegulatoryReportServices {
 					
 				case "MDISB3":
 					response = brrs_mdisb3_reportservice.updateDetailEdit(request);
+					break;
+					
+				case "MASTER":
+					response = brrs_master_reportservice.updateDetailEdit(request);
 					break;
 
 				case "M_LA1":
