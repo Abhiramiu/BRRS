@@ -2847,6 +2847,11 @@ public class RegulatoryReportServices {
 			return BRRS_BORR_UFCE_ReportService.getBORR_UFCEDetailExcel(filename, fromdate, todate, currency,
 					dtltype, type, version);
 		}
+		
+		else if ("BDISB2Detail".equals(filename)) {
+			return BRRS_BDISB2_ReportService.getBDISB2DetailExcel(filename, fromdate, todate, currency,
+					dtltype, type, version);
+		}
 
 		return new byte[0];
 	}
@@ -4153,6 +4158,12 @@ public class RegulatoryReportServices {
 		else if ("BORR_UFCEDetail".equals(filename)) {
 
 			fileData = BRRS_BORR_UFCE_ReportService.getBORR_UFCEDetailExcel(filename, fromdate, todate, currency,
+					dtltype, type, version);
+		}
+		
+		else if ("BDISB2Detail".equals(filename)) {
+
+			fileData = BRRS_BDISB2_ReportService.getBDISB2DetailExcel(filename, fromdate, todate, currency,
 					dtltype, type, version);
 		}
 

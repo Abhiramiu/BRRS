@@ -558,21 +558,35 @@ label.error {
 
 
   function closemodel() {
-   // Hide the modals
-   $('#alert').modal('hide');
-   $('#resultModal').modal('hide');
+      $('#alert').modal('hide');
+      $('#resultModal').modal('hide');
 
   }
+//  function showResultModal(title, message) {
+//			// Set the text for the modal elements
+//			$('#resultModalLabel').text(title);
+//			$('#resultModalBody').text(message);
 
+//			// Show the modal
+//			$('#resultModal').modal('show');
+//		}
 
-  function showResultModal(title, message) {
-   // Set the text for the modal elements
-   $('#resultModalLabel').text(title);
-   $('#resultModalBody').text(message);
+function showResultModal(title, message) {
+  document.getElementById('resultModalLabel1').innerText = title;
+  document.getElementById('resultModalBody1').innerText = message;
 
-   // Show the modal
-   $('#resultModal').modal('show');
+  const modal = new bootstrap.Modal(document.getElementById('resultModal1'));
+  modal.show();
+}
+
+function redirectBack() {
+  if (previousUrl) {
+      window.location.href = previousUrl;
+  } else {
+      window.history.back();
   }
+}
+
 
  </script>
  <script>

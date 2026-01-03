@@ -316,6 +316,7 @@ label.error {
 }
 </style>
 
+
 <script th:inline="javascript">
 	let isDetailsModal = false;
 		$(document).ready(function () {
@@ -491,7 +492,121 @@ label.error {
 			// Show the modal
 			$('#resultModal').modal('show');
 		}
+		
+
+		  function startReport(button) {
+		   const alertMsg = document.getElementById("alertMessage");
+		   const filename = button.getAttribute('data-filename');
+		   const fromdate = button.getAttribute('data-fromdate');
+		   const todate = button.getAttribute('data-todate');
+		   const currency = button.getAttribute('data-currency');
+		   const dtltype = button.getAttribute('data-dtltype');
+		   const type = button.getAttribute('data-type');
+		   const version = button.getAttribute('data-version');
+		   const sessionfilename = sessionStorage.getItem("filename");
+
+		   if (sessionfilename == filename) {
+		    alertMsg.innerHTML = 'Download request already Processing...';
+		    showAlert();
+		    return;
+		   }
+
+		   alertMsg.innerHTML = 'Download request Processing...';
+		   showAlert();
+
+		   const baseUrl = '/BRRS/Reports/startreport';
+		   const downloadUrl = baseUrl +
+		    '?filename=' + encodeURIComponent(filename) +
+		    '&fromdate=' + encodeURIComponent(fromdate) +
+		    '&todate=' + encodeURIComponent(todate) +
+		    '&currency=' + encodeURIComponent(currency) +
+		    '&dtltype=' + encodeURIComponent(dtltype) +
+		    '&type=' + encodeURIComponent(type) +
+		    '&version=' + encodeURIComponent(version);
+		   fetch(downloadUrl)  // ✅ no invalid characters now
+		    .then(res => res.text())
+		    .then(jobId => {
+
+		     alertMsg.innerHTML = 'Download request received...' + jobId;
+		     showAlert();
+		     sessionStorage.setItem("jobId", jobId);
+		     sessionStorage.setItem("filename", filename);
+		     checkReport(jobId);
+		    });
+		  }
+
+		  function checkReport(jobId) {
+		   const alertMsg = document.getElementById("alertMessage");
+		   fetch('/BRRS/Reports/checkreport?jobId=' + encodeURIComponent(jobId))
+		    .then(res => res.text())
+		    .then(status => {
+		     if (status === "READY") {
+		      alertMsg.innerHTML = 'Report is ready! Downloaded';
+		      showAlert();
+		      const filename = sessionStorage.getItem("filename");
+		      downloadDetailfile(jobId, filename)
+		      sessionStorage.removeItem("jobId");
+		      sessionStorage.removeItem("filename");
+
+		     } else if (status === "PROCESSING") {
+		      alertMsg.innerHTML = 'Download Is Processing…';
+		      showAlert();
+		      setTimeout(() => checkReport(jobId), 5000);
+		     }
+		     else if (status === "ERROR") {
+		      alertMsg.innerHTML = 'No data was available to create a download.';
+		      showAlert();
+		      sessionStorage.removeItem("jobId");
+		      sessionStorage.removeItem("filename");
+		     }
+		    });
+		  }
+
+
+
+		  function downloadDetailfile(jobId, filename) {
+
+		   //$('#loader').modal('show');
+
+		   $.ajax({
+		    url: '/BRRS/Reports/downloaddetailExcel?jobId=' + jobId +
+		     '&filename=' + filename,
+		    type: 'GET',
+		    xhrFields: {
+		     responseType: 'blob'
+		    },
+		    success: function (data) {
+		     $('#loader').modal('hide');
+
+		     if (data && data.size > 100) {
+		      const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
+		      const url = window.URL.createObjectURL(blob);
+		      const a = document.createElement('a');
+		      a.style.display = 'none';
+		      a.href = url;
+		      a.download = filename;
+		      document.body.appendChild(a);
+		      a.click();
+		      window.URL.revokeObjectURL(url);
+		      document.body.removeChild(a);
+
+		      showResultModal('BRRS', filename + ' downloaded successfully');
+		     } else {
+		      showResultModal('Information', 'No data was available to create a download.');
+		     }
+		    },
+		    error: function (jqXHR, textStatus, errorThrown) {
+		     $('#loader').modal('hide');
+		     console.error("Download failed:", textStatus, errorThrown);
+		     showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
+		    }
+		   });
+		  }
+
 	</script>
+
+
+ 
 
 <script>
 	// Show Modify (enable inputs & dropdowns)
@@ -503,21 +618,24 @@ function showmodify(btn) {
     $(".Show_input").not(".nonEditable").removeAttr("readonly").removeAttr("disabled");
 
 
-    /*   // Highlight editable fields for rows 11 to 60
-    for (let i = 11; i <= 60; i++) {  
+   // Highlight editable fields for rows 11 to 60
+    for (let i = 6; i <= 12; i++) {  
         let fields = [
-             "security_firm", "credit_rating", "exposure_amount",
-            "risk_weight","rating_agency"
+             "BANK_SPEC_SINGLE_CUST_REC_NUM", "COMPANY_NAME", "COMPANY_REG_NUM",
+            "BUSINEES_PHY_ADDRESS","POSTAL_ADDRESS","COUNTRY_OF_REG","COMPANY_EMAIL"
+            ,"COMPANY_LANDLINE","COMPANY_MOB_PHONE_NUM","PRODUCT_TYPE","ACCT_NUM","STATUS_OF_ACCT","ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT"
+            ,"ACCT_BALANCE_PULA","ACCT_BRANCH","CURRENCY_OF_ACCT","EXCHANGE_RATE"
+            
         ];
 
         fields.forEach(field => {
-            let selector = `#r${i}_${field}`; // ✅ Corrected: backticks for template literal
+            let selector = `#R${i}_${field}`; // ✅ Corrected: backticks for template literal
             if ($(selector).length) {        // Check if element exists
                 $(selector).css({ "background-color": "#d3d3d3" }); // Highlight
             }
         });
     }
-*/
+
     // Show buttons
     $("#submitButton").show();
     $("#cancelRecord").show(); // Show Cancel button only when Modify is clicked
@@ -765,6 +883,39 @@ function fileuploads(btn) {
 }    
 </script>
 
+ <script th:inline="javascript">
+      $(document).ready(function () {
+        var table = $('#reportdetails').DataTable({
+          scrollY: "550px",
+          scrollX: true,
+          scrollCollapse: true,
+          autoWidth: false,
+          paging: true,
+          searching: true,
+          lengthChange: false,
+          ordering: true,
+          pageLength: 100,
+          fixedHeader: true, // ✅ You can simply set it to true
+       // ✅ Column width settings
+        columnDefs: [
+          { width: "100px", targets: 1 }  ,  // Cust ID column
+       ],
+
+          dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t'
+        });
+
+        // ✅ Fix alignment on resize / zoom
+        $(window).on('resize', function () {
+          table.columns.adjust().draw(false);
+        });
+
+        // ✅ Fix initial misalignment if loaded at non-100% zoom
+        setTimeout(function () {
+          table.columns.adjust().draw(false);
+        }, 500);
+      });
+    </script>
+
 
 </head>
 
@@ -806,8 +957,9 @@ function fileuploads(btn) {
 
       <!-- Modify button -->
       <button type="button" class="custom-tab-btn" onclick="showmodify(this);" title="Click to EDIT Records"
-       th:if="${type == 'RESUB' or type=='BRRS' and type != 'ARCHIVAL'}"
+       th:if="${type == 'RESUB' or displaymode == 'summary' and type != 'ARCHIVAL'}"
        th:classappend="${session.PERMISSIONS == 'W'} and ${dtltype == 'report'} ? 'addedit' " id="addRecord">Modify</button>
+
 
       <!-- Cancel button (hidden initially) -->
       <button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord" onclick="cancelModify();"
@@ -884,7 +1036,8 @@ function fileuploads(btn) {
            <tr>
             <th colspan="12"></th>
             
-            <th style="text-align: left; color: black;">Account Status - "Fit for Straight</th>
+            <th style="text-align: left; color: black;" rowspan="3">Account Status - "Fit for Straight
+            <br>Through Payout" OR "Not Fit for<br>Straight Through Payout"</th>
             <th colspan="4"></th>
             
            </tr>
@@ -896,35 +1049,35 @@ function fileuploads(btn) {
             <th></th>
             <th style="text-align: left; color: black;">Country of</th>
             <th style="text-align: left; color: black;">Company</th>
-            <th style="text-align: right; color: black;">Company</th>
-            <th style="text-align: right; color: black;">Company</th>
+            <th style="text-align: left; color: black;">Company</th>
+            <th style="text-align: left; color: black;">Company</th>
             <th></th>
             <th></th>
             <th></th>
-            <th style="text-align: left; color: black;">Through Payout" OR "Not Fit for</th>
+            <!-- <th style="text-align: left; color: black;">Through Payout" OR "Not Fit for</th> -->
             <th></th>
             <th style="text-align: right; color: black;">(Pula)</th>
             <th></th>
             <th></th>
            </tr>
            <tr style="background-color: #b3b6b9;">
-            <th style="text-align: right; color: black;">Bank Specific Single Customer View Record Number</th>
+            <th style="text-align: left; color: black;">Bank Specific Single Customer View Record Number</th>
             <th style="text-align: left; color: black;">Company Name</th>
-            <th style="text-align: right; color: black;">Company Registration Number</th>
+            <th style="text-align: left; color: black;">Company Registration Number</th>
             <th style="text-align: left; color: black;">Physical Address</th>
             <th style="text-align: left; color: black;">Postal Address</th>
             <th style="text-align: left; color: black;">Registration</th>
             <th style="text-align: left; color: black;">Email</th>
-            <th style="text-align: right; color: black;">Landline</th>
-            <th style="text-align: right; color: black;">Mobile Phone Number</th>
+            <th style="text-align: left; color: black;">Landline</th>
+            <th style="text-align: left; color: black;">Mobile Phone Number</th>
             <th style="text-align: left; color: black;">Product Type</th>
-            <th style="text-align: right; color: black;">Account Number</th>
+            <th style="text-align: left; color: black;">Account Number</th>
             <th style="text-align: left; color: black;">Status of Account</th>
-            <th style="text-align: left; color: black;">Straight Through Payout"</th>
+            <!-- <th style="text-align: left; color: black;">Straight Through Payout"</th> -->
             <th style="text-align: left; color: black;">Account Branch</th>
             <th style="text-align: right; color: black;">Account Balance</th>
             <th style="text-align: left; color: black;">Currency of Account</th>
-            <th style="text-align: right; color: black;">Exchange Rate</th>
+            <th style="text-align: left; color: black;">Exchange Rate</th>
            </tr>
           </thead>
 
@@ -933,10 +1086,10 @@ function fileuploads(btn) {
           <tbody id="entity" th:each="report: ${reportsummary}" style="font-family: Arial;">
            <tr>
 
-            <td id="R6" style="text-align: right;"><input class="display-input Show_input" type="text"
+            <td id="R6" style="text-align: left;"><input class="display-input Show_input" type="text"
              th:value="${report.R6_BANK_SPEC_SINGLE_CUST_REC_NUM != null ? #numbers.formatDecimal(report.R6_BANK_SPEC_SINGLE_CUST_REC_NUM, 1, 'COMMA', 0, 'POINT') : '0'}"
              id="R6_BANK_SPEC_SINGLE_CUST_REC_NUM" name="R6_C1_BANK_SPEC_SINGLE_CUST_REC_NUM"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
              readonly /></td>
              
             <td id="R6"><input class="display-input Show_input" type="text"
@@ -945,10 +1098,10 @@ function fileuploads(btn) {
              style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
              readonly /></td>
 
-            <td id="R6" style="text-align: right;"><input class="display-input Show_input" type="text"
+            <td id="R6" style="text-align: left;"><input class="display-input Show_input" type="text"
              th:value="${report.R6_COMPANY_REG_NUM != null ? #numbers.formatDecimal(report.R6_COMPANY_REG_NUM, 1, 'COMMA', 0, 'POINT') : '0'}"
              id="R6_COMPANY_REG_NUM" name="R6_C3_COMPANY_REG_NUM"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
              readonly /></td>
 
             <td id="R6"><input class="display-input Show_input" type="text"
@@ -992,10 +1145,10 @@ function fileuploads(btn) {
              style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
              readonly /></td>
 
-            <td id="R6" style="text-align: right;"><input class="display-input Show_input" type="text"
+            <td id="R6" style="text-align: left;"><input class="display-input Show_input" type="text"
              th:value="${report.R6_ACCT_NUM != null ? #numbers.formatDecimal(report.R6_ACCT_NUM, 1, 'COMMA', 0, 'POINT') : '0'}"
              id="R6_ACCT_NUM" name="R6_C11_ACCT_NUM"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
              readonly /></td>
 
             <td id="R6"><input class="display-input Show_input" type="text"
@@ -1029,18 +1182,18 @@ function fileuploads(btn) {
              style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
              readonly /></td>
 
-            <td id="R6" style="text-align: right;"><input class="display-input Show_input" type="text"
+            <td id="R6" style="text-align: left;"><input class="display-input Show_input" type="text"
              th:value="${report.R6_EXCHANGE_RATE != null ? #numbers.formatDecimal(report.R6_EXCHANGE_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
              id="R6_EXCHANGE_RATE" name="R6_C17_EXCHANGE_RATE"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
              readonly /></td>
          </tr>
                     <tr>
 
-            <td id="R7" style="text-align: right;"><input class="display-input Show_input" type="text"
+            <td id="R7" style="text-align: left;"><input class="display-input Show_input" type="text"
              th:value="${report.R7_BANK_SPEC_SINGLE_CUST_REC_NUM != null ? #numbers.formatDecimal(report.R7_BANK_SPEC_SINGLE_CUST_REC_NUM, 1, 'COMMA', 0, 'POINT') : '0'}"
              id="R7_BANK_SPEC_SINGLE_CUST_REC_NUM" name="R7_C1_BANK_SPEC_SINGLE_CUST_REC_NUM"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
              readonly /></td>
              
             <td id="R7"><input class="display-input Show_input" type="text"
@@ -1049,10 +1202,10 @@ function fileuploads(btn) {
              style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
              readonly /></td>
 
-            <td id="R7" style="text-align: right;"><input class="display-input Show_input" type="text"
+            <td id="R7" style="text-align: left;"><input class="display-input Show_input" type="text"
              th:value="${report.R7_COMPANY_REG_NUM != null ? #numbers.formatDecimal(report.R7_COMPANY_REG_NUM, 1, 'COMMA', 0, 'POINT') : '0'}"
              id="R7_COMPANY_REG_NUM" name="R7_C3_COMPANY_REG_NUM"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
              readonly /></td>
 
             <td id="R7"><input class="display-input Show_input" type="text"
@@ -1096,10 +1249,10 @@ function fileuploads(btn) {
              style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
              readonly /></td>
 
-            <td id="R7" style="text-align: right;"><input class="display-input Show_input" type="text"
+            <td id="R7" style="text-align: left;"><input class="display-input Show_input" type="text"
              th:value="${report.R7_ACCT_NUM != null ? #numbers.formatDecimal(report.R7_ACCT_NUM, 1, 'COMMA', 0, 'POINT') : '0'}"
              id="R7_ACCT_NUM" name="R7_C11_ACCT_NUM"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
              readonly /></td>
 
             <td id="R7"><input class="display-input Show_input" type="text"
@@ -1133,18 +1286,18 @@ function fileuploads(btn) {
              style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
              readonly /></td>
 
-            <td id="R7" style="text-align: right;"><input class="display-input Show_input" type="text"
+            <td id="R7" style="text-align: left;"><input class="display-input Show_input" type="text"
              th:value="${report.R7_EXCHANGE_RATE != null ? #numbers.formatDecimal(report.R7_EXCHANGE_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
              id="R7_EXCHANGE_RATE" name="R7_C17_EXCHANGE_RATE"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
              readonly /></td>
          </tr>
                     <tr>
 
-            <td id="R8" style="text-align: right;"><input class="display-input Show_input" type="text"
+            <td id="R8" style="text-align: left;"><input class="display-input Show_input" type="text"
              th:value="${report.R8_BANK_SPEC_SINGLE_CUST_REC_NUM != null ? #numbers.formatDecimal(report.R8_BANK_SPEC_SINGLE_CUST_REC_NUM, 1, 'COMMA', 0, 'POINT') : '0'}"
              id="R8_BANK_SPEC_SINGLE_CUST_REC_NUM" name="R8_C1_BANK_SPEC_SINGLE_CUST_REC_NUM"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
              readonly /></td>
              
             <td id="R8"><input class="display-input Show_input" type="text"
@@ -1153,10 +1306,10 @@ function fileuploads(btn) {
              style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
              readonly /></td>
 
-            <td id="R8" style="text-align: right;"><input class="display-input Show_input" type="text"
+            <td id="R8" style="text-align: left;"><input class="display-input Show_input" type="text"
              th:value="${report.R8_COMPANY_REG_NUM != null ? #numbers.formatDecimal(report.R8_COMPANY_REG_NUM, 1, 'COMMA', 0, 'POINT') : '0'}"
              id="R8_COMPANY_REG_NUM" name="R8_C3_COMPANY_REG_NUM"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
              readonly /></td>
 
             <td id="R8"><input class="display-input Show_input" type="text"
@@ -1200,10 +1353,10 @@ function fileuploads(btn) {
              style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
              readonly /></td>
 
-            <td id="R8" style="text-align: right;"><input class="display-input Show_input" type="text"
+            <td id="R8" style="text-align: left;"><input class="display-input Show_input" type="text"
              th:value="${report.R8_ACCT_NUM != null ? #numbers.formatDecimal(report.R8_ACCT_NUM, 1, 'COMMA', 0, 'POINT') : '0'}"
              id="R8_ACCT_NUM" name="R8_C11_ACCT_NUM"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
              readonly /></td>
 
             <td id="R8"><input class="display-input Show_input" type="text"
@@ -1237,18 +1390,18 @@ function fileuploads(btn) {
              style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
              readonly /></td>
 
-            <td id="R8" style="text-align: right;"><input class="display-input Show_input" type="text"
+            <td id="R8" style="text-align: left;"><input class="display-input Show_input" type="text"
              th:value="${report.R8_EXCHANGE_RATE != null ? #numbers.formatDecimal(report.R8_EXCHANGE_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
              id="R8_EXCHANGE_RATE" name="R8_C17_EXCHANGE_RATE"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
              readonly /></td>
          </tr>
                     <tr>
 
-            <td id="R9" style="text-align: right;"><input class="display-input Show_input" type="text"
+            <td id="R9" style="text-align: left;"><input class="display-input Show_input" type="text"
              th:value="${report.R9_BANK_SPEC_SINGLE_CUST_REC_NUM != null ? #numbers.formatDecimal(report.R9_BANK_SPEC_SINGLE_CUST_REC_NUM, 1, 'COMMA', 0, 'POINT') : '0'}"
              id="R9_BANK_SPEC_SINGLE_CUST_REC_NUM" name="R9_C1_BANK_SPEC_SINGLE_CUST_REC_NUM"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
              readonly /></td>
              
             <td id="R9"><input class="display-input Show_input" type="text"
@@ -1257,10 +1410,10 @@ function fileuploads(btn) {
              style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
              readonly /></td>
 
-            <td id="R9" style="text-align: right;"><input class="display-input Show_input" type="text"
+            <td id="R9" style="text-align: left;"><input class="display-input Show_input" type="text"
              th:value="${report.R9_COMPANY_REG_NUM != null ? #numbers.formatDecimal(report.R9_COMPANY_REG_NUM, 1, 'COMMA', 0, 'POINT') : '0'}"
              id="R9_COMPANY_REG_NUM" name="R9_C3_COMPANY_REG_NUM"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
              readonly /></td>
 
             <td id="R9"><input class="display-input Show_input" type="text"
@@ -1304,10 +1457,10 @@ function fileuploads(btn) {
              style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
              readonly /></td>
 
-            <td id="R9" style="text-align: right;"><input class="display-input Show_input" type="text"
+            <td id="R9" style="text-align: left;"><input class="display-input Show_input" type="text"
              th:value="${report.R9_ACCT_NUM != null ? #numbers.formatDecimal(report.R9_ACCT_NUM, 1, 'COMMA', 0, 'POINT') : '0'}"
              id="R9_ACCT_NUM" name="R9_C11_ACCT_NUM"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
              readonly /></td>
 
             <td id="R9"><input class="display-input Show_input" type="text"
@@ -1341,18 +1494,18 @@ function fileuploads(btn) {
              style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
              readonly /></td>
 
-            <td id="R9" style="text-align: right;"><input class="display-input Show_input" type="text"
+            <td id="R9" style="text-align: left;"><input class="display-input Show_input" type="text"
              th:value="${report.R9_EXCHANGE_RATE != null ? #numbers.formatDecimal(report.R9_EXCHANGE_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
              id="R9_EXCHANGE_RATE" name="R9_C17_EXCHANGE_RATE"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
              readonly /></td>
          </tr>
                     <tr>
 
-            <td id="R10" style="text-align: right;"><input class="display-input Show_input" type="text"
+            <td id="R10" style="text-align: left;"><input class="display-input Show_input" type="text"
              th:value="${report.R10_BANK_SPEC_SINGLE_CUST_REC_NUM != null ? #numbers.formatDecimal(report.R10_BANK_SPEC_SINGLE_CUST_REC_NUM, 1, 'COMMA', 0, 'POINT') : '0'}"
              id="R10_BANK_SPEC_SINGLE_CUST_REC_NUM" name="R10_C1_BANK_SPEC_SINGLE_CUST_REC_NUM"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
              readonly /></td>
              
             <td id="R10"><input class="display-input Show_input" type="text"
@@ -1361,10 +1514,10 @@ function fileuploads(btn) {
              style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
              readonly /></td>
 
-            <td id="R10" style="text-align: right;"><input class="display-input Show_input" type="text"
+            <td id="R10" style="text-align: left;"><input class="display-input Show_input" type="text"
              th:value="${report.R10_COMPANY_REG_NUM != null ? #numbers.formatDecimal(report.R10_COMPANY_REG_NUM, 1, 'COMMA', 0, 'POINT') : '0'}"
              id="R10_COMPANY_REG_NUM" name="R10_C3_COMPANY_REG_NUM"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
              readonly /></td>
 
             <td id="R10"><input class="display-input Show_input" type="text"
@@ -1408,10 +1561,10 @@ function fileuploads(btn) {
              style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
              readonly /></td>
 
-            <td id="R10" style="text-align: right;"><input class="display-input Show_input" type="text"
+            <td id="R10" style="text-align: left;"><input class="display-input Show_input" type="text"
              th:value="${report.R10_ACCT_NUM != null ? #numbers.formatDecimal(report.R10_ACCT_NUM, 1, 'COMMA', 0, 'POINT') : '0'}"
              id="R10_ACCT_NUM" name="R10_C11_ACCT_NUM"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
              readonly /></td>
 
             <td id="R10"><input class="display-input Show_input" type="text"
@@ -1445,18 +1598,18 @@ function fileuploads(btn) {
              style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
              readonly /></td>
 
-            <td id="R10" style="text-align: right;"><input class="display-input Show_input" type="text"
+            <td id="R10" style="text-align: left;"><input class="display-input Show_input" type="text"
              th:value="${report.R10_EXCHANGE_RATE != null ? #numbers.formatDecimal(report.R10_EXCHANGE_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
              id="R10_EXCHANGE_RATE" name="R10_C17_EXCHANGE_RATE"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
              readonly /></td>
          </tr>
                     <tr>
 
-            <td id="R11" style="text-align: right;"><input class="display-input Show_input" type="text"
+            <td id="R11" style="text-align: left;"><input class="display-input Show_input" type="text"
              th:value="${report.R11_BANK_SPEC_SINGLE_CUST_REC_NUM != null ? #numbers.formatDecimal(report.R11_BANK_SPEC_SINGLE_CUST_REC_NUM, 1, 'COMMA', 0, 'POINT') : '0'}"
              id="R11_BANK_SPEC_SINGLE_CUST_REC_NUM" name="R11_C1_BANK_SPEC_SINGLE_CUST_REC_NUM"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
              readonly /></td>
              
             <td id="R11"><input class="display-input Show_input" type="text"
@@ -1465,10 +1618,10 @@ function fileuploads(btn) {
              style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
              readonly /></td>
 
-            <td id="R11" style="text-align: right;"><input class="display-input Show_input" type="text"
+            <td id="R11" style="text-align: left;"><input class="display-input Show_input" type="text"
              th:value="${report.R11_COMPANY_REG_NUM != null ? #numbers.formatDecimal(report.R11_COMPANY_REG_NUM, 1, 'COMMA', 0, 'POINT') : '0'}"
              id="R11_COMPANY_REG_NUM" name="R11_C3_COMPANY_REG_NUM"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
              readonly /></td>
 
             <td id="R11"><input class="display-input Show_input" type="text"
@@ -1512,10 +1665,10 @@ function fileuploads(btn) {
              style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
              readonly /></td>
 
-            <td id="R11" style="text-align: right;"><input class="display-input Show_input" type="text"
+            <td id="R11" style="text-align: left;"><input class="display-input Show_input" type="text"
              th:value="${report.R11_ACCT_NUM != null ? #numbers.formatDecimal(report.R11_ACCT_NUM, 1, 'COMMA', 0, 'POINT') : '0'}"
              id="R11_ACCT_NUM" name="R11_C11_ACCT_NUM"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
              readonly /></td>
 
             <td id="R11"><input class="display-input Show_input" type="text"
@@ -1549,18 +1702,18 @@ function fileuploads(btn) {
              style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
              readonly /></td>
 
-            <td id="R11" style="text-align: right;"><input class="display-input Show_input" type="text"
+            <td id="R11" style="text-align: left;"><input class="display-input Show_input" type="text"
              th:value="${report.R11_EXCHANGE_RATE != null ? #numbers.formatDecimal(report.R11_EXCHANGE_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
              id="R11_EXCHANGE_RATE" name="R11_C17_EXCHANGE_RATE"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
              readonly /></td>
          </tr>
                     <tr>
 
-            <td id="R12" style="text-align: right;"><input class="display-input Show_input" type="text"
+            <td id="R12" style="text-align: left;"><input class="display-input Show_input" type="text"
              th:value="${report.R12_BANK_SPEC_SINGLE_CUST_REC_NUM != null ? #numbers.formatDecimal(report.R12_BANK_SPEC_SINGLE_CUST_REC_NUM, 1, 'COMMA', 0, 'POINT') : '0'}"
              id="R12_BANK_SPEC_SINGLE_CUST_REC_NUM" name="R12_C1_BANK_SPEC_SINGLE_CUST_REC_NUM"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
              readonly /></td>
              
             <td id="R12"><input class="display-input Show_input" type="text"
@@ -1569,10 +1722,10 @@ function fileuploads(btn) {
              style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
              readonly /></td>
 
-            <td id="R12" style="text-align: right;"><input class="display-input Show_input" type="text"
+            <td id="R12" style="text-align: left;"><input class="display-input Show_input" type="text"
              th:value="${report.R12_COMPANY_REG_NUM != null ? #numbers.formatDecimal(report.R12_COMPANY_REG_NUM, 1, 'COMMA', 0, 'POINT') : '0'}"
              id="R12_COMPANY_REG_NUM" name="R12_C3_COMPANY_REG_NUM"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
              readonly /></td>
 
             <td id="R12"><input class="display-input Show_input" type="text"
@@ -1616,10 +1769,10 @@ function fileuploads(btn) {
              style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
              readonly /></td>
 
-            <td id="R12" style="text-align: right;"><input class="display-input Show_input" type="text"
+            <td id="R12" style="text-align: left;"><input class="display-input Show_input" type="text"
              th:value="${report.R12_ACCT_NUM != null ? #numbers.formatDecimal(report.R12_ACCT_NUM, 1, 'COMMA', 0, 'POINT') : '0'}"
              id="R12_ACCT_NUM" name="R12_C11_ACCT_NUM"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
              readonly /></td>
 
             <td id="R12"><input class="display-input Show_input" type="text"
@@ -1653,10 +1806,10 @@ function fileuploads(btn) {
              style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
              readonly /></td>
 
-            <td id="R12" style="text-align: right;"><input class="display-input Show_input" type="text"
+            <td id="R12" style="text-align: left;"><input class="display-input Show_input" type="text"
              th:value="${report.R12_EXCHANGE_RATE != null ? #numbers.formatDecimal(report.R12_EXCHANGE_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
              id="R12_EXCHANGE_RATE" name="R12_C17_EXCHANGE_RATE"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
              readonly /></td>
          </tr>
          
@@ -1677,13 +1830,16 @@ function fileuploads(btn) {
       </div>
      </div>
     </div>
-    <div th:if="${displaymode == 'Details'}">
+<!--  DETAIL -->
+            <div th:if="${displaymode == 'Details'}">
+             <div class="row">
+              <div class="col-sm-12" style="max-height:90vh; overflow-y: auto; ">
+               <div class="table-container" 
+                style="border-right: 1px solid #dee2e6; ">
+                <table class="table table-striped table-bordered table-hover"
+                 id="reportdetails">
+                 <thead class="thead-light">
 
-    <div class="row">
-     <div class="col-sm-12" style="max-height:90vh; overflow-y: auto; ">
-      <div class="table-container" style="border-right: 1px solid #dee2e6;">
-       <table class="table table-striped table-bordered table-hover" id="reportdetails">
-        <thead class="thead-light">
          <tr>
           <th>S No</th>
           <th>CUST ID</th>
@@ -1974,37 +2130,116 @@ div.dataTables_wrapper div.dataTables_info {
        white-space: nowrap;
      } */
 </style>
-<script th:inline="javascript">
-				  $(document).ready(function () {
-				    var table = $('#reportdetails').DataTable({
-				      scrollY: "550px",
-				      scrollX: true,
-				      scrollCollapse: true,
-				      autoWidth: false,
-				      paging: true,
-				      searching: true,
-				      lengthChange: false,
-				      ordering: true,
-				      pageLength: 100,
-				      fixedHeader: true, // ✅ You can simply set it to true
-					  // ✅ Column width settings
-					   columnDefs: [
-					     { width: "150px", targets: 1 }  ,  // S No column
-						 ],
 
-				      dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t'
-				    });
 
-				    // ✅ Fix alignment on resize / zoom
-				    $(window).on('resize', function () {
-				      table.columns.adjust().draw(false);
-				    });
+<!-- <style>
+ .dataTables_scrollHeadInner,
+ table.dataTable {
+  width: 100% !important;
+ }
 
-				    // ✅ Fix initial misalignment if loaded at non-100% zoom
-				    setTimeout(function () {
-				      table.columns.adjust().draw(false);
-				    }, 500);
-				  });
-				</script>
+ /* Your existing CSS - this is the correct approach */
+ .scrollable-table-container {
+  /* This is the key: it creates the scroll context */
+  max-height: 700px;
+  /* Or a suitable height like 80vh for responsive design */
+  overflow-y: auto;
+  overflow-x: hidden;
+  border: 1px solid #ccc;
+ }
 
+ /* Your existing sticky header CSS, targeting the tr elements within the thead */
+ .scrollable-table-container thead tr:nth-child(1) {
+  position: sticky;
+  top: 0;
+  background-color: #b3b6b9;
+  z-index: 5;
+ }
+
+ .scrollable-table-container thead tr:nth-child(2) {
+  position: sticky;
+  top: 36px;
+  /* adjust based on row height */
+  background-color: #b3b6b9;
+  z-index: 4;
+ }
+
+ .scrollable-table-container thead tr:nth-child(3) {
+  position: sticky;
+  top: 72px;
+  /* Adjust based on row height */
+  background-color: #b3b6b9;
+  z-index: 3;
+ }
+
+ .scrollable-table-container thead tr:nth-child(4) {
+  position: sticky;
+  top: 100px;
+  /* Adjust based on row height */
+  background-color: #b3b6b9;
+  z-index: 2;
+ }
+
+ .scrollable-table-container thead tr:nth-child(5) {
+  position: sticky;
+  top: 135px;
+  /* Adjust based on row height */
+  background-color: #b3b6b9;
+  z-index: 1;
+ }
+</style>
+
+
+<style>
+ .inner {
+  max-height: 600px;
+  /* Adjust height as needed */
+  overflow: auto;
+  border: 1px solid #dee2e6;
+ }
+
+ /* Sticky thead */
+ #reports thead th {
+  position: sticky;
+  top: 0;
+  background-color: #f8f9fa;
+  /* Match Bootstrap thead-light */
+  z-index: 2;
+ }
+
+ div.dataTables_wrapper div.dataTables_paginate {
+  text-align: right !important;
+  float: right !important;
+  width: auto;
+  margin-top: 10px;
+ }
+
+ /* Ensure info text (e.g., "Showing 1 to X") stays on the left */
+ div.dataTables_wrapper div.dataTables_info {
+  float: left !important;
+  margin-top: 10px;
+ }
+
+ .pagination {
+  margin: 0;
+ }
+
+ .page-item.active .page-link {
+  background-color: #386276;
+  border-color: #386276;
+ }
+
+ .page-link {
+  color: #386276;
+ }
+
+ .page-link:hover {
+  color: #2a4a5c;
+ }
+
+ .form-select {
+  display: inline-block;
+  width: auto;
+ }
+</style> -->
 </html>

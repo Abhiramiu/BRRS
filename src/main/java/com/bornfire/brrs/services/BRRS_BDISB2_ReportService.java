@@ -21,12 +21,18 @@ import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CreationHelper;
+import org.apache.poi.ss.usermodel.DataFormat;
+import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
@@ -47,6 +53,8 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 
 import com.bornfire.brrs.entities.BDISB2_Summary_Entity;
+import com.bornfire.brrs.entities.BDISB2_Archival_Detail_Entity;
+import com.bornfire.brrs.entities.BDISB2_Detail_Entity;
 import com.bornfire.brrs.entities.BDISB2_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.BRRS_BDISB2_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_BDISB2_Archival_Summary_Repo;
@@ -5860,4 +5868,414 @@ public class BRRS_BDISB2_ReportService {
 		}
 	}
 
+	public byte[] getBDISB2DetailExcel(String filename, String fromdate, String todate, String currency,
+			   String dtltype, String type, String version) {
+try {
+logger.info("Generating Excel for BDISB2 Details...");
+System.out.println("came to Detail download service");
+
+
+if (type.equals("ARCHIVAL") & version != null) {
+byte[] ARCHIVALreport = getDetailExcelARCHIVAL(filename, fromdate, todate, currency, dtltype, type,
+version);
+return ARCHIVALreport;
 }
+
+XSSFWorkbook workbook = new XSSFWorkbook();
+XSSFSheet sheet = workbook.createSheet("BDISB2Detail");
+
+//Common border style
+BorderStyle border = BorderStyle.THIN;
+
+//Header style (left aligned)
+CellStyle headerStyle = workbook.createCellStyle();
+Font headerFont = workbook.createFont();
+headerFont.setBold(true);
+headerFont.setFontHeightInPoints((short) 10);
+headerStyle.setFont(headerFont);
+headerStyle.setAlignment(HorizontalAlignment.LEFT);
+headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+headerStyle.setBorderTop(border);
+headerStyle.setBorderBottom(border);
+headerStyle.setBorderLeft(border);
+headerStyle.setBorderRight(border);
+
+//Right-aligned header style for ACCT BALANCE
+CellStyle rightAlignedHeaderStyle = workbook.createCellStyle();
+rightAlignedHeaderStyle.cloneStyleFrom(headerStyle);
+rightAlignedHeaderStyle.setAlignment(HorizontalAlignment.RIGHT);
+
+//Default data style (left aligned)
+CellStyle dataStyle = workbook.createCellStyle();
+dataStyle.setAlignment(HorizontalAlignment.LEFT);
+dataStyle.setBorderTop(border);
+dataStyle.setBorderBottom(border);
+dataStyle.setBorderLeft(border);
+dataStyle.setBorderRight(border);
+
+//ACCT BALANCE style (right aligned with thousand separator)
+CellStyle balanceStyle = workbook.createCellStyle();
+balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
+balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("#,###"));
+balanceStyle.setBorderTop(border);
+balanceStyle.setBorderBottom(border);
+balanceStyle.setBorderLeft(border);
+balanceStyle.setBorderRight(border);
+
+//Header row
+String[] headers = {
+"CUST ID", "ACCT NO", "ACCT NAME","BANK_SPEC_SINGLE_CUST_REC_NUM","COMPANY_NAME ","COMPANY_REG_NUM",
+"BUSINEES_PHY_ADDRESS","POSTAL_ADDRESS","COUNTRY_OF_REG","COMPANY_EMAIL",
+"COMPANY_LANDLINE","COMPANY_MOB_PHONE_NUM","PRODUCT_TYPE","ACCT_NUM","STATUS_OF_ACCT",
+"ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT",
+"ACCT_BRANCH",
+"ACCT BALANCE IN PULA","CURRENCY_OF_ACCT","EXCHANGE_RATE", "REPORT LABLE", "REPORT ADDL CRITERIA1",
+"REPORT_DATE"
+};
+
+XSSFRow headerRow = sheet.createRow(0);
+for (int i = 0; i < headers.length; i++) {
+Cell cell = headerRow.createCell(i);
+cell.setCellValue(headers[i]);
+
+if (i == 17) { // ACCT BALANCE
+cell.setCellStyle(rightAlignedHeaderStyle);
+} else {
+cell.setCellStyle(headerStyle);
+}
+
+sheet.setColumnWidth(i, 5000);
+}
+
+//Get data
+Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
+List<BDISB2_Detail_Entity> reportData = BRRS_BDISB2_Detail_Repo.getdatabydateList(parsedToDate);
+
+if (reportData != null && !reportData.isEmpty()) {
+int rowIndex = 1;
+for (BDISB2_Detail_Entity item : reportData) {
+XSSFRow row = sheet.createRow(rowIndex++);
+
+row.createCell(0).setCellValue(item.getCustId());
+row.createCell(1).setCellValue(item.getAcctNumber());
+row.createCell(2).setCellValue(item.getAcctName());
+
+Cell bankSpecSingleCell = row.createCell(3);
+if (item.getBANK_SPEC_SINGLE_CUST_REC_NUM() != null) {
+	bankSpecSingleCell.setCellValue(item.getBANK_SPEC_SINGLE_CUST_REC_NUM().doubleValue());
+} else {
+	bankSpecSingleCell.setCellValue(0);
+}
+
+row.createCell(4).setCellValue(item.getCOMPANY_NAME());
+
+Cell comRegNumCell = row.createCell(5);
+if (item.getCOMPANY_REG_NUM() != null) {
+	comRegNumCell.setCellValue(item.getCOMPANY_REG_NUM().doubleValue());
+} else {
+	comRegNumCell.setCellValue(0);
+}
+
+row.createCell(6).setCellValue(item.getBUSINEES_PHY_ADDRESS());
+
+row.createCell(7).setCellValue(item.getPOSTAL_ADDRESS());
+
+row.createCell(8).setCellValue(item.getCOUNTRY_OF_REG());
+
+row.createCell(9).setCellValue(item.getCOMPANY_EMAIL());
+
+row.createCell(10).setCellValue(item.getCOMPANY_LANDLINE());
+
+row.createCell(11).setCellValue(item.getCOMPANY_MOB_PHONE_NUM());
+
+row.createCell(12).setCellValue(item.getPRODUCT_TYPE());
+
+Cell acctNumCell = row.createCell(13);
+if (item.getACCT_NUM() != null) {
+	acctNumCell.setCellValue(item.getACCT_NUM().doubleValue());
+} else {
+	acctNumCell.setCellValue(0);
+}
+
+row.createCell(14).setCellValue(item.getSTATUS_OF_ACCT());
+
+row.createCell(15).setCellValue(item.getACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT());
+
+row.createCell(16).setCellValue(item.getACCT_BRANCH());
+
+
+//ACCT BALANCE (right aligned, 3 decimal places)
+Cell balanceCell = row.createCell(17);
+if (item.getACCT_BALANCE_PULA() != null) {
+balanceCell.setCellValue(item.getACCT_BALANCE_PULA().doubleValue());
+} else {
+balanceCell.setCellValue(0);
+}
+balanceCell.setCellStyle(balanceStyle);
+
+row.createCell(18).setCellValue(item.getCURRENCY_OF_ACCT());
+
+Cell excRateCell = row.createCell(19);
+if (item.getEXCHANGE_RATE() != null) {
+	excRateCell.setCellValue(item.getEXCHANGE_RATE().doubleValue());
+} else {
+	excRateCell.setCellValue(0);
+}
+
+		row.createCell(20).setCellValue(item.getReportLable());
+		row.createCell(21).setCellValue(item.getReportAddlCriteria1());
+		row.createCell(22)
+				.setCellValue(item.getReportDate() != null
+						? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
+						: "");
+
+		// Apply data style for all other cells
+		for (int j = 0; j < 22; j++) {
+			if (j != 3) {
+				row.getCell(j).setCellStyle(dataStyle);
+			}
+		}
+	}
+} else {
+	logger.info("No data found for BDISB2 — only header will be written.");
+}
+
+//Write to byte[]
+ByteArrayOutputStream bos = new ByteArrayOutputStream();
+workbook.write(bos);
+workbook.close();
+
+logger.info("Excel generation completed with {} row(s).", reportData != null ? reportData.size() : 0);
+return bos.toByteArray();
+
+} catch (Exception e) {
+logger.error("Error generating BDISB2 Excel", e);
+return new byte[0];
+}
+}
+
+	public byte[] getDetailExcelARCHIVAL(String filename, String fromdate, String todate, String currency,
+			 String dtltype, String type, String version) {
+try {
+logger.info("Generating Excel for BRRS_BDISB2 ARCHIVAL Details...");
+System.out.println("came to Detail download service");
+if (type.equals("ARCHIVAL") & version != null) {
+
+}
+XSSFWorkbook workbook = new XSSFWorkbook();
+XSSFSheet sheet = workbook.createSheet("BDISB2Detail");
+
+//Common border style
+BorderStyle border = BorderStyle.THIN;
+
+//Header style (left aligned)
+CellStyle headerStyle = workbook.createCellStyle();
+Font headerFont = workbook.createFont();
+headerFont.setBold(true);
+headerFont.setFontHeightInPoints((short) 10);
+headerStyle.setFont(headerFont);
+headerStyle.setAlignment(HorizontalAlignment.LEFT);
+headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+headerStyle.setBorderTop(border);
+headerStyle.setBorderBottom(border);
+headerStyle.setBorderLeft(border);
+headerStyle.setBorderRight(border);
+
+//Right-aligned header style for ACCT BALANCE
+CellStyle rightAlignedHeaderStyle = workbook.createCellStyle();
+rightAlignedHeaderStyle.cloneStyleFrom(headerStyle);
+rightAlignedHeaderStyle.setAlignment(HorizontalAlignment.RIGHT);
+
+//Default data style (left aligned)
+CellStyle dataStyle = workbook.createCellStyle();
+dataStyle.setAlignment(HorizontalAlignment.LEFT);
+dataStyle.setBorderTop(border);
+dataStyle.setBorderBottom(border);
+dataStyle.setBorderLeft(border);
+dataStyle.setBorderRight(border);
+
+//ACCT BALANCE style (right aligned with 3 decimals)
+CellStyle balanceStyle = workbook.createCellStyle();
+balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
+balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("#,###"));
+balanceStyle.setBorderTop(border);
+balanceStyle.setBorderBottom(border);
+balanceStyle.setBorderLeft(border);
+balanceStyle.setBorderRight(border);
+
+
+//Header row
+String[] headers = {
+		"CUST ID", "ACCT NO", "ACCT NAME","BANK_SPEC_SINGLE_CUST_REC_NUM","COMPANY_NAME ","COMPANY_REG_NUM",
+		"BUSINEES_PHY_ADDRESS","POSTAL_ADDRESS","COUNTRY_OF_REG","COMPANY_EMAIL",
+		"COMPANY_LANDLINE","COMPANY_MOB_PHONE_NUM","PRODUCT_TYPE","ACCT_NUM","STATUS_OF_ACCT",
+		"ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT",
+		"ACCT_BRANCH",
+		"ACCT BALANCE IN PULA","CURRENCY_OF_ACCT","EXCHANGE_RATE", "REPORT LABLE", "REPORT ADDL CRITERIA1",
+		"REPORT_DATE"
+};
+
+XSSFRow headerRow = sheet.createRow(0);
+for (int i = 0; i < headers.length; i++) {
+Cell cell = headerRow.createCell(i);
+cell.setCellValue(headers[i]);
+
+if (i == 3) { // ACCT BALANCE
+cell.setCellStyle(rightAlignedHeaderStyle);
+} else {
+cell.setCellStyle(headerStyle);
+}
+
+sheet.setColumnWidth(i, 5000);
+}
+
+//Get data
+Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
+List<BDISB2_Archival_Detail_Entity> reportData = BRRS_BDISB2_Archival_Detail_Repo.getdatabydateList(parsedToDate,version);
+
+if (reportData != null && !reportData.isEmpty()) {
+int rowIndex = 1;
+for (BDISB2_Archival_Detail_Entity item : reportData) {
+XSSFRow row = sheet.createRow(rowIndex++);
+
+//row.createCell(0).setCellValue(item.getCustId());
+//row.createCell(1).setCellValue(item.getAcctNumber());
+//row.createCell(2).setCellValue(item.getAcctName());
+//
+////ACCT BALANCE (right aligned, 3 decimal places with comma separator)
+//Cell balanceCell = row.createCell(3);
+//
+//if (item.getAcctBalanceInpula() != null) {
+//balanceCell.setCellValue(item.getAcctBalanceInpula().doubleValue());
+//} else {
+//balanceCell.setCellValue(0);
+//}
+//
+//Create style with thousand separator and decimal point
+DataFormat format = workbook.createDataFormat();
+
+//Format: 1,234,567
+balanceStyle.setDataFormat(format.getFormat("#,##0"));
+
+//Right alignment (optional)
+balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
+
+//balanceCell.setCellStyle(balanceStyle);
+
+//row.createCell(4).setCellValue(item.getReportLable());
+//row.createCell(5).setCellValue(item.getReportAddlCriteria1());
+//row.createCell(6).setCellValue(
+//item.getReportDate() != null ?
+//new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate()) : ""
+//);
+//
+////Apply data style for all other cells
+//for (int j = 0; j < 7; j++) {
+//if (j != 3) {
+//row.getCell(j).setCellStyle(dataStyle);
+//}
+//}
+//}
+//}
+row.createCell(0).setCellValue(item.getCustId());
+row.createCell(1).setCellValue(item.getAcctNumber());
+row.createCell(2).setCellValue(item.getAcctName());
+
+Cell bankSpecSingleCell = row.createCell(3);
+if (item.getBANK_SPEC_SINGLE_CUST_REC_NUM() != null) {
+	bankSpecSingleCell.setCellValue(item.getBANK_SPEC_SINGLE_CUST_REC_NUM().doubleValue());
+} else {
+	bankSpecSingleCell.setCellValue(0);
+}
+
+row.createCell(4).setCellValue(item.getCOMPANY_NAME());
+
+Cell comRegNumCell = row.createCell(5);
+if (item.getCOMPANY_REG_NUM() != null) {
+	comRegNumCell.setCellValue(item.getCOMPANY_REG_NUM().doubleValue());
+} else {
+	comRegNumCell.setCellValue(0);
+}
+
+row.createCell(6).setCellValue(item.getBUSINEES_PHY_ADDRESS());
+
+row.createCell(7).setCellValue(item.getPOSTAL_ADDRESS());
+
+row.createCell(8).setCellValue(item.getCOUNTRY_OF_REG());
+
+row.createCell(9).setCellValue(item.getCOMPANY_EMAIL());
+
+row.createCell(10).setCellValue(item.getCOMPANY_LANDLINE());
+
+row.createCell(11).setCellValue(item.getCOMPANY_MOB_PHONE_NUM());
+
+row.createCell(12).setCellValue(item.getPRODUCT_TYPE());
+
+Cell acctNumCell = row.createCell(13);
+if (item.getACCT_NUM() != null) {
+	acctNumCell.setCellValue(item.getACCT_NUM().doubleValue());
+} else {
+	acctNumCell.setCellValue(0);
+}
+
+row.createCell(14).setCellValue(item.getSTATUS_OF_ACCT());
+
+row.createCell(15).setCellValue(item.getACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT());
+
+row.createCell(16).setCellValue(item.getACCT_BRANCH());
+
+
+//ACCT BALANCE (right aligned, 3 decimal places)
+Cell balanceCell = row.createCell(17);
+if (item.getACCT_BALANCE_PULA() != null) {
+balanceCell.setCellValue(item.getACCT_BALANCE_PULA().doubleValue());
+} else {
+balanceCell.setCellValue(0);
+}
+balanceCell.setCellStyle(balanceStyle);
+
+row.createCell(18).setCellValue(item.getCURRENCY_OF_ACCT());
+
+Cell excRateCell = row.createCell(19);
+if (item.getEXCHANGE_RATE() != null) {
+	excRateCell.setCellValue(item.getEXCHANGE_RATE().doubleValue());
+} else {
+	excRateCell.setCellValue(0);
+}
+
+		row.createCell(20).setCellValue(item.getReportLable());
+		row.createCell(21).setCellValue(item.getReportAddlCriteria1());
+		row.createCell(22)
+				.setCellValue(item.getReportDate() != null
+						? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
+						: "");
+
+		// Apply data style for all other cells
+		for (int j = 0; j < 22; j++) {
+			if (j != 3) {
+				row.getCell(j).setCellStyle(dataStyle);
+			}
+		}
+	}
+}
+else {
+logger.info("No data found for BDISB2 — only header will be written.");
+}
+//Write to byte[]
+ByteArrayOutputStream bos = new ByteArrayOutputStream();
+workbook.write(bos);
+workbook.close();
+
+logger.info("Excel generation completed with {} row(s).", reportData != null ? reportData.size() : 0);
+return bos.toByteArray();
+
+} catch (Exception e) {
+logger.error("Error generating BDISB2 Excel", e);
+return new byte[0];
+}
+}
+	
+}
+
