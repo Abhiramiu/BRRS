@@ -10,7 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface BRRS_BDISB3_Archival_Summary_Repo 
+public interface BRRS_BDISB3_Archival_Detail_Repo 
         extends JpaRepository<BDISB3_Archival_Summary_Entity, BDISB3_Archival_Summary_PK> {
 
     // Fetch specific archival data by report date & version
