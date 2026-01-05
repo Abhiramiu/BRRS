@@ -331,7 +331,13 @@ label.error {
   }
  </style>
 
-
+<script>
+    // Capture referrer ONCE when page loads
+    var previousUrl = document.referrer;
+    
+    
+    let isResubmissionUpdate = false;
+</script>
 
 <script th:inline="javascript">
 	let isDetailsModal = false;
@@ -788,9 +794,13 @@ function fileuploads(btn) {
 	            $("#resultModalBody").text(response);
 	            $("#resultModal").modal("show");
 
-			    //  Wait for user to close the modal manually
-			    $("#resultModal").off("hidden.bs.modal").on("hidden.bs.modal", function () {
-			        location.reload(); // reload ONLY when modal is closed
+	        //  Wait for user to close the modal manually
+			     $("#resultModal").off("hidden.bs.modal").on("hidden.bs.modal", function () {
+			    	 if (isResubmissionUpdate) {
+			    		 window.location.href = previousUrl
+			    		 ? previousUrl 
+			    				 : "/BRRS/Resubmission?rptcode=BDISB2";
+			    	 } // reload ONLY when modal is closed
 			    });
 			},
 	        error: function (jqXHR) {
@@ -1813,7 +1823,7 @@ function fileuploads(btn) {
           <td style="text-align:left;" th:text="${report.STATUS_OF_ACCT}"></td>
           <td style="text-align:left;" th:text="${report.ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT}"></td>
           <td style="text-align:left;" th:text="${report.ACCT_BRANCH}"></td>
-          <td style="text-align:right;" th:text="${report.ACCT_BALANCE_PULA}"></td>
+          <td style="text-align:right;" th:text="${#numbers.formatDecimal(report.ACCT_BALANCE_PULA,1,'COMMA',0,'POINT')}"></td>
           <td style="text-align:left;" th:text="${report.CURRENCY_OF_ACCT}"></td>
           <td style="text-align:left;" th:text="${report.EXCHANGE_RATE}"></td>
           <td style="text-align:left;" th:text="${report.reportLable}"></td>

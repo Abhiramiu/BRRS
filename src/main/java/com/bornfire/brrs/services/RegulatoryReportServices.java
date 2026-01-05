@@ -2852,6 +2852,11 @@ public class RegulatoryReportServices {
 			return BRRS_BDISB2_ReportService.getBDISB2DetailExcel(filename, fromdate, todate, currency,
 					dtltype, type, version);
 		}
+		
+		else if ("MDISB5Detail".equals(filename)) {
+			return BRRS_MDISB5_ReportService.getMDISB5DetailExcel(filename, fromdate, todate, currency,
+					dtltype, type, version);
+		}
 
 		return new byte[0];
 	}
@@ -4164,6 +4169,11 @@ public class RegulatoryReportServices {
 		else if ("BDISB2Detail".equals(filename)) {
 
 			fileData = BRRS_BDISB2_ReportService.getBDISB2DetailExcel(filename, fromdate, todate, currency,
+					dtltype, type, version);
+		}
+		else if ("MDISB5Detail".equals(filename)) {
+
+			fileData = BRRS_MDISB5_ReportService.getMDISB5DetailExcel(filename, fromdate, todate, currency,
 					dtltype, type, version);
 		}
 

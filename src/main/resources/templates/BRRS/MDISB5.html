@@ -65,13 +65,13 @@ PURPOSE		: BRRS_MDISB5REPORT
 			border-color: #0c0c0c;
 		}
 
-		/* .btn-primary:not (:disabled):not (.disabled).active,
+		 .btn-primary:not (:disabled):not (.disabled).active,
 		.btn-primary:not (:disabled):not (.disabled):active,
 		.show>.btn-primary.dropdown-toggle {
 			color: #fff;
-			background-color: #cc000000;
+			background-color: #cc0000;
 			border-color: #161617;
-		} */
+		} 
 
 		#finusertb {
 			width: 460px;
@@ -201,137 +201,137 @@ PURPOSE		: BRRS_MDISB5REPORT
 			transition: 0.3s ease;
 		}
 
-		/* When input or select is focused or has a value, move the label up */
-		/* .form-control:focus~.form-legend,
-		.form-control:not (:placeholder-shown)~.form-legend {
-			top: -8px;
-			font-size: 1rem;
-			color: #007bff;
-		} */
 
-		/* Hover effect when the input/select is focused 
-		.form-control:focus:hover~.form-legend {
-			color: #0056b3;
-			 Darker shade of blue on hover
-		} */
+/* When input or select is focused or has a value, move the label up */
+.form-control:focus ~.form-legend, .form-control:not (:placeholder-shown
+	 )~.form-legend {
+	top: -8px;
+	font-size: 1rem;
+	color: #007bff;
+}
 
-		/* Ensure the label returns to the normal color after focus or hover is removed */
-		/* .form-control:not (:focus)~.form-legend {
-			color: #aaa; */
-		/* Normal label color */
-		/* } */
-	</style>
-	<style>
-		/* Red border for invalid inputs */
-		input.error,
-		select.error {
-			border: 2px solid red !important;
-		}
+/* Hover effect when the input/select is focused */
+.form-control:focus:hover ~.form-legend {
+	color: #0056b3;
+	/* Darker shade of blue on hover */
+}
 
-		/* Error message style */
-		label.error {
-			color: red;
-			font-size: 0.85em;
-			margin-top: 5px;
-			display: block;
-		}
+/* Ensure the label returns to the normal color after focus or hover is removed */
+.form-control:not (:focus )~.form-legend {
+	color: #aaa;
+	/* Normal label color */
+}
 
-		.underline {
-			text-decoration: underline;
-			color: #08a6f1;
-			cursor: pointer;
-		}
 
-		.left-arrow-circle {
-			width: 35px;
-			height: 35px;
-			border-radius: 50%;
-			background-color: white;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			margin-right: 10px;
-			transition: background-color 0.3s, transform 0.2s;
-		}
+/* 🚌 Bus display style box */
+.boards {
+	transform: translateY(6px);
+	background-color: rgb(107, 122, 143);
+	color: white;
+	padding: 5px 5px;
+	border-radius: 8px;
+	overflow: hidden;
+	white-space: nowrap;
+	flex: 1; /* ✅ makes it take available space dynamically */
+	min-width: 200px;
+	box-shadow: 0 0 10px rgb(107, 122, 143);
+	position: relative;
+}
 
-		.left-arrow-circle i {
-			color: rgb(107, 122, 143);
-		}
+/* ✨ Scrolling animation */
+.scrolling-text {
+	display: inline-block;
+	font-family: "Courier New", monospace;
+	font-weight: bold;
+	letter-spacing: 1px;
+	animation: scroll-left 10s linear infinite;
+}
 
-		.left-arrow-circle:hover {
-			background-color: rgb(107, 122, 143);
-			cursor: pointer;
-			transform: scale(1.05);
-			border: 2px solid white;
-		}
+@keyframes scroll-left {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
 
-		.left-arrow-circle:hover i {
-			color: white;
-		}
 
-		.white-text span {
-			color: white !important;
-		}
+</style>
+<style>
+/* Red border for invalid inputs */
+input.error, select.error {
+	border: 2px solid red !important;
+}
 
-		.table-cell tbody td:hover {
-			background-color: #f0f0f0;
-			/* Hover color for cell */
-			cursor: pointer;
-			/* Optional: pointer cursor */
-		}
+/* Error message style */
+label.error {
+	color: red;
+	font-size: 0.85em;
+	margin-top: 5px;
+	display: block;
+}
 
-		.table-bordered td,
-		.table-bordered th {
-			border: 1px solid #000 !important;
-		}
-	</style>
-	<style>
-		.left-arrow-circle {
-			background-color: white;
-			color: #007bff;
-			border-radius: 50%;
-			padding: 8px;
-			margin-right: 10px;
-			cursor: pointer;
-		}
+.underline {
+	text-decoration: underline;
+	color: #08a6f1;
+	cursor: pointer;
+}
 
-		/* 🚌 Bus display style box */
-		/* 🚌 Bus display style box */
-		.boards {
-			transform: translateY(6px);
-			background-color: rgb(107, 122, 143);
-			color: white;
-			padding: 5px 80px;
-			border-radius: 8px;
-			overflow: hidden;
-			white-space: nowrap;
-			flex: 1;
-			/* ✅ makes it take available space dynamically */
-			min-width: 200px;
-			box-shadow: 0 0 10px rgb(107, 122, 143);
-			position: relative;
-		}
+.left-arrow-circle {
+	width: 35px;
+	height: 35px;
+	border-radius: 50%;
+	background-color: white;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-right: 10px;
+	transition: background-color 0.3s, transform 0.2s;
+}
 
-		/* ✨ Scrolling animation */
-		.scrolling-text {
-			display: inline-block;
-			font-family: "Courier New", monospace;
-			font-weight: bold;
-			letter-spacing: 1px;
-			animation: scroll-left 10s linear infinite;
-		}
+.left-arrow-circle i {
+	color: rgb(107, 122, 143);
+}
 
-		/* Animation keyframes */
-		@keyframes scroll-left {
-			0% {
-				transform: translateX(100%);
-			}
+.left-arrow-circle:hover {
+	background-color: rgb(107, 122, 143);
+	cursor: pointer;
+	transform: scale(1.05);
+	border: 2px solid white;
+}
 
-			100% {
-				transform: translateX(-100%);
-			}
-		}
-	</style>
+.left-arrow-circle:hover i {
+	color: white;
+}
+
+.white-text span {
+	color: white !important;
+}
+
+.table-cell tbody td:hover {
+	background-color: #f0f0f0;
+	/* Hover color for cell */
+	cursor: pointer;
+	/* Optional: pointer cursor */
+}
+
+/* .table-bordered td, .table-bordered th {
+	border: 1px solid #000 !important;
+} */
+</style>
+ <style>
+  #reports,
+  #reports th,
+  #reports td {
+   border: 1px solid black !important;
+  }
+
+  #reports {
+   border-collapse: collapse;
+  }
+ </style>
+
 
 <script>
     // Capture referrer ONCE when page loads
@@ -722,6 +722,38 @@ function cancelModify() {
 		}    
 		</script>
  
+ <script th:inline="javascript">
+      $(document).ready(function () {
+        var table = $('#reportdetails').DataTable({
+          scrollY: "550px",
+          scrollX: true,
+          scrollCollapse: true,
+          autoWidth: false,
+          paging: true,
+          searching: true,
+          lengthChange: false,
+          ordering: true,
+          pageLength: 100,
+          fixedHeader: true, // ✅ You can simply set it to true
+       // ✅ Column width settings
+        columnDefs: [
+          { width: "100px", targets: 1 }  ,  // Cust ID column
+       ],
+
+          dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t'
+        });
+
+        // ✅ Fix alignment on resize / zoom
+        $(window).on('resize', function () {
+          table.columns.adjust().draw(false);
+        });
+
+        // ✅ Fix initial misalignment if loaded at non-100% zoom
+        setTimeout(function () {
+          table.columns.adjust().draw(false);
+        }, 500);
+      });
+    </script>
  
 </head>
 <title>BRRS</title>
@@ -767,13 +799,12 @@ function cancelModify() {
 							th:if="${displaymode == 'summary'}">Details</button>
 
 
-						<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
-							title="Click to EDIT Records"
-							th:if="${type == 'RESUB' or type=='BRRS' and type != 'ARCHIVAL'}"
-							th:classappend="${session.PERMISSIONS == 'W'} and ${dtltype == 'report'} ? 'addedit' "
-							id="addRecord">
-							Modify
-						</button>
+						<button class="custom-tab-btn"
+                onclick="showmodify(this);"
+                title="Click to EDIT Records"
+                th:if="${type != 'ARCHIVAL' and displaymode == 'summary'}"
+                th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit"
+                id="addRecord">Modify</button>
 
 
 						<!-- Cancel button (hidden initially) -->
@@ -2166,7 +2197,7 @@ function cancelModify() {
           <td style="text-align:left;" th:text="${report.NAME}"></td>
           <td style="text-align:left;" th:text="${report.DESIGNATION_OR_POSITION}"></td>
           <td style="text-align:left;" th:text="${report.NUMBER_OF_ACCOUNTS}"></td>
-          <td style="text-align:right;" th:text="${report.AMOUNT}"></td>
+          <td style="text-align:right;" th:text="${#numbers.formatDecimal(report.AMOUNT,1,'COMMA',0,'POINT')}"></td>
           <td style="text-align:left;" th:text="${report.reportLable}"></td>
           <td th:text="${report.reportAddlCriteria1}"></td>
           <td th:text="${#dates.format(report.reportDate,'dd-MM-yyyy')}"></td>
@@ -2242,82 +2273,147 @@ function cancelModify() {
 
 </body>
 
-<!-- <script>
-															  $(document).ready(function () {
-															    $('#BRRSvalidation').DataTable({
-															      "paging": true,
-															      "info": false,       // turn off "Showing x of y"
-															      "searching": false,  // turn off search
-															      "ordering": false,   // turn off ordering
-															      "lengthChange": false // hide "Show x entries"
-															    });
-															  });
-	
-														</script> -->
 
 <style>
-	#BRFdet td {
-		border: 1px solid #000000;
-		padding: 8px;
-	}
+/* Your existing CSS - this is the correct approach */
+.scrollable-table-container {
+	/* This is the key: it creates the scroll context */
+	max-height: 590px;
+	/* Or a suitable height like 80vh for responsive design */
+	overflow-y: auto;
+	border: 1px solid #ccc;
+}
 
-	#BRFdet {
-		border-collapse: collapse;
-		width: 100%;
-	}
+/* Your existing sticky header CSS, targeting the tr elements within the thead */
+.scrollable-table-container thead tr:nth-child(1) {
+	position: sticky;
+	top: 0;
+	background-color: #b3b6b9;
+	z-index: 5;
+}
+
+.scrollable-table-container thead tr:nth-child(2) {
+	position: sticky;
+	top: 36px;
+	/* adjust based on row height */
+	background-color: #b3b6b9;
+	z-index: 4;
+}
+
+.scrollable-table-container thead tr:nth-child(3) {
+	position: sticky;
+	top: 72px;
+	/* Adjust based on row height */
+	background-color: #b3b6b9;
+	z-index: 3;
+}
+
+.scrollable-table-container thead tr:nth-child(4) {
+	position: sticky;
+	top: 100px;
+	/* Adjust based on row height */
+	background-color: #b3b6b9;
+	z-index: 2;
+}
+
+.scrollable-table-container thead tr:nth-child(5) {
+	position: sticky;
+	top: 135px;
+	/* Adjust based on row height */
+	background-color: #b3b6b9;
+	z-index: 1;
+}
 </style>
-
 <style>
-	/* Your existing CSS - this is the correct approach */
-	.scrollable-table-container {
-		/* This is the key: it creates the scroll context */
-		max-height: 600px;
-		/* Or a suitable height like 80vh for responsive design */
-		overflow-y: auto;
-		border: 1px solid #ccc;
-	}
+.inner {
+	max-height: 600px;
+	/* Adjust height as needed */
+	overflow: auto;
+	border: 1px solid #dee2e6;
+}
 
-	/* Your existing sticky header CSS, targeting the tr elements within the thead */
-	.scrollable-table-container thead tr:nth-child(1) {
-		position: sticky;
-		top: 0;
-		background-color: #b3b6b9;
-		z-index: 5;
-	}
+/* Sticky thead */
+#reports thead th {
+	position: sticky;
+	top: 0;
+	background-color: #D8D8D8; /* light gray header */
+	/* Match Bootstrap thead-light */
+	z-index: 2;
+}
 
-	.scrollable-table-container thead tr:nth-child(2) {
-		position: sticky;
-		top: 36px;
-		/* adjust based on row height */
-		background-color: #b3b6b9;
-		z-index: 4;
-	}
+div.dataTables_wrapper div.dataTables_paginate {
+	text-align: right !important;
+	float: right !important;
+	width: auto;
+	margin-top: 10px;
+}
 
-	.scrollable-table-container thead tr:nth-child(3) {
-		position: sticky;
-		top: 72px;
-		/* Adjust based on row height */
-		background-color: #b3b6b9;
-		z-index: 3;
-	}
+/* Ensure info text (e.g., "Showing 1 to X") stays on the left */
+div.dataTables_wrapper div.dataTables_info {
+	float: left !important;
+	margin-top: 10px;
+}
 
-	.scrollable-table-container thead tr:nth-child(4) {
-		position: sticky;
-		top: 100px;
-		/* Adjust based on row height */
-		background-color: #b3b6b9;
-		z-index: 2;
-	}
+.pagination {
+	margin: 0;
+}
 
+.page-item.active .page-link {
+	background-color: #386276;
+	border-color: #386276;
+}
+
+.page-link {
+	color: #386276;
+}
+
+.page-link:hover {
+	color: #2a4a5c;
+}
+
+.form-select {
+	display: inline-block;
+	width: auto;
+}
+
+.scrollable-table-container thead tr:nth-child(1),
+	.scrollable-table-container thead tr:nth-child(2),
+	.scrollable-table-container thead tr:nth-child(3),
+	.scrollable-table-container thead tr:nth-child(4),
 	.scrollable-table-container thead tr:nth-child(5) {
-		position: sticky;
-		top: 135px;
-		/* Adjust based on row height */
-		background-color: #b3b6b9;
-		z-index: 1;
-	}
+	background-color: #D8D8D8; /* set header color */
+}
+/* 1. Force table to obey colgroup */
+#reports {
+    table-layout: fixed !important;
+}
+
+/* 2. Make header cells follow colgroup width */
+#reports th {
+    width: inherit !important;
+}
+
+/* 3. Prevent empty headers from collapsing */
+#reports th:empty::after {
+    content: "\00A0";
+}
+/*#reports th:empty {
+    border: none !important;
+    background-color: transparent !important;
+    color: transparent !important;
+}*/
+
+/*  #reportdetails {
+       width: 100% !important;
+       table-layout: fixed !important;
+     }
+
+     #reportdetails th, 
+     #reportdetails td {
+       white-space: nowrap;
+     } */
 </style>
-<style>
+<!-- <style>
 	.inner {
 		max-height: 600px;
 		/* Adjust height as needed */
@@ -2421,6 +2517,6 @@ function cancelModify() {
 		display: inline-block;
 		width: auto;
 	}
-</style>
+</style> -->
 
 </html>
