@@ -557,11 +557,11 @@ label.error {
   }
 
 
-  function closemodel() {
+/*   function closemodel() {
       $('#alert').modal('hide');
       $('#resultModal').modal('hide');
 
-  }
+  } */
 //  function showResultModal(title, message) {
 //			// Set the text for the modal elements
 //			$('#resultModalLabel').text(title);
@@ -571,23 +571,27 @@ label.error {
 //			$('#resultModal').modal('show');
 //		}
 
-function showResultModal(title, message) {
+/* function showResultModal(title, message) {
   document.getElementById('resultModalLabel1').innerText = title;
   document.getElementById('resultModalBody1').innerText = message;
 
   const modal = new bootstrap.Modal(document.getElementById('resultModal1'));
   modal.show();
 }
-
-function redirectBack() {
+ */
+/* function redirectBack() {
   if (previousUrl) {
       window.location.href = previousUrl;
   } else {
       window.history.back();
   }
-}
+} */
+/* function redirectBack()
+{
+	window.history.back();
+	}
 
-
+ */
  </script>
  <script>
 
@@ -988,13 +992,16 @@ function cancelModify() {
            }, 500);
          });
        </script>
+       
     
   <script>
+//✅ Store the previous page URL
+  let previousUrl = document.referrer; // same as going back once in history
     function submitUpdate() {
         const formData = $('#DetailForm').serialize(); // Ensure correct form ID
 
         // ✅ Store the previous page URL
-        const previousUrl = document.referrer; // same as going back once in history
+        let previousUrl = document.referrer; // same as going back once in history
 
         // Show loader while processing
         $('#loader').modal('show');
@@ -1786,7 +1793,7 @@ function cancelModify() {
      style="text-align: center; font-size: 1.1rem;">
      <p id="resultModalBody1"></p>
       
-     <button type="button" class="custom-tab-btn" onclick="closemodel()"
+     <button type="button" class="custom-tab-btn" onclick="redirectBack()"
       data-dismiss="modal">OK</button>
     </div>
    </div>
@@ -1819,7 +1826,41 @@ function cancelModify() {
 
 </body>        
 
+<script>
 
+
+
+    function closemodel() {
+        $('#alert').modal('hide');
+        $('#resultModal').modal('hide');
+
+    }
+    //    function showResultModal(title, message) {
+    //    // Set the text for the modal elements
+    //    $('#resultModalLabel').text(title);
+    //    $('#resultModalBody').text(message);
+
+    //    // Show the modal
+    //    $('#resultModal').modal('show');
+    //   }
+
+    function showResultModal(title, message) {
+        document.getElementById('resultModalLabel1').innerText = title;
+        document.getElementById('resultModalBody1').innerText = message;
+
+        const modal = new bootstrap.Modal(document.getElementById('resultModal1'));
+        modal.show();
+    }
+
+    function redirectBack() {
+        if (previousUrl) {
+            window.location.href = previousUrl;
+        } else {
+            window.history.back();
+        }
+    }
+
+</script>
 <style>
 /* Your existing CSS - this is the correct approach */
 .scrollable-table-container {

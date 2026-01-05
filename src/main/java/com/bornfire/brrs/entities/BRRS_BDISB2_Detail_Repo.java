@@ -23,7 +23,7 @@ public interface BRRS_BDISB2_Detail_Repo extends JpaRepository<BDISB2_Detail_Ent
     
     // ✅ Pagination fixed → use OFFSET and LIMIT correctly
     @Query(value = "select * from BRRS_BDISB2_DETAILTABLE where REPORT_DATE = ?1 offset ?2 rows fetch next ?3 rows only", nativeQuery = true)
-    List<BDISB2_Detail_Entity> getdatabydateList(Date reportdate, int offset, int limit);
+    List<BDISB2_Detail_Entity> getdatabydateList(Date reportdate,int startpage,int endpage);
     
  // Count rows by date
     @Query(value = "select count(*) from BRRS_BDISB2_DETAILTABLE where REPORT_DATE = ?1", nativeQuery = true)

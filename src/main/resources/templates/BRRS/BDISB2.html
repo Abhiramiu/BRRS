@@ -69,7 +69,7 @@ PURPOSE		: BDISB2 BRRSREPORT
 	 (:disabled ):not (.disabled ):active, .show>.btn-primary.dropdown-toggle
 	{
 	color: #fff;
-	background-color: #cc000000;
+	background-color: #cc0000;
 	border-color: #161617;
 }
 
@@ -199,6 +199,29 @@ td {
 	pointer-events: none;
 	transition: 0.3s ease;
 }
+
+
+/* When input or select is focused or has a value, move the label up */
+.form-control:focus ~.form-legend, .form-control:not (:placeholder-shown
+	 )~.form-legend {
+	top: -8px;
+	font-size: 1rem;
+	color: #007bff;
+}
+
+/* Hover effect when the input/select is focused */
+.form-control:focus:hover ~.form-legend {
+	color: #0056b3;
+	/* Darker shade of blue on hover */
+}
+
+/* Ensure the label returns to the normal color after focus or hover is removed */
+.form-control:not (:focus )~.form-legend {
+	color: #aaa;
+	/* Normal label color */
+}
+
+
 /* 🚌 Bus display style box */
 .boards {
 	transform: translateY(6px);
@@ -233,25 +256,6 @@ td {
 }
 
 
-/* When input or select is focused or has a value, move the label up */
-.form-control:focus ~.form-legend, .form-control:not (:placeholder-shown
-	 )~.form-legend {
-	top: -8px;
-	font-size: 1rem;
-	color: #007bff;
-}
-
-/* Hover effect when the input/select is focused */
-.form-control:focus:hover ~.form-legend {
-	color: #0056b3;
-	/* Darker shade of blue on hover */
-}
-
-/* Ensure the label returns to the normal color after focus or hover is removed */
-.form-control:not (:focus )~.form-legend {
-	color: #aaa;
-	/* Normal label color */
-}
 </style>
 <style>
 /* Red border for invalid inputs */
@@ -311,10 +315,22 @@ label.error {
 	/* Optional: pointer cursor */
 }
 
-.table-bordered td, .table-bordered th {
+/* .table-bordered td, .table-bordered th {
 	border: 1px solid #000 !important;
-}
+} */
 </style>
+ <style>
+  #reports,
+  #reports th,
+  #reports td {
+   border: 1px solid black !important;
+  }
+
+  #reports {
+   border-collapse: collapse;
+  }
+ </style>
+
 
 
 <script th:inline="javascript">
@@ -670,97 +686,6 @@ function cancelModify() {
 
 	</script>
 
-<SCRIPT>
-
-/*//Calculating formulas for rows from R11 to R60 for	G column 
-	function calculateColumnG() {
-        for (let i = 11; i <= 60; i++) {
-            // Get numeric values safely (remove commas, default to 0)
-            let exp = parseFloat($("#r" + i + "_exposure_amount").val()?.replace(/,/g, "")) || 0;
-            let risk = parseFloat($("#r" + i + "_risk_weight").val()?.replace(/,/g, "")) || 0;
-
-            // Formula: exposure * risk
-            let result = exp * risk;
-
-            // Update the result cell (formatted with commas)
-            $("#r" + i + "_risk_weighted_amount").val(
-                result.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
-            );
-        }
-    }
-
-	$(document).ready(function() {
-	    // Calculate once on load
-	    calculateColumnG();
-
-	    // ✅ Recalculate when any relevant input changes (R11–R60)
-    for (let i = 11; i <= 60; i++) {
-        $("#r" + i + "_exposure_amount, #r" + i + "_risk_weight").on("input", function() {
-            calculateColumnG();
-        });
-    }
-	});
-	
-	
-// ✅ Calculate total for Column E (R61_exposure_amount = sum of R11–R60 exposure_amount)
-function calculateR61ColE() {
-    let result = 0;
-
-    // Sum all R11–R60 exposure_amount values
-    for (let i = 11; i <= 60; i++) {
-        let colE = parseFloat($("#r" + i + "_exposure_amount").val()?.replace(/,/g, "")) || 0;
-        result += colE;
-    }
-
-    // ✅ Update the result cell after loop completes
-    $("#R61_exposure_amount").val(
-        result.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
-    );
-}
-
-$(document).ready(function() {
-    // Calculate once on load
-    calculateR61ColE();
-
-    // ✅ Recalculate whenever any exposure_amount (R11–R60) changes
-    for (let i = 11; i <= 60; i++) {
-        $("#r" + i + "_exposure_amount").on("input", function() {
-            calculateR61ColE();
-        });
-    }
-});
-
-	
-// ✅ Calculate total for Column G (R61_risk_weighted_amount = sum of R11–R60 risk_weighted_amount)
-function calculateR61ColG() {
-    let result = 0;
-
-    // Sum all R11–R60 risk_weighted_amount values
-    for (let i = 11; i <= 60; i++) {
-        let colG = parseFloat($("#r" + i + "_risk_weighted_amount").val()?.replace(/,/g, "")) || 0;
-        result += colG;
-    }
-
-    // ✅ Update the result cell after loop completes
-    $("#R61_risk_weighted_amount").val(
-        result.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
-    );
-}
-
-$(document).ready(function() {
-    // Calculate once on load
-    calculateR61ColG();
-
-    // ✅ Recalculate whenever any exposure_amount (R11–R60) changes
-    for (let i = 11; i <= 60; i++) {
-        $("#r" + i + "_exposure_amount, #r" + i + "_risk_weight").on("input", function() {
-            calculateR61ColG();
-        });
-    }
-});	
-	
-*/
-	</SCRIPT>
 
 <script>
 function closemodel() {

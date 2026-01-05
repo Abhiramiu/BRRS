@@ -6032,7 +6032,7 @@ if (item.getEXCHANGE_RATE() != null) {
 
 		// Apply data style for all other cells
 		for (int j = 0; j < 22; j++) {
-			if (j != 3) {
+			if (j != 17) {
 				row.getCell(j).setCellStyle(dataStyle);
 			}
 		}
