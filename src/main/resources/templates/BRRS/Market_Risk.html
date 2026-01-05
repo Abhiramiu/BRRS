@@ -516,7 +516,15 @@ PURPOSE		: BRRSREPORT
 
         }
 
+	function closemodels() {
+	    $("#resultModal").modal("hide");
+	    $('#loader').modal('hide');
 
+		// Reload the page after a short delay to ensure the modal animation completes smoothly.
+		    setTimeout(function () {
+		        location.reload();
+		    }, 300);
+	}
     </script>
 
     <script>
@@ -711,20 +719,20 @@ function submitMarketRiskUpdate() {
             $('#loader').modal('hide');
 
             if (response && response.toLowerCase().includes('success')) {
-                showResultModal('Success', response);
+                showResultModalDU('Success', response);
             } else {
-                showResultModal('Information', response || 'No data updated.');
+                showResultModalDU('Information', response || 'No data updated.');
             }
         },
 
         error: function () {
             $('#loader').modal('hide');
-            showResultModal('Error', 'Failed to update record. Please try again.');
+            showResultModalDU('Error', 'Failed to update record. Please try again.');
         }
     });
 }
 
-    function showResultModal(title, message) {
+    function showResultModalDU(title, message) {
     document.getElementById('resultModalLabel1').innerText = title;
     document.getElementById('resultModalBody1').innerText = message;
 
@@ -732,7 +740,16 @@ function submitMarketRiskUpdate() {
     modal.show();
 }
 
-function redirectBack() {
+   function showResultModal(title, message) {
+			// Set the text for the modal elements
+			$('#resultModalLabel').text(title);
+			$('#resultModalBody').text(message);
+
+			// Show the modal
+			$('#resultModal').modal('show');
+		}
+
+function closemodel() {
     if (previousUrl) {
         window.location.href = previousUrl;
     } else {
@@ -1519,7 +1536,7 @@ function redirectBack() {
 					<p id="resultModalBody"></p>
 					<!-- Your custom styled button -->
 					<button type="button" class="custom-tab-btn" onclick="closemodels()"
-						data-dismiss="modal">okk</button>
+						data-dismiss="modal">Ok</button>
 				</div>
 			</div>
 		</div>
@@ -1533,7 +1550,7 @@ function redirectBack() {
       </div>
       <div class="modal-body" style="text-align: center; font-size: 1.1rem;">
         <p id="resultModalBody1"></p>
-        <button type="button" class="custom-tab-btn" onclick="redirectBack()">OK</button>
+        <button type="button" class="custom-tab-btn" onclick="closemodel()">OK</button>
       </div>
     </div>
   </div>

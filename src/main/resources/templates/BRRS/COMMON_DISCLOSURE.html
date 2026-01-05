@@ -515,7 +515,15 @@ PURPOSE		: BRRSREPORT
             $('#resultModal').modal('hide');
 
         }
+        function closemodels() {
+            $("#resultModal").modal("hide");
+            $('#loader').modal('hide');
 
+            // Reload the page after a short delay to ensure the modal animation completes smoothly.
+            setTimeout(function () {
+                location.reload();
+            }, 300);
+        }
 
     </script>
 
@@ -697,49 +705,57 @@ PURPOSE		: BRRSREPORT
 
         let previousUrl = document.referrer;
 
-function submitCommon_DisclosureUpdate() {
+        function submitCommon_DisclosureUpdate() {
 
-    const formData = $('#Common_DisclosureDetailForm').serialize();
+            const formData = $('#Common_DisclosureDetailForm').serialize();
 
-    $('#loader').modal('show');
+            $('#loader').modal('show');
 
-    $.ajax({
-        url: '/BRRS/Reports/' + reportId + '/update',
-        type: 'POST',
-        data: formData,
+            $.ajax({
+                url: '/BRRS/Reports/' + reportId + '/update',
+                type: 'POST',
+                data: formData,
 
-        success: function (response) {
-            $('#loader').modal('hide');
+                success: function (response) {
+                    $('#loader').modal('hide');
 
-            if (response && response.toLowerCase().includes('success')) {
-                showResultModal('Success', response);
-            } else {
-                showResultModal('Information', response || 'No data updated.');
-            }
-        },
+                    if (response && response.toLowerCase().includes('success')) {
+                        showResultModalDU('Success', response);
+                    } else {
+                        showResultModalDU('Information', response || 'No data updated.');
+                    }
+                },
 
-        error: function () {
-            $('#loader').modal('hide');
-            showResultModal('Error', 'Failed to update record. Please try again.');
+                error: function () {
+                    $('#loader').modal('hide');
+                    showResultModalDU('Error', 'Failed to update record. Please try again.');
+                }
+            });
         }
-    });
-}
 
-      function showResultModal(title, message) {
-    document.getElementById('resultModalLabel1').innerText = title;
-    document.getElementById('resultModalBody1').innerText = message;
+        function showResultModalDU(title, message) {
+            document.getElementById('resultModalLabel1').innerText = title;
+            document.getElementById('resultModalBody1').innerText = message;
 
-    const modal = new bootstrap.Modal(document.getElementById('resultModal1'));
-    modal.show();
-}
+            const modal = new bootstrap.Modal(document.getElementById('resultModal1'));
+            modal.show();
+        }
 
-function redirectBack() {
-    if (previousUrl) {
-        window.location.href = previousUrl;
-    } else {
-        window.history.back();
-    }
-}
+        function redirectBack() {
+            if (previousUrl) {
+                window.location.href = previousUrl;
+            } else {
+                window.history.back();
+            }
+        }
+        function showResultModal(title, message) {
+            // Set the text for the modal elements
+            $('#resultModalLabel').text(title);
+            $('#resultModalBody').text(message);
+
+            // Show the modal
+            $('#resultModal').modal('show');
+        }
 
         function startReport(button) {
             const alertMsg = document.getElementById("alertMessage");
@@ -1215,15 +1231,19 @@ function redirectBack() {
                                     <table class="table table-bordered table-hover table-sm">
                                         <thead>
                                             <tr>
-                                                <th class="header-row"colspan="5" style="text-align: center;background-color: #D8D8D8;">Common Equity Tier I capital:
+                                                <th class="header-row" colspan="5"
+                                                    style="text-align: center;background-color: #D8D8D8;">Common Equity
+                                                    Tier I capital:
                                                     instruments and reserves</th>
                                             </tr>
                                             <tr>
-                                                
+
                                                 <th></th>
                                                 <th style="width: 20px;"></th>
-                                                <th style="font-weight: normal;">Component of regulatory capital reported by bank</th>
-                                                <th style="font-weight: normal;">Source based on Reference numbers/letters of the balance sheet under
+                                                <th style="font-weight: normal;">Component of regulatory capital
+                                                    reported by bank</th>
+                                                <th style="font-weight: normal;">Source based on Reference
+                                                    numbers/letters of the balance sheet under
                                                     the regulatory scope of consolidation from step 2.</th>
                                             </tr>
                                         </thead>
@@ -1231,87 +1251,88 @@ function redirectBack() {
                                             <!-- R7 -->
                                             <tr>
                                                 <td style="width: 20px;">1</td>
-                                                <td th:text="${reportsummary.R7_PRODUCT}"  style="padding-left: 20px;"></td>
+                                                <td th:text="${reportsummary.R7_PRODUCT}" style="padding-left: 20px;">
+                                                </td>
                                                 <td th:text="${#numbers.formatDecimal(reportsummary.R7_COMPONENT_OF_REGU, 0, 'COMMA', 0, 'POINT')}"
-                                                    style="text-align:right;"
-                                                    th:attr="RowId='R7', ColumnId='C2'"
+                                                    style="text-align:right;" th:attr="RowId='R7', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                                 <td th:text="${reportsummary.R7_SOURCE_REF}"></td>
                                             </tr>
 
                                             <!-- R8 -->
                                             <tr>
-                                                 <td style="width: 20px;">2</td>
-                                                <td th:text="${reportsummary.R8_PRODUCT}" style="padding-left: 20px;"></td>
+                                                <td style="width: 20px;">2</td>
+                                                <td th:text="${reportsummary.R8_PRODUCT}" style="padding-left: 20px;">
+                                                </td>
                                                 <td th:text="${#numbers.formatDecimal(reportsummary.R8_COMPONENT_OF_REGU, 0, 'COMMA', 0, 'POINT')}"
-                                                    style="text-align:right;"
-                                                    th:attr="RowId='R8', ColumnId='C2'"
+                                                    style="text-align:right;" th:attr="RowId='R8', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                                 <td th:text="${reportsummary.R8_SOURCE_REF}"></td>
                                             </tr>
 
                                             <!-- R9 -->
                                             <tr>
-                                                 <td style="width: 20px;">3</td>
-                                                <td th:text="${reportsummary.R9_PRODUCT}" style="padding-left: 20px;"></td>
+                                                <td style="width: 20px;">3</td>
+                                                <td th:text="${reportsummary.R9_PRODUCT}" style="padding-left: 20px;">
+                                                </td>
                                                 <td th:text="${#numbers.formatDecimal(reportsummary.R9_COMPONENT_OF_REGU, 0, 'COMMA', 0, 'POINT')}"
-                                                    style="text-align:right;"
-                                                    th:attr="RowId='R9', ColumnId='C2'"
+                                                    style="text-align:right;" th:attr="RowId='R9', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                                 <td th:text="${reportsummary.R9_SOURCE_REF}"></td>
                                             </tr>
 
                                             <!-- R10 -->
                                             <tr>
-                                                 <td style="width: 20px;">4</td>
-                                                <td th:text="${reportsummary.R10_PRODUCT}" style="padding-left: 20px;"></td>
+                                                <td style="width: 20px;">4</td>
+                                                <td th:text="${reportsummary.R10_PRODUCT}" style="padding-left: 20px;">
+                                                </td>
                                                 <td th:text="${#numbers.formatDecimal(reportsummary.R10_COMPONENT_OF_REGU, 0, 'COMMA', 0, 'POINT')}"
-                                                    style="text-align:right;"
-                                                    th:attr="RowId='R10', ColumnId='C2'"
+                                                    style="text-align:right;" th:attr="RowId='R10', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                                 <td th:text="${reportsummary.R10_SOURCE_REF}"></td>
                                             </tr>
 
                                             <!-- R11 -->
                                             <tr>
-                                                 <td style="width: 20px;">5</td>
-                                                <td th:text="${reportsummary.R11_PRODUCT}" style="padding-left: 20px;"></td>
+                                                <td style="width: 20px;">5</td>
+                                                <td th:text="${reportsummary.R11_PRODUCT}" style="padding-left: 20px;">
+                                                </td>
                                                 <td th:text="${#numbers.formatDecimal(reportsummary.R11_COMPONENT_OF_REGU, 0, 'COMMA', 0, 'POINT')}"
-                                                    style="text-align:right;"
-                                                    th:attr="RowId='R11', ColumnId='C2'"
+                                                    style="text-align:right;" th:attr="RowId='R11', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                                 <td th:text="${reportsummary.R11_SOURCE_REF}"></td>
                                             </tr>
 
                                             <!-- R12 -->
                                             <tr>
-                                                 <td style="width: 20px;">6</td>
-                                                <td th:text="${reportsummary.R12_PRODUCT}" style="padding-left: 20px;font-weight: bold;background-color: #D8D8D8;"></td>
+                                                <td style="width: 20px;">6</td>
+                                                <td th:text="${reportsummary.R12_PRODUCT}"
+                                                    style="padding-left: 20px;font-weight: bold;background-color: #D8D8D8;">
+                                                </td>
                                                 <td th:text="${#numbers.formatDecimal(reportsummary.R12_COMPONENT_OF_REGU, 0, 'COMMA', 0, 'POINT')}"
-                                                    style="text-align:right;"
-                                                    th:attr="RowId='R12', ColumnId='C2'"
+                                                    style="text-align:right;" th:attr="RowId='R12', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                                 <td th:text="${reportsummary.R12_SOURCE_REF}"></td>
                                             </tr>
 
                                             <!-- R13 -->
                                             <tr>
-                                                 <td style="width: 20px;">7</td>
-                                                <td th:text="${reportsummary.R13_PRODUCT}" style="padding-left: 20px;"></td>
+                                                <td style="width: 20px;">7</td>
+                                                <td th:text="${reportsummary.R13_PRODUCT}" style="padding-left: 20px;">
+                                                </td>
                                                 <td th:text="${#numbers.formatDecimal(reportsummary.R13_COMPONENT_OF_REGU, 0, 'COMMA', 0, 'POINT')}"
-                                                    style="text-align:right;"
-                                                    th:attr="RowId='R13', ColumnId='C2'"
+                                                    style="text-align:right;" th:attr="RowId='R13', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                                 <td th:text="${reportsummary.R13_SOURCE_REF}"></td>
                                             </tr>
 
                                             <!-- R14 -->
                                             <tr>
-                                                 <td style="width: 20px;">8</td>
-                                                <td th:text="${reportsummary.R14_PRODUCT}" style="padding-left: 20px;"></td>
+                                                <td style="width: 20px;">8</td>
+                                                <td th:text="${reportsummary.R14_PRODUCT}" style="padding-left: 20px;">
+                                                </td>
                                                 <td th:text="${#numbers.formatDecimal(reportsummary.R14_COMPONENT_OF_REGU, 0, 'COMMA', 0, 'POINT')}"
-                                                    style="text-align:right;"
-                                                    th:attr="RowId='R14', ColumnId='C2'"
+                                                    style="text-align:right;" th:attr="RowId='R14', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                                 <td th:text="${reportsummary.R14_SOURCE_REF}"></td>
                                             </tr>
@@ -1378,7 +1399,7 @@ function redirectBack() {
                                     </td>
 
                                     <td th:text="${report.reportLabel}"></td>
-                                  <td th:text="${report.reportAddlCriteria1}"></td>
+                                    <td th:text="${report.reportAddlCriteria1}"></td>
                                     <td th:text="${#dates.format(report.reportDate, 'dd-MM-yyyy')}"></td>
                                 </tr>
                             </tbody>
@@ -1466,84 +1487,83 @@ function redirectBack() {
         </div>
     </div>
     </div>
- 	<div class="modal fade" id="loader" data-backdrop="static"
-		data-keyboard="false">
-		<div
-			class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-			<div class="modal-content" style="background: transparent;">
-				<div class="modal-body" style="text-align: center">
-					<div>
-						<img th:src=@{/images/loader.gif} id="bfirelogo"
-							style="width: 153px; height: auto; margin-left: 18px; background-color: transparent; border-color: transparent;"
-							alt="Bornfire">
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-
-
-
-	<!-- Custom Alert/Result Modal (Matches your existing style) For Modify in Summary -->
-	<div class="modal fade" id="resultModal">
-		<div class="modal-dialog modal-dialog-centered">
-			<div class="modal-content">
-				<!-- Your custom styled header -->
-				<div class="menu-title-header">
-					<div class="modal-title" id="resultModalLabel"
-						style="text-align: center; color: white;">
-						<!-- Title will be set by JavaScript -->
-					</div>
-				</div>
-				<div class="modal-body"
-					style="text-align: center; font-size: 1.1rem;">
-					<p id="resultModalBody"></p>
-					<!-- Your custom styled button -->
-					<button type="button" class="custom-tab-btn" onclick="closemodels()"
-						data-dismiss="modal">okk</button>
-				</div>
-			</div>
-		</div>
-	</div>
-	<!-- For Edit in Detail page -->
-<div class="modal fade" id="resultModal1" tabindex="-1">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="menu-title-header">
-        <div class="modal-title " id="resultModalLabel1"style="text-align: center; color: white;"></div>
-      </div>
-      <div class="modal-body" style="text-align: center; font-size: 1.1rem;">
-        <p id="resultModalBody1"></p>
-        <button type="button" class="custom-tab-btn" onclick="redirectBack()">OK</button>
-      </div>
+    <div class="modal fade" id="loader" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content" style="background: transparent;">
+                <div class="modal-body" style="text-align: center">
+                    <div>
+                        <img th:src=@{/images/loader.gif} id="bfirelogo"
+                            style="width: 153px; height: auto; margin-left: 18px; background-color: transparent; border-color: transparent;"
+                            alt="Bornfire">
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
-</div>
 
-	
-<!-- Custom Cellresult Modal -->
-		<div class="modal fade" id="cellresultModal">
-		  <div class="modal-dialog modal-dialog-centered">
-		    <div class="modal-content">
-		      
-		      <!-- Custom header -->
-		      <div class="menu-title-header" style="background-color:#6c7a91; padding: 8px; border-radius:5px 5px 0 0;">
-		        <div class="modal-title" id="cellresultModalLabel" style="text-align: center; color: white;">
-		          Do you want to open the report?
-		        </div>
-		      </div>
 
-		      <div class="modal-body" style="text-align: center; font-size: 1.1rem;">
-		        <button type="button" class="custom-tab-btn cancel-btn" data-bs-dismiss="modal"  style="margin-right:10px; border:2px solid #6c7a91; background:white; color:black; border-radius:20px; padding:5px 15px;">
-		          Cancel
-		        </button>
-		        <button type="button" class="custom-tab-btn yes-btn" style="background:#6c7a91; color:white; border:none; border-radius:20px; padding:5px 20px;">
-		          Yes
-		        </button>
-		      </div>
-		    </div>
-		  </div>
-		</div>
+
+    <!-- Custom Alert/Result Modal (Matches your existing style) For Modify in Summary -->
+    <div class="modal fade" id="resultModal">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <!-- Your custom styled header -->
+                <div class="menu-title-header">
+                    <div class="modal-title" id="resultModalLabel" style="text-align: center; color: white;">
+                        <!-- Title will be set by JavaScript -->
+                    </div>
+                </div>
+                <div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+                    <p id="resultModalBody"></p>
+                    <!-- Your custom styled button -->
+                    <button type="button" class="custom-tab-btn" onclick="closemodels()"
+                        data-dismiss="modal">Ok</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- For Edit in Detail page -->
+    <div class="modal fade" id="resultModal1" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="menu-title-header">
+                    <div class="modal-title " id="resultModalLabel1" style="text-align: center; color: white;"></div>
+                </div>
+                <div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+                    <p id="resultModalBody1"></p>
+                    <button type="button" class="custom-tab-btn" onclick="redirectBack()">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Custom Cellresult Modal -->
+    <div class="modal fade" id="cellresultModal">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+
+                <!-- Custom header -->
+                <div class="menu-title-header"
+                    style="background-color:#6c7a91; padding: 8px; border-radius:5px 5px 0 0;">
+                    <div class="modal-title" id="cellresultModalLabel" style="text-align: center; color: white;">
+                        Do you want to open the report?
+                    </div>
+                </div>
+
+                <div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+                    <button type="button" class="custom-tab-btn cancel-btn" data-bs-dismiss="modal"
+                        style="margin-right:10px; border:2px solid #6c7a91; background:white; color:black; border-radius:20px; padding:5px 15px;">
+                        Cancel
+                    </button>
+                    <button type="button" class="custom-tab-btn yes-btn"
+                        style="background:#6c7a91; color:white; border:none; border-radius:20px; padding:5px 20px;">
+                        Yes
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
 
 

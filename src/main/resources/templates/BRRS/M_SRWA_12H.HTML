@@ -645,51 +645,84 @@ function showdetails() {
         setTimeout(() => location.reload(), 300);
     }
 }
+	</script>
+<script>
+    // Capture referrer ONCE when page loads
+    var previousUrl = document.referrer;
+    
+    
+    let isResubmissionUpdate = false;
+
 function closemodel() {
-    $("#resultModal").modal("hide");
-    $('#loader').modal('hide');
+			$("#resultModal").modal("hide");
+			$('#loader').modal('hide');
+			
+			if (isResubmissionUpdate) {
+		        return;
+		    }
 
-    // Only reload if not from Details modal
-    if (!isDetailsModal) {
-        setTimeout(function () {
-            location.reload();
-        }, 300);
-    } else {
-        // reset flag for next modal usage
-        isDetailsModal = false;
-    }
-}
-		function fileuploads(btn) {
-			const asondate = btn.getAttribute("data-todate");
-			const type = btn.getAttribute("data-type"); // MAIN / RESUB / ARCHIVAL
-
-			$('#loader').modal('show');
-
-			// Step 1: Calculate totals
-			calculateR81Totals();
-			calculateR12toR80Totals();
-
-			// Step 2: Remove commas
-			$("#fileupload input[type='text']").each(function () {
-				$(this).val($(this).val().replace(/,/g, ''));
-			});
-
-			// Step 3: Validate form
-			if (!$("#fileupload").valid()) {
-				$('#loader').modal('hide');
-				return;
+			// Only reload if not from Details modal
+			if (!isDetailsModal) {
+				setTimeout(function () {
+					location.reload();
+				}, 300);
+			} else {
+				// reset flag for next modal usage
+				isDetailsModal = false;
 			}
+		}
 
-			// Step 4: Build FormData
-			const formData = new FormData();
-			formData.append("asondate", asondate);
-			formData.append("type", type);
 
-			$('#fileupload').find(':input').each(function () {
-				const name = $(this).attr('name');
-				if (name) formData.append(name, $(this).val());
-			});
 
+		function fileuploads(btn) {
+		    var asondate = btn.getAttribute("data-todate");
+		    const type = btn.getAttribute("data-type"); // MAIN / RESUB / ARCHIVAL
+		    
+		    // ✅ Mark RESUB once
+		    isResubmissionUpdate = (type && type.toUpperCase() === 'RESUB');
+		    
+		    $('#loader').modal('show');
+
+		    // Pre-calculations
+		    		calculateR81Totals();
+			calculateR12toR80Totals();
+		    console.log("✅ Calculations executed successfully");
+
+		    // Remove commas from numeric inputs
+		    $("#fileupload input[type='text']").each(function () {
+		        var val = $(this).val();
+		        if (val && val.includes(",")) {
+		            $(this).val(val.replace(/,/g, ''));
+		        }
+		    });
+
+		    if (!$("#fileupload").valid()) {
+		        $('#loader').modal('hide');
+		        return;
+		    }
+
+		    // ✅ One combined FormData for all entities
+		    const formData = new FormData();
+		    formData.append("asondate", asondate);
+		    formData.append("type", type);
+
+		  
+		 // Append only named inputs
+		    $('#fileupload').find(':input[name]').each(function () {
+		        formData.append(this.name, this.value);
+
+		/*         let originalName = this.name;  
+		        let value = this.value;
+
+		        // Convert: R6_C2_COMPANY_NAME → R6_COMPANY_NAME
+		        let fixedName = originalName.replace(/_C\d+_/, '_');
+		        console.log(originalName, "→", fixedName);
+		        formData.append(fixedName, value); */
+		    });
+		    console.log("✅ Entity executed successfully");    
+
+
+		    
 // Step 5: Select API endpoint dynamically
 let apiUrl = './UpdateM_SRWA_12H'; // normal update
 if (type && type.toUpperCase() === 'RESUB') {
@@ -709,34 +742,30 @@ $.ajax({
 		$("#resultModalBody").text(response);
 		$("#resultModal").modal("show");
 
-		// ✅ Redirect after short delay (so user sees the success message)
-		if (response.includes("Resubmission Updated Successfully")) {
-			setTimeout(function() {
-				// Go back to the previous page user came from
-				if (document.referrer && document.referrer !== '') {
-					// Redirect to the page that opened this one
-					window.location.href = document.referrer;
-				} else {
-					// If no referrer, just go one step back in history
-					window.history.back();
-				}
-			}, 2000); // wait 2 seconds before redirect
-		}
-	},
-	error: function (jqXHR) {
-		$("#resultModalLabel").text("Error");
-		$("#resultModalBody").text("Update failed: " + jqXHR.responseText);
-		$("#resultModal").modal("show");
-	},
-	complete: function () {
-		$('#loader').modal('hide');
-	}
-});
+					    //  Wait for user to close the modal manually
+					     $("#resultModal").off("hidden.bs.modal").on("hidden.bs.modal", function () {
+					    	 if (isResubmissionUpdate) {
+					    		 window.location.href = previousUrl
+					    		 ? previousUrl 
+					    				 : "/BRRS/Resubmission?rptcode=MDISB5";
+					    	 } // reload ONLY when modal is closed
+					    });
+					},
+			        error: function (jqXHR) {
+			            console.log("Error response:", jqXHR.responseText);
+			            $("#resultModalLabel").text("Error");
+			            $("#resultModalBody").text("Update failed. Check console for details.");
+			            $("#resultModal").modal("show");
+			        },
+			        complete: function () {
+			            $('#loader').modal('hide');
+			        }
+			    });
 
-		}
-
-
-	</script>
+		    console.log("✅ AJAX executed successfully");
+		}    
+		
+		</script>
 
 
 

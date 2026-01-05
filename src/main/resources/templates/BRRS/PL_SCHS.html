@@ -564,31 +564,25 @@ PURPOSE		: BRRSREPORT
 
         function checkReport(jobId) {
             const alertMsg = document.getElementById("alertMessage");
-
             fetch('/BRRS/Reports/checkreport?jobId=' + encodeURIComponent(jobId))
                 .then(res => res.text())
                 .then(status => {
-
                     if (status === "READY") {
-                        alertMsg.innerHTML = 'Report ready! Downloading...';
+                        alertMsg.innerHTML = 'Report is ready! Downloaded';
                         showAlert();
-
                         const filename = sessionStorage.getItem("filename");
-                        downloadDetailfile(jobId, filename + ".xlsx");
-
+                        downloadDetailfile(jobId, filename)
                         sessionStorage.removeItem("jobId");
                         sessionStorage.removeItem("filename");
 
                     } else if (status === "PROCESSING") {
-                        alertMsg.innerHTML = 'Report processing...';
+                        alertMsg.innerHTML = 'Download Is Processing…';
                         showAlert();
-
-                        setTimeout(() => checkReport(jobId), 4000);
-
-                    } else if (status === "ERROR") {
-                        alertMsg.innerHTML = 'No data available to download.';
+                        setTimeout(() => checkReport(jobId), 5000);
+                    }
+                    else if (status === "ERROR") {
+                        alertMsg.innerHTML = 'No data was available to create a download.';
                         showAlert();
-
                         sessionStorage.removeItem("jobId");
                         sessionStorage.removeItem("filename");
                     }
@@ -611,34 +605,6 @@ PURPOSE		: BRRSREPORT
             location.href = `/BRRS/Reports/${reportId}/Detailspage?formmode=${mode}&acctNo=${acctNo}&asondate=${asondate}`;
         }
 
-        function downloadDetailfile(jobId, filename) {
-
-            $.ajax({
-                url: '/BRRS/Reports/downloaddetailExcel?jobId=' + jobId + '&filename=' + filename,
-                type: 'GET',
-                xhrFields: { responseType: 'blob' },
-
-                success: function (data) {
-                    if (data && data.size > 100) {
-                        const blob = new Blob([data], { type: 'application/vnd.ms-excel' });
-                        const url = window.URL.createObjectURL(blob);
-
-                        const a = document.createElement('a');
-                        a.href = url;
-                        a.download = filename;
-                        document.body.appendChild(a);
-                        a.click();
-
-                        window.URL.revokeObjectURL(url);
-                        document.body.removeChild(a);
-
-                        showResultModal('BRRS', filename + ' downloaded successfully.');
-                    } else {
-                        showResultModal('Information', 'No data found to download.');
-                    }
-                }
-            });
-        }
 
     </script>
 
@@ -708,15 +674,15 @@ PURPOSE		: BRRSREPORT
                     $('#loader').modal('hide');
 
                     if (response && response.toLowerCase().includes('success')) {
-                        showResultModal('BRRS', response);
+                        showResultModalDU('BRRS', response);
                     } else {
-                        showResultModal('Information', response || 'No data updated.');
+                        showResultModalDU('Information', response || 'No data updated.');
                     }
                 },
 
                 error: function () {
                     $('#loader').modal('hide');
-                    showResultModal('Error', 'Failed to update record. Please try again.');
+                    showResultModalDU('Error', 'Failed to update record. Please try again.');
                 }
             });
         }
@@ -764,35 +730,6 @@ PURPOSE		: BRRSREPORT
                 });
         }
 
-        function checkReport(jobId) {
-            const alertMsg = document.getElementById("alertMessage");
-            fetch('/BRRS/Reports/checkreport?jobId=' + encodeURIComponent(jobId))
-                .then(res => res.text())
-                .then(status => {
-                    if (status === "READY") {
-                        alertMsg.innerHTML = 'Report is ready! Downloaded';
-                        showAlert();
-                        const filename = sessionStorage.getItem("filename");
-                        downloadDetailfile(jobId, filename)
-                        sessionStorage.removeItem("jobId");
-                        sessionStorage.removeItem("filename");
-
-                    } else if (status === "PROCESSING") {
-                        alertMsg.innerHTML = 'Download Is Processing…';
-                        showAlert();
-                        setTimeout(() => checkReport(jobId), 5000);
-                    }
-                    else if (status === "ERROR") {
-                        alertMsg.innerHTML = 'No data was available to create a download.';
-                        showAlert();
-                        sessionStorage.removeItem("jobId");
-                        sessionStorage.removeItem("filename");
-                    }
-                });
-        }
-
-
-
         function downloadDetailfile(jobId, filename) {
 
             //$('#loader').modal('show');
@@ -831,7 +768,6 @@ PURPOSE		: BRRSREPORT
                 }
             });
         }
-
 
 
     </script>
@@ -1635,16 +1571,15 @@ PURPOSE		: BRRSREPORT
 
                         <button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord"
                             onclick="cancelModify();" style="display: none;">Cancel</button>
-                        <button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-                            th:if="${displaymode == 'summary'}" th:attr="data-reportid=${reportid}, 
-                    				 data-asondate=${asondate}, 
-                    				 data-fromdate=${fromdate}, 
-                     				 data-todate=${todate}, 
-                     				 data-currency=${currency},  
-                     				 data-dtltype=${dtltype}, 
-                     				 data-filename='PL_SCHS.xlsx',
-					 				 data-type=${type},
-					    			 data-version=${version}" onclick="downloadfile(this);">
+                        <button type="button" class="custom-tab-btn" th:if="${displaymode == 'summary'}" th:attr="data-reportid=${reportid}, 
+                     data-asondate=${asondate}, 
+                     data-fromdate=${fromdate}, 
+                     data-todate=${todate}, 
+                     data-currency=${currency},  
+                     data-dtltype=${dtltype}, 
+                     data-filename='PL_SCHS.xlsx',
+                     data-type=${type},
+                     data-version=${version}" onclick="downloadfile(this);">
                             <i class="fa fa-download"></i>
                         </button>
                         <button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
@@ -3573,22 +3508,22 @@ PURPOSE		: BRRSREPORT
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                             </tr>
                                         </tbody>
-                                        </table>
-                                        <table class="table table-bordered table-hover table-sm">
-                                            <th style="vertical-align: middle;" colspan="2">
-                                                SCHEDULE - 16<br>
-                                                OPERATING EXPENSES
-                                            </th>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
+                                    </table>
+                                    <table class="table table-bordered table-hover table-sm">
+                                        <th style="vertical-align: middle;" colspan="2">
+                                            SCHEDULE - 16<br>
+                                            OPERATING EXPENSES
+                                        </th>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
                                         <tbody style="font-family: Arial" th:each="reportsummary: ${reportsummary}">
                                             <tr>
                                                 <td style="width: 10px;">I</td>
@@ -4728,7 +4663,7 @@ PURPOSE		: BRRSREPORT
                         <p id="resultModalBody"></p>
                         <!-- Your custom styled button -->
                         <button type="button" class="custom-tab-btn" onclick="closemodels()"
-                            data-dismiss="modal">ok</button>
+                            data-dismiss="modal">Ok</button>
                     </div>
                 </div>
             </div>
@@ -4790,16 +4725,16 @@ PURPOSE		: BRRSREPORT
         $('#resultModal').modal('hide');
 
     }
-    //    function showResultModal(title, message) {
-    // 			// Set the text for the modal elements
-    // 			$('#resultModalLabel').text(title);
-    // 			$('#resultModalBody').text(message);
+       function showResultModal(title, message) {
+    			// Set the text for the modal elements
+    			$('#resultModalLabel').text(title);
+    			$('#resultModalBody').text(message);
 
-    // 			// Show the modal
-    // 			$('#resultModal').modal('show');
-    // 		}
+    			// Show the modal
+    			$('#resultModal').modal('show');
+    		}
 
-    function showResultModal(title, message) {
+    function showResultModalDU(title, message) {
         document.getElementById('resultModalLabel1').innerText = title;
         document.getElementById('resultModalBody1').innerText = message;
 
