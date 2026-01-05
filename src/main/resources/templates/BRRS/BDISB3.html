@@ -1,293 +1,347 @@
 <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
 <!--
-CREATED BY	: INFANT JONES J 
-CREATED ON	: 10.09.2025
-PURPOSE		: BWRBRREPORT
+CREATED BY	: INFANT JONES J
+CREATED ON	: 8.12.2025
+PURPOSE		: BDISB3 BRRSREPORT
 -->
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<!-- CSS -->
-	
-	
-	<link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}">
-	<link rel="stylesheet" type="text/css" th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}">
-	<link rel="stylesheet" type="text/css" th:href="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.css}">
-	<link rel="stylesheet" type="text/css" th:href="@{/webjars/datatables/1.10.19/css/jquery.dataTables.min.css}">
-	<link rel="stylesheet" th:href="@{/css/CustomButton.css}" />
-	<link rel="icon" th:href="@{/favicon.ico}" type="image/x-icon" />
-	<!-- JavaScript -->
-	<!-- jQuery core (required first) -->
-	<!-- ✅ Your manually placed jQuery validation
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- CSS -->
+
+
+<link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}">
+<link rel="stylesheet" type="text/css" th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}">
+<link rel="stylesheet" type="text/css" th:href="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.css}">
+<link rel="stylesheet" type="text/css" th:href="@{/webjars/datatables/1.10.19/css/jquery.dataTables.min.css}">
+<link rel="stylesheet" th:href="@{/css/CustomButton.css}" />
+<link rel="icon" th:href="@{/favicon.ico}" type="image/x-icon" />
+<!-- JavaScript -->
+<!-- jQuery core (required first) -->
+<!-- ✅ Your manually placed jQuery validation
 	<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
 	 <script th:src="/jquery/jquery.validate.min.js"></script>
 	 -->
-	<!-- jQuery (required first) -->
-	<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
-	<!-- <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script> -->
-	<!-- ✅ jQuery Validation -->
-	<script src="/webjars/jquery-validation/1.19.0/jquery.validate.min.js"
-		th:src="@{/webjars/jquery-validation/1.19.0/jquery.validate.min.js}"></script>
-	<!-- Bootstrap + Others -->
-	<script th:src="@{/webjars/popper.js/1.14.7/umd/popper.min.js}"></script>
-	<script th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
-	<script th:src="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.js}"></script>
-	<script th:src="@{/webjars/jquery-form/4.2.2/jquery.form.min.js}"></script>
-	<script th:src="@{/webjars/datatables/1.10.19/js/jquery.dataTables.min.js}"></script>
-	<script th:src="@{/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js}"></script>
-	<style>
-		.btns {
-			float: right;
-			margin: 5px;
-		}
+<!-- jQuery (required first) -->
+<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+<!-- <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script> -->
+<!-- ✅ jQuery Validation -->
+<script src="/webjars/jquery-validation/1.19.0/jquery.validate.min.js"
+ th:src="@{/webjars/jquery-validation/1.19.0/jquery.validate.min.js}"></script>
+<!-- Bootstrap + Others -->
+<script th:src="@{/webjars/popper.js/1.14.7/umd/popper.min.js}"></script>
+<script th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
+<script th:src="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.js}"></script>
+<script th:src="@{/webjars/jquery-form/4.2.2/jquery.form.min.js}"></script>
+<script th:src="@{/webjars/datatables/1.10.19/js/jquery.dataTables.min.js}"></script>
+<script th:src="@{/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js}"></script>
+<style>
+.btns {
+	float: right;
+	margin: 5px;
+}
 
-		.col-sm-5 {
-			padding-bottom: 15px;
-		}
+.col-sm-5 {
+	padding-bottom: 15px;
+}
 
-		.list-body {
-			padding: 0px;
-		}
+.list-body {
+	padding: 0px;
+}
 
-		.error {
-			color: red;
-			padding-left: 10px;
-		}
+.error {
+	color: red;
+	padding-left: 10px;
+}
 
-		.formline {
-			padding-bottom: 15px;
-		}
+.formline {
+	padding-bottom: 15px;
+}
 
-		.btn-primary {
-			background-color: #E77400;
-			border-color: #0c0c0c;
-		}
+.btn-primary {
+	background-color: #E77400;
+	border-color: #0c0c0c;
+}
 
-		.btn-primary:not (:disabled):not (.disabled).active,
-		.btn-primary:not (:disabled):not (.disabled):active,
-		.show>.btn-primary.dropdown-toggle {
-			color: #fff;
-			background-color: #cc000000;
-			border-color: #161617;
-		}
+.btn-primary:not (:disabled ):not (.disabled ).active, .btn-primary:not 
+	 (:disabled ):not (.disabled ):active, .show>.btn-primary.dropdown-toggle
+	{
+	color: #fff;
+	background-color: #cc0000;
+	border-color: #161617;
+}
 
-		#finusertb {
-			width: 460px;
-		}
+#finusertb {
+	width: 460px;
+}
 
-		.dataTables_wrapper .dataTables_paginate .paginate_button {
-			padding: 0px;
-		}
-	</style>
-	<style>
-		div span {
-			font-weight: bold;
-			color: white !important;
-		}
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+	padding: 0px;
+}
+</style>
+<style>
+div span {
+	font-weight: bold;
+	color: white !important;
+}
 
-		.card {
-			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-			border-radius: 8px;
-		}
+.card {
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	border-radius: 8px;
+}
 
-		.card-header h5 {
-			font-size: 22px;
-			color: #fff;
-			font-weight: 600;
-		}
+.card-header h5 {
+	font-size: 22px;
+	color: #fff;
+	font-weight: 600;
+}
 
-		.nav-tabs .nav-link {
-			font-weight: 500;
-			border: 1px solid #dee2e6;
-			border-bottom: none;
-			border-radius: 4px 4px 0 0;
-			background-color: #f1f1f1;
-			margin-right: 5px;
-		}
+.nav-tabs .nav-link {
+	font-weight: 500;
+	border: 1px solid #dee2e6;
+	border-bottom: none;
+	border-radius: 4px 4px 0 0;
+	background-color: #f1f1f1;
+	margin-right: 5px;
+}
 
-		.nav-tabs .nav-link.active {
-			background-color: #ffffff;
-			border-color: #dee2e6 #dee2e6 #ffffff;
-		}
+.nav-tabs .nav-link.active {
+	background-color: #ffffff;
+	border-color: #dee2e6 #dee2e6 #ffffff;
+}
 
-		.table-responsive {
-			border: 1px solid #dee2e6;
-			border-radius: 4px;
-		}
+.table-responsive {
+	border: 1px solid #dee2e6;
+	border-radius: 4px;
+}
 
-		.table-hover tbody tr:hover {
-			background-color: #f3f6f9;
-		}
+.table-hover tbody tr:hover {
+	background-color: #f3f6f9;
+}
 
-		thead th {
-			position: sticky;
-			top: 0;
-			background-color: #e9ecf0;
-			z-index: 1;
-		}
+thead th {
+	position: sticky;
+	top: 0;
+	background-color: #e9ecf0;
+	z-index: 1;
+}
 
-		.table td {
-			background-color: #FFFFFF;
-		}
+.table td {
+	background-color: #FFFFFF;
+}
 
-		.card-footer {
-			padding: 10px;
-			border-top: 1px solid #ccc;
-		}
+.card-footer {
+	padding: 10px;
+	border-top: 1px solid #ccc;
+}
 
-		.btn-xs {
-			padding: 4px 12px;
-			font-size: 14px;
-			border-radius: 4px;
-		}
+.btn-xs {
+	padding: 4px 12px;
+	font-size: 14px;
+	border-radius: 4px;
+}
 
-		#BRRSvalidation th,
-		#usertable td {
-			vertical-align: middle;
-			text-align: left;
-			font-size: 16px;
-			font-family: Arial;
-		}
+#BRRSvalidation th, #usertable td {
+	vertical-align: middle;
+	text-align: left;
+	font-size: 16px;
+	font-family: Arial;
+}
 
-		.fa-edit:hover {
-			color: #28a745;
-			transform: scale(1.1);
-		}
+.fa-edit:hover {
+	color: #28a745;
+	transform: scale(1.1);
+}
 
-		td {
-			border: 1px solid rgb(0, 164, 166);
-			overflow: hidden;
-			white-space: nowrap;
-			text-overflow: ellipsis;
-		}
-	</style>
-	<style>
-		.form-group {
-			position: relative;
-			margin-bottom: 1.5rem;
-		}
+td {
+	border: 1px solid rgb(0, 164, 166);
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+</style>
+<style>
+.form-group {
+	position: relative;
+	margin-bottom: 1.5rem;
+}
 
-		.form-control {
-			width: 100%;
-			border: 2px solid #ccc;
-			border-radius: 8px;
-			font-size: 1rem;
-			outline: none;
-			background: transparent;
-			transition: border-color 0.3s ease, padding-top 0.3s ease;
-		}
+.form-control {
+	width: 100%;
+	border: 2px solid #ccc;
+	border-radius: 8px;
+	font-size: 1rem;
+	outline: none;
+	background: transparent;
+	transition: border-color 0.3s ease, padding-top 0.3s ease;
+}
 
-		.error {
-			color: red;
-			padding-top: 15px;
-		}
+.error {
+	color: red;
+	padding-top: 15px;
+}
 
-		.form-control:focus {
-			border-color: #007bff;
-		}
+.form-control:focus {
+	border-color: #007bff;
+}
 
-		.form-legend {
-			position: absolute;
-			top: 50%;
-			left: 15px;
-			transform: translateY(-50%);
-			font-size: 1rem;
-			color: #aaa;
-			background: white;
-			padding: 0 5px;
-			pointer-events: none;
-			transition: 0.3s ease;
-		}
+.form-legend {
+	position: absolute;
+	top: 50%;
+	left: 15px;
+	transform: translateY(-50%);
+	font-size: 1rem;
+	color: #aaa;
+	background: white;
+	padding: 0 5px;
+	pointer-events: none;
+	transition: 0.3s ease;
+}
 
-		/* When input or select is focused or has a value, move the label up */
-		.form-control:focus~.form-legend,
-		.form-control:not (:placeholder-shown)~.form-legend {
-			top: -8px;
-			font-size: 1rem;
-			color: #007bff;
-		}
 
-		/* Hover effect when the input/select is focused */
-		.form-control:focus:hover~.form-legend {
-			color: #0056b3;
-			/* Darker shade of blue on hover */
-		}
+/* When input or select is focused or has a value, move the label up */
+.form-control:focus ~.form-legend, .form-control:not (:placeholder-shown
+	 )~.form-legend {
+	top: -8px;
+	font-size: 1rem;
+	color: #007bff;
+}
 
-		/* Ensure the label returns to the normal color after focus or hover is removed */
-		.form-control:not (:focus)~.form-legend {
-			color: #aaa;
-			/* Normal label color */
-		}
-	</style>
-	<style>
-		/* Red border for invalid inputs */
-		input.error,
-		select.error {
-			border: 2px solid red !important;
-		}
+/* Hover effect when the input/select is focused */
+.form-control:focus:hover ~.form-legend {
+	color: #0056b3;
+	/* Darker shade of blue on hover */
+}
 
-		/* Error message style */
-		label.error {
-			color: red;
-			font-size: 0.85em;
-			margin-top: 5px;
-			display: block;
-		}
+/* Ensure the label returns to the normal color after focus or hover is removed */
+.form-control:not (:focus )~.form-legend {
+	color: #aaa;
+	/* Normal label color */
+}
 
-		.underline {
-			text-decoration: underline;
-			color: #08a6f1;
-			cursor: pointer;
-		}
 
-		.left-arrow-circle {
-			width: 35px;
-			height: 35px;
-			border-radius: 50%;
-			background-color: white;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			margin-right: 10px;
-			transition: background-color 0.3s, transform 0.2s;
-		}
+/* 🚌 Bus display style box */
+.boards {
+	transform: translateY(6px);
+	background-color: rgb(107, 122, 143);
+	color: white;
+	padding: 5px 5px;
+	border-radius: 8px;
+	overflow: hidden;
+	white-space: nowrap;
+	flex: 1; /* ✅ makes it take available space dynamically */
+	min-width: 200px;
+	box-shadow: 0 0 10px rgb(107, 122, 143);
+	position: relative;
+}
 
-		.left-arrow-circle i {
-			color: rgb(107, 122, 143);
-		}
+/* ✨ Scrolling animation */
+.scrolling-text {
+	display: inline-block;
+	font-family: "Courier New", monospace;
+	font-weight: bold;
+	letter-spacing: 1px;
+	animation: scroll-left 10s linear infinite;
+}
 
-		.left-arrow-circle:hover {
-			background-color: rgb(107, 122, 143);
-			cursor: pointer;
-			transform: scale(1.05);
-			border: 2px solid white;
-		}
+@keyframes scroll-left {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
 
-		.left-arrow-circle:hover i {
-			color: white;
-		}
 
-		.white-text span {
-			color: white !important;
-		}
+</style>
+<style>
+/* Red border for invalid inputs */
+input.error, select.error {
+	border: 2px solid red !important;
+}
 
-		.table-cell tbody td:hover {
-			background-color: #f0f0f0;
-			/* Hover color for cell */
-			cursor: pointer;
-			/* Optional: pointer cursor */
-		}
+/* Error message style */
+label.error {
+	color: red;
+	font-size: 0.85em;
+	margin-top: 5px;
+	display: block;
+}
 
-		.table-bordered td,
-		.table-bordered th {
-			border: 1px solid #000 !important;
-		}
-	</style>
-	<script th:inline="javascript">
+.underline {
+	text-decoration: underline;
+	color: #08a6f1;
+	cursor: pointer;
+}
+
+.left-arrow-circle {
+	width: 35px;
+	height: 35px;
+	border-radius: 50%;
+	background-color: white;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-right: 10px;
+	transition: background-color 0.3s, transform 0.2s;
+}
+
+.left-arrow-circle i {
+	color: rgb(107, 122, 143);
+}
+
+.left-arrow-circle:hover {
+	background-color: rgb(107, 122, 143);
+	cursor: pointer;
+	transform: scale(1.05);
+	border: 2px solid white;
+}
+
+.left-arrow-circle:hover i {
+	color: white;
+}
+
+.white-text span {
+	color: white !important;
+}
+
+.table-cell tbody td:hover {
+	background-color: #f0f0f0;
+	/* Hover color for cell */
+	cursor: pointer;
+	/* Optional: pointer cursor */
+}
+
+/* .table-bordered td, .table-bordered th {
+	border: 1px solid #000 !important;
+} */
+</style>
+ <style>
+  #reports,
+  #reports th,
+  #reports td {
+   border: 1px solid black !important;
+  }
+
+  #reports {
+   border-collapse: collapse;
+  }
+ </style>
+
+<script>
+    // Capture referrer ONCE when page loads
+    var previousUrl = document.referrer;
+    
+    
+    let isResubmissionUpdate = false;
+</script>
+
+<script th:inline="javascript">
+	let isDetailsModal = false;
 		$(document).ready(function () {
-			let isDetailsModal = false;
 			// hide loader on normal load
 			$('#loader').modal('hide');
 		});
@@ -300,8 +354,8 @@ PURPOSE		: BWRBRREPORT
 			$('#loader').modal('hide');
 		});
 
-		
-		
+              
+				
 		$(document).ready(function() {
 			Maker_Checker_Function(); 
 		});
@@ -314,7 +368,7 @@ PURPOSE		: BWRBRREPORT
 				success: function(roleId) {
 					// console.log("User Role ID:", roleId);
 				
-					if (roleId === "ADM-C" || roleId === "USR-C" || roleId === "USER-AUDIT") {
+					if (roleId === "ADM-C" || roleId === "USR-C"  || roleId === "USER-AUDIT") {
 						const modifyBtn = document.getElementById("addRecord");
 						if (modifyBtn) modifyBtn.style.display = "none";
 					}
@@ -330,7 +384,8 @@ PURPOSE		: BWRBRREPORT
 		     }
 		    });
 		}
-		
+
+
 
 		function home() {
 			$("#loader").modal("toggle");
@@ -342,24 +397,32 @@ PURPOSE		: BWRBRREPORT
 		}
 
 		//to fetch summary from the database - called from the summary button
+		//function showdetails() {
+			// alert("Details page not available for Manual Report");
+		//}
+		/* function showdetails() {
+		    isDetailsModal = true; // mark that this modal is from Details
+			 showResultModal('BRRS',' Details page not available for Manual Report');
+		} */
+		//to fetch summary from the database - called from the summary button
 		function showdetails() {
 			var Callurl;
-	    	$('#loader').modal('show');
-	        Callurl = /*[[@{'/Reports/'+${reportid}+'/Details'(asondate=${asondate},fromdate=${fromdate},todate=${todate},currency=${currency},dtltype=${dtltype},type=${type},version=${version})}]]*/ 
-	        location.href = Callurl;
-	        	console.log(Callurl);
-			
+			$('#loader').modal('show');
+			Callurl = /*[[@{'/Reports/'+${reportid}+'/Details'(asondate=${asondate},fromdate=${fromdate},todate=${todate},currency=${currency},dtltype=${dtltype},type=${type},version=${version})}]]*/
+				location.href = Callurl;
+			console.log(Callurl);
+
 		}
 
 		function showsummary() {
 			$('#loader').modal('show');
-			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/;
 			location.href = Callurl;
 		}
 
 
 	</script>
-	<script>
+<script>
 		function activateTab(tabName) {
 			// Remove 'active' from all buttons
 			document.querySelectorAll('.custom-tab-btn').forEach(btn => {
@@ -423,7 +486,7 @@ PURPOSE		: BWRBRREPORT
 						a.click();
 						window.URL.revokeObjectURL(url);
 						document.body.removeChild(a);
-						showResultModal('BRRS', filename + ' downloaded successfully.');
+						showResultModal('BRRS', 'BDISB3.xlsx downloaded successfully.');
 					} else {
 						showResultModal('Information', 'No data was available to create a download.');
 					}
@@ -435,16 +498,15 @@ PURPOSE		: BWRBRREPORT
 				}
 			});
 		}
-		
 		function editRecord() {
 			showResultModal('Alert', 'Development in progress');
 
 		}
-		function closemodel() {
+/* 		function closemodel() {
 			$('#alert').modal('hide');
 			$('#resultModal').modal('hide');
 
-		}
+		} */
 		function showResultModal(title, message) {
 			// Set the text for the modal elements
 			$('#resultModalLabel').text(title);
@@ -452,39 +514,156 @@ PURPOSE		: BWRBRREPORT
 			// Show the modal
 			$('#resultModal').modal('show');
 		}
+		
+
+		  function startReport(button) {
+		   const alertMsg = document.getElementById("alertMessage");
+		   const filename = button.getAttribute('data-filename');
+		   const fromdate = button.getAttribute('data-fromdate');
+		   const todate = button.getAttribute('data-todate');
+		   const currency = button.getAttribute('data-currency');
+		   const dtltype = button.getAttribute('data-dtltype');
+		   const type = button.getAttribute('data-type');
+		   const version = button.getAttribute('data-version');
+		   const sessionfilename = sessionStorage.getItem("filename");
+
+		   if (sessionfilename == filename) {
+		    alertMsg.innerHTML = 'Download request already Processing...';
+		    showAlert();
+		    return;
+		   }
+
+		   alertMsg.innerHTML = 'Download request Processing...';
+		   showAlert();
+
+		   const baseUrl = '/BRRS/Reports/startreport';
+		   const downloadUrl = baseUrl +
+		    '?filename=' + encodeURIComponent(filename) +
+		    '&fromdate=' + encodeURIComponent(fromdate) +
+		    '&todate=' + encodeURIComponent(todate) +
+		    '&currency=' + encodeURIComponent(currency) +
+		    '&dtltype=' + encodeURIComponent(dtltype) +
+		    '&type=' + encodeURIComponent(type) +
+		    '&version=' + encodeURIComponent(version);
+		   fetch(downloadUrl)  // ✅ no invalid characters now
+		    .then(res => res.text())
+		    .then(jobId => {
+
+		     alertMsg.innerHTML = 'Download request received...' + jobId;
+		     showAlert();
+		     sessionStorage.setItem("jobId", jobId);
+		     sessionStorage.setItem("filename", filename);
+		     checkReport(jobId);
+		    });
+		  }
+
+		  function checkReport(jobId) {
+		   const alertMsg = document.getElementById("alertMessage");
+		   fetch('/BRRS/Reports/checkreport?jobId=' + encodeURIComponent(jobId))
+		    .then(res => res.text())
+		    .then(status => {
+		     if (status === "READY") {
+		      alertMsg.innerHTML = 'Report is ready! Downloaded';
+		      showAlert();
+		      const filename = sessionStorage.getItem("filename");
+		      downloadDetailfile(jobId, filename)
+		      sessionStorage.removeItem("jobId");
+		      sessionStorage.removeItem("filename");
+
+		     } else if (status === "PROCESSING") {
+		      alertMsg.innerHTML = 'Download Is Processing…';
+		      showAlert();
+		      setTimeout(() => checkReport(jobId), 5000);
+		     }
+		     else if (status === "ERROR") {
+		      alertMsg.innerHTML = 'No data was available to create a download.';
+		      showAlert();
+		      sessionStorage.removeItem("jobId");
+		      sessionStorage.removeItem("filename");
+		     }
+		    });
+		  }
+
+
+
+		  function downloadDetailfile(jobId, filename) {
+
+		   //$('#loader').modal('show');
+
+		   $.ajax({
+		    url: '/BRRS/Reports/downloaddetailExcel?jobId=' + jobId +
+		     '&filename=' + filename,
+		    type: 'GET',
+		    xhrFields: {
+		     responseType: 'blob'
+		    },
+		    success: function (data) {
+		     $('#loader').modal('hide');
+
+		     if (data && data.size > 100) {
+		      const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
+		      const url = window.URL.createObjectURL(blob);
+		      const a = document.createElement('a');
+		      a.style.display = 'none';
+		      a.href = url;
+		      a.download = filename;
+		      document.body.appendChild(a);
+		      a.click();
+		      window.URL.revokeObjectURL(url);
+		      document.body.removeChild(a);
+
+		      showResultModal('BRRS', filename + ' downloaded successfully');
+		     } else {
+		      showResultModal('Information', 'No data was available to create a download.');
+		     }
+		    },
+		    error: function (jqXHR, textStatus, errorThrown) {
+		     $('#loader').modal('hide');
+		     console.error("Download failed:", textStatus, errorThrown);
+		     showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
+		    }
+		   });
+		  }
+
 	</script>
-	
-	
-	<script>
+
+
+ 
+
+<script>
 	// Show Modify (enable inputs & dropdowns)
 function showmodify(btn) {
-	//$(".Show_input").removeAttr("readonly").removeAttr("disabled");
+    
+    //$(".Show_input").removeAttr("readonly").removeAttr("disabled");
+    
+    // Make all editable fields editable 
     $(".Show_input").not(".nonEditable").removeAttr("readonly").removeAttr("disabled");
-    
-    const readonlyIds = [
-      
-    ];
 
-    // 🔹 Enable editing for all inputs except formula ones
-    $(".show_input, .display-input").each(function () {
-        if (!readonlyIds.includes(this.id)) {
-            $(this).removeAttr("readonly")
-                   .removeAttr("disabled")
-                   .css({"background-color": "#d3d3d3"}); // light yellow for editable
-        } 
-    });
 
+   // Highlight editable fields for rows 11 to 60
+    for (let i = 5; i <= 11; i++) {  
+        let fields = [
+        	"AGGREGATE_BALANCE",
+	        "COMPENSATABLE_AMOUNT"
+            
+        ];
+
+        fields.forEach(field => {
+            let selector = `#R${i}_${field}`; // ✅ Corrected: backticks for template literal
+            if ($(selector).length) {        // Check if element exists
+                $(selector).css({ "background-color": "#d3d3d3" }); // Highlight
+            }
+        });
+    }
+
+    // Show buttons
+    $("#submitButton").show();
+    $("#cancelRecord").show(); // Show Cancel button only when Modify is clicked
     
-    // Toggle buttons
-    $("#submitButton, #btnBack_edit").show();
-    $("#btnBack").hide();
-    
-    // Show Cancel button only when Modify is clicked
-    $("#cancelRecord").show();
-    
-    // Optionally hide the clicked Modify button
+    // Hide the clicked Modify button
     $(btn).hide();
 }
+
 
 //Cancel / Reset function
 function cancelModify() {
@@ -493,29 +672,6 @@ function cancelModify() {
         location.reload();
         
         $(".Show_input").attr("readonly", true).attr("disabled", true);
-
-        for (let i = 11; i <= 37; i++) {
-            $("#R" + i + "_EQUITY").hide();
-            $("#R" + i + "_BONDS").hide();
-            $("#R" + i + "_BOBCS").hide();
-            $("#R" + i + "_TREASURY_BILLS").hide();
-            $("#R" + i + "_REPURCHASE_AGREEMENTS").hide();
-            $("#R" + i + "_COMMERCIAL_PAPER").hide();
-            $("#R" + i + "_CERTIFICATES_OF_DEPOSITS").hide();
-            $("#R" + i + "_PLEDGED_ASSETS").hide();
-            $("#R" + i + "_OTHER_SPECIFY").hide();
-            
-
-            $("#R" + i + "_EQUITY").show();
-            $("#R" + i + "_BONDS").show();
-            $("#R" + i + "_BOBCS").show();
-            $("#R" + i + "_TREASURY_BILLS").show();
-            $("#R" + i + "_REPURCHASE_AGREEMENTS").show();
-            $("#R" + i + "_COMMERCIAL_PAPER").show();
-            $("#R" + i + "_CERTIFICATES_OF_DEPOSITS").show();
-            $("#R" + i + "_PLEDGED_ASSETS").show();
-            $("#R" + i + "_OTHER_SPECIFY").show();
-        }
 
         $("#submitButton, #btnBack_edit").hide();
         $("#btnBack").show();
@@ -533,26 +689,23 @@ function cancelModify() {
 	
 
 	</script>
-	
 
 
-
-
-	<script>
-	
-	// This function is for closing the modal after an action is complete.
-	// It hides the result and loader modals and reloads the page.
-	function closemodel() {
-    $("#resultModal").modal("hide");
-	/*    $("#resultModal").modal("hide");
+<script>
+function closemodel() {
+/*    $("#resultModal").modal("hide");
     $('#loader').modal('hide');
     setTimeout(function () {
         location.reload();
-    }, 300);
         }, 300);*/
         $("#resultModal").modal("hide");
         $('#loader').modal('hide');
 
+        if (isResubmissionUpdate) {
+	        return;
+	    }
+
+        
         // Only reload if not from Details modal
         if (!isDetailsModal) {
             setTimeout(function () {
@@ -563,7 +716,23 @@ function cancelModify() {
             isDetailsModal = false;
         }
 }
+// --- NEW: append type value (NORMAL, RESUB, ARCHIVAL) ---
+//const selectedType = $("#OBType").val(); // Get from dropdown
+//formData.append("type", selectedType);
+//console.log("Selected type:", selectedType);
 
+// --- Entity fields (R10-R17) ---
+/* for (let i = 6; i <= 12; i++) {
+    ["bank_spec_single_cust_rec_num", "COMPANY_NAME", "COMPANY_REG_NUM", "BUSINEES_PHY_ADDRESS",
+		  "POSTAL_ADDRESS", "COUNTRY_OF_REG", "COMPANY_EMAIL", "COMPANY_LANDLINE", "COMPANY_MOB_PHONE_NUM",
+	  "PRODUCT_TYPE", "ACCT_NUM", "STATUS_OF_ACCT", "ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT",
+	  "ACCT_BRANCH", "ACCT_BALANCE_PULA", "CURRENCY_OF_ACCT", "EXCHANGE_RATE"].forEach(field => {
+        const input = $("#r" + i + "_" + field);
+        if (input.length) {
+            formData.append(input.attr("name"), input.val());
+        }
+    });
+} */
 function fileuploads(btn) {
     var asondate = btn.getAttribute("data-todate");
     const type = btn.getAttribute("data-type"); // MAIN / RESUB / ARCHIVAL
@@ -648,154 +817,41 @@ function fileuploads(btn) {
 
 </script>
 
-<style>
-		.left-arrow-circle {
-			background-color: white;
-			color: #007bff;
-			border-radius: 50%;
-			padding: 8px;
-			margin-right: 10px;
-			cursor: pointer;
-		}
+ <script th:inline="javascript">
+      $(document).ready(function () {
+        var table = $('#reportdetails').DataTable({
+          scrollY: "550px",
+          scrollX: true,
+          scrollCollapse: true,
+          autoWidth: false,
+          paging: true,
+          searching: true,
+          lengthChange: false,
+          ordering: true,
+          pageLength: 100,
+          fixedHeader: true, // ✅ You can simply set it to true
+       // ✅ Column width settings
+        columnDefs: [
+          { width: "100px", targets: 1 }  ,  // Cust ID column
+       ],
 
-		/* 🚌 Bus display style box */
-		/* 🚌 Bus display style box */
-					.boards {
-						transform: translateY(6px);
-					  background-color: rgb(107, 122, 143);
-					  color: white;
-					  padding: 5px 80px;
-					  border-radius: 8px;
-					  overflow: hidden;
-					  white-space: nowrap;
-					  flex: 1; /* ✅ makes it take available space dynamically */
-					  min-width: 200px;
-					  box-shadow: 0 0 10px rgb(107, 122, 143);
-					  position: relative;
-					}
+          dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t'
+        });
 
-		/* ✨ Scrolling animation */
-		.scrolling-text {
-			display: inline-block;
-			font-family: "Courier New", monospace;
-			font-weight: bold;
-			letter-spacing: 1px;
-			animation: scroll-left 10s linear infinite;
-		}
+        // ✅ Fix alignment on resize / zoom
+        $(window).on('resize', function () {
+          table.columns.adjust().draw(false);
+        });
 
-		/* Animation keyframes */
-		@keyframes scroll-left {
-			0% {
-				transform: translateX(100%);
-			}
+        // ✅ Fix initial misalignment if loaded at non-100% zoom
+        setTimeout(function () {
+          table.columns.adjust().draw(false);
+        }, 500);
+      });
+    </script>
+    
+    </head>
 
-			100% {
-				transform: translateX(-100%);
-			}
-		}
-	</style>
-
-
-
-
-	<style>
-		/* Keep the header fixed and aligned */
-		.dataTables_scrollHeadInner,
-		.dataTables_scrollBody table {
-			width: 100% !important;
-		}
-
-		/* Prevent thead shrinking at zoom */
-		.dataTables_scrollHeadInner table {
-			width: 100% !important;
-			min-width: 100% !important;
-		}
-
-		#reportdetails {
-			width: 100% !important;
-			table-layout: fixed !important;
-		}
-
-		#reportdetails th,
-		#reportdetails td {
-			white-space: nowrap;
-		}
-
-		table.dataTable th.dt-type-numeric,
-		table.dataTable th.dt-type-date,
-		table.dataTable td.dt-type-numeric,
-		table.dataTable td.dt-type-date {
-			text-align: left !important;
-		}
-
-		table.dataTable th.dt-type-numeric:nth-child(6) {
-			text-align: right !important;
-		}
-
-		/* ✅ Right-align both header and data (6th column = ACCT BALANCE) */
-		#reportdetails th.dt-type-numeric:nth-child(6),
-		#reportdetails td:nth-child(6),
-		.dataTables_scrollHeadInner table th:nth-child(6) {
-			text-align: right !important;
-			padding-right: 10px !important;
-		}
-	</style>
-	<style>
-		#reportdetails,
-		#reportdetails th,
-		#reportdetails td {
-			
-		}
-
-		#reportdetails {
-			border-collapse: collapse;
-		}
-	</style>
-	<script th:inline="javascript">
-				  $(document).ready(function () {
-				    var table = $('#reportdetails').DataTable({
-				      scrollY: "550px",
-				      scrollX: true,
-				      scrollCollapse: true,
-				      autoWidth: false,
-				      paging: true,
-				      searching: true,
-				      lengthChange: false,
-				      ordering: true,
-				      pageLength: 100,
-				      fixedHeader: true, // ✅ You can simply set it to true
-					  // ✅ Column width settings
-					   columnDefs: [
-					     { width: "60px", targets: 0 },   // Edit icon column
-					     { width: "150px", targets: 1 }  ,  // S No column
-						 { width: "300px", targets: 7 }    // S No column
-					   ],
-
-				      dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t'
-				    });
-
-				    // ✅ Fix alignment on resize / zoom
-				    $(window).on('resize', function () {
-				      table.columns.adjust().draw(false);
-				    });
-
-				    // ✅ Fix initial misalignment if loaded at non-100% zoom
-				    setTimeout(function () {
-				      table.columns.adjust().draw(false);
-				    }, 500);
-				  });
-				</script>
-
-	<script th:inline="javascript">
-		/*<![CDATA[*/
-		const reportId = /*[[${reportid}]]*/ null;
-		/*]]>*/
-	</script>
-
-
-
-
-</head>
 <title>BRRS</title>
 
 <body>
@@ -829,27 +885,25 @@ function fileuploads(btn) {
 							Date:<span th:text="${#strings.replace(asondate, '/', '-')}">2025-09-18</span>
 						</span>
 						<!-- Buttons -->
-						<input type="hidden" id="selectedTab" th:value="${displaymode}">
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showsummary();"
-							th:if="${displaymode == 'Details'}">Summary</button>
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails();"
-							th:if="${displaymode == 'summary'}">Details</button>
-				
-						<!-- Modify button -->
-						<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
-							title="Click to EDIT Records"
-							th:if="${type == 'RESUB' or type=='BRRS' and type != 'ARCHIVAL'}"
-							th:classappend="${session.PERMISSIONS == 'W'} and ${dtltype == 'report'} ? 'addedit' "
-							id="addRecord">
-							Modify
-						</button>
+      <input type="hidden" id="selectedTab" th:value="${displaymode}">
+      <button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showsummary();"
+       th:if="${displaymode == 'Details'}">Summary</button>
+      <button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails();"
+       th:if="${displaymode == 'summary'}">Details</button>
+
+      <!-- Modify button -->
+      <button type="button" class="custom-tab-btn" onclick="showmodify(this);" title="Click to EDIT Records"
+       th:if="${type == 'RESUB' or displaymode == 'summary' and type != 'ARCHIVAL'}"
+       th:classappend="${session.PERMISSIONS == 'W'} and ${dtltype == 'report'} ? 'addedit' " id="addRecord">Modify</button>
 
 
-						<!-- Cancel button (hidden initially) -->
-						<button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord"
-							onclick="cancelModify();" style="display: none;">Cancel</button>
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'summary'}" th:attr="data-reportid=${reportid},
+      <!-- Cancel button (hidden initially) -->
+      <button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord" onclick="cancelModify();"
+       style="display: none;">Cancel</button>
+
+
+      <button type="button" class="custom-tab-btn" id="custom-tab-btnAdd" th:if="${displaymode == 'summary'}"
+       th:attr="data-reportid=${reportid},
                    				 data-asondate=${asondate},
                    				 data-fromdate=${fromdate},
                     				 data-todate=${todate},
@@ -858,22 +912,27 @@ function fileuploads(btn) {
                     				 data-filename='M_BDISB3.xlsx',
 					 				 data-type=${type},
 					    			 data-version=${version}"
-									  onclick="downloadfile(this);">
-							<i class="fa fa-download"></i>
-						</button>
+       onclick="downloadfile(this);">
+       <i class="fa fa-download"></i>
+      </button>
 
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'Details'}" onclick="startReport(this);" th:attr="
+
+
+
+      <button type="button" class="custom-tab-btn" id="custom-tab-btnAdd" th:if="${displaymode == 'Details'}"
+       onclick="startReport(this);"
+       th:attr="
 								    data-fromdate=${fromdate},
 								    data-todate=${todate},
 									data-currency=${currency},  
 												data-dtltype=${dtltype}, 
-								    data-filename='M_BDISB3Detail',
+								    data-filename='BDISB3Detail',
 									data-type=${type},
 												data-version=${version}
 								  ">
-							<i class="fa fa-download"></i>
-						</button>
+       <i class="fa fa-download"></i>
+      </button>
+						
 
 
 					</div>
@@ -1057,40 +1116,37 @@ function fileuploads(btn) {
     </td>
 </tr>
     
-    
-    </tbody>	
-										
-</table>
-		</div>
-							<div style="text-align: center; margin-top: 10px;">
-								
-    <button id="submitButton" 
-            type="button"
-            class="custom-tab-btn Show_input" 
-            form="fileupload"
-            th:attr="data-todate=${asondate}, data-type=${type}"
-            onclick="fileuploads(this);" 
-            style="display: none;">
-        Submit
-    </button>
-</div>
-							</form>
-							</div>
-						</div>
-					</div>
-					
-		<div th:if="${displaymode == 'Details'}">
-			<div class="row">
-				<div class="col-sm-12" >
-		<div class="table-container" style="border-right: 1px solid #dee2e6;">
-							<table class="table table-striped table-bordered table-hover" id="reportdetail">
-							 <thead class="thead-light">
-            <tr>
+   </tbody>
+         </table>
+
+
+
+
+        </div>
+        <div style="text-align: center; margin-top: 10px;">
+
+         <button id="submitButton" type="button" class="custom-tab-btn Show_input" form="fileupload"
+          th:attr="data-todate=${asondate}, data-type=${type}" onclick="fileuploads(this);" style="display: none;">
+          Submit</button>
+        </div>
+       </form>
+      </div>
+     </div>
+    </div>
+<!--  DETAIL -->
+            <div th:if="${displaymode == 'Details'}">
+             <div class="row">
+              <div class="col-sm-12" style="max-height:90vh; overflow-y: auto; ">
+               <div class="table-container" 
+                style="border-right: 1px solid #dee2e6; ">
+                <table class="table table-striped table-bordered table-hover"
+                 id="reportdetails">
+                 <thead class="thead-light">
+
+         <tr>
                <!-- <th></th> -->
 		<th style="width: 60px; text-align:center;">S No</th>
-		<th>CUST ID</th>
-		<th>ACCT NO</th>
-		<th>ACCT NAME</th>
+
 		<th style="text-align:right !important;">AGGREGATE BALANCE</th>
 		<th style="text-align:right !important;">COMPENSATABLE AMOUNT</th>
 		<th style="text-align:left;">REPORT LABEL</th>
@@ -1113,11 +1169,7 @@ function fileuploads(btn) {
                 </td> -->
 	
 				<td style="text-align:center;" th:text="${srlno.index + 1}"></td>
-	                <td th:text="${report.custId}"></td>
-
-                <td  th:text="${report.acctNumber}"></td>
-
-                <td th:text="${report.acctName}"></td>
+	              
 
 <td style="text-align:right !important;"
     th:text="${#numbers.formatDecimal(report.AGGREGATE_BALANCE, 1, 'COMMA', 0, 'POINT')}">
@@ -1134,78 +1186,72 @@ function fileuploads(btn) {
                 <td th:text="${#dates.format(report.reportDate,'dd-MM-yyyy')}"></td>
             </tr>
         </tbody>
-    </table>
-</div>
+       </table>
 
-							
-							
+      </div>
 
-						</div>
-					</div>
-				</div>
-				
-				</div>
-				
-			</div>
-		</div>
-	
-	
-	<!-- Custom Cellresult Modal -->
-		<div class="modal fade" id="cellresultModal">
-		  <div class="modal-dialog modal-dialog-centered">
-		    <div class="modal-content">
-		      
-		      <!-- Custom header -->
-		      <div class="menu-title-header" style="background-color:#6c7a91; padding: 8px; border-radius:5px 5px 0 0;">
-		        <div class="modal-title" id="cellresultModalLabel" style="text-align: center; color: white;">
-		          Do you want to open the report?
-		        </div>
-		      </div>
+      
+     </div>
+    </div>
+   </div>
+    
+   </div>
+  </div>
+ </div>
+ <!-- Custom Cellresult Modal -->
+ <div class="modal fade" id="cellresultModal">
+  <div class="modal-dialog modal-dialog-centered">
+   <div class="modal-content">
 
-		      <div class="modal-body" style="text-align: center; font-size: 1.1rem;">
-		        <button type="button" class="custom-tab-btn cancel-btn" data-bs-dismiss="modal"  style="margin-right:10px; border:2px solid #6c7a91; background:white; color:black; border-radius:20px; padding:5px 15px;">
-		          Cancel
-		        </button>
-		        <button type="button" class="custom-tab-btn yes-btn" style="background:#6c7a91; color:white; border:none; border-radius:20px; padding:5px 20px;">
-		          Yes
-		        </button>
-		      </div>
-		    </div>
-		  </div>
-		</div>
+    <!-- Custom header -->
+    <div class="menu-title-header" style="background-color: #6c7a91; padding: 8px; border-radius: 5px 5px 0 0;">
+     <div class="modal-title" id="cellresultModalLabel" style="text-align: center; color: white;">Do you want to
+      open the report?</div>
+    </div>
 
-	
-	<div class="modal fade" id="loader" data-backdrop="static" data-keyboard="false">
-		<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-			<div class="modal-content" style="background: transparent;">
-				<div class="modal-body" style="text-align: center">
-					<div>
-						<img th:src=@{/images/loader.gif} id="bfirelogo"
-							style="width: 153px; height: auto; margin-left: 18px; background-color: transparent; border-color: transparent;"
-							alt="Bornfire">
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-	<!-- Custom Alert/Result Modal (Matches your existing style) -->
-	<div class="modal fade" id="resultModal">
-		<div class="modal-dialog modal-dialog-centered">
-			<div class="modal-content">
-				<!-- Your custom styled header -->
-				<div class="menu-title-header">
-					<div class="modal-title" id="resultModalLabel" style="text-align: center; color: white;">
-						<!-- Title will be set by JavaScript -->
-					</div>
-				</div>
-				<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
-					<p id="resultModalBody"></p>
-					<!-- Your custom styled button -->
-					<button type="button" class="custom-tab-btn" onclick="closemodel()" data-bs-dismiss="modal">OK</button>
-				</div>
-			</div>
-		</div>
-	</div>
+    <div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+     <button type="button" class="custom-tab-btn cancel-btn" data-bs-dismiss="modal"
+      style="margin-right: 10px; border: 2px solid #6c7a91; background: white; color: black; border-radius: 20px; padding: 5px 15px;">
+      Cancel</button>
+     <button type="button" class="custom-tab-btn yes-btn"
+      style="background: #6c7a91; color: white; border: none; border-radius: 20px; padding: 5px 20px;">Yes</button>
+    </div>
+   </div>
+  </div>
+ </div>
+
+
+ <div class="modal fade" id="loader" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+   <div class="modal-content" style="background: transparent;">
+    <div class="modal-body" style="text-align: center">
+     <div>
+      <img th:src=@{/images/loader.gif} id="bfirelogo"
+       style="width: 153px; height: auto; margin-left: 18px; background-color: transparent; border-color: transparent;"
+       alt="Bornfire">
+     </div>
+    </div>
+   </div>
+  </div>
+ </div>
+ <!-- Custom Alert/Result Modal (Matches your existing style) -->
+ <div class="modal fade" id="resultModal">
+  <div class="modal-dialog modal-dialog-centered">
+   <div class="modal-content">
+    <!-- Your custom styled header -->
+    <div class="menu-title-header">
+     <div class="modal-title" id="resultModalLabel" style="text-align: center; color: white;">
+      <!-- Title will be set by JavaScript -->
+     </div>
+    </div>
+    <div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+     <p id="resultModalBody"></p>
+     <!-- Your custom styled button -->
+     <button type="button" class="custom-tab-btn" onclick="closemodel()" data-bs-dismiss="modal">OK</button>
+    </div>
+   </div>
+  </div>
+ </div>
 
 </body>
 
@@ -1221,171 +1267,268 @@ function fileuploads(btn) {
 															  });
 	
 														</script> -->
-														
-														<style>
-														  #BRFdet td {
-														    border: 1px solid #ccc;
-														    padding: 8px;
-														  }
-
-														  #BRFdet {
-														    border-collapse: collapse;
-														    width: 100%;
-														  }
-														</style>
-														
+<!-- 
 <style>
-	/* Your existing CSS - this is the correct approach */
-	.scrollable-table-container {
-		/* This is the key: it creates the scroll context */
-		max-height: 590px;
-		/* Or a suitable height like 80vh for responsive design */
-		overflow-y: auto;
-		border: 1px solid #ccc;
-	}
-
-	/* Your existing sticky header CSS, targeting the tr elements within the thead */
-	.scrollable-table-container thead tr:nth-child(1) {
-		position: sticky;
-		top: 0;
-		background-color: #b3b6b9;
-		z-index: 5;
-	}
-
-	.scrollable-table-container thead tr:nth-child(2) {
-		position: sticky;
-		top: 36px;
-		/* adjust based on row height */
-		background-color: #b3b6b9;
-		z-index: 4;
-	}
-
-	.scrollable-table-container thead tr:nth-child(3) {
-		position: sticky;
-		top: 72px;
-		/* Adjust based on row height */
-		background-color: #b3b6b9;
-		z-index: 3;
-	}
-
-	.scrollable-table-container thead tr:nth-child(4) {
-		position: sticky;
-		top: 100px;
-		/* Adjust based on row height */
-		background-color: #b3b6b9;
-		z-index: 2;
-	}
-
-	.scrollable-table-container thead tr:nth-child(5) {
-		position: sticky;
-		top: 135px;
-		/* Adjust based on row height */
-		background-color: #b3b6b9;
-		z-index: 1;
-	}
-</style>
-<style>
-	.inner {
-		max-height: 600px;
-		/* Adjust height as needed */
-		overflow: auto;
-		border: 1px solid #dee2e6;
-	}
-
-	/* Sticky thead */
-	#reports thead th {
-		position: sticky;
-		top: 0;
-		background-color: #D8D8D8; /* light gray header */
-		/* Match Bootstrap thead-light */
-		z-index: 2;
-	}
-
-
-	div.dataTables_wrapper div.dataTables_paginate {
-		text-align: right !important;
-		float: right !important;
-		width: auto;
-		margin-top: 10px;
-	}
-
-	/* Ensure info text (e.g., "Showing 1 to X") stays on the left */
-	div.dataTables_wrapper div.dataTables_info {
-		float: left !important;
-		margin-top: 10px;
-	}
-
-	.pagination {
-		margin: 0;
-	}
-
-	.page-item.active .page-link {
-		background-color: #386276;
-		border-color: #386276;
-	}
-
-	.page-link {
-		color: #386276;
-	}
-
-	.page-link:hover {
-		color: #2a4a5c;
-	}
-
-	.form-select {
-		display: inline-block;
-		width: auto;
-	}
-	.scrollable-table-container thead tr:nth-child(1),
-.scrollable-table-container thead tr:nth-child(2),
-.scrollable-table-container thead tr:nth-child(3),
-.scrollable-table-container thead tr:nth-child(4),
-.scrollable-table-container thead tr:nth-child(5) {
-    background-color: #D8D8D8; /* set header color */
+#BRFdet td {
+	border: 1px solid #ccc;
+	padding: 8px;
 }
-	
+
+#BRFdet {
+	border-collapse: collapse;
+	width: 100%;
+}
+</style>
+ -->
+<style>
+/* Your existing CSS - this is the correct approach */
+.scrollable-table-container {
+	/* This is the key: it creates the scroll context */
+	max-height: 590px;
+	/* Or a suitable height like 80vh for responsive design */
+	overflow-y: auto;
+	border: 1px solid #ccc;
+}
+
+/* Your existing sticky header CSS, targeting the tr elements within the thead */
+.scrollable-table-container thead tr:nth-child(1) {
+	position: sticky;
+	top: 0;
+	background-color: #b3b6b9;
+	z-index: 5;
+}
+
+.scrollable-table-container thead tr:nth-child(2) {
+	position: sticky;
+	top: 36px;
+	/* adjust based on row height */
+	background-color: #b3b6b9;
+	z-index: 4;
+}
+
+.scrollable-table-container thead tr:nth-child(3) {
+	position: sticky;
+	top: 72px;
+	/* Adjust based on row height */
+	background-color: #b3b6b9;
+	z-index: 3;
+}
+
+.scrollable-table-container thead tr:nth-child(4) {
+	position: sticky;
+	top: 100px;
+	/* Adjust based on row height */
+	background-color: #b3b6b9;
+	z-index: 2;
+}
+
+.scrollable-table-container thead tr:nth-child(5) {
+	position: sticky;
+	top: 135px;
+	/* Adjust based on row height */
+	background-color: #b3b6b9;
+	z-index: 1;
+}
+</style>
+<style>
+.inner {
+	max-height: 600px;
+	/* Adjust height as needed */
+	overflow: auto;
+	border: 1px solid #dee2e6;
+}
+
+/* Sticky thead */
+#reports thead th {
+	position: sticky;
+	top: 0;
+	background-color: #D8D8D8; /* light gray header */
+	/* Match Bootstrap thead-light */
+	z-index: 2;
+}
+
+div.dataTables_wrapper div.dataTables_paginate {
+	text-align: right !important;
+	float: right !important;
+	width: auto;
+	margin-top: 10px;
+}
+
+/* Ensure info text (e.g., "Showing 1 to X") stays on the left */
+div.dataTables_wrapper div.dataTables_info {
+	float: left !important;
+	margin-top: 10px;
+}
+
+.pagination {
+	margin: 0;
+}
+
+.page-item.active .page-link {
+	background-color: #386276;
+	border-color: #386276;
+}
+
+.page-link {
+	color: #386276;
+}
+
+.page-link:hover {
+	color: #2a4a5c;
+}
+
+.form-select {
+	display: inline-block;
+	width: auto;
+}
+
+.scrollable-table-container thead tr:nth-child(1),
+	.scrollable-table-container thead tr:nth-child(2),
+	.scrollable-table-container thead tr:nth-child(3),
+	.scrollable-table-container thead tr:nth-child(4),
+	.scrollable-table-container thead tr:nth-child(5) {
+	background-color: #D8D8D8; /* set header color */
+}
+/* 1. Force table to obey colgroup */
+#reports {
+    table-layout: fixed !important;
+}
+
+/* 2. Make header cells follow colgroup width */
+#reports th {
+    width: inherit !important;
+}
+
+/* 3. Prevent empty headers from collapsing */
+#reports th:empty::after {
+    content: "\00A0";
+}
+/*#reports th:empty {
+    border: none !important;
+    background-color: transparent !important;
+    color: transparent !important;
+}*/
+
+/*  #reportdetails {
+       width: 100% !important;
+       table-layout: fixed !important;
+     }
+
+     #reportdetails th, 
+     #reportdetails td {
+       white-space: nowrap;
+     } */
 </style>
 
-</html>
 
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-    
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
+<!-- <style>
+ .dataTables_scrollHeadInner,
+ table.dataTable {
+  width: 100% !important;
+ }
+
+ /* Your existing CSS - this is the correct approach */
+ .scrollable-table-container {
+  /* This is the key: it creates the scroll context */
+  max-height: 700px;
+  /* Or a suitable height like 80vh for responsive design */
+  overflow-y: auto;
+  overflow-x: hidden;
+  border: 1px solid #ccc;
+ }
+
+ /* Your existing sticky header CSS, targeting the tr elements within the thead */
+ .scrollable-table-container thead tr:nth-child(1) {
+  position: sticky;
+  top: 0;
+  background-color: #b3b6b9;
+  z-index: 5;
+ }
+
+ .scrollable-table-container thead tr:nth-child(2) {
+  position: sticky;
+  top: 36px;
+  /* adjust based on row height */
+  background-color: #b3b6b9;
+  z-index: 4;
+ }
+
+ .scrollable-table-container thead tr:nth-child(3) {
+  position: sticky;
+  top: 72px;
+  /* Adjust based on row height */
+  background-color: #b3b6b9;
+  z-index: 3;
+ }
+
+ .scrollable-table-container thead tr:nth-child(4) {
+  position: sticky;
+  top: 100px;
+  /* Adjust based on row height */
+  background-color: #b3b6b9;
+  z-index: 2;
+ }
+
+ .scrollable-table-container thead tr:nth-child(5) {
+  position: sticky;
+  top: 135px;
+  /* Adjust based on row height */
+  background-color: #b3b6b9;
+  z-index: 1;
+ }
+</style>
+
+
+<style>
+ .inner {
+  max-height: 600px;
+  /* Adjust height as needed */
+  overflow: auto;
+  border: 1px solid #dee2e6;
+ }
+
+ /* Sticky thead */
+ #reports thead th {
+  position: sticky;
+  top: 0;
+  background-color: #f8f9fa;
+  /* Match Bootstrap thead-light */
+  z-index: 2;
+ }
+
+ div.dataTables_wrapper div.dataTables_paginate {
+  text-align: right !important;
+  float: right !important;
+  width: auto;
+  margin-top: 10px;
+ }
+
+ /* Ensure info text (e.g., "Showing 1 to X") stays on the left */
+ div.dataTables_wrapper div.dataTables_info {
+  float: left !important;
+  margin-top: 10px;
+ }
+
+ .pagination {
+  margin: 0;
+ }
+
+ .page-item.active .page-link {
+  background-color: #386276;
+  border-color: #386276;
+ }
+
+ .page-link {
+  color: #386276;
+ }
+
+ .page-link:hover {
+  color: #2a4a5c;
+ }
+
+ .form-select {
+  display: inline-block;
+  width: auto;
+ }
+</style> -->
+</html>					

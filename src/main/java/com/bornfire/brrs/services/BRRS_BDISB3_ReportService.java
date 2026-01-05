@@ -24,11 +24,18 @@ import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CreationHelper;
+import org.apache.poi.ss.usermodel.DataFormat;
+import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
@@ -47,6 +54,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.bornfire.brrs.entities.BDISB1_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.BDISB1_Summary_Entity;
+import com.bornfire.brrs.entities.BDISB2_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.BDISB3_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.BDISB3_Detail_Entity;
 import com.bornfire.brrs.entities.BDISB3_Archival_Detail_Entity;
@@ -1225,6 +1233,267 @@ logger.info("Service: Excel data successfully written to memory buffer ({} bytes
 return out.toByteArray();
 }
 }
+
+public byte[] getBDISB3DetailExcel(String filename, String fromdate, String todate,
+        String currency, String dtltype, String type, String version) {
+
+    try {
+        logger.info("Generating Excel for BDISB3 Details...");
+        System.out.println("came to Detail download service");
+
+        // ================= ARCHIVAL HANDLING =================
+        if ("ARCHIVAL".equals(type) && version != null) {
+            return getDetailExcelARCHIVAL(filename, fromdate, todate, currency, dtltype, type, version);
+        }
+
+        // ================= WORKBOOK & SHEET =================
+        XSSFWorkbook workbook = new XSSFWorkbook();
+        XSSFSheet sheet = workbook.createSheet("BDISB3Detail");
+
+        BorderStyle border = BorderStyle.THIN;
+
+        // ================= HEADER STYLE =================
+        CellStyle headerStyle = workbook.createCellStyle();
+        Font headerFont = workbook.createFont();
+        headerFont.setBold(true);
+        headerFont.setFontHeightInPoints((short) 10);
+        headerStyle.setFont(headerFont);
+        headerStyle.setAlignment(HorizontalAlignment.LEFT);
+        headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+        headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        headerStyle.setBorderTop(border);
+        headerStyle.setBorderBottom(border);
+        headerStyle.setBorderLeft(border);
+        headerStyle.setBorderRight(border);
+
+        CellStyle rightHeaderStyle = workbook.createCellStyle();
+        rightHeaderStyle.cloneStyleFrom(headerStyle);
+        rightHeaderStyle.setAlignment(HorizontalAlignment.RIGHT);
+
+        // ================= DATA STYLES =================
+        CellStyle textStyle = workbook.createCellStyle();
+        textStyle.setAlignment(HorizontalAlignment.LEFT);
+        textStyle.setBorderTop(border);
+        textStyle.setBorderBottom(border);
+        textStyle.setBorderLeft(border);
+        textStyle.setBorderRight(border);
+
+        CellStyle amountStyle = workbook.createCellStyle();
+        amountStyle.setAlignment(HorizontalAlignment.RIGHT);
+        amountStyle.setDataFormat(workbook.createDataFormat().getFormat("#,##0.00"));
+        amountStyle.setBorderTop(border);
+        amountStyle.setBorderBottom(border);
+        amountStyle.setBorderLeft(border);
+        amountStyle.setBorderRight(border);
+
+        // ================= HEADER ROW =================
+        String[] headers = {
+            "AGGREGATE BALANCE",
+            "COMPENSATABLE AMOUNT",
+            "REPORT LABEL",
+            "REPORT ADDL CRITERIA1",
+            "REPORT DATE"
+        };
+
+        XSSFRow headerRow = sheet.createRow(0);
+        for (int i = 0; i < headers.length; i++) {
+            Cell cell = headerRow.createCell(i);
+            cell.setCellValue(headers[i]);
+            cell.setCellStyle((i == 0 || i == 1) ? rightHeaderStyle : headerStyle);
+            sheet.setColumnWidth(i, 6000);
+        }
+
+        // ================= DATA FETCH =================
+        Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
+        List<BDISB3_Detail_Entity> reportData = repo.getdatabydateList(parsedToDate);
+
+        // ================= DATA ROWS =================
+        int rowIndex = 1;
+
+        if (reportData != null && !reportData.isEmpty()) {
+            for (BDISB3_Detail_Entity item : reportData) {
+
+                XSSFRow row = sheet.createRow(rowIndex++);
+
+                // Column 0 - AGGREGATE BALANCE
+                Cell c0 = row.createCell(0);
+                c0.setCellValue(item.getAGGREGATE_BALANCE() != null
+                        ? item.getAGGREGATE_BALANCE().doubleValue() : 0);
+                c0.setCellStyle(amountStyle);
+
+                // Column 1 - COMPENSATABLE AMOUNT
+                Cell c1 = row.createCell(1);
+                c1.setCellValue(item.getCOMPENSATABLE_AMOUNT() != null
+                        ? item.getCOMPENSATABLE_AMOUNT().doubleValue() : 0);
+                c1.setCellStyle(amountStyle);
+
+                // Column 2 - REPORT LABEL
+                Cell c2 = row.createCell(2);
+                c2.setCellValue(item.getReportLable());
+                c2.setCellStyle(textStyle);
+
+                // Column 3 - REPORT ADDL CRITERIA 1
+                Cell c3 = row.createCell(3);
+                c3.setCellValue(item.getReportAddlCriteria1());
+                c3.setCellStyle(textStyle);
+
+                // Column 4 - REPORT DATE
+                Cell c4 = row.createCell(4);
+                c4.setCellValue(item.getReportDate() != null
+                        ? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
+                        : "");
+                c4.setCellStyle(textStyle);
+            }
+        } else {
+            logger.info("No data found for BDISB3 — only header written.");
+        }
+
+        // ================= WRITE FILE =================
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        workbook.write(bos);
+        workbook.close();
+
+        logger.info("Excel generation completed with {} row(s).",
+                reportData != null ? reportData.size() : 0);
+
+        return bos.toByteArray();
+
+    } catch (Exception e) {
+        logger.error("Error generating BDISB3 Excel", e);
+        return new byte[0];
+    }
+}
+
+public byte[] getDetailExcelARCHIVAL(String filename, String fromdate, String todate,
+        String currency, String dtltype, String type, String version) {
+
+    try {
+        logger.info("Generating Excel for BRRS_BDISB3 ARCHIVAL Details...");
+        System.out.println("came to Detail download service");
+
+        // ================= WORKBOOK & SHEET =================
+        XSSFWorkbook workbook = new XSSFWorkbook();
+        XSSFSheet sheet = workbook.createSheet("BDISB3Detail");
+
+        BorderStyle border = BorderStyle.THIN;
+
+        // ================= HEADER STYLE =================
+        CellStyle headerStyle = workbook.createCellStyle();
+        Font headerFont = workbook.createFont();
+        headerFont.setBold(true);
+        headerFont.setFontHeightInPoints((short) 10);
+        headerStyle.setFont(headerFont);
+        headerStyle.setAlignment(HorizontalAlignment.LEFT);
+        headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+        headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        headerStyle.setBorderTop(border);
+        headerStyle.setBorderBottom(border);
+        headerStyle.setBorderLeft(border);
+        headerStyle.setBorderRight(border);
+
+        CellStyle rightHeaderStyle = workbook.createCellStyle();
+        rightHeaderStyle.cloneStyleFrom(headerStyle);
+        rightHeaderStyle.setAlignment(HorizontalAlignment.RIGHT);
+
+        // ================= DATA STYLES =================
+        CellStyle textStyle = workbook.createCellStyle();
+        textStyle.setAlignment(HorizontalAlignment.LEFT);
+        textStyle.setBorderTop(border);
+        textStyle.setBorderBottom(border);
+        textStyle.setBorderLeft(border);
+        textStyle.setBorderRight(border);
+
+        CellStyle amountStyle = workbook.createCellStyle();
+        amountStyle.setAlignment(HorizontalAlignment.RIGHT);
+        amountStyle.setDataFormat(workbook.createDataFormat().getFormat("#,##0.00"));
+        amountStyle.setBorderTop(border);
+        amountStyle.setBorderBottom(border);
+        amountStyle.setBorderLeft(border);
+        amountStyle.setBorderRight(border);
+
+        // ================= HEADER ROW =================
+        String[] headers = {
+            "AGGREGATE BALANCE",
+            "COMPENSATABLE AMOUNT",
+            "REPORT LABEL",
+            "REPORT ADDL CRITERIA1",
+            "REPORT DATE"
+        };
+
+        XSSFRow headerRow = sheet.createRow(0);
+        for (int i = 0; i < headers.length; i++) {
+            Cell cell = headerRow.createCell(i);
+            cell.setCellValue(headers[i]);
+            cell.setCellStyle((i == 0 || i == 1) ? rightHeaderStyle : headerStyle);
+            sheet.setColumnWidth(i, 6000);
+        }
+
+        // ================= DATA FETCH =================
+        Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
+        List<BDISB3_Archival_Detail_Entity> reportData =
+                BDISB3_Detail_Repo_Archival.getdatabydateList(parsedToDate, version);
+
+        // ================= DATA ROWS =================
+        int rowIndex = 1;
+
+        if (reportData != null && !reportData.isEmpty()) {
+            for (BDISB3_Archival_Detail_Entity item : reportData) {
+
+                XSSFRow row = sheet.createRow(rowIndex++);
+
+                // Column 0 - AGGREGATE BALANCE
+                Cell c0 = row.createCell(0);
+                c0.setCellValue(item.getAGGREGATE_BALANCE() != null
+                        ? item.getAGGREGATE_BALANCE().doubleValue() : 0);
+                c0.setCellStyle(amountStyle);
+
+                // Column 1 - COMPENSATABLE AMOUNT
+                Cell c1 = row.createCell(1);
+                c1.setCellValue(item.getCOMPENSATABLE_AMOUNT() != null
+                        ? item.getCOMPENSATABLE_AMOUNT().doubleValue() : 0);
+                c1.setCellStyle(amountStyle);
+
+                // Column 2 - REPORT LABEL
+                Cell c2 = row.createCell(2);
+                c2.setCellValue(item.getReportLable());
+                c2.setCellStyle(textStyle);
+
+                // Column 3 - REPORT ADDL CRITERIA 1
+                Cell c3 = row.createCell(3);
+                c3.setCellValue(item.getReportAddlCriteria1());
+                c3.setCellStyle(textStyle);
+
+                // Column 4 - REPORT DATE
+                Cell c4 = row.createCell(4);
+                c4.setCellValue(item.getReportDate() != null
+                        ? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
+                        : "");
+                c4.setCellStyle(textStyle);
+            }
+        } else {
+            logger.info("No archival data found for BDISB3 — only header written.");
+        }
+
+        // ================= WRITE FILE =================
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        workbook.write(bos);
+        workbook.close();
+
+        logger.info("ARCHIVAL Excel generation completed with {} row(s).",
+                reportData != null ? reportData.size() : 0);
+
+        return bos.toByteArray();
+
+    } catch (Exception e) {
+        logger.error("Error generating BDISB3 ARCHIVAL Excel", e);
+        return new byte[0];
+    }
+}
+
+
+
+
+
 
 
 
