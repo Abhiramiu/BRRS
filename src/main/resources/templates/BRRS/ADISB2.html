@@ -698,7 +698,7 @@ label.error {
    if (cellValue !== '0') {
     // Set dynamic message in modal (instead of confirm)
     document.getElementById("cellresultModalLabel").innerText =
-     "Do you want to open details for Report Lable: " + reportLable + " and Report Addl Criteria1: " + reportAddlCriteria1 + "?";
+     "Do you want to open details for Row: " + reportLable + " and Column: " + reportAddlCriteria1 + "?";
 
     // Show custom Bootstrap modal
     $('#cellresultModal').modal('show');
@@ -1154,19 +1154,19 @@ function cancelModify() {
 
     <td id="R6_COVERED_DEPOSITORS_PCT"
         th:text="${#numbers.formatDecimal(row.R6_COVERED_DEPOSITORS_PCT,1,'COMMA',0,'POINT')}"
-        style="text-align:right;width:200px;"
+        style="text-align:right;width:200px; background-color: rgb(107, 122, 143);color: white;"
         th:attr="reportLable='R6',reportAddlCriteria1='C4'">
     </td>
 
     <td id="R6_EXCEEDING_DEPOSITORS"
         th:text="${#numbers.formatDecimal(row.R6_EXCEEDING_DEPOSITORS,1,'COMMA',0,'POINT')}"
-        style="text-align:right;width:200px;"
+        style="text-align:right;width:200px; background-color: rgb(107, 122, 143);color: white;"
         th:attr="reportLable='R6',reportAddlCriteria1='C5'">
     </td>
 
     <td id="R6_COVERED_AMOUNT_PCT"
         th:text="${#numbers.formatDecimal(row.R6_COVERED_AMOUNT_PCT,1,'COMMA',0,'POINT')}"
-        style="text-align:right;width:200px;"
+        style="text-align:right;width:200px; background-color: rgb(107, 122, 143);color: white;"
         th:attr="reportLable='R6',reportAddlCriteria1='C6'">
     </td>
 </tr>
@@ -1191,19 +1191,19 @@ function cancelModify() {
 
     <td id="R7_COVERED_DEPOSITORS_PCT"
         th:text="${#numbers.formatDecimal(row.R7_COVERED_DEPOSITORS_PCT,1,'COMMA',0,'POINT')}"
-        style="text-align:right;width:200px;"
+        style="text-align:right;width:200px; background-color: rgb(107, 122, 143);color: white;"
         th:attr="reportLable='R7',reportAddlCriteria1='C4'">
     </td>
 
     <td id="R7_EXCEEDING_DEPOSITORS"
         th:text="${#numbers.formatDecimal(row.R7_EXCEEDING_DEPOSITORS,1,'COMMA',0,'POINT')}"
-        style="text-align:right;width:200px;"
+        style="text-align:right;width:200px; background-color: rgb(107, 122, 143);color: white;"
         th:attr="reportLable='R7',reportAddlCriteria1='C5'">
     </td>
 
     <td id="R7_COVERED_AMOUNT_PCT"
         th:text="${#numbers.formatDecimal(row.R7_COVERED_AMOUNT_PCT,1,'COMMA',0,'POINT')}"
-        style="text-align:right;width:200px;"
+        style="text-align:right;width:200px; background-color: rgb(107, 122, 143);color: white;"
         th:attr="reportLable='R7',reportAddlCriteria1='C6'">
     </td>
 </tr>
@@ -1228,19 +1228,19 @@ function cancelModify() {
 
     <td id="R8_COVERED_DEPOSITORS_PCT"
         th:text="${#numbers.formatDecimal(row.R8_COVERED_DEPOSITORS_PCT,1,'COMMA',0,'POINT')}"
-        style="text-align:right;width:200px;"
+        style="text-align:right;width:200px; background-color: rgb(107, 122, 143);color: white;"
         th:attr="reportLable='R8',reportAddlCriteria1='C4'">
     </td>
 
     <td id="R8_EXCEEDING_DEPOSITORS"
         th:text="${#numbers.formatDecimal(row.R8_EXCEEDING_DEPOSITORS,1,'COMMA',0,'POINT')}"
-        style="text-align:right;width:200px;"
+        style="text-align:right;width:200px; background-color: rgb(107, 122, 143);color: white;"
         th:attr="reportLable='R8',reportAddlCriteria1='C5'">
     </td>
 
     <td id="R8_COVERED_AMOUNT_PCT"
         th:text="${#numbers.formatDecimal(row.R8_COVERED_AMOUNT_PCT,1,'COMMA',0,'POINT')}"
-        style="text-align:right;width:200px;"
+        style="text-align:right;width:200px; background-color: rgb(107, 122, 143);color: white;"
         th:attr="reportLable='R8',reportAddlCriteria1='C6'">
     </td>
 </tr>
@@ -1265,19 +1265,19 @@ function cancelModify() {
 
     <td id="R9_COVERED_DEPOSITORS_PCT"
         th:text="${#numbers.formatDecimal(row.R9_COVERED_DEPOSITORS_PCT,1,'COMMA',0,'POINT')}"
-        style="text-align:right;width:200px;"
+        style="text-align:right;width:200px;background-color: rgb(107, 122, 143);color: white;"
         th:attr="reportLable='R9',reportAddlCriteria1='C4'">
     </td>
 
     <td id="R9_EXCEEDING_DEPOSITORS"
         th:text="${#numbers.formatDecimal(row.R9_EXCEEDING_DEPOSITORS,1,'COMMA',0,'POINT')}"
-        style="text-align:right;width:200px;"
+        style="text-align:right;width:200px; background-color: rgb(107, 122, 143);color: white;"
         th:attr="reportLable='R9',reportAddlCriteria1='C5'">
     </td>
 
     <td id="R9_COVERED_AMOUNT_PCT"
         th:text="${#numbers.formatDecimal(row.R9_COVERED_AMOUNT_PCT,1,'COMMA',0,'POINT')}"
-        style="text-align:right;width:200px;"
+        style="text-align:right;width:200px; background-color: rgb(107, 122, 143);color: white;"
         th:attr="reportLable='R9',reportAddlCriteria1='C6'">
     </td>
 </tr>
@@ -1302,19 +1302,19 @@ function cancelModify() {
 
     <td id="R10_COVERED_DEPOSITORS_PCT"
         th:text="${#numbers.formatDecimal(row.R10_COVERED_DEPOSITORS_PCT,1,'COMMA',0,'POINT')}"
-        style="text-align:right;width:200px;"
+        style="text-align:right;width:200px; background-color: rgb(107, 122, 143);color: white;"
         th:attr="reportLable='R10',reportAddlCriteria1='C4'">
     </td>
 
     <td id="R10_EXCEEDING_DEPOSITORS"
         th:text="${#numbers.formatDecimal(row.R10_EXCEEDING_DEPOSITORS,1,'COMMA',0,'POINT')}"
-        style="text-align:right;width:200px;"
+        style="text-align:right;width:200px; background-color: rgb(107, 122, 143);color: white;"
         th:attr="reportLable='R10',reportAddlCriteria1='C5'">
     </td>
 
     <td id="R10_COVERED_AMOUNT_PCT"
         th:text="${#numbers.formatDecimal(row.R10_COVERED_AMOUNT_PCT,1,'COMMA',0,'POINT')}"
-        style="text-align:right;width:200px;"
+        style="text-align:right;width:200px; background-color: rgb(107, 122, 143);color: white;"
         th:attr="reportLable='R10',reportAddlCriteria1='C6'">
     </td>
 </tr>
@@ -1339,19 +1339,19 @@ function cancelModify() {
 
     <td id="R11_COVERED_DEPOSITORS_PCT"
         th:text="${#numbers.formatDecimal(row.R11_COVERED_DEPOSITORS_PCT,1,'COMMA',0,'POINT')}"
-        style="text-align:right;width:200px;"
+        style="text-align:right;width:200px; background-color: rgb(107, 122, 143);color: white;"
         th:attr="reportLable='R11',reportAddlCriteria1='C4'">
     </td>
 
     <td id="R11_EXCEEDING_DEPOSITORS"
         th:text="${#numbers.formatDecimal(row.R11_EXCEEDING_DEPOSITORS,1,'COMMA',0,'POINT')}"
-        style="text-align:right;width:200px;"
+        style="text-align:right;width:200px; background-color: rgb(107, 122, 143);color: white;"
         th:attr="reportLable='R11',reportAddlCriteria1='C5'">
     </td>
 
     <td id="R11_COVERED_AMOUNT_PCT"
         th:text="${#numbers.formatDecimal(row.R11_COVERED_AMOUNT_PCT,1,'COMMA',0,'POINT')}"
-        style="text-align:right;width:200px;"
+        style="text-align:right;width:200px; background-color: rgb(107, 122, 143);color: white;"
         th:attr="reportLable='R11',reportAddlCriteria1='C6'">
     </td>
 </tr>
@@ -1376,19 +1376,19 @@ function cancelModify() {
 
     <td id="R12_COVERED_DEPOSITORS_PCT"
         th:text="${#numbers.formatDecimal(row.R12_COVERED_DEPOSITORS_PCT,1,'COMMA',0,'POINT')}"
-        style="text-align:right;width:200px;"
+        style="text-align:right;width:200px; background-color: rgb(107, 122, 143);color: white;"
         th:attr="reportLable='R12',reportAddlCriteria1='C4'">
     </td>
 
     <td id="R12_EXCEEDING_DEPOSITORS"
         th:text="${#numbers.formatDecimal(row.R12_EXCEEDING_DEPOSITORS,1,'COMMA',0,'POINT')}"
-        style="text-align:right;width:200px;"
+        style="text-align:right;width:200px; background-color: rgb(107, 122, 143);color: white;"
         th:attr="reportLable='R12',reportAddlCriteria1='C5'">
     </td>
 
     <td id="R12_COVERED_AMOUNT_PCT"
         th:text="${#numbers.formatDecimal(row.R12_COVERED_AMOUNT_PCT,1,'COMMA',0,'POINT')}"
-        style="text-align:right;width:200px;"
+        style="text-align:right;width:200px; background-color: rgb(107, 122, 143);color: white;"
         th:attr="reportLable='R12',reportAddlCriteria1='C6'">
     </td>
 </tr>
@@ -1413,19 +1413,19 @@ function cancelModify() {
 
     <td id="R13_COVERED_DEPOSITORS_PCT"
         th:text="${#numbers.formatDecimal(row.R13_COVERED_DEPOSITORS_PCT,1,'COMMA',0,'POINT')}"
-        style="text-align:right;width:200px;"
+        style="text-align:right;width:200px; background-color: rgb(107, 122, 143);color: white;"
         th:attr="reportLable='R13',reportAddlCriteria1='C4'">
     </td>
 
     <td id="R13_EXCEEDING_DEPOSITORS"
         th:text="${#numbers.formatDecimal(row.R13_EXCEEDING_DEPOSITORS,1,'COMMA',0,'POINT')}"
-        style="text-align:right;width:200px;"
+        style="text-align:right;width:200px; background-color: rgb(107, 122, 143);color: white;"
         th:attr="reportLable='R13',reportAddlCriteria1='C5'">
     </td>
 
     <td id="R13_COVERED_AMOUNT_PCT"
         th:text="${#numbers.formatDecimal(row.R13_COVERED_AMOUNT_PCT,1,'COMMA',0,'POINT')}"
-        style="text-align:right;width:200px;"
+        style="text-align:right;width:200px; background-color: rgb(107, 122, 143);color: white;"
         th:attr="reportLable='R13',reportAddlCriteria1='C6'">
     </td>
 </tr>
@@ -1450,19 +1450,19 @@ function cancelModify() {
 
     <td id="R14_COVERED_DEPOSITORS_PCT"
         th:text="${#numbers.formatDecimal(row.R14_COVERED_DEPOSITORS_PCT,1,'COMMA',0,'POINT')}"
-        style="text-align:right;width:200px;"
+        style="text-align:right;width:200px; background-color: rgb(107, 122, 143);color: white;"
         th:attr="reportLable='R14',reportAddlCriteria1='C4'">
     </td>
 
     <td id="R14_EXCEEDING_DEPOSITORS"
         th:text="${#numbers.formatDecimal(row.R14_EXCEEDING_DEPOSITORS,1,'COMMA',0,'POINT')}"
-        style="text-align:right;width:200px;"
+        style="text-align:right;width:200px; background-color: rgb(107, 122, 143);color: white;"
         th:attr="reportLable='R14',reportAddlCriteria1='C5'">
     </td>
 
     <td id="R14_COVERED_AMOUNT_PCT"
         th:text="${#numbers.formatDecimal(row.R14_COVERED_AMOUNT_PCT,1,'COMMA',0,'POINT')}"
-        style="text-align:right;width:200px;"
+        style="text-align:right;width:200px; background-color: rgb(107, 122, 143);color: white;"
         th:attr="reportLable='R14',reportAddlCriteria1='C6'">
     </td>
 
@@ -1474,31 +1474,31 @@ function cancelModify() {
 
     <td id="R15_TOTAL_DEPOSIT_AMOUNT"
         th:text="${#numbers.formatDecimal(row.R15_TOTAL_DEPOSIT_AMOUNT,1,'COMMA',0,'POINT')}"
-        style="text-align:right;width:200px;"
+        style="text-align:right;width:200px; background-color: rgb(107, 122, 143);color: white;"
         th:attr="reportLable='R15',reportAddlCriteria1='C2'">
     </td>
 
     <td id="R15_COVERED_DEPOSITORS"
         th:text="${#numbers.formatDecimal(row.R15_COVERED_DEPOSITORS,1,'COMMA',0,'POINT')}"
-        style="text-align:right;width:200px;"
+        style="text-align:right;width:200px; background-color: rgb(107, 122, 143);color: white;"
         th:attr="reportLable='R15',reportAddlCriteria1='C3'">
     </td>
 
     <td id="R15_COVERED_DEPOSITORS_PCT"
         th:text="${#numbers.formatDecimal(row.R15_COVERED_DEPOSITORS_PCT,1,'COMMA',0,'POINT')}"
-        style="text-align:right;width:200px;"
+        style="text-align:right;width:200px; background-color: rgb(107, 122, 143);color: white;"
         th:attr="reportLable='R15',reportAddlCriteria1='C4'">
     </td>
 
     <td id="R15_EXCEEDING_DEPOSITORS"
         th:text="${#numbers.formatDecimal(row.R15_EXCEEDING_DEPOSITORS,1,'COMMA',0,'POINT')}"
-        style="text-align:right;width:200px;"
+        style="text-align:right;width:200px; background-color: rgb(107, 122, 143);color: white;"
         th:attr="reportLable='R15',reportAddlCriteria1='C5'">
     </td>
 
     <td id="R15_COVERED_AMOUNT_PCT"
         th:text="${#numbers.formatDecimal(row.R15_COVERED_AMOUNT_PCT,1,'COMMA',0,'POINT')}"
-        style="text-align:right;width:200px;"
+        style="text-align:right;width:200px; background-color: rgb(107, 122, 143);color: white;"
         th:attr="reportLable='R15',reportAddlCriteria1='C6'">
     </td>
 
