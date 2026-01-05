@@ -42,4 +42,7 @@ public interface BRRS_SCH_17_Detail_Repo extends JpaRepository<SCH_17_Detail_Ent
 	@Query(value = "SELECT * FROM BRRS_SCH_17_DETAILTABLE WHERE ACCT_NUMBER = :acct_number", nativeQuery = true)
 	SCH_17_Detail_Entity findByAcctnumber(@Param("acct_number") String acct_number);
 
+	@Query(value = "SELECT * FROM BRRS_SCH_17_DETAILTABLE WHERE SNO = :Sno", nativeQuery = true)
+	SCH_17_Detail_Entity findBySno(@Param("Sno") String Sno);
+
 }

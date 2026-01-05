@@ -92,110 +92,111 @@ PURPOSE		: BRRS SCH  REPORT
 </style>
 
 <style>
-		.left-arrow-circle {
-			background-color: white;
-			color: #007bff;
-			border-radius: 50%;
-			padding: 8px;
-			margin-right: 10px;
-			cursor: pointer;
-		}
+.left-arrow-circle {
+	background-color: white;
+	color: #007bff;
+	border-radius: 50%;
+	padding: 8px;
+	margin-right: 10px;
+	cursor: pointer;
+}
 
-		/* 🚌 Bus display style box */
-		/* 🚌 Bus display style box */
-					.boards {
-						transform: translateY(6px);
-					  background-color: rgb(107, 122, 143);
-					  color: white;
-					  padding: 5px 80px;
-					  border-radius: 8px;
-					  overflow: hidden;
-					  white-space: nowrap;
-					  flex: 1; /* ✅ makes it take available space dynamically */
-					  min-width: 200px;
-					  box-shadow: 0 0 10px rgb(107, 122, 143);
-					  position: relative;
-					}
+/* 🚌 Bus display style box */
+/* 🚌 Bus display style box */
+.boards {
+	transform: translateY(6px);
+	background-color: rgb(107, 122, 143);
+	color: white;
+	padding: 5px 80px;
+	border-radius: 8px;
+	overflow: hidden;
+	white-space: nowrap;
+	flex: 1; /* ✅ makes it take available space dynamically */
+	min-width: 200px;
+	box-shadow: 0 0 10px rgb(107, 122, 143);
+	position: relative;
+}
 
-		/* ✨ Scrolling animation */
-		.scrolling-text {
-			display: inline-block;
-			font-family: "Courier New", monospace;
-			font-weight: bold;
-			letter-spacing: 1px;
-			animation: scroll-left 10s linear infinite;
-		}
+/* ✨ Scrolling animation */
+.scrolling-text {
+	display: inline-block;
+	font-family: "Courier New", monospace;
+	font-weight: bold;
+	letter-spacing: 1px;
+	animation: scroll-left 10s linear infinite;
+}
 
-		/* Animation keyframes */
-		@keyframes scroll-left {
-			0% {
-				transform: translateX(100%);
-			}
-
-			100% {
-				transform: translateX(-100%);
-			}
-		}
-	</style>
-	
-	
-	<style>
-					/* Keep the header fixed and aligned */
-					.dataTables_scrollHeadInner,
-					.dataTables_scrollBody table {
-					  width: 100% !important;
-					}
-
-					/* Prevent thead shrinking at zoom */
-					.dataTables_scrollHeadInner table {
-					  width: 100% !important;
-					  min-width: 100% !important;
-					}
-
-					#reportdetails {
-					  width: 100% !important;
-					  table-layout: fixed !important;
-					}
-
-					#reportdetails th, 
-					#reportdetails td {
-					  white-space: nowrap;
-					}
-					table.dataTable th.dt-type-numeric,
-						table.dataTable th.dt-type-date,
-						table.dataTable td.dt-type-numeric,
-						table.dataTable td.dt-type-date {
-						    text-align: left !important;
-						}
-						
-						/* Right-align header (6th column = ACCT BALANCE) */
-															table.dataTable th.dt-type-numeric:nth-child(6) {
-															  text-align: right !important;
-															}
-															
-															/* Right-align data (6th column = ACCT BALANCE) */
-																									#reportdetails td:nth-child(6),
-																									.dataTables_scrollHeadInner table th:nth-child(6) {
-																									 text-align: right !important;
-																									 padding-right: 10px !important;
-																										}
-						
-				
+/* Animation keyframes */
+@
+keyframes scroll-left { 0% {
+	transform: translateX(100%);
+}
+100%
+{
+transform
 
 
+:
 
-						  
-						</style>
-				
-	
-	
-	
-	
-	
-	
-	
-	
-	
+ 
+
+translateX
+
+
+(-100%);
+}
+}
+</style>
+
+
+<style>
+/* Keep the header fixed and aligned */
+.dataTables_scrollHeadInner, .dataTables_scrollBody table {
+	width: 100% !important;
+}
+
+/* Prevent thead shrinking at zoom */
+.dataTables_scrollHeadInner table {
+	width: 100% !important;
+	min-width: 100% !important;
+}
+
+#reportdetails {
+	width: 100% !important;
+	table-layout: fixed !important;
+}
+
+#reportdetails th, #reportdetails td {
+	white-space: nowrap;
+}
+
+table.dataTable th.dt-type-numeric, table.dataTable th.dt-type-date,
+	table.dataTable td.dt-type-numeric, table.dataTable td.dt-type-date {
+	text-align: left !important;
+}
+
+/* Right-align header (6th column = ACCT BALANCE) */
+table.dataTable th.dt-type-numeric:nth-child(6) {
+	text-align: right !important;
+}
+
+/* Right-align data (6th column = ACCT BALANCE) */
+#reportdetails td:nth-child(6), .dataTables_scrollHeadInner table th:nth-child(6)
+	{
+	text-align: right !important;
+	padding-right: 10px !important;
+}
+</style>
+
+
+
+
+
+
+
+
+
+
 
 
 <style>
@@ -321,7 +322,7 @@ td {
 
 /* When input or select is focused or has a value, move the label up */
 .form-control:focus ~ .form-legend, .form-control:not (:placeholder-shown
-	) ~ .form-legend {
+	 ) ~ .form-legend {
 	top: -8px;
 	font-size: 1rem;
 	color: #007bff;
@@ -399,8 +400,8 @@ label.error {
 }
 
 .green-cell {
-	 background-color: rgb(107, 122, 143) !important;
-    color: white !important;
+	background-color: rgb(107, 122, 143) !important;
+	color: white !important;
 }
 </style>
 
@@ -476,41 +477,48 @@ $(window).on('beforeunload', function() {
     </script>
 
 
-
 <script th:inline="javascript">
-				  $(document).ready(function () {
-				    var table = $('#reportdetails').DataTable({
-				      scrollY: "550px",
-				      scrollX: true,
-				      scrollCollapse: true,
-				      autoWidth: false,
-				      paging: true,
-				      searching: true,
-				      lengthChange: false,
-				      ordering: true,
-				      pageLength: 100,
-				      fixedHeader: true, // ✅ You can simply set it to true
-					  // ✅ Column width settings
-					   columnDefs: [
-					     { width: "60px", targets: 0 },   // Edit icon column
-					     { width: "150px", targets: 1 }  ,  // S No column
-						 { width: "300px", targets: 7 }    // S No column
-					   ],
+$(document).ready(function () {
 
-				      dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t'
-				    });
+    var table = $('#reportdetails').DataTable({
+        scrollY: "500px",
+        scrollX: true,
+        scrollCollapse: true,
+        autoWidth: false,
+        fixedHeader: true,
 
-				    // ✅ Fix alignment on resize / zoom
-				    $(window).on('resize', function () {
-				      table.columns.adjust().draw(false);
-				    });
+        paging: true,
+        searching: true,
+        ordering: true,
+        pageLength: 100,
+        lengthChange: false,
 
-				    // ✅ Fix initial misalignment if loaded at non-100% zoom
-				    setTimeout(function () {
-				      table.columns.adjust().draw(false);
-				    }, 500);
-				  });
-				</script>
+        columnDefs: [
+            { width: "50px", targets: 0 },   // Edit
+            { width: "60px", targets: 1 },   // S No
+            { width: "120px", targets: 2 },  // Cust ID
+            { width: "140px", targets: 3 },  // Acct Number
+            { width: "190px", targets: 4 },  // Acct Name
+            { width: "190px", targets: 5 },  // Balance
+            { width: "160px", targets: 6 },  // Label
+            { width: "220px", targets: 7 },  // Addl Criteria
+            { width: "120px", targets: 8 }   // Date
+        ],
+
+        dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t'
+    });
+
+    /* Fix alignment on load / resize / zoom */
+    setTimeout(function () {
+        table.columns.adjust().draw(false);
+    }, 300);
+
+    $(window).on('resize', function () {
+        table.columns.adjust().draw(false);
+    });
+
+});
+</script>
 
 
 <script>
@@ -532,13 +540,13 @@ $(window).on('beforeunload', function() {
 
 
 	</script>
-	<script th:inline="javascript">
+<script th:inline="javascript">
 	    /*<![CDATA[*/
 	    const reportId = /*[[${reportid}]]*/ null;
 	    /*]]>*/
 	</script>
 
-	<script>
+<script>
 	    function opensch_17Detail(elem, mode) { 
 			
 			var type = elem.getAttribute('data-type');   
@@ -549,18 +557,19 @@ $(window).on('beforeunload', function() {
 			        }			
 			
 	        const acctNo = elem.getAttribute("data-acctNo");
+	        const SNO = elem.getAttribute("data-SNo");
 	        const asondate = elem.getAttribute("data-asondate");
 	        
 	        // Use the 'reportId' variable initialized above
 	        // Use backticks (`) for a template literal to easily include the variable
-	        location.href = `/BRRS/Reports/${reportId}/Detailspage?formmode=${mode}&acctNo=${acctNo}&asondate=${asondate}`;
+	        location.href = `/BRRS/Reports/${reportId}/Detailspage?formmode=${mode}&SNO=${SNO}&asondate=${asondate}`;
 	    }
 	</script>
 
 
 
 
-	<script>
+<script>
 		function submitSCH_17Update() {
 			const formData = $('#sch_17DetailForm').serialize(); // Ensure correct form ID
 
@@ -1241,28 +1250,30 @@ function fileuploads(btn) {
 
 						<!-- Title -->
 						<h5
-							style="font-family: arial; font-size: 20px; font-weight: bold; color: white; margin: 0 10px; ">
-					SCHEDULES TO PROFIT AND LOSS A/C AS AT</h5>
-							
-							
-							<!-- Moving bus-board text -->
+							style="font-family: arial; font-size: 20px; font-weight: bold; color: white; margin: 0 10px;">
+							SCHEDULES TO PROFIT AND LOSS A/C AS AT</h5>
+
+
+						<!-- Moving bus-board text -->
 						<div class="boards">
-							<p class="scrolling-text">BANK OF BOTSWANA - BANKING SUPERVISION DEPARTMENT </p>
+							<p class="scrolling-text">BANK OF BOTSWANA - BANKING
+								SUPERVISION DEPARTMENT</p>
 						</div>
-							
-							
-							
-							
-							
+
+
+
+
+
 					</div>
 
 					<div class="custom-tab-btn-group nav-buttons"
 						style="display: flex; color: white; align-items: center;">
 						<!-- 📅 Date -->
 						<span class="white-text"
-      style="color: white !important; font-size: 16px; margin-right: 20px;">
-    Report Date: <span th:text="${#strings.replace(asondate, '/', '-')}">2025-07-04</span>
-</span>
+							style="color: white !important; font-size: 16px; margin-right: 20px;">
+							Report Date: <span
+							th:text="${#strings.replace(asondate, '/', '-')}">2025-07-04</span>
+						</span>
 
 						<!-- Buttons -->
 						<input type="hidden" id="selectedTab" th:value="${displaymode}">
@@ -1272,25 +1283,25 @@ function fileuploads(btn) {
 						<button type="button" class="custom-tab-btn"
 							id="custom-tab-btnDetails" onclick="showdetails();"
 							th:if="${displaymode == 'summary'}">Details</button>
-							
-							
-							
-							
-								<!-- Modify button -->
-				 	<button type="button" class="custom-tab-btn"
+
+
+
+
+						<!-- Modify button -->
+						<button type="button" class="custom-tab-btn"
 							onclick="showmodify(this);" title="Click to EDIT Records"
 							th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
-							th:if="${type != 'ARCHIVAL'}" id="addRecord">Modify</button> 
+							th:if="${type != 'ARCHIVAL'}" id="addRecord">Modify</button>
 
 						<!-- Cancel button (hidden initially) -->
 						<button type="button" class="custom-tab-btn"
 							title="Cancel editing" id="cancelRecord"
-							onclick="cancelModify();" style="display: none;">Cancel</button> 
-							
-							
-							
-							
-							
+							onclick="cancelModify();" style="display: none;">Cancel</button>
+
+
+
+
+
 						<button type="button" class="custom-tab-btn"
 							id="custom-tab-btnAdd" th:if="${displaymode == 'summary'}"
 							th:attr="data-reportid=${reportid}, 
@@ -1316,7 +1327,7 @@ function fileuploads(btn) {
 					data-version=${version}  ">
 							<i class="fa fa-download"></i>
 						</button>
-						
+
 					</div>
 				</div>
 
@@ -1325,480 +1336,429 @@ function fileuploads(btn) {
 				<div th:if="${displaymode == 'summary'}">
 					<div class="row">
 						<div class="col-sm-12">
-						
-						
-						<form action="#" method="POST" id="fileupload">
-							<div
-								class="table-wrapper table-responsive scrollable-table-container"
-								style="border-right: 1px solid #dee2e6;">
-								<table
-									class="sticky-header-table table table-bordered table-cell table-sm table-condensed"
-									id="reports">
-									<thead class="thead-light">
-										<tr style="background-color: #b3b6b9">
 
-												<th  colspan="2"
-													style="text-align: center; background-color: #D8D8D8; font-weight: bold; padding: 10px; ">
-													</th>
-												<th 
-													style="text-align: right; background-color: #D8D8D8; font-weight: bold;  padding: 10px;"> 31.03.2025 </th>
 
-												<th 
-													style="text-align: right; background-color: #D8D8D8; font-weight: bold; padding: 10px;"> 30.09.2025</th>
-												
+							<form action="#" method="POST" id="fileupload">
+								<div
+									class="table-wrapper table-responsive scrollable-table-container"
+									style="border-right: 1px solid #dee2e6;">
+									<table
+										class="sticky-header-table table table-bordered table-cell table-sm table-condensed"
+										id="reports">
+										<thead class="thead-light">
+											<tr style="background-color: #b3b6b9">
+
+												<th colspan="2"
+													style="text-align: center; background-color: #D8D8D8; font-weight: bold; padding: 10px;">
+												</th>
+												<th
+													style="text-align: right; background-color: #D8D8D8; font-weight: bold; padding: 10px;">
+													31.03.2025</th>
+
+												<th
+													style="text-align: right; background-color: #D8D8D8; font-weight: bold; padding: 10px;">
+													30.09.2025</th>
+
 											</tr>
 
 
-									</thead>
-									
-									<div >
-									
-								<p style="color:black; font-weight:bold; text-align: left; padding-top: 10px; ">Schedule - 17		
-</p>	
-									
-							<p style="color:black; font-weight:bold; text-align: center; ">BREAK-UP OF PROVISIONS AND CONTINGENCIES APPEARING IN PROFIT & LOSS ACCOUNT		
-</p>
-							</div>
+										</thead>
+
+										<div>
+
+											<p
+												style="color: black; font-weight: bold; text-align: left; padding-top: 10px;">Schedule
+												- 17</p>
+
+											<p
+												style="color: black; font-weight: bold; text-align: center;">BREAK-UP
+												OF PROVISIONS AND CONTINGENCIES APPEARING IN PROFIT & LOSS
+												ACCOUNT</p>
+										</div>
 
 
-									<tbody  
-										style="font-family: Arial;">
-     
-     
-     
-                    				<tr  th:each="report: ${reportsummary}">
-										
-										         <td    style="text-align: center;  "
-											  
-											   	>(a)</td>
+										<tbody style="font-family: Arial;">
 
 
-											
-													<td    style="text-align: left; "
-												th:text="${report?.r9_product ?: ''}"
-												></td>
-												
-												
-													<td  id="r9_31_3_25_amt" 
-													 style="text-align: right; padding-right:10px; "  
-												th:text="${report?.r9_31_3_25_amt ?: ''}"
-												th:attr="RowId='R9', ColumnId='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-												
-												<td id="r9_30_9_25_amt" 
-												 style="text-align: right; padding-right:10px; "  
-												th:text="${report?.r9_30_9_25_amt ?: ''}"
-												th:attr="RowId='R9', ColumnId='C3'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
+
+											<tr th:each="report: ${reportsummary}">
+
+												<td style="text-align: center;">(a)</td>
 
 
-										</tr>
-										
-										<!-- R10 -->
-										
-										
- 	                       <tr th:each="report : ${reportsummary1}" >
-                                  <td style="text-align: center;  width:30px; ">(b)</td>
-    
-    				
-													<td id="ROW10"
-													style=" font-weight: bold; text-align: left; "><input
+
+												<td style="text-align: left;"
+													th:text="${report?.r9_product ?: ''}"></td>
+
+
+												<td id="r9_31_3_25_amt"
+													style="text-align: right; padding-right: 10px;"
+													th:text="${report?.r9_31_3_25_amt ?: ''}"
+													th:attr="RowId='R9', ColumnId='C2'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+
+												<td id="r9_30_9_25_amt"
+													style="text-align: right; padding-right: 10px;"
+													th:text="${report?.r9_30_9_25_amt ?: ''}"
+													th:attr="RowId='R9', ColumnId='C3'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+
+
+											</tr>
+
+											<!-- R10 -->
+
+
+											<tr th:each="report : ${reportsummary1}">
+												<td style="text-align: center; width: 30px;">(b)</td>
+
+
+												<td id="ROW10" style="font-weight: bold; text-align: left;"><input
 													class="display-input Show_input" type="text"
 													th:value="'Adhoc provision for weak standard Assets (BIFR) Accounts'"
 													id="r10_product" name="r10_product"
-													style="background-color: #FFFFFF;  width: -webkit-fill-available; border-color: transparent; text-align: left;"
+													style="background-color: #FFFFFF; width: -webkit-fill-available; border-color: transparent; text-align: left;"
 													readonly /></td>
 
 
-                                                   <td id="ROW10"
-													style=" font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width: 200px;"><input
+												<td id="ROW10"
+													style="font-weight: bold; text-align: right; padding-right: 10px; padding-left: 20px; width: 200px;"><input
 													class="display-input Show_input" type="text"
 													th:value="${report.r10_31_3_25_amt != null ? #numbers.formatDecimal(report.r10_31_3_25_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
 													id="r10_31_3_25_amt" name="R10_C2_r10_31_3_25_amt"
-													style="background-color: #FFFFFF;  width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													style="background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
 													readonly /></td>
-													
-													<td id="ROW10"
-													style=" font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width: 200px;"><input
+
+												<td id="ROW10"
+													style="font-weight: bold; text-align: right; padding-right: 10px; padding-left: 20px; width: 200px;"><input
 													class="display-input Show_input" type="text"
 													th:value="${report.r10_30_9_25_amt != null ? #numbers.formatDecimal(report.r10_30_9_25_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
 													id="r10_30_9_25_amt" name="R10_C3_r10_30_9_25_amt"
 													style="background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
 													readonly /></td>
-   
-
-    
-
-    
-</tr> 
-										
-										
-										<tr th:each="report : ${reportsummary1}">
-    <td style="text-align: center; width:30px;">(c)</td>
-
-    <td id="ROW11"
-        style="font-weight: bold; text-align: left; width:200px;">
-        <input
-            class="display-input Show_input"
-            type="text"
-            th:value="'Adhoc General Provision for 90 days delinquency norms'"
-            id="r11_product"
-            name="r11_product"
-            style="background-color:#FFFFFF; width:-webkit-fill-available; border-color:transparent; text-align:left;"
-            readonly />
-    </td>
-
-    <td id="ROW11"
-        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;">
-        <input
-            class="display-input Show_input"
-            type="text"
-            th:value="${report.r11_31_3_25_amt != null ? #numbers.formatDecimal(report.r11_31_3_25_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
-            id="r11_31_3_25_amt"
-            name="R11_C2_r11_31_3_25_amt"
-            style="background-color:#FFFFFF; width:-webkit-fill-available; height:28px; border-color:transparent; text-align:right;"
-            readonly />
-    </td>
-
-    <td id="ROW11"
-        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;">
-        <input
-            class="display-input Show_input"
-            type="text"
-            th:value="${report.r11_30_9_25_amt != null ? #numbers.formatDecimal(report.r11_30_9_25_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
-            id="r11_30_9_25_amt"
-            name="R11_C3_r11_30_9_25_amt"
-            style="background-color:#FFFFFF; width:-webkit-fill-available; height:28px; border-color:transparent; text-align:right;"
-            readonly />
-    </td>
-</tr>
-		
-		
-		<tr th:each="report : ${reportsummary1}">
-    <td style="text-align: center; width:30px;">(d)</td>
-
-    <td id="ROW12"
-        style="font-weight: bold; text-align: left;  width:200px;">
-        <input
-            class="display-input Show_input"
-            type="text"
-            th:value="'Provision towards sacrifice of interest in restructured standard and sub-standard accounts'"
-            id="r12_product"
-            name="r12_product"
-            style="background-color:#FFFFFF; width:-webkit-fill-available; border-color:transparent; text-align:left;"
-            readonly />
-    </td>
-
-    <td id="ROW12"
-        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;">
-        <input
-            class="display-input Show_input"
-            type="text"
-            th:value="${report.r12_31_3_25_amt != null ? #numbers.formatDecimal(report.r12_31_3_25_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
-            id="r12_31_3_25_amt"
-            name="R12_C2_r12_31_3_25_amt"
-            style="background-color:#FFFFFF; width:-webkit-fill-available; height:28px; border-color:transparent; text-align:right;"
-            readonly />
-    </td>
-
-    <td id="ROW12"
-        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;">
-        <input
-            class="display-input Show_input"
-            type="text"
-            th:value="${report.r12_30_9_25_amt != null ? #numbers.formatDecimal(report.r12_30_9_25_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
-            id="r12_30_9_25_amt"
-            name="R12_C3_r12_30_9_25_amt"
-            style="background-color:#FFFFFF; width:-webkit-fill-available; height:28px; border-color:transparent; text-align:right;"
-            readonly />
-    </td>
-</tr>
-										
-	
-<!-- R13 -->
-<tr th:each="report: ${reportsummary}">
-    <td style="text-align: center; ">(e)</td>
-
-    <td style="text-align: left;"
-        th:text="${report?.r13_product ?: ''}">
-    </td>
-
-    <td id="r13_31_3_25_amt" 
-    
-     style="text-align: right; padding-right:10px;"
-        th:text="${report?.r13_31_3_25_amt ?: ''}"
-        th:attr="RowId='R13', ColumnId='C2'"
-        onclick="showdetailsbyRowAndColumn(this)">
-    </td>
-
-    <td  id="r13_30_9_25_amt" 
-    style="text-align: right; padding-right:10px;"
-        th:text="${report?.r13_30_9_25_amt ?: ''}"
-        th:attr="RowId='R13', ColumnId='C3'"
-        onclick="showdetailsbyRowAndColumn(this)">
-    </td>
-</tr>
-
-<tr th:each="report : ${reportsummary1}">
-    <td style="text-align: center; width:30px;">(f)</td>
-
-    <td id="ROW14"
-        style="font-weight: bold; text-align: left;  width:200px;">
-        <input
-            class="display-input Show_input"
-            type="text"
-            th:value="'Provision for depreciation on investment (incl. matured securities)'"
-            id="r14_product"
-            name="r14_product"
-            style="background-color:#FFFFFF; width:-webkit-fill-available; border-color:transparent; text-align:left;"
-            readonly />
-    </td>
-
-    <td id="ROW14"
-        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;">
-        <input
-            class="display-input Show_input"
-            type="text"
-            th:value="${report.r14_31_3_25_amt != null ? #numbers.formatDecimal(report.r14_31_3_25_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
-            id="r14_31_3_25_amt"
-            name="R14_C2_r14_31_3_25_amt"
-            style="background-color:#FFFFFF; width:-webkit-fill-available; height:28px; border-color:transparent; text-align:right;"
-            readonly />
-    </td>
-
-    <td id="ROW14"
-        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;">
-        <input
-            class="display-input Show_input"
-            type="text"
-            th:value="${report.r14_30_9_25_amt != null ? #numbers.formatDecimal(report.r14_30_9_25_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
-            id="r14_30_9_25_amt"
-            name="R14_C3_r14_30_9_25_amt"
-            style="background-color:#FFFFFF; width:-webkit-fill-available; height:28px; border-color:transparent; text-align:right;"
-            readonly />
-    </td>
-</tr>
-
-<tr th:each="report : ${reportsummary1}">
-    <td style="text-align: center; width:30px;">(g)</td>
-
-    <td id="ROW15"
-        style="font-weight: bold; text-align: left;  width:200px;">
-        <input
-            class="display-input Show_input"
-            type="text"
-            th:value="'Provision for Standard Assets '"
-            id="r15_product"
-            name="r15_product"
-            style="background-color:#FFFFFF; width:-webkit-fill-available; border-color:transparent; text-align:left;"
-            readonly />
-    </td>
-
-    <td id="ROW15"
-        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;">
-        <input
-            class="display-input Show_input"
-            type="text"
-            th:value="${report.r15_31_3_25_amt != null ? #numbers.formatDecimal(report.r15_31_3_25_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
-            id="r15_31_3_25_amt"
-            name="R15_C2_r15_31_3_25_amt"
-            style="background-color:#FFFFFF; width:-webkit-fill-available; height:28px; border-color:transparent; text-align:right;"
-            readonly />
-    </td>
-
-    <td id="ROW15"
-        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;">
-        <input
-            class="display-input Show_input"
-            type="text"
-            th:value="${report.r15_30_9_25_amt != null ? #numbers.formatDecimal(report.r15_30_9_25_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
-            id="r15_30_9_25_amt"
-            name="R15_C3_r15_30_9_25_amt"
-            style="background-color:#FFFFFF; width:-webkit-fill-available; height:28px; border-color:transparent; text-align:right;"
-            readonly />
-    </td>
-</tr>
-
-<tr th:each="report : ${reportsummary1}">
-    <td style="text-align: center; width:30px;">(h)</td>
-
-    <td id="ROW16"
-        style="font-weight: bold; text-align: left;  width:200px;">
-        <input
-            class="display-input Show_input"
-            type="text"
-            th:value="'Others provisions( Interim Dividend)'"
-            id="r16_product"
-            name="r16_product"
-            style="background-color:#FFFFFF; width:-webkit-fill-available; border-color:transparent; text-align:left;"
-            readonly />
-    </td>
-
-    <td id="ROW16"
-        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;">
-        <input
-            class="display-input Show_input"
-            type="text"
-            th:value="${report.r16_31_3_25_amt != null ? #numbers.formatDecimal(report.r16_31_3_25_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
-            id="r16_31_3_25_amt"
-            name="R16_C2_r16_31_3_25_amt"
-            style="background-color:#FFFFFF; width:-webkit-fill-available; height:28px; border-color:transparent; text-align:right;"
-            readonly />
-    </td>
-
-    <td id="ROW16"
-        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;">
-        <input
-            class="display-input Show_input"
-            type="text"
-            th:value="${report.r16_30_9_25_amt != null ? #numbers.formatDecimal(report.r16_30_9_25_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
-            id="r16_30_9_25_amt"
-            name="R16_C3_r16_30_9_25_amt"
-            style="background-color:#FFFFFF; width:-webkit-fill-available; height:28px; border-color:transparent; text-align:right;"
-            readonly />
-    </td>
-</tr>
-
-<tr th:each="report : ${reportsummary1}">
-    <td style="text-align: center; width:30px;"></td>
-
-    <td id="ROW17"
-        style="font-weight: bold; text-align: left;  width:200px;  " >
-        <input class="display-input Show_input " type="text"
-            th:value="'Total'"
-            id="r17_product" name="r17_product"
-            style="background-color:#FFFFFF; width:-webkit-fill-available; border-color:transparent; text-align:left; font-weight:bold;"
-            readonly />
-    </td>
-
-    <td id="ROW17"
-        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;" class="green-cell">
-        <input class="display-input Show_input green-cell" type="text"
-            th:value="${report.r17_31_3_25_amt }"
-            id="r17_31_3_25_amt" name="R17_C2_r17_31_3_25_amt"
-            style="background-color:#FFFFFF; width:-webkit-fill-available; height:28px; border-color:transparent; text-align:right;"
-            readonly />
-    </td>
-
-    <td id="ROW17"
-        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;" class="green-cell">
-        <input class="display-input Show_input green-cell" type="text"
-            th:value="${report.r17_30_9_25_amt != null ? #numbers.formatDecimal(report.r17_30_9_25_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
-            id="r17_30_9_25_amt" name="R17_C3_r17_30_9_25_amt"
-            style="background-color:#FFFFFF; width:-webkit-fill-available; height:28px; border-color:transparent; text-align:right;"
-            readonly />
-    </td>
-</tr>
-
-
-<tr th:each="report : ${reportsummary1}">
-    <td style="text-align: center; width:30px;"></td>
-
-    <td id="ROW18"
-        style="font-weight: bold; text-align: left;  width:200px;">
-        <input class="display-input Show_input" type="text"
-            th:value="'Less: Excess Provision for Depreciation on Investments'"
-            id="r18_product" name="r18_product"
-            style="background-color:#FFFFFF; width:-webkit-fill-available; border-color:transparent; text-align:left;"
-            readonly />
-    </td>
-
-    <td id="ROW18"
-        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;">
-        <input class="display-input Show_input" type="text"
-            th:value="${report.r18_31_3_25_amt != null ? #numbers.formatDecimal(report.r18_31_3_25_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
-            id="r18_31_3_25_amt" name="R18_C2_r18_31_3_25_amt"
-            style="background-color:#FFFFFF; width:-webkit-fill-available; height:28px; border-color:transparent; text-align:right;"
-            readonly />
-    </td>
-
-    <td id="ROW18"
-        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;">
-        <input class="display-input Show_input" type="text"
-            th:value="${report.r18_30_9_25_amt != null ? #numbers.formatDecimal(report.r18_30_9_25_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
-            id="r18_30_9_25_amt" name="R18_C3_r18_30_9_25_amt"
-            style="background-color:#FFFFFF; width:-webkit-fill-available; height:28px; border-color:transparent; text-align:right;"
-            readonly />
-    </td>
-</tr>
-
-
-<tr th:each="report : ${reportsummary1}">
-    <td style="text-align: center; width:30px;"></td>
-
-    <td id="ROW19"
-        style="font-weight: bold; text-align: left; padding-right:20px; width:200px;">
-        <input class="display-input Show_input" type="text"
-            th:value="'         Excess provision –Others'"
-            id="r19_product" name="r19_product"
-            style="background-color:#FFFFFF; width:-webkit-fill-available; border-color:transparent; text-align:left;"
-            readonly />
-    </td>
-
-    <td id="ROW19"
-        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;">
-        <input class="display-input Show_input" type="text"
-            th:value="${report.r19_31_3_25_amt != null ? #numbers.formatDecimal(report.r19_31_3_25_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
-            id="r19_31_3_25_amt" name="R19_C2_r19_31_3_25_amt"
-            style="background-color:#FFFFFF; width:-webkit-fill-available; height:28px; border-color:transparent; text-align:right;"
-            readonly />
-    </td>
-
-    <td id="ROW19"
-        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;">
-        <input class="display-input Show_input" type="text"
-            th:value="${report.r19_30_9_25_amt != null ? #numbers.formatDecimal(report.r19_30_9_25_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
-            id="r19_30_9_25_amt" name="R19_C3_r19_30_9_25_amt"
-            style="background-color:#FFFFFF; width:-webkit-fill-available; height:28px; border-color:transparent; text-align:right;"
-            readonly />
-    </td>
-</tr>
-
-<tr th:each="report : ${reportsummary1}">
-    <td style="text-align: center; width:30px;"></td>
-
-    <td id="ROW20"
-        style="font-weight: bold; text-align: left;  width:200px;">
-        <input class="display-input Show_input" type="text"
-            th:value="' TOTAL'"
-            id="r20_product" name="r20_product"
-            style="background-color:#FFFFFF; width:-webkit-fill-available; border-color:transparent; text-align:left; font-weight:bold;"
-            readonly />
-    </td>
-
-    <td id="ROW20"
-        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;" class="green-cell">
-        <input class="display-input Show_input green-cell" type="text"
-            th:value="${report.r20_31_3_25_amt != null ? #numbers.formatDecimal(report.r20_31_3_25_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
-            id="r20_31_3_25_amt" name="R20_C2_r20_31_3_25_amt"
-            style="background-color:#FFFFFF; width:-webkit-fill-available; height:28px; border-color:transparent; text-align:right;"
-            readonly />
-    </td>
-
-    <td id="ROW20"
-        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;" class="green-cell">
-        <input class="display-input Show_input green-cell" type="text"
-            th:value="${report.r20_30_9_25_amt != null ? #numbers.formatDecimal(report.r20_30_9_25_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
-            id="r20_30_9_25_amt" name="R20_C3_r20_30_9_25_amt"
-            style="background-color:#FFFFFF; width:-webkit-fill-available; height:28px; border-color:transparent; text-align:right;"
-            readonly />
-    </td>
-</tr>
 
 
 
 
-										
-										
-										
 
-									</tbody>
-									
-								</table>
+											</tr>
 
-							</div>
 
-<div style="text-align: center; margin-top: 10px;">
+											<tr th:each="report : ${reportsummary1}">
+												<td style="text-align: center; width: 30px;">(c)</td>
+
+												<td id="ROW11"
+													style="font-weight: bold; text-align: left; width: 200px;">
+													<input class="display-input Show_input" type="text"
+													th:value="'Adhoc General Provision for 90 days delinquency norms'"
+													id="r11_product" name="r11_product"
+													style="background-color: #FFFFFF; width: -webkit-fill-available; border-color: transparent; text-align: left;"
+													readonly />
+												</td>
+
+												<td id="ROW11"
+													style="font-weight: bold; text-align: right; padding-right: 10px; padding-left: 20px; width: 200px;">
+													<input class="display-input Show_input" type="text"
+													th:value="${report.r11_31_3_25_amt != null ? #numbers.formatDecimal(report.r11_31_3_25_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r11_31_3_25_amt" name="R11_C2_r11_31_3_25_amt"
+													style="background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly />
+												</td>
+
+												<td id="ROW11"
+													style="font-weight: bold; text-align: right; padding-right: 10px; padding-left: 20px; width: 200px;">
+													<input class="display-input Show_input" type="text"
+													th:value="${report.r11_30_9_25_amt != null ? #numbers.formatDecimal(report.r11_30_9_25_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r11_30_9_25_amt" name="R11_C3_r11_30_9_25_amt"
+													style="background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly />
+												</td>
+											</tr>
+
+
+											<tr th:each="report : ${reportsummary1}">
+												<td style="text-align: center; width: 30px;">(d)</td>
+
+												<td id="ROW12"
+													style="font-weight: bold; text-align: left; width: 200px;">
+													<input class="display-input Show_input" type="text"
+													th:value="'Provision towards sacrifice of interest in restructured standard and sub-standard accounts'"
+													id="r12_product" name="r12_product"
+													style="background-color: #FFFFFF; width: -webkit-fill-available; border-color: transparent; text-align: left;"
+													readonly />
+												</td>
+
+												<td id="ROW12"
+													style="font-weight: bold; text-align: right; padding-right: 10px; padding-left: 20px; width: 200px;">
+													<input class="display-input Show_input" type="text"
+													th:value="${report.r12_31_3_25_amt != null ? #numbers.formatDecimal(report.r12_31_3_25_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r12_31_3_25_amt" name="R12_C2_r12_31_3_25_amt"
+													style="background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly />
+												</td>
+
+												<td id="ROW12"
+													style="font-weight: bold; text-align: right; padding-right: 10px; padding-left: 20px; width: 200px;">
+													<input class="display-input Show_input" type="text"
+													th:value="${report.r12_30_9_25_amt != null ? #numbers.formatDecimal(report.r12_30_9_25_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r12_30_9_25_amt" name="R12_C3_r12_30_9_25_amt"
+													style="background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly />
+												</td>
+											</tr>
+
+
+											<!-- R13 -->
+											<tr th:each="report: ${reportsummary}">
+												<td style="text-align: center;">(e)</td>
+
+												<td style="text-align: left;"
+													th:text="${report?.r13_product ?: ''}"></td>
+
+												<td id="r13_31_3_25_amt"
+													style="text-align: right; padding-right: 10px;"
+													th:text="${report?.r13_31_3_25_amt ?: ''}"
+													th:attr="RowId='R13', ColumnId='C2'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+
+												<td id="r13_30_9_25_amt"
+													style="text-align: right; padding-right: 10px;"
+													th:text="${report?.r13_30_9_25_amt ?: ''}"
+													th:attr="RowId='R13', ColumnId='C3'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+											</tr>
+
+											<tr th:each="report : ${reportsummary1}">
+												<td style="text-align: center; width: 30px;">(f)</td>
+
+												<td id="ROW14"
+													style="font-weight: bold; text-align: left; width: 200px;">
+													<input class="display-input Show_input" type="text"
+													th:value="'Provision for depreciation on investment (incl. matured securities)'"
+													id="r14_product" name="r14_product"
+													style="background-color: #FFFFFF; width: -webkit-fill-available; border-color: transparent; text-align: left;"
+													readonly />
+												</td>
+
+												<td id="ROW14"
+													style="font-weight: bold; text-align: right; padding-right: 10px; padding-left: 20px; width: 200px;">
+													<input class="display-input Show_input" type="text"
+													th:value="${report.r14_31_3_25_amt != null ? #numbers.formatDecimal(report.r14_31_3_25_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r14_31_3_25_amt" name="R14_C2_r14_31_3_25_amt"
+													style="background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly />
+												</td>
+
+												<td id="ROW14"
+													style="font-weight: bold; text-align: right; padding-right: 10px; padding-left: 20px; width: 200px;">
+													<input class="display-input Show_input" type="text"
+													th:value="${report.r14_30_9_25_amt != null ? #numbers.formatDecimal(report.r14_30_9_25_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r14_30_9_25_amt" name="R14_C3_r14_30_9_25_amt"
+													style="background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly />
+												</td>
+											</tr>
+
+											<tr th:each="report : ${reportsummary1}">
+												<td style="text-align: center; width: 30px;">(g)</td>
+
+												<td id="ROW15"
+													style="font-weight: bold; text-align: left; width: 200px;">
+													<input class="display-input Show_input" type="text"
+													th:value="'Provision for Standard Assets '"
+													id="r15_product" name="r15_product"
+													style="background-color: #FFFFFF; width: -webkit-fill-available; border-color: transparent; text-align: left;"
+													readonly />
+												</td>
+
+												<td id="ROW15"
+													style="font-weight: bold; text-align: right; padding-right: 10px; padding-left: 20px; width: 200px;">
+													<input class="display-input Show_input" type="text"
+													th:value="${report.r15_31_3_25_amt != null ? #numbers.formatDecimal(report.r15_31_3_25_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r15_31_3_25_amt" name="R15_C2_r15_31_3_25_amt"
+													style="background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly />
+												</td>
+
+												<td id="ROW15"
+													style="font-weight: bold; text-align: right; padding-right: 10px; padding-left: 20px; width: 200px;">
+													<input class="display-input Show_input" type="text"
+													th:value="${report.r15_30_9_25_amt != null ? #numbers.formatDecimal(report.r15_30_9_25_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r15_30_9_25_amt" name="R15_C3_r15_30_9_25_amt"
+													style="background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly />
+												</td>
+											</tr>
+
+											<tr th:each="report : ${reportsummary1}">
+												<td style="text-align: center; width: 30px;">(h)</td>
+
+												<td id="ROW16"
+													style="font-weight: bold; text-align: left; width: 200px;">
+													<input class="display-input Show_input" type="text"
+													th:value="'Others provisions( Interim Dividend)'"
+													id="r16_product" name="r16_product"
+													style="background-color: #FFFFFF; width: -webkit-fill-available; border-color: transparent; text-align: left;"
+													readonly />
+												</td>
+
+												<td id="ROW16"
+													style="font-weight: bold; text-align: right; padding-right: 10px; padding-left: 20px; width: 200px;">
+													<input class="display-input Show_input" type="text"
+													th:value="${report.r16_31_3_25_amt != null ? #numbers.formatDecimal(report.r16_31_3_25_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r16_31_3_25_amt" name="R16_C2_r16_31_3_25_amt"
+													style="background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly />
+												</td>
+
+												<td id="ROW16"
+													style="font-weight: bold; text-align: right; padding-right: 10px; padding-left: 20px; width: 200px;">
+													<input class="display-input Show_input" type="text"
+													th:value="${report.r16_30_9_25_amt != null ? #numbers.formatDecimal(report.r16_30_9_25_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r16_30_9_25_amt" name="R16_C3_r16_30_9_25_amt"
+													style="background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly />
+												</td>
+											</tr>
+
+											<tr th:each="report : ${reportsummary1}">
+												<td style="text-align: center; width: 30px;"></td>
+
+												<td id="ROW17"
+													style="font-weight: bold; text-align: left; width: 200px;">
+													<input class="display-input Show_input " type="text"
+													th:value="'Total'" id="r17_product" name="r17_product"
+													style="background-color: #FFFFFF; width: -webkit-fill-available; border-color: transparent; text-align: left; font-weight: bold;"
+													readonly />
+												</td>
+
+												<td id="ROW17"
+													style="font-weight: bold; text-align: right; padding-right: 10px; padding-left: 20px; width: 200px;"
+													class="green-cell"><input
+													class="display-input Show_input green-cell" type="text"
+													th:value="${report.r17_31_3_25_amt }" id="r17_31_3_25_amt"
+													name="R17_C2_r17_31_3_25_amt"
+													style="background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW17"
+													style="font-weight: bold; text-align: right; padding-right: 10px; padding-left: 20px; width: 200px;"
+													class="green-cell"><input
+													class="display-input Show_input green-cell" type="text"
+													th:value="${report.r17_30_9_25_amt != null ? #numbers.formatDecimal(report.r17_30_9_25_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r17_30_9_25_amt" name="R17_C3_r17_30_9_25_amt"
+													style="background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+											</tr>
+
+
+											<tr th:each="report : ${reportsummary1}">
+												<td style="text-align: center; width: 30px;"></td>
+
+												<td id="ROW18"
+													style="font-weight: bold; text-align: left; width: 200px;">
+													<input class="display-input Show_input" type="text"
+													th:value="'Less: Excess Provision for Depreciation on Investments'"
+													id="r18_product" name="r18_product"
+													style="background-color: #FFFFFF; width: -webkit-fill-available; border-color: transparent; text-align: left;"
+													readonly />
+												</td>
+
+												<td id="ROW18"
+													style="font-weight: bold; text-align: right; padding-right: 10px; padding-left: 20px; width: 200px;">
+													<input class="display-input Show_input" type="text"
+													th:value="${report.r18_31_3_25_amt != null ? #numbers.formatDecimal(report.r18_31_3_25_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r18_31_3_25_amt" name="R18_C2_r18_31_3_25_amt"
+													style="background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly />
+												</td>
+
+												<td id="ROW18"
+													style="font-weight: bold; text-align: right; padding-right: 10px; padding-left: 20px; width: 200px;">
+													<input class="display-input Show_input" type="text"
+													th:value="${report.r18_30_9_25_amt != null ? #numbers.formatDecimal(report.r18_30_9_25_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r18_30_9_25_amt" name="R18_C3_r18_30_9_25_amt"
+													style="background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly />
+												</td>
+											</tr>
+
+
+											<tr th:each="report : ${reportsummary1}">
+												<td style="text-align: center; width: 30px;"></td>
+
+												<td id="ROW19"
+													style="font-weight: bold; text-align: left; padding-right: 20px; width: 200px;">
+													<input class="display-input Show_input" type="text"
+													th:value="'         Excess provision –Others'"
+													id="r19_product" name="r19_product"
+													style="background-color: #FFFFFF; width: -webkit-fill-available; border-color: transparent; text-align: left;"
+													readonly />
+												</td>
+
+												<td id="ROW19"
+													style="font-weight: bold; text-align: right; padding-right: 10px; padding-left: 20px; width: 200px;">
+													<input class="display-input Show_input" type="text"
+													th:value="${report.r19_31_3_25_amt != null ? #numbers.formatDecimal(report.r19_31_3_25_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r19_31_3_25_amt" name="R19_C2_r19_31_3_25_amt"
+													style="background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly />
+												</td>
+
+												<td id="ROW19"
+													style="font-weight: bold; text-align: right; padding-right: 10px; padding-left: 20px; width: 200px;">
+													<input class="display-input Show_input" type="text"
+													th:value="${report.r19_30_9_25_amt != null ? #numbers.formatDecimal(report.r19_30_9_25_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r19_30_9_25_amt" name="R19_C3_r19_30_9_25_amt"
+													style="background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly />
+												</td>
+											</tr>
+
+											<tr th:each="report : ${reportsummary1}">
+												<td style="text-align: center; width: 30px;"></td>
+
+												<td id="ROW20"
+													style="font-weight: bold; text-align: left; width: 200px;">
+													<input class="display-input Show_input" type="text"
+													th:value="' TOTAL'" id="r20_product" name="r20_product"
+													style="background-color: #FFFFFF; width: -webkit-fill-available; border-color: transparent; text-align: left; font-weight: bold;"
+													readonly />
+												</td>
+
+												<td id="ROW20"
+													style="font-weight: bold; text-align: right; padding-right: 10px; padding-left: 20px; width: 200px;"
+													class="green-cell"><input
+													class="display-input Show_input green-cell" type="text"
+													th:value="${report.r20_31_3_25_amt != null ? #numbers.formatDecimal(report.r20_31_3_25_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r20_31_3_25_amt" name="R20_C2_r20_31_3_25_amt"
+													style="background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW20"
+													style="font-weight: bold; text-align: right; padding-right: 10px; padding-left: 20px; width: 200px;"
+													class="green-cell"><input
+													class="display-input Show_input green-cell" type="text"
+													th:value="${report.r20_30_9_25_amt != null ? #numbers.formatDecimal(report.r20_30_9_25_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r20_30_9_25_amt" name="R20_C3_r20_30_9_25_amt"
+													style="background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+											</tr>
+
+
+
+
+
+
+
+
+										</tbody>
+
+									</table>
+
+								</div>
+
+								<div style="text-align: center; margin-top: 10px;">
 
 									<button id="submitButton" type="button"
 										class="custom-tab-btn Show_input" form="fileupload"
@@ -1807,163 +1767,173 @@ function fileuploads(btn) {
 								</div>
 
 
-                  </form>
+							</form>
 
 						</div>
 					</div>
 				</div>
 
-				<div th:if="${displaymode == 'Details'}" >
-					<div class="row"  >
-						<div class="col-sm-12" >
-							<div class="table-responsive scrollable-table-container"
+				<div th:if="${displaymode == 'Details'}">
+					<div class="row">
+						<div class="col-sm-12">
+							<div class="table-responsive"
 								style="border-right: 1px solid #dee2e6;">
-								<table class="table table-striped table-hover" id="reportdetails">
-								<thead class="thead-light">
-										<tr>
-											<th></th>
-											<th>S No</th>
-											<th>CUST_ID</th>
-											<th>ACCT_NUMBER</th>
-											<th>ACCT_NAME</th>
-											<th style="text-align:right;">ACCT_BALANCE_IN_PULA</th>
-											<th>REPORT LABEL</th>
-											<th>REPORT ADDL CRITERIA1</th>
-											<th>REPORT_DATE</th>
-										</tr>
+								<table class="table table-striped table-hover"
+									id="reportdetails" style="width: 100%; table-layout: fixed;">
 
+									<thead class="thead-light">
+										<tr>
+											<th style="width: 50px; text-align: center;"></th>
+											<th style="width: 60px;">S No</th>
+											<th style="width: 120px;">CUST_ID</th>
+											<th style="width: 140px;">ACCT_NUMBER</th>
+											<th style="width: 220px;">ACCT_NAME</th>
+											<th style="width: 140px; text-align: right;">ACCT_BALANCE_IN_PULA</th>
+											<th style="width: 160px;">REPORT LABEL</th>
+											<th style="width: 250px;">REPORT ADDL CRITERIA1</th>
+											<th style="width: 120px;">REPORT_DATE</th>
+										</tr>
 									</thead>
 
 									<tbody style="font-family: Arial;">
 										<tr th:each="report, srlno : ${reportdetails}">
-											<td>
-												<a data-toggle="tooltip" class="editrec"
-													title="Click to Edit this Record">
-													<i class="fas fa-edit" style="color: black; cursor:pointer;"
-														th:attr="data-acctNo=${report.acctNumber},
-																							data-asondate=${#dates.format(report.reportDate, 'dd-MM-yyyy')},data-type=${type}"
-														onclick="opensch_17Detail(this, 'edit')"></i>
-
-												</a>
-											</td>
-
+											<!-- Edit Column -->
+											<td style="min-width: 50px; text-align: center;"><a
+												data-toggle="tooltip" class="editrec"
+												title="Click to Edit this Record"
+												th:if="${report.reportRemarks != 'MAN'}"> <i
+													class="fas fa-edit" style="color: black; cursor: pointer;"
+													th:attr="data-acctNo=${report.acctNumber},
+													data-SNo=${report.sno},
+                                    data-asondate=${#dates.format(report.reportDate, 'dd-MM-yyyy')},
+                                    data-type=${type}"
+													onclick="opensch_17Detail(this, 'edit')"></i>
+											</a></td>
 
 											<td th:text="${srlno.index + 1}"></td>
 											<td th:text="${report.custId}"></td>
 											<td th:text="${report.acctNumber}"></td>
 											<td th:text="${report.acctName}"></td>
 
-											<td style="text-align:right !important;"
-    th:text="${#numbers.formatDecimal(report.acctBalanceInpula, 1, 'COMMA', 0, 'POINT')}">
-</td>
-
+											<td style="text-align: right;"
+												th:text="${#numbers.formatDecimal(report.acctBalanceInpula, 1, 'COMMA', 0, 'POINT')}">
+											</td>
 
 											<td th:text="${report.reportLabel}"></td>
 											<td th:text="${report.reportAddlCriteria_1}"></td>
-											<td th:text="${#dates.format(report.reportDate, 'dd-MM-yyyy')}"></td>
+											<td
+												th:text="${#dates.format(report.reportDate, 'dd-MM-yyyy')}"></td>
 										</tr>
 									</tbody>
 								</table>
-
 							</div>
 
-							<!-- Submit Button -->
-							<div style="text-align: center; margin-top: 15px; background-color: white;">
-								<button id="submitButton" type="button" class="custom-tab-btn Show_input"
-									onclick="updateform();" style="display: none;">
-									Submit
-								</button>
-							</div>
+
+							
 						</div>
 					</div>
 				</div>
-				
-				
+
+
 				<!-- sch_17Data -->
-			<div th:if="${formmode == 'edit'}" class="card">
+				<div th:if="${formmode == 'edit'}" class="card">
 
 
-				<div class="card-body">
-					<form th:object="${sch_17Data}" method="post" id="sch_17DetailForm">
-						<div class="row formline" style="margin-top:10px;">
-							<label class="col-sm-2">Customer ID</label>
-							<div class="col-sm-3">
-								<input type="text" th:field="*{custId}" class="form-control form-control-sm" readonly />
-							</div>
-
-							<div class="col-sm-1"></div>
-
-							<label class="col-sm-2">Account Number</label>
-							<div class="col-sm-3">
-								<input type="text" th:field="*{acctNumber}" name="acctNumber"
-									class="form-control form-control-sm" readonly />
-							</div>
-						</div>
-
-						<div class="row formline" style="margin-top:10px;">
-							<label class="col-sm-2">Account Name</label>
-							<div class="col-sm-3">
-								<input type="text" th:field="*{acctName}" class="form-control form-control-sm" readonly />
-							</div>
-
-							<div class="col-sm-1"></div>
-
-							<label class="col-sm-2">Acct Balance</label>
-							<div class="col-sm-3">
-									<input type="number" step="0.01" th:field="*{acctBalanceInpula}"
-										class="form-control form-control-sm" style="text-align:right;" />
+					<div class="card-body">
+						<form th:object="${sch_17Data}" method="post"
+							id="sch_17DetailForm">
+							<div class="row formline" style="margin-top: 10px;">
+								<label class="col-sm-2">Customer ID</label>
+								<div class="col-sm-3">
+									<input type="text" th:field="*{custId}"
+										class="form-control form-control-sm" readonly />
 								</div>
-						</div>
 
-						<div class="row formline" style="margin-top:10px;">
-							<label class="col-sm-2">Report Label</label>
-							<div class="col-sm-3">
-								<input type="text" th:field="*{reportLabel}" class="form-control form-control-sm" readonly />
+								<div class="col-sm-1"></div>
+
+								<label class="col-sm-2">Account Number</label>
+								<div class="col-sm-3">
+									<input type="text" th:field="*{acctNumber}" name="acctNumber"
+										class="form-control form-control-sm" readonly />
+								</div>
 							</div>
 
-							<div class="col-sm-1"></div>
+							<div class="row formline" style="margin-top: 10px;">
+								<label class="col-sm-2">Account Name</label>
+								<div class="col-sm-3">
+									<input type="text" th:field="*{acctName}"
+										class="form-control form-control-sm" readonly />
+								</div>
 
-							<label class="col-sm-2">Report Addl Criteria 1</label>
-							<div class="col-sm-3">
-								<input type="text" th:field="*{reportAddlCriteria_1}" class="form-control form-control-sm"
-									readonly />
+								<div class="col-sm-1"></div>
+
+								<label class="col-sm-2">Acct Balance</label>
+								<div class="col-sm-3">
+									<input type="number" step="0.01"
+										th:field="*{acctBalanceInpula}"
+										class="form-control form-control-sm"
+										style="text-align: right;" />
+								</div>
 							</div>
-						</div>
 
-						<div class="row formline" style="margin-top:10px;">
-							<label class="col-sm-2">Report Date</label>
-							<div class="col-sm-3">
-								<input type="date" name="reportDate" class="form-control form-control-sm"readonly
-									th:value="${#dates.format(sch_17Data.reportDate, 'yyyy-MM-dd')}" />
+							<div class="row formline" style="margin-top: 10px;">
+								<label class="col-sm-2">Report Label</label>
+								<div class="col-sm-3">
+									<input type="text" th:field="*{reportLabel}"
+										class="form-control form-control-sm" readonly />
+								</div>
+
+								<div class="col-sm-1"></div>
+
+								<label class="col-sm-2">Report Addl Criteria 1</label>
+								<div class="col-sm-3">
+									<input type="text" th:field="*{reportAddlCriteria_1}"
+										class="form-control form-control-sm" readonly />
+								</div>
 							</div>
-						</div>
 
-						<div style="text-align:center; margin-top:20px;">
-							<button type="button" class="custom-tab-btn" th:if="${formmode == 'edit'}"
-								onclick="submitSCH_17Update()">Update</button>
+							<div class="row formline" style="margin-top: 10px;">
+								<label class="col-sm-2">Report Date</label>
+								<div class="col-sm-3">
+									<input type="date" name="reportDate"
+										class="form-control form-control-sm" readonly
+										th:value="${#dates.format(sch_17Data.reportDate, 'yyyy-MM-dd')}" />
+								</div>
+								
+								<div class="col-sm-1"></div>
 
-						</div>
-					</form>
+								<div class="col-sm-3">
+									<input type="hidden" th:field="*{sno}"
+										class="form-control form-control-sm" readonly />
+								</div>
+							</div>
+
+							<div style="text-align: center; margin-top: 20px;">
+								<button type="button" class="custom-tab-btn"
+									th:if="${formmode == 'edit'}" onclick="submitSCH_17Update()">Update</button>
+
+							</div>
+						</form>
+					</div>
 				</div>
-			</div>
-			
-			
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 			</div>
 
 
@@ -2150,5 +2120,19 @@ div.dataTables_wrapper div.dataTables_info {
 	width: auto;
 }
 </style>
+<style>
+/* Fix DataTables header/body width mismatch */
+.dataTables_scrollHeadInner, .dataTables_scrollHeadInner table {
+	width: 100% !important;
+}
 
+.dataTables_scrollBody table {
+	width: 100% !important;
+}
+
+/* Prevent column shrinking */
+#reportdetails th, #reportdetails td {
+	white-space: nowrap;
+}
+</style>
 </html>

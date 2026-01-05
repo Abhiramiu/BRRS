@@ -4443,7 +4443,7 @@ public class RegulatoryReportServices {
 					break;
 
 				case "SCH_17":
-					modelAndView = brrs_sch_17_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
+					modelAndView = brrs_sch_17_reportservice.getViewOrEditPage(request.getParameter("SNO"),
 							request.getParameter("formmode"));
 					break;
 

@@ -1067,11 +1067,12 @@ public class BRRS_SCH_17_ReportService {
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
-	public ModelAndView getViewOrEditPage(String acctNo, String formMode) {
+	public ModelAndView getViewOrEditPage(String SNO, String formMode) {
 		ModelAndView mv = new ModelAndView("BRRS/SCH_17"); 
 
-		if (acctNo != null) {
-			SCH_17_Detail_Entity sch_17Entity = BRRS_SCH_17_detail_repo.findByAcctnumber(acctNo);
+		System.out.println("sno is : "+ SNO);
+		if (SNO != null) {
+			SCH_17_Detail_Entity sch_17Entity = BRRS_SCH_17_detail_repo.findBySno(SNO);
 			if (sch_17Entity != null && sch_17Entity.getReportDate() != null) {
 				String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(sch_17Entity.getReportDate());
 				mv.addObject("asondate", formattedDate);
@@ -1088,15 +1089,18 @@ public class BRRS_SCH_17_ReportService {
 	public ResponseEntity<?> updateDetailEdit(HttpServletRequest request) {
 		try {
 			String acctNo = request.getParameter("acctNumber");
+			String Sno = request.getParameter("sno");
 			String acctBalanceInpula = request.getParameter("acctBalanceInpula");
 			String acctName = request.getParameter("acctName");
 			String reportDateStr = request.getParameter("reportDate");
 
 			logger.info("Received update for ACCT_NO: {}", acctNo);
 
-			SCH_17_Detail_Entity existing = BRRS_SCH_17_detail_repo.findByAcctnumber(acctNo);
+			System.out.println("Sno is : "+ Sno);
+			
+			SCH_17_Detail_Entity existing = BRRS_SCH_17_detail_repo.findBySno(Sno);
 			if (existing == null) {
-				logger.warn("No record found for ACCT_NO: {}", acctNo);
+				logger.warn("No record found for Sno: {}", Sno);
 				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Record not found for update.");
 			}
 
