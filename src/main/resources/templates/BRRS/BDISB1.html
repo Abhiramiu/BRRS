@@ -2709,19 +2709,34 @@ function fileuploads(btn) {
       <tbody style="font-family: Arial;">
 <tr th:each="report, srlno : ${reportdetails}">
 
+    <!-- Serial number -->
     <td style="text-align:center;"
         th:text="${srlno.index + 1}"></td>
 
-    <td th:text="${report.custId}"></td>
-    <td th:text="${report.acctNumber}"></td>
-    <td th:text="${report.acctName}"></td>
+    <!-- Customer ID (can be NULL for manual report) -->
+    <td th:text="${report != null && report.custId != null ? report.custId : '-'}"></td>
+
+    <!-- Account Number -->
+    <td th:text="${report != null && report.acctNumber != null ? report.acctNumber : '-'}"></td>
+
+    <!-- Account Name -->
+    <td th:text="${report != null && report.acctName != null ? report.acctName : '-'}"></td>
+
+    <!-- Report Label -->
     <td style="text-align:left;"
-        th:text="${report.reportLable}"></td>
-    <td th:text="${report.reportAddlCriteria1}"></td>
-    <td th:text="${#dates.format(report.reportDate,'dd-MM-yyyy')}"></td>
+        th:text="${report != null && report.reportLable != null ? report.reportLable : '-'}"></td>
+
+    <!-- Additional Criteria -->
+    <td th:text="${report != null && report.reportAddlCriteria1 != null ? report.reportAddlCriteria1 : '-'}"></td>
+
+    <!-- Report Date -->
+    <td th:text="${report != null && report.reportDate != null
+        ? #dates.format(report.reportDate,'dd-MM-yyyy')
+        : '-'}"></td>
 
 </tr>
 </tbody>
+
 
 
     </table>
