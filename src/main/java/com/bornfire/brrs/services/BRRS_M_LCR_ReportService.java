@@ -190,7 +190,12 @@ public class BRRS_M_LCR_ReportService {
 				// 🔹 Current branch
 				List<M_LCR_Detail_Entity> T1Dt1;
 				if (rowId != null && columnId != null) {
-					T1Dt1 = BRRS_M_LCR_Detail_Repo.GetDataByRowIdAndColumnId(rowId, columnId, parsedDate);
+					if ("R81".equals(rowId) || "R82".equals(rowId) || "R83".equals(rowId)) {
+						T1Dt1 = BRRS_M_LCR_Detail_Repo.GetDataByRowIdAndColumnId2(rowId, columnId, parsedDate);
+					} else {
+						T1Dt1 = BRRS_M_LCR_Detail_Repo.GetDataByRowIdAndColumnId(rowId, columnId, parsedDate);
+					}
+
 				} else {
 					T1Dt1 = BRRS_M_LCR_Detail_Repo.getdatabydateList(parsedDate);
 					totalPages = BRRS_M_LCR_Detail_Repo.getdatacount(parsedDate);
@@ -198,7 +203,7 @@ public class BRRS_M_LCR_ReportService {
 				}
 
 				mv.addObject("reportdetails", T1Dt1);
-				
+
 				System.out.println("LISTCOUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
 			}
 
@@ -308,628 +313,625 @@ public class BRRS_M_LCR_ReportService {
 					Cell cell4 = row.getCell(4);
 					if (record.getR12_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR12_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
 
 					row = sheet.getRow(12);
-					
+
 					// R13
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR13_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR13_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(13);
-					
+
 					// R14
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR14_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR14_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
-					
+
 					row = sheet.getRow(14);
 					// R15
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR15_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR15_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(19);
 					// R20
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR20_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR20_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(20);
 					// R21
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR21_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR21_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(30);
 					// R31
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR31_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR31_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(33);
 					// R34
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR34_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR34_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(34);
 					// R35
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR35_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR35_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(35);
 					// R36
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR36_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR36_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(36);
 					// R37
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR37_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR37_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(37);
 					// R38
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR38_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR38_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(39);
 					// R40
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR40_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR40_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(40);
 					// R41
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR41_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR41_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(41);
 					// R42
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR42_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR42_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(42);
 					// R43
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR43_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR43_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(44);
 					// R45
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR45_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR45_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(45);
 					// R46
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR46_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR46_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(46);
 					// R47
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR47_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR47_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(47);
 					// R48
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR48_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR48_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(48);
 					// R49
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR49_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR49_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(49);
 					// R50
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR50_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR50_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(50);
 					// R51
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR51_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR51_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(51);
 					// R52
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR52_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR52_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(52);
 					// R53
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR53_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR53_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(54);
 					// R55
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR55_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR55_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(55);
 					// R56
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR56_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR56_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(56);
 					// R57
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR57_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR57_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(57);
 					// R58
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR58_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR58_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(58);
 					// R59
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR59_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR59_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(59);
 					// R60
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR60_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR60_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(60);
 					// R61
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR61_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR61_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(61);
 					// R62
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR62_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR62_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(52);
 					// R63
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR63_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR63_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(64);
 					// R65
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR65_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR65_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(65);
 					// R66
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR66_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR66_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(66);
 					// R67
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR67_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR67_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(67);
 					// R68
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR68_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR68_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(68);
 					// R69
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR69_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR69_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(73);
 					// R74
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR74_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR74_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(74);
 					// R75
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR75_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR75_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(75);
 					// R76
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR76_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR76_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(76);
 					// R77
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR77_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR77_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(77);
 					// R78
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR78_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR78_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(78);
 					// R79
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR79_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR79_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(80);
 					// R81
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR81_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR81_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(81);
 					// R82
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR82_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR82_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(82);
 					// R83
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR83_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR83_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(83);
 					// R84
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR84_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR84_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(84);
 					// R74
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR85_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR85_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(87);
 					// R88
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR88_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR88_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(88);
 					// R89
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR89_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR89_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-
-
 
 				}
 				workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
@@ -1173,627 +1175,625 @@ public class BRRS_M_LCR_ReportService {
 					Cell cell4 = row.getCell(4);
 					if (record.getR12_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR12_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
 
 					row = sheet.getRow(12);
-					
+
 					// R13
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR13_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR13_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(13);
-					
+
 					// R14
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR14_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR14_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
-					
+
 					row = sheet.getRow(14);
 					// R15
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR15_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR15_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(19);
 					// R20
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR20_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR20_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(20);
 					// R21
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR21_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR21_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(30);
 					// R31
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR31_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR31_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(33);
 					// R34
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR34_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR34_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(34);
 					// R35
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR35_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR35_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(35);
 					// R36
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR36_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR36_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(36);
 					// R37
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR37_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR37_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(37);
 					// R38
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR38_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR38_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(39);
 					// R40
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR40_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR40_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(40);
 					// R41
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR41_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR41_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(41);
 					// R42
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR42_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR42_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(42);
 					// R43
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR43_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR43_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(44);
 					// R45
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR45_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR45_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(45);
 					// R46
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR46_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR46_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(46);
 					// R47
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR47_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR47_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(47);
 					// R48
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR48_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR48_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(48);
 					// R49
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR49_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR49_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(49);
 					// R50
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR50_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR50_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(50);
 					// R51
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR51_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR51_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(51);
 					// R52
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR52_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR52_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(52);
 					// R53
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR53_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR53_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(54);
 					// R55
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR55_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR55_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(55);
 					// R56
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR56_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR56_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(56);
 					// R57
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR57_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR57_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(57);
 					// R58
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR58_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR58_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(58);
 					// R59
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR59_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR59_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(59);
 					// R60
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR60_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR60_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(60);
 					// R61
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR61_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR61_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(61);
 					// R62
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR62_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR62_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(52);
 					// R63
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR63_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR63_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(64);
 					// R65
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR65_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR65_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(65);
 					// R66
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR66_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR66_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(66);
 					// R67
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR67_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR67_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(67);
 					// R68
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR68_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR68_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(68);
 					// R69
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR69_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR69_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(73);
 					// R74
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR74_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR74_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(74);
 					// R75
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR75_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR75_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(75);
 					// R76
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR76_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR76_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(76);
 					// R77
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR77_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR77_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(77);
 					// R78
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR78_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR78_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(78);
 					// R79
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR79_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR79_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(80);
 					// R81
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR81_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR81_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(81);
 					// R82
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR82_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR82_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(82);
 					// R83
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR83_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR83_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(83);
 					// R84
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR84_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR84_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(84);
 					// R74
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR85_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR85_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(87);
 					// R88
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR88_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR88_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					row = sheet.getRow(88);
 					// R89
 					// Column E
 					cell4 = row.getCell(4);
 					if (record.getR89_bob_total_amount() != null) {
 						cell4.setCellValue(record.getR89_bob_total_amount().doubleValue());
-						
+
 					} else {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-
 
 				}
 				workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
@@ -1964,7 +1964,7 @@ public class BRRS_M_LCR_ReportService {
 	private JdbcTemplate jdbcTemplate;
 
 	public ModelAndView getViewOrEditPage(String acctNo, String formMode) {
-		ModelAndView mv = new ModelAndView("BRRS/M_LCR"); 
+		ModelAndView mv = new ModelAndView("BRRS/M_LCR");
 
 		if (acctNo != null) {
 			M_LCR_Detail_Entity mLCREntity = M_LCR_Detail_Repo.findByAcctnumber(acctNo);
@@ -2011,22 +2011,24 @@ public class BRRS_M_LCR_ReportService {
 
 			if (provisionStr != null && !provisionStr.isEmpty()) {
 				BigDecimal newProvision = new BigDecimal(provisionStr);
-				if (existing.getAcctBalanceInPula() == null || existing.getAcctBalanceInPula().compareTo(newProvision) != 0) {
+				if (existing.getAcctBalanceInPula() == null
+						|| existing.getAcctBalanceInPula().compareTo(newProvision) != 0) {
 					existing.setAcctBalanceInPula(newProvision);
 					isChanged = true;
 					logger.info("Provision updated to {}", newProvision);
 				}
 			}
-			
+
 			if (provisionStr1 != null && !provisionStr1.isEmpty()) {
 				BigDecimal newProvision = new BigDecimal(provisionStr1);
-				if (existing.getDebitequivalent() == null || existing.getDebitequivalent().compareTo(newProvision) != 0) {
+				if (existing.getDebitequivalent() == null
+						|| existing.getDebitequivalent().compareTo(newProvision) != 0) {
 					existing.setDebitequivalent(newProvision);
 					isChanged = true;
 					logger.info("Provision updated to {}", newProvision);
 				}
 			}
-			
+
 			if (provisionStr2 != null && !provisionStr2.isEmpty()) {
 				BigDecimal newProvision = new BigDecimal(provisionStr2);
 				if (existing.getEmi() == null || existing.getEmi().compareTo(newProvision) != 0) {
@@ -2035,16 +2037,16 @@ public class BRRS_M_LCR_ReportService {
 					logger.info("Provision updated to {}", newProvision);
 				}
 			}
-			
+
 			if (provisionStr3 != null && !provisionStr3.isEmpty()) {
 				BigDecimal newProvision = new BigDecimal(provisionStr3);
-				if (existing.getCreditequivalent() == null || existing.getCreditequivalent().compareTo(newProvision) != 0) {
+				if (existing.getCreditequivalent() == null
+						|| existing.getCreditequivalent().compareTo(newProvision) != 0) {
 					existing.setCreditequivalent(newProvision);
 					isChanged = true;
 					logger.info("Provision updated to {}", newProvision);
 				}
 			}
-
 
 			if (isChanged) {
 				M_LCR_Detail_Repo.save(existing);
