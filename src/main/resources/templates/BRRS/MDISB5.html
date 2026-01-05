@@ -492,6 +492,115 @@ label.error {
 			// Show the modal
 			$('#resultModal').modal('show');
 		}
+		
+		  function startReport(button) {
+			   const alertMsg = document.getElementById("alertMessage");
+			   const filename = button.getAttribute('data-filename');
+			   const fromdate = button.getAttribute('data-fromdate');
+			   const todate = button.getAttribute('data-todate');
+			   const currency = button.getAttribute('data-currency');
+			   const dtltype = button.getAttribute('data-dtltype');
+			   const type = button.getAttribute('data-type');
+			   const version = button.getAttribute('data-version');
+			   const sessionfilename = sessionStorage.getItem("filename");
+
+			   if (sessionfilename == filename) {
+			    alertMsg.innerHTML = 'Download request already Processing...';
+			    showAlert();
+			    return;
+			   }
+
+			   alertMsg.innerHTML = 'Download request Processing...';
+			   showAlert();
+
+			   const baseUrl = '/BRRS/Reports/startreport';
+			   const downloadUrl = baseUrl +
+			    '?filename=' + encodeURIComponent(filename) +
+			    '&fromdate=' + encodeURIComponent(fromdate) +
+			    '&todate=' + encodeURIComponent(todate) +
+			    '&currency=' + encodeURIComponent(currency) +
+			    '&dtltype=' + encodeURIComponent(dtltype) +
+			    '&type=' + encodeURIComponent(type) +
+			    '&version=' + encodeURIComponent(version);
+			   fetch(downloadUrl)  // ✅ no invalid characters now
+			    .then(res => res.text())
+			    .then(jobId => {
+
+			     alertMsg.innerHTML = 'Download request received...' + jobId;
+			     showAlert();
+			     sessionStorage.setItem("jobId", jobId);
+			     sessionStorage.setItem("filename", filename);
+			     checkReport(jobId);
+			    });
+			  }
+
+			  function checkReport(jobId) {
+			   const alertMsg = document.getElementById("alertMessage");
+			   fetch('/BRRS/Reports/checkreport?jobId=' + encodeURIComponent(jobId))
+			    .then(res => res.text())
+			    .then(status => {
+			     if (status === "READY") {
+			      alertMsg.innerHTML = 'Report is ready! Downloaded';
+			      showAlert();
+			      const filename = sessionStorage.getItem("filename");
+			      downloadDetailfile(jobId, filename)
+			      sessionStorage.removeItem("jobId");
+			      sessionStorage.removeItem("filename");
+
+			     } else if (status === "PROCESSING") {
+			      alertMsg.innerHTML = 'Download Is Processing…';
+			      showAlert();
+			      setTimeout(() => checkReport(jobId), 5000);
+			     }
+			     else if (status === "ERROR") {
+			      alertMsg.innerHTML = 'No data was available to create a download.';
+			      showAlert();
+			      sessionStorage.removeItem("jobId");
+			      sessionStorage.removeItem("filename");
+			     }
+			    });
+			  }
+
+
+
+			  function downloadDetailfile(jobId, filename) {
+
+			   //$('#loader').modal('show');
+
+			   $.ajax({
+			    url: '/BRRS/Reports/downloaddetailExcel?jobId=' + jobId +
+			     '&filename=' + filename,
+			    type: 'GET',
+			    xhrFields: {
+			     responseType: 'blob'
+			    },
+			    success: function (data) {
+			     $('#loader').modal('hide');
+
+			     if (data && data.size > 100) {
+			      const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
+			      const url = window.URL.createObjectURL(blob);
+			      const a = document.createElement('a');
+			      a.style.display = 'none';
+			      a.href = url;
+			      a.download = filename;
+			      document.body.appendChild(a);
+			      a.click();
+			      window.URL.revokeObjectURL(url);
+			      document.body.removeChild(a);
+
+			      showResultModal('BRRS', filename + ' downloaded successfully');
+			     } else {
+			      showResultModal('Information', 'No data was available to create a download.');
+			     }
+			    },
+			    error: function (jqXHR, textStatus, errorThrown) {
+			     $('#loader').modal('hide');
+			     console.error("Download failed:", textStatus, errorThrown);
+			     showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
+			    }
+			   });
+			  }
 	</script>
 	
 	

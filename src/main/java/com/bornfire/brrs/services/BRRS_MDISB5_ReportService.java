@@ -240,7 +240,7 @@ public class BRRS_MDISB5_ReportService {
 				if (rowId != null && columnId != null) {
 					T1Dt1 = BRRS_MDISB5_Detail_Repo.GetDataByRowIdAndColumnId(rowId, columnId, parsedDate);
 				} else {
-					T1Dt1 = BRRS_MDISB5_Detail_Repo.getdatabydateList(parsedDate, currentPage, pageSize);
+					T1Dt1 = BRRS_MDISB5_Detail_Repo.getdatabydateList(parsedDate);
 					System.out.println("bdisb2 size is : " + T1Dt1.size());
 					totalPages = BRRS_MDISB5_Detail_Repo.getdatacount(parsedDate);
 					mv.addObject("pagination", "YES");

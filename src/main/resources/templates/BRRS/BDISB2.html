@@ -502,11 +502,11 @@ label.error {
 			showResultModal('Alert', 'Development in progress');
 
 		}
-		function closemodel() {
+/* 		function closemodel() {
 			$('#alert').modal('hide');
 			$('#resultModal').modal('hide');
 
-		}
+		} */
 		function showResultModal(title, message) {
 			// Set the text for the modal elements
 			$('#resultModalLabel').text(title);
@@ -703,6 +703,11 @@ function closemodel() {
         $("#resultModal").modal("hide");
         $('#loader').modal('hide');
 
+        if (isResubmissionUpdate) {
+	        return;
+	    }
+
+        
         // Only reload if not from Details modal
         if (!isDetailsModal) {
             setTimeout(function () {
@@ -733,6 +738,9 @@ function closemodel() {
 function fileuploads(btn) {
     var asondate = btn.getAttribute("data-todate");
     const type = btn.getAttribute("data-type"); // MAIN / RESUB / ARCHIVAL
+    
+ // ✅ Mark RESUB once
+    isResubmissionUpdate = (type && type.toUpperCase() === 'RESUB');
     
     $('#loader').modal('show');
 
@@ -797,6 +805,7 @@ function fileuploads(btn) {
 	        //  Wait for user to close the modal manually
 			     $("#resultModal").off("hidden.bs.modal").on("hidden.bs.modal", function () {
 			    	 if (isResubmissionUpdate) {
+			    		 console.log("✅ came to resubmission");
 			    		 window.location.href = previousUrl
 			    		 ? previousUrl 
 			    				 : "/BRRS/Resubmission?rptcode=BDISB2";
