@@ -127,10 +127,7 @@ PURPOSE		: BRRSREPORT
 			border-color: #dee2e6 #dee2e6 #ffffff;
 		}
 
-		.table-responsive {
-			border: 1px solid #dee2e6;
-			border-radius: 4px;
-		}
+	
 
 		.table-hover tbody tr:hover {
 			background-color: #f3f6f9;
@@ -171,12 +168,7 @@ PURPOSE		: BRRSREPORT
 			transform: scale(1.1);
 		}
 
-		td {
-			border: 1px solid rgb(0, 164, 166);
-			overflow: hidden;
-			white-space: nowrap;
-			text-overflow: ellipsis;
-		}
+	
 	</style>
 
 
@@ -724,22 +716,16 @@ PURPOSE		: BRRSREPORT
 		function showdetailsbyRowAndColumn(a) {
 			var rowId = a.getAttribute('RowId') || "";
 			var columnId = a.getAttribute('ColumnId') || "";
-			var columnId1 = a.getAttribute('ColumnId1') || "";
-			var columnId2 = a.getAttribute('ColumnId2') || "";
 			var cellValue = a.textContent || a.innerText;
 
 			// ✅ At least one columnId should have value
 			const hasAnyColumnId =
-				(columnId && columnId.trim() !== "") ||
-				(columnId1 && columnId1.trim() !== "") ||
-				(columnId2 && columnId2.trim() !== "");
+				(columnId && columnId.trim() !== "") ;
 
 			if (cellValue !== '0' && hasAnyColumnId) {
 				document.getElementById("cellresultModalLabel").innerText =
 					"Do you want to open details for Row: " + rowId +
-					" | Column: " + (columnId || "") +
-					" | Column1: " + (columnId1 || "") +
-					" | Column2: " + (columnId2 || "") + "";
+					" | Column: " + (columnId || "") +"";
 
 				$('#cellresultModal').modal('show');
 
@@ -756,7 +742,7 @@ PURPOSE		: BRRSREPORT
 					var Callurl = /*[[@{'/Reports/' + ${reportid} + '/Details'(asondate=${asondate}, fromdate=${fromdate}, todate=${todate}, currency=${currency}, dtltype=${dtltype},type=${type},version=${version})}]]*/ "";
 
 					// ✅ Append filter params
-					Callurl += "&filter=" + encodeURIComponent(rowId + "," + columnId + "," + columnId1 + "," + columnId2);
+					Callurl += "&filter=" + encodeURIComponent(rowId + "," + columnId + "," );
 
 					window.location.href = Callurl;
 				};
@@ -930,6 +916,12 @@ PURPOSE		: BRRSREPORT
 				transform: translateX(-100%);
 			}
 		}
+	
+		.colspan-border {
+		    border: 1px solid black !important;
+		}
+
+
 	</style>
 
 
@@ -1038,78 +1030,93 @@ PURPOSE		: BRRSREPORT
 										<th colspan="3" style="border:white;background-color: rgb(255, 255, 255);color: black;"> A: CUSTOMER BASE</th>
 										</tr>
 										
-										<tr>
-										<th style="text-align: center; background-color: rgb(107, 122, 143);color: white;"> Customer Deposit</th>
-										<th style="text-align: center;background-color: rgb(107, 122, 143);color: white;"> Number of Accounts </th>
-										<th style="text-align: center;background-color: rgb(107, 122, 143);color: white;"> Total Deposits (P'000) </th>
+										<tr colspan="3" style="border: none;">
+										<th style="text-align: center;vertical-align: middle; background-color: rgb(107, 122, 143);color: white;"> Customer Deposit</th>
+										<th style="text-align: center;vertical-align: middle;background-color: rgb(107, 122, 143);color: white;"> Number of Accounts </th>
+										<th style="text-align: center;vertical-align: middle;background-color: rgb(107, 122, 143);color: white;"> Total Deposits (P'000) </th>
 										</tr>
 										
-									    <tr>
-									        <td th:text="${report.r11_customer_deposit}"></td>
-											<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r11_no_of_accounts ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R11', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
-											<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r11_total_deposits ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R11', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<tr colspan="3" style="border: none;">
+										    <td  class="colspan-border">
+										        <span th:text="${report.r11_customer_deposit}"></span>
+										    </td>
+
+										    <td  class="colspan-border" style="text-align:right;"
+										        th:text="${#numbers.formatDecimal(report.r11_no_of_accounts ?: 0, 0, 'COMMA', 0, 'POINT')}"
+										        th:attr="RowId='R11', ColumnId='C3'"
+										        onclick="showdetailsbyRowAndColumn(this)">
+										    </td>
+
+										    <td class="colspan-border" style="text-align:right;"
+										        th:text="${#numbers.formatDecimal(report.r11_total_deposits ?: 0, 0, 'COMMA', 0, 'POINT')}"
+										        th:attr="RowId='R11', ColumnId='C4'"
+										        onclick="showdetailsbyRowAndColumn(this)">
+										    </td>
+										</tr>
+
+										
+										
+										 <tr colspan="3" style="border: none;">
+										<td class="colspan-border">Savings</td>
+										<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r12_no_of_accounts ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R12', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r12_total_deposits ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R12', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										
+									</tr>
+										
+										 <tr colspan="3" style="border: none;">
+										<td class="colspan-border">Call</td>
+										<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r13_no_of_accounts ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R13', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r13_total_deposits ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R13', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 										
-										 <tr>
-										<td>Savings</td>
-										<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r12_no_of_accounts ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R12', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r12_total_deposits ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R12', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										 <tr colspan="3" style="border: none;">
+										<td class="colspan-border">Time (Fixed and Notice)</td>
+										<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r14_no_of_accounts ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R14', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r14_total_deposits ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R14', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 										
-										 <tr>
-										<td>Call</td>
-										<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r13_no_of_accounts ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R13', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r13_total_deposits ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R13', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										</tr>
-										
-										 <tr>
-										<td>Time (Fixed and Notice)</td>
-										<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r14_no_of_accounts ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R14', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r14_total_deposits ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R14', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										</tr>
-										
-										 <tr>
-										<th>Total</th>
-										<th style="text-align: right;" th:text="${#numbers.formatDecimal(report.r15_no_of_accounts ?: 0, 0, 'COMMA', 0, 'POINT')}" ></th>
-										<th style="text-align: right;" th:text="${#numbers.formatDecimal(report.r15_total_deposits ?: 0, 0, 'COMMA', 0, 'POINT')}" ></th>
+										 <tr colspan="3" style="border: none;">
+										<th class="colspan-border">Total</th>
+										<th class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r15_no_of_accounts ?: 0, 0, 'COMMA', 0, 'POINT')}" ></th>
+										<th class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r15_total_deposits ?: 0, 0, 'COMMA', 0, 'POINT')}" ></th>
 										</tr>
 										
 										<tr style="border: none;">
 											<th colspan="3" style="border:white;"></th>
 										</tr>
 										
-										<tr style="border: none;">
+										<tr colspan="3" style="border: none;">
 										    <th colspan="3" style="border:white;"> B1: CUSTOMER RISK PROFILE OF DEPOSITORS AS DETERMINED BY THE BANK  </th>
 										</tr>
 										
-										<tr>
-                                     	<th style="text-align: center; background-color: rgb(107, 122, 143);color: white;"> Customer Deposit</th>
-										<th style="text-align: center;background-color: rgb(107, 122, 143);color: white;"> Number  of Customers </th>
-										<th style="text-align: center;background-color: rgb(107, 122, 143);color: white;"> Value (P'000) </th>
+										<tr colspan="3" style="border: none;">
+                                     	<th class="colspan-border" style="text-align: center;vertical-align: middle; background-color: rgb(107, 122, 143);color: white;"> Customer Deposit</th>
+										<th class="colspan-border" style="text-align: center;vertical-align: middle;background-color: rgb(107, 122, 143);color: white;"> Number  of Customers </th>
+										<th class="colspan-border" style="text-align: center;vertical-align: middle;background-color: rgb(107, 122, 143);color: white;"> Value (P'000) </th>
 										</tr>
 										
-										 <tr>
-										<td>High Risk</td>
-										<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r21_no_of_customer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R21', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r21_value ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R21', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										 <tr colspan="3" style="border: none;">
+										<td class="colspan-border">High Risk</td>
+										<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r21_no_of_customer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R21', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r21_value ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R21', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 										
-										 <tr>
-										<td>Medium Risk</td>
-										<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r22_no_of_customer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R22', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r22_value ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R22', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										 <tr colspan="3" style="border: none;">
+										<td class="colspan-border">Medium Risk</td>
+										<td class="colspan-border"style="text-align: right;" th:text="${#numbers.formatDecimal(report.r22_no_of_customer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R22', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<td class="colspan-border"style="text-align: right;" th:text="${#numbers.formatDecimal(report.r22_value ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R22', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 										
-										 <tr>
-										<td>Low Risk</td>
-										<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r23_no_of_customer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R23', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r23_value ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R23', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										 <tr colspan="3" style="border: none;">
+										<td class="colspan-border">Low Risk</td>
+										<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r23_no_of_customer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R23', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r23_value ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R23', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 										
-										 <tr>
-										<th>Total</th>
-										<th style="text-align: right;" th:text="${#numbers.formatDecimal(report.r24_no_of_customer ?: 0, 0, 'COMMA', 0, 'POINT')}" ></th>
-										<th style="text-align: right;" th:text="${#numbers.formatDecimal(report.r24_value ?: 0, 0, 'COMMA', 0, 'POINT')}" ></th>
+										 <tr colspan="3" style="border: none;">
+										<th class="colspan-border">Total</th>
+										<th class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r24_no_of_customer ?: 0, 0, 'COMMA', 0, 'POINT')}" ></th>
+										<th class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r24_value ?: 0, 0, 'COMMA', 0, 'POINT')}" ></th>
 										</tr>
 										
 										<tr style="border: none;">
@@ -1120,73 +1127,73 @@ PURPOSE		: BRRSREPORT
 										<th colspan="3" style="border:white;"> B2: CUSTOMER RISK PROFILE OF DEPOSITORS AS DETERMINED BY THE BANK   </th>
 										</tr>
 																				
-										<tr>
-										<th style="text-align: center;vertical-align: middle; background-color: rgb(107, 122, 143);color: white;"> Customer Deposit</th>
-										<th colspan="2" style="text-align: center;background-color: rgb(107, 122, 143);color: white;"> 	Low Risk Customers </th>
-										<th colspan="2" style="text-align: center;background-color: rgb(107, 122, 143);color: white;"> Medium Risk Customers  </th>
-								    	<th colspan="2" style="text-align: center;background-color: rgb(107, 122, 143);color: white;"> High Risk Customers   </th>
-										<th colspan="2" style="text-align: center; background-color: rgb(107, 122, 143);color: white;"> Total</th>
+										<tr colspan="9" style="border: none;">
+										<th  class="colspan-border" style="text-align: center;vertical-align: middle; background-color: rgb(107, 122, 143);color: white;"> Customer Deposit</th>
+										<th  class="colspan-border" colspan="2" style="text-align: center;background-color: rgb(107, 122, 143);color: white;"> 	Low Risk Customers </th>
+										<th  class="colspan-border" colspan="2" style="text-align: center;background-color: rgb(107, 122, 143);color: white;"> Medium Risk Customers  </th>
+								    	<th  class="colspan-border" colspan="2" style="text-align: center;background-color: rgb(107, 122, 143);color: white;"> High Risk Customers   </th>
+										<th  class="colspan-border" colspan="2" style="text-align: center; background-color: rgb(107, 122, 143);color: white;"> Total</th>
 										</tr>
 										
-										<tr>
-											<th></th>
-											<th style="text-align: center;"> Number of customers</th>
-											<th style="text-align: center;"> Deposits (P'000)</th>
-											<th style="text-align: center;"> Number of customers</th>
-											<th style="text-align: center;"> Deposits (P'000)</th>
-											<th style="text-align: center;"> Number of customers</th>
-											<th style="text-align: center;"> Deposits (P'000)</th>
-											<th style="text-align: center;"> Number of customers</th>
-											<th style="text-align: center;"> Deposits (P'000)</th>
+										<tr colspan="9" style="border: none;">
+											<th  class="colspan-border"></th>
+											<th  class="colspan-border" style="text-align: center;"> Number of customers</th>
+											<th  class="colspan-border" style="text-align: center;"> Deposits (P'000)</th>
+											<th  class="colspan-border" style="text-align: center;"> Number of customers</th>
+											<th  class="colspan-border" style="text-align: center;"> Deposits (P'000)</th>
+											<th  class="colspan-border" style="text-align: center;"> Number of customers</th>
+											<th  class="colspan-border" style="text-align: center;"> Deposits (P'000)</th>
+											<th  class="colspan-border" style="text-align: center;"> Number of customers</th>
+											<th  class="colspan-border" style="text-align: center;"> Deposits (P'000)</th>
 										</tr>
 											
-										 <tr>
-										<td>Natural Person (Individual)</td>
-										<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r30_low_customer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R30', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r30_low_deposit ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R30', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r30_medium_customer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R30', ColumnId='C5'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r30_medium_deposit ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R30', ColumnId='C6'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r30_high_customer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R30', ColumnId='C7'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r30_high_deposit ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R30', ColumnId='C8'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r30_total_customer ?: 0, 0, 'COMMA', 0, 'POINT')}" ></td>
-										<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r30_total_deposit ?: 0, 0, 'COMMA', 0, 'POINT')}" ></td>
+										 <tr colspan="9" style="border: none;">
+										<td class="colspan-border">Natural Person (Individual)</td>
+										<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r30_low_customer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R30', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r30_low_deposit ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R30', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r30_medium_customer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R30', ColumnId='C5'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r30_medium_deposit ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R30', ColumnId='C6'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r30_high_customer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R30', ColumnId='C7'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r30_high_deposit ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R30', ColumnId='C8'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r30_total_customer ?: 0, 0, 'COMMA', 0, 'POINT')}" ></td>
+										<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r30_total_deposit ?: 0, 0, 'COMMA', 0, 'POINT')}" ></td>
 										</tr>
 
-										 <tr>
-										<td>Legal Person/Entity (corporations, limited liability companies, partneships)</td>
-										<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r31_low_customer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R31', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r31_low_deposit ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R31', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r31_medium_customer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R31', ColumnId='C5'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r31_medium_deposit ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R31', ColumnId='C6'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r31_high_customer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R31', ColumnId='C7'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r31_high_deposit ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R31', ColumnId='C8'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r31_total_customer ?: 0, 0, 'COMMA', 0, 'POINT')}" ></td>
-										<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r31_total_deposit ?: 0, 0, 'COMMA', 0, 'POINT')}" ></td>
+										 <tr colspan="9" style="border: none;">
+										<td class="colspan-border">Legal Person/Entity (corporations, limited liability companies, partneships)</td>
+										<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r31_low_customer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R31', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r31_low_deposit ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R31', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r31_medium_customer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R31', ColumnId='C5'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r31_medium_deposit ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R31', ColumnId='C6'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r31_high_customer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R31', ColumnId='C7'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r31_high_deposit ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R31', ColumnId='C8'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r31_total_customer ?: 0, 0, 'COMMA', 0, 'POINT')}" ></td>
+										<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r31_total_deposit ?: 0, 0, 'COMMA', 0, 'POINT')}" ></td>
 										</tr>
 
 
-										 <tr>
-										<td>Legal Arrangement (express trust or other similar arrangement)</td>
-										<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r32_low_customer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R32', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r32_low_deposit ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R32', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r32_medium_customer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R32', ColumnId='C5'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r32_medium_deposit ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R32', ColumnId='C6'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r32_high_customer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R32', ColumnId='C7'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r32_high_deposit ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R32', ColumnId='C8'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r32_total_customer ?: 0, 0, 'COMMA', 0, 'POINT')}" ></td>
-										<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r32_total_deposit ?: 0, 0, 'COMMA', 0, 'POINT')}" ></td>
+										 <tr colspan="9" style="border: none;">
+										<td class="colspan-border">Legal Arrangement (express trust or other similar arrangement)</td>
+										<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r32_low_customer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R32', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r32_low_deposit ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R32', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r32_medium_customer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R32', ColumnId='C5'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r32_medium_deposit ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R32', ColumnId='C6'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r32_high_customer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R32', ColumnId='C7'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r32_high_deposit ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R32', ColumnId='C8'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r32_total_customer ?: 0, 0, 'COMMA', 0, 'POINT')}" ></td>
+										<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r32_total_deposit ?: 0, 0, 'COMMA', 0, 'POINT')}" ></td>
 										</tr>
 
-										 <tr>
-										<th>Total</th>
-										<th style="text-align: right;" th:text="${#numbers.formatDecimal(report.r33_low_customer ?: 0, 0, 'COMMA', 0, 'POINT')}" ></th>
-										<th style="text-align: right;" th:text="${#numbers.formatDecimal(report.r33_low_deposit ?: 0, 0, 'COMMA', 0, 'POINT')}" ></th>
-										<th style="text-align: right;" th:text="${#numbers.formatDecimal(report.r33_medium_customer ?: 0, 0, 'COMMA', 0, 'POINT')}" ></th>
-										<th style="text-align: right;" th:text="${#numbers.formatDecimal(report.r33_medium_deposit ?: 0, 0, 'COMMA', 0, 'POINT')}" ></th>
-										<th style="text-align: right;" th:text="${#numbers.formatDecimal(report.r33_high_customer ?: 0, 0, 'COMMA', 0, 'POINT')}" ></th>
-										<th style="text-align: right;" th:text="${#numbers.formatDecimal(report.r33_high_deposit ?: 0, 0, 'COMMA', 0, 'POINT')}" ></th>
-										<th style="text-align: right;" th:text="${#numbers.formatDecimal(report.r33_total_customer ?: 0, 0, 'COMMA', 0, 'POINT')}" ></th>
-										<th style="text-align: right;" th:text="${#numbers.formatDecimal(report.r33_total_deposit ?: 0, 0, 'COMMA', 0, 'POINT')}" ></th>
+										 <tr colspan="9" style="border: none;">
+										<th class="colspan-border">Total</th>
+										<th class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r33_low_customer ?: 0, 0, 'COMMA', 0, 'POINT')}" ></th>
+										<th class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r33_low_deposit ?: 0, 0, 'COMMA', 0, 'POINT')}" ></th>
+										<th class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r33_medium_customer ?: 0, 0, 'COMMA', 0, 'POINT')}" ></th>
+										<th class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r33_medium_deposit ?: 0, 0, 'COMMA', 0, 'POINT')}" ></th>
+										<th class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r33_high_customer ?: 0, 0, 'COMMA', 0, 'POINT')}" ></th>
+										<th class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r33_high_deposit ?: 0, 0, 'COMMA', 0, 'POINT')}" ></th>
+										<th class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r33_total_customer ?: 0, 0, 'COMMA', 0, 'POINT')}" ></th>
+										<th class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r33_total_deposit ?: 0, 0, 'COMMA', 0, 'POINT')}" ></th>
 										</tr>
 
 										<tr style="border: none;">
@@ -1197,28 +1204,28 @@ PURPOSE		: BRRSREPORT
 										<th colspan="3" style="border:white;"> C: CUSTOMER BASE ACCORDING TO RESIDENCE STATUS  </th>
 										</tr>
 										
-										<tr>
-										<th style="text-align: center; background-color: rgb(107, 122, 143);color: white;"> Customer Deposit</th>
-										<th style="text-align: center;background-color: rgb(107, 122, 143);color: white;"> Number  of Customers </th>
-										<th style="text-align: center;background-color: rgb(107, 122, 143);color: white;"> Deposits (P'000) </th>
+										<tr colspan="3" style="border: none;">
+										<th class="colspan-border" style="text-align: center; background-color: rgb(107, 122, 143);color: white;"> Customer Deposit</th>
+										<th class="colspan-border" style="text-align: center;background-color: rgb(107, 122, 143);color: white;"> Number  of Customers </th>
+										<th class="colspan-border" style="text-align: center;background-color: rgb(107, 122, 143);color: white;"> Deposits (P'000) </th>
 										</tr>
 
-										 <tr>
-										<td>1. Resident</td>
-										<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r39_no_of_accounts ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R39', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r39_deposits ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R39', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										 <tr colspan="3" style="border: none;">
+										<td class="colspan-border">1. Resident</td>
+										<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r39_no_of_accounts ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R39', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r39_deposits ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R39', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
-										 <tr>
-										<td>2. Non-resident</td>
-										<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r40_no_of_accounts ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R40', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r40_deposits ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R40', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										 <tr colspan="3" style="border: none;">
+										<td class="colspan-border">2. Non-resident</td>
+										<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r40_no_of_accounts ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R40', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r40_deposits ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R40', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
-										 <tr>
-										<th>Total</th>
-										<th style="text-align: right;" th:text="${#numbers.formatDecimal(report.r41_no_of_accounts ?: 0, 0, 'COMMA', 0, 'POINT')}" ></th>
-										<th style="text-align: right;" th:text="${#numbers.formatDecimal(report.r41_deposits ?: 0, 0, 'COMMA', 0, 'POINT')}" ></th>
+										 <tr colspan="3" style="border: none;">
+										<th class="colspan-border">Total</th>
+										<th class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r41_no_of_accounts ?: 0, 0, 'COMMA', 0, 'POINT')}" ></th>
+										<th class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r41_deposits ?: 0, 0, 'COMMA', 0, 'POINT')}" ></th>
 										</tr>
 
 										<tr style="border: none;">
@@ -1229,164 +1236,164 @@ PURPOSE		: BRRSREPORT
 										<th colspan="3" style="border:white;"> D: BREAKDOWN OF CUSTOMER TYPE</th>
 										</tr>
 																				
-										<tr>
-										<th style="text-align: center; background-color: rgb(107, 122, 143);color: white;"> Types of customers</th>
-										<th style="text-align: center;background-color: rgb(107, 122, 143);color: white;"> Number of customers </th>
-										<th style="text-align: center;background-color: rgb(107, 122, 143);color: white;"> Total Deposits (P'000) </th>
+										<tr colspan="3" style="border: none;">
+										<th class="colspan-border" style="text-align: center;vertical-align: middle; background-color: rgb(107, 122, 143);color: white;"> Types of customers</th>
+										<th class="colspan-border" style="text-align: center;vertical-align: middle;background-color: rgb(107, 122, 143);color: white;"> Number of customers </th>
+										<th class="colspan-border" style="text-align: center;vertical-align: middle;background-color: rgb(107, 122, 143);color: white;"> Total Deposits (P'000) </th>
 										</tr>
 
-										<tr>
-											<th colspan="2">A.Legal entities and Arrangements</th>
-											<th></th>
+										<tr colspan="3" style="border: none;">
+											<th class="colspan-border" colspan="2">A.Legal entities and Arrangements</th>
+											<th class="colspan-border"></th>
 										</tr>
 										
-										 <tr>
-										<td>(a) Non-Resident Companies from High risk Jurisdictions</td>
-										<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r51_no_of_accounts ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R51', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r51_deposits ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R51', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										 <tr colspan="3" style="border: none;">
+										<td class="colspan-border">(a) Non-Resident Companies from High risk Jurisdictions</td>
+										<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r51_no_of_accounts ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R51', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r51_deposits ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R51', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
-										 <tr>
-										<td>(b) Non-Resident Companies from Other Jurisdictions</td>
-										<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r52_no_of_accounts ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R52', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r52_deposits ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R52', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										 <tr  colspan="3" style="border: none;">
+										<td class="colspan-border">(b) Non-Resident Companies from Other Jurisdictions</td>
+										<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r52_no_of_accounts ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R52', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r52_deposits ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R52', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 										
-										 <tr>
-										<td>(c) Non-Resident Legal Arrangements from High risk Jurisdictions</td>
-										<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r53_no_of_accounts ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R53', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r53_deposits ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R53', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										 <tr  colspan="3" style="border: none;">
+										<td class="colspan-border">(c) Non-Resident Legal Arrangements from High risk Jurisdictions</td>
+										<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r53_no_of_accounts ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R53', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r53_deposits ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R53', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
-										 <tr>
-										<td>(d) Non-Resident Legal Arrangements from Other Jurisdictions</td>
-										<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r54_no_of_accounts ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R54', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r54_deposits ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R54', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										 <tr  colspan="3" style="border: none;">
+										<td class="colspan-border" >(d) Non-Resident Legal Arrangements from Other Jurisdictions</td>
+										<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r54_no_of_accounts ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R54', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r54_deposits ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R54', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 										
-										 <tr>
-										<th>I. Total (sum of lines A(a) to (d))</th>
-										<th style="text-align: right;" th:text="${#numbers.formatDecimal(report.r55_no_of_accounts ?: 0, 0, 'COMMA', 0, 'POINT')}" ></th>
-										<th style="text-align: right;" th:text="${#numbers.formatDecimal(report.r55_deposits ?: 0, 0, 'COMMA', 0, 'POINT')}" ></th>
+										 <tr  colspan="3" style="border: none;">
+										<th class="colspan-border">I. Total (sum of lines A(a) to (d))</th>
+										<th class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r55_no_of_accounts ?: 0, 0, 'COMMA', 0, 'POINT')}" ></th>
+										<th class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r55_deposits ?: 0, 0, 'COMMA', 0, 'POINT')}" ></th>
 										</tr>
 
-										 <tr>
-										<td>B.Legal entities and Arrangements by business Sector</td>
-										<td></td>
-										<td></td>
+										 <tr  colspan="3" style="border: none;" >
+										<td class="colspan-border">B.Legal entities and Arrangements by business Sector</td>
+										<td class="colspan-border"></td>
+										<td class="colspan-border"></td>
 										</tr>
 										
-										 <tr>
-										<td>(a) Non-profit organisations (foundations,charity organisations,churches etc)</td>
-										<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r57_no_of_accounts ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R57', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r57_deposits ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R57', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										 <tr  colspan="3" style="border: none;">
+										<td class="colspan-border">(a) Non-profit organisations (foundations,charity organisations,churches etc)</td>
+										<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r57_no_of_accounts ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R57', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r57_deposits ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R57', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
-										 <tr>
-										<td>(b)Trusts</td>
-										<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r58_no_of_accounts ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R58', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r58_deposits ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R58', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										 <tr  colspan="3" style="border: none;">
+										<td class="colspan-border">(b)Trusts</td>
+										<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r58_no_of_accounts ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R58', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r58_deposits ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R58', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 										
-										 <tr>
-										<td>(c) Bureau de change </td>
-										<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r59_no_of_accounts ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R59', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r59_deposits ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R59', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										 <tr  colspan="3" style="border: none;">
+										<td class="colspan-border">(c) Bureau de change </td>
+										<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r59_no_of_accounts ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R59', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r59_deposits ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R59', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
-										 <tr>
-										<td>(d) Money lenders- Banks</td>
-										<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r60_no_of_accounts ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R60', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r60_deposits ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R60', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										 <tr  colspan="3" style="border: none;">
+										<td class="colspan-border">(d) Money lenders- Banks</td>
+										<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r60_no_of_accounts ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R60', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r60_deposits ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R60', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
-										 <tr>
-										<td>(e) Securities intermediaries-(Trade, construction,etc</td>
-										<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r61_no_of_accounts ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R61', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r61_deposits ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R61', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										 <tr  colspan="3" style="border: none;">
+										<td class="colspan-border">(e) Securities intermediaries-(Trade, construction,etc</td>
+										<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r61_no_of_accounts ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R61', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r61_deposits ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R61', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
-										 <tr>
-										<td>(f) Insurance companies</td>
-										<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r62_no_of_accounts ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R62', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r62_deposits ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R62', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										 <tr  colspan="3" style="border: none;">
+										<td class="colspan-border">(f) Insurance companies</td>
+										<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r62_no_of_accounts ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R62', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r62_deposits ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R62', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
-										 <tr>
-										<td>(g) Money and Value Transfer Service Providers (MVTS)</td>
-										<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r63_no_of_accounts ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R63', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r63_deposits ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R63', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										 <tr  colspan="3" style="border: none;">
+										<td class="colspan-border">(g) Money and Value Transfer Service Providers (MVTS)</td>
+										<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r63_no_of_accounts ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R63', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r63_deposits ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R63', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
-										 <tr>
-										<td>(h) Real Estate</td>
-										<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r64_no_of_accounts ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R64', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r64_deposits ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R64', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										 <tr  colspan="3" style="border: none;">
+										<td class="colspan-border" >(h) Real Estate</td>
+										<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r64_no_of_accounts ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R64', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r64_deposits ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R64', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
-										 <tr>
-										<td>(i) Dealers in precious metals and stones</td>
-										<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r65_no_of_accounts ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R65', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r65_deposits ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R65', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										 <tr  colspan="3" style="border: none;">
+										<td class="colspan-border">(i) Dealers in precious metals and stones</td>
+										<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r65_no_of_accounts ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R65', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r65_deposits ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R65', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 										
-										 <tr>
-										<td>(j) Lawyers and Notaries*</td>
-										<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r66_no_of_accounts ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R66', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r66_deposits ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R66', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										 <tr  colspan="3" style="border: none;">
+										<td class="colspan-border">(j) Lawyers and Notaries*</td>
+										<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r66_no_of_accounts ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R66', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r66_deposits ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R66', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 										
-										 <tr>
-										<td>(k) Accountants*</td>
-										<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r67_no_of_accounts ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R67', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r67_deposits ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R67', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										 <tr  colspan="3" style="border: none;">
+										<td class="colspan-border">(k) Accountants*</td>
+										<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r67_no_of_accounts ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R67', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r67_deposits ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R67', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
-										 <tr>
-										<td>(l) Used Car Dealerships (that are not franchise)</td>
-										<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r68_no_of_accounts ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R68', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r68_deposits ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R68', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										 <tr colspan="3" style="border: none;">
+										<td class="colspan-border">(l) Used Car Dealerships (that are not franchise)</td>
+										<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r68_no_of_accounts ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R68', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r68_deposits ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R68', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 										
-										 <tr>
-										<td>(m) Casinos- Hotel</td>
-										<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r69_no_of_accounts ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R69', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r69_deposits ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R69', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										 <tr colspan="3" style="border: none;">
+										<td class="colspan-border">(m) Casinos- Hotel</td>
+										<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r69_no_of_accounts ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R69', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r69_deposits ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R69', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 										
-										 <tr>
-										<th>(II) Total (sum of lines B(a) to (m))</th>
-										<th style="text-align: right;" th:text="${#numbers.formatDecimal(report.r70_no_of_accounts ?: 0, 0, 'COMMA', 0, 'POINT')}" ></th>
-										<th style="text-align: right;" th:text="${#numbers.formatDecimal(report.r70_deposits ?: 0, 0, 'COMMA', 0, 'POINT')}" ></th>
+										 <tr colspan="3" style="border: none;">
+										<th class="colspan-border">(II) Total (sum of lines B(a) to (m))</th>
+										<th class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r70_no_of_accounts ?: 0, 0, 'COMMA', 0, 'POINT')}" ></th>
+										<th class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r70_deposits ?: 0, 0, 'COMMA', 0, 'POINT')}" ></th>
 										</tr>
 										
-										<tr>
-											<th colspan="2">C.Individuals:</th>
-											<td></td>
+										<tr colspan="3" style="border: none;">
+											<th class="colspan-border" colspan="2">C.Individuals:</th>
+											<td class="colspan-border"></td>
 										</tr>
 										
-										 <tr>
-										<td>         (a) Residents</td>
-										<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r72_no_of_accounts ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R72', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r72_deposits ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R72', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										 <tr colspan="3" style="border: none;">
+										<td  class="colspan-border">         (a) Residents</td>
+										<td  class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r72_no_of_accounts ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R72', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<td  class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r72_deposits ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R72', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
-										 <tr>
-										<td>         (b) Non-Residents - High-Risk Jurisdictions</td>
-										<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r73_no_of_accounts ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R73', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r73_deposits ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R73', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										 <tr colspan="3" style="border: none;">
+										<td  class="colspan-border">         (b) Non-Residents - High-Risk Jurisdictions</td>
+										<td  class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r73_no_of_accounts ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R73', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<td  class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r73_deposits ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R73', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 										
-										 <tr>
-										<td>         (c) Non-Resident Other Jurisdictions </td>
-										<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r74_no_of_accounts ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R74', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r74_deposits ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R74', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										 <tr colspan="3" style="border: none;">
+										<td  class="colspan-border">         (c) Non-Resident Other Jurisdictions </td>
+										<td  class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r74_no_of_accounts ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R74', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<td  class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r74_deposits ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R74', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
-										 <tr>
-										<th>(III) Total (sum of lines C(a) to C(c))</th>
-										<th style="text-align: right;" th:text="${#numbers.formatDecimal(report.r75_no_of_accounts ?: 0, 0, 'COMMA', 0, 'POINT')}" ></th>
-										<th style="text-align: right;" th:text="${#numbers.formatDecimal(report.r75_deposits ?: 0, 0, 'COMMA', 0, 'POINT')}" ></th>
+										 <tr colspan="3" style="border: none;">
+										<th class="colspan-border">(III) Total (sum of lines C(a) to C(c))</th>
+										<th class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r75_no_of_accounts ?: 0, 0, 'COMMA', 0, 'POINT')}" ></th>
+										<th class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r75_deposits ?: 0, 0, 'COMMA', 0, 'POINT')}" ></th>
 										</tr>
 
 
@@ -1398,29 +1405,29 @@ PURPOSE		: BRRSREPORT
 									    <th colspan="5" style="border:white;"> E1: PROMINENT INFLUENTIAL PERSONS (PIPs) & RELATED COMPANIES/AFFILIATIONS - FOREIGN PIPS  </th>
 										</tr>
 																				
-										<tr>
-									    <th style="text-align: center; background-color: rgb(107, 122, 143);color: white;"> Total number of customers</th>
-										<th style="text-align: center;background-color: rgb(107, 122, 143);color: white;"> Loans and on-balance sheet exposures (P'000) </th>
-										<th style="text-align: center;background-color: rgb(107, 122, 143);color: white;"> Deposits (P'000) </th>
-										<th style="text-align: center;background-color: rgb(107, 122, 143);color: white;"> Funds managed on behalf of customers (P'000) </th>
-										<th style="text-align: center;background-color: rgb(107, 122, 143);color: white;"> Turnover* (P'000) </th>
+										<tr colspan="5" style="border: none;">
+									    <th class="colspan-border" style="text-align: center;vertical-align: middle; background-color: rgb(107, 122, 143);color: white;"> Total number of customers</th>
+										<th class="colspan-border" style="text-align: center;vertical-align: middle;background-color: rgb(107, 122, 143);color: white;"> Loans and on-balance sheet exposures (P'000) </th>
+										<th class="colspan-border" style="text-align: center;vertical-align: middle;background-color: rgb(107, 122, 143);color: white;"> Deposits (P'000) </th>
+										<th class="colspan-border" style="text-align: center;vertical-align: middle;background-color: rgb(107, 122, 143);color: white;"> Funds managed on behalf of customers (P'000) </th>
+										<th class="colspan-border" style="text-align: center;vertical-align: middle;background-color: rgb(107, 122, 143);color: white;"> Turnover* (P'000) </th>
 										</tr>
 
-										 <tr>
-										<td style="text-align: center;" th:text="${#numbers.formatDecimal(report.r82_customer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R82', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align: center;" th:text="${#numbers.formatDecimal(report.r82_loan ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R82', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align: center;" th:text="${#numbers.formatDecimal(report.r82_deposits ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R82', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align: center;" th:text="${#numbers.formatDecimal(report.r82_funds ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R82', ColumnId='C5'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align: center;" th:text="${#numbers.formatDecimal(report.r82_turnover ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R82', ColumnId='C6'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										 <tr colspan="5" style="border: none;">
+										<td class="colspan-border" style="text-align: center;" th:text="${#numbers.formatDecimal(report.r82_customer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R82', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<td class="colspan-border" style="text-align: center;" th:text="${#numbers.formatDecimal(report.r82_loan ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R82', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<td class="colspan-border" style="text-align: center;" th:text="${#numbers.formatDecimal(report.r82_deposits ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R82', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<td class="colspan-border" style="text-align: center;" th:text="${#numbers.formatDecimal(report.r82_funds ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R82', ColumnId='C5'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<td class="colspan-border" style="text-align: center;" th:text="${#numbers.formatDecimal(report.r82_turnover ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R82', ColumnId='C6'" onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
 
-										<tr>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
+										<tr colspan="5" style="border: none;">
+											<td class="colspan-border"></td>
+											<td class="colspan-border"></td>
+											<td class="colspan-border"></td>
+											<td class="colspan-border"></td>
+											<td class="colspan-border"></td>
 										</tr>
 
 										<tr style="border: none;">
@@ -1431,62 +1438,62 @@ PURPOSE		: BRRSREPORT
 										<th colspan="5" style="border:white;"> E2: PROMINENT INFLUENTIAL PERSONS (PIPS) & RELATED COMPANIES/AFFILIATIONS - DOMESTIC PIPs  </th>
 										</tr>
 																												
-										<tr>
-										<th style="text-align: center; background-color: rgb(107, 122, 143);color: white;"> Total number of customers</th>
-										<th style="text-align: center;background-color: rgb(107, 122, 143);color: white;"> Loans and on-balance sheet exposures (P'000) </th>
-										<th style="text-align: center;background-color: rgb(107, 122, 143);color: white;"> Deposits (P'000) </th>
-										<th style="text-align: center;background-color: rgb(107, 122, 143);color: white;"> Funds managed on behalf of customers (P'000) </th>
-										<th style="text-align: center;background-color: rgb(107, 122, 143);color: white;"> Turnover* (P'000) </th>
+										<tr colspan="5" style="border: none;">
+										<th class="colspan-border" style="text-align: center;vertical-align: middle; background-color: rgb(107, 122, 143);color: white;"> Total number of customers</th>
+										<th class="colspan-border" style="text-align: center;vertical-align: middle;background-color: rgb(107, 122, 143);color: white;"> Loans and on-balance sheet exposures (P'000) </th>
+										<th class="colspan-border" style="text-align: center;vertical-align: middle;background-color: rgb(107, 122, 143);color: white;"> Deposits (P'000) </th>
+										<th class="colspan-border" style="text-align: center;vertical-align: middle;background-color: rgb(107, 122, 143);color: white;"> Funds managed on behalf of customers (P'000) </th>
+										<th class="colspan-border"style="text-align: center;vertical-align: middle;background-color: rgb(107, 122, 143);color: white;"> Turnover* (P'000) </th>
 										</tr>
 
-										 <tr>
-										<td style="text-align: center;" th:text="${#numbers.formatDecimal(report.r89_customer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R89', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align: center;" th:text="${#numbers.formatDecimal(report.r89_loan ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R89', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align: center;" th:text="${#numbers.formatDecimal(report.r89_deposits ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R89', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align: center;" th:text="${#numbers.formatDecimal(report.r89_funds ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R89', ColumnId='C5'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align: center;" th:text="${#numbers.formatDecimal(report.r89_turnover ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R89', ColumnId='C6'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										 <tr colspan="5" style="border: none;">
+										<td class="colspan-border" style="text-align: center;" th:text="${#numbers.formatDecimal(report.r89_customer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R89', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<td class="colspan-border" style="text-align: center;" th:text="${#numbers.formatDecimal(report.r89_loan ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R89', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<td class="colspan-border" style="text-align: center;" th:text="${#numbers.formatDecimal(report.r89_deposits ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R89', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<td class="colspan-border" style="text-align: center;" th:text="${#numbers.formatDecimal(report.r89_funds ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R89', ColumnId='C5'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<td class="colspan-border" style="text-align: center;" th:text="${#numbers.formatDecimal(report.r89_turnover ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R89', ColumnId='C6'" onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
 
-																		<tr>
-																			<td></td>
-																			<td></td>
-																			<td></td>
-																			<td></td>
-																			<td></td>
+																		<tr colspan="5" style="border: none;">
+																			<td class="colspan-border"></td>
+																			<td class="colspan-border"></td>
+																			<td class="colspan-border"></td>
+																			<td class="colspan-border"></td>
+																			<td class="colspan-border"></td>
 																		</tr>
 																		
 									<tr style="border: none;">
-									<th colspan="3" style="border:white;"></th>
+									<th  colspan="3" style="border:white;"></th>
 									</tr>
 									
- 										<tr style="border: none;">
-										<th colspan="5" style="border:white;"> E3: PROMINENNT INFLUENTIAL PERSONS (PIPs) & RELATED COMPANIES/AFFILIATIONS - INTERNATIONAL ORGANISATIONS </th>
+ 										<tr  style="border: none;">
+										<th   colspan="5" style="border:white;"> E3: PROMINENNT INFLUENTIAL PERSONS (PIPs) & RELATED COMPANIES/AFFILIATIONS - INTERNATIONAL ORGANISATIONS </th>
 										</tr>
 																																				
-										<tr>
-										<th style="text-align: center; background-color: rgb(107, 122, 143);color: white;"> Total number of customers</th>
-										<th style="text-align: center;background-color: rgb(107, 122, 143);color: white;"> Loans and on-balance sheet exposures (P'000) </th>
-										<th style="text-align: center;background-color: rgb(107, 122, 143);color: white;"> Deposits (P'000) </th>
-										<th style="text-align: center;background-color: rgb(107, 122, 143);color: white;"> Funds managed on behalf of customers (P'000) </th>
-										<th style="text-align: center;background-color: rgb(107, 122, 143);color: white;"> Turnover* (P'000) </th>
+										<tr colspan="5" style="border: none;">
+										<th class="colspan-border" style="text-align: center;vertical-align: middle; background-color: rgb(107, 122, 143);color: white;"> Total number of customers</th>
+										<th class="colspan-border" style="text-align: center;vertical-align: middle; background-color: rgb(107, 122, 143);color: white;"> Loans and on-balance sheet exposures (P'000) </th>
+										<th class="colspan-border" style="text-align: center;vertical-align: middle; background-color: rgb(107, 122, 143);color: white;"> Deposits (P'000) </th>
+										<th class="colspan-border" style="text-align: center;vertical-align: middle; background-color: rgb(107, 122, 143);color: white;"> Funds managed on behalf of customers (P'000) </th>
+										<th class="colspan-border" style="text-align: center;vertical-align: middle;background-color: rgb(107, 122, 143);color: white;"> Turnover* (P'000) </th>
 										</tr>
 
-										<tr>
-										<td style="text-align: center;" th:text="${#numbers.formatDecimal(report.r96_customer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R96', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align: center;" th:text="${#numbers.formatDecimal(report.r96_loan ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R96', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align: center;" th:text="${#numbers.formatDecimal(report.r96_deposits ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R96', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align: center;" th:text="${#numbers.formatDecimal(report.r96_funds ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R96', ColumnId='C5'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align: center;" th:text="${#numbers.formatDecimal(report.r96_turnover ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R96', ColumnId='C6'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<tr colspan="5" style="border: none;">
+										<td class="colspan-border" style="text-align: center;" th:text="${#numbers.formatDecimal(report.r96_customer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R96', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<td class="colspan-border" style="text-align: center;" th:text="${#numbers.formatDecimal(report.r96_loan ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R96', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<td class="colspan-border" style="text-align: center;" th:text="${#numbers.formatDecimal(report.r96_deposits ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R96', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<td class="colspan-border" style="text-align: center;" th:text="${#numbers.formatDecimal(report.r96_funds ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R96', ColumnId='C5'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<td class="colspan-border" style="text-align: center;" th:text="${#numbers.formatDecimal(report.r96_turnover ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R96', ColumnId='C6'" onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
 
-										<tr>
-										<td></td>
-										<td></td>
-										<td></td>
-										<td></td>
-										<td></td>
+										<tr colspan="5" style="border: none;">
+										<td class="colspan-border"></td>
+										<td class="colspan-border"></td>
+										<td class="colspan-border"></td>
+										<td class="colspan-border"></td>
+										<td class="colspan-border"></td>
 										</tr>
 										
 										<tr style="border: none;">
@@ -1497,29 +1504,29 @@ PURPOSE		: BRRSREPORT
 									    <th colspan="5" style="border:white;"> F: PRIVATE BANKING/HIGH NET-WORTH CUSTOMERS </th>
 										</tr>
 																																														
-										<tr>
-										<th style="text-align: center; background-color: rgb(107, 122, 143);color: white;"> Total number of customers</th>
-										<th style="text-align: center;background-color: rgb(107, 122, 143);color: white;"> Loans and on-balance sheet exposures (P'000) </th>
-										<th style="text-align: center;background-color: rgb(107, 122, 143);color: white;"> Deposits (P'000) </th>
-										<th style="text-align: center;background-color: rgb(107, 122, 143);color: white;"> Funds managed on behalf of customers (P'000) </th>
-										<th style="text-align: center;background-color: rgb(107, 122, 143);color: white;"> Turnover* (P'000) </th>
+										<tr colspan="5" style="border: none;">
+										<th class="colspan-border" style="text-align: center;vertical-align: middle; background-color: rgb(107, 122, 143);color: white;"> Total number of customers</th>
+										<th class="colspan-border" style="text-align: center;vertical-align: middle; background-color: rgb(107, 122, 143);color: white;"> Loans and on-balance sheet exposures (P'000) </th>
+										<th class="colspan-border" style="text-align: center;vertical-align: middle; background-color: rgb(107, 122, 143);color: white;"> Deposits (P'000) </th>
+										<th class="colspan-border" style="text-align: center;vertical-align: middle; background-color: rgb(107, 122, 143);color: white;"> Funds managed on behalf of customers (P'000) </th>
+										<th class="colspan-border" style="text-align: center;vertical-align: middle; background-color: rgb(107, 122, 143);color: white;"> Turnover* (P'000) </th>
 										</tr>
 
-										<tr>
-										<td style="text-align: center;" th:text="${#numbers.formatDecimal(report.r104_customer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R104', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align: center;" th:text="${#numbers.formatDecimal(report.r104_loan ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R104', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align: center;" th:text="${#numbers.formatDecimal(report.r104_deposits ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R104', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align: center;" th:text="${#numbers.formatDecimal(report.r104_funds ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R104', ColumnId='C5'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align: center;" th:text="${#numbers.formatDecimal(report.r104_turnover ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R104', ColumnId='C6'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<tr colspan="5" style="border: none;">
+										<td class="colspan-border" style="text-align: center;" th:text="${#numbers.formatDecimal(report.r104_customer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R104', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<td class="colspan-border" style="text-align: center;" th:text="${#numbers.formatDecimal(report.r104_loan ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R104', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<td class="colspan-border" style="text-align: center;" th:text="${#numbers.formatDecimal(report.r104_deposits ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R104', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<td class="colspan-border" style="text-align: center;" th:text="${#numbers.formatDecimal(report.r104_funds ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R104', ColumnId='C5'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<td class="colspan-border" style="text-align: center;" th:text="${#numbers.formatDecimal(report.r104_turnover ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R104', ColumnId='C6'" onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
-                                        <tr>
-										<td></td>
-										<td></td>
-										<td></td>
-										<td></td>
-										<td></td>
-										</tr>
+										<tr colspan="5" style="border: none;">
+																				<td class="colspan-border"></td>
+																				<td class="colspan-border"></td>
+																				<td class="colspan-border"></td>
+																				<td class="colspan-border"></td>
+																				<td class="colspan-border"></td>
+																				</tr>
 
 										<tr style="border: none;">
 										<th colspan="3" style="border:white;"></th>
@@ -1529,137 +1536,138 @@ PURPOSE		: BRRSREPORT
 										<th colspan="5" style="border:white;"> G1: WIRE TRANSFERS  </th>
 										</tr>
 																																																								
-										<tr>
-									    <th colspan="2" style="text-align: right; background-color: rgb(107, 122, 143);color: white;"> Payment Mechanism</th>
-										<th style="text-align: center;background-color: rgb(107, 122, 143);color: white;"> Number of transfers  </th>
-										<th style="text-align: center;background-color: rgb(107, 122, 143);color: white;"> Value of transfers*(P'000)  </th>
+										<tr colspan="4" style="border: none;">
+									    <th class="colspan-border" colspan="2" style="text-align: left; background-color: rgb(107, 122, 143);color: white;"> Payment Mechanism</th>
+										<th class="colspan-border" style="text-align: center;background-color: rgb(107, 122, 143);color: white;"> Number of transfers  </th>
+										<th class="colspan-border" style="text-align: center;background-color: rgb(107, 122, 143);color: white;"> Value of transfers*(P'000)  </th>
 										</tr>
 
-										<tr>
-											<td>SWIFT (International)</td>
-											<td style="text-align: center;">Incoming </td>
-											<td style="text-align: center;" th:text="${#numbers.formatDecimal(report.r111_no_of_transfer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R111', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
-											<td style="text-align: center;" th:text="${#numbers.formatDecimal(report.r111_values_of_transfer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R111', ColumnId='C5'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<tr colspan="4" style="border: none;">
+											<td class="colspan-border">SWIFT (International)</td>
+											<td class="colspan-border" style="text-align: center;">Incoming </td>
+											<td class="colspan-border" style="text-align: center;" th:text="${#numbers.formatDecimal(report.r111_no_of_transfer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R111', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td class="colspan-border" style="text-align: center;" th:text="${#numbers.formatDecimal(report.r111_values_of_transfer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R111', ColumnId='C5'" onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
-										<tr>
-										<td></td>
-										<td style="text-align: center;">Outgoing </td>
-										<td style="text-align: center;" th:text="${#numbers.formatDecimal(report.r112_no_of_transfer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R112', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align: center;" th:text="${#numbers.formatDecimal(report.r112_values_of_transfer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R112', ColumnId='C5'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<tr colspan="4" style="border: none;">
+										<td class="colspan-border"></td>
+										<td class="colspan-border" style="text-align: center;">Outgoing </td>
+										<td class="colspan-border" style="text-align: center;" th:text="${#numbers.formatDecimal(report.r112_no_of_transfer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R112', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<td class="colspan-border" style="text-align: center;" th:text="${#numbers.formatDecimal(report.r112_values_of_transfer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R112', ColumnId='C5'" onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
-										<tr>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
+										<tr colspan="4" style="border: none;">
+											<td class="colspan-border"></td>
+											<td class="colspan-border"></td>
+											<td class="colspan-border"></td>
+											<td class="colspan-border"></td>
 										</tr>
 										
-										<tr>
-										<td>SWIFT (Local)</td>
-										<td style="text-align: center;">Incoming </td>
-										<td style="text-align: center;" th:text="${#numbers.formatDecimal(report.r114_no_of_transfer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R114', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align: center;" th:text="${#numbers.formatDecimal(report.r114_values_of_transfer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R114', ColumnId='C5'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<tr colspan="4" style="border: none;">
+										<td class="colspan-border">SWIFT (Local)</td>
+										<td class="colspan-border" style="text-align: center;">Incoming </td>
+										<td class="colspan-border" style="text-align: center;" th:text="${#numbers.formatDecimal(report.r114_no_of_transfer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R114', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<td class="colspan-border"style="text-align: center;" th:text="${#numbers.formatDecimal(report.r114_values_of_transfer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R114', ColumnId='C5'" onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
-										<tr>
-										<td></td>
-										<td style="text-align: center;">Outgoing </td>
-										<td style="text-align: center;" th:text="${#numbers.formatDecimal(report.r115_no_of_transfer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R115', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align: center;" th:text="${#numbers.formatDecimal(report.r115_values_of_transfer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R115', ColumnId='C5'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<tr colspan="4" style="border: none;">
+										<td class="colspan-border"></td>
+										<td class="colspan-border" style="text-align: center;">Outgoing </td>
+										<td class="colspan-border" style="text-align: center;" th:text="${#numbers.formatDecimal(report.r115_no_of_transfer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R115', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<td class="colspan-border" style="text-align: center;" th:text="${#numbers.formatDecimal(report.r115_values_of_transfer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R115', ColumnId='C5'" onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
-										<tr>
+										<tr colspan="4" style="border: none;">
+																					<td class="colspan-border"></td>
+																					<td class="colspan-border"></td>
+																					<td class="colspan-border"></td>
+																					<td class="colspan-border"></td>
+																				</tr>
+										
+										<tr colspan="4" style="border: none;">
+										<td class="colspan-border">EFT (domestic)</td>
+										<td class="colspan-border" style="text-align: center;">Incoming </td>
+										<td class="colspan-border" style="text-align: center;" th:text="${#numbers.formatDecimal(report.r117_no_of_transfer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R117', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<td class="colspan-border" style="text-align: center;" th:text="${#numbers.formatDecimal(report.r117_values_of_transfer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R117', ColumnId='C5'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										</tr>
+
+										<tr colspan="4" style="border: none;">
+										<td class="colspan-border"></td>
+										<td class="colspan-border" style="text-align: center;">Outgoing </td>
+										<td class="colspan-border" style="text-align: center;" th:text="${#numbers.formatDecimal(report.r118_no_of_transfer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R118', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<td class="colspan-border" style="text-align: center;" th:text="${#numbers.formatDecimal(report.r118_values_of_transfer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R118', ColumnId='C5'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										</tr>
+
+										<tr colspan="4" style="border: none;">
+																															<td class="colspan-border"></td>
+																															<td class="colspan-border"></td>
+																															<td class="colspan-border"></td>
+																															<td class="colspan-border"></td>
+																														</tr>
+										
+										<tr colspan="4" style="border: none;">
+										<td class="colspan-border">EFT (International)</td>
+										<td class="colspan-border"style="text-align: center;">Incoming </td>
+										<td class="colspan-border" style="text-align: center;" th:text="${#numbers.formatDecimal(report.r120_no_of_transfer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R120', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<td class="colspan-border" style="text-align: center;" th:text="${#numbers.formatDecimal(report.r120_values_of_transfer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R120', ColumnId='C5'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										</tr>
+
+										<tr colspan="4" style="border: none;">
+										<td class="colspan-border"></td>
+										<td class="colspan-border" style="text-align: center;">Outgoing </td>
+										<td class="colspan-border" style="text-align: center;" th:text="${#numbers.formatDecimal(report.r121_no_of_transfer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R121', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<td class="colspan-border" style="text-align: center;" th:text="${#numbers.formatDecimal(report.r121_values_of_transfer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R121', ColumnId='C5'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										</tr>
+
+										<tr colspan="4" style="border: none;">
+																																									<td class="colspan-border"></td>
+																																									<td class="colspan-border"></td>
+																																									<td class="colspan-border"></td>
+																																									<td class="colspan-border"></td>
+																																								</tr>
+																				
+										
+										<tr colspan="4" style="border: none;">
+										<td class="colspan-border" >RTGS (domestic)</tdclass="colspan-border">
+										<td class="colspan-border" style="text-align: center;">Incoming </td>
+										<td class="colspan-border" style="text-align: center;" th:text="${#numbers.formatDecimal(report.r123_no_of_transfer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R123', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<td class="colspan-border" style="text-align: center;" th:text="${#numbers.formatDecimal(report.r123_values_of_transfer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R123', ColumnId='C5'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										</tr>
+
+										<tr colspan="4" style="border: none;">
 										<td></td>
-										<td></td>
-										<td></td>
-										<td></td>
+										<td class="colspan-border" style="text-align: center;">Outgoing </td>
+										<td class="colspan-border" style="text-align: center;" th:text="${#numbers.formatDecimal(report.r124_no_of_transfer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R124', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<td class="colspan-border" style="text-align: center;" th:text="${#numbers.formatDecimal(report.r124_values_of_transfer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R124', ColumnId='C5'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										</tr>
+
+										<tr colspan="4" style="border: none;">
+										<td class="colspan-border"></td>
+										<td class="colspan-border"></td>
+										<td class="colspan-border"></td>
+										<td class="colspan-border"></td>
 										</tr>
 										
-										<tr>
-										<td>EFT (domestic)</td>
-										<td style="text-align: center;">Incoming </td>
-										<td style="text-align: center;" th:text="${#numbers.formatDecimal(report.r117_no_of_transfer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R117', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align: center;" th:text="${#numbers.formatDecimal(report.r117_values_of_transfer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R117', ColumnId='C5'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<tr colspan="4" style="border: none;">
+										<td class="colspan-border">RTGS (Regional)</td>
+										<td class="colspan-border" style="text-align: center;">Incoming </td>
+										<td class="colspan-border" style="text-align: center;" th:text="${#numbers.formatDecimal(report.r126_no_of_transfer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R126', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></tdclass="colspan-border">
+										<td class="colspan-border" style="text-align: center;" th:text="${#numbers.formatDecimal(report.r126_values_of_transfer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R126', ColumnId='C5'" onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
-										<tr>
-										<td></td>
-										<td style="text-align: center;">Outgoing </td>
-										<td style="text-align: center;" th:text="${#numbers.formatDecimal(report.r118_no_of_transfer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R118', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align: center;" th:text="${#numbers.formatDecimal(report.r118_values_of_transfer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R118', ColumnId='C5'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										</tr>
-
-										<tr>
-										<td></td>
-										<td></td>
-										<td></td>
-										<td></td>
-										</tr>
-										
-										<tr>
-										<td>EFT (International)</td>
-										<td style="text-align: center;">Incoming </td>
-										<td style="text-align: center;" th:text="${#numbers.formatDecimal(report.r120_no_of_transfer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R120', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align: center;" th:text="${#numbers.formatDecimal(report.r120_values_of_transfer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R120', ColumnId='C5'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										</tr>
-
-										<tr>
-										<td></td>
-										<td style="text-align: center;">Outgoing </td>
-										<td style="text-align: center;" th:text="${#numbers.formatDecimal(report.r121_no_of_transfer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R121', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align: center;" th:text="${#numbers.formatDecimal(report.r121_values_of_transfer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R121', ColumnId='C5'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										</tr>
-
-										<tr>
-										<td></td>
-										<td></td>
-										<td></td>
-										<td></td>
-										</tr>
-										
-										<tr>
-										<td>RTGS (domestic)</td>
-										<td style="text-align: center;">Incoming </td>
-										<td style="text-align: center;" th:text="${#numbers.formatDecimal(report.r123_no_of_transfer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R123', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align: center;" th:text="${#numbers.formatDecimal(report.r123_values_of_transfer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R123', ColumnId='C5'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										</tr>
-
-										<tr>
-										<td></td>
-										<td style="text-align: center;">Outgoing </td>
-										<td style="text-align: center;" th:text="${#numbers.formatDecimal(report.r124_no_of_transfer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R124', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align: center;" th:text="${#numbers.formatDecimal(report.r124_values_of_transfer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R124', ColumnId='C5'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										</tr>
-
-										<tr>
-										<td></td>
-										<td></td>
-										<td></td>
-										<td></td>
-										</tr>
-										
-										<tr>
-										<td>RTGS (Regional)</td>
-										<td style="text-align: center;">Incoming </td>
-										<td style="text-align: center;" th:text="${#numbers.formatDecimal(report.r126_no_of_transfer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R126', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align: center;" th:text="${#numbers.formatDecimal(report.r126_values_of_transfer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R126', ColumnId='C5'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										</tr>
-
-										<tr>
-										<td></td>
-										<td style="text-align: center;">Outgoing </td>
-										<td style="text-align: center;" th:text="${#numbers.formatDecimal(report.r127_no_of_transfer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R127', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align: center;" th:text="${#numbers.formatDecimal(report.r127_values_of_transfer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R127', ColumnId='C5'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<tr colspan="4" style="border: none;">
+										<td class="colspan-border"></td>
+										<td class="colspan-border" style="text-align: center;">Outgoing </td>
+										<td class="colspan-border" style="text-align: center;" th:text="${#numbers.formatDecimal(report.r127_no_of_transfer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R127', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<td class="colspan-border" style="text-align: center;" th:text="${#numbers.formatDecimal(report.r127_values_of_transfer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R127', ColumnId='C5'" onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
 										
-										<tr>
-										<td>Other alternative Payment Method , (please specify)</td>
-										<td></td>
-										<td style="text-align: center;" th:text="${#numbers.formatDecimal(report.r128_no_of_transfer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R128', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align: center;" th:text="${#numbers.formatDecimal(report.r128_values_of_transfer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R128', ColumnId='C5'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<tr colspan="4" style="border: none;">
+										<td class="colspan-border">Other alternative Payment Method , (please specify)</td>
+										<td class="colspan-border"></td>
+										<td class="colspan-border" style="text-align: center;" th:text="${#numbers.formatDecimal(report.r128_no_of_transfer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R128', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<td class="colspan-border" style="text-align: center;" th:text="${#numbers.formatDecimal(report.r128_values_of_transfer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R128', ColumnId='C5'" onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 											
 										<tr style="border: none;">
@@ -1670,37 +1678,37 @@ PURPOSE		: BRRSREPORT
 										<th colspan="5" style="border:white;"> G2: FOREIGN CURRENCY EXCHANGE  </th>
 										</tr>
 																																																																		
-										<tr>
-										<th colspan="2" style="text-align: left;vertical-align: middle; background-color: rgb(107, 122, 143);color: white;"> FOREIGN EXCHANGE</th>
-										<th style="text-align: center;vertical-align: middle;background-color: rgb(107, 122, 143);color: white;"> Value of transactions* (P'000)  </th>
+										<tr colspan="3" style="border: none;">
+										<th class="colspan-border" colspan="2" style="text-align: left;vertical-align: middle; background-color: rgb(107, 122, 143);color: white;"> FOREIGN EXCHANGE</th>
+										<th class="colspan-border" style="text-align: center;vertical-align: middle;background-color: rgb(107, 122, 143);color: white;"> Value of transactions* (P'000)  </th>
 										</tr>
 
 
-										<tr>
-										<td rowspan="2" style="text-align: center;vertical-align: middle;">Spot </td>
-										<td style="text-align: center;">Buying</td>
-										<td style="text-align: center;" th:text="${#numbers.formatDecimal(report.r135_transactions ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R135', ColumnId='C6'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<tr colspan="3" style="border: none;">
+										<td class="colspan-border" rowspan="2" style="text-align: center;vertical-align: middle;">Spot </td>
+										<td class="colspan-border" style="text-align: center;">Buying</td>
+										<td class="colspan-border" style="text-align: center;" th:text="${#numbers.formatDecimal(report.r135_transactions ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R135', ColumnId='C6'" onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 										
-										<tr>
-										<td style="text-align: center;">Selling</td>
-										<td style="text-align: center;" th:text="${#numbers.formatDecimal(report.r136_transactions ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R136', ColumnId='C6'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<tr colspan="3" style="border: none;">
+										<td class="colspan-border" style="text-align: center;">Selling</td>
+										<td class="colspan-border" style="text-align: center;" th:text="${#numbers.formatDecimal(report.r136_transactions ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R136', ColumnId='C6'" onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 										
 									
-										<tr>
-											<td colspan="3"></td>
+										<tr colspan="3" style="border: none;">
+											<td class="colspan-border"colspan="3"></td>
 										</tr>
 										
-										<tr>
-										<td rowspan="2" style="text-align: center;vertical-align: middle;">Forward </td>
-										<td style="text-align: center;">Buying</td>
-										<td style="text-align: center;" th:text="${#numbers.formatDecimal(report.r138_transactions ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R138', ColumnId='C6'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<tr colspan="3" style="border: none;">
+										<td class="colspan-border" rowspan="2" style="text-align: center;vertical-align: middle;">Forward </td>
+										<td class="colspan-border" style="text-align: center;">Buying</td>
+										<td class="colspan-border" style="text-align: center;" th:text="${#numbers.formatDecimal(report.r138_transactions ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R138', ColumnId='C6'" onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 																				
-										<tr>
-										<td style="text-align: center;">Selling</td>
-										<td style="text-align: center;" th:text="${#numbers.formatDecimal(report.r139_transactions ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R139', ColumnId='C6'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<tr colspan="3" style="border: none;">
+										<td class="colspan-border" style="text-align: center;">Selling</td>
+										<td class="colspan-border" style="text-align: center;" th:text="${#numbers.formatDecimal(report.r139_transactions ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R139', ColumnId='C6'" onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 										
 										<tr style="border: none;">
@@ -1711,34 +1719,34 @@ PURPOSE		: BRRSREPORT
 										<th colspan="5" style="border:white;"> H: LENDING ACTIVITIES   </th>
 										</tr>
 										
-										<tr>
-										<th colspan="4" style="text-align: left;vertical-align: middle; background-color: rgb(107, 122, 143);color: white;"> FOREIGN EXCHANGE</th>
-										<th style="text-align: center;vertical-align: middle;background-color: rgb(107, 122, 143);color: white;"> Value of transactions* (P'000)  </th>
+										<tr colspan="5" style="border: none;">
+										<th class="colspan-border" colspan="4" style="text-align: left;vertical-align: middle; background-color: rgb(107, 122, 143);color: white;"> FOREIGN EXCHANGE</th>
+										<th class="colspan-border" style="text-align: center;vertical-align: middle;background-color: rgb(107, 122, 143);color: white;"> Value of transactions* (P'000)  </th>
 										</tr>
 										
-										<tr>
-										<td colspan="4" style="text-align: left;">Total Loans </td>
-										<td style="text-align: center;" th:text="${#numbers.formatDecimal(report.r144_transactions ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R144', ColumnId='C6'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<tr colspan="5" style="border: none;">
+										<td class="colspan-border" colspan="4" style="text-align: left;">Total Loans </td>
+										<td class="colspan-border" style="text-align: center;" th:text="${#numbers.formatDecimal(report.r144_transactions ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R144', ColumnId='C6'" onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 										
-										<tr>
-										<td colspan="4" style="text-align: left;">Loans secured by cash </td>
-										<td style="text-align: center;" th:text="${#numbers.formatDecimal(report.r145_transactions ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R145', ColumnId='C6'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<tr colspan="5" style="border: none;">
+										<td class="colspan-border" colspan="4" style="text-align: left;">Loans secured by cash </td>
+										<td class="colspan-border" style="text-align: center;" th:text="${#numbers.formatDecimal(report.r145_transactions ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R145', ColumnId='C6'" onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 										
-										<tr>
-										<td colspan="4" style="text-align: left;">Loans paid in cash (loans that were repaid in cash up to twelve months after originating, as well as those that were paid in cash twelve months before maturity). </td>
-										<td style="text-align: center;" th:text="${#numbers.formatDecimal(report.r146_transactions ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R146', ColumnId='C6'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<tr colspan="5" style="border: none;">
+										<td class="colspan-border" colspan="4" style="text-align: left;">Loans paid in cash (loans that were repaid in cash up to twelve months after originating, as well as those that were paid in cash twelve months before maturity). </td>
+										<td class="colspan-border" style="text-align: center;" th:text="${#numbers.formatDecimal(report.r146_transactions ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R146', ColumnId='C6'" onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 										
-										<tr>
-										<td colspan="4" style="text-align: left;">Unsecured Personal Loans (>30 days past due since origination) </td>
-										<td style="text-align: center;" th:text="${#numbers.formatDecimal(report.r147_transactions ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R147', ColumnId='C6'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<tr colspan="5" style="border: none;">
+										<td class="colspan-border" colspan="4" style="text-align: left;">Unsecured Personal Loans (>30 days past due since origination) </td>
+										<td class="colspan-border" style="text-align: center;" th:text="${#numbers.formatDecimal(report.r147_transactions ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R147', ColumnId='C6'" onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 										
-										<tr>
-										<td colspan="4" style="text-align: left;">Loans to PIPs (please report the extension of loans granted to PIPs and related companies (foreign PIPs/domestic PIPs/officials from international organisations)). </td>
-										<td style="text-align: center;" th:text="${#numbers.formatDecimal(report.r148_transactions ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R148', ColumnId='C6'" onclick="showdetailsbyRowAndColumn(this)"></td>
+										<tr colspan="5" style="border: none;">
+										<td class="colspan-border" colspan="4" style="text-align: left;">Loans to PIPs (please report the extension of loans granted to PIPs and related companies (foreign PIPs/domestic PIPs/officials from international organisations)). </td>
+										<td class="colspan-border" style="text-align: center;" th:text="${#numbers.formatDecimal(report.r148_transactions ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R148', ColumnId='C6'" onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 										
 										<tr style="border: none;">
@@ -1749,33 +1757,33 @@ PURPOSE		: BRRSREPORT
 									    <th colspan="3" style="border:white;"> I: PRODUCTS AND SERVICES </th>
 										</tr>
 																				
-										<tr>
-										<th style="text-align: center;vertical-align: middle; background-color: rgb(107, 122, 143);color: white;"> Product/Service</th>
-										<th style="text-align: center;vertical-align: middle;background-color: rgb(107, 122, 143);color: white;"> No. of customers</th>
-										<th style="text-align: center;vertical-align: middle;background-color: rgb(107, 122, 143);color: white;"> Outstanding Balance (P'000) </th>
-										<th style="text-align: center;vertical-align: middle;background-color: rgb(107, 122, 143);color: white;"> Turnover (P'000) </th>	
+										<tr colspan="4" style="border: none;">
+										<th class="colspan-border" style="text-align: center;vertical-align: middle; background-color: rgb(107, 122, 143);color: white;"> Product/Service</th>
+										<th class="colspan-border" style="text-align: center;vertical-align: middle;background-color: rgb(107, 122, 143);color: white;"> No. of customers</th>
+										<th class="colspan-border" style="text-align: center;vertical-align: middle;background-color: rgb(107, 122, 143);color: white;"> Outstanding Balance (P'000) </th>
+										<th class="colspan-border" style="text-align: center;vertical-align: middle;background-color: rgb(107, 122, 143);color: white;"> Turnover (P'000) </th>	
 									</tr>
 										
-									 <tr>
-									<td>Prepaid/stored value cards</td>
-									<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r153_no_of_customer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R153', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
-									<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r153_outstanding ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R153', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
-									<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r153_turnover ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R153', ColumnId='C5'" onclick="showdetailsbyRowAndColumn(this)"></td>
+									 <tr colspan="4" style="border: none;">
+									<td class="colspan-border">Prepaid/stored value cards</td>
+									<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r153_no_of_customer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R153', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
+									<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r153_outstanding ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R153', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
+									<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r153_turnover ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R153', ColumnId='C5'" onclick="showdetailsbyRowAndColumn(this)"></td>
 									</tr>
 
-									 <tr>
-									<td>Internet Banking</td>
-									<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r154_no_of_customer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R154', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
-									<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r154_outstanding ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R154', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
-									<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r154_turnover ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R154', ColumnId='C5'" onclick="showdetailsbyRowAndColumn(this)"></td>
+									 <tr colspan="4" style="border: none;">
+									<td class="colspan-border">Internet Banking</td>
+									<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r154_no_of_customer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R154', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
+									<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r154_outstanding ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R154', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
+									<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r154_turnover ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R154', ColumnId='C5'" onclick="showdetailsbyRowAndColumn(this)"></td>
 									</tr>
 
 
-									 <tr>
-									<td>Mobile Banking</td>
-									<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r155_no_of_customer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R155', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
-									<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r155_outstanding ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R155', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
-									<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r155_turnover ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R155', ColumnId='C5'" onclick="showdetailsbyRowAndColumn(this)"></td>
+									 <tr colspan="4" style="border: none;">
+									<td class="colspan-border">Mobile Banking</td>
+									<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r155_no_of_customer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R155', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
+									<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r155_outstanding ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R155', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
+									<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r155_turnover ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R155', ColumnId='C5'" onclick="showdetailsbyRowAndColumn(this)"></td>
 									</tr>
 
 									<tr style="border: none;">
@@ -1786,34 +1794,34 @@ PURPOSE		: BRRSREPORT
 								    <th colspan="4" style="border:white;">J: TRADE FINANCE  (NEW SCHEDULE) </th>
 									</tr>
 																													
-									<tr>
-									<th style="text-align: center;vertical-align: middle; background-color: rgb(107, 122, 143);color: white;"> Trade Finance Products</th>
-									<th style="text-align: center;vertical-align: middle;background-color: rgb(107, 122, 143);color: white;">Number of customers</th>
-									<th colspan = "2" style="text-align: center;vertical-align: middle;background-color: rgb(107, 122, 143);color: white;"> Commitment as at June 30, 2025               (P'000) </th>
+									<tr colspan="4" style="border: none;">
+									<th class="colspan-border"style="text-align: left;vertical-align: middle; background-color: rgb(107, 122, 143);color: white;"> Trade Finance Products</th>
+									<th class="colspan-border" style="text-align: center;vertical-align: middle;background-color: rgb(107, 122, 143);color: white;">Number of customers</th>
+									<th class="colspan-border" colspan = "2" style="text-align: center;vertical-align: middle;background-color: rgb(107, 122, 143);color: white;"> Commitment as at June 30, 2025               (P'000) </th>
 									</tr>
 
-									 <tr>
-									<td>Letters of Credit</td>
-									<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r161_no_of_customer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R161', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
-									<td colspan ="2" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r161_commitment ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R161', ColumnId='C5'" onclick="showdetailsbyRowAndColumn(this)"></td>
+									<tr colspan="4" style="border: none;">
+									<td class="colspan-border">Letters of Credit</td>
+									<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r161_no_of_customer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R161', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
+									<td class="colspan-border" colspan ="2" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r161_commitment ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R161', ColumnId='C5'" onclick="showdetailsbyRowAndColumn(this)"></td>
 									</tr>
 
-									 <tr>
-									<td>Guarantees</td>
-									<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r162_no_of_customer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R162', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
-									<td colspan ="2" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r162_commitment ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R162', ColumnId='C5'" onclick="showdetailsbyRowAndColumn(this)"></td>
+									<tr colspan="4" style="border: none;">
+									<td class="colspan-border">Guarantees</td>
+									<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r162_no_of_customer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R162', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
+									<td class="colspan-border" colspan ="2" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r162_commitment ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R162', ColumnId='C5'" onclick="showdetailsbyRowAndColumn(this)"></td>
 									</tr>
 									
-									 <tr>
-									<td>Any other trade finance related products</td>
-									<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r163_no_of_customer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R163', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
-									<td colspan ="2" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r163_commitment ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R163', ColumnId='C5'" onclick="showdetailsbyRowAndColumn(this)"></td>
+									 <tr colspan="4" style="border: none;">
+									<td class="colspan-border">Any other trade finance related products</td>
+									<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r163_no_of_customer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R163', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
+									<td class="colspan-border" colspan ="2" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r163_commitment ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R163', ColumnId='C5'" onclick="showdetailsbyRowAndColumn(this)"></td>
 									</tr>
 									
-									 <tr>
-									<th>Total </th>
-									<th style="text-align: right;" th:text="${#numbers.formatDecimal(report.r164_no_of_customer ?: 0, 0, 'COMMA', 0, 'POINT')}" ></td>
-									<th colspan ="2" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r164_commitment ?: 0, 0, 'COMMA', 0, 'POINT')}" ></th>
+									 <tr colspan="4" style="border: none;">
+									<th class="colspan-border">Total </th>
+									<th class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r164_no_of_customer ?: 0, 0, 'COMMA', 0, 'POINT')}" ></td>
+									<th class="colspan-border" colspan ="2" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r164_commitment ?: 0, 0, 'COMMA', 0, 'POINT')}" ></th>
 									</tr>
 									
 									<tr style="border: none;">
@@ -1824,31 +1832,31 @@ PURPOSE		: BRRSREPORT
 									<th colspan="4" style="border:white;">K: TRANSFERS TO AND FROM HIGH RISK JURISDICTIONS</th>
 									</tr>
 																																						
-									<tr>
-									<th colspan = "2"  style="text-align: center;vertical-align: middle; background-color: rgb(107, 122, 143);color: white;"> Payment Mechanism</th>
-									<th style="text-align: center;vertical-align: middle;background-color: rgb(107, 122, 143);color: white;">Number of transfers</th>
-									<th style="text-align: center;vertical-align: middle;background-color: rgb(107, 122, 143);color: white;"> Value of Transfers*(P'000) </th>
+									<tr colspan="4" style="border: none;">
+									<th class="colspan-border" colspan = "2"  style="text-align: left;vertical-align: middle; background-color: rgb(107, 122, 143);color: white;"> Payment Mechanism</th>
+									<th class="colspan-border" style="text-align: center;vertical-align: middle;background-color: rgb(107, 122, 143);color: white;">Number of transfers</th>
+									<th class="colspan-border" style="text-align: center;vertical-align: middle;background-color: rgb(107, 122, 143);color: white;"> Value of Transfers*(P'000) </th>
 									</tr>
 									
-									<tr>
-									<th rowspan="2" style="text-align: center;vertical-align: middle;">SWIFT (International)</th>
-									<td style="text-align: center;">Incoming </td>
-									<td style="text-align: center;" th:text="${#numbers.formatDecimal(report.r170_no_of_transfer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R170', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
-									<td style="text-align: center;" th:text="${#numbers.formatDecimal(report.r170_value_of_transfer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R170', ColumnId='C5'" onclick="showdetailsbyRowAndColumn(this)"></td>
+									<tr colspan="4" style="border: none;">
+									<th class="colspan-border" rowspan="2" style="text-align: center;vertical-align: middle;">SWIFT (International)</th>
+									<td class="colspan-border" style="text-align: center;">Incoming </td>
+									<td class="colspan-border" style="text-align: center;" th:text="${#numbers.formatDecimal(report.r170_no_of_transfer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R170', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
+									<td class="colspan-border" style="text-align: center;" th:text="${#numbers.formatDecimal(report.r170_value_of_transfer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R170', ColumnId='C5'" onclick="showdetailsbyRowAndColumn(this)"></td>
 									</tr>
 
-									<tr>
+									<tr colspan="4" style="border: none;">
 									
-									<td style="text-align: center;">Outgoing </td>
-									<td style="text-align: center;" th:text="${#numbers.formatDecimal(report.r171_no_of_transfer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R170', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
-									<td style="text-align: center;" th:text="${#numbers.formatDecimal(report.r171_value_of_transfer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R170', ColumnId='C5'" onclick="showdetailsbyRowAndColumn(this)"></td>
+									<td class="colspan-border" style="text-align: center;">Outgoing </td>
+									<td class="colspan-border" style="text-align: center;" th:text="${#numbers.formatDecimal(report.r171_no_of_transfer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R170', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
+									<td class="colspan-border" style="text-align: center;" th:text="${#numbers.formatDecimal(report.r171_value_of_transfer ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R170', ColumnId='C5'" onclick="showdetailsbyRowAndColumn(this)"></td>
 									</tr>									
 										
-									<tr>
-										<th  style="text-align: center;vertical-align: middle;">Other alternative Payment Method , (please specify)</th>
-										<td></td>
-										<td></td>
-										<td></td>
+									<tr colspan="4" style="border: none;">
+										<th  class="colspan-border" style="text-align: center;vertical-align: middle;">Other alternative Payment Method , (please specify)</th>
+										<td class="colspan-border"></td>
+										<td class="colspan-border"></td>
+										<td class="colspan-border"></td>
 									</tr>
 									
 									<tr style="border: none;">
@@ -1859,24 +1867,24 @@ PURPOSE		: BRRSREPORT
 									<th colspan="2" style="border:white;">L: TRANSACTION REPORTS</th>
 									</tr>
 																																															
-									<tr>
-									<th style="text-align: center;vertical-align: middle; background-color: rgb(107, 122, 143);color: white;"> Transaction Report</th>
-									<th style="text-align: center;vertical-align: middle;background-color: rgb(107, 122, 143);color: white;">Number of Transactions</th>
+									<tr colspan="2" style="border: none;">
+									<th class="colspan-border" style="text-align: left;vertical-align: middle; background-color: rgb(107, 122, 143);color: white;"> Transaction Report</th>
+									<th class="colspan-border" style="text-align: center;vertical-align: middle;background-color: rgb(107, 122, 143);color: white;">Number of Transactions</th>
 									</tr>
 									
-									<tr>
-									<td style="text-align: left;">1. Number of Suspicious Transaction Reports Submitted to FIA for the period  from  January 01 to June  30, 2025 </td>
-									<td style="text-align: center;" th:text="${#numbers.formatDecimal(report.r179_no_of_transaction ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R179', ColumnId='C6'" onclick="showdetailsbyRowAndColumn(this)"></td>
+									<tr colspan="2" style="border: none;">
+									<td class="colspan-border" style="text-align: left;">1. Number of Suspicious Transaction Reports Submitted to FIA for the period  from  January 01 to June  30, 2025 </td>
+									<td class="colspan-border" style="text-align: center;" th:text="${#numbers.formatDecimal(report.r179_no_of_transaction ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R179', ColumnId='C6'" onclick="showdetailsbyRowAndColumn(this)"></td>
 									</tr>									
 									
-									<tr>
-									<td style="text-align: left;">2. Number of Unusual Transactions or alerts generated by the system but not reported to the FIA during the period  from January 01 to June  30, 2025 </td>
-									<td style="text-align: center;" th:text="${#numbers.formatDecimal(report.r180_no_of_transaction ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R180', ColumnId='C6'" onclick="showdetailsbyRowAndColumn(this)"></td>
+									<tr colspan="2" style="border: none;">
+									<td class="colspan-border" style="text-align: left;">2. Number of Unusual Transactions or alerts generated by the system but not reported to the FIA during the period  from January 01 to June  30, 2025 </td>
+									<td class="colspan-border" style="text-align: center;" th:text="${#numbers.formatDecimal(report.r180_no_of_transaction ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R180', ColumnId='C6'" onclick="showdetailsbyRowAndColumn(this)"></td>
 									</tr>
 									
-									<tr>
-									<td style="text-align: left;">3. Number of Unusual Transactions or alerts generated by the system analysed but not reported to the FIA during the period from January 01 to June  30, 2025</td>
-									<td style="text-align: center;" th:text="${#numbers.formatDecimal(report.r181_no_of_transaction ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R181', ColumnId='C6'" onclick="showdetailsbyRowAndColumn(this)"></td>
+									<tr colspan="2" style="border: none;">
+									<td class="colspan-border" style="text-align: left;">3. Number of Unusual Transactions or alerts generated by the system analysed but not reported to the FIA during the period from January 01 to June  30, 2025</td>
+									<td class="colspan-border" style="text-align: center;" th:text="${#numbers.formatDecimal(report.r181_no_of_transaction ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R181', ColumnId='C6'" onclick="showdetailsbyRowAndColumn(this)"></td>
 									</tr>
 									
 									<tr style="border: none;">
@@ -1887,16 +1895,16 @@ PURPOSE		: BRRSREPORT
 									<th colspan="3" style="border:white;">M: LARGE CASH TRANSACTION REPORTS</th>
 									</tr>
 																																																								
-									<tr>
-									<th style="text-align: center;vertical-align: middle; background-color: rgb(107, 122, 143);color: white;"> TRANSACTION TYPE</th>
-									<th style="text-align: center;vertical-align: middle;background-color: rgb(107, 122, 143);color: white;">Number of transactions</th>
-								    <th style="text-align: center;vertical-align: middle;background-color: rgb(107, 122, 143);color: white;">Value of Transactions     (P'000)</th>
+									<tr colspan="3" style="border: none;">
+									<th class="colspan-border" style="text-align: left;vertical-align: middle; background-color: rgb(107, 122, 143);color: white;"> TRANSACTION TYPE</th>
+									<th class="colspan-border" style="text-align: center;vertical-align: middle;background-color: rgb(107, 122, 143);color: white;">Number of transactions</th>
+								    <th class="colspan-border" style="text-align: center;vertical-align: middle;background-color: rgb(107, 122, 143);color: white;">Value of Transactions     (P'000)</th>
 									</tr>
 																		
-									<tr>
-									<td style="text-align: left;">Large cash transactions reported to the FIA for the period January 01 to June  30, 2025 </td>
-									<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r187_no_of_transaction ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R187', ColumnId='C5'" onclick="showdetailsbyRowAndColumn(this)"></td>
-								    <td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r187_value_of_transaction ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R187', ColumnId='C6'" onclick="showdetailsbyRowAndColumn(this)"></td>
+									<tr colspan="3" style="border: none;">
+									<td class="colspan-border" style="text-align: left;">Large cash transactions reported to the FIA for the period January 01 to June  30, 2025 </td>
+									<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r187_no_of_transaction ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R187', ColumnId='C5'" onclick="showdetailsbyRowAndColumn(this)"></td>
+								    <td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r187_value_of_transaction ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R187', ColumnId='C6'" onclick="showdetailsbyRowAndColumn(this)"></td>
 									</tr>
 									
 									<tr style="border: none;">
@@ -1907,16 +1915,16 @@ PURPOSE		: BRRSREPORT
 									<th colspan="3" style="border:white;">N: EFT TRANSACTIONS TRANSACTION REPORTS</th>
 									</tr>
 																																																																	
-									<tr>
-									<th style="text-align: center;vertical-align: middle; background-color: rgb(107, 122, 143);color: white;"> TRANSACTION TYPE</th>
-									<th style="text-align: center;vertical-align: middle;background-color: rgb(107, 122, 143);color: white;">Number of transactions</th>
-									<th style="text-align: center;vertical-align: middle;background-color: rgb(107, 122, 143);color: white;">Value of Transactions     (P'000)</th>
+									<tr colspan="3" style="border: none;">
+									<th class="colspan-border" style="text-align: left;vertical-align: middle; background-color: rgb(107, 122, 143);color: white;"> TRANSACTION TYPE</th>
+									<th class="colspan-border" style="text-align: center;vertical-align: middle;background-color: rgb(107, 122, 143);color: white;">Number of transactions</th>
+									<th class="colspan-border" style="text-align: center;vertical-align: middle;background-color: rgb(107, 122, 143);color: white;">Value of Transactions     (P'000)</th>
 									</tr>
 																											
-									<tr>
-									<td style="text-align: left;">1. Number of EFT reported to the FIA for the period January 01 to June  30, 2025 </td>
-									<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r192_no_of_transaction ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R192', ColumnId='C5'" onclick="showdetailsbyRowAndColumn(this)"></td>
-									<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r192_value_of_transaction ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R192', ColumnId='C6'" onclick="showdetailsbyRowAndColumn(this)"></td>
+									<tr colspan="3" style="border: none;">
+									<td class="colspan-border" style="text-align: left;">1. Number of EFT reported to the FIA for the period January 01 to June  30, 2025 </td>
+									<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r192_no_of_transaction ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R192', ColumnId='C5'" onclick="showdetailsbyRowAndColumn(this)"></td>
+									<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r192_value_of_transaction ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R192', ColumnId='C6'" onclick="showdetailsbyRowAndColumn(this)"></td>
 									</tr>
 									
 									<tr style="border: none;">
@@ -1927,16 +1935,16 @@ PURPOSE		: BRRSREPORT
 									<th colspan="3" style="border:white;">O:LARGE WIRE TRANSFER (SWIFT  - INCOMING) TRANSACTION REPORTS</th>
 									</tr>
 																																																																	
-									<tr>
-									<th style="text-align: center;vertical-align: middle; background-color: rgb(107, 122, 143);color: white;"> TRANSACTION TYPE</th>
-									<th style="text-align: center;vertical-align: middle;background-color: rgb(107, 122, 143);color: white;">Number of transactions</th>
-									<th style="text-align: center;vertical-align: middle;background-color: rgb(107, 122, 143);color: white;">Value of Transactions     (P'000)</th>
+									<tr colspan="3" style="border: none;">
+									<th class="colspan-border" style="text-align: left;vertical-align: middle; background-color: rgb(107, 122, 143);color: white;"> TRANSACTION TYPE</th>
+									<th class="colspan-border" style="text-align: center;vertical-align: middle;background-color: rgb(107, 122, 143);color: white;">Number of transactions</th>
+									<th class="colspan-border" style="text-align: center;vertical-align: middle;background-color: rgb(107, 122, 143);color: white;">Value of Transactions     (P'000)</th>
 									</tr>
 																											
-									<tr>
-									<td style="text-align: left;">SWIFT  - incoming transferes of P10 000 and above reported to the FIA for the period January 01 to June  30, 2025 </td>
-									<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r196_no_of_transaction ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R196', ColumnId='C5'" onclick="showdetailsbyRowAndColumn(this)"></td>
-									<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r196_value_of_transaction ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R196', ColumnId='C6'" onclick="showdetailsbyRowAndColumn(this)"></td>
+									<tr colspan="3" style="border: none;">
+									<td class="colspan-border" style="text-align: left;">SWIFT  - incoming transferes of P10 000 and above reported to the FIA for the period January 01 to June  30, 2025 </td>
+									<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r196_no_of_transaction ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R196', ColumnId='C5'" onclick="showdetailsbyRowAndColumn(this)"></td>
+									<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r196_value_of_transaction ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R196', ColumnId='C6'" onclick="showdetailsbyRowAndColumn(this)"></td>
 									</tr>
 									
 									<tr style="border: none;">
@@ -1947,16 +1955,16 @@ PURPOSE		: BRRSREPORT
 									<th colspan="3" style="border:white;">P:LARGE WIRE TRANSFER (SWIFT  - OUTGOING) TRANSACTION REPORTS</th>
 									</tr>
 																																																																	
-									<tr>
-									<th style="text-align: center;vertical-align: middle; background-color: rgb(107, 122, 143);color: white;"> TRANSACTION TYPE</th>
-									<th style="text-align: center;vertical-align: middle;background-color: rgb(107, 122, 143);color: white;">Number of transactions</th>
-									<th style="text-align: center;vertical-align: middle;background-color: rgb(107, 122, 143);color: white;">Value of Transactions     (P'000)</th>
+									<tr colspan="3" style="border: none;">
+									<th class="colspan-border" style="text-align: left;vertical-align: middle; background-color: rgb(107, 122, 143);color: white;"> TRANSACTION TYPE</th>
+									<th class="colspan-border" style="text-align: center;vertical-align: middle;background-color: rgb(107, 122, 143);color: white;">Number of transactions</th>
+									<th class="colspan-border" style="text-align: center;vertical-align: middle;background-color: rgb(107, 122, 143);color: white;">Value of Transactions     (P'000)</th>
 									</tr>
 																											
-									<tr>
-									<td style="text-align: left;"> SWIFT  - outgoing transferes of P10 000 and above reported to the FIA for the period January 01 to June  30, 2025</td>
-									<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r201_no_of_transaction ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R201', ColumnId='C5'" onclick="showdetailsbyRowAndColumn(this)"></td>
-									<td style="text-align: right;" th:text="${#numbers.formatDecimal(report.r201_value_of_transaction ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R201', ColumnId='C6'" onclick="showdetailsbyRowAndColumn(this)"></td>
+									<tr colspan="3" style="border: none;">
+									<td class="colspan-border" style="text-align: left;"> SWIFT  - outgoing transferes of P10 000 and above reported to the FIA for the period January 01 to June  30, 2025</td>
+									<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r201_no_of_transaction ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R201', ColumnId='C5'" onclick="showdetailsbyRowAndColumn(this)"></td>
+									<td class="colspan-border" style="text-align: right;" th:text="${#numbers.formatDecimal(report.r201_value_of_transaction ?: 0, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R201', ColumnId='C6'" onclick="showdetailsbyRowAndColumn(this)"></td>
 									</tr>
 									</tbody>
 
