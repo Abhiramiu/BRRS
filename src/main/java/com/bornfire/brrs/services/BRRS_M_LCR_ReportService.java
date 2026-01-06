@@ -190,8 +190,10 @@ public class BRRS_M_LCR_ReportService {
 				// 🔹 Current branch
 				List<M_LCR_Detail_Entity> T1Dt1;
 				if (rowId != null && columnId != null) {
-					if ("R81".equals(rowId) || "R82".equals(rowId) || "R83".equals(rowId)) {
+					if ("R81".equals(rowId) || "R82".equals(rowId) || "R83".equals(rowId) || "R37".equals(rowId)) {
 						T1Dt1 = BRRS_M_LCR_Detail_Repo.GetDataByRowIdAndColumnId2(rowId, columnId, parsedDate);
+					}else if ("R38".equals(rowId) ) {
+						T1Dt1 = BRRS_M_LCR_Detail_Repo.GetDataByRowIdAndColumnId3(rowId, columnId, parsedDate);
 					} else {
 						T1Dt1 = BRRS_M_LCR_Detail_Repo.GetDataByRowIdAndColumnId(rowId, columnId, parsedDate);
 					}
@@ -1042,7 +1044,7 @@ public class BRRS_M_LCR_ReportService {
 					}
 					balanceCell.setCellStyle(balanceStyle);
 
-					row.createCell(4).setCellValue(item.getReportLable());
+					row.createCell(4).setCellValue(item.getReportLabel());
 					row.createCell(5).setCellValue(item.getReportAddlCriteria1());
 					row.createCell(6)
 							.setCellValue(item.getReportDate() != null

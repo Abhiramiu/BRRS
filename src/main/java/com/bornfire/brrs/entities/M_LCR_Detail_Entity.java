@@ -28,7 +28,13 @@ public class M_LCR_Detail_Entity {
 	    private String dataType;
 	   	    
 	    @Column(name = "REPORT_LABEL")
-	    private String reportLable;
+	    private String reportLabel;
+	    
+	    @Column(name = "REPORT_LABEL_2")
+	    private String reportLabel2;
+	    
+	    @Column(name = "REPORT_LABEL_3")
+	    private String reportLabel3;
 
 	    @Column(name = "REPORT_ADDL_CRITERIA_1")
 	    private String reportAddlCriteria1;
@@ -133,12 +139,28 @@ public class M_LCR_Detail_Entity {
 			this.dataType = dataType;
 		}
 
-		public String getReportLable() {
-			return reportLable;
+		public String getReportLabel() {
+			return reportLabel;
 		}
 
-		public void setReportLable(String reportLable) {
-			this.reportLable = reportLable;
+		public void setReportLabel(String reportLabel) {
+			this.reportLabel = reportLabel;
+		}
+
+		public String getReportLabel2() {
+			return reportLabel2;
+		}
+
+		public void setReportLabel2(String reportLabel2) {
+			this.reportLabel2 = reportLabel2;
+		}
+
+		public String getReportLabel3() {
+			return reportLabel3;
+		}
+
+		public void setReportLabel3(String reportLabel3) {
+			this.reportLabel3 = reportLabel3;
 		}
 
 		public String getReportAddlCriteria1() {
@@ -323,6 +345,5 @@ public class M_LCR_Detail_Entity {
 		}
 
 		
-
 
 }
