@@ -102,50 +102,39 @@ PURPOSE		: BRRS SCH  REPORT
 }
 
 /* 🚌 Bus display style box */
-/* 🚌 Bus display style box */
-.boards {
-	transform: translateY(6px);
-	background-color: rgb(107, 122, 143);
-	color: white;
-	padding: 5px 80px;
-	border-radius: 8px;
-	overflow: hidden;
-	white-space: nowrap;
-	flex: 1; /* ✅ makes it take available space dynamically */
-	min-width: 200px;
-	box-shadow: 0 0 10px rgb(107, 122, 143);
-	position: relative;
-}
+					.boards {
+						transform: translateY(6px);
+					  background-color: rgb(107, 122, 143);
+					  color: white;
+					  padding: 5px 5px;
+					  border-radius: 8px;
+					  overflow: hidden;
+					  white-space: nowrap;
+					  flex: 1; /* ✅ makes it take available space dynamically */
+					  min-width: 200px;
+					  box-shadow: 0 0 10px rgb(107, 122, 143);
+					  position: relative;
+					}
 
-/* ✨ Scrolling animation */
-.scrolling-text {
-	display: inline-block;
-	font-family: "Courier New", monospace;
-	font-weight: bold;
-	letter-spacing: 1px;
-	animation: scroll-left 10s linear infinite;
-}
+		/* ✨ Scrolling animation */
+		.scrolling-text {
+			display: inline-block;
+			font-family: "Courier New", monospace;
+			font-weight: bold;
+			letter-spacing: 1px;
+			animation: scroll-left 10s linear infinite;
+		}
 
-/* Animation keyframes */
-@
-keyframes scroll-left { 0% {
-	transform: translateX(100%);
-}
-100%
-{
-transform
+		/* Animation keyframes */
+		@keyframes scroll-left {
+			0% {
+				transform: translateX(100%);
+			}
 
-
-:
-
- 
-
-translateX
-
-
-(-100%);
-}
-}
+			100% {
+				transform: translateX(-100%);
+			}
+		}
 </style>
 
 
@@ -445,26 +434,7 @@ $(window).on('beforeunload', function() {
         Callurl = /*[[@{'/Reports/'+${reportid}+'/Details'(asondate=${asondate},fromdate=${fromdate},todate=${todate},currency=${currency},dtltype=${dtltype},type=${type},version=${version})}]]*/
         location.href = Callurl;
         	console.log(Callurl);
-   /*  $.ajax({
-        type: 'get',
-        url: Callurl,
-        beforeSend: function () {
-            $('#loader').modal('show'); // 🔄 Show loader
-        },
-        success: function (data) {
-            $('.content').html(data);
-            //$("#detailsbtn").addClass("active");
-            //tablepagination();
-        },
-        complete: function () {
-            $('#loader').modal('hide'); 
-        },
-        error: function () {
-        	  $('#loader').modal('hide');
-            alert("Something went wrongss. Please try again.");
-          
-        }
-    }); */
+   
 }
 		
 				function showsummary() {
@@ -649,12 +619,7 @@ function activateTab(tabName) {
 }
 
 window.onload = function() {
-    /* setTimeout(function() {
-        var selectedTab = document.getElementById("selectedTab").value;
-        alert(selectedTab);
-        activateTab(selectedTab);
-    }, 10000); */ // 10,000 milliseconds = 10 seconds
-    
+   
 	var selectedTab = document.getElementById("selectedTab").value;
     activateTab(selectedTab);
 };
@@ -853,7 +818,7 @@ function showResultModal1(title, message) {
 						window.URL.revokeObjectURL(url);
 						document.body.removeChild(a);
 
-						showResultModal('BRRS', filename + ' downloaded successfully.');
+						showResultModal('BRRS', filename + ' Detail downloaded successfully.');
 					} else {
 						showResultModal('Information', 'No data found to download.');
 					}
@@ -1260,13 +1225,12 @@ function fileuploads(btn) {
 						<!-- Title -->
 						<h5
 							style="font-family: arial; font-size: 20px; font-weight: bold; color: white; margin: 0 10px;">
-							SCHEDULES TO PROFIT AND LOSS A/C AS AT</h5>
+							SCHEDULES TO PROFIT AND LOSS A/C</h5>
 
 
 						<!-- Moving bus-board text -->
 						<div class="boards">
-							<p class="scrolling-text">BANK OF BOTSWANA - BANKING
-								SUPERVISION DEPARTMENT</p>
+							<p class="scrolling-text"> BANK OF BOTSWANA - BANKING SUPERVISION DEPARTMENT</p>
 						</div>
 
 
@@ -1283,7 +1247,7 @@ function fileuploads(btn) {
 							Report Date: <span
 							th:text="${#strings.replace(asondate, '/', '-')}">2025-07-04</span>
 						</span>
-						
+
 
 						<!-- Buttons -->
 						<input type="hidden" id="selectedTab" th:value="${displaymode}">
@@ -1297,15 +1261,11 @@ function fileuploads(btn) {
 
 
 
-					<button type="button"
-        class="custom-tab-btn"
-        id="addRecord"
-        title="Click to EDIT Records"
-        onclick="showmodify(this);"
-        th:if="${type != 'ARCHIVAL' and displaymode == 'summary'}"
-        th:classappend="${session.PERMISSIONS == 'W' and dtltype == 'report'} ? 'addedit' : ''">
-    Modify
-</button>
+						<button type="button" class="custom-tab-btn" id="addRecord"
+							title="Click to EDIT Records" onclick="showmodify(this);"
+							th:if="${type != 'ARCHIVAL' and displaymode == 'summary'}"
+							th:classappend="${session.PERMISSIONS == 'W' and dtltype == 'report'} ? 'addedit' : ''">
+							Modify</button>
 
 						<!-- Cancel button (hidden initially) -->
 						<button type="button" class="custom-tab-btn"
@@ -1367,28 +1327,28 @@ function fileuploads(btn) {
 												</th>
 												<th
 													style="text-align: right; background-color: #D8D8D8; font-weight: bold; padding: 10px;">
-													31.03.2025</th>
+													March Month</th>
 
 												<th
 													style="text-align: right; background-color: #D8D8D8; font-weight: bold; padding: 10px;">
-													30.09.2025</th>
+													Reporting Month</th>
 
 											</tr>
 
 
 										</thead>
 
-										<div>
+										<div style="display: flex; align-items: center;">
+											<p
+												style="color: black; font-weight: bold; padding-top: 10px; margin: 0;">
+												SCHEDULE - 17</p>
 
 											<p
-												style="color: black; font-weight: bold; text-align: left; padding-top: 10px;">Schedule
-												- 17</p>
-
-											<p
-												style="color: black; font-weight: bold; text-align: center;">BREAK-UP
-												OF PROVISIONS AND CONTINGENCIES APPEARING IN PROFIT & LOSS
-												ACCOUNT</p>
+												style="color: black; font-weight: bold; text-align: center; margin: 0; flex: 1;">
+												BREAK-UP OF PROVISIONS AND CONTINGENCIES APPEARING IN PROFIT
+												& LOSS ACCOUNT</p>
 										</div>
+
 
 
 										<tbody style="font-family: Arial;">
@@ -1407,13 +1367,17 @@ function fileuploads(btn) {
 
 												<td id="r9_31_3_25_amt"
 													style="text-align: right; padding-right: 10px;"
-													th:text="${report?.r9_31_3_25_amt ?: ''}"
+													th:text="${report?.r9_31_3_25_amt != null 
+        ? #numbers.formatDecimal(report.r9_31_3_25_amt, 1, 'COMMA', 0, 'POINT') 
+        : ''}"
 													th:attr="RowId='R9', ColumnId='C2'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 
 												<td id="r9_30_9_25_amt"
 													style="text-align: right; padding-right: 10px;"
-													th:text="${report?.r9_30_9_25_amt ?: ''}"
+													th:text="${report?.r9_30_9_25_amt != null 
+        ? #numbers.formatDecimal(report.r9_30_9_25_amt, 1, 'COMMA', 0, 'POINT') 
+        : ''}"
 													th:attr="RowId='R9', ColumnId='C3'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 
@@ -1436,22 +1400,26 @@ function fileuploads(btn) {
 
 
 												<td id="ROW10"
-													style="font-weight: bold; text-align: right; padding-right: 10px; padding-left: 20px; width: 200px;"><input
-													class="display-input Show_input" type="text"
-													th:value="${report.r10_31_3_25_amt != null ? #numbers.formatDecimal(report.r10_31_3_25_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													style="font-weight: bold; text-align: right; padding-right: 10px; padding-left: 20px; width: 200px;">
+													<input class="display-input Show_input" type="text"
+													th:value="${report.r10_31_3_25_amt != null
+               ? #numbers.formatDecimal(report.r10_31_3_25_amt, 1, 'COMMA', 0, 'POINT')
+               : '0'}"
 													id="r10_31_3_25_amt" name="R10_C2_r10_31_3_25_amt"
 													style="background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
-													readonly /></td>
+													readonly />
+												</td>
 
 												<td id="ROW10"
-													style="font-weight: bold; text-align: right; padding-right: 10px; padding-left: 20px; width: 200px;"><input
-													class="display-input Show_input" type="text"
-													th:value="${report.r10_30_9_25_amt != null ? #numbers.formatDecimal(report.r10_30_9_25_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													style="font-weight: bold; text-align: right; padding-right: 10px; padding-left: 20px; width: 200px;">
+													<input class="display-input Show_input" type="text"
+													th:value="${report.r10_30_9_25_amt != null
+               ? #numbers.formatDecimal(report.r10_30_9_25_amt, 1, 'COMMA', 0, 'POINT')
+               : '0'}"
 													id="r10_30_9_25_amt" name="R10_C3_r10_30_9_25_amt"
 													style="background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
-													readonly /></td>
-
-
+													readonly />
+												</td>
 
 
 
@@ -1460,7 +1428,6 @@ function fileuploads(btn) {
 
 											<tr th:each="report : ${reportsummary1}">
 												<td style="text-align: center; width: 30px;">(c)</td>
-
 												<td id="ROW11"
 													style="font-weight: bold; text-align: left; width: 200px;">
 													<input class="display-input Show_input" type="text"
@@ -1469,7 +1436,6 @@ function fileuploads(btn) {
 													style="background-color: #FFFFFF; width: -webkit-fill-available; border-color: transparent; text-align: left;"
 													readonly />
 												</td>
-
 												<td id="ROW11"
 													style="font-weight: bold; text-align: right; padding-right: 10px; padding-left: 20px; width: 200px;">
 													<input class="display-input Show_input" type="text"
@@ -1478,7 +1444,6 @@ function fileuploads(btn) {
 													style="background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
 													readonly />
 												</td>
-
 												<td id="ROW11"
 													style="font-weight: bold; text-align: right; padding-right: 10px; padding-left: 20px; width: 200px;">
 													<input class="display-input Show_input" type="text"
@@ -1489,10 +1454,8 @@ function fileuploads(btn) {
 												</td>
 											</tr>
 
-
 											<tr th:each="report : ${reportsummary1}">
 												<td style="text-align: center; width: 30px;">(d)</td>
-
 												<td id="ROW12"
 													style="font-weight: bold; text-align: left; width: 200px;">
 													<input class="display-input Show_input" type="text"
@@ -1501,7 +1464,6 @@ function fileuploads(btn) {
 													style="background-color: #FFFFFF; width: -webkit-fill-available; border-color: transparent; text-align: left;"
 													readonly />
 												</td>
-
 												<td id="ROW12"
 													style="font-weight: bold; text-align: right; padding-right: 10px; padding-left: 20px; width: 200px;">
 													<input class="display-input Show_input" type="text"
@@ -1510,7 +1472,6 @@ function fileuploads(btn) {
 													style="background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
 													readonly />
 												</td>
-
 												<td id="ROW12"
 													style="font-weight: bold; text-align: right; padding-right: 10px; padding-left: 20px; width: 200px;">
 													<input class="display-input Show_input" type="text"
@@ -1521,30 +1482,24 @@ function fileuploads(btn) {
 												</td>
 											</tr>
 
-
-											<!-- R13 -->
 											<tr th:each="report: ${reportsummary}">
 												<td style="text-align: center;">(e)</td>
-
 												<td style="text-align: left;"
 													th:text="${report?.r13_product ?: ''}"></td>
-
 												<td id="r13_31_3_25_amt"
 													style="text-align: right; padding-right: 10px;"
-													th:text="${report?.r13_31_3_25_amt ?: ''}"
+													th:text="${report?.r13_31_3_25_amt != null ? #numbers.formatDecimal(report.r13_31_3_25_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
 													th:attr="RowId='R13', ColumnId='C2'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
-
 												<td id="r13_30_9_25_amt"
 													style="text-align: right; padding-right: 10px;"
-													th:text="${report?.r13_30_9_25_amt ?: ''}"
+													th:text="${report?.r13_30_9_25_amt != null ? #numbers.formatDecimal(report.r13_30_9_25_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
 													th:attr="RowId='R13', ColumnId='C3'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 											</tr>
 
 											<tr th:each="report : ${reportsummary1}">
 												<td style="text-align: center; width: 30px;">(f)</td>
-
 												<td id="ROW14"
 													style="font-weight: bold; text-align: left; width: 200px;">
 													<input class="display-input Show_input" type="text"
@@ -1553,7 +1508,6 @@ function fileuploads(btn) {
 													style="background-color: #FFFFFF; width: -webkit-fill-available; border-color: transparent; text-align: left;"
 													readonly />
 												</td>
-
 												<td id="ROW14"
 													style="font-weight: bold; text-align: right; padding-right: 10px; padding-left: 20px; width: 200px;">
 													<input class="display-input Show_input" type="text"
@@ -1562,7 +1516,6 @@ function fileuploads(btn) {
 													style="background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
 													readonly />
 												</td>
-
 												<td id="ROW14"
 													style="font-weight: bold; text-align: right; padding-right: 10px; padding-left: 20px; width: 200px;">
 													<input class="display-input Show_input" type="text"
@@ -1575,7 +1528,6 @@ function fileuploads(btn) {
 
 											<tr th:each="report : ${reportsummary1}">
 												<td style="text-align: center; width: 30px;">(g)</td>
-
 												<td id="ROW15"
 													style="font-weight: bold; text-align: left; width: 200px;">
 													<input class="display-input Show_input" type="text"
@@ -1584,7 +1536,6 @@ function fileuploads(btn) {
 													style="background-color: #FFFFFF; width: -webkit-fill-available; border-color: transparent; text-align: left;"
 													readonly />
 												</td>
-
 												<td id="ROW15"
 													style="font-weight: bold; text-align: right; padding-right: 10px; padding-left: 20px; width: 200px;">
 													<input class="display-input Show_input" type="text"
@@ -1593,7 +1544,6 @@ function fileuploads(btn) {
 													style="background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
 													readonly />
 												</td>
-
 												<td id="ROW15"
 													style="font-weight: bold; text-align: right; padding-right: 10px; padding-left: 20px; width: 200px;">
 													<input class="display-input Show_input" type="text"
@@ -1606,7 +1556,6 @@ function fileuploads(btn) {
 
 											<tr th:each="report : ${reportsummary1}">
 												<td style="text-align: center; width: 30px;">(h)</td>
-
 												<td id="ROW16"
 													style="font-weight: bold; text-align: left; width: 200px;">
 													<input class="display-input Show_input" type="text"
@@ -1615,7 +1564,6 @@ function fileuploads(btn) {
 													style="background-color: #FFFFFF; width: -webkit-fill-available; border-color: transparent; text-align: left;"
 													readonly />
 												</td>
-
 												<td id="ROW16"
 													style="font-weight: bold; text-align: right; padding-right: 10px; padding-left: 20px; width: 200px;">
 													<input class="display-input Show_input" type="text"
@@ -1624,7 +1572,6 @@ function fileuploads(btn) {
 													style="background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
 													readonly />
 												</td>
-
 												<td id="ROW16"
 													style="font-weight: bold; text-align: right; padding-right: 10px; padding-left: 20px; width: 200px;">
 													<input class="display-input Show_input" type="text"
@@ -1637,7 +1584,6 @@ function fileuploads(btn) {
 
 											<tr th:each="report : ${reportsummary1}">
 												<td style="text-align: center; width: 30px;"></td>
-
 												<td id="ROW17"
 													style="font-weight: bold; text-align: left; width: 200px;">
 													<input class="display-input Show_input " type="text"
@@ -1645,16 +1591,14 @@ function fileuploads(btn) {
 													style="background-color: #FFFFFF; width: -webkit-fill-available; border-color: transparent; text-align: left; font-weight: bold;"
 													readonly />
 												</td>
-
 												<td id="ROW17"
 													style="font-weight: bold; text-align: right; padding-right: 10px; padding-left: 20px; width: 200px;"
 													class="green-cell"><input
 													class="display-input Show_input green-cell" type="text"
-													th:value="${report.r17_31_3_25_amt }" id="r17_31_3_25_amt"
-													name="R17_C2_r17_31_3_25_amt"
+													th:value="${report.r17_31_3_25_amt != null ? #numbers.formatDecimal(report.r17_31_3_25_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r17_31_3_25_amt" name="R17_C2_r17_31_3_25_amt"
 													style="background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
 													readonly /></td>
-
 												<td id="ROW17"
 													style="font-weight: bold; text-align: right; padding-right: 10px; padding-left: 20px; width: 200px;"
 													class="green-cell"><input
@@ -1665,10 +1609,8 @@ function fileuploads(btn) {
 													readonly /></td>
 											</tr>
 
-
 											<tr th:each="report : ${reportsummary1}">
 												<td style="text-align: center; width: 30px;"></td>
-
 												<td id="ROW18"
 													style="font-weight: bold; text-align: left; width: 200px;">
 													<input class="display-input Show_input" type="text"
@@ -1677,7 +1619,6 @@ function fileuploads(btn) {
 													style="background-color: #FFFFFF; width: -webkit-fill-available; border-color: transparent; text-align: left;"
 													readonly />
 												</td>
-
 												<td id="ROW18"
 													style="font-weight: bold; text-align: right; padding-right: 10px; padding-left: 20px; width: 200px;">
 													<input class="display-input Show_input" type="text"
@@ -1686,7 +1627,6 @@ function fileuploads(btn) {
 													style="background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
 													readonly />
 												</td>
-
 												<td id="ROW18"
 													style="font-weight: bold; text-align: right; padding-right: 10px; padding-left: 20px; width: 200px;">
 													<input class="display-input Show_input" type="text"
@@ -1697,19 +1637,16 @@ function fileuploads(btn) {
 												</td>
 											</tr>
 
-
 											<tr th:each="report : ${reportsummary1}">
 												<td style="text-align: center; width: 30px;"></td>
-
 												<td id="ROW19"
 													style="font-weight: bold; text-align: left; padding-right: 20px; width: 200px;">
 													<input class="display-input Show_input" type="text"
-													th:value="'         Excess provision –Others'"
+													th:value="'&nbsp;&nbsp;&nbsp;&nbsp;Excess provision –Others'"
 													id="r19_product" name="r19_product"
 													style="background-color: #FFFFFF; width: -webkit-fill-available; border-color: transparent; text-align: left;"
 													readonly />
 												</td>
-
 												<td id="ROW19"
 													style="font-weight: bold; text-align: right; padding-right: 10px; padding-left: 20px; width: 200px;">
 													<input class="display-input Show_input" type="text"
@@ -1718,7 +1655,6 @@ function fileuploads(btn) {
 													style="background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
 													readonly />
 												</td>
-
 												<td id="ROW19"
 													style="font-weight: bold; text-align: right; padding-right: 10px; padding-left: 20px; width: 200px;">
 													<input class="display-input Show_input" type="text"
@@ -1731,7 +1667,6 @@ function fileuploads(btn) {
 
 											<tr th:each="report : ${reportsummary1}">
 												<td style="text-align: center; width: 30px;"></td>
-
 												<td id="ROW20"
 													style="font-weight: bold; text-align: left; width: 200px;">
 													<input class="display-input Show_input" type="text"
@@ -1739,7 +1674,6 @@ function fileuploads(btn) {
 													style="background-color: #FFFFFF; width: -webkit-fill-available; border-color: transparent; text-align: left; font-weight: bold;"
 													readonly />
 												</td>
-
 												<td id="ROW20"
 													style="font-weight: bold; text-align: right; padding-right: 10px; padding-left: 20px; width: 200px;"
 													class="green-cell"><input
@@ -1748,7 +1682,6 @@ function fileuploads(btn) {
 													id="r20_31_3_25_amt" name="R20_C2_r20_31_3_25_amt"
 													style="background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
 													readonly /></td>
-
 												<td id="ROW20"
 													style="font-weight: bold; text-align: right; padding-right: 10px; padding-left: 20px; width: 200px;"
 													class="green-cell"><input
@@ -1758,7 +1691,6 @@ function fileuploads(btn) {
 													style="background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
 													readonly /></td>
 											</tr>
-
 
 
 
@@ -1786,7 +1718,7 @@ function fileuploads(btn) {
 						</div>
 					</div>
 				</div>
-			<div th:if="${displaymode == 'Details'}">
+				<div th:if="${displaymode == 'Details'}">
 					<div class="row">
 						<div class="col-sm-12">
 							<div class="table-responsive"
@@ -1842,7 +1774,7 @@ function fileuploads(btn) {
 							</div>
 
 
-							
+
 						</div>
 					</div>
 				</div>
@@ -1912,7 +1844,7 @@ function fileuploads(btn) {
 										class="form-control form-control-sm" readonly
 										th:value="${#dates.format(sch_17Data.reportDate, 'yyyy-MM-dd')}" />
 								</div>
-								
+
 								<div class="col-sm-1"></div>
 
 								<div class="col-sm-3">
@@ -1998,7 +1930,7 @@ function fileuploads(btn) {
 			</div>
 		</div>
 	</div>
-	
+
 	<div class="modal fade" id="resultModal1">
 		<div class="modal-dialog modal-dialog-centered">
 			<div class="modal-content">
@@ -2013,8 +1945,8 @@ function fileuploads(btn) {
 					style="text-align: center; font-size: 1.1rem;">
 					<p id="resultModalBody1"></p>
 					<!-- Your custom styled button -->
-					<button type="button" class="custom-tab-btn" onclick="closemodels()"
-						data-dismiss="modal">OK</button>
+					<button type="button" class="custom-tab-btn"
+						onclick="closemodels()" data-dismiss="modal">OK</button>
 				</div>
 			</div>
 		</div>

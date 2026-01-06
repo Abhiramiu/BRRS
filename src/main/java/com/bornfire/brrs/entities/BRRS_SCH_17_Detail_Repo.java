@@ -36,7 +36,7 @@ public interface BRRS_SCH_17_Detail_Repo extends JpaRepository<SCH_17_Detail_Ent
 	@Query(value = "select count(*) from BRRS_SCH_17_DETAILTABLE where REPORT_DATE = ?1", nativeQuery = true)
 	int getdatacount(Date reportdate);
 
-	@Query(value = "select * from BRRS_SCH_17_DETAILTABLE where REPORT_LABEL =?1 and REPORT_ADDL_CRITERIA_1=?2 AND REPORT_DATE=?3", nativeQuery = true)
+	@Query(value = "select * from BRRS_SCH_17_DETAILTABLE where REPORT_LABEL =?1 and REPORT_ADDL_CRITERIA_1=?2", nativeQuery = true)
 	List<SCH_17_Detail_Entity> GetDataByRowIdAndColumnId(String reportLabel, String reportAddlCriteria_1, Date reportdate);
 
 	@Query(value = "SELECT * FROM BRRS_SCH_17_DETAILTABLE WHERE ACCT_NUMBER = :acct_number", nativeQuery = true)
