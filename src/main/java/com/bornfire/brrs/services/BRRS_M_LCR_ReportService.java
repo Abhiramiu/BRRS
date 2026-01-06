@@ -382,6 +382,31 @@ public class BRRS_M_LCR_ReportService {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
+					
+					row = sheet.getRow(28);
+					// R29
+					// Column E
+					cell4 = row.getCell(4);
+					if (record.getR29_bob_total_amount() != null) {
+						cell4.setCellValue(record.getR29_bob_total_amount().doubleValue());
+
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+					
+					row = sheet.getRow(29);
+					// R30
+					// Column E
+					cell4 = row.getCell(4);
+					if (record.getR30_bob_total_amount() != null) {
+						cell4.setCellValue(record.getR30_bob_total_amount().doubleValue());
+
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
 
 					row = sheet.getRow(30);
 					// R31
