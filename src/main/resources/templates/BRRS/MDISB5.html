@@ -834,7 +834,7 @@ function cancelModify() {
  <script th:inline="javascript">
       $(document).ready(function () {
         var table = $('#reportdetails').DataTable({
-          scrollY: "550px",
+        	scrollY: "500px",
           scrollX: true,
           scrollCollapse: true,
           autoWidth: false,
@@ -2270,7 +2270,7 @@ function cancelModify() {
     <div th:if="${displaymode == 'Details'}">
 
     <div class="row">
-     <div class="col-sm-12" style="max-height:90vh; overflow-y: auto; ">
+     <div class="col-sm-12" style="max-height:90vh;">
       <div class="table-container" style="border-right: 1px solid #dee2e6;">
        <table class="table table-striped table-bordered table-hover" id="reportdetails">
         <thead class="thead-light">

@@ -718,23 +718,7 @@ function closemodel() {
             isDetailsModal = false;
         }
 }
-// --- NEW: append type value (NORMAL, RESUB, ARCHIVAL) ---
-//const selectedType = $("#OBType").val(); // Get from dropdown
-//formData.append("type", selectedType);
-//console.log("Selected type:", selectedType);
 
-// --- Entity fields (R10-R17) ---
-/* for (let i = 6; i <= 12; i++) {
-    ["bank_spec_single_cust_rec_num", "COMPANY_NAME", "COMPANY_REG_NUM", "BUSINEES_PHY_ADDRESS",
-		  "POSTAL_ADDRESS", "COUNTRY_OF_REG", "COMPANY_EMAIL", "COMPANY_LANDLINE", "COMPANY_MOB_PHONE_NUM",
-	  "PRODUCT_TYPE", "ACCT_NUM", "STATUS_OF_ACCT", "ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT",
-	  "ACCT_BRANCH", "ACCT_BALANCE_PULA", "CURRENCY_OF_ACCT", "EXCHANGE_RATE"].forEach(field => {
-        const input = $("#r" + i + "_" + field);
-        if (input.length) {
-            formData.append(input.attr("name"), input.val());
-        }
-    });
-} */
 function fileuploads(btn) {
     var asondate = btn.getAttribute("data-todate");
     const type = btn.getAttribute("data-type"); // MAIN / RESUB / ARCHIVAL
@@ -901,7 +885,7 @@ function fileuploads(btn) {
 
       <!-- Modify button -->
       <button type="button" class="custom-tab-btn" onclick="showmodify(this);" title="Click to EDIT Records"
-       th:if="${type == 'RESUB' or displaymode == 'summary' and type != 'ARCHIVAL'}"
+       th:if="${displaymode != 'Details' and type != 'ARCHIVAL'}"
        th:classappend="${session.PERMISSIONS == 'W'} and ${dtltype == 'report'} ? 'addedit' " id="addRecord">Modify</button>
 
 
@@ -977,52 +961,28 @@ function fileuploads(btn) {
     </colgroup>
           
           <thead class="thead-light" style="background-color: #D8D8D8;">
-           <tr>
-            <th colspan="12"></th>
-            
-            <th style="text-align: left; color: black;" rowspan="3">Account Status - "Fit for Straight
-            <br>Through Payout" OR "Not Fit for<br>Straight Through Payout"</th>
-            <th colspan="4"></th>
-            
-           </tr>
-           <tr>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th style="text-align: left; color: black;">Business</th>
-            <th></th>
-            <th style="text-align: left; color: black;">Country of</th>
-            <th style="text-align: left; color: black;">Company</th>
-            <th style="text-align: left; color: black;">Company</th>
-            <th style="text-align: left; color: black;">Company</th>
-            <th></th>
-            <th></th>
-            <th></th>
-            <!-- <th style="text-align: left; color: black;">Through Payout" OR "Not Fit for</th> -->
-            <th></th>
-            <th style="text-align: right; color: black;">(Pula)</th>
-            <th></th>
-            <th></th>
-           </tr>
+          
            <tr style="background-color: #b3b6b9;">
             <th style="text-align: left; color: black;">Bank Specific Single Customer View Record Number</th>
             <th style="text-align: left; color: black;">Company Name</th>
             <th style="text-align: left; color: black;">Company Registration Number</th>
-            <th style="text-align: left; color: black;">Physical Address</th>
+            <th style="text-align: left; color: black;">Business<br>Physical Address</th>
             <th style="text-align: left; color: black;">Postal Address</th>
-            <th style="text-align: left; color: black;">Registration</th>
-            <th style="text-align: left; color: black;">Email</th>
-            <th style="text-align: left; color: black;">Landline</th>
-            <th style="text-align: left; color: black;">Mobile Phone Number</th>
+            <th style="text-align: left; color: black;">Country of<br>Registration</th>
+            <th style="text-align: left; color: black;">Company<br>Email</th>
+            <th style="text-align: left; color: black;">Company<br>Landline</th>
+            <th style="text-align: left; color: black;">Company<br>Mobile Phone Number</th>
             <th style="text-align: left; color: black;">Product Type</th>
             <th style="text-align: left; color: black;">Account Number</th>
             <th style="text-align: left; color: black;">Status of Account</th>
-            <!-- <th style="text-align: left; color: black;">Straight Through Payout"</th> -->
+            <th style="text-align: left; color: black;">Account Status - "Fit for Straight<br>Through Payout" OR "Not Fit for
+            <br>Straight Through Payout"</th>
             <th style="text-align: left; color: black;">Account Branch</th>
-            <th style="text-align: right; color: black;">Account Balance</th>
+            <th style="text-align: right; color: black;">Account Balance(Pula)</th>
             <th style="text-align: left; color: black;">Currency of Account</th>
             <th style="text-align: left; color: black;">Exchange Rate</th>
            </tr>
+           
           </thead>
 
 
@@ -1030,21 +990,21 @@ function fileuploads(btn) {
           <tbody id="entity" th:each="report: ${reportsummary}" style="font-family: Arial;">
            <tr>
 
-            <td id="R6" style="text-align: left;"><input class="display-input Show_input" type="text"
-             th:value="${report.R6_BANK_SPEC_SINGLE_CUST_REC_NUM != null ? #numbers.formatDecimal(report.R6_BANK_SPEC_SINGLE_CUST_REC_NUM, 1, 'COMMA', 0, 'POINT') : '0'}"
-             id="R6_BANK_SPEC_SINGLE_CUST_REC_NUM" name="R6_C1_BANK_SPEC_SINGLE_CUST_REC_NUM"
+            <td id="R6"><input class="display-input Show_input" type="text"
+             th:value="${#strings.defaultString(report.R6_BANK_SPEC_SINGLE_CUST_REC_NUM, 'N/A')}" id="R6_BANK_SPEC_SINGLE_CUST_REC_NUM"
+             name="R6_C1_BANK_SPEC_SINGLE_CUST_REC_NUM"
              style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
              readonly /></td>
-             
-            <td id="R6"><input class="display-input Show_input" type="text"
+            
+             <td id="R6"><input class="display-input Show_input" type="text"
              th:value="${#strings.defaultString(report.R6_COMPANY_NAME, 'N/A')}" id="R6_COMPANY_NAME"
              name="R6_C2_COMPANY_NAME"
              style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
              readonly /></td>
-
-            <td id="R6" style="text-align: left;"><input class="display-input Show_input" type="text"
-             th:value="${report.R6_COMPANY_REG_NUM != null ? #numbers.formatDecimal(report.R6_COMPANY_REG_NUM, 1, 'COMMA', 0, 'POINT') : '0'}"
-             id="R6_COMPANY_REG_NUM" name="R6_C3_COMPANY_REG_NUM"
+            
+            <td id="R6"><input class="display-input Show_input" type="text"
+             th:value="${#strings.defaultString(report.R6_COMPANY_REG_NUM, 'N/A')}" id="R6_COMPANY_REG_NUM"
+             name="R6_C3_COMPANY_REG_NUM"
              style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
              readonly /></td>
 
@@ -1134,21 +1094,21 @@ function fileuploads(btn) {
          </tr>
                     <tr>
 
-            <td id="R7" style="text-align: left;"><input class="display-input Show_input" type="text"
-             th:value="${report.R7_BANK_SPEC_SINGLE_CUST_REC_NUM != null ? #numbers.formatDecimal(report.R7_BANK_SPEC_SINGLE_CUST_REC_NUM, 1, 'COMMA', 0, 'POINT') : '0'}"
-             id="R7_BANK_SPEC_SINGLE_CUST_REC_NUM" name="R7_C1_BANK_SPEC_SINGLE_CUST_REC_NUM"
+            <td id="R7"><input class="display-input Show_input" type="text"
+             th:value="${#strings.defaultString(report.R7_BANK_SPEC_SINGLE_CUST_REC_NUM, 'N/A')}" id="R7_BANK_SPEC_SINGLE_CUST_REC_NUM"
+             name="R7_C1_BANK_SPEC_SINGLE_CUST_REC_NUM"
              style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
              readonly /></td>
-             
-            <td id="R7"><input class="display-input Show_input" type="text"
+            
+             <td id="R7"><input class="display-input Show_input" type="text"
              th:value="${#strings.defaultString(report.R7_COMPANY_NAME, 'N/A')}" id="R7_COMPANY_NAME"
              name="R7_C2_COMPANY_NAME"
              style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
              readonly /></td>
-
-            <td id="R7" style="text-align: left;"><input class="display-input Show_input" type="text"
-             th:value="${report.R7_COMPANY_REG_NUM != null ? #numbers.formatDecimal(report.R7_COMPANY_REG_NUM, 1, 'COMMA', 0, 'POINT') : '0'}"
-             id="R7_COMPANY_REG_NUM" name="R7_C3_COMPANY_REG_NUM"
+            
+            <td id="R7"><input class="display-input Show_input" type="text"
+             th:value="${#strings.defaultString(report.R7_COMPANY_REG_NUM, 'N/A')}" id="R7_COMPANY_REG_NUM"
+             name="R7_C3_COMPANY_REG_NUM"
              style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
              readonly /></td>
 
@@ -1238,21 +1198,21 @@ function fileuploads(btn) {
          </tr>
                     <tr>
 
-            <td id="R8" style="text-align: left;"><input class="display-input Show_input" type="text"
-             th:value="${report.R8_BANK_SPEC_SINGLE_CUST_REC_NUM != null ? #numbers.formatDecimal(report.R8_BANK_SPEC_SINGLE_CUST_REC_NUM, 1, 'COMMA', 0, 'POINT') : '0'}"
-             id="R8_BANK_SPEC_SINGLE_CUST_REC_NUM" name="R8_C1_BANK_SPEC_SINGLE_CUST_REC_NUM"
+            <td id="R8"><input class="display-input Show_input" type="text"
+             th:value="${#strings.defaultString(report.R8_BANK_SPEC_SINGLE_CUST_REC_NUM, 'N/A')}" id="R8_BANK_SPEC_SINGLE_CUST_REC_NUM"
+             name="R8_C1_BANK_SPEC_SINGLE_CUST_REC_NUM"
              style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
              readonly /></td>
-             
-            <td id="R8"><input class="display-input Show_input" type="text"
+            
+             <td id="R8"><input class="display-input Show_input" type="text"
              th:value="${#strings.defaultString(report.R8_COMPANY_NAME, 'N/A')}" id="R8_COMPANY_NAME"
              name="R8_C2_COMPANY_NAME"
              style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
              readonly /></td>
-
-            <td id="R8" style="text-align: left;"><input class="display-input Show_input" type="text"
-             th:value="${report.R8_COMPANY_REG_NUM != null ? #numbers.formatDecimal(report.R8_COMPANY_REG_NUM, 1, 'COMMA', 0, 'POINT') : '0'}"
-             id="R8_COMPANY_REG_NUM" name="R8_C3_COMPANY_REG_NUM"
+            
+            <td id="R8"><input class="display-input Show_input" type="text"
+             th:value="${#strings.defaultString(report.R8_COMPANY_REG_NUM, 'N/A')}" id="R8_COMPANY_REG_NUM"
+             name="R8_C3_COMPANY_REG_NUM"
              style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
              readonly /></td>
 
@@ -1342,21 +1302,21 @@ function fileuploads(btn) {
          </tr>
                     <tr>
 
-            <td id="R9" style="text-align: left;"><input class="display-input Show_input" type="text"
-             th:value="${report.R9_BANK_SPEC_SINGLE_CUST_REC_NUM != null ? #numbers.formatDecimal(report.R9_BANK_SPEC_SINGLE_CUST_REC_NUM, 1, 'COMMA', 0, 'POINT') : '0'}"
-             id="R9_BANK_SPEC_SINGLE_CUST_REC_NUM" name="R9_C1_BANK_SPEC_SINGLE_CUST_REC_NUM"
+            <td id="R9"><input class="display-input Show_input" type="text"
+             th:value="${#strings.defaultString(report.R9_BANK_SPEC_SINGLE_CUST_REC_NUM, 'N/A')}" id="R9_BANK_SPEC_SINGLE_CUST_REC_NUM"
+             name="R9_C1_BANK_SPEC_SINGLE_CUST_REC_NUM"
              style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
              readonly /></td>
-             
-            <td id="R9"><input class="display-input Show_input" type="text"
+            
+             <td id="R9"><input class="display-input Show_input" type="text"
              th:value="${#strings.defaultString(report.R9_COMPANY_NAME, 'N/A')}" id="R9_COMPANY_NAME"
              name="R9_C2_COMPANY_NAME"
              style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
              readonly /></td>
-
-            <td id="R9" style="text-align: left;"><input class="display-input Show_input" type="text"
-             th:value="${report.R9_COMPANY_REG_NUM != null ? #numbers.formatDecimal(report.R9_COMPANY_REG_NUM, 1, 'COMMA', 0, 'POINT') : '0'}"
-             id="R9_COMPANY_REG_NUM" name="R9_C3_COMPANY_REG_NUM"
+            
+            <td id="R9"><input class="display-input Show_input" type="text"
+             th:value="${#strings.defaultString(report.R9_COMPANY_REG_NUM, 'N/A')}" id="R9_COMPANY_REG_NUM"
+             name="R9_C3_COMPANY_REG_NUM"
              style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
              readonly /></td>
 
@@ -1446,21 +1406,21 @@ function fileuploads(btn) {
          </tr>
                     <tr>
 
-            <td id="R10" style="text-align: left;"><input class="display-input Show_input" type="text"
-             th:value="${report.R10_BANK_SPEC_SINGLE_CUST_REC_NUM != null ? #numbers.formatDecimal(report.R10_BANK_SPEC_SINGLE_CUST_REC_NUM, 1, 'COMMA', 0, 'POINT') : '0'}"
-             id="R10_BANK_SPEC_SINGLE_CUST_REC_NUM" name="R10_C1_BANK_SPEC_SINGLE_CUST_REC_NUM"
+            <td id="R10"><input class="display-input Show_input" type="text"
+             th:value="${#strings.defaultString(report.R10_BANK_SPEC_SINGLE_CUST_REC_NUM, 'N/A')}" id="R10_BANK_SPEC_SINGLE_CUST_REC_NUM"
+             name="R10_C1_BANK_SPEC_SINGLE_CUST_REC_NUM"
              style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
              readonly /></td>
-             
-            <td id="R10"><input class="display-input Show_input" type="text"
+            
+             <td id="R10"><input class="display-input Show_input" type="text"
              th:value="${#strings.defaultString(report.R10_COMPANY_NAME, 'N/A')}" id="R10_COMPANY_NAME"
              name="R10_C2_COMPANY_NAME"
              style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
              readonly /></td>
-
-            <td id="R10" style="text-align: left;"><input class="display-input Show_input" type="text"
-             th:value="${report.R10_COMPANY_REG_NUM != null ? #numbers.formatDecimal(report.R10_COMPANY_REG_NUM, 1, 'COMMA', 0, 'POINT') : '0'}"
-             id="R10_COMPANY_REG_NUM" name="R10_C3_COMPANY_REG_NUM"
+            
+            <td id="R10"><input class="display-input Show_input" type="text"
+             th:value="${#strings.defaultString(report.R10_COMPANY_REG_NUM, 'N/A')}" id="R10_COMPANY_REG_NUM"
+             name="R10_C3_COMPANY_REG_NUM"
              style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
              readonly /></td>
 
@@ -1550,21 +1510,21 @@ function fileuploads(btn) {
          </tr>
                     <tr>
 
-            <td id="R11" style="text-align: left;"><input class="display-input Show_input" type="text"
-             th:value="${report.R11_BANK_SPEC_SINGLE_CUST_REC_NUM != null ? #numbers.formatDecimal(report.R11_BANK_SPEC_SINGLE_CUST_REC_NUM, 1, 'COMMA', 0, 'POINT') : '0'}"
-             id="R11_BANK_SPEC_SINGLE_CUST_REC_NUM" name="R11_C1_BANK_SPEC_SINGLE_CUST_REC_NUM"
+            <td id="R11"><input class="display-input Show_input" type="text"
+             th:value="${#strings.defaultString(report.R11_BANK_SPEC_SINGLE_CUST_REC_NUM, 'N/A')}" id="R11_BANK_SPEC_SINGLE_CUST_REC_NUM"
+             name="R11_C1_BANK_SPEC_SINGLE_CUST_REC_NUM"
              style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
              readonly /></td>
-             
-            <td id="R11"><input class="display-input Show_input" type="text"
+            
+             <td id="R11"><input class="display-input Show_input" type="text"
              th:value="${#strings.defaultString(report.R11_COMPANY_NAME, 'N/A')}" id="R11_COMPANY_NAME"
              name="R11_C2_COMPANY_NAME"
              style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
              readonly /></td>
-
-            <td id="R11" style="text-align: left;"><input class="display-input Show_input" type="text"
-             th:value="${report.R11_COMPANY_REG_NUM != null ? #numbers.formatDecimal(report.R11_COMPANY_REG_NUM, 1, 'COMMA', 0, 'POINT') : '0'}"
-             id="R11_COMPANY_REG_NUM" name="R11_C3_COMPANY_REG_NUM"
+            
+            <td id="R11"><input class="display-input Show_input" type="text"
+             th:value="${#strings.defaultString(report.R11_COMPANY_REG_NUM, 'N/A')}" id="R11_COMPANY_REG_NUM"
+             name="R11_C3_COMPANY_REG_NUM"
              style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
              readonly /></td>
 
@@ -1654,21 +1614,21 @@ function fileuploads(btn) {
          </tr>
                     <tr>
 
-            <td id="R12" style="text-align: left;"><input class="display-input Show_input" type="text"
-             th:value="${report.R12_BANK_SPEC_SINGLE_CUST_REC_NUM != null ? #numbers.formatDecimal(report.R12_BANK_SPEC_SINGLE_CUST_REC_NUM, 1, 'COMMA', 0, 'POINT') : '0'}"
-             id="R12_BANK_SPEC_SINGLE_CUST_REC_NUM" name="R12_C1_BANK_SPEC_SINGLE_CUST_REC_NUM"
+            <td id="R12"><input class="display-input Show_input" type="text"
+             th:value="${#strings.defaultString(report.R12_BANK_SPEC_SINGLE_CUST_REC_NUM, 'N/A')}" id="R12_BANK_SPEC_SINGLE_CUST_REC_NUM"
+             name="R12_C1_BANK_SPEC_SINGLE_CUST_REC_NUM"
              style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
              readonly /></td>
-             
-            <td id="R12"><input class="display-input Show_input" type="text"
+            
+             <td id="R12"><input class="display-input Show_input" type="text"
              th:value="${#strings.defaultString(report.R12_COMPANY_NAME, 'N/A')}" id="R12_COMPANY_NAME"
              name="R12_C2_COMPANY_NAME"
              style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
              readonly /></td>
-
-            <td id="R12" style="text-align: left;"><input class="display-input Show_input" type="text"
-             th:value="${report.R12_COMPANY_REG_NUM != null ? #numbers.formatDecimal(report.R12_COMPANY_REG_NUM, 1, 'COMMA', 0, 'POINT') : '0'}"
-             id="R12_COMPANY_REG_NUM" name="R12_C3_COMPANY_REG_NUM"
+            
+            <td id="R12"><input class="display-input Show_input" type="text"
+             th:value="${#strings.defaultString(report.R12_COMPANY_REG_NUM, 'N/A')}" id="R12_COMPANY_REG_NUM"
+             name="R12_C3_COMPANY_REG_NUM"
              style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
              readonly /></td>
 
@@ -1777,7 +1737,7 @@ function fileuploads(btn) {
 <!--  DETAIL -->
             <div th:if="${displaymode == 'Details'}">
              <div class="row">
-              <div class="col-sm-12" style="max-height:90vh; overflow-y: auto; ">
+              <div class="col-sm-12" style="max-height:90vh; ">
                <div class="table-container" 
                 style="border-right: 1px solid #dee2e6; ">
                 <table class="table table-striped table-bordered table-hover"
@@ -1786,27 +1746,27 @@ function fileuploads(btn) {
 
          <tr>
           <th>S No</th>
-          <th>CUST ID</th>
+          <!-- <th>CUST ID</th>
           <th style="text-align:left;">ACCT NO</th>
-          <th>ACCT NAME</th>
-          <th style="text-align:left;">BANK_SPEC_SINGLE_CUST_REC_NUM</th>
+          <th>ACCT NAME</th> -->
+          <!-- <th style="text-align:left;">BANK_SPEC_SINGLE_CUST_REC_NUM</th> -->
           <th style="text-align:left;">COMPANY_NAME</th>
           <th style="text-align:left;">COMPANY_REG_NUM</th>
-          <th style="text-align:left;">BUSINEES_PHY_ADDRESS</th>
+          <!-- <th style="text-align:left;">BUSINEES_PHY_ADDRESS</th>
           <th style="text-align:left;">POSTAL_ADDRESS</th>
           <th style="text-align:left;">COUNTRY_OF_REG</th>
           <th style="text-align:left;">COMPANY_EMAIL</th>
           <th style="text-align:left;">COMPANY_LANDLINE</th>
           <th style="text-align:left;">COMPANY_MOB_PHONE_NUM</th>
-          <th style="text-align:left;">PRODUCT_TYPE</th>
+          <th style="text-align:left;">PRODUCT_TYPE</th> -->
           <th style="text-align:left;">ACCT_NUM</th>
-          <th style="text-align:left;">STATUS_OF_ACCT</th>
+<!--           <th style="text-align:left;">STATUS_OF_ACCT</th>
           <th style="text-align:left;">ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT</th>
-          <th style="text-align:left;">ACCT_BRANCH</th>
+          <th style="text-align:left;">ACCT_BRANCH</th> -->
           <th style="text-align:right;">ACCT BALANCE IN PULA</th>
-          <th style="text-align:left;">CURRENCY_OF_ACCT</th>
-          <th style="text-align:left;">EXCHANGE_RATE</th>
-          <th style="text-align:left;"> REPORT LABLE</th>
+          <!-- <th style="text-align:left;">CURRENCY_OF_ACCT</th>
+          <th style="text-align:left;">EXCHANGE_RATE</th> -->
+          <th style="text-align:left;"> REPORT LABEL</th>
           <th>REPORT ADDL CRITERIA</th>
           <th>REPORT DATE</th>
          </tr>
@@ -1815,27 +1775,27 @@ function fileuploads(btn) {
         <tbody style="font-family: Arial;">
          <tr th:each="report, srlno : ${reportdetails}">
                     <td th:text="${srlno.index + 1}"></td>
-          <td th:text="${report.custId}"></td>
+          <!-- <td th:text="${report.custId}"></td>
           <td style="text-align:left;" th:text="${report.acctNumber}"></td>
           <td th:text="${report.acctName}"></td>
-          <td style="text-align:left;" th:text="${report.BANK_SPEC_SINGLE_CUST_REC_NUM}"></td>
+          <td style="text-align:left;" th:text="${report.BANK_SPEC_SINGLE_CUST_REC_NUM}"></td> -->
           <td style="text-align:left;" th:text="${report.COMPANY_NAME}"></td>
           <td style="text-align:left;" th:text="${report.COMPANY_REG_NUM}"></td>
-          <td style="text-align:left;" th:text="${report.BUSINEES_PHY_ADDRESS}"></td>
+          <!-- <td style="text-align:left;" th:text="${report.BUSINEES_PHY_ADDRESS}"></td>
           <td style="text-align:left;" th:text="${report.POSTAL_ADDRESS}"></td>
           <td style="text-align:left;" th:text="${report.COUNTRY_OF_REG}"></td>
           <td style="text-align:left;" th:text="${report.COMPANY_EMAIL}"></td>
           <td style="text-align:left;" th:text="${report.COMPANY_LANDLINE}"></td>
           <td style="text-align:left;" th:text="${report.COMPANY_MOB_PHONE_NUM}"></td>
-          <td style="text-align:left;" th:text="${report.PRODUCT_TYPE}"></td>
+          <td style="text-align:left;" th:text="${report.PRODUCT_TYPE}"></td> -->
           <td style="text-align:left;" th:text="${report.ACCT_NUM}"></td>
-          <td style="text-align:left;" th:text="${report.STATUS_OF_ACCT}"></td>
+          <!-- <td style="text-align:left;" th:text="${report.STATUS_OF_ACCT}"></td>
           <td style="text-align:left;" th:text="${report.ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT}"></td>
-          <td style="text-align:left;" th:text="${report.ACCT_BRANCH}"></td>
+          <td style="text-align:left;" th:text="${report.ACCT_BRANCH}"></td> -->
           <td style="text-align:right;" th:text="${#numbers.formatDecimal(report.ACCT_BALANCE_PULA,1,'COMMA',0,'POINT')}"></td>
-          <td style="text-align:left;" th:text="${report.CURRENCY_OF_ACCT}"></td>
-          <td style="text-align:left;" th:text="${report.EXCHANGE_RATE}"></td>
-          <td style="text-align:left;" th:text="${report.reportLable}"></td>
+          <!-- <td style="text-align:left;" th:text="${report.CURRENCY_OF_ACCT}"></td>
+          <td style="text-align:left;" th:text="${report.EXCHANGE_RATE}"></td> -->
+          <td style="text-align:left;" th:text="${report.reportLabel}"></td>
           <td th:text="${report.reportAddlCriteria1}"></td>
           <td th:text="${#dates.format(report.reportDate,'dd-MM-yyyy')}"></td>
 
@@ -1910,31 +1870,6 @@ function fileuploads(btn) {
 
 </body>
 
-<!-- <script>
-															  $(document).ready(function () {
-															    $('#BRRSvalidation').DataTable({
-															      "paging": true,
-															      "info": false,       // turn off "Showing x of y"
-															      "searching": false,  // turn off search
-															      "ordering": false,   // turn off ordering
-															      "lengthChange": false // hide "Show x entries"
-															    });
-															  });
-	
-														</script> -->
-<!-- 
-<style>
-#BRFdet td {
-	border: 1px solid #ccc;
-	padding: 8px;
-}
-
-#BRFdet {
-	border-collapse: collapse;
-	width: 100%;
-}
-</style>
- -->
 <style>
 /* Your existing CSS - this is the correct approach */
 .scrollable-table-container {
@@ -2058,132 +1993,8 @@ div.dataTables_wrapper div.dataTables_info {
 #reports th:empty::after {
     content: "\00A0";
 }
-/*#reports th:empty {
-    border: none !important;
-    background-color: transparent !important;
-    color: transparent !important;
-}*/
 
-/*  #reportdetails {
-       width: 100% !important;
-       table-layout: fixed !important;
-     }
-
-     #reportdetails th, 
-     #reportdetails td {
-       white-space: nowrap;
-     } */
 </style>
 
 
-<!-- <style>
- .dataTables_scrollHeadInner,
- table.dataTable {
-  width: 100% !important;
- }
-
- /* Your existing CSS - this is the correct approach */
- .scrollable-table-container {
-  /* This is the key: it creates the scroll context */
-  max-height: 700px;
-  /* Or a suitable height like 80vh for responsive design */
-  overflow-y: auto;
-  overflow-x: hidden;
-  border: 1px solid #ccc;
- }
-
- /* Your existing sticky header CSS, targeting the tr elements within the thead */
- .scrollable-table-container thead tr:nth-child(1) {
-  position: sticky;
-  top: 0;
-  background-color: #b3b6b9;
-  z-index: 5;
- }
-
- .scrollable-table-container thead tr:nth-child(2) {
-  position: sticky;
-  top: 36px;
-  /* adjust based on row height */
-  background-color: #b3b6b9;
-  z-index: 4;
- }
-
- .scrollable-table-container thead tr:nth-child(3) {
-  position: sticky;
-  top: 72px;
-  /* Adjust based on row height */
-  background-color: #b3b6b9;
-  z-index: 3;
- }
-
- .scrollable-table-container thead tr:nth-child(4) {
-  position: sticky;
-  top: 100px;
-  /* Adjust based on row height */
-  background-color: #b3b6b9;
-  z-index: 2;
- }
-
- .scrollable-table-container thead tr:nth-child(5) {
-  position: sticky;
-  top: 135px;
-  /* Adjust based on row height */
-  background-color: #b3b6b9;
-  z-index: 1;
- }
-</style>
-
-
-<style>
- .inner {
-  max-height: 600px;
-  /* Adjust height as needed */
-  overflow: auto;
-  border: 1px solid #dee2e6;
- }
-
- /* Sticky thead */
- #reports thead th {
-  position: sticky;
-  top: 0;
-  background-color: #f8f9fa;
-  /* Match Bootstrap thead-light */
-  z-index: 2;
- }
-
- div.dataTables_wrapper div.dataTables_paginate {
-  text-align: right !important;
-  float: right !important;
-  width: auto;
-  margin-top: 10px;
- }
-
- /* Ensure info text (e.g., "Showing 1 to X") stays on the left */
- div.dataTables_wrapper div.dataTables_info {
-  float: left !important;
-  margin-top: 10px;
- }
-
- .pagination {
-  margin: 0;
- }
-
- .page-item.active .page-link {
-  background-color: #386276;
-  border-color: #386276;
- }
-
- .page-link {
-  color: #386276;
- }
-
- .page-link:hover {
-  color: #2a4a5c;
- }
-
- .form-select {
-  display: inline-block;
-  width: auto;
- }
-</style> -->
 </html>

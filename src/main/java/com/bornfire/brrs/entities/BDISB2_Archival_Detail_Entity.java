@@ -30,8 +30,8 @@ public class BDISB2_Archival_Detail_Entity {
     @Column(name = "DATA_TYPE", length = 100)
     private String dataType;
 
-    @Column(name = "REPORT_LABLE", length = 10)
-    private String reportLable;
+    @Column(name = "REPORT_LABEL", length = 10)
+    private String reportLabel;
     
     @Column(name = "REPORT_ADDL_CRITERIA_1", length = 10)
     private String reportAddlCriteria1;
@@ -85,9 +85,9 @@ public class BDISB2_Archival_Detail_Entity {
     @Column(name = "DEL_FLG", length = 1)
     private String delFlg;
 
-	private BigDecimal BANK_SPEC_SINGLE_CUST_REC_NUM;
+	private String BANK_SPEC_SINGLE_CUST_REC_NUM;
 	private String COMPANY_NAME;
-	private BigDecimal COMPANY_REG_NUM;
+	private String COMPANY_REG_NUM;
 	private String BUSINEES_PHY_ADDRESS;
 	private String POSTAL_ADDRESS;
 	private String COUNTRY_OF_REG;
@@ -105,17 +105,279 @@ public class BDISB2_Archival_Detail_Entity {
     
 	
 
-	public BigDecimal getBANK_SPEC_SINGLE_CUST_REC_NUM() {
+	public String getSno() {
+		return sno;
+	}
+
+
+
+	public void setSno(String sno) {
+		this.sno = sno;
+	}
+
+
+
+	public String getCustId() {
+		return custId;
+	}
+
+
+
+	public void setCustId(String custId) {
+		this.custId = custId;
+	}
+
+
+
+	public String getAcctNumber() {
+		return acctNumber;
+	}
+
+
+
+	public void setAcctNumber(String acctNumber) {
+		this.acctNumber = acctNumber;
+	}
+
+
+
+	public String getAcctName() {
+		return acctName;
+	}
+
+
+
+	public void setAcctName(String acctName) {
+		this.acctName = acctName;
+	}
+
+
+
+	public String getDataType() {
+		return dataType;
+	}
+
+
+
+	public void setDataType(String dataType) {
+		this.dataType = dataType;
+	}
+
+
+
+	public String getReportLabel() {
+		return reportLabel;
+	}
+
+
+
+	public void setReportLabel(String reportLabel) {
+		this.reportLabel = reportLabel;
+	}
+
+
+
+	public String getReportAddlCriteria1() {
+		return reportAddlCriteria1;
+	}
+
+
+
+	public void setReportAddlCriteria1(String reportAddlCriteria1) {
+		this.reportAddlCriteria1 = reportAddlCriteria1;
+	}
+
+
+
+	public String getReportRemarks() {
+		return reportRemarks;
+	}
+
+
+
+	public void setReportRemarks(String reportRemarks) {
+		this.reportRemarks = reportRemarks;
+	}
+
+
+
+	public String getModificationRemarks() {
+		return modificationRemarks;
+	}
+
+
+
+	public void setModificationRemarks(String modificationRemarks) {
+		this.modificationRemarks = modificationRemarks;
+	}
+
+
+
+	public String getDataEntryVersion() {
+		return dataEntryVersion;
+	}
+
+
+
+	public void setDataEntryVersion(String dataEntryVersion) {
+		this.dataEntryVersion = dataEntryVersion;
+	}
+
+
+
+	public BigDecimal getAcctBalanceInPula() {
+		return acctBalanceInPula;
+	}
+
+
+
+	public void setAcctBalanceInPula(BigDecimal acctBalanceInPula) {
+		this.acctBalanceInPula = acctBalanceInPula;
+	}
+
+
+
+	public Date getReportDate() {
+		return reportDate;
+	}
+
+
+
+	public void setReportDate(Date reportDate) {
+		this.reportDate = reportDate;
+	}
+
+
+
+	public String getReportName() {
+		return reportName;
+	}
+
+
+
+	public void setReportName(String reportName) {
+		this.reportName = reportName;
+	}
+
+
+
+	public String getCreateUser() {
+		return createUser;
+	}
+
+
+
+	public void setCreateUser(String createUser) {
+		this.createUser = createUser;
+	}
+
+
+
+	public Date getCreateTime() {
+		return createTime;
+	}
+
+
+
+	public void setCreateTime(Date createTime) {
+		this.createTime = createTime;
+	}
+
+
+
+	public String getModifyUser() {
+		return modifyUser;
+	}
+
+
+
+	public void setModifyUser(String modifyUser) {
+		this.modifyUser = modifyUser;
+	}
+
+
+
+	public Date getModifyTime() {
+		return modifyTime;
+	}
+
+
+
+	public void setModifyTime(Date modifyTime) {
+		this.modifyTime = modifyTime;
+	}
+
+
+
+	public String getVerifyUser() {
+		return verifyUser;
+	}
+
+
+
+	public void setVerifyUser(String verifyUser) {
+		this.verifyUser = verifyUser;
+	}
+
+
+
+	public Date getVerifyTime() {
+		return verifyTime;
+	}
+
+
+
+	public void setVerifyTime(Date verifyTime) {
+		this.verifyTime = verifyTime;
+	}
+
+
+
+	public String getEntityFlg() {
+		return entityFlg;
+	}
+
+
+
+	public void setEntityFlg(String entityFlg) {
+		this.entityFlg = entityFlg;
+	}
+
+
+
+	public String getModifyFlg() {
+		return modifyFlg;
+	}
+
+
+
+	public void setModifyFlg(String modifyFlg) {
+		this.modifyFlg = modifyFlg;
+	}
+
+
+
+	public String getDelFlg() {
+		return delFlg;
+	}
+
+
+
+	public void setDelFlg(String delFlg) {
+		this.delFlg = delFlg;
+	}
+
+
+
+	public String getBANK_SPEC_SINGLE_CUST_REC_NUM() {
 		return BANK_SPEC_SINGLE_CUST_REC_NUM;
 	}
 
 
 
-
-	public void setBANK_SPEC_SINGLE_CUST_REC_NUM(BigDecimal bANK_SPEC_SINGLE_CUST_REC_NUM) {
+	public void setBANK_SPEC_SINGLE_CUST_REC_NUM(String bANK_SPEC_SINGLE_CUST_REC_NUM) {
 		BANK_SPEC_SINGLE_CUST_REC_NUM = bANK_SPEC_SINGLE_CUST_REC_NUM;
 	}
-
 
 
 
@@ -125,25 +387,21 @@ public class BDISB2_Archival_Detail_Entity {
 
 
 
-
 	public void setCOMPANY_NAME(String cOMPANY_NAME) {
 		COMPANY_NAME = cOMPANY_NAME;
 	}
 
 
 
-
-	public BigDecimal getCOMPANY_REG_NUM() {
+	public String getCOMPANY_REG_NUM() {
 		return COMPANY_REG_NUM;
 	}
 
 
 
-
-	public void setCOMPANY_REG_NUM(BigDecimal cOMPANY_REG_NUM) {
+	public void setCOMPANY_REG_NUM(String cOMPANY_REG_NUM) {
 		COMPANY_REG_NUM = cOMPANY_REG_NUM;
 	}
-
 
 
 
@@ -153,11 +411,9 @@ public class BDISB2_Archival_Detail_Entity {
 
 
 
-
 	public void setBUSINEES_PHY_ADDRESS(String bUSINEES_PHY_ADDRESS) {
 		BUSINEES_PHY_ADDRESS = bUSINEES_PHY_ADDRESS;
 	}
-
 
 
 
@@ -167,11 +423,9 @@ public class BDISB2_Archival_Detail_Entity {
 
 
 
-
 	public void setPOSTAL_ADDRESS(String pOSTAL_ADDRESS) {
 		POSTAL_ADDRESS = pOSTAL_ADDRESS;
 	}
-
 
 
 
@@ -181,11 +435,9 @@ public class BDISB2_Archival_Detail_Entity {
 
 
 
-
 	public void setCOUNTRY_OF_REG(String cOUNTRY_OF_REG) {
 		COUNTRY_OF_REG = cOUNTRY_OF_REG;
 	}
-
 
 
 
@@ -195,11 +447,9 @@ public class BDISB2_Archival_Detail_Entity {
 
 
 
-
 	public void setCOMPANY_EMAIL(String cOMPANY_EMAIL) {
 		COMPANY_EMAIL = cOMPANY_EMAIL;
 	}
-
 
 
 
@@ -209,11 +459,9 @@ public class BDISB2_Archival_Detail_Entity {
 
 
 
-
 	public void setCOMPANY_LANDLINE(String cOMPANY_LANDLINE) {
 		COMPANY_LANDLINE = cOMPANY_LANDLINE;
 	}
-
 
 
 
@@ -223,11 +471,9 @@ public class BDISB2_Archival_Detail_Entity {
 
 
 
-
 	public void setCOMPANY_MOB_PHONE_NUM(String cOMPANY_MOB_PHONE_NUM) {
 		COMPANY_MOB_PHONE_NUM = cOMPANY_MOB_PHONE_NUM;
 	}
-
 
 
 
@@ -237,11 +483,9 @@ public class BDISB2_Archival_Detail_Entity {
 
 
 
-
 	public void setPRODUCT_TYPE(String pRODUCT_TYPE) {
 		PRODUCT_TYPE = pRODUCT_TYPE;
 	}
-
 
 
 
@@ -251,11 +495,9 @@ public class BDISB2_Archival_Detail_Entity {
 
 
 
-
 	public void setACCT_NUM(BigDecimal aCCT_NUM) {
 		ACCT_NUM = aCCT_NUM;
 	}
-
 
 
 
@@ -265,18 +507,15 @@ public class BDISB2_Archival_Detail_Entity {
 
 
 
-
 	public void setSTATUS_OF_ACCT(String sTATUS_OF_ACCT) {
 		STATUS_OF_ACCT = sTATUS_OF_ACCT;
 	}
 
 
 
-
 	public String getACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT() {
 		return ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT;
 	}
-
 
 
 
@@ -287,11 +526,9 @@ public class BDISB2_Archival_Detail_Entity {
 
 
 
-
 	public String getACCT_BRANCH() {
 		return ACCT_BRANCH;
 	}
-
 
 
 
@@ -301,11 +538,9 @@ public class BDISB2_Archival_Detail_Entity {
 
 
 
-
 	public BigDecimal getACCT_BALANCE_PULA() {
 		return ACCT_BALANCE_PULA;
 	}
-
 
 
 
@@ -315,11 +550,9 @@ public class BDISB2_Archival_Detail_Entity {
 
 
 
-
 	public String getCURRENCY_OF_ACCT() {
 		return CURRENCY_OF_ACCT;
 	}
-
 
 
 
@@ -329,326 +562,15 @@ public class BDISB2_Archival_Detail_Entity {
 
 
 
-
 	public BigDecimal getEXCHANGE_RATE() {
 		return EXCHANGE_RATE;
 	}
 
 
 
-
 	public void setEXCHANGE_RATE(BigDecimal eXCHANGE_RATE) {
 		EXCHANGE_RATE = eXCHANGE_RATE;
 	}
-
-
-
-
-	public String getSno() {
-		return sno;
-	}
-
-
-
-
-	public void setSno(String sno) {
-		this.sno = sno;
-	}
-
-
-
-
-	public String getCustId() {
-		return custId;
-	}
-
-
-
-
-	public void setCustId(String custId) {
-		this.custId = custId;
-	}
-
-
-
-
-	public String getAcctNumber() {
-		return acctNumber;
-	}
-
-
-
-
-	public void setAcctNumber(String acctNumber) {
-		this.acctNumber = acctNumber;
-	}
-
-
-
-
-	public String getAcctName() {
-		return acctName;
-	}
-
-
-
-
-	public void setAcctName(String acctName) {
-		this.acctName = acctName;
-	}
-
-
-
-
-	public String getDataType() {
-		return dataType;
-	}
-
-
-
-
-	public void setDataType(String dataType) {
-		this.dataType = dataType;
-	}
-
-
-
-
-	public String getReportLable() {
-		return reportLable;
-	}
-
-
-
-
-	public void setReportLable(String reportLable) {
-		this.reportLable = reportLable;
-	}
-
-
-
-
-	public String getReportAddlCriteria1() {
-		return reportAddlCriteria1;
-	}
-
-
-
-
-	public void setReportAddlCriteria1(String reportAddlCriteria1) {
-		this.reportAddlCriteria1 = reportAddlCriteria1;
-	}
-
-
-
-
-	public String getReportRemarks() {
-		return reportRemarks;
-	}
-
-
-
-
-	public void setReportRemarks(String reportRemarks) {
-		this.reportRemarks = reportRemarks;
-	}
-
-
-
-
-	public String getModificationRemarks() {
-		return modificationRemarks;
-	}
-
-
-
-
-	public void setModificationRemarks(String modificationRemarks) {
-		this.modificationRemarks = modificationRemarks;
-	}
-
-
-
-
-	public String getDataEntryVersion() {
-		return dataEntryVersion;
-	}
-
-
-
-
-	public void setDataEntryVersion(String dataEntryVersion) {
-		this.dataEntryVersion = dataEntryVersion;
-	}
-
-
-
-
-	public BigDecimal getAcctBalanceInPula() {
-		return acctBalanceInPula;
-	}
-
-
-
-
-	public void setAcctBalanceInPula(BigDecimal acctBalanceInPula) {
-		this.acctBalanceInPula = acctBalanceInPula;
-	}
-
-
-
-
-	public Date getReportDate() {
-		return reportDate;
-	}
-
-
-
-
-	public void setReportDate(Date reportDate) {
-		this.reportDate = reportDate;
-	}
-
-
-
-
-	public String getReportName() {
-		return reportName;
-	}
-
-
-
-
-	public void setReportName(String reportName) {
-		this.reportName = reportName;
-	}
-
-
-
-
-	public String getCreateUser() {
-		return createUser;
-	}
-
-
-
-
-	public void setCreateUser(String createUser) {
-		this.createUser = createUser;
-	}
-
-
-
-
-	public Date getCreateTime() {
-		return createTime;
-	}
-
-
-
-
-	public void setCreateTime(Date createTime) {
-		this.createTime = createTime;
-	}
-
-
-
-
-	public String getModifyUser() {
-		return modifyUser;
-	}
-
-
-
-
-	public void setModifyUser(String modifyUser) {
-		this.modifyUser = modifyUser;
-	}
-
-
-
-
-	public Date getModifyTime() {
-		return modifyTime;
-	}
-
-
-
-
-	public void setModifyTime(Date modifyTime) {
-		this.modifyTime = modifyTime;
-	}
-
-
-
-
-	public String getVerifyUser() {
-		return verifyUser;
-	}
-
-
-
-
-	public void setVerifyUser(String verifyUser) {
-		this.verifyUser = verifyUser;
-	}
-
-
-
-
-	public Date getVerifyTime() {
-		return verifyTime;
-	}
-
-
-
-
-	public void setVerifyTime(Date verifyTime) {
-		this.verifyTime = verifyTime;
-	}
-
-
-
-
-	public String getEntityFlg() {
-		return entityFlg;
-	}
-
-
-
-
-	public void setEntityFlg(String entityFlg) {
-		this.entityFlg = entityFlg;
-	}
-
-
-
-
-	public String getModifyFlg() {
-		return modifyFlg;
-	}
-
-
-
-
-	public void setModifyFlg(String modifyFlg) {
-		this.modifyFlg = modifyFlg;
-	}
-
-
-
-
-	public String getDelFlg() {
-		return delFlg;
-	}
-
-
-
-
-	public void setDelFlg(String delFlg) {
-		this.delFlg = delFlg;
-	}
-
 
 
 

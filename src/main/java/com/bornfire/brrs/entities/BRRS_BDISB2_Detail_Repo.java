@@ -10,10 +10,10 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface BRRS_BDISB2_Detail_Repo extends JpaRepository<BDISB2_Detail_Entity,String> {
 
-	@Query(value = "select * from BRRS_BDISB2_DETAILTABLE where REPORT_DATE = ?1 AND REPORT_LABLE= ?2 AND REPORT_ADDL_CRITERIA_1= ?3", nativeQuery = true)
-    List<BDISB2_Detail_Entity> findByReportDateAndReportLableAndReportAddlCriteria1(
+	@Query(value = "select * from BRRS_BDISB2_DETAILTABLE where REPORT_DATE = ?1 AND REPORT_LABEL= ?2 AND REPORT_ADDL_CRITERIA_1= ?3", nativeQuery = true)
+    List<BDISB2_Detail_Entity> findByReportDateAndReportLabelAndReportAddlCriteria1(
             Date reportDate,
-            String reportLable,
+            String reportLabel,
             String reportAddlCriteria1
     );
     
@@ -29,8 +29,8 @@ public interface BRRS_BDISB2_Detail_Repo extends JpaRepository<BDISB2_Detail_Ent
     @Query(value = "select count(*) from BRRS_BDISB2_DETAILTABLE where REPORT_DATE = ?1", nativeQuery = true)
     int getdatacount(Date reportdate);
     
-    @Query(value ="select * from BRRS_BDISB2_DETAILTABLE where REPORT_LABLE =?1 and REPORT_ADDL_CRITERIA_1=?2 AND REPORT_DATE=?3"
+    @Query(value ="select * from BRRS_BDISB2_DETAILTABLE where REPORT_LABEL =?1 and REPORT_ADDL_CRITERIA_1=?2 AND REPORT_DATE=?3"
     		  , nativeQuery = true) 
-    List<BDISB2_Detail_Entity> GetDataByRowIdAndColumnId(String reportLable,String reportAddlCriteria_1,Date reportdate);
+    List<BDISB2_Detail_Entity> GetDataByRowIdAndColumnId(String reportLabel,String reportAddlCriteria_1,Date reportdate);
     		  
 }

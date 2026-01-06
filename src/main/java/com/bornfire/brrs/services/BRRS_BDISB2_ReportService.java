@@ -294,15 +294,15 @@ public class BRRS_BDISB2_ReportService {
 	 * continue; }
 	 * 
 	 * 
-	 * String[] parts = key.split("_"); String reportLable = parts[0]; // R12 String
+	 * String[] parts = key.split("_"); String reportLabel = parts[0]; // R12 String
 	 * addlCriteria = parts[1]; // C2
 	 * 
 	 * BigDecimal amount = (value == null || value.isEmpty()) ? BigDecimal.ZERO :
 	 * new BigDecimal(value);
 	 * 
 	 * List<BDISB2_Detail_Entity> rows =
-	 * BRRS_BDISB2_Detail_Repo.findByReportDateAndReportLableAndReportAddlCriteria1(
-	 * reportDate, reportLable, addlCriteria );
+	 * BRRS_BDISB2_Detail_Repo.findByReportDateAndReportLabelAndReportAddlCriteria1(
+	 * reportDate, reportLabel, addlCriteria );
 	 * 
 	 * for (BDISB2_Detail_Entity row : rows) { row.setAcctBalanceInPula(amount);
 	 * row.setModifyFlg("Y"); }
@@ -331,30 +331,18 @@ public class BRRS_BDISB2_ReportService {
 
 			// Parse key parts
 			String[] parts = key.split("_");
-			String reportLable = parts[0]; // R6, R7...
+			String reportLabel = parts[0]; // R6, R7...
 			String addlCriteria = parts[1]; // C1, C2...
 			String columnName = key.replaceFirst("R\\d+_C\\d+_", "");
 
 			// Fetch matching rows
 			List<BDISB2_Detail_Entity> rows = BRRS_BDISB2_Detail_Repo
-					.findByReportDateAndReportLableAndReportAddlCriteria1(reportDate, reportLable, addlCriteria);
+					.findByReportDateAndReportLabelAndReportAddlCriteria1(reportDate, reportLabel, addlCriteria);
 
 			for (BDISB2_Detail_Entity row : rows) {
 
 				// ---------- NUMERIC COLUMNS ----------
-				if ("BANK_SPEC_SINGLE_CUST_REC_NUM".equals(columnName)) {
-
-					BigDecimal num = (value == null || value.trim().isEmpty()) ? BigDecimal.ZERO
-							: new BigDecimal(value.replace(",", ""));
-					row.setBANK_SPEC_SINGLE_CUST_REC_NUM(num);
-
-				} else if ("COMPANY_REG_NUM".equals(columnName)) {
-
-					BigDecimal num = (value == null || value.trim().isEmpty()) ? BigDecimal.ZERO
-							: new BigDecimal(value.replace(",", ""));
-					row.setCOMPANY_REG_NUM(num);
-
-				} else if ("ACCT_NUM".equals(columnName)) {
+				if ("ACCT_NUM".equals(columnName)) {
 
 					BigDecimal num = (value == null || value.trim().isEmpty()) ? BigDecimal.ZERO
 							: new BigDecimal(value.replace(",", ""));
@@ -374,7 +362,13 @@ public class BRRS_BDISB2_ReportService {
 				}
 
 				// ---------- STRING COLUMNS ----------
-				else if ("COMPANY_NAME".equals(columnName)) {
+				else if ("BANK_SPEC_SINGLE_CUST_REC_NUM".equals(columnName)) {
+					row.setBANK_SPEC_SINGLE_CUST_REC_NUM(value);
+
+				} else if ("COMPANY_REG_NUM".equals(columnName)) {
+					row.setCOMPANY_REG_NUM(value);
+					
+				} else if ("COMPANY_NAME".equals(columnName)) {
 					row.setCOMPANY_NAME(value);
 
 				} else if ("BUSINEES_PHY_ADDRESS".equals(columnName)) {
@@ -626,8 +620,9 @@ public class BRRS_BDISB2_ReportService {
 					if (cellA == null)
 						cellA = row.createCell(0);
 					originalStyle = cellA.getCellStyle();
+					// ✅ Handle String value
 					if (record1.getR6_BANK_SPEC_SINGLE_CUST_REC_NUM() != null)
-						cellA.setCellValue(record1.getR6_BANK_SPEC_SINGLE_CUST_REC_NUM().doubleValue());
+						cellA.setCellValue(record1.getR6_BANK_SPEC_SINGLE_CUST_REC_NUM()); // String directly
 					else
 						cellA.setCellValue("");
 					cellA.setCellStyle(originalStyle);
@@ -651,12 +646,13 @@ public class BRRS_BDISB2_ReportService {
 					if (cellC == null)
 						cellC = row.createCell(2);
 					originalStyle = cellC.getCellStyle();
+					// ✅ Handle String value
 					if (record1.getR6_COMPANY_REG_NUM() != null)
-						cellC.setCellValue(record1.getR6_COMPANY_REG_NUM().doubleValue());
+						cellC.setCellValue(record1.getR6_COMPANY_REG_NUM()); // String directly
 					else
 						cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-
+					
 					// ===== R6 / Col D =====
 
 					cellD = row.getCell(3);
@@ -843,8 +839,9 @@ public class BRRS_BDISB2_ReportService {
 					if (cellA == null)
 						cellA = row.createCell(0);
 					originalStyle = cellA.getCellStyle();
+					// ✅ Handle String value
 					if (record1.getR7_BANK_SPEC_SINGLE_CUST_REC_NUM() != null)
-						cellA.setCellValue(record1.getR7_BANK_SPEC_SINGLE_CUST_REC_NUM().doubleValue());
+						cellA.setCellValue(record1.getR7_BANK_SPEC_SINGLE_CUST_REC_NUM()); // String directly
 					else
 						cellA.setCellValue("");
 					cellA.setCellStyle(originalStyle);
@@ -868,8 +865,9 @@ public class BRRS_BDISB2_ReportService {
 					if (cellC == null)
 						cellC = row.createCell(2);
 					originalStyle = cellC.getCellStyle();
+					// ✅ Handle String value
 					if (record1.getR7_COMPANY_REG_NUM() != null)
-						cellC.setCellValue(record1.getR7_COMPANY_REG_NUM().doubleValue());
+						cellC.setCellValue(record1.getR7_COMPANY_REG_NUM()); // String directly
 					else
 						cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
@@ -1060,8 +1058,9 @@ public class BRRS_BDISB2_ReportService {
 					if (cellA == null)
 						cellA = row.createCell(0);
 					originalStyle = cellA.getCellStyle();
+					// ✅ Handle String value
 					if (record1.getR8_BANK_SPEC_SINGLE_CUST_REC_NUM() != null)
-						cellA.setCellValue(record1.getR8_BANK_SPEC_SINGLE_CUST_REC_NUM().doubleValue());
+						cellA.setCellValue(record1.getR8_BANK_SPEC_SINGLE_CUST_REC_NUM()); // String directly
 					else
 						cellA.setCellValue("");
 					cellA.setCellStyle(originalStyle);
@@ -1085,8 +1084,9 @@ public class BRRS_BDISB2_ReportService {
 					if (cellC == null)
 						cellC = row.createCell(2);
 					originalStyle = cellC.getCellStyle();
+					// ✅ Handle String value
 					if (record1.getR8_COMPANY_REG_NUM() != null)
-						cellC.setCellValue(record1.getR8_COMPANY_REG_NUM().doubleValue());
+						cellC.setCellValue(record1.getR8_COMPANY_REG_NUM()); // String directly
 					else
 						cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
@@ -1277,8 +1277,9 @@ public class BRRS_BDISB2_ReportService {
 					if (cellA == null)
 						cellA = row.createCell(0);
 					originalStyle = cellA.getCellStyle();
+					// ✅ Handle String value
 					if (record1.getR9_BANK_SPEC_SINGLE_CUST_REC_NUM() != null)
-						cellA.setCellValue(record1.getR9_BANK_SPEC_SINGLE_CUST_REC_NUM().doubleValue());
+						cellA.setCellValue(record1.getR9_BANK_SPEC_SINGLE_CUST_REC_NUM()); // String directly
 					else
 						cellA.setCellValue("");
 					cellA.setCellStyle(originalStyle);
@@ -1302,8 +1303,9 @@ public class BRRS_BDISB2_ReportService {
 					if (cellC == null)
 						cellC = row.createCell(2);
 					originalStyle = cellC.getCellStyle();
+					// ✅ Handle String value
 					if (record1.getR9_COMPANY_REG_NUM() != null)
-						cellC.setCellValue(record1.getR9_COMPANY_REG_NUM().doubleValue());
+						cellC.setCellValue(record1.getR9_COMPANY_REG_NUM()); // String directly
 					else
 						cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
@@ -1494,8 +1496,9 @@ public class BRRS_BDISB2_ReportService {
 					if (cellA == null)
 						cellA = row.createCell(0);
 					originalStyle = cellA.getCellStyle();
+					// ✅ Handle String value
 					if (record1.getR10_BANK_SPEC_SINGLE_CUST_REC_NUM() != null)
-						cellA.setCellValue(record1.getR10_BANK_SPEC_SINGLE_CUST_REC_NUM().doubleValue());
+						cellA.setCellValue(record1.getR10_BANK_SPEC_SINGLE_CUST_REC_NUM()); // String directly
 					else
 						cellA.setCellValue("");
 					cellA.setCellStyle(originalStyle);
@@ -1519,8 +1522,9 @@ public class BRRS_BDISB2_ReportService {
 					if (cellC == null)
 						cellC = row.createCell(2);
 					originalStyle = cellC.getCellStyle();
+					// ✅ Handle String value
 					if (record1.getR10_COMPANY_REG_NUM() != null)
-						cellC.setCellValue(record1.getR10_COMPANY_REG_NUM().doubleValue());
+						cellC.setCellValue(record1.getR10_COMPANY_REG_NUM()); // String directly
 					else
 						cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
@@ -1711,8 +1715,9 @@ public class BRRS_BDISB2_ReportService {
 					if (cellA == null)
 						cellA = row.createCell(0);
 					originalStyle = cellA.getCellStyle();
+					// ✅ Handle String value
 					if (record1.getR11_BANK_SPEC_SINGLE_CUST_REC_NUM() != null)
-						cellA.setCellValue(record1.getR11_BANK_SPEC_SINGLE_CUST_REC_NUM().doubleValue());
+						cellA.setCellValue(record1.getR11_BANK_SPEC_SINGLE_CUST_REC_NUM()); // String directly
 					else
 						cellA.setCellValue("");
 					cellA.setCellStyle(originalStyle);
@@ -1736,8 +1741,9 @@ public class BRRS_BDISB2_ReportService {
 					if (cellC == null)
 						cellC = row.createCell(2);
 					originalStyle = cellC.getCellStyle();
+					// ✅ Handle String value
 					if (record1.getR11_COMPANY_REG_NUM() != null)
-						cellC.setCellValue(record1.getR11_COMPANY_REG_NUM().doubleValue());
+						cellC.setCellValue(record1.getR11_COMPANY_REG_NUM()); // String directly
 					else
 						cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
@@ -1928,8 +1934,9 @@ public class BRRS_BDISB2_ReportService {
 					if (cellA == null)
 						cellA = row.createCell(0);
 					originalStyle = cellA.getCellStyle();
+					// ✅ Handle String value
 					if (record1.getR12_BANK_SPEC_SINGLE_CUST_REC_NUM() != null)
-						cellA.setCellValue(record1.getR12_BANK_SPEC_SINGLE_CUST_REC_NUM().doubleValue());
+						cellA.setCellValue(record1.getR12_BANK_SPEC_SINGLE_CUST_REC_NUM()); // String directly
 					else
 						cellA.setCellValue("");
 					cellA.setCellStyle(originalStyle);
@@ -1953,8 +1960,9 @@ public class BRRS_BDISB2_ReportService {
 					if (cellC == null)
 						cellC = row.createCell(2);
 					originalStyle = cellC.getCellStyle();
+					// ✅ Handle String value
 					if (record1.getR12_COMPANY_REG_NUM() != null)
-						cellC.setCellValue(record1.getR12_COMPANY_REG_NUM().doubleValue());
+						cellC.setCellValue(record1.getR12_COMPANY_REG_NUM()); // String directly
 					else
 						cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
@@ -2259,8 +2267,9 @@ public class BRRS_BDISB2_ReportService {
 					if (cellA == null)
 						cellA = row.createCell(0);
 					originalStyle = cellA.getCellStyle();
+					// ✅ Handle String value
 					if (record1.getR6_BANK_SPEC_SINGLE_CUST_REC_NUM() != null)
-						cellA.setCellValue(record1.getR6_BANK_SPEC_SINGLE_CUST_REC_NUM().doubleValue());
+						cellA.setCellValue(record1.getR6_BANK_SPEC_SINGLE_CUST_REC_NUM()); // String directly
 					else
 						cellA.setCellValue("");
 					cellA.setCellStyle(originalStyle);
@@ -2284,12 +2293,13 @@ public class BRRS_BDISB2_ReportService {
 					if (cellC == null)
 						cellC = row.createCell(2);
 					originalStyle = cellC.getCellStyle();
+					// ✅ Handle String value
 					if (record1.getR6_COMPANY_REG_NUM() != null)
-						cellC.setCellValue(record1.getR6_COMPANY_REG_NUM().doubleValue());
+						cellC.setCellValue(record1.getR6_COMPANY_REG_NUM()); // String directly
 					else
 						cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-
+					
 					// ===== R6 / Col D =====
 
 					cellD = row.getCell(3);
@@ -2476,8 +2486,9 @@ public class BRRS_BDISB2_ReportService {
 					if (cellA == null)
 						cellA = row.createCell(0);
 					originalStyle = cellA.getCellStyle();
+					// ✅ Handle String value
 					if (record1.getR7_BANK_SPEC_SINGLE_CUST_REC_NUM() != null)
-						cellA.setCellValue(record1.getR7_BANK_SPEC_SINGLE_CUST_REC_NUM().doubleValue());
+						cellA.setCellValue(record1.getR7_BANK_SPEC_SINGLE_CUST_REC_NUM()); // String directly
 					else
 						cellA.setCellValue("");
 					cellA.setCellStyle(originalStyle);
@@ -2501,8 +2512,9 @@ public class BRRS_BDISB2_ReportService {
 					if (cellC == null)
 						cellC = row.createCell(2);
 					originalStyle = cellC.getCellStyle();
+					// ✅ Handle String value
 					if (record1.getR7_COMPANY_REG_NUM() != null)
-						cellC.setCellValue(record1.getR7_COMPANY_REG_NUM().doubleValue());
+						cellC.setCellValue(record1.getR7_COMPANY_REG_NUM()); // String directly
 					else
 						cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
@@ -2693,8 +2705,9 @@ public class BRRS_BDISB2_ReportService {
 					if (cellA == null)
 						cellA = row.createCell(0);
 					originalStyle = cellA.getCellStyle();
+					// ✅ Handle String value
 					if (record1.getR8_BANK_SPEC_SINGLE_CUST_REC_NUM() != null)
-						cellA.setCellValue(record1.getR8_BANK_SPEC_SINGLE_CUST_REC_NUM().doubleValue());
+						cellA.setCellValue(record1.getR8_BANK_SPEC_SINGLE_CUST_REC_NUM()); // String directly
 					else
 						cellA.setCellValue("");
 					cellA.setCellStyle(originalStyle);
@@ -2718,8 +2731,9 @@ public class BRRS_BDISB2_ReportService {
 					if (cellC == null)
 						cellC = row.createCell(2);
 					originalStyle = cellC.getCellStyle();
+					// ✅ Handle String value
 					if (record1.getR8_COMPANY_REG_NUM() != null)
-						cellC.setCellValue(record1.getR8_COMPANY_REG_NUM().doubleValue());
+						cellC.setCellValue(record1.getR8_COMPANY_REG_NUM()); // String directly
 					else
 						cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
@@ -2910,8 +2924,9 @@ public class BRRS_BDISB2_ReportService {
 					if (cellA == null)
 						cellA = row.createCell(0);
 					originalStyle = cellA.getCellStyle();
+					// ✅ Handle String value
 					if (record1.getR9_BANK_SPEC_SINGLE_CUST_REC_NUM() != null)
-						cellA.setCellValue(record1.getR9_BANK_SPEC_SINGLE_CUST_REC_NUM().doubleValue());
+						cellA.setCellValue(record1.getR9_BANK_SPEC_SINGLE_CUST_REC_NUM()); // String directly
 					else
 						cellA.setCellValue("");
 					cellA.setCellStyle(originalStyle);
@@ -2935,8 +2950,9 @@ public class BRRS_BDISB2_ReportService {
 					if (cellC == null)
 						cellC = row.createCell(2);
 					originalStyle = cellC.getCellStyle();
+					// ✅ Handle String value
 					if (record1.getR9_COMPANY_REG_NUM() != null)
-						cellC.setCellValue(record1.getR9_COMPANY_REG_NUM().doubleValue());
+						cellC.setCellValue(record1.getR9_COMPANY_REG_NUM()); // String directly
 					else
 						cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
@@ -3127,8 +3143,9 @@ public class BRRS_BDISB2_ReportService {
 					if (cellA == null)
 						cellA = row.createCell(0);
 					originalStyle = cellA.getCellStyle();
+					// ✅ Handle String value
 					if (record1.getR10_BANK_SPEC_SINGLE_CUST_REC_NUM() != null)
-						cellA.setCellValue(record1.getR10_BANK_SPEC_SINGLE_CUST_REC_NUM().doubleValue());
+						cellA.setCellValue(record1.getR10_BANK_SPEC_SINGLE_CUST_REC_NUM()); // String directly
 					else
 						cellA.setCellValue("");
 					cellA.setCellStyle(originalStyle);
@@ -3152,8 +3169,9 @@ public class BRRS_BDISB2_ReportService {
 					if (cellC == null)
 						cellC = row.createCell(2);
 					originalStyle = cellC.getCellStyle();
+					// ✅ Handle String value
 					if (record1.getR10_COMPANY_REG_NUM() != null)
-						cellC.setCellValue(record1.getR10_COMPANY_REG_NUM().doubleValue());
+						cellC.setCellValue(record1.getR10_COMPANY_REG_NUM()); // String directly
 					else
 						cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
@@ -3344,8 +3362,9 @@ public class BRRS_BDISB2_ReportService {
 					if (cellA == null)
 						cellA = row.createCell(0);
 					originalStyle = cellA.getCellStyle();
+					// ✅ Handle String value
 					if (record1.getR11_BANK_SPEC_SINGLE_CUST_REC_NUM() != null)
-						cellA.setCellValue(record1.getR11_BANK_SPEC_SINGLE_CUST_REC_NUM().doubleValue());
+						cellA.setCellValue(record1.getR11_BANK_SPEC_SINGLE_CUST_REC_NUM()); // String directly
 					else
 						cellA.setCellValue("");
 					cellA.setCellStyle(originalStyle);
@@ -3369,8 +3388,9 @@ public class BRRS_BDISB2_ReportService {
 					if (cellC == null)
 						cellC = row.createCell(2);
 					originalStyle = cellC.getCellStyle();
+					// ✅ Handle String value
 					if (record1.getR11_COMPANY_REG_NUM() != null)
-						cellC.setCellValue(record1.getR11_COMPANY_REG_NUM().doubleValue());
+						cellC.setCellValue(record1.getR11_COMPANY_REG_NUM()); // String directly
 					else
 						cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
@@ -3561,8 +3581,9 @@ public class BRRS_BDISB2_ReportService {
 					if (cellA == null)
 						cellA = row.createCell(0);
 					originalStyle = cellA.getCellStyle();
+					// ✅ Handle String value
 					if (record1.getR12_BANK_SPEC_SINGLE_CUST_REC_NUM() != null)
-						cellA.setCellValue(record1.getR12_BANK_SPEC_SINGLE_CUST_REC_NUM().doubleValue());
+						cellA.setCellValue(record1.getR12_BANK_SPEC_SINGLE_CUST_REC_NUM()); // String directly
 					else
 						cellA.setCellValue("");
 					cellA.setCellStyle(originalStyle);
@@ -3586,8 +3607,9 @@ public class BRRS_BDISB2_ReportService {
 					if (cellC == null)
 						cellC = row.createCell(2);
 					originalStyle = cellC.getCellStyle();
+					// ✅ Handle String value
 					if (record1.getR12_COMPANY_REG_NUM() != null)
-						cellC.setCellValue(record1.getR12_COMPANY_REG_NUM().doubleValue());
+						cellC.setCellValue(record1.getR12_COMPANY_REG_NUM()); // String directly
 					else
 						cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
@@ -3915,12 +3937,13 @@ public class BRRS_BDISB2_ReportService {
 	             * ===================================================== */
 
 	         // ======================= R6 =======================
-	            if ("R6_BANK_SPEC_SINGLE_CUST_REC_NUM".equals(normalizedKey)) {
-	                archivalEntity.setR6_BANK_SPEC_SINGLE_CUST_REC_NUM(parseBigDecimal(value));
+	            
+	                   if ("R6_BANK_SPEC_SINGLE_CUST_REC_NUM".equals(normalizedKey)) {
+		            archivalEntity.setR6_BANK_SPEC_SINGLE_CUST_REC_NUM(value);
 	            } else if ("R6_COMPANY_NAME".equals(normalizedKey)) {
 	                archivalEntity.setR6_COMPANY_NAME(value);
 	            } else if ("R6_COMPANY_REG_NUM".equals(normalizedKey)) {
-	                archivalEntity.setR6_COMPANY_REG_NUM(parseBigDecimal(value));
+	                archivalEntity.setR6_COMPANY_REG_NUM(value);
 	            } else if ("R6_BUSINEES_PHY_ADDRESS".equals(normalizedKey)) {
 	                archivalEntity.setR6_BUSINEES_PHY_ADDRESS(value);
 	            } else if ("R6_POSTAL_ADDRESS".equals(normalizedKey)) {
@@ -3953,11 +3976,11 @@ public class BRRS_BDISB2_ReportService {
 
 	            // ======================= R7 =======================
 	            else if ("R7_BANK_SPEC_SINGLE_CUST_REC_NUM".equals(normalizedKey)) {
-	                archivalEntity.setR7_BANK_SPEC_SINGLE_CUST_REC_NUM(parseBigDecimal(value));
+		            archivalEntity.setR7_BANK_SPEC_SINGLE_CUST_REC_NUM(value);
 	            } else if ("R7_COMPANY_NAME".equals(normalizedKey)) {
 	                archivalEntity.setR7_COMPANY_NAME(value);
 	            } else if ("R7_COMPANY_REG_NUM".equals(normalizedKey)) {
-	                archivalEntity.setR7_COMPANY_REG_NUM(parseBigDecimal(value));
+	                archivalEntity.setR7_COMPANY_REG_NUM(value);
 	            } else if ("R7_BUSINEES_PHY_ADDRESS".equals(normalizedKey)) {
 	                archivalEntity.setR7_BUSINEES_PHY_ADDRESS(value);
 	            } else if ("R7_POSTAL_ADDRESS".equals(normalizedKey)) {
@@ -3990,11 +4013,11 @@ public class BRRS_BDISB2_ReportService {
 
 	            // ======================= R8 =======================
 	            else if ("R8_BANK_SPEC_SINGLE_CUST_REC_NUM".equals(normalizedKey)) {
-	                archivalEntity.setR8_BANK_SPEC_SINGLE_CUST_REC_NUM(parseBigDecimal(value));
+		            archivalEntity.setR8_BANK_SPEC_SINGLE_CUST_REC_NUM(value);
 	            } else if ("R8_COMPANY_NAME".equals(normalizedKey)) {
 	                archivalEntity.setR8_COMPANY_NAME(value);
 	            } else if ("R8_COMPANY_REG_NUM".equals(normalizedKey)) {
-	                archivalEntity.setR8_COMPANY_REG_NUM(parseBigDecimal(value));
+	                archivalEntity.setR8_COMPANY_REG_NUM(value);
 	            } else if ("R8_BUSINEES_PHY_ADDRESS".equals(normalizedKey)) {
 	                archivalEntity.setR8_BUSINEES_PHY_ADDRESS(value);
 	            } else if ("R8_POSTAL_ADDRESS".equals(normalizedKey)) {
@@ -4027,11 +4050,11 @@ public class BRRS_BDISB2_ReportService {
 
 	            // ======================= R9 =======================
 	            else if ("R9_BANK_SPEC_SINGLE_CUST_REC_NUM".equals(normalizedKey)) {
-	                archivalEntity.setR9_BANK_SPEC_SINGLE_CUST_REC_NUM(parseBigDecimal(value));
+		            archivalEntity.setR9_BANK_SPEC_SINGLE_CUST_REC_NUM(value);
 	            } else if ("R9_COMPANY_NAME".equals(normalizedKey)) {
 	                archivalEntity.setR9_COMPANY_NAME(value);
 	            } else if ("R9_COMPANY_REG_NUM".equals(normalizedKey)) {
-	                archivalEntity.setR9_COMPANY_REG_NUM(parseBigDecimal(value));
+	                archivalEntity.setR9_COMPANY_REG_NUM(value);
 	            } else if ("R9_BUSINEES_PHY_ADDRESS".equals(normalizedKey)) {
 	                archivalEntity.setR9_BUSINEES_PHY_ADDRESS(value);
 	            } else if ("R9_POSTAL_ADDRESS".equals(normalizedKey)) {
@@ -4064,11 +4087,11 @@ public class BRRS_BDISB2_ReportService {
 
 	            // ======================= R10 =======================
 	            else if ("R10_BANK_SPEC_SINGLE_CUST_REC_NUM".equals(normalizedKey)) {
-	                archivalEntity.setR10_BANK_SPEC_SINGLE_CUST_REC_NUM(parseBigDecimal(value));
+		            archivalEntity.setR10_BANK_SPEC_SINGLE_CUST_REC_NUM(value);
 	            } else if ("R10_COMPANY_NAME".equals(normalizedKey)) {
 	                archivalEntity.setR10_COMPANY_NAME(value);
 	            } else if ("R10_COMPANY_REG_NUM".equals(normalizedKey)) {
-	                archivalEntity.setR10_COMPANY_REG_NUM(parseBigDecimal(value));
+	                archivalEntity.setR10_COMPANY_REG_NUM(value);
 	            } else if ("R10_BUSINEES_PHY_ADDRESS".equals(normalizedKey)) {
 	                archivalEntity.setR10_BUSINEES_PHY_ADDRESS(value);
 	            } else if ("R10_POSTAL_ADDRESS".equals(normalizedKey)) {
@@ -4101,11 +4124,11 @@ public class BRRS_BDISB2_ReportService {
 
 	            // ======================= R11 =======================
 	            else if ("R11_BANK_SPEC_SINGLE_CUST_REC_NUM".equals(normalizedKey)) {
-	                archivalEntity.setR11_BANK_SPEC_SINGLE_CUST_REC_NUM(parseBigDecimal(value));
+		            archivalEntity.setR11_BANK_SPEC_SINGLE_CUST_REC_NUM(value);
 	            } else if ("R11_COMPANY_NAME".equals(normalizedKey)) {
 	                archivalEntity.setR11_COMPANY_NAME(value);
 	            } else if ("R11_COMPANY_REG_NUM".equals(normalizedKey)) {
-	                archivalEntity.setR11_COMPANY_REG_NUM(parseBigDecimal(value));
+	                archivalEntity.setR11_COMPANY_REG_NUM(value);
 	            } else if ("R11_BUSINEES_PHY_ADDRESS".equals(normalizedKey)) {
 	                archivalEntity.setR11_BUSINEES_PHY_ADDRESS(value);
 	            } else if ("R11_POSTAL_ADDRESS".equals(normalizedKey)) {
@@ -4138,11 +4161,11 @@ public class BRRS_BDISB2_ReportService {
 
 	            // ======================= R12 =======================
 	            else if ("R12_BANK_SPEC_SINGLE_CUST_REC_NUM".equals(normalizedKey)) {
-	                archivalEntity.setR12_BANK_SPEC_SINGLE_CUST_REC_NUM(parseBigDecimal(value));
+		            archivalEntity.setR12_BANK_SPEC_SINGLE_CUST_REC_NUM(value);
 	            } else if ("R12_COMPANY_NAME".equals(normalizedKey)) {
 	                archivalEntity.setR12_COMPANY_NAME(value);
 	            } else if ("R12_COMPANY_REG_NUM".equals(normalizedKey)) {
-	                archivalEntity.setR12_COMPANY_REG_NUM(parseBigDecimal(value));
+	                archivalEntity.setR12_COMPANY_REG_NUM(value);
 	            } else if ("R12_BUSINEES_PHY_ADDRESS".equals(normalizedKey)) {
 	                archivalEntity.setR12_BUSINEES_PHY_ADDRESS(value);
 	            } else if ("R12_POSTAL_ADDRESS".equals(normalizedKey)) {
@@ -4340,8 +4363,9 @@ public class BRRS_BDISB2_ReportService {
 					if (cellA == null)
 						cellA = row.createCell(0);
 					originalStyle = cellA.getCellStyle();
+					// ✅ Handle String value
 					if (record1.getR6_BANK_SPEC_SINGLE_CUST_REC_NUM() != null)
-						cellA.setCellValue(record1.getR6_BANK_SPEC_SINGLE_CUST_REC_NUM().doubleValue());
+						cellA.setCellValue(record1.getR6_BANK_SPEC_SINGLE_CUST_REC_NUM()); // String directly
 					else
 						cellA.setCellValue("");
 					cellA.setCellStyle(originalStyle);
@@ -4365,12 +4389,13 @@ public class BRRS_BDISB2_ReportService {
 					if (cellC == null)
 						cellC = row.createCell(2);
 					originalStyle = cellC.getCellStyle();
+					// ✅ Handle String value
 					if (record1.getR6_COMPANY_REG_NUM() != null)
-						cellC.setCellValue(record1.getR6_COMPANY_REG_NUM().doubleValue());
+						cellC.setCellValue(record1.getR6_COMPANY_REG_NUM()); // String directly
 					else
 						cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-
+					
 					// ===== R6 / Col D =====
 
 					cellD = row.getCell(3);
@@ -4557,8 +4582,9 @@ public class BRRS_BDISB2_ReportService {
 					if (cellA == null)
 						cellA = row.createCell(0);
 					originalStyle = cellA.getCellStyle();
+					// ✅ Handle String value
 					if (record1.getR7_BANK_SPEC_SINGLE_CUST_REC_NUM() != null)
-						cellA.setCellValue(record1.getR7_BANK_SPEC_SINGLE_CUST_REC_NUM().doubleValue());
+						cellA.setCellValue(record1.getR7_BANK_SPEC_SINGLE_CUST_REC_NUM()); // String directly
 					else
 						cellA.setCellValue("");
 					cellA.setCellStyle(originalStyle);
@@ -4582,8 +4608,9 @@ public class BRRS_BDISB2_ReportService {
 					if (cellC == null)
 						cellC = row.createCell(2);
 					originalStyle = cellC.getCellStyle();
+					// ✅ Handle String value
 					if (record1.getR7_COMPANY_REG_NUM() != null)
-						cellC.setCellValue(record1.getR7_COMPANY_REG_NUM().doubleValue());
+						cellC.setCellValue(record1.getR7_COMPANY_REG_NUM()); // String directly
 					else
 						cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
@@ -4774,8 +4801,9 @@ public class BRRS_BDISB2_ReportService {
 					if (cellA == null)
 						cellA = row.createCell(0);
 					originalStyle = cellA.getCellStyle();
+					// ✅ Handle String value
 					if (record1.getR8_BANK_SPEC_SINGLE_CUST_REC_NUM() != null)
-						cellA.setCellValue(record1.getR8_BANK_SPEC_SINGLE_CUST_REC_NUM().doubleValue());
+						cellA.setCellValue(record1.getR8_BANK_SPEC_SINGLE_CUST_REC_NUM()); // String directly
 					else
 						cellA.setCellValue("");
 					cellA.setCellStyle(originalStyle);
@@ -4799,8 +4827,9 @@ public class BRRS_BDISB2_ReportService {
 					if (cellC == null)
 						cellC = row.createCell(2);
 					originalStyle = cellC.getCellStyle();
+					// ✅ Handle String value
 					if (record1.getR8_COMPANY_REG_NUM() != null)
-						cellC.setCellValue(record1.getR8_COMPANY_REG_NUM().doubleValue());
+						cellC.setCellValue(record1.getR8_COMPANY_REG_NUM()); // String directly
 					else
 						cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
@@ -4991,8 +5020,9 @@ public class BRRS_BDISB2_ReportService {
 					if (cellA == null)
 						cellA = row.createCell(0);
 					originalStyle = cellA.getCellStyle();
+					// ✅ Handle String value
 					if (record1.getR9_BANK_SPEC_SINGLE_CUST_REC_NUM() != null)
-						cellA.setCellValue(record1.getR9_BANK_SPEC_SINGLE_CUST_REC_NUM().doubleValue());
+						cellA.setCellValue(record1.getR9_BANK_SPEC_SINGLE_CUST_REC_NUM()); // String directly
 					else
 						cellA.setCellValue("");
 					cellA.setCellStyle(originalStyle);
@@ -5016,8 +5046,9 @@ public class BRRS_BDISB2_ReportService {
 					if (cellC == null)
 						cellC = row.createCell(2);
 					originalStyle = cellC.getCellStyle();
+					// ✅ Handle String value
 					if (record1.getR9_COMPANY_REG_NUM() != null)
-						cellC.setCellValue(record1.getR9_COMPANY_REG_NUM().doubleValue());
+						cellC.setCellValue(record1.getR9_COMPANY_REG_NUM()); // String directly
 					else
 						cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
@@ -5208,8 +5239,9 @@ public class BRRS_BDISB2_ReportService {
 					if (cellA == null)
 						cellA = row.createCell(0);
 					originalStyle = cellA.getCellStyle();
+					// ✅ Handle String value
 					if (record1.getR10_BANK_SPEC_SINGLE_CUST_REC_NUM() != null)
-						cellA.setCellValue(record1.getR10_BANK_SPEC_SINGLE_CUST_REC_NUM().doubleValue());
+						cellA.setCellValue(record1.getR10_BANK_SPEC_SINGLE_CUST_REC_NUM()); // String directly
 					else
 						cellA.setCellValue("");
 					cellA.setCellStyle(originalStyle);
@@ -5233,8 +5265,9 @@ public class BRRS_BDISB2_ReportService {
 					if (cellC == null)
 						cellC = row.createCell(2);
 					originalStyle = cellC.getCellStyle();
+					// ✅ Handle String value
 					if (record1.getR10_COMPANY_REG_NUM() != null)
-						cellC.setCellValue(record1.getR10_COMPANY_REG_NUM().doubleValue());
+						cellC.setCellValue(record1.getR10_COMPANY_REG_NUM()); // String directly
 					else
 						cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
@@ -5425,8 +5458,9 @@ public class BRRS_BDISB2_ReportService {
 					if (cellA == null)
 						cellA = row.createCell(0);
 					originalStyle = cellA.getCellStyle();
+					// ✅ Handle String value
 					if (record1.getR11_BANK_SPEC_SINGLE_CUST_REC_NUM() != null)
-						cellA.setCellValue(record1.getR11_BANK_SPEC_SINGLE_CUST_REC_NUM().doubleValue());
+						cellA.setCellValue(record1.getR11_BANK_SPEC_SINGLE_CUST_REC_NUM()); // String directly
 					else
 						cellA.setCellValue("");
 					cellA.setCellStyle(originalStyle);
@@ -5450,8 +5484,9 @@ public class BRRS_BDISB2_ReportService {
 					if (cellC == null)
 						cellC = row.createCell(2);
 					originalStyle = cellC.getCellStyle();
+					// ✅ Handle String value
 					if (record1.getR11_COMPANY_REG_NUM() != null)
-						cellC.setCellValue(record1.getR11_COMPANY_REG_NUM().doubleValue());
+						cellC.setCellValue(record1.getR11_COMPANY_REG_NUM()); // String directly
 					else
 						cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
@@ -5642,8 +5677,9 @@ public class BRRS_BDISB2_ReportService {
 					if (cellA == null)
 						cellA = row.createCell(0);
 					originalStyle = cellA.getCellStyle();
+					// ✅ Handle String value
 					if (record1.getR12_BANK_SPEC_SINGLE_CUST_REC_NUM() != null)
-						cellA.setCellValue(record1.getR12_BANK_SPEC_SINGLE_CUST_REC_NUM().doubleValue());
+						cellA.setCellValue(record1.getR12_BANK_SPEC_SINGLE_CUST_REC_NUM()); // String directly
 					else
 						cellA.setCellValue("");
 					cellA.setCellStyle(originalStyle);
@@ -5667,8 +5703,9 @@ public class BRRS_BDISB2_ReportService {
 					if (cellC == null)
 						cellC = row.createCell(2);
 					originalStyle = cellC.getCellStyle();
+					// ✅ Handle String value
 					if (record1.getR12_COMPANY_REG_NUM() != null)
-						cellC.setCellValue(record1.getR12_COMPANY_REG_NUM().doubleValue());
+						cellC.setCellValue(record1.getR12_COMPANY_REG_NUM()); // String directly
 					else
 						cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
@@ -5924,13 +5961,19 @@ balanceStyle.setBorderLeft(border);
 balanceStyle.setBorderRight(border);
 
 //Header row
+//String[] headers = {
+//"CUST ID", "ACCT NO", "ACCT NAME","BANK_SPEC_SINGLE_CUST_REC_NUM","COMPANY_NAME ","COMPANY_REG_NUM",
+//"BUSINEES_PHY_ADDRESS","POSTAL_ADDRESS","COUNTRY_OF_REG","COMPANY_EMAIL",
+//"COMPANY_LANDLINE","COMPANY_MOB_PHONE_NUM","PRODUCT_TYPE","ACCT_NUM","STATUS_OF_ACCT",
+//"ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT",
+//"ACCT_BRANCH",
+//"ACCT BALANCE IN PULA","CURRENCY_OF_ACCT","EXCHANGE_RATE", "REPORT LABEL", "REPORT ADDL CRITERIA1",
+//"REPORT_DATE"
+//};
 String[] headers = {
-"CUST ID", "ACCT NO", "ACCT NAME","BANK_SPEC_SINGLE_CUST_REC_NUM","COMPANY_NAME ","COMPANY_REG_NUM",
-"BUSINEES_PHY_ADDRESS","POSTAL_ADDRESS","COUNTRY_OF_REG","COMPANY_EMAIL",
-"COMPANY_LANDLINE","COMPANY_MOB_PHONE_NUM","PRODUCT_TYPE","ACCT_NUM","STATUS_OF_ACCT",
-"ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT",
-"ACCT_BRANCH",
-"ACCT BALANCE IN PULA","CURRENCY_OF_ACCT","EXCHANGE_RATE", "REPORT LABLE", "REPORT ADDL CRITERIA1",
+"COMPANY_NAME ","COMPANY_REG_NUM",
+"ACCT_NUM",
+"ACCT BALANCE IN PULA", "REPORT LABEL", "REPORT ADDL CRITERIA1",
 "REPORT_DATE"
 };
 
@@ -5939,7 +5982,7 @@ for (int i = 0; i < headers.length; i++) {
 Cell cell = headerRow.createCell(i);
 cell.setCellValue(headers[i]);
 
-if (i == 17) { // ACCT BALANCE
+if (i == 3) { // ACCT BALANCE
 cell.setCellStyle(rightAlignedHeaderStyle);
 } else {
 cell.setCellStyle(headerStyle);
@@ -5957,56 +6000,18 @@ int rowIndex = 1;
 for (BDISB2_Detail_Entity item : reportData) {
 XSSFRow row = sheet.createRow(rowIndex++);
 
-row.createCell(0).setCellValue(item.getCustId());
-row.createCell(1).setCellValue(item.getAcctNumber());
-row.createCell(2).setCellValue(item.getAcctName());
+row.createCell(0).setCellValue(item.getCOMPANY_NAME());
+row.createCell(1).setCellValue(item.getCOMPANY_REG_NUM());
 
-Cell bankSpecSingleCell = row.createCell(3);
-if (item.getBANK_SPEC_SINGLE_CUST_REC_NUM() != null) {
-	bankSpecSingleCell.setCellValue(item.getBANK_SPEC_SINGLE_CUST_REC_NUM().doubleValue());
+Cell bankSpecSingleCell = row.createCell(2);
+if (item.getACCT_NUM() != null) {
+	bankSpecSingleCell.setCellValue(item.getACCT_NUM().doubleValue());
 } else {
 	bankSpecSingleCell.setCellValue(0);
 }
 
-row.createCell(4).setCellValue(item.getCOMPANY_NAME());
-
-Cell comRegNumCell = row.createCell(5);
-if (item.getCOMPANY_REG_NUM() != null) {
-	comRegNumCell.setCellValue(item.getCOMPANY_REG_NUM().doubleValue());
-} else {
-	comRegNumCell.setCellValue(0);
-}
-
-row.createCell(6).setCellValue(item.getBUSINEES_PHY_ADDRESS());
-
-row.createCell(7).setCellValue(item.getPOSTAL_ADDRESS());
-
-row.createCell(8).setCellValue(item.getCOUNTRY_OF_REG());
-
-row.createCell(9).setCellValue(item.getCOMPANY_EMAIL());
-
-row.createCell(10).setCellValue(item.getCOMPANY_LANDLINE());
-
-row.createCell(11).setCellValue(item.getCOMPANY_MOB_PHONE_NUM());
-
-row.createCell(12).setCellValue(item.getPRODUCT_TYPE());
-
-Cell acctNumCell = row.createCell(13);
-if (item.getACCT_NUM() != null) {
-	acctNumCell.setCellValue(item.getACCT_NUM().doubleValue());
-} else {
-	acctNumCell.setCellValue(0);
-}
-
-row.createCell(14).setCellValue(item.getSTATUS_OF_ACCT());
-
-row.createCell(15).setCellValue(item.getACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT());
-
-row.createCell(16).setCellValue(item.getACCT_BRANCH());
-
-
 //ACCT BALANCE (right aligned, 3 decimal places)
-Cell balanceCell = row.createCell(17);
+Cell balanceCell = row.createCell(3);
 if (item.getACCT_BALANCE_PULA() != null) {
 balanceCell.setCellValue(item.getACCT_BALANCE_PULA().doubleValue());
 } else {
@@ -6014,25 +6019,15 @@ balanceCell.setCellValue(0);
 }
 balanceCell.setCellStyle(balanceStyle);
 
-row.createCell(18).setCellValue(item.getCURRENCY_OF_ACCT());
-
-Cell excRateCell = row.createCell(19);
-if (item.getEXCHANGE_RATE() != null) {
-	excRateCell.setCellValue(item.getEXCHANGE_RATE().doubleValue());
-} else {
-	excRateCell.setCellValue(0);
-}
-
-		row.createCell(20).setCellValue(item.getReportLable());
-		row.createCell(21).setCellValue(item.getReportAddlCriteria1());
-		row.createCell(22)
-				.setCellValue(item.getReportDate() != null
-						? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
-						: "");
+ row.createCell(4).setCellValue(item.getReportLabel());
+ row.createCell(5).setCellValue(item.getReportAddlCriteria1());
+ row.createCell(6)
+		.setCellValue(item.getReportDate() != null
+		? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate()): "");
 
 		// Apply data style for all other cells
-		for (int j = 0; j < 22; j++) {
-			if (j != 17) {
+		for (int j = 0; j < 6; j++) {
+			if (j != 3) {
 				row.getCell(j).setCellStyle(dataStyle);
 			}
 		}
@@ -6108,12 +6103,9 @@ balanceStyle.setBorderRight(border);
 
 //Header row
 String[] headers = {
-		"CUST ID", "ACCT NO", "ACCT NAME","BANK_SPEC_SINGLE_CUST_REC_NUM","COMPANY_NAME ","COMPANY_REG_NUM",
-		"BUSINEES_PHY_ADDRESS","POSTAL_ADDRESS","COUNTRY_OF_REG","COMPANY_EMAIL",
-		"COMPANY_LANDLINE","COMPANY_MOB_PHONE_NUM","PRODUCT_TYPE","ACCT_NUM","STATUS_OF_ACCT",
-		"ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT",
-		"ACCT_BRANCH",
-		"ACCT BALANCE IN PULA","CURRENCY_OF_ACCT","EXCHANGE_RATE", "REPORT LABLE", "REPORT ADDL CRITERIA1",
+		"COMPANY_NAME ","COMPANY_REG_NUM",
+		"ACCT_NUM",
+		"ACCT BALANCE IN PULA", "REPORT LABEL", "REPORT ADDL CRITERIA1",
 		"REPORT_DATE"
 };
 
@@ -6164,7 +6156,7 @@ balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
 
 //balanceCell.setCellStyle(balanceStyle);
 
-//row.createCell(4).setCellValue(item.getReportLable());
+//row.createCell(4).setCellValue(item.getReportLabel());
 //row.createCell(5).setCellValue(item.getReportAddlCriteria1());
 //row.createCell(6).setCellValue(
 //item.getReportDate() != null ?
@@ -6179,56 +6171,18 @@ balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
 //}
 //}
 //}
-row.createCell(0).setCellValue(item.getCustId());
-row.createCell(1).setCellValue(item.getAcctNumber());
-row.createCell(2).setCellValue(item.getAcctName());
+row.createCell(0).setCellValue(item.getCOMPANY_NAME());
+row.createCell(1).setCellValue(item.getCOMPANY_REG_NUM());
 
-Cell bankSpecSingleCell = row.createCell(3);
-if (item.getBANK_SPEC_SINGLE_CUST_REC_NUM() != null) {
-	bankSpecSingleCell.setCellValue(item.getBANK_SPEC_SINGLE_CUST_REC_NUM().doubleValue());
+Cell bankSpecSingleCell = row.createCell(2);
+if (item.getACCT_NUM() != null) {
+	bankSpecSingleCell.setCellValue(item.getACCT_NUM().doubleValue());
 } else {
 	bankSpecSingleCell.setCellValue(0);
 }
 
-row.createCell(4).setCellValue(item.getCOMPANY_NAME());
-
-Cell comRegNumCell = row.createCell(5);
-if (item.getCOMPANY_REG_NUM() != null) {
-	comRegNumCell.setCellValue(item.getCOMPANY_REG_NUM().doubleValue());
-} else {
-	comRegNumCell.setCellValue(0);
-}
-
-row.createCell(6).setCellValue(item.getBUSINEES_PHY_ADDRESS());
-
-row.createCell(7).setCellValue(item.getPOSTAL_ADDRESS());
-
-row.createCell(8).setCellValue(item.getCOUNTRY_OF_REG());
-
-row.createCell(9).setCellValue(item.getCOMPANY_EMAIL());
-
-row.createCell(10).setCellValue(item.getCOMPANY_LANDLINE());
-
-row.createCell(11).setCellValue(item.getCOMPANY_MOB_PHONE_NUM());
-
-row.createCell(12).setCellValue(item.getPRODUCT_TYPE());
-
-Cell acctNumCell = row.createCell(13);
-if (item.getACCT_NUM() != null) {
-	acctNumCell.setCellValue(item.getACCT_NUM().doubleValue());
-} else {
-	acctNumCell.setCellValue(0);
-}
-
-row.createCell(14).setCellValue(item.getSTATUS_OF_ACCT());
-
-row.createCell(15).setCellValue(item.getACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT());
-
-row.createCell(16).setCellValue(item.getACCT_BRANCH());
-
-
 //ACCT BALANCE (right aligned, 3 decimal places)
-Cell balanceCell = row.createCell(17);
+Cell balanceCell = row.createCell(3);
 if (item.getACCT_BALANCE_PULA() != null) {
 balanceCell.setCellValue(item.getACCT_BALANCE_PULA().doubleValue());
 } else {
@@ -6236,24 +6190,14 @@ balanceCell.setCellValue(0);
 }
 balanceCell.setCellStyle(balanceStyle);
 
-row.createCell(18).setCellValue(item.getCURRENCY_OF_ACCT());
-
-Cell excRateCell = row.createCell(19);
-if (item.getEXCHANGE_RATE() != null) {
-	excRateCell.setCellValue(item.getEXCHANGE_RATE().doubleValue());
-} else {
-	excRateCell.setCellValue(0);
-}
-
-		row.createCell(20).setCellValue(item.getReportLable());
-		row.createCell(21).setCellValue(item.getReportAddlCriteria1());
-		row.createCell(22)
-				.setCellValue(item.getReportDate() != null
-						? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
-						: "");
+ row.createCell(4).setCellValue(item.getReportLabel());
+ row.createCell(5).setCellValue(item.getReportAddlCriteria1());
+ row.createCell(6)
+		.setCellValue(item.getReportDate() != null
+		? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate()): "");
 
 		// Apply data style for all other cells
-		for (int j = 0; j < 22; j++) {
+		for (int j = 0; j < 6; j++) {
 			if (j != 3) {
 				row.getCell(j).setCellStyle(dataStyle);
 			}

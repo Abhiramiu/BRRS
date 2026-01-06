@@ -42,9 +42,9 @@ public class BDISB2_Summary_Entity{
 	public String MODIFY_FLG;
 	public String DEL_FLG;
 
-	private BigDecimal R6_BANK_SPEC_SINGLE_CUST_REC_NUM;
+	private String R6_BANK_SPEC_SINGLE_CUST_REC_NUM;
 	private String R6_COMPANY_NAME;
-	private BigDecimal R6_COMPANY_REG_NUM;
+	private String R6_COMPANY_REG_NUM;
 	private String R6_BUSINEES_PHY_ADDRESS;
 	private String R6_POSTAL_ADDRESS;
 	private String R6_COUNTRY_OF_REG;
@@ -59,10 +59,9 @@ public class BDISB2_Summary_Entity{
 	private BigDecimal R6_ACCT_BALANCE_PULA;
 	private String R6_CURRENCY_OF_ACCT;
 	private BigDecimal R6_EXCHANGE_RATE;
-
-	private BigDecimal R7_BANK_SPEC_SINGLE_CUST_REC_NUM;
+	private String R7_BANK_SPEC_SINGLE_CUST_REC_NUM;
 	private String R7_COMPANY_NAME;
-	private BigDecimal R7_COMPANY_REG_NUM;
+	private String R7_COMPANY_REG_NUM;
 	private String R7_BUSINEES_PHY_ADDRESS;
 	private String R7_POSTAL_ADDRESS;
 	private String R7_COUNTRY_OF_REG;
@@ -77,10 +76,9 @@ public class BDISB2_Summary_Entity{
 	private BigDecimal R7_ACCT_BALANCE_PULA;
 	private String R7_CURRENCY_OF_ACCT;
 	private BigDecimal R7_EXCHANGE_RATE;
-
-	private BigDecimal R8_BANK_SPEC_SINGLE_CUST_REC_NUM;
+	private String R8_BANK_SPEC_SINGLE_CUST_REC_NUM;
 	private String R8_COMPANY_NAME;
-	private BigDecimal R8_COMPANY_REG_NUM;
+	private String R8_COMPANY_REG_NUM;
 	private String R8_BUSINEES_PHY_ADDRESS;
 	private String R8_POSTAL_ADDRESS;
 	private String R8_COUNTRY_OF_REG;
@@ -95,10 +93,9 @@ public class BDISB2_Summary_Entity{
 	private BigDecimal R8_ACCT_BALANCE_PULA;
 	private String R8_CURRENCY_OF_ACCT;
 	private BigDecimal R8_EXCHANGE_RATE;
-
-	private BigDecimal R9_BANK_SPEC_SINGLE_CUST_REC_NUM;
+	private String R9_BANK_SPEC_SINGLE_CUST_REC_NUM;
 	private String R9_COMPANY_NAME;
-	private BigDecimal R9_COMPANY_REG_NUM;
+	private String R9_COMPANY_REG_NUM;
 	private String R9_BUSINEES_PHY_ADDRESS;
 	private String R9_POSTAL_ADDRESS;
 	private String R9_COUNTRY_OF_REG;
@@ -113,10 +110,9 @@ public class BDISB2_Summary_Entity{
 	private BigDecimal R9_ACCT_BALANCE_PULA;
 	private String R9_CURRENCY_OF_ACCT;
 	private BigDecimal R9_EXCHANGE_RATE;
-
-	private BigDecimal R10_BANK_SPEC_SINGLE_CUST_REC_NUM;
+	private String R10_BANK_SPEC_SINGLE_CUST_REC_NUM;
 	private String R10_COMPANY_NAME;
-	private BigDecimal R10_COMPANY_REG_NUM;
+	private String R10_COMPANY_REG_NUM;
 	private String R10_BUSINEES_PHY_ADDRESS;
 	private String R10_POSTAL_ADDRESS;
 	private String R10_COUNTRY_OF_REG;
@@ -131,10 +127,9 @@ public class BDISB2_Summary_Entity{
 	private BigDecimal R10_ACCT_BALANCE_PULA;
 	private String R10_CURRENCY_OF_ACCT;
 	private BigDecimal R10_EXCHANGE_RATE;
-
-	private BigDecimal R11_BANK_SPEC_SINGLE_CUST_REC_NUM;
+	private String R11_BANK_SPEC_SINGLE_CUST_REC_NUM;
 	private String R11_COMPANY_NAME;
-	private BigDecimal R11_COMPANY_REG_NUM;
+	private String R11_COMPANY_REG_NUM;
 	private String R11_BUSINEES_PHY_ADDRESS;
 	private String R11_POSTAL_ADDRESS;
 	private String R11_COUNTRY_OF_REG;
@@ -149,10 +144,9 @@ public class BDISB2_Summary_Entity{
 	private BigDecimal R11_ACCT_BALANCE_PULA;
 	private String R11_CURRENCY_OF_ACCT;
 	private BigDecimal R11_EXCHANGE_RATE;
-
-	private BigDecimal R12_BANK_SPEC_SINGLE_CUST_REC_NUM;
+	private String R12_BANK_SPEC_SINGLE_CUST_REC_NUM;
 	private String R12_COMPANY_NAME;
-	private BigDecimal R12_COMPANY_REG_NUM;
+	private String R12_COMPANY_REG_NUM;
 	private String R12_BUSINEES_PHY_ADDRESS;
 	private String R12_POSTAL_ADDRESS;
 	private String R12_COUNTRY_OF_REG;
@@ -167,6 +161,7 @@ public class BDISB2_Summary_Entity{
 	private BigDecimal R12_ACCT_BALANCE_PULA;
 	private String R12_CURRENCY_OF_ACCT;
 	private BigDecimal R12_EXCHANGE_RATE;
+
 
 	
 
@@ -284,14 +279,16 @@ public class BDISB2_Summary_Entity{
 
 
 
-	public BigDecimal getR6_BANK_SPEC_SINGLE_CUST_REC_NUM() {
+
+
+	public String getR6_BANK_SPEC_SINGLE_CUST_REC_NUM() {
 		return R6_BANK_SPEC_SINGLE_CUST_REC_NUM;
 	}
 
 
 
 
-	public void setR6_BANK_SPEC_SINGLE_CUST_REC_NUM(BigDecimal r6_BANK_SPEC_SINGLE_CUST_REC_NUM) {
+	public void setR6_BANK_SPEC_SINGLE_CUST_REC_NUM(String r6_BANK_SPEC_SINGLE_CUST_REC_NUM) {
 		R6_BANK_SPEC_SINGLE_CUST_REC_NUM = r6_BANK_SPEC_SINGLE_CUST_REC_NUM;
 	}
 
@@ -312,14 +309,14 @@ public class BDISB2_Summary_Entity{
 
 
 
-	public BigDecimal getR6_COMPANY_REG_NUM() {
+	public String getR6_COMPANY_REG_NUM() {
 		return R6_COMPANY_REG_NUM;
 	}
 
 
 
 
-	public void setR6_COMPANY_REG_NUM(BigDecimal r6_COMPANY_REG_NUM) {
+	public void setR6_COMPANY_REG_NUM(String r6_COMPANY_REG_NUM) {
 		R6_COMPANY_REG_NUM = r6_COMPANY_REG_NUM;
 	}
 
@@ -523,14 +520,14 @@ public class BDISB2_Summary_Entity{
 
 
 
-	public BigDecimal getR7_BANK_SPEC_SINGLE_CUST_REC_NUM() {
+	public String getR7_BANK_SPEC_SINGLE_CUST_REC_NUM() {
 		return R7_BANK_SPEC_SINGLE_CUST_REC_NUM;
 	}
 
 
 
 
-	public void setR7_BANK_SPEC_SINGLE_CUST_REC_NUM(BigDecimal r7_BANK_SPEC_SINGLE_CUST_REC_NUM) {
+	public void setR7_BANK_SPEC_SINGLE_CUST_REC_NUM(String r7_BANK_SPEC_SINGLE_CUST_REC_NUM) {
 		R7_BANK_SPEC_SINGLE_CUST_REC_NUM = r7_BANK_SPEC_SINGLE_CUST_REC_NUM;
 	}
 
@@ -551,14 +548,14 @@ public class BDISB2_Summary_Entity{
 
 
 
-	public BigDecimal getR7_COMPANY_REG_NUM() {
+	public String getR7_COMPANY_REG_NUM() {
 		return R7_COMPANY_REG_NUM;
 	}
 
 
 
 
-	public void setR7_COMPANY_REG_NUM(BigDecimal r7_COMPANY_REG_NUM) {
+	public void setR7_COMPANY_REG_NUM(String r7_COMPANY_REG_NUM) {
 		R7_COMPANY_REG_NUM = r7_COMPANY_REG_NUM;
 	}
 
@@ -762,14 +759,14 @@ public class BDISB2_Summary_Entity{
 
 
 
-	public BigDecimal getR8_BANK_SPEC_SINGLE_CUST_REC_NUM() {
+	public String getR8_BANK_SPEC_SINGLE_CUST_REC_NUM() {
 		return R8_BANK_SPEC_SINGLE_CUST_REC_NUM;
 	}
 
 
 
 
-	public void setR8_BANK_SPEC_SINGLE_CUST_REC_NUM(BigDecimal r8_BANK_SPEC_SINGLE_CUST_REC_NUM) {
+	public void setR8_BANK_SPEC_SINGLE_CUST_REC_NUM(String r8_BANK_SPEC_SINGLE_CUST_REC_NUM) {
 		R8_BANK_SPEC_SINGLE_CUST_REC_NUM = r8_BANK_SPEC_SINGLE_CUST_REC_NUM;
 	}
 
@@ -790,14 +787,14 @@ public class BDISB2_Summary_Entity{
 
 
 
-	public BigDecimal getR8_COMPANY_REG_NUM() {
+	public String getR8_COMPANY_REG_NUM() {
 		return R8_COMPANY_REG_NUM;
 	}
 
 
 
 
-	public void setR8_COMPANY_REG_NUM(BigDecimal r8_COMPANY_REG_NUM) {
+	public void setR8_COMPANY_REG_NUM(String r8_COMPANY_REG_NUM) {
 		R8_COMPANY_REG_NUM = r8_COMPANY_REG_NUM;
 	}
 
@@ -1001,14 +998,14 @@ public class BDISB2_Summary_Entity{
 
 
 
-	public BigDecimal getR9_BANK_SPEC_SINGLE_CUST_REC_NUM() {
+	public String getR9_BANK_SPEC_SINGLE_CUST_REC_NUM() {
 		return R9_BANK_SPEC_SINGLE_CUST_REC_NUM;
 	}
 
 
 
 
-	public void setR9_BANK_SPEC_SINGLE_CUST_REC_NUM(BigDecimal r9_BANK_SPEC_SINGLE_CUST_REC_NUM) {
+	public void setR9_BANK_SPEC_SINGLE_CUST_REC_NUM(String r9_BANK_SPEC_SINGLE_CUST_REC_NUM) {
 		R9_BANK_SPEC_SINGLE_CUST_REC_NUM = r9_BANK_SPEC_SINGLE_CUST_REC_NUM;
 	}
 
@@ -1029,14 +1026,14 @@ public class BDISB2_Summary_Entity{
 
 
 
-	public BigDecimal getR9_COMPANY_REG_NUM() {
+	public String getR9_COMPANY_REG_NUM() {
 		return R9_COMPANY_REG_NUM;
 	}
 
 
 
 
-	public void setR9_COMPANY_REG_NUM(BigDecimal r9_COMPANY_REG_NUM) {
+	public void setR9_COMPANY_REG_NUM(String r9_COMPANY_REG_NUM) {
 		R9_COMPANY_REG_NUM = r9_COMPANY_REG_NUM;
 	}
 
@@ -1240,14 +1237,14 @@ public class BDISB2_Summary_Entity{
 
 
 
-	public BigDecimal getR10_BANK_SPEC_SINGLE_CUST_REC_NUM() {
+	public String getR10_BANK_SPEC_SINGLE_CUST_REC_NUM() {
 		return R10_BANK_SPEC_SINGLE_CUST_REC_NUM;
 	}
 
 
 
 
-	public void setR10_BANK_SPEC_SINGLE_CUST_REC_NUM(BigDecimal r10_BANK_SPEC_SINGLE_CUST_REC_NUM) {
+	public void setR10_BANK_SPEC_SINGLE_CUST_REC_NUM(String r10_BANK_SPEC_SINGLE_CUST_REC_NUM) {
 		R10_BANK_SPEC_SINGLE_CUST_REC_NUM = r10_BANK_SPEC_SINGLE_CUST_REC_NUM;
 	}
 
@@ -1268,14 +1265,14 @@ public class BDISB2_Summary_Entity{
 
 
 
-	public BigDecimal getR10_COMPANY_REG_NUM() {
+	public String getR10_COMPANY_REG_NUM() {
 		return R10_COMPANY_REG_NUM;
 	}
 
 
 
 
-	public void setR10_COMPANY_REG_NUM(BigDecimal r10_COMPANY_REG_NUM) {
+	public void setR10_COMPANY_REG_NUM(String r10_COMPANY_REG_NUM) {
 		R10_COMPANY_REG_NUM = r10_COMPANY_REG_NUM;
 	}
 
@@ -1479,14 +1476,14 @@ public class BDISB2_Summary_Entity{
 
 
 
-	public BigDecimal getR11_BANK_SPEC_SINGLE_CUST_REC_NUM() {
+	public String getR11_BANK_SPEC_SINGLE_CUST_REC_NUM() {
 		return R11_BANK_SPEC_SINGLE_CUST_REC_NUM;
 	}
 
 
 
 
-	public void setR11_BANK_SPEC_SINGLE_CUST_REC_NUM(BigDecimal r11_BANK_SPEC_SINGLE_CUST_REC_NUM) {
+	public void setR11_BANK_SPEC_SINGLE_CUST_REC_NUM(String r11_BANK_SPEC_SINGLE_CUST_REC_NUM) {
 		R11_BANK_SPEC_SINGLE_CUST_REC_NUM = r11_BANK_SPEC_SINGLE_CUST_REC_NUM;
 	}
 
@@ -1507,14 +1504,14 @@ public class BDISB2_Summary_Entity{
 
 
 
-	public BigDecimal getR11_COMPANY_REG_NUM() {
+	public String getR11_COMPANY_REG_NUM() {
 		return R11_COMPANY_REG_NUM;
 	}
 
 
 
 
-	public void setR11_COMPANY_REG_NUM(BigDecimal r11_COMPANY_REG_NUM) {
+	public void setR11_COMPANY_REG_NUM(String r11_COMPANY_REG_NUM) {
 		R11_COMPANY_REG_NUM = r11_COMPANY_REG_NUM;
 	}
 
@@ -1718,14 +1715,14 @@ public class BDISB2_Summary_Entity{
 
 
 
-	public BigDecimal getR12_BANK_SPEC_SINGLE_CUST_REC_NUM() {
+	public String getR12_BANK_SPEC_SINGLE_CUST_REC_NUM() {
 		return R12_BANK_SPEC_SINGLE_CUST_REC_NUM;
 	}
 
 
 
 
-	public void setR12_BANK_SPEC_SINGLE_CUST_REC_NUM(BigDecimal r12_BANK_SPEC_SINGLE_CUST_REC_NUM) {
+	public void setR12_BANK_SPEC_SINGLE_CUST_REC_NUM(String r12_BANK_SPEC_SINGLE_CUST_REC_NUM) {
 		R12_BANK_SPEC_SINGLE_CUST_REC_NUM = r12_BANK_SPEC_SINGLE_CUST_REC_NUM;
 	}
 
@@ -1746,14 +1743,14 @@ public class BDISB2_Summary_Entity{
 
 
 
-	public BigDecimal getR12_COMPANY_REG_NUM() {
+	public String getR12_COMPANY_REG_NUM() {
 		return R12_COMPANY_REG_NUM;
 	}
 
 
 
 
-	public void setR12_COMPANY_REG_NUM(BigDecimal r12_COMPANY_REG_NUM) {
+	public void setR12_COMPANY_REG_NUM(String r12_COMPANY_REG_NUM) {
 		R12_COMPANY_REG_NUM = r12_COMPANY_REG_NUM;
 	}
 
