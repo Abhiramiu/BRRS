@@ -1371,7 +1371,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 							<form action="#" method="POST" id="fileupload">
 								<div class="table-wrapper table-responsive scrollable-table-container "
 									style="border-right: 1px solid #ffffff;">
-									<table class="table table-bordered table-hover table-sm" style="width: 2550px;">
+									<table class="table table-bordered table-hover table-sm" style="width: 2520px;">
 										<thead class="thead-light">
 											<tr style="background-color: #b3b6b9">
 												<th
@@ -1458,8 +1458,9 @@ PURPOSE		: BRRS GL_SCH REPORT
 												<td colspan="10" style="text-align: left; font-weight: bold;"></td>
 											</tr>
 											<tr>
+												
 												<!--  C -->
-												<td style="text-align: left; font-weight: bold; padding-left: 20px; width: 400px;"
+												<td style="text-align: left; font-weight: bold; padding-left: 40px;width: 400px;"
 													th:text="${report?.R11_PRODUCT ?: ''}"></td>
 												<!--  D -->
 												<td th:text="${#numbers.formatDecimal(report.R11_FIG_BAL_BWP1, 0, 'COMMA', 0, 'POINT')}"
@@ -1531,7 +1532,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="text-align: left; font-weight: bold; padding-left: 20px; "
+												<td style="text-align: left; font-weight: bold; padding-left: 40px;"
 													th:text="${report?.R12_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -1610,7 +1611,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="text-align: left; font-weight: bold; padding-left: 20px; "
+												<td style="text-align: left; font-weight: bold; padding-left: 40px;"
 													th:text="${report?.R13_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -1686,7 +1687,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="text-align: left; font-weight: bold; padding-left: 20px; "
+												<td style="text-align: left; font-weight: bold; padding-left: 40px;"
 													th:text="${report?.R14_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -1762,7 +1763,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="text-align: left; font-weight: bold; padding-left: 20px; "
+												<td style="text-align: left; font-weight: bold; padding-left: 40px;"
 													th:text="${report?.R15_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -1838,7 +1839,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="text-align: left; font-weight: bold; padding-left: 20px; "
+												<td style="text-align: left; font-weight: bold; padding-left: 40px;"
 													th:text="${report?.R16_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -1914,7 +1915,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="text-align: left; font-weight: bold; padding-left: 20px; "
+												<td style="text-align: left; font-weight: bold; padding-left: 40px;"
 													th:text="${report?.R17_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -1990,7 +1991,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="text-align: left; font-weight: bold; padding-left: 20px; "
+												<td style="text-align: left; font-weight: bold; padding-left: 40px;"
 													th:text="${report?.R18_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -2066,7 +2067,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="text-align: left; font-weight: bold; padding-left: 20px; "
+												<td style="text-align: left; font-weight: bold; padding-left: 40px;"
 													th:text="${report?.R19_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -2142,7 +2143,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="text-align: left; font-weight: bold; padding-left: 20px; "
+												<td style="text-align: left; font-weight: bold; padding-left: 40px;"
 													th:text="${report?.R20_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -2218,7 +2219,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="text-align: left; font-weight: bold; padding-left: 20px; "
+												<td style="text-align: left; font-weight: bold; padding-left: 40px;"
 													th:text="${report?.R21_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -2294,7 +2295,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="text-align: left; font-weight: bold; padding-left: 20px; "
+												<td style="text-align: left; font-weight: bold; padding-left: 40px;"
 													th:text="${report?.R22_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -2370,7 +2371,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="text-align: left; font-weight: bold; padding-left: 20px; "
+												<td style="text-align: left; font-weight: bold; padding-left: 40px;"
 													th:text="${report?.R23_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -2446,7 +2447,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="text-align: left; font-weight: bold; padding-left: 20px; "
+												<td style="text-align: left; font-weight: bold; padding-left: 40px;"
 													th:text="${report?.R24_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -2754,61 +2755,104 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 
 									</table>
-									<table class="table table-bordered table-hover table-sm" style="width: 2550px;">
-										<thead class="thead-light">
-											<tr style="text-align: center;">
-												<th rowspan="2" colspan="2" style="text-align: center;">
-												</th>
-												<th colspan="2" style="vertical-align: top;">Figures as per Balance
-													Sheet</th>
-												<th colspan="2" style="vertical-align: top;">
-													Amount as per statement of Adjustment<br>(Add / Less)
-												</th>
-												<th colspan="2" style="vertical-align: top;">Net Amount</th>
-												<th colspan="2" style="vertical-align: top;">
-													Balances with Bank of Baroda and other Subsidiaries<br>
-													as per books of the subsidiary
-												</th>
-												<th colspan="2" style="vertical-align: top;">
-													Balances as per statement of A/c. of Bank of Baroda<br>
-													branches / other subsidiaries
-												</th>
-											</tr>
 
-											<tr>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-											</tr>
-											<th style="vertical-align: middle;" colspan="2">
-												SCHEDULE- 2<br>
-												RESERVES & SURPLUS
+
+									<table class="table table-bordered table-hover table-sm" style="width: 2520px;"
+										id="reports">
+										<tr style="background-color: #b3b6b9">
+											<th
+												style="text-align: center; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
 											</th>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
+
+											<th colspan="2"
+												style="text-align: center; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												Figures as per Balance Sheet</th>
+
+											<th colspan="2"
+												style="text-align: center; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												Amount as per statement of Adjustment (Add / Less)</th>
+
+											<th colspan="2"
+												style="text-align: center; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												Net Amount</th>
+											<th colspan="2"
+												style="text-align: center; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												Balances
+												with Bank of Baroda and other Subsidiaries as per books of
+												the subsidiary</th>
+
+											<th colspan="2"
+												style="text-align: center; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												Balances
+												as per statement of A/c. of Bank of Baroda branches / other
+												subsidiaries</th>
+										</tr>
+
+										<tr style="background-color: #b3b6b9">
+
+											<th
+												style="text-align: center; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+											</th>
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+										</tr>
 										</thead>
 										<tbody th:each="report: ${reportsummary}" style="font-family: Arial;">
-
+											<tr>
+												<td style="text-align: left; font-weight: bold;">SCHEDULE- 2</td>
+												<td colspan="10" style="text-align: left; font-weight: bold;"></td>
+											</tr>
+											<tr>
+												<td style="text-align: left; font-weight: bold;">RESERVES & SURPLUS</td>
+												<td colspan="10" style="text-align: left; font-weight: bold;"></td>
+											</tr>
 											<tr>
 												<!-- C -->
-
-												<td style="width: 10px;font-weight: bold;">I</td>
-												<td style="text-align: left; font-weight: bold; padding-left: 20px; width: 500px;"
+												<td style="text-align: left; font-weight: bold; padding-left: 40px; width: 500px;"
 													th:text="${report?.R34_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -2884,8 +2928,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="width: 10px;font-weight: bold;"></td>
-												<td style="text-align: left; padding-left: 20px; "
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R35_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -2961,8 +3004,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="width: 10px;font-weight: bold;"></td>
-												<td style="text-align: left; padding-left: 20px; "
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R36_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -3038,8 +3080,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="width: 10px;font-weight: bold;"></td>
-												<td style="text-align: left; padding-left: 20px; "
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R37_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -3115,8 +3156,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="width: 10px;font-weight: bold;">II</td>
-												<td style="text-align: left; font-weight: bold; padding-left: 20px; "
+												<td style="text-align: left; font-weight: bold; padding-left: 40px;"
 													th:text="${report?.R38_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -3192,8 +3232,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="width: 10px;font-weight: bold;"></td>
-												<td style="text-align: left; padding-left: 20px; "
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R39_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -3269,8 +3308,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="width: 10px;font-weight: bold;"></td>
-												<td style="text-align: left; padding-left: 20px; "
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R40_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -3346,8 +3384,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="width: 10px;font-weight: bold;"></td>
-												<td style="text-align: left; padding-left: 20px; "
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R41_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -3423,8 +3460,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="width: 10px;font-weight: bold;">III</td>
-												<td style="text-align: left; font-weight: bold; padding-left: 20px; "
+												<td style="text-align: left; font-weight: bold; padding-left: 40px;"
 													th:text="${report?.R42_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -3500,8 +3536,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="width: 10px;font-weight: bold;"></td>
-												<td style="text-align: left; padding-left: 20px; "
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R43_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -3577,8 +3612,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="width: 10px;font-weight: bold;"></td>
-												<td style="text-align: left; padding-left: 20px; "
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R44_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -3654,8 +3688,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="width: 10px;font-weight: bold;"></td>
-												<td style="text-align: left; padding-left: 20px; "
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R45_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -3731,8 +3764,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="width: 10px;font-weight: bold;">IV</td>
-												<td style="text-align: left; font-weight: bold; padding-left: 20px; "
+												<td style="text-align: left; font-weight: bold; padding-left: 40px;"
 													th:text="${report?.R46_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -3808,8 +3840,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="width: 10px;font-weight: bold;"></td>
-												<td style="text-align: left; padding-left: 20px; "
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R47_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -3885,8 +3916,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="width: 10px;font-weight: bold;"></td>
-												<td style="text-align: left; padding-left: 20px; "
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R48_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -3962,8 +3992,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="width: 10px;font-weight: bold;"></td>
-												<td style="text-align: left; padding-left: 20px; "
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R49_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -4039,8 +4068,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="width: 10px;font-weight: bold;">V</td>
-												<td style="text-align: left; font-weight: bold; padding-left: 20px; "
+												<td style="text-align: left; font-weight: bold; padding-left: 40px;"
 													th:text="${report?.R50_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -4116,8 +4144,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="width: 10px;font-weight: bold;"></td>
-												<td style="text-align: left; padding-left: 20px; "
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R51_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -4193,8 +4220,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="width: 10px;font-weight: bold;"></td>
-												<td style="text-align: left; padding-left: 20px; "
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R52_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -4270,8 +4296,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="width: 10px;font-weight: bold;"></td>
-												<td style="text-align: left; padding-left: 20px; "
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R53_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -4347,8 +4372,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="width: 10px;font-weight: bold;">VI</td>
-												<td style="text-align: left; font-weight: bold; padding-left: 20px; "
+												<td style="text-align: left; font-weight: bold; padding-left: 40px;"
 													th:text="${report?.R54_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -4424,8 +4448,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="width: 10px;font-weight: bold;"></td>
-												<td style="text-align: left; padding-left: 20px; "
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R55_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -4501,8 +4524,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="width: 10px;font-weight: bold;"></td>
-												<td style="text-align: left; padding-left: 20px; "
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R56_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -4578,8 +4600,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="width: 10px;font-weight: bold;"></td>
-												<td style="text-align: left; padding-left: 20px; "
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R57_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -4655,8 +4676,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="width: 10px;font-weight: bold;">VII</td>
-												<td style="text-align: left; font-weight: bold; padding-left: 20px; "
+												<td style="text-align: left; font-weight: bold; padding-left: 40px;"
 													th:text="${report?.R58_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -4732,8 +4752,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="width: 10px;font-weight: bold;"></td>
-												<td style="text-align: left; padding-left: 20px; "
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R59_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -4809,8 +4828,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="width: 10px;font-weight: bold;"></td>
-												<td style="text-align: left; padding-left: 20px; "
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R60_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -4886,8 +4904,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr th:each="report1 : ${reportsummary3}">
 												<!-- C -->
-												<td style="width: 10px;font-weight: bold;"></td>
-												<td style="text-align: left; "><input type="text"
+												<td style="text-align: left; padding-left: 40px;"><input type="text"
 														class="display-input Show_input" id="R61_PRODUCT"
 														name="R61_PRODUCT" th:value="'Deductions during the period'"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: left;"
@@ -5019,8 +5036,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="width: 10px;font-weight: bold;">VIII</td>
-												<td style="text-align: left; font-weight: bold; padding-left: 20px; "
+												<td style="text-align: left; font-weight: bold; padding-left: 40px;"
 													th:text="${report?.R62_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -5096,8 +5112,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="width: 10px;font-weight: bold;"></td>
-												<td style="text-align: left; padding-left: 20px; "
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R63_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -5173,8 +5188,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="width: 10px;font-weight: bold;"></td>
-												<td style="text-align: left; padding-left: 20px; "
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R64_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -5250,8 +5264,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="width: 10px;font-weight: bold;"></td>
-												<td style="text-align: left; padding-left: 20px; "
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R65_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -5327,8 +5340,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="width: 10px;font-weight: bold;"></td>
-												<td style="text-align: left; font-weight: bold; padding-left: 20px; "
+												<td style="text-align: left; font-weight: bold; padding-left: 40px;"
 													th:text="${report?.R66_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -5409,59 +5421,122 @@ PURPOSE		: BRRS GL_SCH REPORT
 									</table>
 
 
-									<table class="table table-bordered table-hover table-sm" style="width: 2550px;">
-										<thead class="thead-light">
-											<tr style="text-align: center;">
-												<th rowspan="2" colspan="2" style="text-align: center;">
-												</th>
-												<th colspan="2" style="vertical-align: top;">Figures as per Balance
-													Sheet</th>
-												<th colspan="2" style="vertical-align: top;">
-													Amount as per statement of Adjustment<br>(Add / Less)
-												</th>
-												<th colspan="2" style="vertical-align: top;">Net Amount</th>
-												<th colspan="2" style="vertical-align: top;">
-													Balances with Bank of Baroda and other Subsidiaries<br>
-													as per books of the subsidiary
-												</th>
-												<th colspan="2" style="vertical-align: top;">
-													Balances as per statement of A/c. of Bank of Baroda<br>
-													branches / other subsidiaries
-												</th>
-											</tr>
+									<table class="table table-bordered table-hover table-sm" style="width: 2520px;"
+										id="reports">
+										<tr style="background-color: #b3b6b9">
+											<th
+												style="text-align: center; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+											</th>
+
+											<th colspan="2"
+												style="text-align: center; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												Figures as per Balance Sheet</th>
+
+											<th colspan="2"
+												style="text-align: center; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												Amount as per statement of Adjustment (Add / Less)</th>
+
+											<th colspan="2"
+												style="text-align: center; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												Net Amount</th>
+											<th colspan="2"
+												style="text-align: center; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												Balances
+												with Bank of Baroda and other Subsidiaries as per books of
+												the subsidiary</th>
+
+											<th colspan="2"
+												style="text-align: center; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												Balances
+												as per statement of A/c. of Bank of Baroda branches / other
+												subsidiaries</th>
+
+
+
+										</tr>
+
+										<tr style="background-color: #b3b6b9">
+
+											<th
+												style="text-align: center; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+											</th>
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+
+
+
+										</tr>
+
+
+
+
+
+
+										</thead>
+
+
+										<tbody th:each="report: ${reportsummary}" style="font-family: Arial;">
+
+
 
 											<tr>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
+
+												<td style="text-align: left; font-weight: bold;">SCHEDULE
+													- 3 DEPOSITS</td>
+												<td colspan="10" style="text-align: left; font-weight: bold;"></td>
+
 											</tr>
-											<th style="vertical-align: middle;" colspan="2">
-												SCHEDULE
-												- 3 DEPOSITS
-											</th>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-										</thead>
-										<tbody th:each="report: ${reportsummary}" style="font-family: Arial;">
+
+
+
+
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px">A</td>
 												<td style="text-align: left; font-weight: bold;"
 													th:text="${report?.R71_PRODUCT ?: ''}"></td>
 
@@ -5538,8 +5613,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; padding-left: 20px; "
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R72_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -5614,9 +5688,8 @@ PURPOSE		: BRRS GL_SCH REPORT
 											</tr>
 
 											<tr>
-												<td style="font-weight: bold;width:10px"></td>
 												<!-- C -->
-												<td style="text-align: left; padding-left: 20px; "
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R73_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -5692,8 +5765,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; font-weight: bold; padding-left: 20px; "
+												<td style="text-align: left; font-weight: bold; padding-left: 40px;"
 													th:text="${report?.R74_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -5769,8 +5841,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; font-weight: bold; padding-left: 20px; "
+												<td style="text-align: left; font-weight: bold; padding-left: 40px;"
 													th:text="${report?.R75_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -5846,8 +5917,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; font-weight: bold; padding-left: 20px; "
+												<td style="text-align: left; font-weight: bold; padding-left: 40px;"
 													th:text="${report?.R76_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -5923,8 +5993,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; font-weight: bold; padding-left: 20px; "
+												<td style="text-align: left; font-weight: bold; padding-left: 40px;"
 													th:text="${report?.R77_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -6000,8 +6069,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; padding-left: 70px;"
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R78_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -6077,8 +6145,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; padding-left: 70px;"
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R79_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -6154,8 +6221,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; font-weight: bold; padding-left: 20px; "
+												<td style="text-align: left; font-weight: bold; padding-left: 40px;"
 													th:text="${report?.R80_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -6231,8 +6297,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; font-weight: bold; padding-left: 20px; "
+												<td style="text-align: left; font-weight: bold; padding-left: 40px;"
 													th:text="${report?.R81_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -6308,7 +6373,6 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px">B</td>
 												<td style="text-align: left; font-weight: bold;"
 													th:text="${report?.R82_PRODUCT ?: ''}"></td>
 
@@ -6385,8 +6449,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; font-weight: bold;"
+												<td style="text-align: left; font-weight: bold; padding-left: 40px;"
 													th:text="${report?.R83_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -6462,8 +6525,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; padding-left: 20px; "
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R84_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -6543,136 +6605,196 @@ PURPOSE		: BRRS GL_SCH REPORT
 									</table>
 
 
-									<table class="table table-bordered table-hover table-sm" style="width: 2550px;">
-										<thead class="thead-light">
-											<tr style="text-align: center;">
-												<th rowspan="2" colspan="2" style="text-align: center;">
-												</th>
-												<th colspan="2" style="vertical-align: top;">Figures as per Balance
-													Sheet</th>
-												<th colspan="2" style="vertical-align: top;">
-													Amount as per statement of Adjustment<br>(Add / Less)
-												</th>
-												<th colspan="2" style="vertical-align: top;">Net Amount</th>
-												<th colspan="2" style="vertical-align: top;">
-													Balances with Bank of Baroda and other Subsidiaries<br>
-													as per books of the subsidiary
-												</th>
-												<th colspan="2" style="vertical-align: top;">
-													Balances as per statement of A/c. of Bank of Baroda<br>
-													branches / other subsidiaries
-												</th>
-											</tr>
-
-											<tr>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-											</tr>
-											<th style="vertical-align: middle;" colspan="2">
-												SCHEDULE
-												- 4 BORROWINGS
+									<table class="table table-bordered table-hover table-sm" style="width: 2520px;"
+										id="reports">
+										<tr style="background-color: #b3b6b9">
+											<th
+												style="text-align: center; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
 											</th>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
+
+											<th colspan="2"
+												style="text-align: center; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												Figures as per Balance Sheet</th>
+
+											<th colspan="2"
+												style="text-align: center; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												Amount as per statement of Adjustment (Add / Less)</th>
+
+											<th colspan="2"
+												style="text-align: center; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												Net Amount</th>
+											<th colspan="2"
+												style="text-align: center; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												Balances
+												with Bank of Baroda and other Subsidiaries as per books of
+												the subsidiary</th>
+
+											<th colspan="2"
+												style="text-align: center; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												Balances
+												as per statement of A/c. of Bank of Baroda branches / other
+												subsidiaries</th>
+
+
+
+										</tr>
+
+										<tr style="background-color: #b3b6b9">
+
+											<th
+												style="text-align: center; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+											</th>
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+
+
+
+										</tr>
+
+
+
+
+
+
 										</thead>
+
+
 										<tbody th:each="report: ${reportsummary}" style="font-family: Arial;">
 
-											<!-- C -->
-											<td style="font-weight: bold;width: 10px;">I</td>
-											<td style="text-align: left; font-weight: bold; padding-left: 20px; width: 900px;"
-												th:text="${report?.R87_PRODUCT ?: ''}"></td>
 
-											<!-- D -->
-											<td th:text="${#numbers.formatDecimal(report.R87_FIG_BAL_BWP1, 0, 'COMMA', 0, 'POINT')}"
-												id="R87_FIG_BAL_BWP1" class="R87_FIG_BAL_BWP1"
-												style="text-align: right; width: 390px"
-												th:attr="RowId='R87', ColumnId='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<tr>
 
-											<!-- E -->
-											<td th:text="${#numbers.formatDecimal(report.R87_FIG_BAL_BWP2, 0, 'COMMA', 0, 'POINT')}"
-												id="R87_FIG_BAL_BWP2" class="R87_FIG_BAL_BWP2"
-												style="text-align: right; width: 390px"
-												th:attr="RowId='R87', ColumnId='C3'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
+												<td style="text-align: left; font-weight: bold;">SCHEDULE
+													- 4 BORROWINGS</td>
+												<td colspan="10" style="text-align: left; font-weight: bold;"></td>
 
-											<!-- F -->
-											<td th:text="${#numbers.formatDecimal(report.R87_AMT_ADJ_BWP1, 0, 'COMMA', 0, 'POINT')}"
-												id="R87_AMT_ADJ_BWP1" class="R87_AMT_ADJ_BWP1"
-												style="text-align: right; width: 390px"
-												th:attr="RowId='R87', ColumnId='C4'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
+											</tr>
 
-											<!-- G -->
-											<td th:text="${#numbers.formatDecimal(report.R87_AMT_ADJ_BWP2, 0, 'COMMA', 0, 'POINT')}"
-												id="R87_AMT_ADJ_BWP2" class="R87_AMT_ADJ_BWP2"
-												style="text-align: right; width: 390px"
-												th:attr="RowId='R87', ColumnId='C5'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
 
-											<!-- H -->
-											<td th:text="${#numbers.formatDecimal(report.R87_NET_AMT_BWP1, 0, 'COMMA', 0, 'POINT')}"
-												id="R87_NET_AMT_BWP1" class="R87_NET_AMT_BWP1"
-												style="text-align: right; width: 390px"
-												th:attr="RowId='R87', ColumnId='C6'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
 
-											<!-- I -->
-											<td th:text="${#numbers.formatDecimal(report.R87_NET_AMT_BWP2, 0, 'COMMA', 0, 'POINT')}"
-												id="R87_NET_AMT_BWP2" class="R87_NET_AMT_BWP2"
-												style="text-align: right; width: 390px"
-												th:attr="RowId='R87', ColumnId='C7'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<tr>
+												<!-- C -->
+												<td style="text-align: left; font-weight: bold; padding-left: 40px;"
+													th:text="${report?.R87_PRODUCT ?: ''}"></td>
 
-											<!-- J -->
-											<td th:text="${#numbers.formatDecimal(report.R87_BAL_SUB_BWP1, 0, 'COMMA', 0, 'POINT')}"
-												id="R87_BAL_SUB_BWP1" class="R87_BAL_SUB_BWP1"
-												style="text-align: right; width: 390px"
-												th:attr="RowId='R87', ColumnId='C8'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
+												<!-- D -->
+												<td th:text="${#numbers.formatDecimal(report.R87_FIG_BAL_BWP1, 0, 'COMMA', 0, 'POINT')}"
+													id="R87_FIG_BAL_BWP1" class="R87_FIG_BAL_BWP1"
+													style="text-align: right; width: 390px"
+													th:attr="RowId='R87', ColumnId='C2'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
 
-											<!-- K -->
-											<td th:text="${#numbers.formatDecimal(report.R87_BAL_SUB_BWP2, 0, 'COMMA', 0, 'POINT')}"
-												id="R87_BAL_SUB_BWP2" class="R87_BAL_SUB_BWP2"
-												style="text-align: right; width: 390px"
-												th:attr="RowId='R87', ColumnId='C9'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
+												<!-- E -->
+												<td th:text="${#numbers.formatDecimal(report.R87_FIG_BAL_BWP2, 0, 'COMMA', 0, 'POINT')}"
+													id="R87_FIG_BAL_BWP2" class="R87_FIG_BAL_BWP2"
+													style="text-align: right; width: 390px"
+													th:attr="RowId='R87', ColumnId='C3'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
 
-											<!-- L -->
-											<td th:text="${#numbers.formatDecimal(report.R87_BAL_ACT_SUB_BWP1, 0, 'COMMA', 0, 'POINT')}"
-												id="R87_BAL_ACT_SUB_BWP1" class="R87_BAL_ACT_SUB_BWP1"
-												style="text-align: right; width: 390px"
-												th:attr="RowId='R87', ColumnId='C10'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
+												<!-- F -->
+												<td th:text="${#numbers.formatDecimal(report.R87_AMT_ADJ_BWP1, 0, 'COMMA', 0, 'POINT')}"
+													id="R87_AMT_ADJ_BWP1" class="R87_AMT_ADJ_BWP1"
+													style="text-align: right; width: 390px"
+													th:attr="RowId='R87', ColumnId='C4'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
 
-											<!-- M -->
-											<td th:text="${#numbers.formatDecimal(report.R87_BAL_ACT_SUB_BWP2, 0, 'COMMA', 0, 'POINT')}"
-												id="R87_BAL_ACT_SUB_BWP2" class="R87_BAL_ACT_SUB_BWP2"
-												style="text-align: right; width: 390px"
-												th:attr="RowId='R87', ColumnId='C11'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
+												<!-- G -->
+												<td th:text="${#numbers.formatDecimal(report.R87_AMT_ADJ_BWP2, 0, 'COMMA', 0, 'POINT')}"
+													id="R87_AMT_ADJ_BWP2" class="R87_AMT_ADJ_BWP2"
+													style="text-align: right; width: 390px"
+													th:attr="RowId='R87', ColumnId='C5'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+
+												<!-- H -->
+												<td th:text="${#numbers.formatDecimal(report.R87_NET_AMT_BWP1, 0, 'COMMA', 0, 'POINT')}"
+													id="R87_NET_AMT_BWP1" class="R87_NET_AMT_BWP1"
+													style="text-align: right; width: 390px"
+													th:attr="RowId='R87', ColumnId='C6'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+
+												<!-- I -->
+												<td th:text="${#numbers.formatDecimal(report.R87_NET_AMT_BWP2, 0, 'COMMA', 0, 'POINT')}"
+													id="R87_NET_AMT_BWP2" class="R87_NET_AMT_BWP2"
+													style="text-align: right; width: 390px"
+													th:attr="RowId='R87', ColumnId='C7'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+
+												<!-- J -->
+												<td th:text="${#numbers.formatDecimal(report.R87_BAL_SUB_BWP1, 0, 'COMMA', 0, 'POINT')}"
+													id="R87_BAL_SUB_BWP1" class="R87_BAL_SUB_BWP1"
+													style="text-align: right; width: 390px"
+													th:attr="RowId='R87', ColumnId='C8'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+
+												<!-- K -->
+												<td th:text="${#numbers.formatDecimal(report.R87_BAL_SUB_BWP2, 0, 'COMMA', 0, 'POINT')}"
+													id="R87_BAL_SUB_BWP2" class="R87_BAL_SUB_BWP2"
+													style="text-align: right; width: 390px"
+													th:attr="RowId='R87', ColumnId='C9'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+
+												<!-- L -->
+												<td th:text="${#numbers.formatDecimal(report.R87_BAL_ACT_SUB_BWP1, 0, 'COMMA', 0, 'POINT')}"
+													id="R87_BAL_ACT_SUB_BWP1" class="R87_BAL_ACT_SUB_BWP1"
+													style="text-align: right; width: 390px"
+													th:attr="RowId='R87', ColumnId='C10'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+
+												<!-- M -->
+												<td th:text="${#numbers.formatDecimal(report.R87_BAL_ACT_SUB_BWP2, 0, 'COMMA', 0, 'POINT')}"
+													id="R87_BAL_ACT_SUB_BWP2" class="R87_BAL_ACT_SUB_BWP2"
+													style="text-align: right; width: 390px"
+													th:attr="RowId='R87', ColumnId='C11'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
 											</tr>
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; padding-left: 20px; "
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R88_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -6748,8 +6870,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; padding-left: 20px; "
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R89_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -6825,8 +6946,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; padding-left: 20px; "
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R90_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -6902,8 +7022,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;">II</td>
-												<td style="text-align: left; font-weight: bold; padding-left: 20px; "
+												<td style="text-align: left; font-weight: bold; padding-left: 40px;"
 													th:text="${report?.R91_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -6979,8 +7098,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; font-weight: bold; padding-left: 20px; "
+												<td style="text-align: left; font-weight: bold; padding-left: 40px;"
 													th:text="${report?.R92_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -7056,8 +7174,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; padding-left: 20px; "
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R93_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -7133,8 +7250,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; padding-left: 20px; "
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R94_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -7214,61 +7330,120 @@ PURPOSE		: BRRS GL_SCH REPORT
 									</table>
 
 
-									<table class="table table-bordered table-hover table-sm" style="width: 2550px;">
-										<thead class="thead-light">
-											<tr style="text-align: center;">
-												<th rowspan="2" colspan="2" style="text-align: center;">
-												</th>
-												<th colspan="2" style="vertical-align: top;">Figures as per Balance
-													Sheet</th>
-												<th colspan="2" style="vertical-align: top;">
-													Amount as per statement of Adjustment<br>(Add / Less)
-												</th>
-												<th colspan="2" style="vertical-align: top;">Net Amount</th>
-												<th colspan="2" style="vertical-align: top;">
-													Balances with Bank of Baroda and other Subsidiaries<br>
-													as per books of the subsidiary
-												</th>
-												<th colspan="2" style="vertical-align: top;">
-													Balances as per statement of A/c. of Bank of Baroda<br>
-													branches / other subsidiaries
-												</th>
-											</tr>
-
-											<tr>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-											</tr>
-											<th style="vertical-align: middle;" colspan="2">
-												SCHEDULE
-												- 5 <br>OTHER LIABILITIES <br> AND PROVISIONS
+									<table class="table table-bordered table-hover table-sm" style="width: 2520px;"
+										id="reports">
+										<tr style="background-color: #b3b6b9">
+											<th
+												style="text-align: center; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
 											</th>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
+
+											<th colspan="2"
+												style="text-align: center; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												Figures as per Balance Sheet</th>
+
+											<th colspan="2"
+												style="text-align: center; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												Amount as per statement of Adjustment (Add / Less)</th>
+
+											<th colspan="2"
+												style="text-align: center; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												Net Amount</th>
+											<th colspan="2"
+												style="text-align: center; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												Balances
+												with Bank of Baroda and other Subsidiaries as per books of
+												the subsidiary</th>
+
+											<th colspan="2"
+												style="text-align: center; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												Balances
+												as per statement of A/c. of Bank of Baroda branches / other
+												subsidiaries</th>
+
+
+
+										</tr>
+
+										<tr style="background-color: #b3b6b9">
+
+											<th
+												style="text-align: center; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+											</th>
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+
+
+
+										</tr>
+
+
+
+
+
+
 										</thead>
 
 
 										<tbody th:each="report: ${reportsummary}" style="font-family: Arial;">
+
+
+											<tr>
+
+												<td style="text-align: left; font-weight: bold;">SCHEDULE
+													- 5 <br>OTHER LIABILITIES <br> AND PROVISIONS
+												</td>
+
+												<td colspan="10" style="text-align: left; font-weight: bold;"></td>
+
+											</tr>
+
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px">I</td>
-												<td style="text-align: left; padding-left: 20px; width: 900px;"
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R102_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -7344,11 +7519,10 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr th:each="report1 : ${reportsummary3}">
 												<!-- C -->
-												<td style="font-weight: bold;width:10px">II</td>
-												<td style="text-align: left; "><input type="text"
+												<td style="text-align: left; padding-left: 40px;"><input type="text"
 														class="display-input Show_input" id="R103_PRODUCT"
 														name="R103_PRODUCT"
-														th:value="' Interoffice Adjustments(Net)'"
+														th:value="'II  Interoffice Adjustments(Net)'"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: left;"
 														readonly /></td>
 
@@ -7456,8 +7630,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px">III</td>
-												<td style="text-align: left; padding-left: 20px; "
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R104_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -7533,8 +7706,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px">IV</td>
-												<td style="text-align: left; padding-left: 20px; "
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R105_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -7610,8 +7782,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px">V</td>
-												<td style="text-align: left; padding-left: 20px; "
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R106_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -7687,8 +7858,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px">VI</td>
-												<td style="text-align: left; padding-left: 20px; "
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R107_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -7764,8 +7934,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; font-weight: bold; padding-left: 20px; "
+												<td style="text-align: left; font-weight: bold; padding-left: 40px;"
 													th:text="${report?.R108_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -7847,64 +8016,138 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 									</table>
 
-									<table class="table table-bordered table-hover table-sm" style="width: 2550px;">
-										<thead class="thead-light">
-											<tr style="text-align: center;">
-												<th rowspan="2" colspan="2" style="text-align: center;">
-												</th>
-												<th colspan="2" style="vertical-align: top;">Figures as per Balance
-													Sheet</th>
-												<th colspan="2" style="vertical-align: top;">
-													Amount as per statement of Adjustment<br>(Add / Less)
-												</th>
-												<th colspan="2" style="vertical-align: top;">Net Amount</th>
-												<th colspan="2" style="vertical-align: top;">
-													Balances with Bank of Baroda and other Subsidiaries<br>
-													as per books of the subsidiary
-												</th>
-												<th colspan="2" style="vertical-align: top;">
-													Balances as per statement of A/c. of Bank of Baroda<br>
-													branches / other subsidiaries
-												</th>
-											</tr>
 
-											<tr>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-											</tr>
-											<th style="vertical-align: middle;" colspan="2">
-												SCHEDULE
-												- 6 <br>CASH
-												AND BALANCES WITH <br>BANK
-												OF BOTSWANA
+									<table class="table table-bordered table-hover table-sm" style="width: 2520px;"
+										id="reports">
+										<tr style="background-color: #b3b6b9">
+											<th
+												style="text-align: center; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
 											</th>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
+
+											<th colspan="2"
+												style="text-align: center; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												Figures as per Balance Sheet</th>
+
+											<th colspan="2"
+												style="text-align: center; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												Amount as per statement of Adjustment (Add / Less)</th>
+
+											<th colspan="2"
+												style="text-align: center; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												Net Amount</th>
+											<th colspan="2"
+												style="text-align: center; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												Balances
+												with Bank of Baroda and other Subsidiaries as per books of
+												the subsidiary</th>
+
+											<th colspan="2"
+												style="text-align: center; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												Balances
+												as per statement of A/c. of Bank of Baroda branches / other
+												subsidiaries</th>
+
+
+
+										</tr>
+
+										<tr style="background-color: #b3b6b9">
+
+											<th
+												style="text-align: center; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+											</th>
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+
+
+
+										</tr>
+
+
+
+
+
+
 										</thead>
 
 
 										<tbody th:each="report: ${reportsummary1}" style="font-family: Arial;">
 
+
+											<tr>
+
+												<td style="text-align: left; font-weight: bold;">SCHEDULE
+													- 6</td>
+
+												<td colspan="10" style="text-align: left; font-weight: bold;"></td>
+
+											</tr>
+
+											<tr>
+
+												<td style="text-align: left; font-weight: bold;">CASH
+													AND BALANCES WITH</td>
+
+												<td colspan="10" style="text-align: left; font-weight: bold;"></td>
+
+											</tr>
+
+											<tr>
+
+												<td style="text-align: left; font-weight: bold;">BANK
+													OF BOTSWANA</td>
+
+												<td colspan="10" style="text-align: left; font-weight: bold;"></td>
+
+											</tr>
+
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px">I</td>
-												<td style="text-align: left; padding-left: 20px; "
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R113_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -7980,8 +8223,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px">II</td>
-												<td style="text-align: left; padding-left: 20px; "
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R114_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -8057,8 +8299,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; padding-left: 20px; "
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R115_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -8134,8 +8375,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; padding-left: 20px; "
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R116_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -8211,8 +8451,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; font-weight: bold; padding-left: 20px; "
+												<td style="text-align: left; font-weight: bold; padding-left: 40px;"
 													th:text="${report?.R117_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -8294,62 +8533,129 @@ PURPOSE		: BRRS GL_SCH REPORT
 									</table>
 
 
-									<table class="table table-bordered table-hover table-sm" style="width: 2550px;">
-										<thead class="thead-light">
-											<tr style="text-align: center;">
-												<th rowspan="2" colspan="2" style="text-align: center;">
-												</th>
-												<th colspan="2" style="vertical-align: top;">Figures as per Balance
-													Sheet</th>
-												<th colspan="2" style="vertical-align: top;">
-													Amount as per statement of Adjustment<br>(Add / Less)
-												</th>
-												<th colspan="2" style="vertical-align: top;">Net Amount</th>
-												<th colspan="2" style="vertical-align: top;">
-													Balances with Bank of Baroda and other Subsidiaries<br>
-													as per books of the subsidiary
-												</th>
-												<th colspan="2" style="vertical-align: top;">
-													Balances as per statement of A/c. of Bank of Baroda<br>
-													branches / other subsidiaries
-												</th>
-											</tr>
-
-											<tr>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-											</tr>
-											<th style="vertical-align: middle;" colspan="2">
-												SCHEDULE
-												- 7 <br> BALANCES
-												WITH BANKS AND <br>MONEY
-												AT CALL & SHORT<br> NOTICE
+									<table class="table table-bordered table-hover table-sm" style="width: 2520px;"
+										id="reports">
+										<tr style="background-color: #b3b6b9">
+											<th
+												style="text-align: center; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
 											</th>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
+
+											<th colspan="2"
+												style="text-align: center; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												Figures as per Balance Sheet</th>
+
+											<th colspan="2"
+												style="text-align: center; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												Amount as per statement of Adjustment (Add / Less)</th>
+
+											<th colspan="2"
+												style="text-align: center; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												Net Amount</th>
+											<th colspan="2"
+												style="text-align: center; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												Balances
+												with Bank of Baroda and other Subsidiaries as per books of
+												the subsidiary</th>
+
+											<th colspan="2"
+												style="text-align: center; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												Balances
+												as per statement of A/c. of Bank of Baroda branches / other
+												subsidiaries</th>
+
+
+
+										</tr>
+
+										<tr style="background-color: #b3b6b9">
+
+											<th
+												style="text-align: center; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+											</th>
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+										</tr>
 										</thead>
+
 
 										<tbody th:each="report: ${reportsummary1}" style="font-family: Arial;">
 
+
+											<tr>
+
+												<td style="text-align: left; font-weight: bold;">SCHEDULE
+													- 7</td>
+
+												<td colspan="10" style="text-align: left; font-weight: bold;"></td>
+
+											</tr>
+
+											<tr>
+
+												<td style="text-align: left; font-weight: bold;">BALANCES
+													WITH BANKS AND</td>
+
+												<td colspan="10" style="text-align: left; font-weight: bold;"></td>
+
+											</tr>
+
+
+											<tr>
+
+												<td style="text-align: left; font-weight: bold;">MONEY
+													AT CALL & SHORT<br> NOTICE
+												</td>
+
+												<td colspan="10" style="text-align: left; font-weight: bold;"></td>
+
+											</tr>
+
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px">I</td>
 												<td style="text-align: left; font-weight: bold;"
 													th:text="${report?.R127_PRODUCT ?: ''}"></td>
 
@@ -8426,9 +8732,8 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; padding-left: 20px;"
-													th:text="${report?.R128_PRODUCT ?: ''}">i)</td>
+												<td style="text-align: left; padding-left: 40px;"
+													th:text="${report?.R128_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
 												<td th:text="${#numbers.formatDecimal(report.R128_FIG_BAL_BWP1, 0, 'COMMA', 0, 'POINT')}"
@@ -8503,8 +8808,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; padding-left: 20px; "
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R129_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -8580,8 +8884,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr th:each="report1 : ${reportsummary3}">
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; "><input type="text"
+												<td style="text-align: left; padding-left: 40px;"><input type="text"
 														class="display-input Show_input" id="R130_PRODUCT"
 														name="R130_PRODUCT" th:value="'b)  in Other Deposit Accounts'"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: left;"
@@ -8691,8 +8994,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; font-weight: bold; padding-left: 20px; "
+												<td style="text-align: left; font-weight: bold; padding-left: 40px;"
 													th:text="${report?.R131_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -8768,8 +9070,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px">ii)</td>
-												<td style="text-align: left; padding-left: 20px;"
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R132_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -8845,8 +9146,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; padding-left: 20px; "
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R133_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -8922,8 +9222,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; padding-left: 20px; "
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R134_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -8999,8 +9298,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; font-weight: bold; padding-left: 20px; "
+												<td style="text-align: left; font-weight: bold; padding-left: 40px;"
 													th:text="${report?.R135_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -9076,8 +9374,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; font-weight: bold; padding-left: 20px; "
+												<td style="text-align: left; font-weight: bold; padding-left: 40px;"
 													th:text="${report?.R136_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -9153,8 +9450,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px">II</td>
-												<td style="text-align: left; font-weight: bold;"
+												<td style="text-align: left; font-weight: bold; padding-left: 40px;"
 													th:text="${report?.R137_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -9230,8 +9526,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; padding-left: 20px; "
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R138_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -9307,8 +9602,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr th:each="report1 : ${reportsummary3}">
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; "><input type="text"
+												<td style="text-align: left; padding-left: 40px;"><input type="text"
 														class="display-input Show_input" id="R139_PRODUCT"
 														name="R139_PRODUCT" th:value="'ii in Other Deposit Accounts'"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: left;"
@@ -9418,8 +9712,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; padding-left: 20px; "
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R140_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -9495,8 +9788,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; font-weight: bold; padding-left: 20px; "
+												<td style="text-align: left; font-weight: bold; padding-left: 40px;"
 													th:text="${report?.R141_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -9572,8 +9864,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; font-weight: bold; padding-left: 20px; "
+												<td style="text-align: left; font-weight: bold; padding-left: 40px;"
 													th:text="${report?.R142_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -9653,58 +9944,116 @@ PURPOSE		: BRRS GL_SCH REPORT
 									</table>
 
 
-									<table class="table table-bordered table-hover table-sm" style="width: 2550px;">
-										<thead class="thead-light">
-											<tr style="text-align: center;">
-												<th rowspan="2" colspan="2" style="text-align: center;">
-												</th>
-												<th colspan="2" style="vertical-align: top;">Figures as per Balance
-													Sheet</th>
-												<th colspan="2" style="vertical-align: top;">
-													Amount as per statement of Adjustment<br>(Add / Less)
-												</th>
-												<th colspan="2" style="vertical-align: top;">Net Amount</th>
-												<th colspan="2" style="vertical-align: top;">
-													Balances with Bank of Baroda and other Subsidiaries<br>
-													as per books of the subsidiary
-												</th>
-												<th colspan="2" style="vertical-align: top;">
-													Balances as per statement of A/c. of Bank of Baroda<br>
-													branches / other subsidiaries
-												</th>
-											</tr>
+									<table class="table table-bordered table-hover table-sm" style="width: 2520px;"
+										id="reports">
+										<th
+											style="text-align: center; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+										</th>
 
-											<tr>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-											</tr>
-											<th style="vertical-align: middle;" colspan="2">
-												SCHEDULE- 8
+										<th colspan="2"
+											style="text-align: center; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+											Figures as per Balance Sheet</th>
+
+										<th colspan="2"
+											style="text-align: center; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+											Amount as per statement of Adjustment (Add / Less)</th>
+
+										<th colspan="2"
+											style="text-align: center; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+											Net Amount</th>
+										<th colspan="2"
+											style="text-align: center; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+											Balances
+											with Bank of Baroda and other Subsidiaries as per books of
+											the subsidiary</th>
+
+										<th colspan="2"
+											style="text-align: center; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+											Balances
+											as per statement of A/c. of Bank of Baroda branches / other
+											subsidiaries</th>
+
+
+
+										</tr>
+
+										<tr style="background-color: #b3b6b9">
+
+											<th
+												style="text-align: center; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
 											</th>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+										</tr>
 										</thead>
 
+
 										<tbody th:each="report: ${reportsummary1}" style="font-family: Arial;">
+
+
+											<tr>
+
+												<td style="text-align: left; font-weight: bold;">SCHEDULE
+													- 8</td>
+
+												<td colspan="10" style="text-align: left; font-weight: bold;"></td>
+
+											</tr>
+
+											<tr>
+
+												<td style="text-align: left; font-weight: bold;">INVESTMENTS</td>
+
+												<td colspan="10" style="text-align: left; font-weight: bold;"></td>
+
+											</tr>
+
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px">I</td>
 												<td style="text-align: left; font-weight: bold;"
 													th:text="${report?.R149_PRODUCT ?: ''}"></td>
 
@@ -9783,8 +10132,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; padding-left: 20px; "
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R150_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -9860,8 +10208,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; padding-left: 20px; "
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R151_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -9937,8 +10284,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; padding-left: 20px; "
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R152_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -10014,8 +10360,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; padding-left: 20px; "
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R153_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -10091,8 +10436,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; padding-left: 20px; "
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R154_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -10168,8 +10512,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; padding-left: 20px; "
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R155_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -10245,8 +10588,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; font-weight: bold; padding-left: 20px; "
+												<td style="text-align: left; font-weight: bold; padding-left: 40px;"
 													th:text="${report?.R156_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -10322,7 +10664,6 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px">II</td>
 												<td style="text-align: left; font-weight: bold;"
 													th:text="${report?.R157_PRODUCT ?: ''}"></td>
 
@@ -10399,8 +10740,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; font-weight: bold; padding-left: 20px; "
+												<td style="text-align: left; font-weight: bold; padding-left: 40px;"
 													th:text="${report?.R158_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -10476,8 +10816,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; padding-left: 20px; "
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R159_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -10553,8 +10892,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; font-weight: bold; padding-left: 20px; "
+												<td style="text-align: left; font-weight: bold; padding-left: 40px;"
 													th:text="${report?.R160_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -10630,8 +10968,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; padding-left: 20px; "
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R161_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -10707,8 +11044,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; padding-left: 20px; "
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R162_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -10784,8 +11120,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; font-weight: bold; padding-left: 20px; "
+												<td style="text-align: left; font-weight: bold; padding-left: 40px;"
 													th:text="${report?.R163_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -10861,8 +11196,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; font-weight: bold; padding-left: 20px; "
+												<td style="text-align: left; font-weight: bold; padding-left: 40px;"
 													th:text="${report?.R164_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -10938,8 +11272,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; font-weight: bold; padding-left: 20px; "
+												<td style="text-align: left; font-weight: bold; padding-left: 40px;"
 													th:text="${report?.R165_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -11015,7 +11348,6 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px">III</td>
 												<td style="text-align: left; font-weight: bold;"
 													th:text="${report?.R166_PRODUCT ?: ''}"></td>
 
@@ -11092,8 +11424,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; padding-left: 20px; "
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R167_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -11169,8 +11500,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; padding-left: 20px; "
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R168_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -11246,8 +11576,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; padding-left: 20px; "
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R169_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -11323,8 +11652,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; font-weight: bold; padding-left: 20px; "
+												<td style="text-align: left; font-weight: bold; padding-left: 40px;"
 													th:text="${report?.R170_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -11400,7 +11728,6 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px">IV</td>
 												<td style="text-align: left; font-weight: bold;"
 													th:text="${report?.R171_PRODUCT ?: ''}"></td>
 
@@ -11477,8 +11804,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; padding-left: 20px; "
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R172_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -11554,8 +11880,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; padding-left: 20px; "
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R173_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -11631,8 +11956,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; padding-left: 20px; "
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R174_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -11709,61 +12033,111 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 										</tbody>
 									</table>
-									<table class="table table-bordered table-hover table-sm" style="width: 2550px;">
-										<thead class="thead-light">
-											<tr style="text-align: center;">
-												<th rowspan="2" colspan="2" style="text-align: center;">
-												</th>
-												<th colspan="2" style="vertical-align: top;">Figures as per Balance
-													Sheet</th>
-												<th colspan="2" style="vertical-align: top;">
-													Amount as per statement of Adjustment<br>(Add / Less)
-												</th>
-												<th colspan="2" style="vertical-align: top;">Net Amount</th>
-												<th colspan="2" style="vertical-align: top;">
-													Balances with Bank of Baroda and other Subsidiaries<br>
-													as per books of the subsidiary
-												</th>
-												<th colspan="2" style="vertical-align: top;">
-													Balances as per statement of A/c. of Bank of Baroda<br>
-													branches / other subsidiaries
-												</th>
-											</tr>
-
-											<tr>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-											</tr>
-											<th style="vertical-align: middle;" colspan="2">
-												SCHEDULE
-												- 9 ADVANCES
+									<table class="table table-bordered table-hover table-sm" style="width: 2520px;"
+										id="reports">
+										<tr style="background-color: #b3b6b9">
+											<th
+												style="text-align: center; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
 											</th>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
+
+											<th colspan="2"
+												style="text-align: center; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												Figures as per Balance Sheet</th>
+
+											<th colspan="2"
+												style="text-align: center; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												Amount as per statement of Adjustment (Add / Less)</th>
+
+											<th colspan="2"
+												style="text-align: center; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												Net Amount</th>
+											<th colspan="2"
+												style="text-align: center; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												Balances
+												with Bank of Baroda and other Subsidiaries as per books of
+												the subsidiary</th>
+
+											<th colspan="2"
+												style="text-align: center; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												Balances
+												as per statement of A/c. of Bank of Baroda branches / other
+												subsidiaries</th>
+
+
+
+										</tr>
+
+										<tr style="background-color: #b3b6b9">
+
+											<th
+												style="text-align: center; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+											</th>
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+										</tr>
 										</thead>
+
+
 										<tbody th:each="report: ${reportsummary1}" style="font-family: Arial;">
 
 
 											<tr>
+
+												<td style="text-align: left; font-weight: bold;">SCHEDULE
+													- 9 ADVANCES</td>
+
+												<td colspan="10" style="text-align: left; font-weight: bold;"></td>
+
+											</tr>
+
+
+											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; font-weight: bold; padding-left: 20px; "
+												<td style="text-align: left; font-weight: bold; padding-left: 40px;"
 													th:text="${report?.R180_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -11839,8 +12213,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px">A</td>
-												<td style="text-align: left; "
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R181_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -11916,8 +12289,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left;"
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R182_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -11993,8 +12365,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; "
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R183_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -12070,8 +12441,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; font-weight: bold;"
+												<td style="text-align: left; font-weight: bold; padding-left: 40px;"
 													th:text="${report?.R184_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -12147,8 +12517,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; font-weight: bold;"
+												<td style="text-align: left; font-weight: bold; padding-left: 40px;"
 													th:text="${report?.R185_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -12224,8 +12593,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px">B</td>
-												<td style="text-align: left; "
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R186_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -12301,8 +12669,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left;"
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R187_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -12378,8 +12745,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left;"
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R188_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -12455,8 +12821,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; font-weight: bold;"
+												<td style="text-align: left; font-weight: bold; padding-left: 40px;"
 													th:text="${report?.R189_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -12532,8 +12897,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; font-weight: bold;"
+												<td style="text-align: left; font-weight: bold; padding-left: 40px;"
 													th:text="${report?.R190_PRODUCT ?: ''}">9A & 9B to
 													tally</td>
 
@@ -12610,9 +12974,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px">C</td>
-												
-												<td style="text-align: left;"
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R191_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -12688,8 +13050,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left;"
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R192_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -12765,8 +13126,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left;"
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R193_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -12842,8 +13202,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; "
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R194_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -12919,8 +13278,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left;"
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R195_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -12996,8 +13354,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; "
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R196_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -13073,8 +13430,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; "
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R197_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -13150,8 +13506,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; "
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R198_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -13227,8 +13582,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px;"></td>
-												<td style="text-align: left;padding-left: 20px;"
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R199_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -13304,8 +13658,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left;padding-left: 20px;"
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R200_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -13381,8 +13734,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px;"></td>
-												<td style="text-align: left;padding-left: 20px;"
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R201_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -13458,8 +13810,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; font-weight: bold;"
+												<td style="text-align: left; font-weight: bold; padding-left: 40px;"
 													th:text="${report?.R202_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -13540,60 +13891,114 @@ PURPOSE		: BRRS GL_SCH REPORT
 									</table>
 
 
-									<table class="table table-bordered table-hover table-sm" style="width: 2550px;">
-										<thead class="thead-light">
-											<tr style="text-align: center;">
-												<th rowspan="2" colspan="2" style="text-align: center;">
-												</th>
-												<th colspan="2" style="vertical-align: top;">Figures as per Balance
-													Sheet</th>
-												<th colspan="2" style="vertical-align: top;">
-													Amount as per statement of Adjustment<br>(Add / Less)
-												</th>
-												<th colspan="2" style="vertical-align: top;">Net Amount</th>
-												<th colspan="2" style="vertical-align: top;">
-													Balances with Bank of Baroda and other Subsidiaries<br>
-													as per books of the subsidiary
-												</th>
-												<th colspan="2" style="vertical-align: top;">
-													Balances as per statement of A/c. of Bank of Baroda<br>
-													branches / other subsidiaries
-												</th>
-											</tr>
+									<table class="table table-bordered table-hover table-sm" style="width: 2520px;"
+										id="reports">
+
+										<tr style="background-color: #b3b6b9">
+											<th
+												style="text-align: center; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+											</th>
+
+											<th colspan="2"
+												style="text-align: center; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												Figures as per Balance Sheet</th>
+
+											<th colspan="2"
+												style="text-align: center; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												Amount as per statement of Adjustment (Add / Less)</th>
+
+											<th colspan="2"
+												style="text-align: center; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												Net Amount</th>
+											<th colspan="2"
+												style="text-align: center; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												Balances
+												with Bank of Baroda and other Subsidiaries as per books of
+												the subsidiary</th>
+
+											<th colspan="2"
+												style="text-align: center; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												Balances
+												as per statement of A/c. of Bank of Baroda branches / other
+												subsidiaries</th>
+
+
+
+										</tr>
+
+										<tr style="background-color: #b3b6b9">
+
+											<th
+												style="text-align: center; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+											</th>
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+										</tr>
+										</thead>
+
+
+										<tbody th:each="report: ${reportsummary2}" style="font-family: Arial;">
+
 
 											<tr>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
+
+												<td style="text-align: left; font-weight: bold;">SCHEDULE
+													- 10<br> FIXED ASSETS
+												</td>
+
+												<td colspan="10" style="text-align: left; font-weight: bold;"></td>
+
 											</tr>
-											<th style="vertical-align: middle;" colspan="2">
-												SCHEDULE
-												- 10<br> FIXED ASSETS
-											</th>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-										</thead>
-										<tbody th:each="report: ${reportsummary2}" style="font-family: Arial;">
+
+
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px">I</td>
-												<td style="text-align: left; font-weight: bold;"
+												<td style="text-align: left; font-weight: bold; padding-left: 40px;"
 													th:text="${report?.R209_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -13669,8 +14074,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; "
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R210_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -13746,8 +14150,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; "
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R211_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -13823,8 +14226,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; font-weight: bold;"
+												<td style="text-align: left; font-weight: bold; padding-left: 40px;"
 													th:text="${report?.R212_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -13900,8 +14302,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left;"
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R213_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -13977,8 +14378,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; font-weight: bold;"
+												<td style="text-align: left; font-weight: bold; padding-left: 40px;"
 													th:text="${report?.R214_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -14054,8 +14454,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; "
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R215_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -14131,8 +14530,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px">I A</td>
-												<td style="text-align: left; font-weight: bold; "
+												<td style="text-align: left; font-weight: bold; padding-left: 40px;"
 													th:text="${report?.R216_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -14208,8 +14606,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px">II</td>
-												<td style="text-align: left; font-weight: bold;"
+												<td style="text-align: left; font-weight: bold; padding-left: 40px;"
 													th:text="${report?.R217_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -14285,8 +14682,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left;"
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R218_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -14362,8 +14758,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; "
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R219_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -14439,8 +14834,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left;"
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R220_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -14516,8 +14910,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left;"
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R221_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -14593,8 +14986,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left;"
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R222_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -14670,8 +15062,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left;"
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R223_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -14747,8 +15138,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px">II  A</td>
-												<td style="text-align: left; font-weight: bold;"
+												<td style="text-align: left; font-weight: bold; padding-left: 40px;"
 													th:text="${report?.R224_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -14824,8 +15214,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left;"
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R225_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -14901,8 +15290,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left;"
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R226_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -14978,8 +15366,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; font-weight: bold;"
+												<td style="text-align: left; font-weight: bold; padding-left: 40px;"
 													th:text="${report?.R227_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -15055,8 +15442,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left;"
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R228_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -15132,8 +15518,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; font-weight: bold"
+												<td style="text-align: left; font-weight: bold; padding-left: 40px;"
 													th:text="${report?.R229_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -15209,8 +15594,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; "
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R230_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -15286,8 +15670,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; font-weight: bold; "
+												<td style="text-align: left; font-weight: bold; padding-left: 40px;"
 													th:text="${report?.R231_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -15363,8 +15746,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px">III</td>
-												<td style="text-align: left; font-weight: bold; "
+												<td style="text-align: left; font-weight: bold; padding-left: 40px;"
 													th:text="${report?.R232_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -15440,8 +15822,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; font-weight: bold;"
+												<td style="text-align: left; font-weight: bold; padding-left: 40px;"
 													th:text="${report?.R233_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -15520,63 +15901,114 @@ PURPOSE		: BRRS GL_SCH REPORT
 									</table>
 
 
-									<table class="table table-bordered table-hover table-sm" style="width: 2550px;">
-										<thead class="thead-light">
-											<tr style="text-align: center;">
-												<th rowspan="2" colspan="2" style="text-align: center;">
-												</th>
-												<th colspan="2" style="vertical-align: top;">Figures as per Balance
-													Sheet</th>
-												<th colspan="2" style="vertical-align: top;">
-													Amount as per statement of Adjustment<br>(Add / Less)
-												</th>
-												<th colspan="2" style="vertical-align: top;">Net Amount</th>
-												<th colspan="2" style="vertical-align: top;">
-													Balances with Bank of Baroda and other Subsidiaries<br>
-													as per books of the subsidiary
-												</th>
-												<th colspan="2" style="vertical-align: top;">
-													Balances as per statement of A/c. of Bank of Baroda<br>
-													branches / other subsidiaries
-												</th>
-											</tr>
-
-											<tr>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-											</tr>
-											<th style="vertical-align: middle;" colspan="2">
-												SCHEDULE
-												- 11 <br> OTHER ASSETS
+									<table class="table table-bordered table-hover table-sm" style="width: 2520px;"
+										id="reports">
+										<tr style="background-color: #b3b6b9">
+											<th
+												style="text-align: center; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
 											</th>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
+
+											<th colspan="2"
+												style="text-align: center; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												Figures as per Balance Sheet</th>
+
+											<th colspan="2"
+												style="text-align: center; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												Amount as per statement of Adjustment (Add / Less)</th>
+
+											<th colspan="2"
+												style="text-align: center; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												Net Amount</th>
+											<th colspan="2"
+												style="text-align: center; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												Balances
+												with Bank of Baroda and other Subsidiaries as per books of
+												the subsidiary</th>
+
+											<th colspan="2"
+												style="text-align: center; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												Balances
+												as per statement of A/c. of Bank of Baroda branches / other
+												subsidiaries</th>
+
+
+
+										</tr>
+
+										<tr style="background-color: #b3b6b9">
+
+											<th
+												style="text-align: center; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+											</th>
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+										</tr>
 										</thead>
 										<tbody th:each="report: ${reportsummary2}" style="font-family: Arial;">
 
+
+											<tr>
+
+												<td style="text-align: left; font-weight: bold;">SCHEDULE
+													- 11 <br> OTHER ASSETS
+												</td>
+
+												<td colspan="10" style="text-align: left; font-weight: bold;"></td>
+
+											</tr>
+
+
+
 											<tr th:each="report1 : ${reportsummary3}">
 												<!-- C -->
-												<td style="font-weight: bold;width:10px">I</td>
-												<td style="text-align: left; "><input type="text"
+												<td style="text-align: left; padding-left: 40px;"><input type="text"
 														class="display-input Show_input" id="R241_PRODUCT"
 														name="R241_PRODUCT"
-														th:value="' Inter-Office Adjustments (Net)'"
+														th:value="'I   Inter-Office Adjustments (Net)'"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: left;"
 														readonly /></td>
 
@@ -15685,8 +16117,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px">II</td>
-												<td style="text-align: left; "
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R242_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -15762,11 +16193,10 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr th:each="report1 : ${reportsummary3}">
 												<!-- C -->
-												<td style="font-weight: bold;width:10px">III</td>
-												<td style="text-align: left; "><input type="text"
+												<td style="text-align: left; padding-left: 40px;"><input type="text"
 														class="display-input Show_input" id="R243_PRODUCT"
 														name="R243_PRODUCT"
-														th:value="'Tax paid in advance/tax deducted at source'"
+														th:value="'III   Tax paid in advance/tax deducted at source'"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: left;"
 														readonly /></td>
 
@@ -15874,8 +16304,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px">IV</td>
-												<td style="text-align: left; "
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R244_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -15951,11 +16380,10 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr th:each="report1 : ${reportsummary3}">
 												<!-- C -->
-												<td style="font-weight: bold;width:10px">V</td>
-												<td style="text-align: left; "><input type="text"
+												<td style="text-align: left; padding-left: 40px;"><input type="text"
 														class="display-input Show_input" id="R245_PRODUCT"
 														name="R245_PRODUCT"
-														th:value="'Non-Banking assets acquired in satisfaction of claims'"
+														th:value="'V  Non-Banking assets acquired in satisfaction of claims'"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: left;"
 														readonly /></td>
 
@@ -16063,8 +16491,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px">VI</td>
-												<td style="text-align: left; "
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R246_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -16140,8 +16567,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px">VII</td>
-												<td style="text-align: left; "
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R247_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -16217,8 +16643,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; font-weight: bold;"
+												<td style="text-align: left; font-weight: bold; padding-left: 40px;"
 													th:text="${report?.R248_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -16296,60 +16721,109 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 										</tbody>
 									</table>
-									<table class="table table-bordered table-hover table-sm" style="width: 2550px;">
-										<thead class="thead-light">
-											<tr style="text-align: center;">
-												<th rowspan="2" colspan="2" style="text-align: center;">
-												</th>
-												<th colspan="2" style="vertical-align: top;">Figures as per Balance
-													Sheet</th>
-												<th colspan="2" style="vertical-align: top;">
-													Amount as per statement of Adjustment<br>(Add / Less)
-												</th>
-												<th colspan="2" style="vertical-align: top;">Net Amount</th>
-												<th colspan="2" style="vertical-align: top;">
-													Balances with Bank of Baroda and other Subsidiaries<br>
-													as per books of the subsidiary
-												</th>
-												<th colspan="2" style="vertical-align: top;">
-													Balances as per statement of A/c. of Bank of Baroda<br>
-													branches / other subsidiaries
-												</th>
-											</tr>
-
-											<tr>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-												<th style="text-align: right;">BWP</th>
-											</tr>
-											<th style="vertical-align: middle;" colspan="2">
-												SCHEDULE
-												- 12<br> CONTINGENT LIABILITIES
+									<table class="table table-bordered table-hover table-sm" style="width: 2520px;"
+										id="reports">
+										<tr style="background-color: #b3b6b9">
+											<th
+												style="text-align: center; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
 											</th>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
+
+											<th colspan="2"
+												style="text-align: center; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												Figures as per Balance Sheet</th>
+
+											<th colspan="2"
+												style="text-align: center; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												Amount as per statement of Adjustment (Add / Less)</th>
+
+											<th colspan="2"
+												style="text-align: center; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												Net Amount</th>
+											<th colspan="2"
+												style="text-align: center; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												Balances
+												with Bank of Baroda and other Subsidiaries as per books of
+												the subsidiary</th>
+
+											<th colspan="2"
+												style="text-align: center; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												Balances
+												as per statement of A/c. of Bank of Baroda branches / other
+												subsidiaries</th>
+
+
+
+										</tr>
+
+										<tr style="background-color: #b3b6b9">
+
+											<th
+												style="text-align: center; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+											</th>
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+
+											<th
+												style="text-align: right; background-color: #D8D8D8; padding: 10px; font-weight: bold; color: #000000;">
+												BWP
+											</th>
+										</tr>
 										</thead>
 										<tbody th:each="report: ${reportsummary2}" style="font-family: Arial;">
 
+
+											<tr>
+
+												<td style="text-align: left; font-weight: bold;">SCHEDULE
+													- 12<br> CONTINGENT LIABILITIES
+												</td>
+
+												<td colspan="10" style="text-align: left; font-weight: bold;"></td>
+
+											</tr>
+
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px">I</td>
-												<td style="text-align: left; "
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R252_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -16425,8 +16899,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px">II</td>
-												<td style="text-align: left; "
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R253_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -16502,8 +16975,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px">III</td>
-												<td style="text-align: left; "
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R254_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -16579,8 +17051,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px">IV</td>
-												<td style="text-align: left;"
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R255_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -16656,8 +17127,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; "
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R256_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -16733,8 +17203,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; "
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R257_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -16810,8 +17279,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px">V</td>
-												<td style="text-align: left"
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R258_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -16887,8 +17355,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px">VI</td>
-												<td style="text-align: left; "
+												<td style="text-align: left; padding-left: 40px;"
 													th:text="${report?.R259_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -16964,8 +17431,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; font-weight: bold; "
+												<td style="text-align: left; font-weight: bold; padding-left: 40px;"
 													th:text="${report?.R260_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
