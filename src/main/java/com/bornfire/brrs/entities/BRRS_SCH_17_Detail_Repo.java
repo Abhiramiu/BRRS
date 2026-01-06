@@ -23,7 +23,7 @@ public interface BRRS_SCH_17_Detail_Repo extends JpaRepository<SCH_17_Detail_Ent
 	
 	// Fetch all records for a given date
 
-	@Query(value = "select * from BRRS_SCH_17_DETAILTABLE where REPORT_DATE = ?1", nativeQuery = true)
+	@Query(value = "select * from BRRS_SCH_17_DETAILTABLE", nativeQuery = true)
 	List<SCH_17_Detail_Entity> getdatabydateList(Date reportdate);
 
 	// ✅ Pagination fixed → use OFFSET and LIMIT correctly
