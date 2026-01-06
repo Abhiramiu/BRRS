@@ -364,7 +364,7 @@ public class BRRS_GL_SCH_ReportService {
                 populateEntity4Data(sheet, dataList3.get(0), textStyle, numberStyle);
             }
 
-            workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
+			/* workbook.getCreationHelper().createFormulaEvaluator().evaluateAll(); */
             workbook.write(out);
             logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
             return out.toByteArray();
