@@ -102,39 +102,55 @@ PURPOSE		: BRRS SCH  REPORT
 }
 
 /* 🚌 Bus display style box */
-					.boards {
-						transform: translateY(6px);
-					  background-color: rgb(107, 122, 143);
-					  color: white;
-					  padding: 5px 5px;
-					  border-radius: 8px;
-					  overflow: hidden;
-					  white-space: nowrap;
-					  flex: 1; /* ✅ makes it take available space dynamically */
-					  min-width: 200px;
-					  box-shadow: 0 0 10px rgb(107, 122, 143);
-					  position: relative;
-					}
+.boards {
+	transform: translateY(6px);
+	background-color: rgb(107, 122, 143);
+	color: white;
+	padding: 5px 5px;
+	border-radius: 8px;
+	overflow: hidden;
+	white-space: nowrap;
+	flex: 1; /* ✅ makes it take available space dynamically */
+	min-width: 200px;
+	box-shadow: 0 0 10px rgb(107, 122, 143);
+	position: relative;
+}
 
-		/* ✨ Scrolling animation */
-		.scrolling-text {
-			display: inline-block;
-			font-family: "Courier New", monospace;
-			font-weight: bold;
-			letter-spacing: 1px;
-			animation: scroll-left 10s linear infinite;
-		}
+/* ✨ Scrolling animation */
+.scrolling-text {
+	display: inline-block;
+	font-family: "Courier New", monospace;
+	font-weight: bold;
+	letter-spacing: 1px;
+	animation: scroll-left 10s linear infinite;
+}
 
-		/* Animation keyframes */
-		@keyframes scroll-left {
-			0% {
-				transform: translateX(100%);
-			}
+/* Animation keyframes */
+@
+keyframes scroll-left { 0% {
+	transform: translateX(100%);
+}
+100%
+{
+transform
 
-			100% {
-				transform: translateX(-100%);
-			}
-		}
+
+
+
+:
+
+
+ 
+
+
+translateX
+
+
+
+
+(-100%);
+}
+}
 </style>
 
 
@@ -818,7 +834,7 @@ function showResultModal1(title, message) {
 						window.URL.revokeObjectURL(url);
 						document.body.removeChild(a);
 
-						showResultModal('BRRS', filename + ' Detail downloaded successfully.');
+						showResultModal('BRRS', ' SCH17Detail.xlsx downloaded successfully..');
 					} else {
 						showResultModal('Information', 'No data found to download.');
 					}
@@ -1230,7 +1246,8 @@ function fileuploads(btn) {
 
 						<!-- Moving bus-board text -->
 						<div class="boards">
-							<p class="scrolling-text"> BANK OF BOTSWANA - BANKING SUPERVISION DEPARTMENT</p>
+							<p class="scrolling-text">BANK OF BOTSWANA - BANKING
+								SUPERVISION DEPARTMENT</p>
 						</div>
 
 
@@ -1363,7 +1380,7 @@ function fileuploads(btn) {
 
 												<!-- <td style="text-align: left;"
 													th:text="${report?.r9_product ?: ''}"></td> -->
-													<td id="ROW9" style="font-weight: bold; text-align: left;"><input
+												<td id="ROW9" style="font-weight: bold; text-align: left;"><input
 													class="display-input Show_input" type="text"
 													th:value="'Bad Debts written off / Provision made towards NPA'"
 													id="r9_product" name="r9_product"
@@ -1492,7 +1509,7 @@ function fileuploads(btn) {
 												<td style="text-align: center;">(e)</td>
 												<!-- <td style="text-align: left;"
 													th:text="${report?.r13_product ?: ''}"></td> -->
-													<td id="ROW13" style="font-weight: bold; text-align: left;"><input
+												<td id="ROW13" style="font-weight: bold; text-align: left;"><input
 													class="display-input Show_input" type="text"
 													th:value="'Provision for taxes (Net of Deferred Tax)'"
 													id="r13_product" name="r13_product"
@@ -1654,8 +1671,8 @@ function fileuploads(btn) {
 												<td id="ROW19"
 													style="font-weight: bold; text-align: left; padding-left: 20px; width: 200px;">
 													<input class="display-input Show_input" type="text"
-													th:value="'Excess provision –Others'"
-													id="r19_product" name="r19_product"
+													th:value="'Excess provision –Others'" id="r19_product"
+													name="r19_product"
 													style="background-color: #FFFFFF; width: -webkit-fill-available; border-color: transparent; text-align: left;"
 													readonly />
 												</td>

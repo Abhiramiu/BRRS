@@ -71,8 +71,11 @@ public class MCBL_Services {
 
 	private final ConcurrentHashMap<String, String> jobStatusStorage = new ConcurrentHashMap<>();
 
-	@Async
-	public void initializeJobStatus(String jobId, MultipartFile file, String userid, String username,
+	
+	public void initializeJobStatus(String jobId, 
+			MultipartFile file, 
+			String userid, 
+			String username,
 			String reportDate) {
 
 		logger.info("Initializing job. jobId={}, userId={}, reportDate={}", jobId, userid, reportDate);

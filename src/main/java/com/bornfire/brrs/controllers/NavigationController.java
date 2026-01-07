@@ -468,6 +468,7 @@ public class NavigationController {
 
 		return "BRRS/BRRSArchival";
 	}
+
 	@RequestMapping(value = "HalfYearlyArchival", method = { RequestMethod.GET, RequestMethod.POST })
 	public String brrsHalfYearlyArchival(Model md, HttpServletRequest req) {
 		md.addAttribute("menu", "BRRS - BRRS HALFYEARLY ARCHIVAL");
@@ -672,7 +673,7 @@ public class NavigationController {
 
 		return "Source_Data_Mapping";
 	}
-	
+
 //	@RequestMapping(value = "SLSREPORT", method = {RequestMethod.GET, RequestMethod.POST})
 //	public ModelAndView SLSREPORT(
 //	        @RequestParam(required = false) String currency,
@@ -687,22 +688,17 @@ public class NavigationController {
 	@Autowired
 	private BRRS_SLS_INPUT_SHT_ReportService BRRS_SLS_INPUT_SHT_reportservice;
 
-	@RequestMapping(value = "SLSREPORT", method = {RequestMethod.GET, RequestMethod.POST})
-	public ModelAndView SLSREPORT(
-	        @RequestParam(required = false) String todate, // Key changed from fromdate/asondate to todate
-	        @RequestParam(required = false) String currency,
-	        @RequestParam(required = false) String formmode,
-	        @RequestParam(defaultValue = "0") int page,
-	        @RequestParam(defaultValue = "100") int size) {
+	@RequestMapping(value = "SLSREPORT", method = { RequestMethod.GET, RequestMethod.POST })
+	public ModelAndView SLSREPORT(@RequestParam(required = false) String todate, // Key changed from fromdate/asondate
+																					// to todate
+			@RequestParam(required = false) String currency, @RequestParam(required = false) String formmode,
+			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "100") int size) {
 
-	    Pageable pageable = PageRequest.of(page, size);
+		Pageable pageable = PageRequest.of(page, size);
 
-	    // Call service. formmode (summary/Detail) maps to dtltype
-	    return BRRS_SLS_INPUT_SHT_reportservice.getRT_SLSView(
-	            "SLS", null, todate, currency, formmode, pageable
-	    );
+		// Call service. formmode (summary/Detail) maps to dtltype
+		return BRRS_SLS_INPUT_SHT_reportservice.getRT_SLSView("SLS", null, todate, currency, formmode, pageable);
 	}
-
 
 	@RequestMapping(value = "ReferCodeMast", method = { RequestMethod.GET, RequestMethod.POST })
 	public String ReferCodeMast(@RequestParam(required = false) String formmode,
