@@ -1103,7 +1103,7 @@ return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 
 	        BDISB1reportService.updateDetailFromForm(asondate, allParams);
 
-	        return ResponseEntity.ok("Detail Updated Successfully");
+	        return ResponseEntity.ok("Updated Successfully.");
 	    } catch (Exception e) {
 	        e.printStackTrace();
 	        return ResponseEntity
@@ -1178,7 +1178,7 @@ return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 	    try {
 	    	System.out.println("came to Controller for updating values");
 	    	BDISB3reportService.updateDetailFromForm(asondate, allParams);
-	        return ResponseEntity.ok("Detail Updated Successfully");
+	        return ResponseEntity.ok("Updated Successfully.");
 	    } catch (Exception e) {
 	        e.printStackTrace();
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -1225,7 +1225,7 @@ return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 
 	        BRRS_MDISB5_ReportService.updateDetailFromForm(asondate, allParams);
 
-	        return ResponseEntity.ok("Detail Updated Successfully");
+	        return ResponseEntity.ok("Updated Successfully.");
 
 	    } catch (Exception e) {
 	        e.printStackTrace();
