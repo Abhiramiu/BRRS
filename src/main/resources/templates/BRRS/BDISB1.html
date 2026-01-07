@@ -890,57 +890,51 @@ function fileuploads(btn) {
 <title>BRRS</title>
 
 <body>
-	<div class="container-fluid" style="padding-left: 0px; padding-right: 0px;">
-		<div class="row">
-			<div th:insert="HeaderMenu :: header"></div>
-			<div class="card">
-				<div class="card-header"
-					style="background-color: rgb(107, 122, 143); display: flex; align-items: center; justify-content: space-between;">
-					<div style="display: flex; align-items: center;" onclick="back();">
-						<!-- ⬅️ Left circular arrow -->
-						<div class="left-arrow-circle">
-							<i class="fa fa-arrow-left"></i>
-						</div>
-						<!-- Title -->
-						<h5
-							style="font-family: arial; font-size: 20px; font-weight: bold; color: white;margin-right: 10px; margin: 0 10px;">
-							BDISB1 - Single Customer View Individual Disaggregate Records  </h5>
-					</div>
-					<!-- Moving bus-board text -->
-						<div class="boards">
-							<p class="scrolling-text">BANK OF BOTSWANA - BANKING SUPERVISION DEPARTMENT </p>
-					
-						</div>
-						
-					<div class="custom-tab-btn-group nav-buttons"
-						style="display: flex; color: white; align-items: center;">
-						<!-- 📅 Date -->
-						<span class="white-text"
-							style="color: white !important; font-size: 16px;margin-left: 20px; margin-right: 20px;">Report
-							Date:<span th:text="${#strings.replace(asondate, '/', '-')}">2025-09-18</span>
-						</span>
-						<!-- Buttons -->
-						<input type="hidden" id="selectedTab" th:value="${displaymode}">
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showsummary();"
-							th:if="${displaymode == 'Details'}">Summary</button>
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails();"
-							th:if="${displaymode == 'summary'}">Details</button>
-				
-						<!-- Modify button -->
-						<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
-							title="Click to EDIT Records"
-							th:if="${type == 'RESUB' or type=='BRRS' and type != 'ARCHIVAL'}"
-							th:classappend="${session.PERMISSIONS == 'W'} and ${dtltype == 'report'} ? 'addedit' "
-							id="addRecord">
-							Modify
-						</button>
+ <div class="container-fluid" style="padding-left: 0px; padding-right: 0px;">
+  <div class="row">
+   <div th:insert="HeaderMenu :: header"></div>
+   <div class="card">
+    <div class="card-header"
+     style="background-color: rgb(107, 122, 143); display: flex; align-items: center; justify-content: space-between;">
+     <div style="display: flex; align-items: center;" onclick="back();">
+      <!-- ⬅️ Left circular arrow -->
+      <div class="left-arrow-circle">
+       <i class="fa fa-arrow-left"></i>
+      </div>
+      <!-- Title -->
+      <h5
+       style="font-family: arial; font-size: 20px; padding-top: 10px; font-weight: bold; color: white; margin-right: 10px;">
+       BDISB1-Single Customer View Company Disaggregate Records</h5>
+     </div>
+     <!-- Moving bus-board text -->
+     <div class="boards">
+      <p class="scrolling-text">BANK OF BOTSWANA - BANKING SUPERVISION DEPARTMENT</p>
+     </div>
+     <div class="custom-tab-btn-group nav-buttons" style="display: flex; color: white; align-items: center;">
+      <!-- 📅 Date -->
+      <span class="white-text" style="color: white !important; font-size: 16px; margin-right: 20px; margin-left: 10px;">Report
+       Date: <span th:text="${#strings.replace(asondate, '/', '-')}">30-06-2025</span>
+      </span>
+      <!-- Buttons -->
+      <input type="hidden" id="selectedTab" th:value="${displaymode}">
+      <button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showsummary();"
+       th:if="${displaymode == 'Details'}">Summary</button>
+      <button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails();"
+       th:if="${displaymode == 'summary'}">Details</button>
+
+      <!-- Modify button -->
+      <button type="button" class="custom-tab-btn" onclick="showmodify(this);" title="Click to EDIT Records"
+       th:if="${displaymode != 'Details' and type != 'ARCHIVAL'}"
+       th:classappend="${session.PERMISSIONS == 'W'} and ${dtltype == 'report'} ? 'addedit' " id="addRecord">Modify</button>
 
 
-						<!-- Cancel button (hidden initially) -->
-						<button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord"
-							onclick="cancelModify();" style="display: none;">Cancel</button>
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'summary'}" th:attr="data-reportid=${reportid},
+      <!-- Cancel button (hidden initially) -->
+      <button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord" onclick="cancelModify();"
+       style="display: none;">Cancel</button>
+
+
+      <button type="button" class="custom-tab-btn" id="custom-tab-btnAdd" th:if="${displaymode == 'summary'}"
+       th:attr="data-reportid=${reportid},
                    				 data-asondate=${asondate},
                    				 data-fromdate=${fromdate},
                     				 data-todate=${todate},
@@ -949,12 +943,16 @@ function fileuploads(btn) {
                     				 data-filename='BDISB1.xlsx',
 					 				 data-type=${type},
 					    			 data-version=${version}"
-									  onclick="downloadfile(this);">
-							<i class="fa fa-download"></i>
-						</button>
+       onclick="downloadfile(this);">
+       <i class="fa fa-download"></i>
+      </button>
 
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'Details'}" onclick="startReport(this);" th:attr="
+
+
+
+      <button type="button" class="custom-tab-btn" id="custom-tab-btnAdd" th:if="${displaymode == 'Details'}"
+       onclick="startReport(this);"
+       th:attr="
 								    data-fromdate=${fromdate},
 								    data-todate=${todate},
 									data-currency=${currency},  
@@ -963,63 +961,49 @@ function fileuploads(btn) {
 									data-type=${type},
 												data-version=${version}
 								  ">
-							<i class="fa fa-download"></i>
-						</button>
+       <i class="fa fa-download"></i>
+      </button>
 
 
-					</div>
-					
-				</div>
-				<div th:if="${displaymode == 'summary'}">
-					<div class="row">
-						<div class="col-sm-12">
-						<form action="#" method="POST" id="fileupload">
-						<input type="hidden" name="asondate" id="asondate" th:value="${asondate}" />
-							<div class="table-wrapper table-responsive scrollable-table-container"
-								style="border-right: 1px solid #dee2e6; ">
-								<table
-									class="sticky-header-table table table-bordered table-hover table-sm table-condensed"
-									id="reports">
-									<thead class="thead-light">
-		                                   <tr style="background-color: #b3b6b9;">
 
-    <th style="background-color: #D8D8D8;text-align: left; border:none !important;"></th>
-    <th style="background-color: #D8D8D8;text-align: left; border:none !important;"></th>
-    <th style="background-color: #D8D8D8;text-align: left; border:none !important;"></th>
-    <th style="background-color: #D8D8D8;text-align: right; border:none !important;"></th>
-    <th style="background-color: #D8D8D8;text-align: right; border:none !important;"></th>
-    <th style="background-color: #D8D8D8;text-align: right; border:none !important;"></th>
-    <th style="background-color: #D8D8D8;text-align: right; border:none !important;"></th>
-    <th style="background-color: #D8D8D8;text-align: right; border:none !important;"></th>
+     </div>
 
-    <th style="background-color: #D8D8D8;text-align: left;vertical-align:middle;color: black;">National Identification Number/</th>
-    <th style="background-color: #D8D8D8;text-align: right; border:none !important;"></th>
+    </div>
+    <div th:if="${displaymode == 'summary'}">
+     <div class="row">
+      <div class="col-sm-12">
+       <form action="#" method="POST" id="fileupload">
+        <input type="hidden" name="asondate" id="asondate" th:value="${asondate}" />
 
-    <th style="background-color: #D8D8D8;text-align: left;vertical-align:middle;color: black;">Residential</th>
-    <th style="background-color: #D8D8D8;text-align: right; border:none !important;"></th>
-
-    <th style="background-color: #D8D8D8;text-align: left;vertical-align:middle;color: black;">Country of</th>
-    <th style="background-color: #D8D8D8;text-align: right; border:none !important;"></th>
-    <th style="background-color: #D8D8D8;text-align: right; border:none !important;"></th>
-    <th style="background-color: #D8D8D8;text-align: right; border:none !important;"></th>
-    <th style="background-color: #D8D8D8;text-align: right; border:none !important;"></th>
-    <th style="background-color: #D8D8D8;text-align: right; border:none !important;"></th>
-    <th style="background-color: #D8D8D8;text-align: right; border:none !important;"></th>
-    <th style="background-color: #D8D8D8;text-align: right; border:none !important;"></th>
-    <th style="background-color: #D8D8D8;text-align: right; border:none !important;"></th>
-    <th style="background-color: #D8D8D8;text-align: right; border:none !important;"></th>
-    <th style="background-color: #D8D8D8;text-align: left;vertical-align:middle;color: black;">Account Status -  "Fit for Straight Through Payout "</th>
-    <th style="background-color: #D8D8D8;text-align: right; border:none !important;"></th>
-    <th style="background-color: #D8D8D8;text-align: right; border:none !important;"></th>
-    <th style="background-color: #D8D8D8;text-align: right; border:none !important;"></th>
-    <th style="background-color: #D8D8D8;text-align: right; border:none !important;"></th>
-    
-
-</tr>
+        <div class="table-wrapper table-responsive scrollable-table-container" style="border-right: 1px solid #dee2e6;">
 
 
-								<tr>		
-										<th style="background-color: #D8D8D8;text-align: right;vertical-align:middle;color: black;">Bank Specific Single Customer View Record Number</th>
+         <table class="sticky-header-table table table-bordered table-hover table-sm table-condensed" id="reports">    
+    <colgroup>
+        <col style="width: 450px;">  <!-- Col 1 -->
+        <col style="width: 260px;">  <!-- Col 2 -->
+        <col style="width: 260px;">  <!-- Col 3 -->
+        <col style="width: 260px;">  <!-- Col 4 -->
+        <col style="width: 260px;">  <!-- Col 5 -->
+        <col style="width: 260px;">  <!-- Col 6 -->
+        <col style="width: 260px;">  <!-- Col 7 -->
+        <col style="width: 260px;">  <!-- Col 8 -->
+        <col style="width: 240px;">  <!-- Col 9 -->
+        <col style="width: 290px;">  <!-- Col 10 -->
+        <col style="width: 260px;">  <!-- Col 11 -->
+        <col style="width: 260px;">  <!-- Col 12 -->
+        <col style="width: 290px;">  <!-- Col 13 -->
+        <col style="width: 260px;">  <!-- Col 14 -->
+        <col style="width: 260px;">  <!-- Col 15 -->
+        <col style="width: 260px;">  <!-- Col 16 -->
+        <col style="width: 260px;">  <!-- Col 17 -->
+    </colgroup>
+          
+          <thead class="thead-light" style="background-color: #D8D8D8;">
+          
+           <tr style="background-color: #b3b6b9;">
+
+   			                         	<th style="background-color: #D8D8D8;text-align: left;vertical-align:middle;color: black;">Bank Specific Single Customer View Record Number</th>
 										<th style="background-color: #D8D8D8;text-align: left;vertical-align:middle;color: black;">Title</th>
 										<th style="background-color: #D8D8D8;text-align: left;vertical-align:middle;color: black;"> First Name</th>
 										<th style="background-color: #D8D8D8;text-align: left;vertical-align:middle;color: black;"> Middle Name </th>
@@ -1028,13 +1012,13 @@ function fileuploads(btn) {
 										<th style="background-color: #D8D8D8;text-align: left;vertical-align:middle;color: black;"> Gender </th>
 										<th style="background-color: #D8D8D8;text-align: left;vertical-align:middle;color: black;"> Identification Type </th>
 										
-										<th style="background-color: #D8D8D8;text-align: left;vertical-align:middle;color: black;"> Passport Number </th>
+										<th style="background-color: #D8D8D8;text-align: left;vertical-align:middle;color: black;">National Identification Number/<br> Passport Number </th>
 										<th style="background-color: #D8D8D8;text-align: left;vertical-align:middle;color: black;"> Date of Birth </th>
 										
-										<th style="background-color: #D8D8D8;text-align: left;vertical-align:middle;color: black;"> Home Address</th>
+										<th style="background-color: #D8D8D8;text-align: left;vertical-align:middle;color: black;"> Residential <br>Home Address</th>
 										<th style="background-color: #D8D8D8;text-align: left;vertical-align:middle;color: black;"> Postal Address </th>
 										
-										<th style="background-color: #D8D8D8;text-align: left;vertical-align:middle;color: black;"> Residence </th>
+										<th style="background-color: #D8D8D8;text-align: left;vertical-align:middle;color: black;"> Country of <br>Residence </th>
                                         <th style="background-color: #D8D8D8;text-align: left;vertical-align:middle;color: black;"> Email </th>
                                         <th style="background-color: #D8D8D8;text-align: left;vertical-align:middle;color: black;"> Landline </th>
                                         <th style="background-color: #D8D8D8;text-align: left;vertical-align:middle;color: black;"> Mobile Phone Number </th>
@@ -1042,10 +1026,10 @@ function fileuploads(btn) {
                                         <th style="background-color: #D8D8D8;text-align: left;vertical-align:middle;color: black;"> Product Type </th>
                                         <th style="background-color: #D8D8D8;text-align: left;vertical-align:middle;color: black;"> Account By Ownership </th>
                                         <th style="background-color: #D8D8D8;text-align: left;vertical-align:middle;color: black;"> Account Number </th>
-                                        <th style="background-color: #D8D8D8;text-align: left;vertical-align:middle;color: black;"> Account Holder Indicator </th>
+                                        <th style="background-color: #D8D8D8;text-align: right;vertical-align:middle;color: black;"> Account Holder Indicator </th>
                                         <th style="background-color: #D8D8D8;text-align: left;vertical-align:middle;color: black;"> Status of Account </th>
               
-                                        <th style="background-color: #D8D8D8;text-align: left;vertical-align:middle;color: black;"> OR "Not Fit for Straight Through Payout" </th>
+                                        <th style="background-color: #D8D8D8;text-align: left;vertical-align:middle;color: black;">Account Status -  "Fit for Straight Through Payout "<br> OR "Not Fit for Straight Through Payout" </th>
                                         <th style="background-color: #D8D8D8;text-align: left;vertical-align:middle;color: black;"> Branch Code and Name </th>
                                         <th style="background-color: #D8D8D8;text-align: right;vertical-align:middle;color: black;"> Account Balance in Pula</th>
                                         <th style="background-color: #D8D8D8;text-align: left;vertical-align:middle;color: black;"> Currency of Account </th>
@@ -1059,17 +1043,14 @@ function fileuploads(btn) {
 
 					<tbody th:each="report: ${reportsummary}" style="font-family: Arial;">
 	<tr>
-
-
-<td id="ROW5" style="text-align: right; background-color:#FFFFFF; font-weight: bold;">
-        <input class="display-input Show_input"
-               type="text"
-               th:value="${report.R5_RECORD_NUMBER != null ? #numbers.formatDecimal(report.R5_RECORD_NUMBER, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R5_RECORD_NUMBER"
-               name="R5_C1_RECORD_NUMBER"
-               style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
-               readonly />
-    </td>
+    
+    <td id="ROW5" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
+    <input class="display-input Show_input" type="text"
+           th:value="${#strings.defaultString(report.R5_RECORD_NUMBER, 'N/A')}"
+           id="R5_RECORD_NUMBER" name="R5_C1_RECORD_NUMBER"
+           style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
+           readonly />
+</td>
 
 <td id="ROW5" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
@@ -1226,13 +1207,16 @@ function fileuploads(btn) {
            readonly />
 </td>
 
-<td id="ROW5" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
-    <input class="display-input Show_input" type="text"
-           th:value="${#strings.defaultString(report.R5_ACCOUNT_HOLDER_INDICATOR, 'N/A')}"
-           id="R5_ACCOUNT_HOLDER_INDICATOR" name="R5_C20_ACCOUNT_HOLDER_INDICATOR"
-           style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
-           readonly />
-</td>
+<td id="ROW5" style="text-align: right; background-color:#FFFFFF; font-weight: bold;">
+        <input class="display-input Show_input"
+               type="text"
+               th:value="${report.R5_ACCOUNT_HOLDER_INDICATOR != null ? #numbers.formatDecimal(report.R5_ACCOUNT_HOLDER_INDICATOR, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="R5_ACCOUNT_HOLDER_INDICATOR"
+               name="R5_C24_ACCOUNT_HOLDER_INDICATOR"
+               style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+
 
 <td id="ROW5" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
@@ -1291,15 +1275,13 @@ function fileuploads(btn) {
 	<tr>
 
 
-<td id="ROW6" style="text-align: right; background-color:#FFFFFF; font-weight: bold;">
-        <input class="display-input Show_input"
-               type="text"
-               th:value="${report.R6_RECORD_NUMBER != null ? #numbers.formatDecimal(report.R6_RECORD_NUMBER, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R6_RECORD_NUMBER"
-               name="R6_C1_RECORD_NUMBER"
-               style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
-               readonly />
-    </td>
+<td id="ROW6" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
+    <input class="display-input Show_input" type="text"
+           th:value="${#strings.defaultString(report.R6_RECORD_NUMBER, 'N/A')}"
+           id="R6_RECORD_NUMBER" name="R6_C1_RECORD_NUMBER"
+           style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
+           readonly />
+</td>
 
 <td id="ROW6" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
@@ -1456,13 +1438,16 @@ function fileuploads(btn) {
            readonly />
 </td>
 
-<td id="ROW6" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
-    <input class="display-input Show_input" type="text"
-           th:value="${#strings.defaultString(report.R6_ACCOUNT_HOLDER_INDICATOR, 'N/A')}"
-           id="R6_ACCOUNT_HOLDER_INDICATOR" name="R6_C20_ACCOUNT_HOLDER_INDICATOR"
-           style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
-           readonly />
-</td>
+<td id="ROW6" style="text-align: right; background-color:#FFFFFF; font-weight: bold;">
+        <input class="display-input Show_input"
+               type="text"
+               th:value="${report.R6_ACCOUNT_HOLDER_INDICATOR != null ? #numbers.formatDecimal(report.R6_ACCOUNT_HOLDER_INDICATOR, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="R6_ACCOUNT_HOLDER_INDICATOR"
+               name="R6_C24_ACCOUNT_HOLDER_INDICATOR"
+               style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+
 
 <td id="ROW6" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
@@ -1522,15 +1507,13 @@ function fileuploads(btn) {
 	<tr>
 
 
-<td id="ROW7" style="text-align: right; background-color:#FFFFFF; font-weight: bold;">
-        <input class="display-input Show_input"
-               type="text"
-               th:value="${report.R7_RECORD_NUMBER != null ? #numbers.formatDecimal(report.R7_RECORD_NUMBER, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R7_RECORD_NUMBER"
-               name="R7_C1_RECORD_NUMBER"
-               style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
-               readonly />
-    </td>
+<td id="ROW7" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
+    <input class="display-input Show_input" type="text"
+           th:value="${#strings.defaultString(report.R7_RECORD_NUMBER, 'N/A')}"
+           id="R7_RECORD_NUMBER" name="R7_C1_RECORD_NUMBER"
+           style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
+           readonly />
+</td>
 
 <td id="ROW7" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
@@ -1687,13 +1670,16 @@ function fileuploads(btn) {
            readonly />
 </td>
 
-<td id="ROW7" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
-    <input class="display-input Show_input" type="text"
-           th:value="${#strings.defaultString(report.R7_ACCOUNT_HOLDER_INDICATOR, 'N/A')}"
-           id="R7_ACCOUNT_HOLDER_INDICATOR" name="R7_C20_ACCOUNT_HOLDER_INDICATOR"
-           style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
-           readonly />
-</td>
+<td id="ROW7" style="text-align: right; background-color:#FFFFFF; font-weight: bold;">
+        <input class="display-input Show_input"
+               type="text"
+               th:value="${report.R7_ACCOUNT_HOLDER_INDICATOR != null ? #numbers.formatDecimal(report.R7_ACCOUNT_HOLDER_INDICATOR, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="R7_ACCOUNT_HOLDER_INDICATOR"
+               name="R7_C24_ACCOUNT_HOLDER_INDICATOR"
+               style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+
 
 <td id="ROW7" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
@@ -1753,15 +1739,13 @@ function fileuploads(btn) {
 	<tr>
 
 
-<td id="ROW8" style="text-align: right; background-color:#FFFFFF; font-weight: bold;">
-        <input class="display-input Show_input"
-               type="text"
-               th:value="${report.R8_RECORD_NUMBER != null ? #numbers.formatDecimal(report.R8_RECORD_NUMBER, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R8_RECORD_NUMBER"
-               name="R8_C1_RECORD_NUMBER"
-               style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
-               readonly />
-    </td>
+<td id="ROW8" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
+    <input class="display-input Show_input" type="text"
+           th:value="${#strings.defaultString(report.R8_RECORD_NUMBER, 'N/A')}"
+           id="R8_RECORD_NUMBER" name="R8_C1_RECORD_NUMBER"
+           style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
+           readonly />
+</td>
 
 <td id="ROW8" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
@@ -1918,13 +1902,16 @@ function fileuploads(btn) {
            readonly />
 </td>
 
-<td id="ROW8" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
-    <input class="display-input Show_input" type="text"
-           th:value="${#strings.defaultString(report.R8_ACCOUNT_HOLDER_INDICATOR, 'N/A')}"
-           id="R8_ACCOUNT_HOLDER_INDICATOR" name="R8_C20_ACCOUNT_HOLDER_INDICATOR"
-           style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
-           readonly />
-</td>
+<td id="ROW8" style="text-align: right; background-color:#FFFFFF; font-weight: bold;">
+        <input class="display-input Show_input"
+               type="text"
+               th:value="${report.R8_ACCOUNT_HOLDER_INDICATOR != null ? #numbers.formatDecimal(report.R8_ACCOUNT_HOLDER_INDICATOR, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="R8_ACCOUNT_HOLDER_INDICATOR"
+               name="R8_C24_ACCOUNT_HOLDER_INDICATOR"
+               style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+
 
 <td id="ROW8" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
@@ -1984,15 +1971,13 @@ function fileuploads(btn) {
 	<tr>
 
 
-<td id="ROW9" style="text-align: right; background-color:#FFFFFF; font-weight: bold;">
-        <input class="display-input Show_input"
-               type="text"
-               th:value="${report.R9_RECORD_NUMBER != null ? #numbers.formatDecimal(report.R9_RECORD_NUMBER, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R9_RECORD_NUMBER"
-               name="R9_C1_RECORD_NUMBER"
-               style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
-               readonly />
-    </td>
+<td id="ROW9" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
+    <input class="display-input Show_input" type="text"
+           th:value="${#strings.defaultString(report.R9_RECORD_NUMBER, 'N/A')}"
+           id="R9_RECORD_NUMBER" name="R9_C1_RECORD_NUMBER"
+           style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
+           readonly />
+</td>
 
 <td id="ROW9" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
@@ -2149,13 +2134,16 @@ function fileuploads(btn) {
            readonly />
 </td>
 
-<td id="ROW9" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
-    <input class="display-input Show_input" type="text"
-           th:value="${#strings.defaultString(report.R9_ACCOUNT_HOLDER_INDICATOR, 'N/A')}"
-           id="R9_ACCOUNT_HOLDER_INDICATOR" name="R9_C20_ACCOUNT_HOLDER_INDICATOR"
-           style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
-           readonly />
-</td>
+<td id="ROW9" style="text-align: right; background-color:#FFFFFF; font-weight: bold;">
+        <input class="display-input Show_input"
+               type="text"
+               th:value="${report.R9_ACCOUNT_HOLDER_INDICATOR != null ? #numbers.formatDecimal(report.R9_ACCOUNT_HOLDER_INDICATOR, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="R9_ACCOUNT_HOLDER_INDICATOR"
+               name="R9_C24_ACCOUNT_HOLDER_INDICATOR"
+               style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+
 
 <td id="ROW9" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
@@ -2214,15 +2202,13 @@ function fileuploads(btn) {
 	<tr>
 
 
-<td id="ROW10" style="text-align: right; background-color:#FFFFFF; font-weight: bold;">
-        <input class="display-input Show_input"
-               type="text"
-               th:value="${report.R10_RECORD_NUMBER != null ? #numbers.formatDecimal(report.R10_RECORD_NUMBER, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R10_RECORD_NUMBER"
-               name="R10_C1_RECORD_NUMBER"
-               style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
-               readonly />
-    </td>
+<td id="ROW10" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
+    <input class="display-input Show_input" type="text"
+           th:value="${#strings.defaultString(report.R10_RECORD_NUMBER, 'N/A')}"
+           id="R10_RECORD_NUMBER" name="R10_C1_RECORD_NUMBER"
+           style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
+           readonly />
+</td>
 
 <td id="ROW10" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
@@ -2379,13 +2365,16 @@ function fileuploads(btn) {
            readonly />
 </td>
 
-<td id="ROW10" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
-    <input class="display-input Show_input" type="text"
-           th:value="${#strings.defaultString(report.R10_ACCOUNT_HOLDER_INDICATOR, 'N/A')}"
-           id="R10_ACCOUNT_HOLDER_INDICATOR" name="R10_C20_ACCOUNT_HOLDER_INDICATOR"
-           style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
-           readonly />
-</td>
+<td id="ROW10" style="text-align: right; background-color:#FFFFFF; font-weight: bold;">
+        <input class="display-input Show_input"
+               type="text"
+               th:value="${report.R11_ACCOUNT_HOLDER_INDICATOR != null ? #numbers.formatDecimal(report.R10_ACCOUNT_HOLDER_INDICATOR, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="R10_ACCOUNT_HOLDER_INDICATOR"
+               name="R10_C24_ACCOUNT_HOLDER_INDICATOR"
+               style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+
 
 <td id="ROW10" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
@@ -2444,15 +2433,13 @@ function fileuploads(btn) {
 	<tr>
 
 
-<td id="ROW11" style="text-align: right; background-color:#FFFFFF; font-weight: bold;">
-        <input class="display-input Show_input"
-               type="text"
-               th:value="${report.R11_RECORD_NUMBER != null ? #numbers.formatDecimal(report.R11_RECORD_NUMBER, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R11_RECORD_NUMBER"
-               name="R11_C1_RECORD_NUMBER"
-               style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
-               readonly />
-    </td>
+<td id="ROW11" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
+    <input class="display-input Show_input" type="text"
+           th:value="${#strings.defaultString(report.R11_RECORD_NUMBER, 'N/A')}"
+           id="R11_RECORD_NUMBER" name="R11_C1_RECORD_NUMBER"
+           style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
+           readonly />
+</td>
 
 <td id="ROW11" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
@@ -2609,13 +2596,15 @@ function fileuploads(btn) {
            readonly />
 </td>
 
-<td id="ROW11" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
-    <input class="display-input Show_input" type="text"
-           th:value="${#strings.defaultString(report.R11_ACCOUNT_HOLDER_INDICATOR, 'N/A')}"
-           id="R11_ACCOUNT_HOLDER_INDICATOR" name="R11_C20_ACCOUNT_HOLDER_INDICATOR"
-           style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
-           readonly />
-</td>
+<td id="ROW11" style="text-align: right; background-color:#FFFFFF; font-weight: bold;">
+        <input class="display-input Show_input"
+               type="text"
+               th:value="${report.R11_ACCOUNT_HOLDER_INDICATOR != null ? #numbers.formatDecimal(report.R11_ACCOUNT_HOLDER_INDICATOR, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="R11_ACCOUNT_HOLDER_INDICATOR"
+               name="R11_C24_ACCOUNT_HOLDER_INDICATOR"
+               style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
 
 <td id="ROW11" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
@@ -2696,9 +2685,8 @@ function fileuploads(btn) {
             <tr>
                <!-- <th></th> -->
 		<th style="width: 60px; text-align:center;">S No</th>
-		<th>CUST ID</th>
-		<th>ACCT NO</th>
-		<th>ACCT NAME</th>
+		<th>FIRST NAME</th>
+		<th>ACCOUNT BALANCE IN PULA</th>
 		<th style="text-align:left;">REPORT LABEL</th>
 		<th>REPORT ADDL CRITERIA 1</th>
 		<th>REPORT DATE</th>
@@ -2714,14 +2702,11 @@ function fileuploads(btn) {
         th:text="${srlno.index + 1}"></td>
 
     <!-- Customer ID (can be NULL for manual report) -->
-    <td th:text="${report != null && report.custId != null ? report.custId : '-'}"></td>
+    <td th:text="${report != null && report.FIRST_NAME != null ? report.FIRST_NAME : '-'}"></td>
 
     <!-- Account Number -->
-    <td th:text="${report != null && report.acctNumber != null ? report.acctNumber : '-'}"></td>
-
-    <!-- Account Name -->
-    <td th:text="${report != null && report.acctName != null ? report.acctName : '-'}"></td>
-
+    <td th:text="${report != null && report.ACCOUNT_BALANCE_IN_PULA != null ? report.ACCOUNT_BALANCE_IN_PULA : '-'}"></td>
+    
     <!-- Report Label -->
     <td style="text-align:left;"
         th:text="${report != null && report.reportLable != null ? report.reportLable : '-'}"></td>
