@@ -381,6 +381,11 @@ public class RegulatoryReportServices {
 	@Autowired
 	BRRS_AS_11_ReportService BRRS_AS_11_Reportservice;
 
+ 	@Autowired
+	BRRS_M_OPTR_NEW_ReportService BRRS_M_OPTR_NEW_ReportService;
+ 	
+
+
 	private static final Logger logger = LoggerFactory.getLogger(RegulatoryReportServices.class);
 
 	public ModelAndView getReportView(String reportId, String reportDate, String fromdate, String todate,
@@ -1071,6 +1076,11 @@ public class RegulatoryReportServices {
 				repsummary = BRRS_BORR_UFCE_ReportService.getBORR_UFCEView(reportId, fromdate, todate, currency,
 						dtltype, pageable, type, version);
 
+				break;
+				
+			case "M_OPTR_NEW":
+				repsummary = BRRS_M_OPTR_NEW_ReportService.getM_OPTR_NEWView(reportId, fromdate, todate, currency, dtltype,
+						pageable, type, version);
 				break;
 
 		}
@@ -2700,6 +2710,16 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
+				
+			case "M_OPTR_NEW":
+				try {
+					repfile = BRRS_M_OPTR_NEW_ReportService.getM_OPTR_NEWExcel(filename, reportId, fromdate, todate, currency,
+							dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
 		}
 		return repfile;
@@ -3853,6 +3873,12 @@ public class RegulatoryReportServices {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				break;
+				
+			case "M_OPTR_NEW":
+				List<Object[]> optrnewList = BRRS_M_OPTR_NEW_ReportService.getM_OPTR_NEWArchival();
+				archivalData.addAll(optrnewList);
+				System.out.println("Fetched M_OPTR_NEW archival data: " + optrnewList.size());
 				break;
 
 			default:
@@ -5255,6 +5281,17 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 
+				break;
+				
+			case "M_OPTR_NEW":
+				try {
+					List<Object[]> resubList = BRRS_M_OPTR_NEW_ReportService.getM_OPTR_NEWResub();
+					resubmissionData.addAll(resubList);
+					System.out.println("Resubmission data fetched for M_OPTR_NEW: " + resubList.size());
+				} catch (Exception e) {
+					System.err.println("Error fetching resubmission data for M_OPTR_NEW: " + e.getMessage());
+					e.printStackTrace();
+				}
 				break;
 
 			default:

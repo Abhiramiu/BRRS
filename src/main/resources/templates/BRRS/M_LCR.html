@@ -823,20 +823,19 @@ PURPOSE		: BRRS_M_LCRREPORT
 
 	<script>
 		function openMPLLDetail(elem, mode) {
+		    var type = elem.getAttribute('data-type');
+		    if (type === "ARCHIVAL") {
+		        showResultModal('BRRS', "Archived Data cannot be modified");
+		        return;
+		    }
 
-			var type = elem.getAttribute('data-type');
+		    const acctNo = elem.getAttribute("data-acctNo");
+		    const asondate = elem.getAttribute("data-asondate");
+		    // Capture the clickedRow context
+		    const clickedRow = elem.getAttribute("data-clickedRow"); 
 
-			if (type === "ARCHIVAL") {
-				showResultModal('BRRS', "Archived Data cannot be modified");
-				return;
-			}
-
-			const acctNo = elem.getAttribute("data-acctNo");
-			const asondate = elem.getAttribute("data-asondate");
-
-			// Use the 'reportId' variable initialized above
-			// Use backticks (`) for a template literal to easily include the variable
-			location.href = `/BRRS/Reports/${reportId}/Detailspage?formmode=${mode}&acctNo=${acctNo}&asondate=${asondate}`;
+		    // Add clickedRow to the URL parameters
+		    location.href = `/BRRS/Reports/${reportId}/Detailspage?formmode=${mode}&acctNo=${acctNo}&asondate=${asondate}&clickedRow=${clickedRow}`;
 		}
 	</script>
 
@@ -1086,7 +1085,7 @@ PURPOSE		: BRRS_M_LCRREPORT
 										<td style="text-align:right; vertical-align: middle;"
 											th:text="${#numbers.formatDecimal(report.r13_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
 										</td>
-										<td style="text-align:right; vertical-align: middle;background-color: rgb(255, 255, 255);"
+										<td style="text-align:right; vertical-align: middle;background-color: #FFFF00;"
 											th:text="${#numbers.formatDecimal(report.r13_bob_total_amount,1,'COMMA',0,'POINT')}"
 											th:attr="reportLable='R13', reportAddlCriteria1='C4'"
 											onclick="showdetailsbyRowAndColumn(this)"></td>
@@ -1390,7 +1389,7 @@ PURPOSE		: BRRS_M_LCRREPORT
 										<td style="text-align:right; vertical-align: middle;"
 											th:text="${#numbers.formatDecimal(report.r34_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
 										</td>
-										<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
+										<td style="text-align:right; vertical-align: middle; background-color: #FFFF00;"
 											th:text="${#numbers.formatDecimal(report.r34_bob_total_amount,1,'COMMA',0,'POINT')}"
 											th:attr="reportLable='R34', reportAddlCriteria1='C4'"
 											onclick="showdetailsbyRowAndColumn(this)"></td>
@@ -1404,7 +1403,7 @@ PURPOSE		: BRRS_M_LCRREPORT
 										<td style="text-align:right; vertical-align: middle;"
 											th:text="${#numbers.formatDecimal(report.r35_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
 										</td>
-										<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
+										<td style="text-align:right; vertical-align: middle; background-color: #FFFF00;"
 											th:text="${#numbers.formatDecimal(report.r35_bob_total_amount,1,'COMMA',0,'POINT')}"
 											th:attr="reportLable='R35', reportAddlCriteria1='C4'"
 											onclick="showdetailsbyRowAndColumn(this)"></td>
@@ -1432,7 +1431,7 @@ PURPOSE		: BRRS_M_LCRREPORT
 										<td style="text-align:right; vertical-align: middle;"
 											th:text="${#numbers.formatDecimal(report.r37_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
 										</td>
-										<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
+										<td style="text-align:right; vertical-align: middle; background-color: #FFFF00;"
 											th:text="${#numbers.formatDecimal(report.r37_bob_total_amount,1,'COMMA',0,'POINT')}"
 											th:attr="reportLable='R37', reportAddlCriteria1='C4'"
 											onclick="showdetailsbyRowAndColumn(this)"></td>
@@ -1446,11 +1445,11 @@ PURPOSE		: BRRS_M_LCRREPORT
 										<td style="text-align:right; vertical-align: middle;"
 											th:text="${#numbers.formatDecimal(report.r38_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
 										</td>
-										<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
+										<td style="text-align:right; vertical-align: middle; background-color: #FFFF00;"
 											th:text="${#numbers.formatDecimal(report.r38_bob_total_amount,1,'COMMA',0,'POINT')}"
 											th:attr="reportLable='R38', reportAddlCriteria1='C4'"
 											onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
+										<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);;"
 											th:text="${#numbers.formatDecimal(report.r38_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
 										</td>
 									</tr>
@@ -1693,7 +1692,7 @@ PURPOSE		: BRRS_M_LCRREPORT
 										<td style="text-align:right; vertical-align: middle;"
 											th:text="${#numbers.formatDecimal(report.r55_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
 										</td>
-										<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
+										<td style="text-align:right; vertical-align: middle; background-color: #FFFF00;"
 											th:text="${#numbers.formatDecimal(report.r55_bob_total_amount,1,'COMMA',0,'POINT')}"
 											th:attr="reportLable='R55', reportAddlCriteria1='C4'"
 											onclick="showdetailsbyRowAndColumn(this)"></td>
@@ -1724,7 +1723,7 @@ PURPOSE		: BRRS_M_LCRREPORT
 										<td style="text-align:right; vertical-align: middle;"
 											th:text="${#numbers.formatDecimal(report.r57_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
 										</td>
-										<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
+										<td style="text-align:right; vertical-align: middle; background-color: #FFFF00;"
 											th:text="${#numbers.formatDecimal(report.r57_bob_total_amount,1,'COMMA',0,'POINT')}"
 											th:attr="reportLable='R57', reportAddlCriteria1='C4'"
 											onclick="showdetailsbyRowAndColumn(this)"></td>
@@ -2105,7 +2104,7 @@ PURPOSE		: BRRS_M_LCRREPORT
 										<td style="text-align:right; vertical-align: middle;"
 											th:text="${#numbers.formatDecimal(report.r83_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
 										</td>
-										<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
+										<td style="text-align:right; vertical-align: middle; background-color: #FFFF00;"
 											th:text="${#numbers.formatDecimal(report.r83_bob_total_amount,1,'COMMA',0,'POINT')}"
 											th:attr="reportLable='R83', reportAddlCriteria1='C4'"
 											onclick="showdetailsbyRowAndColumn(this)"></td>
@@ -2243,9 +2242,12 @@ PURPOSE		: BRRS_M_LCRREPORT
 									<tr th:each="report, srlno : ${reportdetails}">
 										<td>
 											<a data-toggle="tooltip" class="editrec" title="Click to Edit this Record">
-												<i class="fas fa-edit" style="color: black; cursor:pointer;" th:attr="data-acctNo=${report.acctNumber}, 
-											                    data-asondate=${#dates.format(report.reportDate, 'dd-MM-yyyy')},data-type=${type}"
-													onclick="openMPLLDetail(this, 'edit')">
+												<i class="fas fa-edit" style="color: black; cursor:pointer;" 
+												   th:attr="data-acctNo=${report.acctNumber}, 
+												            data-asondate=${#dates.format(report.reportDate, 'dd-MM-yyyy')},
+												            data-type=${type},
+												            data-clickedRow=${clickedRow}" 
+												   onclick="openMPLLDetail(this, 'edit')">
 												</i>
 											</a>
 										</td>
@@ -2268,8 +2270,15 @@ PURPOSE		: BRRS_M_LCRREPORT
 										<td style="text-align:right;"
 											th:text="${#numbers.formatDecimal(report.creditequivalent,1,'COMMA',0,'POINT')}">
 										</td>
-										<td style="text-align:left;" th:text="${report.reportLabel}"></td>
-										<td th:text="${report.reportAddlCriteria1}"></td>
+										<td style="text-align:left;" 
+										    th:text="${clickedRow == 'R38' ? report.reportLabel3 : 
+										             (clickedRow == 'R37' || clickedRow == 'R81' || clickedRow == 'R82' || clickedRow == 'R83') ? report.reportLabel2 : 
+										             report.reportLabel}">
+										</td>
+										<td th:text="${clickedRow == 'R38' ? report.reportAddlCriteria3 : 
+										             (clickedRow == 'R37' || clickedRow == 'R81' || clickedRow == 'R82' || clickedRow == 'R83') ? report.reportAddlCriteria2 : 
+										             report.reportAddlCriteria1}">
+										</td>
 										<td th:text="${#dates.format(report.reportDate,'dd-MM-yyyy')}"></td>
 
 									</tr>
@@ -2355,17 +2364,24 @@ PURPOSE		: BRRS_M_LCRREPORT
 
 							<label class="col-sm-2 col-form-label">Row ID</label>
 							<div class="col-sm-3">
-								<input type="text" th:field="*{reportLabel}" class="form-control form-control-sm"
-									readonly />
+							    <!-- Use ${param.clickedRow} to read directly from the URL -->
+							    <input type="text" class="form-control form-control-sm" readonly 
+							           th:value="${param.clickedRow[0] == 'R38' ? Data.reportLabel3 : 
+							                    (param.clickedRow[0] == 'R37' || param.clickedRow[0] == 'R81' || param.clickedRow[0] == 'R82') ? Data.reportLabel2 : 
+							                    Data.reportLabel}" />
 							</div>
+
+
 						</div>
 
 						<!-- Column ID & Report Date -->
 						<div class="row formline mt-2">
 							<label class="col-sm-2 col-form-label">Column ID</label>
 							<div class="col-sm-3">
-								<input type="text" th:field="*{reportAddlCriteria1}"
-									class="form-control form-control-sm" readonly />
+							    <input type="text" class="form-control form-control-sm" readonly 
+							           th:value="${param.clickedRow[0] == 'R38' ? Data.reportAddlCriteria3 : 
+							                    (param.clickedRow[0] == 'R37' || param.clickedRow[0] == 'R81' || param.clickedRow[0] == 'R82') ? Data.reportAddlCriteria2 : 
+							                    Data.reportAddlCriteria1}" />
 							</div>
 
 							<div class="col-sm-1"></div>
