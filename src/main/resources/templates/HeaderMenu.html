@@ -907,6 +907,21 @@
 		.dropdown-submenu:hover>.dropdown-menu {
 			display: block;
 		}
+		
+		
+		.two-column-dropdown {
+    		width: 420px;              /* adjust if needed */
+   		    column-count: 2;
+    		column-gap: 20px;
+		}
+
+		.two-column-dropdown li {
+  		    break-inside: avoid;
+		}
+
+		.two-column-dropdown .nav-link {
+    		white-space: normal;       /* allows long text wrap */
+		}
 	</style>
 	<script>
 		function showUploadAlert(message, type = "success", showIcon = true) {
@@ -1264,6 +1279,82 @@
 											</li>
 										</ul>
 									</li>
+									
+									<li class="dropdown-submenu">
+										<a href="#" class="nav-link">RBR Reports</a>
+										<ul class="dropdown-menu two-column-dropdown">
+											<li>
+												<a href="#" class="nav-link" id="PulaCFS"
+													onclick="contentLoad(this)">Pula CFS</a>
+											</li>
+											
+											<li>
+												<a href="#" class="nav-link" id="Pillar3Disclosure"
+													onclick="contentLoad(this)">Pillar 3 Disclosure</a>
+											</li>
+											
+											<li>
+												<a href="#" class="nav-link" id="LCR"
+													onclick="contentLoad(this)">LCR</a>
+											</li>
+											
+											<li>
+												<a href="#" class="nav-link" id="NSFR"
+													onclick="contentLoad(this)">NSFR</a>
+											</li>
+											
+											<li>
+												<a href="#" class="nav-link" id="CPR"
+													onclick="contentLoad(this)">CPR</a>
+											</li>
+											
+											<li>
+												<a href="#" class="nav-link" id="FSI"
+													onclick="contentLoad(this)">FSI</a>
+											</li>
+											
+											<li>
+												<a href="#" class="nav-link" id="AMLCFT"
+													onclick="contentLoad(this)">AML-CFT</a>
+											</li>
+											
+											<li>
+												<a href="#" class="nav-link" id="DISBAnnualReturn"
+													onclick="contentLoad(this)">DISB Annual Return</a>
+											</li>
+											
+											<li>
+												<a href="#" class="nav-link" id="DISBBiannualReturn"
+													onclick="contentLoad(this)">DISB Single Customer View Biannual Return</a>
+											</li>
+											
+											<li>
+												<a href="#" class="nav-link" id="DISBMonthlyAndQuaterly"
+													onclick="contentLoad(this)">DISB Monthly and Quaterly Returns</a>
+											</li>
+											
+											<li>
+												<a href="#" class="nav-link" id="BGREPORT"
+													onclick="contentLoad(this)">BG REPORT</a>
+											</li>
+											
+											<li>
+												<a href="#" class="nav-link" id="UFCE"
+													onclick="contentLoad(this)">UFCE</a>
+											</li>
+											
+											<li>
+												<a href="#" class="nav-link" id="IRRBB"
+													onclick="contentLoad(this)">IRRBB</a>
+											</li>
+											
+											<li>
+												<a href="#" class="nav-link" id="Top100borrower"
+													onclick="contentLoad(this)">Top 100 borrower</a>
+											</li>
+						
+										</ul>
+									</li>
 
 								</ul>
 							</li>
@@ -1297,42 +1388,208 @@ th:if="${session.DOMAINID != null and #strings.containsIgnoreCase(session.DOMAIN
 								th:if="${session.DOMAINID != null and #strings.containsIgnoreCase(session.DOMAINID, 'Archival')}">
 
 								<a href="#" class="dropdown-toggle">Resubmission</a>
-
 								<ul class="dropdown-menu">
-
-
-									<li><a href="#" class="nav-link" id="Monthly1-Resubmission"
-											onclick="contentLoad(this)">Monthly</a></li>
-
-									<li><a href="#" class="nav-link" id="QuarterlyResub"
-											onclick="contentLoad(this)">Quarterly</a></li>
-
-								</ul>
-
-
+								
+									<li class="dropdown-submenu">
+											<a href="#" class="nav-link">Basel Returns</a>
+	
+												<ul class="dropdown-menu">
+				
+				
+													<li><a href="#" class="nav-link" id="Monthly1-Resubmission"
+															onclick="contentLoad(this)">Monthly</a></li>
+				
+													<li><a href="#" class="nav-link" id="QuarterlyResub"
+															onclick="contentLoad(this)">Quarterly</a></li>
+															
+													<li>
+														<a href="#" class="nav-link" id="HalfYearlyResubmission"
+															onclick="contentLoad(this)">Half Yearly</a>
+													</li>
+				
+												</ul>
+									</li>
+									
+									<li class="dropdown-submenu">
+											<a href="#" class="nav-link">RBR Reports</a>
+											<ul class="dropdown-menu two-column-dropdown">
+												<li>
+													<a href="#" class="nav-link" id="PulaCFSResubmission"
+														onclick="contentLoad(this)">Pula CFS</a>
+												</li>
+												
+												<li>
+													<a href="#" class="nav-link" id="Pillar3DisclosureResubmission"
+														onclick="contentLoad(this)">Pillar 3 Disclosure</a>
+												</li>
+												
+												<li>
+													<a href="#" class="nav-link" id="LCRResubmission"
+														onclick="contentLoad(this)">LCR</a>
+												</li>
+												
+												<li>
+													<a href="#" class="nav-link" id="NSFRResubmission"
+														onclick="contentLoad(this)">NSFR</a>
+												</li>
+												
+												<li>
+													<a href="#" class="nav-link" id="CPRResubmission"
+														onclick="contentLoad(this)">CPR</a>
+												</li>
+												
+												<li>
+													<a href="#" class="nav-link" id="FSIResubmission"
+														onclick="contentLoad(this)">FSI</a>
+												</li>
+												
+												<li>
+													<a href="#" class="nav-link" id="AMLCFTResubmission"
+														onclick="contentLoad(this)">AML-CFT</a>
+												</li>
+												
+												<li>
+													<a href="#" class="nav-link" id="DISBAnnualReturnResubmission"
+														onclick="contentLoad(this)">DISB Annual Return</a>
+												</li>
+												
+												<li>
+													<a href="#" class="nav-link" id="DISBBiannualReturnResubmission"
+														onclick="contentLoad(this)">DISB Single Customer View Biannual Return</a>
+												</li>
+												
+												<li>
+													<a href="#" class="nav-link" id="DISBMonthlyAndQuaterlyResubmission"
+														onclick="contentLoad(this)">DISB Monthly and Quaterly Returns</a>
+												</li>
+												
+												<li>
+													<a href="#" class="nav-link" id="BGREPORTResubmission"
+														onclick="contentLoad(this)">BG REPORT</a>
+												</li>
+												
+												<li>
+													<a href="#" class="nav-link" id="UFCEResubmission"
+														onclick="contentLoad(this)">UFCE</a>
+												</li>
+												
+												<li>
+													<a href="#" class="nav-link" id="IRRBBResubmission"
+														onclick="contentLoad(this)">IRRBB</a>
+												</li>
+												
+												<li>
+													<a href="#" class="nav-link" id="Top100borrowerResubmission"
+														onclick="contentLoad(this)">Top 100 borrower</a>
+												</li>
+							
+											</ul>
+										</li>
+									</ul>
 							</li>
 
 							<li class="nav-item dropdown" style=" text-align: center;"
 								th:if="${session.DOMAINID != null and #strings.containsIgnoreCase(session.DOMAINID, 'Archival')}">
 
 								<a href="#" class="dropdown-toggle">Archival</a>
-
 								<ul class="dropdown-menu">
-
-
-									<li><a href="#" class="nav-link" id="MonthlyArchival"
-											onclick="contentLoad(this)">Monthly</a></li>
-
-									<li><a href="#" class="nav-link" id="QuarterlyArchival"
-											onclick="contentLoad(this)">Quarterly</a></li>
-									<li>
-										<a href="#" class="nav-link" id="HalfYearlyArchival"
-											onclick="contentLoad(this)">Half Yearly Reports</a>
-									</li>
-
-								</ul>
-
-
+								
+									<li class="dropdown-submenu">
+											<a href="#" class="nav-link">Basel Returns</a>
+	
+											<ul class="dropdown-menu">
+			
+			
+												<li><a href="#" class="nav-link" id="MonthlyArchival"
+														onclick="contentLoad(this)">Monthly</a></li>
+			
+												<li><a href="#" class="nav-link" id="QuarterlyArchival"
+														onclick="contentLoad(this)">Quarterly</a></li>
+												<li>
+													<a href="#" class="nav-link" id="HalfYearlyArchival"
+														onclick="contentLoad(this)">Half Yearly Reports</a>
+												</li>
+			
+											</ul>
+										</li>
+	
+									
+									<li class="dropdown-submenu">
+											<a href="#" class="nav-link">RBR Reports</a>
+											<ul class="dropdown-menu two-column-dropdown">
+												<li>
+													<a href="#" class="nav-link" id="PulaCFSArchival"
+														onclick="contentLoad(this)">Pula CFS</a>
+												</li>
+												
+												<li>
+													<a href="#" class="nav-link" id="Pillar3DisclosureArchival"
+														onclick="contentLoad(this)">Pillar 3 Disclosure</a>
+												</li>
+												
+												<li>
+													<a href="#" class="nav-link" id="LCRArchival"
+														onclick="contentLoad(this)">LCR</a>
+												</li>
+												
+												<li>
+													<a href="#" class="nav-link" id="NSFRArchival"
+														onclick="contentLoad(this)">NSFR</a>
+												</li>
+												
+												<li>
+													<a href="#" class="nav-link" id="CPRArchival"
+														onclick="contentLoad(this)">CPR</a>
+												</li>
+												
+												<li>
+													<a href="#" class="nav-link" id="FSIArchival"
+														onclick="contentLoad(this)">FSI</a>
+												</li>
+												
+												<li>
+													<a href="#" class="nav-link" id="AMLCFTArchival"
+														onclick="contentLoad(this)">AML-CFT</a>
+												</li>
+												
+												<li>
+													<a href="#" class="nav-link" id="DISBAnnualReturnArchival"
+														onclick="contentLoad(this)">DISB Annual Return</a>
+												</li>
+												
+												<li>
+													<a href="#" class="nav-link" id="DISBBiannualReturnArchival"
+														onclick="contentLoad(this)">DISB Single Customer View Biannual Return</a>
+												</li>
+												
+												<li>
+													<a href="#" class="nav-link" id="DISBMonthlyAndQuaterlyArchival"
+														onclick="contentLoad(this)">DISB Monthly and Quaterly Returns</a>
+												</li>
+												
+												<li>
+													<a href="#" class="nav-link" id="BGREPORTArchival"
+														onclick="contentLoad(this)">BG REPORT</a>
+												</li>
+												
+												<li>
+													<a href="#" class="nav-link" id="UFCEArchival"
+														onclick="contentLoad(this)">UFCE</a>
+												</li>
+												
+												<li>
+													<a href="#" class="nav-link" id="IRRBBArchival"
+														onclick="contentLoad(this)">IRRBB</a>
+												</li>
+												
+												<li>
+													<a href="#" class="nav-link" id="Top100borrowerArchival"
+														onclick="contentLoad(this)">Top 100 borrower</a>
+												</li>
+							
+											</ul>
+										</li>
+									</ul>
 							</li>
 
 							<li class="nav-item dropdown" style=" text-align: center;"

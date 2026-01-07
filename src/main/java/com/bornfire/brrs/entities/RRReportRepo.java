@@ -18,6 +18,47 @@ public interface RRReportRepo extends JpaRepository<RRReport, Integer> {
 	@Query(value = "select * from BRRS_RR_RPT_MAST WHERE REMARKS_5 = 'H' ORDER BY rpt_code", nativeQuery = true)
 	List<RRReport> getReportListbrrsH();
 	
+	@Query(value = "select * from BRRS_RR_RPT_MAST WHERE REMARKS_5 = 'P3' ORDER BY rpt_code", nativeQuery = true)
+	List<RRReport> getReportListbrrsP3();
+	
+	@Query(value = "select * from BRRS_RR_RPT_MAST WHERE REMARKS_5 = 'PCFS' ORDER BY rpt_code", nativeQuery = true)
+	List<RRReport> getReportListbrrsPCFS();
+	
+	@Query(value = "select * from BRRS_RR_RPT_MAST WHERE REMARKS_5 = 'DMQ' ORDER BY rpt_code", nativeQuery = true)
+	List<RRReport> getReportListbrrsDMQ();
+	
+	@Query(value = "select * from BRRS_RR_RPT_MAST WHERE REMARKS_5 = 'LCR' ORDER BY rpt_code", nativeQuery = true)
+	List<RRReport> getReportListbrrsLCR();
+	
+	@Query(value = "select * from BRRS_RR_RPT_MAST WHERE REMARKS_5 = 'NSFR' ORDER BY rpt_code", nativeQuery = true)
+	List<RRReport> getReportListbrrsNSFR();
+	
+	@Query(value = "select * from BRRS_RR_RPT_MAST WHERE REMARKS_5 = 'CPR' ORDER BY rpt_code", nativeQuery = true)
+	List<RRReport> getReportListbrrsCPR();
+	
+	@Query(value = "select * from BRRS_RR_RPT_MAST WHERE REMARKS_5 = 'FSI' ORDER BY rpt_code", nativeQuery = true)
+	List<RRReport> getReportListbrrsFSI();
+	
+	@Query(value = "select * from BRRS_RR_RPT_MAST WHERE REMARKS_5 = 'AML' ORDER BY rpt_code", nativeQuery = true)
+	List<RRReport> getReportListbrrsAML();
+	
+	@Query(value = "select * from BRRS_RR_RPT_MAST WHERE REMARKS_5 = 'DAR' ORDER BY rpt_code", nativeQuery = true)
+	List<RRReport> getReportListbrrsDAR();
+	
+	@Query(value = "select * from BRRS_RR_RPT_MAST WHERE REMARKS_5 = 'DBR' ORDER BY rpt_code", nativeQuery = true)
+	List<RRReport> getReportListbrrsDBR();
+	
+	@Query(value = "select * from BRRS_RR_RPT_MAST WHERE REMARKS_5 = 'BG' ORDER BY rpt_code", nativeQuery = true)
+	List<RRReport> getReportListbrrsBG();
+	
+	@Query(value = "select * from BRRS_RR_RPT_MAST WHERE REMARKS_5 = 'UFCE' ORDER BY rpt_code", nativeQuery = true)
+	List<RRReport> getReportListbrrsUFCE();
+	
+	@Query(value = "select * from BRRS_RR_RPT_MAST WHERE REMARKS_5 = 'IRB' ORDER BY rpt_code", nativeQuery = true)
+	List<RRReport> getReportListbrrsIRRBB();
+	
+	@Query(value = "select * from BRRS_RR_RPT_MAST WHERE REMARKS_5 = 'TB' ORDER BY rpt_code", nativeQuery = true)
+	List<RRReport> getReportListbrrsTB();
 	
 	@Query(value = "select * from BRRS_RR_RPT_MAST WHERE REMARKS_5 = 'M2' ORDER BY rpt_code", nativeQuery = true)
 	List<RRReport> getReportListmonthly2();

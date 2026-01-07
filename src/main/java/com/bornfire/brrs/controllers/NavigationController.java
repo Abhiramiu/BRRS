@@ -446,6 +446,286 @@ public class NavigationController {
 		return "BRRS/RRReports";
 
 	}
+	
+	@RequestMapping(value = "Pillar3Disclosure", method = { RequestMethod.GET, RequestMethod.POST })
+	public String Pillar3Disclosure(Model md, HttpServletRequest req) {
+		md.addAttribute("menu", "RBR Reports- Pillar 3 Disclosure Reports");
+		System.out.println("count" + rrReportlist.getReportListbrrsP3().size());
+		md.addAttribute("reportlist", rrReportlist.getReportListbrrsP3());
+
+		return "BRRS/RRReports";
+
+	}
+	
+	@RequestMapping(value = "PulaCFS", method = { RequestMethod.GET, RequestMethod.POST })
+	public String PulaCFS(Model md, HttpServletRequest req) {
+		md.addAttribute("menu", "RBR Reports- Pula CFS Reports");
+		System.out.println("count" + rrReportlist.getReportListbrrsPCFS().size());
+		md.addAttribute("reportlist", rrReportlist.getReportListbrrsPCFS());
+
+		return "BRRS/RRReports";
+
+	}
+	
+	@RequestMapping(value = "DISBMonthlyAndQuaterly", method = { RequestMethod.GET, RequestMethod.POST })
+	public String DISBMonthlyAndQuaterly(Model md, HttpServletRequest req) {
+		md.addAttribute("menu", "RBR Reports- DISB Monthly And Quaterly Reports");
+		System.out.println("count" + rrReportlist.getReportListbrrsDMQ().size());
+		md.addAttribute("reportlist", rrReportlist.getReportListbrrsDMQ());
+
+		return "BRRS/RRReports";
+
+	}
+	
+	@RequestMapping(value = "LCR", method = { RequestMethod.GET, RequestMethod.POST })
+	public String LCR(Model md, HttpServletRequest req) {
+		md.addAttribute("menu", "RBR Reports- LCR");
+		System.out.println("count" + rrReportlist.getReportListbrrsLCR().size());
+		md.addAttribute("reportlist", rrReportlist.getReportListbrrsLCR());
+
+		return "BRRS/RRReports";
+
+	}
+	
+	@RequestMapping(value = "NSFR", method = { RequestMethod.GET, RequestMethod.POST })
+	public String NSFR(Model md, HttpServletRequest req) {
+		md.addAttribute("menu", "RBR Reports- NSFR");
+		System.out.println("count" + rrReportlist.getReportListbrrsNSFR().size());
+		md.addAttribute("reportlist", rrReportlist.getReportListbrrsNSFR());
+
+		return "BRRS/RRReports";
+
+	}
+	
+	@RequestMapping(value = "CPR", method = { RequestMethod.GET, RequestMethod.POST })
+	public String CPR(Model md, HttpServletRequest req) {
+		md.addAttribute("menu", "RBR Reports- CPR");
+		System.out.println("count" + rrReportlist.getReportListbrrsCPR().size());
+		md.addAttribute("reportlist", rrReportlist.getReportListbrrsCPR());
+
+		return "BRRS/RRReports";
+
+	}
+	
+	@RequestMapping(value = "FSI", method = { RequestMethod.GET, RequestMethod.POST })
+	public String FSI(Model md, HttpServletRequest req) {
+		md.addAttribute("menu", "RBR Reports- FSI");
+		System.out.println("count" + rrReportlist.getReportListbrrsFSI().size());
+		md.addAttribute("reportlist", rrReportlist.getReportListbrrsFSI());
+
+		return "BRRS/RRReports";
+
+	}
+	
+	@RequestMapping(value = "AMLCFT", method = { RequestMethod.GET, RequestMethod.POST })
+	public String AMLCFT(Model md, HttpServletRequest req) {
+		md.addAttribute("menu", "RBR Reports- AMLCFT");
+		System.out.println("count" + rrReportlist.getReportListbrrsAML().size());
+		md.addAttribute("reportlist", rrReportlist.getReportListbrrsAML());
+
+		return "BRRS/RRReports";
+
+	}
+	
+	@RequestMapping(value = "DISBAnnualReturn", method = { RequestMethod.GET, RequestMethod.POST })
+	public String DISBAnnualReturn(Model md, HttpServletRequest req) {
+		md.addAttribute("menu", "RBR Reports- DISB Annual Return");
+		System.out.println("count" + rrReportlist.getReportListbrrsDAR().size());
+		md.addAttribute("reportlist", rrReportlist.getReportListbrrsDAR());
+
+		return "BRRS/RRReports";
+
+	}
+	
+	@RequestMapping(value = "DISBBiannualReturn", method = { RequestMethod.GET, RequestMethod.POST })
+	public String DISBBiannualReturn(Model md, HttpServletRequest req) {
+		md.addAttribute("menu", "RBR Reports- DISB Biannual Return");
+		System.out.println("count" + rrReportlist.getReportListbrrsDBR().size());
+		md.addAttribute("reportlist", rrReportlist.getReportListbrrsDBR());
+
+		return "BRRS/RRReports";
+
+	}
+	
+	@RequestMapping(value = "BGREPORT", method = { RequestMethod.GET, RequestMethod.POST })
+	public String BGREPORT(Model md, HttpServletRequest req) {
+		md.addAttribute("menu", "RBR Reports- BG REPORT");
+		System.out.println("count" + rrReportlist.getReportListbrrsBG().size());
+		md.addAttribute("reportlist", rrReportlist.getReportListbrrsBG());
+
+		return "BRRS/RRReports";
+
+	}
+	
+	@RequestMapping(value = "UFCE", method = { RequestMethod.GET, RequestMethod.POST })
+	public String UFCE(Model md, HttpServletRequest req) {
+		md.addAttribute("menu", "RBR Reports- UFCE");
+		System.out.println("count" + rrReportlist.getReportListbrrsUFCE().size());
+		md.addAttribute("reportlist", rrReportlist.getReportListbrrsUFCE());
+
+		return "BRRS/RRReports";
+
+	}
+	
+	@RequestMapping(value = "IRRBB", method = { RequestMethod.GET, RequestMethod.POST })
+	public String IRRBB(Model md, HttpServletRequest req) {
+		md.addAttribute("menu", "RBR Reports- IRRBB");
+		System.out.println("count" + rrReportlist.getReportListbrrsIRRBB().size());
+		md.addAttribute("reportlist", rrReportlist.getReportListbrrsIRRBB());
+
+		return "BRRS/RRReports";
+
+	}
+	
+	@RequestMapping(value = "Top100borrower", method = { RequestMethod.GET, RequestMethod.POST })
+	public String Top100borrower(Model md, HttpServletRequest req) {
+		md.addAttribute("menu", "RBR Reports- Top100 borrower");
+		System.out.println("count" + rrReportlist.getReportListbrrsTB().size());
+		md.addAttribute("reportlist", rrReportlist.getReportListbrrsTB());
+
+		return "BRRS/RRReports";
+
+	}
+	
+	@RequestMapping(value = "Top100borrowerArchival", method = { RequestMethod.GET, RequestMethod.POST })
+	public String Top100borrowerArchival(Model md, HttpServletRequest req) {
+		md.addAttribute("menu", "RBR Reports- Top100 borrower Archival");
+		System.out.println("count" + rrReportlist.getReportListbrrsTB().size());
+		md.addAttribute("reportlist", rrReportlist.getReportListbrrsTB());
+
+		return "BRRS/BRRSArchival";
+
+	}
+	
+	@RequestMapping(value = "IRRBBArchival", method = { RequestMethod.GET, RequestMethod.POST })
+	public String IRRBBArchival(Model md, HttpServletRequest req) {
+		md.addAttribute("menu", "RBR Reports- IRRBB Archival");
+		System.out.println("count" + rrReportlist.getReportListbrrsIRRBB().size());
+		md.addAttribute("reportlist", rrReportlist.getReportListbrrsIRRBB());
+
+		return "BRRS/BRRSArchival";
+
+	}
+	
+	@RequestMapping(value = "UFCEArchival", method = { RequestMethod.GET, RequestMethod.POST })
+	public String UFCEArchival(Model md, HttpServletRequest req) {
+		md.addAttribute("menu", "RBR Reports- UFCE Archival");
+		System.out.println("count" + rrReportlist.getReportListbrrsUFCE().size());
+		md.addAttribute("reportlist", rrReportlist.getReportListbrrsUFCE());
+
+		return "BRRS/BRRSArchival";
+
+	}
+	
+	@RequestMapping(value = "BGREPORTArchival", method = { RequestMethod.GET, RequestMethod.POST })
+	public String BGREPORTArchival(Model md, HttpServletRequest req) {
+		md.addAttribute("menu", "RBR Reports- BG REPORT Archival");
+		System.out.println("count" + rrReportlist.getReportListbrrsBG().size());
+		md.addAttribute("reportlist", rrReportlist.getReportListbrrsBG());
+
+		return "BRRS/BRRSArchival";
+
+	}
+	
+	@RequestMapping(value = "DISBBiannualReturnArchival", method = { RequestMethod.GET, RequestMethod.POST })
+	public String DISBBiannualReturnArchival(Model md, HttpServletRequest req) {
+		md.addAttribute("menu", "RBR Reports- DISB Biannual Return Archival");
+		System.out.println("count" + rrReportlist.getReportListbrrsDBR().size());
+		md.addAttribute("reportlist", rrReportlist.getReportListbrrsDBR());
+
+		return "BRRS/BRRSArchival";
+
+	}
+	
+	@RequestMapping(value = "DISBAnnualReturnArchival", method = { RequestMethod.GET, RequestMethod.POST })
+	public String DISBAnnualReturnArchival(Model md, HttpServletRequest req) {
+		md.addAttribute("menu", "RBR Reports- DISB Annual Return Archival");
+		System.out.println("count" + rrReportlist.getReportListbrrsDAR().size());
+		md.addAttribute("reportlist", rrReportlist.getReportListbrrsDAR());
+
+		return "BRRS/BRRSArchival";
+
+	}
+	
+	@RequestMapping(value = "AMLCFTArchival", method = { RequestMethod.GET, RequestMethod.POST })
+	public String AMLCFTArchival(Model md, HttpServletRequest req) {
+		md.addAttribute("menu", "RBR Reports- AMLCFT Archival");
+		System.out.println("count" + rrReportlist.getReportListbrrsAML().size());
+		md.addAttribute("reportlist", rrReportlist.getReportListbrrsAML());
+
+		return "BRRS/BRRSArchival";
+
+	}
+	
+	@RequestMapping(value = "FSIArchival", method = { RequestMethod.GET, RequestMethod.POST })
+	public String FSIArchival(Model md, HttpServletRequest req) {
+		md.addAttribute("menu", "RBR Reports- FSI Archival");
+		System.out.println("count" + rrReportlist.getReportListbrrsFSI().size());
+		md.addAttribute("reportlist", rrReportlist.getReportListbrrsFSI());
+
+		return "BRRS/BRRSArchival";
+
+	}
+	
+	@RequestMapping(value = "CPRArchival", method = { RequestMethod.GET, RequestMethod.POST })
+	public String CPRArchival(Model md, HttpServletRequest req) {
+		md.addAttribute("menu", "RBR Reports- CPR Archival");
+		System.out.println("count" + rrReportlist.getReportListbrrsCPR().size());
+		md.addAttribute("reportlist", rrReportlist.getReportListbrrsCPR());
+
+		return "BRRS/BRRSArchival";
+
+	}
+	
+	@RequestMapping(value = "NSFRArchival", method = { RequestMethod.GET, RequestMethod.POST })
+	public String NSFRArchival(Model md, HttpServletRequest req) {
+		md.addAttribute("menu", "RBR Reports- NSFR Archival");
+		System.out.println("count" + rrReportlist.getReportListbrrsNSFR().size());
+		md.addAttribute("reportlist", rrReportlist.getReportListbrrsNSFR());
+
+		return "BRRS/BRRSArchival";
+
+	}
+	
+	@RequestMapping(value = "LCRArchival", method = { RequestMethod.GET, RequestMethod.POST })
+	public String LCRArchival(Model md, HttpServletRequest req) {
+		md.addAttribute("menu", "RBR Reports- LCR Archival");
+		System.out.println("count" + rrReportlist.getReportListbrrsLCR().size());
+		md.addAttribute("reportlist", rrReportlist.getReportListbrrsLCR());
+
+		return "BRRS/BRRSArchival";
+
+	}
+	
+	@RequestMapping(value = "DISBMonthlyAndQuaterlyArchival", method = { RequestMethod.GET, RequestMethod.POST })
+	public String DISBMonthlyAndQuaterlyArchival(Model md, HttpServletRequest req) {
+		md.addAttribute("menu", "RBR Reports- DISB Monthly And Quaterly Archival");
+		System.out.println("count" + rrReportlist.getReportListbrrsDMQ().size());
+		md.addAttribute("reportlist", rrReportlist.getReportListbrrsDMQ());
+
+		return "BRRS/BRRSArchival";
+
+	}
+	
+	@RequestMapping(value = "PulaCFSArchival", method = { RequestMethod.GET, RequestMethod.POST })
+	public String PulaCFSArchival(Model md, HttpServletRequest req) {
+		md.addAttribute("menu", "RBR Reports- Pula CFS Archival");
+		System.out.println("count" + rrReportlist.getReportListbrrsPCFS().size());
+		md.addAttribute("reportlist", rrReportlist.getReportListbrrsPCFS());
+
+		return "BRRS/BRRSArchival";
+
+	}
+	
+	@RequestMapping(value = "Pillar3DisclosureArchival", method = { RequestMethod.GET, RequestMethod.POST })
+	public String Pillar3DisclosureArchival(Model md, HttpServletRequest req) {
+		md.addAttribute("menu", "RBR Reports- Pillar 3 Disclosure Archival");
+		System.out.println("count" + rrReportlist.getReportListbrrsP3().size());
+		md.addAttribute("reportlist", rrReportlist.getReportListbrrsP3());
+
+		return "BRRS/BRRSArchival";
+
+	}
 
 	@RequestMapping(value = "MonthlyArchival", method = { RequestMethod.GET, RequestMethod.POST })
 	public String brrsArchival(Model md, HttpServletRequest req) {
@@ -1688,6 +1968,157 @@ public class NavigationController {
 
 		return "BRRS/BRRSResubmission";
 	}
+	
+	@RequestMapping(value = "HalfYearlyResubmission", method = { RequestMethod.GET, RequestMethod.POST })
+	public String HalfYearlyResubmission(Model md, HttpServletRequest req) {
+		md.addAttribute("menu", "BRRS - BRRS Half Yearly RESUBMISSION");
+
+		System.out.println("count: " + rrReportlist.getReportListbrrsH().size());
+		md.addAttribute("reportlist", rrReportlist.getReportListbrrsH());
+
+		return "BRRS/BRRSResubmission";
+	}
+	
+	@RequestMapping(value = "Top100borrowerResubmission", method = { RequestMethod.GET, RequestMethod.POST })
+	public String Top100borrowerResubmission(Model md, HttpServletRequest req) {
+		md.addAttribute("menu", "RBR Reports- Top100 borrower Resubmission");
+		System.out.println("count" + rrReportlist.getReportListbrrsTB().size());
+		md.addAttribute("reportlist", rrReportlist.getReportListbrrsTB());
+
+		return "BRRS/BRRSResubmission";
+
+	}
+	
+	@RequestMapping(value = "IRRBBResubmission", method = { RequestMethod.GET, RequestMethod.POST })
+	public String IRRBBResubmission(Model md, HttpServletRequest req) {
+		md.addAttribute("menu", "RBR Reports- IRRBB Resubmission");
+		System.out.println("count" + rrReportlist.getReportListbrrsIRRBB().size());
+		md.addAttribute("reportlist", rrReportlist.getReportListbrrsIRRBB());
+
+		return "BRRS/BRRSResubmission";
+
+	}
+	
+	@RequestMapping(value = "UFCEResubmission", method = { RequestMethod.GET, RequestMethod.POST })
+	public String UFCEResubmission(Model md, HttpServletRequest req) {
+		md.addAttribute("menu", "RBR Reports- UFCE Resubmission");
+		System.out.println("count" + rrReportlist.getReportListbrrsUFCE().size());
+		md.addAttribute("reportlist", rrReportlist.getReportListbrrsUFCE());
+
+		return "BRRS/BRRSResubmission";
+
+	}
+	
+	@RequestMapping(value = "BGREPORTResubmission", method = { RequestMethod.GET, RequestMethod.POST })
+	public String BGREPORTResubmission(Model md, HttpServletRequest req) {
+		md.addAttribute("menu", "RBR Reports- BG REPORT Resubmission");
+		System.out.println("count" + rrReportlist.getReportListbrrsBG().size());
+		md.addAttribute("reportlist", rrReportlist.getReportListbrrsBG());
+
+		return "BRRS/BRRSResubmission";
+
+	}
+	
+	@RequestMapping(value = "DISBBiannualReturnResubmission", method = { RequestMethod.GET, RequestMethod.POST })
+	public String DISBBiannualReturnResubmission(Model md, HttpServletRequest req) {
+		md.addAttribute("menu", "RBR Reports- DISB Biannual Return Resubmission");
+		System.out.println("count" + rrReportlist.getReportListbrrsDBR().size());
+		md.addAttribute("reportlist", rrReportlist.getReportListbrrsDBR());
+
+		return "BRRS/BRRSResubmission";
+
+	}
+	
+	@RequestMapping(value = "DISBAnnualReturnResubmission", method = { RequestMethod.GET, RequestMethod.POST })
+	public String DISBAnnualReturnResubmission(Model md, HttpServletRequest req) {
+		md.addAttribute("menu", "RBR Reports- DISB Annual Return Resubmission");
+		System.out.println("count" + rrReportlist.getReportListbrrsDAR().size());
+		md.addAttribute("reportlist", rrReportlist.getReportListbrrsDAR());
+
+		return "BRRS/BRRSResubmission";
+
+	}
+	
+	@RequestMapping(value = "AMLCFTResubmission", method = { RequestMethod.GET, RequestMethod.POST })
+	public String AMLCFTResubmission(Model md, HttpServletRequest req) {
+		md.addAttribute("menu", "RBR Reports- AMLCFT Resubmission");
+		System.out.println("count" + rrReportlist.getReportListbrrsAML().size());
+		md.addAttribute("reportlist", rrReportlist.getReportListbrrsAML());
+
+		return "BRRS/BRRSResubmission";
+
+	}
+	
+	@RequestMapping(value = "FSIResubmission", method = { RequestMethod.GET, RequestMethod.POST })
+	public String FSIResubmission(Model md, HttpServletRequest req) {
+		md.addAttribute("menu", "RBR Reports- FSI Resubmission");
+		System.out.println("count" + rrReportlist.getReportListbrrsFSI().size());
+		md.addAttribute("reportlist", rrReportlist.getReportListbrrsFSI());
+
+		return "BRRS/BRRSResubmission";
+
+	}
+	
+	@RequestMapping(value = "CPRResubmission", method = { RequestMethod.GET, RequestMethod.POST })
+	public String CPRResubmission(Model md, HttpServletRequest req) {
+		md.addAttribute("menu", "RBR Reports- CPR Resubmission");
+		System.out.println("count" + rrReportlist.getReportListbrrsCPR().size());
+		md.addAttribute("reportlist", rrReportlist.getReportListbrrsCPR());
+
+		return "BRRS/BRRSResubmission";
+
+	}
+	
+	@RequestMapping(value = "NSFRResubmission", method = { RequestMethod.GET, RequestMethod.POST })
+	public String NSFRResubmission(Model md, HttpServletRequest req) {
+		md.addAttribute("menu", "RBR Reports- NSFR Resubmission");
+		System.out.println("count" + rrReportlist.getReportListbrrsNSFR().size());
+		md.addAttribute("reportlist", rrReportlist.getReportListbrrsNSFR());
+
+		return "BRRS/BRRSResubmission";
+
+	}
+	
+	@RequestMapping(value = "LCRResubmission", method = { RequestMethod.GET, RequestMethod.POST })
+	public String LCRResubmission(Model md, HttpServletRequest req) {
+		md.addAttribute("menu", "RBR Reports- LCR Resubmission");
+		System.out.println("count" + rrReportlist.getReportListbrrsLCR().size());
+		md.addAttribute("reportlist", rrReportlist.getReportListbrrsLCR());
+
+		return "BRRS/BRRSResubmission";
+
+	}
+	
+	@RequestMapping(value = "DISBMonthlyAndQuaterlyResubmission", method = { RequestMethod.GET, RequestMethod.POST })
+	public String DISBMonthlyAndQuaterlyResubmission(Model md, HttpServletRequest req) {
+		md.addAttribute("menu", "RBR Reports- DISB Monthly And Quaterly Resubmission");
+		System.out.println("count" + rrReportlist.getReportListbrrsDMQ().size());
+		md.addAttribute("reportlist", rrReportlist.getReportListbrrsDMQ());
+
+		return "BRRS/BRRSResubmission";
+
+	}
+	
+	@RequestMapping(value = "PulaCFSResubmission", method = { RequestMethod.GET, RequestMethod.POST })
+	public String PulaCFSResubmission(Model md, HttpServletRequest req) {
+		md.addAttribute("menu", "RBR Reports- Pula CFS Resubmission");
+		System.out.println("count" + rrReportlist.getReportListbrrsPCFS().size());
+		md.addAttribute("reportlist", rrReportlist.getReportListbrrsPCFS());
+
+		return "BRRS/BRRSResubmission";
+
+	}
+	
+	@RequestMapping(value = "Pillar3DisclosureResubmission", method = { RequestMethod.GET, RequestMethod.POST })
+	public String Pillar3DisclosureResubmission(Model md, HttpServletRequest req) {
+		md.addAttribute("menu", "RBR Reports- Pillar 3 Disclosure Resubmission");
+		System.out.println("count" + rrReportlist.getReportListbrrsP3().size());
+		md.addAttribute("reportlist", rrReportlist.getReportListbrrsP3());
+
+		return "BRRS/BRRSResubmission";
+
+	}
+
 
 	@RequestMapping(value = "Resubmission", method = { RequestMethod.GET, RequestMethod.POST })
 	public String Resubmission(Model md, @RequestParam(value = "rptcode", required = false) String rptcode,
