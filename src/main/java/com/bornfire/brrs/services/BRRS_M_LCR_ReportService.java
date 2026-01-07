@@ -205,6 +205,7 @@ public class BRRS_M_LCR_ReportService {
 				}
 
 				mv.addObject("reportdetails", T1Dt1);
+				mv.addObject("clickedRow", rowId);
 
 				System.out.println("LISTCOUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
 			}
@@ -1928,7 +1929,7 @@ public class BRRS_M_LCR_ReportService {
 					}
 					balanceCell.setCellStyle(balanceStyle);
 
-					row.createCell(4).setCellValue(item.getReportLable());
+					row.createCell(4).setCellValue(item.getReportLabel());
 					row.createCell(5).setCellValue(item.getReportAddlCriteria1());
 					row.createCell(6)
 							.setCellValue(item.getReportDate() != null
@@ -2000,6 +2001,7 @@ public class BRRS_M_LCR_ReportService {
 				mv.addObject("asondate", formattedDate);
 			}
 			mv.addObject("Data", mLCREntity);
+		
 		}
 
 		mv.addObject("displaymode", "edit");
