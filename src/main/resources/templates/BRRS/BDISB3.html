@@ -1,204 +1,205 @@
 <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
 <!--
-CREATED BY	: INFANT JONES J
-CREATED ON	: 8.12.2025
-PURPOSE		: BDISB3 BRRSREPORT
+CREATED BY	: NIVETHA S
+CREATED ON	: 10.12.2025
+PURPOSE		: BRRS_MDISB5REPORT
 -->
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<!-- CSS -->
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<!-- CSS -->
 
 
-<link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}">
-<link rel="stylesheet" type="text/css" th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}">
-<link rel="stylesheet" type="text/css" th:href="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.css}">
-<link rel="stylesheet" type="text/css" th:href="@{/webjars/datatables/1.10.19/css/jquery.dataTables.min.css}">
-<link rel="stylesheet" th:href="@{/css/CustomButton.css}" />
-<link rel="icon" th:href="@{/favicon.ico}" type="image/x-icon" />
-<!-- JavaScript -->
-<!-- jQuery core (required first) -->
-<!-- ✅ Your manually placed jQuery validation
+	<link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}">
+	<link rel="stylesheet" type="text/css" th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}">
+	<link rel="stylesheet" type="text/css" th:href="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.css}">
+	<link rel="stylesheet" type="text/css" th:href="@{/webjars/datatables/1.10.19/css/jquery.dataTables.min.css}">
+	<link rel="stylesheet" th:href="@{/css/CustomButton.css}" />
+	<link rel="icon" th:href="@{/favicon.ico}" type="image/x-icon" />
+	<!-- JavaScript -->
+	<!-- jQuery core (required first) -->
+	<!-- ✅ Your manually placed jQuery validation
 	<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
 	 <script th:src="/jquery/jquery.validate.min.js"></script>
 	 -->
-<!-- jQuery (required first) -->
-<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
-<!-- <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script> -->
-<!-- ✅ jQuery Validation -->
-<script src="/webjars/jquery-validation/1.19.0/jquery.validate.min.js"
- th:src="@{/webjars/jquery-validation/1.19.0/jquery.validate.min.js}"></script>
-<!-- Bootstrap + Others -->
-<script th:src="@{/webjars/popper.js/1.14.7/umd/popper.min.js}"></script>
-<script th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
-<script th:src="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.js}"></script>
-<script th:src="@{/webjars/jquery-form/4.2.2/jquery.form.min.js}"></script>
-<script th:src="@{/webjars/datatables/1.10.19/js/jquery.dataTables.min.js}"></script>
-<script th:src="@{/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js}"></script>
-<style>
-.btns {
-	float: right;
-	margin: 5px;
-}
+	<!-- jQuery (required first) -->
+	<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+	<!-- <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script> -->
+	<!-- ✅ jQuery Validation -->
+	<script src="/webjars/jquery-validation/1.19.0/jquery.validate.min.js"
+		th:src="@{/webjars/jquery-validation/1.19.0/jquery.validate.min.js}"></script>
+	<!-- Bootstrap + Others -->
+	<script th:src="@{/webjars/popper.js/1.14.7/umd/popper.min.js}"></script>
+	<script th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
+	<script th:src="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.js}"></script>
+	<script th:src="@{/webjars/jquery-form/4.2.2/jquery.form.min.js}"></script>
+	<script th:src="@{/webjars/datatables/1.10.19/js/jquery.dataTables.min.js}"></script>
+	<script th:src="@{/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js}"></script>
+	<style>
+		.btns {
+			float: right;
+			margin: 5px;
+		}
 
-.col-sm-5 {
-	padding-bottom: 15px;
-}
+		.col-sm-5 {
+			padding-bottom: 15px;
+		}
 
-.list-body {
-	padding: 0px;
-}
+		.list-body {
+			padding: 0px;
+		}
 
-.error {
-	color: red;
-	padding-left: 10px;
-}
+		.error {
+			color: red;
+			padding-left: 10px;
+		}
 
-.formline {
-	padding-bottom: 15px;
-}
+		.formline {
+			padding-bottom: 15px;
+		}
 
-.btn-primary {
-	background-color: #E77400;
-	border-color: #0c0c0c;
-}
+		.btn-primary {
+			background-color: #E77400;
+			border-color: #0c0c0c;
+		}
 
-.btn-primary:not (:disabled ):not (.disabled ).active, .btn-primary:not 
-	 (:disabled ):not (.disabled ):active, .show>.btn-primary.dropdown-toggle
-	{
-	color: #fff;
-	background-color: #cc0000;
-	border-color: #161617;
-}
+		 .btn-primary:not (:disabled):not (.disabled).active,
+		.btn-primary:not (:disabled):not (.disabled):active,
+		.show>.btn-primary.dropdown-toggle {
+			color: #fff;
+			background-color: #cc0000;
+			border-color: #161617;
+		} 
 
-#finusertb {
-	width: 460px;
-}
+		#finusertb {
+			width: 460px;
+		}
 
-.dataTables_wrapper .dataTables_paginate .paginate_button {
-	padding: 0px;
-}
-</style>
-<style>
-div span {
-	font-weight: bold;
-	color: white !important;
-}
+		.dataTables_wrapper .dataTables_paginate .paginate_button {
+			padding: 0px;
+		}
+	</style>
+	<style>
+		div span {
+			font-weight: bold;
+			color: white !important;
+		}
 
-.card {
-	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-	border-radius: 8px;
-}
+		.card {
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+			border-radius: 8px;
+		}
 
-.card-header h5 {
-	font-size: 22px;
-	color: #fff;
-	font-weight: 600;
-}
+		.card-header h5 {
+			font-size: 22px;
+			color: #fff;
+			font-weight: 600;
+		}
 
-.nav-tabs .nav-link {
-	font-weight: 500;
-	border: 1px solid #dee2e6;
-	border-bottom: none;
-	border-radius: 4px 4px 0 0;
-	background-color: #f1f1f1;
-	margin-right: 5px;
-}
+		.nav-tabs .nav-link {
+			font-weight: 500;
+			border: 1px solid #dee2e6;
+			border-bottom: none;
+			border-radius: 4px 4px 0 0;
+			background-color: #f1f1f1;
+			margin-right: 5px;
+		}
 
-.nav-tabs .nav-link.active {
-	background-color: #ffffff;
-	border-color: #dee2e6 #dee2e6 #ffffff;
-}
+		.nav-tabs .nav-link.active {
+			background-color: #ffffff;
+			border-color: #dee2e6 #dee2e6 #ffffff;
+		}
 
-.table-responsive {
-	border: 1px solid #dee2e6;
-	border-radius: 4px;
-}
+		.table-responsive {
+			border: 1px solid #dee2e6;
+			border-radius: 4px;
+		}
 
-.table-hover tbody tr:hover {
-	background-color: #f3f6f9;
-}
+		.table-hover tbody tr:hover {
+			background-color: #f3f6f9;
+		}
 
-thead th {
-	position: sticky;
-	top: 0;
-	background-color: #e9ecf0;
-	z-index: 1;
-}
+		thead th {
+			position: sticky;
+			top: 0;
+			background-color: #e9ecf0;
+			z-index: 1;
+		}
 
-.table td {
-	background-color: #FFFFFF;
-}
+		.table td {
+			background-color: #FFFFFF;
+		}
 
-.card-footer {
-	padding: 10px;
-	border-top: 1px solid #ccc;
-}
+		.card-footer {
+			padding: 10px;
+			border-top: 1px solid #ccc;
+		}
 
-.btn-xs {
-	padding: 4px 12px;
-	font-size: 14px;
-	border-radius: 4px;
-}
+		.btn-xs {
+			padding: 4px 12px;
+			font-size: 14px;
+			border-radius: 4px;
+		}
 
-#BRRSvalidation th, #usertable td {
-	vertical-align: middle;
-	text-align: left;
-	font-size: 16px;
-	font-family: Arial;
-}
+		#BRRSvalidation th,
+		#usertable td {
+			vertical-align: middle;
+			text-align: left;
+			font-size: 16px;
+			font-family: Arial;
+		}
 
-.fa-edit:hover {
-	color: #28a745;
-	transform: scale(1.1);
-}
+		.fa-edit:hover {
+			color: #28a745;
+			transform: scale(1.1);
+		}
 
-td {
-	border: 1px solid rgb(0, 164, 166);
-	overflow: hidden;
-	white-space: nowrap;
-	text-overflow: ellipsis;
-}
-</style>
-<style>
-.form-group {
-	position: relative;
-	margin-bottom: 1.5rem;
-}
+		td {
+			border: 1px solid rgb(0, 164, 166);
+			overflow: hidden;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+		}
+	</style>
+	<style>
+		.form-group {
+			position: relative;
+			margin-bottom: 1.5rem;
+		}
 
-.form-control {
-	width: 100%;
-	border: 2px solid #ccc;
-	border-radius: 8px;
-	font-size: 1rem;
-	outline: none;
-	background: transparent;
-	transition: border-color 0.3s ease, padding-top 0.3s ease;
-}
+		.form-control {
+			width: 100%;
+			border: 2px solid #ccc;
+			border-radius: 8px;
+			font-size: 1rem;
+			outline: none;
+			background: transparent;
+			transition: border-color 0.3s ease, padding-top 0.3s ease;
+		}
 
-.error {
-	color: red;
-	padding-top: 15px;
-}
+		.error {
+			color: red;
+			padding-top: 15px;
+		}
 
-.form-control:focus {
-	border-color: #007bff;
-}
+		.form-control:focus {
+			border-color: #007bff;
+		}
 
-.form-legend {
-	position: absolute;
-	top: 50%;
-	left: 15px;
-	transform: translateY(-50%);
-	font-size: 1rem;
-	color: #aaa;
-	background: white;
-	padding: 0 5px;
-	pointer-events: none;
-	transition: 0.3s ease;
-}
+		.form-legend {
+			position: absolute;
+			top: 50%;
+			left: 15px;
+			transform: translateY(-50%);
+			font-size: 1rem;
+			color: #aaa;
+			background: white;
+			padding: 0 5px;
+			pointer-events: none;
+			transition: 0.3s ease;
+		}
 
 
 /* When input or select is focused or has a value, move the label up */
@@ -331,6 +332,7 @@ label.error {
   }
  </style>
 
+
 <script>
     // Capture referrer ONCE when page loads
     var previousUrl = document.referrer;
@@ -339,8 +341,9 @@ label.error {
     let isResubmissionUpdate = false;
 </script>
 
+
 <script th:inline="javascript">
-	let isDetailsModal = false;
+		let isDetailsModal = false;
 		$(document).ready(function () {
 			// hide loader on normal load
 			$('#loader').modal('hide');
@@ -354,39 +357,6 @@ label.error {
 			$('#loader').modal('hide');
 		});
 
-              
-				
-		$(document).ready(function() {
-			Maker_Checker_Function(); 
-		});
-
-		// if logged user is a Checker, checker cannot modify, if user is maker , then maker cant download
-		function Maker_Checker_Function() {
-			$.ajax({
-				url: "/BRRS/getUserRole",    
-				type: "GET",
-				success: function(roleId) {
-					// console.log("User Role ID:", roleId);
-				
-					if (roleId === "ADM-C" || roleId === "USR-C"  || roleId === "USER-AUDIT") {
-						const modifyBtn = document.getElementById("addRecord");
-						if (modifyBtn) modifyBtn.style.display = "none";
-					}
-
-					if (roleId === "ADM-M" || roleId === "USR-M") {
-								const button = document.getElementById("custom-tab-btnAdd");
-								if (button) button.style.display = "none";
-							}
-
-				},
-				error: function(err) {
-					console.error("Error fetching role:", err);
-		     }
-		    });
-		}
-
-
-
 		function home() {
 			$("#loader").modal("toggle");
 			location.href = 'Dashboard'
@@ -397,14 +367,10 @@ label.error {
 		}
 
 		//to fetch summary from the database - called from the summary button
-		//function showdetails() {
-			// alert("Details page not available for Manual Report");
-		//}
 		/* function showdetails() {
-		    isDetailsModal = true; // mark that this modal is from Details
-			 showResultModal('BRRS',' Details page not available for Manual Report');
+			isDetailsModal = true; // mark that this modal is from Details
+			showResultModal('BRRS', 'Details page not available for Manual Report');
 		} */
-		//to fetch summary from the database - called from the summary button
 		function showdetails() {
 			var Callurl;
 			$('#loader').modal('show');
@@ -422,7 +388,7 @@ label.error {
 
 
 	</script>
-<script>
+	<script>
 		function activateTab(tabName) {
 			// Remove 'active' from all buttons
 			document.querySelectorAll('.custom-tab-btn').forEach(btn => {
@@ -457,6 +423,7 @@ label.error {
 			var filename = button.getAttribute('data-filename');
 			var type = button.getAttribute('data-type');
 			var version = button.getAttribute('data-version');
+
 			$('#loader').modal('show');
 			$.ajax({
 				url: './downloadExcel?reportid=' + reportid +
@@ -466,9 +433,9 @@ label.error {
 					'&currency=' + currency +
 					'&subreportid=' + subreportid +
 					'&secid=' + secid +
-					'&filename=' + filename +
 					'&type=' + type +
-					'&version=' + version,
+					'&version=' + version +
+					'&filename=' + filename,
 				type: 'GET',
 				xhrFields: {
 					responseType: 'blob'
@@ -476,7 +443,7 @@ label.error {
 				success: function (data) {
 					$('#loader').modal('hide');
 					if (data && data.size > 100) {
-						const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
+						const blob = new Blob([data], { type: 'application/vnd.ms-excel' });
 						const url = window.URL.createObjectURL(blob);
 						const a = document.createElement('a');
 						a.style.display = 'none';
@@ -486,7 +453,7 @@ label.error {
 						a.click();
 						window.URL.revokeObjectURL(url);
 						document.body.removeChild(a);
-						showResultModal('BRRS', 'BDISB3.xlsx downloaded successfully.');
+						showResultModal('BRRS', filename + ' downloaded successfully.');
 					} else {
 						showResultModal('Information', 'No data was available to create a download.');
 					}
@@ -498,14 +465,25 @@ label.error {
 				}
 			});
 		}
+
+
 		function editRecord() {
 			showResultModal('Alert', 'Development in progress');
 
 		}
-/* 		function closemodel() {
-			$('#alert').modal('hide');
-			$('#resultModal').modal('hide');
+		/* function closemodel() {
+			$("#resultModal").modal("hide");
+			$('#loader').modal('hide');
 
+			// Only reload if not from Details modal
+			if (!isDetailsModal) {
+				setTimeout(function () {
+					location.reload();
+				}, 300);
+			} else {
+				// reset flag for next modal usage
+				isDetailsModal = false;
+			}
 		} */
 		function showResultModal(title, message) {
 			// Set the text for the modal elements
@@ -515,155 +493,162 @@ label.error {
 			$('#resultModal').modal('show');
 		}
 		
-
 		  function startReport(button) {
-		   const alertMsg = document.getElementById("alertMessage");
-		   const filename = button.getAttribute('data-filename');
-		   const fromdate = button.getAttribute('data-fromdate');
-		   const todate = button.getAttribute('data-todate');
-		   const currency = button.getAttribute('data-currency');
-		   const dtltype = button.getAttribute('data-dtltype');
-		   const type = button.getAttribute('data-type');
-		   const version = button.getAttribute('data-version');
-		   const sessionfilename = sessionStorage.getItem("filename");
+			   const alertMsg = document.getElementById("alertMessage");
+			   const filename = button.getAttribute('data-filename');
+			   const fromdate = button.getAttribute('data-fromdate');
+			   const todate = button.getAttribute('data-todate');
+			   const currency = button.getAttribute('data-currency');
+			   const dtltype = button.getAttribute('data-dtltype');
+			   const type = button.getAttribute('data-type');
+			   const version = button.getAttribute('data-version');
+			   const sessionfilename = sessionStorage.getItem("filename");
 
-		   if (sessionfilename == filename) {
-		    alertMsg.innerHTML = 'Download request already Processing...';
-		    showAlert();
-		    return;
-		   }
+			   if (sessionfilename == filename) {
+			    alertMsg.innerHTML = 'Download request already Processing...';
+			    showAlert();
+			    return;
+			   }
 
-		   alertMsg.innerHTML = 'Download request Processing...';
-		   showAlert();
+			   alertMsg.innerHTML = 'Download request Processing...';
+			   showAlert();
 
-		   const baseUrl = '/BRRS/Reports/startreport';
-		   const downloadUrl = baseUrl +
-		    '?filename=' + encodeURIComponent(filename) +
-		    '&fromdate=' + encodeURIComponent(fromdate) +
-		    '&todate=' + encodeURIComponent(todate) +
-		    '&currency=' + encodeURIComponent(currency) +
-		    '&dtltype=' + encodeURIComponent(dtltype) +
-		    '&type=' + encodeURIComponent(type) +
-		    '&version=' + encodeURIComponent(version);
-		   fetch(downloadUrl)  // ✅ no invalid characters now
-		    .then(res => res.text())
-		    .then(jobId => {
+			   const baseUrl = '/BRRS/Reports/startreport';
+			   const downloadUrl = baseUrl +
+			    '?filename=' + encodeURIComponent(filename) +
+			    '&fromdate=' + encodeURIComponent(fromdate) +
+			    '&todate=' + encodeURIComponent(todate) +
+			    '&currency=' + encodeURIComponent(currency) +
+			    '&dtltype=' + encodeURIComponent(dtltype) +
+			    '&type=' + encodeURIComponent(type) +
+			    '&version=' + encodeURIComponent(version);
+			   fetch(downloadUrl)  // ✅ no invalid characters now
+			    .then(res => res.text())
+			    .then(jobId => {
 
-		     alertMsg.innerHTML = 'Download request received...' + jobId;
-		     showAlert();
-		     sessionStorage.setItem("jobId", jobId);
-		     sessionStorage.setItem("filename", filename);
-		     checkReport(jobId);
-		    });
-		  }
+			     alertMsg.innerHTML = 'Download request received...' + jobId;
+			     showAlert();
+			     sessionStorage.setItem("jobId", jobId);
+			     sessionStorage.setItem("filename", filename);
+			     checkReport(jobId);
+			    });
+			  }
 
-		  function checkReport(jobId) {
-		   const alertMsg = document.getElementById("alertMessage");
-		   fetch('/BRRS/Reports/checkreport?jobId=' + encodeURIComponent(jobId))
-		    .then(res => res.text())
-		    .then(status => {
-		     if (status === "READY") {
-		      alertMsg.innerHTML = 'Report is ready! Downloaded';
-		      showAlert();
-		      const filename = sessionStorage.getItem("filename");
-		      downloadDetailfile(jobId, filename)
-		      sessionStorage.removeItem("jobId");
-		      sessionStorage.removeItem("filename");
+			  function checkReport(jobId) {
+			   const alertMsg = document.getElementById("alertMessage");
+			   fetch('/BRRS/Reports/checkreport?jobId=' + encodeURIComponent(jobId))
+			    .then(res => res.text())
+			    .then(status => {
+			     if (status === "READY") {
+			      alertMsg.innerHTML = 'Report is ready! Downloaded';
+			      showAlert();
+			      const filename = sessionStorage.getItem("filename");
+			      downloadDetailfile(jobId, filename)
+			      sessionStorage.removeItem("jobId");
+			      sessionStorage.removeItem("filename");
 
-		     } else if (status === "PROCESSING") {
-		      alertMsg.innerHTML = 'Download Is Processing…';
-		      showAlert();
-		      setTimeout(() => checkReport(jobId), 5000);
-		     }
-		     else if (status === "ERROR") {
-		      alertMsg.innerHTML = 'No data was available to create a download.';
-		      showAlert();
-		      sessionStorage.removeItem("jobId");
-		      sessionStorage.removeItem("filename");
-		     }
-		    });
-		  }
+			     } else if (status === "PROCESSING") {
+			      alertMsg.innerHTML = 'Download Is Processing…';
+			      showAlert();
+			      setTimeout(() => checkReport(jobId), 5000);
+			     }
+			     else if (status === "ERROR") {
+			      alertMsg.innerHTML = 'No data was available to create a download.';
+			      showAlert();
+			      sessionStorage.removeItem("jobId");
+			      sessionStorage.removeItem("filename");
+			     }
+			    });
+			  }
 
 
 
-		  function downloadDetailfile(jobId, filename) {
+			  function downloadDetailfile(jobId, filename) {
 
-		   //$('#loader').modal('show');
+			   //$('#loader').modal('show');
 
-		   $.ajax({
-		    url: '/BRRS/Reports/downloaddetailExcel?jobId=' + jobId +
-		     '&filename=' + filename,
-		    type: 'GET',
-		    xhrFields: {
-		     responseType: 'blob'
-		    },
-		    success: function (data) {
-		     $('#loader').modal('hide');
+			   $.ajax({
+			    url: '/BRRS/Reports/downloaddetailExcel?jobId=' + jobId +
+			     '&filename=' + filename,
+			    type: 'GET',
+			    xhrFields: {
+			     responseType: 'blob'
+			    },
+			    success: function (data) {
+			     $('#loader').modal('hide');
 
-		     if (data && data.size > 100) {
-		      const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
-		      const url = window.URL.createObjectURL(blob);
-		      const a = document.createElement('a');
-		      a.style.display = 'none';
-		      a.href = url;
-		      a.download = filename;
-		      document.body.appendChild(a);
-		      a.click();
-		      window.URL.revokeObjectURL(url);
-		      document.body.removeChild(a);
+			     if (data && data.size > 100) {
+			      const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
+			      const url = window.URL.createObjectURL(blob);
+			      const a = document.createElement('a');
+			      a.style.display = 'none';
+			      a.href = url;
+			      a.download = filename;
+			      document.body.appendChild(a);
+			      a.click();
+			      window.URL.revokeObjectURL(url);
+			      document.body.removeChild(a);
 
-		      showResultModal('BRRS', filename + ' downloaded successfully');
-		     } else {
-		      showResultModal('Information', 'No data was available to create a download.');
-		     }
-		    },
-		    error: function (jqXHR, textStatus, errorThrown) {
-		     $('#loader').modal('hide');
-		     console.error("Download failed:", textStatus, errorThrown);
-		     showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
-		    }
-		   });
-		  }
-
+			      showResultModal('BRRS', filename + ' downloaded successfully');
+			     } else {
+			      showResultModal('Information', 'No data was available to create a download.');
+			     }
+			    },
+			    error: function (jqXHR, textStatus, errorThrown) {
+			     $('#loader').modal('hide');
+			     console.error("Download failed:", textStatus, errorThrown);
+			     showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
+			    }
+			   });
+			  }
 	</script>
-
-
- 
-
-<script>
+	
+	
+	<script>
 	// Show Modify (enable inputs & dropdowns)
+	
+		
 function showmodify(btn) {
+		
+	let readonlyIds = [];    
+
+	
+	$(".Show_input").each(function () {
+		        if (!readonlyIds.includes(this.id)) {
+		            $(this).removeAttr("readonly").removeAttr("disabled");
+		        }
+		    });
+
+			
+
+			for (let i = 5; i <= 11; i++) {  
+						    let fields = [
+						    	"AGGREGATE_BALANCE",
+						        "COMPENSATABLE_AMOUNT"
+						        
+						    ];
+
+						    fields.forEach(field => {
+						        let selector = `#R${i}_${field}`;
+						        if ($(selector).length) {  // check if element exists
+						            $(selector).css("background-color", "#d3d3d3");     // set grey
+						        }
+						    });
+						}
+			
+			
+			
+	
     
-    //$(".Show_input").removeAttr("readonly").removeAttr("disabled");
-    
-    // Make all editable fields editable 
-    $(".Show_input").not(".nonEditable").removeAttr("readonly").removeAttr("disabled");
-
-
-   // Highlight editable fields for rows 11 to 60
-    for (let i = 5; i <= 11; i++) {  
-        let fields = [
-        	"AGGREGATE_BALANCE",
-	        "COMPENSATABLE_AMOUNT"
-            
-        ];
-
-        fields.forEach(field => {
-            let selector = `#R${i}_${field}`; // ✅ Corrected: backticks for template literal
-            if ($(selector).length) {        // Check if element exists
-                $(selector).css({ "background-color": "#d3d3d3" }); // Highlight
-            }
-        });
-    }
-
-    // Show buttons
+    // Toggle buttons
     $("#submitButton").show();
-    $("#cancelRecord").show(); // Show Cancel button only when Modify is clicked
     
-    // Hide the clicked Modify button
+    // Show Cancel button only when Modify is clicked
+    $("#cancelRecord").show();
+    
+    // Optionally hide the clicked Modify button
     $(btn).hide();
 }
-
 
 //Cancel / Reset function
 function cancelModify() {
@@ -672,6 +657,8 @@ function cancelModify() {
         location.reload();
         
         $(".Show_input").attr("readonly", true).attr("disabled", true);
+
+       
 
         $("#submitButton, #btnBack_edit").hide();
         $("#btnBack").show();
@@ -691,136 +678,125 @@ function cancelModify() {
 	</script>
 
 
-<script>
-function closemodel() {
-/*    $("#resultModal").modal("hide");
-    $('#loader').modal('hide');
-    setTimeout(function () {
-        location.reload();
-        }, 300);*/
-        $("#resultModal").modal("hide");
-        $('#loader').modal('hide');
+	<script>
 
-        if (isResubmissionUpdate) {
-	        return;
-	    }
 
-        
-        // Only reload if not from Details modal
-        if (!isDetailsModal) {
-            setTimeout(function () {
-                location.reload();
-            }, 300);
-        } else {
-            // reset flag for next modal usage
-            isDetailsModal = false;
-        }
-}
-// --- NEW: append type value (NORMAL, RESUB, ARCHIVAL) ---
-//const selectedType = $("#OBType").val(); // Get from dropdown
-//formData.append("type", selectedType);
-//console.log("Selected type:", selectedType);
+		// This function is for closing the modal after an action is complete.
+		// It hides the result and loader modals and reloads the page.
+		function closemodel() {
+			$("#resultModal").modal("hide");
+			$('#loader').modal('hide');
+			
+			if (isResubmissionUpdate) {
+		        return;
+		    }
 
-// --- Entity fields (R10-R17) ---
-/* for (let i = 6; i <= 12; i++) {
-    ["bank_spec_single_cust_rec_num", "COMPANY_NAME", "COMPANY_REG_NUM", "BUSINEES_PHY_ADDRESS",
-		  "POSTAL_ADDRESS", "COUNTRY_OF_REG", "COMPANY_EMAIL", "COMPANY_LANDLINE", "COMPANY_MOB_PHONE_NUM",
-	  "PRODUCT_TYPE", "ACCT_NUM", "STATUS_OF_ACCT", "ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT",
-	  "ACCT_BRANCH", "ACCT_BALANCE_PULA", "CURRENCY_OF_ACCT", "EXCHANGE_RATE"].forEach(field => {
-        const input = $("#r" + i + "_" + field);
-        if (input.length) {
-            formData.append(input.attr("name"), input.val());
-        }
-    });
-} */
-function fileuploads(btn) {
-    var asondate = btn.getAttribute("data-todate");
-    const type = btn.getAttribute("data-type"); // MAIN / RESUB / ARCHIVAL
-    
-    
-    $('#loader').modal('show');
-     
-	    
-	 // Remove commas from numeric inputs
-	    $("#fileupload input[type='text']").each(function () {
-	        var val = $(this).val();
-	        if (val && val.includes(",")) {
-	            $(this).val(val.replace(/,/g, ''));
-	        }
-	    });
-
-	    if (!$("#fileupload").valid()) {
-	        $('#loader').modal('hide');
-	        return;
-	    }
-
-	    // ✅ One combined FormData for all entities
-	    const formData = new FormData();
-	    formData.append("asondate", asondate);
-	    formData.append("type", type);
-	    
-
-	    // --- NEW: append type value (NORMAL, RESUB, ARCHIVAL) ---
-	    //const selectedType = $("#SRWA_12GType").val(); // Get from dropdown
-	    //formData.append("type", selectedType);
-	    //console.log("Selected type:", selectedType);
-
-	    // --- Entity fields (R10-R17) ---
-	    for (let i = 5; i <= 10; i++) {
-	        ["AGGREGATE_BALANCE",
-	        "COMPENSATABLE_AMOUNT"].forEach(field => {
-	            const input = $("#R" + i + "_" + field);
-	            if (input.length) {
-	                formData.append(input.attr("name"), input.val());
-	            }
-	        });
-	    }console.log("✅ Entity executed successfully");
-	    
-		//Select API endpoint dynamically
-		let apiUrl = './BDISB3updateAll'; // normal update
-		if (type && type.toUpperCase() === 'RESUB') {
-			apiUrl = './UpdateBDISB3_ReSub'; // Resubmission endpoint
+			// Only reload if not from Details modal
+			if (!isDetailsModal) {
+				setTimeout(function () {
+					location.reload();
+				}, 300);
+			} else {
+				// reset flag for next modal usage
+				isDetailsModal = false;
+			}
 		}
-	    
 
-	    // ✅ Single AJAX call with type info
-	    $.ajax({
-	        url: apiUrl,
-	        type: 'POST',
-	        data: formData,
-	        processData: false,
-	        contentType: false,
-	        dataType: 'text',
-	        success: function (response) {
-	            $("#resultModalLabel").text("BRRS");
-	            $("#resultModalBody").text(response);
-	            $("#resultModal").modal("show");
+		function fileuploads(btn) {
+		    var asondate = btn.getAttribute("data-todate");
+		    const type = btn.getAttribute("data-type"); // MAIN / RESUB / ARCHIVAL
+		    
+		    // ✅ Mark RESUB once
+		    isResubmissionUpdate = (type && type.toUpperCase() === 'RESUB');
+		    
+		    $('#loader').modal('show');
 
-			    //  Wait for user to close the modal manually
-			    $("#resultModal").off("hidden.bs.modal").on("hidden.bs.modal", function () {
-			        location.reload(); // reload ONLY when modal is closed
+		    // Pre-calculations
+		    
+		    console.log("✅ Calculations executed successfully");
+
+		    // Remove commas from numeric inputs
+		    $("#fileupload input[type='text']").each(function () {
+		        var val = $(this).val();
+		        if (val && val.includes(",")) {
+		            $(this).val(val.replace(/,/g, ''));
+		        }
+		    });
+
+		    if (!$("#fileupload").valid()) {
+		        $('#loader').modal('hide');
+		        return;
+		    }
+
+		    // ✅ One combined FormData for all entities
+		    const formData = new FormData();
+		    formData.append("asondate", asondate);
+		    formData.append("type", type);
+
+		  
+		 // Append only named inputs
+		    $('#fileupload').find(':input[name]').each(function () {
+		        formData.append(this.name, this.value);
+
+		/*         let originalName = this.name;  
+		        let value = this.value;
+
+		        // Convert: R6_C2_COMPANY_NAME → R6_COMPANY_NAME
+		        let fixedName = originalName.replace(/_C\d+_/, '_');
+		        console.log(originalName, "→", fixedName);
+		        formData.append(fixedName, value); */
+		    });
+		    console.log("✅ Entity executed successfully");    
+
+
+		    
+			//Select API endpoint dynamically
+			let apiUrl = './BDISB3updateAll'; // normal update
+			if (type && type.toUpperCase() === 'RESUB') {
+				apiUrl = './UpdateBDISB3_ReSub'; // Resubmission endpoint
+			}
+
+		    // ✅ Single AJAX call with type info
+		 	    $.ajax({
+			        url: apiUrl,
+			        type: 'POST',
+			        data: formData,
+			        processData: false,
+			        contentType: false,
+			        dataType: 'text',
+			        success: function (response) {
+			            $("#resultModalLabel").text("BRRS");
+			            $("#resultModalBody").text(response);
+			            $("#resultModal").modal("show");
+
+					    //  Wait for user to close the modal manually
+					     $("#resultModal").off("hidden.bs.modal").on("hidden.bs.modal", function () {
+					    	 if (isResubmissionUpdate) {
+					    		 window.location.href = previousUrl
+					    		 ? previousUrl 
+					    				 : "/BRRS/Resubmission?rptcode=MDISB5";
+					    	 } // reload ONLY when modal is closed
+					    });
+					},
+			        error: function (jqXHR) {
+			            console.log("Error response:", jqXHR.responseText);
+			            $("#resultModalLabel").text("Error");
+			            $("#resultModalBody").text("Update failed. Check console for details.");
+			            $("#resultModal").modal("show");
+			        },
+			        complete: function () {
+			            $('#loader').modal('hide');
+			        }
 			    });
-			},
-	        error: function (jqXHR) {
-	            console.log("Error response:", jqXHR.responseText);
-	            $("#resultModalLabel").text("Error");
-	            $("#resultModalBody").text("Update failed. Check console for details.");
-	            $("#resultModal").modal("show");
-	        },
-	        complete: function () {
-	            $('#loader').modal('hide');
-	        }
-	    });
 
-	    console.log("✅ AJAX executed successfully");
-	}
-
-</script>
-
+		    console.log("✅ AJAX executed successfully");
+		}    
+		</script>
+ 
  <script th:inline="javascript">
       $(document).ready(function () {
         var table = $('#reportdetails').DataTable({
-          scrollY: "550px",
+        	scrollY: "500px",
           scrollX: true,
           scrollCollapse: true,
           autoWidth: false,
@@ -849,7 +825,6 @@ function fileuploads(btn) {
         }, 500);
       });
     </script>
-    
     </head>
 
 <title>BRRS</title>
