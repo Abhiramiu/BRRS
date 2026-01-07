@@ -17,9 +17,13 @@ public interface BRRS_BDISB1_Detail_Repo extends JpaRepository<BDISB1_Detail_Ent
             String reportAddlCriteria1
     );
     
+	// Fetch all records for a given date
+    @Query(value = "select * from BRRS_BDISB1_DETAILTABLE where REPORT_DATE = ?1", nativeQuery = true)
+    List<BDISB1_Detail_Entity> getdatabydateList(Date reportdate);
+    
     // ✅ Pagination fixed → use OFFSET and LIMIT correctly
     @Query(value = "select * from BRRS_BDISB1_DETAILTABLE where REPORT_DATE = ?1 offset ?2 rows fetch next ?3 rows only", nativeQuery = true)
-    List<BDISB1_Detail_Entity> getdatabydateList(Date reportdate, int offset, int limit);
+    List<BDISB1_Detail_Entity> getdatabydateList(Date reportdate,int startpage,int endpage);
     
  // Count rows by date
     @Query(value = "select count(*) from BRRS_BDISB1_DETAILTABLE where REPORT_DATE = ?1", nativeQuery = true)

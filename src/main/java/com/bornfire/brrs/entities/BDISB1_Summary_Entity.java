@@ -40,7 +40,7 @@ public class BDISB1_Summary_Entity {
 	
 
     // ===================== R5 =====================
-    private BigDecimal R5_RECORD_NUMBER;
+    private String R5_RECORD_NUMBER;
     private String R5_TITLE;
     private String R5_FIRST_NAME;
     private String R5_MIDDLE_NAME;
@@ -62,7 +62,7 @@ public class BDISB1_Summary_Entity {
     private String R5_PRODUCT_TYPE;
     private String R5_ACCOUNT_BY_OWNERSHIP;
     private String R5_ACCOUNT_NUMBER;
-    private String R5_ACCOUNT_HOLDER_INDICATOR;
+    private BigDecimal R5_ACCOUNT_HOLDER_INDICATOR;
     private String R5_STATUS_OF_ACCOUNT;
     private String R5_NOT_FIT_FOR_STP;
     private String R5_BRANCH_CODE_AND_NAME;
@@ -71,7 +71,7 @@ public class BDISB1_Summary_Entity {
     private BigDecimal R5_EXCHANGE_RATE;
 
     // ===================== R6 =====================
-    private BigDecimal R6_RECORD_NUMBER;
+    private String R6_RECORD_NUMBER;
     private String R6_TITLE;
     private String R6_FIRST_NAME;
     private String R6_MIDDLE_NAME;
@@ -93,7 +93,7 @@ public class BDISB1_Summary_Entity {
     private String R6_PRODUCT_TYPE;
     private String R6_ACCOUNT_BY_OWNERSHIP;
     private String R6_ACCOUNT_NUMBER;
-    private String R6_ACCOUNT_HOLDER_INDICATOR;
+    private BigDecimal R6_ACCOUNT_HOLDER_INDICATOR;
     private String R6_STATUS_OF_ACCOUNT;
     private String R6_NOT_FIT_FOR_STP;
     private String R6_BRANCH_CODE_AND_NAME;
@@ -102,7 +102,7 @@ public class BDISB1_Summary_Entity {
     private BigDecimal R6_EXCHANGE_RATE;
 
     // ===================== R7 =====================
-    private BigDecimal R7_RECORD_NUMBER;
+    private String R7_RECORD_NUMBER;
     private String R7_TITLE;
     private String R7_FIRST_NAME;
     private String R7_MIDDLE_NAME;
@@ -124,7 +124,7 @@ public class BDISB1_Summary_Entity {
     private String R7_PRODUCT_TYPE;
     private String R7_ACCOUNT_BY_OWNERSHIP;
     private String R7_ACCOUNT_NUMBER;
-    private String R7_ACCOUNT_HOLDER_INDICATOR;
+    private BigDecimal R7_ACCOUNT_HOLDER_INDICATOR;
     private String R7_STATUS_OF_ACCOUNT;
     private String R7_NOT_FIT_FOR_STP;
     private String R7_BRANCH_CODE_AND_NAME;
@@ -133,7 +133,7 @@ public class BDISB1_Summary_Entity {
     private BigDecimal R7_EXCHANGE_RATE;
 
     // ===================== R8 =====================
-    private BigDecimal R8_RECORD_NUMBER;
+    private String R8_RECORD_NUMBER;
     private String R8_TITLE;
     private String R8_FIRST_NAME;
     private String R8_MIDDLE_NAME;
@@ -155,7 +155,7 @@ public class BDISB1_Summary_Entity {
     private String R8_PRODUCT_TYPE;
     private String R8_ACCOUNT_BY_OWNERSHIP;
     private String R8_ACCOUNT_NUMBER;
-    private String R8_ACCOUNT_HOLDER_INDICATOR;
+    private BigDecimal R8_ACCOUNT_HOLDER_INDICATOR;
     private String R8_STATUS_OF_ACCOUNT;
     private String R8_NOT_FIT_FOR_STP;
     private String R8_BRANCH_CODE_AND_NAME;
@@ -164,7 +164,7 @@ public class BDISB1_Summary_Entity {
     private BigDecimal R8_EXCHANGE_RATE;
 
     // ===================== R9 =====================
-    private BigDecimal R9_RECORD_NUMBER;
+    private String R9_RECORD_NUMBER;
     private String R9_TITLE;
     private String R9_FIRST_NAME;
     private String R9_MIDDLE_NAME;
@@ -186,7 +186,7 @@ public class BDISB1_Summary_Entity {
     private String R9_PRODUCT_TYPE;
     private String R9_ACCOUNT_BY_OWNERSHIP;
     private String R9_ACCOUNT_NUMBER;
-    private String R9_ACCOUNT_HOLDER_INDICATOR;
+    private BigDecimal R9_ACCOUNT_HOLDER_INDICATOR;
     private String R9_STATUS_OF_ACCOUNT;
     private String R9_NOT_FIT_FOR_STP;
     private String R9_BRANCH_CODE_AND_NAME;
@@ -195,7 +195,7 @@ public class BDISB1_Summary_Entity {
     private BigDecimal R9_EXCHANGE_RATE;
 
     // ===================== R10 =====================
-    private BigDecimal R10_RECORD_NUMBER;
+    private String R10_RECORD_NUMBER;
     private String R10_TITLE;
     private String R10_FIRST_NAME;
     private String R10_MIDDLE_NAME;
@@ -217,7 +217,7 @@ public class BDISB1_Summary_Entity {
     private String R10_PRODUCT_TYPE;
     private String R10_ACCOUNT_BY_OWNERSHIP;
     private String R10_ACCOUNT_NUMBER;
-    private String R10_ACCOUNT_HOLDER_INDICATOR;
+    private BigDecimal R10_ACCOUNT_HOLDER_INDICATOR;
     private String R10_STATUS_OF_ACCOUNT;
     private String R10_NOT_FIT_FOR_STP;
     private String R10_BRANCH_CODE_AND_NAME;
@@ -226,7 +226,7 @@ public class BDISB1_Summary_Entity {
     private BigDecimal R10_EXCHANGE_RATE;
 
     // ===================== R11 =====================
-    private BigDecimal R11_RECORD_NUMBER;
+    private String R11_RECORD_NUMBER;
     private String R11_TITLE;
     private String R11_FIRST_NAME;
     private String R11_MIDDLE_NAME;
@@ -248,7 +248,7 @@ public class BDISB1_Summary_Entity {
     private String R11_PRODUCT_TYPE;
     private String R11_ACCOUNT_BY_OWNERSHIP;
     private String R11_ACCOUNT_NUMBER;
-    private String R11_ACCOUNT_HOLDER_INDICATOR;
+    private BigDecimal R11_ACCOUNT_HOLDER_INDICATOR;
     private String R11_STATUS_OF_ACCOUNT;
     private String R11_NOT_FIT_FOR_STP;
     private String R11_BRANCH_CODE_AND_NAME;
@@ -303,10 +303,10 @@ public class BDISB1_Summary_Entity {
 	public void setDel_flg(String del_flg) {
 		this.del_flg = del_flg;
 	}
-	public BigDecimal getR5_RECORD_NUMBER() {
+	public String getR5_RECORD_NUMBER() {
 		return R5_RECORD_NUMBER;
 	}
-	public void setR5_RECORD_NUMBER(BigDecimal r5_RECORD_NUMBER) {
+	public void setR5_RECORD_NUMBER(String r5_RECORD_NUMBER) {
 		R5_RECORD_NUMBER = r5_RECORD_NUMBER;
 	}
 	public String getR5_TITLE() {
@@ -423,10 +423,10 @@ public class BDISB1_Summary_Entity {
 	public void setR5_ACCOUNT_NUMBER(String r5_ACCOUNT_NUMBER) {
 		R5_ACCOUNT_NUMBER = r5_ACCOUNT_NUMBER;
 	}
-	public String getR5_ACCOUNT_HOLDER_INDICATOR() {
+	public BigDecimal getR5_ACCOUNT_HOLDER_INDICATOR() {
 		return R5_ACCOUNT_HOLDER_INDICATOR;
 	}
-	public void setR5_ACCOUNT_HOLDER_INDICATOR(String r5_ACCOUNT_HOLDER_INDICATOR) {
+	public void setR5_ACCOUNT_HOLDER_INDICATOR(BigDecimal r5_ACCOUNT_HOLDER_INDICATOR) {
 		R5_ACCOUNT_HOLDER_INDICATOR = r5_ACCOUNT_HOLDER_INDICATOR;
 	}
 	public String getR5_STATUS_OF_ACCOUNT() {
@@ -465,10 +465,10 @@ public class BDISB1_Summary_Entity {
 	public void setR5_EXCHANGE_RATE(BigDecimal r5_EXCHANGE_RATE) {
 		R5_EXCHANGE_RATE = r5_EXCHANGE_RATE;
 	}
-	public BigDecimal getR6_RECORD_NUMBER() {
+	public String getR6_RECORD_NUMBER() {
 		return R6_RECORD_NUMBER;
 	}
-	public void setR6_RECORD_NUMBER(BigDecimal r6_RECORD_NUMBER) {
+	public void setR6_RECORD_NUMBER(String r6_RECORD_NUMBER) {
 		R6_RECORD_NUMBER = r6_RECORD_NUMBER;
 	}
 	public String getR6_TITLE() {
@@ -585,10 +585,10 @@ public class BDISB1_Summary_Entity {
 	public void setR6_ACCOUNT_NUMBER(String r6_ACCOUNT_NUMBER) {
 		R6_ACCOUNT_NUMBER = r6_ACCOUNT_NUMBER;
 	}
-	public String getR6_ACCOUNT_HOLDER_INDICATOR() {
+	public BigDecimal getR6_ACCOUNT_HOLDER_INDICATOR() {
 		return R6_ACCOUNT_HOLDER_INDICATOR;
 	}
-	public void setR6_ACCOUNT_HOLDER_INDICATOR(String r6_ACCOUNT_HOLDER_INDICATOR) {
+	public void setR6_ACCOUNT_HOLDER_INDICATOR(BigDecimal r6_ACCOUNT_HOLDER_INDICATOR) {
 		R6_ACCOUNT_HOLDER_INDICATOR = r6_ACCOUNT_HOLDER_INDICATOR;
 	}
 	public String getR6_STATUS_OF_ACCOUNT() {
@@ -627,10 +627,10 @@ public class BDISB1_Summary_Entity {
 	public void setR6_EXCHANGE_RATE(BigDecimal r6_EXCHANGE_RATE) {
 		R6_EXCHANGE_RATE = r6_EXCHANGE_RATE;
 	}
-	public BigDecimal getR7_RECORD_NUMBER() {
+	public String getR7_RECORD_NUMBER() {
 		return R7_RECORD_NUMBER;
 	}
-	public void setR7_RECORD_NUMBER(BigDecimal r7_RECORD_NUMBER) {
+	public void setR7_RECORD_NUMBER(String r7_RECORD_NUMBER) {
 		R7_RECORD_NUMBER = r7_RECORD_NUMBER;
 	}
 	public String getR7_TITLE() {
@@ -747,10 +747,10 @@ public class BDISB1_Summary_Entity {
 	public void setR7_ACCOUNT_NUMBER(String r7_ACCOUNT_NUMBER) {
 		R7_ACCOUNT_NUMBER = r7_ACCOUNT_NUMBER;
 	}
-	public String getR7_ACCOUNT_HOLDER_INDICATOR() {
+	public BigDecimal getR7_ACCOUNT_HOLDER_INDICATOR() {
 		return R7_ACCOUNT_HOLDER_INDICATOR;
 	}
-	public void setR7_ACCOUNT_HOLDER_INDICATOR(String r7_ACCOUNT_HOLDER_INDICATOR) {
+	public void setR7_ACCOUNT_HOLDER_INDICATOR(BigDecimal r7_ACCOUNT_HOLDER_INDICATOR) {
 		R7_ACCOUNT_HOLDER_INDICATOR = r7_ACCOUNT_HOLDER_INDICATOR;
 	}
 	public String getR7_STATUS_OF_ACCOUNT() {
@@ -789,10 +789,10 @@ public class BDISB1_Summary_Entity {
 	public void setR7_EXCHANGE_RATE(BigDecimal r7_EXCHANGE_RATE) {
 		R7_EXCHANGE_RATE = r7_EXCHANGE_RATE;
 	}
-	public BigDecimal getR8_RECORD_NUMBER() {
+	public String getR8_RECORD_NUMBER() {
 		return R8_RECORD_NUMBER;
 	}
-	public void setR8_RECORD_NUMBER(BigDecimal r8_RECORD_NUMBER) {
+	public void setR8_RECORD_NUMBER(String r8_RECORD_NUMBER) {
 		R8_RECORD_NUMBER = r8_RECORD_NUMBER;
 	}
 	public String getR8_TITLE() {
@@ -909,10 +909,10 @@ public class BDISB1_Summary_Entity {
 	public void setR8_ACCOUNT_NUMBER(String r8_ACCOUNT_NUMBER) {
 		R8_ACCOUNT_NUMBER = r8_ACCOUNT_NUMBER;
 	}
-	public String getR8_ACCOUNT_HOLDER_INDICATOR() {
+	public BigDecimal getR8_ACCOUNT_HOLDER_INDICATOR() {
 		return R8_ACCOUNT_HOLDER_INDICATOR;
 	}
-	public void setR8_ACCOUNT_HOLDER_INDICATOR(String r8_ACCOUNT_HOLDER_INDICATOR) {
+	public void setR8_ACCOUNT_HOLDER_INDICATOR(BigDecimal r8_ACCOUNT_HOLDER_INDICATOR) {
 		R8_ACCOUNT_HOLDER_INDICATOR = r8_ACCOUNT_HOLDER_INDICATOR;
 	}
 	public String getR8_STATUS_OF_ACCOUNT() {
@@ -951,10 +951,10 @@ public class BDISB1_Summary_Entity {
 	public void setR8_EXCHANGE_RATE(BigDecimal r8_EXCHANGE_RATE) {
 		R8_EXCHANGE_RATE = r8_EXCHANGE_RATE;
 	}
-	public BigDecimal getR9_RECORD_NUMBER() {
+	public String getR9_RECORD_NUMBER() {
 		return R9_RECORD_NUMBER;
 	}
-	public void setR9_RECORD_NUMBER(BigDecimal r9_RECORD_NUMBER) {
+	public void setR9_RECORD_NUMBER(String r9_RECORD_NUMBER) {
 		R9_RECORD_NUMBER = r9_RECORD_NUMBER;
 	}
 	public String getR9_TITLE() {
@@ -1071,10 +1071,10 @@ public class BDISB1_Summary_Entity {
 	public void setR9_ACCOUNT_NUMBER(String r9_ACCOUNT_NUMBER) {
 		R9_ACCOUNT_NUMBER = r9_ACCOUNT_NUMBER;
 	}
-	public String getR9_ACCOUNT_HOLDER_INDICATOR() {
+	public BigDecimal getR9_ACCOUNT_HOLDER_INDICATOR() {
 		return R9_ACCOUNT_HOLDER_INDICATOR;
 	}
-	public void setR9_ACCOUNT_HOLDER_INDICATOR(String r9_ACCOUNT_HOLDER_INDICATOR) {
+	public void setR9_ACCOUNT_HOLDER_INDICATOR(BigDecimal r9_ACCOUNT_HOLDER_INDICATOR) {
 		R9_ACCOUNT_HOLDER_INDICATOR = r9_ACCOUNT_HOLDER_INDICATOR;
 	}
 	public String getR9_STATUS_OF_ACCOUNT() {
@@ -1113,10 +1113,10 @@ public class BDISB1_Summary_Entity {
 	public void setR9_EXCHANGE_RATE(BigDecimal r9_EXCHANGE_RATE) {
 		R9_EXCHANGE_RATE = r9_EXCHANGE_RATE;
 	}
-	public BigDecimal getR10_RECORD_NUMBER() {
+	public String getR10_RECORD_NUMBER() {
 		return R10_RECORD_NUMBER;
 	}
-	public void setR10_RECORD_NUMBER(BigDecimal r10_RECORD_NUMBER) {
+	public void setR10_RECORD_NUMBER(String r10_RECORD_NUMBER) {
 		R10_RECORD_NUMBER = r10_RECORD_NUMBER;
 	}
 	public String getR10_TITLE() {
@@ -1233,10 +1233,10 @@ public class BDISB1_Summary_Entity {
 	public void setR10_ACCOUNT_NUMBER(String r10_ACCOUNT_NUMBER) {
 		R10_ACCOUNT_NUMBER = r10_ACCOUNT_NUMBER;
 	}
-	public String getR10_ACCOUNT_HOLDER_INDICATOR() {
+	public BigDecimal getR10_ACCOUNT_HOLDER_INDICATOR() {
 		return R10_ACCOUNT_HOLDER_INDICATOR;
 	}
-	public void setR10_ACCOUNT_HOLDER_INDICATOR(String r10_ACCOUNT_HOLDER_INDICATOR) {
+	public void setR10_ACCOUNT_HOLDER_INDICATOR(BigDecimal r10_ACCOUNT_HOLDER_INDICATOR) {
 		R10_ACCOUNT_HOLDER_INDICATOR = r10_ACCOUNT_HOLDER_INDICATOR;
 	}
 	public String getR10_STATUS_OF_ACCOUNT() {
@@ -1275,10 +1275,10 @@ public class BDISB1_Summary_Entity {
 	public void setR10_EXCHANGE_RATE(BigDecimal r10_EXCHANGE_RATE) {
 		R10_EXCHANGE_RATE = r10_EXCHANGE_RATE;
 	}
-	public BigDecimal getR11_RECORD_NUMBER() {
+	public String getR11_RECORD_NUMBER() {
 		return R11_RECORD_NUMBER;
 	}
-	public void setR11_RECORD_NUMBER(BigDecimal r11_RECORD_NUMBER) {
+	public void setR11_RECORD_NUMBER(String r11_RECORD_NUMBER) {
 		R11_RECORD_NUMBER = r11_RECORD_NUMBER;
 	}
 	public String getR11_TITLE() {
@@ -1395,10 +1395,10 @@ public class BDISB1_Summary_Entity {
 	public void setR11_ACCOUNT_NUMBER(String r11_ACCOUNT_NUMBER) {
 		R11_ACCOUNT_NUMBER = r11_ACCOUNT_NUMBER;
 	}
-	public String getR11_ACCOUNT_HOLDER_INDICATOR() {
+	public BigDecimal getR11_ACCOUNT_HOLDER_INDICATOR() {
 		return R11_ACCOUNT_HOLDER_INDICATOR;
 	}
-	public void setR11_ACCOUNT_HOLDER_INDICATOR(String r11_ACCOUNT_HOLDER_INDICATOR) {
+	public void setR11_ACCOUNT_HOLDER_INDICATOR(BigDecimal r11_ACCOUNT_HOLDER_INDICATOR) {
 		R11_ACCOUNT_HOLDER_INDICATOR = r11_ACCOUNT_HOLDER_INDICATOR;
 	}
 	public String getR11_STATUS_OF_ACCOUNT() {
@@ -1442,6 +1442,7 @@ public class BDISB1_Summary_Entity {
 		// TODO Auto-generated constructor stub
 	}
 	
+    
     
     
 

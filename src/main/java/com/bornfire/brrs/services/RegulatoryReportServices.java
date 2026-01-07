@@ -259,7 +259,7 @@ public class RegulatoryReportServices {
 	BRRS_M_SRWA_12D_ReportService brrs_m_srwa_12d_reportservice;
 
 	@Autowired
-	BRRS_BDISB1_ReportService brrs_m_bdisb1_reportservice;
+	BRRS_BDISB1_ReportService brrs_bdisb1_reportservice;
 
 	@Autowired
 	BRRS_BDISB3_ReportService brrs_bdisb3_reportservice;
@@ -482,7 +482,7 @@ public class RegulatoryReportServices {
 				break;
 
 			case "BDISB1":
-				repsummary = brrs_m_bdisb1_reportservice.getBDISB1View(reportId, fromdate, todate, currency, dtltype,
+				repsummary = brrs_bdisb1_reportservice.getBDISB1View(reportId, fromdate, todate, currency, dtltype,
 						pageable, type, version);
 				break;
 
@@ -1492,9 +1492,7 @@ public class RegulatoryReportServices {
 				break;
 
 			case "BDISB1":
-
-				repdetail = brrs_m_bdisb1_reportservice.getBDISB1currentDtl(reportId, fromdate, todate, currency,
-						dtltype,
+				repdetail = brrs_bdisb1_reportservice.getBDISB1currentDtl(reportId, fromdate, todate, currency, dtltype,
 						pageable, Filter, type, version);
 				break;
 
@@ -1615,7 +1613,7 @@ public class RegulatoryReportServices {
 
 			case "BDISB1":
 				try {
-					repfile = brrs_m_bdisb1_reportservice.getBDISB1Excel(filename, reportId, fromdate, todate,
+					repfile = brrs_bdisb1_reportservice.getBDISB1Excel(filename, reportId, fromdate, todate,
 							currency,
 							dtltype, type, version);
 				} catch (Exception e) {
@@ -2882,6 +2880,15 @@ public class RegulatoryReportServices {
 					dtltype, type, version);
 		}
 
+
+
+		
+		else if ("BDISB1Detail".equals(filename)) {
+			return brrs_bdisb1_reportservice.getBDISB1DetailExcel(filename, fromdate, todate, currency,
+					dtltype, type, version);
+		}
+		
+
 		else if ("MDISB5Detail".equals(filename)) {
 			return BRRS_MDISB5_ReportService.getMDISB5DetailExcel(filename, fromdate, todate, currency,
 					dtltype, type, version);
@@ -3585,7 +3592,7 @@ public class RegulatoryReportServices {
 				break;
 
 			case "BDISB1":
-				List<Object[]> bdisb1List = brrs_m_bdisb1_reportservice.getBDISB1Archival();
+				List<Object[]> bdisb1List = brrs_bdisb1_reportservice.getBDISB1Archival();
 				archivalData.addAll(bdisb1List);
 				System.out.println("Fetched M_C archival data: " + bdisb1List.size());
 				break;
@@ -4218,6 +4225,16 @@ public class RegulatoryReportServices {
 			fileData = brrs_bdisb3_reportservice.getBDISB3DetailExcel(filename, fromdate, todate, currency,
 					dtltype, type, version);
 		}
+
+
+
+		
+		else if ("BDISB1Detail".equals(filename)) {
+
+			fileData = brrs_bdisb1_reportservice.getBDISB1DetailExcel(filename, fromdate, todate, currency,
+					dtltype, type, version);
+		}
+		
 
 		else if ("MDISB5Detail".equals(filename)) {
 
@@ -5094,7 +5111,7 @@ public class RegulatoryReportServices {
 
 			case "BDISB1":
 				try {
-					List<Object[]> resubList = brrs_m_bdisb1_reportservice.getBDISB1Resub();
+					List<Object[]> resubList = brrs_bdisb1_reportservice.getBDISB1Resub();
 					resubmissionData.addAll(resubList);
 					System.out.println("Resubmission data fetched for M_BDISB1: " + resubList.size());
 				} catch (Exception e) {

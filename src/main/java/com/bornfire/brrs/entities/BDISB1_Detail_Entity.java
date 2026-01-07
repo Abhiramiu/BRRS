@@ -10,6 +10,8 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 @Entity
 @Table(name = "BRRS_BDISB1_DETAILTABLE")
 public class BDISB1_Detail_Entity {
@@ -85,7 +87,7 @@ public class BDISB1_Detail_Entity {
 	    @Column(name = "DEL_FLG", length = 1)
 	    private String delFlg;
 	   
-	    private BigDecimal RECORD_NUMBER;               // NUMBER(24,2)
+	    private String RECORD_NUMBER;               // NUMBER(24,2)
 	    private String TITLE;                           // VARCHAR2(100)
 	    private String FIRST_NAME;                      // VARCHAR2(100)
 	    private String MIDDLE_NAME;                     // VARCHAR2(100)
@@ -94,7 +96,8 @@ public class BDISB1_Detail_Entity {
 	    private String GENDER;                          // VARCHAR2(100)
 	    private String IDENTIFICATION_TYPE;             // VARCHAR2(100)
 	    private String PASSPORT_NUMBER;                 // VARCHAR2(100)
-
+	    @Temporal(TemporalType.DATE)
+	    @DateTimeFormat(pattern = "yyyy-MM-dd")
 	    private Date DATE_OF_BIRTH;                     // DATE
 
 	    private String HOME_ADDRESS;                    // VARCHAR2(100)
@@ -108,7 +111,7 @@ public class BDISB1_Detail_Entity {
 	    private String PRODUCT_TYPE;                    // VARCHAR2(100)
 	    private String ACCOUNT_BY_OWNERSHIP;            // VARCHAR2(100)
 	    private String ACCOUNT_NUMBER;                  // VARCHAR2(100)
-	    private String ACCOUNT_HOLDER_INDICATOR;         // VARCHAR2(100)
+	    private BigDecimal ACCOUNT_HOLDER_INDICATOR;         // VARCHAR2(100)
 	    private String STATUS_OF_ACCOUNT;               // VARCHAR2(100)
 	    private String NOT_FIT_FOR_STP;                 // VARCHAR2(100)
 	    private String BRANCH_CODE_AND_NAME;             // VARCHAR2(100)
@@ -248,10 +251,10 @@ public class BDISB1_Detail_Entity {
 		public void setDelFlg(String delFlg) {
 			this.delFlg = delFlg;
 		}
-		public BigDecimal getRECORD_NUMBER() {
+		public String getRECORD_NUMBER() {
 			return RECORD_NUMBER;
 		}
-		public void setRECORD_NUMBER(BigDecimal rECORD_NUMBER) {
+		public void setRECORD_NUMBER(String rECORD_NUMBER) {
 			RECORD_NUMBER = rECORD_NUMBER;
 		}
 		public String getTITLE() {
@@ -368,10 +371,10 @@ public class BDISB1_Detail_Entity {
 		public void setACCOUNT_NUMBER(String aCCOUNT_NUMBER) {
 			ACCOUNT_NUMBER = aCCOUNT_NUMBER;
 		}
-		public String getACCOUNT_HOLDER_INDICATOR() {
+		public BigDecimal getACCOUNT_HOLDER_INDICATOR() {
 			return ACCOUNT_HOLDER_INDICATOR;
 		}
-		public void setACCOUNT_HOLDER_INDICATOR(String aCCOUNT_HOLDER_INDICATOR) {
+		public void setACCOUNT_HOLDER_INDICATOR(BigDecimal aCCOUNT_HOLDER_INDICATOR) {
 			ACCOUNT_HOLDER_INDICATOR = aCCOUNT_HOLDER_INDICATOR;
 		}
 		public String getSTATUS_OF_ACCOUNT() {
@@ -414,7 +417,7 @@ public class BDISB1_Detail_Entity {
 			super();
 			// TODO Auto-generated constructor stub
 		}
-		
+	    
 	    
 	    
 	    

@@ -70,10 +70,15 @@ import com.bornfire.brrs.entities.BDISB2_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.BDISB2_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.BDISB2_Detail_Entity;
 import com.bornfire.brrs.entities.BDISB2_Summary_Entity;
+import com.bornfire.brrs.entities.BDISB3_Archival_Detail_Entity;
+import com.bornfire.brrs.entities.BDISB3_Detail_Entity;
 import com.bornfire.brrs.entities.M_CA5_Summary_Entity1;
 import com.bornfire.brrs.entities.M_SRWA_12F_Archival_Summary_Entity;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+
+
 
 @Component
 @Service
@@ -91,16 +96,16 @@ public class BRRS_BDISB1_ReportService {
 	SessionFactory sessionFactory;
 
 	@Autowired
-	BRRS_BDISB1_Summary_Repo BDISB1_Summary_Repo;
+	BRRS_BDISB1_Summary_Repo  BDISB1_Summary_Repo;
 
 	@Autowired
 	BRRS_BDISB1_Archival_Summary_Repo BDISB1_Archival_Summary_Repo;
 	
 	@Autowired
-	private BRRS_BDISB1_Detail_Repo BDISB1_Detail_Repo;
+	BRRS_BDISB1_Detail_Repo  BDISB1_Detail_Repo;
 
 	@Autowired
-	private BRRS_BDISB1_Archival_Detail_Repo BDISB1_Archival_Detail_Repo;
+   BRRS_BDISB1_Archival_Detail_Repo BDISB1_Archival_Detail_Repo;
 
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
@@ -233,7 +238,6 @@ public class BRRS_BDISB1_ReportService {
 	
 	
 	
-	@Transactional
 	public void updateDetailFromForm(Date reportDate, Map<String, String> params) {
 
 	    System.out.println("Updating BDISB1 detail table");
@@ -243,7 +247,7 @@ public class BRRS_BDISB1_ReportService {
 	        String key = entry.getKey();
 	        String value = entry.getValue();
 
-	        // ✅ Allow ONLY valid BDISB1 keys
+	        // ✅ Allow only valid BDISB1 keys
 	        if (!key.matches(
 	                "R\\d+_C\\d+_(" +
 	                        "RECORD_NUMBER|" +
@@ -278,38 +282,71 @@ public class BRRS_BDISB1_ReportService {
 	            continue;
 	        }
 
-	        // ---------- Parse key ----------
+	        // 🔹 Parse key parts
 	        String[] parts = key.split("_");
-	        String reportLable  = parts[0];   // R6
-	        String addlCriteria = parts[1];   // C1
-	        String columnName   = key.replaceFirst("R\\d+_C\\d+_", "");
+	        String reportLable = parts[0];      // R5, R6...
+	        String addlCriteria = parts[1];     // C1, C2...
+	        String columnName = key.replaceFirst("R\\d+_C\\d+_", "");
 
-	        // ---------- Fetch rows ----------
+	        // 🔹 Fetch rows
 	        List<BDISB1_Detail_Entity> rows =
 	                BDISB1_Detail_Repo
 	                        .findByReportDateAndReportLableAndReportAddlCriteria1(
-	                                reportDate, reportLable, addlCriteria
-	                        );
-
-	        if (rows == null || rows.isEmpty()) {
-	            continue;
-	        }
+	                                reportDate, reportLable, addlCriteria);
 
 	        for (BDISB1_Detail_Entity row : rows) {
 
-	            if (row == null) continue;
+	            /* =======================
+	               NUMERIC COLUMNS
+	               ======================= */
 
-	            // ---------- NUMERIC ----------
-	            if ("RECORD_NUMBER".equals(columnName)) {
-	                row.setRECORD_NUMBER(BigDecimal(value));
+	            if ("ACCOUNT_HOLDER_INDICATOR".equals(columnName)) {
+
+	                BigDecimal num = (value == null || value.trim().isEmpty())
+	                        ? BigDecimal.ZERO
+	                        : new BigDecimal(value.replace(",", ""));
+	                row.setACCOUNT_HOLDER_INDICATOR(num);
 
 	            } else if ("ACCOUNT_BALANCE_IN_PULA".equals(columnName)) {
-	                row.setACCOUNT_BALANCE_IN_PULA(BigDecimal(value));
+
+	                BigDecimal num = (value == null || value.trim().isEmpty())
+	                        ? BigDecimal.ZERO
+	                        : new BigDecimal(value.replace(",", ""));
+	                row.setACCOUNT_BALANCE_IN_PULA(num);
 
 	            } else if ("EXCHANGE_RATE".equals(columnName)) {
-	                row.setEXCHANGE_RATE(BigDecimal(value));
 
-	            // ---------- STRING ----------
+	                BigDecimal num = (value == null || value.trim().isEmpty())
+	                        ? BigDecimal.ZERO
+	                        : new BigDecimal(value.replace(",", ""));
+	                row.setEXCHANGE_RATE(num);
+	            }
+
+	            /* =======================
+	               DATE COLUMN
+	               ======================= */
+	            else if ("DATE_OF_BIRTH".equals(columnName)) {
+
+	                if (value == null || value.trim().isEmpty()) {
+	                    row.setDATE_OF_BIRTH(null);
+	                } else {
+	                    try {
+	                        // HTML <input type="date"> sends yyyy-MM-dd
+	                        LocalDate localDate = LocalDate.parse(value);
+	                        row.setDATE_OF_BIRTH(java.sql.Date.valueOf(localDate));
+	                    } catch (Exception e) {
+	                        throw new RuntimeException("Invalid DATE_OF_BIRTH: " + value);
+	                    }
+	                }
+	            }
+
+
+	            /* =======================
+	               STRING COLUMNS
+	               ======================= */
+	            else if ("RECORD_NUMBER".equals(columnName)) {
+	                row.setRECORD_NUMBER(value);
+
 	            } else if ("TITLE".equals(columnName)) {
 	                row.setTITLE(value);
 
@@ -364,9 +401,6 @@ public class BRRS_BDISB1_ReportService {
 	            } else if ("ACCOUNT_NUMBER".equals(columnName)) {
 	                row.setACCOUNT_NUMBER(value);
 
-	            } else if ("ACCOUNT_HOLDER_INDICATOR".equals(columnName)) {
-	                row.setACCOUNT_HOLDER_INDICATOR(value);
-
 	            } else if ("STATUS_OF_ACCOUNT".equals(columnName)) {
 	                row.setSTATUS_OF_ACCOUNT(value);
 
@@ -378,195 +412,176 @@ public class BRRS_BDISB1_ReportService {
 
 	            } else if ("CURRENCY_OF_ACCOUNT".equals(columnName)) {
 	                row.setCURRENCY_OF_ACCOUNT(value);
-
-	            // ---------- DATE ----------
-	            } else if ("DATE_OF_BIRTH".equals(columnName)) {
-	                row.setDATE_OF_BIRTH(Date(value));
 	            }
 
-	            // ✅ mark modified
+	            // 🔹 Mark modified
 	            row.setModifyFlg("Y");
-
-	            // 🔥 SAVE EACH ROW (IMPORTANT)
-	            BDISB1_Detail_Repo.save(row);
 	        }
+
+	        BDISB1_Detail_Repo.saveAll(rows);
 	    }
 
-	    // 🔥 Run summary after commit
 	    callSummaryProcedure(reportDate);
 	}
-	
-	private BigDecimal BigDecimal(String value) {
-	    return (value == null || value.trim().isEmpty())
-	            ? BigDecimal.ZERO
-	            : new BigDecimal(value.replace(",", ""));
-	}
 
-	private Date Date(String value) {
-	    if (value == null || value.trim().isEmpty()) return null;
-	    try {
-	        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
-	        sdf.setLenient(false);
-	        return sdf.parse(value);
-	    } catch (ParseException e) {
-	        throw new RuntimeException("Invalid DATE format: " + value);
-	    }
-	}
 	
 	private void callSummaryProcedure(Date reportDate) {
 
-	    String sql = "{ call BRRS_BDISB1_SUMMARY_PROCEDURE(?) }";
+		String sql = "{ call BRRS_BDISB1_SUMMARY_PROCEDURE(?) }";
 
-	    jdbcTemplate.update(connection -> {
-	        CallableStatement cs = connection.prepareCall(sql);
+		jdbcTemplate.update(connection -> {
+			CallableStatement cs = connection.prepareCall(sql);
 
-	        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
-	        sdf.setLenient(false);
+			// Force exact format expected by procedure
+			SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+			sdf.setLenient(false);
 
-	        cs.setString(1, sdf.format(reportDate));
-	        return cs;
-	    });
+			String formattedDate = sdf.format(reportDate);
 
-	    System.out.println("✅ Summary procedure executed for date: " +
-	            new SimpleDateFormat("dd-MM-yyyy").format(reportDate));
+			cs.setString(1, formattedDate); // 🔥 THIS IS MANDATORY
+			return cs;
+		});
+
+		System.out.println(
+				"✅ Summary procedure executed for date: " + new SimpleDateFormat("dd-MM-yyyy").format(reportDate));
 	}
 	
 	
-	public void updateReport(BDISB1_Summary_Entity updatedEntity) {
-	    System.out.println("Came to services");
-		    System.out.println("Report Date: " + updatedEntity.getReportDate());
+//	public void updateReport(BDISB1_Summary_Entity updatedEntity) {
+//	    System.out.println("Came to services");
+//		    System.out.println("Report Date: " + updatedEntity.getReportDate());
+//
+//		    BDISB1_Summary_Entity existing = BDISB1_Summary_Repo.findById(updatedEntity.getReportDate())
+//		            .orElseThrow(() -> new RuntimeException(
+//	                    "Record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
 
-		    BDISB1_Summary_Entity existing = BDISB1_Summary_Repo.findById(updatedEntity.getReportDate())
-		            .orElseThrow(() -> new RuntimeException(
-	                    "Record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
-
-	try {
+//	try {
 	    // 1️⃣ Loop through R14 to R100
-	    for (int i = 5; i <= 11; i++) {
-	        String prefix = "R" + i + "_";
+//	    for (int i = 5; i <= 11; i++) {
+//	        String prefix = "R" + i + "_";
 
-	        String[] fields = {
-	        		"RECORD_NUMBER",
-	        		"TITLE",
-	        		"FIRST_NAME",
-	        		"MIDDLE_NAME",
-	        		"SURNAME",
-	        		"PREVIOUS_NAME",
-	        		"GENDER",
-	        		"IDENTIFICATION_TYPE",
-	        		"PASSPORT_NUMBER",
-	        		"DATE_OF_BIRTH",
-	        		"HOME_ADDRESS",
-	        		"POSTAL_ADDRESS",
-	        		"RESIDENCE",
-	        		"EMAIL",
-	        		"LANDLINE",
-	        		"MOBILE_PHONE_NUMBER",
-	        		"MOBILE_MONEY_NUMBER",
-	        		"PRODUCT_TYPE",
-	        		"ACCOUNT_BY_OWNERSHIP",
-	        		"ACCOUNT_NUMBER",
-	        		"ACCOUNT_HOLDER_INDICATOR",
-	        		"STATUS_OF_ACCOUNT",
-	        		"NOT_FIT_FOR_STP",
-	        		"BRANCH_CODE_AND_NAME",
-	        		"ACCOUNT_BALANCE_IN_PULA",
-	        		"CURRENCY_OF_ACCOUNT",
-	        		"EXCHANGE_RATE"
+//	        String[] fields = {
+//	        		"RECORD_NUMBER",
+//	        		"TITLE",
+//	        		"FIRST_NAME",
+//	        		"MIDDLE_NAME",
+//	        		"SURNAME",
+//	        		"PREVIOUS_NAME",
+//	        		"GENDER",
+//	        		"IDENTIFICATION_TYPE",
+//	        		"PASSPORT_NUMBER",
+//	        		"DATE_OF_BIRTH",
+//	        		"HOME_ADDRESS",
+//	        		"POSTAL_ADDRESS",
+//	        		"RESIDENCE",
+//	        		"EMAIL",
+//	        		"LANDLINE",
+//	        		"MOBILE_PHONE_NUMBER",
+//	        		"MOBILE_MONEY_NUMBER",
+//	        		"PRODUCT_TYPE",
+//	        		"ACCOUNT_BY_OWNERSHIP",
+//	        		"ACCOUNT_NUMBER",
+//	        		"ACCOUNT_HOLDER_INDICATOR",
+//	        		"STATUS_OF_ACCOUNT",
+//	        		"NOT_FIT_FOR_STP",
+//	        		"BRANCH_CODE_AND_NAME",
+//	        		"ACCOUNT_BALANCE_IN_PULA",
+//	        		"CURRENCY_OF_ACCOUNT",
+//	        		"EXCHANGE_RATE"
 
-	        };
+//	        };
 
-	        for (String field : fields) {
-	            String getterName = "get" + prefix + field;
-	            String setterName = "set" + prefix + field;
+//	        for (String field : fields) {
+//	            String getterName = "get" + prefix + field;
+//	            String setterName = "set" + prefix + field;
 
-	            try {
-	                Method getter = BDISB1_Summary_Entity.class.getMethod(getterName);
-	                Method setter = BDISB1_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+//	            try {
+//	                Method getter = BDISB1_Summary_Entity.class.getMethod(getterName);
+//	                Method setter = BDISB1_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
 
-	                Object newValue = getter.invoke(updatedEntity);
-	                setter.invoke(existing, newValue);
+//	                Object newValue = getter.invoke(updatedEntity);
+//	                setter.invoke(existing, newValue);
 
-	            } catch (NoSuchMethodException e) {
-	                // Skip missing fields
-	                continue;
-	            }
-	        }
-	    }
+//	            } catch (NoSuchMethodException e) {
+//	                // Skip missing fields
+//	                continue;
+//	            }
+//	        }
+//	    }
 
 	    // 2️⃣ Handle R100 total fields using same structure
-	      String prefix = "R11_";
-	      String[] totalFields = {
-	      		"TITLE",
-	      		"FIRST_NAME",
-	      		"MIDDLE_NAME",
-	      		"SURNAME",
-	      		"PREVIOUS_NAME",
-	      		"GENDER",
-	      		"IDENTIFICATION_TYPE",
-	      		"PASSPORT_NUMBER",
-	      		"DATE_OF_BIRTH",
-	      		"HOME_ADDRESS",
-	      		"POSTAL_ADDRESS",
-	      		"RESIDENCE",
-	      		"EMAIL",
-	      		"LANDLINE",
-	      		"MOBILE_PHONE_NUMBER",
-	      		"MOBILE_MONEY_NUMBER",
-	      		"PRODUCT_TYPE",
-	      		"ACCOUNT_BY_OWNERSHIP",
-	      		"ACCOUNT_NUMBER",
-	      		"ACCOUNT_HOLDER_INDICATOR",
-	      		"STATUS_OF_ACCOUNT",
-	      		"NOT_FIT_FOR_STP",
-	      		"BRANCH_CODE_AND_NAME",
-	      		"ACCOUNT_BALANCE_IN_PULA",
-	      		"CURRENCY_OF_ACCOUNT",
-	      		"EXCHANGE_RATE"
+//	      String prefix = "R11_";
+//	      String[] totalFields = {
+//	      		"TITLE",
+//	      		"FIRST_NAME",
+//	      		"MIDDLE_NAME",
+//	      		"SURNAME",
+//	      		"PREVIOUS_NAME",
+//	      		"GENDER",
+//	      		"IDENTIFICATION_TYPE",
+//	      		"PASSPORT_NUMBER",
+//	      		"DATE_OF_BIRTH",
+//	      		"HOME_ADDRESS",
+//	      		"POSTAL_ADDRESS",
+//	      		"RESIDENCE",
+//	      		"EMAIL",
+//	      		"LANDLINE",
+//	      		"MOBILE_PHONE_NUMBER",
+//	      		"MOBILE_MONEY_NUMBER",
+//	      		"PRODUCT_TYPE",
+//	      		"ACCOUNT_BY_OWNERSHIP",
+//	      		"ACCOUNT_NUMBER",
+//	      		"ACCOUNT_HOLDER_INDICATOR",
+//	      		"STATUS_OF_ACCOUNT",
+//	      		"NOT_FIT_FOR_STP",
+//	      		"BRANCH_CODE_AND_NAME",
+//	      		"ACCOUNT_BALANCE_IN_PULA",
+//	      		"CURRENCY_OF_ACCOUNT",
+//	      		"EXCHANGE_RATE"
 
-	      };
+//	      };
 
-	      for (String field : totalFields) {
-	          String getterName = "get" + prefix + field;
-	          String setterName = "set" + prefix + field;
+//	      for (String field : totalFields) {
+//	          String getterName = "get" + prefix + field;
+//	          String setterName = "set" + prefix + field;
 
-	          try {
-	              Method getter = BDISB1_Summary_Entity.class.getMethod(getterName);
-	              Method setter = BDISB1_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+//	          try {
+//	              Method getter = BDISB1_Summary_Entity.class.getMethod(getterName);
+//	              Method setter = BDISB1_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
 
-	              Object newValue = getter.invoke(updatedEntity);
-	              setter.invoke(existing, newValue);
+//	              Object newValue = getter.invoke(updatedEntity);
+//	              setter.invoke(existing, newValue);
 
-	          } catch (NoSuchMethodException e) {
+//	          } catch (NoSuchMethodException e) {
 	              // Skip missing total fields
-	              continue;
-	          }
-	      }
+//	              continue;
+//	          }
+//	      }
 
-	  } catch (Exception e) {
-	      throw new RuntimeException("Error while updating report fields", e);
-	  }
+//	  } catch (Exception e) {
+//	      throw new RuntimeException("Error while updating report fields", e);
+//	  }
 
-	  try {
-	  	existing.setR5_DATE_OF_BIRTH(updatedEntity.getR5_DATE_OF_BIRTH());
-	  	existing.setR6_DATE_OF_BIRTH(updatedEntity.getR6_DATE_OF_BIRTH());
-	  	existing.setR7_DATE_OF_BIRTH(updatedEntity.getR7_DATE_OF_BIRTH());
-	  	existing.setR8_DATE_OF_BIRTH(updatedEntity.getR8_DATE_OF_BIRTH());
-	  	existing.setR9_DATE_OF_BIRTH(updatedEntity.getR9_DATE_OF_BIRTH());
-	  	existing.setR10_DATE_OF_BIRTH(updatedEntity.getR10_DATE_OF_BIRTH());
-	  	existing.setR11_DATE_OF_BIRTH(updatedEntity.getR11_DATE_OF_BIRTH());
+//	  try {
+//	  	existing.setR5_DATE_OF_BIRTH(updatedEntity.getR5_DATE_OF_BIRTH());
+//	  	existing.setR6_DATE_OF_BIRTH(updatedEntity.getR6_DATE_OF_BIRTH());
+//	  	existing.setR7_DATE_OF_BIRTH(updatedEntity.getR7_DATE_OF_BIRTH());
+//	  	existing.setR8_DATE_OF_BIRTH(updatedEntity.getR8_DATE_OF_BIRTH());
+//	  	existing.setR9_DATE_OF_BIRTH(updatedEntity.getR9_DATE_OF_BIRTH());
+//	  	existing.setR10_DATE_OF_BIRTH(updatedEntity.getR10_DATE_OF_BIRTH());
+//	  	existing.setR11_DATE_OF_BIRTH(updatedEntity.getR11_DATE_OF_BIRTH());
 		
 
 		    	
 		        
-		    } catch (Exception e) {
-		        throw new RuntimeException("Error while updating date fields", e);
-		    }
+//		    } catch (Exception e) {
+//		        throw new RuntimeException("Error while updating date fields", e);
+//		    }
 		    
 		   
 		    // 3️⃣ Save updated entity
-		    BDISB1_Summary_Repo.save(existing);
-		}
+	//	    BDISB1_Summary_Repo.save(existing);
+	//	}
 
 
 
@@ -770,14 +785,16 @@ row = sheet.createRow(startRow + i);
 }
 
 
-//Cell0 - R5_RECORD_NUMBER
+
+
+//Cell1 - R5_TITLE
 Cell cell0 = row.createCell(0);
 if (record.getR5_RECORD_NUMBER() != null) {
- cell0.setCellValue(record.getR5_RECORD_NUMBER().doubleValue());
- cell0.setCellStyle(numberStyle);
+cell0.setCellValue(record.getR5_RECORD_NUMBER());
+cell0.setCellStyle(textStyle);
 } else {
- cell0.setCellValue("");
- cell0.setCellStyle(textStyle);
+cell0.setCellValue("");
+cell0.setCellStyle(textStyle);
 }
 
 //Cell1 - R5_TITLE
@@ -973,12 +990,12 @@ if (record.getR5_ACCOUNT_NUMBER() != null) {
 //Cell20 - R5_ACCOUNT_HOLDER_INDICATOR
 Cell cell20 = row.createCell(20);
 if (record.getR5_ACCOUNT_HOLDER_INDICATOR() != null) {
- cell20.setCellValue(record.getR5_ACCOUNT_HOLDER_INDICATOR());
- cell20.setCellStyle(textStyle);
-} else {
- cell20.setCellValue("");
- cell20.setCellStyle(textStyle);
-}
+	  cell20.setCellValue(record.getR5_ACCOUNT_HOLDER_INDICATOR().doubleValue());
+	  cell20.setCellStyle(numberStyle);
+	} else {
+	  cell20.setCellValue("");
+	  cell20.setCellStyle(textStyle);
+	}
 
 //Cell21 - R5_STATUS_OF_ACCOUNT
 Cell cell21 = row.createCell(21);
@@ -1044,14 +1061,14 @@ if (record.getR5_EXCHANGE_RATE() != null) {
 row = sheet.getRow(5);
 //====================== R6 ======================
 
-//Cell0 - R6_RECORD_NUMBER
+//Cell1 - R5_TITLE
 cell0 = row.createCell(0);
 if (record.getR6_RECORD_NUMBER() != null) {
-  cell0.setCellValue(record.getR6_RECORD_NUMBER().doubleValue());
-  cell0.setCellStyle(numberStyle);
+cell0.setCellValue(record.getR6_RECORD_NUMBER());
+cell0.setCellStyle(textStyle);
 } else {
-  cell0.setCellValue("");
-  cell0.setCellStyle(textStyle);
+cell0.setCellValue("");
+cell0.setCellStyle(textStyle);
 }
 
 //Cell1 - R6_TITLE
@@ -1247,8 +1264,8 @@ if (record.getR6_ACCOUNT_NUMBER() != null) {
 //Cell20 - R6_ACCOUNT_HOLDER_INDICATOR
 cell20 = row.createCell(20);
 if (record.getR6_ACCOUNT_HOLDER_INDICATOR() != null) {
-  cell20.setCellValue(record.getR6_ACCOUNT_HOLDER_INDICATOR());
-  cell20.setCellStyle(textStyle);
+  cell20.setCellValue(record.getR6_ACCOUNT_HOLDER_INDICATOR().doubleValue());
+  cell20.setCellStyle(numberStyle);
 } else {
   cell20.setCellValue("");
   cell20.setCellStyle(textStyle);
@@ -1322,11 +1339,11 @@ row = sheet.getRow(6);
 //Cell0 - R7_RECORD_NUMBER
 cell0 = row.createCell(0);
 if (record.getR7_RECORD_NUMBER() != null) {
-  cell0.setCellValue(record.getR7_RECORD_NUMBER().doubleValue());
-  cell0.setCellStyle(numberStyle);
+cell0.setCellValue(record.getR7_RECORD_NUMBER());
+cell0.setCellStyle(textStyle);
 } else {
-  cell0.setCellValue("");
-  cell0.setCellStyle(textStyle);
+cell0.setCellValue("");
+cell0.setCellStyle(textStyle);
 }
 
 //Cell1 - R7_TITLE
@@ -1521,9 +1538,9 @@ if (record.getR7_ACCOUNT_NUMBER() != null) {
 
 //Cell20 - R7_ACCOUNT_HOLDER_INDICATOR
 cell20 = row.createCell(20);
-if (record.getR7_ACCOUNT_HOLDER_INDICATOR() != null) {
-  cell20.setCellValue(record.getR7_ACCOUNT_HOLDER_INDICATOR());
-  cell20.setCellStyle(textStyle);
+if (record.getR11_ACCOUNT_HOLDER_INDICATOR() != null) {
+  cell20.setCellValue(record.getR11_ACCOUNT_HOLDER_INDICATOR().doubleValue());
+  cell20.setCellStyle(numberStyle);
 } else {
   cell20.setCellValue("");
   cell20.setCellStyle(textStyle);
@@ -1597,11 +1614,11 @@ row = sheet.getRow(7);
 //Cell0 - R8_RECORD_NUMBER
 cell0 = row.createCell(0);
 if (record.getR8_RECORD_NUMBER() != null) {
-  cell0.setCellValue(record.getR8_RECORD_NUMBER().doubleValue());
-  cell0.setCellStyle(numberStyle);
+cell0.setCellValue(record.getR8_RECORD_NUMBER());
+cell0.setCellStyle(textStyle);
 } else {
-  cell0.setCellValue("");
-  cell0.setCellStyle(textStyle);
+cell0.setCellValue("");
+cell0.setCellStyle(textStyle);
 }
 
 //Cell1 - R8_TITLE
@@ -1797,8 +1814,8 @@ if (record.getR8_ACCOUNT_NUMBER() != null) {
 //Cell20 - R8_ACCOUNT_HOLDER_INDICATOR
 cell20 = row.createCell(20);
 if (record.getR8_ACCOUNT_HOLDER_INDICATOR() != null) {
-  cell20.setCellValue(record.getR8_ACCOUNT_HOLDER_INDICATOR());
-  cell20.setCellStyle(textStyle);
+  cell20.setCellValue(record.getR8_ACCOUNT_HOLDER_INDICATOR().doubleValue());
+  cell20.setCellStyle(numberStyle);
 } else {
   cell20.setCellValue("");
   cell20.setCellStyle(textStyle);
@@ -1870,11 +1887,11 @@ row = sheet.getRow(8);
 //Cell0 - R9_RECORD_NUMBER
 cell0 = row.createCell(0);
 if (record.getR9_RECORD_NUMBER() != null) {
-  cell0.setCellValue(record.getR9_RECORD_NUMBER().doubleValue());
-  cell0.setCellStyle(numberStyle);
+cell0.setCellValue(record.getR9_RECORD_NUMBER());
+cell0.setCellStyle(textStyle);
 } else {
-  cell0.setCellValue("");
-  cell0.setCellStyle(textStyle);
+cell0.setCellValue("");
+cell0.setCellStyle(textStyle);
 }
 
 //Cell1 - R9_TITLE
@@ -2070,8 +2087,8 @@ if (record.getR9_ACCOUNT_NUMBER() != null) {
 //Cell20 - R9_ACCOUNT_HOLDER_INDICATOR
 cell20 = row.createCell(20);
 if (record.getR9_ACCOUNT_HOLDER_INDICATOR() != null) {
-  cell20.setCellValue(record.getR9_ACCOUNT_HOLDER_INDICATOR());
-  cell20.setCellStyle(textStyle);
+  cell20.setCellValue(record.getR9_ACCOUNT_HOLDER_INDICATOR().doubleValue());
+  cell20.setCellStyle(numberStyle);
 } else {
   cell20.setCellValue("");
   cell20.setCellStyle(textStyle);
@@ -2145,11 +2162,11 @@ row = sheet.getRow(9);
 //Cell0 - R10_RECORD_NUMBER
 cell0 = row.createCell(0);
 if (record.getR10_RECORD_NUMBER() != null) {
-  cell0.setCellValue(record.getR10_RECORD_NUMBER().doubleValue());
-  cell0.setCellStyle(numberStyle);
+cell0.setCellValue(record.getR10_RECORD_NUMBER());
+cell0.setCellStyle(textStyle);
 } else {
-  cell0.setCellValue("");
-  cell0.setCellStyle(textStyle);
+cell0.setCellValue("");
+cell0.setCellStyle(textStyle);
 }
 
 //Cell1 - R10_TITLE
@@ -2345,8 +2362,8 @@ if (record.getR10_ACCOUNT_NUMBER() != null) {
 //Cell20 - R10_ACCOUNT_HOLDER_INDICATOR
 cell20 = row.createCell(20);
 if (record.getR10_ACCOUNT_HOLDER_INDICATOR() != null) {
-  cell20.setCellValue(record.getR10_ACCOUNT_HOLDER_INDICATOR());
-  cell20.setCellStyle(textStyle);
+  cell20.setCellValue(record.getR10_ACCOUNT_HOLDER_INDICATOR().doubleValue());
+  cell20.setCellStyle(numberStyle);
 } else {
   cell20.setCellValue("");
   cell20.setCellStyle(textStyle);
@@ -2417,11 +2434,11 @@ row = sheet.getRow(10);
 //Cell0 - R11_RECORD_NUMBER
 cell0 = row.createCell(0);
 if (record.getR11_RECORD_NUMBER() != null) {
-  cell0.setCellValue(record.getR11_RECORD_NUMBER().doubleValue());
-  cell0.setCellStyle(numberStyle);
+cell0.setCellValue(record.getR11_RECORD_NUMBER());
+cell0.setCellStyle(textStyle);
 } else {
-  cell0.setCellValue("");
-  cell0.setCellStyle(textStyle);
+cell0.setCellValue("");
+cell0.setCellStyle(textStyle);
 }
 
 //Cell1 - R11_TITLE
@@ -2615,10 +2632,11 @@ if (record.getR11_ACCOUNT_NUMBER() != null) {
 }
 
 //Cell20 - R11_ACCOUNT_HOLDER_INDICATOR
+
 cell20 = row.createCell(20);
 if (record.getR11_ACCOUNT_HOLDER_INDICATOR() != null) {
-  cell20.setCellValue(record.getR11_ACCOUNT_HOLDER_INDICATOR());
-  cell20.setCellStyle(textStyle);
+  cell20.setCellValue(record.getR11_ACCOUNT_HOLDER_INDICATOR().doubleValue());
+  cell20.setCellStyle(numberStyle);
 } else {
   cell20.setCellValue("");
   cell20.setCellStyle(textStyle);
@@ -2783,14 +2801,15 @@ return out.toByteArray();
 					if (row == null) {
 						row = sheet.createRow(startRow + i);
 					}
-					//Cell0 - R5_record1_NUMBER
+
+					//Cell1 - R5_TITLE
 					Cell cell0 = row.createCell(0);
 					if (record1.getR5_RECORD_NUMBER() != null) {
-					 cell0.setCellValue(record1.getR5_RECORD_NUMBER().doubleValue());
-					 cell0.setCellStyle(numberStyle);
+					cell0.setCellValue(record1.getR5_RECORD_NUMBER());
+					cell0.setCellStyle(textStyle);
 					} else {
-					 cell0.setCellValue("");
-					 cell0.setCellStyle(textStyle);
+					cell0.setCellValue("");
+					cell0.setCellStyle(textStyle);
 					}
 
 					//Cell1 - R5_TITLE
@@ -2986,12 +3005,12 @@ return out.toByteArray();
 					//Cell20 - R5_ACCOUNT_HOLDER_INDICATOR
 					Cell cell20 = row.createCell(20);
 					if (record1.getR5_ACCOUNT_HOLDER_INDICATOR() != null) {
-					 cell20.setCellValue(record1.getR5_ACCOUNT_HOLDER_INDICATOR());
-					 cell20.setCellStyle(textStyle);
-					} else {
-					 cell20.setCellValue("");
-					 cell20.setCellStyle(textStyle);
-					}
+						  cell20.setCellValue(record1.getR5_ACCOUNT_HOLDER_INDICATOR().doubleValue());
+						  cell20.setCellStyle(numberStyle);
+						} else {
+						  cell20.setCellValue("");
+						  cell20.setCellStyle(textStyle);
+						}
 
 					//Cell21 - R5_STATUS_OF_ACCOUNT
 					Cell cell21 = row.createCell(21);
@@ -3057,14 +3076,14 @@ return out.toByteArray();
 					row = sheet.getRow(5);
 					//====================== R6 ======================
 
-					//Cell0 - R6_record1_NUMBER
+					//Cell1 - R5_TITLE
 					cell0 = row.createCell(0);
 					if (record1.getR6_RECORD_NUMBER() != null) {
-					  cell0.setCellValue(record1.getR6_RECORD_NUMBER().doubleValue());
-					  cell0.setCellStyle(numberStyle);
+					cell0.setCellValue(record1.getR6_RECORD_NUMBER());
+					cell0.setCellStyle(textStyle);
 					} else {
-					  cell0.setCellValue("");
-					  cell0.setCellStyle(textStyle);
+					cell0.setCellValue("");
+					cell0.setCellStyle(textStyle);
 					}
 
 					//Cell1 - R6_TITLE
@@ -3260,8 +3279,8 @@ return out.toByteArray();
 					//Cell20 - R6_ACCOUNT_HOLDER_INDICATOR
 					cell20 = row.createCell(20);
 					if (record1.getR6_ACCOUNT_HOLDER_INDICATOR() != null) {
-					  cell20.setCellValue(record1.getR6_ACCOUNT_HOLDER_INDICATOR());
-					  cell20.setCellStyle(textStyle);
+					  cell20.setCellValue(record1.getR6_ACCOUNT_HOLDER_INDICATOR().doubleValue());
+					  cell20.setCellStyle(numberStyle);
 					} else {
 					  cell20.setCellValue("");
 					  cell20.setCellStyle(textStyle);
@@ -3335,11 +3354,11 @@ return out.toByteArray();
 					//Cell0 - R7_record1_NUMBER
 					cell0 = row.createCell(0);
 					if (record1.getR7_RECORD_NUMBER() != null) {
-					  cell0.setCellValue(record1.getR7_RECORD_NUMBER().doubleValue());
-					  cell0.setCellStyle(numberStyle);
+					cell0.setCellValue(record1.getR7_RECORD_NUMBER());
+					cell0.setCellStyle(textStyle);
 					} else {
-					  cell0.setCellValue("");
-					  cell0.setCellStyle(textStyle);
+					cell0.setCellValue("");
+					cell0.setCellStyle(textStyle);
 					}
 
 					//Cell1 - R7_TITLE
@@ -3534,9 +3553,9 @@ return out.toByteArray();
 
 					//Cell20 - R7_ACCOUNT_HOLDER_INDICATOR
 					cell20 = row.createCell(20);
-					if (record1.getR7_ACCOUNT_HOLDER_INDICATOR() != null) {
-					  cell20.setCellValue(record1.getR7_ACCOUNT_HOLDER_INDICATOR());
-					  cell20.setCellStyle(textStyle);
+					if (record1.getR11_ACCOUNT_HOLDER_INDICATOR() != null) {
+					  cell20.setCellValue(record1.getR11_ACCOUNT_HOLDER_INDICATOR().doubleValue());
+					  cell20.setCellStyle(numberStyle);
 					} else {
 					  cell20.setCellValue("");
 					  cell20.setCellStyle(textStyle);
@@ -3610,11 +3629,11 @@ return out.toByteArray();
 					//Cell0 - R8_record1_NUMBER
 					cell0 = row.createCell(0);
 					if (record1.getR8_RECORD_NUMBER() != null) {
-					  cell0.setCellValue(record1.getR8_RECORD_NUMBER().doubleValue());
-					  cell0.setCellStyle(numberStyle);
+					cell0.setCellValue(record1.getR8_RECORD_NUMBER());
+					cell0.setCellStyle(textStyle);
 					} else {
-					  cell0.setCellValue("");
-					  cell0.setCellStyle(textStyle);
+					cell0.setCellValue("");
+					cell0.setCellStyle(textStyle);
 					}
 
 					//Cell1 - R8_TITLE
@@ -3810,8 +3829,8 @@ return out.toByteArray();
 					//Cell20 - R8_ACCOUNT_HOLDER_INDICATOR
 					cell20 = row.createCell(20);
 					if (record1.getR8_ACCOUNT_HOLDER_INDICATOR() != null) {
-					  cell20.setCellValue(record1.getR8_ACCOUNT_HOLDER_INDICATOR());
-					  cell20.setCellStyle(textStyle);
+					  cell20.setCellValue(record1.getR8_ACCOUNT_HOLDER_INDICATOR().doubleValue());
+					  cell20.setCellStyle(numberStyle);
 					} else {
 					  cell20.setCellValue("");
 					  cell20.setCellStyle(textStyle);
@@ -3883,11 +3902,11 @@ return out.toByteArray();
 					//Cell0 - R9_record1_NUMBER
 					cell0 = row.createCell(0);
 					if (record1.getR9_RECORD_NUMBER() != null) {
-					  cell0.setCellValue(record1.getR9_RECORD_NUMBER().doubleValue());
-					  cell0.setCellStyle(numberStyle);
+					cell0.setCellValue(record1.getR9_RECORD_NUMBER());
+					cell0.setCellStyle(textStyle);
 					} else {
-					  cell0.setCellValue("");
-					  cell0.setCellStyle(textStyle);
+					cell0.setCellValue("");
+					cell0.setCellStyle(textStyle);
 					}
 
 					//Cell1 - R9_TITLE
@@ -4083,8 +4102,8 @@ return out.toByteArray();
 					//Cell20 - R9_ACCOUNT_HOLDER_INDICATOR
 					cell20 = row.createCell(20);
 					if (record1.getR9_ACCOUNT_HOLDER_INDICATOR() != null) {
-					  cell20.setCellValue(record1.getR9_ACCOUNT_HOLDER_INDICATOR());
-					  cell20.setCellStyle(textStyle);
+					  cell20.setCellValue(record1.getR9_ACCOUNT_HOLDER_INDICATOR().doubleValue());
+					  cell20.setCellStyle(numberStyle);
 					} else {
 					  cell20.setCellValue("");
 					  cell20.setCellStyle(textStyle);
@@ -4158,11 +4177,11 @@ return out.toByteArray();
 					//Cell0 - R10_record1_NUMBER
 					cell0 = row.createCell(0);
 					if (record1.getR10_RECORD_NUMBER() != null) {
-					  cell0.setCellValue(record1.getR10_RECORD_NUMBER().doubleValue());
-					  cell0.setCellStyle(numberStyle);
+					cell0.setCellValue(record1.getR10_RECORD_NUMBER());
+					cell0.setCellStyle(textStyle);
 					} else {
-					  cell0.setCellValue("");
-					  cell0.setCellStyle(textStyle);
+					cell0.setCellValue("");
+					cell0.setCellStyle(textStyle);
 					}
 
 					//Cell1 - R10_TITLE
@@ -4358,8 +4377,8 @@ return out.toByteArray();
 					//Cell20 - R10_ACCOUNT_HOLDER_INDICATOR
 					cell20 = row.createCell(20);
 					if (record1.getR10_ACCOUNT_HOLDER_INDICATOR() != null) {
-					  cell20.setCellValue(record1.getR10_ACCOUNT_HOLDER_INDICATOR());
-					  cell20.setCellStyle(textStyle);
+					  cell20.setCellValue(record1.getR10_ACCOUNT_HOLDER_INDICATOR().doubleValue());
+					  cell20.setCellStyle(numberStyle);
 					} else {
 					  cell20.setCellValue("");
 					  cell20.setCellStyle(textStyle);
@@ -4430,11 +4449,11 @@ return out.toByteArray();
 					//Cell0 - R11_record1_NUMBER
 					cell0 = row.createCell(0);
 					if (record1.getR11_RECORD_NUMBER() != null) {
-					  cell0.setCellValue(record1.getR11_RECORD_NUMBER().doubleValue());
-					  cell0.setCellStyle(numberStyle);
+					cell0.setCellValue(record1.getR11_RECORD_NUMBER());
+					cell0.setCellStyle(textStyle);
 					} else {
-					  cell0.setCellValue("");
-					  cell0.setCellStyle(textStyle);
+					cell0.setCellValue("");
+					cell0.setCellStyle(textStyle);
 					}
 
 					//Cell1 - R11_TITLE
@@ -4628,10 +4647,11 @@ return out.toByteArray();
 					}
 
 					//Cell20 - R11_ACCOUNT_HOLDER_INDICATOR
+
 					cell20 = row.createCell(20);
 					if (record1.getR11_ACCOUNT_HOLDER_INDICATOR() != null) {
-					  cell20.setCellValue(record1.getR11_ACCOUNT_HOLDER_INDICATOR());
-					  cell20.setCellStyle(textStyle);
+					  cell20.setCellValue(record1.getR11_ACCOUNT_HOLDER_INDICATOR().doubleValue());
+					  cell20.setCellStyle(numberStyle);
 					} else {
 					  cell20.setCellValue("");
 					  cell20.setCellStyle(textStyle);
@@ -4770,449 +4790,661 @@ return archivalList;
 @Transactional
 public void updateReportReSub(BDISB1_Summary_Entity updatedEntity) {
 
-System.out.println("Came to Resub Service");
+    System.out.println("Came to Resub Service");
 
-Date reportDate = updatedEntity.getReportDate();
-System.out.println("Report Date: " + reportDate);
+    Date reportDate = updatedEntity.getReportDate();
+    System.out.println("Report Date: " + reportDate);
 
-try {
-/* =========================================================
-* 1️⃣ FETCH LATEST ARCHIVAL VERSION
-* ========================================================= */
-Optional<BDISB1_Archival_Summary_Entity> latestArchivalOpt =
-BDISB1_Archival_Summary_Repo
-.getLatestArchivalVersionByDate(reportDate);
+    try {
 
-int newVersion = 1;
-if (latestArchivalOpt.isPresent()) {
-try {
-newVersion =
-Integer.parseInt(latestArchivalOpt.get().getReportVersion()) + 1;
-} catch (NumberFormatException e) {
-newVersion = 1;
-}
-}
+        /* =========================================================
+         * 1️⃣ FETCH LATEST ARCHIVAL VERSION
+         * ========================================================= */
+        Optional<BDISB1_Archival_Summary_Entity> latestArchivalOpt =
+                BDISB1_Archival_Summary_Repo
+                        .getLatestArchivalVersionByDate(reportDate);
 
-boolean exists =
-BDISB1_Archival_Summary_Repo
-.findByReportDateAndReportVersion(
-reportDate, String.valueOf(newVersion))
-.isPresent();
+        int newVersion = 1;
+        if (latestArchivalOpt.isPresent()) {
+            try {
+                newVersion =
+                        Integer.parseInt(latestArchivalOpt.get().getReportVersion()) + 1;
+            } catch (NumberFormatException e) {
+                newVersion = 1;
+            }
+        }
 
-if (exists) {
-throw new RuntimeException(
-"Version " + newVersion + " already exists for report date " + reportDate);
-}
+        boolean exists =
+                BDISB1_Archival_Summary_Repo
+                        .findByReportDateAndReportVersion(
+                                reportDate, String.valueOf(newVersion))
+                        .isPresent();
 
-/* =========================================================
-* 2️⃣ CREATE NEW ARCHIVAL ENTITY (BASE COPY)
-* ========================================================= */
-BDISB1_Archival_Summary_Entity archivalEntity =
-new BDISB1_Archival_Summary_Entity();
+        if (exists) {
+            throw new RuntimeException(
+                    "Version " + newVersion + " already exists for report date " + reportDate);
+        }
 
-if (latestArchivalOpt.isPresent()) {
-BeanUtils.copyProperties(latestArchivalOpt.get(), archivalEntity);
-}
+        /* =========================================================
+         * 2️⃣ CREATE NEW ARCHIVAL ENTITY (BASE COPY)
+         * ========================================================= */
+        BDISB1_Archival_Summary_Entity archivalEntity =
+                new BDISB1_Archival_Summary_Entity();
 
-/* =========================================================
-* 3️⃣ READ RAW REQUEST PARAMETERS (CRITICAL FIX)
-* ========================================================= */
-HttpServletRequest request =
-((ServletRequestAttributes) RequestContextHolder
-.getRequestAttributes()).getRequest();
+        if (latestArchivalOpt.isPresent()) {
+            BeanUtils.copyProperties(latestArchivalOpt.get(), archivalEntity);
+        }
 
-Map<String, String[]> parameterMap = request.getParameterMap();
+        archivalEntity.setReportDate(reportDate);
+        archivalEntity.setReportVersion(String.valueOf(newVersion));
+        archivalEntity.setModify_flg("Y");
 
-for (Map.Entry<String, String[]> entry : parameterMap.entrySet()) {
+        /* =========================================================
+         * 3️⃣ READ RAW REQUEST PARAMETERS
+         * ========================================================= */
+        HttpServletRequest request =
+                ((ServletRequestAttributes) RequestContextHolder
+                        .getRequestAttributes()).getRequest();
 
-String key = entry.getKey();              // R6_C11_ACCT_NUM
-String value = entry.getValue()[0];
+        Map<String, String[]> parameterMap = request.getParameterMap();
 
-// Ignore non-field params
-if ("asondate".equalsIgnoreCase(key) || "type".equalsIgnoreCase(key)) {
-continue;
-}
+        for (Map.Entry<String, String[]> entry : parameterMap.entrySet()) {
 
-// Normalize: R6_C11_ACCT_NUM → R6_ACCT_NUM
-String normalizedKey = key.replaceFirst("_C\\d+_", "_");
+            String key = entry.getKey();        // R5_C11_FIRST_NAME
+            String value = entry.getValue()[0];
 
-/* =====================================================
-* 4️⃣ APPLY VALUES (EXPLICIT, SAFE, NO REFLECTION)
-* ===================================================== */
-//======================= R5 – R11 =======================
+            // Ignore non-data params
+            if ("asondate".equalsIgnoreCase(key)
+                    || "type".equalsIgnoreCase(key)) {
+                continue;
+            }
 
-if ("R5_RECORD_NUMBER".equals(normalizedKey)) {
- archivalEntity.setR5_RECORD_NUMBER(parseBigDecimal(value));
-} else if ("R5_TITLE".equals(normalizedKey)) {
- archivalEntity.setR5_TITLE(value);
-} else if ("R5_FIRST_NAME".equals(normalizedKey)) {
- archivalEntity.setR5_FIRST_NAME(value);
-} else if ("R5_MIDDLE_NAME".equals(normalizedKey)) {
- archivalEntity.setR5_MIDDLE_NAME(value);
-} else if ("R5_SURNAME".equals(normalizedKey)) {
- archivalEntity.setR5_SURNAME(value);
-} else if ("R5_PREVIOUS_NAME".equals(normalizedKey)) {
- archivalEntity.setR5_PREVIOUS_NAME(value);
-} else if ("R5_GENDER".equals(normalizedKey)) {
- archivalEntity.setR5_GENDER(value);
-} else if ("R5_IDENTIFICATION_TYPE".equals(normalizedKey)) {
- archivalEntity.setR5_IDENTIFICATION_TYPE(value);
-} else if ("R5_PASSPORT_NUMBER".equals(normalizedKey)) {
- archivalEntity.setR5_PASSPORT_NUMBER(value);
-} else if ("R5_HOME_ADDRESS".equals(normalizedKey)) {
- archivalEntity.setR5_HOME_ADDRESS(value);
-} else if ("R5_POSTAL_ADDRESS".equals(normalizedKey)) {
- archivalEntity.setR5_POSTAL_ADDRESS(value);
-} else if ("R5_RESIDENCE".equals(normalizedKey)) {
- archivalEntity.setR5_RESIDENCE(value);
-} else if ("R5_EMAIL".equals(normalizedKey)) {
- archivalEntity.setR5_EMAIL(value);
-} else if ("R5_LANDLINE".equals(normalizedKey)) {
- archivalEntity.setR5_LANDLINE(value);
-} else if ("R5_MOBILE_PHONE_NUMBER".equals(normalizedKey)) {
- archivalEntity.setR5_MOBILE_PHONE_NUMBER(value);
-} else if ("R5_MOBILE_MONEY_NUMBER".equals(normalizedKey)) {
- archivalEntity.setR5_MOBILE_MONEY_NUMBER(value);
-} else if ("R5_PRODUCT_TYPE".equals(normalizedKey)) {
- archivalEntity.setR5_PRODUCT_TYPE(value);
-} else if ("R5_ACCOUNT_BY_OWNERSHIP".equals(normalizedKey)) {
- archivalEntity.setR5_ACCOUNT_BY_OWNERSHIP(value);
-} else if ("R5_ACCOUNT_NUMBER".equals(normalizedKey)) {
- archivalEntity.setR5_ACCOUNT_NUMBER(value);
-} else if ("R5_ACCOUNT_HOLDER_INDICATOR".equals(normalizedKey)) {
- archivalEntity.setR5_ACCOUNT_HOLDER_INDICATOR(value);
-} else if ("R5_STATUS_OF_ACCOUNT".equals(normalizedKey)) {
- archivalEntity.setR5_STATUS_OF_ACCOUNT(value);
-} else if ("R5_NOT_FIT_FOR_STP".equals(normalizedKey)) {
- archivalEntity.setR5_NOT_FIT_FOR_STP(value);
-} else if ("R5_BRANCH_CODE_AND_NAME".equals(normalizedKey)) {
- archivalEntity.setR5_BRANCH_CODE_AND_NAME(value);
-} else if ("R5_ACCOUNT_BALANCE_IN_PULA".equals(normalizedKey)) {
- archivalEntity.setR5_ACCOUNT_BALANCE_IN_PULA(parseBigDecimal(value));
-} else if ("R5_CURRENCY_OF_ACCOUNT".equals(normalizedKey)) {
- archivalEntity.setR5_CURRENCY_OF_ACCOUNT(value);
-} else if ("R5_EXCHANGE_RATE".equals(normalizedKey)) {
- archivalEntity.setR5_EXCHANGE_RATE(parseBigDecimal(value));
+            // Normalize: R5_C11_FIRST_NAME → R5_FIRST_NAME
+            String normalizedKey = key.replaceFirst("_C\\d+_", "_");
 
-} else if ("R6_RECORD_NUMBER".equals(normalizedKey)) {
- archivalEntity.setR6_RECORD_NUMBER(parseBigDecimal(value));
-} else if ("R6_TITLE".equals(normalizedKey)) {
- archivalEntity.setR6_TITLE(value);
-} else if ("R6_FIRST_NAME".equals(normalizedKey)) {
- archivalEntity.setR6_FIRST_NAME(value);
-} else if ("R6_MIDDLE_NAME".equals(normalizedKey)) {
- archivalEntity.setR6_MIDDLE_NAME(value);
-} else if ("R6_SURNAME".equals(normalizedKey)) {
- archivalEntity.setR6_SURNAME(value);
-} else if ("R6_PREVIOUS_NAME".equals(normalizedKey)) {
- archivalEntity.setR6_PREVIOUS_NAME(value);
-} else if ("R6_GENDER".equals(normalizedKey)) {
- archivalEntity.setR6_GENDER(value);
-} else if ("R6_IDENTIFICATION_TYPE".equals(normalizedKey)) {
- archivalEntity.setR6_IDENTIFICATION_TYPE(value);
-} else if ("R6_PASSPORT_NUMBER".equals(normalizedKey)) {
- archivalEntity.setR6_PASSPORT_NUMBER(value);
-} else if ("R6_HOME_ADDRESS".equals(normalizedKey)) {
- archivalEntity.setR6_HOME_ADDRESS(value);
-} else if ("R6_POSTAL_ADDRESS".equals(normalizedKey)) {
- archivalEntity.setR6_POSTAL_ADDRESS(value);
-} else if ("R6_RESIDENCE".equals(normalizedKey)) {
- archivalEntity.setR6_RESIDENCE(value);
-} else if ("R6_EMAIL".equals(normalizedKey)) {
- archivalEntity.setR6_EMAIL(value);
-} else if ("R6_LANDLINE".equals(normalizedKey)) {
- archivalEntity.setR6_LANDLINE(value);
-} else if ("R6_MOBILE_PHONE_NUMBER".equals(normalizedKey)) {
- archivalEntity.setR6_MOBILE_PHONE_NUMBER(value);
-} else if ("R6_MOBILE_MONEY_NUMBER".equals(normalizedKey)) {
- archivalEntity.setR6_MOBILE_MONEY_NUMBER(value);
-} else if ("R6_PRODUCT_TYPE".equals(normalizedKey)) {
- archivalEntity.setR6_PRODUCT_TYPE(value);
-} else if ("R6_ACCOUNT_BY_OWNERSHIP".equals(normalizedKey)) {
- archivalEntity.setR6_ACCOUNT_BY_OWNERSHIP(value);
-} else if ("R6_ACCOUNT_NUMBER".equals(normalizedKey)) {
- archivalEntity.setR6_ACCOUNT_NUMBER(value);
-} else if ("R6_ACCOUNT_HOLDER_INDICATOR".equals(normalizedKey)) {
- archivalEntity.setR6_ACCOUNT_HOLDER_INDICATOR(value);
-} else if ("R6_STATUS_OF_ACCOUNT".equals(normalizedKey)) {
- archivalEntity.setR6_STATUS_OF_ACCOUNT(value);
-} else if ("R6_NOT_FIT_FOR_STP".equals(normalizedKey)) {
- archivalEntity.setR6_NOT_FIT_FOR_STP(value);
-} else if ("R6_BRANCH_CODE_AND_NAME".equals(normalizedKey)) {
- archivalEntity.setR6_BRANCH_CODE_AND_NAME(value);
-} else if ("R6_ACCOUNT_BALANCE_IN_PULA".equals(normalizedKey)) {
- archivalEntity.setR6_ACCOUNT_BALANCE_IN_PULA(parseBigDecimal(value));
-} else if ("R6_CURRENCY_OF_ACCOUNT".equals(normalizedKey)) {
- archivalEntity.setR6_CURRENCY_OF_ACCOUNT(value);
-} else if ("R6_EXCHANGE_RATE".equals(normalizedKey)) {
- archivalEntity.setR6_EXCHANGE_RATE(parseBigDecimal(value));
+            /* =====================================================
+             * 4️⃣ APPLY VALUES (EXPLICIT MAPPING)
+             * ===================================================== */
 
-} else if ("R7_RECORD_NUMBER".equals(normalizedKey)) {
- archivalEntity.setR7_RECORD_NUMBER(parseBigDecimal(value));
-} else if ("R7_TITLE".equals(normalizedKey)) {
- archivalEntity.setR7_TITLE(value);
-} else if ("R7_FIRST_NAME".equals(normalizedKey)) {
- archivalEntity.setR7_FIRST_NAME(value);
-} else if ("R7_MIDDLE_NAME".equals(normalizedKey)) {
- archivalEntity.setR7_MIDDLE_NAME(value);
-} else if ("R7_SURNAME".equals(normalizedKey)) {
- archivalEntity.setR7_SURNAME(value);
-} else if ("R7_PREVIOUS_NAME".equals(normalizedKey)) {
- archivalEntity.setR7_PREVIOUS_NAME(value);
-} else if ("R7_GENDER".equals(normalizedKey)) {
- archivalEntity.setR7_GENDER(value);
-} else if ("R7_IDENTIFICATION_TYPE".equals(normalizedKey)) {
- archivalEntity.setR7_IDENTIFICATION_TYPE(value);
-} else if ("R7_PASSPORT_NUMBER".equals(normalizedKey)) {
- archivalEntity.setR7_PASSPORT_NUMBER(value);
-} else if ("R7_HOME_ADDRESS".equals(normalizedKey)) {
- archivalEntity.setR7_HOME_ADDRESS(value);
-} else if ("R7_POSTAL_ADDRESS".equals(normalizedKey)) {
- archivalEntity.setR7_POSTAL_ADDRESS(value);
-} else if ("R7_RESIDENCE".equals(normalizedKey)) {
- archivalEntity.setR7_RESIDENCE(value);
-} else if ("R7_EMAIL".equals(normalizedKey)) {
- archivalEntity.setR7_EMAIL(value);
-} else if ("R7_LANDLINE".equals(normalizedKey)) {
- archivalEntity.setR7_LANDLINE(value);
-} else if ("R7_MOBILE_PHONE_NUMBER".equals(normalizedKey)) {
- archivalEntity.setR7_MOBILE_PHONE_NUMBER(value);
-} else if ("R7_MOBILE_MONEY_NUMBER".equals(normalizedKey)) {
- archivalEntity.setR7_MOBILE_MONEY_NUMBER(value);
-} else if ("R7_PRODUCT_TYPE".equals(normalizedKey)) {
- archivalEntity.setR7_PRODUCT_TYPE(value);
-} else if ("R7_ACCOUNT_BY_OWNERSHIP".equals(normalizedKey)) {
- archivalEntity.setR7_ACCOUNT_BY_OWNERSHIP(value);
-} else if ("R7_ACCOUNT_NUMBER".equals(normalizedKey)) {
- archivalEntity.setR7_ACCOUNT_NUMBER(value);
-} else if ("R7_ACCOUNT_HOLDER_INDICATOR".equals(normalizedKey)) {
- archivalEntity.setR7_ACCOUNT_HOLDER_INDICATOR(value);
-} else if ("R7_STATUS_OF_ACCOUNT".equals(normalizedKey)) {
- archivalEntity.setR7_STATUS_OF_ACCOUNT(value);
-} else if ("R7_NOT_FIT_FOR_STP".equals(normalizedKey)) {
- archivalEntity.setR7_NOT_FIT_FOR_STP(value);
-} else if ("R7_BRANCH_CODE_AND_NAME".equals(normalizedKey)) {
- archivalEntity.setR7_BRANCH_CODE_AND_NAME(value);
-} else if ("R7_ACCOUNT_BALANCE_IN_PULA".equals(normalizedKey)) {
- archivalEntity.setR7_ACCOUNT_BALANCE_IN_PULA(parseBigDecimal(value));
-} else if ("R7_CURRENCY_OF_ACCOUNT".equals(normalizedKey)) {
- archivalEntity.setR7_CURRENCY_OF_ACCOUNT(value);
-} else if ("R7_EXCHANGE_RATE".equals(normalizedKey)) {
- archivalEntity.setR7_EXCHANGE_RATE(parseBigDecimal(value));
+            // ======================= R5 =======================
+
+            if ("R5_RECORD_NUMBER".equals(normalizedKey)) {
+                archivalEntity.setR5_RECORD_NUMBER(value);
+
+            } else if ("R5_TITLE".equals(normalizedKey)) {
+                archivalEntity.setR5_TITLE(value);
+
+            } else if ("R5_FIRST_NAME".equals(normalizedKey)) {
+                archivalEntity.setR5_FIRST_NAME(value);
+
+            } else if ("R5_MIDDLE_NAME".equals(normalizedKey)) {
+                archivalEntity.setR5_MIDDLE_NAME(value);
+
+            } else if ("R5_SURNAME".equals(normalizedKey)) {
+                archivalEntity.setR5_SURNAME(value);
+
+            } else if ("R5_PREVIOUS_NAME".equals(normalizedKey)) {
+                archivalEntity.setR5_PREVIOUS_NAME(value);
+
+            } else if ("R5_GENDER".equals(normalizedKey)) {
+                archivalEntity.setR5_GENDER(value);
+
+            } else if ("R5_IDENTIFICATION_TYPE".equals(normalizedKey)) {
+                archivalEntity.setR5_IDENTIFICATION_TYPE(value);
+
+            } else if ("R5_PASSPORT_NUMBER".equals(normalizedKey)) {
+                archivalEntity.setR5_PASSPORT_NUMBER(value);
+
+            } else if ("R5_DATE_OF_BIRTH".equals(normalizedKey)) {
+                archivalEntity.setR5_DATE_OF_BIRTH(Date(value));
+
+            } else if ("R5_HOME_ADDRESS".equals(normalizedKey)) {
+                archivalEntity.setR5_HOME_ADDRESS(value);
+
+            } else if ("R5_POSTAL_ADDRESS".equals(normalizedKey)) {
+                archivalEntity.setR5_POSTAL_ADDRESS(value);
+
+            } else if ("R5_RESIDENCE".equals(normalizedKey)) {
+                archivalEntity.setR5_RESIDENCE(value);
+
+            } else if ("R5_EMAIL".equals(normalizedKey)) {
+                archivalEntity.setR5_EMAIL(value);
+
+            } else if ("R5_LANDLINE".equals(normalizedKey)) {
+                archivalEntity.setR5_LANDLINE(value);
+
+            } else if ("R5_MOBILE_PHONE_NUMBER".equals(normalizedKey)) {
+                archivalEntity.setR5_MOBILE_PHONE_NUMBER(value);
+
+            } else if ("R5_MOBILE_MONEY_NUMBER".equals(normalizedKey)) {
+                archivalEntity.setR5_MOBILE_MONEY_NUMBER(value);
+
+            } else if ("R5_PRODUCT_TYPE".equals(normalizedKey)) {
+                archivalEntity.setR5_PRODUCT_TYPE(value);
+
+            } else if ("R5_ACCOUNT_BY_OWNERSHIP".equals(normalizedKey)) {
+                archivalEntity.setR5_ACCOUNT_BY_OWNERSHIP(value);
+
+            } else if ("R5_ACCOUNT_NUMBER".equals(normalizedKey)) {
+                archivalEntity.setR5_ACCOUNT_NUMBER(value);
+
+            } else if ("R5_ACCOUNT_HOLDER_INDICATOR".equals(normalizedKey)) {
+                archivalEntity.setR5_ACCOUNT_HOLDER_INDICATOR(parseBigDecimal(value));
+
+            } else if ("R5_STATUS_OF_ACCOUNT".equals(normalizedKey)) {
+                archivalEntity.setR5_STATUS_OF_ACCOUNT(value);
+
+            } else if ("R5_NOT_FIT_FOR_STP".equals(normalizedKey)) {
+                archivalEntity.setR5_NOT_FIT_FOR_STP(value);
+
+            } else if ("R5_BRANCH_CODE_AND_NAME".equals(normalizedKey)) {
+                archivalEntity.setR5_BRANCH_CODE_AND_NAME(value);
+
+            } else if ("R5_ACCOUNT_BALANCE_IN_PULA".equals(normalizedKey)) {
+                archivalEntity.setR5_ACCOUNT_BALANCE_IN_PULA(parseBigDecimal(value));
+
+            } else if ("R5_CURRENCY_OF_ACCOUNT".equals(normalizedKey)) {
+                archivalEntity.setR5_CURRENCY_OF_ACCOUNT(value);
+
+            } else if ("R5_EXCHANGE_RATE".equals(normalizedKey)) {
+                archivalEntity.setR5_EXCHANGE_RATE(parseBigDecimal(value));
+            }
+                
+                else if ("R6_RECORD_NUMBER".equals(normalizedKey)) {
+                    archivalEntity.setR6_RECORD_NUMBER(value);
+
+                } else if ("R6_TITLE".equals(normalizedKey)) {
+                    archivalEntity.setR6_TITLE(value);
+
+                } else if ("R6_FIRST_NAME".equals(normalizedKey)) {
+                    archivalEntity.setR6_FIRST_NAME(value);
+
+                } else if ("R6_MIDDLE_NAME".equals(normalizedKey)) {
+                    archivalEntity.setR6_MIDDLE_NAME(value);
+
+                } else if ("R6_SURNAME".equals(normalizedKey)) {
+                    archivalEntity.setR6_SURNAME(value);
+
+                } else if ("R6_PREVIOUS_NAME".equals(normalizedKey)) {
+                    archivalEntity.setR6_PREVIOUS_NAME(value);
+
+                } else if ("R6_GENDER".equals(normalizedKey)) {
+                    archivalEntity.setR6_GENDER(value);
+
+                } else if ("R6_IDENTIFICATION_TYPE".equals(normalizedKey)) {
+                    archivalEntity.setR6_IDENTIFICATION_TYPE(value);
+
+                } else if ("R6_PASSPORT_NUMBER".equals(normalizedKey)) {
+                    archivalEntity.setR6_PASSPORT_NUMBER(value);
+
+                } else if ("R6_DATE_OF_BIRTH".equals(normalizedKey)) {
+                    archivalEntity.setR6_DATE_OF_BIRTH(Date(value));
+
+                } else if ("R6_HOME_ADDRESS".equals(normalizedKey)) {
+                    archivalEntity.setR6_HOME_ADDRESS(value);
+
+                } else if ("R6_POSTAL_ADDRESS".equals(normalizedKey)) {
+                    archivalEntity.setR6_POSTAL_ADDRESS(value);
+
+                } else if ("R6_RESIDENCE".equals(normalizedKey)) {
+                    archivalEntity.setR6_RESIDENCE(value);
+
+                } else if ("R6_EMAIL".equals(normalizedKey)) {
+                    archivalEntity.setR6_EMAIL(value);
+
+                } else if ("R6_LANDLINE".equals(normalizedKey)) {
+                    archivalEntity.setR6_LANDLINE(value);
+
+                } else if ("R6_MOBILE_PHONE_NUMBER".equals(normalizedKey)) {
+                    archivalEntity.setR6_MOBILE_PHONE_NUMBER(value);
+
+                } else if ("R6_MOBILE_MONEY_NUMBER".equals(normalizedKey)) {
+                    archivalEntity.setR6_MOBILE_MONEY_NUMBER(value);
+
+                } else if ("R6_PRODUCT_TYPE".equals(normalizedKey)) {
+                    archivalEntity.setR6_PRODUCT_TYPE(value);
+
+                } else if ("R6_ACCOUNT_BY_OWNERSHIP".equals(normalizedKey)) {
+                    archivalEntity.setR6_ACCOUNT_BY_OWNERSHIP(value);
+
+                } else if ("R6_ACCOUNT_NUMBER".equals(normalizedKey)) {
+                    archivalEntity.setR6_ACCOUNT_NUMBER(value);
+
+                } else if ("R6_ACCOUNT_HOLDER_INDICATOR".equals(normalizedKey)) {
+                    archivalEntity.setR6_ACCOUNT_HOLDER_INDICATOR(parseBigDecimal(value));
+
+                } else if ("R6_STATUS_OF_ACCOUNT".equals(normalizedKey)) {
+                    archivalEntity.setR6_STATUS_OF_ACCOUNT(value);
+
+                } else if ("R6_NOT_FIT_FOR_STP".equals(normalizedKey)) {
+                    archivalEntity.setR6_NOT_FIT_FOR_STP(value);
+
+                } else if ("R6_BRANCH_CODE_AND_NAME".equals(normalizedKey)) {
+                    archivalEntity.setR6_BRANCH_CODE_AND_NAME(value);
+
+                } else if ("R6_ACCOUNT_BALANCE_IN_PULA".equals(normalizedKey)) {
+                    archivalEntity.setR6_ACCOUNT_BALANCE_IN_PULA(parseBigDecimal(value));
+
+                } else if ("R6_CURRENCY_OF_ACCOUNT".equals(normalizedKey)) {
+                    archivalEntity.setR6_CURRENCY_OF_ACCOUNT(value);
+
+                } else if ("R6_EXCHANGE_RATE".equals(normalizedKey)) {
+                    archivalEntity.setR6_EXCHANGE_RATE(parseBigDecimal(value));
+                }
+            
+                else if ("R7_RECORD_NUMBER".equals(normalizedKey)) {
+                    archivalEntity.setR7_RECORD_NUMBER(value);
+
+                } else if ("R7_TITLE".equals(normalizedKey)) {
+                    archivalEntity.setR7_TITLE(value);
+
+                } else if ("R7_FIRST_NAME".equals(normalizedKey)) {
+                    archivalEntity.setR7_FIRST_NAME(value);
+
+                } else if ("R7_MIDDLE_NAME".equals(normalizedKey)) {
+                    archivalEntity.setR7_MIDDLE_NAME(value);
+
+                } else if ("R7_SURNAME".equals(normalizedKey)) {
+                    archivalEntity.setR7_SURNAME(value);
+
+                } else if ("R7_PREVIOUS_NAME".equals(normalizedKey)) {
+                    archivalEntity.setR7_PREVIOUS_NAME(value);
+
+                } else if ("R7_GENDER".equals(normalizedKey)) {
+                    archivalEntity.setR7_GENDER(value);
+
+                } else if ("R7_IDENTIFICATION_TYPE".equals(normalizedKey)) {
+                    archivalEntity.setR7_IDENTIFICATION_TYPE(value);
+
+                } else if ("R7_PASSPORT_NUMBER".equals(normalizedKey)) {
+                    archivalEntity.setR7_PASSPORT_NUMBER(value);
+
+                } else if ("R7_DATE_OF_BIRTH".equals(normalizedKey)) {
+                    archivalEntity.setR7_DATE_OF_BIRTH(Date(value));
+
+                } else if ("R7_HOME_ADDRESS".equals(normalizedKey)) {
+                    archivalEntity.setR7_HOME_ADDRESS(value);
+
+                } else if ("R7_POSTAL_ADDRESS".equals(normalizedKey)) {
+                    archivalEntity.setR7_POSTAL_ADDRESS(value);
+
+                } else if ("R7_RESIDENCE".equals(normalizedKey)) {
+                    archivalEntity.setR7_RESIDENCE(value);
+
+                } else if ("R7_EMAIL".equals(normalizedKey)) {
+                    archivalEntity.setR7_EMAIL(value);
+
+                } else if ("R7_LANDLINE".equals(normalizedKey)) {
+                    archivalEntity.setR7_LANDLINE(value);
+
+                } else if ("R7_MOBILE_PHONE_NUMBER".equals(normalizedKey)) {
+                    archivalEntity.setR7_MOBILE_PHONE_NUMBER(value);
+
+                } else if ("R7_MOBILE_MONEY_NUMBER".equals(normalizedKey)) {
+                    archivalEntity.setR7_MOBILE_MONEY_NUMBER(value);
+
+                } else if ("R7_PRODUCT_TYPE".equals(normalizedKey)) {
+                    archivalEntity.setR7_PRODUCT_TYPE(value);
+
+                } else if ("R7_ACCOUNT_BY_OWNERSHIP".equals(normalizedKey)) {
+                    archivalEntity.setR7_ACCOUNT_BY_OWNERSHIP(value);
+
+                } else if ("R7_ACCOUNT_NUMBER".equals(normalizedKey)) {
+                    archivalEntity.setR7_ACCOUNT_NUMBER(value);
+
+                } else if ("R7_ACCOUNT_HOLDER_INDICATOR".equals(normalizedKey)) {
+                    archivalEntity.setR7_ACCOUNT_HOLDER_INDICATOR(parseBigDecimal(value));
+
+                } else if ("R7_STATUS_OF_ACCOUNT".equals(normalizedKey)) {
+                    archivalEntity.setR7_STATUS_OF_ACCOUNT(value);
+
+                } else if ("R7_NOT_FIT_FOR_STP".equals(normalizedKey)) {
+                    archivalEntity.setR7_NOT_FIT_FOR_STP(value);
+
+                } else if ("R7_BRANCH_CODE_AND_NAME".equals(normalizedKey)) {
+                    archivalEntity.setR7_BRANCH_CODE_AND_NAME(value);
+
+                } else if ("R7_ACCOUNT_BALANCE_IN_PULA".equals(normalizedKey)) {
+                    archivalEntity.setR7_ACCOUNT_BALANCE_IN_PULA(parseBigDecimal(value));
+
+                } else if ("R7_CURRENCY_OF_ACCOUNT".equals(normalizedKey)) {
+                    archivalEntity.setR7_CURRENCY_OF_ACCOUNT(value);
+
+                } else if ("R7_EXCHANGE_RATE".equals(normalizedKey)) {
+                    archivalEntity.setR7_EXCHANGE_RATE(parseBigDecimal(value));
+                }
+            
+                else if ("R8_RECORD_NUMBER".equals(normalizedKey)) {
+                    archivalEntity.setR8_RECORD_NUMBER(value);
+
+                } else if ("R8_TITLE".equals(normalizedKey)) {
+                    archivalEntity.setR8_TITLE(value);
+
+                } else if ("R8_FIRST_NAME".equals(normalizedKey)) {
+                    archivalEntity.setR8_FIRST_NAME(value);
+
+                } else if ("R8_MIDDLE_NAME".equals(normalizedKey)) {
+                    archivalEntity.setR8_MIDDLE_NAME(value);
+
+                } else if ("R8_SURNAME".equals(normalizedKey)) {
+                    archivalEntity.setR8_SURNAME(value);
+
+                } else if ("R8_PREVIOUS_NAME".equals(normalizedKey)) {
+                    archivalEntity.setR8_PREVIOUS_NAME(value);
+
+                } else if ("R8_GENDER".equals(normalizedKey)) {
+                    archivalEntity.setR8_GENDER(value);
+
+                } else if ("R8_IDENTIFICATION_TYPE".equals(normalizedKey)) {
+                    archivalEntity.setR8_IDENTIFICATION_TYPE(value);
+
+                } else if ("R8_PASSPORT_NUMBER".equals(normalizedKey)) {
+                    archivalEntity.setR8_PASSPORT_NUMBER(value);
+
+                } else if ("R8_DATE_OF_BIRTH".equals(normalizedKey)) {
+                    archivalEntity.setR8_DATE_OF_BIRTH(Date(value));
+
+                } else if ("R8_HOME_ADDRESS".equals(normalizedKey)) {
+                    archivalEntity.setR8_HOME_ADDRESS(value);
+
+                } else if ("R8_POSTAL_ADDRESS".equals(normalizedKey)) {
+                    archivalEntity.setR8_POSTAL_ADDRESS(value);
+
+                } else if ("R8_RESIDENCE".equals(normalizedKey)) {
+                    archivalEntity.setR8_RESIDENCE(value);
+
+                } else if ("R8_EMAIL".equals(normalizedKey)) {
+                    archivalEntity.setR8_EMAIL(value);
+
+                } else if ("R8_LANDLINE".equals(normalizedKey)) {
+                    archivalEntity.setR8_LANDLINE(value);
+
+                } else if ("R8_MOBILE_PHONE_NUMBER".equals(normalizedKey)) {
+                    archivalEntity.setR8_MOBILE_PHONE_NUMBER(value);
+
+                } else if ("R8_MOBILE_MONEY_NUMBER".equals(normalizedKey)) {
+                    archivalEntity.setR8_MOBILE_MONEY_NUMBER(value);
+
+                } else if ("R8_PRODUCT_TYPE".equals(normalizedKey)) {
+                    archivalEntity.setR8_PRODUCT_TYPE(value);
+
+                } else if ("R8_ACCOUNT_BY_OWNERSHIP".equals(normalizedKey)) {
+                    archivalEntity.setR8_ACCOUNT_BY_OWNERSHIP(value);
+
+                } else if ("R8_ACCOUNT_NUMBER".equals(normalizedKey)) {
+                    archivalEntity.setR8_ACCOUNT_NUMBER(value);
+
+                } else if ("R8_ACCOUNT_HOLDER_INDICATOR".equals(normalizedKey)) {
+                    archivalEntity.setR8_ACCOUNT_HOLDER_INDICATOR(parseBigDecimal(value));
+
+                } else if ("R8_STATUS_OF_ACCOUNT".equals(normalizedKey)) {
+                    archivalEntity.setR8_STATUS_OF_ACCOUNT(value);
+
+                } else if ("R8_NOT_FIT_FOR_STP".equals(normalizedKey)) {
+                    archivalEntity.setR8_NOT_FIT_FOR_STP(value);
+
+                } else if ("R8_BRANCH_CODE_AND_NAME".equals(normalizedKey)) {
+                    archivalEntity.setR8_BRANCH_CODE_AND_NAME(value);
+
+                } else if ("R8_ACCOUNT_BALANCE_IN_PULA".equals(normalizedKey)) {
+                    archivalEntity.setR8_ACCOUNT_BALANCE_IN_PULA(parseBigDecimal(value));
+
+                } else if ("R8_CURRENCY_OF_ACCOUNT".equals(normalizedKey)) {
+                    archivalEntity.setR8_CURRENCY_OF_ACCOUNT(value);
+
+                } else if ("R8_EXCHANGE_RATE".equals(normalizedKey)) {
+                    archivalEntity.setR8_EXCHANGE_RATE(parseBigDecimal(value));
+                }
+            
+                else if ("R9_RECORD_NUMBER".equals(normalizedKey)) {
+                    archivalEntity.setR9_RECORD_NUMBER(value);
+
+                } else if ("R9_TITLE".equals(normalizedKey)) {
+                    archivalEntity.setR9_TITLE(value);
+
+                } else if ("R9_FIRST_NAME".equals(normalizedKey)) {
+                    archivalEntity.setR9_FIRST_NAME(value);
+
+                } else if ("R9_MIDDLE_NAME".equals(normalizedKey)) {
+                    archivalEntity.setR9_MIDDLE_NAME(value);
+
+                } else if ("R9_SURNAME".equals(normalizedKey)) {
+                    archivalEntity.setR9_SURNAME(value);
+
+                } else if ("R9_PREVIOUS_NAME".equals(normalizedKey)) {
+                    archivalEntity.setR9_PREVIOUS_NAME(value);
+
+                } else if ("R9_GENDER".equals(normalizedKey)) {
+                    archivalEntity.setR9_GENDER(value);
+
+                } else if ("R9_IDENTIFICATION_TYPE".equals(normalizedKey)) {
+                    archivalEntity.setR9_IDENTIFICATION_TYPE(value);
+
+                } else if ("R9_PASSPORT_NUMBER".equals(normalizedKey)) {
+                    archivalEntity.setR9_PASSPORT_NUMBER(value);
+
+                } else if ("R9_DATE_OF_BIRTH".equals(normalizedKey)) {
+                    archivalEntity.setR9_DATE_OF_BIRTH(Date(value));
+
+                } else if ("R9_HOME_ADDRESS".equals(normalizedKey)) {
+                    archivalEntity.setR9_HOME_ADDRESS(value);
+
+                } else if ("R9_POSTAL_ADDRESS".equals(normalizedKey)) {
+                    archivalEntity.setR9_POSTAL_ADDRESS(value);
+
+                } else if ("R9_RESIDENCE".equals(normalizedKey)) {
+                    archivalEntity.setR9_RESIDENCE(value);
+
+                } else if ("R9_EMAIL".equals(normalizedKey)) {
+                    archivalEntity.setR9_EMAIL(value);
+
+                } else if ("R9_LANDLINE".equals(normalizedKey)) {
+                    archivalEntity.setR9_LANDLINE(value);
+
+                } else if ("R9_MOBILE_PHONE_NUMBER".equals(normalizedKey)) {
+                    archivalEntity.setR9_MOBILE_PHONE_NUMBER(value);
+
+                } else if ("R9_MOBILE_MONEY_NUMBER".equals(normalizedKey)) {
+                    archivalEntity.setR9_MOBILE_MONEY_NUMBER(value);
+
+                } else if ("R9_PRODUCT_TYPE".equals(normalizedKey)) {
+                    archivalEntity.setR9_PRODUCT_TYPE(value);
+
+                } else if ("R9_ACCOUNT_BY_OWNERSHIP".equals(normalizedKey)) {
+                    archivalEntity.setR9_ACCOUNT_BY_OWNERSHIP(value);
+
+                } else if ("R9_ACCOUNT_NUMBER".equals(normalizedKey)) {
+                    archivalEntity.setR9_ACCOUNT_NUMBER(value);
+
+                } else if ("R9_ACCOUNT_HOLDER_INDICATOR".equals(normalizedKey)) {
+                    archivalEntity.setR9_ACCOUNT_HOLDER_INDICATOR(parseBigDecimal(value));
+
+                } else if ("R9_STATUS_OF_ACCOUNT".equals(normalizedKey)) {
+                    archivalEntity.setR9_STATUS_OF_ACCOUNT(value);
+
+                } else if ("R9_NOT_FIT_FOR_STP".equals(normalizedKey)) {
+                    archivalEntity.setR9_NOT_FIT_FOR_STP(value);
+
+                } else if ("R9_BRANCH_CODE_AND_NAME".equals(normalizedKey)) {
+                    archivalEntity.setR9_BRANCH_CODE_AND_NAME(value);
+
+                } else if ("R9_ACCOUNT_BALANCE_IN_PULA".equals(normalizedKey)) {
+                    archivalEntity.setR9_ACCOUNT_BALANCE_IN_PULA(parseBigDecimal(value));
+
+                } else if ("R9_CURRENCY_OF_ACCOUNT".equals(normalizedKey)) {
+                    archivalEntity.setR9_CURRENCY_OF_ACCOUNT(value);
+
+                } else if ("R9_EXCHANGE_RATE".equals(normalizedKey)) {
+                    archivalEntity.setR9_EXCHANGE_RATE(parseBigDecimal(value));
+                }
+            
+                else if ("R10_RECORD_NUMBER".equals(normalizedKey)) {
+                    archivalEntity.setR10_RECORD_NUMBER(value);
+
+                } else if ("R10_TITLE".equals(normalizedKey)) {
+                    archivalEntity.setR10_TITLE(value);
+
+                } else if ("R10_FIRST_NAME".equals(normalizedKey)) {
+                    archivalEntity.setR10_FIRST_NAME(value);
+
+                } else if ("R10_MIDDLE_NAME".equals(normalizedKey)) {
+                    archivalEntity.setR10_MIDDLE_NAME(value);
+
+                } else if ("R10_SURNAME".equals(normalizedKey)) {
+                    archivalEntity.setR10_SURNAME(value);
+
+                } else if ("R10_PREVIOUS_NAME".equals(normalizedKey)) {
+                    archivalEntity.setR10_PREVIOUS_NAME(value);
+
+                } else if ("R10_GENDER".equals(normalizedKey)) {
+                    archivalEntity.setR10_GENDER(value);
+
+                } else if ("R10_IDENTIFICATION_TYPE".equals(normalizedKey)) {
+                    archivalEntity.setR10_IDENTIFICATION_TYPE(value);
+
+                } else if ("R10_PASSPORT_NUMBER".equals(normalizedKey)) {
+                    archivalEntity.setR10_PASSPORT_NUMBER(value);
+
+                } else if ("R10_DATE_OF_BIRTH".equals(normalizedKey)) {
+                    archivalEntity.setR10_DATE_OF_BIRTH(Date(value));
+
+                } else if ("R10_HOME_ADDRESS".equals(normalizedKey)) {
+                    archivalEntity.setR10_HOME_ADDRESS(value);
+
+                } else if ("R10_POSTAL_ADDRESS".equals(normalizedKey)) {
+                    archivalEntity.setR10_POSTAL_ADDRESS(value);
+
+                } else if ("R10_RESIDENCE".equals(normalizedKey)) {
+                    archivalEntity.setR10_RESIDENCE(value);
+
+                } else if ("R10_EMAIL".equals(normalizedKey)) {
+                    archivalEntity.setR10_EMAIL(value);
+
+                } else if ("R10_LANDLINE".equals(normalizedKey)) {
+                    archivalEntity.setR10_LANDLINE(value);
+
+                } else if ("R10_MOBILE_PHONE_NUMBER".equals(normalizedKey)) {
+                    archivalEntity.setR10_MOBILE_PHONE_NUMBER(value);
+
+                } else if ("R10_MOBILE_MONEY_NUMBER".equals(normalizedKey)) {
+                    archivalEntity.setR10_MOBILE_MONEY_NUMBER(value);
+
+                } else if ("R10_PRODUCT_TYPE".equals(normalizedKey)) {
+                    archivalEntity.setR10_PRODUCT_TYPE(value);
+
+                } else if ("R10_ACCOUNT_BY_OWNERSHIP".equals(normalizedKey)) {
+                    archivalEntity.setR10_ACCOUNT_BY_OWNERSHIP(value);
+
+                } else if ("R10_ACCOUNT_NUMBER".equals(normalizedKey)) {
+                    archivalEntity.setR10_ACCOUNT_NUMBER(value);
+
+                } else if ("R10_ACCOUNT_HOLDER_INDICATOR".equals(normalizedKey)) {
+                    archivalEntity.setR10_ACCOUNT_HOLDER_INDICATOR(parseBigDecimal(value));
+
+                } else if ("R10_STATUS_OF_ACCOUNT".equals(normalizedKey)) {
+                    archivalEntity.setR10_STATUS_OF_ACCOUNT(value);
+
+                } else if ("R10_NOT_FIT_FOR_STP".equals(normalizedKey)) {
+                    archivalEntity.setR10_NOT_FIT_FOR_STP(value);
+
+                } else if ("R10_BRANCH_CODE_AND_NAME".equals(normalizedKey)) {
+                    archivalEntity.setR10_BRANCH_CODE_AND_NAME(value);
+
+                } else if ("R10_ACCOUNT_BALANCE_IN_PULA".equals(normalizedKey)) {
+                    archivalEntity.setR10_ACCOUNT_BALANCE_IN_PULA(parseBigDecimal(value));
+
+                } else if ("R10_CURRENCY_OF_ACCOUNT".equals(normalizedKey)) {
+                    archivalEntity.setR10_CURRENCY_OF_ACCOUNT(value);
+
+                } else if ("R10_EXCHANGE_RATE".equals(normalizedKey)) {
+                    archivalEntity.setR10_EXCHANGE_RATE(parseBigDecimal(value));
+                }
+            
+                else if ("R11_RECORD_NUMBER".equals(normalizedKey)) {
+                    archivalEntity.setR11_RECORD_NUMBER(value);
+
+                } else if ("R11_TITLE".equals(normalizedKey)) {
+                    archivalEntity.setR11_TITLE(value);
+
+                } else if ("R11_FIRST_NAME".equals(normalizedKey)) {
+                    archivalEntity.setR11_FIRST_NAME(value);
+
+                } else if ("R11_MIDDLE_NAME".equals(normalizedKey)) {
+                    archivalEntity.setR11_MIDDLE_NAME(value);
+
+                } else if ("R11_SURNAME".equals(normalizedKey)) {
+                    archivalEntity.setR11_SURNAME(value);
+
+                } else if ("R11_PREVIOUS_NAME".equals(normalizedKey)) {
+                    archivalEntity.setR11_PREVIOUS_NAME(value);
+
+                } else if ("R11_GENDER".equals(normalizedKey)) {
+                    archivalEntity.setR11_GENDER(value);
+
+                } else if ("R11_IDENTIFICATION_TYPE".equals(normalizedKey)) {
+                    archivalEntity.setR11_IDENTIFICATION_TYPE(value);
+
+                } else if ("R11_PASSPORT_NUMBER".equals(normalizedKey)) {
+                    archivalEntity.setR11_PASSPORT_NUMBER(value);
+
+                } else if ("R11_DATE_OF_BIRTH".equals(normalizedKey)) {
+                    archivalEntity.setR11_DATE_OF_BIRTH(Date(value));
+
+                } else if ("R11_HOME_ADDRESS".equals(normalizedKey)) {
+                    archivalEntity.setR11_HOME_ADDRESS(value);
+
+                } else if ("R11_POSTAL_ADDRESS".equals(normalizedKey)) {
+                    archivalEntity.setR11_POSTAL_ADDRESS(value);
+
+                } else if ("R11_RESIDENCE".equals(normalizedKey)) {
+                    archivalEntity.setR11_RESIDENCE(value);
+
+                } else if ("R11_EMAIL".equals(normalizedKey)) {
+                    archivalEntity.setR11_EMAIL(value);
+
+                } else if ("R11_LANDLINE".equals(normalizedKey)) {
+                    archivalEntity.setR11_LANDLINE(value);
+
+                } else if ("R11_MOBILE_PHONE_NUMBER".equals(normalizedKey)) {
+                    archivalEntity.setR11_MOBILE_PHONE_NUMBER(value);
+
+                } else if ("R11_MOBILE_MONEY_NUMBER".equals(normalizedKey)) {
+                    archivalEntity.setR11_MOBILE_MONEY_NUMBER(value);
+
+                } else if ("R11_PRODUCT_TYPE".equals(normalizedKey)) {
+                    archivalEntity.setR11_PRODUCT_TYPE(value);
+
+                } else if ("R11_ACCOUNT_BY_OWNERSHIP".equals(normalizedKey)) {
+                    archivalEntity.setR11_ACCOUNT_BY_OWNERSHIP(value);
+
+                } else if ("R11_ACCOUNT_NUMBER".equals(normalizedKey)) {
+                    archivalEntity.setR11_ACCOUNT_NUMBER(value);
+
+                } else if ("R11_ACCOUNT_HOLDER_INDICATOR".equals(normalizedKey)) {
+                    archivalEntity.setR11_ACCOUNT_HOLDER_INDICATOR(parseBigDecimal(value));
+
+                } else if ("R11_STATUS_OF_ACCOUNT".equals(normalizedKey)) {
+                    archivalEntity.setR11_STATUS_OF_ACCOUNT(value);
+
+                } else if ("R11_NOT_FIT_FOR_STP".equals(normalizedKey)) {
+                    archivalEntity.setR11_NOT_FIT_FOR_STP(value);
+
+                } else if ("R11_BRANCH_CODE_AND_NAME".equals(normalizedKey)) {
+                    archivalEntity.setR11_BRANCH_CODE_AND_NAME(value);
+
+                } else if ("R11_ACCOUNT_BALANCE_IN_PULA".equals(normalizedKey)) {
+                    archivalEntity.setR11_ACCOUNT_BALANCE_IN_PULA(parseBigDecimal(value));
+
+                } else if ("R11_CURRENCY_OF_ACCOUNT".equals(normalizedKey)) {
+                    archivalEntity.setR11_CURRENCY_OF_ACCOUNT(value);
+
+                } else if ("R11_EXCHANGE_RATE".equals(normalizedKey)) {
+                    archivalEntity.setR11_EXCHANGE_RATE(parseBigDecimal(value));
+                }
+            
+            
 
 
-} else if ("R8_RECORD_NUMBER".equals(normalizedKey)) {
-    archivalEntity.setR8_RECORD_NUMBER(parseBigDecimal(value));
-} else if ("R8_TITLE".equals(normalizedKey)) {
-    archivalEntity.setR8_TITLE(value);
-} else if ("R8_FIRST_NAME".equals(normalizedKey)) {
-    archivalEntity.setR8_FIRST_NAME(value);
-} else if ("R8_MIDDLE_NAME".equals(normalizedKey)) {
-    archivalEntity.setR8_MIDDLE_NAME(value);
-} else if ("R8_SURNAME".equals(normalizedKey)) {
-    archivalEntity.setR8_SURNAME(value);
-} else if ("R8_PREVIOUS_NAME".equals(normalizedKey)) {
-    archivalEntity.setR8_PREVIOUS_NAME(value);
-} else if ("R8_GENDER".equals(normalizedKey)) {
-    archivalEntity.setR8_GENDER(value);
-} else if ("R8_IDENTIFICATION_TYPE".equals(normalizedKey)) {
-    archivalEntity.setR8_IDENTIFICATION_TYPE(value);
-} else if ("R8_PASSPORT_NUMBER".equals(normalizedKey)) {
-    archivalEntity.setR8_PASSPORT_NUMBER(value);
-} else if ("R8_HOME_ADDRESS".equals(normalizedKey)) {
-    archivalEntity.setR8_HOME_ADDRESS(value);
-} else if ("R8_POSTAL_ADDRESS".equals(normalizedKey)) {
-    archivalEntity.setR8_POSTAL_ADDRESS(value);
-} else if ("R8_RESIDENCE".equals(normalizedKey)) {
-    archivalEntity.setR8_RESIDENCE(value);
-} else if ("R8_EMAIL".equals(normalizedKey)) {
-    archivalEntity.setR8_EMAIL(value);
-} else if ("R8_LANDLINE".equals(normalizedKey)) {
-    archivalEntity.setR8_LANDLINE(value);
-} else if ("R8_MOBILE_PHONE_NUMBER".equals(normalizedKey)) {
-    archivalEntity.setR8_MOBILE_PHONE_NUMBER(value);
-} else if ("R8_MOBILE_MONEY_NUMBER".equals(normalizedKey)) {
-    archivalEntity.setR8_MOBILE_MONEY_NUMBER(value);
-} else if ("R8_PRODUCT_TYPE".equals(normalizedKey)) {
-    archivalEntity.setR8_PRODUCT_TYPE(value);
-} else if ("R8_ACCOUNT_BY_OWNERSHIP".equals(normalizedKey)) {
-    archivalEntity.setR8_ACCOUNT_BY_OWNERSHIP(value);
-} else if ("R8_ACCOUNT_NUMBER".equals(normalizedKey)) {
-    archivalEntity.setR8_ACCOUNT_NUMBER(value);
-} else if ("R8_ACCOUNT_HOLDER_INDICATOR".equals(normalizedKey)) {
-    archivalEntity.setR8_ACCOUNT_HOLDER_INDICATOR(value);
-} else if ("R8_STATUS_OF_ACCOUNT".equals(normalizedKey)) {
-    archivalEntity.setR8_STATUS_OF_ACCOUNT(value);
-} else if ("R8_NOT_FIT_FOR_STP".equals(normalizedKey)) {
-    archivalEntity.setR8_NOT_FIT_FOR_STP(value);
-} else if ("R8_BRANCH_CODE_AND_NAME".equals(normalizedKey)) {
-    archivalEntity.setR8_BRANCH_CODE_AND_NAME(value);
-} else if ("R8_ACCOUNT_BALANCE_IN_PULA".equals(normalizedKey)) {
-    archivalEntity.setR8_ACCOUNT_BALANCE_IN_PULA(parseBigDecimal(value));
-} else if ("R8_CURRENCY_OF_ACCOUNT".equals(normalizedKey)) {
-    archivalEntity.setR8_CURRENCY_OF_ACCOUNT(value);
-} else if ("R8_EXCHANGE_RATE".equals(normalizedKey)) {
-    archivalEntity.setR8_EXCHANGE_RATE(parseBigDecimal(value));
-
-} else if ("R9_RECORD_NUMBER".equals(normalizedKey)) {
-    archivalEntity.setR9_RECORD_NUMBER(parseBigDecimal(value));
-} else if ("R9_TITLE".equals(normalizedKey)) {
-    archivalEntity.setR9_TITLE(value);
-} else if ("R9_FIRST_NAME".equals(normalizedKey)) {
-    archivalEntity.setR9_FIRST_NAME(value);
-} else if ("R9_MIDDLE_NAME".equals(normalizedKey)) {
-    archivalEntity.setR9_MIDDLE_NAME(value);
-} else if ("R9_SURNAME".equals(normalizedKey)) {
-    archivalEntity.setR9_SURNAME(value);
-} else if ("R9_PREVIOUS_NAME".equals(normalizedKey)) {
-    archivalEntity.setR9_PREVIOUS_NAME(value);
-} else if ("R9_GENDER".equals(normalizedKey)) {
-    archivalEntity.setR9_GENDER(value);
-} else if ("R9_IDENTIFICATION_TYPE".equals(normalizedKey)) {
-    archivalEntity.setR9_IDENTIFICATION_TYPE(value);
-} else if ("R9_PASSPORT_NUMBER".equals(normalizedKey)) {
-    archivalEntity.setR9_PASSPORT_NUMBER(value);
-} else if ("R9_HOME_ADDRESS".equals(normalizedKey)) {
-    archivalEntity.setR9_HOME_ADDRESS(value);
-} else if ("R9_POSTAL_ADDRESS".equals(normalizedKey)) {
-    archivalEntity.setR9_POSTAL_ADDRESS(value);
-} else if ("R9_RESIDENCE".equals(normalizedKey)) {
-    archivalEntity.setR9_RESIDENCE(value);
-} else if ("R9_EMAIL".equals(normalizedKey)) {
-    archivalEntity.setR9_EMAIL(value);
-} else if ("R9_LANDLINE".equals(normalizedKey)) {
-    archivalEntity.setR9_LANDLINE(value);
-} else if ("R9_MOBILE_PHONE_NUMBER".equals(normalizedKey)) {
-    archivalEntity.setR9_MOBILE_PHONE_NUMBER(value);
-} else if ("R9_MOBILE_MONEY_NUMBER".equals(normalizedKey)) {
-    archivalEntity.setR9_MOBILE_MONEY_NUMBER(value);
-} else if ("R9_PRODUCT_TYPE".equals(normalizedKey)) {
-    archivalEntity.setR9_PRODUCT_TYPE(value);
-} else if ("R9_ACCOUNT_BY_OWNERSHIP".equals(normalizedKey)) {
-    archivalEntity.setR9_ACCOUNT_BY_OWNERSHIP(value);
-} else if ("R9_ACCOUNT_NUMBER".equals(normalizedKey)) {
-    archivalEntity.setR9_ACCOUNT_NUMBER(value);
-} else if ("R9_ACCOUNT_HOLDER_INDICATOR".equals(normalizedKey)) {
-    archivalEntity.setR9_ACCOUNT_HOLDER_INDICATOR(value);
-} else if ("R9_STATUS_OF_ACCOUNT".equals(normalizedKey)) {
-    archivalEntity.setR9_STATUS_OF_ACCOUNT(value);
-} else if ("R9_NOT_FIT_FOR_STP".equals(normalizedKey)) {
-    archivalEntity.setR9_NOT_FIT_FOR_STP(value);
-} else if ("R9_BRANCH_CODE_AND_NAME".equals(normalizedKey)) {
-    archivalEntity.setR9_BRANCH_CODE_AND_NAME(value);
-} else if ("R9_ACCOUNT_BALANCE_IN_PULA".equals(normalizedKey)) {
-    archivalEntity.setR9_ACCOUNT_BALANCE_IN_PULA(parseBigDecimal(value));
-} else if ("R9_CURRENCY_OF_ACCOUNT".equals(normalizedKey)) {
-    archivalEntity.setR9_CURRENCY_OF_ACCOUNT(value);
-} else if ("R9_EXCHANGE_RATE".equals(normalizedKey)) {
-    archivalEntity.setR9_EXCHANGE_RATE(parseBigDecimal(value));
-
-} else if ("R10_RECORD_NUMBER".equals(normalizedKey)) {
-    archivalEntity.setR10_RECORD_NUMBER(parseBigDecimal(value));
-} else if ("R10_TITLE".equals(normalizedKey)) {
-    archivalEntity.setR10_TITLE(value);
-} else if ("R10_FIRST_NAME".equals(normalizedKey)) {
-    archivalEntity.setR10_FIRST_NAME(value);
-} else if ("R10_MIDDLE_NAME".equals(normalizedKey)) {
-    archivalEntity.setR10_MIDDLE_NAME(value);
-} else if ("R10_SURNAME".equals(normalizedKey)) {
-    archivalEntity.setR10_SURNAME(value);
-} else if ("R10_PREVIOUS_NAME".equals(normalizedKey)) {
-    archivalEntity.setR10_PREVIOUS_NAME(value);
-} else if ("R10_GENDER".equals(normalizedKey)) {
-    archivalEntity.setR10_GENDER(value);
-} else if ("R10_IDENTIFICATION_TYPE".equals(normalizedKey)) {
-    archivalEntity.setR10_IDENTIFICATION_TYPE(value);
-} else if ("R10_PASSPORT_NUMBER".equals(normalizedKey)) {
-    archivalEntity.setR10_PASSPORT_NUMBER(value);
-} else if ("R10_HOME_ADDRESS".equals(normalizedKey)) {
-    archivalEntity.setR10_HOME_ADDRESS(value);
-} else if ("R10_POSTAL_ADDRESS".equals(normalizedKey)) {
-    archivalEntity.setR10_POSTAL_ADDRESS(value);
-} else if ("R10_RESIDENCE".equals(normalizedKey)) {
-    archivalEntity.setR10_RESIDENCE(value);
-} else if ("R10_EMAIL".equals(normalizedKey)) {
-    archivalEntity.setR10_EMAIL(value);
-} else if ("R10_LANDLINE".equals(normalizedKey)) {
-    archivalEntity.setR10_LANDLINE(value);
-} else if ("R10_MOBILE_PHONE_NUMBER".equals(normalizedKey)) {
-    archivalEntity.setR10_MOBILE_PHONE_NUMBER(value);
-} else if ("R10_MOBILE_MONEY_NUMBER".equals(normalizedKey)) {
-    archivalEntity.setR10_MOBILE_MONEY_NUMBER(value);
-} else if ("R10_PRODUCT_TYPE".equals(normalizedKey)) {
-    archivalEntity.setR10_PRODUCT_TYPE(value);
-} else if ("R10_ACCOUNT_BY_OWNERSHIP".equals(normalizedKey)) {
-    archivalEntity.setR10_ACCOUNT_BY_OWNERSHIP(value);
-} else if ("R10_ACCOUNT_NUMBER".equals(normalizedKey)) {
-    archivalEntity.setR10_ACCOUNT_NUMBER(value);
-} else if ("R10_ACCOUNT_HOLDER_INDICATOR".equals(normalizedKey)) {
-    archivalEntity.setR10_ACCOUNT_HOLDER_INDICATOR(value);
-} else if ("R10_STATUS_OF_ACCOUNT".equals(normalizedKey)) {
-    archivalEntity.setR10_STATUS_OF_ACCOUNT(value);
-} else if ("R10_NOT_FIT_FOR_STP".equals(normalizedKey)) {
-    archivalEntity.setR10_NOT_FIT_FOR_STP(value);
-} else if ("R10_BRANCH_CODE_AND_NAME".equals(normalizedKey)) {
-    archivalEntity.setR10_BRANCH_CODE_AND_NAME(value);
-} else if ("R10_ACCOUNT_BALANCE_IN_PULA".equals(normalizedKey)) {
-    archivalEntity.setR10_ACCOUNT_BALANCE_IN_PULA(parseBigDecimal(value));
-} else if ("R10_CURRENCY_OF_ACCOUNT".equals(normalizedKey)) {
-    archivalEntity.setR10_CURRENCY_OF_ACCOUNT(value);
-} else if ("R10_EXCHANGE_RATE".equals(normalizedKey)) {
-    archivalEntity.setR10_EXCHANGE_RATE(parseBigDecimal(value));
-
-} else if ("R11_RECORD_NUMBER".equals(normalizedKey)) {
-    archivalEntity.setR11_RECORD_NUMBER(parseBigDecimal(value));
-} else if ("R11_TITLE".equals(normalizedKey)) {
-    archivalEntity.setR11_TITLE(value);
-} else if ("R11_FIRST_NAME".equals(normalizedKey)) {
-    archivalEntity.setR11_FIRST_NAME(value);
-} else if ("R11_MIDDLE_NAME".equals(normalizedKey)) {
-    archivalEntity.setR11_MIDDLE_NAME(value);
-} else if ("R11_SURNAME".equals(normalizedKey)) {
-    archivalEntity.setR11_SURNAME(value);
-} else if ("R11_PREVIOUS_NAME".equals(normalizedKey)) {
-    archivalEntity.setR11_PREVIOUS_NAME(value);
-} else if ("R11_GENDER".equals(normalizedKey)) {
-    archivalEntity.setR11_GENDER(value);
-} else if ("R11_IDENTIFICATION_TYPE".equals(normalizedKey)) {
-    archivalEntity.setR11_IDENTIFICATION_TYPE(value);
-} else if ("R11_PASSPORT_NUMBER".equals(normalizedKey)) {
-    archivalEntity.setR11_PASSPORT_NUMBER(value);
-} else if ("R11_HOME_ADDRESS".equals(normalizedKey)) {
-    archivalEntity.setR11_HOME_ADDRESS(value);
-} else if ("R11_POSTAL_ADDRESS".equals(normalizedKey)) {
-    archivalEntity.setR11_POSTAL_ADDRESS(value);
-} else if ("R11_RESIDENCE".equals(normalizedKey)) {
-    archivalEntity.setR11_RESIDENCE(value);
-} else if ("R11_EMAIL".equals(normalizedKey)) {
-    archivalEntity.setR11_EMAIL(value);
-} else if ("R11_LANDLINE".equals(normalizedKey)) {
-    archivalEntity.setR11_LANDLINE(value);
-} else if ("R11_MOBILE_PHONE_NUMBER".equals(normalizedKey)) {
-    archivalEntity.setR11_MOBILE_PHONE_NUMBER(value);
-} else if ("R11_MOBILE_MONEY_NUMBER".equals(normalizedKey)) {
-    archivalEntity.setR11_MOBILE_MONEY_NUMBER(value);
-} else if ("R11_PRODUCT_TYPE".equals(normalizedKey)) {
-    archivalEntity.setR11_PRODUCT_TYPE(value);
-} else if ("R11_ACCOUNT_BY_OWNERSHIP".equals(normalizedKey)) {
-    archivalEntity.setR11_ACCOUNT_BY_OWNERSHIP(value);
-} else if ("R11_ACCOUNT_NUMBER".equals(normalizedKey)) {
-    archivalEntity.setR11_ACCOUNT_NUMBER(value);
-} else if ("R11_ACCOUNT_HOLDER_INDICATOR".equals(normalizedKey)) {
-    archivalEntity.setR11_ACCOUNT_HOLDER_INDICATOR(value);
-} else if ("R11_STATUS_OF_ACCOUNT".equals(normalizedKey)) {
-    archivalEntity.setR11_STATUS_OF_ACCOUNT(value);
-} else if ("R11_NOT_FIT_FOR_STP".equals(normalizedKey)) {
-    archivalEntity.setR11_NOT_FIT_FOR_STP(value);
-} else if ("R11_BRANCH_CODE_AND_NAME".equals(normalizedKey)) {
-    archivalEntity.setR11_BRANCH_CODE_AND_NAME(value);
-} else if ("R11_ACCOUNT_BALANCE_IN_PULA".equals(normalizedKey)) {
-    archivalEntity.setR11_ACCOUNT_BALANCE_IN_PULA(parseBigDecimal(value));
-} else if ("R11_CURRENCY_OF_ACCOUNT".equals(normalizedKey)) {
-    archivalEntity.setR11_CURRENCY_OF_ACCOUNT(value);
-} else if ("R11_EXCHANGE_RATE".equals(normalizedKey)) {
-    archivalEntity.setR11_EXCHANGE_RATE(parseBigDecimal(value));
-}
 }
 
 /* =========================================================
@@ -5224,7 +5456,8 @@ archivalEntity.setReportResubDate(new Date());
 
 /* =========================================================
 * 6️⃣ SAVE NEW ARCHIVAL VERSION
-* ========================================================= */BDISB1_Archival_Summary_Repo.save(archivalEntity);
+* ========================================================= */
+BDISB1_Archival_Summary_Repo.save(archivalEntity);
 
 System.out.println("✅ RESUB saved successfully. Version = " + newVersion);
 
@@ -5240,6 +5473,24 @@ return (value == null || value.trim().isEmpty())
 ? BigDecimal.ZERO
 : new BigDecimal(value.replace(",", ""));
 }
+
+private Date Date(String value) {
+
+    if (value == null || value.trim().isEmpty()) {
+        return null;
+    }
+
+    try {
+        // HTML <input type="date"> sends yyyy-MM-dd
+        LocalDate localDate = LocalDate.parse(value);
+        return java.sql.Date.valueOf(localDate);
+
+    } catch (Exception e) {
+        throw new RuntimeException("Invalid DATE_OF_BIRTH: " + value, e);
+    }
+}
+
+
 
 
 /// Downloaded for Archival & Resub
@@ -5327,14 +5578,14 @@ if (!dataList1.isEmpty()) {
 		if (row == null) {
 			row = sheet.createRow(startRow + i);
 		}
-		//Cell0 - R5_record1_NUMBER
+		//Cell1 - R5_TITLE
 		Cell cell0 = row.createCell(0);
 		if (record1.getR5_RECORD_NUMBER() != null) {
-		 cell0.setCellValue(record1.getR5_RECORD_NUMBER().doubleValue());
-		 cell0.setCellStyle(numberStyle);
+		cell0.setCellValue(record1.getR5_RECORD_NUMBER());
+		cell0.setCellStyle(textStyle);
 		} else {
-		 cell0.setCellValue("");
-		 cell0.setCellStyle(textStyle);
+		cell0.setCellValue("");
+		cell0.setCellStyle(textStyle);
 		}
 
 		//Cell1 - R5_TITLE
@@ -5530,12 +5781,12 @@ if (!dataList1.isEmpty()) {
 		//Cell20 - R5_ACCOUNT_HOLDER_INDICATOR
 		Cell cell20 = row.createCell(20);
 		if (record1.getR5_ACCOUNT_HOLDER_INDICATOR() != null) {
-		 cell20.setCellValue(record1.getR5_ACCOUNT_HOLDER_INDICATOR());
-		 cell20.setCellStyle(textStyle);
-		} else {
-		 cell20.setCellValue("");
-		 cell20.setCellStyle(textStyle);
-		}
+			  cell20.setCellValue(record1.getR5_ACCOUNT_HOLDER_INDICATOR().doubleValue());
+			  cell20.setCellStyle(numberStyle);
+			} else {
+			  cell20.setCellValue("");
+			  cell20.setCellStyle(textStyle);
+			}
 
 		//Cell21 - R5_STATUS_OF_ACCOUNT
 		Cell cell21 = row.createCell(21);
@@ -5601,14 +5852,14 @@ if (!dataList1.isEmpty()) {
 		row = sheet.getRow(5);
 		//====================== R6 ======================
 
-		//Cell0 - R6_record1_NUMBER
+		//Cell1 - R5_TITLE
 		cell0 = row.createCell(0);
 		if (record1.getR6_RECORD_NUMBER() != null) {
-		  cell0.setCellValue(record1.getR6_RECORD_NUMBER().doubleValue());
-		  cell0.setCellStyle(numberStyle);
+		cell0.setCellValue(record1.getR6_RECORD_NUMBER());
+		cell0.setCellStyle(textStyle);
 		} else {
-		  cell0.setCellValue("");
-		  cell0.setCellStyle(textStyle);
+		cell0.setCellValue("");
+		cell0.setCellStyle(textStyle);
 		}
 
 		//Cell1 - R6_TITLE
@@ -5804,8 +6055,8 @@ if (!dataList1.isEmpty()) {
 		//Cell20 - R6_ACCOUNT_HOLDER_INDICATOR
 		cell20 = row.createCell(20);
 		if (record1.getR6_ACCOUNT_HOLDER_INDICATOR() != null) {
-		  cell20.setCellValue(record1.getR6_ACCOUNT_HOLDER_INDICATOR());
-		  cell20.setCellStyle(textStyle);
+		  cell20.setCellValue(record1.getR6_ACCOUNT_HOLDER_INDICATOR().doubleValue());
+		  cell20.setCellStyle(numberStyle);
 		} else {
 		  cell20.setCellValue("");
 		  cell20.setCellStyle(textStyle);
@@ -5879,11 +6130,11 @@ if (!dataList1.isEmpty()) {
 		//Cell0 - R7_record1_NUMBER
 		cell0 = row.createCell(0);
 		if (record1.getR7_RECORD_NUMBER() != null) {
-		  cell0.setCellValue(record1.getR7_RECORD_NUMBER().doubleValue());
-		  cell0.setCellStyle(numberStyle);
+		cell0.setCellValue(record1.getR7_RECORD_NUMBER());
+		cell0.setCellStyle(textStyle);
 		} else {
-		  cell0.setCellValue("");
-		  cell0.setCellStyle(textStyle);
+		cell0.setCellValue("");
+		cell0.setCellStyle(textStyle);
 		}
 
 		//Cell1 - R7_TITLE
@@ -6078,9 +6329,9 @@ if (!dataList1.isEmpty()) {
 
 		//Cell20 - R7_ACCOUNT_HOLDER_INDICATOR
 		cell20 = row.createCell(20);
-		if (record1.getR7_ACCOUNT_HOLDER_INDICATOR() != null) {
-		  cell20.setCellValue(record1.getR7_ACCOUNT_HOLDER_INDICATOR());
-		  cell20.setCellStyle(textStyle);
+		if (record1.getR11_ACCOUNT_HOLDER_INDICATOR() != null) {
+		  cell20.setCellValue(record1.getR11_ACCOUNT_HOLDER_INDICATOR().doubleValue());
+		  cell20.setCellStyle(numberStyle);
 		} else {
 		  cell20.setCellValue("");
 		  cell20.setCellStyle(textStyle);
@@ -6154,11 +6405,11 @@ if (!dataList1.isEmpty()) {
 		//Cell0 - R8_record1_NUMBER
 		cell0 = row.createCell(0);
 		if (record1.getR8_RECORD_NUMBER() != null) {
-		  cell0.setCellValue(record1.getR8_RECORD_NUMBER().doubleValue());
-		  cell0.setCellStyle(numberStyle);
+		cell0.setCellValue(record1.getR8_RECORD_NUMBER());
+		cell0.setCellStyle(textStyle);
 		} else {
-		  cell0.setCellValue("");
-		  cell0.setCellStyle(textStyle);
+		cell0.setCellValue("");
+		cell0.setCellStyle(textStyle);
 		}
 
 		//Cell1 - R8_TITLE
@@ -6354,8 +6605,8 @@ if (!dataList1.isEmpty()) {
 		//Cell20 - R8_ACCOUNT_HOLDER_INDICATOR
 		cell20 = row.createCell(20);
 		if (record1.getR8_ACCOUNT_HOLDER_INDICATOR() != null) {
-		  cell20.setCellValue(record1.getR8_ACCOUNT_HOLDER_INDICATOR());
-		  cell20.setCellStyle(textStyle);
+		  cell20.setCellValue(record1.getR8_ACCOUNT_HOLDER_INDICATOR().doubleValue());
+		  cell20.setCellStyle(numberStyle);
 		} else {
 		  cell20.setCellValue("");
 		  cell20.setCellStyle(textStyle);
@@ -6427,11 +6678,11 @@ if (!dataList1.isEmpty()) {
 		//Cell0 - R9_record1_NUMBER
 		cell0 = row.createCell(0);
 		if (record1.getR9_RECORD_NUMBER() != null) {
-		  cell0.setCellValue(record1.getR9_RECORD_NUMBER().doubleValue());
-		  cell0.setCellStyle(numberStyle);
+		cell0.setCellValue(record1.getR9_RECORD_NUMBER());
+		cell0.setCellStyle(textStyle);
 		} else {
-		  cell0.setCellValue("");
-		  cell0.setCellStyle(textStyle);
+		cell0.setCellValue("");
+		cell0.setCellStyle(textStyle);
 		}
 
 		//Cell1 - R9_TITLE
@@ -6627,8 +6878,8 @@ if (!dataList1.isEmpty()) {
 		//Cell20 - R9_ACCOUNT_HOLDER_INDICATOR
 		cell20 = row.createCell(20);
 		if (record1.getR9_ACCOUNT_HOLDER_INDICATOR() != null) {
-		  cell20.setCellValue(record1.getR9_ACCOUNT_HOLDER_INDICATOR());
-		  cell20.setCellStyle(textStyle);
+		  cell20.setCellValue(record1.getR9_ACCOUNT_HOLDER_INDICATOR().doubleValue());
+		  cell20.setCellStyle(numberStyle);
 		} else {
 		  cell20.setCellValue("");
 		  cell20.setCellStyle(textStyle);
@@ -6702,11 +6953,11 @@ if (!dataList1.isEmpty()) {
 		//Cell0 - R10_record1_NUMBER
 		cell0 = row.createCell(0);
 		if (record1.getR10_RECORD_NUMBER() != null) {
-		  cell0.setCellValue(record1.getR10_RECORD_NUMBER().doubleValue());
-		  cell0.setCellStyle(numberStyle);
+		cell0.setCellValue(record1.getR10_RECORD_NUMBER());
+		cell0.setCellStyle(textStyle);
 		} else {
-		  cell0.setCellValue("");
-		  cell0.setCellStyle(textStyle);
+		cell0.setCellValue("");
+		cell0.setCellStyle(textStyle);
 		}
 
 		//Cell1 - R10_TITLE
@@ -6902,8 +7153,8 @@ if (!dataList1.isEmpty()) {
 		//Cell20 - R10_ACCOUNT_HOLDER_INDICATOR
 		cell20 = row.createCell(20);
 		if (record1.getR10_ACCOUNT_HOLDER_INDICATOR() != null) {
-		  cell20.setCellValue(record1.getR10_ACCOUNT_HOLDER_INDICATOR());
-		  cell20.setCellStyle(textStyle);
+		  cell20.setCellValue(record1.getR10_ACCOUNT_HOLDER_INDICATOR().doubleValue());
+		  cell20.setCellStyle(numberStyle);
 		} else {
 		  cell20.setCellValue("");
 		  cell20.setCellStyle(textStyle);
@@ -6974,11 +7225,11 @@ if (!dataList1.isEmpty()) {
 		//Cell0 - R11_record1_NUMBER
 		cell0 = row.createCell(0);
 		if (record1.getR11_RECORD_NUMBER() != null) {
-		  cell0.setCellValue(record1.getR11_RECORD_NUMBER().doubleValue());
-		  cell0.setCellStyle(numberStyle);
+		cell0.setCellValue(record1.getR11_RECORD_NUMBER());
+		cell0.setCellStyle(textStyle);
 		} else {
-		  cell0.setCellValue("");
-		  cell0.setCellStyle(textStyle);
+		cell0.setCellValue("");
+		cell0.setCellStyle(textStyle);
 		}
 
 		//Cell1 - R11_TITLE
@@ -7172,10 +7423,11 @@ if (!dataList1.isEmpty()) {
 		}
 
 		//Cell20 - R11_ACCOUNT_HOLDER_INDICATOR
+
 		cell20 = row.createCell(20);
 		if (record1.getR11_ACCOUNT_HOLDER_INDICATOR() != null) {
-		  cell20.setCellValue(record1.getR11_ACCOUNT_HOLDER_INDICATOR());
-		  cell20.setCellStyle(textStyle);
+		  cell20.setCellValue(record1.getR11_ACCOUNT_HOLDER_INDICATOR().doubleValue());
+		  cell20.setCellStyle(numberStyle);
 		} else {
 		  cell20.setCellValue("");
 		  cell20.setCellStyle(textStyle);
@@ -7255,6 +7507,261 @@ logger.info("Service: Excel data successfully written to memory buffer ({} bytes
 return out.toByteArray();
 }
 }
+
+public byte[] getBDISB1DetailExcel(String filename, String fromdate, String todate,
+        String currency, String dtltype, String type, String version) {
+
+    try {
+        logger.info("Generating Excel for BDISB1 Details...");
+        System.out.println("came to Detail download service");
+
+        // ================= ARCHIVAL HANDLING =================
+        if ("ARCHIVAL".equals(type) && version != null) {
+            return getDetailExcelARCHIVAL(filename, fromdate, todate, currency, dtltype, type, version);
+        }
+
+        // ================= WORKBOOK & SHEET =================
+        XSSFWorkbook workbook = new XSSFWorkbook();
+        XSSFSheet sheet = workbook.createSheet("BDISB3Detail");
+
+        BorderStyle border = BorderStyle.THIN;
+
+        // ================= HEADER STYLE =================
+        CellStyle headerStyle = workbook.createCellStyle();
+        Font headerFont = workbook.createFont();
+        headerFont.setBold(true);
+        headerFont.setFontHeightInPoints((short) 10);
+        headerStyle.setFont(headerFont);
+        headerStyle.setAlignment(HorizontalAlignment.LEFT);
+        headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+        headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        headerStyle.setBorderTop(border);
+        headerStyle.setBorderBottom(border);
+        headerStyle.setBorderLeft(border);
+        headerStyle.setBorderRight(border);
+
+        CellStyle rightHeaderStyle = workbook.createCellStyle();
+        rightHeaderStyle.cloneStyleFrom(headerStyle);
+        rightHeaderStyle.setAlignment(HorizontalAlignment.RIGHT);
+
+        // ================= DATA STYLES =================
+        CellStyle textStyle = workbook.createCellStyle();
+        textStyle.setAlignment(HorizontalAlignment.LEFT);
+        textStyle.setBorderTop(border);
+        textStyle.setBorderBottom(border);
+        textStyle.setBorderLeft(border);
+        textStyle.setBorderRight(border);
+
+        CellStyle amountStyle = workbook.createCellStyle();
+        amountStyle.setAlignment(HorizontalAlignment.RIGHT);
+        amountStyle.setDataFormat(workbook.createDataFormat().getFormat("#,##0.00"));
+        amountStyle.setBorderTop(border);
+        amountStyle.setBorderBottom(border);
+        amountStyle.setBorderLeft(border);
+        amountStyle.setBorderRight(border);
+
+        // ================= HEADER ROW =================
+        String[] headers = {
+            "FIRST NAME",
+            "ACCOUNT BALANCE IN PULA",
+            "REPORT LABEL",
+            "REPORT ADDL CRITERIA1",
+            "REPORT DATE"
+        };
+
+        XSSFRow headerRow = sheet.createRow(0);
+        for (int i = 0; i < headers.length; i++) {
+            Cell cell = headerRow.createCell(i);
+            cell.setCellValue(headers[i]);
+            cell.setCellStyle((i == 0 || i == 1) ? rightHeaderStyle : headerStyle);
+            sheet.setColumnWidth(i, 6000);
+        }
+
+        // ================= DATA FETCH =================
+        Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
+        List<BDISB1_Detail_Entity> reportData = BDISB1_Detail_Repo.getdatabydateList(parsedToDate);
+
+        // ================= DATA ROWS =================
+        int rowIndex = 1;
+
+        if (reportData != null && !reportData.isEmpty()) {
+            for (BDISB1_Detail_Entity item : reportData) {
+
+                XSSFRow row = sheet.createRow(rowIndex++);
+
+                // Column 0 - AGGREGATE BALANCE
+                Cell c0 = row.createCell(0);
+                c0.setCellValue(item.getFIRST_NAME());
+                c0.setCellStyle(textStyle);
+
+                // Column 1 - COMPENSATABLE AMOUNT
+                Cell c1 = row.createCell(1);
+                c1.setCellValue(item.getACCOUNT_BALANCE_IN_PULA() != null
+                        ? item.getACCOUNT_BALANCE_IN_PULA().doubleValue() : 0);
+                c1.setCellStyle(amountStyle);
+
+                // Column 2 - REPORT LABEL
+                Cell c2 = row.createCell(2);
+                c2.setCellValue(item.getReportLable());
+                c2.setCellStyle(textStyle);
+
+                // Column 3 - REPORT ADDL CRITERIA 1
+                Cell c3 = row.createCell(3);
+                c3.setCellValue(item.getReportAddlCriteria1());
+                c3.setCellStyle(textStyle);
+
+                // Column 4 - REPORT DATE
+                Cell c4 = row.createCell(4);
+                c4.setCellValue(item.getReportDate() != null
+                        ? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
+                        : "");
+                c4.setCellStyle(textStyle);
+            }
+        } else {
+            logger.info("No data found for BDISB1 — only header written.");
+        }
+
+        // ================= WRITE FILE =================
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        workbook.write(bos);
+        workbook.close();
+
+        logger.info("Excel generation completed with {} row(s).",
+                reportData != null ? reportData.size() : 0);
+
+        return bos.toByteArray();
+
+    } catch (Exception e) {
+        logger.error("Error generating BDISB1 Excel", e);
+        return new byte[0];
+    }
+}
+
+public byte[] getDetailExcelARCHIVAL(String filename, String fromdate, String todate,
+        String currency, String dtltype, String type, String version) {
+
+    try {
+        logger.info("Generating Excel for BRRS_BDISB1 ARCHIVAL Details...");
+        System.out.println("came to Detail download service");
+
+        // ================= WORKBOOK & SHEET =================
+        XSSFWorkbook workbook = new XSSFWorkbook();
+        XSSFSheet sheet = workbook.createSheet("BDISB3Detail");
+
+        BorderStyle border = BorderStyle.THIN;
+
+        // ================= HEADER STYLE =================
+        CellStyle headerStyle = workbook.createCellStyle();
+        Font headerFont = workbook.createFont();
+        headerFont.setBold(true);
+        headerFont.setFontHeightInPoints((short) 10);
+        headerStyle.setFont(headerFont);
+        headerStyle.setAlignment(HorizontalAlignment.LEFT);
+        headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+        headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        headerStyle.setBorderTop(border);
+        headerStyle.setBorderBottom(border);
+        headerStyle.setBorderLeft(border);
+        headerStyle.setBorderRight(border);
+
+        CellStyle rightHeaderStyle = workbook.createCellStyle();
+        rightHeaderStyle.cloneStyleFrom(headerStyle);
+        rightHeaderStyle.setAlignment(HorizontalAlignment.RIGHT);
+
+        // ================= DATA STYLES =================
+        CellStyle textStyle = workbook.createCellStyle();
+        textStyle.setAlignment(HorizontalAlignment.LEFT);
+        textStyle.setBorderTop(border);
+        textStyle.setBorderBottom(border);
+        textStyle.setBorderLeft(border);
+        textStyle.setBorderRight(border);
+
+        CellStyle amountStyle = workbook.createCellStyle();
+        amountStyle.setAlignment(HorizontalAlignment.RIGHT);
+        amountStyle.setDataFormat(workbook.createDataFormat().getFormat("#,##0.00"));
+        amountStyle.setBorderTop(border);
+        amountStyle.setBorderBottom(border);
+        amountStyle.setBorderLeft(border);
+        amountStyle.setBorderRight(border);
+
+        // ================= HEADER ROW =================
+        String[] headers = {
+            "FIRST NAME",
+            "ACCOUNT BALANCE IN PULA",
+            "REPORT LABEL",
+            "REPORT ADDL CRITERIA1",
+            "REPORT DATE"
+        };
+
+        XSSFRow headerRow = sheet.createRow(0);
+        for (int i = 0; i < headers.length; i++) {
+            Cell cell = headerRow.createCell(i);
+            cell.setCellValue(headers[i]);
+            cell.setCellStyle((i == 0 || i == 1) ? rightHeaderStyle : headerStyle);
+            sheet.setColumnWidth(i, 6000);
+        }
+
+        // ================= DATA FETCH =================
+        Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
+        List<BDISB1_Archival_Detail_Entity> reportData =
+        		BDISB1_Archival_Detail_Repo.getdatabydateList(parsedToDate, version);
+
+        // ================= DATA ROWS =================
+        int rowIndex = 1;
+
+        if (reportData != null && !reportData.isEmpty()) {
+            for (BDISB1_Archival_Detail_Entity item : reportData) {
+
+                XSSFRow row = sheet.createRow(rowIndex++);
+
+                // Column 0 - AGGREGATE BALANCE
+                Cell c0 = row.createCell(0);
+                c0.setCellValue(item.getFIRST_NAME());
+                c0.setCellStyle(textStyle);
+
+                // Column 1 - COMPENSATABLE AMOUNT
+                Cell c1 = row.createCell(1);
+                c1.setCellValue(item.getACCOUNT_BALANCE_IN_PULA() != null
+                        ? item.getACCOUNT_BALANCE_IN_PULA().doubleValue() : 0);
+                c1.setCellStyle(amountStyle);
+
+                // Column 2 - REPORT LABEL
+                Cell c2 = row.createCell(2);
+                c2.setCellValue(item.getReportLable());
+                c2.setCellStyle(textStyle);
+
+                // Column 3 - REPORT ADDL CRITERIA 1
+                Cell c3 = row.createCell(3);
+                c3.setCellValue(item.getReportAddlCriteria1());
+                c3.setCellStyle(textStyle);
+
+                // Column 4 - REPORT DATE
+                Cell c4 = row.createCell(4);
+                c4.setCellValue(item.getReportDate() != null
+                        ? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
+                        : "");
+                c4.setCellStyle(textStyle);
+            }
+        } else {
+            logger.info("No archival data found for BDISB1 — only header written.");
+        }
+
+        // ================= WRITE FILE =================
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        workbook.write(bos);
+        workbook.close();
+
+        logger.info("ARCHIVAL Excel generation completed with {} row(s).",
+                reportData != null ? reportData.size() : 0);
+
+        return bos.toByteArray();
+
+    } catch (Exception e) {
+        logger.error("Error generating BDISB1 ARCHIVAL Excel", e);
+        return new byte[0];
+    }
+}
+
 
 
 
