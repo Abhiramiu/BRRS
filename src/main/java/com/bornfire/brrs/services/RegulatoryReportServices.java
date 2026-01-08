@@ -112,6 +112,9 @@ public class RegulatoryReportServices {
 
 	@Autowired
 	BRRS_M_LA1_ReportService BRRS_M_LA1_reportservice;
+	
+	@Autowired
+	BRRS_M_LA1_ReportService_New BRRS_M_LA1_reportservice_new;
 
 	@Autowired
 	BRRS_M_DEP1_ReportService BRRS_M_DEP1_reportservice;
@@ -560,6 +563,12 @@ public class RegulatoryReportServices {
 
 			case "M_LA1":
 				repsummary = BRRS_M_LA1_reportservice.getM_LA1View(reportId, fromdate, todate, currency, dtltype,
+						pageable,
+						type, version);
+				break;
+				
+			case "M_LA1_NEW":
+				repsummary = BRRS_M_LA1_reportservice_new.getM_LA1View(reportId, fromdate, todate, currency, dtltype,
 						pageable,
 						type, version);
 				break;
@@ -1201,6 +1210,11 @@ public class RegulatoryReportServices {
 
 			case "M_LA1":
 				repdetail = BRRS_M_LA1_reportservice.getM_LA1currentDtl(reportId, fromdate, todate, currency, dtltype,
+						pageable, Filter, type, version);
+				break;
+				
+			case "M_LA1_NEW":
+				repdetail = BRRS_M_LA1_reportservice_new.getM_LA1currentDtl(reportId, fromdate, todate, currency, dtltype,
 						pageable, Filter, type, version);
 				break;
 
@@ -1879,6 +1893,16 @@ public class RegulatoryReportServices {
 			case "M_LA1":
 				try {
 					repfile = BRRS_M_LA1_reportservice.BRRS_M_LA1Excel(filename, reportId, fromdate, todate, currency,
+							dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+				
+			case "M_LA1_NEW":
+				try {
+					repfile = BRRS_M_LA1_reportservice_new.BRRS_M_LA1Excel(filename, reportId, fromdate, todate, currency,
 							dtltype, type, version);
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
@@ -2785,6 +2809,9 @@ public class RegulatoryReportServices {
 		} else if ("M_LA1Detail".equals(filename)) {
 			return BRRS_M_LA1_reportservice.BRRS_M_LA1DetailExcel(filename, fromdate, todate, currency, dtltype, type,
 					version);
+		}else if ("M_LA1Detail".equals(filename)) {
+			return BRRS_M_LA1_reportservice_new.BRRS_M_LA1DetailExcel(filename, fromdate, todate, currency, dtltype, type,
+					version);
 		} else if ("M_DEP1Detail".equals(filename)) {
 			return BRRS_M_DEP1_reportservice.BRRS_M_DEP1DetailExcel(filename, fromdate, todate, currency, dtltype, type,
 					version);
@@ -3039,6 +3066,15 @@ public class RegulatoryReportServices {
 			case "M_LA1":
 				try {
 					archivalData = BRRS_M_LA1_reportservice.getM_LA1Archival();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+				
+			case "M_LA1_NEW":
+				try {
+					archivalData = BRRS_M_LA1_reportservice_new.getM_LA1Archival();
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -3966,6 +4002,9 @@ public class RegulatoryReportServices {
 		} else if (filename.equals("M_LA1Detail")) {
 			fileData = BRRS_M_LA1_reportservice.BRRS_M_LA1DetailExcel(filename, fromdate, todate, currency, dtltype,
 					type, version);
+		}else if (filename.equals("M_LA1Detail")) {
+			fileData = BRRS_M_LA1_reportservice_new.BRRS_M_LA1DetailExcel(filename, fromdate, todate, currency, dtltype,
+					type, version);
 		} else if (filename.equals("M_DEP1Detail")) {
 			fileData = BRRS_M_DEP1_reportservice.BRRS_M_DEP1DetailExcel(filename, fromdate, todate, currency, dtltype,
 					type, version);
@@ -4302,6 +4341,13 @@ public class RegulatoryReportServices {
 				System.out.println("Fetching M_LA1 data from: " + specificFilePath);
 				reportData = BRRS_M_LA1_reportservice.getReportData(specificFilePath);
 				break;
+				
+			case "M_LA1_NEW":
+					specificFilePath = baseExportPath + "M_LA1.xlsx";
+					System.out.println("Fetching M_LA1 data from: " + specificFilePath);
+					reportData = BRRS_M_LA1_reportservice_new.getReportData(specificFilePath);
+					break;
+					
 			case "M_SFINP2":
 				System.out.println(reportCode);
 				specificFilePath = baseExportPath + "M_SFINP2.xlsx";
@@ -4331,6 +4377,11 @@ public class RegulatoryReportServices {
 					break;
 
 				case "M_LA1":
+					modelAndView = BRRS_M_LA1_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
+							request.getParameter("formmode"));
+					break;
+					
+				case "M_LA1_NEW":
 					modelAndView = BRRS_M_LA1_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
 							request.getParameter("formmode"));
 					break;
@@ -4678,6 +4729,10 @@ public class RegulatoryReportServices {
 
 				case "M_LA1":
 					response = BRRS_M_LA1_reportservice.updateDetailEdit(request);
+					break;
+					
+				case "M_LA1_NEW":
+					response = BRRS_M_LA1_reportservice_new.updateDetailEdit(request);
 					break;
 
 				case "M_LA3":
@@ -5466,6 +5521,10 @@ public class RegulatoryReportServices {
 
 				case "M_LA1":
 					return BRRS_M_LA1_reportservice.BRRS_M_LA1Excel(filename, reportName, fromdate, todate, currency,
+							"DETAIL", type, version);
+					
+				case "M_LA1_NEW":
+					return BRRS_M_LA1_reportservice_new.BRRS_M_LA1Excel(filename, reportName, fromdate, todate, currency,
 							"DETAIL", type, version);
 
 				case "M_LA2":

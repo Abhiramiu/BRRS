@@ -115,6 +115,7 @@ import com.bornfire.brrs.services.BRRS_SCH_17_ReportService;
 import com.bornfire.brrs.services.RegulatoryReportServices;
 import com.bornfire.brrs.services.ReportCodeMappingService;
 import com.bornfire.brrs.services.BRRS_M_OPTR_NEW_ReportService;
+import com.bornfire.brrs.services.BRRS_MDISB1_ReportService;
 @Controller
 @ConfigurationProperties("default")
 @RequestMapping(value = "Reports")
@@ -154,6 +155,8 @@ public class BRRS_ReportsController {
 	@Autowired
 	BRRS_M_NOSVOS_ReportService BRRS_M_NOSVOS_ReportService;
 	
+	@Autowired
+	BRRS_MDISB1_ReportService BRRS_MDISB1_ReportService;
 	
 
 	private String pagesize;
@@ -434,6 +437,30 @@ public class BRRS_ReportsController {
 
 			// call services
 			BRRS_M_LA4_ReportService.updateReport(request1);
+
+			return ResponseEntity.ok("Updated Successfully.");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
+		}
+	}
+
+	
+	@RequestMapping(value = "/updateReportMDISB1", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<String> updateAllReports(
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+
+			@ModelAttribute MDISB1_Summary_Entity_Manual request1
+
+	) {
+		try {
+
+			// set date into all 4 entities
+			request1.setReport_date(asondate);
+
+			// call services
+			BRRS_MDISB1_ReportService.updateReport(request1);
 
 			return ResponseEntity.ok("Updated Successfully.");
 		} catch (Exception e) {

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 
 
 @Repository
-public interface BRRS_SCH_17_Detail_Repo extends JpaRepository<SCH_17_Detail_Entity, String> {
+public interface BRRS_SCH_17_Detail_Repo extends JpaRepository<SCH_17_Detail_Entity, Long> {
 
 	
 	@Query(value = "select * from BRRS_SCH_17_DETAILTABLE where REPORT_DATE = ?1 AND REPORT_LABEL= ?2 AND REPORT_ADDL_CRITERIA_1= ?3", nativeQuery = true)

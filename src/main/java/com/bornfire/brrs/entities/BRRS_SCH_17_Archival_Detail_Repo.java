@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 
-public interface BRRS_SCH_17_Archival_Detail_Repo extends JpaRepository<SCH_17_Archival_Detail_Entity, String> {
+public interface BRRS_SCH_17_Archival_Detail_Repo extends JpaRepository<SCH_17_Archival_Detail_Entity, Long> {
 
 	@Query(value = "select * from BRRS_SCH_17_ARCHIVALTABLE_DETAIL where REPORT_DATE=?1 AND DATA_ENTRY_VERSION=?2", nativeQuery = true)
 	List<SCH_17_Archival_Detail_Entity> getdatabydateList(Date reportdate,String DATA_ENTRY_VERSION);
