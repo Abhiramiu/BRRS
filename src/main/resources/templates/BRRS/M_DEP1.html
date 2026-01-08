@@ -633,7 +633,7 @@ PURPOSE		: BRFREPORT
 			if (cellValue !== '0') {
 				// Set dynamic message in modal (instead of confirm)
 				document.getElementById("cellresultModalLabel").innerText =
-					"Do you want to open details for Report Lable: " + reportLable + " and Report Addl Criteria1: " + reportAddlCriteria1 + "?";
+					"Do you want to open details for Row ID: " + reportLable + " and Column ID: " + reportAddlCriteria1 + "?";
 
 				// Show custom Bootstrap modal
 				$('#cellresultModal').modal('show');
@@ -3698,7 +3698,7 @@ PURPOSE		: BRFREPORT
 				<!--  DETAIL -->
 												<div th:if="${displaymode == 'Details'}">
 													<div class="row">
-														<div class="col-sm-12" style="max-height:90vh; overflow-y: auto; ">
+														<div class="col-sm-12" style="max-height:90vh;">
 															<div class="table-container" 
 																style="border-right: 1px solid #dee2e6; ">
 																<table class="table table-striped table-bordered table-hover"
@@ -3713,7 +3713,7 @@ PURPOSE		: BRFREPORT
 																			<th>ACCT NAME</th>
 																			<th>ACCT BALANCE IN PULA</th>
 																			
-																			<th style="text-align:left;">REPORT LABLE</th>
+																			<th style="text-align:left;">REPORT LABEL</th>
 																			<th>REPORT ADDL CRITERIA 1</th>
 																			<th>REPORT DATE</th>
 																		</tr>
@@ -3798,7 +3798,7 @@ PURPOSE		: BRFREPORT
 
 			      <!-- Row 3 -->
 			      <div class="row formline" style="margin-top:10px;">
-			        <label class="col-sm-2">Report Lable</label>
+			        <label class="col-sm-2">Report Label</label>
 			        <div class="col-sm-3">
 			          <input type="text" th:field="*{reportLable}" class="form-control form-control-sm" readonly />
 			        </div>
