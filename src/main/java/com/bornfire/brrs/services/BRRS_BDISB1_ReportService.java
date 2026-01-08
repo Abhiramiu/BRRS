@@ -205,8 +205,8 @@ public class BRRS_BDISB1_ReportService {
 				if (rowId != null && columnId != null) {
 					T1Dt1 = BDISB1_Detail_Repo.GetDataByRowIdAndColumnId(rowId, columnId, parsedDate);
 				} else {
-					T1Dt1 = BDISB1_Detail_Repo.getdatabydateList(parsedDate, currentPage, pageSize);
-					System.out.println("la1 size is : "+ T1Dt1.size());
+					T1Dt1 = BDISB1_Detail_Repo.getdatabydateList(parsedDate);
+					System.out.println("bdisb2 size is : " + T1Dt1.size());
 					totalPages = BDISB1_Detail_Repo.getdatacount(parsedDate);
 					mv.addObject("pagination", "YES");
 				}
