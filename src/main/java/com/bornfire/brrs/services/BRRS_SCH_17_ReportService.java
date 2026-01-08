@@ -542,7 +542,8 @@ public class BRRS_SCH_17_ReportService {
 		List<SCH_17_Archival_Summary_Entity> dataList = SCH_17_Archival_Summary_Repo
 				.getdatabydateListarchival(dateformat.parse(todate), version);
 	
-
+       List<SCH_17_Archival_Manual_Summary_Entity> dataList1 = SCH_17_Manual_Archival_Summary_Repo
+				.getdatabydateListarchival(dateformat.parse(todate), version);
 		
 
 		if (dataList.isEmpty()) {
@@ -611,7 +612,7 @@ public class BRRS_SCH_17_ReportService {
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
 					SCH_17_Archival_Summary_Entity record = dataList.get(i);
-				
+				    SCH_17_Archival_Manual_Summary_Entity record1 = dataList1.get(i);
 					System.out.println("rownumber=" + startRow + i);
 					Row row = sheet.getRow(startRow + i);
 					if (row == null) {
@@ -619,29 +620,38 @@ public class BRRS_SCH_17_ReportService {
 					}
 
 
-					// R9
-					row = sheet.getRow(8);
-					Cell cellC = row.getCell(2);
-					if (cellC == null) cellC = row.createCell(2);
-					cellC.setCellValue(record.getR9_31_3_25_amt() != null ? record.getR9_31_3_25_amt().doubleValue() : 0);
-					
-					// R9
-				
-					Cell cellD = row.getCell(3);
-					if (cellD == null) cellD = row.createCell(3);
-					cellD.setCellValue(record.getR9_30_9_25_amt() != null ? record.getR9_30_9_25_amt().doubleValue() : 0);
+						// Column C
+					Cell cellC = row.createCell(2);
+					if (record.getR9_31_3_25_amt() != null) {
+					    cellC.setCellValue(record.getR9_31_3_25_amt().doubleValue());
+					    cellC.setCellStyle(numberStyle);
+					} else {
+					    cellC.setCellValue(0);   // IMPORTANT
+					    cellC.setCellStyle(numberStyle);
+					}
+
+					// Column D
+					Cell cellD = row.createCell(3);
+					if (record.getR9_30_9_25_amt() != null) {
+					    cellD.setCellValue(record.getR9_30_9_25_amt().doubleValue());
+					    cellD.setCellStyle(numberStyle);
+					} else {
+					    cellD.setCellValue(0);   // IMPORTANT
+					    cellD.setCellStyle(numberStyle);
+					}
+
 
 					// R10
 					row = sheet.getRow(9);
 				   cellC = row.getCell(2);
 					if (cellC == null) cellC = row.createCell(2);
-					cellC.setCellValue(record.getR10_31_3_25_amt() != null ? record.getR10_31_3_25_amt().doubleValue() : 0);
+					cellC.setCellValue(record1.getR10_31_3_25_amt() != null ? record1.getR10_31_3_25_amt().doubleValue() : 0);
 					
 					// R10
 				
 				   cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
-					cellD.setCellValue(record.getR10_30_9_25_amt() != null ? record.getR10_30_9_25_amt().doubleValue() : 0);
+					cellD.setCellValue(record1.getR10_30_9_25_amt() != null ? record1.getR10_30_9_25_amt().doubleValue() : 0);
 
 
 				
@@ -649,22 +659,22 @@ public class BRRS_SCH_17_ReportService {
 					row = sheet.getRow(10);
 					cellC = row.getCell(2);
 					if (cellC == null) cellC = row.createCell(2);
-					cellC.setCellValue(record.getR11_31_3_25_amt() != null ? record.getR11_31_3_25_amt().doubleValue() : 0);
+					cellC.setCellValue(record1.getR11_31_3_25_amt() != null ? record1.getR11_31_3_25_amt().doubleValue() : 0);
 
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
-					cellD.setCellValue(record.getR11_30_9_25_amt() != null ? record.getR11_30_9_25_amt().doubleValue() : 0);
+					cellD.setCellValue(record1.getR11_30_9_25_amt() != null ? record1.getR11_30_9_25_amt().doubleValue() : 0);
 
 
 					// R12
 					row = sheet.getRow(11);
 					cellC = row.getCell(2);
 					if (cellC == null) cellC = row.createCell(2);
-					cellC.setCellValue(record.getR12_31_3_25_amt() != null ? record.getR12_31_3_25_amt().doubleValue() : 0);
+					cellC.setCellValue(record1.getR12_31_3_25_amt() != null ? record1.getR12_31_3_25_amt().doubleValue() : 0);
 
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
-					cellD.setCellValue(record.getR12_30_9_25_amt() != null ? record.getR12_30_9_25_amt().doubleValue() : 0);
+					cellD.setCellValue(record1.getR12_30_9_25_amt() != null ? record1.getR12_30_9_25_amt().doubleValue() : 0);
 
 
 					// R13
@@ -682,76 +692,76 @@ public class BRRS_SCH_17_ReportService {
 					row = sheet.getRow(13);
 					cellC = row.getCell(2);
 					if (cellC == null) cellC = row.createCell(2);
-					cellC.setCellValue(record.getR14_31_3_25_amt() != null ? record.getR14_31_3_25_amt().doubleValue() : 0);
+					cellC.setCellValue(record1.getR14_31_3_25_amt() != null ? record1.getR14_31_3_25_amt().doubleValue() : 0);
 
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
-					cellD.setCellValue(record.getR14_30_9_25_amt() != null ? record.getR14_30_9_25_amt().doubleValue() : 0);
+					cellD.setCellValue(record1.getR14_30_9_25_amt() != null ? record1.getR14_30_9_25_amt().doubleValue() : 0);
 
 
 					// R15
 					row = sheet.getRow(14);
 					cellC = row.getCell(2);
 					if (cellC == null) cellC = row.createCell(2);
-					cellC.setCellValue(record.getR15_31_3_25_amt() != null ? record.getR15_31_3_25_amt().doubleValue() : 0);
+					cellC.setCellValue(record1.getR15_31_3_25_amt() != null ? record1.getR15_31_3_25_amt().doubleValue() : 0);
 
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
-					cellD.setCellValue(record.getR15_30_9_25_amt() != null ? record.getR15_30_9_25_amt().doubleValue() : 0);
+					cellD.setCellValue(record1.getR15_30_9_25_amt() != null ? record1.getR15_30_9_25_amt().doubleValue() : 0);
 
 
 					// R16
 					row = sheet.getRow(15);
 					cellC = row.getCell(2);
 					if (cellC == null) cellC = row.createCell(2);
-					cellC.setCellValue(record.getR16_31_3_25_amt() != null ? record.getR16_31_3_25_amt().doubleValue() : 0);
+					cellC.setCellValue(record1.getR16_31_3_25_amt() != null ? record1.getR16_31_3_25_amt().doubleValue() : 0);
 
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
-					cellD.setCellValue(record.getR16_30_9_25_amt() != null ? record.getR16_30_9_25_amt().doubleValue() : 0);
+					cellD.setCellValue(record1.getR16_30_9_25_amt() != null ? record1.getR16_30_9_25_amt().doubleValue() : 0);
 
 					// R17
 					row = sheet.getRow(16);
 					cellC = row.getCell(2);
 					if (cellC == null) cellC = row.createCell(2);
-					cellC.setCellValue(record.getR17_31_3_25_amt() != null ? record.getR17_31_3_25_amt().doubleValue() : 0);
+					cellC.setCellValue(record1.getR17_31_3_25_amt() != null ? record1.getR17_31_3_25_amt().doubleValue() : 0);
 
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
-					cellD.setCellValue(record.getR17_30_9_25_amt() != null ? record.getR17_30_9_25_amt().doubleValue() : 0);
+					cellD.setCellValue(record1.getR17_30_9_25_amt() != null ? record1.getR17_30_9_25_amt().doubleValue() : 0);
 				
 
 					// R18
 					row = sheet.getRow(17);
 					cellC = row.getCell(2);
 					if (cellC == null) cellC = row.createCell(2);
-					cellC.setCellValue(record.getR18_31_3_25_amt() != null ? record.getR18_31_3_25_amt().doubleValue() : 0);
+					cellC.setCellValue(record1.getR18_31_3_25_amt() != null ? record1.getR18_31_3_25_amt().doubleValue() : 0);
 
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
-					cellD.setCellValue(record.getR18_30_9_25_amt() != null ? record.getR18_30_9_25_amt().doubleValue() : 0);
+					cellD.setCellValue(record1.getR18_30_9_25_amt() != null ? record1.getR18_30_9_25_amt().doubleValue() : 0);
 
 
 					// R19
 					row = sheet.getRow(18);
 					cellC = row.getCell(2);
 					if (cellC == null) cellC = row.createCell(2);
-					cellC.setCellValue(record.getR19_31_3_25_amt() != null ? record.getR19_31_3_25_amt().doubleValue() : 0);
+					cellC.setCellValue(record1.getR19_31_3_25_amt() != null ? record1.getR19_31_3_25_amt().doubleValue() : 0);
 
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
-					cellD.setCellValue(record.getR19_30_9_25_amt() != null ? record.getR19_30_9_25_amt().doubleValue() : 0);
-
-
+					cellD.setCellValue(record1.getR19_30_9_25_amt() != null ? record1.getR19_30_9_25_amt().doubleValue() : 0);
+					
+					
 					// R20
 					row = sheet.getRow(19);
 					cellC = row.getCell(2);
 					if (cellC == null) cellC = row.createCell(2);
-					cellC.setCellValue(record.getR20_31_3_25_amt() != null ? record.getR20_31_3_25_amt().doubleValue() : 0);
+					cellC.setCellValue(record1.getR20_31_3_25_amt() != null ? record1.getR20_31_3_25_amt().doubleValue() : 0);
 
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
-					cellD.setCellValue(record.getR20_30_9_25_amt() != null ? record.getR20_30_9_25_amt().doubleValue() : 0);
+					cellD.setCellValue(record1.getR20_30_9_25_amt() != null ? record1.getR20_30_9_25_amt().doubleValue() : 0);
 					
 					
 				}
