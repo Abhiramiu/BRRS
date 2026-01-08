@@ -3742,7 +3742,7 @@ public ResponseEntity<String> updateBDISB2AllReports(
 
         BRRS_BDISB2_ReportService.updateDetailFromForm(asondate, allParams);
 
-        return ResponseEntity.ok("Updated Successfully");
+        return ResponseEntity.ok("Updated Successfully.");
     } catch (Exception e) {
         e.printStackTrace();
         return ResponseEntity

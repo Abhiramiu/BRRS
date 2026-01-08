@@ -9,6 +9,7 @@ PURPOSE		: BDISB3 BRRSREPORT
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>BRRS - BDISB3</title>
 	<!-- CSS -->
 
 
@@ -18,13 +19,7 @@ PURPOSE		: BDISB3 BRRSREPORT
 	<link rel="stylesheet" type="text/css" th:href="@{/webjars/datatables/1.10.19/css/jquery.dataTables.min.css}">
 	<link rel="stylesheet" th:href="@{/css/CustomButton.css}" />
 	<link rel="icon" th:href="@{/favicon.ico}" type="image/x-icon" />
-	<!-- JavaScript -->
-	<!-- jQuery core (required first) -->
-	<!-- ✅ Your manually placed jQuery validation
-	<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
-	 <script th:src="/jquery/jquery.validate.min.js"></script>
-	 -->
-	<!-- jQuery (required first) -->
+
 	<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
 	<!-- <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script> -->
 	<!-- ✅ jQuery Validation -->
@@ -367,10 +362,6 @@ label.error {
 		}
 
 		//to fetch summary from the database - called from the summary button
-		/* function showdetails() {
-			isDetailsModal = true; // mark that this modal is from Details
-			showResultModal('BRRS', 'Details page not available for Manual Report');
-		} */
 		function showdetails() {
 			var Callurl;
 			$('#loader').modal('show');
@@ -402,12 +393,6 @@ label.error {
 			}
 		}
 		window.onload = function () {
-			/* setTimeout(function() {
-				var selectedTab = document.getElementById("selectedTab").value;
-				alert(selectedTab);
-				activateTab(selectedTab);
-			}, 10000); */ // 10,000 milliseconds = 10 seconds
-
 			var selectedTab = document.getElementById("selectedTab").value;
 			activateTab(selectedTab);
 		};
@@ -471,20 +456,7 @@ label.error {
 			showResultModal('Alert', 'Development in progress');
 
 		}
-		/* function closemodel() {
-			$("#resultModal").modal("hide");
-			$('#loader').modal('hide');
 
-			// Only reload if not from Details modal
-			if (!isDetailsModal) {
-				setTimeout(function () {
-					location.reload();
-				}, 300);
-			} else {
-				// reset flag for next modal usage
-				isDetailsModal = false;
-			}
-		} */
 		function showResultModal(title, message) {
 			// Set the text for the modal elements
 			$('#resultModalLabel').text(title);
@@ -605,9 +577,8 @@ label.error {
 	
 	
 	<script>
-	// Show Modify (enable inputs & dropdowns)
 	
-		
+// Show Modify (enable inputs & dropdowns)	
 function showmodify(btn) {
 		
 	let readonlyIds = [];    
@@ -737,14 +708,6 @@ function cancelModify() {
 		 // Append only named inputs
 		    $('#fileupload').find(':input[name]').each(function () {
 		        formData.append(this.name, this.value);
-
-		/*         let originalName = this.name;  
-		        let value = this.value;
-
-		        // Convert: R6_C2_COMPANY_NAME → R6_COMPANY_NAME
-		        let fixedName = originalName.replace(/_C\d+_/, '_');
-		        console.log(originalName, "→", fixedName);
-		        formData.append(fixedName, value); */
 		    });
 		    console.log("✅ Entity executed successfully");    
 
@@ -844,7 +807,7 @@ function cancelModify() {
 						<!-- Title -->
 						<h5
 							style="font-family: arial; font-size: 20px; font-weight: bold; color: white;margin-right: 10px; margin: 0 10px;">
-							BDISB3 - Single Customer View Aggregate Records   </h5>
+							BDISB3 - SINGLE CUSTOMER VIEW AGGREGATE REPORTS </h5>
 					</div>
 					<!-- Moving bus-board text -->
 						<div class="boards">
@@ -1138,15 +1101,6 @@ function cancelModify() {
 
         <tbody style="font-family: Arial;">
             <tr th:each="report, srlno: ${reportdetails}">
-                <!-- <td>
-                    <a data-toggle="tooltip" class="editrec" title="Click to Edit this Record">
-                        <i class="fas fa-edit" style="color: black; cursor:pointer;"
-                            th:attr="data-acctNo=${report.acctNumber},
-                            data-asondate=${#dates.format(report.reportDate, 'dd-MM-yyyy')},
-                            data-type=${type}"
-                            onclick="openDetail(this, 'edit')"></i>
-                    </a>
-                </td> -->
 	
 				<td style="text-align:center;" th:text="${srlno.index + 1}"></td>
 	              
@@ -1235,31 +1189,7 @@ function cancelModify() {
 
 </body>
 
-<!-- <script>
-															  $(document).ready(function () {
-															    $('#BRRSvalidation').DataTable({
-															      "paging": true,
-															      "info": false,       // turn off "Showing x of y"
-															      "searching": false,  // turn off search
-															      "ordering": false,   // turn off ordering
-															      "lengthChange": false // hide "Show x entries"
-															    });
-															  });
-	
-														</script> -->
-<!-- 
-<style>
-#BRFdet td {
-	border: 1px solid #ccc;
-	padding: 8px;
-}
 
-#BRFdet {
-	border-collapse: collapse;
-	width: 100%;
-}
-</style>
- -->
 <style>
 /* Your existing CSS - this is the correct approach */
 .scrollable-table-container {
@@ -1383,132 +1313,7 @@ div.dataTables_wrapper div.dataTables_info {
 #reports th:empty::after {
     content: "\00A0";
 }
-/*#reports th:empty {
-    border: none !important;
-    background-color: transparent !important;
-    color: transparent !important;
-}*/
 
-/*  #reportdetails {
-       width: 100% !important;
-       table-layout: fixed !important;
-     }
-
-     #reportdetails th, 
-     #reportdetails td {
-       white-space: nowrap;
-     } */
 </style>
 
-
-<!-- <style>
- .dataTables_scrollHeadInner,
- table.dataTable {
-  width: 100% !important;
- }
-
- /* Your existing CSS - this is the correct approach */
- .scrollable-table-container {
-  /* This is the key: it creates the scroll context */
-  max-height: 700px;
-  /* Or a suitable height like 80vh for responsive design */
-  overflow-y: auto;
-  overflow-x: hidden;
-  border: 1px solid #ccc;
- }
-
- /* Your existing sticky header CSS, targeting the tr elements within the thead */
- .scrollable-table-container thead tr:nth-child(1) {
-  position: sticky;
-  top: 0;
-  background-color: #b3b6b9;
-  z-index: 5;
- }
-
- .scrollable-table-container thead tr:nth-child(2) {
-  position: sticky;
-  top: 36px;
-  /* adjust based on row height */
-  background-color: #b3b6b9;
-  z-index: 4;
- }
-
- .scrollable-table-container thead tr:nth-child(3) {
-  position: sticky;
-  top: 72px;
-  /* Adjust based on row height */
-  background-color: #b3b6b9;
-  z-index: 3;
- }
-
- .scrollable-table-container thead tr:nth-child(4) {
-  position: sticky;
-  top: 100px;
-  /* Adjust based on row height */
-  background-color: #b3b6b9;
-  z-index: 2;
- }
-
- .scrollable-table-container thead tr:nth-child(5) {
-  position: sticky;
-  top: 135px;
-  /* Adjust based on row height */
-  background-color: #b3b6b9;
-  z-index: 1;
- }
-</style>
-
-
-<style>
- .inner {
-  max-height: 600px;
-  /* Adjust height as needed */
-  overflow: auto;
-  border: 1px solid #dee2e6;
- }
-
- /* Sticky thead */
- #reports thead th {
-  position: sticky;
-  top: 0;
-  background-color: #f8f9fa;
-  /* Match Bootstrap thead-light */
-  z-index: 2;
- }
-
- div.dataTables_wrapper div.dataTables_paginate {
-  text-align: right !important;
-  float: right !important;
-  width: auto;
-  margin-top: 10px;
- }
-
- /* Ensure info text (e.g., "Showing 1 to X") stays on the left */
- div.dataTables_wrapper div.dataTables_info {
-  float: left !important;
-  margin-top: 10px;
- }
-
- .pagination {
-  margin: 0;
- }
-
- .page-item.active .page-link {
-  background-color: #386276;
-  border-color: #386276;
- }
-
- .page-link {
-  color: #386276;
- }
-
- .page-link:hover {
-  color: #2a4a5c;
- }
-
- .form-select {
-  display: inline-block;
-  width: auto;
- }
-</style> -->
 </html>					

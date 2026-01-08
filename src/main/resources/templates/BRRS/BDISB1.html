@@ -1,8 +1,8 @@
 <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
 <!--
-CREATED BY	: NIVETHA S
-CREATED ON	: 10.12.2025
-PURPOSE		: BRRS_MDISB5REPORT
+CREATED BY	: INFANT JONES J
+CREATED ON	: 8.12.2025
+PURPOSE		: BDISB1 BRRSREPORT
 -->
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 
@@ -10,7 +10,7 @@ PURPOSE		: BRRS_MDISB5REPORT
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<!-- CSS -->
-
+	<title>BRRS - BDISB1</title>
 
 	<link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}">
 	<link rel="stylesheet" type="text/css" th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}">
@@ -18,13 +18,6 @@ PURPOSE		: BRRS_MDISB5REPORT
 	<link rel="stylesheet" type="text/css" th:href="@{/webjars/datatables/1.10.19/css/jquery.dataTables.min.css}">
 	<link rel="stylesheet" th:href="@{/css/CustomButton.css}" />
 	<link rel="icon" th:href="@{/favicon.ico}" type="image/x-icon" />
-	<!-- JavaScript -->
-	<!-- jQuery core (required first) -->
-	<!-- ✅ Your manually placed jQuery validation
-	<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
-	 <script th:src="/jquery/jquery.validate.min.js"></script>
-	 -->
-	<!-- jQuery (required first) -->
 	<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
 	<!-- <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script> -->
 	<!-- ✅ jQuery Validation -->
@@ -366,11 +359,6 @@ label.error {
 			window.history.back();
 		}
 
-		//to fetch summary from the database - called from the summary button
-		/* function showdetails() {
-			isDetailsModal = true; // mark that this modal is from Details
-			showResultModal('BRRS', 'Details page not available for Manual Report');
-		} */
 		function showdetails() {
 			var Callurl;
 			$('#loader').modal('show');
@@ -402,12 +390,6 @@ label.error {
 			}
 		}
 		window.onload = function () {
-			/* setTimeout(function() {
-				var selectedTab = document.getElementById("selectedTab").value;
-				alert(selectedTab);
-				activateTab(selectedTab);
-			}, 10000); */ // 10,000 milliseconds = 10 seconds
-
 			var selectedTab = document.getElementById("selectedTab").value;
 			activateTab(selectedTab);
 		};
@@ -471,20 +453,7 @@ label.error {
 			showResultModal('Alert', 'Development in progress');
 
 		}
-		/* function closemodel() {
-			$("#resultModal").modal("hide");
-			$('#loader').modal('hide');
 
-			// Only reload if not from Details modal
-			if (!isDetailsModal) {
-				setTimeout(function () {
-					location.reload();
-				}, 300);
-			} else {
-				// reset flag for next modal usage
-				isDetailsModal = false;
-			}
-		} */
 		function showResultModal(title, message) {
 			// Set the text for the modal elements
 			$('#resultModalLabel').text(title);
@@ -604,7 +573,7 @@ label.error {
 	</script>
 	
 	<script>
-	// Show Modify (enable inputs & dropdowns)
+// Show Modify (enable inputs & dropdowns)
 function showmodify(btn) {
     // 🔹 IDs of formula/total cells that must always stay readonly
      $(".Show_input").not(".nonEditable").removeAttr("readonly").removeAttr("disabled");
@@ -772,14 +741,6 @@ function cancelModify() {
 		 // Append only named inputs
 		    $('#fileupload').find(':input[name]').each(function () {
 		        formData.append(this.name, this.value);
-
-		/*         let originalName = this.name;  
-		        let value = this.value;
-
-		        // Convert: R6_C2_COMPANY_NAME → R6_COMPANY_NAME
-		        let fixedName = originalName.replace(/_C\d+_/, '_');
-		        console.log(originalName, "→", fixedName);
-		        formData.append(fixedName, value); */
 		    });
 		    console.log("✅ Entity executed successfully");    
 
@@ -881,7 +842,7 @@ function cancelModify() {
       <!-- Title -->
       <h5
        style="font-family: arial; font-size: 20px; padding-top: 10px; font-weight: bold; color: white; margin-right: 10px;">
-       BDISB1-Single Customer View Company Disaggregate Records</h5>
+       BDISB1 - SINGLE CUSTOMER VIEW COMPANY DISAGGREGATE RECORDS</h5>
      </div>
      <!-- Moving bus-board text -->
      <div class="boards">
