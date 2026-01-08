@@ -242,6 +242,8 @@ public class BRRS_BDISB1_ReportService {
 
 	    System.out.println("Updating BDISB1 detail table");
 
+	    List<BDISB1_Detail_Entity> allModifiedRows = new ArrayList<>();
+
 	    for (Map.Entry<String, String> entry : params.entrySet()) {
 
 	        String key = entry.getKey();
@@ -331,15 +333,13 @@ public class BRRS_BDISB1_ReportService {
 	                    row.setDATE_OF_BIRTH(null);
 	                } else {
 	                    try {
-	                        // HTML <input type="date"> sends yyyy-MM-dd
 	                        LocalDate localDate = LocalDate.parse(value);
 	                        row.setDATE_OF_BIRTH(java.sql.Date.valueOf(localDate));
 	                    } catch (Exception e) {
-	                        throw new RuntimeException("Invalid DATE_OF_BIRTH: " + value);
+	                        row.setDATE_OF_BIRTH(null); // ❗ do not crash entire submission
 	                    }
 	                }
 	            }
-
 
 	            /* =======================
 	               STRING COLUMNS
@@ -418,7 +418,11 @@ public class BRRS_BDISB1_ReportService {
 	            row.setModifyFlg("Y");
 	        }
 
-	        BDISB1_Detail_Repo.saveAll(rows);
+	        allModifiedRows.addAll(rows);
+	    }
+
+	    if (!allModifiedRows.isEmpty()) {
+	        BDISB1_Detail_Repo.saveAll(allModifiedRows);
 	    }
 
 	    callSummaryProcedure(reportDate);

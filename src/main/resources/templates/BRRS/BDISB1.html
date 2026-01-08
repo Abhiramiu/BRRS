@@ -603,68 +603,54 @@ label.error {
 			  }
 	</script>
 	
-	
 	<script>
 	// Show Modify (enable inputs & dropdowns)
-	
-		
 function showmodify(btn) {
-		
-	let readonlyIds = [];    
+    // 🔹 IDs of formula/total cells that must always stay readonly
+     $(".Show_input").not(".nonEditable").removeAttr("readonly").removeAttr("disabled");
+    const readonlyIds = [
+    	"RECORD_NUMBER",
+		"TITLE",
+		"FIRST_NAME",
+		"MIDDLE_NAME",
+		"SURNAME",
+		"PREVIOUS_NAME",
+		"GENDER",
+		"IDENTIFICATION_TYPE",
+		"PASSPORT_NUMBER",
+		"DATE_OF_BIRTH",
+		"HOME_ADDRESS",
+		"POSTAL_ADDRESS",
+		"RESIDENCE",
+		"EMAIL",
+		"LANDLINE",
+		"MOBILE_PHONE_NUMBER",
+		"MOBILE_MONEY_NUMBER",
+		"PRODUCT_TYPE",
+		"ACCOUNT_BY_OWNERSHIP",
+		"ACCOUNT_NUMBER",
+		"ACCOUNT_HOLDER_INDICATOR",
+		"STATUS_OF_ACCOUNT",
+		"NOT_FIT_FOR_STP",
+		"BRANCH_CODE_AND_NAME",
+		"ACCOUNT_BALANCE_IN_PULA",
+		"CURRENCY_OF_ACCOUNT",
+		"EXCHANGE_RATE"
+    ];
 
-	
-	$(".Show_input").each(function () {
-		        if (!readonlyIds.includes(this.id)) {
-		            $(this).removeAttr("readonly").removeAttr("disabled");
-		        }
-		    });
+    // 🔹 Enable editing for all inputs except formula ones
+    $(".show_input, .display-input").each(function () {
+        if (!readonlyIds.includes(this.id)) {
+            $(this).removeAttr("readonly")
+                   .removeAttr("disabled")
+                   .css({"background-color": "#d3d3d3"}); // light yellow for editable
+        } 
+    });
 
-			
-
-			for (let i = 5; i <= 11; i++) {  
-						    let fields = [
-						    	"RECORD_NUMBER",
-				        		"TITLE",
-				        		"FIRST_NAME",
-				        		"MIDDLE_NAME",
-				        		"SURNAME",
-				        		"PREVIOUS_NAME",
-				        		"GENDER",
-				        		"IDENTIFICATION_TYPE",
-				        		"PASSPORT_NUMBER",
-				        		"DATE_OF_BIRTH",
-				        		"HOME_ADDRESS",
-				        		"POSTAL_ADDRESS",
-				        		"RESIDENCE",
-				        		"EMAIL",
-				        		"LANDLINE",
-				        		"MOBILE_PHONE_NUMBER",
-				        		"MOBILE_MONEY_NUMBER",
-				        		"PRODUCT_TYPE",
-				        		"ACCOUNT_BY_OWNERSHIP",
-				        		"ACCOUNT_NUMBER",
-				        		"ACCOUNT_HOLDER_INDICATOR",
-				        		"STATUS_OF_ACCOUNT",
-				        		"NOT_FIT_FOR_STP",
-				        		"BRANCH_CODE_AND_NAME",
-				        		"ACCOUNT_BALANCE_IN_PULA",
-				        		"CURRENCY_OF_ACCOUNT",
-				        		"EXCHANGE_RATE"
-						        
-						    ];
-
-						    fields.forEach(field => {
-						        let selector = `#R${i}_${field}`;
-						        if ($(selector).length) {  // check if element exists
-						            $(selector).css("background-color", "#d3d3d3");     // set grey
-						        }
-						    });
-						}
-			
-			
     
     // Toggle buttons
-    $("#submitButton").show();
+    $("#submitButton, #btnBack_edit").show();
+    $("#btnBack").hide();
     
     // Show Cancel button only when Modify is clicked
     $("#cancelRecord").show();
@@ -681,7 +667,27 @@ function cancelModify() {
         
         $(".Show_input").attr("readonly", true).attr("disabled", true);
 
-       
+        for (let i = 14; i <= 27; i++) {
+            $("#R" + i + "_note_holders").hide();
+            $("#R" + i + "_name_of_instrument_programe").hide();
+            $("#R" + i + "_issuing_entity_if_issued_throughan_spv").hide();
+            $("#R" + i + "_issuance_date").hide();
+            $("#R" + i + "_contractual_maturity_date").hide();
+            $("#R" + i + "_effective_maturity_date_if_date").hide();
+            $("#R" + i + "_amount").hide();
+            
+            
+            
+
+            $("#R" + i + "_note_holders").show();
+            $("#R" + i + "_name_of_instrument_programe").show();
+            $("#R" + i + "_issuing_entity_if_issued_throughan_spv").show();
+            $("#R" + i + "_issuance_date").show();
+            $("#R" + i + "_contractual_maturity_date").show();
+            $("#R" + i + "_effective_maturity_date_if_date").show();
+            $("#R" + i + "_amount").show();
+            
+        }
 
         $("#submitButton, #btnBack_edit").hide();
         $("#btnBack").show();
@@ -699,6 +705,12 @@ function cancelModify() {
 	
 
 	</script>
+	
+
+
+	
+
+	
 
 
 	<script>
@@ -729,7 +741,7 @@ function cancelModify() {
 		    var asondate = btn.getAttribute("data-todate");
 		    const type = btn.getAttribute("data-type"); // MAIN / RESUB / ARCHIVAL
 		    
-		    // ✅ Mark RESUB once
+		 // ✅ Mark RESUB once
 		    isResubmissionUpdate = (type && type.toUpperCase() === 'RESUB');
 		    
 		    $('#loader').modal('show');
@@ -792,12 +804,13 @@ function cancelModify() {
 			            $("#resultModalBody").text(response);
 			            $("#resultModal").modal("show");
 
-					    //  Wait for user to close the modal manually
+			        //  Wait for user to close the modal manually
 					     $("#resultModal").off("hidden.bs.modal").on("hidden.bs.modal", function () {
 					    	 if (isResubmissionUpdate) {
+					    		 console.log("✅ came to resubmission");
 					    		 window.location.href = previousUrl
 					    		 ? previousUrl 
-					    				 : "/BRRS/Resubmission?rptcode=MDISB5";
+					    				 : "/BRRS/Resubmission?rptcode=BDISB2";
 					    	 } // reload ONLY when modal is closed
 					    });
 					},
@@ -815,41 +828,39 @@ function cancelModify() {
 		    console.log("✅ AJAX executed successfully");
 		}    
 		</script>
- 
- <script th:inline="javascript">
-      $(document).ready(function () {
-        var table = $('#reportdetails').DataTable({
-        	scrollY: "500px",
-          scrollX: true,
-          scrollCollapse: true,
-          autoWidth: false,
-          paging: true,
-          searching: true,
-          lengthChange: false,
-          ordering: true,
-          pageLength: 100,
-          fixedHeader: true, // ✅ You can simply set it to true
-       // ✅ Column width settings
-        columnDefs: [
-          { width: "100px", targets: 1 }  ,  // Cust ID column
-       ],
 
-          dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t'
-        });
+		 <script th:inline="javascript">
+		      $(document).ready(function () {
+		        var table = $('#reportdetails').DataTable({
+		          scrollY: "550px",
+		          scrollX: true,
+		          scrollCollapse: true,
+		          autoWidth: false,
+		          paging: true,
+		          searching: true,
+		          lengthChange: false,
+		          ordering: true,
+		          pageLength: 100,
+		          fixedHeader: true, // ✅ You can simply set it to true
+		       // ✅ Column width settings
+		        columnDefs: [
+		          { width: "100px", targets: 1 }  ,  // Cust ID column
+		       ],
 
-        // ✅ Fix alignment on resize / zoom
-        $(window).on('resize', function () {
-          table.columns.adjust().draw(false);
-        });
+		          dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t'
+		        });
 
-        // ✅ Fix initial misalignment if loaded at non-100% zoom
-        setTimeout(function () {
-          table.columns.adjust().draw(false);
-        }, 500);
-      });
-    </script>
- 
+		        // ✅ Fix alignment on resize / zoom
+		        $(window).on('resize', function () {
+		          table.columns.adjust().draw(false);
+		        });
 
+		        // ✅ Fix initial misalignment if loaded at non-100% zoom
+		        setTimeout(function () {
+		          table.columns.adjust().draw(false);
+		        }, 500);
+		      });
+		    </script>
 
 
 </head>
@@ -1147,7 +1158,7 @@ function cancelModify() {
 <td id="ROW5" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R5_MOBILE_PHONE_NUMBER, 'N/A')}"
-           id="R5_MOBILE_PHONE_NUMBER" name="R5_C15_MOBILE_PHONE_NUMBER"
+           id="R5_MOBILE_PHONE_NUMBER" name="R5_C16_MOBILE_PHONE_NUMBER"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1155,7 +1166,7 @@ function cancelModify() {
 <td id="ROW5" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R5_MOBILE_MONEY_NUMBER, 'N/A')}"
-           id="R5_MOBILE_MONEY_NUMBER" name="R5_C16_MOBILE_MONEY_NUMBER"
+           id="R5_MOBILE_MONEY_NUMBER" name="R5_C17_MOBILE_MONEY_NUMBER"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1163,7 +1174,7 @@ function cancelModify() {
 <td id="ROW5" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R5_PRODUCT_TYPE, 'N/A')}"
-           id="R5_PRODUCT_TYPE" name="R5_C17_PRODUCT_TYPE"
+           id="R5_PRODUCT_TYPE" name="R5_C18_PRODUCT_TYPE"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1171,7 +1182,7 @@ function cancelModify() {
 <td id="ROW5" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R5_ACCOUNT_BY_OWNERSHIP, 'N/A')}"
-           id="R5_ACCOUNT_BY_OWNERSHIP" name="R5_C18_ACCOUNT_BY_OWNERSHIP"
+           id="R5_ACCOUNT_BY_OWNERSHIP" name="R5_C19_ACCOUNT_BY_OWNERSHIP"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1179,7 +1190,7 @@ function cancelModify() {
 <td id="ROW5" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R5_ACCOUNT_NUMBER, 'N/A')}"
-           id="R5_ACCOUNT_NUMBER" name="R5_C19_ACCOUNT_NUMBER"
+           id="R5_ACCOUNT_NUMBER" name="R5_C20_ACCOUNT_NUMBER"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1187,9 +1198,9 @@ function cancelModify() {
 <td id="ROW5" style="text-align: right; background-color:#FFFFFF; font-weight: bold;">
         <input class="display-input Show_input"
                type="text"
-               th:value="${report.R5_ACCOUNT_HOLDER_INDICATOR != null ? #numbers.formatDecimal(report.R5_ACCOUNT_HOLDER_INDICATOR, 1, 'COMMA', 0, 'POINT') : '0'}"
+               th:value="${report.R5_ACCOUNT_HOLDER_INDICATOR != null ? #numbers.formatDecimal(report.R5_ACCOUNT_HOLDER_INDICATOR, 1, 'NONE', 0, 'POINT') : '0'}"
                id="R5_ACCOUNT_HOLDER_INDICATOR"
-               name="R5_C24_ACCOUNT_HOLDER_INDICATOR"
+               name="R5_C21_ACCOUNT_HOLDER_INDICATOR"
                style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -1198,7 +1209,7 @@ function cancelModify() {
 <td id="ROW5" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R5_STATUS_OF_ACCOUNT, 'N/A')}"
-           id="R5_STATUS_OF_ACCOUNT" name="R5_C21_STATUS_OF_ACCOUNT"
+           id="R5_STATUS_OF_ACCOUNT" name="R5_C22_STATUS_OF_ACCOUNT"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1206,7 +1217,7 @@ function cancelModify() {
 <td id="ROW5" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R5_NOT_FIT_FOR_STP, 'N/A')}"
-           id="R5_NOT_FIT_FOR_STP" name="R5_C22_NOT_FIT_FOR_STP"
+           id="R5_NOT_FIT_FOR_STP" name="R5_C23_NOT_FIT_FOR_STP"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1214,7 +1225,7 @@ function cancelModify() {
 <td id="ROW5" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R5_BRANCH_CODE_AND_NAME, 'N/A')}"
-           id="R5_BRANCH_CODE_AND_NAME" name="R5_C23_BRANCH_CODE_AND_NAME"
+           id="R5_BRANCH_CODE_AND_NAME" name="R5_C24_BRANCH_CODE_AND_NAME"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1224,7 +1235,7 @@ function cancelModify() {
                type="text"
                th:value="${report.R5_ACCOUNT_BALANCE_IN_PULA != null ? #numbers.formatDecimal(report.R5_ACCOUNT_BALANCE_IN_PULA, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R5_ACCOUNT_BALANCE_IN_PULA"
-               name="R5_C24_ACCOUNT_BALANCE_IN_PULA"
+               name="R5_C25_ACCOUNT_BALANCE_IN_PULA"
                style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -1232,7 +1243,7 @@ function cancelModify() {
 <td id="ROW5" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R5_CURRENCY_OF_ACCOUNT, 'N/A')}"
-           id="R5_CURRENCY_OF_ACCOUNT" name="R5_C25_CURRENCY_OF_ACCOUNT"
+           id="R5_CURRENCY_OF_ACCOUNT" name="R5_C26_CURRENCY_OF_ACCOUNT"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1242,7 +1253,7 @@ function cancelModify() {
                type="text"
                th:value="${report.R5_EXCHANGE_RATE != null ? #numbers.formatDecimal(report.R5_EXCHANGE_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R5_EXCHANGE_RATE"
-               name="R5_C26_EXCHANGE_RATE"
+               name="R5_C27_EXCHANGE_RATE"
                style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -1378,7 +1389,7 @@ function cancelModify() {
 <td id="ROW6" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R6_MOBILE_PHONE_NUMBER, 'N/A')}"
-           id="R6_MOBILE_PHONE_NUMBER" name="R6_C15_MOBILE_PHONE_NUMBER"
+           id="R6_MOBILE_PHONE_NUMBER" name="R6_C16_MOBILE_PHONE_NUMBER"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1386,7 +1397,7 @@ function cancelModify() {
 <td id="ROW6" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R6_MOBILE_MONEY_NUMBER, 'N/A')}"
-           id="R6_MOBILE_MONEY_NUMBER" name="R6_C16_MOBILE_MONEY_NUMBER"
+           id="R6_MOBILE_MONEY_NUMBER" name="R6_C17_MOBILE_MONEY_NUMBER"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1394,7 +1405,7 @@ function cancelModify() {
 <td id="ROW6" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R6_PRODUCT_TYPE, 'N/A')}"
-           id="R6_PRODUCT_TYPE" name="R6_C17_PRODUCT_TYPE"
+           id="R6_PRODUCT_TYPE" name="R6_C18_PRODUCT_TYPE"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1402,7 +1413,7 @@ function cancelModify() {
 <td id="ROW6" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R6_ACCOUNT_BY_OWNERSHIP, 'N/A')}"
-           id="R6_ACCOUNT_BY_OWNERSHIP" name="R6_C18_ACCOUNT_BY_OWNERSHIP"
+           id="R6_ACCOUNT_BY_OWNERSHIP" name="R6_C19_ACCOUNT_BY_OWNERSHIP"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1410,7 +1421,7 @@ function cancelModify() {
 <td id="ROW6" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R6_ACCOUNT_NUMBER, 'N/A')}"
-           id="R6_ACCOUNT_NUMBER" name="R6_C19_ACCOUNT_NUMBER"
+           id="R6_ACCOUNT_NUMBER" name="R6_C20_ACCOUNT_NUMBER"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1418,9 +1429,9 @@ function cancelModify() {
 <td id="ROW6" style="text-align: right; background-color:#FFFFFF; font-weight: bold;">
         <input class="display-input Show_input"
                type="text"
-               th:value="${report.R6_ACCOUNT_HOLDER_INDICATOR != null ? #numbers.formatDecimal(report.R6_ACCOUNT_HOLDER_INDICATOR, 1, 'COMMA', 0, 'POINT') : '0'}"
+               th:value="${report.R6_ACCOUNT_HOLDER_INDICATOR != null ? #numbers.formatDecimal(report.R6_ACCOUNT_HOLDER_INDICATOR, 1, 'NONE', 0, 'POINT') : '0'}"
                id="R6_ACCOUNT_HOLDER_INDICATOR"
-               name="R6_C24_ACCOUNT_HOLDER_INDICATOR"
+               name="R6_C21_ACCOUNT_HOLDER_INDICATOR"
                style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -1429,7 +1440,7 @@ function cancelModify() {
 <td id="ROW6" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R6_STATUS_OF_ACCOUNT, 'N/A')}"
-           id="R6_STATUS_OF_ACCOUNT" name="R6_C21_STATUS_OF_ACCOUNT"
+           id="R6_STATUS_OF_ACCOUNT" name="R6_C22_STATUS_OF_ACCOUNT"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1437,7 +1448,7 @@ function cancelModify() {
 <td id="ROW6" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R6_NOT_FIT_FOR_STP, 'N/A')}"
-           id="R6_NOT_FIT_FOR_STP" name="R6_C22_NOT_FIT_FOR_STP"
+           id="R6_NOT_FIT_FOR_STP" name="R6_C23_NOT_FIT_FOR_STP"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1445,7 +1456,7 @@ function cancelModify() {
 <td id="ROW6" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R6_BRANCH_CODE_AND_NAME, 'N/A')}"
-           id="R6_BRANCH_CODE_AND_NAME" name="R6_C23_BRANCH_CODE_AND_NAME"
+           id="R6_BRANCH_CODE_AND_NAME" name="R6_C24_BRANCH_CODE_AND_NAME"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1455,7 +1466,7 @@ function cancelModify() {
                type="text"
                th:value="${report.R6_ACCOUNT_BALANCE_IN_PULA != null ? #numbers.formatDecimal(report.R6_ACCOUNT_BALANCE_IN_PULA, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R6_ACCOUNT_BALANCE_IN_PULA"
-               name="R6_C24_ACCOUNT_BALANCE_IN_PULA"
+               name="R6_C25_ACCOUNT_BALANCE_IN_PULA"
                style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -1463,7 +1474,7 @@ function cancelModify() {
 <td id="ROW6" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R6_CURRENCY_OF_ACCOUNT, 'N/A')}"
-           id="R6_CURRENCY_OF_ACCOUNT" name="R6_C25_CURRENCY_OF_ACCOUNT"
+           id="R6_CURRENCY_OF_ACCOUNT" name="R6_C26_CURRENCY_OF_ACCOUNT"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1473,7 +1484,7 @@ function cancelModify() {
                type="text"
                th:value="${report.R6_EXCHANGE_RATE != null ? #numbers.formatDecimal(report.R6_EXCHANGE_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R6_EXCHANGE_RATE"
-               name="R6_C26_EXCHANGE_RATE"
+               name="R6_C27_EXCHANGE_RATE"
                style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -1610,7 +1621,7 @@ function cancelModify() {
 <td id="ROW7" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R7_MOBILE_PHONE_NUMBER, 'N/A')}"
-           id="R7_MOBILE_PHONE_NUMBER" name="R7_C15_MOBILE_PHONE_NUMBER"
+           id="R7_MOBILE_PHONE_NUMBER" name="R7_C16_MOBILE_PHONE_NUMBER"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1618,7 +1629,7 @@ function cancelModify() {
 <td id="ROW7" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R7_MOBILE_MONEY_NUMBER, 'N/A')}"
-           id="R7_MOBILE_MONEY_NUMBER" name="R7_C16_MOBILE_MONEY_NUMBER"
+           id="R7_MOBILE_MONEY_NUMBER" name="R7_C17_MOBILE_MONEY_NUMBER"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1626,7 +1637,7 @@ function cancelModify() {
 <td id="ROW7" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R7_PRODUCT_TYPE, 'N/A')}"
-           id="R7_PRODUCT_TYPE" name="R7_C17_PRODUCT_TYPE"
+           id="R7_PRODUCT_TYPE" name="R7_C18_PRODUCT_TYPE"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1634,7 +1645,7 @@ function cancelModify() {
 <td id="ROW7" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R7_ACCOUNT_BY_OWNERSHIP, 'N/A')}"
-           id="R7_ACCOUNT_BY_OWNERSHIP" name="R7_C18_ACCOUNT_BY_OWNERSHIP"
+           id="R7_ACCOUNT_BY_OWNERSHIP" name="R7_C19_ACCOUNT_BY_OWNERSHIP"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1642,7 +1653,7 @@ function cancelModify() {
 <td id="ROW7" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R7_ACCOUNT_NUMBER, 'N/A')}"
-           id="R7_ACCOUNT_NUMBER" name="R7_C19_ACCOUNT_NUMBER"
+           id="R7_ACCOUNT_NUMBER" name="R7_C20_ACCOUNT_NUMBER"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1650,9 +1661,9 @@ function cancelModify() {
 <td id="ROW7" style="text-align: right; background-color:#FFFFFF; font-weight: bold;">
         <input class="display-input Show_input"
                type="text"
-               th:value="${report.R7_ACCOUNT_HOLDER_INDICATOR != null ? #numbers.formatDecimal(report.R7_ACCOUNT_HOLDER_INDICATOR, 1, 'COMMA', 0, 'POINT') : '0'}"
+               th:value="${report.R7_ACCOUNT_HOLDER_INDICATOR != null ? #numbers.formatDecimal(report.R7_ACCOUNT_HOLDER_INDICATOR, 1, 'NONE', 0, 'POINT') : '0'}"
                id="R7_ACCOUNT_HOLDER_INDICATOR"
-               name="R7_C24_ACCOUNT_HOLDER_INDICATOR"
+               name="R7_C21_ACCOUNT_HOLDER_INDICATOR"
                style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -1661,7 +1672,7 @@ function cancelModify() {
 <td id="ROW7" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R7_STATUS_OF_ACCOUNT, 'N/A')}"
-           id="R7_STATUS_OF_ACCOUNT" name="R7_C21_STATUS_OF_ACCOUNT"
+           id="R7_STATUS_OF_ACCOUNT" name="R7_C22_STATUS_OF_ACCOUNT"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1669,7 +1680,7 @@ function cancelModify() {
 <td id="ROW7" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R7_NOT_FIT_FOR_STP, 'N/A')}"
-           id="R7_NOT_FIT_FOR_STP" name="R7_C22_NOT_FIT_FOR_STP"
+           id="R7_NOT_FIT_FOR_STP" name="R7_C23_NOT_FIT_FOR_STP"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1677,7 +1688,7 @@ function cancelModify() {
 <td id="ROW7" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R7_BRANCH_CODE_AND_NAME, 'N/A')}"
-           id="R7_BRANCH_CODE_AND_NAME" name="R7_C23_BRANCH_CODE_AND_NAME"
+           id="R7_BRANCH_CODE_AND_NAME" name="R7_C24_BRANCH_CODE_AND_NAME"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1687,7 +1698,7 @@ function cancelModify() {
                type="text"
                th:value="${report.R7_ACCOUNT_BALANCE_IN_PULA != null ? #numbers.formatDecimal(report.R7_ACCOUNT_BALANCE_IN_PULA, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R7_ACCOUNT_BALANCE_IN_PULA"
-               name="R7_C24_ACCOUNT_BALANCE_IN_PULA"
+               name="R7_C25_ACCOUNT_BALANCE_IN_PULA"
                style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -1695,7 +1706,7 @@ function cancelModify() {
 <td id="ROW7" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R7_CURRENCY_OF_ACCOUNT, 'N/A')}"
-           id="R7_CURRENCY_OF_ACCOUNT" name="R7_C25_CURRENCY_OF_ACCOUNT"
+           id="R7_CURRENCY_OF_ACCOUNT" name="R7_C26_CURRENCY_OF_ACCOUNT"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1705,7 +1716,7 @@ function cancelModify() {
                type="text"
                th:value="${report.R7_EXCHANGE_RATE != null ? #numbers.formatDecimal(report.R7_EXCHANGE_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R7_EXCHANGE_RATE"
-               name="R7_C26_EXCHANGE_RATE"
+               name="R7_C27_EXCHANGE_RATE"
                style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -1842,7 +1853,7 @@ function cancelModify() {
 <td id="ROW8" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R8_MOBILE_PHONE_NUMBER, 'N/A')}"
-           id="R8_MOBILE_PHONE_NUMBER" name="R8_C15_MOBILE_PHONE_NUMBER"
+           id="R8_MOBILE_PHONE_NUMBER" name="R8_C16_MOBILE_PHONE_NUMBER"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1850,7 +1861,7 @@ function cancelModify() {
 <td id="ROW8" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R8_MOBILE_MONEY_NUMBER, 'N/A')}"
-           id="R8_MOBILE_MONEY_NUMBER" name="R8_C16_MOBILE_MONEY_NUMBER"
+           id="R8_MOBILE_MONEY_NUMBER" name="R8_C17_MOBILE_MONEY_NUMBER"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1858,7 +1869,7 @@ function cancelModify() {
 <td id="ROW8" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R8_PRODUCT_TYPE, 'N/A')}"
-           id="R8_PRODUCT_TYPE" name="R8_C17_PRODUCT_TYPE"
+           id="R8_PRODUCT_TYPE" name="R8_C18_PRODUCT_TYPE"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1866,7 +1877,7 @@ function cancelModify() {
 <td id="ROW8" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R8_ACCOUNT_BY_OWNERSHIP, 'N/A')}"
-           id="R8_ACCOUNT_BY_OWNERSHIP" name="R8_C18_ACCOUNT_BY_OWNERSHIP"
+           id="R8_ACCOUNT_BY_OWNERSHIP" name="R8_C19_ACCOUNT_BY_OWNERSHIP"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1874,7 +1885,7 @@ function cancelModify() {
 <td id="ROW8" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R8_ACCOUNT_NUMBER, 'N/A')}"
-           id="R8_ACCOUNT_NUMBER" name="R8_C19_ACCOUNT_NUMBER"
+           id="R8_ACCOUNT_NUMBER" name="R8_C20_ACCOUNT_NUMBER"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1882,9 +1893,9 @@ function cancelModify() {
 <td id="ROW8" style="text-align: right; background-color:#FFFFFF; font-weight: bold;">
         <input class="display-input Show_input"
                type="text"
-               th:value="${report.R8_ACCOUNT_HOLDER_INDICATOR != null ? #numbers.formatDecimal(report.R8_ACCOUNT_HOLDER_INDICATOR, 1, 'COMMA', 0, 'POINT') : '0'}"
+               th:value="${report.R8_ACCOUNT_HOLDER_INDICATOR != null ? #numbers.formatDecimal(report.R8_ACCOUNT_HOLDER_INDICATOR, 1, 'NONE', 0, 'POINT') : '0'}"
                id="R8_ACCOUNT_HOLDER_INDICATOR"
-               name="R8_C24_ACCOUNT_HOLDER_INDICATOR"
+               name="R8_C21_ACCOUNT_HOLDER_INDICATOR"
                style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -1893,7 +1904,7 @@ function cancelModify() {
 <td id="ROW8" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R8_STATUS_OF_ACCOUNT, 'N/A')}"
-           id="R8_STATUS_OF_ACCOUNT" name="R8_C21_STATUS_OF_ACCOUNT"
+           id="R8_STATUS_OF_ACCOUNT" name="R8_C22_STATUS_OF_ACCOUNT"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1901,7 +1912,7 @@ function cancelModify() {
 <td id="ROW8" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R8_NOT_FIT_FOR_STP, 'N/A')}"
-           id="R8_NOT_FIT_FOR_STP" name="R8_C22_NOT_FIT_FOR_STP"
+           id="R8_NOT_FIT_FOR_STP" name="R8_C23_NOT_FIT_FOR_STP"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1909,7 +1920,7 @@ function cancelModify() {
 <td id="ROW8" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R8_BRANCH_CODE_AND_NAME, 'N/A')}"
-           id="R8_BRANCH_CODE_AND_NAME" name="R8_C23_BRANCH_CODE_AND_NAME"
+           id="R8_BRANCH_CODE_AND_NAME" name="R8_C24_BRANCH_CODE_AND_NAME"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1919,7 +1930,7 @@ function cancelModify() {
                type="text"
                th:value="${report.R8_ACCOUNT_BALANCE_IN_PULA != null ? #numbers.formatDecimal(report.R8_ACCOUNT_BALANCE_IN_PULA, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R8_ACCOUNT_BALANCE_IN_PULA"
-               name="R8_C24_ACCOUNT_BALANCE_IN_PULA"
+               name="R8_C25_ACCOUNT_BALANCE_IN_PULA"
                style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -1927,7 +1938,7 @@ function cancelModify() {
 <td id="ROW8" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R8_CURRENCY_OF_ACCOUNT, 'N/A')}"
-           id="R8_CURRENCY_OF_ACCOUNT" name="R8_C25_CURRENCY_OF_ACCOUNT"
+           id="R8_CURRENCY_OF_ACCOUNT" name="R8_C26_CURRENCY_OF_ACCOUNT"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -1937,7 +1948,7 @@ function cancelModify() {
                type="text"
                th:value="${report.R8_EXCHANGE_RATE != null ? #numbers.formatDecimal(report.R8_EXCHANGE_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R8_EXCHANGE_RATE"
-               name="R8_C26_EXCHANGE_RATE"
+               name="R8_C27_EXCHANGE_RATE"
                style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -2074,7 +2085,7 @@ function cancelModify() {
 <td id="ROW9" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R9_MOBILE_PHONE_NUMBER, 'N/A')}"
-           id="R9_MOBILE_PHONE_NUMBER" name="R9_C15_MOBILE_PHONE_NUMBER"
+           id="R9_MOBILE_PHONE_NUMBER" name="R9_C16_MOBILE_PHONE_NUMBER"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2082,7 +2093,7 @@ function cancelModify() {
 <td id="ROW9" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R9_MOBILE_MONEY_NUMBER, 'N/A')}"
-           id="R9_MOBILE_MONEY_NUMBER" name="R9_C16_MOBILE_MONEY_NUMBER"
+           id="R9_MOBILE_MONEY_NUMBER" name="R9_C17_MOBILE_MONEY_NUMBER"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2090,7 +2101,7 @@ function cancelModify() {
 <td id="ROW9" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R9_PRODUCT_TYPE, 'N/A')}"
-           id="R9_PRODUCT_TYPE" name="R9_C17_PRODUCT_TYPE"
+           id="R9_PRODUCT_TYPE" name="R9_C18_PRODUCT_TYPE"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2098,7 +2109,7 @@ function cancelModify() {
 <td id="ROW9" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R9_ACCOUNT_BY_OWNERSHIP, 'N/A')}"
-           id="R9_ACCOUNT_BY_OWNERSHIP" name="R9_C18_ACCOUNT_BY_OWNERSHIP"
+           id="R9_ACCOUNT_BY_OWNERSHIP" name="R9_C19_ACCOUNT_BY_OWNERSHIP"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2106,7 +2117,7 @@ function cancelModify() {
 <td id="ROW9" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R9_ACCOUNT_NUMBER, 'N/A')}"
-           id="R9_ACCOUNT_NUMBER" name="R9_C19_ACCOUNT_NUMBER"
+           id="R9_ACCOUNT_NUMBER" name="R9_C20_ACCOUNT_NUMBER"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2114,9 +2125,9 @@ function cancelModify() {
 <td id="ROW9" style="text-align: right; background-color:#FFFFFF; font-weight: bold;">
         <input class="display-input Show_input"
                type="text"
-               th:value="${report.R9_ACCOUNT_HOLDER_INDICATOR != null ? #numbers.formatDecimal(report.R9_ACCOUNT_HOLDER_INDICATOR, 1, 'COMMA', 0, 'POINT') : '0'}"
+               th:value="${report.R9_ACCOUNT_HOLDER_INDICATOR != null ? #numbers.formatDecimal(report.R9_ACCOUNT_HOLDER_INDICATOR, 1, 'NONE', 0, 'POINT') : '0'}"
                id="R9_ACCOUNT_HOLDER_INDICATOR"
-               name="R9_C24_ACCOUNT_HOLDER_INDICATOR"
+               name="R9_C21_ACCOUNT_HOLDER_INDICATOR"
                style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -2125,7 +2136,7 @@ function cancelModify() {
 <td id="ROW9" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R9_STATUS_OF_ACCOUNT, 'N/A')}"
-           id="R9_STATUS_OF_ACCOUNT" name="R9_C21_STATUS_OF_ACCOUNT"
+           id="R9_STATUS_OF_ACCOUNT" name="R9_C22_STATUS_OF_ACCOUNT"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2133,7 +2144,7 @@ function cancelModify() {
 <td id="ROW9" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R9_NOT_FIT_FOR_STP, 'N/A')}"
-           id="R9_NOT_FIT_FOR_STP" name="R9_C22_NOT_FIT_FOR_STP"
+           id="R9_NOT_FIT_FOR_STP" name="R9_C23_NOT_FIT_FOR_STP"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2141,7 +2152,7 @@ function cancelModify() {
 <td id="ROW9" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R9_BRANCH_CODE_AND_NAME, 'N/A')}"
-           id="R9_BRANCH_CODE_AND_NAME" name="R9_C23_BRANCH_CODE_AND_NAME"
+           id="R9_BRANCH_CODE_AND_NAME" name="R9_C24_BRANCH_CODE_AND_NAME"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2151,7 +2162,7 @@ function cancelModify() {
                type="text"
                th:value="${report.R9_ACCOUNT_BALANCE_IN_PULA != null ? #numbers.formatDecimal(report.R9_ACCOUNT_BALANCE_IN_PULA, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R9_ACCOUNT_BALANCE_IN_PULA"
-               name="R9_C24_ACCOUNT_BALANCE_IN_PULA"
+               name="R9_C25_ACCOUNT_BALANCE_IN_PULA"
                style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -2159,7 +2170,7 @@ function cancelModify() {
 <td id="ROW9" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R9_CURRENCY_OF_ACCOUNT, 'N/A')}"
-           id="R9_CURRENCY_OF_ACCOUNT" name="R9_C25_CURRENCY_OF_ACCOUNT"
+           id="R9_CURRENCY_OF_ACCOUNT" name="R9_C26_CURRENCY_OF_ACCOUNT"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2169,7 +2180,7 @@ function cancelModify() {
                type="text"
                th:value="${report.R9_EXCHANGE_RATE != null ? #numbers.formatDecimal(report.R9_EXCHANGE_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R9_EXCHANGE_RATE"
-               name="R9_C26_EXCHANGE_RATE"
+               name="R9_C27_EXCHANGE_RATE"
                style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -2305,7 +2316,7 @@ function cancelModify() {
 <td id="ROW10" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R10_MOBILE_PHONE_NUMBER, 'N/A')}"
-           id="R10_MOBILE_PHONE_NUMBER" name="R10_C15_MOBILE_PHONE_NUMBER"
+           id="R10_MOBILE_PHONE_NUMBER" name="R10_C16_MOBILE_PHONE_NUMBER"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2313,7 +2324,7 @@ function cancelModify() {
 <td id="ROW10" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R10_MOBILE_MONEY_NUMBER, 'N/A')}"
-           id="R10_MOBILE_MONEY_NUMBER" name="R10_C16_MOBILE_MONEY_NUMBER"
+           id="R10_MOBILE_MONEY_NUMBER" name="R10_C17_MOBILE_MONEY_NUMBER"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2321,7 +2332,7 @@ function cancelModify() {
 <td id="ROW10" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R10_PRODUCT_TYPE, 'N/A')}"
-           id="R10_PRODUCT_TYPE" name="R10_C17_PRODUCT_TYPE"
+           id="R10_PRODUCT_TYPE" name="R10_C18_PRODUCT_TYPE"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2329,7 +2340,7 @@ function cancelModify() {
 <td id="ROW10" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R10_ACCOUNT_BY_OWNERSHIP, 'N/A')}"
-           id="R10_ACCOUNT_BY_OWNERSHIP" name="R10_C18_ACCOUNT_BY_OWNERSHIP"
+           id="R10_ACCOUNT_BY_OWNERSHIP" name="R10_C19_ACCOUNT_BY_OWNERSHIP"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2337,7 +2348,7 @@ function cancelModify() {
 <td id="ROW10" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R10_ACCOUNT_NUMBER, 'N/A')}"
-           id="R10_ACCOUNT_NUMBER" name="R10_C19_ACCOUNT_NUMBER"
+           id="R10_ACCOUNT_NUMBER" name="R10_C20_ACCOUNT_NUMBER"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2345,9 +2356,9 @@ function cancelModify() {
 <td id="ROW10" style="text-align: right; background-color:#FFFFFF; font-weight: bold;">
         <input class="display-input Show_input"
                type="text"
-               th:value="${report.R11_ACCOUNT_HOLDER_INDICATOR != null ? #numbers.formatDecimal(report.R10_ACCOUNT_HOLDER_INDICATOR, 1, 'COMMA', 0, 'POINT') : '0'}"
+               th:value="${report.R11_ACCOUNT_HOLDER_INDICATOR != null ? #numbers.formatDecimal(report.R10_ACCOUNT_HOLDER_INDICATOR, 1, 'NONE', 0, 'POINT') : '0'}"
                id="R10_ACCOUNT_HOLDER_INDICATOR"
-               name="R10_C24_ACCOUNT_HOLDER_INDICATOR"
+               name="R10_C21_ACCOUNT_HOLDER_INDICATOR"
                style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -2356,7 +2367,7 @@ function cancelModify() {
 <td id="ROW10" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R10_STATUS_OF_ACCOUNT, 'N/A')}"
-           id="R10_STATUS_OF_ACCOUNT" name="R10_C21_STATUS_OF_ACCOUNT"
+           id="R10_STATUS_OF_ACCOUNT" name="R10_C22_STATUS_OF_ACCOUNT"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2364,7 +2375,7 @@ function cancelModify() {
 <td id="ROW10" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R10_NOT_FIT_FOR_STP, 'N/A')}"
-           id="R10_NOT_FIT_FOR_STP" name="R10_C22_NOT_FIT_FOR_STP"
+           id="R10_NOT_FIT_FOR_STP" name="R10_C23_NOT_FIT_FOR_STP"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2372,7 +2383,7 @@ function cancelModify() {
 <td id="ROW10" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R10_BRANCH_CODE_AND_NAME, 'N/A')}"
-           id="R10_BRANCH_CODE_AND_NAME" name="R10_C23_BRANCH_CODE_AND_NAME"
+           id="R10_BRANCH_CODE_AND_NAME" name="R10_C24_BRANCH_CODE_AND_NAME"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2382,7 +2393,7 @@ function cancelModify() {
                type="text"
                th:value="${report.R10_ACCOUNT_BALANCE_IN_PULA != null ? #numbers.formatDecimal(report.R10_ACCOUNT_BALANCE_IN_PULA, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R10_ACCOUNT_BALANCE_IN_PULA"
-               name="R10_C24_ACCOUNT_BALANCE_IN_PULA"
+               name="R10_C25_ACCOUNT_BALANCE_IN_PULA"
                style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -2390,7 +2401,7 @@ function cancelModify() {
 <td id="ROW10" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R10_CURRENCY_OF_ACCOUNT, 'N/A')}"
-           id="R10_CURRENCY_OF_ACCOUNT" name="R10_C25_CURRENCY_OF_ACCOUNT"
+           id="R10_CURRENCY_OF_ACCOUNT" name="R10_C26_CURRENCY_OF_ACCOUNT"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2400,7 +2411,7 @@ function cancelModify() {
                type="text"
                th:value="${report.R10_EXCHANGE_RATE != null ? #numbers.formatDecimal(report.R10_EXCHANGE_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R10_EXCHANGE_RATE"
-               name="R10_C26_EXCHANGE_RATE"
+               name="R10_C27_EXCHANGE_RATE"
                style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -2536,7 +2547,7 @@ function cancelModify() {
 <td id="ROW11" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R11_MOBILE_PHONE_NUMBER, 'N/A')}"
-           id="R11_MOBILE_PHONE_NUMBER" name="R11_C15_MOBILE_PHONE_NUMBER"
+           id="R11_MOBILE_PHONE_NUMBER" name="R11_C16_MOBILE_PHONE_NUMBER"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2544,7 +2555,7 @@ function cancelModify() {
 <td id="ROW11" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R11_MOBILE_MONEY_NUMBER, 'N/A')}"
-           id="R11_MOBILE_MONEY_NUMBER" name="R11_C16_MOBILE_MONEY_NUMBER"
+           id="R11_MOBILE_MONEY_NUMBER" name="R11_C17_MOBILE_MONEY_NUMBER"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2552,7 +2563,7 @@ function cancelModify() {
 <td id="ROW11" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R11_PRODUCT_TYPE, 'N/A')}"
-           id="R11_PRODUCT_TYPE" name="R11_C17_PRODUCT_TYPE"
+           id="R11_PRODUCT_TYPE" name="R11_C18_PRODUCT_TYPE"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2560,7 +2571,7 @@ function cancelModify() {
 <td id="ROW11" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R11_ACCOUNT_BY_OWNERSHIP, 'N/A')}"
-           id="R11_ACCOUNT_BY_OWNERSHIP" name="R11_C18_ACCOUNT_BY_OWNERSHIP"
+           id="R11_ACCOUNT_BY_OWNERSHIP" name="R11_C19_ACCOUNT_BY_OWNERSHIP"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2568,7 +2579,7 @@ function cancelModify() {
 <td id="ROW11" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R11_ACCOUNT_NUMBER, 'N/A')}"
-           id="R11_ACCOUNT_NUMBER" name="R11_C19_ACCOUNT_NUMBER"
+           id="R11_ACCOUNT_NUMBER" name="R11_C20_ACCOUNT_NUMBER"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2576,9 +2587,9 @@ function cancelModify() {
 <td id="ROW11" style="text-align: right; background-color:#FFFFFF; font-weight: bold;">
         <input class="display-input Show_input"
                type="text"
-               th:value="${report.R11_ACCOUNT_HOLDER_INDICATOR != null ? #numbers.formatDecimal(report.R11_ACCOUNT_HOLDER_INDICATOR, 1, 'COMMA', 0, 'POINT') : '0'}"
+               th:value="${report.R11_ACCOUNT_HOLDER_INDICATOR != null ? #numbers.formatDecimal(report.R11_ACCOUNT_HOLDER_INDICATOR, 1, 'NONE', 0, 'POINT') : '0'}"
                id="R11_ACCOUNT_HOLDER_INDICATOR"
-               name="R11_C24_ACCOUNT_HOLDER_INDICATOR"
+               name="R11_C21_ACCOUNT_HOLDER_INDICATOR"
                style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -2586,7 +2597,7 @@ function cancelModify() {
 <td id="ROW11" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R11_STATUS_OF_ACCOUNT, 'N/A')}"
-           id="R11_STATUS_OF_ACCOUNT" name="R11_C21_STATUS_OF_ACCOUNT"
+           id="R11_STATUS_OF_ACCOUNT" name="R11_C22_STATUS_OF_ACCOUNT"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2594,7 +2605,7 @@ function cancelModify() {
 <td id="ROW11" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R11_NOT_FIT_FOR_STP, 'N/A')}"
-           id="R11_NOT_FIT_FOR_STP" name="R11_C22_NOT_FIT_FOR_STP"
+           id="R11_NOT_FIT_FOR_STP" name="R11_C23_NOT_FIT_FOR_STP"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2602,7 +2613,7 @@ function cancelModify() {
 <td id="ROW11" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R11_BRANCH_CODE_AND_NAME, 'N/A')}"
-           id="R11_BRANCH_CODE_AND_NAME" name="R11_C23_BRANCH_CODE_AND_NAME"
+           id="R11_BRANCH_CODE_AND_NAME" name="R11_C24_BRANCH_CODE_AND_NAME"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2612,7 +2623,7 @@ function cancelModify() {
                type="text"
                th:value="${report.R11_ACCOUNT_BALANCE_IN_PULA != null ? #numbers.formatDecimal(report.R11_ACCOUNT_BALANCE_IN_PULA, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R11_ACCOUNT_BALANCE_IN_PULA"
-               name="R11_C24_ACCOUNT_BALANCE_IN_PULA"
+               name="R11_C25_ACCOUNT_BALANCE_IN_PULA"
                style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -2620,7 +2631,7 @@ function cancelModify() {
 <td id="ROW11" style="text-align:left;background-color:#FFFFFF;font-weight:bold;">
     <input class="display-input Show_input" type="text"
            th:value="${#strings.defaultString(report.R11_CURRENCY_OF_ACCOUNT, 'N/A')}"
-           id="R11_CURRENCY_OF_ACCOUNT" name="R11_C25_CURRENCY_OF_ACCOUNT"
+           id="R11_CURRENCY_OF_ACCOUNT" name="R11_C26_CURRENCY_OF_ACCOUNT"
            style="background-color:#FFFFFF;height:28px;border-color:transparent;text-align:left;"
            readonly />
 </td>
@@ -2630,7 +2641,7 @@ function cancelModify() {
                type="text"
                th:value="${report.R11_EXCHANGE_RATE != null ? #numbers.formatDecimal(report.R11_EXCHANGE_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R11_EXCHANGE_RATE"
-               name="R11_C26_EXCHANGE_RATE"
+               name="R11_C27_EXCHANGE_RATE"
                style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -2670,7 +2681,7 @@ function cancelModify() {
     S No
 </th>
 
-		<th style="text-align:right; white-space: nowrap;">
+		<th style="text-align:left; white-space: nowrap;">
     FIRST NAME
 </th>
 		<th>ACCOUNT BALANCE IN PULA</th>
