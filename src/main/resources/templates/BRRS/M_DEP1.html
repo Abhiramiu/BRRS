@@ -11,6 +11,7 @@ PURPOSE		: BRFREPORT
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>M_DEP1</title>
 
 	<!-- CSS -->
 	<link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}">
@@ -865,10 +866,14 @@ PURPOSE		: BRFREPORT
 					  // ✅ Column width settings
 					   columnDefs: [
 					     { width: "60px", targets: 0 },   // Edit icon column
-					     { width: "80px", targets: 1 }  ,  // S No column
-						 { width: "250px", targets: 7 }    
-						
-					   ],
+					     { width: "80px", targets: 1 } ,  // S No column
+					     { width: "120px", targets: 2 } , //Cust ID
+					     { width: "200px", targets: 3 } ,
+					     { width: "150px", targets: 4 } , //Acct Name
+					     { width: "250px", targets: 5 } , // Acct balance in Pula
+						 { width: "250px", targets: 7 } , // Report addl Criteria
+						 { width: "180px", targets: 8 }   //report date
+						],
 
 				      dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t'
 				    });
@@ -1225,8 +1230,8 @@ PURPOSE		: BRFREPORT
 										</tr>
 
 										<tr>
-											<td style="font-weight: normal;padding-left: 30px;"
-												th:text="${report.r15_product}"></td>
+											<td style="font-weight: normal; padding-left: 30px;">(iv)Other Non-Financial Corporations (Private business enterprises)
+                                              <br>(sum of lines (a) to (m)):</td>
 											<td style="text-align: right; font-weight: normal;background-color: rgb(107, 122, 143);color: white;"
 												th:text="${#numbers.formatDecimal(report.r15_current,1,'COMMA',0,'POINT')}"></td>
 											<td style="text-align: right; font-weight: normal;background-color: rgb(107, 122, 143);color: white;"
@@ -3961,7 +3966,7 @@ PURPOSE		: BRFREPORT
 	/* Your existing CSS - this is the correct approach */
 	.scrollable-table-container {
 		/* This is the key: it creates the scroll context */
-		max-height: 700px;
+		max-height: 670px;
 		/* Or a suitable height like 80vh for responsive design */
 		overflow-y: auto;
 		overflow-x: auto;
