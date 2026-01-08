@@ -202,6 +202,9 @@ public class RegulatoryReportServices {
 
 	@Autowired
 	BRRS_M_INT_RATES_FCA_ReportService brrs_m_int_rates_fca_reportservice;
+	
+	@Autowired
+	BRRS_M_INT_RATES_FCA_NEW_ReportService brrs_m_int_rates_fca_new_reportservice;
 
 	@Autowired
 	BRRS_M_LARADV_ReportService brrs_m_laradv_reportservice;
@@ -749,6 +752,12 @@ public class RegulatoryReportServices {
 
 			case "M_INT_RATES_FCA":
 				repsummary = brrs_m_int_rates_fca_reportservice.getM_INTRATESFCAView(reportId, fromdate, todate,
+						currency,
+						dtltype, pageable, type, version);
+				break;
+				
+			case "M_INT_RATES_FCA_NEW":
+				repsummary = brrs_m_int_rates_fca_new_reportservice.getM_INTRATESFCACView(reportId, fromdate, todate,
 						currency,
 						dtltype, pageable, type, version);
 				break;
@@ -1693,6 +1702,18 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
+				
+			case "M_INT_RATES_FCA_NEW":
+				try {
+					repfile = brrs_m_int_rates_fca_new_reportservice.getM_INTRATESFCACExcel(filename, reportId, fromdate,
+							todate,
+							currency, dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+				
 			case "M_FAS":
 				try {
 					repfile = BRRS_M_FAS_reportservice.getM_FASExcel(filename, reportId, fromdate, todate, currency,
@@ -3190,11 +3211,18 @@ public class RegulatoryReportServices {
 			// e.printStackTrace();
 			// }
 			// break;
+				
 
 			case "M_INT_RATES_FCA":
 				List<Object[]> intratesfcaList = brrs_m_int_rates_fca_reportservice.getM_INT_RATES_FCAArchival();
 				archivalData.addAll(intratesfcaList);
 				System.out.println("Fetched M_INT_RATES_FCA archival data: " + intratesfcaList.size());
+				break;
+				
+			case "M_INT_RATES_FCA_NEW":
+				List<Object[]> intratesfcanewList = brrs_m_int_rates_fca_new_reportservice.getM_INT_RATES_FCACArchival();
+				archivalData.addAll(intratesfcanewList);
+				System.out.println("Fetched M_INT_RATES_FCA archival data: " + intratesfcanewList.size());
 				break;
 
 			// case "Q_STAFF":
@@ -5090,6 +5118,17 @@ public class RegulatoryReportServices {
 			case "M_INT_RATES_FCA":
 				try {
 					List<Object[]> resubList = brrs_m_int_rates_fca_reportservice.getM_INT_RATES_FCAResub();
+					resubmissionData.addAll(resubList);
+					System.out.println("Resubmission data fetched for M_INT_RATES_FCA: " + resubList.size());
+				} catch (Exception e) {
+					System.err.println("Error fetching resubmission data for M_INT_RATES_FCA: " + e.getMessage());
+					e.printStackTrace();
+				}
+				break;
+				
+			case "M_INT_RATES_FCA_NEW":
+				try {
+					List<Object[]> resubList = brrs_m_int_rates_fca_new_reportservice.getM_INT_RATES_FCACResub();
 					resubmissionData.addAll(resubList);
 					System.out.println("Resubmission data fetched for M_INT_RATES_FCA: " + resubList.size());
 				} catch (Exception e) {
