@@ -2229,12 +2229,12 @@ return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 
 	        brrs_sch_17_reportservice.updateDetailFromForm(asondate, allParams);
 
-	        return ResponseEntity.ok("Updated Successfully");
+	        return ResponseEntity.ok("Updated Successfully.");
 	    } catch (Exception e) {
 	        e.printStackTrace();
 	        return ResponseEntity
 	                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-	                .body("Update Failed: " + e.getMessage());
+	                .body("Update Failed : " + e.getMessage());
 	    }
 	}
 
