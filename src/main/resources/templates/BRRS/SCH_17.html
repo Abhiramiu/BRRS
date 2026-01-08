@@ -1361,8 +1361,14 @@ function fileuploads(btn) {
 
 
 
-												<td style="text-align: left;"
-													th:text="${report?.r9_product ?: ''}"></td>
+												<!-- <td style="text-align: left;"
+													th:text="${report?.r9_product ?: ''}"></td> -->
+													<td id="ROW9" style="font-weight: bold; text-align: left;"><input
+													class="display-input Show_input" type="text"
+													th:value="'Bad Debts written off / Provision made towards NPA'"
+													id="r9_product" name="r9_product"
+													style="background-color: #FFFFFF; width: -webkit-fill-available; border-color: transparent; text-align: left;"
+													readonly /></td>
 
 
 												<td id="r9_31_3_25_amt"
@@ -1484,8 +1490,14 @@ function fileuploads(btn) {
 
 											<tr th:each="report: ${reportsummary}">
 												<td style="text-align: center;">(e)</td>
-												<td style="text-align: left;"
-													th:text="${report?.r13_product ?: ''}"></td>
+												<!-- <td style="text-align: left;"
+													th:text="${report?.r13_product ?: ''}"></td> -->
+													<td id="ROW13" style="font-weight: bold; text-align: left;"><input
+													class="display-input Show_input" type="text"
+													th:value="'Provision for taxes (Net of Deferred Tax)'"
+													id="r13_product" name="r13_product"
+													style="background-color: #FFFFFF; width: -webkit-fill-available; border-color: transparent; text-align: left;"
+													readonly /></td>
 												<td id="r13_31_3_25_amt"
 													style="text-align: right; padding-right: 10px;"
 													th:text="${report?.r13_31_3_25_amt != null ? #numbers.formatDecimal(report.r13_31_3_25_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
