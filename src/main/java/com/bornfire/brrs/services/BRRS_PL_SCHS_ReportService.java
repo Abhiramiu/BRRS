@@ -8175,6 +8175,7 @@ public class BRRS_PL_SCHS_ReportService {
         try {
             String acctNo = request.getParameter("acctNumber");
             String acctBalanceInpula = request.getParameter("acctBalanceInpula");
+            String average = request.getParameter("average");
             String acctName = request.getParameter("acctName");
             String reportDateStr = request.getParameter("reportDate");
 
@@ -8205,6 +8206,17 @@ public class BRRS_PL_SCHS_ReportService {
                     logger.info("Balance updated to {}", newacctBalanceInpula);
                 }
             }
+
+             if (average != null && !average.isEmpty()) {
+                BigDecimal newaverage = new BigDecimal(average);
+                if (existing.getAverage() == null ||
+                        existing.getAverage().compareTo(newaverage) != 0) {
+                    existing.setAverage(newaverage);
+                    isChanged = true;
+                    logger.info("Balance updated to {}", newaverage);
+                }
+            }
+
 
             if (isChanged) {
                 brrs_PL_SCHS_detail_repo.save(existing);

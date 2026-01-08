@@ -315,7 +315,7 @@ PURPOSE		: BRRSREPORT
         $(document).ready(function () {
             var table = $('#reportdetail').DataTable({
                 scrollY: "550px",
-                scrollX: true,
+                // scrollX: true,
                 scrollCollapse: true,
                 autoWidth: false,
                 paging: true,
@@ -1333,110 +1333,110 @@ PURPOSE		: BRRSREPORT
 
 
     <script>
-function showmodify(btn) {
+        function showmodify(btn) {
 
-    // Rows that are editable
-    const rows = [12, 18, 19, 21, 22, 23, 24, 25, 26, 27, 28, 29, 42, 54, 61];
+            // Rows that are editable
+            const rows = [12, 18, 19, 21, 22, 23, 24, 25, 26, 27, 28, 29, 42, 54, 61];
 
-    // Field suffixes that must ALWAYS be readonly
-    const alwaysReadOnlySuffix = [
-        "_operating_expenses",
-        "_intrest_expended",
-        "_other_income",
-        "_intrest_div",
-        "_net_amt"
-    ];
+            // Field suffixes that must ALWAYS be readonly
+            const alwaysReadOnlySuffix = [
+                "_operating_expenses",
+                "_intrest_expended",
+                "_other_income",
+                "_intrest_div",
+                "_net_amt"
+            ];
 
-    // ❌ Explicit net_amt fields to skip (enable logic)
-    const skipNetAmtIds = new Set([
-        "r12_net_amt",
-        "r18_net_amt",
-        "r19_net_amt",
-        "r42_net_amt",
-        "r54_net_amt",
-         "r21_net_amt",
-        "r22_net_amt",
-        "r23_net_amt",
-        "r24_net_amt",
-        "r25_net_amt",
-         "r26_net_amt",
-        "r27_net_amt",
-        "r28_net_amt",
-        "r29_net_amt"
-       
-    ]);
+            // ❌ Explicit net_amt fields to skip (enable logic)
+            const skipNetAmtIds = new Set([
+                "r12_net_amt",
+                "r18_net_amt",
+                "r19_net_amt",
+                "r42_net_amt",
+                "r54_net_amt",
+                "r21_net_amt",
+                "r22_net_amt",
+                "r23_net_amt",
+                "r24_net_amt",
+                "r25_net_amt",
+                "r26_net_amt",
+                "r27_net_amt",
+                "r28_net_amt",
+                "r29_net_amt"
 
-    $(".Show_input").each(function () {
-        const id = this.id;
+            ]);
 
-        const rowMatch = id.match(/^r(\d+)_/);
-        if (!rowMatch) return;
+            $(".Show_input").each(function () {
+                const id = this.id;
 
-        const rowNo = parseInt(rowMatch[1], 10);
+                const rowMatch = id.match(/^r(\d+)_/);
+                if (!rowMatch) return;
 
-        // Skip r21–r30 net_amt
-        if (id.endsWith("_net_amt") && rowNo >= 21 && rowNo <= 30) return;
+                const rowNo = parseInt(rowMatch[1], 10);
 
-        // Skip explicit net_amt
-        if (skipNetAmtIds.has(id)) return;
+                // Skip r21–r30 net_amt
+                if (id.endsWith("_net_amt") && rowNo >= 21 && rowNo <= 30) return;
 
-        // Row not editable
-        if (!rows.includes(rowNo)) return;
+                // Skip explicit net_amt
+                if (skipNetAmtIds.has(id)) return;
 
-        // Always readonly suffix
-        for (let suffix of alwaysReadOnlySuffix) {
-            if (id.endsWith(suffix)) return;
+                // Row not editable
+                if (!rows.includes(rowNo)) return;
+
+                // Always readonly suffix
+                for (let suffix of alwaysReadOnlySuffix) {
+                    if (id.endsWith(suffix)) return;
+                }
+
+                // ✅ Enable
+                $(this).prop("readonly", false).prop("disabled", false);
+            });
+
+            // Fields to gray out
+            const grayFields = [
+                "_fig_bal_sheet",
+                "_fig_bal_sheet_bwp",
+                "_amt_statement_adj",
+                "_amt_statement_adj_bwp",
+                "_net_amt",
+                "_net_amt_bwp",
+                "_bal_sub",
+                "_bal_sub_bwp",
+                "_bal_sub_diaries",
+                "_bal_sub_diaries_bwp"
+            ];
+
+            // ✅ APPLY grey color (existing behavior)
+            rows.forEach(row => {
+                grayFields.forEach(field => {
+                    const selector = `#r${row}${field}`;
+                    if ($(selector).length) {
+                        $(selector).css("background-color", "#d3d3d3");
+                    }
+                });
+            });
+
+            // ❌ Rows where grey color must be REMOVED
+            const skipGreyRows = [
+                12, 18, 19,
+                21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
+                42, 54, 61
+            ];
+
+            // ✅ REMOVE grey color ONLY for skip rows
+            skipGreyRows.forEach(row => {
+                grayFields.forEach(field => {
+                    const selector = `#r${row}${field}`;
+                    if ($(selector).length) {
+                        $(selector).css("color", "black");
+                    }
+                });
+            });
+
+            // Button toggle
+            $("#submitButton, #cancelRecord").show();
+            $(btn).hide();
         }
-
-        // ✅ Enable
-        $(this).prop("readonly", false).prop("disabled", false);
-    });
-
-    // Fields to gray out
-    const grayFields = [
-        "_fig_bal_sheet",
-        "_fig_bal_sheet_bwp",
-        "_amt_statement_adj",
-        "_amt_statement_adj_bwp",
-        "_net_amt",
-        "_net_amt_bwp",
-        "_bal_sub",
-        "_bal_sub_bwp",
-        "_bal_sub_diaries",
-        "_bal_sub_diaries_bwp"
-    ];
-
-    // ✅ APPLY grey color (existing behavior)
-    rows.forEach(row => {
-        grayFields.forEach(field => {
-            const selector = `#r${row}${field}`;
-            if ($(selector).length) {
-                $(selector).css("background-color", "#d3d3d3");
-            }
-        });
-    });
-
-    // ❌ Rows where grey color must be REMOVED
-    const skipGreyRows = [
-        12, 18, 19,
-        21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
-        42, 54, 61
-    ];
-
-    // ✅ REMOVE grey color ONLY for skip rows
-    skipGreyRows.forEach(row => {
-        grayFields.forEach(field => {
-            const selector = `#r${row}${field}`;
-            if ($(selector).length) {
-                $(selector).css("color", "black");
-            }
-        });
-    });
-
-    // Button toggle
-    $("#submitButton, #cancelRecord").show();
-    $(btn).hide();
-}
 
 
         // Cancel / Reset function
@@ -1574,7 +1574,7 @@ function showmodify(btn) {
                   padding-top: 10px;
                   font-weight: bold;
                   color: white;
-                ">PL_SCHS -  SCHEDULES TO PROFIT AND LOSS A/C 
+                ">PL_SCHS - SCHEDULES TO PROFIT AND LOSS A/C
 
 
                         </h5>
@@ -1724,7 +1724,8 @@ function showmodify(btn) {
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                                 <td th:text="${#numbers.formatDecimal(reportsummary.r9_net_amt, 0, 'COMMA', 0, 'POINT')}"
                                                     id="r9_net_amt" name="r9_net_amt" class="r9_net_amt"
-                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"></td>
+                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;">
+                                                </td>
                                                 <td th:text="${#numbers.formatDecimal(reportsummary.r9_net_amt_bwp, 0, 'COMMA', 0, 'POINT')}"
                                                     id="r9_net_amt_bwp" name="r9_net_amt_bwp" class="r9_net_amt_bwp"
                                                     style="text-align:right;width:390px"
@@ -1779,7 +1780,8 @@ function showmodify(btn) {
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                                 <td th:text="${#numbers.formatDecimal(reportsummary.r10_net_amt, 0, 'COMMA', 0, 'POINT')}"
                                                     id="r10_net_amt" name="r10_net_amt" class="r10_net_amt"
-                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"></td>
+                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;">
+                                                </td>
                                                 <td th:text="${#numbers.formatDecimal(reportsummary.r10_net_amt_bwp, 0, 'COMMA', 0, 'POINT')}"
                                                     id="r10_net_amt_bwp" name="r10_net_amt_bwp" class="r10_net_amt_bwp"
                                                     style="text-align:right;width:390px;"
@@ -1833,7 +1835,8 @@ function showmodify(btn) {
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                                 <td th:text="${reportsummary.r11_net_amt}" id="r11_net_amt"
                                                     name="r11_net_amt" class="r11_net_amt"
-                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"></td>
+                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;">
+                                                </td>
                                                 <td th:text="${reportsummary.r11_net_amt_bwp}" id="r11_net_amt_bwp"
                                                     name="r11_net_amt_bwp" class="r11_net_amt_bwp"
                                                     style="text-align:right;width:390px"
@@ -1904,7 +1907,8 @@ function showmodify(btn) {
                                                 </td>
 
 
-                                                <td style="font-weight: bold; padding-left: 20px;;background-color: rgb(107, 122, 143);color: white;">
+                                                <td
+                                                    style="font-weight: bold; padding-left: 20px;;background-color: rgb(107, 122, 143);color: white;">
                                                     <input type="text" class="display-input Show_input r12_net_amt"
                                                         id="r12_net_amt" name="r12_net_amt"
                                                         style="background-color: rgb(107, 122, 143);color: white;width:160px;height:23px;border-color:transparent;text-align:right;"
@@ -1956,19 +1960,19 @@ function showmodify(btn) {
                                                 <td></td>
                                                 <td th:text="${reportsummary.r13_intrest_div}"
                                                     style="padding-left: 20px;font-weight:bold"></td>
-                                                <td 
-                                                    id="r13_fig_bal_sheet" name="r13_fig_bal_sheet"
-                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;" class="r13_fig_bal_sheet"
-                                                    th:attr="RowId='R13', ColumnId='C4'"
+                                                <td id="r13_fig_bal_sheet" name="r13_fig_bal_sheet"
+                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"
+                                                    class="r13_fig_bal_sheet" th:attr="RowId='R13', ColumnId='C4'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                                 <td th:text="${#numbers.formatDecimal(reportsummary.r13_fig_bal_sheet_bwp, 0, 'COMMA', 0, 'POINT')}"
                                                     id="r13_fig_bal_sheet_bwp" name="r13_fig_bal_sheet_bwp"
-                                                    class="r13_fig_bal_sheet_bwp" style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"
+                                                    class="r13_fig_bal_sheet_bwp"
+                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"
                                                     th:attr="RowId='R13', ColumnId='C4'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
-                                                <td 
-                                                    class="r13_amt_statement_adj" id="r13_amt_statement_adj"
-                                                    name="r13_amt_statement_adj" style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"
+                                                <td class="r13_amt_statement_adj" id="r13_amt_statement_adj"
+                                                    name="r13_amt_statement_adj"
+                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"
                                                     th:attr="RowId='R13', ColumnId='C4'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                                 <td th:text="${#numbers.formatDecimal(reportsummary.r13_amt_statement_adj_bwp, 0, 'COMMA', 0, 'POINT')}"
@@ -1977,16 +1981,15 @@ function showmodify(btn) {
                                                     style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"
                                                     th:attr="RowId='R13', ColumnId='C4'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
-                                                <td 
-                                                    id="r13_net_amt" name="r13_net_amt" class="r13_net_amt"
-                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"></td>
+                                                <td id="r13_net_amt" name="r13_net_amt" class="r13_net_amt"
+                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;">
+                                                </td>
                                                 <td th:text="${#numbers.formatDecimal(reportsummary.r13_net_amt_bwp, 0, 'COMMA', 0, 'POINT')}"
                                                     id="r13_net_amt_bwp" name="r13_net_amt_bwp" class="r13_net_amt_bwp"
                                                     style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"
                                                     th:attr="RowId='R13', ColumnId='C4'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
-                                                <td 
-                                                    id="r13_bal_sub" name="r13_bal_sub" class="r13_bal_sub"
+                                                <td id="r13_bal_sub" name="r13_bal_sub" class="r13_bal_sub"
                                                     style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"
                                                     th:attr="RowId='R13', ColumnId='C4'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
@@ -1995,14 +1998,15 @@ function showmodify(btn) {
                                                     style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"
                                                     th:attr="RowId='R13', ColumnId='C4'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
-                                                <td 
-                                                    id="r13_bal_sub_diaries" name="r13_bal_sub_diaries"
-                                                    class="r13_bal_sub_diaries" style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"
+                                                <td id="r13_bal_sub_diaries" name="r13_bal_sub_diaries"
+                                                    class="r13_bal_sub_diaries"
+                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"
                                                     th:attr="RowId='R13', ColumnId='C4'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                                 <td th:text="${#numbers.formatDecimal(reportsummary.r13_bal_sub_diaries_bwp, 0, 'COMMA', 0, 'POINT')}"
                                                     id="r13_bal_sub_diaries_bwp" name="r13_bal_sub_diaries_bwp"
-                                                    class="r13_bal_sub_diaries_bwp" style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"
+                                                    class="r13_bal_sub_diaries_bwp"
+                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"
                                                     th:attr="RowId='R13', ColumnId='C4'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                             </tr>
@@ -2044,7 +2048,8 @@ function showmodify(btn) {
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                                 <td th:text="${#numbers.formatDecimal(reportsummary.r17_net_amt, 0, 'COMMA', 0, 'POINT')}"
                                                     id="r17_net_amt" name="r17_net_amt" class="r17_net_amt"
-                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"></td>
+                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;">
+                                                </td>
                                                 <td th:text="${#numbers.formatDecimal(reportsummary.r17_net_amt_bwp, 0, 'COMMA', 0, 'POINT')}"
                                                     id="r17_net_amt_bwp" name="r17_net_amt_bwp" class="r17_net_amt_bwp"
                                                     style="text-align:right;width:390px"
@@ -2114,7 +2119,8 @@ function showmodify(btn) {
                                                 </td>
 
 
-                                                <td style="font-weight: bold; padding-left: 20px;background-color: rgb(107, 122, 143);color: white;">
+                                                <td
+                                                    style="font-weight: bold; padding-left: 20px;background-color: rgb(107, 122, 143);color: white;">
                                                     <input type="text" class="display-input Show_input r18_net_amt"
                                                         id="r18_net_amt" name="r18_net_amt"
                                                         style="background-color: rgb(107, 122, 143);color: white;width:160px;height:23px;border-color:transparent;text-align:right;"
@@ -2203,7 +2209,8 @@ function showmodify(btn) {
                                                 </td>
 
 
-                                                <td style="font-weight: bold; padding-left: 20px;background-color: rgb(107, 122, 143);color: white;">
+                                                <td
+                                                    style="font-weight: bold; padding-left: 20px;background-color: rgb(107, 122, 143);color: white;">
                                                     <input type="text" class="display-input Show_input r19_net_amt"
                                                         id="r19_net_amt" name="r19_net_amt"
                                                         style="background-color: rgb(107, 122, 143);color: white;width:160px;height:23px;border-color:transparent;text-align:right;"
@@ -2279,7 +2286,8 @@ function showmodify(btn) {
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                                 <td th:text="${#numbers.formatDecimal(reportsummary.r20_net_amt, 0, 'COMMA', 0, 'POINT')}"
                                                     id="r20_net_amt" name="r20_net_amt" class="r20_net_amt"
-                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"></td>
+                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;">
+                                                </td>
                                                 <td th:text="${#numbers.formatDecimal(reportsummary.r20_net_amt_bwp, 0, 'COMMA', 0, 'POINT')}"
                                                     id="r20_net_amt_bwp" name="r20_net_amt_bwp" class="r20_net_amt_bwp"
                                                     style="text-align:right;width:390px"
@@ -2348,7 +2356,8 @@ function showmodify(btn) {
                                                 </td>
 
 
-                                                <td style="font-weight: bold; padding-left: 20px;background-color: rgb(107, 122, 143);color: white;">
+                                                <td
+                                                    style="font-weight: bold; padding-left: 20px;background-color: rgb(107, 122, 143);color: white;">
                                                     <input type="text" class="display-input Show_input r21_net_amt"
                                                         id="r21_net_amt" name="r21_net_amt"
                                                         style="background-color: rgb(107, 122, 143);color: white;width:160px;height:23px;border-color:transparent;text-align:right;"
@@ -2438,7 +2447,8 @@ function showmodify(btn) {
                                                 </td>
 
 
-                                                <td style="font-weight: bold; padding-left: 20px;background-color: rgb(107, 122, 143);color: white;">
+                                                <td
+                                                    style="font-weight: bold; padding-left: 20px;background-color: rgb(107, 122, 143);color: white;">
                                                     <input type="text" class="display-input Show_input r22_net_amt"
                                                         id="r22_net_amt" name="r22_net_amt"
                                                         style="background-color: rgb(107, 122, 143);color: white;width:160px;height:23px;border-color:transparent;text-align:right;"
@@ -2528,7 +2538,8 @@ function showmodify(btn) {
                                                 </td>
 
 
-                                                <td style="font-weight: bold; padding-left: 20px;background-color: rgb(107, 122, 143);color: white;">
+                                                <td
+                                                    style="font-weight: bold; padding-left: 20px;background-color: rgb(107, 122, 143);color: white;">
                                                     <input type="text" class="display-input Show_input r23_net_amt"
                                                         id="r23_net_amt" name="r23_net_amt"
                                                         style="background-color: rgb(107, 122, 143);color: white;width:160px;height:23px;border-color:transparent;text-align:right;"
@@ -2619,7 +2630,8 @@ function showmodify(btn) {
                                                 </td>
 
 
-                                                <td style="font-weight: bold; padding-left: 20px;background-color: rgb(107, 122, 143);color: white;">
+                                                <td
+                                                    style="font-weight: bold; padding-left: 20px;background-color: rgb(107, 122, 143);color: white;">
                                                     <input type="text" class="display-input Show_input r24_net_amt"
                                                         id="r24_net_amt" name="r24_net_amt"
                                                         style="background-color: rgb(107, 122, 143);color: white;width:160px;height:24px;border-color:transparent;text-align:right;"
@@ -2710,7 +2722,8 @@ function showmodify(btn) {
                                                 </td>
 
 
-                                                <td style="font-weight: bold; padding-left: 20px;background-color: rgb(107, 122, 143);color: white;">
+                                                <td
+                                                    style="font-weight: bold; padding-left: 20px;background-color: rgb(107, 122, 143);color: white;">
                                                     <input type="text" class="display-input Show_input r25_net_amt"
                                                         id="r25_net_amt" name="r25_net_amt"
                                                         style="background-color: rgb(107, 122, 143);color: white;width:160px;height:25px;border-color:transparent;text-align:right;"
@@ -2799,7 +2812,8 @@ function showmodify(btn) {
                                                 </td>
 
 
-                                                <td style="font-weight: bold; padding-left: 20px;background-color: rgb(107, 122, 143);color: white;">
+                                                <td
+                                                    style="font-weight: bold; padding-left: 20px;background-color: rgb(107, 122, 143);color: white;">
                                                     <input type="text" class="display-input Show_input r26_net_amt"
                                                         id="r26_net_amt" name="r26_net_amt"
                                                         style="background-color: rgb(107, 122, 143);color: white;width:160px;height:26px;border-color:transparent;text-align:right;"
@@ -2893,7 +2907,8 @@ function showmodify(btn) {
                                                 </td>
 
 
-                                                <td style="font-weight: bold; padding-left: 20px;background-color: rgb(107, 122, 143);color: white;">
+                                                <td
+                                                    style="font-weight: bold; padding-left: 20px;background-color: rgb(107, 122, 143);color: white;">
                                                     <input type="text" class="display-input Show_input r27_net_amt"
                                                         id="r27_net_amt" name="r27_net_amt"
                                                         style="background-color: rgb(107, 122, 143);color: white;width:160px;height:27px;border-color:transparent;text-align:right;"
@@ -2986,7 +3001,8 @@ function showmodify(btn) {
                                                 </td>
 
 
-                                                <td style="font-weight: bold; padding-left: 20px;background-color: rgb(107, 122, 143);color: white;">
+                                                <td
+                                                    style="font-weight: bold; padding-left: 20px;background-color: rgb(107, 122, 143);color: white;">
                                                     <input type="text" class="display-input Show_input r28_net_amt"
                                                         id="r28_net_amt" name="r28_net_amt"
                                                         style="background-color: rgb(107, 122, 143);color: white;width:160px;height:28px;border-color:transparent;text-align:right;"
@@ -3078,7 +3094,8 @@ function showmodify(btn) {
                                                 </td>
 
 
-                                                <td style="font-weight: bold; padding-left: 20px;background-color: rgb(107, 122, 143);color: white;">
+                                                <td
+                                                    style="font-weight: bold; padding-left: 20px;background-color: rgb(107, 122, 143);color: white;">
                                                     <input type="text" class="display-input Show_input r29_net_amt"
                                                         id="r29_net_amt" name="r29_net_amt"
                                                         style="background-color: rgb(107, 122, 143);color: white;width:160px;height:29px;border-color:transparent;text-align:right;"
@@ -3153,7 +3170,8 @@ function showmodify(btn) {
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                                 <td th:text="${#numbers.formatDecimal(reportsummary.r30_net_amt, 0, 'COMMA', 0, 'POINT')}"
                                                     id="r30_net_amt" name="r30_net_amt" class="r30_net_amt"
-                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"></td>
+                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;">
+                                                </td>
                                                 <td th:text="${#numbers.formatDecimal(reportsummary.r30_net_amt_bwp, 0, 'COMMA', 0, 'POINT')}"
                                                     id="r30_net_amt_bwp" name="r30_net_amt_bwp" class="r30_net_amt_bwp"
                                                     style="text-align:right;width:390px"
@@ -3188,19 +3206,19 @@ function showmodify(btn) {
                                                 <td th:text="${reportsummary.r31_other_income}"
                                                     style="padding-left: 20px;font-weight: bold;"></td>
 
-                                                <td 
-                                                    id="r31_fig_bal_sheet" name="r31_fig_bal_sheet"
-                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;" class="r31_fig_bal_sheet"
-                                                    th:attr="RowId='R31', ColumnId='C4'"
+                                                <td id="r31_fig_bal_sheet" name="r31_fig_bal_sheet"
+                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"
+                                                    class="r31_fig_bal_sheet" th:attr="RowId='R31', ColumnId='C4'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                                 <td th:text="${#numbers.formatDecimal(reportsummary.r31_fig_bal_sheet_bwp, 0, 'COMMA', 0, 'POINT')}"
                                                     id="r31_fig_bal_sheet_bwp" name="r31_fig_bal_sheet_bwp"
-                                                    class="r31_fig_bal_sheet_bwp" style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"
+                                                    class="r31_fig_bal_sheet_bwp"
+                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"
                                                     th:attr="RowId='R31', ColumnId='C4'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
-                                                <td 
-                                                    class="r31_amt_statement_adj" id="r31_amt_statement_adj"
-                                                    name="r31_amt_statement_adj" style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"
+                                                <td class="r31_amt_statement_adj" id="r31_amt_statement_adj"
+                                                    name="r31_amt_statement_adj"
+                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"
                                                     th:attr="RowId='R31', ColumnId='C4'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                                 <td th:text="${#numbers.formatDecimal(reportsummary.r31_amt_statement_adj_bwp, 0, 'COMMA', 0, 'POINT')}"
@@ -3209,32 +3227,30 @@ function showmodify(btn) {
                                                     style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"
                                                     th:attr="RowId='R31', ColumnId='C4'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
-                                                <td 
-                                                    id="r31_net_amt" name="r31_net_amt" class="r31_net_amt"
-                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"></td>
+                                                <td id="r31_net_amt" name="r31_net_amt" class="r31_net_amt"
+                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;">
+                                                </td>
                                                 <td th:text="${#numbers.formatDecimal(reportsummary.r31_net_amt_bwp, 0, 'COMMA', 0, 'POINT')}"
                                                     id="r31_net_amt_bwp" name="r31_net_amt_bwp" class="r31_net_amt_bwp"
                                                     style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"
                                                     th:attr="RowId='R31', ColumnId='C4'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
-                                                <td 
-                                                    id="r31_bal_sub" name="r31_bal_sub" class="r31_bal_sub"
+                                                <td id="r31_bal_sub" name="r31_bal_sub" class="r31_bal_sub"
                                                     style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"
                                                     th:attr="RowId='R31', ColumnId='C4'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
-                                                <td 
-                                                    id="r31_bal_sub_bwp" name="r31_bal_sub_bwp" class="r31_bal_sub_bwp"
+                                                <td id="r31_bal_sub_bwp" name="r31_bal_sub_bwp" class="r31_bal_sub_bwp"
                                                     style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"
                                                     th:attr="RowId='R31', ColumnId='C4'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
-                                                <td 
-                                                    id="r31_bal_sub_diaries" name="r31_bal_sub_diaries"
-                                                    class="r31_bal_sub_diaries" style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"
+                                                <td id="r31_bal_sub_diaries" name="r31_bal_sub_diaries"
+                                                    class="r31_bal_sub_diaries"
+                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"
                                                     th:attr="RowId='R31', ColumnId='C4'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
-                                                <td 
-                                                    id="r31_bal_sub_diaries_bwp" name="r31_bal_sub_diaries_bwp"
-                                                    class="r31_bal_sub_diaries_bwp" style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"
+                                                <td id="r31_bal_sub_diaries_bwp" name="r31_bal_sub_diaries_bwp"
+                                                    class="r31_bal_sub_diaries_bwp"
+                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"
                                                     th:attr="RowId='R31', ColumnId='C4'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                             </tr>
@@ -3321,7 +3337,8 @@ function showmodify(btn) {
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                                 <td th:text="${#numbers.formatDecimal(reportsummary.r40_net_amt, 0, 'COMMA', 0, 'POINT')}"
                                                     id="r40_net_amt" name="r40_net_amt" class="r40_net_amt"
-                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"></td>
+                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;">
+                                                </td>
                                                 <td th:text="${#numbers.formatDecimal(reportsummary.r40_net_amt_bwp, 0, 'COMMA', 0, 'POINT')}"
                                                     id="r40_net_amt_bwp" name="r40_net_amt_bwp" class="r40_net_amt_bwp"
                                                     style="text-align:right;width:390px"
@@ -3376,7 +3393,8 @@ function showmodify(btn) {
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                                 <td th:text="${#numbers.formatDecimal(reportsummary.r41_net_amt, 0, 'COMMA', 0, 'POINT')}"
                                                     id="r41_net_amt" name="r41_net_amt" class="r41_net_amt"
-                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"></td>
+                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;">
+                                                </td>
                                                 <td th:text="${#numbers.formatDecimal(reportsummary.r41_net_amt_bwp, 0, 'COMMA', 0, 'POINT')}"
                                                     id="r41_net_amt_bwp" name="r41_net_amt_bwp" class="r41_net_amt_bwp"
                                                     style="text-align:right;width:390px"
@@ -3446,7 +3464,8 @@ function showmodify(btn) {
                                                 </td>
 
 
-                                                <td style="font-weight: bold; padding-left: 20px;background-color: rgb(107, 122, 143);color: white;">
+                                                <td
+                                                    style="font-weight: bold; padding-left: 20px;background-color: rgb(107, 122, 143);color: white;">
                                                     <input type="text" class="display-input Show_input r42_net_amt"
                                                         id="r42_net_amt" name="r42_net_amt"
                                                         style="background-color: rgb(107, 122, 143);color: white;width:160px;height:23px;border-color:transparent;text-align:right;"
@@ -3498,19 +3517,19 @@ function showmodify(btn) {
                                                 <td th:text="${reportsummary.r43_intrest_expended}"
                                                     style="padding-left: 20px;font-weight: bold;"></td>
 
-                                                <td 
-                                                    id="r43_fig_bal_sheet" name="r43_fig_bal_sheet"
-                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;" class="r43_fig_bal_sheet"
-                                                    th:attr="RowId='R43', ColumnId='C4'"
+                                                <td id="r43_fig_bal_sheet" name="r43_fig_bal_sheet"
+                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"
+                                                    class="r43_fig_bal_sheet" th:attr="RowId='R43', ColumnId='C4'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                                 <td th:text="${#numbers.formatDecimal(reportsummary.r43_fig_bal_sheet_bwp, 0, 'COMMA', 0, 'POINT')}"
                                                     id="r43_fig_bal_sheet_bwp" name="r43_fig_bal_sheet_bwp"
-                                                    class="r43_fig_bal_sheet_bwp" style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"
+                                                    class="r43_fig_bal_sheet_bwp"
+                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"
                                                     th:attr="RowId='R43', ColumnId='C4'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
-                                                <td 
-                                                    class="r43_amt_statement_adj" id="r43_amt_statement_adj"
-                                                    name="r43_amt_statement_adj" style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"
+                                                <td class="r43_amt_statement_adj" id="r43_amt_statement_adj"
+                                                    name="r43_amt_statement_adj"
+                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"
                                                     th:attr="RowId='R43', ColumnId='C4'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                                 <td th:text="${#numbers.formatDecimal(reportsummary.r43_amt_statement_adj_bwp, 0, 'COMMA', 0, 'POINT')}"
@@ -3519,16 +3538,15 @@ function showmodify(btn) {
                                                     style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"
                                                     th:attr="RowId='R43', ColumnId='C4'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
-                                                <td 
-                                                    id="r43_net_amt" name="r43_net_amt" class="r43_net_amt"
-                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"></td>
+                                                <td id="r43_net_amt" name="r43_net_amt" class="r43_net_amt"
+                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;">
+                                                </td>
                                                 <td th:text="${#numbers.formatDecimal(reportsummary.r43_net_amt_bwp, 0, 'COMMA', 0, 'POINT')}"
                                                     id="r43_net_amt_bwp" name="r43_net_amt_bwp" class="r43_net_amt_bwp"
                                                     style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"
                                                     th:attr="RowId='R43', ColumnId='C4'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
-                                                <td 
-                                                    id="r43_bal_sub" name="r43_bal_sub" class="r43_bal_sub"
+                                                <td id="r43_bal_sub" name="r43_bal_sub" class="r43_bal_sub"
                                                     style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"
                                                     th:attr="RowId='R43', ColumnId='C4'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
@@ -3537,14 +3555,15 @@ function showmodify(btn) {
                                                     style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"
                                                     th:attr="RowId='R43', ColumnId='C4'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
-                                                <td 
-                                                    id="r43_bal_sub_diaries" name="r43_bal_sub_diaries"
-                                                    class="r43_bal_sub_diaries" style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"
+                                                <td id="r43_bal_sub_diaries" name="r43_bal_sub_diaries"
+                                                    class="r43_bal_sub_diaries"
+                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"
                                                     th:attr="RowId='R43', ColumnId='C4'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                                 <td th:text="${#numbers.formatDecimal(reportsummary.r43_bal_sub_diaries_bwp, 0, 'COMMA', 0, 'POINT')}"
                                                     id="r43_bal_sub_diaries_bwp" name="r43_bal_sub_diaries_bwp"
-                                                    class="r43_bal_sub_diaries_bwp" style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"
+                                                    class="r43_bal_sub_diaries_bwp"
+                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"
                                                     th:attr="RowId='R43', ColumnId='C4'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                             </tr>
@@ -3594,7 +3613,8 @@ function showmodify(btn) {
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                                 <td th:text="${#numbers.formatDecimal(reportsummary.r48_net_amt, 0, 'COMMA', 0, 'POINT')}"
                                                     id="r48_net_amt" name="r48_net_amt" class="r48_net_amt"
-                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"></td>
+                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;">
+                                                </td>
                                                 <td th:text="${#numbers.formatDecimal(reportsummary.r48_net_amt_bwp, 0, 'COMMA', 0, 'POINT')}"
                                                     id="r48_net_amt_bwp" name="r48_net_amt_bwp" class="r48_net_amt_bwp"
                                                     style="text-align:right;width:390px"
@@ -3649,7 +3669,8 @@ function showmodify(btn) {
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                                 <td th:text="${#numbers.formatDecimal(reportsummary.r49_net_amt, 0, 'COMMA', 0, 'POINT')}"
                                                     id="r49_net_amt" name="r49_net_amt" class="r49_net_amt"
-                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"></td>
+                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;">
+                                                </td>
                                                 <td th:text="${#numbers.formatDecimal(reportsummary.r49_net_amt_bwp, 0, 'COMMA', 0, 'POINT')}"
                                                     id="r49_net_amt_bwp" name="r49_net_amt_bwp" class="r49_net_amt_bwp"
                                                     style="text-align:right;width:390px"
@@ -3705,7 +3726,8 @@ function showmodify(btn) {
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                                 <td th:text="${#numbers.formatDecimal(reportsummary.r50_net_amt, 0, 'COMMA', 0, 'POINT')}"
                                                     id="r50_net_amt" name="r50_net_amt" class="r50_net_amt"
-                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"></td>
+                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;">
+                                                </td>
                                                 <td th:text="${#numbers.formatDecimal(reportsummary.r50_net_amt_bwp, 0, 'COMMA', 0, 'POINT')}"
                                                     id="r50_net_amt_bwp" name="r50_net_amt_bwp" class="r50_net_amt_bwp"
                                                     style="text-align:right;width:390px"
@@ -3760,7 +3782,8 @@ function showmodify(btn) {
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                                 <td th:text="${#numbers.formatDecimal(reportsummary.r51_net_amt, 0, 'COMMA', 0, 'POINT')}"
                                                     id="r51_net_amt" name="r51_net_amt" class="r51_net_amt"
-                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"></td>
+                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;">
+                                                </td>
                                                 <td th:text="${#numbers.formatDecimal(reportsummary.r51_net_amt_bwp, 0, 'COMMA', 0, 'POINT')}"
                                                     id="r51_net_amt_bwp" name="r51_net_amt_bwp" class="r51_net_amt_bwp"
                                                     style="text-align:right;width:390px"
@@ -3815,7 +3838,8 @@ function showmodify(btn) {
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                                 <td th:text="${#numbers.formatDecimal(reportsummary.r52_net_amt, 0, 'COMMA', 0, 'POINT')}"
                                                     id="r52_net_amt" name="r52_net_amt" class="r52_net_amt"
-                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"></td>
+                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;">
+                                                </td>
                                                 <td th:text="${#numbers.formatDecimal(reportsummary.r52_net_amt_bwp, 0, 'COMMA', 0, 'POINT')}"
                                                     id="r52_net_amt_bwp" name="r52_net_amt_bwp" class="r52_net_amt_bwp"
                                                     style="text-align:right;width:390px"
@@ -3870,7 +3894,8 @@ function showmodify(btn) {
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                                 <td th:text="${#numbers.formatDecimal(reportsummary.r53_net_amt, 0, 'COMMA', 0, 'POINT')}"
                                                     id="r53_net_amt" name="r53_net_amt" class="r53_net_amt"
-                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"></td>
+                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;">
+                                                </td>
                                                 <td th:text="${#numbers.formatDecimal(reportsummary.r53_net_amt_bwp, 0, 'COMMA', 0, 'POINT')}"
                                                     id="r53_net_amt_bwp" name="r53_net_amt_bwp" class="r53_net_amt_bwp"
                                                     style="text-align:right;width:390px"
@@ -3940,7 +3965,8 @@ function showmodify(btn) {
                                                 </td>
 
 
-                                                <td style="font-weight: bold; padding-left: 20px;background-color: rgb(107, 122, 143);color: white;">
+                                                <td
+                                                    style="font-weight: bold; padding-left: 20px;background-color: rgb(107, 122, 143);color: white;">
                                                     <input type="text" class="display-input Show_input r54_net_amt"
                                                         id="r54_net_amt" name="r54_net_amt"
                                                         style="background-color: rgb(107, 122, 143);color: white;width:160px;height:23px;border-color:transparent;text-align:right;"
@@ -4015,7 +4041,8 @@ function showmodify(btn) {
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                                 <td th:text="${#numbers.formatDecimal(reportsummary.r55_net_amt, 0, 'COMMA', 0, 'POINT')}"
                                                     id="r55_net_amt" name="r55_net_amt" class="r55_net_amt"
-                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"></td>
+                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;">
+                                                </td>
                                                 <td th:text="${#numbers.formatDecimal(reportsummary.r55_net_amt_bwp, 0, 'COMMA', 0, 'POINT')}"
                                                     id="r55_net_amt_bwp" name="r55_net_amt_bwp" class="r55_net_amt_bwp"
                                                     style="text-align:right;width:390px"
@@ -4070,7 +4097,8 @@ function showmodify(btn) {
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                                 <td th:text="${#numbers.formatDecimal(reportsummary.r56_net_amt, 0, 'COMMA', 0, 'POINT')}"
                                                     id="r56_net_amt" name="r56_net_amt" class="r56_net_amt"
-                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"></td>
+                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;">
+                                                </td>
                                                 <td th:text="${#numbers.formatDecimal(reportsummary.r56_net_amt_bwp, 0, 'COMMA', 0, 'POINT')}"
                                                     id="r56_net_amt_bwp" name="r56_net_amt_bwp" class="r56_net_amt_bwp"
                                                     style="text-align:right;width:390px"
@@ -4125,7 +4153,8 @@ function showmodify(btn) {
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                                 <td th:text="${#numbers.formatDecimal(reportsummary.r57_net_amt, 0, 'COMMA', 0, 'POINT')}"
                                                     id="r57_net_amt" name="r57_net_amt" class="r57_net_amt"
-                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"></td>
+                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;">
+                                                </td>
                                                 <td th:text="${#numbers.formatDecimal(reportsummary.r57_net_amt_bwp, 0, 'COMMA', 0, 'POINT')}"
                                                     id="r57_net_amt_bwp" name="r57_net_amt_bwp" class="r57_net_amt_bwp"
                                                     style="text-align:right;width:390px"
@@ -4180,7 +4209,8 @@ function showmodify(btn) {
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                                 <td th:text="${#numbers.formatDecimal(reportsummary.r58_net_amt, 0, 'COMMA', 0, 'POINT')}"
                                                     id="r58_net_amt" name="r58_net_amt" class="r58_net_amt"
-                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"></td>
+                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;">
+                                                </td>
                                                 <td th:text="${#numbers.formatDecimal(reportsummary.r58_net_amt_bwp, 0, 'COMMA', 0, 'POINT')}"
                                                     id="r58_net_amt_bwp" name="r58_net_amt_bwp" class="r58_net_amt_bwp"
                                                     style="text-align:right;width:390px"
@@ -4235,7 +4265,8 @@ function showmodify(btn) {
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                                 <td th:text="${#numbers.formatDecimal(reportsummary.r59_net_amt, 0, 'COMMA', 0, 'POINT')}"
                                                     id="r59_net_amt" name="r59_net_amt" class="r59_net_amt"
-                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"></td>
+                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;">
+                                                </td>
                                                 <td th:text="${#numbers.formatDecimal(reportsummary.r59_net_amt_bwp, 0, 'COMMA', 0, 'POINT')}"
                                                     id="r59_net_amt_bwp" name="r59_net_amt_bwp" class="r59_net_amt_bwp"
                                                     style="text-align:right;width:390px"
@@ -4290,7 +4321,8 @@ function showmodify(btn) {
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                                 <td th:text="${#numbers.formatDecimal(reportsummary.r60_net_amt, 0, 'COMMA', 0, 'POINT')}"
                                                     id="r60_net_amt" name="r60_net_amt" class="r60_net_amt"
-                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"></td>
+                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;">
+                                                </td>
                                                 <td th:text="${#numbers.formatDecimal(reportsummary.r60_net_amt_bwp, 0, 'COMMA', 0, 'POINT')}"
                                                     id="r60_net_amt_bwp" name="r60_net_amt_bwp" class="r60_net_amt_bwp"
                                                     style="text-align:right;width:390px"
@@ -4360,7 +4392,8 @@ function showmodify(btn) {
                                                 </td>
 
 
-                                                <td style="font-weight: bold; padding-left: 20px;background-color: rgb(107, 122, 143);color: white;">
+                                                <td
+                                                    style="font-weight: bold; padding-left: 20px;background-color: rgb(107, 122, 143);color: white;">
                                                     <input type="text" class="display-input Show_input r61_net_amt"
                                                         id="r61_net_amt" name="r61_net_amt"
                                                         style="background-color: rgb(107, 122, 143);color: white;width:160px;height:23px;border-color:transparent;text-align:right;"
@@ -4436,7 +4469,8 @@ function showmodify(btn) {
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                                 <td th:text="${#numbers.formatDecimal(reportsummary.r62_net_amt, 0, 'COMMA', 0, 'POINT')}"
                                                     id="r62_net_amt" name="r62_net_amt" class="r62_net_amt"
-                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"></td>
+                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;">
+                                                </td>
                                                 <td th:text="${#numbers.formatDecimal(reportsummary.r62_net_amt_bwp, 0, 'COMMA', 0, 'POINT')}"
                                                     id="r62_net_amt_bwp" name="r62_net_amt_bwp" class="r62_net_amt_bwp"
                                                     style="text-align:right;width:390px"
@@ -4468,19 +4502,19 @@ function showmodify(btn) {
                                                 <td th:text="${reportsummary.r63_operating_expenses}"
                                                     style="padding-left: 20px;font-weight: bold;"></td>
 
-                                                <td 
-                                                    id="r63_fig_bal_sheet" name="r63_fig_bal_sheet"
-                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;" class="r63_fig_bal_sheet"
-                                                    th:attr="RowId='R63', ColumnId='C4'"
+                                                <td id="r63_fig_bal_sheet" name="r63_fig_bal_sheet"
+                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"
+                                                    class="r63_fig_bal_sheet" th:attr="RowId='R63', ColumnId='C4'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                                 <td th:text="${#numbers.formatDecimal(reportsummary.r63_fig_bal_sheet_bwp, 0, 'COMMA', 0, 'POINT')}"
                                                     id="r63_fig_bal_sheet_bwp" name="r63_fig_bal_sheet_bwp"
-                                                    class="r63_fig_bal_sheet_bwp" style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"
+                                                    class="r63_fig_bal_sheet_bwp"
+                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"
                                                     th:attr="RowId='R63', ColumnId='C4'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
-                                                <td 
-                                                    class="r63_amt_statement_adj" id="r63_amt_statement_adj"
-                                                    name="r63_amt_statement_adj" style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"
+                                                <td class="r63_amt_statement_adj" id="r63_amt_statement_adj"
+                                                    name="r63_amt_statement_adj"
+                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"
                                                     th:attr="RowId='R63', ColumnId='C4'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                                 <td th:text="${#numbers.formatDecimal(reportsummary.r63_amt_statement_adj_bwp, 0, 'COMMA', 0, 'POINT')}"
@@ -4489,16 +4523,15 @@ function showmodify(btn) {
                                                     style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"
                                                     th:attr="RowId='R63', ColumnId='C4'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
-                                                <td 
-                                                    id="r63_net_amt" name="r63_net_amt" class="r63_net_amt"
-                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"></td>
+                                                <td id="r63_net_amt" name="r63_net_amt" class="r63_net_amt"
+                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;">
+                                                </td>
                                                 <td th:text="${#numbers.formatDecimal(reportsummary.r63_net_amt_bwp, 0, 'COMMA', 0, 'POINT')}"
                                                     id="r63_net_amt_bwp" name="r63_net_amt_bwp" class="r63_net_amt_bwp"
                                                     style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"
                                                     th:attr="RowId='R63', ColumnId='C4'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
-                                                <td 
-                                                    id="r63_bal_sub" name="r63_bal_sub" class="r63_bal_sub"
+                                                <td id="r63_bal_sub" name="r63_bal_sub" class="r63_bal_sub"
                                                     style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"
                                                     th:attr="RowId='R63', ColumnId='C4'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
@@ -4507,14 +4540,15 @@ function showmodify(btn) {
                                                     style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"
                                                     th:attr="RowId='R63', ColumnId='C4'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
-                                                <td 
-                                                    id="r63_bal_sub_diaries" name="r63_bal_sub_diaries"
-                                                    class="r63_bal_sub_diaries" style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"
+                                                <td id="r63_bal_sub_diaries" name="r63_bal_sub_diaries"
+                                                    class="r63_bal_sub_diaries"
+                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"
                                                     th:attr="RowId='R63', ColumnId='C4'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                                 <td th:text="${#numbers.formatDecimal(reportsummary.r63_bal_sub_diaries_bwp, 0, 'COMMA', 0, 'POINT')}"
                                                     id="r63_bal_sub_diaries_bwp" name="r63_bal_sub_diaries_bwp"
-                                                    class="r63_bal_sub_diaries_bwp" style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"
+                                                    class="r63_bal_sub_diaries_bwp"
+                                                    style="text-align:right;width:390px;background-color: rgb(107, 122, 143);color: white;"
                                                     th:attr="RowId='R63', ColumnId='C4'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                             </tr>
@@ -4542,20 +4576,20 @@ function showmodify(btn) {
                 <div th:if="${displaymode == 'Details'}">
                     <div class="row">
                         <div class="col-sm-12">
-                            <div class="table-responsive scrollable-table-container"
-                                style="border-right: 1px solid #dee2e6;">
+                            <div class="table-responsive" style="border-right: 1px solid #dee2e6;">
                                 <table class="table table-striped table-hover" id="reportdetail">
                                     <thead class="thead-light">
                                         <tr>
                                             <th></th>
                                             <th>S No</th>
-                                            <th>CUST_ID</th>
-                                            <th>ACCT_NUMBER</th>
-                                            <th>ACCT_NAME</th>
-                                            <th style="text-align:right;">ACCT_BALANCE_IN_PULA</th>
-                                            <th>REPORT LABEL</th>
-                                            <th>REPORT ADDL CRITERIA1</th>
-                                            <th>REPORT_DATE</th>
+                                            <th>CUST ID</th>
+                                            <th>ACCT NUMBER</th>
+                                            <th>ACCT NAME</th>
+                                            <th style="text-align:right;">ACCT BALANCE</th>
+                                            <th style="text-align:right;">AVERAGE</th>
+                                            <th>REPORT LABLE</th>
+                                            <th>REPORT ADDL CRITERIA</th>
+                                            <th>REPORT DATE</th>
                                         </tr>
 
                                     </thead>
@@ -4574,17 +4608,21 @@ function showmodify(btn) {
                                             </td>
 
 
-                                            <td th:text="${srlno.index + 1}"></td>
-                                            <td th:text="${report.custId}"></td>
-                                            <td th:text="${report.acctNumber}"></td>
-                                            <td th:text="${report.acctName}"></td>
+                                            <td th:text="${srlno.index + 1}" style="text-align:left"></td>
+                                            <td th:text="${report.custId}" style="text-align:left"></td>
+                                            <td th:text="${report.acctNumber}" style="text-align:left"></td>
+                                            <td th:text="${report.acctName}" style="text-align:left"></td>
                                             <td style="text-align:right;"
                                                 th:text="${#numbers.formatDecimal(report.acctBalanceInpula == null ? 0 : report.acctBalanceInpula, 1, 'COMMA', 0, 'POINT')}">
                                             </td>
+                                            <td style="text-align:right" th:text="${report.average != null ?
+      #numbers.formatDecimal(report.average, 1, 'COMMA', 0, 'POINT') : '0'}">
+                                            </td>
 
-                                            <td th:text="${report.reportLabel}"></td>
-                                            <td th:text="${report.reportAddlCriteria1}"></td>
-                                            <td th:text="${#dates.format(report.reportDate, 'dd-MM-yyyy')}"></td>
+                                            <td th:text="${report.reportLabel}" style="text-align:left"></td>
+                                            <td th:text="${report.reportAddlCriteria1}" style="text-align:left"></td>
+                                            <td th:text="${#dates.format(report.reportDate, 'dd-MM-yyyy')}"
+                                                style="text-align:left"></td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -4640,28 +4678,37 @@ function showmodify(btn) {
                             </div>
 
                             <div class="row formline" style="margin-top:10px;">
+                                <label class="col-sm-2">Average</label>
+                                <div class="col-sm-3">
+                                    <input type="number" step="0.01" th:field="*{average}"
+                                        class="form-control form-control-sm" style="text-align:right;" />
+                                </div>
+
+                                <div class="col-sm-1"></div>
+
                                 <label class="col-sm-2">Report Label</label>
                                 <div class="col-sm-3">
                                     <input type="text" th:field="*{reportLabel}" class="form-control form-control-sm"
                                         readonly />
                                 </div>
+                            </div>
 
-                                <div class="col-sm-1"></div>
-
+                            <div class="row formline" style="margin-top:10px;">
                                 <label class="col-sm-2">Report Addl Criteria 1</label>
                                 <div class="col-sm-3">
                                     <input type="text" th:field="*{reportAddlCriteria1}"
                                         class="form-control form-control-sm" readonly />
                                 </div>
-                            </div>
 
-                            <div class="row formline" style="margin-top:10px;">
+                                <div class="col-sm-1"></div>
+
                                 <label class="col-sm-2">Report Date</label>
                                 <div class="col-sm-3">
                                     <input type="date" name="reportDate" class="form-control form-control-sm" readonly
                                         th:value="${#dates.format(PL_SCHSData.reportDate, 'yyyy-MM-dd')}" />
                                 </div>
                             </div>
+
 
                             <div style="text-align:center; margin-top:20px;">
                                 <button type="button" class="custom-tab-btn" th:if="${formmode == 'edit'}"
@@ -4766,14 +4813,14 @@ function showmodify(btn) {
         $('#resultModal').modal('hide');
 
     }
-       function showResultModal(title, message) {
-    			// Set the text for the modal elements
-    			$('#resultModalLabel').text(title);
-    			$('#resultModalBody').text(message);
+    function showResultModal(title, message) {
+        // Set the text for the modal elements
+        $('#resultModalLabel').text(title);
+        $('#resultModalBody').text(message);
 
-    			// Show the modal
-    			$('#resultModal').modal('show');
-    		}
+        // Show the modal
+        $('#resultModal').modal('show');
+    }
 
     function showResultModalDU(title, message) {
         document.getElementById('resultModalLabel1').innerText = title;
