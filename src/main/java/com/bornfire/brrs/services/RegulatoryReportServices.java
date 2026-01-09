@@ -1519,6 +1519,13 @@ public class RegulatoryReportServices {
 				repdetail = BRRS_M_OPTR_ReportService.getM_OPTRcurrentDtl(reportId, fromdate, todate, currency, dtltype,
 						pageable, Filter, type, version);
 				break;
+				
+			case "M_OPTR_NEW":
+
+				repdetail = BRRS_M_OPTR_NEW_ReportService.getM_OPTRNEWcurrentDtl(reportId, fromdate, todate, currency, dtltype,
+						pageable, Filter, type, version);
+				break;
+
 
 			case "BDISB1":
 				repdetail = brrs_bdisb1_reportservice.getBDISB1currentDtl(reportId, fromdate, todate, currency, dtltype,
@@ -2947,6 +2954,11 @@ public class RegulatoryReportServices {
 					dtltype, type, version);
 		}
 		
+		else if ("M_OPTR_NEWDetail".equals(filename)) {
+			return BRRS_M_OPTR_NEW_ReportService.getM_OPTR_NEWDetailExcel(filename, fromdate, todate, currency,
+					dtltype, type, version);
+		}
+		
 
 		else if ("MDISB5Detail".equals(filename)) {
 			return BRRS_MDISB5_ReportService.getMDISB5DetailExcel(filename, fromdate, todate, currency,
@@ -4301,6 +4313,12 @@ public class RegulatoryReportServices {
 		else if ("M_OPTRDetail".equals(filename)) {
 
 			fileData = BRRS_M_OPTR_ReportService.getM_OPTRDetailExcel(filename, fromdate, todate, currency,
+					dtltype, type, version);
+		}
+		
+		else if ("M_OPTR_NEWDetail".equals(filename)) {
+
+			fileData = BRRS_M_OPTR_NEW_ReportService.getM_OPTR_NEWDetailExcel(filename, fromdate, todate, currency,
 					dtltype, type, version);
 		}
 
