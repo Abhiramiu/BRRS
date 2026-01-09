@@ -11,6 +11,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>M_PLL</title>
 
 	<!-- CSS -->
 	<link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}">
@@ -610,7 +611,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 						window.URL.revokeObjectURL(url);
 						document.body.removeChild(a);
 
-						showResultModal('BRRS', filename + ' downloaded successfully');
+						showResultModal('BRRS', filename + '.xls downloaded successfully.');
 					} else {
 						showResultModal('Information', 'No data was available to create a download.');
 					}
@@ -1588,14 +1589,15 @@ PURPOSE		: BRRS_M_PLLREPORT
 						</div>
 
 						<div class="row formline" style="margin-top:10px;">
-							<label class="col-sm-2">Row ID</label>
+							<label class="col-sm-2">Report Label</label>
 							<div class="col-sm-3">
 								<input type="text" th:field="*{rowId}" class="form-control form-control-sm" readonly />
 							</div>
 
 							<div class="col-sm-1"></div>
 
-							<label class="col-sm-2">Column ID</label>
+							<label class="col-sm-2">Report Addl Criteria</label>
+							
 							<div class="col-sm-3">
 								<input type="text" th:field="*{columnId}" class="form-control form-control-sm"
 									readonly />
