@@ -558,7 +558,7 @@ label.error {
 			      window.URL.revokeObjectURL(url);
 			      document.body.removeChild(a);
 
-			      showResultModal('BRRS', filename + ' downloaded successfully');
+			      showResultModal('BRRS', filename + '.xls downloaded successfully.');
 			     } else {
 			      showResultModal('Information', 'No data was available to create a download.');
 			     }
@@ -2645,6 +2645,9 @@ function cancelModify() {
 		<th style="text-align:left; white-space: nowrap;">
     FIRST NAME
 </th>
+        <th style="text-align:left; white-space: nowrap;">MIDDLE NAME</th>
+        <th style="text-align:left; white-space: nowrap;">SURNAME</th>
+        <th style="text-align:left; white-space: nowrap;">ACCOUNT NUMBER</th>
 		<th>ACCOUNT BALANCE IN PULA</th>
 		<th style="text-align:left;">REPORT LABEL</th>
 		<th>REPORT ADDL CRITERIA 1</th>
@@ -2662,6 +2665,12 @@ function cancelModify() {
 
     <!-- Customer ID (can be NULL for manual report) -->
     <td th:text="${report != null && report.FIRST_NAME != null ? report.FIRST_NAME : '-'}"></td>
+    
+    <td th:text="${report != null && report.MIDDLE_NAME != null ? report.MIDDLE_NAME : '-'}"></td>
+    
+    <td th:text="${report != null && report.SURNAME != null ? report.SURNAME : '-'}"></td>
+    
+    <td th:text="${report != null && report.ACCOUNT_NUMBER != null ? report.ACCOUNT_NUMBER : '-'}"></td>
 
     <!-- Account Number -->
     <td th:text="${report != null && report.ACCOUNT_BALANCE_IN_PULA != null ? report.ACCOUNT_BALANCE_IN_PULA : '-'}"></td>

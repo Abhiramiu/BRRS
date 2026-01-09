@@ -450,245 +450,7 @@ public class BRRS_BDISB1_ReportService {
 				"✅ Summary procedure executed for date: " + new SimpleDateFormat("dd-MM-yyyy").format(reportDate));
 	}
 	
-	
-//	public void updateReport(BDISB1_Summary_Entity updatedEntity) {
-//	    System.out.println("Came to services");
-//		    System.out.println("Report Date: " + updatedEntity.getReportDate());
-//
-//		    BDISB1_Summary_Entity existing = BDISB1_Summary_Repo.findById(updatedEntity.getReportDate())
-//		            .orElseThrow(() -> new RuntimeException(
-//	                    "Record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
 
-//	try {
-	    // 1️⃣ Loop through R14 to R100
-//	    for (int i = 5; i <= 11; i++) {
-//	        String prefix = "R" + i + "_";
-
-//	        String[] fields = {
-//	        		"RECORD_NUMBER",
-//	        		"TITLE",
-//	        		"FIRST_NAME",
-//	        		"MIDDLE_NAME",
-//	        		"SURNAME",
-//	        		"PREVIOUS_NAME",
-//	        		"GENDER",
-//	        		"IDENTIFICATION_TYPE",
-//	        		"PASSPORT_NUMBER",
-//	        		"DATE_OF_BIRTH",
-//	        		"HOME_ADDRESS",
-//	        		"POSTAL_ADDRESS",
-//	        		"RESIDENCE",
-//	        		"EMAIL",
-//	        		"LANDLINE",
-//	        		"MOBILE_PHONE_NUMBER",
-//	        		"MOBILE_MONEY_NUMBER",
-//	        		"PRODUCT_TYPE",
-//	        		"ACCOUNT_BY_OWNERSHIP",
-//	        		"ACCOUNT_NUMBER",
-//	        		"ACCOUNT_HOLDER_INDICATOR",
-//	        		"STATUS_OF_ACCOUNT",
-//	        		"NOT_FIT_FOR_STP",
-//	        		"BRANCH_CODE_AND_NAME",
-//	        		"ACCOUNT_BALANCE_IN_PULA",
-//	        		"CURRENCY_OF_ACCOUNT",
-//	        		"EXCHANGE_RATE"
-
-//	        };
-
-//	        for (String field : fields) {
-//	            String getterName = "get" + prefix + field;
-//	            String setterName = "set" + prefix + field;
-
-//	            try {
-//	                Method getter = BDISB1_Summary_Entity.class.getMethod(getterName);
-//	                Method setter = BDISB1_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-
-//	                Object newValue = getter.invoke(updatedEntity);
-//	                setter.invoke(existing, newValue);
-
-//	            } catch (NoSuchMethodException e) {
-//	                // Skip missing fields
-//	                continue;
-//	            }
-//	        }
-//	    }
-
-	    // 2️⃣ Handle R100 total fields using same structure
-//	      String prefix = "R11_";
-//	      String[] totalFields = {
-//	      		"TITLE",
-//	      		"FIRST_NAME",
-//	      		"MIDDLE_NAME",
-//	      		"SURNAME",
-//	      		"PREVIOUS_NAME",
-//	      		"GENDER",
-//	      		"IDENTIFICATION_TYPE",
-//	      		"PASSPORT_NUMBER",
-//	      		"DATE_OF_BIRTH",
-//	      		"HOME_ADDRESS",
-//	      		"POSTAL_ADDRESS",
-//	      		"RESIDENCE",
-//	      		"EMAIL",
-//	      		"LANDLINE",
-//	      		"MOBILE_PHONE_NUMBER",
-//	      		"MOBILE_MONEY_NUMBER",
-//	      		"PRODUCT_TYPE",
-//	      		"ACCOUNT_BY_OWNERSHIP",
-//	      		"ACCOUNT_NUMBER",
-//	      		"ACCOUNT_HOLDER_INDICATOR",
-//	      		"STATUS_OF_ACCOUNT",
-//	      		"NOT_FIT_FOR_STP",
-//	      		"BRANCH_CODE_AND_NAME",
-//	      		"ACCOUNT_BALANCE_IN_PULA",
-//	      		"CURRENCY_OF_ACCOUNT",
-//	      		"EXCHANGE_RATE"
-
-//	      };
-
-//	      for (String field : totalFields) {
-//	          String getterName = "get" + prefix + field;
-//	          String setterName = "set" + prefix + field;
-
-//	          try {
-//	              Method getter = BDISB1_Summary_Entity.class.getMethod(getterName);
-//	              Method setter = BDISB1_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-
-//	              Object newValue = getter.invoke(updatedEntity);
-//	              setter.invoke(existing, newValue);
-
-//	          } catch (NoSuchMethodException e) {
-	              // Skip missing total fields
-//	              continue;
-//	          }
-//	      }
-
-//	  } catch (Exception e) {
-//	      throw new RuntimeException("Error while updating report fields", e);
-//	  }
-
-//	  try {
-//	  	existing.setR5_DATE_OF_BIRTH(updatedEntity.getR5_DATE_OF_BIRTH());
-//	  	existing.setR6_DATE_OF_BIRTH(updatedEntity.getR6_DATE_OF_BIRTH());
-//	  	existing.setR7_DATE_OF_BIRTH(updatedEntity.getR7_DATE_OF_BIRTH());
-//	  	existing.setR8_DATE_OF_BIRTH(updatedEntity.getR8_DATE_OF_BIRTH());
-//	  	existing.setR9_DATE_OF_BIRTH(updatedEntity.getR9_DATE_OF_BIRTH());
-//	  	existing.setR10_DATE_OF_BIRTH(updatedEntity.getR10_DATE_OF_BIRTH());
-//	  	existing.setR11_DATE_OF_BIRTH(updatedEntity.getR11_DATE_OF_BIRTH());
-		
-
-		    	
-		        
-//		    } catch (Exception e) {
-//		        throw new RuntimeException("Error while updating date fields", e);
-//		    }
-		    
-		   
-		    // 3️⃣ Save updated entity
-	//	    BDISB1_Summary_Repo.save(existing);
-	//	}
-
-
-
-	
-
-
-	//public void updateArchivalReport(BDISB1_Archival_Summary_Entity updatedEntity) {
-
-	//    System.out.println("Came to services 1");
-	//    System.out.println("Report Date: " + updatedEntity.getReportDate());
-	//    System.out.println("Report Version: " + updatedEntity.getReportVersion());
-
-	    // Composite PK
-	//    BDISB1_Archival_Summary_PK pk =
-	//            new BDISB1_Archival_Summary_PK(
-	//                    updatedEntity.getReportDate(),
-	//                    updatedEntity.getReportVersion()
-	//            );
-
-	//    BDISB1_Archival_Summary_Entity existing =
-	//            BDISB1_Archival_Summary_Repo.findById(pk)
-	//            .orElseThrow(() -> new RuntimeException(
-	//                    "Record not found for REPORT_DATE: "
-	//                            + updatedEntity.getReportDate()
-	//                            + " and REPORT_VERSION: "
-	//                            + updatedEntity.getReportVersion()
-	//            ));
-
-	//    try {
-	 //       for (int i = 5; i <= 11; i++) {
-
-	 //           String prefix = "R" + i + "_";
-
-	 //          String[] fields = {
-	//                "RECORD_NUMBER",
-	//                "TITLE",
-	//                "FIRST_NAME",
-	//                "MIDDLE_NAME",
-	//                "SURNAME",
-	//                "PREVIOUS_NAME",
-	//                "GENDER",
-	//                "IDENTIFICATION_TYPE",
-	//                "PASSPORT_NUMBER",
-	//                "DATE_OF_BIRTH",
-	//                "HOME_ADDRESS",
-	//                "POSTAL_ADDRESS",
-	//                "RESIDENCE",
-	//                "EMAIL",
-	//                "LANDLINE",
-	//                "MOBILE_PHONE_NUMBER",
-	//                "MOBILE_MONEY_NUMBER",
-	//                "PRODUCT_TYPE",
-	//                "ACCOUNT_BY_OWNERSHIP",
-	//                "ACCOUNT_NUMBER",
-	//                "ACCOUNT_HOLDER_INDICATOR",
-	//                "STATUS_OF_ACCOUNT",
-	//                "NOT_FIT_FOR_STP",
-	//                "BRANCH_CODE_AND_NAME",
-	//                "ACCOUNT_BALANCE_IN_PULA",
-	//                "CURRENCY_OF_ACCOUNT",
-	//                "EXCHANGE_RATE"
-	//            };
-
-	//           for (String field : fields) {
-
-	//                String getterName = "get" + prefix + field;
-	//               String setterName = "set" + prefix + field;
-
-	//              try {
-	//                    Method getter =
-	//                            BDISB1_Archival_Summary_Entity.class.getMethod(getterName);
-
-	//                    Method setter =
-	//                            BDISB1_Archival_Summary_Entity.class
-	//                                    .getMethod(setterName, getter.getReturnType());
-
-	//                   Object newValue = getter.invoke(updatedEntity);
-
-	                    // ✅ DO NOT overwrite with null
-	//                    if (newValue != null) {
-	//                        setter.invoke(existing, newValue);
-	//                   }
-
-	//              } catch (NoSuchMethodException e) {
-	//                   System.out.println("Missing field: " + getterName);
-	//                }
-//           }
-	//       }
-
-	        // Safety log
-	//       System.out.println("Before Save → VERSION = " + existing.getReportVersion());
-
-	//      BDISB1_Archival_Summary_Repo.save(existing);
-
-	//   } catch (Exception e) {
-	//       throw new RuntimeException("Error while updating report fields", e);
-	        //    }
-	//}
-
-	
-
-
-	
 	public byte[] getBDISB1Excel(String filename, String reportId, String fromdate, String todate, String currency,
 			 String dtltype, String type, String version) throws Exception {
 logger.info("Service: Starting Excel generation process in memory.");
@@ -7526,7 +7288,7 @@ public byte[] getBDISB1DetailExcel(String filename, String fromdate, String toda
 
         // ================= WORKBOOK & SHEET =================
         XSSFWorkbook workbook = new XSSFWorkbook();
-        XSSFSheet sheet = workbook.createSheet("BDISB3Detail");
+        XSSFSheet sheet = workbook.createSheet("BDISB1Detail");
 
         BorderStyle border = BorderStyle.THIN;
 
@@ -7567,6 +7329,9 @@ public byte[] getBDISB1DetailExcel(String filename, String fromdate, String toda
         // ================= HEADER ROW =================
         String[] headers = {
             "FIRST NAME",
+            "MIDDLE NAME",
+            "SURNAME",
+            "ACCOUNT NUMBER",
             "ACCOUNT BALANCE IN PULA",
             "REPORT LABEL",
             "REPORT ADDL CRITERIA1",
@@ -7577,7 +7342,7 @@ public byte[] getBDISB1DetailExcel(String filename, String fromdate, String toda
         for (int i = 0; i < headers.length; i++) {
             Cell cell = headerRow.createCell(i);
             cell.setCellValue(headers[i]);
-            cell.setCellStyle((i == 0 || i == 1) ? rightHeaderStyle : headerStyle);
+            cell.setCellStyle((i == 4) ? rightHeaderStyle : headerStyle);
             sheet.setColumnWidth(i, 6000);
         }
 
@@ -7593,29 +7358,44 @@ public byte[] getBDISB1DetailExcel(String filename, String fromdate, String toda
 
                 XSSFRow row = sheet.createRow(rowIndex++);
 
-                // Column 0 - AGGREGATE BALANCE
+                // Column 0 - FIRST NAME
                 Cell c0 = row.createCell(0);
                 c0.setCellValue(item.getFIRST_NAME());
                 c0.setCellStyle(textStyle);
+                
+                // Column 1 - MIDDLE NAME
+                Cell c5 = row.createCell(1);
+                c5.setCellValue(item.getMIDDLE_NAME());
+                c5.setCellStyle(textStyle);
+                
+                // Column 2 - SURNAME
+                Cell c6 = row.createCell(2);
+                c6.setCellValue(item.getSURNAME());
+                c6.setCellStyle(textStyle);
+                
+                // Column 3 - ACCOUNT NUMBER
+                Cell c7 = row.createCell(3);
+                c7.setCellValue(item.getACCOUNT_NUMBER());
+                c7.setCellStyle(textStyle);
 
-                // Column 1 - COMPENSATABLE AMOUNT
-                Cell c1 = row.createCell(1);
+                // Column 4 - ACCOUNT BALANCE IN PULA
+                Cell c1 = row.createCell(4);
                 c1.setCellValue(item.getACCOUNT_BALANCE_IN_PULA() != null
                         ? item.getACCOUNT_BALANCE_IN_PULA().doubleValue() : 0);
                 c1.setCellStyle(amountStyle);
 
-                // Column 2 - REPORT LABEL
-                Cell c2 = row.createCell(2);
+                // Column 5 - REPORT LABEL
+                Cell c2 = row.createCell(5);
                 c2.setCellValue(item.getReportLable());
                 c2.setCellStyle(textStyle);
 
-                // Column 3 - REPORT ADDL CRITERIA 1
-                Cell c3 = row.createCell(3);
+                // Column 6 - REPORT ADDL CRITERIA 1
+                Cell c3 = row.createCell(6);
                 c3.setCellValue(item.getReportAddlCriteria1());
                 c3.setCellStyle(textStyle);
 
-                // Column 4 - REPORT DATE
-                Cell c4 = row.createCell(4);
+                // Column 7 - REPORT DATE
+                Cell c4 = row.createCell(7);
                 c4.setCellValue(item.getReportDate() != null
                         ? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
                         : "");
@@ -7650,7 +7430,7 @@ public byte[] getDetailExcelARCHIVAL(String filename, String fromdate, String to
 
         // ================= WORKBOOK & SHEET =================
         XSSFWorkbook workbook = new XSSFWorkbook();
-        XSSFSheet sheet = workbook.createSheet("BDISB3Detail");
+        XSSFSheet sheet = workbook.createSheet("BDISB1Detail");
 
         BorderStyle border = BorderStyle.THIN;
 
@@ -7691,6 +7471,9 @@ public byte[] getDetailExcelARCHIVAL(String filename, String fromdate, String to
         // ================= HEADER ROW =================
         String[] headers = {
             "FIRST NAME",
+            "MIDDLE NAME",
+            "SURNAME",
+            "ACCOUNT NUMBER",
             "ACCOUNT BALANCE IN PULA",
             "REPORT LABEL",
             "REPORT ADDL CRITERIA1",
@@ -7701,7 +7484,7 @@ public byte[] getDetailExcelARCHIVAL(String filename, String fromdate, String to
         for (int i = 0; i < headers.length; i++) {
             Cell cell = headerRow.createCell(i);
             cell.setCellValue(headers[i]);
-            cell.setCellStyle((i == 0 || i == 1) ? rightHeaderStyle : headerStyle);
+            cell.setCellStyle((i == 4) ? rightHeaderStyle : headerStyle);
             sheet.setColumnWidth(i, 6000);
         }
 
@@ -7718,29 +7501,44 @@ public byte[] getDetailExcelARCHIVAL(String filename, String fromdate, String to
 
                 XSSFRow row = sheet.createRow(rowIndex++);
 
-                // Column 0 - AGGREGATE BALANCE
+             // Column 0 - FIRST NAME
                 Cell c0 = row.createCell(0);
                 c0.setCellValue(item.getFIRST_NAME());
                 c0.setCellStyle(textStyle);
+                
+                // Column 1 - MIDDLE NAME
+                Cell c5 = row.createCell(1);
+                c5.setCellValue(item.getMIDDLE_NAME());
+                c5.setCellStyle(textStyle);
+                
+                // Column 2 - SURNAME
+                Cell c6 = row.createCell(2);
+                c6.setCellValue(item.getSURNAME());
+                c6.setCellStyle(textStyle);
+                
+                // Column 3 - ACCOUNT NUMBER
+                Cell c7 = row.createCell(3);
+                c7.setCellValue(item.getACCOUNT_NUMBER());
+                c7.setCellStyle(textStyle);
 
-                // Column 1 - COMPENSATABLE AMOUNT
-                Cell c1 = row.createCell(1);
+                // Column 4 - ACCOUNT BALANCE IN PULA
+                Cell c1 = row.createCell(4);
                 c1.setCellValue(item.getACCOUNT_BALANCE_IN_PULA() != null
                         ? item.getACCOUNT_BALANCE_IN_PULA().doubleValue() : 0);
                 c1.setCellStyle(amountStyle);
 
-                // Column 2 - REPORT LABEL
-                Cell c2 = row.createCell(2);
+                // Column 5 - REPORT LABEL
+                Cell c2 = row.createCell(5);
                 c2.setCellValue(item.getReportLable());
                 c2.setCellStyle(textStyle);
 
-                // Column 3 - REPORT ADDL CRITERIA 1
-                Cell c3 = row.createCell(3);
+                // Column 6 - REPORT ADDL CRITERIA 1
+                Cell c3 = row.createCell(6);
                 c3.setCellValue(item.getReportAddlCriteria1());
                 c3.setCellStyle(textStyle);
 
-                // Column 4 - REPORT DATE
-                Cell c4 = row.createCell(4);
+                // Column 7 - REPORT DATE
+                Cell c4 = row.createCell(7);
                 c4.setCellValue(item.getReportDate() != null
                         ? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
                         : "");
