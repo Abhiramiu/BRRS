@@ -9,8 +9,8 @@ import org.springframework.data.repository.query.Param;
 public interface BRRS_PL_SCHS_Detail_Repo extends JpaRepository<PL_SCHS_Detail_Entity, String> {
 
     // Fetch all records for a given date
-    @Query(value = "select * from BRRS_PL_SCHS_DETAILTABLE where REPORT_DATE = ?1", nativeQuery = true)
-    List<PL_SCHS_Detail_Entity> getdatabydateList(Date reportdate);
+    // @Query(value = "select * from BRRS_PL_SCHS_DETAILTABLE where REPORT_DATE = ?1", nativeQuery = true)
+    // List<PL_SCHS_Detail_Entity> getdatabydateList(Date reportdate);
 
     // ✅ Pagination fixed → use OFFSET and LIMIT correctly
     @Query(value = "select * from BRRS_PL_SCHS_DETAILTABLE where REPORT_DATE = ?1 offset ?2 rows fetch next ?3 rows only", nativeQuery = true)
@@ -26,4 +26,7 @@ public interface BRRS_PL_SCHS_Detail_Repo extends JpaRepository<PL_SCHS_Detail_E
     @Query(value = "SELECT * FROM BRRS_PL_SCHS_DETAILTABLE WHERE ACCT_NUMBER = :acctNumber", nativeQuery = true)
     PL_SCHS_Detail_Entity findByAcctnumber(@Param("acctNumber") String acctNumber);
 
+
+    @Query(value = "select * from BRRS_PL_SCHS_DETAILTABLE ", nativeQuery = true)
+	List<PL_SCHS_Detail_Entity> getdatabydateList(Date reportdate);
 }

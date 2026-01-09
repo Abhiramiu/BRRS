@@ -404,7 +404,7 @@ function getVali(a) {
 							<thead style="background-color:#e9ecf0; font-family: Arial;">
 								<tr>									
 										<th>Report Date</th>
-										<th>Report Version</th>
+										<th >Report Version</th>
 										<th>Domain</th>
 									</tr>
 							</thead>
@@ -415,7 +415,7 @@ function getVali(a) {
 								 data-todate=${#dates.format(archival[0],'dd/MM/yyyy')},
 								 data-version=${archival[1]}"
 								style="color: #08a6f1;" th:text="${#dates.format(archival[0],'dd/MM/yyyy')}" onclick="getReport(this);"></td>
-								<td th:text="${archival[1]}"></td>
+								<td th:text="${archival[1]}"style="text-align: left;"></td>
 								<td th:text="${domain}"></td>
 								
 							</tr >

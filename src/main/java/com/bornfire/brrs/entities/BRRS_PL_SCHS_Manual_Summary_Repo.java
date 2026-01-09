@@ -9,7 +9,11 @@ import org.springframework.stereotype.Repository;
 import org.springframework.data.repository.query.Param;
 
 @Repository
-public interface BRRS_PL_SCHS_Manual_Summary_Repo extends JpaRepository<PL_SCHS_Manual_Summary_Entity , Date> {    
-    @Query(value = "SELECT * FROM BRRS_PL_SCHS_MANUAL_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(:reportdate)", nativeQuery = true)
-    List<PL_SCHS_Manual_Summary_Entity> getdatabydateList(@Param("reportdate") Date reportdate);
+public interface BRRS_PL_SCHS_Manual_Summary_Repo extends JpaRepository<PL_SCHS_Manual_Summary_Entity, Date> {
+
+    @Query(value = "SELECT * FROM BRRS_PL_SCHS_MANUAL_SUMMARYTABLE WHERE REPORT_DATE = ?1", nativeQuery = true)
+    List<PL_SCHS_Manual_Summary_Entity> getdatabydateList(Date rpt_date);
+
+    
+
 }

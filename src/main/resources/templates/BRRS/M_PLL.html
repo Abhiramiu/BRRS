@@ -1056,7 +1056,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 									<tr>
 										<td style="font-weight:bold; padding-left:4px;"
 											th:text="${report.r11_provi_ins_sec}"></td>
-										<td style="font-weight:bold; text-align:right; background-color:rgb(107,122,143); color:white;"
+										<td style="font-weight:bold; text-align:right; "
 											th:text="${#numbers.formatDecimal(report.r11_provi_loan_loss, 0, 'COMMA', 0, 'POINT')}"
 											th:attr="RowId='R11', ColumnId='C2'"
 											onclick="showdetailsbyRowAndColumn(this)"></td>
@@ -1089,13 +1089,13 @@ PURPOSE		: BRRS_M_PLLREPORT
 									<tr>
 										<td style="padding-left:25px;font-weight:bold;"
 											th:text="${report.r15_provi_ins_sec}"></td>
-										<td style="font-weight:bold;background-color:rgb(107,122,143);color:white;text-align:right;"
+										<td style="font-weight:bold;text-align:right;"
 											th:text="${#numbers.formatDecimal(report.r15_provi_loan_loss,1,'COMMA',0,'POINT')}"
 											th:attr="RowId='R15', ColumnId='C2'"></td>
 									</tr>
 
 									<tr>
-										<td style="padding-left:30px;" th:text="${report.r16_provi_ins_sec}"></td>
+										<td style="padding-left:50px;" th:text="${report.r16_provi_ins_sec}"></td>
 										<td style="text-align:right;"
 											th:text="${#numbers.formatDecimal(report.r16_provi_loan_loss,1,'COMMA',0,'POINT')}"
 											th:attr="RowId='R16', ColumnId='C2'"
@@ -1103,7 +1103,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 									</tr>
 
 									<tr>
-										<td style="padding-left:30px;" th:text="${report.r17_provi_ins_sec}"></td>
+										<td style="padding-left:50px;" th:text="${report.r17_provi_ins_sec}"></td>
 										<td style="text-align:right;"
 											th:text="${#numbers.formatDecimal(report.r17_provi_loan_loss,1,'COMMA',0,'POINT')}"
 											th:attr="RowId='R17', ColumnId='C2'"
@@ -1111,7 +1111,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 									</tr>
 
 									<tr>
-										<td style="padding-left:30px;" th:text="${report.r18_provi_ins_sec}"></td>
+										<td style="padding-left:50px;" th:text="${report.r18_provi_ins_sec}"></td>
 										<td style="text-align:right;"
 											th:text="${#numbers.formatDecimal(report.r18_provi_loan_loss,1,'COMMA',0,'POINT')}"
 											th:attr="RowId='R18', ColumnId='C2'"
@@ -1119,7 +1119,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 									</tr>
 
 									<tr>
-										<td style="padding-left:30px;" th:text="${report.r19_provi_ins_sec}"></td>
+										<td style="padding-left:50px;" th:text="${report.r19_provi_ins_sec}"></td>
 										<td style="text-align:right;"
 											th:text="${#numbers.formatDecimal(report.r19_provi_loan_loss,1,'COMMA',0,'POINT')}"
 											th:attr="RowId='R19', ColumnId='C2'"
@@ -1127,7 +1127,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 									</tr>
 
 									<tr>
-										<td style="padding-left:30px;" th:text="${report.r20_provi_ins_sec}"></td>
+										<td style="padding-left:50px;" th:text="${report.r20_provi_ins_sec}"></td>
 										<td style="text-align:right;"
 											th:text="${#numbers.formatDecimal(report.r20_provi_loan_loss,1,'COMMA',0,'POINT')}"
 											th:attr="RowId='R20', ColumnId='C2'"
@@ -1135,7 +1135,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 									</tr>
 
 									<tr>
-										<td style="padding-left:30px;" th:text="${report.r21_provi_ins_sec}"></td>
+										<td style="padding-left:50px;" th:text="${report.r21_provi_ins_sec}"></td>
 										<td style="text-align:right;"
 											th:text="${#numbers.formatDecimal(report.r21_provi_loan_loss,1,'COMMA',0,'POINT')}"
 											th:attr="RowId='R21', ColumnId='C2'"
@@ -1143,7 +1143,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 									</tr>
 
 									<tr>
-										<td style="padding-left:30px;" th:text="${report.r22_provi_ins_sec}"></td>
+										<td style="padding-left:50px;" th:text="${report.r22_provi_ins_sec}"></td>
 										<td style="text-align:right;"
 											th:text="${#numbers.formatDecimal(report.r22_provi_loan_loss,1,'COMMA',0,'POINT')}"
 											th:attr="RowId='R22', ColumnId='C2'"
@@ -1151,7 +1151,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 									</tr>
 
 									<tr>
-										<td style="padding-left:30px;" th:text="${report.r23_provi_ins_sec}"></td>
+										<td style="padding-left:50px;" th:text="${report.r23_provi_ins_sec}"></td>
 										<td style="text-align:right;"
 											th:text="${#numbers.formatDecimal(report.r23_provi_loan_loss,1,'COMMA',0,'POINT')}"
 											th:attr="RowId='R23', ColumnId='C2'"
@@ -1159,7 +1159,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 									</tr>
 
 									<tr>
-										<td style="padding-left:30px;" th:text="${report.r24_provi_ins_sec}"></td>
+										<td style="padding-left:50px;" th:text="${report.r24_provi_ins_sec}"></td>
 										<td style="text-align:right;"
 											th:text="${#numbers.formatDecimal(report.r24_provi_loan_loss,1,'COMMA',0,'POINT')}"
 											th:attr="RowId='R24', ColumnId='C2'"
@@ -1167,7 +1167,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 									</tr>
 
 									<tr>
-										<td style="padding-left:30px;" th:text="${report.r25_provi_ins_sec}"></td>
+										<td style="padding-left:50px;" th:text="${report.r25_provi_ins_sec}"></td>
 										<td style="text-align:right;"
 											th:text="${#numbers.formatDecimal(report.r25_provi_loan_loss,1,'COMMA',0,'POINT')}"
 											th:attr="RowId='R25', ColumnId='C2'"
@@ -1175,7 +1175,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 									</tr>
 
 									<tr>
-										<td style="padding-left:30px;" th:text="${report.r26_provi_ins_sec}"></td>
+										<td style="padding-left:50px;" th:text="${report.r26_provi_ins_sec}"></td>
 										<td style="text-align:right;"
 											th:text="${#numbers.formatDecimal(report.r26_provi_loan_loss,1,'COMMA',0,'POINT')}"
 											th:attr="RowId='R26', ColumnId='C2'"
@@ -1183,7 +1183,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 									</tr>
 
 									<tr>
-										<td style="padding-left:30px;" th:text="${report.r27_provi_ins_sec}"></td>
+										<td style="padding-left:50px;" th:text="${report.r27_provi_ins_sec}"></td>
 										<td style="text-align:right;"
 											th:text="${#numbers.formatDecimal(report.r27_provi_loan_loss,1,'COMMA',0,'POINT')}"
 											th:attr="RowId='R27', ColumnId='C2'"
@@ -1191,7 +1191,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 									</tr>
 
 									<tr>
-										<td style="padding-left:30px;" th:text="${report.r28_provi_ins_sec}"></td>
+										<td style="padding-left:50px;" th:text="${report.r28_provi_ins_sec}"></td>
 										<td style="text-align:right;"
 											th:text="${#numbers.formatDecimal(report.r28_provi_loan_loss,1,'COMMA',0,'POINT')}"
 											th:attr="RowId='R28', ColumnId='C2'"
@@ -1201,13 +1201,13 @@ PURPOSE		: BRRS_M_PLLREPORT
 									<tr>
 										<td style="padding-left:25px;font-weight:bold;"
 											th:text="${report.r29_provi_ins_sec}"></td>
-										<td style="font-weight:bold;background-color:rgb(107,122,143);color:white;text-align:right;"
+										<td style="font-weight:bold;text-align:right;"
 											th:text="${#numbers.formatDecimal(report.r29_provi_loan_loss,1,'COMMA',0,'POINT')}"
 											th:attr="RowId='R29', ColumnId='C2'"></td>
 									</tr>
 
 									<tr>
-										<td style="padding-left:30px;" th:text="${report.r30_provi_ins_sec}"></td>
+										<td style="padding-left:50px;" th:text="${report.r30_provi_ins_sec}"></td>
 										<td style="text-align:right;"
 											th:text="${#numbers.formatDecimal(report.r30_provi_loan_loss,1,'COMMA',0,'POINT')}"
 											th:attr="RowId='R30', ColumnId='C2'"
@@ -1215,7 +1215,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 									</tr>
 
 									<tr>
-										<td style="padding-left:30px;" th:text="${report.r31_provi_ins_sec}"></td>
+										<td style="padding-left:50px;" th:text="${report.r31_provi_ins_sec}"></td>
 										<td style="text-align:right;"
 											th:text="${#numbers.formatDecimal(report.r31_provi_loan_loss,1,'COMMA',0,'POINT')}"
 											th:attr="RowId='R31', ColumnId='C2'"
@@ -1223,7 +1223,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 									</tr>
 
 									<tr>
-										<td style="padding-left:30px;" th:text="${report.r32_provi_ins_sec}"></td>
+										<td style="padding-left:50px;" th:text="${report.r32_provi_ins_sec}"></td>
 										<td style="text-align:right;"
 											th:text="${#numbers.formatDecimal(report.r32_provi_loan_loss,1,'COMMA',0,'POINT')}"
 											th:attr="RowId='R32', ColumnId='C2'"
@@ -1231,7 +1231,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 									</tr>
 
 									<tr>
-										<td style="padding-left:30px;" th:text="${report.r33_provi_ins_sec}"></td>
+										<td style="padding-left:50px;" th:text="${report.r33_provi_ins_sec}"></td>
 										<td style="text-align:right;"
 											th:text="${#numbers.formatDecimal(report.r33_provi_loan_loss,1,'COMMA',0,'POINT')}"
 											th:attr="RowId='R33', ColumnId='C2'"
@@ -1239,7 +1239,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 									</tr>
 
 									<tr>
-										<td style="padding-left:30px;" th:text="${report.r34_provi_ins_sec}"></td>
+										<td style="padding-left:50px;" th:text="${report.r34_provi_ins_sec}"></td>
 										<td style="text-align:right;"
 											th:text="${#numbers.formatDecimal(report.r34_provi_loan_loss,1,'COMMA',0,'POINT')}"
 											th:attr="RowId='R34', ColumnId='C2'"
@@ -1247,7 +1247,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 									</tr>
 
 									<tr>
-										<td style="padding-left:30px;" th:text="${report.r35_provi_ins_sec}"></td>
+										<td style="padding-left:50px;" th:text="${report.r35_provi_ins_sec}"></td>
 										<td style="text-align:right;"
 											th:text="${#numbers.formatDecimal(report.r35_provi_loan_loss,1,'COMMA',0,'POINT')}"
 											th:attr="RowId='R35', ColumnId='C2'"
@@ -1255,7 +1255,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 									</tr>
 
 									<tr>
-										<td style="padding-left:30px;" th:text="${report.r36_provi_ins_sec}"></td>
+										<td style="padding-left:50px;" th:text="${report.r36_provi_ins_sec}"></td>
 										<td style="text-align:right;"
 											th:text="${#numbers.formatDecimal(report.r36_provi_loan_loss,1,'COMMA',0,'POINT')}"
 											th:attr="RowId='R36', ColumnId='C2'"
@@ -1272,13 +1272,13 @@ PURPOSE		: BRRS_M_PLLREPORT
 
 									<tr>
 										<td style="padding-left:25px;" th:text="${report.r38_provi_ins_sec}"></td>
-										<td style="text-align:right;background-color:rgb(107,122,143);color:white;"
+										<td style="text-align:right;"
 											th:text="${#numbers.formatDecimal(report.r38_provi_loan_loss,1,'COMMA',0,'POINT')}"
 											th:attr="RowId='R38', ColumnId='C2'"></td>
 									</tr>
 
 									<tr>
-										<td style="padding-left:30px;" th:text="${report.r39_provi_ins_sec}"></td>
+										<td style="padding-left:50px;" th:text="${report.r39_provi_ins_sec}"></td>
 										<td style="text-align:right;"
 											th:text="${#numbers.formatDecimal(report.r39_provi_loan_loss,1,'COMMA',0,'POINT')}"
 											th:attr="RowId='R39', ColumnId='C2'"
@@ -1286,7 +1286,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 									</tr>
 
 									<tr>
-										<td style="padding-left:30px;" th:text="${report.r40_provi_ins_sec}"></td>
+										<td style="padding-left:50px;" th:text="${report.r40_provi_ins_sec}"></td>
 										<td style="text-align:right;"
 											th:text="${#numbers.formatDecimal(report.r40_provi_loan_loss,1,'COMMA',0,'POINT')}"
 											th:attr="RowId='R40', ColumnId='C2'"
@@ -1296,7 +1296,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 									<tr>
 										<td style="font-weight:bold; padding-left:4px;"
 											th:text="${report.r41_provi_ins_sec}"></td>
-										<td style="font-weight:bold;background-color:rgb(107,122,143);color:white;text-align:right;"
+										<td style="font-weight:bold;text-align:right;"
 											th:text="${#numbers.formatDecimal(report.r41_provi_loan_loss,1,'COMMA',0,'POINT')}"
 											th:attr="RowId='R41', ColumnId='C2'"></td>
 									</tr>
@@ -1319,13 +1319,13 @@ PURPOSE		: BRRS_M_PLLREPORT
 
 									<tr>
 										<td style="padding-left:25px;" th:text="${report.r44_provi_ins_sec}"></td>
-										<td style="background-color:rgb(107,122,143);color:white;text-align:right;"
+										<td style="text-align:right;"
 											th:text="${#numbers.formatDecimal(report.r44_provi_loan_loss,1,'COMMA',0,'POINT')}"
 											th:attr="RowId='R44', ColumnId='C2'"></td>
 									</tr>
 
 									<tr>
-										<td style="padding-left:30px;" th:text="${report.r45_provi_ins_sec}"></td>
+										<td style="padding-left:50px;" th:text="${report.r45_provi_ins_sec}"></td>
 										<td style="text-align:right;"
 											th:text="${#numbers.formatDecimal(report.r45_provi_loan_loss,1,'COMMA',0,'POINT')}"
 											th:attr="RowId='R45', ColumnId='C2'"
@@ -1333,7 +1333,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 									</tr>
 
 									<tr>
-										<td style="padding-left:30px;" th:text="${report.r46_provi_ins_sec}"></td>
+										<td style="padding-left:50px;" th:text="${report.r46_provi_ins_sec}"></td>
 										<td style="text-align:right;"
 											th:text="${#numbers.formatDecimal(report.r46_provi_loan_loss,1,'COMMA',0,'POINT')}"
 											th:attr="RowId='R46', ColumnId='C2'"
@@ -1341,7 +1341,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 									</tr>
 
 									<tr>
-										<td style="padding-left:30px;" th:text="${report.r47_provi_ins_sec}"></td>
+										<td style="padding-left:50px;" th:text="${report.r47_provi_ins_sec}"></td>
 										<td style="text-align:right;"
 											th:text="${#numbers.formatDecimal(report.r47_provi_loan_loss,1,'COMMA',0,'POINT')}"
 											th:attr="RowId='R47', ColumnId='C2'"
@@ -1349,7 +1349,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 									</tr>
 
 									<tr>
-										<td style="padding-left:30px;" th:text="${report.r48_provi_ins_sec}"></td>
+										<td style="padding-left:50px;" th:text="${report.r48_provi_ins_sec}"></td>
 										<td style="text-align:right;"
 											th:text="${#numbers.formatDecimal(report.r48_provi_loan_loss,1,'COMMA',0,'POINT')}"
 											th:attr="RowId='R48', ColumnId='C2'"
@@ -1358,13 +1358,13 @@ PURPOSE		: BRRS_M_PLLREPORT
 
 									<tr>
 										<td style="padding-left:25px;" th:text="${report.r49_provi_ins_sec}"></td>
-										<td style="background-color:rgb(107,122,143);color:white;text-align:right;"
+										<td style="text-align:right;"
 											th:text="${#numbers.formatDecimal(report.r49_provi_loan_loss,1,'COMMA',0,'POINT')}"
 											th:attr="RowId='R49', ColumnId='C2'"></td>
 									</tr>
 
 									<tr>
-										<td style="padding-left:30px;" th:text="${report.r50_provi_ins_sec}"></td>
+										<td style="padding-left:50px;" th:text="${report.r50_provi_ins_sec}"></td>
 										<td style="text-align:right;"
 											th:text="${#numbers.formatDecimal(report.r50_provi_loan_loss,1,'COMMA',0,'POINT')}"
 											th:attr="RowId='R50', ColumnId='C2'"
@@ -1372,7 +1372,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 									</tr>
 
 									<tr>
-										<td style="padding-left:30px;" th:text="${report.r51_provi_ins_sec}"></td>
+										<td style="padding-left:50px;" th:text="${report.r51_provi_ins_sec}"></td>
 										<td style="text-align:right;"
 											th:text="${#numbers.formatDecimal(report.r51_provi_loan_loss,1,'COMMA',0,'POINT')}"
 											th:attr="RowId='R51', ColumnId='C2'"
@@ -1380,14 +1380,14 @@ PURPOSE		: BRRS_M_PLLREPORT
 									</tr>
 
 									<tr>
-										<td style="padding-left:30px;" th:text="${report.r52_provi_ins_sec}"></td>
-										<td style="text-align:right;background-color:rgb(107,122,143);color:white;"
+										<td style="padding-left:50px;" th:text="${report.r52_provi_ins_sec}"></td>
+										<td style="text-align:right;"
 											th:text="${#numbers.formatDecimal(report.r52_provi_loan_loss,1,'COMMA',0,'POINT')}"
 											th:attr="RowId='R52', ColumnId='C2'"></td>
 									</tr>
 
 									<tr>
-										<td style="padding-left:40px;" th:text="${report.r53_provi_ins_sec}"></td>
+										<td style="padding-left:70px;" th:text="${report.r53_provi_ins_sec}"></td>
 										<td style="text-align:right;"
 											th:text="${#numbers.formatDecimal(report.r53_provi_loan_loss,1,'COMMA',0,'POINT')}"
 											th:attr="RowId='R53', ColumnId='C2'"
@@ -1395,7 +1395,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 									</tr>
 
 									<tr>
-										<td style="padding-left:40px;" th:text="${report.r54_provi_ins_sec}"></td>
+										<td style="padding-left:70px;" th:text="${report.r54_provi_ins_sec}"></td>
 										<td style="text-align:right;"
 											th:text="${#numbers.formatDecimal(report.r54_provi_loan_loss,1,'COMMA',0,'POINT')}"
 											th:attr="RowId='R54', ColumnId='C2'"
@@ -1403,7 +1403,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 									</tr>
 
 									<tr>
-										<td style="padding-left:40px;" th:text="${report.r55_provi_ins_sec}"></td>
+										<td style="padding-left:70px;" th:text="${report.r55_provi_ins_sec}"></td>
 										<td style="text-align:right;"
 											th:text="${#numbers.formatDecimal(report.r55_provi_loan_loss,1,'COMMA',0,'POINT')}"
 											th:attr="RowId='R55', ColumnId='C2'"
@@ -1411,7 +1411,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 									</tr>
 
 									<tr>
-										<td style="padding-left:40px;" th:text="${report.r56_provi_ins_sec}"></td>
+										<td style="padding-left:70px;" th:text="${report.r56_provi_ins_sec}"></td>
 										<td style="text-align:right;"
 											th:text="${#numbers.formatDecimal(report.r56_provi_loan_loss,1,'COMMA',0,'POINT')}"
 											th:attr="RowId='R56', ColumnId='C2'"
@@ -1419,7 +1419,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 									</tr>
 
 									<tr>
-										<td style="padding-left:40px;" th:text="${report.r57_provi_ins_sec}"></td>
+										<td style="padding-left:70px;" th:text="${report.r57_provi_ins_sec}"></td>
 										<td style="text-align:right;"
 											th:text="${#numbers.formatDecimal(report.r57_provi_loan_loss,1,'COMMA',0,'POINT')}"
 											th:attr="RowId='R57', ColumnId='C2'"
@@ -1428,13 +1428,13 @@ PURPOSE		: BRRS_M_PLLREPORT
 
 									<tr>
 										<td style="padding-left:30px;" th:text="${report.r58_provi_ins_sec}"></td>
-										<td style="text-align:right;background-color:rgb(107,122,143);color:white;"
+										<td style="text-align:right;"
 											th:text="${#numbers.formatDecimal(report.r58_provi_loan_loss,1,'COMMA',0,'POINT')}"
 											th:attr="RowId='R58', ColumnId='C2'"></td>
 									</tr>
 
 									<tr>
-										<td style="padding-left:40px;" th:text="${report.r59_provi_ins_sec}"></td>
+										<td style="padding-left:70px;" th:text="${report.r59_provi_ins_sec}"></td>
 										<td style="text-align:right;"
 											th:text="${#numbers.formatDecimal(report.r59_provi_loan_loss,1,'COMMA',0,'POINT')}"
 											th:attr="RowId='R59', ColumnId='C2'"
@@ -1442,7 +1442,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 									</tr>
 
 									<tr>
-										<td style="padding-left:40px;" th:text="${report.r60_provi_ins_sec}"></td>
+										<td style="padding-left:70px;" th:text="${report.r60_provi_ins_sec}"></td>
 										<td style="text-align:right;"
 											th:text="${#numbers.formatDecimal(report.r60_provi_loan_loss,1,'COMMA',0,'POINT')}"
 											th:attr="RowId='R60', ColumnId='C2'"
@@ -1450,7 +1450,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 									</tr>
 
 									<tr>
-										<td style="padding-left:40px;" th:text="${report.r61_provi_ins_sec}"></td>
+										<td style="padding-left:70px;" th:text="${report.r61_provi_ins_sec}"></td>
 										<td style="text-align:right;"
 											th:text="${#numbers.formatDecimal(report.r61_provi_loan_loss,1,'COMMA',0,'POINT')}"
 											th:attr="RowId='R61', ColumnId='C2'"
@@ -1458,7 +1458,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 									</tr>
 
 									<tr>
-										<td style="padding-left:40px;" th:text="${report.r62_provi_ins_sec}"></td>
+										<td style="padding-left:70px;" th:text="${report.r62_provi_ins_sec}"></td>
 										<td style="text-align:right;"
 											th:text="${#numbers.formatDecimal(report.r62_provi_loan_loss,1,'COMMA',0,'POINT')}"
 											th:attr="RowId='R62', ColumnId='C2'"
@@ -1476,7 +1476,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 									<tr>
 										<td style="font-weight:bold; padding-left:4px;"
 											th:text="${report.r64_provi_ins_sec}"></td>
-										<td style="font-weight:bold;text-align:right;background-color:rgb(107,122,143);color:white;"
+										<td style="font-weight:bold;text-align:right;"
 											th:text="${#numbers.formatDecimal(report.r64_provi_loan_loss,1,'COMMA',0,'POINT')}"
 											th:attr="RowId='R64', ColumnId='C2'"></td>
 									</tr>
