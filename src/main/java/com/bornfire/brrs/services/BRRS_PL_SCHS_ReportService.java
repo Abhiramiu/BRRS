@@ -4168,7 +4168,7 @@ public class BRRS_PL_SCHS_ReportService {
                     PL_SCHS_Manual_Archival_Summary_Entity record1 = dataList1.get(i);
 
                     System.out.println("rownumber=" + startRow + i);
-                    Row row = sheet.getRow(startRow + i);
+                      Row row = sheet.getRow(startRow + i);
                     if (row == null) {
                         row = sheet.createRow(startRow + i);
                     }
@@ -4540,98 +4540,98 @@ public class BRRS_PL_SCHS_ReportService {
                         R12Cell10.setCellValue("");
                         R12Cell10.setCellStyle(textStyle);
                     }
-                    row = sheet.getRow(12);
-                    Cell R13Cell1 = row.createCell(3);
-                    if (record.getR13_fig_bal_sheet() != null) {
-                        R13Cell1.setCellValue(record.getR13_fig_bal_sheet().doubleValue());
-                        R13Cell1.setCellStyle(numberStyle);
-                    } else {
-                        R13Cell1.setCellValue("");
-                        R13Cell1.setCellStyle(textStyle);
-                    }
+                    // row = sheet.getRow(12);
+                    // Cell R13Cell1 = row.createCell(3);
+                    // if (record.getR13_fig_bal_sheet() != null) {
+                    // R13Cell1.setCellValue(record.getR13_fig_bal_sheet().doubleValue());
+                    // R13Cell1.setCellStyle(numberStyle);
+                    // } else {
+                    // R13Cell1.setCellValue("");
+                    // R13Cell1.setCellStyle(textStyle);
+                    // }
 
-                    // R13 Col E
-                    Cell R13Cell2 = row.createCell(4);
-                    if (record.getR13_fig_bal_sheet_bwp() != null) {
-                        R13Cell2.setCellValue(record.getR13_fig_bal_sheet_bwp().doubleValue());
-                        R13Cell2.setCellStyle(numberStyle);
-                    } else {
-                        R13Cell2.setCellValue("");
-                        R13Cell2.setCellStyle(textStyle);
-                    }
+                    // // R13 Col E
+                    // Cell R13Cell2 = row.createCell(4);
+                    // if (record.getR13_fig_bal_sheet_bwp() != null) {
+                    // R13Cell2.setCellValue(record.getR13_fig_bal_sheet_bwp().doubleValue());
+                    // R13Cell2.setCellStyle(numberStyle);
+                    // } else {
+                    // R13Cell2.setCellValue("");
+                    // R13Cell2.setCellStyle(textStyle);
+                    // }
 
-                    // R13 Col F
-                    Cell R13Cell3 = row.createCell(5);
-                    if (record.getR13_amt_statement_adj() != null) {
-                        R13Cell3.setCellValue(record.getR13_amt_statement_adj().doubleValue());
-                        R13Cell3.setCellStyle(numberStyle);
-                    } else {
-                        R13Cell3.setCellValue("");
-                        R13Cell3.setCellStyle(textStyle);
-                    }
-                    // R13 Col G
-                    Cell R13Cell4 = row.createCell(6);
-                    if (record.getR13_amt_statement_adj_bwp() != null) {
-                        R13Cell4.setCellValue(record.getR13_amt_statement_adj_bwp().doubleValue());
-                        R13Cell4.setCellStyle(numberStyle);
-                    } else {
-                        R13Cell4.setCellValue("");
-                        R13Cell4.setCellStyle(textStyle);
-                    }
-                    // R13 Col H
-                    Cell R13Cell5 = row.createCell(7);
-                    if (record.getR13_net_amt() != null) {
-                        R13Cell5.setCellValue(record.getR13_net_amt().doubleValue());
-                        R13Cell5.setCellStyle(numberStyle);
-                    } else {
-                        R13Cell5.setCellValue("");
-                        R13Cell5.setCellStyle(textStyle);
-                    }
-                    // R13 Col I
-                    Cell R13Cell6 = row.createCell(8);
-                    if (record.getR13_net_amt_bwp() != null) {
-                        R13Cell6.setCellValue(record.getR13_net_amt_bwp().doubleValue());
-                        R13Cell6.setCellStyle(numberStyle);
-                    } else {
-                        R13Cell6.setCellValue("");
-                        R13Cell6.setCellStyle(textStyle);
-                    }
-                    // R13 Col J
-                    Cell R13Cell7 = row.createCell(9);
-                    if (record.getR13_bal_sub() != null) {
-                        R13Cell7.setCellValue(record.getR13_bal_sub().doubleValue());
-                        R13Cell7.setCellStyle(numberStyle);
-                    } else {
-                        R13Cell7.setCellValue("");
-                        R13Cell7.setCellStyle(textStyle);
-                    }
-                    // R13 Col K
-                    Cell R13Cell8 = row.createCell(10);
-                    if (record.getR13_bal_sub_bwp() != null) {
-                        R13Cell8.setCellValue(record.getR13_bal_sub_bwp().doubleValue());
-                        R13Cell8.setCellStyle(numberStyle);
-                    } else {
-                        R13Cell8.setCellValue("");
-                        R13Cell8.setCellStyle(textStyle);
-                    }
-                    // R13 Col L
-                    Cell R13Cell9 = row.createCell(11);
-                    if (record.getR13_bal_sub_diaries() != null) {
-                        R13Cell9.setCellValue(record.getR13_bal_sub_diaries().doubleValue());
-                        R13Cell9.setCellStyle(numberStyle);
-                    } else {
-                        R13Cell9.setCellValue("");
-                        R13Cell9.setCellStyle(textStyle);
-                    }
-                    // R13 Col M
-                    Cell R13Cell10 = row.createCell(12);
-                    if (record.getR13_bal_sub_diaries_bwp() != null) {
-                        R13Cell10.setCellValue(record.getR13_bal_sub_diaries_bwp().doubleValue());
-                        R13Cell10.setCellStyle(numberStyle);
-                    } else {
-                        R13Cell10.setCellValue("");
-                        R13Cell10.setCellStyle(textStyle);
-                    }
+                    // // R13 Col F
+                    // Cell R13Cell3 = row.createCell(5);
+                    // if (record.getR13_amt_statement_adj() != null) {
+                    // R13Cell3.setCellValue(record.getR13_amt_statement_adj().doubleValue());
+                    // R13Cell3.setCellStyle(numberStyle);
+                    // } else {
+                    // R13Cell3.setCellValue("");
+                    // R13Cell3.setCellStyle(textStyle);
+                    // }
+                    // // R13 Col G
+                    // Cell R13Cell4 = row.createCell(6);
+                    // if (record.getR13_amt_statement_adj_bwp() != null) {
+                    // R13Cell4.setCellValue(record.getR13_amt_statement_adj_bwp().doubleValue());
+                    // R13Cell4.setCellStyle(numberStyle);
+                    // } else {
+                    // R13Cell4.setCellValue("");
+                    // R13Cell4.setCellStyle(textStyle);
+                    // }
+                    // // R13 Col H
+                    // Cell R13Cell5 = row.createCell(7);
+                    // if (record.getR13_net_amt() != null) {
+                    // R13Cell5.setCellValue(record.getR13_net_amt().doubleValue());
+                    // R13Cell5.setCellStyle(numberStyle);
+                    // } else {
+                    // R13Cell5.setCellValue("");
+                    // R13Cell5.setCellStyle(textStyle);
+                    // }
+                    // // R13 Col I
+                    // Cell R13Cell6 = row.createCell(8);
+                    // if (record.getR13_net_amt_bwp() != null) {
+                    // R13Cell6.setCellValue(record.getR13_net_amt_bwp().doubleValue());
+                    // R13Cell6.setCellStyle(numberStyle);
+                    // } else {
+                    // R13Cell6.setCellValue("");
+                    // R13Cell6.setCellStyle(textStyle);
+                    // }
+                    // // R13 Col J
+                    // Cell R13Cell7 = row.createCell(9);
+                    // if (record.getR13_bal_sub() != null) {
+                    // R13Cell7.setCellValue(record.getR13_bal_sub().doubleValue());
+                    // R13Cell7.setCellStyle(numberStyle);
+                    // } else {
+                    // R13Cell7.setCellValue("");
+                    // R13Cell7.setCellStyle(textStyle);
+                    // }
+                    // // R13 Col K
+                    // Cell R13Cell8 = row.createCell(10);
+                    // if (record.getR13_bal_sub_bwp() != null) {
+                    // R13Cell8.setCellValue(record.getR13_bal_sub_bwp().doubleValue());
+                    // R13Cell8.setCellStyle(numberStyle);
+                    // } else {
+                    // R13Cell8.setCellValue("");
+                    // R13Cell8.setCellStyle(textStyle);
+                    // }
+                    // // R13 Col L
+                    // Cell R13Cell9 = row.createCell(11);
+                    // if (record.getR13_bal_sub_diaries() != null) {
+                    // R13Cell9.setCellValue(record.getR13_bal_sub_diaries().doubleValue());
+                    // R13Cell9.setCellStyle(numberStyle);
+                    // } else {
+                    // R13Cell9.setCellValue("");
+                    // R13Cell9.setCellStyle(textStyle);
+                    // }
+                    // // R13 Col M
+                    // Cell R13Cell10 = row.createCell(12);
+                    // if (record.getR13_bal_sub_diaries_bwp() != null) {
+                    // R13Cell10.setCellValue(record.getR13_bal_sub_diaries_bwp().doubleValue());
+                    // R13Cell10.setCellStyle(numberStyle);
+                    // } else {
+                    // R13Cell10.setCellValue("");
+                    // R13Cell10.setCellStyle(textStyle);
+                    // }
 
                     row = sheet.getRow(16);
                     Cell R17Cell1 = row.createCell(3);
@@ -7858,22 +7858,18 @@ public class BRRS_PL_SCHS_ReportService {
                     // R63Cell10.setCellStyle(textStyle);
                     // }
                 }
-
-                workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
+                // workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
+                // ✅ Let Excel calculate formulas on open
+                workbook.setForceFormulaRecalculation(true);
             } else {
 
             }
-
             // Write the final workbook content to the in-memory stream.
             workbook.write(out);
-
             logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-
             return out.toByteArray();
         }
-
     }
-
     public List<Object> getPL_SCHSArchival() {
         List<Object> PL_SCHSArchivallist = new ArrayList<>();
         try {
@@ -7949,7 +7945,7 @@ public class BRRS_PL_SCHS_ReportService {
             balanceStyle.setBorderRight(border);
 
             // Header row
-            String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "REPORT LABLE",
+            String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE","AVERAGE", "REPORT LABLE",
                     "REPORT ADDL CRITERIA1", "REPORT_DATE" };
 
             XSSFRow headerRow = sheet.createRow(0);
@@ -7988,15 +7984,24 @@ public class BRRS_PL_SCHS_ReportService {
                     }
                     balanceCell.setCellStyle(balanceStyle);
 
-                    row.createCell(4).setCellValue(item.getReportLabel());
-                    row.createCell(5).setCellValue(item.getReportAddlCriteria1());
-                    row.createCell(6)
-                            .setCellValue(item.getReportDate() != null
-                                    ? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
+                    // AVERAGE  (right aligned, 3 decimal places)
+                    Cell balanceCell1 = row.createCell(4);
+                    if (item.getAverage() != null) {
+                        balanceCell1.setCellValue(item.getAverage().doubleValue());
+                    } else {
+                        balanceCell1.setCellValue(0);
+                    }
+                    balanceCell1.setCellStyle(balanceStyle);
+
+                    row.createCell(5).setCellValue(item.getReportLabel());
+                    row.createCell(6).setCellValue(item.getReportAddlCriteria1());
+                    row.createCell(7)
+                            .setCellValue(item.getREPORT_DATE() != null
+                                    ? new SimpleDateFormat("dd-MM-yyyy").format(item.getREPORT_DATE())
                                     : "");
 
                     // Apply data style for all other cells
-                    for (int j = 0; j < 7; j++) {
+                    for (int j = 0; j < 8; j++) {
                         if (j != 3) {
                             row.getCell(j).setCellStyle(dataStyle);
                         }
@@ -8072,7 +8077,7 @@ public class BRRS_PL_SCHS_ReportService {
             balanceStyle.setBorderRight(border);
 
             // Header row
-            String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "REPORT LABLE",
+            String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE","AVERAGE", "REPORT LABLE",
                     "REPORT ADDL CRITERIA1", "REPORT_DATE" };
 
             XSSFRow headerRow = sheet.createRow(0);
@@ -8113,15 +8118,24 @@ public class BRRS_PL_SCHS_ReportService {
                     }
                     balanceCell.setCellStyle(balanceStyle);
 
-                    row.createCell(4).setCellValue(item.getReportLabel());
-                    row.createCell(5).setCellValue(item.getReportAddlCriteria1());
-                    row.createCell(6)
-                            .setCellValue(item.getReportDate() != null
-                                    ? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
+                      // AVERAGE  (right aligned, 3 decimal places)
+                    Cell balanceCell1 = row.createCell(4);
+                    if (item.getAverage() != null) {
+                        balanceCell1.setCellValue(item.getAverage().doubleValue());
+                    } else {
+                        balanceCell1.setCellValue(0);
+                    }
+                    balanceCell1.setCellStyle(balanceStyle);
+
+                    row.createCell(5).setCellValue(item.getReportLabel());
+                    row.createCell(6).setCellValue(item.getReportAddlCriteria1());
+                    row.createCell(7)
+                            .setCellValue(item.getREPORT_DATE() != null
+                                    ? new SimpleDateFormat("dd-MM-yyyy").format(item.getREPORT_DATE())
                                     : "");
 
                     // Apply data style for all other cells
-                    for (int j = 0; j < 7; j++) {
+                    for (int j = 0; j < 8; j++) {
                         if (j != 3) {
                             row.getCell(j).setCellStyle(dataStyle);
                         }
@@ -8157,9 +8171,9 @@ public class BRRS_PL_SCHS_ReportService {
         if (acctNo != null) {
             PL_SCHS_Detail_Entity PL_SCHSEntity = brrs_PL_SCHS_detail_repo
                     .findByAcctnumber(acctNo);
-            if (PL_SCHSEntity != null && PL_SCHSEntity.getReportDate() != null) {
+            if (PL_SCHSEntity != null && PL_SCHSEntity.getREPORT_DATE() != null) {
                 String formattedDate = new SimpleDateFormat("dd/MM/yyyy")
-                        .format(PL_SCHSEntity.getReportDate());
+                        .format(PL_SCHSEntity.getREPORT_DATE());
                 mv.addObject("asondate", formattedDate);
             }
             mv.addObject("PL_SCHSData", PL_SCHSEntity);

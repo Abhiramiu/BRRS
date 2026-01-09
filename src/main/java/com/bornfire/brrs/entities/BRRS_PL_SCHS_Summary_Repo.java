@@ -6,9 +6,9 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-public interface BRRS_PL_SCHS_Summary_Repo extends JpaRepository<PL_SCHS_Summary_Entity , Date> {
-    
-@Query(value = "select * from BRRS_PL_SCHS_SUMMARYTABLE ", nativeQuery = true)
-	List<PL_SCHS_Summary_Entity> getdatabydateList(Date reportdate);
+public interface BRRS_PL_SCHS_Summary_Repo extends JpaRepository<PL_SCHS_Summary_Entity, Date> {
+
+	@Query(value = "SELECT * FROM BRRS_PL_SCHS_SUMMARYTABLE WHERE REPORT_DATE = ?1", nativeQuery = true)
+	List<PL_SCHS_Summary_Entity> getdatabydateList(Date rpt_date);
 
 }

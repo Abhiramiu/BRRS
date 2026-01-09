@@ -1587,10 +1587,9 @@ PURPOSE		: BRRSREPORT
                         style="display: flex; color: white; align-items: center">
                         <!-- 📅 Date -->
                         <span class="white-text"
-                            style="color: white !important; font-size: 16px; margin-right: 20px;">Report Date:
-                            <span th:text="${#strings.replace(asondate, '/', '-')}">2025-07-04</span>
+                            style="color:white !important; font-size: 17px; margin-right: 20px;">Report Date:
+                            <span th:text="${#strings.replace(asondate, '/', '-')}"></span>
                         </span>
-
                         <!-- Buttons -->
                         <input type="hidden" id="selectedTab" th:value="${displaymode}" />
                         <button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showsummary();"
@@ -4601,7 +4600,7 @@ PURPOSE		: BRRSREPORT
                                                     title="Click to Edit this Record">
                                                     <i class="fas fa-edit" style="color: black; cursor:pointer;"
                                                         th:attr="data-acctNo=${report.acctNumber},
-														data-asondate=${#dates.format(report.reportDate, 'dd-MM-yyyy')},data-type=${type}"
+														data-asondate=${#dates.format(report.REPORT_DATE, 'dd-MM-yyyy')},data-type=${type}"
                                                         onclick="openPL_SCHSDetail(this, 'edit')"></i>
 
                                                 </a>
@@ -4621,7 +4620,7 @@ PURPOSE		: BRRSREPORT
 
                                             <td th:text="${report.reportLabel}" style="text-align:left"></td>
                                             <td th:text="${report.reportAddlCriteria1}" style="text-align:left"></td>
-                                            <td th:text="${#dates.format(report.reportDate, 'dd-MM-yyyy')}"
+                                            <td th:text="${#dates.format(report.REPORT_DATE, 'dd-MM-yyyy')}"
                                                 style="text-align:left"></td>
                                         </tr>
                                     </tbody>

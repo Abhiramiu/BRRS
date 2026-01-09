@@ -51,7 +51,7 @@ public class PL_SCHS_Detail_Entity {
 
     @Column(name = "REPORT_DATE")
     @DateTimeFormat(pattern = "dd-MM-yyyy")
-    private Date reportDate;
+    private Date REPORT_DATE;
 
     @Column(name = "CREATE_USER")
     private String createUser;
@@ -171,12 +171,12 @@ public class PL_SCHS_Detail_Entity {
         this.acctBalanceInpula = acctBalanceInpula;
     }
 
-    public Date getReportDate() {
-        return reportDate;
+    public Date getREPORT_DATE() {
+        return REPORT_DATE;
     }
 
-    public void setReportDate(Date reportDate) {
-        this.reportDate = reportDate;
+    public void setREPORT_DATE(Date rEPORT_DATE) {
+        REPORT_DATE = rEPORT_DATE;
     }
 
     public String getCreateUser() {
