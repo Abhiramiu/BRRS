@@ -755,7 +755,7 @@ public class RegulatoryReportServices {
 				break;
 
 			case "M_OPTR":
-				repsummary = BRRS_M_OPTR_ReportService.getM_OPTRView(reportId, fromdate, todate, currency, dtltype,
+				repsummary = BRRS_M_OPTR_ReportService.getMOPTRView(reportId, fromdate, todate, currency, dtltype,
 						pageable, type, version);
 				break;
 

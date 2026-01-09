@@ -98,11 +98,11 @@ public class BRRS_M_OPTR_NEW_ReportService {
 
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
-	public ModelAndView getM_OPTR_NEWView(String reportId, String fromdate, String todate, String currency,
-										String dtltype, Pageable pageable, String type, String version) {
+	public ModelAndView getM_OPTR_NEWView(String reportId, String fromdate, String todate, String currency, String dtltype,
+			Pageable pageable, String type, String version) {
 		ModelAndView mv = new ModelAndView();
 		Session hs = sessionFactory.getCurrentSession();
-		
+
 		int pageSize = pageable.getPageSize();
 		int currentPage = pageable.getPageNumber();
 		int startItem = currentPage * pageSize;
@@ -110,29 +110,29 @@ public class BRRS_M_OPTR_NEW_ReportService {
 		try {
 			Date d1 = dateformat.parse(todate);
 
-	 // ---------- CASE 1: ARCHIVAL ----------
-        if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
-            List<M_OPTR_NEW_Archival_Summary_Entity> T1Master = 
-                BRRS_M_OPTR_NEW_Archival_Summary_Repo.getdatabydateListarchival(d1, version);
-            
-            mv.addObject("reportsummary", T1Master);
-        }
+			// ---------- CASE 1: ARCHIVAL ----------
+			if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
+				List<M_OPTR_NEW_Archival_Summary_Entity> T1Master = BRRS_M_OPTR_NEW_Archival_Summary_Repo
+						.getdatabydateListarchival(d1, version);
 
-        // ---------- CASE 2: RESUB ----------
-        else if ("RESUB".equalsIgnoreCase(type) && version != null) {
-            List<M_OPTR_NEW_Archival_Summary_Entity> T1Master =
-                BRRS_M_OPTR_NEW_Archival_Summary_Repo.getdatabydateListarchival(d1, version);
-            
-            mv.addObject("reportsummary", T1Master);
-        }
+				mv.addObject("reportsummary", T1Master);
+			}
 
-        // ---------- CASE 3: NORMAL ----------
-        else {
-            List<M_OPTR_NEW_Summary_Entity> T1Master = 
-                BRRS_M_OPTR_NEW_Summary_Repo.getdatabydateListWithVersion(todate);
-            System.out.println("T1Master Size "+T1Master.size());
-            mv.addObject("reportsummary", T1Master);
-        }
+			// ---------- CASE 2: RESUB ----------
+			else if ("RESUB".equalsIgnoreCase(type) && version != null) {
+				List<M_OPTR_NEW_Archival_Summary_Entity> T1Master = BRRS_M_OPTR_NEW_Archival_Summary_Repo
+						.getdatabydateListarchival(d1, version);
+
+				mv.addObject("reportsummary", T1Master);
+			}
+
+			// ---------- CASE 3: NORMAL ----------
+			else {
+				List<M_OPTR_NEW_Summary_Entity> T1Master = BRRS_M_OPTR_NEW_Summary_Repo
+						.getdatabydateList(dateformat.parse(todate));
+				System.out.println("T1Master Size " + T1Master.size());
+				mv.addObject("reportsummary", T1Master);
+			}
 
 		} catch (ParseException e) {
 			e.printStackTrace();
@@ -143,7 +143,6 @@ public class BRRS_M_OPTR_NEW_ReportService {
 		System.out.println("View set to: " + mv.getViewName());
 		return mv;
 	}
-
 	
 	public ModelAndView getM_OPTRNEWcurrentDtl(String reportId, String fromdate, String todate, String currency,
 			String dtltype, Pageable pageable, String Filter, String type, String version) {
