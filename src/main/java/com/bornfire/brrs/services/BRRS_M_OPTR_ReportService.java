@@ -8,11 +8,14 @@ import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.CallableStatement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
@@ -37,11 +40,14 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
@@ -49,11 +55,19 @@ import org.springframework.web.servlet.ModelAndView;
 
 
 import com.bornfire.brrs.entities.M_OPTR_Archival_Summary_Entity;
+import com.bornfire.brrs.entities.M_OPTR_Detail_Entity;
 import com.bornfire.brrs.entities.M_OPTR_Summary_Entity;
 import com.bornfire.brrs.entities.BRRS_M_OPTR_Summary_Repo;
+import com.bornfire.brrs.entities.M_OPTR_Archival_Detail_Entity;
+import com.bornfire.brrs.entities.BDISB1_Archival_Detail_Entity;
+import com.bornfire.brrs.entities.BDISB1_Detail_Entity;
+import com.bornfire.brrs.entities.BDISB3_Archival_Detail_Entity;
+import com.bornfire.brrs.entities.BDISB3_Archival_Summary_Entity;
+import com.bornfire.brrs.entities.BDISB3_Detail_Entity;
+import com.bornfire.brrs.entities.BDISB3_Summary_Entity;
+import com.bornfire.brrs.entities.BRRS_M_OPTR_Archival_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_M_OPTR_Archival_Summary_Repo;
-
-
+import com.bornfire.brrs.entities.BRRS_M_OPTR_Detail_Repo;
 
 import java.math.BigDecimal;
 
@@ -68,14 +82,21 @@ public class BRRS_M_OPTR_ReportService {
 	@Autowired
 	SessionFactory sessionFactory;
 
-
+	@Autowired
+	private JdbcTemplate jdbcTemplate;
 
 
 	@Autowired
 	BRRS_M_OPTR_Summary_Repo BRRS_M_OPTR_Summary_Repo;
+	
+	@Autowired
+	BRRS_M_OPTR_Detail_Repo OPTR_Detail_Repo;
 
 	@Autowired
 	BRRS_M_OPTR_Archival_Summary_Repo BRRS_M_OPTR_Archival_Summary_Repo;
+	
+	@Autowired
+	BRRS_M_OPTR_Archival_Detail_Repo M_OPTR_Archival_Detail_Repo;
 
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
@@ -124,107 +145,262 @@ public class BRRS_M_OPTR_ReportService {
 		System.out.println("View set to: " + mv.getViewName());
 		return mv;
 	}
+	
+	public ModelAndView getM_OPTRcurrentDtl(String reportId, String fromdate, String todate, String currency,
+			String dtltype, Pageable pageable, String Filter, String type, String version) {
 
+		int pageSize = pageable != null ? pageable.getPageSize() : 10;
+		int currentPage = pageable != null ? pageable.getPageNumber() : 0;
+		int totalPages = 0;
 
+		ModelAndView mv = new ModelAndView();
+		Session hs = sessionFactory.getCurrentSession();
 
-	public void updateReport1(M_OPTR_Summary_Entity updatedEntity) {
-	    System.out.println("Came to services1");
-	    System.out.println("Report Date: " + updatedEntity.getReportDate());
+		try {
+			Date parsedDate = null;
+			if (todate != null && !todate.isEmpty()) {
+				parsedDate = dateformat.parse(todate);
+			}
 
-	    M_OPTR_Summary_Entity existing = BRRS_M_OPTR_Summary_Repo.findById(updatedEntity.getReportDate())
-	            .orElseThrow(() -> new RuntimeException(
-	                    "Record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
+			String rowId = null;
+			String columnId = null;
 
-	    try {
-	        // 1. Loop from R15 to R50 and copy fields
-	        for (int i = 10; i <= 14; i++) {
-		if (i == 12) {
-        continue;
-    }
-	            String prefix = "R" + i + "_";
+			// ✅ Split filter string into rowId & columnId
+			if (Filter != null && Filter.contains(",")) {
+				String[] parts = Filter.split(",");
+				if (parts.length >= 2) {
+					rowId = parts[0];
+					columnId = parts[1];
+				}
+			}
+			System.out.println(type);
+			if ("ARCHIVAL".equals(type) && version != null) {
+				System.out.println(type);
+				// 🔹 Archival branch
+				List<M_OPTR_Archival_Detail_Entity> T1Dt1;
+				if (rowId != null && columnId != null) {
+					T1Dt1 = M_OPTR_Archival_Detail_Repo.GetDataByRowIdAndColumnId(rowId, columnId, parsedDate,
+							version);
+				} else {
+					T1Dt1 = M_OPTR_Archival_Detail_Repo.getdatabydateList(parsedDate, version);
+				}
 
-	            String[] fields = {"INTEREST_RATES", "EQUITIES", "FOREIGN_EXC_GOLD", "COMMODITIES"};
+				mv.addObject("reportdetails", T1Dt1);
+				mv.addObject("reportmaster12", T1Dt1);
+				System.out.println("ARCHIVAL COUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
 
-	            for (String field : fields) {
-	                String getterName = "get" + prefix + field;
-	                String setterName = "set" + prefix + field;
+			} else {
+				// 🔹 Current branch
+				List<M_OPTR_Detail_Entity> T1Dt1;
+				if (rowId != null && columnId != null) {
+					T1Dt1 = OPTR_Detail_Repo.GetDataByRowIdAndColumnId(rowId, columnId, parsedDate);
+				} else {
+					T1Dt1 = OPTR_Detail_Repo.getdatabydateList(parsedDate);
+					System.out.println("bdisb2 size is : " + T1Dt1.size());
+					totalPages = OPTR_Detail_Repo.getdatacount(parsedDate);
+					mv.addObject("pagination", "YES");
+				}
 
-	                try {
-	                    Method getter = M_OPTR_Summary_Entity.class.getMethod(getterName);
-	                    Method setter = M_OPTR_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+				mv.addObject("reportdetails", T1Dt1);
+				mv.addObject("reportmaster12", T1Dt1);
+				System.out.println("LISTCOUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
+			}
 
-	                    Object newValue = getter.invoke(updatedEntity);
-	                    setter.invoke(existing, newValue);
+		} catch (ParseException e) {
+			e.printStackTrace();
+			mv.addObject("errorMessage", "Invalid date format: " + todate);
+		} catch (Exception e) {
+			e.printStackTrace();
+			mv.addObject("errorMessage", "Unexpected error: " + e.getMessage());
+		}
 
-	                } catch (NoSuchMethodException e) {
-	                    // Skip missing fields
-	                    continue;
-	                }
-	            }
-	        }
-	        
-// Loop through rows for formula fields 
-int[] targetRows = {12};
+		// ✅ Common attributes
+		mv.setViewName("BRRS/M_OPTR");
+		mv.addObject("displaymode", "Details");
+		mv.addObject("currentPage", currentPage);
+		System.out.println("totalPages: " + (int) Math.ceil((double) totalPages / 100));
+		mv.addObject("totalPages", (int) Math.ceil((double) totalPages / 100));
+		mv.addObject("reportsflag", "reportsflag");
+		mv.addObject("menu", reportId);
 
-for (int i : targetRows) {
-    String prefix = "R" + i + "_";
-
-    String[] fields = {"INTEREST_RATES", "EQUITIES", "FOREIGN_EXC_GOLD", "COMMODITIES"};
-
-    for (String field : fields) {
-        String getterName = "get" + prefix + field;
-        String setterName = "set" + prefix + field;
-
-        try {
-            Method getter = M_OPTR_Summary_Entity.class.getMethod(getterName);
-            Method setter = M_OPTR_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-
-            Object newValue = getter.invoke(updatedEntity);
-            setter.invoke(existing, newValue);
-
-        } catch (NoSuchMethodException e) {
-            // Skip missing fields
-            continue;
-        }
-    }
-}
-//Loop through rows for formula fields 
-int[] target = {10,11,12,13,14};
-
-for (int i : target) {
- String prefix = "R" + i + "_";
-
- String[] fields = {"TOTAL"};
-
- for (String field : fields) {
-     String getterName = "get" + prefix + field;
-     String setterName = "set" + prefix + field;
-
-     try {
-         Method getter = M_OPTR_Summary_Entity.class.getMethod(getterName);
-         Method setter = M_OPTR_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-
-         Object newValue = getter.invoke(updatedEntity);
-         setter.invoke(existing, newValue);
-
-     } catch (NoSuchMethodException e) {
-         // Skip missing fields
-         continue;
-     }
- }
-}
-
-}			
-
-	catch (Exception e) {
-	        throw new RuntimeException("Error while updating report fields", e);
-	    }
-
-	    // 3️⃣ Save updated entity
-	    BRRS_M_OPTR_Summary_Repo.save(existing);
+		return mv;
 	}
 	
+	public void updateDetailFromForm(Date reportDate, Map<String, String> params) {
 
+	    System.out.println("came to service for update ");
+
+	    for (Map.Entry<String, String> entry : params.entrySet()) {
+
+	        String key = entry.getKey();
+	        String value = entry.getValue();
+
+	        // ✅ Allow only valid keys for required columns
+	        if (!key.matches("R\\d+_C\\d+_(INTEREST_RATES|EQUITIES|FOREIGN_EXC_GOLD|COMMODITIES|TOTAL)")) {
+	            continue;
+	        }
+
+	        String[] parts = key.split("_");
+	        String reportLabel = parts[0];       // R1, R2, etc.
+	        String addlCriteria = parts[1];      // C1, C2, etc.
+	        String column = String.join("_", Arrays.copyOfRange(parts, 2, parts.length));
+
+	        BigDecimal amount = new BigDecimal(value);
+
+	        List<M_OPTR_Detail_Entity> rows =
+	        		OPTR_Detail_Repo.findByReportDateAndReportLableAndReportAddlCriteria1(
+	                reportDate, reportLabel, addlCriteria
+	            );
+
+	        for (M_OPTR_Detail_Entity row : rows) {
+
+	            if ("INTEREST_RATES".equals(column)) {
+	                row.setINTEREST_RATES(amount);
+
+	            } else if ("EQUITIES".equals(column)) {
+	                row.setEQUITIES(amount);
+
+	            } else if ("FOREIGN_EXC_GOLD".equals(column)) {
+	                row.setFOREIGN_EXC_GOLD(amount);
+
+	            } else if ("COMMODITIES".equals(column)) {
+	                row.setCOMMODITIES(amount);
+
+	            } else if ("TOTAL".equals(column)) {
+	                row.setTOTAL(amount);
+	            }
+	        }
+
+	        OPTR_Detail_Repo.saveAll(rows);
+	    }
+
+	    // ✅ CALL ORACLE PROCEDURE AFTER ALL UPDATES
+	    callSummaryProcedure(reportDate);
+	}
+	
+	private void callSummaryProcedure(Date reportDate) {
+
+	    String sql = "{ call BRRS_M_OPTR_SUMMARY_PROCEDURE(?) }";
+
+	    jdbcTemplate.update(connection -> {
+	        CallableStatement cs = connection.prepareCall(sql);
+
+	        // Force exact format expected by procedure
+	        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+	        sdf.setLenient(false);
+
+	        String formattedDate = sdf.format(reportDate);
+
+	        cs.setString(1, formattedDate);  // 🔥 THIS IS MANDATORY
+	        return cs;
+	    });
+
+	    System.out.println("✅ Summary procedure executed for date: " +
+	            new SimpleDateFormat("dd-MM-yyyy").format(reportDate));
+	}
+
+
+
+
+
+
+	//public void updateReport1(M_OPTR_Summary_Entity updatedEntity) {
+	//    System.out.println("Came to services1");
+	//    System.out.println("Report Date: " + updatedEntity.getReportDate());
+
+	 //   M_OPTR_Summary_Entity existing = BRRS_M_OPTR_Summary_Repo.findById(updatedEntity.getReportDate())
+	 //           .orElseThrow(() -> new RuntimeException(
+	  //                  "Record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
+
+	//    try {
+	        // 1. Loop from R15 to R50 and copy fields
+//	        for (int i = 10; i <= 14; i++) {
+//		if (i == 12) {
+ //       continue;
+ //   }
+//	            String prefix = "R" + i + "_";
+
+//	            String[] fields = {"INTEREST_RATES", "EQUITIES", "FOREIGN_EXC_GOLD", "COMMODITIES"};
+
+//	            for (String field : fields) {
+//	                String getterName = "get" + prefix + field;
+//	                String setterName = "set" + prefix + field;
+
+//	                try {
+//	                    Method getter = M_OPTR_Summary_Entity.class.getMethod(getterName);
+//	                    Method setter = M_OPTR_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+
+//	                    Object newValue = getter.invoke(updatedEntity);
+//	                    setter.invoke(existing, newValue);
+
+//	                } catch (NoSuchMethodException e) {
+	                    // Skip missing fields
+	//                    continue;
+	//                }
+	 //           }
+	//       }
+	        
+// Loop through rows for formula fields 
+//int[] targetRows = {12};
+
+//for (int i : targetRows) {
+  //  String prefix = "R" + i + "_";
+
+  //  String[] fields = {"INTEREST_RATES", "EQUITIES", "FOREIGN_EXC_GOLD", "COMMODITIES"};
+
+  //  for (String field : fields) {
+   //     String getterName = "get" + prefix + field;
+   //     String setterName = "set" + prefix + field;
+
+   //     try {
+   //         Method getter = M_OPTR_Summary_Entity.class.getMethod(getterName);
+  //         Method setter = M_OPTR_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+
+   //         Object newValue = getter.invoke(updatedEntity);
+   //         setter.invoke(existing, newValue);
+
+   //     } catch (NoSuchMethodException e) {
+            // Skip missing fields
+  //          continue;
+  //      }
+  //  }
+//}
+//Loop through rows for formula fields 
+//int[] target = {10,11,12,13,14};
+
+//for (int i : target) {
+ //String prefix = "R" + i + "_";
+
+ //String[] fields = {"TOTAL"};
+
+ //for (String field : fields) {
+//     String getterName = "get" + prefix + field;
+ //    String setterName = "set" + prefix + field;
+
+ //    try {
+  //       Method getter = M_OPTR_Summary_Entity.class.getMethod(getterName);
+  //       Method setter = M_OPTR_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+
+  //       Object newValue = getter.invoke(updatedEntity);
+ //        setter.invoke(existing, newValue);
+
+ //    } catch (NoSuchMethodException e) {
+         // Skip missing fields
+//         continue;
+ //    }
+// }
+//}
+
+//}			
+
+//	catch (Exception e) {
+	//        throw new RuntimeException("Error while updating report fields", e);
+//	    }
+
+	    // 3️⃣ Save updated entity
+	//    BRRS_M_OPTR_Summary_Repo.save(existing);
+	//}
+//
 	
 	
 //	public ModelAndView getM_OPTRcurrentDtl(String reportId, String fromdate, String todate, String currency,
@@ -1016,62 +1192,189 @@ return archivalList;
 }
 
 
-//Resubmit the values , latest version and Resub Date
+@Transactional
 public void updateReportReSub(M_OPTR_Summary_Entity updatedEntity) {
+
 System.out.println("Came to Resub Service");
-System.out.println("Report Date: " + updatedEntity.getReportDate());
 
 Date reportDate = updatedEntity.getReportDate();
-int newVersion = 1;
+System.out.println("Report Date: " + reportDate);
 
 try {
-//Fetch the latest archival version for this report date
-Optional<M_OPTR_Archival_Summary_Entity> latestArchivalOpt = BRRS_M_OPTR_Archival_Summary_Repo
+/* =========================================================
+* 1️⃣ FETCH LATEST ARCHIVAL VERSION
+* ========================================================= */
+Optional<M_OPTR_Archival_Summary_Entity> latestArchivalOpt =
+BRRS_M_OPTR_Archival_Summary_Repo
 .getLatestArchivalVersionByDate(reportDate);
 
-//Determine next version number
+int newVersion = 1;
 if (latestArchivalOpt.isPresent()) {
-M_OPTR_Archival_Summary_Entity latestArchival = latestArchivalOpt.get();
 try {
-newVersion = Integer.parseInt(latestArchival.getReportVersion()) + 1;
+newVersion =
+Integer.parseInt(latestArchivalOpt.get().getReportVersion()) + 1;
 } catch (NumberFormatException e) {
-System.err.println("Invalid version format. Defaulting to version 1");
 newVersion = 1;
 }
-} else {
-System.out.println("No previous archival found for date: " + reportDate);
 }
 
-//Prevent duplicate version number
-boolean exists = BRRS_M_OPTR_Archival_Summary_Repo
-.findByReportDateAndReportVersion(reportDate, String.valueOf(newVersion))
+boolean exists =
+BRRS_M_OPTR_Archival_Summary_Repo
+.findByReportDateAndReportVersion(
+reportDate, String.valueOf(newVersion))
 .isPresent();
 
 if (exists) {
-throw new RuntimeException("Version " + newVersion + " already exists for report date " + reportDate);
+throw new RuntimeException(
+"Version " + newVersion + " already exists for report date " + reportDate);
 }
 
-//Copy summary entity to archival entity
-M_OPTR_Archival_Summary_Entity archivalEntity = new M_OPTR_Archival_Summary_Entity();
-org.springframework.beans.BeanUtils.copyProperties(updatedEntity, archivalEntity);
+/* =========================================================
+* 2️⃣ CREATE NEW ARCHIVAL ENTITY (BASE COPY)
+* ========================================================= */
+M_OPTR_Archival_Summary_Entity archivalEntity =
+new M_OPTR_Archival_Summary_Entity();
 
+if (latestArchivalOpt.isPresent()) {
+BeanUtils.copyProperties(latestArchivalOpt.get(), archivalEntity);
+}
+
+/* =========================================================
+* 3️⃣ READ RAW REQUEST PARAMETERS (CRITICAL FIX)
+* ========================================================= */
+HttpServletRequest request =
+((ServletRequestAttributes) RequestContextHolder
+.getRequestAttributes()).getRequest();
+
+Map<String, String[]> parameterMap = request.getParameterMap();
+
+for (Map.Entry<String, String[]> entry : parameterMap.entrySet()) {
+
+String key = entry.getKey();              // R6_C11_ACCT_NUM
+String value = entry.getValue()[0];
+
+//Ignore non-field params
+if ("asondate".equalsIgnoreCase(key) || "type".equalsIgnoreCase(key)) {
+continue;
+}
+
+//Normalize: R6_C11_ACCT_NUM → R6_ACCT_NUM
+String normalizedKey = key.replaceFirst("_C\\d+_", "_");
+
+/* =====================================================
+* 4️⃣ APPLY VALUES (EXPLICIT, SAFE, NO REFLECTION)
+* ===================================================== */
+//======================= R5 – R11 =======================
+
+if ("R10_INTEREST_RATES".equals(normalizedKey)) {
+    archivalEntity.setR10_INTEREST_RATES(parseBigDecimal(value));
+
+} else if ("R10_EQUITIES".equals(normalizedKey)) {
+    archivalEntity.setR10_EQUITIES(parseBigDecimal(value));
+
+} else if ("R10_FOREIGN_EXC_GOLD".equals(normalizedKey)) {
+    archivalEntity.setR10_FOREIGN_EXC_GOLD(parseBigDecimal(value));
+
+} else if ("R10_COMMODITIES".equals(normalizedKey)) {
+    archivalEntity.setR10_COMMODITIES(parseBigDecimal(value));
+
+} else if ("R10_TOTAL".equals(normalizedKey)) {
+    archivalEntity.setR10_TOTAL(parseBigDecimal(value));
+
+
+} else if ("R11_INTEREST_RATES".equals(normalizedKey)) {
+    archivalEntity.setR11_INTEREST_RATES(parseBigDecimal(value));
+
+} else if ("R11_EQUITIES".equals(normalizedKey)) {
+    archivalEntity.setR11_EQUITIES(parseBigDecimal(value));
+
+} else if ("R11_FOREIGN_EXC_GOLD".equals(normalizedKey)) {
+    archivalEntity.setR11_FOREIGN_EXC_GOLD(parseBigDecimal(value));
+
+} else if ("R11_COMMODITIES".equals(normalizedKey)) {
+    archivalEntity.setR11_COMMODITIES(parseBigDecimal(value));
+
+} else if ("R11_TOTAL".equals(normalizedKey)) {
+    archivalEntity.setR11_TOTAL(parseBigDecimal(value));
+
+
+} else if ("R12_INTEREST_RATES".equals(normalizedKey)) {
+    archivalEntity.setR12_INTEREST_RATES(parseBigDecimal(value));
+
+} else if ("R12_EQUITIES".equals(normalizedKey)) {
+    archivalEntity.setR12_EQUITIES(parseBigDecimal(value));
+
+} else if ("R12_FOREIGN_EXC_GOLD".equals(normalizedKey)) {
+    archivalEntity.setR12_FOREIGN_EXC_GOLD(parseBigDecimal(value));
+
+} else if ("R12_COMMODITIES".equals(normalizedKey)) {
+    archivalEntity.setR12_COMMODITIES(parseBigDecimal(value));
+
+} else if ("R12_TOTAL".equals(normalizedKey)) {
+    archivalEntity.setR12_TOTAL(parseBigDecimal(value));
+
+
+} else if ("R13_INTEREST_RATES".equals(normalizedKey)) {
+    archivalEntity.setR13_INTEREST_RATES(parseBigDecimal(value));
+
+} else if ("R13_EQUITIES".equals(normalizedKey)) {
+    archivalEntity.setR13_EQUITIES(parseBigDecimal(value));
+
+} else if ("R13_FOREIGN_EXC_GOLD".equals(normalizedKey)) {
+    archivalEntity.setR13_FOREIGN_EXC_GOLD(parseBigDecimal(value));
+
+} else if ("R13_COMMODITIES".equals(normalizedKey)) {
+    archivalEntity.setR13_COMMODITIES(parseBigDecimal(value));
+
+} else if ("R13_TOTAL".equals(normalizedKey)) {
+    archivalEntity.setR13_TOTAL(parseBigDecimal(value));
+
+
+} else if ("R14_INTEREST_RATES".equals(normalizedKey)) {
+    archivalEntity.setR14_INTEREST_RATES(parseBigDecimal(value));
+
+} else if ("R14_EQUITIES".equals(normalizedKey)) {
+    archivalEntity.setR14_EQUITIES(parseBigDecimal(value));
+
+} else if ("R14_FOREIGN_EXC_GOLD".equals(normalizedKey)) {
+    archivalEntity.setR14_FOREIGN_EXC_GOLD(parseBigDecimal(value));
+
+} else if ("R14_COMMODITIES".equals(normalizedKey)) {
+    archivalEntity.setR14_COMMODITIES(parseBigDecimal(value));
+
+} else if ("R14_TOTAL".equals(normalizedKey)) {
+    archivalEntity.setR14_TOTAL(parseBigDecimal(value));
+}
+
+
+}
+
+/* =========================================================
+* 5️⃣ SET RESUB METADATA
+* ========================================================= */
 archivalEntity.setReportDate(reportDate);
 archivalEntity.setReportVersion(String.valueOf(newVersion));
 archivalEntity.setReportResubDate(new Date());
 
-System.out.println("Saving new archival version: " + newVersion);
-
-//Save new version to repository
+/* =========================================================
+* 6️⃣ SAVE NEW ARCHIVAL VERSION
+* ========================================================= */
 BRRS_M_OPTR_Archival_Summary_Repo.save(archivalEntity);
 
-System.out.println(" Saved archival version successfully: " + newVersion);
+System.out.println("✅ RESUB saved successfully. Version = " + newVersion);
 
 } catch (Exception e) {
 e.printStackTrace();
-throw new RuntimeException("Error while creating archival resubmission record", e);
+throw new RuntimeException(
+"Error while creating archival resubmission record", e);
 }
 }
 
+private BigDecimal parseBigDecimal(String value) {
+return (value == null || value.trim().isEmpty())
+? BigDecimal.ZERO
+: new BigDecimal(value.replace(",", ""));
+}
 /// Downloaded for Archival & Resub
 public byte[] BRRS_M_OPTRResubExcel(String filename, String reportId, String fromdate,
 String todate, String currency, String dtltype,
@@ -1328,6 +1631,287 @@ logger.info("Service: Excel data successfully written to memory buffer ({} bytes
 
 return out.toByteArray();
 }
+}
+
+
+public byte[] getM_OPTRDetailExcel(String filename, String fromdate, String todate,
+        String currency, String dtltype, String type, String version) {
+
+    try {
+        logger.info("Generating Excel for M_OPTR Details...");
+        System.out.println("came to Detail download service");
+
+        // ================= ARCHIVAL HANDLING =================
+        if ("ARCHIVAL".equals(type) && version != null) {
+            return getDetailExcelARCHIVAL(filename, fromdate, todate, currency, dtltype, type, version);
+        }
+
+        // ================= WORKBOOK & SHEET =================
+        XSSFWorkbook workbook = new XSSFWorkbook();
+        XSSFSheet sheet = workbook.createSheet("BDISB3Detail");
+
+        BorderStyle border = BorderStyle.THIN;
+
+        // ================= HEADER STYLE =================
+        CellStyle headerStyle = workbook.createCellStyle();
+        Font headerFont = workbook.createFont();
+        headerFont.setBold(true);
+        headerFont.setFontHeightInPoints((short) 10);
+        headerStyle.setFont(headerFont);
+        headerStyle.setAlignment(HorizontalAlignment.LEFT);
+        headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+        headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        headerStyle.setBorderTop(border);
+        headerStyle.setBorderBottom(border);
+        headerStyle.setBorderLeft(border);
+        headerStyle.setBorderRight(border);
+
+        CellStyle rightHeaderStyle = workbook.createCellStyle();
+        rightHeaderStyle.cloneStyleFrom(headerStyle);
+        rightHeaderStyle.setAlignment(HorizontalAlignment.RIGHT);
+
+        // ================= DATA STYLES =================
+        CellStyle textStyle = workbook.createCellStyle();
+        textStyle.setAlignment(HorizontalAlignment.LEFT);
+        textStyle.setBorderTop(border);
+        textStyle.setBorderBottom(border);
+        textStyle.setBorderLeft(border);
+        textStyle.setBorderRight(border);
+
+        CellStyle amountStyle = workbook.createCellStyle();
+        amountStyle.setAlignment(HorizontalAlignment.RIGHT);
+        amountStyle.setDataFormat(workbook.createDataFormat().getFormat("#,##0.00"));
+        amountStyle.setBorderTop(border);
+        amountStyle.setBorderBottom(border);
+        amountStyle.setBorderLeft(border);
+        amountStyle.setBorderRight(border);
+
+        // ================= HEADER ROW =================
+        String[] headers = {
+           "INTEREST_RATES",
+        	"EQUITIES",
+            "FOREIGN_EXC_GOLD",
+        	"COMMODITIES",
+            "REPORT LABEL",
+            "REPORT ADDL CRITERIA1",
+            "REPORT DATE"
+        };
+
+        XSSFRow headerRow = sheet.createRow(0);
+        for (int i = 0; i < headers.length; i++) {
+            Cell cell = headerRow.createCell(i);
+            cell.setCellValue(headers[i]);
+            cell.setCellStyle((i == 0 || i == 1) ? rightHeaderStyle : headerStyle);
+            sheet.setColumnWidth(i, 6000);
+        }
+
+        // ================= DATA FETCH =================
+        Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
+        List<M_OPTR_Detail_Entity> reportData = OPTR_Detail_Repo.getdatabydateList(parsedToDate);
+
+        // ================= DATA ROWS =================
+        int rowIndex = 1;
+
+        if (reportData != null && !reportData.isEmpty()) {
+            for (M_OPTR_Detail_Entity item : reportData) {
+
+                XSSFRow row = sheet.createRow(rowIndex++);
+
+                // Column 0 - AGGREGATE BALANCE
+                Cell c0 = row.createCell(0);
+                c0.setCellValue(item.getINTEREST_RATES() != null
+                        ? item.getINTEREST_RATES().doubleValue() : 0);
+                c0.setCellStyle(amountStyle);
+
+                // Column 1 - COMPENSATABLE AMOUNT
+                Cell c1 = row.createCell(1);
+                c1.setCellValue(item.getEQUITIES() != null
+                        ? item.getEQUITIES().doubleValue() : 0);
+                c1.setCellStyle(amountStyle);
+                
+                Cell c2 = row.createCell(2);
+                c2.setCellValue(item.getEQUITIES() != null
+                        ? item.getEQUITIES().doubleValue() : 0);
+                c2.setCellStyle(amountStyle);
+                
+                Cell c3 = row.createCell(3);
+                c3.setCellValue(item.getCOMMODITIES() != null
+                        ? item.getCOMMODITIES().doubleValue() : 0);
+                c3.setCellStyle(amountStyle);
+
+                // Column 2 - REPORT LABEL
+                Cell c4 = row.createCell(4);
+                c4.setCellValue(item.getReportLable());
+                c4.setCellStyle(textStyle);
+
+                // Column 3 - REPORT ADDL CRITERIA 1
+                Cell c5 = row.createCell(5);
+                c5.setCellValue(item.getReportAddlCriteria1());
+                c5.setCellStyle(textStyle);
+
+                // Column 4 - REPORT DATE
+                Cell c6 = row.createCell(6);
+                c6.setCellValue(item.getReportDate() != null
+                        ? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
+                        : "");
+                c6.setCellStyle(textStyle);
+            }
+        } else {
+            logger.info("No data found for M-OPTR — only header written.");
+        }
+
+        // ================= WRITE FILE =================
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        workbook.write(bos);
+        workbook.close();
+
+        logger.info("Excel generation completed with {} row(s).",
+                reportData != null ? reportData.size() : 0);
+
+        return bos.toByteArray();
+
+    } catch (Exception e) {
+        logger.error("Error generating BDISB3 Excel", e);
+        return new byte[0];
+    }
+}
+
+public byte[] getDetailExcelARCHIVAL(String filename, String fromdate, String todate,
+        String currency, String dtltype, String type, String version) {
+
+    try {
+        logger.info("Generating Excel for BRRS_M_OPTR ARCHIVAL Details...");
+        System.out.println("came to Detail download service");
+
+        // ================= WORKBOOK & SHEET =================
+        XSSFWorkbook workbook = new XSSFWorkbook();
+        XSSFSheet sheet = workbook.createSheet("M_OPTRDetail");
+
+        BorderStyle border = BorderStyle.THIN;
+
+        // ================= HEADER STYLE =================
+        CellStyle headerStyle = workbook.createCellStyle();
+        Font headerFont = workbook.createFont();
+        headerFont.setBold(true);
+        headerFont.setFontHeightInPoints((short) 10);
+        headerStyle.setFont(headerFont);
+        headerStyle.setAlignment(HorizontalAlignment.LEFT);
+        headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+        headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        headerStyle.setBorderTop(border);
+        headerStyle.setBorderBottom(border);
+        headerStyle.setBorderLeft(border);
+        headerStyle.setBorderRight(border);
+
+        CellStyle rightHeaderStyle = workbook.createCellStyle();
+        rightHeaderStyle.cloneStyleFrom(headerStyle);
+        rightHeaderStyle.setAlignment(HorizontalAlignment.RIGHT);
+
+        // ================= DATA STYLES =================
+        CellStyle textStyle = workbook.createCellStyle();
+        textStyle.setAlignment(HorizontalAlignment.LEFT);
+        textStyle.setBorderTop(border);
+        textStyle.setBorderBottom(border);
+        textStyle.setBorderLeft(border);
+        textStyle.setBorderRight(border);
+
+        CellStyle amountStyle = workbook.createCellStyle();
+        amountStyle.setAlignment(HorizontalAlignment.RIGHT);
+        amountStyle.setDataFormat(workbook.createDataFormat().getFormat("#,##0.00"));
+        amountStyle.setBorderTop(border);
+        amountStyle.setBorderBottom(border);
+        amountStyle.setBorderLeft(border);
+        amountStyle.setBorderRight(border);
+
+        // ================= HEADER ROW =================
+        String[] headers = {
+        		"INTEREST_RATES",
+            	"EQUITIES",
+                "FOREIGN_EXC_GOLD",
+            	"COMMODITIES",
+                "REPORT LABEL",
+                "REPORT ADDL CRITERIA1",
+                "REPORT DATE"
+        };
+
+        XSSFRow headerRow = sheet.createRow(0);
+        for (int i = 0; i < headers.length; i++) {
+            Cell cell = headerRow.createCell(i);
+            cell.setCellValue(headers[i]);
+            cell.setCellStyle((i == 0 || i == 1) ? rightHeaderStyle : headerStyle);
+            sheet.setColumnWidth(i, 6000);
+        }
+
+        // ================= DATA FETCH =================
+        Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
+        List<M_OPTR_Archival_Detail_Entity> reportData =
+                M_OPTR_Archival_Detail_Repo.getdatabydateList(parsedToDate, version);
+
+        // ================= DATA ROWS =================
+        int rowIndex = 1;
+
+        if (reportData != null && !reportData.isEmpty()) {
+            for (M_OPTR_Archival_Detail_Entity item : reportData) {
+
+                XSSFRow row = sheet.createRow(rowIndex++);
+
+             // Column 0 - AGGREGATE BALANCE
+                Cell c0 = row.createCell(0);
+                c0.setCellValue(item.getINTEREST_RATES() != null
+                        ? item.getINTEREST_RATES().doubleValue() : 0);
+                c0.setCellStyle(amountStyle);
+
+                // Column 1 - COMPENSATABLE AMOUNT
+                Cell c1 = row.createCell(1);
+                c1.setCellValue(item.getEQUITIES() != null
+                        ? item.getEQUITIES().doubleValue() : 0);
+                c1.setCellStyle(amountStyle);
+                
+                Cell c2 = row.createCell(2);
+                c2.setCellValue(item.getEQUITIES() != null
+                        ? item.getEQUITIES().doubleValue() : 0);
+                c2.setCellStyle(amountStyle);
+                
+                Cell c3 = row.createCell(3);
+                c3.setCellValue(item.getCOMMODITIES() != null
+                        ? item.getCOMMODITIES().doubleValue() : 0);
+                c3.setCellStyle(amountStyle);
+
+                // Column 2 - REPORT LABEL
+                Cell c4 = row.createCell(4);
+                c4.setCellValue(item.getReportLable());
+                c4.setCellStyle(textStyle);
+
+                // Column 3 - REPORT ADDL CRITERIA 1
+                Cell c5 = row.createCell(5);
+                c5.setCellValue(item.getReportAddlCriteria1());
+                c5.setCellStyle(textStyle);
+
+                // Column 4 - REPORT DATE
+                Cell c6 = row.createCell(6);
+                c6.setCellValue(item.getReportDate() != null
+                        ? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
+                        : "");
+                c6.setCellStyle(textStyle);
+            }
+        } else {
+            logger.info("No archival data found for M_OPTR — only header written.");
+        }
+
+        // ================= WRITE FILE =================
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        workbook.write(bos);
+        workbook.close();
+
+        logger.info("ARCHIVAL Excel generation completed with {} row(s).",
+                reportData != null ? reportData.size() : 0);
+
+        return bos.toByteArray();
+
+    } catch (Exception e) {
+        logger.error("Error generating M_OPTR ARCHIVAL Excel", e);
+        return new byte[0];
+    }
 }
 
 	

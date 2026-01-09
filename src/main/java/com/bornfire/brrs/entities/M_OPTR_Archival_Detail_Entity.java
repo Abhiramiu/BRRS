@@ -1,0 +1,306 @@
+package com.bornfire.brrs.entities;
+
+import java.math.BigDecimal;
+import java.util.Date;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import org.springframework.format.annotation.DateTimeFormat;
+
+@Entity
+@Table(name = "BRRS_M_OPTR_ARCHIVALTABLE_DETAIL")
+public class M_OPTR_Archival_Detail_Entity {
+	
+	@Id
+    @Column(name = "SNO", length = 20)
+    private String sno;
+
+    @Column(name = "CUST_ID", length = 100)
+    private String custId;
+
+    @Column(name = "ACCT_NUMBER", length = 100)
+    private String acctNumber;
+
+    @Column(name = "ACCT_NAME", length = 100)
+    private String acctName;
+
+    @Column(name = "REPORT_LABLE", length = 100)
+    private String reportLable;
+
+    @Column(name = "REPORT_ADDL_CRITERIA_1", length = 100)
+    private String reportAddlCriteria1;
+
+    @Column(name = "REPORT_REMARKS", length = 100)
+    private String reportRemarks;
+
+    @Temporal(TemporalType.DATE)
+    @Column(name = "REPORT_DATE")
+    private Date reportDate;
+
+    @Column(name = "REPORT_NAME", length = 100)
+    private String reportName;
+
+    @Column(name = "CREATE_USER", length = 50)
+    private String createUser;
+
+    @Temporal(TemporalType.DATE)
+    @Column(name = "CREATE_TIME")
+    private Date createTime;
+
+    @Column(name = "MODIFY_USER", length = 50)
+    private String modifyUser;
+
+    @Temporal(TemporalType.DATE)
+    @Column(name = "MODIFY_TIME")
+    private Date modifyTime;
+
+    @Column(name = "VERIFY_USER", length = 50)
+    private String verifyUser;
+
+    @Temporal(TemporalType.DATE)
+    @Column(name = "VERIFY_TIME")
+    private Date verifyTime;
+
+    @Column(name = "ENTITY_FLG", length = 1)
+    private String entityFlg;
+
+    @Column(name = "MODIFY_FLG", length = 1)
+    private String modifyFlg;
+
+    @Column(name = "DEL_FLG", length = 1)
+    private String delFlg;
+
+    @Column(name = "INTEREST_RATES")
+    private BigDecimal INTEREST_RATES;
+
+    @Column(name = "EQUITIES")
+    private BigDecimal EQUITIES;
+    
+    @Column(name = "FOREIGN_EXC_GOLD")
+    private BigDecimal FOREIGN_EXC_GOLD;
+    
+    @Column(name = "COMMODITIES")
+    private BigDecimal COMMODITIES;
+    
+    @Column(name = "TOTAL")
+    private BigDecimal TOTAL;
+    
+    @Column(name = "DATA_ENTRY_VERSION", length = 100)
+    private String dataEntryVersion;
+
+    @Column(name = "ACCT_BALANCE_IN_PULA", precision = 24, scale = 3)
+    private BigDecimal acctBalanceInPula;
+
+	public String getSno() {
+		return sno;
+	}
+
+	public void setSno(String sno) {
+		this.sno = sno;
+	}
+
+	public String getCustId() {
+		return custId;
+	}
+
+	public void setCustId(String custId) {
+		this.custId = custId;
+	}
+
+	public String getAcctNumber() {
+		return acctNumber;
+	}
+
+	public void setAcctNumber(String acctNumber) {
+		this.acctNumber = acctNumber;
+	}
+
+	public String getAcctName() {
+		return acctName;
+	}
+
+	public void setAcctName(String acctName) {
+		this.acctName = acctName;
+	}
+
+	public String getReportLable() {
+		return reportLable;
+	}
+
+	public void setReportLable(String reportLable) {
+		this.reportLable = reportLable;
+	}
+
+	public String getReportAddlCriteria1() {
+		return reportAddlCriteria1;
+	}
+
+	public void setReportAddlCriteria1(String reportAddlCriteria1) {
+		this.reportAddlCriteria1 = reportAddlCriteria1;
+	}
+
+	public String getReportRemarks() {
+		return reportRemarks;
+	}
+
+	public void setReportRemarks(String reportRemarks) {
+		this.reportRemarks = reportRemarks;
+	}
+
+	public Date getReportDate() {
+		return reportDate;
+	}
+
+	public void setReportDate(Date reportDate) {
+		this.reportDate = reportDate;
+	}
+
+	public String getReportName() {
+		return reportName;
+	}
+
+	public void setReportName(String reportName) {
+		this.reportName = reportName;
+	}
+
+	public String getCreateUser() {
+		return createUser;
+	}
+
+	public void setCreateUser(String createUser) {
+		this.createUser = createUser;
+	}
+
+	public Date getCreateTime() {
+		return createTime;
+	}
+
+	public void setCreateTime(Date createTime) {
+		this.createTime = createTime;
+	}
+
+	public String getModifyUser() {
+		return modifyUser;
+	}
+
+	public void setModifyUser(String modifyUser) {
+		this.modifyUser = modifyUser;
+	}
+
+	public Date getModifyTime() {
+		return modifyTime;
+	}
+
+	public void setModifyTime(Date modifyTime) {
+		this.modifyTime = modifyTime;
+	}
+
+	public String getVerifyUser() {
+		return verifyUser;
+	}
+
+	public void setVerifyUser(String verifyUser) {
+		this.verifyUser = verifyUser;
+	}
+
+	public Date getVerifyTime() {
+		return verifyTime;
+	}
+
+	public void setVerifyTime(Date verifyTime) {
+		this.verifyTime = verifyTime;
+	}
+
+	public String getEntityFlg() {
+		return entityFlg;
+	}
+
+	public void setEntityFlg(String entityFlg) {
+		this.entityFlg = entityFlg;
+	}
+
+	public String getModifyFlg() {
+		return modifyFlg;
+	}
+
+	public void setModifyFlg(String modifyFlg) {
+		this.modifyFlg = modifyFlg;
+	}
+
+	public String getDelFlg() {
+		return delFlg;
+	}
+
+	public void setDelFlg(String delFlg) {
+		this.delFlg = delFlg;
+	}
+
+	public BigDecimal getINTEREST_RATES() {
+		return INTEREST_RATES;
+	}
+
+	public void setINTEREST_RATES(BigDecimal iNTEREST_RATES) {
+		INTEREST_RATES = iNTEREST_RATES;
+	}
+
+	public BigDecimal getEQUITIES() {
+		return EQUITIES;
+	}
+
+	public void setEQUITIES(BigDecimal eQUITIES) {
+		EQUITIES = eQUITIES;
+	}
+
+	public BigDecimal getFOREIGN_EXC_GOLD() {
+		return FOREIGN_EXC_GOLD;
+	}
+
+	public void setFOREIGN_EXC_GOLD(BigDecimal fOREIGN_EXC_GOLD) {
+		FOREIGN_EXC_GOLD = fOREIGN_EXC_GOLD;
+	}
+
+	public BigDecimal getCOMMODITIES() {
+		return COMMODITIES;
+	}
+
+	public void setCOMMODITIES(BigDecimal cOMMODITIES) {
+		COMMODITIES = cOMMODITIES;
+	}
+
+	public BigDecimal getTOTAL() {
+		return TOTAL;
+	}
+
+	public void setTOTAL(BigDecimal tOTAL) {
+		TOTAL = tOTAL;
+	}
+
+	public String getDataEntryVersion() {
+		return dataEntryVersion;
+	}
+
+	public void setDataEntryVersion(String dataEntryVersion) {
+		this.dataEntryVersion = dataEntryVersion;
+	}
+
+	public BigDecimal getAcctBalanceInPula() {
+		return acctBalanceInPula;
+	}
+
+	public void setAcctBalanceInPula(BigDecimal acctBalanceInPula) {
+		this.acctBalanceInPula = acctBalanceInPula;
+	}
+
+	public M_OPTR_Archival_Detail_Entity() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+    
+    
+
+}

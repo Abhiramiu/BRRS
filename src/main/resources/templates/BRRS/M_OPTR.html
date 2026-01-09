@@ -1,464 +1,394 @@
 <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
-
-<!-- 
-CREATED BY	: SURESH
-CREATED ON	: 11.09.2025
-PURPOSE		: BWRBRREPORT
+<!--
+CREATED BY	: INFANT JONES J
+CREATED ON	: 8.12.2025
+PURPOSE		: BDISB3 BRRSREPORT
 -->
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 
-<html
-  lang="en"
-  xmlns="http://www.w3.org/1999/xhtml"
-  xmlns:th="http://www.thymeleaf.org"
->
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<!-- CSS -->
 
-    <!-- CSS -->
-    <link
-      rel="stylesheet"
-      type="text/css"
-      th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}"
-    />
-    <link
-      rel="stylesheet"
-      type="text/css"
-      th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}"
-    />
-    <link
-      rel="stylesheet"
-      type="text/css"
-      th:href="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.css}"
-    />
-    <link
-      rel="stylesheet"
-      type="text/css"
-      th:href="@{/webjars/datatables/1.10.19/css/jquery.dataTables.min.css}"
-    />
-    <link rel="stylesheet" th:href="@{/css/CustomButton.css}" />
-    <link rel="icon" th:href="@{/favicon.ico}" type="image/x-icon" />
 
-    <!-- JavaScript -->
-    <!-- jQuery core (required first) -->
-
-    <!-- ✅ Your manually placed jQuery validation
+	<link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}">
+	<link rel="stylesheet" type="text/css" th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}">
+	<link rel="stylesheet" type="text/css" th:href="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.css}">
+	<link rel="stylesheet" type="text/css" th:href="@{/webjars/datatables/1.10.19/css/jquery.dataTables.min.css}">
+	<link rel="stylesheet" th:href="@{/css/CustomButton.css}" />
+	<link rel="icon" th:href="@{/favicon.ico}" type="image/x-icon" />
+	<!-- JavaScript -->
+	<!-- jQuery core (required first) -->
+	<!-- ✅ Your manually placed jQuery validation
 	<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
 	 <script th:src="/jquery/jquery.validate.min.js"></script>
 	 -->
+	<!-- jQuery (required first) -->
+	<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+	<!-- <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script> -->
+	<!-- ✅ jQuery Validation -->
+	<script src="/webjars/jquery-validation/1.19.0/jquery.validate.min.js"
+		th:src="@{/webjars/jquery-validation/1.19.0/jquery.validate.min.js}"></script>
+	<!-- Bootstrap + Others -->
+	<script th:src="@{/webjars/popper.js/1.14.7/umd/popper.min.js}"></script>
+	<script th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
+	<script th:src="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.js}"></script>
+	<script th:src="@{/webjars/jquery-form/4.2.2/jquery.form.min.js}"></script>
+	<script th:src="@{/webjars/datatables/1.10.19/js/jquery.dataTables.min.js}"></script>
+	<script th:src="@{/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js}"></script>
+	<style>
+		.btns {
+			float: right;
+			margin: 5px;
+		}
 
-    <!-- jQuery (required first) -->
-    <script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
-    <!-- <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script> -->
+		.col-sm-5 {
+			padding-bottom: 15px;
+		}
 
-    <!-- ✅ jQuery Validation -->
-    <script
-      src="/webjars/jquery-validation/1.19.0/jquery.validate.min.js"
-      th:src="@{/webjars/jquery-validation/1.19.0/jquery.validate.min.js}"
-    ></script>
+		.list-body {
+			padding: 0px;
+		}
 
-    <!-- Bootstrap + Others -->
-    <script th:src="@{/webjars/popper.js/1.14.7/umd/popper.min.js}"></script>
-    <script th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
-    <script th:src="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.js}"></script>
-    <script th:src="@{/webjars/jquery-form/4.2.2/jquery.form.min.js}"></script>
-    <script
-      th:src="@{/webjars/datatables/1.10.19/js/jquery.dataTables.min.js}"
-    ></script>
-    <script
-      th:src="@{/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js}"
-    ></script>
+		.error {
+			color: red;
+			padding-left: 10px;
+		}
 
-    <style>
-      .btns {
-        float: right;
-        margin: 5px;
-      }
+		.formline {
+			padding-bottom: 15px;
+		}
 
-      .col-sm-5 {
-        padding-bottom: 15px;
-      }
+		.btn-primary {
+			background-color: #E77400;
+			border-color: #0c0c0c;
+		}
 
-      .list-body {
-        padding: 0px;
-      }
+		 .btn-primary:not (:disabled):not (.disabled).active,
+		.btn-primary:not (:disabled):not (.disabled):active,
+		.show>.btn-primary.dropdown-toggle {
+			color: #fff;
+			background-color: #cc0000;
+			border-color: #161617;
+		} 
 
-      .error {
-        color: red;
-        padding-left: 10px;
-      }
+		#finusertb {
+			width: 460px;
+		}
 
-      .formline {
-        padding-bottom: 15px;
-      }
+		.dataTables_wrapper .dataTables_paginate .paginate_button {
+			padding: 0px;
+		}
+	</style>
+	<style>
+		div span {
+			font-weight: bold;
+			color: white !important;
+		}
 
-      .btn-primary {
-        background-color: #e77400;
-        border-color: #0c0c0c;
-      }
+		.card {
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+			border-radius: 8px;
+		}
 
-      .btn-primary:not (:disabled ):not (.disabled ).active,
-      .btn-primary:not (:disabled ):not (.disabled ):active,
-      .show > .btn-primary.dropdown-toggle {
-        color: #fff;
-        background-color: #cc000000;
-        border-color: #161617;
-      }
+		.card-header h5 {
+			font-size: 22px;
+			color: #fff;
+			font-weight: 600;
+		}
 
-      #finusertb {
-        width: 460px;
-      }
+		.nav-tabs .nav-link {
+			font-weight: 500;
+			border: 1px solid #dee2e6;
+			border-bottom: none;
+			border-radius: 4px 4px 0 0;
+			background-color: #f1f1f1;
+			margin-right: 5px;
+		}
 
-      .dataTables_wrapper .dataTables_paginate .paginate_button {
-        padding: 0px;
-      }
-    </style>
+		.nav-tabs .nav-link.active {
+			background-color: #ffffff;
+			border-color: #dee2e6 #dee2e6 #ffffff;
+		}
 
-    <style>
-      div span {
-        font-weight: bold;
-        color: white !important;
-      }
+		.table-responsive {
+			border: 1px solid #dee2e6;
+			border-radius: 4px;
+		}
 
-      .card {
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        border-radius: 8px;
-      }
+		.table-hover tbody tr:hover {
+			background-color: #f3f6f9;
+		}
 
-      .card-header h5 {
-        font-size: 22px;
-        color: #fff;
-        font-weight: 600;
-      }
+		thead th {
+			position: sticky;
+			top: 0;
+			background-color: #e9ecf0;
+			z-index: 1;
+		}
 
-      .nav-tabs .nav-link {
-        font-weight: 500;
-        border: 1px solid #dee2e6;
-        border-bottom: none;
-        border-radius: 4px 4px 0 0;
-        background-color: #f1f1f1;
-        margin-right: 5px;
-      }
+		.table td {
+			background-color: #FFFFFF;
+		}
 
-      .nav-tabs .nav-link.active {
-        background-color: #ffffff;
-        border-color: #dee2e6 #dee2e6 #ffffff;
-      }
+		.card-footer {
+			padding: 10px;
+			border-top: 1px solid #ccc;
+		}
 
-      .table-responsive {
-        border: 1px solid #dee2e6;
-        border-radius: 4px;
-      }
+		.btn-xs {
+			padding: 4px 12px;
+			font-size: 14px;
+			border-radius: 4px;
+		}
 
-      .table-hover tbody tr:hover {
-        background-color: #f3f6f9;
-      }
+		#BRRSvalidation th,
+		#usertable td {
+			vertical-align: middle;
+			text-align: left;
+			font-size: 16px;
+			font-family: Arial;
+		}
 
-      thead th {
-        position: sticky;
-        top: 0;
-        background-color: #e9ecf0;
-        z-index: 1;
-      }
+		.fa-edit:hover {
+			color: #28a745;
+			transform: scale(1.1);
+		}
 
-      .table td {
-        background-color: #ffffff;
-      }
+		td {
+			border: 1px solid rgb(0, 164, 166);
+			overflow: hidden;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+		}
+	</style>
+	<style>
+		.form-group {
+			position: relative;
+			margin-bottom: 1.5rem;
+		}
 
-      .card-footer {
-        padding: 10px;
-        border-top: 1px solid #ccc;
-      }
+		.form-control {
+			width: 100%;
+			border: 2px solid #ccc;
+			border-radius: 8px;
+			font-size: 1rem;
+			outline: none;
+			background: transparent;
+			transition: border-color 0.3s ease, padding-top 0.3s ease;
+		}
 
-      .btn-xs {
-        padding: 4px 12px;
-        font-size: 14px;
-        border-radius: 4px;
-      }
+		.error {
+			color: red;
+			padding-top: 15px;
+		}
 
-      #BRFvalidation th,
-      #usertable td {
-        vertical-align: middle;
-        text-align: left;
-        font-size: 16px;
-        font-family: Arial;
-      }
+		.form-control:focus {
+			border-color: #007bff;
+		}
 
-      .fa-edit:hover {
-        color: #28a745;
-        transform: scale(1.1);
-      }
+		.form-legend {
+			position: absolute;
+			top: 50%;
+			left: 15px;
+			transform: translateY(-50%);
+			font-size: 1rem;
+			color: #aaa;
+			background: white;
+			padding: 0 5px;
+			pointer-events: none;
+			transition: 0.3s ease;
+		}
 
-      td {
-        border: 1px solid rgb(0, 164, 166);
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-      }
-    </style>
 
-    <style>
-      .form-group {
-        position: relative;
-        margin-bottom: 1.5rem;
-      }
-
-      .form-control {
-        width: 100%;
-        border: 2px solid #ccc;
-        border-radius: 8px;
-        font-size: 1rem;
-        outline: none;
-        background: transparent;
-        transition: border-color 0.3s ease, padding-top 0.3s ease;
-      }
-
-      .error {
-        color: red;
-        padding-top: 15px;
-      }
-
-      .form-control:focus {
-        border-color: #007bff;
-      }
-
-      .form-legend {
-        position: absolute;
-        top: 50%;
-        left: 15px;
-        transform: translateY(-50%);
-        font-size: 1rem;
-        color: #aaa;
-        background: white;
-        padding: 0 5px;
-        pointer-events: none;
-        transition: 0.3s ease;
-      }
-
-      /* When input or select is focused or has a value, move the label up */
-      .form-control:focus ~ .form-legend,
-      .form-control:not (:placeholder-shown
-	) ~ .form-legend {
-        top: -8px;
-        font-size: 1rem;
-        color: #007bff;
-      }
-
-      /* Hover effect when the input/select is focused */
-      .form-control:focus:hover ~ .form-legend {
-        color: #0056b3; /* Darker shade of blue on hover */
-      }
-
-      /* Ensure the label returns to the normal color after focus or hover is removed */
-      .form-control:not (:focus ) ~ .form-legend {
-        color: #aaa; /* Normal label color */
-      }
-    </style>
-
-    <style>
-      /* Red border for invalid inputs */
-      input.error,
-      select.error {
-        border: 2px solid red !important;
-      }
-  
-      
-
-      /* Error message style */
-      label.error {
-        color: red;
-        font-size: 0.85em;
-        margin-top: 5px;
-        display: block;
-      }
-
-      .underline {
-        text-decoration: underline;
-        color: #08a6f1;
-        cursor: pointer;
-      }
-
-      .left-arrow-circle {
-        width: 35px;
-        height: 35px;
-        border-radius: 50%;
-        background-color: white;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-right: 10px;
-        transition: background-color 0.3s, transform 0.2s;
-      }
-
-      .left-arrow-circle i {
-        color: rgb(107, 122, 143);
-      }
-          .no-border {
-  border: none !important;
+/* When input or select is focused or has a value, move the label up */
+.form-control:focus ~.form-legend, .form-control:not (:placeholder-shown
+	 )~.form-legend {
+	top: -8px;
+	font-size: 1rem;
+	color: #007bff;
 }
 
-      .left-arrow-circle:hover {
-        background-color: rgb(107, 122, 143);
-        cursor: pointer;
-        transform: scale(1.05);
-        border: 2px solid white;
-      }
+/* Hover effect when the input/select is focused */
+.form-control:focus:hover ~.form-legend {
+	color: #0056b3;
+	/* Darker shade of blue on hover */
+}
 
-      .left-arrow-circle:hover i {
-        color: white;
-      }
-
-      .white-text span {
-        color: white !important;
-      }
-
-      .table-cell tbody td:hover {
-        background-color: #f0f0f0; /* Hover color for cell */
-        cursor: pointer; /* Optional: pointer cursor */
-      }
-
-      .table-bordered td,
-      .table-bordered th {
-        border: 1px solid #000 !important;
-      }
-      		/* 🚌 Bus display style box */
-					.boards {
-						transform: translateY(6px);
-					  background-color: rgb(107, 122, 143);
-					  color: white;
-					  padding: 5px 5px;
-					  border-radius: 8px;
-					  overflow: hidden;
-					  white-space: nowrap;
-					  flex: 1; /* ✅ makes it take available space dynamically */
-					  min-width: 200px;
-					  box-shadow: 0 0 10px rgb(107, 122, 143);
-					  position: relative;
-					}
-
-		/* ✨ Scrolling animation */
-		.scrolling-text {
-			display: inline-block;
-			font-family: "Courier New", monospace;
-			font-weight: bold;
-			letter-spacing: 1px;
-			animation: scroll-left 10s linear infinite;
-		}
-
-		/* Animation keyframes */
-		@keyframes scroll-left {
-			0% {
-				transform: translateX(100%);
-			}
-
-			100% {
-				transform: translateX(-100%);
-			}
-		}
-    </style>
-
-    <script th:inline="javascript">
-	let isDetailsModal = false;
-      $(document).ready(function() {
-          // hide loader on normal load
-          $('#loader').modal('hide');
-      });
-
-      $(window).on('pageshow', function() {
-          // hide loader on back/forward nav
-          $('#loader').modal('hide');
-      });
-
-      $(window).on('beforeunload', function() {
-          // hide loader on leaving page
-          $('#loader').modal('hide');
-      });
+/* Ensure the label returns to the normal color after focus or hover is removed */
+.form-control:not (:focus )~.form-legend {
+	color: #aaa;
+	/* Normal label color */
+}
 
 
-      
-		$(document).ready(function() {
-			Maker_Checker_Function(); 
-		});
+/* 🚌 Bus display style box */
+.boards {
+	transform: translateY(6px);
+	background-color: rgb(107, 122, 143);
+	color: white;
+	padding: 5px 5px;
+	border-radius: 8px;
+	overflow: hidden;
+	white-space: nowrap;
+	flex: 1; /* ✅ makes it take available space dynamically */
+	min-width: 200px;
+	box-shadow: 0 0 10px rgb(107, 122, 143);
+	position: relative;
+}
 
-		// if logged user is a Checker, checker cannot modify, if user is maker , then maker cant download
-		function Maker_Checker_Function() {
-			$.ajax({
-				url: "/BRRS/getUserRole",    
-				type: "GET",
-				success: function(roleId) {
-					// console.log("User Role ID:", roleId);
-				
-					if (roleId === "ADM-C" || roleId === "USR-C" || roleId === "USER-AUDIT") {
-						const modifyBtn = document.getElementById("addRecord");
-						if (modifyBtn) modifyBtn.style.display = "none";
-					}
+/* ✨ Scrolling animation */
+.scrolling-text {
+	display: inline-block;
+	font-family: "Courier New", monospace;
+	font-weight: bold;
+	letter-spacing: 1px;
+	animation: scroll-left 10s linear infinite;
+}
 
-					if (roleId === "ADM-M" || roleId === "USR-M") {
-								const button = document.getElementById("custom-tab-btnAdd");
-								if (button) button.style.display = "none";
-							}
+@keyframes scroll-left {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
 
-				},
-				error: function(err) {
-					console.error("Error fetching role:", err);
-		     }
-		    });
-		}
 
-      	function home() {
-              $("#loader").modal("toggle");
-      		location.href = 'Dashboard'
-      	}
+</style>
+<style>
+/* Red border for invalid inputs */
+input.error, select.error {
+	border: 2px solid red !important;
+}
 
-      	function back() {
-              $("#loader").modal("toggle");
+/* Error message style */
+label.error {
+	color: red;
+	font-size: 0.85em;
+	margin-top: 5px;
+	display: block;
+}
 
-      		window.history.back();
-      	}
+.underline {
+	text-decoration: underline;
+	color: #08a6f1;
+	cursor: pointer;
+}
 
-      	//to fetch summary from the database - called from the summary button
-      	//function showdetails() {
+.left-arrow-circle {
+	width: 35px;
+	height: 35px;
+	border-radius: 50%;
+	background-color: white;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-right: 10px;
+	transition: background-color 0.3s, transform 0.2s;
+}
 
-      		//		var Callurl;
-      			//	$('#loader').modal('show');
-      				//Callurl = /*[[@{'/Reports/'+${reportid}+'/Details'(asondate=${asondate},fromdate=${fromdate},todate=${todate},currency=${currency},dtltype=${dtltype},type=${type},version=${version})}]]*/
-      					//location.href = Callurl;
-      				//c/onsole.log(Callurl);
-      				/*  $.ajax({
-      					 type: 'get',
-      					 url: Callurl,
-      					 beforeSend: function () {
-      						 $('#loader').modal('show'); // 🔄 Show loader
-      					 },
-      					 success: function (data) {
-      						 $('.content').html(data);
-      						 //$("#detailsbtn").addClass("active");
-      						 //tablepagination();
-      					 },
-      					 complete: function () {
-      						 $('#loader').modal('hide');
-      					 },
-      					 error: function () {
-      							  $('#loader').modal('hide');
-      						 alert("Something went wrongss. Please try again.");
+.left-arrow-circle i {
+	color: rgb(107, 122, 143);
+}
 
-      					 }
-      				 }); */
-      			//}
+.left-arrow-circle:hover {
+	background-color: rgb(107, 122, 143);
+	cursor: pointer;
+	transform: scale(1.05);
+	border: 2px solid white;
+}
 
-      	function showdetails() {
-		    isDetailsModal = true; // mark that this modal is from Details
-			 showResultModal('BRRS',' Details page not available for Manual Report');
-		}
-      	function showsummary() {
-      		$('#loader').modal('show');
-      		var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/;
-      		location.href = Callurl;
+.left-arrow-circle:hover i {
+	color: white;
+}
 
-      	}
-    </script>
+.white-text span {
+	color: white !important;
+}
+
+.table-cell tbody td:hover {
+	background-color: #f0f0f0;
+	/* Hover color for cell */
+	cursor: pointer;
+	/* Optional: pointer cursor */
+}
+
+/* .table-bordered td, .table-bordered th {
+	border: 1px solid #000 !important;
+} */
+</style>
+ <style>
+  #reports,
+  #reports th,
+  #reports td {
+   border: 1px solid black !important;
+  }
+
+  #reports {
+   border-collapse: collapse;
+  }
+ </style>
+
 
 <script>
+    // Capture referrer ONCE when page loads
+    var previousUrl = document.referrer;
+    
+    
+    let isResubmissionUpdate = false;
+</script>
+
+
+<script th:inline="javascript">
+		let isDetailsModal = false;
+		$(document).ready(function () {
+			// hide loader on normal load
+			$('#loader').modal('hide');
+		});
+		$(window).on('pageshow', function () {
+			// hide loader on back/forward nav
+			$('#loader').modal('hide');
+		});
+		$(window).on('beforeunload', function () {
+			// hide loader on leaving page
+			$('#loader').modal('hide');
+		});
+
+		function home() {
+			$("#loader").modal("toggle");
+			location.href = 'Dashboard'
+		}
+		function back() {
+			$("#loader").modal("toggle");
+			window.history.back();
+		}
+
+		//to fetch summary from the database - called from the summary button
+		/* function showdetails() {
+			isDetailsModal = true; // mark that this modal is from Details
+			showResultModal('BRRS', 'Details page not available for Manual Report');
+		} */
+		function showdetails() {
+			var Callurl;
+			$('#loader').modal('show');
+			Callurl = /*[[@{'/Reports/'+${reportid}+'/Details'(asondate=${asondate},fromdate=${fromdate},todate=${todate},currency=${currency},dtltype=${dtltype},type=${type},version=${version})}]]*/
+				location.href = Callurl;
+			console.log(Callurl);
+
+		}
+
+		function showsummary() {
+			$('#loader').modal('show');
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/;
+			location.href = Callurl;
+		}
+
+
+	</script>
+	<script>
 		function activateTab(tabName) {
 			// Remove 'active' from all buttons
 			document.querySelectorAll('.custom-tab-btn').forEach(btn => {
@@ -493,6 +423,7 @@ PURPOSE		: BWRBRREPORT
 			var filename = button.getAttribute('data-filename');
 			var type = button.getAttribute('data-type');
 			var version = button.getAttribute('data-version');
+
 			$('#loader').modal('show');
 			$.ajax({
 				url: './downloadExcel?reportid=' + reportid +
@@ -502,9 +433,9 @@ PURPOSE		: BWRBRREPORT
 					'&currency=' + currency +
 					'&subreportid=' + subreportid +
 					'&secid=' + secid +
-					'&filename=' + filename +
 					'&type=' + type +
-					'&version=' + version,
+					'&version=' + version +
+					'&filename=' + filename,
 				type: 'GET',
 				xhrFields: {
 					responseType: 'blob'
@@ -512,7 +443,7 @@ PURPOSE		: BWRBRREPORT
 				success: function (data) {
 					$('#loader').modal('hide');
 					if (data && data.size > 100) {
-						const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
+						const blob = new Blob([data], { type: 'application/vnd.ms-excel' });
 						const url = window.URL.createObjectURL(blob);
 						const a = document.createElement('a');
 						a.style.display = 'none';
@@ -522,7 +453,7 @@ PURPOSE		: BWRBRREPORT
 						a.click();
 						window.URL.revokeObjectURL(url);
 						document.body.removeChild(a);
-						showResultModal('BRRS', 'M_OPTR.xlsx downloaded successfully.');
+						showResultModal('BRRS', filename + ' downloaded successfully.');
 					} else {
 						showResultModal('Information', 'No data was available to create a download.');
 					}
@@ -534,15 +465,26 @@ PURPOSE		: BWRBRREPORT
 				}
 			});
 		}
+
+
 		function editRecord() {
 			showResultModal('Alert', 'Development in progress');
 
 		}
-		function closemodel() {
-			$('#alert').modal('hide');
-			$('#resultModal').modal('hide');
+		/* function closemodel() {
+			$("#resultModal").modal("hide");
+			$('#loader').modal('hide');
 
-		}
+			// Only reload if not from Details modal
+			if (!isDetailsModal) {
+				setTimeout(function () {
+					location.reload();
+				}, 300);
+			} else {
+				// reset flag for next modal usage
+				isDetailsModal = false;
+			}
+		} */
 		function showResultModal(title, message) {
 			// Set the text for the modal elements
 			$('#resultModalLabel').text(title);
@@ -550,40 +492,162 @@ PURPOSE		: BWRBRREPORT
 			// Show the modal
 			$('#resultModal').modal('show');
 		}
+		
+		  function startReport(button) {
+			   const alertMsg = document.getElementById("alertMessage");
+			   const filename = button.getAttribute('data-filename');
+			   const fromdate = button.getAttribute('data-fromdate');
+			   const todate = button.getAttribute('data-todate');
+			   const currency = button.getAttribute('data-currency');
+			   const dtltype = button.getAttribute('data-dtltype');
+			   const type = button.getAttribute('data-type');
+			   const version = button.getAttribute('data-version');
+			   const sessionfilename = sessionStorage.getItem("filename");
+
+			   if (sessionfilename == filename) {
+			    alertMsg.innerHTML = 'Download request already Processing...';
+			    showAlert();
+			    return;
+			   }
+
+			   alertMsg.innerHTML = 'Download request Processing...';
+			   showAlert();
+
+			   const baseUrl = '/BRRS/Reports/startreport';
+			   const downloadUrl = baseUrl +
+			    '?filename=' + encodeURIComponent(filename) +
+			    '&fromdate=' + encodeURIComponent(fromdate) +
+			    '&todate=' + encodeURIComponent(todate) +
+			    '&currency=' + encodeURIComponent(currency) +
+			    '&dtltype=' + encodeURIComponent(dtltype) +
+			    '&type=' + encodeURIComponent(type) +
+			    '&version=' + encodeURIComponent(version);
+			   fetch(downloadUrl)  // ✅ no invalid characters now
+			    .then(res => res.text())
+			    .then(jobId => {
+
+			     alertMsg.innerHTML = 'Download request received...' + jobId;
+			     showAlert();
+			     sessionStorage.setItem("jobId", jobId);
+			     sessionStorage.setItem("filename", filename);
+			     checkReport(jobId);
+			    });
+			  }
+
+			  function checkReport(jobId) {
+			   const alertMsg = document.getElementById("alertMessage");
+			   fetch('/BRRS/Reports/checkreport?jobId=' + encodeURIComponent(jobId))
+			    .then(res => res.text())
+			    .then(status => {
+			     if (status === "READY") {
+			      alertMsg.innerHTML = 'Report is ready! Downloaded';
+			      showAlert();
+			      const filename = sessionStorage.getItem("filename");
+			      downloadDetailfile(jobId, filename)
+			      sessionStorage.removeItem("jobId");
+			      sessionStorage.removeItem("filename");
+
+			     } else if (status === "PROCESSING") {
+			      alertMsg.innerHTML = 'Download Is Processing…';
+			      showAlert();
+			      setTimeout(() => checkReport(jobId), 5000);
+			     }
+			     else if (status === "ERROR") {
+			      alertMsg.innerHTML = 'No data was available to create a download.';
+			      showAlert();
+			      sessionStorage.removeItem("jobId");
+			      sessionStorage.removeItem("filename");
+			     }
+			    });
+			  }
+
+
+
+			  function downloadDetailfile(jobId, filename) {
+
+			   //$('#loader').modal('show');
+
+			   $.ajax({
+			    url: '/BRRS/Reports/downloaddetailExcel?jobId=' + jobId +
+			     '&filename=' + filename,
+			    type: 'GET',
+			    xhrFields: {
+			     responseType: 'blob'
+			    },
+			    success: function (data) {
+			     $('#loader').modal('hide');
+
+			     if (data && data.size > 100) {
+			      const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
+			      const url = window.URL.createObjectURL(blob);
+			      const a = document.createElement('a');
+			      a.style.display = 'none';
+			      a.href = url;
+			      a.download = filename;
+			      document.body.appendChild(a);
+			      a.click();
+			      window.URL.revokeObjectURL(url);
+			      document.body.removeChild(a);
+
+			      showResultModal('BRRS', filename + '.xls downloaded successfully.');
+			     } else {
+			      showResultModal('Information', 'No data was available to create a download.');
+			     }
+			    },
+			    error: function (jqXHR, textStatus, errorThrown) {
+			     $('#loader').modal('hide');
+			     console.error("Download failed:", textStatus, errorThrown);
+			     showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
+			    }
+			   });
+			  }
 	</script>
+	
 	
 	<script>
 	// Show Modify (enable inputs & dropdowns)
+	
+		
 function showmodify(btn) {
+		
+	let readonlyIds = [];    
+
+	
+	$(".Show_input").each(function () {
+		        if (!readonlyIds.includes(this.id)) {
+		            $(this).removeAttr("readonly").removeAttr("disabled");
+		        }
+		    });
+
+			
+
+			for (let i = 10; i <= 14; i++) {  
+						    let fields = [
+						    	"INTEREST_RATES", "EQUITIES", "FOREIGN_EXC_GOLD", "COMMODITIES", "TOTAL"
+						        
+						    ];
+
+						    fields.forEach(field => {
+						        let selector = `#R${i}_${field}`;
+						        if ($(selector).length) {  // check if element exists
+						            $(selector).css("background-color", "#d3d3d3");     // set grey
+						        }
+						    });
+						}
+			
+			
+			
+	
     
-    //$(".Show_input").removeAttr("readonly").removeAttr("disabled");
-    
-    // Make all editable fields editable 
-    $(".Show_input").not(".nonEditable").removeAttr("readonly").removeAttr("disabled");
-
-
-    // Highlight editable fields for rows 10 to 14
-    for (let i = 10; i <= 14; i++) {
-    if ([12].includes(i)) continue;
-
-    let fields = ["INTEREST_RATES", "EQUITIES", "FOREIGN_EXC_GOLD", "COMMODITIES"];
-    fields.forEach(field => {
-        let selector = `#R${i}_${field}`;
-        if ($(selector).length) {
-            $(selector).css({ "background-color": "#d3d3d3" });
-        }
-    });
-}
-
-
-    // Show buttons
+    // Toggle buttons
     $("#submitButton").show();
-    $("#cancelRecord").show(); // Show Cancel button only when Modify is clicked
     
-    // Hide the clicked Modify button
+    // Show Cancel button only when Modify is clicked
+    $("#cancelRecord").show();
+    
+    // Optionally hide the clicked Modify button
     $(btn).hide();
 }
-
 
 //Cancel / Reset function
 function cancelModify() {
@@ -592,6 +656,8 @@ function cancelModify() {
         location.reload();
         
         $(".Show_input").attr("readonly", true).attr("disabled", true);
+
+       
 
         $("#submitButton, #btnBack_edit").hide();
         $("#btnBack").show();
@@ -609,8 +675,32 @@ function cancelModify() {
 	
 
 	</script>
+
+
+	<script>
+
+
+		// This function is for closing the modal after an action is complete.
+		// It hides the result and loader modals and reloads the page.
+		function closemodel() {
+			$("#resultModal").modal("hide");
+			$('#loader').modal('hide');
+			
+			if (isResubmissionUpdate) {
+		        return;
+		    }
+
+			// Only reload if not from Details modal
+			if (!isDetailsModal) {
+				setTimeout(function () {
+					location.reload();
+				}, 300);
+			} else {
+				// reset flag for next modal usage
+				isDetailsModal = false;
+			}
+		}
 	
-	<SCRIPT>
 	
 	// Calculate total for R10
 	function calculateR10Totals() {
@@ -863,12 +953,17 @@ function closemodel() {
         }
 }
 
+
 function fileuploads(btn) {
     var asondate = btn.getAttribute("data-todate");
     const type = btn.getAttribute("data-type"); // MAIN / RESUB / ARCHIVAL
     
+    // ✅ Mark RESUB once
+    isResubmissionUpdate = (type && type.toUpperCase() === 'RESUB');
+    
     $('#loader').modal('show');
 
+    // Pre-calculations
     // Pre-calculations
     calculateR11Totals();
     calculateR10Totals();
@@ -897,22 +992,31 @@ function fileuploads(btn) {
     formData.append("asondate", asondate);
     formData.append("type", type);
 
-    // --- NEW: append type value (NORMAL, RESUB, ARCHIVAL) ---
-    const selectedType = $("#OPTRType").val(); // Get from dropdown
-    formData.append("type", selectedType);
-    console.log("Selected type:", selectedType);
+  
+ // Append only named inputs
+    $('#fileupload').find(':input[name]').each(function () {
+        formData.append(this.name, this.value);
 
-    // --- Entity fields (R10-R17) ---
-    for (let i = 10; i <= 14; i++) {
-        ["INTEREST_RATES", "EQUITIES", "FOREIGN_EXC_GOLD", "COMMODITIES", "TOTAL"].forEach(field => {
-            const input = $("#R" + i + "_" + field);
-            if (input.length) {
-                formData.append(input.attr("name"), input.val());
-            }
-        });
-    }
-    console.log("✅ Entity executed successfully");
+/*         let originalName = this.name;  
+        let value = this.value;
 
+        // Convert: R6_C2_COMPANY_NAME → R6_COMPANY_NAME
+        let fixedName = originalName.replace(/_C\d+_/, '_');
+        console.log(originalName, "→", fixedName);
+        formData.append(fixedName, value); */
+        for (let i = 10; i <= 14; i++) {
+            ["INTEREST_RATES", "EQUITIES", "FOREIGN_EXC_GOLD", "COMMODITIES", "TOTAL"].forEach(field => {
+                const input = $("#R" + i + "_" + field);
+                if (input.length) {
+                    formData.append(input.attr("name"), input.val());
+                }
+            });
+        }
+    });
+    console.log("✅ Entity executed successfully");    
+
+
+    
 	//Select API endpoint dynamically
 	let apiUrl = './MOPTRupdateAll'; // normal update
 	if (type && type.toUpperCase() === 'RESUB') {
@@ -920,177 +1024,74 @@ function fileuploads(btn) {
 	}
 
     // ✅ Single AJAX call with type info
-    $.ajax({
-        url: apiUrl,
-        type: 'POST',
-        data: formData,
-        processData: false,
-        contentType: false,
-        dataType: 'text',
-        success: function (response) {
-            $("#resultModalLabel").text("BRRS");
-            $("#resultModalBody").text(response);
-            $("#resultModal").modal("show");
-        },
-        error: function (jqXHR) {
-            console.log("Error response:", jqXHR.responseText);
-            $("#resultModalLabel").text("Error");
-            $("#resultModalBody").text("Update failed. Check console for details.");
-            $("#resultModal").modal("show");
-        },
-        complete: function () {
-            $('#loader').modal('hide');
-        }
-    });
+ 	    $.ajax({
+	        url: apiUrl,
+	        type: 'POST',
+	        data: formData,
+	        processData: false,
+	        contentType: false,
+	        dataType: 'text',
+	        success: function (response) {
+	            $("#resultModalLabel").text("BRRS");
+	            $("#resultModalBody").text(response);
+	            $("#resultModal").modal("show");
+
+			    //  Wait for user to close the modal manually
+			     $("#resultModal").off("hidden.bs.modal").on("hidden.bs.modal", function () {
+			    	 if (isResubmissionUpdate) {
+			    		 window.location.href = previousUrl
+			    		 ? previousUrl 
+			    				 : "/BRRS/Resubmission?rptcode=MDISB5";
+			    	 } // reload ONLY when modal is closed
+			    });
+			},
+	        error: function (jqXHR) {
+	            console.log("Error response:", jqXHR.responseText);
+	            $("#resultModalLabel").text("Error");
+	            $("#resultModalBody").text("Update failed. Check console for details.");
+	            $("#resultModal").modal("show");
+	        },
+	        complete: function () {
+	            $('#loader').modal('hide');
+	        }
+	    });
 
     console.log("✅ AJAX executed successfully");
-}
+}    
 </script>
-	
-	
-<!-- <script>
-		function activateTab(tabName) {
-			// Remove 'active' from all buttons
-			document.querySelectorAll('.custom-tab-btn').forEach(btn => {
-				btn.classList.remove('active');
-			});
-			// Add 'active' to selected button
-			if (tabName === 'summary') {
-				document.getElementById('custom-tab-btnSummary').classList.add('active');
-			} else if (tabName === 'Details') {
-				document.getElementById('custom-tab-btnDetails').classList.add('active');
-			}
-		}
-		window.onload = function () {
-			/* setTimeout(function() {
-				var selectedTab = document.getElementById("selectedTab").value;
-				alert(selectedTab);
-				activateTab(selectedTab);
-			}, 10000); */ // 10,000 milliseconds = 10 seconds
 
-			var selectedTab = document.getElementById("selectedTab").value;
-			activateTab(selectedTab);
-		};
-		function downloadfile(button) {
-			var reportid = button.getAttribute('data-reportid');
-			var asondate = button.getAttribute('data-asondate');
-			var fromdate = button.getAttribute('data-fromdate');
-			var todate = button.getAttribute('data-todate');
-			var currency = button.getAttribute('data-currency');
-			var subreportid = button.getAttribute('data-subreportid');
-			var secid = button.getAttribute('data-secid');
-			var dtltype = button.getAttribute('data-dtltype');
-			var filename = button.getAttribute('data-filename');
-			var type = button.getAttribute('data-type');
-			var version = button.getAttribute('data-version');
-			$('#loader').modal('show');
-			$.ajax({
-				url: './downloadExcel?reportid=' + reportid +
-					'&fromdate=' + fromdate +
-					'&asondate=' + asondate +
-					'&todate=' + todate +
-					'&currency=' + currency +
-					'&subreportid=' + subreportid +
-					'&secid=' + secid +
-					'&filename=' + filename +
-					'&type=' + type +
-					'&version=' + version,
-				type: 'GET',
-				xhrFields: {
-					responseType: 'blob'
-				},
-				success: function (data) {
-					$('#loader').modal('hide');
-					if (data && data.size > 100) {
-						const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
-						const url = window.URL.createObjectURL(blob);
-						const a = document.createElement('a');
-						a.style.display = 'none';
-						a.href = url;
-						a.download = filename;
-						document.body.appendChild(a);
-						a.click();
-						window.URL.revokeObjectURL(url);
-						document.body.removeChild(a);
-						showResultModal('BRRS', 'M_OPTR downloaded successfully.');
-					} else {
-						showResultModal('Information', 'No data was available to create a download.');
-					}
-				},
-				error: function (jqXHR, textStatus, errorThrown) {
-					$('#loader').modal('hide');
-					console.error("Download failed:", textStatus, errorThrown);
-					showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
-				}
-			});
-		}
-		function editRecord() {
-			showResultModal('Alert', 'Development in progress');
+<script th:inline="javascript">
+$(document).ready(function () {
+var table = $('#reportdetails').DataTable({
+	scrollY: "500px",
+  scrollX: true,
+  scrollCollapse: true,
+  autoWidth: false,
+  paging: true,
+  searching: true,
+  lengthChange: false,
+  ordering: true,
+  pageLength: 100,
+  fixedHeader: true, // ✅ You can simply set it to true
+// ✅ Column width settings
+columnDefs: [
+  { width: "100px", targets: 1 }  ,  // Cust ID column
+],
 
-		}
-		function closemodel() {
-			$('#alert').modal('hide');
-			$('#resultModal').modal('hide');
+  dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t'
+});
 
-		}
-		function showResultModal(title, message) {
-			// Set the text for the modal elements
-			$('#resultModalLabel').text(title);
-			$('#resultModalBody').text(message);
-			// Show the modal
-			$('#resultModal').modal('show');
-		}
-	</script> -->
+// ✅ Fix alignment on resize / zoom
+$(window).on('resize', function () {
+  table.columns.adjust().draw(false);
+});
 
-  <!-- <script th:inline="javascript">
-      function showdetailsbyRowAndColumn(a) {
-        var rowId = a.getAttribute("RowId");
-        var columnId = a.getAttribute("ColumnId");
-        var cellValue = a.textContent || a.innerText;
-
-        if (cellValue !== "0") {
-          // Set dynamic message in modal (instead of confirm)
-          document.getElementById("cellresultModalLabel").innerText =
-            "Do you want to open details for Row: " +
-            rowId +
-            " and Column: " +
-            columnId +
-            "?";
-
-          // Show custom Bootstrap modal
-          $("#cellresultModal").modal("show");
-
-          // Handle Yes button
-          document.querySelector(".yes-btn").onclick = function () {
-            $("#cellresultModal").modal("hide");
-
-            // Show loader
-            const loader = bootstrap.Modal.getOrCreateInstance(
-              document.getElementById("loader"),
-              {
-                backdrop: "static",
-                keyboard: false,
-              }
-            );
-            $("#loader").modal("show");
-
-            // Build dynamic URL
-            var Callurl =
-              /*[[@{'/Reports/' + ${reportid} + '/Details'(asondate=${asondate}, fromdate=${fromdate}, todate=${todate}, currency=${currency}, dtltype=${dtltype},type=${type},version=${version})}]]*/ "";
-            Callurl += "&filter=" + encodeURIComponent(rowId + "," + columnId);
-
-            location.href = Callurl;
-          };
-        } else {
-          // Use your custom alert modal instead of window.alert
-          showResultModal(
-            "Alert",
-            "No Records available for this selected cell."
-          );
-        }
-      }
-    </script> -->  
-  </head>
+// ✅ Fix initial misalignment if loaded at non-100% zoom
+setTimeout(function () {
+  table.columns.adjust().draw(false);
+}, 500);
+});
+</script>
 
   <title>BRRS</title>
   <body>
@@ -1121,31 +1122,25 @@ function fileuploads(btn) {
 							style="color: white !important; font-size: 16px; margin-right: 20px;margin-left: 10px;">Report Date: <span th:text="${#strings.replace(asondate, '/', '-')}">30-06-2025</span>
 						</span>
 						<!-- Buttons -->
-						<input type="hidden" id="selectedTab" th:value="${displaymode}">
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showsummary();"
-							th:if="${displaymode == 'Details'}">Summary</button>
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails();"
-							th:if="${displaymode == 'summary'}">Details</button>
-						
-						<!-- Modify button -->
-						<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
-							title="Click to EDIT Records"
-							th:if="${type == 'RESUB' or type=='BRRS' and type != 'ARCHIVAL'}"
-							th:classappend="${session.PERMISSIONS == 'W'} and ${dtltype == 'report'} ? 'addedit' "
-							id="addRecord">
-							Modify
-						</button>
+      <input type="hidden" id="selectedTab" th:value="${displaymode}">
+      <button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showsummary();"
+       th:if="${displaymode == 'Details'}">Summary</button>
+      <button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails();"
+       th:if="${displaymode == 'summary'}">Details</button>
 
-<!-- Cancel button (hidden initially) -->
-<button type="button" class="custom-tab-btn"
-        title="Cancel editing"
-        id="cancelRecord"
-        onclick="cancelModify();"
-        style="display: none;">Cancel</button>
+      <!-- Modify button -->
+      <button type="button" class="custom-tab-btn" onclick="showmodify(this);" title="Click to EDIT Records"
+       th:if="${type == 'RESUB' or displaymode == 'summary' and type != 'ARCHIVAL'}"
+       th:classappend="${session.PERMISSIONS == 'W'} and ${dtltype == 'report'} ? 'addedit' " id="addRecord">Modify</button>
 
 
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'summary'}" th:attr="data-reportid=${reportid},
+      <!-- Cancel button (hidden initially) -->
+      <button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord" onclick="cancelModify();"
+       style="display: none;">Cancel</button>
+
+
+      <button type="button" class="custom-tab-btn" id="custom-tab-btnAdd" th:if="${displaymode == 'summary'}"
+       th:attr="data-reportid=${reportid},
                    				 data-asondate=${asondate},
                    				 data-fromdate=${fromdate},
                     				 data-todate=${todate},
@@ -1153,15 +1148,17 @@ function fileuploads(btn) {
                     				 data-dtltype=${dtltype},
                     				 data-filename='M_OPTR.xlsx',
 					 				 data-type=${type},
-					    			 data-version=${version}" onclick="downloadfile(this);">
-							<i class="fa fa-download"></i>
-						</button>
-						
-						
-						
+					    			 data-version=${version}"
+       onclick="downloadfile(this);">
+       <i class="fa fa-download"></i>
+      </button>
 
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'Details'}" onclick="startReport(this);" th:attr="
+
+
+
+      <button type="button" class="custom-tab-btn" id="custom-tab-btnAdd" th:if="${displaymode == 'Details'}"
+       onclick="startReport(this);"
+       th:attr="
 								    data-fromdate=${fromdate},
 								    data-todate=${todate},
 									data-currency=${currency},  
@@ -1170,29 +1167,25 @@ function fileuploads(btn) {
 									data-type=${type},
 												data-version=${version}
 								  ">
-							<i class="fa fa-download"></i>
-						</button>
-
+       <i class="fa fa-download"></i>
+      </button>
+						
 
 
 					</div>
 					
 				</div>
-          <div th:if="${displaymode == 'summary'}">
-            <div class="row">
-              <div class="col-sm-12">
-              <form action="#" method="POST" id="fileupload">
+				<div th:if="${displaymode == 'summary'}">
+					<div class="row">
+						<div class="col-sm-12">
+						<form action="#" method="POST" id="fileupload">
 						<input type="hidden" name="asondate" id="asondate" th:value="${asondate}" />
-                <div
-                  class="table-wrapper table-responsive scrollable-table-container"
-                  style="border-right: 1px solid #dee2e6"
-                >
-                  <table
-                  style="margin-bottom: 0px;"
-                    class="sticky-header-table table table-bordered table-cell table-sm table-condensed"
-                    id="reports"
-                  >
-                    <thead class="thead-light">
+							<div class="table-wrapper table-responsive scrollable-table-container"
+								style="border-right: 1px solid #dee2e6; ">
+								<table
+									class="sticky-header-table table table-bordered table-hover table-sm table-condensed"
+									id="reports">
+									<thead class="thead-light">
                       <tr>
                         <th style="font-weight:bold; text-align:left;">
                            Line
@@ -1234,28 +1227,28 @@ function fileuploads(btn) {
 		<input class="display-input Show_input "
 		type="text"
 		th:value="${report.R10_INTEREST_RATES != null ? #numbers.formatDecimal(report.R10_INTEREST_RATES, 1, 'COMMA', 0, 'POINT') : '0'}"
-		id="R10_INTEREST_RATES" name="R10_INTEREST_RATES"
+		id="R10_INTEREST_RATES" name="R10_C4_INTEREST_RATES"
 		style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
 		readonly /></td>
 		<td id="R10" style="text-align:right;">
 		<input class="display-input Show_input "
 		type="text"
 		th:value="${report.R10_EQUITIES != null ? #numbers.formatDecimal(report.R10_EQUITIES, 1, 'COMMA', 0, 'POINT') : '0'}"
-		id="R10_EQUITIES" name="R10_EQUITIES"
+		id="R10_EQUITIES" name="R10_C5_EQUITIES"
 		style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
 		readonly /></td>
 		<td id="R10" style="text-align:right;">
 		<input class="display-input Show_input "
 		type="text"
 		th:value="${report.R10_FOREIGN_EXC_GOLD != null ? #numbers.formatDecimal(report.R10_FOREIGN_EXC_GOLD, 1, 'COMMA', 0, 'POINT') : '0'}"
-		id="R10_FOREIGN_EXC_GOLD" name="R10_FOREIGN_EXC_GOLD"
+		id="R10_FOREIGN_EXC_GOLD" name="R10_C6_FOREIGN_EXC_GOLD"
 		style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
 		readonly /></td>
 		<td id="R10" style="text-align:right;">
 		<input class="display-input Show_input "
 		type="text"
 		th:value="${report.R10_COMMODITIES != null ? #numbers.formatDecimal(report.R10_COMMODITIES, 1, 'COMMA', 0, 'POINT') : '0'}"
-		id="R10_COMMODITIES" name="R10_COMMODITIES"
+		id="R10_COMMODITIES" name="R10_C7_COMMODITIES"
 		style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
 		readonly /></td>		
         
@@ -1267,7 +1260,7 @@ style="text-align: right; width:248px; background-color: rgb(107, 122, 143); col
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R10_TOTAL != null ? #numbers.formatDecimal(report.R10_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
-	id="R10_TOTAL" name="R10_TOTAL"
+	id="R10_TOTAL" name="R10_C8_TOTAL"
 	style="background-color: rgb(107, 122, 143); color: white; width: 248px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
                       		
@@ -1280,28 +1273,28 @@ style="text-align: right; width:248px; background-color: rgb(107, 122, 143); col
 		<input class="display-input Show_input "
 		type="text"
 		th:value="${report.R11_INTEREST_RATES != null ? #numbers.formatDecimal(report.R11_INTEREST_RATES, 1, 'COMMA', 0, 'POINT') : '0'}"
-		id="R11_INTEREST_RATES" name="R11_INTEREST_RATES"
+		id="R11_INTEREST_RATES" name="R11_C4_INTEREST_RATES"
 		style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
 		readonly /></td>
 		<td id="R11" style="text-align:right;">
 		<input class="display-input Show_input "
 		type="text"
 		th:value="${report.R11_EQUITIES != null ? #numbers.formatDecimal(report.R11_EQUITIES, 1, 'COMMA', 0, 'POINT') : '0'}"
-		id="R11_EQUITIES" name="R11_EQUITIES"
+		id="R11_EQUITIES" name="R11_C5_EQUITIES"
 		style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
 		readonly /></td>
 		<td id="R11" style="text-align:right;">
 		<input class="display-input Show_input "
 		type="text"
 		th:value="${report.R11_FOREIGN_EXC_GOLD != null ? #numbers.formatDecimal(report.R11_FOREIGN_EXC_GOLD, 1, 'COMMA', 0, 'POINT') : '0'}"
-		id="R11_FOREIGN_EXC_GOLD" name="R11_FOREIGN_EXC_GOLD"
+		id="R11_FOREIGN_EXC_GOLD" name="R11_C6_FOREIGN_EXC_GOLD"
 		style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
 		readonly /></td>
 		<td id="R11" style="text-align:right;">
 		<input class="display-input Show_input "
 		type="text"
 		th:value="${report.R11_COMMODITIES != null ? #numbers.formatDecimal(report.R11_COMMODITIES, 1, 'COMMA', 0, 'POINT') : '0'}"
-		id="R11_COMMODITIES" name="R11_COMMODITIES"
+		id="R11_COMMODITIES" name="R11_C7_COMMODITIES"
 		style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
 		readonly /></td>		
         
@@ -1312,7 +1305,7 @@ style="text-align: right; width:248px; background-color: rgb(107, 122, 143); col
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R11_TOTAL != null ? #numbers.formatDecimal(report.R11_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
-	id="R11_TOTAL" name="R11_TOTAL"
+	id="R11_TOTAL" name="R11_C8_TOTAL"
 	style="background-color: rgb(107, 122, 143); color: white; width: 248px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
                       		
@@ -1330,7 +1323,7 @@ style="text-align: right; width:248px; background-color: rgb(107, 122, 143); col
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R12_INTEREST_RATES != null ? #numbers.formatDecimal(report.R12_INTEREST_RATES, 1, 'COMMA', 0, 'POINT') : '0'}"
-	id="R12_INTEREST_RATES" name="R12_INTEREST_RATES"
+	id="R12_INTEREST_RATES" name="R12_C4_INTEREST_RATES"
 	style="background-color: rgb(107, 122, 143); color: white; width: 248px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
@@ -1342,7 +1335,7 @@ style="text-align: right; width:248px; background-color: rgb(107, 122, 143); col
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R12_EQUITIES != null ? #numbers.formatDecimal(report.R12_EQUITIES, 1, 'COMMA', 0, 'POINT') : '0'}"
-	id="R12_EQUITIES" name="R12_EQUITIES"
+	id="R12_EQUITIES" name="R12_C5_EQUITIES"
 	style="background-color: rgb(107, 122, 143); color: white; width: 248px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
                     
@@ -1353,7 +1346,7 @@ style="text-align: right; width:248px; background-color: rgb(107, 122, 143); col
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R12_FOREIGN_EXC_GOLD != null ? #numbers.formatDecimal(report.R12_FOREIGN_EXC_GOLD, 1, 'COMMA', 0, 'POINT') : '0'}"
-	id="R12_FOREIGN_EXC_GOLD" name="R12_FOREIGN_EXC_GOLD"
+	id="R12_FOREIGN_EXC_GOLD" name="R12_C6_FOREIGN_EXC_GOLD"
 	style="background-color: rgb(107, 122, 143); color: white; width: 248px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 		
@@ -1364,7 +1357,7 @@ style="text-align: right; width:248px; background-color: rgb(107, 122, 143); col
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R12_COMMODITIES != null ? #numbers.formatDecimal(report.R12_COMMODITIES, 1, 'COMMA', 0, 'POINT') : '0'}"
-	id="R12_COMMODITIES" name="R12_COMMODITIES"
+	id="R12_COMMODITIES" name="R12_C7_COMMODITIES"
 	style="background-color: rgb(107, 122, 143); color: white; width: 248px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 	
@@ -1377,7 +1370,7 @@ style="text-align: right; width:248px; background-color: rgb(107, 122, 143); col
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R12_TOTAL != null ? #numbers.formatDecimal(report.R12_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
-	id="R12_TOTAL" name="R12_TOTAL"
+	id="R12_TOTAL" name="R12_C8_TOTAL"
 	style="background-color: rgb(107, 122, 143); color: white; width: 248px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>  
                       		
@@ -1392,28 +1385,28 @@ style="text-align: right; width:248px; background-color: rgb(107, 122, 143); col
 		<input class="display-input Show_input "
 		type="text"
 		th:value="${report.R13_INTEREST_RATES != null ? #numbers.formatDecimal(report.R13_INTEREST_RATES, 1, 'COMMA', 0, 'POINT') : '0'}"
-		id="R13_INTEREST_RATES" name="R13_INTEREST_RATES"
+		id="R13_INTEREST_RATES" name="R13_C4_INTEREST_RATES"
 		style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
 		readonly /></td>
 		<td id="R13" style="text-align:right;">
 		<input class="display-input Show_input "
 		type="text"
 		th:value="${report.R13_EQUITIES != null ? #numbers.formatDecimal(report.R13_EQUITIES, 1, 'COMMA', 0, 'POINT') : '0'}"
-		id="R13_EQUITIES" name="R13_EQUITIES"
+		id="R13_EQUITIES" name="R13_C5_EQUITIES"
 		style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
 		readonly /></td>
 		<td id="R13" style="text-align:right;">
 		<input class="display-input Show_input "
 		type="text"
 		th:value="${report.R13_FOREIGN_EXC_GOLD != null ? #numbers.formatDecimal(report.R13_FOREIGN_EXC_GOLD, 1, 'COMMA', 0, 'POINT') : '0'}"
-		id="R13_FOREIGN_EXC_GOLD" name="R13_FOREIGN_EXC_GOLD"
+		id="R13_FOREIGN_EXC_GOLD" name="R13_C6_FOREIGN_EXC_GOLD"
 		style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
 		readonly /></td>
 		<td id="R13" style="text-align:right;">
 		<input class="display-input Show_input "
 		type="text"
 		th:value="${report.R13_COMMODITIES != null ? #numbers.formatDecimal(report.R13_COMMODITIES, 1, 'COMMA', 0, 'POINT') : '0'}"
-		id="R13_COMMODITIES" name="R13_COMMODITIES"
+		id="R13_COMMODITIES" name="R13_C7_COMMODITIES"
 		style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
 		readonly /></td>		
         
@@ -1424,7 +1417,7 @@ style="text-align: right; width:248px; background-color: rgb(107, 122, 143); col
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R13_TOTAL != null ? #numbers.formatDecimal(report.R13_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
-	id="R13_TOTAL" name="R13_TOTAL"
+	id="R13_TOTAL" name="R13_C8_TOTAL"
 	style="background-color: rgb(107, 122, 143); color: white; width: 248px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
                       		
@@ -1439,28 +1432,28 @@ style="text-align: right; width:248px; background-color: rgb(107, 122, 143); col
 		<input class="display-input Show_input "
 		type="text"
 		th:value="${report.R14_INTEREST_RATES != null ? #numbers.formatDecimal(report.R14_INTEREST_RATES, 1, 'COMMA', 0, 'POINT') : '0'}"
-		id="R14_INTEREST_RATES" name="R14_INTEREST_RATES"
+		id="R14_INTEREST_RATES" name="R14_C5_INTEREST_RATES"
 		style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
 		readonly /></td>
 		<td id="R14" style="text-align:right;">
 		<input class="display-input Show_input "
 		type="text"
 		th:value="${report.R14_EQUITIES != null ? #numbers.formatDecimal(report.R14_EQUITIES, 1, 'COMMA', 0, 'POINT') : '0'}"
-		id="R14_EQUITIES" name="R14_EQUITIES"
+		id="R14_EQUITIES" name="R14_C5_EQUITIES"
 		style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
 		readonly /></td>
 		<td id="R14" style="text-align:right;">
 		<input class="display-input Show_input "
 		type="text"
 		th:value="${report.R14_FOREIGN_EXC_GOLD != null ? #numbers.formatDecimal(report.R14_FOREIGN_EXC_GOLD, 1, 'COMMA', 0, 'POINT') : '0'}"
-		id="R14_FOREIGN_EXC_GOLD" name="R14_FOREIGN_EXC_GOLD"
+		id="R14_FOREIGN_EXC_GOLD" name="R14_C6_FOREIGN_EXC_GOLD"
 		style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
 		readonly /></td>
 		<td id="R14" style="text-align:right;">
 		<input class="display-input Show_input "
 		type="text"
 		th:value="${report.R14_COMMODITIES != null ? #numbers.formatDecimal(report.R14_COMMODITIES, 1, 'COMMA', 0, 'POINT') : '0'}"
-		id="R14_COMMODITIES" name="R14_COMMODITIES"
+		id="R14_COMMODITIES" name="R14_C7_COMMODITIES"
 		style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
 		readonly /></td>		
         
@@ -1471,7 +1464,7 @@ style="text-align: right; width:248px; background-color: rgb(107, 122, 143); col
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R14_TOTAL != null ? #numbers.formatDecimal(report.R14_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
-	id="R14_TOTAL" name="R14_TOTAL"
+	id="R14_TOTAL" name="R14_C8_TOTAL"
 	style="background-color: rgb(107, 122, 143); color: white; width: 248px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
                       		
@@ -1494,358 +1487,431 @@ style="text-align: right; width:248px; background-color: rgb(107, 122, 143); col
                     
 
                     </tbody>
-                  </table>
-                  </div>
-							<div style="text-align: center; margin-top: 10px;">
-								
-   <button id="submitButton" 
-            type="button"
-            class="custom-tab-btn Show_input" 
-            form="fileupload"
-            th:attr="data-todate=${asondate}, data-type=${type}"
-            onclick="fileuploads(this);" 
-            style="display: none;">
-        Submit
-    </button>
-</div>
-							</form>
-                </div>
-              </div>
-            </div>
-          </div>
+         </table>
 
-          <div th:if="${displaymode == 'Details'}">
-            <div class="row">
-              <div class="col-sm-12">
-                <div
-                  class="table-responsive scrollable-table-container"
-                  style="border-right: 1px solid #dee2e6"
-                >
-                  <table
-                    class="sticky-header-table table table-bordered table-hover table-sm table-condensed"
-                    id="reportss"
-                  >
-                    <thead class="thead-light">
-                      <tr>
-                        <th></th>
-                        <th>CUST ID</th>
-                        <th>ACCT NO</th>
-                        <th>ACCT NAME</th>
-                        <th style="text-align: right">ACCT BALANCE</th>
-                        <th style="text-align: left">ROWID</th>
-                        <th>COLUMNID</th>
-                        <th>REPORT_DATE</th>
-                      </tr>
-                    </thead>
 
-                    <tbody style="font-family: Arial">
-                      <tr th:each="report: ${reportdetails}">
-                        <td>
-                          <a
-                            data-toggle="tooltip"
-                            class="editrec"
-                            title="Click to Edit this Record"
-                          >
-                            <i
-                              class="fas fa-edit"
-                              onclick="editRecord(this)"
-                            ></i>
-                          </a>
-                        </td>
-                        <td th:text="${report.CUST_ID}"></td>
-                        <td th:text="${report.ACCT_NUMBER}"></td>
-                        <td th:text="${report.ACCT_NAME}"></td>
-                        <!---	<td th:text="${report.acctBalanceInpula} "></td> -->
-                        <td
-                          th:text="${#numbers.formatDecimal(report.ACCT_BALANCE_IN_PULA, 1, 3)}"
-                          style="text-align: right"
-                        ></td>
 
-                        <td
-                          style="text-align: left"
-                          th:text="${report.ROW_ID}"
-                        ></td>
-                        <td th:text="${report.COLUMN_ID}"></td>
-                        <td
-                          th:text="${#dates.format(report.REPORT_DATE, 'dd-MM-yyyy')}"
-                        ></td>
-                      </tr>
-                    </tbody>
-                  </table>
 
-                  <div
-                    style="margin-top: 20px; text-align: center"
-                    th:if="${pagination=='YES'}"
-                  >
-                    <a
-                      th:if="${currentPage > 0}"
-                      th:href="@{'/Reports/' + ${reportid} + '/Details'(
-																	    asondate=${asondate},                             
-																	    fromdate=${fromdate},
-																	    todate=${todate},
-																	    currency=${currency},
-																	    dtltype=${dtltype},
-																	    type=${type},
-																	    version=${version},
-																	    page=${currentPage - 100},
-																	    size=100
-																	)}"
-                    >
-                      Previous
+        </div>
+        <div style="text-align: center; margin-top: 10px;">
+
+         <button id="submitButton" type="button" class="custom-tab-btn Show_input" form="fileupload"
+          th:attr="data-todate=${asondate}, data-type=${type}" onclick="fileuploads(this);" style="display: none;">
+          Submit</button>
+        </div>
+       </form>
+      </div>
+     </div>
+    </div>
+<!--  DETAIL -->
+            <div th:if="${displaymode == 'Details'}">
+             <div class="row">
+              <div class="col-sm-12" style="max-height:90vh; overflow-y: auto; ">
+               <div class="table-container" 
+                style="border-right: 1px solid #dee2e6; ">
+                <table class="table table-striped table-bordered table-hover"
+                 id="reportdetails">
+                 <thead class="thead-light">
+
+         <tr>
+               <!-- <th></th> -->
+		<th style="width:60px; text-align:center; white-space: nowrap;">
+    S No
+</th>
+
+		<th style="text-align:right; white-space: nowrap;">
+    INTEREST RATES
+</th>
+
+		<th style="text-align:right !important;">EQUITIES</th>
+		<th style="text-align:right !important;">FOREIGN EXC GOLD</th>
+		<th style="text-align:right !important;">COMMODITIES</th>
+		<th style="text-align:left;">REPORT LABEL</th>
+		<th>REPORT ADDL CRITERIA 1</th>
+		<th>REPORT DATE</th>
+
+            </tr>
+        </thead>
+
+        <tbody style="font-family: Arial;">
+            <tr th:each="report, srlno: ${reportdetails}">
+                <!-- <td>
+                    <a data-toggle="tooltip" class="editrec" title="Click to Edit this Record">
+                        <i class="fas fa-edit" style="color: black; cursor:pointer;"
+                            th:attr="data-acctNo=${report.acctNumber},
+                            data-asondate=${#dates.format(report.reportDate, 'dd-MM-yyyy')},
+                            data-type=${type}"
+                            onclick="openDetail(this, 'edit')"></i>
                     </a>
+                </td> -->
+	
+				<td style="text-align:center;" th:text="${srlno.index + 1}"></td>
+	              
 
-                    <span
-                      >Page [[${currentPage / 100 + 1}]] of
-                      [[${totalPages}]]</span
-                    >
+<td style="text-align:right !important;"
+    th:text="${#numbers.formatDecimal(report.INTEREST_RATES, 1, 'COMMA', 0, 'POINT')}">
+</td>
 
-                    <a
-                      th:if="${currentPage < (totalPages - 1) * 100}"
-                      th:href="@{'/Reports/' + ${reportid} + '/Details'(
-																	    asondate=${asondate},
-																	    fromdate=${fromdate},
-																	    todate=${todate},
-																	    currency=${currency},
-																	    dtltype=${dtltype},
-																	    type=${type},
-																	    version=${version},
-																	    page=${currentPage + 100},
-																	    size=100
-																	)}"
-                    >
-                      Next
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+<td style="text-align:right !important;"
+    th:text="${#numbers.formatDecimal(report.EQUITIES, 1, 'COMMA', 0, 'POINT')}">
+</td>
+<td style="text-align:right !important;"
+    th:text="${#numbers.formatDecimal(report.FOREIGN_EXC_GOLD, 1, 'COMMA', 0, 'POINT')}">
+</td>
+<td style="text-align:right !important;"
+    th:text="${#numbers.formatDecimal(report.COMMODITIES, 1, 'COMMA', 0, 'POINT')}">
+</td>
+
+                <td style="text-align:left;" th:text="${report.reportLable}"></td>
+
+                <td th:text="${report.reportAddlCriteria1}"></td>
+
+                <td th:text="${#dates.format(report.reportDate,'dd-MM-yyyy')}"></td>
+            </tr>
+        </tbody>
+       </table>
+
       </div>
+
+      
+     </div>
+    </div>
+   </div>
+    
+   </div>
+  </div>
+ </div>
+ <!-- Custom Cellresult Modal -->
+ <div class="modal fade" id="cellresultModal">
+  <div class="modal-dialog modal-dialog-centered">
+   <div class="modal-content">
+
+    <!-- Custom header -->
+    <div class="menu-title-header" style="background-color: #6c7a91; padding: 8px; border-radius: 5px 5px 0 0;">
+     <div class="modal-title" id="cellresultModalLabel" style="text-align: center; color: white;">Do you want to
+      open the report?</div>
     </div>
 
-    <div
-      class="modal fade"
-      id="loader"
-      data-backdrop="static"
-      data-keyboard="false"
-    >
-      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-        <div class="modal-content" style="background: transparent">
-          <div class="modal-body" style="text-align: center">
-            <div>
-              <img th:src=@{/images/loader.gif} id="bfirelogo" style="width:
-              153px; height: auto; margin-left: 18px; background-color:
-              transparent; border-color: transparent;" alt="Bornfire">
-            </div>
-          </div>
-        </div>
-      </div>
+    <div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+     <button type="button" class="custom-tab-btn cancel-btn" data-bs-dismiss="modal"
+      style="margin-right: 10px; border: 2px solid #6c7a91; background: white; color: black; border-radius: 20px; padding: 5px 15px;">
+      Cancel</button>
+     <button type="button" class="custom-tab-btn yes-btn"
+      style="background: #6c7a91; color: white; border: none; border-radius: 20px; padding: 5px 20px;">Yes</button>
     </div>
+   </div>
+  </div>
+ </div>
 
-    <!-- Custom Alert/Result Modal (Matches your existing style) -->
-    <div class="modal fade" id="resultModal">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <!-- Your custom styled header -->
-          <div class="menu-title-header">
-            <div
-              class="modal-title"
-              id="resultModalLabel"
-              style="text-align: center; color: white"
-            >
-              <!-- Title will be set by JavaScript -->
-            </div>
-          </div>
-          <div class="modal-body" style="text-align: center; font-size: 1.1rem">
-            <p id="resultModalBody"></p>
-            <!-- Your custom styled button -->
-            <button
-              type="button"
-              class="custom-tab-btn"
-              onclick="closemodel()"
-              data-dismiss="modal"
-            >
-              OK
-            </button>
-          </div>
-        </div>
-      </div>
+
+ <div class="modal fade" id="loader" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+   <div class="modal-content" style="background: transparent;">
+    <div class="modal-body" style="text-align: center">
+     <div>
+      <img th:src=@{/images/loader.gif} id="bfirelogo"
+       style="width: 153px; height: auto; margin-left: 18px; background-color: transparent; border-color: transparent;"
+       alt="Bornfire">
+     </div>
     </div>
-
-    <!-- Custom Cellresult Modal -->
-    <div class="modal fade" id="cellresultModal">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <!-- Custom header -->
-          <div
-            class="menu-title-header"
-            style="
-              background-color: #6c7a91;
-              padding: 8px;
-              border-radius: 5px 5px 0 0;
-            "
-          >
-            <div
-              class="modal-title"
-              id="cellresultModalLabel"
-              style="text-align: center; color: white"
-            >
-              Do you want to open the report?
-            </div>
-          </div>
-
-          <div class="modal-body" style="text-align: center; font-size: 1.1rem">
-            <button
-              type="button"
-              class="custom-tab-btn cancel-btn"
-              data-bs-dismiss="modal"
-              style="
-                margin-right: 10px;
-                border: 2px solid #6c7a91;
-                background: white;
-                color: black;
-                border-radius: 20px;
-                padding: 5px 15px;
-              "
-            >
-              Cancel
-            </button>
-            <button
-              type="button"
-              class="custom-tab-btn yes-btn"
-              style="
-                background: #6c7a91;
-                color: white;
-                border: none;
-                border-radius: 20px;
-                padding: 5px 20px;
-              "
-            >
-              Yes
-            </button>
-          </div>
-        </div>
-      </div>
+   </div>
+  </div>
+ </div>
+ <!-- Custom Alert/Result Modal (Matches your existing style) -->
+ <div class="modal fade" id="resultModal">
+  <div class="modal-dialog modal-dialog-centered">
+   <div class="modal-content">
+    <!-- Your custom styled header -->
+    <div class="menu-title-header">
+     <div class="modal-title" id="resultModalLabel" style="text-align: center; color: white;">
+      <!-- Title will be set by JavaScript -->
+     </div>
     </div>
-  </body>
+    <div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+     <p id="resultModalBody"></p>
+     <!-- Your custom styled button -->
+     <button type="button" class="custom-tab-btn" onclick="closemodel()" data-bs-dismiss="modal">OK</button>
+    </div>
+   </div>
+  </div>
+ </div>
 
-  <style>
-    /* Your existing CSS - this is the correct approach */
-    .scrollable-table-container {
-      /* This is the key: it creates the scroll context */
-      max-height: 600px;
-      /* Or a suitable height like 80vh for responsive design */
-      overflow-y: auto;
-      border: 1px solid #ccc;
-    }
+</body>
 
-    /* Your existing sticky header CSS, targeting the tr elements within the thead */
-    .scrollable-table-container thead tr:nth-child(1) {
-      position: sticky;
-      top: 0;
-      background-color: #b3b6b9;
-      z-index: 5;
-    }
-
-    .scrollable-table-container thead tr:nth-child(2) {
-      position: sticky;
-      top: 36px; /* adjust based on row height */
-      background-color: #b3b6b9;
-      z-index: 4;
-    }
-    #reports thead th:nth-child(2) {
-  width: 250px; /* <-- Adjust this width as needed */
+<!-- <script>
+															  $(document).ready(function () {
+															    $('#BRRSvalidation').DataTable({
+															      "paging": true,
+															      "info": false,       // turn off "Showing x of y"
+															      "searching": false,  // turn off search
+															      "ordering": false,   // turn off ordering
+															      "lengthChange": false // hide "Show x entries"
+															    });
+															  });
+	
+														</script> -->
+<!-- 
+<style>
+#BRFdet td {
+	border: 1px solid #ccc;
+	padding: 8px;
 }
 
-    .scrollable-table-container thead tr:nth-child(3) {
-      position: sticky;
-      top: 72px; /* Adjust based on row height */
-      background-color: #b3b6b9;
-      z-index: 3;
-    }
+#BRFdet {
+	border-collapse: collapse;
+	width: 100%;
+}
+</style>
+ -->
+<style>
+/* Your existing CSS - this is the correct approach */
+.scrollable-table-container {
+	/* This is the key: it creates the scroll context */
+	max-height: 590px;
+	/* Or a suitable height like 80vh for responsive design */
+	overflow-y: auto;
+	border: 1px solid #ccc;
+}
 
-    .scrollable-table-container thead tr:nth-child(4) {
-      position: sticky;
-      top: 100px; /* Adjust based on row height */
-      background-color: #b3b6b9;
-      z-index: 2;
-    }
+/* Your existing sticky header CSS, targeting the tr elements within the thead */
+.scrollable-table-container thead tr:nth-child(1) {
+	position: sticky;
+	top: 0;
+	background-color: #b3b6b9;
+	z-index: 5;
+}
 
-    .scrollable-table-container thead tr:nth-child(5) {
-      position: sticky;
-      top: 135px; /* Adjust based on row height */
-      background-color: #b3b6b9;
-      z-index: 1;
-    }
-  </style>
+.scrollable-table-container thead tr:nth-child(2) {
+	position: sticky;
+	top: 36px;
+	/* adjust based on row height */
+	background-color: #b3b6b9;
+	z-index: 4;
+}
 
-  <style>
-    .inner {
-      max-height: 600px; /* Adjust height as needed */
-      overflow: auto;
-      border: 1px solid #dee2e6;
-    }
+.scrollable-table-container thead tr:nth-child(3) {
+	position: sticky;
+	top: 72px;
+	/* Adjust based on row height */
+	background-color: #b3b6b9;
+	z-index: 3;
+}
 
- 	/* Sticky thead */
-	#reports thead th {
-		position: sticky;
-		top: 0;
-		background-color: #D8D8D8; /* light gray header */
-		/* Match Bootstrap thead-light */
-		z-index: 2;
-	}
+.scrollable-table-container thead tr:nth-child(4) {
+	position: sticky;
+	top: 100px;
+	/* Adjust based on row height */
+	background-color: #b3b6b9;
+	z-index: 2;
+}
 
-    div.dataTables_wrapper div.dataTables_paginate {
-      text-align: right !important;
-      float: right !important;
-      width: auto;
-      margin-top: 10px;
-    }
-
-    /* Ensure info text (e.g., "Showing 1 to X") stays on the left */
-    div.dataTables_wrapper div.dataTables_info {
-      float: left !important;
-      margin-top: 10px;
-    }
-
-    .pagination {
-      margin: 0;
-    }
-
-    .page-item.active .page-link {
-      background-color: #386276;
-      border-color: #386276;
-    }
-
-    .page-link {
-      color: #386276;
-    }
-
-    .page-link:hover {
-      color: #2a4a5c;
-    }
-    
-    
-
-    .form-select {
-      display: inline-block;
-      width: auto;
-    }
-    .scrollable-table-container thead tr:nth-child(1),
-.scrollable-table-container thead tr:nth-child(2),
-.scrollable-table-container thead tr:nth-child(3),
-.scrollable-table-container thead tr:nth-child(4),
 .scrollable-table-container thead tr:nth-child(5) {
-    background-color: #D8D8D8; /* set header color */
+	position: sticky;
+	top: 135px;
+	/* Adjust based on row height */
+	background-color: #b3b6b9;
+	z-index: 1;
+}
+</style>
+<style>
+.inner {
+	max-height: 600px;
+	/* Adjust height as needed */
+	overflow: auto;
+	border: 1px solid #dee2e6;
 }
 
-.scrollable-table-container table tr:last-child td:first-child  {
-  border-bottom: none !important;
-}
-.scrollable-table-container table tr:last-child td:first-child {
-  border-left: none !important;
+/* Sticky thead */
+#reports thead th {
+	position: sticky;
+	top: 0;
+	background-color: #D8D8D8; /* light gray header */
+	/* Match Bootstrap thead-light */
+	z-index: 2;
 }
 
-  </style>
-</html>
+div.dataTables_wrapper div.dataTables_paginate {
+	text-align: right !important;
+	float: right !important;
+	width: auto;
+	margin-top: 10px;
+}
+
+/* Ensure info text (e.g., "Showing 1 to X") stays on the left */
+div.dataTables_wrapper div.dataTables_info {
+	float: left !important;
+	margin-top: 10px;
+}
+
+.pagination {
+	margin: 0;
+}
+
+.page-item.active .page-link {
+	background-color: #386276;
+	border-color: #386276;
+}
+
+.page-link {
+	color: #386276;
+}
+
+.page-link:hover {
+	color: #2a4a5c;
+}
+
+.form-select {
+	display: inline-block;
+	width: auto;
+}
+
+.scrollable-table-container thead tr:nth-child(1),
+	.scrollable-table-container thead tr:nth-child(2),
+	.scrollable-table-container thead tr:nth-child(3),
+	.scrollable-table-container thead tr:nth-child(4),
+	.scrollable-table-container thead tr:nth-child(5) {
+	background-color: #D8D8D8; /* set header color */
+}
+/* 1. Force table to obey colgroup */
+#reports {
+    table-layout: fixed !important;
+}
+
+/* 2. Make header cells follow colgroup width */
+#reports th {
+    width: inherit !important;
+}
+
+/* 3. Prevent empty headers from collapsing */
+#reports th:empty::after {
+    content: "\00A0";
+}
+/*#reports th:empty {
+    border: none !important;
+    background-color: transparent !important;
+    color: transparent !important;
+}*/
+
+/*  #reportdetails {
+       width: 100% !important;
+       table-layout: fixed !important;
+     }
+
+     #reportdetails th, 
+     #reportdetails td {
+       white-space: nowrap;
+     } */
+</style>
+
+
+<!-- <style>
+ .dataTables_scrollHeadInner,
+ table.dataTable {
+  width: 100% !important;
+ }
+
+ /* Your existing CSS - this is the correct approach */
+ .scrollable-table-container {
+  /* This is the key: it creates the scroll context */
+  max-height: 700px;
+  /* Or a suitable height like 80vh for responsive design */
+  overflow-y: auto;
+  overflow-x: hidden;
+  border: 1px solid #ccc;
+ }
+
+ /* Your existing sticky header CSS, targeting the tr elements within the thead */
+ .scrollable-table-container thead tr:nth-child(1) {
+  position: sticky;
+  top: 0;
+  background-color: #b3b6b9;
+  z-index: 5;
+ }
+
+ .scrollable-table-container thead tr:nth-child(2) {
+  position: sticky;
+  top: 36px;
+  /* adjust based on row height */
+  background-color: #b3b6b9;
+  z-index: 4;
+ }
+
+ .scrollable-table-container thead tr:nth-child(3) {
+  position: sticky;
+  top: 72px;
+  /* Adjust based on row height */
+  background-color: #b3b6b9;
+  z-index: 3;
+ }
+
+ .scrollable-table-container thead tr:nth-child(4) {
+  position: sticky;
+  top: 100px;
+  /* Adjust based on row height */
+  background-color: #b3b6b9;
+  z-index: 2;
+ }
+
+ .scrollable-table-container thead tr:nth-child(5) {
+  position: sticky;
+  top: 135px;
+  /* Adjust based on row height */
+  background-color: #b3b6b9;
+  z-index: 1;
+ }
+</style>
+
+
+<style>
+ .inner {
+  max-height: 600px;
+  /* Adjust height as needed */
+  overflow: auto;
+  border: 1px solid #dee2e6;
+ }
+
+ /* Sticky thead */
+ #reports thead th {
+  position: sticky;
+  top: 0;
+  background-color: #f8f9fa;
+  /* Match Bootstrap thead-light */
+  z-index: 2;
+ }
+
+ div.dataTables_wrapper div.dataTables_paginate {
+  text-align: right !important;
+  float: right !important;
+  width: auto;
+  margin-top: 10px;
+ }
+
+ /* Ensure info text (e.g., "Showing 1 to X") stays on the left */
+ div.dataTables_wrapper div.dataTables_info {
+  float: left !important;
+  margin-top: 10px;
+ }
+
+ .pagination {
+  margin: 0;
+ }
+
+ .page-item.active .page-link {
+  background-color: #386276;
+  border-color: #386276;
+ }
+
+ .page-link {
+  color: #386276;
+ }
+
+ .page-link:hover {
+  color: #2a4a5c;
+ }
+
+ .form-select {
+  display: inline-block;
+  width: auto;
+ }
+</style> -->
+</html>				
