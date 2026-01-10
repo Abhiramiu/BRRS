@@ -1063,7 +1063,7 @@ function cancelModify() {
   style="background-color: #FFFFFF; width: 180px; padding-left: 20px; height: 28px; border-color: transparent; text-align: right;"
   readonly /></td>
   <td id="R9" style="background-color: rgb(107, 122, 143); color: white; text-align:right;">
-  <input class="display-input Show_input "
+  <input class="display-input Show_inputnonEditable "
   type="text"
   th:value="${report.R9_TOTAL != null ? #numbers.formatDecimal(report.R9_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
   id="R9_TOTAL" name="R9_C8_TOTAL"
@@ -1112,7 +1112,7 @@ function cancelModify() {
         
        
         <td id="R11" style="background-color: rgb(107, 122, 143); color: white; text-align:right;">
- <input class="display-input Show_input"
+ <input class="display-input Show_inputnonEditable"
  type="text"
  th:value="${report.R11_TOTAL != null ? #numbers.formatDecimal(report.R11_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
  id="R11_TOTAL" name="R11_C8_TOTAL"
@@ -1166,7 +1166,7 @@ function cancelModify() {
         <!-- <td id="R13_TOTAL" th:text="${#numbers.formatDecimal(report.R13_TOTAL, 1, 'COMMA', 0, 'POINT')}" 
 style="text-align: right; width:248px; background-color: rgb(107, 122, 143); color: white;"></td> -->
         <td id="R13" style="background-color: rgb(107, 122, 143);text-align:right;">
- <input class="display-input Show_input nonEditable"
+ <input class="display-input Show_inputnonEditable"
  type="text"
  th:value="${report.R13_TOTAL != null ? #numbers.formatDecimal(report.R13_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
  id="R13_TOTAL" name="R13_C8_TOTAL"
@@ -1213,7 +1213,7 @@ style="text-align: right; width:248px; background-color: rgb(107, 122, 143); col
         <!--   <td id="R14_TOTAL" th:text="${#numbers.formatDecimal(report.R14_TOTAL, 1, 'COMMA', 0, 'POINT')}" 
 style="text-align: right; width:248px; background-color: rgb(107, 122, 143); color: white;"></td> -->
         <td id="R14" style="background-color: rgb(107, 122, 143);text-align:right;">
- <input class="display-input Show_input nonEditable"
+ <input class="display-input Show_inputnonEditable"
  type="text"
  th:value="${report.R14_TOTAL != null ? #numbers.formatDecimal(report.R14_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
  id="R14_TOTAL" name="R14_C8_TOTAL"
@@ -1227,7 +1227,7 @@ style="text-align: right; width:248px; background-color: rgb(107, 122, 143); col
  <input class="display-input Show_input"
  type="text"
  th:value="${report.R15_TOTAL != null ? #numbers.formatDecimal(report.R15_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
- id="R15_TOTAL" name="R15_C8_TOTAL"
+ id="R15_TOTAL" name="R15_TOTAL"
  style="background-color: #FFFFFF; width: 180px; padding-left: 20px; height: 28px; border-color: transparent; text-align: right;"
  readonly /></td>
                     </tr>
@@ -1237,7 +1237,7 @@ style="text-align: right; width:248px; background-color: rgb(107, 122, 143); col
  <input class="display-input Show_input"
  type="text"
  th:value="${report.R16_TOTAL != null ? #numbers.formatDecimal(report.R16_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
- id="R16_TOTAL" name="R16_C8_TOTAL"
+ id="R16_TOTAL" name="R16_TOTAL"
  style="background-color: #FFFFFF; width: 180px; padding-left: 20px; height: 28px; border-color: transparent; text-align: right;"
  readonly /></td>
                     </tr>   

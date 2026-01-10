@@ -1019,7 +1019,7 @@ function fileuploads(btn) {
         console.log(originalName, "→", fixedName);
         formData.append(fixedName, value); */
         for (let i = 10; i <= 14; i++) {
-            ["INTEREST_RATES", "EQUITIES", "FOREIGN_EXC_GOLD", "COMMODITIES", "TOTAL"].forEach(field => {
+            ["INTEREST_RATES", "EQUITIES", "FOREIGN_EXC_GOLD", "COMMODITIES","TOTAL"].forEach(field => {
                 const input = $("#R" + i + "_" + field);
                 if (input.length) {
                     formData.append(input.attr("name"), input.val());
@@ -1271,7 +1271,7 @@ setTimeout(function () {
         <!-- <td id="R10_TOTAL" th:text="${#numbers.formatDecimal(report.R10_TOTAL, 1, 'COMMA', 0, 'POINT')}" 
 style="text-align: right; width:248px; background-color: rgb(107, 122, 143); color: white;"></td> -->
         <td id="R10" style="background-color: rgb(107, 122, 143);text-align:right;">
-	<input class="display-input Show_input nonEditable"
+	<input class="display-input Show_inputnonEditable"
 	type="text"
 	th:value="${report.R10_TOTAL != null ? #numbers.formatDecimal(report.R10_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
 	id="R10_TOTAL" name="R10_C8_TOTAL"
@@ -1316,7 +1316,7 @@ style="text-align: right; width:248px; background-color: rgb(107, 122, 143); col
         <!-- <td id="R11_TOTAL" th:text="${#numbers.formatDecimal(report.R11_TOTAL, 1, 'COMMA', 0, 'POINT')}" 
 style="text-align: right; width:248px; background-color: rgb(107, 122, 143); color: white;"></td> -->
         <td id="R11" style="background-color: rgb(107, 122, 143);text-align:right;">
-	<input class="display-input Show_input nonEditable"
+	<input class="display-input Show_inputnonEditable"
 	type="text"
 	th:value="${report.R11_TOTAL != null ? #numbers.formatDecimal(report.R11_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
 	id="R11_TOTAL" name="R11_C8_TOTAL"
@@ -1334,7 +1334,7 @@ style="text-align: right; width:248px; background-color: rgb(107, 122, 143); col
                       		        <!-- <td id="R12_INTEREST_RATES" th:text="${#numbers.formatDecimal(report.R12_INTEREST_RATES, 1, 'COMMA', 0, 'POINT')}" 
 style="text-align: right; width:248px; background-color: rgb(107, 122, 143); color: white;"></td> -->
                       		        <td id="R12" style="background-color: rgb(107, 122, 143);text-align:right;">
-	<input class="display-input Show_input nonEditable"
+	<input class="display-input Show_inputnonEditable"
 	type="text"
 	th:value="${report.R12_INTEREST_RATES != null ? #numbers.formatDecimal(report.R12_INTEREST_RATES, 1, 'COMMA', 0, 'POINT') : '0'}"
 	id="R12_INTEREST_RATES" name="R12_C4_INTEREST_RATES"
@@ -1346,7 +1346,7 @@ style="text-align: right; width:248px; background-color: rgb(107, 122, 143); col
         <!-- <td id="R12_EQUITIES" th:text="${#numbers.formatDecimal(report.R12_EQUITIES, 1, 'COMMA', 0, 'POINT')}" 
 style="text-align: right; width:248px; background-color: rgb(107, 122, 143); color: white;"></td> -->
         <td id="R12" style="background-color: rgb(107, 122, 143);text-align:right;">
-	<input class="display-input Show_input nonEditable"
+	<input class="display-input Show_inputnonEditable"
 	type="text"
 	th:value="${report.R12_EQUITIES != null ? #numbers.formatDecimal(report.R12_EQUITIES, 1, 'COMMA', 0, 'POINT') : '0'}"
 	id="R12_EQUITIES" name="R12_C5_EQUITIES"
@@ -1357,7 +1357,7 @@ style="text-align: right; width:248px; background-color: rgb(107, 122, 143); col
 		        <!-- <td id="R12_FOREIGN_EXC_GOLD" th:text="${#numbers.formatDecimal(report.R12_FOREIGN_EXC_GOLD, 1, 'COMMA', 0, 'POINT')}" 
 style="text-align: right; width:248px; background-color: rgb(107, 122, 143); color: white;"></td> -->
 		        <td id="R12" style="background-color: rgb(107, 122, 143);text-align:right;">
-	<input class="display-input Show_input nonEditable"
+	<input class="display-input Show_inputnonEditable"
 	type="text"
 	th:value="${report.R12_FOREIGN_EXC_GOLD != null ? #numbers.formatDecimal(report.R12_FOREIGN_EXC_GOLD, 1, 'COMMA', 0, 'POINT') : '0'}"
 	id="R12_FOREIGN_EXC_GOLD" name="R12_C6_FOREIGN_EXC_GOLD"
@@ -1368,7 +1368,7 @@ style="text-align: right; width:248px; background-color: rgb(107, 122, 143); col
 	        <!-- <td id="R12_COMMODITIES" th:text="${#numbers.formatDecimal(report.R12_COMMODITIES, 1, 'COMMA', 0, 'POINT')}" 
 style="text-align: right; width:248px; background-color: rgb(107, 122, 143); color: white;"></td> -->
 	        <td id="R12" style="background-color: rgb(107, 122, 143);text-align:right;">
-	<input class="display-input Show_input nonEditable"
+	<input class="display-input Show_inputnonEditable"
 	type="text"
 	th:value="${report.R12_COMMODITIES != null ? #numbers.formatDecimal(report.R12_COMMODITIES, 1, 'COMMA', 0, 'POINT') : '0'}"
 	id="R12_COMMODITIES" name="R12_C7_COMMODITIES"
@@ -1381,7 +1381,7 @@ style="text-align: right; width:248px; background-color: rgb(107, 122, 143); col
 <!-- <td id="R12_TOTAL" th:text="${#numbers.formatDecimal(report.R12_TOTAL, 1, 'COMMA', 0, 'POINT')}" 
 style="text-align: right; width:248px; background-color: rgb(107, 122, 143); color: white;"></td> -->
 <td id="R12" style="background-color: rgb(107, 122, 143);text-align:right;">
-	<input class="display-input Show_input nonEditable"
+	<input class="display-input Show_inputnonEditable"
 	type="text"
 	th:value="${report.R12_TOTAL != null ? #numbers.formatDecimal(report.R12_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
 	id="R12_TOTAL" name="R12_C8_TOTAL"
@@ -1428,7 +1428,7 @@ style="text-align: right; width:248px; background-color: rgb(107, 122, 143); col
         <!-- <td id="R13_TOTAL" th:text="${#numbers.formatDecimal(report.R13_TOTAL, 1, 'COMMA', 0, 'POINT')}" 
 style="text-align: right; width:248px; background-color: rgb(107, 122, 143); color: white;"></td> -->
         <td id="R13" style="background-color: rgb(107, 122, 143);text-align:right;">
-	<input class="display-input Show_input nonEditable"
+	<input class="display-input Show_inputnonEditable"
 	type="text"
 	th:value="${report.R13_TOTAL != null ? #numbers.formatDecimal(report.R13_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
 	id="R13_TOTAL" name="R13_C8_TOTAL"
@@ -1475,7 +1475,7 @@ style="text-align: right; width:248px; background-color: rgb(107, 122, 143); col
         <!--   <td id="R14_TOTAL" th:text="${#numbers.formatDecimal(report.R14_TOTAL, 1, 'COMMA', 0, 'POINT')}" 
 style="text-align: right; width:248px; background-color: rgb(107, 122, 143); color: white;"></td> -->
         <td id="R14" style="background-color: rgb(107, 122, 143);text-align:right;">
-	<input class="display-input Show_input nonEditable"
+	<input class="display-input Show_inputnonEditable"
 	type="text"
 	th:value="${report.R14_TOTAL != null ? #numbers.formatDecimal(report.R14_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
 	id="R14_TOTAL" name="R14_C8_TOTAL"
