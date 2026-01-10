@@ -1028,22 +1028,17 @@ PURPOSE		: BRRSREPORT
 		function showdetailsbyRowAndColumn(a) {
 			var rowId = a.getAttribute('RowId') || "";
 			var columnId = a.getAttribute('ColumnId') || "";
-			var columnId1 = a.getAttribute('ColumnId1') || "";
-			var columnId2 = a.getAttribute('ColumnId2') || "";
+			
 			var cellValue = a.textContent || a.innerText;
 
 			// ✅ At least one columnId should have value
 			const hasAnyColumnId =
-				(columnId && columnId.trim() !== "") ||
-				(columnId1 && columnId1.trim() !== "") ||
-				(columnId2 && columnId2.trim() !== "");
+				(columnId && columnId.trim() !== "");
 
 			if (cellValue !== '0' && hasAnyColumnId) {
 				document.getElementById("cellresultModalLabel").innerText =
 					"Do you want to open details for Row: " + rowId +
-					" | Column: " + (columnId || "") +
-					" | Column1: " + (columnId1 || "") +
-					" | Column2: " + (columnId2 || "") + "";
+					" | Column: " + (columnId || "") + "";
 
 				$('#cellresultModal').modal('show');
 
@@ -1060,7 +1055,7 @@ PURPOSE		: BRRSREPORT
 					var Callurl = /*[[@{'/Reports/' + ${reportid} + '/Details'(asondate=${asondate}, fromdate=${fromdate}, todate=${todate}, currency=${currency}, dtltype=${dtltype},type=${type},version=${version})}]]*/ "";
 
 					// ✅ Append filter params
-					Callurl += "&filter=" + encodeURIComponent(rowId + "," + columnId + "," + columnId1 + "," + columnId2);
+					Callurl += "&filter=" + encodeURIComponent(rowId + "," + columnId );
 
 					window.location.href = Callurl;
 				};
@@ -1245,7 +1240,7 @@ PURPOSE		: BRRSREPORT
 
 
 
-<title>BRRS</title>
+<title>MDISB1</title>
 
 <body>
 	<div class="container-fluid" style="padding-left: 0px; padding-right: 0px;">
@@ -1264,7 +1259,7 @@ PURPOSE		: BRRSREPORT
 
 						<!-- Title -->
 						<h5 class="header-title">
-							Household Deposits by Size and Type of Account
+							MDISB1 Household Deposits by Size and Type of Account
 						</h5>
 
 
@@ -1335,10 +1330,10 @@ PURPOSE		: BRRSREPORT
 								<div class="table-wrapper table-responsive scrollable-table-container"
 									style="border-right: 1px solid #dee2e6; ">
 									<table
-																		class="sticky-header-table table table-bordered table-cell table-sm table-condensed"
-																		id="reportss">
-																		<thead class="thead-light">
-											
+										class="sticky-header-table table table-bordered table-cell table-sm table-condensed"
+										id="reportss">
+										<thead class="thead-light">
+
 											<th style="background-color: rgb(107, 122, 143);color: white;"></th>
 											<th style="background-color: rgb(107, 122, 143);color: white;"></th>
 											<th colspan="6"
@@ -1396,7 +1391,7 @@ PURPOSE		: BRRSREPORT
 										</thead>
 
 										<tbody th:each="report: ${reportsummary}" style="font-family: Arial;">
-											
+
 
 											<tr>
 												<th>0 - 100 000</th>
@@ -5105,25 +5100,23 @@ PURPOSE		: BRRSREPORT
 
 				<!--  DETAIL -->
 				<div th:if="${displaymode == 'Details'}">
-
 					<div class="row">
 						<div class="col-sm-12">
 							<div class="table-container" style="border-right: 1px solid #dee2e6;">
-								<table class="table table-striped table-bordered table-hover" id="reportdetails">
+								<table class="table table-striped table-bordered table-hover" id="reportdetail">
 									<thead class="thead-light">
 										<tr>
-											<th></th>
+											<th> </th>
 											<th>S No</th>
 											<th>CUST ID</th>
-											<th style="text-align:left;">ACCT NUMBER</th>
-
-											<th style="text-align:right;">ACCT BALANCE IN PULA</th>
-											<!---	<th style="text-align:right;">APPROVED LIMIT</th> -->
-
-											<th style="text-align:left;">REPORT LABEL</th>
+											<th>ACCT NUMBER</th>
+											<th>ACCT NAME</th>
+											<th>ACCT BALANCE IN PULA</th>
 											<th>REPORT ADDL CRITERIA 1</th>
+											<th>REPORT LABEL</th>
 											<th>REPORT DATE</th>
 										</tr>
+
 									</thead>
 
 									<tbody style="font-family: Arial;">
@@ -5133,47 +5126,32 @@ PURPOSE		: BRRSREPORT
 													title="Click to Edit this Record">
 													<i class="fas fa-edit" style="color: black; cursor:pointer;"
 														th:attr="data-acctNo=${report.acct_number},
-                                                 data-asondate=${#dates.format(report.report_date, 'dd-MM-yyyy')},
-                                                 data-type=${type}" onclick="openDetail(this, 'edit')">
-													</i>
+																		data-asondate=${#dates.format(report.report_date, 'dd-MM-yyyy')}"
+														onclick="openDetail(this, 'edit')"></i>
+
 												</a>
 											</td>
-
 											<td th:text="${srlno.index + 1}"></td>
-
 											<td th:text="${report.cust_id != null ? report.cust_id : '-'}"></td>
-
-											<td style="text-align:left;"
-												th:text="${report.acct_number != null ? report.acct_number : '-'}">
+											<td th:text="${report.acct_number != null ? report.acct_number : '-'}"></td>
+											<td th:text="${report.acct_name != null ? report.acct_name : '-'}"></td>
+											<td style="text-align:right !important;" th:text="${report.acct_balance_in_pula != null 
+				        ? #numbers.formatDecimal(report.acct_balance_in_pula, 1, 'COMMA', 0, 'POINT') 
+				        : '0'}">
 											</td>
 
-
-
-											<td style="text-align:right;" th:text="${report.acct_balance_in_pula != null 
-                                        ? #numbers.formatDecimal(report.acct_balance_in_pula,1,'COMMA',0,'POINT') 
-                                        : '0'}">
+										
+											<td th:text="${report.report_label != null ? report.report_label : '-'}">
 											</td>
-
-											<!---		<td style="text-align:right;" th:text="${report.sanction_limit != null 
-                                        ? #numbers.formatDecimal(report.sanction_limit,1,'COMMA',0,'POINT') 
-                                        : '0'}">
-											</td> -->
-
-											<td style="text-align:left;"
-												th:text="${report.report_label != null ? report.report_label : '-'}">
-											</td>
-
 											<td
 												th:text="${report.report_addl_criteria_1 != null ? report.report_addl_criteria_1 : '-'}">
 											</td>
-
-
 											<td th:text="${report.report_date != null 
-                                        ? #dates.format(report.report_date, 'dd-MM-yyyy') 
-                                        : '-'}"></td>
+																																	? #dates.format(report.report_date, 'dd-MM-yyyy') : '-'}"></td>
 										</tr>
 									</tbody>
 								</table>
+
 							</div>
 
 							<!-- Submit Button -->
@@ -5183,21 +5161,18 @@ PURPOSE		: BRRSREPORT
 									Submit
 								</button>
 							</div>
-
 						</div>
 					</div>
-
 				</div>
 
-
-				<!-- MDISB1 Detail Form Screen -->
+				<!-- M_la3 Detail Form Screen -->
 				<div th:if="${formmode == 'edit'}" class="card">
 					<div class="card-body">
 						<form th:object="${Data}" method="post" id="DetailForm">
 
 							<!-- Row 1 -->
-							<div class="row formline mt-2">
-								<label class="col-sm-2 col-form-label">Customer ID</label>
+							<div class="row formline" style="margin-top:10px;">
+								<label class="col-sm-2">Customer ID</label>
 								<div class="col-sm-3">
 									<input type="text" th:field="*{cust_id}" class="form-control form-control-sm"
 										readonly />
@@ -5205,7 +5180,7 @@ PURPOSE		: BRRSREPORT
 
 								<div class="col-sm-1"></div>
 
-								<label class="col-sm-2 col-form-label">Account Number</label>
+								<label class="col-sm-2">Account Number</label>
 								<div class="col-sm-3">
 									<input type="text" th:field="*{acct_number}" class="form-control form-control-sm"
 										readonly />
@@ -5213,25 +5188,43 @@ PURPOSE		: BRRSREPORT
 							</div>
 
 							<!-- Row 2 -->
-							<div class="row formline mt-2">
-								<label class="col-sm-2 col-form-label">Acct Balance</label>
+							<div class="row formline" style="margin-top:10px;">
+								<label class="col-sm-2">Account Name</label>
+								<div class="col-sm-3">
+									<input type="text" th:field="*{acct_name}" class="form-control form-control-sm"
+										readonly />
+								</div>
+
+
+								<div class="col-sm-1"></div>
+
+								<label class="col-sm-2">Acct Balance</label>
 								<div class="col-sm-3">
 									<input type="number" step="0.01" th:field="*{acct_balance_in_pula}"
+										class="form-control form-control-sm" style="text-align:right;" />
+								</div>
+							</div>
+
+							<!-- Row 3 -->
+							<div class="row formline" style="margin-top:10px;">
+								<label class="col-sm-2">Sanction Limit</label>
+								<div class="col-sm-3">
+									<input type="number" step="0.01" th:field="*{sanction_limit}"
 										class="form-control form-control-sm" style="text-align:right;" />
 								</div>
 
 								<div class="col-sm-1"></div>
 
-								<label class="col-sm-2 col-form-label">Report Label</label>
+								<label class="col-sm-2">Report Label</label>
 								<div class="col-sm-3">
 									<input type="text" th:field="*{report_label}" class="form-control form-control-sm"
 										readonly />
 								</div>
 							</div>
 
-							<!-- Row 3 -->
-							<div class="row formline mt-2">
-								<label class="col-sm-2 col-form-label">Report Addl Criteria 1</label>
+							<!-- Row 4 -->
+							<div class="row formline" style="margin-top:10px;">
+								<label class="col-sm-2">Report Addl Criteria 1</label>
 								<div class="col-sm-3">
 									<input type="text" th:field="*{report_addl_criteria_1}"
 										class="form-control form-control-sm" readonly />
@@ -5239,103 +5232,138 @@ PURPOSE		: BRRSREPORT
 
 								<div class="col-sm-1"></div>
 
-								<label class="col-sm-2 col-form-label">Report Date</label>
+								<label class="col-sm-2">Report Addl Criteria 2</label>
 								<div class="col-sm-3">
-									<input type="date" name="report_date" class="form-control form-control-sm"
-										th:value="${#dates.format(Data.report_date, 'yyyy-MM-dd')}" readonly />
+									<input type="text" th:field="*{report_addl_criteria_2}"
+										class="form-control form-control-sm" readonly />
 								</div>
 							</div>
 
-							<!-- Update Button -->
-							<div class="text-center mt-4">
-								<button type="button" class="custom-tab-btn" th:if="${formmode == 'edit'}"
-									onclick="submitUpdate()">
-									Update
-								</button>
-							</div>
+							<!-- Row 5 -->
+							<div class="row formline" style="margin-top:10px;">
+								<label class="col-sm-2">Report Addl Criteria 3</label>
+								<div class="col-sm-3">
+									<input type="text" th:field="*{report_addl_criteria_3}"
+										class="form-control form-control-sm" readonly />
+								</div>
 
+								<div class="row formline" style="margin-top:10px;">
+									<label class="col-sm-2">Report Date</label>
+									<div class="col-sm-3">
+										<input type="date" name="report_Date" class="form-control form-control-sm"
+											th:value="${#dates.format(Data.report_date, 'yyyy-MM-dd')}" readonly />
+									</div>
+								</div>
+
+								<!-- Update Button -->
+								<div style="text-align:center; margin-top:20px;">
+									<button type="button" class="custom-tab-btn" th:if="${formmode == 'edit'}"
+										onclick="submitUpdate()">Update</button>
+								</div>
 						</form>
 					</div>
 				</div>
 
 
 
+			</div>
 
 
-				<div class="modal fade" id="loader" data-backdrop="static" data-keyboard="false">
-					<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-						<div class="modal-content" style="background: transparent;">
-							<div class="modal-body" style="text-align: center">
-								<div>
-									<img th:src=@{/images/loader.gif} id="bfirelogo"
-										style="width: 153px; height: auto; margin-left: 18px; background-color: transparent; border-color: transparent;"
-										alt="Bornfire">
-								</div>
-							</div>
+
+		</div>
+
+
+
+
+
+
+		<div class="modal fade" id="loader" data-backdrop="static" data-keyboard="false">
+			<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+				<div class="modal-content" style="background: transparent;">
+					<div class="modal-body" style="text-align: center">
+						<div>
+							<img th:src=@{/images/loader.gif} id="bfirelogo"
+								style="width: 153px; height: auto; margin-left: 18px; background-color: transparent; border-color: transparent;"
+								alt="Bornfire">
 						</div>
 					</div>
 				</div>
+			</div>
+		</div>
 
 
 
-				<!-- Custom Alert/Result Modal (Matches your existing style) -->
-				<div class="modal fade" id="resultModal">
-					<div class="modal-dialog modal-dialog-centered">
-						<div class="modal-content">
-							<!-- Your custom styled header -->
-							<div class="menu-title-header">
-								<div class="modal-title" id="resultModalLabel"
-									style="text-align: center; color: white;">
-									<!-- Title will be set by JavaScript -->
-								</div>
-							</div>
-							<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
-								<p id="resultModalBody"></p>
-								<!-- Your custom styled button -->
-								<button type="button" class="custom-tab-btn" onclick="closemodels()"
-									data-dismiss="modal">OK</button>
-							</div>
+		<!-- Custom Alert/Result Modal (Matches your existing style) -->
+		<div class="modal fade" id="resultModal">
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content">
+					<!-- Your custom styled header -->
+					<div class="menu-title-header">
+						<div class="modal-title" id="resultModalLabel" style="text-align: center; color: white;">
+							<!-- Title will be set by JavaScript -->
 						</div>
 					</div>
-				</div>
-
-				<!-- Custom Cellresult Modal -->
-				<div class="modal fade" id="cellresultModal">
-					<div class="modal-dialog modal-dialog-centered">
-						<div class="modal-content">
-
-							<!-- Custom header -->
-							<div class="menu-title-header"
-								style="background-color:#6c7a91; padding: 8px; border-radius:5px 5px 0 0;">
-								<div class="modal-title" id="cellresultModalLabel"
-									style="text-align: center; color: white;">
-									Do you want to open the report?
-								</div>
-							</div>
-
-							<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
-								<button type="button" class="custom-tab-btn cancel-btn" data-bs-dismiss="modal"
-									style="margin-right:10px; border:2px solid #6c7a91; background:white; color:black; border-radius:20px; padding:5px 15px;">
-									Cancel
-								</button>
-								<button type="button" class="custom-tab-btn yes-btn"
-									style="background:#6c7a91; color:white; border:none; border-radius:20px; padding:5px 20px;">
-									Yes
-								</button>
-							</div>
-						</div>
+					<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+						<p id="resultModalBody"></p>
+						<!-- Your custom styled button -->
+						<button type="button" class="custom-tab-btn" onclick="closemodels()"
+							data-dismiss="modal">OK</button>
 					</div>
 				</div>
+			</div>
+		</div>
+
+		<!-- Detail update handling -->
+		<div class="modal fade" id="resultModal1">
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content">
+					<!-- Your custom styled header -->
+					<div class="menu-title-header">
+						<div class="modal-title" id="resultModalLabel1" style="text-align: center; color: white;">
+							<!-- Title will be set by JavaScript -->
+						</div>
+					</div>
+					<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+						<p id="resultModalBody1"></p>
+						<!-- Your custom styled button -->
+						<button type="button" class="custom-tab-btn" onclick="closemodel()"
+							data-dismiss="modal">OK</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Custom Cellresult Modal -->
+		<div class="modal fade" id="cellresultModal">
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content">
+
+					<!-- Custom header -->
+					<div class="menu-title-header"
+						style="background-color:#6c7a91; padding: 8px; border-radius:5px 5px 0 0;">
+						<div class="modal-title" id="cellresultModalLabel" style="text-align: center; color: white;">
+							Do you want to open the report?
+						</div>
+					</div>
+
+					<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+						<button type="button" class="custom-tab-btn cancel-btn" data-bs-dismiss="modal"
+							style="margin-right:10px; border:2px solid #6c7a91; background:white; color:black; border-radius:20px; padding:5px 15px;">
+							Cancel
+						</button>
+						<button type="button" class="custom-tab-btn yes-btn"
+							style="background:#6c7a91; color:white; border:none; border-radius:20px; padding:5px 20px;">
+							Yes
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
 
 </body>
 
 
 <style>
-	.dataTables_scrollHeadInner,
-	table.dataTable {
-		width: 100% !important;
-	}
-
 	/* Your existing CSS - this is the correct approach */
 	.scrollable-table-container {
 		/* This is the key: it creates the scroll context */
@@ -5440,7 +5468,40 @@ PURPOSE		: BRRSREPORT
 		width: auto;
 	}
 </style>
+<script th:inline="javascript">
+	$(document).ready(function () {
+		var table = $('#reportdetail').DataTable({
+			scrollY: "550px",
+			scrollX: true,
+			scrollCollapse: true,
+			autoWidth: false,
+			paging: true,
+			searching: true,
+			lengthChange: false,
+			ordering: true,
+			pageLength: 100,
+			fixedHeader: true, // ✅ You can simply set it to true
+			// ✅ Column width settings
+			columnDefs: [
+				{width: "60px", targets: 0},   // Edit icon column
+				{width: "100px", targets: 1},  // S No column
+				{width: "250px", targets: 5}
 
+			],
 
+			dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t'
+		});
+
+		// ✅ Fix alignment on resize / zoom
+		$(window).on('resize', function () {
+			table.columns.adjust().draw(false);
+		});
+
+		// ✅ Fix initial misalignment if loaded at non-100% zoom
+		setTimeout(function () {
+			table.columns.adjust().draw(false);
+		}, 500);
+	});
+</script>
 
 </html>

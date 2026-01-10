@@ -387,7 +387,7 @@ public class BRRS_MDISB1_ReportService {
 					if (record2.getR7_TOTAL_DEPOSIT_EXCEED() != null) {
 						cell5.setCellValue(record2.getR7_TOTAL_DEPOSIT_EXCEED().doubleValue());
 						} else {
-						cell5.setCellValue("");
+							cell5.setCellValue("");
 						
 					}
 					
@@ -3017,7 +3017,7 @@ public class BRRS_MDISB1_ReportService {
 					R64cell5.setCellValue(record2.getR64_TOTAL_DEPOSIT_EXCEED().doubleValue());
 					} else {
 					R64cell5.setCellValue("");
-					
+					}
 										
 					// Column J
 					Cell R64cell6 = row.createCell(9);
@@ -3071,14 +3071,13 @@ public class BRRS_MDISB1_ReportService {
 						R65cell4.setCellValue("");
 						R65cell4.setCellStyle(textStyle);
 					}
-
+					
 					// Column I
 					Cell R65cell5 = row.createCell(8);
 					if (record2.getR65_TOTAL_DEPOSIT_EXCEED() != null) {
 					R65cell5.setCellValue(record2.getR65_TOTAL_DEPOSIT_EXCEED().doubleValue());
 					} else {
 					R65cell5.setCellValue("");
-					
 					}
 										
 					// Column J
@@ -5120,7 +5119,7 @@ public class BRRS_MDISB1_ReportService {
 
 					
 					workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
-				} }else {
+				} else {
 
 				}
 				// Write the final workbook content to the in-memory stream.
