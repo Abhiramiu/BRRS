@@ -155,8 +155,7 @@ public class RegulatoryReportServices {
 	@Autowired
 	BRRS_M_TOP_100_BORROWER_ReportService BRRS_M_TOP_100_BORROWER_reportservice;
 
-	@Autowired
-	BRRS_Q_STAFF_Report_Service BRRS_Q_STAFF_report_service;
+
 
 	@Autowired
 	BRRS_Q_BRANCHNET_ReportService BRRS_Q_BRANCHNET_reportservice;
@@ -665,10 +664,6 @@ public class RegulatoryReportServices {
 						pageable, type, version);
 				break;
 
-			case "Q_STAFF":
-				repsummary = BRRS_Q_STAFF_report_service.getQ_STAFFView(reportId, fromdate, todate, currency, dtltype,
-						pageable, type, version);
-				break;
 
 			case "Q_BRANCHNET":
 				repsummary = BRRS_Q_BRANCHNET_reportservice.getQ_BRANCHNETView(reportId, fromdate, todate, currency,
@@ -1561,12 +1556,7 @@ public class RegulatoryReportServices {
 						dtltype,
 						pageable, Filter, type, version);
 				break;
-			case "Q_STAFF":
 
-				repdetail = BRRS_Q_STAFF_report_service.getQ_STAFFcurrentDtl(reportId, fromdate, todate, currency,
-						dtltype,
-						pageable, Filter, type, version);
-				break;
 		}
 		return repdetail;
 	}
@@ -2082,16 +2072,7 @@ public class RegulatoryReportServices {
 				}
 				break;
 
-			case "Q_STAFF":
-				try {
-					repfile = BRRS_Q_STAFF_report_service.BRRS_Q_STAFFExcel(filename, reportId, fromdate, todate,
-							currency,
-							dtltype, type, version);
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
+		
 
 			case "Q_BRANCHNET":
 				try {
@@ -2948,10 +2929,7 @@ public class RegulatoryReportServices {
 					dtltype, type, version);
 		}
 
-else if ("Q_STAFFDetail".equals(filename)) {
-			return BRRS_Q_STAFF_report_service.getQ_STAFFDetailExcel(filename, fromdate, todate, currency,
-					dtltype, type, version);
-		}
+
 
 		
 		else if ("BDISB1Detail".equals(filename)) {
@@ -3610,11 +3588,7 @@ else if ("Q_STAFFDetail".equals(filename)) {
 				System.out.println("Fetched M_SRWA_12H archival data: " + GPList.size());
 				break;
 
-			case "Q_STAFF":
-				List<Object[]> QSList = BRRS_Q_STAFF_report_service.getQ_STAFFArchival();
-				archivalData.addAll(QSList);
-				System.out.println("Fetched Q_STAFF archival data: " + QSList.size());
-				break;
+		
 			case "M_IS":
 				List<Object[]> MISList = BRRS_M_IS_reportservice.getM_ISArchival();
 				archivalData.addAll(MISList);
@@ -4332,11 +4306,7 @@ else if ("Q_STAFFDetail".equals(filename)) {
 			fileData = brrs_bdisb3_reportservice.getBDISB3DetailExcel(filename, fromdate, todate, currency,
 					dtltype, type, version);
 		}
-else if ("Q_STAFFDetail".equals(filename)) {
 
-			fileData = BRRS_Q_STAFF_report_service.getQ_STAFFDetailExcel(filename, fromdate, todate, currency,
-					dtltype, type, version);
-		}
 
 
 		
@@ -5073,16 +5043,6 @@ else if ("Q_STAFFDetail".equals(filename)) {
 				}
 				break;
 
-			case "Q_STAFF":
-				try {
-					List<Object[]> resubList = BRRS_Q_STAFF_report_service.getQ_STAFFResub();
-					resubmissionData.addAll(resubList);
-					System.out.println("Resubmission data fetched for M_SRWA_12H: " + resubList.size());
-				} catch (Exception e) {
-					System.err.println("Error fetching resubmission data for M_SRWA_12H: " + e.getMessage());
-					e.printStackTrace();
-				}
-				break;
 
 			case "Q_BRANCHNET":
 				try {
