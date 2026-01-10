@@ -5567,13 +5567,13 @@ public class BRRS_M_DEP2_ReportService {
 // ACCT BALANCE style (right aligned with 3 decimals)
 			CellStyle balanceStyle = workbook.createCellStyle();
 			balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
-			balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0.000"));
+			balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("#,###"));
 			balanceStyle.setBorderTop(border);
 			balanceStyle.setBorderBottom(border);
 			balanceStyle.setBorderLeft(border);
 			balanceStyle.setBorderRight(border);
 // Header row
-			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "REPORT_LABLE", "REPORT_ADDL_CRITERIA_1",
+			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "REPORT_LABEL", "REPORT_ADDL_CRITERIA_1",
 					"REPORT_DATE" };
 			XSSFRow headerRow = sheet.createRow(0);
 			for (int i = 0; i < headers.length; i++) {
@@ -5596,12 +5596,12 @@ public class BRRS_M_DEP2_ReportService {
 					row.createCell(0).setCellValue(item.getCustId());
 					row.createCell(1).setCellValue(item.getAcctNumber());
 					row.createCell(2).setCellValue(item.getAcctName());
-// ACCT BALANCE (right aligned, 3 decimal places)
+// ACCT BALANCE (right aligned)
 					Cell balanceCell = row.createCell(3);
 					if (item.getAcctBalanceInpula() != null) {
 						balanceCell.setCellValue(item.getAcctBalanceInpula().doubleValue());
 					} else {
-						balanceCell.setCellValue(0.000);
+						balanceCell.setCellValue(0);
 					}
 					balanceCell.setCellStyle(balanceStyle);
 					row.createCell(4).setCellValue(item.getReportLable());
@@ -10981,14 +10981,14 @@ public class BRRS_M_DEP2_ReportService {
 			// ACCT BALANCE style (right aligned with 3 decimals)
 			CellStyle balanceStyle = workbook.createCellStyle();
 			balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
-			balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0.000"));
+			balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("#,###"));
 			balanceStyle.setBorderTop(border);
 			balanceStyle.setBorderBottom(border);
 			balanceStyle.setBorderLeft(border);
 			balanceStyle.setBorderRight(border);
 
 			// Header row
-			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "REPORT_LABLE", "REPORT_ADDL_CRITERIA_1",
+			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "REPORT_LABEL", "REPORT_ADDL_CRITERIA_1",
 					"REPORT_DATE" };
 
 			XSSFRow headerRow = sheet.createRow(0);
@@ -11025,7 +11025,7 @@ public class BRRS_M_DEP2_ReportService {
 					if (item.getAcctBalanceInpula() != null) {
 						balanceCell.setCellValue(item.getAcctBalanceInpula().doubleValue());
 					} else {
-						balanceCell.setCellValue(0.000);
+						balanceCell.setCellValue(0);
 					}
 					balanceCell.setCellStyle(balanceStyle);
 
