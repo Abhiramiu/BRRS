@@ -6,11 +6,14 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.CallableStatement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
@@ -38,33 +41,23 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
-
-import com.bornfire.brrs.entities.BRRS_Q_STAFF_Archival_Summary_Repo1;
-import com.bornfire.brrs.entities.BRRS_Q_STAFF_Archival_Summary_Repo2;
-import com.bornfire.brrs.entities.BRRS_Q_STAFF_Archival_Summary_Repo3;
-import com.bornfire.brrs.entities.BRRS_Q_STAFF_Summary_Repo1;
-import com.bornfire.brrs.entities.BRRS_Q_STAFF_Summary_Repo2;
-import com.bornfire.brrs.entities.BRRS_Q_STAFF_Summary_Repo3;
-import com.bornfire.brrs.entities.M_SRWA_12H_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.M_SRWA_12H_Summary_Entity;
-import com.bornfire.brrs.entities.Q_BRANCHNET_Archival_Summary_Entity1;
-import com.bornfire.brrs.entities.Q_STAFF_Archival_Summary_Entity1;
-import com.bornfire.brrs.entities.Q_STAFF_Archival_Summary_Entity2;
-import com.bornfire.brrs.entities.Q_STAFF_Archival_Summary_Entity3;
-import com.bornfire.brrs.entities.Q_STAFF_Summary_Entity1;
-import com.bornfire.brrs.entities.Q_STAFF_Summary_Entity2;
-import com.bornfire.brrs.entities.Q_STAFF_Summary_Entity3;
+import com.bornfire.brrs.entities.*;
 
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 
 @Component
 @Service
 public class BRRS_Q_STAFF_Report_Service {
+
+    private final BRRS_M_CA5_Archival_Summary_Repo1 BRRS_M_CA5_Archival_Summary_Repo1;
 
     private static final Logger logger = LoggerFactory.getLogger(BRRS_Q_STAFF_Report_Service.class);
 
@@ -95,7 +88,20 @@ public class BRRS_Q_STAFF_Report_Service {
     @Autowired
     private BRRS_Q_STAFF_Archival_Summary_Repo3 Q_STAFF_Archival_Summary_Repo3;
 
+    @Autowired
+    BRRS_Q_STAFF_Detail_Repo Q_STAFF_detail_repo;
+
+    @Autowired
+    BRRS_Q_STAFF_Archival_Detail_Repo Q_STAFF_Archival_Detail_Repo;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
     private final SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
+
+    BRRS_Q_STAFF_Report_Service(BRRS_M_CA5_Archival_Summary_Repo1 BRRS_M_CA5_Archival_Summary_Repo1) {
+        this.BRRS_M_CA5_Archival_Summary_Repo1 = BRRS_M_CA5_Archival_Summary_Repo1;
+    }
 
     public ModelAndView getQ_STAFFView(String reportId, String fromdate, String todate,
             String currency, String dtltype, Pageable pageable,
@@ -141,10 +147,15 @@ public class BRRS_Q_STAFF_Report_Service {
 
             // ---------- CASE 3: NORMAL ----------
             else {
-                List<Q_STAFF_Summary_Entity1> T1Master = Q_STAFF_Summary_Repo1.getdatabydateListWithVersion(todate);
-                List<Q_STAFF_Summary_Entity2> T2Master = Q_STAFF_Summary_Repo2.getdatabydateListWithVersion(todate);
-                List<Q_STAFF_Summary_Entity3> T3Master = Q_STAFF_Summary_Repo3.getdatabydateListWithVersion(todate);
+                List<Q_STAFF_Summary_Entity1> T1Master = Q_STAFF_Summary_Repo1
+                        .getdatabydateList(dateformat.parse(todate));
+                List<Q_STAFF_Summary_Entity2> T2Master = Q_STAFF_Summary_Repo2
+                        .getdatabydateList(dateformat.parse(todate));
+                List<Q_STAFF_Summary_Entity3> T3Master = Q_STAFF_Summary_Repo3
+                        .getdatabydateList(dateformat.parse(todate));
                 System.out.println("T1Master Size " + T1Master.size());
+                System.out.println("T2Master Size " + T2Master.size());
+                System.out.println("T3Master Size " + T3Master.size());
                 mv.addObject("reportsummary", T1Master);
                 mv.addObject("reportsummary2", T2Master);
                 mv.addObject("reportsummary3", T3Master);
@@ -158,6 +169,147 @@ public class BRRS_Q_STAFF_Report_Service {
         mv.addObject("displaymode", "summary");
         System.out.println("View set to: " + mv.getViewName());
         return mv;
+    }
+
+    public ModelAndView getQ_STAFFcurrentDtl(String reportId, String fromdate, String todate, String currency,
+            String dtltype, Pageable pageable, String Filter, String type, String version) {
+
+        int pageSize = pageable != null ? pageable.getPageSize() : 10;
+        int currentPage = pageable != null ? pageable.getPageNumber() : 0;
+        int totalPages = 0;
+
+        ModelAndView mv = new ModelAndView();
+        // Session hs = sessionFactory.getCurrentSession();
+
+        try {
+            Date parsedDate = null;
+            if (todate != null && !todate.isEmpty()) {
+                parsedDate = dateformat.parse(todate);
+            }
+
+            String rowId = null;
+            String columnId = null;
+
+            // ✅ Split filter string into rowId & columnId
+            if (Filter != null && Filter.contains(",")) {
+                String[] parts = Filter.split(",");
+                if (parts.length >= 2) {
+                    rowId = parts[0];
+                    columnId = parts[1];
+                }
+            }
+            System.out.println(type);
+            if ("ARCHIVAL".equals(type) && version != null) {
+                System.out.println(type);
+                // 🔹 Archival branch
+                List<Q_STAFF_Archival_Detail_Entity> T1Dt1;
+                if (rowId != null && columnId != null) {
+                    T1Dt1 = Q_STAFF_Archival_Detail_Repo.GetDataByRowIdAndColumnId(rowId, columnId, parsedDate,
+                            version);
+                } else {
+                    T1Dt1 = Q_STAFF_Archival_Detail_Repo.getdatabydateList(parsedDate, version);
+                }
+
+                mv.addObject("reportdetails", T1Dt1);
+                mv.addObject("reportmaster12", T1Dt1);
+                System.out.println("ARCHIVAL COUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
+
+            } else {
+                System.out.println(
+                        "row id is: " + rowId + " column id is : " + columnId + " date parsed is : " + parsedDate);
+                // 🔹 Current branch
+                List<Q_STAFF_Detail_Entity> T1Dt1;
+                if (rowId != null && columnId != null) {
+                    T1Dt1 = Q_STAFF_detail_repo.GetDataByRowIdAndColumnId(rowId, columnId, parsedDate);
+                } else {
+                    T1Dt1 = Q_STAFF_detail_repo.getdatabydateList(parsedDate, currentPage, pageSize);
+                    totalPages = Q_STAFF_detail_repo.getdatacount(parsedDate);
+                    mv.addObject("pagination", "YES");
+                }
+
+                mv.addObject("reportdetails", T1Dt1);
+                mv.addObject("reportmaster12", T1Dt1);
+                System.out.println("LISTCOUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
+            }
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+            mv.addObject("errorMessage", "Invalid date format: " + todate);
+        } catch (Exception e) {
+            e.printStackTrace();
+            mv.addObject("errorMessage", "Unexpected error: " + e.getMessage());
+        }
+
+        // ✅ Common attributes
+        mv.setViewName("BRRS/Q_STAFF");
+        mv.addObject("displaymode", "Details");
+        mv.addObject("currentPage", currentPage);
+        System.out.println("totalPages: " + (int) Math.ceil((double) totalPages / 100));
+        mv.addObject("totalPages", (int) Math.ceil((double) totalPages / 100));
+        mv.addObject("reportsflag", "reportsflag");
+        mv.addObject("menu", reportId);
+
+        return mv;
+    }
+
+    public void updateDetailFromForm(Date reportDate, Map<String, String> params) {
+
+        System.out.println("came to service for update ");
+
+        for (Map.Entry<String, String> entry : params.entrySet()) {
+
+            String key = entry.getKey();
+            String value = entry.getValue();
+
+            if (!key.matches("R\\d+_C\\d+_(AGGREGATE_BALANCE|COMPENSATABLE_AMOUNT)")) {
+                continue;
+            }
+
+            String[] parts = key.split("_");
+            String reportLabel = parts[0];
+            String addlCriteria = parts[1];
+            String column = String.join("_",
+                    Arrays.copyOfRange(parts, 2, parts.length));
+
+            BigDecimal amount = new BigDecimal(value);
+
+            List<Q_STAFF_Detail_Entity> rows = Q_STAFF_detail_repo.findByReportDateAndReportLableAndReportAddlCriteria1(
+                    reportDate, reportLabel, addlCriteria);
+
+            for (Q_STAFF_Detail_Entity row : rows) {
+                if ("AGGREGATE_BALANCE".equals(column)) {
+                    row.setAGGREGATE_BALANCE(amount);
+                } else if ("COMPENSATABLE_AMOUNT".equals(column)) {
+                    row.setCOMPENSATABLE_AMOUNT(amount);
+                }
+            }
+
+            Q_STAFF_detail_repo.saveAll(rows);
+        }
+
+        // ✅ CALL ORACLE PROCEDURE AFTER ALL UPDATES
+        callSummaryProcedure(reportDate);
+    }
+
+    private void callSummaryProcedure(Date reportDate) {
+
+        String sql = "{ call BRRS_Q_STAFF_SUMMARY_PROCEDURE(?) }";
+
+        jdbcTemplate.update(connection -> {
+            CallableStatement cs = connection.prepareCall(sql);
+
+            // Force exact format expected by procedure
+            SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+            sdf.setLenient(false);
+
+            String formattedDate = sdf.format(reportDate);
+
+            cs.setString(1, formattedDate); // 🔥 THIS IS MANDATORY
+            return cs;
+        });
+
+        System.out.println("✅ Summary procedure executed for date: " +
+                new SimpleDateFormat("dd-MM-yyyy").format(reportDate));
     }
 
     public void updateReport(Q_STAFF_Summary_Entity1 updatedEntity) {
@@ -300,6 +452,176 @@ public class BRRS_Q_STAFF_Report_Service {
     // }
     // return Q_STAFFArchivallist;
     // }
+    public byte[] getQ_STAFFDetailExcel(String filename, String fromdate, String todate,
+            String currency, String dtltype, String type, String version) {
+
+        try {
+            logger.info("Generating Excel for Q_STAFF Details...");
+            System.out.println("came to Detail download service");
+
+            // ================= ARCHIVAL HANDLING =================
+            if ("ARCHIVAL".equals(type) && version != null) {
+                return getDetailExcelARCHIVAL(filename, fromdate, todate, currency, dtltype, type, version);
+            }
+
+            // ================= WORKBOOK & SHEET =================
+            XSSFWorkbook workbook = new XSSFWorkbook();
+            XSSFSheet sheet = workbook.createSheet("Q_STAFFDetail");
+
+            BorderStyle border = BorderStyle.THIN;
+
+            // ================= HEADER STYLE =================
+            CellStyle headerStyle = workbook.createCellStyle();
+            Font headerFont = workbook.createFont();
+            headerFont.setBold(true);
+            headerFont.setFontHeightInPoints((short) 10);
+            headerStyle.setFont(headerFont);
+            headerStyle.setAlignment(HorizontalAlignment.LEFT);
+            headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+            headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+            headerStyle.setBorderTop(border);
+            headerStyle.setBorderBottom(border);
+            headerStyle.setBorderLeft(border);
+            headerStyle.setBorderRight(border);
+
+            CellStyle rightHeaderStyle = workbook.createCellStyle();
+            rightHeaderStyle.cloneStyleFrom(headerStyle);
+            rightHeaderStyle.setAlignment(HorizontalAlignment.RIGHT);
+
+            // ================= DATA STYLES =================
+            CellStyle textStyle = workbook.createCellStyle();
+            textStyle.setAlignment(HorizontalAlignment.LEFT);
+            textStyle.setBorderTop(border);
+            textStyle.setBorderBottom(border);
+            textStyle.setBorderLeft(border);
+            textStyle.setBorderRight(border);
+
+            CellStyle amountStyle = workbook.createCellStyle();
+            amountStyle.setAlignment(HorizontalAlignment.RIGHT);
+            amountStyle.setDataFormat(workbook.createDataFormat().getFormat("#,##0.00"));
+            amountStyle.setBorderTop(border);
+            amountStyle.setBorderBottom(border);
+            amountStyle.setBorderLeft(border);
+            amountStyle.setBorderRight(border);
+
+            // ================= HEADER ROW =================
+            String[] headers = {
+                    "LOCAL",
+                    "EXPARIATES",
+                    "TOTAL",
+                    "ORIGINAL_AMT",
+                    "BALANCE_OUTSTANDING",
+                    "NO_OF_ACS",
+                    "INTEREST_RATE",
+                    "REPORT LABEL",
+                    "REPORT ADDL CRITERIA1",
+                    "REPORT DATE"
+            };
+
+            XSSFRow headerRow = sheet.createRow(0);
+            for (int i = 0; i < headers.length; i++) {
+                Cell cell = headerRow.createCell(i);
+                cell.setCellValue(headers[i]);
+                cell.setCellStyle((i == 0 || i == 1) ? rightHeaderStyle : headerStyle);
+                sheet.setColumnWidth(i, 6000);
+            }
+
+            // ================= DATA FETCH =================
+            Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
+            List<Q_STAFF_Detail_Entity> reportData = Q_STAFF_detail_repo.getdatabydateList(parsedToDate);
+
+            // ================= DATA ROWS =================
+            int rowIndex = 1;
+
+            if (reportData != null && !reportData.isEmpty()) {
+                for (Q_STAFF_Detail_Entity item : reportData) {
+
+                    XSSFRow row = sheet.createRow(rowIndex++);
+
+                    // Column 0 - LOCAL
+                    Cell c0 = row.createCell(0);
+                    c0.setCellValue(item.getLocal() != null
+                            ? item.getLocal().doubleValue()
+                            : 0);
+                    c0.setCellStyle(amountStyle);
+
+                    // Column 1 - EXPARIATES
+                    Cell c1 = row.createCell(1);
+                    c1.setCellValue(item.getExpatriates() != null
+                            ? item.getExpatriates().doubleValue()
+                            : 0);
+                    c1.setCellStyle(amountStyle);
+
+                    // Column 2 - TOTAL
+                    Cell c2 = row.createCell(2);
+                    c2.setCellValue(item.getTotal() != null
+                            ? item.getTotal().doubleValue()
+                            : 0);
+                    c2.setCellStyle(amountStyle);
+
+                    // Column 3 - ORIGINAL_AMT
+                    Cell c3 = row.createCell(3);
+                    c3.setCellValue(item.getOriginal_amt() != null
+                            ? item.getOriginal_amt().doubleValue()
+                            : 0);
+                    c3.setCellStyle(amountStyle);
+
+                    // Column 4 - BALANCE_OUTSTANDING
+                    Cell c4 = row.createCell(4);
+                    c4.setCellValue(item.getBalance_outstanding() != null
+                            ? item.getBalance_outstanding().doubleValue()
+                            : 0);
+                    c4.setCellStyle(amountStyle);
+
+                    // Column 5 - NO_OF_ACS
+                    Cell c5 = row.createCell(5);
+                    c5.setCellValue(item.getNo_of_acs() != null
+                            ? item.getNo_of_acs().doubleValue()
+                            : 0);
+                    c5.setCellStyle(amountStyle);
+                    // Column 6 - INTEREST_RATE
+                    Cell c6 = row.createCell(6);
+                    c6.setCellValue(item.getInterest_rate() != null
+                            ? item.getInterest_rate().doubleValue()
+                            : 0);
+                    c6.setCellStyle(amountStyle);
+
+                    // Column 7 - REPORT LABEL
+                    Cell c7 = row.createCell(7);
+                    c7.setCellValue(item.getReportLable());
+                    c7.setCellStyle(textStyle);
+
+                    // Column 8 - REPORT ADDL CRITERIA 1
+                    Cell c8 = row.createCell(8);
+                    c8.setCellValue(item.getReportAddlCriteria1());
+                    c8.setCellStyle(textStyle);
+
+                    // Column 9 - REPORT DATE
+                    Cell c9 = row.createCell(9);
+                    c9.setCellValue(item.getReportDate() != null
+                            ? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
+                            : "");
+                    c9.setCellStyle(textStyle);
+                }
+            } else {
+                logger.info("No data found for Q_STAFF — only header written.");
+            }
+
+            // ================= WRITE FILE =================
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            workbook.write(bos);
+            workbook.close();
+
+            logger.info("Excel generation completed with {} row(s).",
+                    reportData != null ? reportData.size() : 0);
+
+            return bos.toByteArray();
+
+        } catch (Exception e) {
+            logger.error("Error generating Q_STAFF Excel", e);
+            return new byte[0];
+        }
+    }
 
     public byte[] BRRS_Q_STAFFExcel(String filename, String reportId, String fromdate, String todate, String currency,
             String dtltype, String type, String version) throws Exception {
@@ -1489,7 +1811,6 @@ public class BRRS_Q_STAFF_Report_Service {
     /// Report Date | Report Version | Domain
     /// RESUB VIEW
 
-
     public List<Object[]> getQ_STAFFResub() {
         List<Object[]> resubList = new ArrayList<>();
         try {
@@ -2194,4 +2515,513 @@ public class BRRS_Q_STAFF_Report_Service {
             return out.toByteArray();
         }
     }
+
+    @Transactional
+    public void updateReportReSub(Q_STAFF_Summary_Entity1 updatedEntity) {
+
+        System.out.println("Came to Resub Service");
+
+        Date reportDate = updatedEntity.getReportDate();
+        System.out.println("Report Date: " + reportDate);
+
+        try {
+            /*
+             * =========================================================
+             * 1️⃣ FETCH LATEST ARCHIVAL VERSION
+             * =========================================================
+             */
+            Optional<Q_STAFF_Archival_Summary_Entity1> latestArchivalOpt = Q_STAFF_Archival_Summary_Repo1
+                    .getLatestArchivalVersionByDate(reportDate);
+
+            int newVersion = 1;
+            if (latestArchivalOpt.isPresent()) {
+                try {
+                    newVersion = Integer.parseInt(latestArchivalOpt.get().getReportVersion()) + 1;
+                } catch (NumberFormatException e) {
+                    newVersion = 1;
+                }
+            }
+
+            boolean exists = Q_STAFF_Archival_Summary_Repo1
+                    .findByReportDateAndReportVersion(
+                            reportDate, String.valueOf(newVersion))
+                    .isPresent();
+
+            if (exists) {
+                throw new RuntimeException(
+                        "Version " + newVersion + " already exists for report date " + reportDate);
+            }
+
+            /*
+             * =========================================================
+             * 2️⃣ CREATE NEW ARCHIVAL ENTITY (BASE COPY)
+             * =========================================================
+             */
+            Q_STAFF_Archival_Summary_Entity1 archivalEntity1 = new Q_STAFF_Archival_Summary_Entity1();
+            Q_STAFF_Archival_Summary_Entity2 archivalEntity2 = new Q_STAFF_Archival_Summary_Entity2();
+            Q_STAFF_Archival_Summary_Entity3 archivalEntity3 = new Q_STAFF_Archival_Summary_Entity3();
+
+            if (latestArchivalOpt.isPresent()) {
+                BeanUtils.copyProperties(latestArchivalOpt.get(), archivalEntity1);
+            }
+
+            /*
+             * =========================================================
+             * 3️⃣ READ RAW REQUEST PARAMETERS (CRITICAL FIX)
+             * =========================================================
+             */
+            HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder
+                    .getRequestAttributes()).getRequest();
+
+            Map<String, String[]> parameterMap = request.getParameterMap();
+
+            for (Map.Entry<String, String[]> entry : parameterMap.entrySet()) {
+
+                String key = entry.getKey(); // R6_C11_ACCT_NUM
+                String value = entry.getValue()[0];
+
+                // Ignore non-field params
+                if ("asondate".equalsIgnoreCase(key) || "type".equalsIgnoreCase(key)) {
+                    continue;
+                }
+
+                // Normalize: R6_C11_ACCT_NUM → R6_ACCT_NUM
+                String normalizedKey = key.replaceFirst("_C\\d+_", "_");
+
+                /*
+                 * =====================================================
+                 * 4️⃣ APPLY VALUES (EXPLICIT, SAFE, NO REFLECTION)
+                 * =====================================================
+                 */
+                // ======================= R9 – R15 =======================
+
+                // ---------- R9 ----------
+                if ("R9_LOCAL".equals(normalizedKey)) {
+                    archivalEntity1.setR9_LOCAL(parseBigDecimal(value));
+
+                } else if ("R9_EXPARIATES".equals(normalizedKey)) {
+                    archivalEntity1.setR9_EXPARIATES(parseBigDecimal(value));
+
+                } else if ("R9_TOTAL".equals(normalizedKey)) {
+                    archivalEntity1.setR9_TOTAL(parseBigDecimal(value));
+
+                    // ---------- R10 ----------
+                } else if ("R10_LOCAL".equals(normalizedKey)) {
+                    archivalEntity1.setR10_LOCAL(parseBigDecimal(value));
+
+                } else if ("R10_EXPARIATES".equals(normalizedKey)) {
+                    archivalEntity1.setR10_EXPARIATES(parseBigDecimal(value));
+
+                } else if ("R10_TOTAL".equals(normalizedKey)) {
+                    archivalEntity1.setR10_TOTAL(parseBigDecimal(value));
+
+                    // ---------- R11 ----------
+                } else if ("R11_LOCAL".equals(normalizedKey)) {
+                    archivalEntity1.setR11_LOCAL(parseBigDecimal(value));
+
+                } else if ("R11_EXPARIATES".equals(normalizedKey)) {
+                    archivalEntity1.setR11_EXPARIATES(parseBigDecimal(value));
+
+                } else if ("R11_TOTAL".equals(normalizedKey)) {
+                    archivalEntity1.setR11_TOTAL(parseBigDecimal(value));
+
+                    // ---------- R12 ----------
+                } else if ("R12_LOCAL".equals(normalizedKey)) {
+                    archivalEntity1.setR12_LOCAL(parseBigDecimal(value));
+
+                } else if ("R12_EXPARIATES".equals(normalizedKey)) {
+                    archivalEntity1.setR12_EXPARIATES(parseBigDecimal(value));
+
+                } else if ("R12_TOTAL".equals(normalizedKey)) {
+                    archivalEntity1.setR12_TOTAL(parseBigDecimal(value));
+
+                    // ---------- R13 ----------
+                } else if ("R13_LOCAL".equals(normalizedKey)) {
+                    archivalEntity1.setR13_LOCAL(parseBigDecimal(value));
+
+                } else if ("R13_EXPARIATES".equals(normalizedKey)) {
+                    archivalEntity1.setR13_EXPARIATES(parseBigDecimal(value));
+
+                } else if ("R13_TOTAL".equals(normalizedKey)) {
+                    archivalEntity1.setR13_TOTAL(parseBigDecimal(value));
+
+                    // ---------- R14 ----------
+                } else if ("R14_LOCAL".equals(normalizedKey)) {
+                    archivalEntity1.setR14_LOCAL(parseBigDecimal(value));
+
+                } else if ("R14_EXPARIATES".equals(normalizedKey)) {
+                    archivalEntity1.setR14_EXPARIATES(parseBigDecimal(value));
+
+                } else if ("R14_TOTAL".equals(normalizedKey)) {
+                    archivalEntity1.setR14_TOTAL(parseBigDecimal(value));
+
+                    // ---------- R15 ----------
+                } else if ("R15_LOCAL".equals(normalizedKey)) {
+                    archivalEntity1.setR15_LOCAL(parseBigDecimal(value));
+
+                } else if ("R15_EXPARIATES".equals(normalizedKey)) {
+                    archivalEntity1.setR15_EXPARIATES(parseBigDecimal(value));
+
+                } else if ("R15_TOTAL".equals(normalizedKey)) {
+                    archivalEntity1.setR15_TOTAL(parseBigDecimal(value));
+                    // ---------- R21 ----------
+                } else if ("R21_LOCAL".equals(normalizedKey)) {
+                    archivalEntity2.setR21_LOCAL(parseBigDecimal(value));
+
+                } else if ("R21_EXPARIATES".equals(normalizedKey)) {
+                    archivalEntity2.setR21_EXPARIATES(parseBigDecimal(value));
+
+                } else if ("R21_TOTAL".equals(normalizedKey)) {
+                    archivalEntity2.setR21_TOTAL(parseBigDecimal(value));
+
+                    // ---------- R22 ----------
+                } else if ("R22_LOCAL".equals(normalizedKey)) {
+                    archivalEntity2.setR22_LOCAL(parseBigDecimal(value));
+
+                } else if ("R22_EXPARIATES".equals(normalizedKey)) {
+                    archivalEntity2.setR22_EXPARIATES(parseBigDecimal(value));
+
+                } else if ("R22_TOTAL".equals(normalizedKey)) {
+                    archivalEntity2.setR22_TOTAL(parseBigDecimal(value));
+
+                    // ---------- R23 ----------
+                } else if ("R23_LOCAL".equals(normalizedKey)) {
+                    archivalEntity2.setR23_LOCAL(parseBigDecimal(value));
+
+                } else if ("R23_EXPARIATES".equals(normalizedKey)) {
+                    archivalEntity2.setR23_EXPARIATES(parseBigDecimal(value));
+
+                } else if ("R23_TOTAL".equals(normalizedKey)) {
+                    archivalEntity2.setR23_TOTAL(parseBigDecimal(value));
+
+                    // ---------- R24 ----------
+                } else if ("R24_LOCAL".equals(normalizedKey)) {
+                    archivalEntity2.setR24_LOCAL(parseBigDecimal(value));
+
+                } else if ("R24_EXPARIATES".equals(normalizedKey)) {
+                    archivalEntity2.setR24_EXPARIATES(parseBigDecimal(value));
+
+                } else if ("R24_TOTAL".equals(normalizedKey)) {
+                    archivalEntity2.setR24_TOTAL(parseBigDecimal(value));
+
+                    // ---------- R25 ----------
+                } else if ("R25_LOCAL".equals(normalizedKey)) {
+                    archivalEntity2.setR25_LOCAL(parseBigDecimal(value));
+
+                } else if ("R25_EXPARIATES".equals(normalizedKey)) {
+                    archivalEntity2.setR25_EXPARIATES(parseBigDecimal(value));
+
+                } else if ("R25_TOTAL".equals(normalizedKey)) {
+                    archivalEntity2.setR25_TOTAL(parseBigDecimal(value));
+
+                    // ---------- R26 ----------
+                } else if ("R26_LOCAL".equals(normalizedKey)) {
+                    archivalEntity2.setR26_LOCAL(parseBigDecimal(value));
+
+                } else if ("R26_EXPARIATES".equals(normalizedKey)) {
+                    archivalEntity2.setR26_EXPARIATES(parseBigDecimal(value));
+
+                } else if ("R26_TOTAL".equals(normalizedKey)) {
+                    archivalEntity2.setR26_TOTAL(parseBigDecimal(value));
+
+                    // ---------- R27 ----------
+                } else if ("R27_LOCAL".equals(normalizedKey)) {
+                    archivalEntity2.setR27_LOCAL(parseBigDecimal(value));
+
+                } else if ("R27_EXPARIATES".equals(normalizedKey)) {
+                    archivalEntity2.setR27_EXPARIATES(parseBigDecimal(value));
+
+                } else if ("R27_TOTAL".equals(normalizedKey)) {
+                    archivalEntity2.setR27_TOTAL(parseBigDecimal(value));
+
+                    // ---------- R28 ----------
+                } else if ("R28_LOCAL".equals(normalizedKey)) {
+                    archivalEntity2.setR28_LOCAL(parseBigDecimal(value));
+
+                } else if ("R28_EXPARIATES".equals(normalizedKey)) {
+                    archivalEntity2.setR28_EXPARIATES(parseBigDecimal(value));
+
+                } else if ("R28_TOTAL".equals(normalizedKey)) {
+                    archivalEntity2.setR28_TOTAL(parseBigDecimal(value));
+                    // ---------- R33 ----------
+                } else if ("R33_ORIGINAL_AMT".equals(normalizedKey)) {
+                    archivalEntity3.setR33_ORIGINAL_AMT(parseBigDecimal(value));
+
+                } else if ("R33_BALANCE_OUTSTANDING".equals(normalizedKey)) {
+                    archivalEntity3.setR33_BALANCE_OUTSTANDING(parseBigDecimal(value));
+
+                } else if ("R33_NO_OF_ACS".equals(normalizedKey)) {
+                    archivalEntity3.setR33_NO_OF_ACS(parseBigDecimal(value));
+
+                } else if ("R33_INTEREST_RATE".equals(normalizedKey)) {
+                    archivalEntity3.setR33_INTEREST_RATE(parseBigDecimal(value));
+
+                    // ---------- R34 ----------
+                } else if ("R34_ORIGINAL_AMT".equals(normalizedKey)) {
+                    archivalEntity3.setR34_ORIGINAL_AMT(parseBigDecimal(value));
+
+                } else if ("R34_BALANCE_OUTSTANDING".equals(normalizedKey)) {
+                    archivalEntity3.setR34_BALANCE_OUTSTANDING(parseBigDecimal(value));
+
+                } else if ("R34_NO_OF_ACS".equals(normalizedKey)) {
+                    archivalEntity3.setR34_NO_OF_ACS(parseBigDecimal(value));
+
+                } else if ("R34_INTEREST_RATE".equals(normalizedKey)) {
+                    archivalEntity3.setR34_INTEREST_RATE(parseBigDecimal(value));
+
+                    // ---------- R35 ----------
+                } else if ("R35_ORIGINAL_AMT".equals(normalizedKey)) {
+                    archivalEntity3.setR35_ORIGINAL_AMT(parseBigDecimal(value));
+
+                } else if ("R35_BALANCE_OUTSTANDING".equals(normalizedKey)) {
+                    archivalEntity3.setR35_BALANCE_OUTSTANDING(parseBigDecimal(value));
+
+                } else if ("R35_NO_OF_ACS".equals(normalizedKey)) {
+                    archivalEntity3.setR35_NO_OF_ACS(parseBigDecimal(value));
+
+                } else if ("R35_INTEREST_RATE".equals(normalizedKey)) {
+                    archivalEntity3.setR35_INTEREST_RATE(parseBigDecimal(value));
+
+                    // ---------- R36 ----------
+                } else if ("R36_ORIGINAL_AMT".equals(normalizedKey)) {
+                    archivalEntity3.setR36_ORIGINAL_AMT(parseBigDecimal(value));
+
+                } else if ("R36_BALANCE_OUTSTANDING".equals(normalizedKey)) {
+                    archivalEntity3.setR36_BALANCE_OUTSTANDING(parseBigDecimal(value));
+
+                } else if ("R36_NO_OF_ACS".equals(normalizedKey)) {
+                    archivalEntity3.setR36_NO_OF_ACS(parseBigDecimal(value));
+
+                } else if ("R36_INTEREST_RATE".equals(normalizedKey)) {
+                    archivalEntity3.setR36_INTEREST_RATE(parseBigDecimal(value));
+
+                    // ---------- R37 ----------
+                } else if ("R37_ORIGINAL_AMT".equals(normalizedKey)) {
+                    archivalEntity3.setR37_ORIGINAL_AMT(parseBigDecimal(value));
+
+                } else if ("R37_BALANCE_OUTSTANDING".equals(normalizedKey)) {
+                    archivalEntity3.setR37_BALANCE_OUTSTANDING(parseBigDecimal(value));
+
+                } else if ("R37_NO_OF_ACS".equals(normalizedKey)) {
+                    archivalEntity3.setR37_NO_OF_ACS(parseBigDecimal(value));
+
+                } else if ("R37_INTEREST_RATE".equals(normalizedKey)) {
+                    archivalEntity3.setR37_INTEREST_RATE(parseBigDecimal(value));
+
+                    // ---------- R38 ----------
+                } else if ("R38_ORIGINAL_AMT".equals(normalizedKey)) {
+                    archivalEntity3.setR38_ORIGINAL_AMT(parseBigDecimal(value));
+
+                } else if ("R38_BALANCE_OUTSTANDING".equals(normalizedKey)) {
+                    archivalEntity3.setR38_BALANCE_OUTSTANDING(parseBigDecimal(value));
+
+                } else if ("R38_NO_OF_ACS".equals(normalizedKey)) {
+                    archivalEntity3.setR38_NO_OF_ACS(parseBigDecimal(value));
+
+                } else if ("R38_INTEREST_RATE".equals(normalizedKey)) {
+                    archivalEntity3.setR38_INTEREST_RATE(parseBigDecimal(value));
+                }
+
+            }
+
+            /*
+             * =========================================================
+             * 5️⃣ SET RESUB METADATA
+             * =========================================================
+             */
+            archivalEntity1.setReportDate(reportDate);
+            archivalEntity2.setReportVersion(String.valueOf(newVersion));
+            archivalEntity3.setReportResubDate(new Date());
+
+            /*
+             * =========================================================
+             * 6️⃣ SAVE NEW ARCHIVAL VERSION
+             * =========================================================
+             */
+            Q_STAFF_Archival_Summary_Repo1.save(archivalEntity1);
+            Q_STAFF_Archival_Summary_Repo2.save(archivalEntity2);
+            Q_STAFF_Archival_Summary_Repo3.save(archivalEntity3);
+
+            System.out.println("✅ RESUB saved successfully. Version = " + newVersion);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException(
+                    "Error while creating archival resubmission record", e);
+        }
+    }
+
+    private BigDecimal parseBigDecimal(String value) {
+        return (value == null || value.trim().isEmpty())
+                ? BigDecimal.ZERO
+                : new BigDecimal(value.replace(",", ""));
+    }
+
+    public byte[] getDetailExcelARCHIVAL(String filename, String fromdate, String todate,
+            String currency, String dtltype, String type, String version) {
+
+        try {
+            logger.info("Generating Excel for BRRS_Q_STAFF ARCHIVAL Details...");
+            System.out.println("came to Detail download service");
+
+            // ================= WORKBOOK & SHEET =================
+            XSSFWorkbook workbook = new XSSFWorkbook();
+            XSSFSheet sheet = workbook.createSheet("Q_STAFFDetail");
+
+            BorderStyle border = BorderStyle.THIN;
+
+            // ================= HEADER STYLE =================
+            CellStyle headerStyle = workbook.createCellStyle();
+            Font headerFont = workbook.createFont();
+            headerFont.setBold(true);
+            headerFont.setFontHeightInPoints((short) 10);
+            headerStyle.setFont(headerFont);
+            headerStyle.setAlignment(HorizontalAlignment.LEFT);
+            headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+            headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+            headerStyle.setBorderTop(border);
+            headerStyle.setBorderBottom(border);
+            headerStyle.setBorderLeft(border);
+            headerStyle.setBorderRight(border);
+
+            CellStyle rightHeaderStyle = workbook.createCellStyle();
+            rightHeaderStyle.cloneStyleFrom(headerStyle);
+            rightHeaderStyle.setAlignment(HorizontalAlignment.RIGHT);
+
+            // ================= DATA STYLES =================
+            CellStyle textStyle = workbook.createCellStyle();
+            textStyle.setAlignment(HorizontalAlignment.LEFT);
+            textStyle.setBorderTop(border);
+            textStyle.setBorderBottom(border);
+            textStyle.setBorderLeft(border);
+            textStyle.setBorderRight(border);
+
+            CellStyle amountStyle = workbook.createCellStyle();
+            amountStyle.setAlignment(HorizontalAlignment.RIGHT);
+            amountStyle.setDataFormat(workbook.createDataFormat().getFormat("#,##0.00"));
+            amountStyle.setBorderTop(border);
+            amountStyle.setBorderBottom(border);
+            amountStyle.setBorderLeft(border);
+            amountStyle.setBorderRight(border);
+
+            // ================= HEADER ROW =================
+            String[] headers = {
+                    "LOCAL",
+                    "EXPARIATES",
+                    "TOTAL",
+                    "ORIGINAL_AMT",
+                    "BALANCE_OUTSTANDING",
+                    "NO_OF_ACS",
+                    "INTEREST_RATE",
+                    "REPORT LABEL",
+                    "REPORT ADDL CRITERIA1",
+                    "REPORT DATE"
+            };
+
+            XSSFRow headerRow = sheet.createRow(0);
+            for (int i = 0; i < headers.length; i++) {
+                Cell cell = headerRow.createCell(i);
+                cell.setCellValue(headers[i]);
+                cell.setCellStyle((i == 0 || i == 1) ? rightHeaderStyle : headerStyle);
+                sheet.setColumnWidth(i, 6000);
+            }
+
+            // ================= DATA FETCH =================
+            Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
+            List<Q_STAFF_Archival_Detail_Entity> reportData = Q_STAFF_Archival_Detail_Repo
+                    .getdatabydateList(parsedToDate, version);
+
+            // ================= DATA ROWS =================
+            int rowIndex = 1;
+
+            if (reportData != null && !reportData.isEmpty()) {
+                for (Q_STAFF_Archival_Detail_Entity item : reportData) {
+
+                    XSSFRow row = sheet.createRow(rowIndex++);
+
+                    // Column 0 - LOCAL
+                    Cell c0 = row.createCell(0);
+                    c0.setCellValue(item.getLocal() != null
+                            ? item.getLocal().doubleValue()
+                            : 0);
+                    c0.setCellStyle(amountStyle);
+
+                    // Column 1 - EXPARIATES
+                    Cell c1 = row.createCell(1);
+                    c1.setCellValue(item.getExpatriates() != null
+                            ? item.getExpatriates().doubleValue()
+                            : 0);
+                    c1.setCellStyle(amountStyle);
+
+                    // Column 2 - TOTAL
+                    Cell c2 = row.createCell(2);
+                    c2.setCellValue(item.getTotal() != null
+                            ? item.getTotal().doubleValue()
+                            : 0);
+                    c2.setCellStyle(amountStyle);
+
+                    // Column 3 - ORIGINAL_AMT
+                    Cell c3 = row.createCell(3);
+                    c3.setCellValue(item.getOriginal_amt() != null
+                            ? item.getOriginal_amt().doubleValue()
+                            : 0);
+                    c3.setCellStyle(amountStyle);
+
+                    // Column 4 - BALANCE_OUTSTANDING
+                    Cell c4 = row.createCell(4);
+                    c4.setCellValue(item.getBalance_outstanding() != null
+                            ? item.getBalance_outstanding().doubleValue()
+                            : 0);
+                    c4.setCellStyle(amountStyle);
+
+                    // Column 5 - NO_OF_ACS
+                    Cell c5 = row.createCell(5);
+                    c5.setCellValue(item.getNo_of_acs() != null
+                            ? item.getNo_of_acs().doubleValue()
+                            : 0);
+                    c5.setCellStyle(amountStyle);
+                    // Column 6 - INTEREST_RATE
+                    Cell c6 = row.createCell(6);
+                    c6.setCellValue(item.getInterest_rate() != null
+                            ? item.getInterest_rate().doubleValue()
+                            : 0);
+                    c6.setCellStyle(amountStyle);
+
+                    // Column 7 - REPORT LABEL
+                    Cell c7 = row.createCell(7);
+                    c7.setCellValue(item.getReportLable());
+                    c7.setCellStyle(textStyle);
+
+                    // Column 8 - REPORT ADDL CRITERIA 1
+                    Cell c8 = row.createCell(8);
+                    c8.setCellValue(item.getReportAddlCriteria1());
+                    c8.setCellStyle(textStyle);
+
+                    // Column 9 - REPORT DATE
+                    Cell c9 = row.createCell(9);
+                    c9.setCellValue(item.getReportDate() != null
+                            ? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
+                            : "");
+                    c9.setCellStyle(textStyle);
+                }
+            } else {
+                logger.info("No archival data found for Q_STAFF — only header written.");
+            }
+
+            // ================= WRITE FILE =================
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            workbook.write(bos);
+            workbook.close();
+
+            logger.info("ARCHIVAL Excel generation completed with {} row(s).",
+                    reportData != null ? reportData.size() : 0);
+
+            return bos.toByteArray();
+
+        } catch (Exception e) {
+            logger.error("Error generating Q_STAFF ARCHIVAL Excel", e);
+            return new byte[0];
+        }
+    }
+
 }

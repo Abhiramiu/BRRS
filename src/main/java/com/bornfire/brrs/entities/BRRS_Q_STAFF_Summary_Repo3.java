@@ -12,8 +12,8 @@ public interface BRRS_Q_STAFF_Summary_Repo3
         extends JpaRepository<Q_STAFF_Summary_Entity3, Date> {
 
     // Fetch all rows for a specific report date
-    @Query(value = "SELECT * FROM BRRS_Q_STAFF_SUMMARYTABLE3 WHERE REPORT_DATE = ?1", nativeQuery = true)
-    List<Q_STAFF_Summary_Entity3> getdatabydateList(Date rpt_date);
+	@Query(value = "SELECT * FROM BRRS_Q_STAFF_SUMMARYTABLE3 WHERE REPORT_DATE = ?1", nativeQuery = true)
+	List<Q_STAFF_Summary_Entity3> getdatabydateList(Date rpt_date);
 
     @Query(value = "SELECT *  FROM BRRS_Q_STAFF_SUMMARYTABLE3 WHERE REPORT_DATE = ?1   AND REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION DESC FETCH FIRST 1 ROWS ONLY ", nativeQuery = true)
     List<Q_STAFF_Summary_Entity3> getdatabydateListWithVersion(String todate);
@@ -28,4 +28,5 @@ public interface BRRS_Q_STAFF_Summary_Repo3
     Optional<Q_STAFF_Summary_Entity3> findByReportDateAndReportVersion(Date reportDate, String reportVersion);
     @Query(value = "SELECT *  FROM BRRS_Q_STAFF_SUMMARYTABLE3 WHERE REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION DESC FETCH FIRST 1 ROWS ONLY ", nativeQuery = true)
     List<Q_STAFF_Summary_Entity3> getdatabydateListWithVersion();
+
 }
