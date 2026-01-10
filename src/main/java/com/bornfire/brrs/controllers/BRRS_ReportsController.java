@@ -110,7 +110,7 @@ import com.bornfire.brrs.services.BRRS_Q_BRANCHNET_ReportService;
 import com.bornfire.brrs.services.BRRS_Q_RLFA1_ReportService;
 import com.bornfire.brrs.services.BRRS_Q_RLFA2_ReportService;
 import com.bornfire.brrs.services.BRRS_Q_SMME_DEP_ReportService;
-import com.bornfire.brrs.services.BRRS_Q_STAFF_Report_Service;
+/*import com.bornfire.brrs.services.BRRS_Q_STAFF_Report_Service;*/
 import com.bornfire.brrs.services.BRRS_SCH_17_ReportService;
 import com.bornfire.brrs.services.RegulatoryReportServices;
 import com.bornfire.brrs.services.ReportCodeMappingService;
@@ -2662,66 +2662,66 @@ return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 					.body("Resubmission Update Failed: " + e.getMessage());
 		}
 	}
-@Autowired
-	BRRS_Q_STAFF_Report_Service QSTAFF_service;
+	/*
+	 * @Autowired BRRS_Q_STAFF_Report_Service QSTAFF_service;
+	 * 
+	 * @RequestMapping(value = "/Q_STAFFupdateAll", method = { RequestMethod.GET,
+	 * RequestMethod.POST })
+	 * 
+	 * @ResponseBody public ResponseEntity<String> updateAllReports(
+	 * 
+	 * @RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date
+	 * asondate,
+	 * 
+	 * @ModelAttribute Q_STAFF_Summary_Entity1 request1, @ModelAttribute
+	 * Q_STAFF_Summary_Entity2 request2,
+	 * 
+	 * @ModelAttribute Q_STAFF_Summary_Entity3 request3) { try {
+	 * System.out.println("Came to single controller");
+	 * 
+	 * // set date into all 3 entities request1.setReportDate(asondate);
+	 * request2.setReportDate(asondate); request3.setReportDate(asondate);
+	 * 
+	 * // call services QSTAFF_service.updateReport(request1);
+	 * QSTAFF_service.updateReport2(request2);
+	 * QSTAFF_service.updateReport3(request3);
+	 * 
+	 * return ResponseEntity.ok("Updated Successfully."); } catch (Exception e) {
+	 * e.printStackTrace(); return
+	 * ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).
+	 * body("Update Failed: " + e.getMessage()); } }
+	 */
 
-	@RequestMapping(value = "/Q_STAFFupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
-	@ResponseBody
-	public ResponseEntity<String> updateAllReports(
-			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-
-			@ModelAttribute Q_STAFF_Summary_Entity1 request1, @ModelAttribute Q_STAFF_Summary_Entity2 request2,
-			@ModelAttribute Q_STAFF_Summary_Entity3 request3) {
-		try {
-			System.out.println("Came to single controller");
-
-			// set date into all 3 entities
-			request1.setReportDate(asondate);
-			request2.setReportDate(asondate);
-			request3.setReportDate(asondate);
-
-			// call services
-			QSTAFF_service.updateReport(request1);
-			QSTAFF_service.updateReport2(request2);
-			QSTAFF_service.updateReport3(request3);
-
-			return ResponseEntity.ok("Updated Successfully.");
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
-		}
-	}
-
-	@RequestMapping(value = "/UpdateQ_STAFF_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
-	@ResponseBody
-	public ResponseEntity<String> updateReportReSubAll(
-			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@ModelAttribute Q_STAFF_Summary_Entity1 request1,
-			@ModelAttribute Q_STAFF_Summary_Entity2 request2,
-			@ModelAttribute Q_STAFF_Summary_Entity3 request3,
-			HttpServletRequest req) {
-
-		try {
-			System.out.println("Came to Q_STAFF Resub Controller");
-
-			if (asondate != null) {
-				request1.setReportDate(asondate);
-				request2.setReportDate(asondate);
-				request3.setReportDate(asondate);
-				System.out.println("🗓 Set Report Date: " + asondate);
-			}
-
-			// ✅ Call service
-			QSTAFF_service.updateReportReSub(request1, request2, request3);
-
-			return ResponseEntity.ok("Resubmission Updated Successfully");
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body("Q_STAFF Resubmission Update Failed: " + e.getMessage());
-		}
-	}
+	/*
+	 * @RequestMapping(value = "/UpdateQ_STAFF_ReSub", method = { RequestMethod.GET,
+	 * RequestMethod.POST })
+	 * 
+	 * @ResponseBody public ResponseEntity<String> updateReportReSubAll(
+	 * 
+	 * @RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date
+	 * asondate,
+	 * 
+	 * @ModelAttribute Q_STAFF_Summary_Entity1 request1,
+	 * 
+	 * @ModelAttribute Q_STAFF_Summary_Entity2 request2,
+	 * 
+	 * @ModelAttribute Q_STAFF_Summary_Entity3 request3, HttpServletRequest req) {
+	 * 
+	 * try { System.out.println("Came to Q_STAFF Resub Controller");
+	 * 
+	 * if (asondate != null) { request1.setReportDate(asondate);
+	 * request2.setReportDate(asondate); request3.setReportDate(asondate);
+	 * System.out.println("🗓 Set Report Date: " + asondate); }
+	 * 
+	 * // ✅ Call service QSTAFF_service.updateReportReSub(request1, request2,
+	 * request3);
+	 * 
+	 * return ResponseEntity.ok("Resubmission Updated Successfully");
+	 * 
+	 * } catch (Exception e) { e.printStackTrace(); return
+	 * ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	 * .body("Q_STAFF Resubmission Update Failed: " + e.getMessage()); } }
+	 */
 @Autowired
 	BRRS_Q_BRANCHNET_ReportService QBRANCHNET_service;
 
