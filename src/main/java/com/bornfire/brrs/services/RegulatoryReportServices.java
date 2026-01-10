@@ -1561,7 +1561,12 @@ public class RegulatoryReportServices {
 						dtltype,
 						pageable, Filter, type, version);
 				break;
+			case "Q_STAFF":
 
+				repdetail = BRRS_Q_STAFF_report_service.getQ_STAFFcurrentDtl(reportId, fromdate, todate, currency,
+						dtltype,
+						pageable, Filter, type, version);
+				break;
 		}
 		return repdetail;
 	}
@@ -1667,6 +1672,8 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
+
+			
 
 			case "MDISB5":
 				try {
@@ -2941,7 +2948,10 @@ public class RegulatoryReportServices {
 					dtltype, type, version);
 		}
 
-
+else if ("Q_STAFFDetail".equals(filename)) {
+			return BRRS_Q_STAFF_report_service.getQ_STAFFDetailExcel(filename, fromdate, todate, currency,
+					dtltype, type, version);
+		}
 
 		
 		else if ("BDISB1Detail".equals(filename)) {
@@ -3284,14 +3294,7 @@ public class RegulatoryReportServices {
 				System.out.println("Fetched M_INT_RATES_FCA archival data: " + intratesfcanewList.size());
 				break;
 
-			// case "Q_STAFF":
-			// try {
-			// archivalData = BRRS_Q_STAFF_reportservice.getQ_STAFFArchival();
-			// } catch (Exception e) {
-			// // TODO Auto-generated catch block
-			// e.printStackTrace();
-			// }
-
+		
 			case "M_SRWA_12B":
 				List<Object[]> srwabList = brrs_m_srwa_12b_reportservice.getM_SRWA_12BArchival();
 				archivalData.addAll(srwabList);
@@ -3610,7 +3613,7 @@ public class RegulatoryReportServices {
 			case "Q_STAFF":
 				List<Object[]> QSList = BRRS_Q_STAFF_report_service.getQ_STAFFArchival();
 				archivalData.addAll(QSList);
-				System.out.println("Fetched M_SRWA_12H archival data: " + QSList.size());
+				System.out.println("Fetched Q_STAFF archival data: " + QSList.size());
 				break;
 			case "M_IS":
 				List<Object[]> MISList = BRRS_M_IS_reportservice.getM_ISArchival();
@@ -3689,6 +3692,8 @@ public class RegulatoryReportServices {
 				archivalData.addAll(bdisb3List);
 				System.out.println("Fetched M_C archival data: " + bdisb3List.size());
 				break;
+
+			
 
 			case "M_CA7":
 				List<Object[]> CA7List = BRRS_M_CA7_reportservice.getM_CA7Archival();
@@ -4327,7 +4332,11 @@ public class RegulatoryReportServices {
 			fileData = brrs_bdisb3_reportservice.getBDISB3DetailExcel(filename, fromdate, todate, currency,
 					dtltype, type, version);
 		}
+else if ("Q_STAFFDetail".equals(filename)) {
 
+			fileData = BRRS_Q_STAFF_report_service.getQ_STAFFDetailExcel(filename, fromdate, todate, currency,
+					dtltype, type, version);
+		}
 
 
 		
