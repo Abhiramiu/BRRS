@@ -29,6 +29,6 @@ public interface BRRS_Q_STAFF_Detail_Repo extends JpaRepository<Q_STAFF_Detail_E
     		  , nativeQuery = true) 
     List<Q_STAFF_Detail_Entity> GetDataByRowIdAndColumnId(String reportLable,String reportAddlCriteria_1,Date reportdate);
 
-    List<Q_STAFF_Detail_Entity> getdatabydateList(Date parsedToDate);
+    //List<Q_STAFF_Detail_Entity> getdatabydateList(Date parsedToDate);
     		  
 }

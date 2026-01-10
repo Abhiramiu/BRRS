@@ -162,7 +162,9 @@ public class BRRS_MDISB1_ReportService {
 			} catch (ParseException e) {
 				e.printStackTrace();
 			}
+			System.out.println(T1Master);
 			mv.addObject("reportsummary", T1Master);
+			
 			mv.addObject("reportsummary1", T1Master1);
 			mv.addObject("reportsummary2", T1Master2);
 		}

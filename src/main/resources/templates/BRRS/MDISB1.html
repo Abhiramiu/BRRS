@@ -1334,10 +1334,11 @@ PURPOSE		: BRRSREPORT
 							<form action="#" method="POST" id="fileupload">
 								<div class="table-wrapper table-responsive scrollable-table-container"
 									style="border-right: 1px solid #dee2e6; ">
-									<table class="sticky-header-table table table-bordered table-cell table-sm table-condensed" id="reportss" style="border-collapse:collapse;border-spacing:0;">
-
-										<thead class="thead-light"
-											style="position: sticky; top: 0;border:-0.5px solid black; background-color: #b3b6b9; z-index: 1;">
+									<table
+																		class="sticky-header-table table table-bordered table-cell table-sm table-condensed"
+																		id="reportss">
+																		<thead class="thead-light">
+											
 											<th style="background-color: rgb(107, 122, 143);color: white;"></th>
 											<th style="background-color: rgb(107, 122, 143);color: white;"></th>
 											<th colspan="6"
@@ -1395,8 +1396,7 @@ PURPOSE		: BRRSREPORT
 										</thead>
 
 										<tbody th:each="report: ${reportsummary}" style="font-family: Arial;">
-											<tr style="background-color: black; ">
-
+											
 
 											<tr>
 												<th>0 - 100 000</th>
@@ -4209,7 +4209,7 @@ PURPOSE		: BRRSREPORT
 												<th>700 001 - 900 000</th>
 												<th th:text="${report.r87_deposit_type}"></th>
 												<td style="text-align: right;"
-													th:text="${#numbers.formatDecimal(report.r87_deposit_excluding_number ?: 0, 0, 'COMMA', 0, 'POINT')}"
+													th:text="${#numbers.formatDecimal(report.r87_deposit_excluding_number, 0, 'COMMA', 0, 'POINT')}"
 													th:attr="RowId='R87', ColumnId='C3'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 												<td style="text-align: right;"
