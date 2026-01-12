@@ -3,6 +3,7 @@ package com.bornfire.brrs.entities;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -107,9 +108,9 @@ private BigDecimal r44_res_carry_amt;
 private BigDecimal r44_non_res_carry_amt;
 
 
-	@Temporal(TemporalType.DATE)
-	@DateTimeFormat(pattern = "dd/MM/yyyy")
-	@Id
+    @Id
+    @Temporal(TemporalType.DATE)
+    @Column(name = "REPORT_DATE")
 	private Date REPORT_DATE;
 private String report_version;
 private String report_frequency;

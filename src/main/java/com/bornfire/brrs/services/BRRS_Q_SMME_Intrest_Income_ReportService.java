@@ -43,10 +43,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionSynchronizationAdapter;
+import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.servlet.ModelAndView;
-
 import com.bornfire.brrs.entities.BRRS_Q_SMME_Intrest_Income_Archival_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_Q_SMME_Intrest_Income_Archival_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_Q_SMME_Intrest_Income_Detail_Repo;
@@ -54,9 +53,7 @@ import com.bornfire.brrs.entities.Q_SMME_Intrest_Income_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.Q_SMME_Intrest_Income_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.Q_SMME_Intrest_Income_Detail_Entity;
 import com.bornfire.brrs.entities.Q_SMME_Intrest_Income_Summary_Entity;
-import com.bornfire.brrs.entities.Q_SMME_loans_Advances_Detail_Entity;
 import com.bornfire.brrs.entities.BRRS_Q_SMME_Intrest_Income_Summary_Repo;
-import com.bornfire.brrs.entities.M_SRWA_12A_Detail_Entity;
 
 
 @Component
@@ -1663,6 +1660,7 @@ public byte[] getDetailExcelARCHIVAL(String filename,
 }
 
 	
+	
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
@@ -1675,7 +1673,7 @@ public byte[] getDetailExcelARCHIVAL(String filename,
 				String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(q_smmeIi.getReportDate());
 				mv.addObject("asondate", formattedDate);
 			}
-			mv.addObject("Q-SMMEIi aData", q_smmeIi);
+			mv.addObject("Q_SMMEData", q_smmeIi);
 		}
 
 		mv.addObject("displaymode", "edit");
@@ -1686,66 +1684,78 @@ public byte[] getDetailExcelARCHIVAL(String filename,
 	public ResponseEntity<?> updateDetailEdit(HttpServletRequest request) {
 		try {
 			String acctNo = request.getParameter("acctNumber");
-			String acctBalanceInpula = request.getParameter("acctBalanceInpula");
+			String acctBalanceInpula = request.getParameter("acctBalanceInPula");
 			String acctName = request.getParameter("acctName");
-			String reportDateStr = request.getParameter("reportDate");
+			String reportDateStr = request.getParameter("reportDate"); // yyyy-MM-dd from HTML
 
 			logger.info("Received update for ACCT_NO: {}", acctNo);
 
 			Q_SMME_Intrest_Income_Detail_Entity existing = q_SMME_Detail_Repo.findByAcctnumber(acctNo);
+
 			if (existing == null) {
 				logger.warn("No record found for ACCT_NO: {}", acctNo);
-				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Record not found for update.");
+				return ResponseEntity.status(HttpStatus.NOT_FOUND)
+						.body("Record not found for update.");
 			}
 
 			boolean isChanged = false;
 
-			if (acctName != null && !acctName.isEmpty()) {
-				if (existing.getAcctName() == null || !existing.getAcctName().equals(acctName)) {
-					existing.setAcctName(acctName);
+			// Update account name
+			if (acctName != null && !acctName.isEmpty() &&
+					!acctName.equals(existing.getAcctName())) {
+
+				existing.setAcctName(acctName);
+				isChanged = true;
+				logger.info("Updated acctName → {}", acctName);
+			}
+
+			// Update Pula balance
+			if (acctBalanceInpula != null && !acctBalanceInpula.isEmpty()) {
+
+				BigDecimal newBalance = new BigDecimal(acctBalanceInpula.replace(",", ""));
+
+				if (existing.getAcctBalanceInPula() == null ||
+						existing.getAcctBalanceInPula().compareTo(newBalance) != 0) {
+
+					existing.setAcctBalanceInPula(newBalance);
 					isChanged = true;
-					logger.info("Account name updated to {}", acctName);
+					logger.info("Updated acctBalanceInPula → {}", newBalance);
 				}
 			}
 
-			 if (acctBalanceInpula != null && !acctBalanceInpula.isEmpty()) {
-		            BigDecimal newacctBalanceInpula = new BigDecimal(acctBalanceInpula);
-		            if (existing.getAcctBalanceInPula()  == null ||
-		                existing.getAcctBalanceInPula().compareTo(newacctBalanceInpula) != 0) {
-		            	 existing.setAcctBalanceInPula(newacctBalanceInpula);
-		                isChanged = true;
-		                logger.info("Balance updated to {}", newacctBalanceInpula);
-		            }
-		        }
-		        
-			if (isChanged) {
-				q_SMME_Detail_Repo.save(existing);
-				logger.info("Record updated successfully for account {}", acctNo);
-
-				// Format date for procedure
-				String formattedDate = new SimpleDateFormat("dd-MM-yyyy")
-						.format(new SimpleDateFormat("yyyy-MM-dd").parse(reportDateStr));
-
-				// Run summary procedure after commit
-				TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
-					@Override
-					public void afterCommit() {
-						try {
-							logger.info("Transaction committed — calling BRRS_Q_SMME_INTREST_INCOME_SUMMARY_PROCEDURE({})",
-									formattedDate);
-							jdbcTemplate.update("BEGIN BRRS_Q_SMME_INTREST_INCOME_SUMMARY_PROCEDURE(?); END;", formattedDate);
-							logger.info("Procedure executed successfully after commit.");
-						} catch (Exception e) {
-							logger.error("Error executing procedure after commit", e);
-						}
-					}
-				});
-
-				return ResponseEntity.ok("Record updated successfully!");
-			} else {
-				logger.info("No changes detected for ACCT_NO: {}", acctNo);
+			if (!isChanged) {
+				logger.info("No changes detected for ACCT_NO {}", acctNo);
 				return ResponseEntity.ok("No changes were made.");
 			}
+
+			// Save updated data
+			q_SMME_Detail_Repo.save(existing);
+
+			logger.info("Record updated successfully for ACCT_NO {}", acctNo);
+
+			// Format date "yyyy-MM-dd" → "dd-MM-yyyy"
+			String formattedDate = new SimpleDateFormat("dd-MM-yyyy")
+					.format(new SimpleDateFormat("yyyy-MM-dd").parse(reportDateStr));
+
+			// Register after-commit callback
+			TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+				@Override
+				public void afterCommit() {
+					try {
+						logger.info("AFTER COMMIT → Executing BRRS_Q_SMME_INTREST_INCOME_SUMMARY_PROCEDURE({})",
+								formattedDate);
+
+						jdbcTemplate.update(
+								"BEGIN BRRS_Q_SMME_INTREST_INCOME_SUMMARY_PROCEDURE(?); END;",
+								formattedDate);
+
+					} catch (Exception e) {
+						logger.error("Error executing after-commit procedure", e);
+					}
+				}
+			});
+
+			return ResponseEntity.ok("Record updated successfully!");
 
 		} catch (Exception e) {
 			logger.error("Error updating Q_SMME_Ii record", e);

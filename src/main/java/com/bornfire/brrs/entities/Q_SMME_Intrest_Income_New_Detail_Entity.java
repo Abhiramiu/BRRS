@@ -4,11 +4,10 @@ import java.math.BigDecimal;
 import java.util.Date;
 import javax.persistence.*;
 
-import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
-@Table(name = "BRRS_Q_SMME_INTREST_INCOME_DETAILTABLE")
-public class Q_SMME_Intrest_Income_Detail_Entity {
+@Table(name = "BRRS_Q_SMME_INTREST_INCOME_NEW_DETAILTABLE")
+public class Q_SMME_Intrest_Income_New_Detail_Entity {
 
     @Column(name = "CUST_ID")
     private String custId;
@@ -98,7 +97,7 @@ public class Q_SMME_Intrest_Income_Detail_Entity {
     @Column(name = "DEL_FLG")
     private String delFlg;
 
-    public Q_SMME_Intrest_Income_Detail_Entity() {
+    public Q_SMME_Intrest_Income_New_Detail_Entity() {
         super();
     }
 
