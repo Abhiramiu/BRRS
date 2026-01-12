@@ -393,8 +393,9 @@ public class RegulatoryReportServices {
 	@Autowired
 	BRRS_M_OPTR_NEW_ReportService BRRS_M_OPTR_NEW_ReportService;
 
-	@Autowired
-	BRRS_Q_STAFF_Report_Service BRRS_Q_STAFF_report_service;
+	/*
+	 * @Autowired BRRS_Q_STAFF_Report_Service BRRS_Q_STAFF_report_service;
+	 */
 
 	private static final Logger logger = LoggerFactory.getLogger(RegulatoryReportServices.class);
 
@@ -1110,10 +1111,11 @@ public class RegulatoryReportServices {
 						dtltype,
 						pageable, type, version);
 				break;
-			case "Q_STAFF":
-				repsummary = BRRS_Q_STAFF_report_service.getQ_STAFFView(reportId, fromdate, todate, currency, dtltype,
-						pageable, type, version);
-				break;
+			/*
+			 * case "Q_STAFF": repsummary =
+			 * BRRS_Q_STAFF_report_service.getQ_STAFFView(reportId, fromdate, todate,
+			 * currency, dtltype, pageable, type, version); break;
+			 */
 
 		}
 
@@ -1553,12 +1555,12 @@ public class RegulatoryReportServices {
 						pageable, Filter, type, version);
 				break;
 
-			case "Q_STAFF":
-
-				repdetail = BRRS_Q_STAFF_report_service.getQ_STAFFcurrentDtl(reportId, fromdate, todate, currency,
-						dtltype,
-						pageable, Filter, type, version);
-				break;
+			/*
+			 * case "Q_STAFF":
+			 * 
+			 * repdetail = BRRS_Q_STAFF_report_service.getQ_STAFFcurrentDtl(reportId,
+			 * fromdate, todate, currency, dtltype, pageable, Filter, type, version); break;
+			 */
 
 			case "BDISB1":
 				repdetail = brrs_bdisb1_reportservice.getBDISB1currentDtl(reportId, fromdate, todate, currency, dtltype,
@@ -2823,16 +2825,12 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
-			case "Q_STAFF":
-				try {
-					repfile = BRRS_Q_STAFF_report_service.BRRS_Q_STAFFExcel(filename, reportId, fromdate, todate,
-							currency,
-							dtltype, type, version);
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
+			/*
+			 * case "Q_STAFF": try { repfile =
+			 * BRRS_Q_STAFF_report_service.BRRS_Q_STAFFExcel(filename, reportId, fromdate,
+			 * todate, currency, dtltype, type, version); } catch (Exception e) { // TODO
+			 * Auto-generated catch block e.printStackTrace(); } break;
+			 */
 
 		}
 		return repfile;
@@ -4041,11 +4039,12 @@ public class RegulatoryReportServices {
 				System.out.println("Fetched M_OPTR_NEW archival data: " + optrnewList.size());
 				break;
 
-			case "Q_STAFF":
-				List<Object[]> QSList = BRRS_Q_STAFF_report_service.getQ_STAFFArchival();
-				archivalData.addAll(QSList);
-				System.out.println("Fetched Q_STAFF archival data: " + QSList.size());
-				break;
+			/*
+			 * case "Q_STAFF": List<Object[]> QSList =
+			 * BRRS_Q_STAFF_report_service.getQ_STAFFArchival();
+			 * archivalData.addAll(QSList);
+			 * System.out.println("Fetched Q_STAFF archival data: " + QSList.size()); break;
+			 */
 
 			default:
 				System.out.println("No archival logic defined for report: " + rptcode);
@@ -5521,16 +5520,15 @@ public class RegulatoryReportServices {
 				}
 				break;
 
-			case "Q_STAFF":
-				try {
-					List<Object[]> resubList = BRRS_Q_STAFF_report_service.getQ_STAFFResub();
-					resubmissionData.addAll(resubList);
-					System.out.println("Resubmission data fetched for M_SRWA_12H: " + resubList.size());
-				} catch (Exception e) {
-					System.err.println("Error fetching resubmission data for M_SRWA_12H: " + e.getMessage());
-					e.printStackTrace();
-				}
-				break;
+			/*
+			 * case "Q_STAFF": try { List<Object[]> resubList =
+			 * BRRS_Q_STAFF_report_service.getQ_STAFFResub();
+			 * resubmissionData.addAll(resubList);
+			 * System.out.println("Resubmission data fetched for M_SRWA_12H: " +
+			 * resubList.size()); } catch (Exception e) {
+			 * System.err.println("Error fetching resubmission data for M_SRWA_12H: " +
+			 * e.getMessage()); e.printStackTrace(); } break;
+			 */
 
 			default:
 				System.out.println("Unsupported report code: " + rptcode);
