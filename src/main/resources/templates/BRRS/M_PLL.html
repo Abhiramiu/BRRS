@@ -565,7 +565,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 						alertMsg.innerHTML = 'Report is ready! Downloaded';
 						showAlert();
 						const filename = sessionStorage.getItem("filename");
-						downloadDetailfile(jobId, filename)
+						downloadDetailfile(jobId, filename + ".xlsx")
 						sessionStorage.removeItem("jobId");
 						sessionStorage.removeItem("filename");
 
@@ -611,7 +611,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 						window.URL.revokeObjectURL(url);
 						document.body.removeChild(a);
 
-						showResultModal('BRRS', filename + '.xls downloaded successfully.');
+						showResultModal('BRRS', filename + ' downloaded successfully.');
 					} else {
 						showResultModal('Information', 'No data was available to create a download.');
 					}
