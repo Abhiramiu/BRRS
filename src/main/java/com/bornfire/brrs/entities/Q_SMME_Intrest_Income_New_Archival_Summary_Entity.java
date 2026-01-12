@@ -14,9 +14,12 @@ import javax.persistence.TemporalType;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
-@Table(name = "BRRS_Q_SMME_INTREST_INCOME_ARCHIVALTABLE_SUMMARY")
-public class Q_SMME_Intrest_Income_Archival_Summary_Entity {
+@Table(name = "BRRS_Q_SMME_INTREST_INCOME_NEW_ARCHIVALTABLE_SUMMARY")
+public class Q_SMME_Intrest_Income_New_Archival_Summary_Entity {
 
+    private String r14_caoin;
+    private BigDecimal r14_res_carry_amt;
+    private BigDecimal r14_non_res_carry_amt;
     private String r15_caoin;
     private BigDecimal r15_res_carry_amt;
     private BigDecimal r15_non_res_carry_amt;
@@ -95,18 +98,6 @@ public class Q_SMME_Intrest_Income_Archival_Summary_Entity {
     private String r40_caoin;
     private BigDecimal r40_res_carry_amt;
     private BigDecimal r40_non_res_carry_amt;
-    private String r41_caoin;
-    private BigDecimal r41_res_carry_amt;
-    private BigDecimal r41_non_res_carry_amt;
-    private String r42_caoin;
-    private BigDecimal r42_res_carry_amt;
-    private BigDecimal r42_non_res_carry_amt;
-    private String r43_caoin;
-    private BigDecimal r43_res_carry_amt;
-    private BigDecimal r43_non_res_carry_amt;
-    private String r44_caoin;
-    private BigDecimal r44_res_carry_amt;
-    private BigDecimal r44_non_res_carry_amt;
 
     @Id
     @Temporal(TemporalType.DATE)
@@ -120,8 +111,40 @@ public class Q_SMME_Intrest_Income_Archival_Summary_Entity {
     private String modify_flg;
     private String del_flg;
 
-    public Q_SMME_Intrest_Income_Archival_Summary_Entity() {
+    public Q_SMME_Intrest_Income_New_Archival_Summary_Entity() {
         super();
+    }
+
+    public String getR14_caoin() {
+        return r14_caoin;
+    }
+
+    public void setR14_caoin(String r14_caoin) {
+        this.r14_caoin = r14_caoin;
+    }
+
+    public BigDecimal getR14_res_carry_amt() {
+        return r14_res_carry_amt;
+    }
+
+    public void setR14_res_carry_amt(BigDecimal r14_res_carry_amt) {
+        this.r14_res_carry_amt = r14_res_carry_amt;
+    }
+
+    public BigDecimal getR14_non_res_carry_amt() {
+        return r14_non_res_carry_amt;
+    }
+
+    public void setR14_non_res_carry_amt(BigDecimal r14_non_res_carry_amt) {
+        this.r14_non_res_carry_amt = r14_non_res_carry_amt;
+    }
+
+    public Date getREPORT_DATE() {
+        return REPORT_DATE;
+    }
+
+    public void setREPORT_DATE(Date rEPORT_DATE) {
+        REPORT_DATE = rEPORT_DATE;
     }
 
     public String getR15_caoin() {
@@ -746,102 +769,6 @@ public class Q_SMME_Intrest_Income_Archival_Summary_Entity {
 
     public void setR40_non_res_carry_amt(BigDecimal r40_non_res_carry_amt) {
         this.r40_non_res_carry_amt = r40_non_res_carry_amt;
-    }
-
-    public String getR41_caoin() {
-        return r41_caoin;
-    }
-
-    public void setR41_caoin(String r41_caoin) {
-        this.r41_caoin = r41_caoin;
-    }
-
-    public BigDecimal getR41_res_carry_amt() {
-        return r41_res_carry_amt;
-    }
-
-    public void setR41_res_carry_amt(BigDecimal r41_res_carry_amt) {
-        this.r41_res_carry_amt = r41_res_carry_amt;
-    }
-
-    public BigDecimal getR41_non_res_carry_amt() {
-        return r41_non_res_carry_amt;
-    }
-
-    public void setR41_non_res_carry_amt(BigDecimal r41_non_res_carry_amt) {
-        this.r41_non_res_carry_amt = r41_non_res_carry_amt;
-    }
-
-    public String getR42_caoin() {
-        return r42_caoin;
-    }
-
-    public void setR42_caoin(String r42_caoin) {
-        this.r42_caoin = r42_caoin;
-    }
-
-    public BigDecimal getR42_res_carry_amt() {
-        return r42_res_carry_amt;
-    }
-
-    public void setR42_res_carry_amt(BigDecimal r42_res_carry_amt) {
-        this.r42_res_carry_amt = r42_res_carry_amt;
-    }
-
-    public BigDecimal getR42_non_res_carry_amt() {
-        return r42_non_res_carry_amt;
-    }
-
-    public void setR42_non_res_carry_amt(BigDecimal r42_non_res_carry_amt) {
-        this.r42_non_res_carry_amt = r42_non_res_carry_amt;
-    }
-
-    public String getR43_caoin() {
-        return r43_caoin;
-    }
-
-    public void setR43_caoin(String r43_caoin) {
-        this.r43_caoin = r43_caoin;
-    }
-
-    public BigDecimal getR43_res_carry_amt() {
-        return r43_res_carry_amt;
-    }
-
-    public void setR43_res_carry_amt(BigDecimal r43_res_carry_amt) {
-        this.r43_res_carry_amt = r43_res_carry_amt;
-    }
-
-    public BigDecimal getR43_non_res_carry_amt() {
-        return r43_non_res_carry_amt;
-    }
-
-    public void setR43_non_res_carry_amt(BigDecimal r43_non_res_carry_amt) {
-        this.r43_non_res_carry_amt = r43_non_res_carry_amt;
-    }
-
-    public String getR44_caoin() {
-        return r44_caoin;
-    }
-
-    public void setR44_caoin(String r44_caoin) {
-        this.r44_caoin = r44_caoin;
-    }
-
-    public BigDecimal getR44_res_carry_amt() {
-        return r44_res_carry_amt;
-    }
-
-    public void setR44_res_carry_amt(BigDecimal r44_res_carry_amt) {
-        this.r44_res_carry_amt = r44_res_carry_amt;
-    }
-
-    public BigDecimal getR44_non_res_carry_amt() {
-        return r44_non_res_carry_amt;
-    }
-
-    public void setR44_non_res_carry_amt(BigDecimal r44_non_res_carry_amt) {
-        this.r44_non_res_carry_amt = r44_non_res_carry_amt;
     }
 
     public Date getReport_date() {

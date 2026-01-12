@@ -6,6 +6,7 @@ CREATED ON	: 30.08.2025
 PURPOSE		: BRRSREPORT
 -->
 
+
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 
 <head>
@@ -234,86 +235,7 @@ PURPOSE		: BRRSREPORT
         /* Normal label color
       } */
 	</style>
- <style>
-        /* Red border for invalid inputs */
-        input.error,
-        select.error {
-            border: 2px solid red !important;
-        }
 
-        /* Error message style */
-        label.error {
-            color: red;
-            font-size: 0.85em;
-            margin-top: 5px;
-            display: block;
-        }
-
-        .underline {
-            text-decoration: underline;
-            color: #08a6f1;
-            cursor: pointer;
-        }
-
-        .left-arrow-circle {
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            background-color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 10px;
-            transition: background-color 0.3s, transform 0.2s;
-        }
-
-        .left-arrow-circle i {
-            color: rgb(107, 122, 143);
-        }
-
-        .left-arrow-circle:hover {
-            background-color: rgb(107, 122, 143);
-            cursor: pointer;
-            transform: scale(1.05);
-            border: 2px solid white;
-        }
-
-        .left-arrow-circle:hover i {
-            color: white;
-        }
-
-        .white-text span {
-            color: white !important;
-        }
-
-        .table-cell tbody td:hover {
-            background-color: #f0f0f0;
-            /* Hover color for cell */
-            cursor: pointer;
-            /* Optional: pointer cursor */
-        }
-
-        .table-bordered td,
-        .table-bordered th {
-            border: 1px solid #000 !important;
-        }
-
-        .table-bordereds td,
-        .table-bordereds th {
-            border: 1px solid #dfe0e3;
-        }
-
-        .left {
-            text-align: right;
-        }
-
-        #color {
-            background-color: rgb(107, 122, 143);
-            color: white;
-
-            font-weight: bold;
-        }
-    </style>
 	<style>
 		/* Red border for invalid inputs */
 		input.error,
@@ -376,6 +298,86 @@ PURPOSE		: BRRSREPORT
 		.table-bordered td,
 		.table-bordered th {
 			border: 1px solid #000 !important;
+		}
+	</style>
+	<style>
+		/* Red border for invalid inputs */
+		input.error,
+		select.error {
+			border: 2px solid red !important;
+		}
+
+		/* Error message style */
+		label.error {
+			color: red;
+			font-size: 0.85em;
+			margin-top: 5px;
+			display: block;
+		}
+
+		.underline {
+			text-decoration: underline;
+			color: #08a6f1;
+			cursor: pointer;
+		}
+
+		.left-arrow-circle {
+			width: 35px;
+			height: 35px;
+			border-radius: 50%;
+			background-color: white;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			margin-right: 10px;
+			transition: background-color 0.3s, transform 0.2s;
+		}
+
+		.left-arrow-circle i {
+			color: rgb(107, 122, 143);
+		}
+
+		.left-arrow-circle:hover {
+			background-color: rgb(107, 122, 143);
+			cursor: pointer;
+			transform: scale(1.05);
+			border: 2px solid white;
+		}
+
+		.left-arrow-circle:hover i {
+			color: white;
+		}
+
+		.white-text span {
+			color: white !important;
+		}
+
+		.table-cell tbody td:hover {
+			background-color: #f0f0f0;
+			/* Hover color for cell */
+			cursor: pointer;
+			/* Optional: pointer cursor */
+		}
+
+		.table-bordered td,
+		.table-bordered th {
+			border: 1px solid #000 !important;
+		}
+
+		.table-bordereds td,
+		.table-bordereds th {
+			border: 1px solid #dfe0e3;
+		}
+
+		.left {
+			text-align: right;
+		}
+
+		#color {
+			background-color: rgb(107, 122, 143);
+			color: white;
+
+			font-weight: bold;
 		}
 	</style>
 	<style>
@@ -445,8 +447,8 @@ PURPOSE		: BRRSREPORT
 		}
 	</script>
 	<script>
-		function submitQ_SMMELAUpdate() {
-			const formData = $('#QSMMELADetailForm').serialize(); // Ensure correct form ID
+		function submitQ_SMMEUpdate() {
+			const formData = $('#QSMMEDetailForm').serialize(); // Ensure correct form ID
 
 			// ✅ Store the previous page URL
 			const previousUrl = document.referrer; // same as going back once in history
@@ -562,35 +564,38 @@ PURPOSE		: BRRSREPORT
 		}
 
 		//to fetch summary from the database - called from the summary button
-		function showdetails() {
+		// function showdetails() {
 
-			var Callurl;
-			$('#loader').modal('show');
-			Callurl = /*[[@{'/Reports/'+${reportid}+'/Details'(asondate=${asondate},fromdate=${fromdate},todate=${todate},currency=${currency},dtltype=${dtltype},type=${type},version=${version})}]]*/
-				location.href = Callurl;
-			console.log(Callurl);
-			/*  $.ajax({
-				 type: 'get',
-				 url: Callurl,
-				 beforeSend: function () {
-					 $('#loader').modal('show'); // 🔄 Show loader
-				 },
-				 success: function (data) {
-					 $('.content').html(data);
-					 //$("#detailsbtn").addClass("active");
-					 //tablepagination();
-				 },
-				 complete: function () {
-					 $('#loader').modal('hide');
-				 },
-				 error: function () {
-					   $('#loader').modal('hide');
-					 alert("Something went wrongss. Please try again.");
+		// 	var Callurl;
+		// 	$('#loader').modal('show');
+		// 	Callurl = /*[[@{'/Reports/'+${reportid}+'/Details'(asondate=${asondate},fromdate=${fromdate},todate=${todate},currency=${currency},dtltype=${dtltype},type=${type},version=${version})}]]*/
+		// 		location.href = Callurl;
+		// 	console.log(Callurl);
+		// 	/*  $.ajax({
+		// 		 type: 'get',
+		// 		 url: Callurl,
+		// 		 beforeSend: function () {
+		// 			 $('#loader').modal('show'); // 🔄 Show loader
+		// 		 },
+		// 		 success: function (data) {
+		// 			 $('.content').html(data);
+		// 			 //$("#detailsbtn").addClass("active");
+		// 			 //tablepagination();
+		// 		 },
+		// 		 complete: function () {
+		// 			 $('#loader').modal('hide');
+		// 		 },
+		// 		 error: function () {
+		// 			   $('#loader').modal('hide');
+		// 			 alert("Something went wrongss. Please try again.");
 
-				 }
-			 }); */
-		}
-
+		// 		 }
+		// 	 }); */
+		// }
+   function showdetails() {
+            isDetailsModal = true; // mark that this modal is from Details
+            showResultModal('BRRS', 'Details page not available for Q_SMME Interest Income.');
+        }
 		function showsummary() {
 			var loader = new bootstrap.Modal(document.getElementById('loader'), { backdrop: 'static', keyboard: false });
 			loader.show();
@@ -937,59 +942,93 @@ PURPOSE		: BRRSREPORT
 	</script>
 </head>
 
-<title>BRRS</title>
+<title>Q SMME INTEREST</title>
 
 <body>
-	<div class="container-fluid" style="padding-left:0px; padding-right:0px;">
+	<div class="container-fluid" style="padding-left: 0px; padding-right: 0px">
 		<div class="row">
-
 			<div th:insert="HeaderMenu :: header"></div>
 
 			<div class="card">
-				<div class="card-header row" style="background-color: rgb(107, 122, 143) ; ">
-					<div style="display: flex;align-items: center;width: fit-content;" onclick="back();">
+				<div class="card-header" style="
+              background-color: rgb(107, 122, 143);
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+            ">
+					<div style="display: flex; align-items: center" onclick="back();">
 						<!-- ⬅️ Left circular arrow -->
 						<div class="left-arrow-circle">
 							<i class="fa fa-arrow-left"></i>
 						</div>
+
 						<!-- Title -->
 						<h5
-							style="font-family: arial; font-size: 20px; padding-top:10px; font-weight: bold; color: white;">
-							(4) QUARTERLY SCHEDULE: Q-SMME LOANS: SMME LOANS AND ADVANCES </h5>
+							style="font-family: arial; font-size: 20px; font-weight: bold; color: white; margin: 0 10px;">
+							QUARTERLY SCHEDULE : Q-SMME INT : SMME INTEREST INCOME
+						</h5>
+
+						<!-- Moving bus-board text -->
+						<div class="boards">
+							<p class="scrolling-text">BANK OF BOTSWANA - BANKING SUPERVISION DEPARTMENT </p>
+						</div>
 					</div>
-					<div class="custom-tab-btn-group nav-buttons" style="width: fit-content;margin-left:auto;">
-						<input type="hidden" id="selectedTab" th:value="${displaymode}">
+
+					<div class="custom-tab-btn-group nav-buttons"
+						style="display: flex; color: white; align-items: center">
+						<!-- 📅 Date -->
 						<span class="white-text"
 							style="color: white !important; font-size: 16px; margin-right: 20px;">Report Date: <span
 								th:text="${#strings.replace(asondate, '/', '-')}">2025-07-04</span>
 						</span>
-						<span th:text="${report_date}" style="color: white !important;"></span>
-						<button type="button" class="custom-tab-btn" th:if="${displaymode == 'Details'}"
-							id="custom-tab-btnSummary" onclick="showsummary();">Summary</button>
-						<button type="button" class="custom-tab-btn" th:if="${displaymode == 'summary'}"
-							id="custom-tab-btnDetails" onclick="showdetails();">Details</button>
-						<!--                    <button type="button" class="custom-tab-btn" id="custom-tab-btnAdd" onclick="downloadfile(this);" data-asondate="30/06/2025" data-fromdate="01/01/2025" data-todate="30/06/2025" data-dtltype="report" data-filename="M_SRWA_12h.xls" data-type="RBS"><i class="fa fa-download"></i></button>-->
+
+						<!-- Buttons -->
+						<input type="hidden" id="selectedTab" th:value="${displaymode}" />
+						<button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showsummary();"
+							th:if="${displaymode == 'Details'}">
+							Summary
+						</button>
+						<!-- <button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails();"
+							th:if="${displaymode == 'summary'}">
+							Details
+						</button> -->
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'summary'}" th:attr="data-reportid=${reportid},
-                    				 data-asondate=${asondate},
-                    				 data-fromdate=${fromdate},
-                     				 data-todate=${todate},
-                     				 data-currency=${currency},
-                     				 data-dtltype=${dtltype},
-                     				 data-filename='Q_SMME_LOANS.xlsx',
+							th:if="${displaymode == 'summary'}" th:attr="data-reportid=${reportid}, 
+                    				 data-asondate=${asondate}, 
+                    				 data-fromdate=${fromdate}, 
+                     				 data-todate=${todate}, 
+                     				 data-currency=${currency},  
+                     				 data-dtltype=${dtltype}, 
+                     				 data-filename='Q_SMME_INT_NEW.xlsx',
 					 				 data-type=${type},
-					    			 data-version=${version}" onclick="downloadfile(this);"><i class="fa fa-download"></i></button>
-						<button th:if="${displaymode == 'Details'}" type="button" class="custom-tab-btn"
-							onclick="startReport(this);" th:attr="
+					    			 data-version=${version}" onclick="downloadfile(this);">
+							<i class="fa fa-download"></i>
+						</button>
+						<!-- <button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
+							th:if="${displaymode == 'Details'}" onclick="startReport(this);" th:attr="
 						    data-fromdate=${fromdate},
 						    data-todate=${todate},
-                            data-type=${type},
-                            data-version=${version},
-						    data-filename='Q_SMME_LA',
-						  "><i class="fa fa-download"></i></button>
+						    data-filename='Q_SMMEDetail',
+                data-type=${type},
+		            data-version=${version}">
+							<i class="fa fa-download"></i>
+						</button> -->
+						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
+							th:if="${displaymode == 'Details'}" th:attr="
+        data-reportid=${reportid}, 
+        data-asondate=${asondate}, 
+        data-fromdate=${fromdate}, 
+        data-todate=${todate}, 
+        data-currency=${currency},  
+        data-dtltype=${dtltype}, 
+        data-filename='Q_SMMEDetail',
+        data-type=${type},
+        data-version=${version}" onclick="startReport(this)">
+							<i class="fa fa-download"></i>
+						</button>
+
 					</div>
 				</div>
-
 
 				<div th:if="${displaymode == 'summary'}">
 					<div class="row">
@@ -1000,355 +1039,313 @@ PURPOSE		: BRRSREPORT
 									<thead class="thead-light">
 										<tr style="background-color:  #D8D8D8">
 											<th rowspan="2" style="width: 40%;background-color: #D8D8D8">
-												CATEGORY ANALYSIS OF ADVANCES
+												CATEGORY ANALYSIS OF INTEREST INCOME
 											</th>
 											<th colspan="2" style="text-align:center;background-color:  #D8D8D8">
-												BALANCE OUTSTANDING</th>
+												CARRYING AMOUNT (VALUE)</th>
 										</tr>
 										<th style="text-align: right;background-color: #D8D8D8">Resident</th>
 										<th style="text-align: right;background-color: #D8D8D8">Non-resident</th>
 										</tr>
 									</thead>
-									<tbody th:each="report: ${reportsummary}" style="font-family: Arial;">
-										<tr style="background-color: #b3b6b9">
-											<td th:text="${report.r15Caoa}"></td>
-											<td style="text-align: right;background-color: rgb(107, 122, 143);color: white;font-weight: bold;"
-												th:text="${#numbers.formatDecimal(report.r15ResAmt, 0, 'COMMA', 0, 'POINT')}">
-											</td>
-											<td style="text-align: right;background-color: rgb(107, 122, 143);color: white;font-weight: bold;"
-												th:text="${#numbers.formatDecimal(report.r15NonResAmt, 0, 'COMMA', 0, 'POINT')}">
+
+									<tbody style="font-family: Arial" th:each="reportsummary: ${reportsummary}">
+										<tr>
+											<td th:text="${reportsummary.r14_caoin}"></td>
+											<td th:text="${reportsummary.r14_res_carry_amt != null  ? #numbers.formatDecimal(reportsummary.r14_res_carry_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+												style="text-align: right;background-color: rgb(107, 122, 143);color: white;"
+												th:attr="RowId='R14', ColumnId='C2'"></td>
+											<td th:text="${reportsummary.r14_non_res_carry_amt != null ? #numbers.formatDecimal(reportsummary.r14_non_res_carry_amt, 1, 'COMMA', 0, 'POINT')  : '0'}"
+												style="text-align: right;background-color: rgb(107, 122, 143);color: white;"
+												th:attr="RowId='R14', ColumnId='C3'"></td>
+										</tr>
+                                        <tr>
+											<td th:text="${reportsummary.R15_caoin}" style="padding-left: 50px"></td>
+
+											<td th:text="${reportsummary.R15_res_carry_amt != null 
+                ? #numbers.formatDecimal(reportsummary.R15_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
+                : '0'}" style="text-align: right" th:attr="RowId='R15', ColumnId='C2'"
+												 >
 											</td>
 
-										</tr>
-										<tr style="background-color: #b3b6b9">
-											<td style="padding-left: 50px;" th:text="${report.r16Caoa}"></td>
-											<td style="text-align: right" th:attr="RowId='R16', ColumnId='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${#numbers.formatDecimal(report.r16ResAmt, 0, 'COMMA', 0, 'POINT')}">
-											</td>
-											<td style="text-align: right" th:attr="RowId='R16', ColumnId='C3'"
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${#numbers.formatDecimal(report.r16NonResAmt, 0, 'COMMA', 0, 'POINT')}">
+											<td th:text="${reportsummary.r15_non_res_carry_amt != null 
+                ? #numbers.formatDecimal(reportsummary.r15_non_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
+                : '0'}" style="text-align: right" th:attr="RowId='R15', ColumnId='C3'"
+												 >
 											</td>
 										</tr>
-										<tr style="background-color: #b3b6b9">
-											<td style="padding-left: 50px;" th:text="${report.r17Caoa}"></td>
-											<td style="text-align: right" th:attr="RowId='R17', ColumnId='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${#numbers.formatDecimal(report.r17ResAmt, 0, 'COMMA', 0, 'POINT')}">
+										<tr>
+											<td th:text="${reportsummary.R16_caoin}" style="padding-left: 50px"></td>
+
+											<td th:text="${reportsummary.R16_res_carry_amt != null 
+                ? #numbers.formatDecimal(reportsummary.R16_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
+                : '0'}" style="text-align: right" th:attr="RowId='R16', ColumnId='C2'"
+												 >
 											</td>
-											<td style="text-align: right" th:attr="RowId='R17', ColumnId='C3'"
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${#numbers.formatDecimal(report.r17NonResAmt, 0, 'COMMA', 0, 'POINT')}">
-											</td>
-										</tr>
-										<tr style="background-color: #b3b6b9">
-											<td style="padding-left: 50px;" th:text="${report.r18Caoa}"></td>
-											<td style="text-align: right" th:attr="RowId='R18', ColumnId='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${#numbers.formatDecimal(report.r18ResAmt, 0, 'COMMA', 0, 'POINT')}">
-											</td>
-											<td style="text-align: right" th:attr="RowId='R18', ColumnId='C3'"
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${#numbers.formatDecimal(report.r18NonResAmt, 0, 'COMMA', 0, 'POINT')}">
-											</td>
-										</tr>
-										<tr style="background-color: #b3b6b9">
-											<td style="padding-left: 50px;" th:text="${report.r19Caoa}"></td>
-											<td style="text-align: right" th:attr="RowId='R19', ColumnId='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${#numbers.formatDecimal(report.r19ResAmt, 0, 'COMMA', 0, 'POINT')}">
-											</td>
-											<td style="text-align: right" th:attr="RowId='R19', ColumnId='C3'"
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${#numbers.formatDecimal(report.r19NonResAmt, 0, 'COMMA', 0, 'POINT')}">
-											</td>
-										</tr>
-										<tr style="background-color: #b3b6b9">
-											<td style="padding-left: 50px;" th:text="${report.r20Caoa}"></td>
-											<td style="text-align: right" th:attr="RowId='R20', ColumnId='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${#numbers.formatDecimal(report.r20ResAmt, 0, 'COMMA', 0, 'POINT')}">
-											</td>
-											<td style="text-align: right" th:attr="RowId='R20', ColumnId='C3'"
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${#numbers.formatDecimal(report.r20NonResAmt, 0, 'COMMA', 0, 'POINT')}">
-											</td>
-										</tr>
-										<tr style="background-color: #b3b6b9">
-											<td style="padding-left: 50px;" th:text="${report.r21Caoa}"></td>
-											<td style="text-align: right" th:attr="RowId='R21', ColumnId='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${#numbers.formatDecimal(report.r21ResAmt, 0, 'COMMA', 0, 'POINT')}">
-											</td>
-											<td style="text-align: right" th:attr="RowId='R21', ColumnId='C3'"
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${#numbers.formatDecimal(report.r21NonResAmt, 0, 'COMMA', 0, 'POINT')}">
-											</td>
-										</tr>
-										<tr style="background-color: #b3b6b9">
-											<td style="padding-left: 50px;" th:text="${report.r22Caoa}"></td>
-											<td style="text-align: right" th:attr="RowId='R22', ColumnId='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${#numbers.formatDecimal(report.r22ResAmt, 0, 'COMMA', 0, 'POINT')}">
-											</td>
-											<td style="text-align: right" th:attr="RowId='R22', ColumnId='C3'"
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${#numbers.formatDecimal(report.r22NonResAmt, 0, 'COMMA', 0, 'POINT')}">
-											</td>
-										</tr>
-										<tr style="background-color: #b3b6b9">
-											<td style="padding-left: 50px;" th:text="${report.r23Caoa}"></td>
-											<td style="text-align: right" th:attr="RowId='23', ColumnId='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${#numbers.formatDecimal(report.r23ResAmt, 0, 'COMMA', 0, 'POINT')}">
-											</td>
-											<td style="text-align: right" th:attr="RowId='23', ColumnId='C3'"
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${#numbers.formatDecimal(report.r23NonResAmt, 0, 'COMMA', 0, 'POINT')}">
-											</td>
-										</tr>
-										<tr style="background-color: #b3b6b9">
-											<td style="padding-left: 50px;" th:text="${report.r24Caoa}"></td>
-											<td style="text-align: right" th:attr="RowId='R24', ColumnId='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${#numbers.formatDecimal(report.r24ResAmt, 0, 'COMMA', 0, 'POINT')}">
-											</td>
-											<td style="text-align: right" th:attr="RowId='R24', ColumnId='C3'"
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${#numbers.formatDecimal(report.r24NonResAmt, 0, 'COMMA', 0, 'POINT')}">
-											</td>
-										</tr>
-										<tr style="background-color: #b3b6b9">
-											<td style="padding-left: 50px;" th:text="${report.r25Caoa}"></td>
-											<td style="text-align: right" th:attr="RowId='R25', ColumnId='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${#numbers.formatDecimal(report.r25ResAmt, 0, 'COMMA', 0, 'POINT')}">
-											</td>
-											<td style="text-align: right" th:attr="RowId='R25', ColumnId='C3'"
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${#numbers.formatDecimal(report.r25NonResAmt, 0, 'COMMA', 0, 'POINT')}">
-											</td>
-										</tr>
-										<tr style="background-color: #b3b6b9">
-											<td style="padding-left: 50px;" th:text="${report.r26Caoa}"></td>
-											<td style="text-align: right" th:attr="RowId='R26', ColumnId='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${#numbers.formatDecimal(report.r26ResAmt, 0, 'COMMA', 0, 'POINT')}">
-											</td>
-											<td style="text-align: right" th:attr="RowId='R26', ColumnId='C3'"
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${#numbers.formatDecimal(report.r26NonResAmt, 0, 'COMMA', 0, 'POINT')}">
-											</td>
-										</tr>
-										<tr style="background-color: #b3b6b9">
-											<td style="padding-left: 50px;" th:text="${report.r27Caoa}"></td>
-											<td style="text-align: right" th:attr="RowId='R27', ColumnId='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${#numbers.formatDecimal(report.r27ResAmt, 0, 'COMMA', 0, 'POINT')}">
-											</td>
-											<td style="text-align: right" th:attr="RowId='R27', ColumnId='C3'"
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${#numbers.formatDecimal(report.r27NonResAmt, 0, 'COMMA', 0, 'POINT')}">
-											</td>
-										</tr>
-										<tr style="background-color: #b3b6b9">
-											<td style="padding-left: 50px;" th:text="${report.r28Caoa}"></td>
-											<td style="text-align: right" th:attr="RowId='R28', ColumnId='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${#numbers.formatDecimal(report.r28ResAmt, 0, 'COMMA', 0, 'POINT')}">
-											</td>
-											<td style="text-align: right" th:attr="RowId='R28', ColumnId='C3'"
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${#numbers.formatDecimal(report.r28NonResAmt, 0, 'COMMA', 0, 'POINT')}">
-											</td>
-										</tr>
-										<tr style="background-color: #b3b6b9">
-											<td th:text="${report.r29Caoa}"></td>
-											<td style="text-align: right;background-color: rgb(107, 122, 143);color: white;font-weight: bold;"
-												th:text="${#numbers.formatDecimal(report.r29ResAmt, 0, 'COMMA', 0, 'POINT')}">
-											</td>
-											<td style="text-align: right;background-color: rgb(107, 122, 143);color: white;font-weight: bold;"
-												th:text="${#numbers.formatDecimal(report.r29NonResAmt, 0, 'COMMA', 0, 'POINT')}">
-											</td>
-										</tr>
-										<tr style="background-color: #b3b6b9">
-											<td style="padding-left: 50px;" th:text="${report.r30Caoa}"></td>
-											<td style="text-align: right" th:attr="RowId='R30', ColumnId='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${#numbers.formatDecimal(report.r30ResAmt, 0, 'COMMA', 0, 'POINT')}">
-											</td>
-											<td style="text-align: right" th:attr="RowId='R30', ColumnId='C3'"
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${#numbers.formatDecimal(report.r30NonResAmt, 0, 'COMMA', 0, 'POINT')}">
-											</td>
-										</tr>
-										<tr style="background-color: #b3b6b9">
-											<td style="padding-left: 50px;" th:text="${report.r31Caoa}"></td>
-											<td style="text-align: right" th:attr="RowId='R31', ColumnId='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${#numbers.formatDecimal(report.r31ResAmt, 0, 'COMMA', 0, 'POINT')}">
-											</td>
-											<td style="text-align: right" th:attr="RowId='R31', ColumnId='C3'"
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${#numbers.formatDecimal(report.r31NonResAmt, 0, 'COMMA', 0, 'POINT')}">
-											</td>
-										</tr>
-										<tr style="background-color: #b3b6b9">
-											<td style="padding-left: 50px;" th:text="${report.r32Caoa}"></td>
-											<td style="text-align: right" th:attr="RowId='R32', ColumnId='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${#numbers.formatDecimal(report.r32ResAmt, 0, 'COMMA', 0, 'POINT')}">
-											</td>
-											<td style="text-align: right" th:attr="RowId='R32', ColumnId='C3'"
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${#numbers.formatDecimal(report.r32NonResAmt, 0, 'COMMA', 0, 'POINT')}">
-											</td>
-										</tr>
-										<tr style="background-color: #b3b6b9">
-											<td style="padding-left: 50px;" th:text="${report.r33Caoa}"></td>
-											<td style="text-align: right;background-color: rgb(107, 122, 143);color: white;font-weight: bold;"
-												th:text="${#numbers.formatDecimal(report.r33ResAmt, 0, 'COMMA', 0, 'POINT')}">
-											</td>
-											<td style="text-align: right;background-color: rgb(107, 122, 143);color: white;font-weight: bold;"
-												th:text="${#numbers.formatDecimal(report.r33NonResAmt, 0, 'COMMA', 0, 'POINT')}">
-											</td>
-										</tr>
-										<tr style="background-color: #b3b6b9">
-											<td style="padding-left: 100px;" th:text="${report.r34Caoa}"></td>
-											<td style="text-align: right" th:attr="RowId='R34', ColumnId='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${#numbers.formatDecimal(report.r34ResAmt, 0, 'COMMA', 0, 'POINT')}">
-											</td>
-											<td style="text-align: right" th:attr="RowId='R34', ColumnId='C3'"
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${#numbers.formatDecimal(report.r34NonResAmt, 0, 'COMMA', 0, 'POINT')}">
-											</td>
-										</tr>
-										<tr style="background-color: #b3b6b9">
-											<td style="padding-left: 100px;" th:text="${report.r35Caoa}"></td>
-											<td style="text-align: right" th:attr="RowId='R35', ColumnId='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${#numbers.formatDecimal(report.r35ResAmt, 0, 'COMMA', 0, 'POINT')}">
-											</td>
-											<td style="text-align: right" th:attr="RowId='R35', ColumnId='C3'"
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${#numbers.formatDecimal(report.r35NonResAmt, 0, 'COMMA', 0, 'POINT')}">
-											</td>
-										</tr>
-										<tr style="background-color: #b3b6b9">
-											<td style="padding-left: 100px;" th:text="${report.r36Caoa}"></td>
-											<td style="text-align: right" th:attr="RowId='R36', ColumnId='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${#numbers.formatDecimal(report.r36ResAmt, 0, 'COMMA', 0, 'POINT')}">
-											</td>
-											<td style="text-align: right" th:attr="RowId='R36', ColumnId='C3'"
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${#numbers.formatDecimal(report.r36NonResAmt, 0, 'COMMA', 0, 'POINT')}">
-											</td>
-										</tr>
-										<tr style="background-color: #b3b6b9">
-											<td style="padding-left: 50px;" th:text="${report.r37Caoa}"></td>
-											<td style="text-align: right;background-color: rgb(107, 122, 143);color: white;font-weight: bold;"
-												th:text="${#numbers.formatDecimal(report.r37ResAmt, 0, 'COMMA', 0, 'POINT')}">
-											</td>
-											<td style="text-align: right;background-color: rgb(107, 122, 143);color: white;font-weight: bold;"
-												th:text="${#numbers.formatDecimal(report.r37NonResAmt, 0, 'COMMA', 0, 'POINT')}">
-											</td>
-										</tr>
-										<tr style="background-color: #b3b6b9">
-											<td style="padding-left: 100px;" th:text="${report.r38Caoa}"></td>
-											<td style="text-align: right" th:attr="RowId='38', ColumnId='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${#numbers.formatDecimal(report.r38ResAmt, 0, 'COMMA', 0, 'POINT')}">
-											</td>
-											<td style="text-align: right" th:attr="RowId='38', ColumnId='C3'"
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${#numbers.formatDecimal(report.r38NonResAmt, 0, 'COMMA', 0, 'POINT')}">
-											</td>
-										</tr>
-										<tr style="background-color: #b3b6b9">
-											<td style="padding-left: 100px;" th:text="${report.r39Caoa}"></td>
-											<td style="text-align: right" th:attr="RowId='R39', ColumnId='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${#numbers.formatDecimal(report.r39ResAmt, 0, 'COMMA', 0, 'POINT')}">
-											</td>
-											<td style="text-align: right" th:attr="RowId='R39', ColumnId='C3'"
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${#numbers.formatDecimal(report.r39NonResAmt, 0, 'COMMA', 0, 'POINT')}">
-											</td>
-										</tr>
-										<tr style="background-color: #b3b6b9">
-											<td style="padding-left: 100px;" th:text="${report.r40Caoa}"></td>
-											<td style="text-align: right" th:attr="RowId='R40', ColumnId='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${#numbers.formatDecimal(report.r40ResAmt, 0, 'COMMA', 0, 'POINT')}">
-											</td>
-											<td style="text-align: right" th:attr="RowId='R40', ColumnId='C3'"
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${#numbers.formatDecimal(report.r40NonResAmt, 0, 'COMMA', 0, 'POINT')}">
-											</td>
-										</tr>
-										<tr style="background-color: #b3b6b9">
-											<td style="padding-left: 100px;" th:text="${report.r41Caoa}"></td>
-											<td style="text-align: right" th:attr="RowId='R41', ColumnId='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${#numbers.formatDecimal(report.r41ResAmt, 0, 'COMMA', 0, 'POINT')}">
-											</td>
-											<td style="text-align: right" th:attr="RowId='R41', ColumnId='C3'"
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${#numbers.formatDecimal(report.r41NonResAmt, 0, 'COMMA', 0, 'POINT')}">
-											</td>
-										</tr>
-										<tr style="background-color: #b3b6b9">
-											<td style="padding-left: 100px;" th:text="${report.r42Caoa}"></td>
-											<td style="text-align: right" th:attr="RowId='R42', ColumnId='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${#numbers.formatDecimal(report.r42ResAmt, 0, 'COMMA', 0, 'POINT')}">
-											</td>
-											<td style="text-align: right" th:attr="RowId='R42', ColumnId='C3'"
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${#numbers.formatDecimal(report.r42NonResAmt, 0, 'COMMA', 0, 'POINT')}">
-											</td>
-										</tr>
-										<tr style="background-color: #b3b6b9">
-											<td th:text="${report.r43Caoa}"></td>
-											<td style="text-align: right" th:attr="RowId='R43', ColumnId='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${#numbers.formatDecimal(report.r43ResAmt, 0, 'COMMA', 0, 'POINT')}">
-											</td>
-											<td style="text-align: right" th:attr="RowId='R43', ColumnId='C3'"
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${#numbers.formatDecimal(report.r43NonResAmt, 0, 'COMMA', 0, 'POINT')}">
-											</td>
-										</tr>
-										<tr style="background-color: #b3b6b9">
-											<td th:text="${report.r44Caoa}"></td>
-											<td style="text-align: right;background-color: rgb(107, 122, 143);color: white;font-weight: bold;font-weight: bold;"
-												th:text="${#numbers.formatDecimal(report.r44ResAmt, 0, 'COMMA', 0, 'POINT')}">
-											</td>
-											<td style="text-align: right;background-color: rgb(107, 122, 143);color: white;font-weight: bold;"
-												th:text="${#numbers.formatDecimal(report.r44NonResAmt, 0, 'COMMA', 0, 'POINT')}">
+
+											<td th:text="${reportsummary.r16_non_res_carry_amt != null 
+                ? #numbers.formatDecimal(reportsummary.r16_non_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
+                : '0'}" style="text-align: right" th:attr="RowId='R16', ColumnId='C3'"
+												 >
 											</td>
 										</tr>
 
+										<tr>
+											<td th:text="${reportsummary.R17_caoin}" style="padding-left: 50px"></td>
+
+											<td th:text="${reportsummary.R17_res_carry_amt != null 
+                ? #numbers.formatDecimal(reportsummary.R17_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
+                : '0'}" style="text-align: right" th:attr="RowId='R17', ColumnId='C2'"
+												 >
+											</td>
+
+											<td th:text="${reportsummary.r17_non_res_carry_amt != null 
+                ? #numbers.formatDecimal(reportsummary.r17_non_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
+                : '0'}" style="text-align: right" th:attr="RowId='R17', ColumnId='C3'"
+												 >
+											</td>
+										</tr>
+
+										<tr>
+											<td th:text="${reportsummary.R18_caoin}" style="padding-left: 50px"></td>
+
+											<td th:text="${reportsummary.R18_res_carry_amt != null 
+                ? #numbers.formatDecimal(reportsummary.R18_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
+                : '0'}" style="text-align: right" th:attr="RowId='R18', ColumnId='C2'"
+												 >
+											</td>
+
+											<td th:text="${reportsummary.R18_non_res_carry_amt != null 
+                ? #numbers.formatDecimal(reportsummary.R18_non_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
+                : '0'}" style="text-align: right" th:attr="RowId='R18', ColumnId='C3'"
+												 >
+											</td>
+										</tr>
+
+										<tr>
+											<td th:text="${reportsummary.R19_caoin}" style="padding-left: 50px"></td>
+
+											<td th:text="${reportsummary.R19_res_carry_amt != null 
+                ? #numbers.formatDecimal(reportsummary.R19_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
+                : '0'}" style="text-align: right" th:attr="RowId='R19', ColumnId='C2'"
+												 >
+											</td>
+
+											<td th:text="${reportsummary.R19_non_res_carry_amt != null 
+                ? #numbers.formatDecimal(reportsummary.R19_non_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
+                : '0'}" style="text-align: right" th:attr="RowId='R19', ColumnId='C3'"
+												 >
+											</td>
+										</tr>
+
+										<tr>
+											<td th:text="${reportsummary.R20_caoin}" style="padding-left: 50px"></td>
+
+											<td th:text="${reportsummary.R20_res_carry_amt != null 
+                ? #numbers.formatDecimal(reportsummary.R20_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
+                : '0'}" style="text-align: right" th:attr="RowId='R20', ColumnId='C2'"
+												 >
+											</td>
+
+											<td th:text="${reportsummary.R20_non_res_carry_amt != null 
+                ? #numbers.formatDecimal(reportsummary.R20_non_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
+                : '0'}" style="text-align: right" th:attr="RowId='R20', ColumnId='C3'"
+												 >
+											</td>
+										</tr>
+
+										<tr>
+											<td th:text="${reportsummary.R21_caoin}" style="padding-left: 50px"></td>
+											<td th:text="${reportsummary.R21_res_carry_amt != null ? #numbers.formatDecimal(reportsummary.R21_res_carry_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+												style="text-align: right" th:attr="RowId='R21', ColumnId='C2'"
+												 ></td>
+											<td th:text="${reportsummary.R21_non_res_carry_amt != null ? #numbers.formatDecimal(reportsummary.R21_non_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
+: '0'}" style="text-align: right" th:attr="RowId='R21', ColumnId='C3'"  ></td>
+										</tr>
+										<tr>
+											<td th:text="${reportsummary.R22_caoin}" style="padding-left: 50px"></td>
+											<td th:text="${reportsummary.R22_res_carry_amt != null ? #numbers.formatDecimal(reportsummary.R22_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
+: '0'}" style="text-align: right" th:attr="RowId='R22', ColumnId='C2'"  ></td>
+											<td th:text="${reportsummary.R22_non_res_carry_amt != null 
+? #numbers.formatDecimal(reportsummary.R22_non_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
+: '0'}" style="text-align: right" th:attr="RowId='R22', ColumnId='C3'"  ></td>
+										</tr>
+										<tr>
+											<td th:text="${reportsummary.R23_caoin}" style="padding-left: 50px"></td>
+											<td th:text="${reportsummary.R23_res_carry_amt != null 
+? #numbers.formatDecimal(reportsummary.R23_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
+: '0'}" style="text-align: right" th:attr="RowId='R23', ColumnId='C2'"  ></td>
+											<td th:text="${reportsummary.R23_non_res_carry_amt != null 
+? #numbers.formatDecimal(reportsummary.R23_non_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
+: '0'}" style="text-align: right" th:attr="RowId='R23', ColumnId='C3'"  ></td>
+										</tr>
+										<tr>
+											<td th:text="${reportsummary.R24_caoin}" style="padding-left: 50px"></td>
+											<td th:text="${reportsummary.R24_res_carry_amt != null 
+? #numbers.formatDecimal(reportsummary.R24_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
+: '0'}" style="text-align: right" th:attr="RowId='R24', ColumnId='C2'"  ></td>
+											<td th:text="${reportsummary.R24_non_res_carry_amt != null 
+? #numbers.formatDecimal(reportsummary.R24_non_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
+: '0'}" style="text-align: right" th:attr="RowId='R24', ColumnId='C3'"  ></td>
+										</tr>
+										<tr>
+											<td th:text="${reportsummary.R25_caoin}" style="padding-left: 50px"></td>
+											<td th:text="${reportsummary.R25_res_carry_amt != null 
+? #numbers.formatDecimal(reportsummary.R25_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
+: '0'}" style="text-align: right" th:attr="RowId='R25', ColumnId='C2'"  ></td>
+											<td th:text="${reportsummary.R25_non_res_carry_amt != null 
+? #numbers.formatDecimal(reportsummary.R25_non_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
+: '0'}" style="text-align: right" th:attr="RowId='R25', ColumnId='C3'"  ></td>
+										</tr>
+										<tr>
+											<td th:text="${reportsummary.R26_caoin}"></td>
+											<td th:text="${reportsummary.R26_res_carry_amt != null 
+? #numbers.formatDecimal(reportsummary.R26_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
+: '0'}" style="text-align: right" th:attr="RowId='R26', ColumnId='C2'"  ></td>
+											<td th:text="${reportsummary.R26_non_res_carry_amt != null 
+? #numbers.formatDecimal(reportsummary.R26_non_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
+ : '0'}" style="text-align: right" th:attr="RowId='R26', ColumnId='C3'"  ></td>
+										</tr>
+										<tr>
+											<td th:text="${reportsummary.R27_caoin}" style="padding-left: 50px"></td>
+											<td th:text="${reportsummary.R27_res_carry_amt != null 
+ ? #numbers.formatDecimal(reportsummary.R27_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
+: '0'}" style="text-align: right" th:attr="RowId='R27', ColumnId='C2'"  ></td>
+											<td th:text="${reportsummary.R27_non_res_carry_amt != null 
+? #numbers.formatDecimal(reportsummary.R27_non_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
+: '0'}" style="text-align: right" th:attr="RowId='R27', ColumnId='C3'"  ></td>
+										</tr>
+										<tr>
+											<td th:text="${reportsummary.R28_caoin}" style="padding-left: 50px"></td>
+											<td th:text="${reportsummary.R28_res_carry_amt != null 
+? #numbers.formatDecimal(reportsummary.R28_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
+ : '0'}" style="text-align: right" th:attr="RowId='R28', ColumnId='C2'"  ></td>
+											<td th:text="${reportsummary.R28_non_res_carry_amt != null 
+? #numbers.formatDecimal(reportsummary.R28_non_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
+: '0'}" style="text-align: right" th:attr="RowId='R28', ColumnId='C3'"  ></td>
+										</tr>
+										<tr>
+											<td th:text="${reportsummary.R29_caoin}"style="padding-left: 50px"></td>
+											<td th:text="${reportsummary.R29_res_carry_amt != null 
+? #numbers.formatDecimal(reportsummary.R29_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
+: '0'}" style="text-align: right;"></td>
+											<td th:text="${reportsummary.R29_non_res_carry_amt != null 
+? #numbers.formatDecimal(reportsummary.R29_non_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
+: '0'}" style="text-align: right;"></td>
+										</tr>
+										<tr>
+											<td th:text="${reportsummary.R30_caoin}" style="padding-left: 100px"></td>
+											<td th:text="${reportsummary.R30_res_carry_amt != null 
+? #numbers.formatDecimal(reportsummary.R30_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
+: '0'}" style="text-align: right" th:attr="RowId='R30', ColumnId='C2'"  ></td>
+											<td th:text="${reportsummary.R30_non_res_carry_amt != null 
+? #numbers.formatDecimal(reportsummary.R30_non_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
+: '0'}" style="text-align: right" th:attr="RowId='R30', ColumnId='C3'"  ></td>
+										</tr>
+										<tr>
+											<td th:text="${reportsummary.R31_caoin}" style="padding-left: 100px"></td>
+											<td th:text="${reportsummary.R31_res_carry_amt != null 
+? #numbers.formatDecimal(reportsummary.R31_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
+: '0'}" style="text-align: right" th:attr="RowId='R31', ColumnId='C2'"  ></td>
+											<td th:text="${reportsummary.R31_non_res_carry_amt != null 
+                            ? #numbers.formatDecimal(reportsummary.R31_non_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
+: '0'}" style="text-align: right" th:attr="RowId='R31', ColumnId='C3'"  ></td>
+										</tr>
+										<tr>
+											<td th:text="${reportsummary.R32_caoin}" style="padding-left: 100px"></td>
+											<td th:text="${reportsummary.R32_res_carry_amt != null 
+ ? #numbers.formatDecimal(reportsummary.R32_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
+: '0'}" style="text-align: right" th:attr="RowId='R32', ColumnId='C2'"  ></td>
+											<td th:text="${reportsummary.R32_non_res_carry_amt != null 
+? #numbers.formatDecimal(reportsummary.R32_non_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
+ : '0'}" style="text-align: right" th:attr="RowId='R32', ColumnId='C3'"  ></td>
+										</tr>
+										<tr>
+											<td th:text="${reportsummary.R33_caoin}" style="padding-left: 100px"></td>
+											<td th:text="${reportsummary.R33_res_carry_amt != null 
+? #numbers.formatDecimal(reportsummary.R33_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
+: '0'}" style="text-align: right;"></td>
+											<td th:text="${reportsummary.R33_non_res_carry_amt != null 
+? #numbers.formatDecimal(reportsummary.R33_non_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
+: '0'}" style="text-align: right;"></td>
+										</tr>
+										<tr>
+											<td th:text="${reportsummary.R34_caoin}" style="padding-left: 50px"></td>
+											<td th:text="${reportsummary.R34_res_carry_amt != null 
+? #numbers.formatDecimal(reportsummary.R34_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
+: '0'}" style="text-align: right" th:attr="RowId='R34', ColumnId='C2'"  ></td>
+											<td th:text="${reportsummary.R34_non_res_carry_amt != null 
+ ? #numbers.formatDecimal(reportsummary.R34_non_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
+: '0'}" style="text-align: right" th:attr="RowId='R34', ColumnId='C3'"  ></td>
+										</tr>
+										<tr>
+											<td th:text="${reportsummary.R35_caoin}" style="padding-left: 100px"></td>
+											<td th:text="${reportsummary.R35_res_carry_amt != null 
+ ? #numbers.formatDecimal(reportsummary.R35_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
+: '0'}" style="text-align: right" th:attr="RowId='R35', ColumnId='C2'"  ></td>
+											<td th:text="${reportsummary.R35_non_res_carry_amt != null 
+ ? #numbers.formatDecimal(reportsummary.R35_non_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
+ : '0'}" style="text-align: right" th:attr="RowId='R35', ColumnId='C3'"  ></td>
+										</tr>
+										<tr>
+											<td th:text="${reportsummary.R36_caoin}" style="padding-left: 100px"></td>
+											<td th:text="${reportsummary.R36_res_carry_amt != null 
+ ? #numbers.formatDecimal(reportsummary.R36_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
+: '0'}" style="text-align: right" th:attr="RowId='R36', ColumnId='C2'"  ></td>
+											<td th:text="${reportsummary.R36_non_res_carry_amt != null 
+ ? #numbers.formatDecimal(reportsummary.R36_non_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
+ : '0'}" style="text-align: right" th:attr="RowId='R36', ColumnId='C3'"  ></td>
+										</tr>
+										<tr>
+											<td th:text="${reportsummary.R37_caoin}" style="padding-left: 100px"></td>
+											<td th:text="${reportsummary.R37_res_carry_amt != null 
+ ? #numbers.formatDecimal(reportsummary.R37_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
+: '0'}" style="text-align: right;"></td>
+											<td th:text="${reportsummary.R37_non_res_carry_amt != null 
+ ? #numbers.formatDecimal(reportsummary.R37_non_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
+: '0'}" style="text-align: right;"></td>
+										</tr>
+										<tr>
+											<td th:text="${reportsummary.R38_caoin}" style="padding-left: 100px"></td>
+											<td th:text="${reportsummary.R38_res_carry_amt != null 
+? #numbers.formatDecimal(reportsummary.R38_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
+: '0'}" style="text-align: right" th:attr="RowId='R38', ColumnId='C2'"  ></td>
+											<td th:text="${reportsummary.R38_non_res_carry_amt != null 
+? #numbers.formatDecimal(reportsummary.R38_non_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
+: '0'}" style="text-align: right" th:attr="RowId='R38', ColumnId='C3'"  ></td>
+										</tr>
+										<tr>
+											<td th:text="${reportsummary.R39_caoin}" ></td>
+											<td th:text="${reportsummary.R39_res_carry_amt != null 
+? #numbers.formatDecimal(reportsummary.R39_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
+: '0'}" style="text-align: right" th:attr="RowId='R39', ColumnId='C2'"  ></td>
+											<td th:text="${reportsummary.R39_non_res_carry_amt != null 
+? #numbers.formatDecimal(reportsummary.R39_non_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
+: '0'}" style="text-align: right" th:attr="RowId='R39', ColumnId='C3'"  ></td>
+										</tr>
+										<tr>
+											<td th:text="${reportsummary.R40_caoin}" ></td>
+											<td th:text="${reportsummary.R40_res_carry_amt != null 
+? #numbers.formatDecimal(reportsummary.R40_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
+: '0'}" style="text-align: right;background-color: rgb(107, 122, 143);color: white;" th:attr="RowId='R40', ColumnId='C2'"  ></td>
+											<td th:text="${reportsummary.R40_non_res_carry_amt != null 
+? #numbers.formatDecimal(reportsummary.R40_non_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
+: '0'}" style="text-align: right;background-color: rgb(107, 122, 143);color: white;" th:attr="RowId='R40', ColumnId='C3'"  ></td>
+										</tr>
+										
 									</tbody>
 								</table>
 							</div>
-							<!--                        <div class="card-footer text-center" style="background-color: white;">-->
-							<!--                            <button type="button" class="custom-tab-btn custom-tab-btn-xs" id="custom-tab-btnHome" onclick="home();">Home</button>-->
-							<!--                            <button type="button" class="custom-tab-btn custom-tab-btn-xs" id="custom-tab-btnBack" onclick="back();">Back</button>-->
-							<!--                        </div>-->
 
 						</div>
 					</div>
 				</div>
-		               <div th:if="${displaymode == 'Details'}">
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <div class="table-responsive" style="border-right: 1px solid #dee2e6;">
-                                <table class="table table-striped table-hover table-bordereds " id="reportdetail">
-                                    <thead class="thead-light">
+				<div th:if="${displaymode == 'Details'}">
+					<div class="row">
+						<div class="col-sm-12">
+							<div class="table-responsive" style="border-right: 1px solid #dee2e6;">
+								<table class="table table-striped table-hover table-bordereds " id="reportdetail">
+									<thead class="thead-light">
 										<tr>
 											<th></th>
 											<th>S No</th>
@@ -1384,10 +1381,6 @@ PURPOSE		: BRRSREPORT
 											<td style="text-align:right;"
 												th:text="${#numbers.formatDecimal(report.acctBalanceInPula == null ? 0 : report.acctBalanceInPula, 1, 'COMMA', 0, 'POINT')}">
 											</td>
-
-
-
-
 											<td th:text="${report.reportLabel}"></td>
 											<td th:text="${report.reportAddlCriteria1}"></td>
 											<td th:text="${#dates.format(report.reportDate, 'dd-MM-yyyy')}"></td>
@@ -1413,7 +1406,7 @@ PURPOSE		: BRRSREPORT
 
 
 					<div class="card-body">
-						<form th:object="${Q_SMMELAData}" method="post" id="QSMMELADetailForm">
+						<form th:object="${Q_SMMEData}" method="post" id="QSMMEDetailForm">
 							<div class="row formline" style="margin-top:10px;">
 								<label class="col-sm-2">Customer ID</label>
 								<div class="col-sm-3">
@@ -1467,7 +1460,7 @@ PURPOSE		: BRRSREPORT
 								<label class="col-sm-2">Report Date</label>
 								<div class="col-sm-3">
 									<input type="date" th:field="*{reportDate}" class="form-control form-control-sm"
-										readonly th:value="${#dates.format(Q_SMMELAData.reportDate, 'yyyy-MM-dd')}" />
+										readonly th:value="${#dates.format(Q_SMMEData.reportDate, 'yyyy-MM-dd')}" />
 
 								</div>
 							</div>
@@ -1554,6 +1547,10 @@ PURPOSE		: BRRSREPORT
 
 
 </body>
+
+
+
+
 
 
 <style>
@@ -1660,9 +1657,3 @@ PURPOSE		: BRRSREPORT
 		width: auto;
 	}
 </style>
-
-
-
-
-
-</html>

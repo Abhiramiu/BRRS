@@ -487,7 +487,7 @@ PURPOSE		: BRRSREPORT
 		                window.URL.revokeObjectURL(url);
 		                document.body.removeChild(a);
 
-		                showResultModal('Success', filename + ' downloaded successfully.');
+		                showResultModal('BRRS', filename + ' downloaded successfully.');
 		            } else {
 		                showResultModal('Information', 'No data was available to create a download.');
 		            }
@@ -706,7 +706,7 @@ PURPOSE		: BRRSREPORT
 						window.URL.revokeObjectURL(url);
 						document.body.removeChild(a);
 
-						showResultModal('Success', filename + ' downloaded successfully.');
+						showResultModal('BRRS', filename + ' downloaded successfully.');
 					} else {
 						showResultModal('Information', 'No data was available to create a download.');
 					}
@@ -947,7 +947,7 @@ PURPOSE		: BRRSREPORT
 
 
 
-<title>BRRS</title>
+<title>M_LA1</title>
 
 <body>
 	<div class="container-fluid" style="padding-left: 0px; padding-right: 0px;">
@@ -1155,7 +1155,7 @@ PURPOSE		: BRRSREPORT
 										</tr>
 
 										<tr>
-											<td style="font-weight: normal;padding-left: 30px;"
+											<td style="font-weight: normal;padding-left: 60px;"
 												th:text="${report.r16_product}"></td>
 
 

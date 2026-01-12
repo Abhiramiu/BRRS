@@ -7,6 +7,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -46,7 +48,7 @@ public class Q_SMME_Intrest_Income_Archival_Detail_Entity {
     private BigDecimal acctBalanceInpula;
 
     @Column(name = "REPORT_DATE")
-    @DateTimeFormat(pattern = "dd-MM-yyyy")
+    @Temporal(TemporalType.DATE)
     private Date reportDate;
 
     @Column(name = "REPORT_NAME")

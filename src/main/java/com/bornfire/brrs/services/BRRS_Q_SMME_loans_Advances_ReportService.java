@@ -47,7 +47,6 @@ import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.ws.wsdl.wsdl11.provider.SoapProvider;
 
 import com.bornfire.brrs.entities.BRRS_Q_SMME_loans_Advances_Archival_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_Q_SMME_loans_Advances_Archival_Summary_Repo;
@@ -57,7 +56,6 @@ import com.bornfire.brrs.entities.Q_SMME_loans_Advances_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.Q_SMME_loans_Advances_Detail_Entity;
 import com.bornfire.brrs.entities.Q_SMME_loans_Advances_Summary_Entity;
 import com.bornfire.brrs.entities.BRRS_Q_SMME_loans_Advances_Summary_Repo;
-import com.bornfire.brrs.entities.M_SRWA_12A_Detail_Entity;
 
 @Component
 @Service
