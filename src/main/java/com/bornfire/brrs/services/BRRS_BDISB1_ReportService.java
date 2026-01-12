@@ -7320,7 +7320,7 @@ public byte[] getBDISB1DetailExcel(String filename, String fromdate, String toda
 
         CellStyle amountStyle = workbook.createCellStyle();
         amountStyle.setAlignment(HorizontalAlignment.RIGHT);
-        amountStyle.setDataFormat(workbook.createDataFormat().getFormat("#,##0.00"));
+        amountStyle.setDataFormat(workbook.createDataFormat().getFormat("#,##0"));
         amountStyle.setBorderTop(border);
         amountStyle.setBorderBottom(border);
         amountStyle.setBorderLeft(border);
@@ -7462,7 +7462,7 @@ public byte[] getDetailExcelARCHIVAL(String filename, String fromdate, String to
 
         CellStyle amountStyle = workbook.createCellStyle();
         amountStyle.setAlignment(HorizontalAlignment.RIGHT);
-        amountStyle.setDataFormat(workbook.createDataFormat().getFormat("#,##0.00"));
+        amountStyle.setDataFormat(workbook.createDataFormat().getFormat("#,##0"));
         amountStyle.setBorderTop(border);
         amountStyle.setBorderBottom(border);
         amountStyle.setBorderLeft(border);
