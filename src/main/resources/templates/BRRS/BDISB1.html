@@ -512,7 +512,9 @@ label.error {
 			      alertMsg.innerHTML = 'Report is ready! Downloaded';
 			      showAlert();
 			      const filename = sessionStorage.getItem("filename");
-			      downloadDetailfile(jobId, filename)
+					downloadDetailfile(jobId, filename + ".xlsx");
+
+			      
 			      sessionStorage.removeItem("jobId");
 			      sessionStorage.removeItem("filename");
 
@@ -558,7 +560,7 @@ label.error {
 			      window.URL.revokeObjectURL(url);
 			      document.body.removeChild(a);
 
-			      showResultModal('BRRS', filename + '.xls downloaded successfully.');
+			      showResultModal('BRRS', filename + ' downloaded successfully.');
 			     } else {
 			      showResultModal('Information', 'No data was available to create a download.');
 			     }
@@ -2664,28 +2666,28 @@ function cancelModify() {
         th:text="${srlno.index + 1}"></td>
 
     <!-- Customer ID (can be NULL for manual report) -->
-    <td th:text="${report != null && report.FIRST_NAME != null ? report.FIRST_NAME : '-'}"></td>
+    <td th:text="${report != null && report.FIRST_NAME != null ? report.FIRST_NAME : ' '}"></td>
     
-    <td th:text="${report != null && report.MIDDLE_NAME != null ? report.MIDDLE_NAME : '-'}"></td>
+    <td th:text="${report != null && report.MIDDLE_NAME != null ? report.MIDDLE_NAME : ' '}"></td>
     
-    <td th:text="${report != null && report.SURNAME != null ? report.SURNAME : '-'}"></td>
+    <td th:text="${report != null && report.SURNAME != null ? report.SURNAME : ' '}"></td>
     
-    <td th:text="${report != null && report.ACCOUNT_NUMBER != null ? report.ACCOUNT_NUMBER : '-'}"></td>
+    <td th:text="${report != null && report.ACCOUNT_NUMBER != null ? report.ACCOUNT_NUMBER : ' '}"></td>
 
     <!-- Account Number -->
-    <td th:text="${report != null && report.ACCOUNT_BALANCE_IN_PULA != null ? report.ACCOUNT_BALANCE_IN_PULA : '-'}"></td>
+    <td th:text="${report != null && report.ACCOUNT_BALANCE_IN_PULA != null ? report.ACCOUNT_BALANCE_IN_PULA : ' '}"></td>
     
     <!-- Report Label -->
     <td style="text-align:left;"
-        th:text="${report != null && report.reportLable != null ? report.reportLable : '-'}"></td>
+        th:text="${report != null && report.reportLable != null ? report.reportLable : ' '}"></td>
 
     <!-- Additional Criteria -->
-    <td th:text="${report != null && report.reportAddlCriteria1 != null ? report.reportAddlCriteria1 : '-'}"></td>
+    <td th:text="${report != null && report.reportAddlCriteria1 != null ? report.reportAddlCriteria1 : ' '}"></td>
 
     <!-- Report Date -->
     <td th:text="${report != null && report.reportDate != null
         ? #dates.format(report.reportDate,'dd-MM-yyyy')
-        : '-'}"></td>
+        : ' '}"></td>
 
 </tr>
         </tbody>

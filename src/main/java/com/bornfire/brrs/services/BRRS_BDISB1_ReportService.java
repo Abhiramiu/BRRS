@@ -7380,10 +7380,14 @@ public byte[] getBDISB1DetailExcel(String filename, String fromdate, String toda
 
                 // Column 4 - ACCOUNT BALANCE IN PULA
                 Cell c1 = row.createCell(4);
-                c1.setCellValue(item.getACCOUNT_BALANCE_IN_PULA() != null
-                        ? item.getACCOUNT_BALANCE_IN_PULA().doubleValue() : 0);
-                c1.setCellStyle(amountStyle);
 
+                if (item.getACCOUNT_BALANCE_IN_PULA() != null) {
+                    c1.setCellValue(item.getACCOUNT_BALANCE_IN_PULA().toPlainString());
+                } else {
+                    c1.setCellValue("0");
+                }
+
+                c1.setCellStyle(amountStyle);
                 // Column 5 - REPORT LABEL
                 Cell c2 = row.createCell(5);
                 c2.setCellValue(item.getReportLable());
@@ -7523,10 +7527,14 @@ public byte[] getDetailExcelARCHIVAL(String filename, String fromdate, String to
 
                 // Column 4 - ACCOUNT BALANCE IN PULA
                 Cell c1 = row.createCell(4);
-                c1.setCellValue(item.getACCOUNT_BALANCE_IN_PULA() != null
-                        ? item.getACCOUNT_BALANCE_IN_PULA().doubleValue() : 0);
-                c1.setCellStyle(amountStyle);
 
+                if (item.getACCOUNT_BALANCE_IN_PULA() != null) {
+                    c1.setCellValue(item.getACCOUNT_BALANCE_IN_PULA().toPlainString());
+                } else {
+                    c1.setCellValue("0");
+                }
+
+                c1.setCellStyle(amountStyle);
                 // Column 5 - REPORT LABEL
                 Cell c2 = row.createCell(5);
                 c2.setCellValue(item.getReportLable());

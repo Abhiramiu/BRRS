@@ -833,7 +833,7 @@ public class BRRS_SCH_17_ReportService {
 
 			// Header style (left aligned)
 			CellStyle headerStyle = workbook.createCellStyle();
-			Font headerFont = workbook.createFont();
+			Font headerFont = workbook.createFont();	
 			headerFont.setBold(true);
 			headerFont.setFontHeightInPoints((short) 10);
 			headerStyle.setFont(headerFont);
