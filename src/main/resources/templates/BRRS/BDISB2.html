@@ -546,7 +546,7 @@ label.error {
 		      alertMsg.innerHTML = 'Report is ready! Downloaded';
 		      showAlert();
 		      const filename = sessionStorage.getItem("filename");
-		      downloadDetailfile(jobId, filename)
+		      downloadDetailfile(jobId, filename + ".xlsx")
 		      sessionStorage.removeItem("jobId");
 		      sessionStorage.removeItem("filename");
 

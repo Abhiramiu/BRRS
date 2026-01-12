@@ -51,7 +51,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-
 import com.bornfire.brrs.entities.BDISB2_Summary_Entity;
 import com.bornfire.brrs.entities.BDISB2_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.BDISB2_Detail_Entity;
@@ -367,7 +366,7 @@ public class BRRS_BDISB2_ReportService {
 
 				} else if ("COMPANY_REG_NUM".equals(columnName)) {
 					row.setCOMPANY_REG_NUM(value);
-					
+
 				} else if ("COMPANY_NAME".equals(columnName)) {
 					row.setCOMPANY_NAME(value);
 
@@ -652,7 +651,7 @@ public class BRRS_BDISB2_ReportService {
 					else
 						cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-					
+
 					// ===== R6 / Col D =====
 
 					cellD = row.getCell(3);
@@ -2299,7 +2298,7 @@ public class BRRS_BDISB2_ReportService {
 					else
 						cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-					
+
 					// ===== R6 / Col D =====
 
 					cellD = row.getCell(3);
@@ -3866,366 +3865,362 @@ public class BRRS_BDISB2_ReportService {
 	@Transactional
 	public void updateReportReSub(BDISB2_Summary_Entity updatedEntity) {
 
-	    System.out.println("Came to Resub Service");
+		System.out.println("Came to Resub Service");
 
-	    Date reportDate = updatedEntity.getReportDate();
-	    System.out.println("Report Date: " + reportDate);
+		Date reportDate = updatedEntity.getReportDate();
+		System.out.println("Report Date: " + reportDate);
 
-	    try {
-	        /* =========================================================
-	         * 1️⃣ FETCH LATEST ARCHIVAL VERSION
-	         * ========================================================= */
-	        Optional<BDISB2_Archival_Summary_Entity> latestArchivalOpt =
-	                BRRS_BDISB2_Archival_Summary_Repo
-	                        .getLatestArchivalVersionByDate(reportDate);
+		try {
+			/*
+			 * ========================================================= 1️⃣ FETCH LATEST
+			 * ARCHIVAL VERSION =========================================================
+			 */
+			Optional<BDISB2_Archival_Summary_Entity> latestArchivalOpt = BRRS_BDISB2_Archival_Summary_Repo
+					.getLatestArchivalVersionByDate(reportDate);
 
-	        int newVersion = 1;
-	        if (latestArchivalOpt.isPresent()) {
-	            try {
-	                newVersion =
-	                        Integer.parseInt(latestArchivalOpt.get().getReportVersion()) + 1;
-	            } catch (NumberFormatException e) {
-	                newVersion = 1;
-	            }
-	        }
+			int newVersion = 1;
+			if (latestArchivalOpt.isPresent()) {
+				try {
+					newVersion = Integer.parseInt(latestArchivalOpt.get().getReportVersion()) + 1;
+				} catch (NumberFormatException e) {
+					newVersion = 1;
+				}
+			}
 
-	        boolean exists =
-	                BRRS_BDISB2_Archival_Summary_Repo
-	                        .findByReportDateAndReportVersion(
-	                                reportDate, String.valueOf(newVersion))
-	                        .isPresent();
+			boolean exists = BRRS_BDISB2_Archival_Summary_Repo
+					.findByReportDateAndReportVersion(reportDate, String.valueOf(newVersion)).isPresent();
 
-	        if (exists) {
-	            throw new RuntimeException(
-	                    "Version " + newVersion + " already exists for report date " + reportDate);
-	        }
+			if (exists) {
+				throw new RuntimeException("Version " + newVersion + " already exists for report date " + reportDate);
+			}
 
-	        /* =========================================================
-	         * 2️⃣ CREATE NEW ARCHIVAL ENTITY (BASE COPY)
-	         * ========================================================= */
-	        BDISB2_Archival_Summary_Entity archivalEntity =
-	                new BDISB2_Archival_Summary_Entity();
+			/*
+			 * ========================================================= 2️⃣ CREATE NEW
+			 * ARCHIVAL ENTITY (BASE COPY)
+			 * =========================================================
+			 */
+			BDISB2_Archival_Summary_Entity archivalEntity = new BDISB2_Archival_Summary_Entity();
 
-	        if (latestArchivalOpt.isPresent()) {
-	            BeanUtils.copyProperties(latestArchivalOpt.get(), archivalEntity);
-	        }
+			if (latestArchivalOpt.isPresent()) {
+				BeanUtils.copyProperties(latestArchivalOpt.get(), archivalEntity);
+			}
 
-	        /* =========================================================
-	         * 3️⃣ READ RAW REQUEST PARAMETERS (CRITICAL FIX)
-	         * ========================================================= */
-	        HttpServletRequest request =
-	                ((ServletRequestAttributes) RequestContextHolder
-	                        .getRequestAttributes()).getRequest();
+			/*
+			 * ========================================================= 3️⃣ READ RAW
+			 * REQUEST PARAMETERS (CRITICAL FIX)
+			 * =========================================================
+			 */
+			HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
+					.getRequest();
 
-	        Map<String, String[]> parameterMap = request.getParameterMap();
+			Map<String, String[]> parameterMap = request.getParameterMap();
 
-	        for (Map.Entry<String, String[]> entry : parameterMap.entrySet()) {
+			for (Map.Entry<String, String[]> entry : parameterMap.entrySet()) {
 
-	            String key = entry.getKey();              // R6_C11_ACCT_NUM
-	            String value = entry.getValue()[0];
+				String key = entry.getKey(); // R6_C11_ACCT_NUM
+				String value = entry.getValue()[0];
 
-	            // Ignore non-field params
-	            if ("asondate".equalsIgnoreCase(key) || "type".equalsIgnoreCase(key)) {
-	                continue;
-	            }
+				// Ignore non-field params
+				if ("asondate".equalsIgnoreCase(key) || "type".equalsIgnoreCase(key)) {
+					continue;
+				}
 
-	            // Normalize: R6_C11_ACCT_NUM → R6_ACCT_NUM
-	            String normalizedKey = key.replaceFirst("_C\\d+_", "_");
+				// Normalize: R6_C11_ACCT_NUM → R6_ACCT_NUM
+				String normalizedKey = key.replaceFirst("_C\\d+_", "_");
 
-	            /* =====================================================
-	             * 4️⃣ APPLY VALUES (EXPLICIT, SAFE, NO REFLECTION)
-	             * ===================================================== */
+				/*
+				 * ===================================================== 4️⃣ APPLY VALUES
+				 * (EXPLICIT, SAFE, NO REFLECTION)
+				 * =====================================================
+				 */
 
-	         // ======================= R6 =======================
-	            
-	                   if ("R6_BANK_SPEC_SINGLE_CUST_REC_NUM".equals(normalizedKey)) {
-		            archivalEntity.setR6_BANK_SPEC_SINGLE_CUST_REC_NUM(value);
-	            } else if ("R6_COMPANY_NAME".equals(normalizedKey)) {
-	                archivalEntity.setR6_COMPANY_NAME(value);
-	            } else if ("R6_COMPANY_REG_NUM".equals(normalizedKey)) {
-	                archivalEntity.setR6_COMPANY_REG_NUM(value);
-	            } else if ("R6_BUSINEES_PHY_ADDRESS".equals(normalizedKey)) {
-	                archivalEntity.setR6_BUSINEES_PHY_ADDRESS(value);
-	            } else if ("R6_POSTAL_ADDRESS".equals(normalizedKey)) {
-	                archivalEntity.setR6_POSTAL_ADDRESS(value);
-	            } else if ("R6_COUNTRY_OF_REG".equals(normalizedKey)) {
-	                archivalEntity.setR6_COUNTRY_OF_REG(value);
-	            } else if ("R6_COMPANY_EMAIL".equals(normalizedKey)) {
-	                archivalEntity.setR6_COMPANY_EMAIL(value);
-	            } else if ("R6_COMPANY_LANDLINE".equals(normalizedKey)) {
-	                archivalEntity.setR6_COMPANY_LANDLINE(value);
-	            } else if ("R6_COMPANY_MOB_PHONE_NUM".equals(normalizedKey)) {
-	                archivalEntity.setR6_COMPANY_MOB_PHONE_NUM(value);
-	            } else if ("R6_PRODUCT_TYPE".equals(normalizedKey)) {
-	                archivalEntity.setR6_PRODUCT_TYPE(value);
-	            } else if ("R6_ACCT_NUM".equals(normalizedKey)) {
-	                archivalEntity.setR6_ACCT_NUM(parseBigDecimal(value));
-	            } else if ("R6_STATUS_OF_ACCT".equals(normalizedKey)) {
-	                archivalEntity.setR6_STATUS_OF_ACCT(value);
-	            } else if ("R6_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT".equals(normalizedKey)) {
-	                archivalEntity.setR6_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT(value);
-	            } else if ("R6_ACCT_BRANCH".equals(normalizedKey)) {
-	                archivalEntity.setR6_ACCT_BRANCH(value);
-	            } else if ("R6_ACCT_BALANCE_PULA".equals(normalizedKey)) {
-	                archivalEntity.setR6_ACCT_BALANCE_PULA(parseBigDecimal(value));
-	            } else if ("R6_CURRENCY_OF_ACCT".equals(normalizedKey)) {
-	                archivalEntity.setR6_CURRENCY_OF_ACCT(value);
-	            } else if ("R6_EXCHANGE_RATE".equals(normalizedKey)) {
-	                archivalEntity.setR6_EXCHANGE_RATE(parseBigDecimal(value));
-	            }
+				// ======================= R6 =======================
 
-	            // ======================= R7 =======================
-	            else if ("R7_BANK_SPEC_SINGLE_CUST_REC_NUM".equals(normalizedKey)) {
-		            archivalEntity.setR7_BANK_SPEC_SINGLE_CUST_REC_NUM(value);
-	            } else if ("R7_COMPANY_NAME".equals(normalizedKey)) {
-	                archivalEntity.setR7_COMPANY_NAME(value);
-	            } else if ("R7_COMPANY_REG_NUM".equals(normalizedKey)) {
-	                archivalEntity.setR7_COMPANY_REG_NUM(value);
-	            } else if ("R7_BUSINEES_PHY_ADDRESS".equals(normalizedKey)) {
-	                archivalEntity.setR7_BUSINEES_PHY_ADDRESS(value);
-	            } else if ("R7_POSTAL_ADDRESS".equals(normalizedKey)) {
-	                archivalEntity.setR7_POSTAL_ADDRESS(value);
-	            } else if ("R7_COUNTRY_OF_REG".equals(normalizedKey)) {
-	                archivalEntity.setR7_COUNTRY_OF_REG(value);
-	            } else if ("R7_COMPANY_EMAIL".equals(normalizedKey)) {
-	                archivalEntity.setR7_COMPANY_EMAIL(value);
-	            } else if ("R7_COMPANY_LANDLINE".equals(normalizedKey)) {
-	                archivalEntity.setR7_COMPANY_LANDLINE(value);
-	            } else if ("R7_COMPANY_MOB_PHONE_NUM".equals(normalizedKey)) {
-	                archivalEntity.setR7_COMPANY_MOB_PHONE_NUM(value);
-	            } else if ("R7_PRODUCT_TYPE".equals(normalizedKey)) {
-	                archivalEntity.setR7_PRODUCT_TYPE(value);
-	            } else if ("R7_ACCT_NUM".equals(normalizedKey)) {
-	                archivalEntity.setR7_ACCT_NUM(parseBigDecimal(value));
-	            } else if ("R7_STATUS_OF_ACCT".equals(normalizedKey)) {
-	                archivalEntity.setR7_STATUS_OF_ACCT(value);
-	            } else if ("R7_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT".equals(normalizedKey)) {
-	                archivalEntity.setR7_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT(value);
-	            } else if ("R7_ACCT_BRANCH".equals(normalizedKey)) {
-	                archivalEntity.setR7_ACCT_BRANCH(value);
-	            } else if ("R7_ACCT_BALANCE_PULA".equals(normalizedKey)) {
-	                archivalEntity.setR7_ACCT_BALANCE_PULA(parseBigDecimal(value));
-	            } else if ("R7_CURRENCY_OF_ACCT".equals(normalizedKey)) {
-	                archivalEntity.setR7_CURRENCY_OF_ACCT(value);
-	            } else if ("R7_EXCHANGE_RATE".equals(normalizedKey)) {
-	                archivalEntity.setR7_EXCHANGE_RATE(parseBigDecimal(value));
-	            }
+				if ("R6_BANK_SPEC_SINGLE_CUST_REC_NUM".equals(normalizedKey)) {
+					archivalEntity.setR6_BANK_SPEC_SINGLE_CUST_REC_NUM(value);
+				} else if ("R6_COMPANY_NAME".equals(normalizedKey)) {
+					archivalEntity.setR6_COMPANY_NAME(value);
+				} else if ("R6_COMPANY_REG_NUM".equals(normalizedKey)) {
+					archivalEntity.setR6_COMPANY_REG_NUM(value);
+				} else if ("R6_BUSINEES_PHY_ADDRESS".equals(normalizedKey)) {
+					archivalEntity.setR6_BUSINEES_PHY_ADDRESS(value);
+				} else if ("R6_POSTAL_ADDRESS".equals(normalizedKey)) {
+					archivalEntity.setR6_POSTAL_ADDRESS(value);
+				} else if ("R6_COUNTRY_OF_REG".equals(normalizedKey)) {
+					archivalEntity.setR6_COUNTRY_OF_REG(value);
+				} else if ("R6_COMPANY_EMAIL".equals(normalizedKey)) {
+					archivalEntity.setR6_COMPANY_EMAIL(value);
+				} else if ("R6_COMPANY_LANDLINE".equals(normalizedKey)) {
+					archivalEntity.setR6_COMPANY_LANDLINE(value);
+				} else if ("R6_COMPANY_MOB_PHONE_NUM".equals(normalizedKey)) {
+					archivalEntity.setR6_COMPANY_MOB_PHONE_NUM(value);
+				} else if ("R6_PRODUCT_TYPE".equals(normalizedKey)) {
+					archivalEntity.setR6_PRODUCT_TYPE(value);
+				} else if ("R6_ACCT_NUM".equals(normalizedKey)) {
+					archivalEntity.setR6_ACCT_NUM(parseBigDecimal(value));
+				} else if ("R6_STATUS_OF_ACCT".equals(normalizedKey)) {
+					archivalEntity.setR6_STATUS_OF_ACCT(value);
+				} else if ("R6_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT".equals(normalizedKey)) {
+					archivalEntity.setR6_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT(value);
+				} else if ("R6_ACCT_BRANCH".equals(normalizedKey)) {
+					archivalEntity.setR6_ACCT_BRANCH(value);
+				} else if ("R6_ACCT_BALANCE_PULA".equals(normalizedKey)) {
+					archivalEntity.setR6_ACCT_BALANCE_PULA(parseBigDecimal(value));
+				} else if ("R6_CURRENCY_OF_ACCT".equals(normalizedKey)) {
+					archivalEntity.setR6_CURRENCY_OF_ACCT(value);
+				} else if ("R6_EXCHANGE_RATE".equals(normalizedKey)) {
+					archivalEntity.setR6_EXCHANGE_RATE(parseBigDecimal(value));
+				}
 
-	            // ======================= R8 =======================
-	            else if ("R8_BANK_SPEC_SINGLE_CUST_REC_NUM".equals(normalizedKey)) {
-		            archivalEntity.setR8_BANK_SPEC_SINGLE_CUST_REC_NUM(value);
-	            } else if ("R8_COMPANY_NAME".equals(normalizedKey)) {
-	                archivalEntity.setR8_COMPANY_NAME(value);
-	            } else if ("R8_COMPANY_REG_NUM".equals(normalizedKey)) {
-	                archivalEntity.setR8_COMPANY_REG_NUM(value);
-	            } else if ("R8_BUSINEES_PHY_ADDRESS".equals(normalizedKey)) {
-	                archivalEntity.setR8_BUSINEES_PHY_ADDRESS(value);
-	            } else if ("R8_POSTAL_ADDRESS".equals(normalizedKey)) {
-	                archivalEntity.setR8_POSTAL_ADDRESS(value);
-	            } else if ("R8_COUNTRY_OF_REG".equals(normalizedKey)) {
-	                archivalEntity.setR8_COUNTRY_OF_REG(value);
-	            } else if ("R8_COMPANY_EMAIL".equals(normalizedKey)) {
-	                archivalEntity.setR8_COMPANY_EMAIL(value);
-	            } else if ("R8_COMPANY_LANDLINE".equals(normalizedKey)) {
-	                archivalEntity.setR8_COMPANY_LANDLINE(value);
-	            } else if ("R8_COMPANY_MOB_PHONE_NUM".equals(normalizedKey)) {
-	                archivalEntity.setR8_COMPANY_MOB_PHONE_NUM(value);
-	            } else if ("R8_PRODUCT_TYPE".equals(normalizedKey)) {
-	                archivalEntity.setR8_PRODUCT_TYPE(value);
-	            } else if ("R8_ACCT_NUM".equals(normalizedKey)) {
-	                archivalEntity.setR8_ACCT_NUM(parseBigDecimal(value));
-	            } else if ("R8_STATUS_OF_ACCT".equals(normalizedKey)) {
-	                archivalEntity.setR8_STATUS_OF_ACCT(value);
-	            } else if ("R8_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT".equals(normalizedKey)) {
-	                archivalEntity.setR8_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT(value);
-	            } else if ("R8_ACCT_BRANCH".equals(normalizedKey)) {
-	                archivalEntity.setR8_ACCT_BRANCH(value);
-	            } else if ("R8_ACCT_BALANCE_PULA".equals(normalizedKey)) {
-	                archivalEntity.setR8_ACCT_BALANCE_PULA(parseBigDecimal(value));
-	            } else if ("R8_CURRENCY_OF_ACCT".equals(normalizedKey)) {
-	                archivalEntity.setR8_CURRENCY_OF_ACCT(value);
-	            } else if ("R8_EXCHANGE_RATE".equals(normalizedKey)) {
-	                archivalEntity.setR8_EXCHANGE_RATE(parseBigDecimal(value));
-	            }
+				// ======================= R7 =======================
+				else if ("R7_BANK_SPEC_SINGLE_CUST_REC_NUM".equals(normalizedKey)) {
+					archivalEntity.setR7_BANK_SPEC_SINGLE_CUST_REC_NUM(value);
+				} else if ("R7_COMPANY_NAME".equals(normalizedKey)) {
+					archivalEntity.setR7_COMPANY_NAME(value);
+				} else if ("R7_COMPANY_REG_NUM".equals(normalizedKey)) {
+					archivalEntity.setR7_COMPANY_REG_NUM(value);
+				} else if ("R7_BUSINEES_PHY_ADDRESS".equals(normalizedKey)) {
+					archivalEntity.setR7_BUSINEES_PHY_ADDRESS(value);
+				} else if ("R7_POSTAL_ADDRESS".equals(normalizedKey)) {
+					archivalEntity.setR7_POSTAL_ADDRESS(value);
+				} else if ("R7_COUNTRY_OF_REG".equals(normalizedKey)) {
+					archivalEntity.setR7_COUNTRY_OF_REG(value);
+				} else if ("R7_COMPANY_EMAIL".equals(normalizedKey)) {
+					archivalEntity.setR7_COMPANY_EMAIL(value);
+				} else if ("R7_COMPANY_LANDLINE".equals(normalizedKey)) {
+					archivalEntity.setR7_COMPANY_LANDLINE(value);
+				} else if ("R7_COMPANY_MOB_PHONE_NUM".equals(normalizedKey)) {
+					archivalEntity.setR7_COMPANY_MOB_PHONE_NUM(value);
+				} else if ("R7_PRODUCT_TYPE".equals(normalizedKey)) {
+					archivalEntity.setR7_PRODUCT_TYPE(value);
+				} else if ("R7_ACCT_NUM".equals(normalizedKey)) {
+					archivalEntity.setR7_ACCT_NUM(parseBigDecimal(value));
+				} else if ("R7_STATUS_OF_ACCT".equals(normalizedKey)) {
+					archivalEntity.setR7_STATUS_OF_ACCT(value);
+				} else if ("R7_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT".equals(normalizedKey)) {
+					archivalEntity.setR7_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT(value);
+				} else if ("R7_ACCT_BRANCH".equals(normalizedKey)) {
+					archivalEntity.setR7_ACCT_BRANCH(value);
+				} else if ("R7_ACCT_BALANCE_PULA".equals(normalizedKey)) {
+					archivalEntity.setR7_ACCT_BALANCE_PULA(parseBigDecimal(value));
+				} else if ("R7_CURRENCY_OF_ACCT".equals(normalizedKey)) {
+					archivalEntity.setR7_CURRENCY_OF_ACCT(value);
+				} else if ("R7_EXCHANGE_RATE".equals(normalizedKey)) {
+					archivalEntity.setR7_EXCHANGE_RATE(parseBigDecimal(value));
+				}
 
-	            // ======================= R9 =======================
-	            else if ("R9_BANK_SPEC_SINGLE_CUST_REC_NUM".equals(normalizedKey)) {
-		            archivalEntity.setR9_BANK_SPEC_SINGLE_CUST_REC_NUM(value);
-	            } else if ("R9_COMPANY_NAME".equals(normalizedKey)) {
-	                archivalEntity.setR9_COMPANY_NAME(value);
-	            } else if ("R9_COMPANY_REG_NUM".equals(normalizedKey)) {
-	                archivalEntity.setR9_COMPANY_REG_NUM(value);
-	            } else if ("R9_BUSINEES_PHY_ADDRESS".equals(normalizedKey)) {
-	                archivalEntity.setR9_BUSINEES_PHY_ADDRESS(value);
-	            } else if ("R9_POSTAL_ADDRESS".equals(normalizedKey)) {
-	                archivalEntity.setR9_POSTAL_ADDRESS(value);
-	            } else if ("R9_COUNTRY_OF_REG".equals(normalizedKey)) {
-	                archivalEntity.setR9_COUNTRY_OF_REG(value);
-	            } else if ("R9_COMPANY_EMAIL".equals(normalizedKey)) {
-	                archivalEntity.setR9_COMPANY_EMAIL(value);
-	            } else if ("R9_COMPANY_LANDLINE".equals(normalizedKey)) {
-	                archivalEntity.setR9_COMPANY_LANDLINE(value);
-	            } else if ("R9_COMPANY_MOB_PHONE_NUM".equals(normalizedKey)) {
-	                archivalEntity.setR9_COMPANY_MOB_PHONE_NUM(value);
-	            } else if ("R9_PRODUCT_TYPE".equals(normalizedKey)) {
-	                archivalEntity.setR9_PRODUCT_TYPE(value);
-	            } else if ("R9_ACCT_NUM".equals(normalizedKey)) {
-	                archivalEntity.setR9_ACCT_NUM(parseBigDecimal(value));
-	            } else if ("R9_STATUS_OF_ACCT".equals(normalizedKey)) {
-	                archivalEntity.setR9_STATUS_OF_ACCT(value);
-	            } else if ("R9_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT".equals(normalizedKey)) {
-	                archivalEntity.setR9_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT(value);
-	            } else if ("R9_ACCT_BRANCH".equals(normalizedKey)) {
-	                archivalEntity.setR9_ACCT_BRANCH(value);
-	            } else if ("R9_ACCT_BALANCE_PULA".equals(normalizedKey)) {
-	                archivalEntity.setR9_ACCT_BALANCE_PULA(parseBigDecimal(value));
-	            } else if ("R9_CURRENCY_OF_ACCT".equals(normalizedKey)) {
-	                archivalEntity.setR9_CURRENCY_OF_ACCT(value);
-	            } else if ("R9_EXCHANGE_RATE".equals(normalizedKey)) {
-	                archivalEntity.setR9_EXCHANGE_RATE(parseBigDecimal(value));
-	            }
+				// ======================= R8 =======================
+				else if ("R8_BANK_SPEC_SINGLE_CUST_REC_NUM".equals(normalizedKey)) {
+					archivalEntity.setR8_BANK_SPEC_SINGLE_CUST_REC_NUM(value);
+				} else if ("R8_COMPANY_NAME".equals(normalizedKey)) {
+					archivalEntity.setR8_COMPANY_NAME(value);
+				} else if ("R8_COMPANY_REG_NUM".equals(normalizedKey)) {
+					archivalEntity.setR8_COMPANY_REG_NUM(value);
+				} else if ("R8_BUSINEES_PHY_ADDRESS".equals(normalizedKey)) {
+					archivalEntity.setR8_BUSINEES_PHY_ADDRESS(value);
+				} else if ("R8_POSTAL_ADDRESS".equals(normalizedKey)) {
+					archivalEntity.setR8_POSTAL_ADDRESS(value);
+				} else if ("R8_COUNTRY_OF_REG".equals(normalizedKey)) {
+					archivalEntity.setR8_COUNTRY_OF_REG(value);
+				} else if ("R8_COMPANY_EMAIL".equals(normalizedKey)) {
+					archivalEntity.setR8_COMPANY_EMAIL(value);
+				} else if ("R8_COMPANY_LANDLINE".equals(normalizedKey)) {
+					archivalEntity.setR8_COMPANY_LANDLINE(value);
+				} else if ("R8_COMPANY_MOB_PHONE_NUM".equals(normalizedKey)) {
+					archivalEntity.setR8_COMPANY_MOB_PHONE_NUM(value);
+				} else if ("R8_PRODUCT_TYPE".equals(normalizedKey)) {
+					archivalEntity.setR8_PRODUCT_TYPE(value);
+				} else if ("R8_ACCT_NUM".equals(normalizedKey)) {
+					archivalEntity.setR8_ACCT_NUM(parseBigDecimal(value));
+				} else if ("R8_STATUS_OF_ACCT".equals(normalizedKey)) {
+					archivalEntity.setR8_STATUS_OF_ACCT(value);
+				} else if ("R8_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT".equals(normalizedKey)) {
+					archivalEntity.setR8_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT(value);
+				} else if ("R8_ACCT_BRANCH".equals(normalizedKey)) {
+					archivalEntity.setR8_ACCT_BRANCH(value);
+				} else if ("R8_ACCT_BALANCE_PULA".equals(normalizedKey)) {
+					archivalEntity.setR8_ACCT_BALANCE_PULA(parseBigDecimal(value));
+				} else if ("R8_CURRENCY_OF_ACCT".equals(normalizedKey)) {
+					archivalEntity.setR8_CURRENCY_OF_ACCT(value);
+				} else if ("R8_EXCHANGE_RATE".equals(normalizedKey)) {
+					archivalEntity.setR8_EXCHANGE_RATE(parseBigDecimal(value));
+				}
 
-	            // ======================= R10 =======================
-	            else if ("R10_BANK_SPEC_SINGLE_CUST_REC_NUM".equals(normalizedKey)) {
-		            archivalEntity.setR10_BANK_SPEC_SINGLE_CUST_REC_NUM(value);
-	            } else if ("R10_COMPANY_NAME".equals(normalizedKey)) {
-	                archivalEntity.setR10_COMPANY_NAME(value);
-	            } else if ("R10_COMPANY_REG_NUM".equals(normalizedKey)) {
-	                archivalEntity.setR10_COMPANY_REG_NUM(value);
-	            } else if ("R10_BUSINEES_PHY_ADDRESS".equals(normalizedKey)) {
-	                archivalEntity.setR10_BUSINEES_PHY_ADDRESS(value);
-	            } else if ("R10_POSTAL_ADDRESS".equals(normalizedKey)) {
-	                archivalEntity.setR10_POSTAL_ADDRESS(value);
-	            } else if ("R10_COUNTRY_OF_REG".equals(normalizedKey)) {
-	                archivalEntity.setR10_COUNTRY_OF_REG(value);
-	            } else if ("R10_COMPANY_EMAIL".equals(normalizedKey)) {
-	                archivalEntity.setR10_COMPANY_EMAIL(value);
-	            } else if ("R10_COMPANY_LANDLINE".equals(normalizedKey)) {
-	                archivalEntity.setR10_COMPANY_LANDLINE(value);
-	            } else if ("R10_COMPANY_MOB_PHONE_NUM".equals(normalizedKey)) {
-	                archivalEntity.setR10_COMPANY_MOB_PHONE_NUM(value);
-	            } else if ("R10_PRODUCT_TYPE".equals(normalizedKey)) {
-	                archivalEntity.setR10_PRODUCT_TYPE(value);
-	            } else if ("R10_ACCT_NUM".equals(normalizedKey)) {
-	                archivalEntity.setR10_ACCT_NUM(parseBigDecimal(value));
-	            } else if ("R10_STATUS_OF_ACCT".equals(normalizedKey)) {
-	                archivalEntity.setR10_STATUS_OF_ACCT(value);
-	            } else if ("R10_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT".equals(normalizedKey)) {
-	                archivalEntity.setR10_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT(value);
-	            } else if ("R10_ACCT_BRANCH".equals(normalizedKey)) {
-	                archivalEntity.setR10_ACCT_BRANCH(value);
-	            } else if ("R10_ACCT_BALANCE_PULA".equals(normalizedKey)) {
-	                archivalEntity.setR10_ACCT_BALANCE_PULA(parseBigDecimal(value));
-	            } else if ("R10_CURRENCY_OF_ACCT".equals(normalizedKey)) {
-	                archivalEntity.setR10_CURRENCY_OF_ACCT(value);
-	            } else if ("R10_EXCHANGE_RATE".equals(normalizedKey)) {
-	                archivalEntity.setR10_EXCHANGE_RATE(parseBigDecimal(value));
-	            }
+				// ======================= R9 =======================
+				else if ("R9_BANK_SPEC_SINGLE_CUST_REC_NUM".equals(normalizedKey)) {
+					archivalEntity.setR9_BANK_SPEC_SINGLE_CUST_REC_NUM(value);
+				} else if ("R9_COMPANY_NAME".equals(normalizedKey)) {
+					archivalEntity.setR9_COMPANY_NAME(value);
+				} else if ("R9_COMPANY_REG_NUM".equals(normalizedKey)) {
+					archivalEntity.setR9_COMPANY_REG_NUM(value);
+				} else if ("R9_BUSINEES_PHY_ADDRESS".equals(normalizedKey)) {
+					archivalEntity.setR9_BUSINEES_PHY_ADDRESS(value);
+				} else if ("R9_POSTAL_ADDRESS".equals(normalizedKey)) {
+					archivalEntity.setR9_POSTAL_ADDRESS(value);
+				} else if ("R9_COUNTRY_OF_REG".equals(normalizedKey)) {
+					archivalEntity.setR9_COUNTRY_OF_REG(value);
+				} else if ("R9_COMPANY_EMAIL".equals(normalizedKey)) {
+					archivalEntity.setR9_COMPANY_EMAIL(value);
+				} else if ("R9_COMPANY_LANDLINE".equals(normalizedKey)) {
+					archivalEntity.setR9_COMPANY_LANDLINE(value);
+				} else if ("R9_COMPANY_MOB_PHONE_NUM".equals(normalizedKey)) {
+					archivalEntity.setR9_COMPANY_MOB_PHONE_NUM(value);
+				} else if ("R9_PRODUCT_TYPE".equals(normalizedKey)) {
+					archivalEntity.setR9_PRODUCT_TYPE(value);
+				} else if ("R9_ACCT_NUM".equals(normalizedKey)) {
+					archivalEntity.setR9_ACCT_NUM(parseBigDecimal(value));
+				} else if ("R9_STATUS_OF_ACCT".equals(normalizedKey)) {
+					archivalEntity.setR9_STATUS_OF_ACCT(value);
+				} else if ("R9_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT".equals(normalizedKey)) {
+					archivalEntity.setR9_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT(value);
+				} else if ("R9_ACCT_BRANCH".equals(normalizedKey)) {
+					archivalEntity.setR9_ACCT_BRANCH(value);
+				} else if ("R9_ACCT_BALANCE_PULA".equals(normalizedKey)) {
+					archivalEntity.setR9_ACCT_BALANCE_PULA(parseBigDecimal(value));
+				} else if ("R9_CURRENCY_OF_ACCT".equals(normalizedKey)) {
+					archivalEntity.setR9_CURRENCY_OF_ACCT(value);
+				} else if ("R9_EXCHANGE_RATE".equals(normalizedKey)) {
+					archivalEntity.setR9_EXCHANGE_RATE(parseBigDecimal(value));
+				}
 
-	            // ======================= R11 =======================
-	            else if ("R11_BANK_SPEC_SINGLE_CUST_REC_NUM".equals(normalizedKey)) {
-		            archivalEntity.setR11_BANK_SPEC_SINGLE_CUST_REC_NUM(value);
-	            } else if ("R11_COMPANY_NAME".equals(normalizedKey)) {
-	                archivalEntity.setR11_COMPANY_NAME(value);
-	            } else if ("R11_COMPANY_REG_NUM".equals(normalizedKey)) {
-	                archivalEntity.setR11_COMPANY_REG_NUM(value);
-	            } else if ("R11_BUSINEES_PHY_ADDRESS".equals(normalizedKey)) {
-	                archivalEntity.setR11_BUSINEES_PHY_ADDRESS(value);
-	            } else if ("R11_POSTAL_ADDRESS".equals(normalizedKey)) {
-	                archivalEntity.setR11_POSTAL_ADDRESS(value);
-	            } else if ("R11_COUNTRY_OF_REG".equals(normalizedKey)) {
-	                archivalEntity.setR11_COUNTRY_OF_REG(value);
-	            } else if ("R11_COMPANY_EMAIL".equals(normalizedKey)) {
-	                archivalEntity.setR11_COMPANY_EMAIL(value);
-	            } else if ("R11_COMPANY_LANDLINE".equals(normalizedKey)) {
-	                archivalEntity.setR11_COMPANY_LANDLINE(value);
-	            } else if ("R11_COMPANY_MOB_PHONE_NUM".equals(normalizedKey)) {
-	                archivalEntity.setR11_COMPANY_MOB_PHONE_NUM(value);
-	            } else if ("R11_PRODUCT_TYPE".equals(normalizedKey)) {
-	                archivalEntity.setR11_PRODUCT_TYPE(value);
-	            } else if ("R11_ACCT_NUM".equals(normalizedKey)) {
-	                archivalEntity.setR11_ACCT_NUM(parseBigDecimal(value));
-	            } else if ("R11_STATUS_OF_ACCT".equals(normalizedKey)) {
-	                archivalEntity.setR11_STATUS_OF_ACCT(value);
-	            } else if ("R11_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT".equals(normalizedKey)) {
-	                archivalEntity.setR11_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT(value);
-	            } else if ("R11_ACCT_BRANCH".equals(normalizedKey)) {
-	                archivalEntity.setR11_ACCT_BRANCH(value);
-	            } else if ("R11_ACCT_BALANCE_PULA".equals(normalizedKey)) {
-	                archivalEntity.setR11_ACCT_BALANCE_PULA(parseBigDecimal(value));
-	            } else if ("R11_CURRENCY_OF_ACCT".equals(normalizedKey)) {
-	                archivalEntity.setR11_CURRENCY_OF_ACCT(value);
-	            } else if ("R11_EXCHANGE_RATE".equals(normalizedKey)) {
-	                archivalEntity.setR11_EXCHANGE_RATE(parseBigDecimal(value));
-	            }
+				// ======================= R10 =======================
+				else if ("R10_BANK_SPEC_SINGLE_CUST_REC_NUM".equals(normalizedKey)) {
+					archivalEntity.setR10_BANK_SPEC_SINGLE_CUST_REC_NUM(value);
+				} else if ("R10_COMPANY_NAME".equals(normalizedKey)) {
+					archivalEntity.setR10_COMPANY_NAME(value);
+				} else if ("R10_COMPANY_REG_NUM".equals(normalizedKey)) {
+					archivalEntity.setR10_COMPANY_REG_NUM(value);
+				} else if ("R10_BUSINEES_PHY_ADDRESS".equals(normalizedKey)) {
+					archivalEntity.setR10_BUSINEES_PHY_ADDRESS(value);
+				} else if ("R10_POSTAL_ADDRESS".equals(normalizedKey)) {
+					archivalEntity.setR10_POSTAL_ADDRESS(value);
+				} else if ("R10_COUNTRY_OF_REG".equals(normalizedKey)) {
+					archivalEntity.setR10_COUNTRY_OF_REG(value);
+				} else if ("R10_COMPANY_EMAIL".equals(normalizedKey)) {
+					archivalEntity.setR10_COMPANY_EMAIL(value);
+				} else if ("R10_COMPANY_LANDLINE".equals(normalizedKey)) {
+					archivalEntity.setR10_COMPANY_LANDLINE(value);
+				} else if ("R10_COMPANY_MOB_PHONE_NUM".equals(normalizedKey)) {
+					archivalEntity.setR10_COMPANY_MOB_PHONE_NUM(value);
+				} else if ("R10_PRODUCT_TYPE".equals(normalizedKey)) {
+					archivalEntity.setR10_PRODUCT_TYPE(value);
+				} else if ("R10_ACCT_NUM".equals(normalizedKey)) {
+					archivalEntity.setR10_ACCT_NUM(parseBigDecimal(value));
+				} else if ("R10_STATUS_OF_ACCT".equals(normalizedKey)) {
+					archivalEntity.setR10_STATUS_OF_ACCT(value);
+				} else if ("R10_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT".equals(normalizedKey)) {
+					archivalEntity.setR10_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT(value);
+				} else if ("R10_ACCT_BRANCH".equals(normalizedKey)) {
+					archivalEntity.setR10_ACCT_BRANCH(value);
+				} else if ("R10_ACCT_BALANCE_PULA".equals(normalizedKey)) {
+					archivalEntity.setR10_ACCT_BALANCE_PULA(parseBigDecimal(value));
+				} else if ("R10_CURRENCY_OF_ACCT".equals(normalizedKey)) {
+					archivalEntity.setR10_CURRENCY_OF_ACCT(value);
+				} else if ("R10_EXCHANGE_RATE".equals(normalizedKey)) {
+					archivalEntity.setR10_EXCHANGE_RATE(parseBigDecimal(value));
+				}
 
-	            // ======================= R12 =======================
-	            else if ("R12_BANK_SPEC_SINGLE_CUST_REC_NUM".equals(normalizedKey)) {
-		            archivalEntity.setR12_BANK_SPEC_SINGLE_CUST_REC_NUM(value);
-	            } else if ("R12_COMPANY_NAME".equals(normalizedKey)) {
-	                archivalEntity.setR12_COMPANY_NAME(value);
-	            } else if ("R12_COMPANY_REG_NUM".equals(normalizedKey)) {
-	                archivalEntity.setR12_COMPANY_REG_NUM(value);
-	            } else if ("R12_BUSINEES_PHY_ADDRESS".equals(normalizedKey)) {
-	                archivalEntity.setR12_BUSINEES_PHY_ADDRESS(value);
-	            } else if ("R12_POSTAL_ADDRESS".equals(normalizedKey)) {
-	                archivalEntity.setR12_POSTAL_ADDRESS(value);
-	            } else if ("R12_COUNTRY_OF_REG".equals(normalizedKey)) {
-	                archivalEntity.setR12_COUNTRY_OF_REG(value);
-	            } else if ("R12_COMPANY_EMAIL".equals(normalizedKey)) {
-	                archivalEntity.setR12_COMPANY_EMAIL(value);
-	            } else if ("R12_COMPANY_LANDLINE".equals(normalizedKey)) {
-	                archivalEntity.setR12_COMPANY_LANDLINE(value);
-	            } else if ("R12_COMPANY_MOB_PHONE_NUM".equals(normalizedKey)) {
-	                archivalEntity.setR12_COMPANY_MOB_PHONE_NUM(value);
-	            } else if ("R12_PRODUCT_TYPE".equals(normalizedKey)) {
-	                archivalEntity.setR12_PRODUCT_TYPE(value);
-	            } else if ("R12_ACCT_NUM".equals(normalizedKey)) {
-	                archivalEntity.setR12_ACCT_NUM(parseBigDecimal(value));
-	            } else if ("R12_STATUS_OF_ACCT".equals(normalizedKey)) {
-	                archivalEntity.setR12_STATUS_OF_ACCT(value);
-	            } else if ("R12_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT".equals(normalizedKey)) {
-	                archivalEntity.setR12_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT(value);
-	            } else if ("R12_ACCT_BRANCH".equals(normalizedKey)) {
-	                archivalEntity.setR12_ACCT_BRANCH(value);
-	            } else if ("R12_ACCT_BALANCE_PULA".equals(normalizedKey)) {
-	                archivalEntity.setR12_ACCT_BALANCE_PULA(parseBigDecimal(value));
-	            } else if ("R12_CURRENCY_OF_ACCT".equals(normalizedKey)) {
-	                archivalEntity.setR12_CURRENCY_OF_ACCT(value);
-	            } else if ("R12_EXCHANGE_RATE".equals(normalizedKey)) {
-	                archivalEntity.setR12_EXCHANGE_RATE(parseBigDecimal(value));
-	            }
-	        }
+				// ======================= R11 =======================
+				else if ("R11_BANK_SPEC_SINGLE_CUST_REC_NUM".equals(normalizedKey)) {
+					archivalEntity.setR11_BANK_SPEC_SINGLE_CUST_REC_NUM(value);
+				} else if ("R11_COMPANY_NAME".equals(normalizedKey)) {
+					archivalEntity.setR11_COMPANY_NAME(value);
+				} else if ("R11_COMPANY_REG_NUM".equals(normalizedKey)) {
+					archivalEntity.setR11_COMPANY_REG_NUM(value);
+				} else if ("R11_BUSINEES_PHY_ADDRESS".equals(normalizedKey)) {
+					archivalEntity.setR11_BUSINEES_PHY_ADDRESS(value);
+				} else if ("R11_POSTAL_ADDRESS".equals(normalizedKey)) {
+					archivalEntity.setR11_POSTAL_ADDRESS(value);
+				} else if ("R11_COUNTRY_OF_REG".equals(normalizedKey)) {
+					archivalEntity.setR11_COUNTRY_OF_REG(value);
+				} else if ("R11_COMPANY_EMAIL".equals(normalizedKey)) {
+					archivalEntity.setR11_COMPANY_EMAIL(value);
+				} else if ("R11_COMPANY_LANDLINE".equals(normalizedKey)) {
+					archivalEntity.setR11_COMPANY_LANDLINE(value);
+				} else if ("R11_COMPANY_MOB_PHONE_NUM".equals(normalizedKey)) {
+					archivalEntity.setR11_COMPANY_MOB_PHONE_NUM(value);
+				} else if ("R11_PRODUCT_TYPE".equals(normalizedKey)) {
+					archivalEntity.setR11_PRODUCT_TYPE(value);
+				} else if ("R11_ACCT_NUM".equals(normalizedKey)) {
+					archivalEntity.setR11_ACCT_NUM(parseBigDecimal(value));
+				} else if ("R11_STATUS_OF_ACCT".equals(normalizedKey)) {
+					archivalEntity.setR11_STATUS_OF_ACCT(value);
+				} else if ("R11_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT".equals(normalizedKey)) {
+					archivalEntity.setR11_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT(value);
+				} else if ("R11_ACCT_BRANCH".equals(normalizedKey)) {
+					archivalEntity.setR11_ACCT_BRANCH(value);
+				} else if ("R11_ACCT_BALANCE_PULA".equals(normalizedKey)) {
+					archivalEntity.setR11_ACCT_BALANCE_PULA(parseBigDecimal(value));
+				} else if ("R11_CURRENCY_OF_ACCT".equals(normalizedKey)) {
+					archivalEntity.setR11_CURRENCY_OF_ACCT(value);
+				} else if ("R11_EXCHANGE_RATE".equals(normalizedKey)) {
+					archivalEntity.setR11_EXCHANGE_RATE(parseBigDecimal(value));
+				}
 
-	        /* =========================================================
-	         * 5️⃣ SET RESUB METADATA
-	         * ========================================================= */
-	        archivalEntity.setReportDate(reportDate);
-	        archivalEntity.setReportVersion(String.valueOf(newVersion));
-	        archivalEntity.setReportResubDate(new Date());
+				// ======================= R12 =======================
+				else if ("R12_BANK_SPEC_SINGLE_CUST_REC_NUM".equals(normalizedKey)) {
+					archivalEntity.setR12_BANK_SPEC_SINGLE_CUST_REC_NUM(value);
+				} else if ("R12_COMPANY_NAME".equals(normalizedKey)) {
+					archivalEntity.setR12_COMPANY_NAME(value);
+				} else if ("R12_COMPANY_REG_NUM".equals(normalizedKey)) {
+					archivalEntity.setR12_COMPANY_REG_NUM(value);
+				} else if ("R12_BUSINEES_PHY_ADDRESS".equals(normalizedKey)) {
+					archivalEntity.setR12_BUSINEES_PHY_ADDRESS(value);
+				} else if ("R12_POSTAL_ADDRESS".equals(normalizedKey)) {
+					archivalEntity.setR12_POSTAL_ADDRESS(value);
+				} else if ("R12_COUNTRY_OF_REG".equals(normalizedKey)) {
+					archivalEntity.setR12_COUNTRY_OF_REG(value);
+				} else if ("R12_COMPANY_EMAIL".equals(normalizedKey)) {
+					archivalEntity.setR12_COMPANY_EMAIL(value);
+				} else if ("R12_COMPANY_LANDLINE".equals(normalizedKey)) {
+					archivalEntity.setR12_COMPANY_LANDLINE(value);
+				} else if ("R12_COMPANY_MOB_PHONE_NUM".equals(normalizedKey)) {
+					archivalEntity.setR12_COMPANY_MOB_PHONE_NUM(value);
+				} else if ("R12_PRODUCT_TYPE".equals(normalizedKey)) {
+					archivalEntity.setR12_PRODUCT_TYPE(value);
+				} else if ("R12_ACCT_NUM".equals(normalizedKey)) {
+					archivalEntity.setR12_ACCT_NUM(parseBigDecimal(value));
+				} else if ("R12_STATUS_OF_ACCT".equals(normalizedKey)) {
+					archivalEntity.setR12_STATUS_OF_ACCT(value);
+				} else if ("R12_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT".equals(normalizedKey)) {
+					archivalEntity.setR12_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT(value);
+				} else if ("R12_ACCT_BRANCH".equals(normalizedKey)) {
+					archivalEntity.setR12_ACCT_BRANCH(value);
+				} else if ("R12_ACCT_BALANCE_PULA".equals(normalizedKey)) {
+					archivalEntity.setR12_ACCT_BALANCE_PULA(parseBigDecimal(value));
+				} else if ("R12_CURRENCY_OF_ACCT".equals(normalizedKey)) {
+					archivalEntity.setR12_CURRENCY_OF_ACCT(value);
+				} else if ("R12_EXCHANGE_RATE".equals(normalizedKey)) {
+					archivalEntity.setR12_EXCHANGE_RATE(parseBigDecimal(value));
+				}
+			}
 
-	        /* =========================================================
-	         * 6️⃣ SAVE NEW ARCHIVAL VERSION
-	         * ========================================================= */
-	        BRRS_BDISB2_Archival_Summary_Repo.save(archivalEntity);
+			/*
+			 * ========================================================= 5️⃣ SET RESUB
+			 * METADATA =========================================================
+			 */
+			archivalEntity.setReportDate(reportDate);
+			archivalEntity.setReportVersion(String.valueOf(newVersion));
+			archivalEntity.setReportResubDate(new Date());
 
-	        System.out.println("✅ RESUB saved successfully. Version = " + newVersion);
+			/*
+			 * ========================================================= 6️⃣ SAVE NEW
+			 * ARCHIVAL VERSION =========================================================
+			 */
+			BRRS_BDISB2_Archival_Summary_Repo.save(archivalEntity);
 
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        throw new RuntimeException(
-	                "Error while creating archival resubmission record", e);
-	    }
+			System.out.println("✅ RESUB saved successfully. Version = " + newVersion);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException("Error while creating archival resubmission record", e);
+		}
 	}
 
 	private BigDecimal parseBigDecimal(String value) {
-	    return (value == null || value.trim().isEmpty())
-	            ? BigDecimal.ZERO
-	            : new BigDecimal(value.replace(",", ""));
+		return (value == null || value.trim().isEmpty()) ? BigDecimal.ZERO : new BigDecimal(value.replace(",", ""));
 	}
 
-
-	
 	/*
 	 * // Resubmit the values , latest version and Resub Date public void
 	 * updateReportReSub(BDISB2_Summary_Entity updatedEntity) {
@@ -4395,7 +4390,7 @@ public class BRRS_BDISB2_ReportService {
 					else
 						cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-					
+
 					// ===== R6 / Col D =====
 
 					cellD = row.getCell(3);
@@ -5905,254 +5900,227 @@ public class BRRS_BDISB2_ReportService {
 		}
 	}
 
-	public byte[] getBDISB2DetailExcel(String filename, String fromdate, String todate, String currency,
-			   String dtltype, String type, String version) {
-try {
-logger.info("Generating Excel for BDISB2 Details...");
-System.out.println("came to Detail download service");
+	public byte[] getBDISB2DetailExcel(String filename, String fromdate, String todate, String currency, String dtltype,
+			String type, String version) {
+		try {
+			logger.info("Generating Excel for BDISB2 Details...");
+			System.out.println("came to Detail download service");
 
+			if (type.equals("ARCHIVAL") & version != null) {
+				byte[] ARCHIVALreport = getDetailExcelARCHIVAL(filename, fromdate, todate, currency, dtltype, type,
+						version);
+				return ARCHIVALreport;
+			}
 
-if (type.equals("ARCHIVAL") & version != null) {
-byte[] ARCHIVALreport = getDetailExcelARCHIVAL(filename, fromdate, todate, currency, dtltype, type,
-version);
-return ARCHIVALreport;
-}
-
-XSSFWorkbook workbook = new XSSFWorkbook();
-XSSFSheet sheet = workbook.createSheet("BDISB2Detail");
+			XSSFWorkbook workbook = new XSSFWorkbook();
+			XSSFSheet sheet = workbook.createSheet("BDISB2Detail");
 
 //Common border style
-BorderStyle border = BorderStyle.THIN;
+			BorderStyle border = BorderStyle.THIN;
 
 //Header style (left aligned)
-CellStyle headerStyle = workbook.createCellStyle();
-Font headerFont = workbook.createFont();
-headerFont.setBold(true);
-headerFont.setFontHeightInPoints((short) 10);
-headerStyle.setFont(headerFont);
-headerStyle.setAlignment(HorizontalAlignment.LEFT);
-headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
-headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-headerStyle.setBorderTop(border);
-headerStyle.setBorderBottom(border);
-headerStyle.setBorderLeft(border);
-headerStyle.setBorderRight(border);
+			CellStyle headerStyle = workbook.createCellStyle();
+			Font headerFont = workbook.createFont();
+			headerFont.setBold(true);
+			headerFont.setFontHeightInPoints((short) 10);
+			headerStyle.setFont(headerFont);
+			headerStyle.setAlignment(HorizontalAlignment.LEFT);
+			headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+			headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+			headerStyle.setBorderTop(border);
+			headerStyle.setBorderBottom(border);
+			headerStyle.setBorderLeft(border);
+			headerStyle.setBorderRight(border);
 
 //Right-aligned header style for ACCT BALANCE
-CellStyle rightAlignedHeaderStyle = workbook.createCellStyle();
-rightAlignedHeaderStyle.cloneStyleFrom(headerStyle);
-rightAlignedHeaderStyle.setAlignment(HorizontalAlignment.RIGHT);
+			CellStyle rightAlignedHeaderStyle = workbook.createCellStyle();
+			rightAlignedHeaderStyle.cloneStyleFrom(headerStyle);
+			rightAlignedHeaderStyle.setAlignment(HorizontalAlignment.RIGHT);
 
 //Default data style (left aligned)
-CellStyle dataStyle = workbook.createCellStyle();
-dataStyle.setAlignment(HorizontalAlignment.LEFT);
-dataStyle.setBorderTop(border);
-dataStyle.setBorderBottom(border);
-dataStyle.setBorderLeft(border);
-dataStyle.setBorderRight(border);
+			CellStyle dataStyle = workbook.createCellStyle();
+			dataStyle.setAlignment(HorizontalAlignment.LEFT);
+			dataStyle.setBorderTop(border);
+			dataStyle.setBorderBottom(border);
+			dataStyle.setBorderLeft(border);
+			dataStyle.setBorderRight(border);
 
 //ACCT BALANCE style (right aligned with thousand separator)
-CellStyle balanceStyle = workbook.createCellStyle();
-balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
-balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("#,###"));
-balanceStyle.setBorderTop(border);
-balanceStyle.setBorderBottom(border);
-balanceStyle.setBorderLeft(border);
-balanceStyle.setBorderRight(border);
+			CellStyle balanceStyle = workbook.createCellStyle();
+			balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
+			balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("#,##0"));
+			balanceStyle.setBorderTop(border);
+			balanceStyle.setBorderBottom(border);
+			balanceStyle.setBorderLeft(border);
+			balanceStyle.setBorderRight(border);
 
-//Header row
-//String[] headers = {
-//"CUST ID", "ACCT NO", "ACCT NAME","BANK_SPEC_SINGLE_CUST_REC_NUM","COMPANY_NAME ","COMPANY_REG_NUM",
-//"BUSINEES_PHY_ADDRESS","POSTAL_ADDRESS","COUNTRY_OF_REG","COMPANY_EMAIL",
-//"COMPANY_LANDLINE","COMPANY_MOB_PHONE_NUM","PRODUCT_TYPE","ACCT_NUM","STATUS_OF_ACCT",
-//"ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT",
-//"ACCT_BRANCH",
-//"ACCT BALANCE IN PULA","CURRENCY_OF_ACCT","EXCHANGE_RATE", "REPORT LABEL", "REPORT ADDL CRITERIA1",
-//"REPORT_DATE"
-//};
-String[] headers = {
-"COMPANY_NAME ","COMPANY_REG_NUM",
-"ACCT_NUM",
-"ACCT BALANCE IN PULA", "REPORT LABEL", "REPORT ADDL CRITERIA1",
-"REPORT_DATE"
-};
 
-XSSFRow headerRow = sheet.createRow(0);
-for (int i = 0; i < headers.length; i++) {
-Cell cell = headerRow.createCell(i);
-cell.setCellValue(headers[i]);
+			String[] headers = { "COMPANY_NAME ", "COMPANY_REG_NUM", "ACCT_NUM", "ACCT BALANCE IN PULA", "REPORT LABEL",
+					"REPORT ADDL CRITERIA1", "REPORT_DATE" };
 
-if (i == 3) { // ACCT BALANCE
-cell.setCellStyle(rightAlignedHeaderStyle);
-} else {
-cell.setCellStyle(headerStyle);
-}
+			XSSFRow headerRow = sheet.createRow(0);
+			for (int i = 0; i < headers.length; i++) {
+				Cell cell = headerRow.createCell(i);
+				cell.setCellValue(headers[i]);
 
-sheet.setColumnWidth(i, 5000);
-}
+				if (i == 3) { // ACCT BALANCE
+					cell.setCellStyle(rightAlignedHeaderStyle);
+				} else {
+					cell.setCellStyle(headerStyle);
+				}
+
+				sheet.setColumnWidth(i, 5000);
+			}
 
 //Get data
-Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
-List<BDISB2_Detail_Entity> reportData = BRRS_BDISB2_Detail_Repo.getdatabydateList(parsedToDate);
+			Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
+			List<BDISB2_Detail_Entity> reportData = BRRS_BDISB2_Detail_Repo.getdatabydateList(parsedToDate);
 
-if (reportData != null && !reportData.isEmpty()) {
-int rowIndex = 1;
-for (BDISB2_Detail_Entity item : reportData) {
-XSSFRow row = sheet.createRow(rowIndex++);
+			if (reportData != null && !reportData.isEmpty()) {
+				int rowIndex = 1;
+				for (BDISB2_Detail_Entity item : reportData) {
+					XSSFRow row = sheet.createRow(rowIndex++);
 
-row.createCell(0).setCellValue(item.getCOMPANY_NAME());
-row.createCell(1).setCellValue(item.getCOMPANY_REG_NUM());
+					row.createCell(0).setCellValue(item.getCOMPANY_NAME());
+					row.createCell(1).setCellValue(item.getCOMPANY_REG_NUM());
 
-Cell bankSpecSingleCell = row.createCell(2);
-if (item.getACCT_NUM() != null) {
-	bankSpecSingleCell.setCellValue(item.getACCT_NUM().doubleValue());
-} else {
-	bankSpecSingleCell.setCellValue(0);
-}
+					Cell bankSpecSingleCell = row.createCell(2);
+					if (item.getACCT_NUM() != null) {
+					    bankSpecSingleCell.setCellValue(item.getACCT_NUM().toString()); // TEXT
+					} else {
+					    bankSpecSingleCell.setCellValue("");
+					}
+					bankSpecSingleCell.setCellStyle(dataStyle);
 
 //ACCT BALANCE (right aligned, 3 decimal places)
-Cell balanceCell = row.createCell(3);
-if (item.getACCT_BALANCE_PULA() != null) {
-balanceCell.setCellValue(item.getACCT_BALANCE_PULA().doubleValue());
-} else {
-balanceCell.setCellValue(0);
-}
-balanceCell.setCellStyle(balanceStyle);
+					Cell balanceCell = row.createCell(3);
+					if (item.getACCT_BALANCE_PULA() != null) {
+						balanceCell.setCellValue(item.getACCT_BALANCE_PULA().doubleValue());
+					} else {
+						balanceCell.setCellValue(0);
+					}
+					balanceCell.setCellStyle(balanceStyle);
 
- row.createCell(4).setCellValue(item.getReportLabel());
- row.createCell(5).setCellValue(item.getReportAddlCriteria1());
- row.createCell(6)
-		.setCellValue(item.getReportDate() != null
-		? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate()): "");
+					row.createCell(4).setCellValue(item.getReportLabel());
+					row.createCell(5).setCellValue(item.getReportAddlCriteria1());
+					row.createCell(6)
+							.setCellValue(item.getReportDate() != null
+									? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
+									: "");
 
-		// Apply data style for all other cells
-		for (int j = 0; j < 6; j++) {
-			if (j != 3) {
-				row.getCell(j).setCellStyle(dataStyle);
+					// Apply data style for all other cells
+					for (int j = 0; j < 6; j++) {
+						if (j != 3) {
+							row.getCell(j).setCellStyle(dataStyle);
+						}
+					}
+				}
+			} else {
+				logger.info("No data found for BDISB2 — only header will be written.");
 			}
-		}
-	}
-} else {
-	logger.info("No data found for BDISB2 — only header will be written.");
-}
 
 //Write to byte[]
-ByteArrayOutputStream bos = new ByteArrayOutputStream();
-workbook.write(bos);
-workbook.close();
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			workbook.write(bos);
+			workbook.close();
 
-logger.info("Excel generation completed with {} row(s).", reportData != null ? reportData.size() : 0);
-return bos.toByteArray();
+			logger.info("Excel generation completed with {} row(s).", reportData != null ? reportData.size() : 0);
+			return bos.toByteArray();
 
-} catch (Exception e) {
-logger.error("Error generating BDISB2 Excel", e);
-return new byte[0];
-}
-}
+		} catch (Exception e) {
+			logger.error("Error generating BDISB2 Excel", e);
+			return new byte[0];
+		}
+	}
 
 	public byte[] getDetailExcelARCHIVAL(String filename, String fromdate, String todate, String currency,
-			 String dtltype, String type, String version) {
-try {
-logger.info("Generating Excel for BRRS_BDISB2 ARCHIVAL Details...");
-System.out.println("came to Detail download service");
-if (type.equals("ARCHIVAL") & version != null) {
+			String dtltype, String type, String version) {
+		try {
+			logger.info("Generating Excel for BRRS_BDISB2 ARCHIVAL Details...");
+			System.out.println("came to Detail download service");
+			if (type.equals("ARCHIVAL") & version != null) {
 
-}
-XSSFWorkbook workbook = new XSSFWorkbook();
-XSSFSheet sheet = workbook.createSheet("BDISB2Detail");
+			}
+			XSSFWorkbook workbook = new XSSFWorkbook();
+			XSSFSheet sheet = workbook.createSheet("BDISB2Detail");
 
 //Common border style
-BorderStyle border = BorderStyle.THIN;
+			BorderStyle border = BorderStyle.THIN;
 
 //Header style (left aligned)
-CellStyle headerStyle = workbook.createCellStyle();
-Font headerFont = workbook.createFont();
-headerFont.setBold(true);
-headerFont.setFontHeightInPoints((short) 10);
-headerStyle.setFont(headerFont);
-headerStyle.setAlignment(HorizontalAlignment.LEFT);
-headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
-headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-headerStyle.setBorderTop(border);
-headerStyle.setBorderBottom(border);
-headerStyle.setBorderLeft(border);
-headerStyle.setBorderRight(border);
+			CellStyle headerStyle = workbook.createCellStyle();
+			Font headerFont = workbook.createFont();
+			headerFont.setBold(true);
+			headerFont.setFontHeightInPoints((short) 10);
+			headerStyle.setFont(headerFont);
+			headerStyle.setAlignment(HorizontalAlignment.LEFT);
+			headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+			headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+			headerStyle.setBorderTop(border);
+			headerStyle.setBorderBottom(border);
+			headerStyle.setBorderLeft(border);
+			headerStyle.setBorderRight(border);
 
 //Right-aligned header style for ACCT BALANCE
-CellStyle rightAlignedHeaderStyle = workbook.createCellStyle();
-rightAlignedHeaderStyle.cloneStyleFrom(headerStyle);
-rightAlignedHeaderStyle.setAlignment(HorizontalAlignment.RIGHT);
+			CellStyle rightAlignedHeaderStyle = workbook.createCellStyle();
+			rightAlignedHeaderStyle.cloneStyleFrom(headerStyle);
+			rightAlignedHeaderStyle.setAlignment(HorizontalAlignment.RIGHT);
 
 //Default data style (left aligned)
-CellStyle dataStyle = workbook.createCellStyle();
-dataStyle.setAlignment(HorizontalAlignment.LEFT);
-dataStyle.setBorderTop(border);
-dataStyle.setBorderBottom(border);
-dataStyle.setBorderLeft(border);
-dataStyle.setBorderRight(border);
+			CellStyle dataStyle = workbook.createCellStyle();
+			dataStyle.setAlignment(HorizontalAlignment.LEFT);
+			dataStyle.setBorderTop(border);
+			dataStyle.setBorderBottom(border);
+			dataStyle.setBorderLeft(border);
+			dataStyle.setBorderRight(border);
 
 //ACCT BALANCE style (right aligned with 3 decimals)
-CellStyle balanceStyle = workbook.createCellStyle();
-balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
-balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("#,###"));
-balanceStyle.setBorderTop(border);
-balanceStyle.setBorderBottom(border);
-balanceStyle.setBorderLeft(border);
-balanceStyle.setBorderRight(border);
-
+			CellStyle balanceStyle = workbook.createCellStyle();
+			balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
+			balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("#,##0"));
+			balanceStyle.setBorderTop(border);
+			balanceStyle.setBorderBottom(border);
+			balanceStyle.setBorderLeft(border);
+			balanceStyle.setBorderRight(border);
 
 //Header row
-String[] headers = {
-		"COMPANY_NAME ","COMPANY_REG_NUM",
-		"ACCT_NUM",
-		"ACCT BALANCE IN PULA", "REPORT LABEL", "REPORT ADDL CRITERIA1",
-		"REPORT_DATE"
-};
+			String[] headers = { "COMPANY_NAME ", "COMPANY_REG_NUM", "ACCT_NUM", "ACCT BALANCE IN PULA", "REPORT LABEL",
+					"REPORT ADDL CRITERIA1", "REPORT_DATE" };
 
-XSSFRow headerRow = sheet.createRow(0);
-for (int i = 0; i < headers.length; i++) {
-Cell cell = headerRow.createCell(i);
-cell.setCellValue(headers[i]);
+			XSSFRow headerRow = sheet.createRow(0);
+			for (int i = 0; i < headers.length; i++) {
+				Cell cell = headerRow.createCell(i);
+				cell.setCellValue(headers[i]);
 
-if (i == 3) { // ACCT BALANCE
-cell.setCellStyle(rightAlignedHeaderStyle);
-} else {
-cell.setCellStyle(headerStyle);
-}
+				if (i == 3) { // ACCT BALANCE
+					cell.setCellStyle(rightAlignedHeaderStyle);
+				} else {
+					cell.setCellStyle(headerStyle);
+				}
 
-sheet.setColumnWidth(i, 5000);
-}
+				sheet.setColumnWidth(i, 5000);
+			}
 
 //Get data
-Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
-List<BDISB2_Archival_Detail_Entity> reportData = BRRS_BDISB2_Archival_Detail_Repo.getdatabydateList(parsedToDate,version);
+			Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
+			List<BDISB2_Archival_Detail_Entity> reportData = BRRS_BDISB2_Archival_Detail_Repo
+					.getdatabydateList(parsedToDate, version);
 
-if (reportData != null && !reportData.isEmpty()) {
-int rowIndex = 1;
-for (BDISB2_Archival_Detail_Entity item : reportData) {
-XSSFRow row = sheet.createRow(rowIndex++);
+			if (reportData != null && !reportData.isEmpty()) {
+				int rowIndex = 1;
+				for (BDISB2_Archival_Detail_Entity item : reportData) {
+					XSSFRow row = sheet.createRow(rowIndex++);
 
-//row.createCell(0).setCellValue(item.getCustId());
-//row.createCell(1).setCellValue(item.getAcctNumber());
-//row.createCell(2).setCellValue(item.getAcctName());
-//
-////ACCT BALANCE (right aligned, 3 decimal places with comma separator)
-//Cell balanceCell = row.createCell(3);
-//
-//if (item.getAcctBalanceInpula() != null) {
-//balanceCell.setCellValue(item.getAcctBalanceInpula().doubleValue());
-//} else {
-//balanceCell.setCellValue(0);
-//}
+
 //
 //Create style with thousand separator and decimal point
-DataFormat format = workbook.createDataFormat();
+					DataFormat format = workbook.createDataFormat();
 
 //Format: 1,234,567
-balanceStyle.setDataFormat(format.getFormat("#,##0"));
+					balanceStyle.setDataFormat(format.getFormat("#,##0"));
 
 //Right alignment (optional)
-balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
+					balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
 
 //balanceCell.setCellStyle(balanceStyle);
 
@@ -6171,55 +6139,56 @@ balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
 //}
 //}
 //}
-row.createCell(0).setCellValue(item.getCOMPANY_NAME());
-row.createCell(1).setCellValue(item.getCOMPANY_REG_NUM());
+					row.createCell(0).setCellValue(item.getCOMPANY_NAME());
+					row.createCell(1).setCellValue(item.getCOMPANY_REG_NUM());
 
-Cell bankSpecSingleCell = row.createCell(2);
-if (item.getACCT_NUM() != null) {
-	bankSpecSingleCell.setCellValue(item.getACCT_NUM().doubleValue());
-} else {
-	bankSpecSingleCell.setCellValue(0);
-}
+					Cell bankSpecSingleCell = row.createCell(2);
+					if (item.getACCT_NUM() != null) {
+					    bankSpecSingleCell.setCellValue(item.getACCT_NUM().toString()); // TEXT
+					} else {
+					    bankSpecSingleCell.setCellValue("");
+					}
+					bankSpecSingleCell.setCellStyle(dataStyle);
+
 
 //ACCT BALANCE (right aligned, 3 decimal places)
-Cell balanceCell = row.createCell(3);
-if (item.getACCT_BALANCE_PULA() != null) {
-balanceCell.setCellValue(item.getACCT_BALANCE_PULA().doubleValue());
-} else {
-balanceCell.setCellValue(0);
-}
-balanceCell.setCellStyle(balanceStyle);
+					Cell balanceCell = row.createCell(3);
+					if (item.getACCT_BALANCE_PULA() != null) {
+						balanceCell.setCellValue(item.getACCT_BALANCE_PULA().doubleValue());
+					} else {
+						balanceCell.setCellValue(0);
+					}
+					balanceCell.setCellStyle(balanceStyle);
 
- row.createCell(4).setCellValue(item.getReportLabel());
- row.createCell(5).setCellValue(item.getReportAddlCriteria1());
- row.createCell(6)
-		.setCellValue(item.getReportDate() != null
-		? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate()): "");
+					row.createCell(4).setCellValue(item.getReportLabel());
+					row.createCell(5).setCellValue(item.getReportAddlCriteria1());
+					row.createCell(6)
+							.setCellValue(item.getReportDate() != null
+									? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
+									: "");
 
-		// Apply data style for all other cells
-		for (int j = 0; j < 6; j++) {
-			if (j != 3) {
-				row.getCell(j).setCellStyle(dataStyle);
+					// Apply data style for all other cells
+					for (int j = 0; j < 6; j++) {
+						if (j != 3) {
+							row.getCell(j).setCellStyle(dataStyle);
+						}
+					}
+				}
+			} else {
+				logger.info("No data found for BDISB2 — only header will be written.");
 			}
+//Write to byte[]
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			workbook.write(bos);
+			workbook.close();
+
+			logger.info("Excel generation completed with {} row(s).", reportData != null ? reportData.size() : 0);
+			return bos.toByteArray();
+
+		} catch (Exception e) {
+			logger.error("Error generating BDISB2 Excel", e);
+			return new byte[0];
 		}
 	}
-}
-else {
-logger.info("No data found for BDISB2 — only header will be written.");
-}
-//Write to byte[]
-ByteArrayOutputStream bos = new ByteArrayOutputStream();
-workbook.write(bos);
-workbook.close();
 
-logger.info("Excel generation completed with {} row(s).", reportData != null ? reportData.size() : 0);
-return bos.toByteArray();
-
-} catch (Exception e) {
-logger.error("Error generating BDISB2 Excel", e);
-return new byte[0];
 }
-}
-	
-}
-
