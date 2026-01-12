@@ -724,11 +724,11 @@ public class BRRS_SCH_17_ReportService {
 					row = sheet.getRow(16);
 					cellC = row.getCell(2);
 					if (cellC == null) cellC = row.createCell(2);
-					cellC.setCellValue(record1.getR17_31_3_25_amt() != null ? record1.getR17_31_3_25_amt().doubleValue() : 0);
+					cellC.setCellValue(record.getR17_31_3_25_amt() != null ? record.getR17_31_3_25_amt().doubleValue() : 0);
 
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
-					cellD.setCellValue(record1.getR17_30_9_25_amt() != null ? record1.getR17_30_9_25_amt().doubleValue() : 0);
+					cellD.setCellValue(record.getR17_30_9_25_amt() != null ? record.getR17_30_9_25_amt().doubleValue() : 0);
 				
 
 					// R18
@@ -861,7 +861,7 @@ public class BRRS_SCH_17_ReportService {
 			// ACCT BALANCE style (right aligned with 3 decimals)
 			CellStyle balanceStyle = workbook.createCellStyle();
 			balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
-			balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0"));
+			balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("#,##0"));
 			balanceStyle.setBorderTop(border);
 			balanceStyle.setBorderBottom(border);
 			balanceStyle.setBorderLeft(border);
