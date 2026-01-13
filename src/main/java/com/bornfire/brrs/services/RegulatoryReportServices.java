@@ -187,6 +187,10 @@ public class RegulatoryReportServices {
 
 	@Autowired
 	BRRS_M_SRWA_12A_ReportService brrs_m_srwa_12a_reportservice;
+	
+	@Autowired
+	BRRS_M_SRWA_12A_New_ReportService  brrs_M_SRWA_12A_New_reportservice;
+	
 
 	@Autowired
 	BRRS_M_OB_ReportService BRRS_M_OB_ReportService;
@@ -740,6 +744,15 @@ public class RegulatoryReportServices {
 						dtltype,
 						pageable, type, version);
 				break;
+				
+				
+			case "M_SRWA_12A_New":
+
+						repsummary = brrs_M_SRWA_12A_New_reportservice.getM_SRWA_12ANewView(reportId, fromdate, todate, currency, dtltype,
+								pageable, type, version);
+
+						break;
+				
 
 			case "M_OB":
 				repsummary = BRRS_M_OB_ReportService.getM_OBview(reportId, fromdate, todate, currency, dtltype,
@@ -1320,6 +1333,13 @@ public class RegulatoryReportServices {
 
 				repdetail = brrs_m_srwa_12a_reportservice.getM_SRWA_12AcurrentDtl(reportId, fromdate, todate, currency,
 						dtltype, pageable, Filter, type, version);
+				break;
+				
+			case "M_SRWA_12A_New":
+
+				repdetail = brrs_M_SRWA_12A_New_reportservice.getM_SRWA_12A_NewcurrentDtl(reportId, fromdate, todate, currency,
+						dtltype,
+						pageable, Filter, type, version);
 				break;
 
 			case "M_GMIRT":
@@ -2251,6 +2271,20 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
+				
+			case "M_SRWA_12A_New":
+				try {
+
+					repfile = brrs_M_SRWA_12A_New_reportservice.getM_SRWA_12A_NewExcel(filename, reportId, fromdate,
+							todate, currency,
+							dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+				
+				
 
 			case "M_OB":
 				try {
@@ -3438,6 +3472,17 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
+				
+			case "M_SRWA_12A_New":
+				try {
+					archivalData = brrs_M_SRWA_12A_New_reportservice.getM_SRWA_12A_NewArchival();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+				
+				
 
 			case "M_GALOR":
 				try {
@@ -4199,6 +4244,13 @@ public class RegulatoryReportServices {
 					dtltype, type, version);
 
 		}
+		
+		else if ("M_SRWA_12A_New".equals(filename)) {
+
+		fileData = brrs_M_SRWA_12A_New_reportservice.getM_SRWA_12A_NewDetailExcel(filename, fromdate, todate,
+				currency,
+				dtltype, type, version);
+	}
 
 		else if ("M_GMIRT_Detail".equals(filename)) {
 
