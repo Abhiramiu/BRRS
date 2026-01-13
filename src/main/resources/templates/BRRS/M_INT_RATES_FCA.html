@@ -798,10 +798,7 @@ function cancelModify() {
         }, 500);
       });
     </script>
-
-
-
-</head>
+    </head>
 <title>BRRS</title>
 
 <body>
@@ -947,7 +944,7 @@ function cancelModify() {
         <input class="display-input Show_input" type="text"
                th:value="${report.R10_CURRENT != null ? #numbers.formatDecimal(report.R10_CURRENT, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R10_CURRENT" name="R10_C1_CURRENT"
-               style="background-color: #FFFFFF; height: 28px; width:180px; border-color: transparent; text-align: right;" readonly />
+               style="background-color: #FFFFFF; height: 28px;  border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW10" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
         <input class="display-input Show_input" type="text"
@@ -1707,6 +1704,18 @@ div.dataTables_wrapper div.dataTables_info {
 #reports th:empty::after {
     content: "\00A0";
 }
+
+.display-input {
+    width: 100%;
+    box-sizing: border-box;
+    height: 28px;
+    border: none;
+    background: transparent;
+    text-align: right;
+    padding-right: 5px;
+    white-space: nowrap;
+}
+
 /*#reports th:empty {
     border: none !important;
     background-color: transparent !important;
