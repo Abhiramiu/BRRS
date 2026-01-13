@@ -737,11 +737,20 @@ PURPOSE		: BRRSREPORT
 				(columnId2 && columnId2.trim() !== "");
 
 			if (cellValue !== '0' && hasAnyColumnId) {
-				document.getElementById("cellresultModalLabel").innerText =
-					"Do you want to open details for Row: " + rowId +
-					" | Column: " + (columnId || "") +
-					" | Column1: " + (columnId1 || "") +
-					" | Column2: " + (columnId2 || "") + "";
+				let message = "Do you want to open details for Row: " + rowId;
+
+				if (columnId && columnId.trim() !== "") {
+				    message += " | Column: " + columnId;
+				}
+				if (columnId1 && columnId1.trim() !== "") {
+				    message += " | Column1: " + columnId1;
+				}
+				if (columnId2 && columnId2.trim() !== "") {
+				    message += " | Column2: " + columnId2;
+				}
+
+				document.getElementById("cellresultModalLabel").innerText = message;
+
 
 				$('#cellresultModal').modal('show');
 
