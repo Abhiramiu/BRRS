@@ -1650,7 +1650,7 @@ public byte[] getM_OPTRDetailExcel(String filename, String fromdate, String toda
 
         // ================= WORKBOOK & SHEET =================
         XSSFWorkbook workbook = new XSSFWorkbook();
-        XSSFSheet sheet = workbook.createSheet("BDISB3Detail");
+        XSSFSheet sheet = workbook.createSheet("M_OPTRDetail");
 
         BorderStyle border = BorderStyle.THIN;
 
@@ -1682,7 +1682,7 @@ public byte[] getM_OPTRDetailExcel(String filename, String fromdate, String toda
 
         CellStyle amountStyle = workbook.createCellStyle();
         amountStyle.setAlignment(HorizontalAlignment.RIGHT);
-        amountStyle.setDataFormat(workbook.createDataFormat().getFormat("#,##0.00"));
+        amountStyle.setDataFormat(workbook.createDataFormat().getFormat("#,##0"));
         amountStyle.setBorderTop(border);
         amountStyle.setBorderBottom(border);
         amountStyle.setBorderLeft(border);
@@ -1703,7 +1703,7 @@ public byte[] getM_OPTRDetailExcel(String filename, String fromdate, String toda
         for (int i = 0; i < headers.length; i++) {
             Cell cell = headerRow.createCell(i);
             cell.setCellValue(headers[i]);
-            cell.setCellStyle((i == 0 || i == 1) ? rightHeaderStyle : headerStyle);
+            cell.setCellStyle((i == 0 || i == 1 || i == 2 || i == 3) ? rightHeaderStyle : headerStyle);
             sheet.setColumnWidth(i, 6000);
         }
 
@@ -1732,8 +1732,8 @@ public byte[] getM_OPTRDetailExcel(String filename, String fromdate, String toda
                 c1.setCellStyle(amountStyle);
                 
                 Cell c2 = row.createCell(2);
-                c2.setCellValue(item.getEQUITIES() != null
-                        ? item.getEQUITIES().doubleValue() : 0);
+                c2.setCellValue(item.getFOREIGN_EXC_GOLD() != null
+                        ? item.getFOREIGN_EXC_GOLD().doubleValue() : 0);
                 c2.setCellStyle(amountStyle);
                 
                 Cell c3 = row.createCell(3);
@@ -1819,7 +1819,7 @@ public byte[] getDetailExcelARCHIVAL(String filename, String fromdate, String to
 
         CellStyle amountStyle = workbook.createCellStyle();
         amountStyle.setAlignment(HorizontalAlignment.RIGHT);
-        amountStyle.setDataFormat(workbook.createDataFormat().getFormat("#,##0.00"));
+        amountStyle.setDataFormat(workbook.createDataFormat().getFormat("#,##0"));
         amountStyle.setBorderTop(border);
         amountStyle.setBorderBottom(border);
         amountStyle.setBorderLeft(border);
@@ -1840,7 +1840,7 @@ public byte[] getDetailExcelARCHIVAL(String filename, String fromdate, String to
         for (int i = 0; i < headers.length; i++) {
             Cell cell = headerRow.createCell(i);
             cell.setCellValue(headers[i]);
-            cell.setCellStyle((i == 0 || i == 1) ? rightHeaderStyle : headerStyle);
+            cell.setCellStyle((i == 0 || i == 1 || i == 2 || i == 3) ? rightHeaderStyle : headerStyle);
             sheet.setColumnWidth(i, 6000);
         }
 
@@ -1870,8 +1870,8 @@ public byte[] getDetailExcelARCHIVAL(String filename, String fromdate, String to
                 c1.setCellStyle(amountStyle);
                 
                 Cell c2 = row.createCell(2);
-                c2.setCellValue(item.getEQUITIES() != null
-                        ? item.getEQUITIES().doubleValue() : 0);
+                c2.setCellValue(item.getFOREIGN_EXC_GOLD() != null
+                        ? item.getFOREIGN_EXC_GOLD().doubleValue() : 0);
                 c2.setCellStyle(amountStyle);
                 
                 Cell c3 = row.createCell(3);

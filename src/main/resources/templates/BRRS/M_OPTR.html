@@ -543,7 +543,7 @@ label.error {
 			      alertMsg.innerHTML = 'Report is ready! Downloaded';
 			      showAlert();
 			      const filename = sessionStorage.getItem("filename");
-			      downloadDetailfile(jobId, filename)
+			      downloadDetailfile(jobId, filename  + ".xlsx")
 			      sessionStorage.removeItem("jobId");
 			      sessionStorage.removeItem("filename");
 
@@ -589,7 +589,7 @@ label.error {
 			      window.URL.revokeObjectURL(url);
 			      document.body.removeChild(a);
 
-			      showResultModal('BRRS', filename + '.xls downloaded successfully.');
+			      showResultModal('BRRS', filename + ' downloaded successfully.');
 			     } else {
 			      showResultModal('Information', 'No data was available to create a download.');
 			     }
@@ -1107,7 +1107,7 @@ setTimeout(function () {
 });
 </script>
 
-  <title>OPTR</title>
+  <title>M_OPTR</title>
   <body>
 	<div class="container-fluid" style="padding-left: 0px; padding-right: 0px;">
 		<div class="row">
@@ -1446,7 +1446,7 @@ style="text-align: right; width:248px; background-color: rgb(107, 122, 143); col
 		<input class="display-input Show_input "
 		type="text"
 		th:value="${report.R14_INTEREST_RATES != null ? #numbers.formatDecimal(report.R14_INTEREST_RATES, 1, 'COMMA', 0, 'POINT') : '0'}"
-		id="R14_INTEREST_RATES" name="R14_C5_INTEREST_RATES"
+		id="R14_INTEREST_RATES" name="R14_C4_INTEREST_RATES"
 		style="background-color: #FFFFFF; width: 180px; padding-left: 20px; height: 28px; border-color: transparent; text-align: right;"
 		readonly /></td>
 		<td id="R14" style="text-align:right;">
