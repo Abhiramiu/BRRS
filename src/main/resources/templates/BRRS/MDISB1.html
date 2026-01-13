@@ -5126,6 +5126,7 @@ PURPOSE		: BRRSREPORT
 													title="Click to Edit this Record">
 													<i class="fas fa-edit" style="color: black; cursor:pointer;"
 														th:attr="data-acctNo=${report.acct_number},
+														
 																		data-asondate=${#dates.format(report.report_date, 'dd-MM-yyyy')}"
 														onclick="openDetail(this, 'edit')"></i>
 
@@ -5225,7 +5226,7 @@ PURPOSE		: BRRSREPORT
 							<div class="row formline" style="margin-top:10px;">
 								<label class="col-sm-2">Report Date</label>
 																	<div class="col-sm-3">
-																		<input type="date" name="report_date" class="form-control form-control-sm"
+																		<input type="date" name="report_Date" class="form-control form-control-sm"
 																			th:value="${#dates.format(Data.report_date, 'yyyy-MM-dd')}" readonly />
 																	</div>
 

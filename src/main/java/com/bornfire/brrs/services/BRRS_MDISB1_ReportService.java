@@ -5185,7 +5185,7 @@ public class BRRS_MDISB1_ReportService {
 			balanceStyle.setBorderRight(border);
 
 			// Header row
-			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "PROVISION AMOUNT", "ROWID", "COLUMNID",
+			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE PULA", "REPORT LABEL", "REPORT_ADDL_CRITERIA_1",
 					"REPORT_DATE" };
 
 			XSSFRow headerRow = sheet.createRow(0);
@@ -5422,7 +5422,7 @@ public class BRRS_MDISB1_ReportService {
 			balanceStyle.setBorderRight(border);
 
 			// Header row
-			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "PROVISION AMOUNT", "ROWID", "COLUMNID",
+			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE PULA", "REPORT LABEL", "REPORT_ADDL_CRITERIA_1",
 					"REPORT_DATE" };
 
 			XSSFRow headerRow = sheet.createRow(0);
