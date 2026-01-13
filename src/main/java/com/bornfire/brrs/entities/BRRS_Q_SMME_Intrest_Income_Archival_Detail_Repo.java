@@ -12,7 +12,15 @@ public interface BRRS_Q_SMME_Intrest_Income_Archival_Detail_Repo extends JpaRepo
 	@Query(value = "select * from BRRS_Q_SMME_INTREST_INCOME_ARCHIVALTABLE_DETAIL where REPORT_DATE=?1 AND DATA_ENTRY_VERSION=?2", nativeQuery = true)
 	List<Q_SMME_Intrest_Income_Archival_Detail_Entity> getdatabydateList(String todate,String DATA_ENTRY_VERSION);
 	
-	@Query(value = "select * from BRRS_Q_SMME_INTREST_INCOME_ARCHIVALTABLE_DETAIL where REPORT_LABEL =?1 and REPORT_ADDL_CRITERIA_1=?2 AND to_date(?3,'dd-MM-yyyy') AND DATA_ENTRY_VERSION=?4", nativeQuery = true)
-	List<Q_SMME_Intrest_Income_Archival_Detail_Entity> GetDataByRowIdAndColumnId(String reportLabel,String reportAddlCriteria1,Date reportdate,String DATA_ENTRY_VERSION);
+// @Query(value = "SELECT *FROM BRRS_Q_SMME_INTREST_INCOME_ARCHIVALTABLE_DETAIL WHERE REPORT_LABEL = ?1 AND REPORT_ADDL_CRITERIA_1 = ?2 AND REPORT_DATE = ?3 AND DATA_ENTRY_VERSION = ?4", nativeQuery = true)
+// List<Q_SMME_Intrest_Income_Archival_Detail_Entity> GetDataByRowIdAndColumnId(
+//     String reportLabel,
+//     String reportAddlCriteria1,
+//     Date reportDate,
+//     String dataEntryVersion
+// );
 
+	@Query(value = "select * from BRRS_Q_SMME_INTREST_INCOME_ARCHIVALTABLE_DETAIL where REPORT_LABEL =?1 and REPORT_ADDL_CRITERIA_1=?2 AND REPORT_DATE=?3 AND DATA_ENTRY_VERSION=?4", nativeQuery = true)
+	List<Q_SMME_Intrest_Income_Archival_Detail_Entity> GetDataByRowIdAndColumnId(String reportLabel,
+			String reportAddlCriteria1, Date reportdate, String DATA_ENTRY_VERSION);
 }

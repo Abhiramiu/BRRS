@@ -59,7 +59,7 @@ import com.bornfire.brrs.entities.BRRS_Q_SMME_Intrest_Income_Summary_Repo;
 @Component
 @Service
 
-public class BRRS_Q_SMME_Intrest_Income_ReportService<BBRS_Q_SMME_Detail_Repo> {
+public class BRRS_Q_SMME_Intrest_Income_ReportService {
 	private static final Logger logger = LoggerFactory.getLogger(BRRS_Q_SMME_Intrest_Income_ReportService.class);
 
 	@Autowired
@@ -1623,13 +1623,13 @@ public byte[] getDetailExcelARCHIVAL(String filename,
 
                 // Balance
                 Cell balanceCell = row.createCell(3);
-                balanceCell.setCellValue(item.getAcctBalanceInpula() != null
-                        ? item.getAcctBalanceInpula().doubleValue()
+                balanceCell.setCellValue(item.getAcctBalanceInPula() != null
+                        ? item.getAcctBalanceInPula().doubleValue()
                         : 0.000);
                 balanceCell.setCellStyle(balanceStyle);
 
-                row.createCell(4).setCellValue(item.getRowId());
-                row.createCell(5).setCellValue(item.getColumnId());
+                row.createCell(4).setCellValue(item.getReportLabel());
+                row.createCell(5).setCellValue(item.getReportAddlCriteria1());
                 row.createCell(6).setCellValue(item.getReportDate() != null
                         ? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
                         : "");

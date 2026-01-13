@@ -60,7 +60,7 @@ import com.bornfire.brrs.entities.Recon_Of_FS_Summary_Entity;
 @Component
 @Service
 
-public class BRRS_RECON_OF_FS_ReportService<BBRS_Recon_Of_FS_Detail_Repo> {
+public class BRRS_RECON_OF_FS_ReportService {
 	private static final Logger logger = LoggerFactory.getLogger(BRRS_RECON_OF_FS_ReportService.class);
 
 	@Autowired

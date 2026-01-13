@@ -60,7 +60,7 @@ import com.bornfire.brrs.entities.BRRS_Q_SMME_loans_Advances_Summary_Repo;
 @Component
 @Service
 
-public class BRRS_Q_SMME_loans_Advances_ReportService<BBRS_Q_SMME_Detail_Repo> {
+public class BRRS_Q_SMME_loans_Advances_ReportService{
 	private static final Logger logger = LoggerFactory.getLogger(BRRS_Q_SMME_loans_Advances_ReportService.class);
 
 	@Autowired

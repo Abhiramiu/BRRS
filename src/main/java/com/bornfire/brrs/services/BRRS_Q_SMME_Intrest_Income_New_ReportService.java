@@ -59,7 +59,7 @@ import com.bornfire.brrs.entities.Q_SMME_Intrest_Income_New_Summary_Entity;
 @Component
 @Service
 
-public class BRRS_Q_SMME_Intrest_Income_New_ReportService<BBRS_Q_SMME_Detail_Repo> {
+public class BRRS_Q_SMME_Intrest_Income_New_ReportService {
     private static final Logger logger = LoggerFactory.getLogger(BRRS_Q_SMME_Intrest_Income_New_ReportService.class);
 
     @Autowired
