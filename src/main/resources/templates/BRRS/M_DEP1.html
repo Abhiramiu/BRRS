@@ -564,7 +564,7 @@ PURPOSE		: BRFREPORT
 						alertMsg.innerHTML = 'Report is ready! Downloaded';
 						showAlert();
 						const filename = sessionStorage.getItem("filename");
-						downloadDetailfile(jobId, filename)
+						downloadDetailfile(jobId, filename  + ".xlsx")
 						sessionStorage.removeItem("jobId");
 						sessionStorage.removeItem("filename");
 
@@ -610,7 +610,7 @@ PURPOSE		: BRFREPORT
 						window.URL.revokeObjectURL(url);
 						document.body.removeChild(a);
 
-						showResultModal('BRRS', filename + ' downloaded successfully');
+						showResultModal('BRRS', filename + ' downloaded successfully.');
 					} else {
 						showResultModal('Information', 'No data was available to create a download.');
 					}
@@ -975,15 +975,39 @@ PURPOSE		: BRFREPORT
 								<table
 									class="sticky-header-table table table-bordered table-cell table-sm table-condensed"
 									id="reports">
+    <colgroup>
+        <col style="width: 420px;">  <!-- Deposits by Type -->
+        <col style="width: 90px;">   <!-- Current -->
+        <col style="width: 90px;">   <!-- Call -->
+        <col style="width: 90px;">   <!-- Savings -->
+
+        <!-- Notice -->
+        <col style="width: 70px;">   <!-- 0-31 -->
+        <col style="width: 70px;">   <!-- 32-88 -->
+
+        <!-- Fixed Deposits -->
+        <col style="width: 60px;">   <!-- 91-Day -->
+        <col style="width: 60px;">   <!-- 1-2 -->
+        <col style="width: 60px;">   <!-- 4-6 -->
+        <col style="width: 60px;">   <!-- 7-12 -->
+        <col style="width: 60px;">   <!-- 13-18 -->
+        <col style="width: 60px;">   <!-- 19-24 -->
+        <col style="width: 60px;">   <!-- Over 24 -->
+
+        <col style="width: 90px;">  <!-- Certificates -->
+        <col style="width: 90px;">  <!-- Total -->
+    </colgroup>
+
+         
 									<thead class="thead-light">
 										<!-- First header row -->
 										<tr style="background-color: #D8D8D8; text-align:center;">
-											<th rowspan="2" style="text-align:left;">DEPOSITS BY TYPE OF HOLDER
+											<th rowspan="2" style="text-align:left;vertical-align:top;">DEPOSITS BY TYPE OF HOLDER
 												INCLUDING FCAS</th>
-											<th rowspan="2" style="text-align:right;">Current</th>
-											<th rowspan="2" style="text-align:right;">Call</th>
-											<th rowspan="2" style="text-align:right;">Savings</th>
-											<th colspan="2" style="text-align:right;">Notice (Days)</th>
+											<th rowspan="2" style="text-align:right;vertical-align:top;">Current</th>
+											<th rowspan="2" style="text-align:right;vertical-align:top;">Call</th>
+											<th rowspan="2" style="text-align:right;vertical-align:top;">Savings</th>
+											<th colspan="2" style="text-align:center;">Notice (Days)</th>
 											<th colspan="7" >Fixed Deposits (Months)</th>
 											<th rowspan="2" style="text-align:right;">Certificates of Deposit</th>
 											<th rowspan="2" style="text-align:right;">Total</th>
@@ -999,13 +1023,6 @@ PURPOSE		: BRFREPORT
 											<th>19-24</th>
 											<th>Over 24</th>
 										</tr>
-
-										<!-- Second row: technical column IDs under above headers -->
-										<!-- <tr style="background-color: #b3b6b9">
-                                        <th style="text-align: center; background-color: #b3b6b9">C10</th>
-                                        <th style="text-align: center; background-color: #b3b6b9">C20</th>
-                                        <th colspan="2" style="text-align: center; background-color: #b3b6b9">C30</th>
-                                    </tr> -->
 
 									</thead>
 
@@ -3190,7 +3207,7 @@ PURPOSE		: BRFREPORT
 										</tr>
 
 										<tr>
-											<td style="font-weight: normal;padding-left: 30px;"
+											<td style="font-weight: normal;padding-left: 60px;"
 												th:text="${report.r49_product}"></td>
 											<td style="text-align: right; font-weight: normal ;background-color: rgb(107, 122, 143);color: white;"
 												th:text="${#numbers.formatDecimal(report.r49_current,1,'COMMA',0,'POINT')}"></td>
@@ -4044,7 +4061,20 @@ PURPOSE		: BRFREPORT
 		float: left !important;
 		margin-top: 10px;
 	}
+/* 1. Force table to obey colgroup */
+#reports {
+    table-layout: fixed !important;
+}
 
+/* 2. Make header cells follow colgroup width */
+#reports th {
+    width: inherit !important;
+}
+
+/* 3. Prevent empty headers from collapsing */
+#reports th:empty::after {
+    content: "\00A0";
+}
 	.pagination {
 		margin: 0;
 	}
@@ -4066,6 +4096,13 @@ PURPOSE		: BRFREPORT
 		display: inline-block;
 		width: auto;
 	}
+ .scrollable-table-container thead tr:nth-child(1),
+ .scrollable-table-container thead tr:nth-child(2),
+ .scrollable-table-container thead tr:nth-child(3),
+ .scrollable-table-container thead tr:nth-child(4),
+ .scrollable-table-container thead tr:nth-child(5) {
+ background-color: #D8D8D8 !important; /* set header color */
+}
 </style>
 
 

@@ -194,7 +194,7 @@ public class BRRS_M_OPTR_NEW_ReportService {
 					T1Dt1 = M_OPTR_NEW_Detail_Repo.GetDataByRowIdAndColumnId(rowId, columnId, parsedDate);
 				} else {
 					T1Dt1 = M_OPTR_NEW_Detail_Repo.getdatabydateList(parsedDate);
-					System.out.println("bdisb2 size is : " + T1Dt1.size());
+					System.out.println("OPTR NEW size is : " + T1Dt1.size());
 					totalPages = M_OPTR_NEW_Detail_Repo.getdatacount(parsedDate);
 					mv.addObject("pagination", "YES");
 				}
@@ -1923,7 +1923,7 @@ public byte[] getM_OPTR_NEWDetailExcel(String filename, String fromdate, String 
 
         CellStyle amountStyle = workbook.createCellStyle();
         amountStyle.setAlignment(HorizontalAlignment.RIGHT);
-        amountStyle.setDataFormat(workbook.createDataFormat().getFormat("#,##0.00"));
+        amountStyle.setDataFormat(workbook.createDataFormat().getFormat("#,##0"));
         amountStyle.setBorderTop(border);
         amountStyle.setBorderBottom(border);
         amountStyle.setBorderLeft(border);
@@ -1944,7 +1944,7 @@ public byte[] getM_OPTR_NEWDetailExcel(String filename, String fromdate, String 
         for (int i = 0; i < headers.length; i++) {
             Cell cell = headerRow.createCell(i);
             cell.setCellValue(headers[i]);
-            cell.setCellStyle((i == 0 || i == 1) ? rightHeaderStyle : headerStyle);
+            cell.setCellStyle((i == 0 || i == 1 || i == 2 || i == 3) ? rightHeaderStyle : headerStyle);
             sheet.setColumnWidth(i, 6000);
         }
 
@@ -2060,7 +2060,7 @@ public byte[] getDetailExcelARCHIVAL(String filename, String fromdate, String to
 
         CellStyle amountStyle = workbook.createCellStyle();
         amountStyle.setAlignment(HorizontalAlignment.RIGHT);
-        amountStyle.setDataFormat(workbook.createDataFormat().getFormat("#,##0.00"));
+        amountStyle.setDataFormat(workbook.createDataFormat().getFormat("#,##0"));
         amountStyle.setBorderTop(border);
         amountStyle.setBorderBottom(border);
         amountStyle.setBorderLeft(border);
@@ -2081,7 +2081,7 @@ public byte[] getDetailExcelARCHIVAL(String filename, String fromdate, String to
         for (int i = 0; i < headers.length; i++) {
             Cell cell = headerRow.createCell(i);
             cell.setCellValue(headers[i]);
-            cell.setCellStyle((i == 0 || i == 1) ? rightHeaderStyle : headerStyle);
+            cell.setCellStyle((i == 0 || i == 1 || i == 2 || i == 3) ? rightHeaderStyle : headerStyle);
             sheet.setColumnWidth(i, 6000);
         }
 
@@ -2138,7 +2138,7 @@ public byte[] getDetailExcelARCHIVAL(String filename, String fromdate, String to
                 c6.setCellStyle(textStyle);
             }
         } else {
-            logger.info("No archival data found for M_OPTR — only header written.");
+            logger.info("No archival data found for M_OPTR_NEW — only header written.");
         }
 
         // ================= WRITE FILE =================

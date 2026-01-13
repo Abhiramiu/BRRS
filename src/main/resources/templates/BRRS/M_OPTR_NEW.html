@@ -543,7 +543,7 @@ label.error {
 			      alertMsg.innerHTML = 'Report is ready! Downloaded';
 			      showAlert();
 			      const filename = sessionStorage.getItem("filename");
-			      downloadDetailfile(jobId, filename)
+			      downloadDetailfile(jobId, filename  + ".xlsx")
 			      sessionStorage.removeItem("jobId");
 			      sessionStorage.removeItem("filename");
 
@@ -589,7 +589,7 @@ label.error {
 			      window.URL.revokeObjectURL(url);
 			      document.body.removeChild(a);
 
-			      showResultModal('BRRS', filename + '.xls downloaded successfully.');
+			      showResultModal('BRRS', filename + ' downloaded successfully.');
 			     } else {
 			      showResultModal('Information', 'No data was available to create a download.');
 			     }
@@ -604,50 +604,62 @@ label.error {
 	</script>
 	
 	
-	<script>
-	// Show Modify (enable inputs & dropdowns)
-	
-		
+<script>
+ // Show Modify (enable inputs & dropdowns)
 function showmodify(btn) {
-		
-	let readonlyIds = [];    
-
-	
-	$(".Show_input").each(function () {
-		        if (!readonlyIds.includes(this.id)) {
-		            $(this).removeAttr("readonly").removeAttr("disabled");
-		        }
-		    });
-
-			
-
-			for (let i = 9; i <= 14; i++) {  
-						    let fields = [
-						    	"INTEREST_RATES", "EQUITIES", "FOREIGN_EXC_GOLD", "COMMODITIES"
-						        
-						    ];
-
-						    fields.forEach(field => {
-						        let selector = `#R${i}_${field}`;
-						        if ($(selector).length) {  // check if element exists
-						            $(selector).css("background-color", "#d3d3d3");     // set grey
-						        }
-						    });
-						}
-			
-			
-			
-	
     
-    // Toggle buttons
+    //$(".Show_input").removeAttr("readonly").removeAttr("disabled");
+    
+    // Make all editable fields editable 
+    $(".Show_input").not(".nonEditable").removeAttr("readonly").removeAttr("disabled");
+
+
+    // Highlight editable fields for rows 10 to 14
+    for (let i = 9; i <= 14; i++) {
+    if ([10,12].includes(i)) continue;
+
+    let fields = ["INTEREST_RATES", "EQUITIES", "FOREIGN_EXC_GOLD", "COMMODITIES"];
+    fields.forEach(field => {
+        let selector = `#R${i}_${field}`;
+        if ($(selector).length) {
+            $(selector).css({ "background-color": "#d3d3d3" });
+        }
+    });
+}
+
+    for (let i = 9; i <= 11; i++) {
+    	if ([10,12].includes(i)) continue;
+    	
+        let fields = ["TOTAL"];
+        fields.forEach(field => {
+            let selector = `#R${i}_${field}`;
+            if ($(selector).length) {
+                $(selector).css({ "background-color": "#d3d3d3" });
+            }
+        });
+    }
+
+    
+    for (let i = 15; i <= 16; i++) {
+
+        let fields = ["TOTAL"];
+        fields.forEach(field => {
+            let selector = `#R${i}_${field}`;
+            if ($(selector).length) {
+                $(selector).css({ "background-color": "#d3d3d3" });
+            }
+        });
+    }
+
+
+    // Show buttons
     $("#submitButton").show();
+    $("#cancelRecord").show(); // Show Cancel button only when Modify is clicked
     
-    // Show Cancel button only when Modify is clicked
-    $("#cancelRecord").show();
-    
-    // Optionally hide the clicked Modify button
+    // Hide the clicked Modify button
     $(btn).hide();
 }
+
 
 //Cancel / Reset function
 function cancelModify() {
@@ -656,8 +668,6 @@ function cancelModify() {
         location.reload();
         
         $(".Show_input").attr("readonly", true).attr("disabled", true);
-
-       
 
         $("#submitButton, #btnBack_edit").hide();
         $("#btnBack").show();
@@ -672,85 +682,63 @@ function cancelModify() {
 }
 
 
-	
+ 
 
-	</script>
+ </script>
 
+		 <SCRIPT>
+		  
+		//Calculate R14
+		 function calculateR14Totals() {
 
-	<script>
+		     let total15 = parseFloat($("#R15_TOTAL").val().replace(/,/g, "")) || 0;
+		     let total16 = parseFloat($("#R16_TOTAL").val().replace(/,/g, "")) || 0;
 
+		     let total14 = total15 + total16;
 
-		// This function is for closing the modal after an action is complete.
-		// It hides the result and loader modals and reloads the page.
-		function closemodel() {
-			$("#resultModal").modal("hide");
-			$('#loader').modal('hide');
-			
-			if (isResubmissionUpdate) {
-		        return;
-		    }
+		     // Put the total into R14
+		     $("#R14_TOTAL").val(
+		         total14.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
+		     );
+		 }
 
-			// Only reload if not from Details modal
-			if (!isDetailsModal) {
-				setTimeout(function () {
-					location.reload();
-				}, 300);
-			} else {
-				// reset flag for next modal usage
-				isDetailsModal = false;
-			}
-		}
-//Calculate R14
- function calculateR14Totals() {
+		 $(document).ready(function () {
 
-     let total15 = parseFloat($("#R15_TOTAL").val().replace(/,/g, "")) || 0;
-     let total16 = parseFloat($("#R16_TOTAL").val().replace(/,/g, "")) || 0;
+		     // Calculate once on load
+		     calculateR14Totals();
 
-     let total14 = total15 + total16;
+		     // Attach listeners
+		     $("#R15_TOTAL, #R16_TOTAL").on("input", function () {
+		         calculateR14Totals();
+		     });
 
-     // Put the total into R14
-     $("#R14_TOTAL").val(
-         total14.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
-     );
- }
+		 });
 
- $(document).ready(function () {
+		//Calculate R13
+		 function calculateR13Totals() {
 
-     // Calculate once on load
-     calculateR14Totals();
+		     let total14 = parseFloat($("#R14_TOTAL").val().replace(/,/g, "")) || 0;
+		     let total15 = parseFloat($("#R15_TOTAL").val().replace(/,/g, "")) || 0;
 
-     // Attach listeners
-     $("#R15_TOTAL, #R16_TOTAL").on("input", function () {
-         calculateR14Totals();
-     });
+		     let total13 = total14 + total15;
 
- });
+		     // Put the total into R14
+		     $("#R13_TOTAL").val(
+		         total13.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
+		     );
+		 }
 
-//Calculate R13
- function calculateR13Totals() {
+		 $(document).ready(function () {
 
-     let total14 = parseFloat($("#R14_TOTAL").val().replace(/,/g, "")) || 0;
-     let total15 = parseFloat($("#R15_TOTAL").val().replace(/,/g, "")) || 0;
+		     // Calculate once on load
+		     calculateR13Totals();
 
-     let total13 = total14 + total15;
+		     // Attach listeners
+		     $("#R15_TOTAL, #R16_TOTAL").on("input", function () {
+		         calculateR13Totals();
+		     });
 
-     // Put the total into R14
-     $("#R13_TOTAL").val(
-         total13.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
-     );
- }
-
- $(document).ready(function () {
-
-     // Calculate once on load
-     calculateR13Totals();
-
-     // Attach listeners
-     $("#R15_TOTAL, #R16_TOTAL").on("input", function () {
-         calculateR13Totals();
-     });
-
- });
+		 });
  
  </SCRIPT>
 
@@ -774,109 +762,177 @@ function cancelModify() {
              isDetailsModal = false;
          }
  }
+ 
+ 
+/* function fileuploads(btn) {
+ var asondate = btn.getAttribute("data-todate");
+ const type = btn.getAttribute("data-type"); // MAIN / RESUB / ARCHIVAL
+ 
+// ✅ Mark RESUB once
+ isResubmissionUpdate = (type && type.toUpperCase() === 'RESUB');
+ 
+ $('#loader').modal('show');
 
+ // Pre-calculations
+ calculateR14Totals();
+ calculateR13Totals();
+ console.log("✅ Calculations executed successfully");
 
- function fileuploads(btn) {
-     var asondate = btn.getAttribute("data-todate");
-     const type = btn.getAttribute("data-type"); // MAIN / RESUB / ARCHIVAL
-     
-     // ✅ Mark RESUB once
-     isResubmissionUpdate = (type && type.toUpperCase() === 'RESUB');
-     
-     $('#loader').modal('show');
-
-     // Pre-calculations
-     // Pre-calculations
-     calculateR14Totals();
-    calculateR13Totals();
-     
-     console.log("✅ Calculations executed successfully");
-
-     // Remove commas from numeric inputs
-     $("#fileupload input[type='text']").each(function () {
-         var val = $(this).val();
-         if (val && val.includes(",")) {
-             $(this).val(val.replace(/,/g, ''));
-         }
-     });
-
-     if (!$("#fileupload").valid()) {
-         $('#loader').modal('hide');
-         return;
+ // Remove commas from numeric inputs
+ $("#fileupload input[type='text']").each(function () {
+     var val = $(this).val();
+     if (val && val.includes(",")) {
+         $(this).val(val.replace(/,/g, ''));
      }
+ });
 
-     // ✅ One combined FormData for all entities
-     const formData = new FormData();
-     formData.append("asondate", asondate);
-     formData.append("type", type);
+ if (!$("#fileupload").valid()) {
+     $('#loader').modal('hide');
+     return;
+ }
 
-   
-  // Append only named inputs
-     $('#fileupload').find(':input[name]').each(function () {
-         formData.append(this.name, this.value);
-
- /*         let originalName = this.name;  
-         let value = this.value;
-
-         // Convert: R6_C2_COMPANY_NAME → R6_COMPANY_NAME
-         let fixedName = originalName.replace(/_C\d+_/, '_');
-         console.log(originalName, "→", fixedName);
-         formData.append(fixedName, value); */
-         for (let i = 9; i <= 14; i++) {
-             ["INTEREST_RATES", "EQUITIES", "FOREIGN_EXC_GOLD", "COMMODITIES", "TOTAL"].forEach(field => {
-                 const input = $("#R" + i + "_" + field);
-                 if (input.length) {
-                     formData.append(input.attr("name"), input.val());
-                 }
-             });
-         }
-     });
-     console.log("✅ Entity executed successfully");    
+ // ✅ One combined FormData for all entities
+ const formData = new FormData();
+ formData.append("asondate", asondate);
+ formData.append("type", type);
 
 
-     
- 	//Select API endpoint dynamically
- 	let apiUrl = './M_OPTR_NEWupdateAll'; // normal update
- 	if (type && type.toUpperCase() === 'RESUB') {
- 		apiUrl = './UpdateM_OPTR_NEW_ReSub'; // Resubmission endpoint
- 	}
+// Append only named inputs
+ $('#fileupload').find(':input[name]').each(function () {
+     formData.append(this.name, this.value);
+ });
+ console.log("✅ Entity executed successfully");    
 
-     // ✅ Single AJAX call with type info
-  	    $.ajax({
- 	        url: apiUrl,
- 	        type: 'POST',
- 	        data: formData,
- 	        processData: false,
- 	        contentType: false,
- 	        dataType: 'text',
- 	        success: function (response) {
- 	            $("#resultModalLabel").text("BRRS");
- 	            $("#resultModalBody").text(response);
- 	            $("#resultModal").modal("show");
 
- 			    //  Wait for user to close the modal manually
- 			     $("#resultModal").off("hidden.bs.modal").on("hidden.bs.modal", function () {
- 			    	 if (isResubmissionUpdate) {
- 			    		 window.location.href = previousUrl
- 			    		 ? previousUrl 
- 			    				 : "/BRRS/Resubmission?rptcode=MDISB5";
- 			    	 } // reload ONLY when modal is closed
- 			    });
- 			},
- 	        error: function (jqXHR) {
- 	            console.log("Error response:", jqXHR.responseText);
- 	            $("#resultModalLabel").text("Error");
- 	            $("#resultModalBody").text("Update failed. Check console for details.");
- 	            $("#resultModal").modal("show");
- 	        },
- 	        complete: function () {
- 	            $('#loader').modal('hide');
- 	        }
- 	    });
+ 
+	//Select API endpoint dynamically
+	let apiUrl = './M_OPTR_NEWupdateAll'; // normal update
+	if (type && type.toUpperCase() === 'RESUB') {
+		apiUrl = './UpdateM_OPTR_NEW_ReSub'; // Resubmission endpoint
+	}
 
-     console.log("✅ AJAX executed successfully");
- }    
- </script>
+ // ✅ Single AJAX call with type info
+	    $.ajax({
+	        url: apiUrl,
+	        type: 'POST',
+	        data: formData,
+	        processData: false,
+	        contentType: false,
+	        dataType: 'text',
+	        success: function (response) {
+	            $("#resultModalLabel").text("BRRS");
+	            $("#resultModalBody").text(response);
+	            $("#resultModal").modal("show");
+
+	        //  Wait for user to close the modal manually
+			     $("#resultModal").off("hidden.bs.modal").on("hidden.bs.modal", function () {
+			    	 if (isResubmissionUpdate) {
+			    		 console.log("✅ came to resubmission");
+			    		 window.location.href = previousUrl
+			    		 ? previousUrl 
+			    				 : "/BRRS/Resubmission?rptcode=M_OPTR_NEW";
+			    	 } // reload ONLY when modal is closed
+			    });
+			},
+	        error: function (jqXHR) {
+	            console.log("Error response:", jqXHR.responseText);
+	            $("#resultModalLabel").text("Error");
+	            $("#resultModalBody").text("Update failed. Check console for details.");
+	            $("#resultModal").modal("show");
+	        },
+	        complete: function () {
+	            $('#loader').modal('hide');
+	        }
+	    });
+
+ console.log("✅ AJAX executed successfully");
+} */
+
+function fileupload_all(btn) {
+    var asondate = btn.getAttribute("data-todate");
+    const type = btn.getAttribute("data-type"); // MAIN / RESUB / ARCHIVAL
+    
+ // ✅ Mark RESUB once
+    isResubmissionUpdate = (type && type.toUpperCase() === 'RESUB');
+    
+    $('#loader').modal('show');
+
+ // Pre-calculations
+    calculateR14Totals();
+    calculateR13Totals();
+    console.log("✅ Calculations executed successfully");
+
+    // Remove commas from numeric inputs
+    $("#fileupload input[type='text']").each(function () {
+        var val = $(this).val();
+        if (val && val.includes(",")) {
+            $(this).val(val.replace(/,/g, ''));
+        }
+    });
+
+    if (!$("#fileupload").valid()) {
+        $('#loader').modal('hide');
+        return;
+    }
+
+    // ✅ One combined FormData for all entities
+    const formData = new FormData();
+    formData.append("asondate", asondate);
+    formData.append("type", type);
+
+  
+ // Append only named inputs
+    $('#fileupload').find(':input[name]').each(function () {
+        formData.append(this.name, this.value);
+    });
+    console.log("✅ Entity executed successfully");    
+
+
+    
+	//Select API endpoint dynamically
+	let apiUrl = './M_OPTR_NEWupdateAll'; // normal update
+	if (type && type.toUpperCase() === 'RESUB') {
+		apiUrl = './UpdateM_OPTR_NEW_ReSub'; // Resubmission endpoint
+	}
+
+    // ✅ Single AJAX call with type info
+ 	    $.ajax({
+	        url: apiUrl,
+	        type: 'POST',
+	        data: formData,
+	        processData: false,
+	        contentType: false,
+	        dataType: 'text',
+	        success: function (response) {
+	            $("#resultModalLabel").text("BRRS");
+	            $("#resultModalBody").text(response);
+	            $("#resultModal").modal("show");
+
+	        //  Wait for user to close the modal manually
+			     $("#resultModal").off("hidden.bs.modal").on("hidden.bs.modal", function () {
+			    	 if (isResubmissionUpdate) {
+			    		 console.log("✅ came to resubmission");
+			    		 window.location.href = previousUrl
+			    		 ? previousUrl 
+			    				 : "/BRRS/Resubmission?rptcode=M_OPTR_NEW";
+			    	 } // reload ONLY when modal is closed
+			    });
+			},
+	        error: function (jqXHR) {
+	            console.log("Error response:", jqXHR.responseText);
+	            $("#resultModalLabel").text("Error");
+	            $("#resultModalBody").text("Update failed. Check console for details.");
+	            $("#resultModal").modal("show");
+	        },
+	        complete: function () {
+	            $('#loader').modal('hide');
+	        }
+	    });
+
+    console.log("✅ AJAX executed successfully");
+}    
+</script>
+
 
  <script th:inline="javascript">
  $(document).ready(function () {
@@ -915,7 +971,7 @@ function cancelModify() {
 
   </head>
 
-   <title>OPTR</title>
+   <title>M_OPTR_NEW</title>
   <body>
 	<div class="container-fluid" style="padding-left: 0px; padding-right: 0px;">
 		<div class="row">
@@ -1227,7 +1283,7 @@ style="text-align: right; width:248px; background-color: rgb(107, 122, 143); col
  <input class="display-input Show_input"
  type="text"
  th:value="${report.R15_TOTAL != null ? #numbers.formatDecimal(report.R15_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
- id="R15_TOTAL" name="R15_TOTAL"
+ id="R15_TOTAL" name="R15_C8_TOTAL"
  style="background-color: #FFFFFF; width: 180px; padding-left: 20px; height: 28px; border-color: transparent; text-align: right;"
  readonly /></td>
                     </tr>
@@ -1237,7 +1293,7 @@ style="text-align: right; width:248px; background-color: rgb(107, 122, 143); col
  <input class="display-input Show_input"
  type="text"
  th:value="${report.R16_TOTAL != null ? #numbers.formatDecimal(report.R16_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
- id="R16_TOTAL" name="R16_TOTAL"
+ id="R16_TOTAL" name="R16_C8_TOTAL"
  style="background-color: #FFFFFF; width: 180px; padding-left: 20px; height: 28px; border-color: transparent; text-align: right;"
  readonly /></td>
                     </tr>   
