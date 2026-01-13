@@ -261,7 +261,7 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 	        // ✅ Allow only valid keys for required columns
 	        if (!key.matches(
-	                "R\\d+_C\\d+_(CURRENT|CALL|SAVINGS|NOTICE_0_31_DAYS|NOTICE_32_88_DAYS|91_DEPOSIT_DAY|" +
+	                "R\\d+_C\\d+_(CURRENT_AMT|CALL_AMT|SAVINGS|NOTICE_0_31_DAYS|NOTICE_32_88_DAYS|91_DEPOSIT_DAY|" +
 	                "FD_1_6_MONTHS|FD_7_12_MONTHS|FD_13_18_MONTHS|FD_19_24_MONTHS|FD_OVER_24_MONTHS|TOTAL)"
 	        )) {
 	            continue;
