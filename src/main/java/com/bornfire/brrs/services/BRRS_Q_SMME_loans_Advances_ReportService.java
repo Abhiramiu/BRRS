@@ -815,13 +815,13 @@ public class BRRS_Q_SMME_loans_Advances_ReportService{
 			// ACCT BALANCE style (right aligned with 3 decimals)
 			CellStyle balanceStyle = workbook.createCellStyle();
 			balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
-			balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0.000"));
+			balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("#,##0"));
 			balanceStyle.setBorderTop(border);
 			balanceStyle.setBorderBottom(border);
 			balanceStyle.setBorderLeft(border);
 			balanceStyle.setBorderRight(border);
 			// Header row
-			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "ROWID", "COLUMNID",
+			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE",  "REPORT LABLE", "REPORT ADDL CRITERIA1",
 					"REPORT_DATE" };
 			XSSFRow headerRow = sheet.createRow(0);
 			for (int i = 0; i < headers.length; i++) {
@@ -850,7 +850,7 @@ public class BRRS_Q_SMME_loans_Advances_ReportService{
 					if (item.getAcctBalanceInPula() != null) {
 						balanceCell.setCellValue(item.getAcctBalanceInPula().doubleValue());
 					} else {
-						balanceCell.setCellValue(0.000);
+						balanceCell.setCellValue(0);
 					}
 					balanceCell.setCellStyle(balanceStyle);
 					row.createCell(4).setCellValue(item.getReportLabel());
@@ -1516,14 +1516,14 @@ public class BRRS_Q_SMME_loans_Advances_ReportService{
 			// Balance style
 			CellStyle balanceStyle = workbook.createCellStyle();
 			balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
-			balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0.000"));
+			balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("#,##0"));
 			balanceStyle.setBorderTop(border);
 			balanceStyle.setBorderBottom(border);
 			balanceStyle.setBorderLeft(border);
 			balanceStyle.setBorderRight(border);
 
 			// --- Header row ---
-			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "ROWID", "COLUMNID",
+			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE",  "REPORT LABLE", "REPORT ADDL CRITERIA1",
 					"REPORT_DATE" };
 			XSSFRow headerRow = sheet.createRow(0);
 
@@ -1559,7 +1559,7 @@ public class BRRS_Q_SMME_loans_Advances_ReportService{
 					Cell balanceCell = row.createCell(3);
 					balanceCell.setCellValue(item.getAcctBalanceInPula() != null
 							? item.getAcctBalanceInPula().doubleValue()
-							: 0.000);
+							: 0);
 					balanceCell.setCellStyle(balanceStyle);
 
 					row.createCell(4).setCellValue(item.getReportLabel());

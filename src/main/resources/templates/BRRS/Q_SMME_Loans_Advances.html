@@ -447,7 +447,6 @@ PURPOSE		: BRRSREPORT
 	<script>
 		function submitQ_SMMELAUpdate() {
 			const formData = $('#QSMMELADetailForm').serialize(); // Ensure correct form ID
-
 			// ✅ Store the previous page URL
 			const previousUrl = document.referrer; // same as going back once in history
 
@@ -955,7 +954,7 @@ PURPOSE		: BRRSREPORT
 						<!-- Title -->
 						<h5
 							style="font-family: arial; font-size: 20px; padding-top:10px; font-weight: bold; color: white;">
-							(4) QUARTERLY SCHEDULE: Q-SMME LOANS: SMME LOANS AND ADVANCES </h5>
+							QUARTERLY SCHEDULE: Q-SMME LOANS: SMME LOANS AND ADVANCES </h5>
 					</div>
 					<div class="custom-tab-btn-group nav-buttons" style="width: fit-content;margin-left:auto;">
 						<input type="hidden" id="selectedTab" th:value="${displaymode}">
