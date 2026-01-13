@@ -1170,7 +1170,117 @@ return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 					.body("Resubmission Update Failed: " + e.getMessage());
 		}
+	}
+	
+	
+	@Autowired BRRS_M_INT_RATES_FCA_ReportService INT_RATES_FCAreportService;
+	@PostMapping("/INTRATESFCAupdateAll")
+	@ResponseBody
+	public ResponseEntity<String> updateINTRATESFCAAllReports(
+	        @RequestParam @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+	        @RequestParam Map<String, String> allParams
+	) {
+	    try {
+	        System.out.println("Came to INT_RATES_FCA controller");
+
+	        INT_RATES_FCAreportService.updateDetailFromForm(asondate, allParams);
+
+	        return ResponseEntity.ok("Updated Successfully.");
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return ResponseEntity
+	                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                .body("Update Failed: " + e.getMessage());
+	    }
+	}
+
+
+
+	@RequestMapping(value = "/UpdateM_INT_RATES_FCA_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<String> updateReportReSub(
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+			@ModelAttribute M_INT_RATES_FCA_Summary_Entity request,
+			HttpServletRequest req) {
+
+		try {
+			System.out.println("Came to Resub Controller");
+
+			if (asondate != null) {
+				// Set the asondate into the entity
+				request.setReportDate(asondate);
+				System.out.println("Set Report Date: " + asondate);
+			} else {
+				System.out.println("Asondate parameter is null; using entity value: " + request.getReportDate());
+			}
+
+			// Call service to create a new versioned row
+			INT_RATES_FCAreportService.updateReportReSub(request);
+
+			return ResponseEntity.ok("Resubmission Updated Successfully");
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Resubmission Update Failed: " + e.getMessage());
+		}
+	}
+	
+	
+	@Autowired BRRS_M_INT_RATES_FCA_NEW_ReportService INT_RATES_FCA_NEWreportService;
+	@PostMapping("/INTRATESFCANEWupdateAll")
+	@ResponseBody
+	public ResponseEntity<String> updateINTRATESFCANEWAllReports(
+	        @RequestParam @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+	        @RequestParam Map<String, String> allParams
+	) {
+	    try {
+	        System.out.println("Came to INT_RATES_FCA_NEW controller");
+
+	        INT_RATES_FCA_NEWreportService.updateDetailFromForm(asondate, allParams);
+
+	        return ResponseEntity.ok("Updated Successfully.");
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return ResponseEntity
+	                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                .body("Update Failed: " + e.getMessage());
+	    }
+	}
+
+
+
+	@RequestMapping(value = "/UpdateM_INT_RATES_FCA_NEWReSub", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<String> updateReportReSub(
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+			@ModelAttribute M_INT_RATES_FCA_NEW_Summary_Entity request,
+			HttpServletRequest req) {
+
+		try {
+			System.out.println("Came to Resub Controller");
+
+			if (asondate != null) {
+				// Set the asondate into the entity
+				request.setReportDate(asondate);
+				System.out.println("Set Report Date: " + asondate);
+			} else {
+				System.out.println("Asondate parameter is null; using entity value: " + request.getReportDate());
+			}
+
+			// Call service to create a new versioned row
+			INT_RATES_FCA_NEWreportService.updateReportReSub(request);
+
+			return ResponseEntity.ok("Resubmission Updated Successfully");
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Resubmission Update Failed: " + e.getMessage());
+		}
 	}	
+
+
 	
 	
 	@Autowired BRRS_M_OPTR_ReportService M_OPTRreportService;
@@ -1800,57 +1910,6 @@ return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 
 	
 
-	@Autowired
-	private BRRS_M_INT_RATES_FCA_ReportService INTRATESFCAreportService;
-
-	@RequestMapping(value = "/INTRATESFCAupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
-	@ResponseBody
-	public ResponseEntity<String> updateAllReports(
-			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@ModelAttribute M_INT_RATES_FCA_Summary_Entity request1
-
-	) {
-		try {
-			System.out.println("Came to single controller");
-			// set date into all 4 entities
-			request1.setReportDate(asondate);
-
-			// call services
-			INTRATESFCAreportService.updateReport(request1);
-
-			return ResponseEntity.ok("Updated Successfully.");
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body("Update Failed: " + e.getMessage());
-		}
-	}
-	
-	@Autowired
-	private BRRS_M_INT_RATES_FCA_NEW_ReportService INTRATESFCACreportService;
-
-	@RequestMapping(value = "/INTRATESFCACupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
-	@ResponseBody
-	public ResponseEntity<String> updateAllReports(
-			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@ModelAttribute M_INT_RATES_FCA_NEW_Summary_Entity request1
-
-	) {
-		try {
-			System.out.println("Came to single controller");
-			// set date into all 4 entities
-			request1.setReportDate(asondate);
-
-			// call services
-			INTRATESFCACreportService.updateReport(request1);
-
-			return ResponseEntity.ok("Updated Successfully.");
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body("Update Failed: " + e.getMessage());
-		}
-	}
 
 	@Autowired
 	private BRRS_M_FXR_ReportService brrs_m_fxr_reportservice;
@@ -2958,67 +3017,6 @@ return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 	}
 	
 	
-	@RequestMapping(value = "/UpdateM_INT_RATES_FCA_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
-	@ResponseBody
-	public ResponseEntity<String> updateReportReSub(
-			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@ModelAttribute M_INT_RATES_FCA_Summary_Entity request,
-			HttpServletRequest req) {
-
-		try {
-			System.out.println("Came to Resub Controller");
-
-			if (asondate != null) {
-				// Set the asondate into the entity
-				request.setReportDate(asondate);
-				System.out.println("Set Report Date: " + asondate);
-			} else {
-				System.out.println("Asondate parameter is null; using entity value: " + request.getReportDate());
-			}
-
-			// Call service to create a new versioned row
-			INTRATESFCAreportService.updateReportReSub(request);
-
-			return ResponseEntity.ok("Resubmission Updated Successfully");
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body("Resubmission Update Failed: " + e.getMessage());
-		}
-	}
-	
-	@RequestMapping(value = "/UpdateM_INT_RATES_FCA_C_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
-	@ResponseBody
-	public ResponseEntity<String> updateReportReSub(
-			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@ModelAttribute M_INT_RATES_FCA_NEW_Summary_Entity request,
-			HttpServletRequest req) {
-
-		try {
-			System.out.println("Came to Resub Controller");
-
-			if (asondate != null) {
-				// Set the asondate into the entity
-				request.setReportDate(asondate);
-				System.out.println("Set Report Date: " + asondate);
-			} else {
-				System.out.println("Asondate parameter is null; using entity value: " + request.getReportDate());
-			}
-
-			// Call service to create a new versioned row
-			INTRATESFCACreportService.updateReportReSub(request);
-
-			return ResponseEntity.ok("Resubmission Updated Successfully");
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body("Resubmission Update Failed: " + e.getMessage());
-		}
-	}
-
-
 	@RequestMapping(value = "/UpdateM_CA7_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public ResponseEntity<String> updateReportReSub(

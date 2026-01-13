@@ -9,12 +9,17 @@ import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.CallableStatement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.BorderStyle;
@@ -36,24 +41,41 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.bornfire.brrs.entities.BDISB1_Archival_Detail_Entity;
+import com.bornfire.brrs.entities.BDISB1_Archival_Summary_Entity;
+import com.bornfire.brrs.entities.BDISB1_Detail_Entity;
+import com.bornfire.brrs.entities.BDISB1_Summary_Entity;
 import com.bornfire.brrs.entities.BRRS_M_INT_RATES_Archival_Summary_Repo;
+import com.bornfire.brrs.entities.BRRS_M_INT_RATES_FCA_Archival_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_M_INT_RATES_FCA_Archival_Summary_Repo;
+import com.bornfire.brrs.entities.BRRS_M_INT_RATES_FCA_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_M_INT_RATES_FCA_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_M_INT_RATES_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_M_SRWA_12F_Archival_Summary_Repo;
 
 import com.bornfire.brrs.entities.BRRS_M_SRWA_12F_Summary_Repo;
 import com.bornfire.brrs.entities.M_INT_RATES_Archival_Summary_Entity;
+import com.bornfire.brrs.entities.M_INT_RATES_FCA_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.M_INT_RATES_FCA_Archival_Summary_Entity;
+import com.bornfire.brrs.entities.M_INT_RATES_FCA_Detail_Entity;
 import com.bornfire.brrs.entities.M_INT_RATES_FCA_Summary_Entity;
 import com.bornfire.brrs.entities.M_INT_RATES_Summary_Entity;
+import com.bornfire.brrs.entities.M_OPTR_Archival_Detail_Entity;
+import com.bornfire.brrs.entities.M_OPTR_Archival_Summary_Entity;
+import com.bornfire.brrs.entities.M_OPTR_Detail_Entity;
+import com.bornfire.brrs.entities.M_OPTR_Summary_Entity;
 import com.bornfire.brrs.entities.M_SECL_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.M_SECL_Summary_Entity;
 import com.bornfire.brrs.entities.M_SRWA_12F_Summary_Entity;
@@ -68,6 +90,9 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 	@Autowired
 	private Environment env;
+	
+	@Autowired
+	private JdbcTemplate jdbcTemplate;
 
 	@Autowired
 	SessionFactory sessionFactory;
@@ -89,14 +114,20 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 	@Autowired
 	BRRS_M_INT_RATES_FCA_Archival_Summary_Repo M_INT_RATES_FCA_Archival_Summary_Repo;
+	
+	@Autowired
+	BRRS_M_INT_RATES_FCA_Detail_Repo M_INT_RATES_FCA_Detail_Repo;
+
+	@Autowired
+	BRRS_M_INT_RATES_FCA_Archival_Detail_Repo M_INT_RATES_FCA_Archival_Detail_Repo;
 
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
-	public ModelAndView getM_INTRATESFCAView(String reportId, String fromdate, String todate, String currency,
-			String dtltype, Pageable pageable, String type, String version) {
+	public ModelAndView getINT_RATES_FCAView(String reportId, String fromdate, String todate, String currency, String dtltype,
+			Pageable pageable, String type, String version) {
 		ModelAndView mv = new ModelAndView();
 		Session hs = sessionFactory.getCurrentSession();
-		
+
 		int pageSize = pageable.getPageSize();
 		int currentPage = pageable.getPageNumber();
 		int startItem = currentPage * pageSize;
@@ -104,29 +135,29 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 		try {
 			Date d1 = dateformat.parse(todate);
 
-	 // ---------- CASE 1: ARCHIVAL ----------
-        if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
-            List<M_INT_RATES_FCA_Archival_Summary_Entity> T1Master = 
-            		M_INT_RATES_FCA_Archival_Summary_Repo.getdatabydateListarchival(d1, version);
-            
-            mv.addObject("reportsummary", T1Master);
-        }
+			// ---------- CASE 1: ARCHIVAL ----------
+			if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
+				List<M_INT_RATES_Archival_Summary_Entity> T1Master = M_INT_RATES_Archival_Summary_Repo
+						.getdatabydateListarchival(d1, version);
 
-        // ---------- CASE 2: RESUB ----------
-        else if ("RESUB".equalsIgnoreCase(type) && version != null) {
-            List<M_INT_RATES_FCA_Archival_Summary_Entity> T1Master =
-            		M_INT_RATES_FCA_Archival_Summary_Repo.getdatabydateListarchival(d1, version);
-            
-            mv.addObject("reportsummary", T1Master);
-        }
+				mv.addObject("reportsummary", T1Master);
+			}
 
-        // ---------- CASE 3: NORMAL ----------
-        else {
-            List<M_INT_RATES_FCA_Summary_Entity> T1Master = 
-            		M_INT_RATES_FCA_Summary_Repo.getdatabydateListWithVersion(todate);
-            System.out.println("T1Master Size "+T1Master.size());
-            mv.addObject("reportsummary", T1Master);
-        }
+			// ---------- CASE 2: RESUB ----------
+			else if ("RESUB".equalsIgnoreCase(type) && version != null) {
+				List<M_INT_RATES_FCA_Archival_Summary_Entity> T1Master = M_INT_RATES_FCA_Archival_Summary_Repo
+						.getdatabydateListarchival(d1, version);
+
+				mv.addObject("reportsummary", T1Master);
+			}
+
+			// ---------- CASE 3: NORMAL ----------
+			else {
+				List<M_INT_RATES_FCA_Summary_Entity> T1Master = M_INT_RATES_FCA_Summary_Repo
+						.getdatabydateList(dateformat.parse(todate));
+				System.out.println("T1Master Size " + T1Master.size());
+				mv.addObject("reportsummary", T1Master);
+			}
 
 		} catch (ParseException e) {
 			e.printStackTrace();
@@ -139,112 +170,278 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 	}
 
 	
-//	
-//	public List<Object> getM_INTRATESFCAArchival() {
-//		List<Object> M_INTRATESFCAArchivallist = new ArrayList<>();
-////		List<Object> M_SRWA_12GArchivallist2 = new ArrayList<>();
-////		List<Object> M_SRWA_12GArchivallist3 = new ArrayList<>();
-//		try {
-//			M_INTRATESFCAArchivallist = M_INT_RATES_FCA_Archival_Summary_Repo.getM_INTRATESFCAarchival();
-//			System.out.println("countser" + M_INTRATESFCAArchivallist.size());
-////			System.out.println("countser" + M_SRWA_12GArchivallist.size());
-////			System.out.println("countser" + M_SRWA_12GArchivallist.size());
-//		} catch (Exception e) {
-//			// Log the exception
-//			System.err.println("Error fetching M_SRWA_12F Archival data: " + e.getMessage());
-//			e.printStackTrace();
-//			// Optionally, you can rethrow it or return empty list
-//			// throw new RuntimeException("Failed to fetch data", e);
-//		}
-//		return M_INTRATESFCAArchivallist;
-//	}
-	
-	
-	public void updateReport(M_INT_RATES_FCA_Summary_Entity updatedEntity) {
-		System.out.println("Came to services");
-		System.out.println("Report Date: " + updatedEntity.getReportDate());
+	public ModelAndView getM_INT_RATES_FCAcurrentDtl(String reportId, String fromdate, String todate, String currency,
+			String dtltype, Pageable pageable, String Filter, String type, String version) {
 
-		M_INT_RATES_FCA_Summary_Entity existing = M_INT_RATES_FCA_Summary_Repo.findById(updatedEntity.getReportDate())
-				.orElseThrow(() -> new RuntimeException(
-						"Record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
+		int pageSize = pageable != null ? pageable.getPageSize() : 10;
+		int currentPage = pageable != null ? pageable.getPageNumber() : 0;
+		int totalPages = 0;
+
+		ModelAndView mv = new ModelAndView();
+		Session hs = sessionFactory.getCurrentSession();
 
 		try {
-			// 1️⃣ Loop through R14 to R100
-			for (int i = 10; i <= 14; i++) {
-				String prefix = "R" + i + "_";
-
-				String[] fields = {"CURRENT",
-				        "CALL",
-				        "SAVINGS",
-				        "NOTICE_0_31_DAYS",
-				        "NOTICE_32_88_DAYS",
-				        "91_DEPOSIT_DAY",
-				        "FD_1_6_MONTHS",
-				        "FD_7_12_MONTHS",
-				        "FD_13_18_MONTHS",
-				        "FD_19_24_MONTHS",
-				        "FD_OVER_24_MONTHS",
-				        "TOTAL"};
-
-				for (String field : fields) {
-					String getterName = "get" + prefix + field;
-					String setterName = "set" + prefix + field;
-
-					try {
-						Method getter = M_INT_RATES_FCA_Summary_Entity.class.getMethod(getterName);
-						Method setter = M_INT_RATES_FCA_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-
-						Object newValue = getter.invoke(updatedEntity);
-						setter.invoke(existing, newValue);
-
-					} catch (NoSuchMethodException e) {
-						// Skip missing fields
-						continue;
-					}
-				}
+			Date parsedDate = null;
+			if (todate != null && !todate.isEmpty()) {
+				parsedDate = dateformat.parse(todate);
 			}
 
-			// 2️⃣ Handle R100 total fields using same structure
-			String prefix = "R15_";
-			String[] totalFields = { "CURRENCY","CURRENT",
-			        "CALL",
-			        "SAVINGS",
-			        "NOTICE_0_31_DAYS",
-			        "NOTICE_32_88_DAYS",
-			        "91_DEPOSIT_DAY",
-			        "FD_1_6_MONTHS",
-			        "FD_7_12_MONTHS",
-			        "FD_13_18_MONTHS",
-			        "FD_19_24_MONTHS",
-			        "FD_OVER_24_MONTHS",
-			        "TOTAL"};
+			String rowId = null;
+			String columnId = null;
 
-			for (String field : totalFields) {
-				String getterName = "get" + prefix + field;
-				String setterName = "set" + prefix + field;
-
-				try {
-					Method getter = M_INT_RATES_FCA_Summary_Entity.class.getMethod(getterName);
-					Method setter = M_INT_RATES_FCA_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-
-					Object newValue = getter.invoke(updatedEntity);
-					setter.invoke(existing, newValue);
-
-				} catch (NoSuchMethodException e) {
-					// Skip missing total fields
-					continue;
+			// ✅ Split filter string into rowId & columnId
+			if (Filter != null && Filter.contains(",")) {
+				String[] parts = Filter.split(",");
+				if (parts.length >= 2) {
+					rowId = parts[0];
+					columnId = parts[1];
 				}
 			}
+			System.out.println(type);
+			if ("ARCHIVAL".equals(type) && version != null) {
+				System.out.println(type);
+				// 🔹 Archival branch
+				List<M_INT_RATES_FCA_Archival_Detail_Entity> T1Dt1;
+				if (rowId != null && columnId != null) {
+					T1Dt1 = M_INT_RATES_FCA_Archival_Detail_Repo.GetDataByRowIdAndColumnId(rowId, columnId, parsedDate,
+							version);
+				} else {
+					T1Dt1 = M_INT_RATES_FCA_Archival_Detail_Repo.getdatabydateList(parsedDate, version);
+				}
 
+				mv.addObject("reportdetails", T1Dt1);
+				mv.addObject("reportmaster12", T1Dt1);
+				System.out.println("ARCHIVAL COUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
+
+			} else {
+				// 🔹 Current branch
+				List<M_INT_RATES_FCA_Detail_Entity> T1Dt1;
+				if (rowId != null && columnId != null) {
+					T1Dt1 = M_INT_RATES_FCA_Detail_Repo.GetDataByRowIdAndColumnId(rowId, columnId, parsedDate);
+				} else {
+					T1Dt1 = M_INT_RATES_FCA_Detail_Repo.getdatabydateList(parsedDate);
+					System.out.println("bdisb2 size is : " + T1Dt1.size());
+					totalPages = M_INT_RATES_FCA_Detail_Repo.getdatacount(parsedDate);
+					mv.addObject("pagination", "YES");
+				}
+
+				mv.addObject("reportdetails", T1Dt1);
+				mv.addObject("reportmaster12", T1Dt1);
+				System.out.println("LISTCOUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
+			}
+
+		} catch (ParseException e) {
+			e.printStackTrace();
+			mv.addObject("errorMessage", "Invalid date format: " + todate);
 		} catch (Exception e) {
-			throw new RuntimeException("Error while updating report fields", e);
+			e.printStackTrace();
+			mv.addObject("errorMessage", "Unexpected error: " + e.getMessage());
 		}
 
-		// Save updated entity
-		System.out.println("abc");
-		M_INT_RATES_FCA_Summary_Repo.save(existing);
+		// ✅ Common attributes
+		mv.setViewName("BRRS/M_INT_RATES_FCA");
+		mv.addObject("displaymode", "Details");
+		mv.addObject("currentPage", currentPage);
+		System.out.println("totalPages: " + (int) Math.ceil((double) totalPages / 100));
+		mv.addObject("totalPages", (int) Math.ceil((double) totalPages / 100));
+		mv.addObject("reportsflag", "reportsflag");
+		mv.addObject("menu", reportId);
+
+		return mv;
 	}
 	
+	public void updateDetailFromForm(Date reportDate, Map<String, String> params) {
+
+	    System.out.println("came to service for update ");
+
+	    for (Map.Entry<String, String> entry : params.entrySet()) {
+
+	        String key = entry.getKey();
+	        String value = entry.getValue();
+
+	        // ✅ Allow only valid keys for required columns
+	        if (!key.matches(
+	                "R\\d+_C\\d+_(CURRENT|CALL|SAVINGS|NOTICE_0_31_DAYS|NOTICE_32_88_DAYS|91_DEPOSIT_DAY|" +
+	                "FD_1_6_MONTHS|FD_7_12_MONTHS|FD_13_18_MONTHS|FD_19_24_MONTHS|FD_OVER_24_MONTHS|TOTAL)"
+	        )) {
+	            continue;
+	        }
+
+	        if (value == null || value.trim().isEmpty()) {
+	            value = "0";
+	        }
+
+	        String[] parts = key.split("_");
+	        String reportLabel = parts[0];       // R1, R2, etc.
+	        String addlCriteria = parts[1];      // C1, C2, etc.
+	        String column = String.join("_", Arrays.copyOfRange(parts, 2, parts.length));
+
+	        BigDecimal amount = new BigDecimal(value);
+
+	        List<M_INT_RATES_FCA_Detail_Entity> rows =
+	                M_INT_RATES_FCA_Detail_Repo.findByReportDateAndReportLableAndReportAddlCriteria1(
+	                        reportDate, reportLabel, addlCriteria
+	                );
+
+	        for (M_INT_RATES_FCA_Detail_Entity row : rows) {
+
+	            if ("CURRENT_AMT".equals(column)) {
+	                row.setCURRENT_AMT(amount);
+
+	            } else if ("CALL_AMT".equals(column)) {
+	                row.setCALL_AMT(amount);
+
+	            } else if ("SAVINGS".equals(column)) {
+	                row.setSAVINGS(amount);
+
+	            } else if ("NOTICE_0_31_DAYS".equals(column)) {
+	                row.setNOTICE_0_31_DAYS(amount);
+
+	            } else if ("NOTICE_32_88_DAYS".equals(column)) {
+	                row.setNOTICE_32_88_DAYS(amount);
+
+	            } else if ("91_DEPOSIT_DAY".equals(column)) {
+	                row.setFD_91_DEPOSIT_DAY(amount);   
+
+	            } else if ("FD_1_6_MONTHS".equals(column)) {
+	                row.setFD_1_6_MONTHS(amount);
+
+	            } else if ("FD_7_12_MONTHS".equals(column)) {
+	                row.setFD_7_12_MONTHS(amount);
+
+	            } else if ("FD_13_18_MONTHS".equals(column)) {
+	                row.setFD_13_18_MONTHS(amount);
+
+	            } else if ("FD_19_24_MONTHS".equals(column)) {
+	                row.setFD_19_24_MONTHS(amount);
+
+	            } else if ("FD_OVER_24_MONTHS".equals(column)) {
+	                row.setFD_OVER_24_MONTHS(amount);
+
+	            } else if ("TOTAL".equals(column)) {
+	                row.setTOTAL(amount);
+	            }
+	        }
+
+	        M_INT_RATES_FCA_Detail_Repo.saveAll(rows);
+	    }
+
+	    // ✅ CALL ORACLE PROCEDURE AFTER ALL UPDATES
+	    callSummaryProcedure(reportDate);
+	}
+	
+	
+	private void callSummaryProcedure(Date reportDate) {
+
+	    String sql = "{ call BRRS_M_INT_RATES_FCA_SUMMARY_PROCEDURE(?) }";
+
+	    jdbcTemplate.update(connection -> {
+	        CallableStatement cs = connection.prepareCall(sql);
+
+	        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+	        sdf.setLenient(false);
+
+	        String formattedDate = sdf.format(reportDate);
+
+	        cs.setString(1, formattedDate);
+	        return cs;
+	    });
+
+	    System.out.println("✅ Summary procedure executed for date: " +
+	            new SimpleDateFormat("dd-MM-yyyy").format(reportDate));
+	}
+
+
+	
+	
+	
+
+	
+//	public void updateReport(M_INT_RATES_FCA_Summary_Entity updatedEntity) {
+//		System.out.println("Came to services");
+//		System.out.println("Report Date: " + updatedEntity.getReportDate());
+
+//		M_INT_RATES_FCA_Summary_Entity existing = M_INT_RATES_FCA_Summary_Repo.findById(updatedEntity.getReportDate())
+//				.orElseThrow(() -> new RuntimeException(
+//						"Record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
+
+//		try {
+//			// 1️⃣ Loop through R14 to R100
+//			for (int i = 10; i <= 14; i++) {
+//				String prefix = "R" + i + "_";
+
+//				String[] fields = {"CURRENT",
+//				        "CALL",
+//				        "SAVINGS",
+//				        "NOTICE_0_31_DAYS",
+//				        "NOTICE_32_88_DAYS",
+//				        "91_DEPOSIT_DAY",
+//				        "FD_1_6_MONTHS",
+//				        "FD_7_12_MONTHS",
+//				        "FD_13_18_MONTHS",
+//				        "FD_19_24_MONTHS",
+//				        "FD_OVER_24_MONTHS",
+//				        "TOTAL"};
+
+//				for (String field : fields) {
+//					String getterName = "get" + prefix + field;
+//					String setterName = "set" + prefix + field;
+
+//					try {
+//						Method getter = M_INT_RATES_FCA_Summary_Entity.class.getMethod(getterName);
+//						Method setter = M_INT_RATES_FCA_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+
+//						Object newValue = getter.invoke(updatedEntity);
+//						setter.invoke(existing, newValue);
+
+//					} catch (NoSuchMethodException e) {
+						// Skip missing fields
+//						continue;
+//					}
+//				}
+//			}
+
+			// 2️⃣ Handle R100 total fields using same structure
+//			String prefix = "R15_";
+//			String[] totalFields = { "CURRENCY","CURRENT",
+//			        "CALL",
+//			        "SAVINGS",
+//			        "NOTICE_0_31_DAYS",
+//			        "NOTICE_32_88_DAYS",
+//			        "91_DEPOSIT_DAY",
+//			        "FD_1_6_MONTHS",
+//			        "FD_7_12_MONTHS",
+//			        "FD_13_18_MONTHS",
+//			        "FD_19_24_MONTHS",
+//			        "FD_OVER_24_MONTHS",
+//			        "TOTAL"};
+
+//			for (String field : totalFields) {
+//				String getterName = "get" + prefix + field;
+//				String setterName = "set" + prefix + field;
+
+//				try {
+//					Method getter = M_INT_RATES_FCA_Summary_Entity.class.getMethod(getterName);
+//					Method setter = M_INT_RATES_FCA_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+
+//					Object newValue = getter.invoke(updatedEntity);
+//					setter.invoke(existing, newValue);
+
+//				} catch (NoSuchMethodException e) {
+					// Skip missing total fields
+//					continue;
+//				}
+//			}
+
+//		} catch (Exception e) {
+//			throw new RuntimeException("Error while updating report fields", e);
+//		}
+
+		// Save updated entity
+//		System.out.println("abc");
+//		M_INT_RATES_FCA_Summary_Repo.save(existing);
+//	}
+		
 	
 	public byte[] getM_INTRATESFCAExcel(String filename,String reportId, String fromdate, String todate, String currency, String dtltype , String type ,
 			String version) throws Exception {
@@ -1576,60 +1773,328 @@ return archivalList;
 }
 
 
-//Resubmit the values , latest version and Resub Date
+@Transactional
 public void updateReportReSub(M_INT_RATES_FCA_Summary_Entity updatedEntity) {
+
 System.out.println("Came to Resub Service");
-System.out.println("Report Date: " + updatedEntity.getReportDate());
 
 Date reportDate = updatedEntity.getReportDate();
-int newVersion = 1;
+System.out.println("Report Date: " + reportDate);
 
 try {
-//Fetch the latest archival version for this report date
-Optional<M_INT_RATES_FCA_Archival_Summary_Entity> latestArchivalOpt = M_INT_RATES_FCA_Archival_Summary_Repo
+/* =========================================================
+* 1️⃣ FETCH LATEST ARCHIVAL VERSION
+* ========================================================= */
+Optional<M_INT_RATES_FCA_Archival_Summary_Entity> latestArchivalOpt =
+M_INT_RATES_FCA_Archival_Summary_Repo
 .getLatestArchivalVersionByDate(reportDate);
 
-//Determine next version number
+int newVersion = 1;
 if (latestArchivalOpt.isPresent()) {
-M_INT_RATES_FCA_Archival_Summary_Entity latestArchival = latestArchivalOpt.get();
 try {
-newVersion = Integer.parseInt(latestArchival.getReportVersion()) + 1;
+newVersion =
+Integer.parseInt(latestArchivalOpt.get().getReportVersion()) + 1;
 } catch (NumberFormatException e) {
-System.err.println("Invalid version format. Defaulting to version 1");
 newVersion = 1;
 }
-} else {
-System.out.println("No previous archival found for date: " + reportDate);
 }
 
-//Prevent duplicate version number
-boolean exists = M_INT_RATES_FCA_Archival_Summary_Repo
-.findByReportDateAndReportVersion(reportDate, String.valueOf(newVersion))
+boolean exists =
+M_INT_RATES_FCA_Archival_Summary_Repo
+.findByReportDateAndReportVersion(
+reportDate, String.valueOf(newVersion))
 .isPresent();
 
 if (exists) {
-throw new RuntimeException("Version " + newVersion + " already exists for report date " + reportDate);
+throw new RuntimeException(
+"Version " + newVersion + " already exists for report date " + reportDate);
 }
 
-//Copy summary entity to archival entity
-M_INT_RATES_FCA_Archival_Summary_Entity archivalEntity = new M_INT_RATES_FCA_Archival_Summary_Entity();
-org.springframework.beans.BeanUtils.copyProperties(updatedEntity, archivalEntity);
+/* =========================================================
+* 2️⃣ CREATE NEW ARCHIVAL ENTITY (BASE COPY)
+* ========================================================= */
+M_INT_RATES_FCA_Archival_Summary_Entity archivalEntity =
+new M_INT_RATES_FCA_Archival_Summary_Entity();
 
+if (latestArchivalOpt.isPresent()) {
+BeanUtils.copyProperties(latestArchivalOpt.get(), archivalEntity);
+}
+
+/* =========================================================
+* 3️⃣ READ RAW REQUEST PARAMETERS (CRITICAL FIX)
+* ========================================================= */
+HttpServletRequest request =
+((ServletRequestAttributes) RequestContextHolder
+.getRequestAttributes()).getRequest();
+
+Map<String, String[]> parameterMap = request.getParameterMap();
+
+for (Map.Entry<String, String[]> entry : parameterMap.entrySet()) {
+
+String key = entry.getKey();              // R6_C11_ACCT_NUM
+String value = entry.getValue()[0];
+
+//Ignore non-field params
+if ("asondate".equalsIgnoreCase(key) || "type".equalsIgnoreCase(key)) {
+continue;
+}
+
+//Normalize: R6_C11_ACCT_NUM → R6_ACCT_NUM
+String normalizedKey = key.replaceFirst("_C\\d+_", "_");
+
+/* =====================================================
+* 4️⃣ APPLY VALUES (EXPLICIT, SAFE, NO REFLECTION)
+* ===================================================== */
+//======================= R5 – R11 =======================
+
+if ("R10_CURRENT".equals(normalizedKey)) {
+    archivalEntity.setR10_CURRENT(parseBigDecimal(value));
+
+} else if ("R10_CALL".equals(normalizedKey)) {
+    archivalEntity.setR10_CALL(parseBigDecimal(value));
+
+} else if ("R10_SAVINGS".equals(normalizedKey)) {
+    archivalEntity.setR10_SAVINGS(parseBigDecimal(value));
+
+} else if ("R10_NOTICE_0_31_DAYS".equals(normalizedKey)) {
+    archivalEntity.setR10_NOTICE_0_31_DAYS(parseBigDecimal(value));
+
+} else if ("R10_NOTICE_32_88_DAYS".equals(normalizedKey)) {
+    archivalEntity.setR10_NOTICE_32_88_DAYS(parseBigDecimal(value));
+
+} else if ("R10_91_DEPOSIT_DAY".equals(normalizedKey)) {
+    archivalEntity.setR10_91_DEPOSIT_DAY(parseBigDecimal(value));
+
+} else if ("R10_FD_1_6_MONTHS".equals(normalizedKey)) {
+    archivalEntity.setR10_FD_1_6_MONTHS(parseBigDecimal(value));
+
+} else if ("R10_FD_7_12_MONTHS".equals(normalizedKey)) {
+    archivalEntity.setR10_FD_7_12_MONTHS(parseBigDecimal(value));
+
+} else if ("R10_FD_13_18_MONTHS".equals(normalizedKey)) {
+    archivalEntity.setR10_FD_13_18_MONTHS(parseBigDecimal(value));
+
+} else if ("R10_FD_19_24_MONTHS".equals(normalizedKey)) {
+    archivalEntity.setR10_FD_19_24_MONTHS(parseBigDecimal(value));
+
+} else if ("R10_FD_OVER_24_MONTHS".equals(normalizedKey)) {
+    archivalEntity.setR10_FD_OVER_24_MONTHS(parseBigDecimal(value));
+
+} else if ("R10_TOTAL".equals(normalizedKey)) {
+    archivalEntity.setR10_TOTAL(parseBigDecimal(value));
+
+
+} else if ("R11_CURRENT".equals(normalizedKey)) {
+    archivalEntity.setR11_CURRENT(parseBigDecimal(value));
+
+} else if ("R11_CALL".equals(normalizedKey)) {
+    archivalEntity.setR11_CALL(parseBigDecimal(value));
+
+} else if ("R11_SAVINGS".equals(normalizedKey)) {
+    archivalEntity.setR11_SAVINGS(parseBigDecimal(value));
+
+} else if ("R11_NOTICE_0_31_DAYS".equals(normalizedKey)) {
+    archivalEntity.setR11_NOTICE_0_31_DAYS(parseBigDecimal(value));
+
+} else if ("R11_NOTICE_32_88_DAYS".equals(normalizedKey)) {
+    archivalEntity.setR11_NOTICE_32_88_DAYS(parseBigDecimal(value));
+
+} else if ("R11_91_DEPOSIT_DAY".equals(normalizedKey)) {
+    archivalEntity.setR11_91_DEPOSIT_DAY(parseBigDecimal(value));
+
+} else if ("R11_FD_1_6_MONTHS".equals(normalizedKey)) {
+    archivalEntity.setR11_FD_1_6_MONTHS(parseBigDecimal(value));
+
+} else if ("R11_FD_7_12_MONTHS".equals(normalizedKey)) {
+    archivalEntity.setR11_FD_7_12_MONTHS(parseBigDecimal(value));
+
+} else if ("R11_FD_13_18_MONTHS".equals(normalizedKey)) {
+    archivalEntity.setR11_FD_13_18_MONTHS(parseBigDecimal(value));
+
+} else if ("R11_FD_19_24_MONTHS".equals(normalizedKey)) {
+    archivalEntity.setR11_FD_19_24_MONTHS(parseBigDecimal(value));
+
+} else if ("R11_FD_OVER_24_MONTHS".equals(normalizedKey)) {
+    archivalEntity.setR11_FD_OVER_24_MONTHS(parseBigDecimal(value));
+
+} else if ("R11_TOTAL".equals(normalizedKey)) {
+    archivalEntity.setR11_TOTAL(parseBigDecimal(value));
+
+    
+} else if ("R12_CURRENT".equals(normalizedKey)) {
+    archivalEntity.setR12_CURRENT(parseBigDecimal(value));
+
+} else if ("R12_CALL".equals(normalizedKey)) {
+    archivalEntity.setR12_CALL(parseBigDecimal(value));
+
+} else if ("R12_SAVINGS".equals(normalizedKey)) {
+    archivalEntity.setR12_SAVINGS(parseBigDecimal(value));
+
+} else if ("R12_NOTICE_0_31_DAYS".equals(normalizedKey)) {
+    archivalEntity.setR12_NOTICE_0_31_DAYS(parseBigDecimal(value));
+
+} else if ("R12_NOTICE_32_88_DAYS".equals(normalizedKey)) {
+    archivalEntity.setR12_NOTICE_32_88_DAYS(parseBigDecimal(value));
+
+} else if ("R12_91_DEPOSIT_DAY".equals(normalizedKey)) {
+    archivalEntity.setR12_91_DEPOSIT_DAY(parseBigDecimal(value));
+
+} else if ("R12_FD_1_6_MONTHS".equals(normalizedKey)) {
+    archivalEntity.setR12_FD_1_6_MONTHS(parseBigDecimal(value));
+
+} else if ("R12_FD_7_12_MONTHS".equals(normalizedKey)) {
+    archivalEntity.setR12_FD_7_12_MONTHS(parseBigDecimal(value));
+
+} else if ("R12_FD_13_18_MONTHS".equals(normalizedKey)) {
+    archivalEntity.setR12_FD_13_18_MONTHS(parseBigDecimal(value));
+
+} else if ("R12_FD_19_24_MONTHS".equals(normalizedKey)) {
+    archivalEntity.setR12_FD_19_24_MONTHS(parseBigDecimal(value));
+
+} else if ("R12_FD_OVER_24_MONTHS".equals(normalizedKey)) {
+    archivalEntity.setR12_FD_OVER_24_MONTHS(parseBigDecimal(value));
+
+} else if ("R12_TOTAL".equals(normalizedKey)) {
+    archivalEntity.setR12_TOTAL(parseBigDecimal(value));
+
+} else if ("R13_CURRENT".equals(normalizedKey)) {
+    archivalEntity.setR13_CURRENT(parseBigDecimal(value));
+
+} else if ("R13_CALL".equals(normalizedKey)) {
+    archivalEntity.setR13_CALL(parseBigDecimal(value));
+
+} else if ("R13_SAVINGS".equals(normalizedKey)) {
+    archivalEntity.setR13_SAVINGS(parseBigDecimal(value));
+
+} else if ("R13_NOTICE_0_31_DAYS".equals(normalizedKey)) {
+    archivalEntity.setR13_NOTICE_0_31_DAYS(parseBigDecimal(value));
+
+} else if ("R13_NOTICE_32_88_DAYS".equals(normalizedKey)) {
+    archivalEntity.setR13_NOTICE_32_88_DAYS(parseBigDecimal(value));
+
+} else if ("R13_91_DEPOSIT_DAY".equals(normalizedKey)) {
+    archivalEntity.setR13_91_DEPOSIT_DAY(parseBigDecimal(value));
+
+} else if ("R13_FD_1_6_MONTHS".equals(normalizedKey)) {
+    archivalEntity.setR13_FD_1_6_MONTHS(parseBigDecimal(value));
+
+} else if ("R13_FD_7_12_MONTHS".equals(normalizedKey)) {
+    archivalEntity.setR13_FD_7_12_MONTHS(parseBigDecimal(value));
+
+} else if ("R13_FD_13_18_MONTHS".equals(normalizedKey)) {
+    archivalEntity.setR13_FD_13_18_MONTHS(parseBigDecimal(value));
+
+} else if ("R13_FD_19_24_MONTHS".equals(normalizedKey)) {
+    archivalEntity.setR13_FD_19_24_MONTHS(parseBigDecimal(value));
+
+} else if ("R13_FD_OVER_24_MONTHS".equals(normalizedKey)) {
+    archivalEntity.setR13_FD_OVER_24_MONTHS(parseBigDecimal(value));
+
+} else if ("R13_TOTAL".equals(normalizedKey)) {
+    archivalEntity.setR13_TOTAL(parseBigDecimal(value));
+
+} else if ("R14_CURRENT".equals(normalizedKey)) {
+    archivalEntity.setR14_CURRENT(parseBigDecimal(value));
+
+} else if ("R14_CALL".equals(normalizedKey)) {
+    archivalEntity.setR14_CALL(parseBigDecimal(value));
+
+} else if ("R14_SAVINGS".equals(normalizedKey)) {
+    archivalEntity.setR14_SAVINGS(parseBigDecimal(value));
+
+} else if ("R14_NOTICE_0_31_DAYS".equals(normalizedKey)) {
+    archivalEntity.setR14_NOTICE_0_31_DAYS(parseBigDecimal(value));
+
+} else if ("R14_NOTICE_32_88_DAYS".equals(normalizedKey)) {
+    archivalEntity.setR14_NOTICE_32_88_DAYS(parseBigDecimal(value));
+
+} else if ("R14_91_DEPOSIT_DAY".equals(normalizedKey)) {
+    archivalEntity.setR14_91_DEPOSIT_DAY(parseBigDecimal(value));
+
+} else if ("R14_FD_1_6_MONTHS".equals(normalizedKey)) {
+    archivalEntity.setR14_FD_1_6_MONTHS(parseBigDecimal(value));
+
+} else if ("R14_FD_7_12_MONTHS".equals(normalizedKey)) {
+    archivalEntity.setR14_FD_7_12_MONTHS(parseBigDecimal(value));
+
+} else if ("R14_FD_13_18_MONTHS".equals(normalizedKey)) {
+    archivalEntity.setR14_FD_13_18_MONTHS(parseBigDecimal(value));
+
+} else if ("R14_FD_19_24_MONTHS".equals(normalizedKey)) {
+    archivalEntity.setR14_FD_19_24_MONTHS(parseBigDecimal(value));
+
+} else if ("R14_FD_OVER_24_MONTHS".equals(normalizedKey)) {
+    archivalEntity.setR14_FD_OVER_24_MONTHS(parseBigDecimal(value));
+
+} else if ("R14_TOTAL".equals(normalizedKey)) {
+    archivalEntity.setR14_TOTAL(parseBigDecimal(value));
+
+} else if ("R15_CURRENT".equals(normalizedKey)) {
+    archivalEntity.setR15_CURRENT(parseBigDecimal(value));
+
+} else if ("R15_CALL".equals(normalizedKey)) {
+    archivalEntity.setR15_CALL(parseBigDecimal(value));
+
+} else if ("R15_SAVINGS".equals(normalizedKey)) {
+    archivalEntity.setR15_SAVINGS(parseBigDecimal(value));
+
+} else if ("R15_NOTICE_0_31_DAYS".equals(normalizedKey)) {
+    archivalEntity.setR15_NOTICE_0_31_DAYS(parseBigDecimal(value));
+
+} else if ("R15_NOTICE_32_88_DAYS".equals(normalizedKey)) {
+    archivalEntity.setR15_NOTICE_32_88_DAYS(parseBigDecimal(value));
+
+} else if ("R15_91_DEPOSIT_DAY".equals(normalizedKey)) {
+    archivalEntity.setR15_91_DEPOSIT_DAY(parseBigDecimal(value));
+
+} else if ("R15_FD_1_6_MONTHS".equals(normalizedKey)) {
+    archivalEntity.setR15_FD_1_6_MONTHS(parseBigDecimal(value));
+
+} else if ("R15_FD_7_12_MONTHS".equals(normalizedKey)) {
+    archivalEntity.setR15_FD_7_12_MONTHS(parseBigDecimal(value));
+
+} else if ("R15_FD_13_18_MONTHS".equals(normalizedKey)) {
+    archivalEntity.setR15_FD_13_18_MONTHS(parseBigDecimal(value));
+
+} else if ("R15_FD_19_24_MONTHS".equals(normalizedKey)) {
+    archivalEntity.setR15_FD_19_24_MONTHS(parseBigDecimal(value));
+
+} else if ("R15_FD_OVER_24_MONTHS".equals(normalizedKey)) {
+    archivalEntity.setR15_FD_OVER_24_MONTHS(parseBigDecimal(value));
+
+} else if ("R15_TOTAL".equals(normalizedKey)) {
+    archivalEntity.setR15_TOTAL(parseBigDecimal(value));
+
+}
+
+
+}
+
+/* =========================================================
+* 5️⃣ SET RESUB METADATA
+* ========================================================= */
 archivalEntity.setReportDate(reportDate);
 archivalEntity.setReportVersion(String.valueOf(newVersion));
 archivalEntity.setReportResubDate(new Date());
 
-System.out.println("Saving new archival version: " + newVersion);
-
-//Save new version to repository
+/* =========================================================
+* 6️⃣ SAVE NEW ARCHIVAL VERSION
+* ========================================================= */
 M_INT_RATES_FCA_Archival_Summary_Repo.save(archivalEntity);
 
-System.out.println(" Saved archival version successfully: " + newVersion);
+System.out.println("✅ RESUB saved successfully. Version = " + newVersion);
 
 } catch (Exception e) {
 e.printStackTrace();
-throw new RuntimeException("Error while creating archival resubmission record", e);
+throw new RuntimeException(
+"Error while creating archival resubmission record", e);
 }
+}
+
+private BigDecimal parseBigDecimal(String value) {
+return (value == null || value.trim().isEmpty())
+? BigDecimal.ZERO
+: new BigDecimal(value.replace(",", ""));
 }
 
 /// Downloaded for Archival & Resub
@@ -2252,6 +2717,274 @@ int startRow = 9;
 	return out.toByteArray();
 			}
 		}
+
+
+public byte[] getM_INTRATESFCADetailExcel(String filename, String fromdate, String todate,
+        String currency, String dtltype, String type, String version) {
+
+    try {
+        logger.info("Generating Excel for M_OPTR Details...");
+        System.out.println("came to Detail download service");
+
+        // ================= ARCHIVAL HANDLING =================
+        if ("ARCHIVAL".equals(type) && version != null) {
+            return getDetailExcelARCHIVAL(filename, fromdate, todate, currency, dtltype, type, version);
+        }
+
+        // ================= WORKBOOK & SHEET =================
+        XSSFWorkbook workbook = new XSSFWorkbook();
+        XSSFSheet sheet = workbook.createSheet("BDISB3Detail");
+
+        BorderStyle border = BorderStyle.THIN;
+
+        // ================= HEADER STYLE =================
+        CellStyle headerStyle = workbook.createCellStyle();
+        Font headerFont = workbook.createFont();
+        headerFont.setBold(true);
+        headerFont.setFontHeightInPoints((short) 10);
+        headerStyle.setFont(headerFont);
+        headerStyle.setAlignment(HorizontalAlignment.LEFT);
+        headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+        headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        headerStyle.setBorderTop(border);
+        headerStyle.setBorderBottom(border);
+        headerStyle.setBorderLeft(border);
+        headerStyle.setBorderRight(border);
+
+        CellStyle rightHeaderStyle = workbook.createCellStyle();
+        rightHeaderStyle.cloneStyleFrom(headerStyle);
+        rightHeaderStyle.setAlignment(HorizontalAlignment.RIGHT);
+
+        // ================= DATA STYLES =================
+        CellStyle textStyle = workbook.createCellStyle();
+        textStyle.setAlignment(HorizontalAlignment.LEFT);
+        textStyle.setBorderTop(border);
+        textStyle.setBorderBottom(border);
+        textStyle.setBorderLeft(border);
+        textStyle.setBorderRight(border);
+
+        CellStyle amountStyle = workbook.createCellStyle();
+        amountStyle.setAlignment(HorizontalAlignment.RIGHT);
+        amountStyle.setDataFormat(workbook.createDataFormat().getFormat("#,##0"));
+        amountStyle.setBorderTop(border);
+        amountStyle.setBorderBottom(border);
+        amountStyle.setBorderLeft(border);
+        amountStyle.setBorderRight(border);
+
+        // ================= HEADER ROW =================
+        String[] headers = {
+        		"CURRENT",
+        		"CALL",
+        		"SAVINGS",
+                "REPORT LABEL",
+                "REPORT ADDL CRITERIA1",
+                "REPORT DATE"
+        };
+
+        XSSFRow headerRow = sheet.createRow(0);
+        for (int i = 0; i < headers.length; i++) {
+            Cell cell = headerRow.createCell(i);
+            cell.setCellValue(headers[i]);
+            cell.setCellStyle((i == 0 || i == 1) ? rightHeaderStyle : headerStyle);
+            sheet.setColumnWidth(i, 6000);
+        }
+
+        // ================= DATA FETCH =================
+        Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
+        List<M_INT_RATES_FCA_Detail_Entity> reportData = M_INT_RATES_FCA_Detail_Repo.getdatabydateList(parsedToDate);
+
+        // ================= DATA ROWS =================
+        int rowIndex = 1;
+
+        if (reportData != null && !reportData.isEmpty()) {
+            for (M_INT_RATES_FCA_Detail_Entity item : reportData) {
+
+                XSSFRow row = sheet.createRow(rowIndex++);
+
+                Cell c0 = row.createCell(0);
+                c0.setCellValue(item.getCURRENT_AMT() != null
+                        ? item.getCURRENT_AMT().doubleValue() : 0);
+                c0.setCellStyle(amountStyle);
+
+                // Column 1 - COMPENSATABLE AMOUNT
+                Cell c1 = row.createCell(1);
+                c1.setCellValue(item.getCALL_AMT() != null
+                        ? item.getCALL_AMT().doubleValue() : 0);
+                c1.setCellStyle(amountStyle);
+                
+                Cell c2 = row.createCell(2);
+                c2.setCellValue(item.getSAVINGS() != null
+                        ? item.getSAVINGS().doubleValue() : 0);
+                c2.setCellStyle(amountStyle);
+
+                // Column 2 - REPORT LABEL
+                Cell c3 = row.createCell(3);
+                c3.setCellValue(item.getReportLable());
+                c3.setCellStyle(textStyle);
+
+                // Column 3 - REPORT ADDL CRITERIA 1
+                Cell c4 = row.createCell(4);
+                c4.setCellValue(item.getReportAddlCriteria1());
+                c4.setCellStyle(textStyle);
+
+                // Column 4 - REPORT DATE
+                Cell c5 = row.createCell(5);
+                c5.setCellValue(item.getReportDate() != null
+                        ? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
+                        : "");
+                c5.setCellStyle(textStyle);
+            }
+        } else {
+            logger.info("No data found for M-OPTR — only header written.");
+        }
+
+        // ================= WRITE FILE =================
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        workbook.write(bos);
+        workbook.close();
+
+        logger.info("Excel generation completed with {} row(s).",
+                reportData != null ? reportData.size() : 0);
+
+        return bos.toByteArray();
+
+    } catch (Exception e) {
+        logger.error("Error generating BDISB3 Excel", e);
+        return new byte[0];
+    }
+}
+
+public byte[] getDetailExcelARCHIVAL(String filename, String fromdate, String todate,
+        String currency, String dtltype, String type, String version) {
+
+    try {
+        logger.info("Generating Excel for BRRS_M_INT_RATES_FCA ARCHIVAL Details...");
+        System.out.println("came to Detail download service");
+
+        // ================= WORKBOOK & SHEET =================
+        XSSFWorkbook workbook = new XSSFWorkbook();
+        XSSFSheet sheet = workbook.createSheet("M_OPTRDetail");
+
+        BorderStyle border = BorderStyle.THIN;
+
+        // ================= HEADER STYLE =================
+        CellStyle headerStyle = workbook.createCellStyle();
+        Font headerFont = workbook.createFont();
+        headerFont.setBold(true);
+        headerFont.setFontHeightInPoints((short) 10);
+        headerStyle.setFont(headerFont);
+        headerStyle.setAlignment(HorizontalAlignment.LEFT);
+        headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+        headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        headerStyle.setBorderTop(border);
+        headerStyle.setBorderBottom(border);
+        headerStyle.setBorderLeft(border);
+        headerStyle.setBorderRight(border);
+
+        CellStyle rightHeaderStyle = workbook.createCellStyle();
+        rightHeaderStyle.cloneStyleFrom(headerStyle);
+        rightHeaderStyle.setAlignment(HorizontalAlignment.RIGHT);
+
+        // ================= DATA STYLES =================
+        CellStyle textStyle = workbook.createCellStyle();
+        textStyle.setAlignment(HorizontalAlignment.LEFT);
+        textStyle.setBorderTop(border);
+        textStyle.setBorderBottom(border);
+        textStyle.setBorderLeft(border);
+        textStyle.setBorderRight(border);
+
+        CellStyle amountStyle = workbook.createCellStyle();
+        amountStyle.setAlignment(HorizontalAlignment.RIGHT);
+        amountStyle.setDataFormat(workbook.createDataFormat().getFormat("#,##0"));
+        amountStyle.setBorderTop(border);
+        amountStyle.setBorderBottom(border);
+        amountStyle.setBorderLeft(border);
+        amountStyle.setBorderRight(border);
+
+        // ================= HEADER ROW =================
+        String[] headers = {
+        		"CURRENT",
+        		"CALL",
+        		"SAVINGS",
+                "REPORT LABEL",
+                "REPORT ADDL CRITERIA1",
+                "REPORT DATE"
+        };
+
+        XSSFRow headerRow = sheet.createRow(0);
+        for (int i = 0; i < headers.length; i++) {
+            Cell cell = headerRow.createCell(i);
+            cell.setCellValue(headers[i]);
+            cell.setCellStyle((i == 0 || i == 1) ? rightHeaderStyle : headerStyle);
+            sheet.setColumnWidth(i, 6000);
+        }
+
+        // ================= DATA FETCH =================
+        Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
+        List<M_INT_RATES_FCA_Archival_Detail_Entity> reportData =
+                M_INT_RATES_FCA_Archival_Detail_Repo.getdatabydateList(parsedToDate, version);
+
+        // ================= DATA ROWS =================
+        int rowIndex = 1;
+
+        if (reportData != null && !reportData.isEmpty()) {
+            for (M_INT_RATES_FCA_Archival_Detail_Entity item : reportData) {
+
+                XSSFRow row = sheet.createRow(rowIndex++);
+
+             // Column 0 - AGGREGATE BALANCE
+                Cell c0 = row.createCell(0);
+                c0.setCellValue(item.getCURRENT_AMT() != null
+                        ? item.getCURRENT_AMT().doubleValue() : 0);
+                c0.setCellStyle(amountStyle);
+
+                // Column 1 - COMPENSATABLE AMOUNT
+                Cell c1 = row.createCell(1);
+                c1.setCellValue(item.getCALL_AMT() != null
+                        ? item.getCALL_AMT().doubleValue() : 0);
+                c1.setCellStyle(amountStyle);
+                
+                Cell c2 = row.createCell(2);
+                c2.setCellValue(item.getSAVINGS() != null
+                        ? item.getSAVINGS().doubleValue() : 0);
+                c2.setCellStyle(amountStyle);
+
+                // Column 2 - REPORT LABEL
+                Cell c3 = row.createCell(3);
+                c3.setCellValue(item.getReportLable());
+                c3.setCellStyle(textStyle);
+
+                // Column 3 - REPORT ADDL CRITERIA 1
+                Cell c4 = row.createCell(4);
+                c4.setCellValue(item.getReportAddlCriteria1());
+                c4.setCellStyle(textStyle);
+
+                // Column 4 - REPORT DATE
+                Cell c5 = row.createCell(5);
+                c5.setCellValue(item.getReportDate() != null
+                        ? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
+                        : "");
+                c5.setCellStyle(textStyle);
+            }
+        } else {
+            logger.info("No archival data found for M_INT_RATES_FCA — only header written.");
+        }
+
+        // ================= WRITE FILE =================
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        workbook.write(bos);
+        workbook.close();
+
+        logger.info("ARCHIVAL Excel generation completed with {} row(s).",
+                reportData != null ? reportData.size() : 0);
+
+        return bos.toByteArray();
+
+    } catch (Exception e) {
+        logger.error("Error generating M_INT_RATES_FCA ARCHIVAL Excel", e);
+        return new byte[0];
+    }
+}
 
 }
 
