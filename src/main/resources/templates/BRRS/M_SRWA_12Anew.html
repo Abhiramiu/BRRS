@@ -2724,7 +2724,7 @@ $("#r256_rwa_tot_ris_wei_ass").val(formatNumber(AC256));
 									
 									<div class="table-wrapper table-responsive scrollable-table-container" style="border-right: 1px solid #dee2e6; overflow-y: auto;">
 								<table
-									class="sticky-header-table table table-bordered table-cell table-sm table-condensed" id="reports" style="width:321%;">
+									class="sticky-header-table table table-bordered table-cell table-sm table-condensed" id="reports" style="width: -webkit-fill-available;">
 																		<thead class="thead-light" style=" top: 0; position: sticky; border:2px solid black; background-color: #b3b6b9; z-index: 1;">
 
 										<tr style="background-color: #b3b6b9">
@@ -3036,13 +3036,10 @@ $("#r256_rwa_tot_ris_wei_ass").val(formatNumber(AC256));
     </td>
 <!-- C -->	
 
-<td id="ROW17" style="padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_input" type="text"
-            th:text="${report.r17_expo_crm }"
-            id="r17_expo_crm" name="r17_expo_crm"
-            style="background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
-            readonly />
-    </td> 
+<td id="r17_expo_crm"
+    style="text-align:right;"
+    th:text="${#lists.isEmpty(reportsummary9) ? 0 : reportsummary9[0].r17_expo_crm}">
+</td> 
 
 
    
@@ -12158,10 +12155,10 @@ $("#r256_rwa_tot_ris_wei_ass").val(formatNumber(AC256));
             readonly />
     </td>
 <!-- C -->	
- <td th:each="report : ${reportsummary9}"
-    id="r58_expo_crm"
-    style=" padding-right:10px;  text-align: right;"
-    th:text="${report.r58_expo_crm }">
+
+<td id="r58_expo_crm"
+    style="text-align:right;"
+    th:text="${#lists.isEmpty(reportsummary9) ? 0 : reportsummary9[0].r58_expo_crm}">
 </td>
    <!--   <td id="ROW58" style="padding-left: 20px; font-weight: bold; text-align: right;">
         <input class="display-input Show_input" type="text"
@@ -12820,10 +12817,10 @@ $("#r256_rwa_tot_ris_wei_ass").val(formatNumber(AC256));
             readonly />
     </td>
 <!-- C -->	
-   <td th:each="report : ${reportsummary9}"
-    id="r61_expo_crm"
-    style=" padding-right:10px;  text-align: right;"
-    th:text="${report.r61_expo_crm }">
+
+<td id="r61_expo_crm"
+    style="text-align:right;"
+    th:text="${#lists.isEmpty(reportsummary9) ? 0 : reportsummary9[0].r61_expo_crm}">
 </td>
  <!-- D -->	
     <td id="ROW61" style="padding-left: 20px; font-weight: bold; text-align: right;">
@@ -18013,10 +18010,10 @@ $("#r256_rwa_tot_ris_wei_ass").val(formatNumber(AC256));
             readonly />
     </td>
 <!-- C -->	
- <td th:each="report : ${reportsummary9}"
-    id="r85_expo_crm"
-    style=" padding-right:10px;  text-align: right;"
-    th:text="${report.r85_expo_crm }">
+
+<td id="r85_expo_crm"
+    style="text-align:right;"
+    th:text="${#lists.isEmpty(reportsummary9) ? 0 : reportsummary9[0].r85_expo_crm}">
 </td>
     <!-- <td id="ROW85" style="padding-left: 20px; font-weight: bold; text-align: right;"class="green-cell">
         <input class="display-input Show_input green-cell" type="text"
@@ -19115,10 +19112,10 @@ $("#r256_rwa_tot_ris_wei_ass").val(formatNumber(AC256));
   
     </td>
 <!-- C -->	
- <td th:each="report : ${reportsummary9}"
-    id="r90_expo_crm"
-    style=" padding-right:10px;  text-align: right;"
-    th:text="${report.r90_expo_crm }">
+
+<td id="r90_expo_crm"
+    style="text-align:right;"
+    th:text="${#lists.isEmpty(reportsummary9) ? 0 : reportsummary9[0].r90_expo_crm}">
 </td>
 <!-- D -->	
     <td id="ROW90" style="padding-left: 20px; font-weight: bold; text-align: right;">
@@ -19983,11 +19980,13 @@ $("#r256_rwa_tot_ris_wei_ass").val(formatNumber(AC256));
             readonly />
     </td>
 <!-- C -->	
-   <td th:each="report : ${reportsummary9}"
-    id="r94_expo_crm"
-    style=" padding-right:10px;  text-align: right;"
-    th:text="${report.r94_expo_crm }">
-</td>  <!-- <td id="ROW94" style="padding-left: 20px; font-weight: bold; text-align: right;">
+   
+<td id="r94_expo_crm"
+    style="text-align:right;"
+    th:text="${#lists.isEmpty(reportsummary9) ? 0 : reportsummary9[0].r94_expo_crm}">
+</td>
+
+<!-- <td id="ROW94" style="padding-left: 20px; font-weight: bold; text-align: right;">
         <input class="display-input Show_input" type="text"
             th:text="${report.r94_expo_crm }"
             id="r94_expo_crm" name="r94_expo_crm"
@@ -24544,10 +24543,10 @@ $("#r256_rwa_tot_ris_wei_ass").val(formatNumber(AC256));
             readonly />
     </td>
 <!-- C -->	
-    <td th:each="report : ${reportsummary9}"
-    id="r115_expo_crm"
-    style=" padding-right:10px;  text-align: right;"
-    th:text="${report.r115_expo_crm }">
+
+<td id="r115_expo_crm"
+    style="text-align:right;"
+    th:text="${#lists.isEmpty(reportsummary9) ? 0 : reportsummary9[0].r115_expo_crm}">
 </td>
  <!-- td id="ROW115" style="padding-left: 20px; font-weight: bold; text-align: right;">
         <input class="display-input Show_input" type="text"
@@ -26072,12 +26071,10 @@ $("#r256_rwa_tot_ris_wei_ass").val(formatNumber(AC256));
     </td>
 <!-- C -->	
     
-<td th:each="report : ${reportsummary9}"
-    id="r122_expo_crm"
-    style=" padding-right:10px;  text-align: right;"
-    th:text="${report.r122_expo_crm }">
 
-
+<td id="r122_expo_crm"
+    style="text-align:right;"
+    th:text="${#lists.isEmpty(reportsummary9) ? 0 : reportsummary9[0].r122_expo_crm}">
 </td> 
 <!-- D -->	
     <td id="ROW122" style="padding-left: 20px; font-weight: bold; text-align: right;">
@@ -27168,10 +27165,10 @@ $("#r256_rwa_tot_ris_wei_ass").val(formatNumber(AC256));
     </td>
 <!-- C -->	
    
-<td th:each="report : ${reportsummary9}"
-    id="r127_expo_crm"
-    style=" padding-right:10px;  text-align: right;"
-    th:text="${report.r127_expo_crm }">
+
+<td id="r127_expo_crm"
+    style="text-align:right;"
+    th:text="${#lists.isEmpty(reportsummary9) ? 0 : reportsummary9[0].r127_expo_crm}">
 </td>
 <!-- D -->	
     <td id="ROW127" style="padding-left: 20px; font-weight: bold; text-align: right;">
@@ -27603,11 +27600,11 @@ $("#r256_rwa_tot_ris_wei_ass").val(formatNumber(AC256));
             readonly />
     </td>
 <!-- C -->	
-   <td th:each="report : ${reportsummary9}"
-    id="r129_expo_crm"
-    style=" padding-right:10px;  text-align: right;"
-    th:text="${report.r129_expo_crm }">
-</td> 
+   
+<td id="r129_expo_crm"
+    style="text-align:right;"
+    th:text="${#lists.isEmpty(reportsummary9) ? 0 : reportsummary9[0].r129_expo_crm}">
+</td>
 <!-- D -->	
     <td id="ROW129" style="padding-left: 20px; font-weight: bold; text-align: right;">
         <input class="display-input Show_input" type="text"
@@ -32575,12 +32572,12 @@ $("#r256_rwa_tot_ris_wei_ass").val(formatNumber(AC256));
 											</td>
 											
 	      <!-- C FORMULA-->
-           <td th:each="report : ${reportsummary9}"
-    id="r159_nom_pri_amt"
-    style=" padding-right:10px;  text-align: right;"
-    th:text="${report.r159_nom_pri_amt }">
-</td>
+ 
           
+<td id="r159_nom_pri_amt"
+    style="text-align:right;"
+    th:text="${#lists.isEmpty(reportsummary9) ? 0 : reportsummary9[0].r159_nom_pri_amt}">
+</td>
           
           
 			 
