@@ -9,7 +9,6 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>M_INT_RATES_FCA</title>
 	<!-- CSS -->
 
 
@@ -578,47 +577,34 @@ label.error {
 	
 	<script>
 	
-// Show Modify (enable inputs & dropdowns)	
-function showmodify(btn) {
-		
-	let readonlyIds = [];    
+	function showmodify(btn) {
+	    // 🔹 IDs of formula/total cells that must always stay readonly
+	     $(".Show_input").not(".nonEditable").removeAttr("readonly").removeAttr("disabled");
+	    const readonlyIds = [
+	    	"R10_TOTAL","R11_TOTAL","R12_TOTAL","R13_TOTAL","R14_TOTAL","R15_TOTAL",
+	    	"R15_CURRENT",
+	        "R15_CALL",
+	        "R15_SAVINGS",
+	        "R15_NOTICE_0_31_DAYS",
+	        "R15_NOTICE_32_88_DAYS",
+	        "R15_91_DEPOSIT_DAY",
+	        "R15_FD_1_6_MONTHS",
+	        "R15_FD_7_12_MONTHS",
+	        "R15_FD_13_18_MONTHS",
+	        "R15_FD_19_24_MONTHS",
+	        "R15_FD_OVER_24_MONTHS"
+	    ];
+
+	    // 🔹 Enable editing for all inputs except formula ones
+	    $(".show_input, .display-input").each(function () {
+	        if (!readonlyIds.includes(this.id)) {
+	            $(this).removeAttr("readonly")
+	                   .removeAttr("disabled")
+	                   .css({"background-color": "#d3d3d3"}); // light yellow for editable
+	        } 
+	    });
 
 	
-	$(".Show_input").each(function () {
-		        if (!readonlyIds.includes(this.id)) {
-		            $(this).removeAttr("readonly").removeAttr("disabled");
-		        }
-		    });
-
-			
-
-			for (let i = 10; i <= 15; i++) {  
-						    let fields = [
-						    	"R10_TOTAL","R11_TOTAL","R12_TOTAL","R13_TOTAL","R14_TOTAL","R15_TOTAL",
-						    	"R15_CURRENT",
-						        "R15_CALL",
-						        "R15_SAVINGS",
-						        "R15_NOTICE_0_31_DAYS",
-						        "R15_NOTICE_32_88_DAYS",
-						        "R15_91_DEPOSIT_DAY",
-						        "R15_FD_1_6_MONTHS",
-						        "R15_FD_7_12_MONTHS",
-						        "R15_FD_13_18_MONTHS",
-						        "R15_FD_19_24_MONTHS",
-						        "R15_FD_OVER_24_MONTHS"
-						        
-						    ];
-
-						    fields.forEach(field => {
-						        let selector = `#R${i}_${field}`;
-						        if ($(selector).length) {  // check if element exists
-						            $(selector).css("background-color", "#d3d3d3");     // set grey
-						        }
-						    });
-						}
-			
-			
-			
 	
     
     // Toggle buttons
@@ -718,6 +704,25 @@ function cancelModify() {
 		 // Append only named inputs
 		    $('#fileupload').find(':input[name]').each(function () {
 		        formData.append(this.name, this.value);
+		        for (let i = 10; i <= 15; i++) {
+		            [   "TOTAL",
+				    	"CURRENT",
+				        "CALL",
+				        "SAVINGS",
+				        "NOTICE_0_31_DAYS",
+				        "NOTICE_32_88_DAYS",
+				        "91_DEPOSIT_DAY",
+				        "FD_1_6_MONTHS",
+				        "FD_7_12_MONTHS",
+				        "FD_13_18_MONTHS",
+				        "FD_19_24_MONTHS",
+				        "FD_OVER_24_MONTHS"].forEach(field => {
+		                const input = $("#R" + i + "_" + field);
+		                if (input.length) {
+		                    formData.append(input.attr("name"), input.val());
+		                }
+		            });
+		        }
 		    });
 		    console.log("✅ Entity executed successfully");    
 
