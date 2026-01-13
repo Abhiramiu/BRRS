@@ -708,7 +708,7 @@ function cancelModify() {
 			}
 		}
 
-		function fileuploads(btn) {
+		function fileupload_all(btn) {
 		    var asondate = btn.getAttribute("data-todate");
 		    const type = btn.getAttribute("data-type"); // MAIN / RESUB / ARCHIVAL
 		    
@@ -2621,7 +2621,7 @@ function cancelModify() {
         <div style="text-align: center; margin-top: 10px;">
 
          <button id="submitButton" type="button" class="custom-tab-btn Show_input" form="fileupload"
-          th:attr="data-todate=${asondate}, data-type=${type}" onclick="fileuploads(this);" style="display: none;">
+          th:attr="data-todate=${asondate}, data-type=${type}" onclick="fileupload_all(this);" style="display: none;">
           Submit</button>
         </div>
        </form>
