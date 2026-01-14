@@ -563,35 +563,7 @@ PURPOSE		: BRRSREPORT
 			window.history.back();
 		}
 
-		//to fetch summary from the database - called from the summary button
-		// function showdetails() {
-
-		// 	var Callurl;
-		// 	$('#loader').modal('show');
-		// 	Callurl = /*[[@{'/Reports/'+${reportid}+'/Details'(asondate=${asondate},fromdate=${fromdate},todate=${todate},currency=${currency},dtltype=${dtltype},type=${type},version=${version})}]]*/
-		// 		location.href = Callurl;
-		// 	console.log(Callurl);
-		// 	/*  $.ajax({
-		// 		 type: 'get',
-		// 		 url: Callurl,
-		// 		 beforeSend: function () {
-		// 			 $('#loader').modal('show'); // 🔄 Show loader
-		// 		 },
-		// 		 success: function (data) {
-		// 			 $('.content').html(data);
-		// 			 //$("#detailsbtn").addClass("active");
-		// 			 //tablepagination();
-		// 		 },
-		// 		 complete: function () {
-		// 			 $('#loader').modal('hide');
-		// 		 },
-		// 		 error: function () {
-		// 			   $('#loader').modal('hide');
-		// 			 alert("Something went wrongss. Please try again.");
-
-		// 		 }
-		// 	 }); */
-		// }
+		
    function showdetails() {
             isDetailsModal = true; // mark that this modal is from Details
             showResultModal('BRRS', 'Details page not available for Q_SMME Interest Income.');
@@ -965,7 +937,7 @@ PURPOSE		: BRRSREPORT
 						<!-- Title -->
 						<h5
 							style="font-family: arial; font-size: 20px; font-weight: bold; color: white; margin: 0 10px;">
-							QUARTERLY SCHEDULE : Q-SMME INT : SMME INTEREST INCOME
+							(28) QUARTERLY SCHEDULE : Q-SMME INT : SMME INTEREST INCOME (P'000)
 						</h5>
 
 						<!-- Moving bus-board text -->
@@ -1053,10 +1025,10 @@ PURPOSE		: BRRSREPORT
 										<tr>
 											<td th:text="${reportsummary.r14_caoin}"></td>
 											<td th:text="${reportsummary.r14_res_carry_amt != null  ? #numbers.formatDecimal(reportsummary.r14_res_carry_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
-												style="text-align: right;background-color: rgb(107, 122, 143);color: white;"
+												style="text-align: right;"
 												th:attr="RowId='R14', ColumnId='C2'"></td>
 											<td th:text="${reportsummary.r14_non_res_carry_amt != null ? #numbers.formatDecimal(reportsummary.r14_non_res_carry_amt, 1, 'COMMA', 0, 'POINT')  : '0'}"
-												style="text-align: right;background-color: rgb(107, 122, 143);color: white;"
+												style="text-align: right;"
 												th:attr="RowId='R14', ColumnId='C3'"></td>
 										</tr>
                                         <tr>
@@ -1327,10 +1299,10 @@ PURPOSE		: BRRSREPORT
 											<td th:text="${reportsummary.R40_caoin}" ></td>
 											<td th:text="${reportsummary.R40_res_carry_amt != null 
 ? #numbers.formatDecimal(reportsummary.R40_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
-: '0'}" style="text-align: right;background-color: rgb(107, 122, 143);color: white;" th:attr="RowId='R40', ColumnId='C2'"  ></td>
+: '0'}" style="text-align: right;" th:attr="RowId='R40', ColumnId='C2'"  ></td>
 											<td th:text="${reportsummary.R40_non_res_carry_amt != null 
 ? #numbers.formatDecimal(reportsummary.R40_non_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
-: '0'}" style="text-align: right;background-color: rgb(107, 122, 143);color: white;" th:attr="RowId='R40', ColumnId='C3'"  ></td>
+: '0'}" style="text-align: right;" th:attr="RowId='R40', ColumnId='C3'"  ></td>
 										</tr>
 										
 									</tbody>
