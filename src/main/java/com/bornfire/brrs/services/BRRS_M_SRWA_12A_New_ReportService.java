@@ -4,7 +4,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
-import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -13,9 +12,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.transaction.Transactional;
 
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
@@ -39,16 +35,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.support.TransactionSynchronizationAdapter;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.bornfire.brrs.entities.BRRS_M_SRWA_12A_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_M_SRWA_12A_NEW_Archival_SummaryM_Repo;
 import com.bornfire.brrs.entities.BRRS_M_SRWA_12A_NEW_SummaryM_Repo;
 import com.bornfire.brrs.entities.BRRS_M_SRWA_12A_New_Archival_Detail_Repo;
@@ -69,8 +59,6 @@ import com.bornfire.brrs.entities.BRRS_M_SRWA_12A_New_Summary5_Repo;
 import com.bornfire.brrs.entities.BRRS_M_SRWA_12A_New_Summary6_Repo;
 import com.bornfire.brrs.entities.BRRS_M_SRWA_12A_New_Summary7_Repo;
 import com.bornfire.brrs.entities.BRRS_M_SRWA_12A_New_Summary8_Repo;
-
-import com.bornfire.brrs.entities.M_SRWA_12A_Detail_Entity;
 import com.bornfire.brrs.entities.M_SRWA_12A_NEW_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.M_SRWA_12A_NEW_Archival_Summary_M_Entity;
 import com.bornfire.brrs.entities.M_SRWA_12A_NEW_Detail_Entity;
@@ -91,6 +79,7 @@ import com.bornfire.brrs.entities.M_SRWA_12A_New_Archival_Summary_Entity6;
 import com.bornfire.brrs.entities.M_SRWA_12A_New_Archival_Summary_Entity7;
 import com.bornfire.brrs.entities.M_SRWA_12A_New_Archival_Summary_Entity8;
 import com.bornfire.brrs.entities.M_SRWA_12A_New_Summary_Entity1;
+import com.bornfire.brrs.entities.M_SRWA_12A_Summary_M_Entity;
 
 
 
@@ -405,6 +394,8 @@ public class BRRS_M_SRWA_12A_New_ReportService {
 				.getdatabydateList(dateformat.parse(todate));
 		List<M_SRWA_12A_NEW_Summary_Entity8> dataList7 = brrs_m_srwa_12a_new_summary8_repo
 				.getdatabydateList(dateformat.parse(todate));
+		List<M_SRWA_12A_NEW_Summary_M_Entity> dataList8 = brrs_m_srwa_12a_new_summaryM_repo
+				.getdatabydateList(dateformat.parse(todate));
 
 		if (dataList.isEmpty() && dataList1.isEmpty() && dataList2.isEmpty() && dataList3.isEmpty() && dataList4.isEmpty() && dataList5.isEmpty() && dataList6.isEmpty()&& dataList7.isEmpty()) {
 			logger.warn("Service: No data found for M_SRWA_12Anew report. Returning empty result.");
@@ -499,7 +490,11 @@ public class BRRS_M_SRWA_12A_New_ReportService {
 			if (!dataList7.isEmpty()) {
 				populateEntity8Data(sheet, dataList7.get(0), textStyle, numberStyle);
 			}
-			workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
+			
+			if (!dataList8.isEmpty()) {
+				populateEntity9Data(sheet, dataList8.get(0), textStyle, numberStyle);
+			}
+			  workbook.setForceFormulaRecalculation(true);
 			workbook.write(out);
 			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
 			return out.toByteArray();
@@ -44992,6 +44987,162 @@ private void populateEntity6Data(Sheet sheet, M_SRWA_12A_NEW_Summary_Entity6 rec
 		}
 
       
+        
+        
+        private void populateEntity9Data(Sheet sheet, M_SRWA_12A_NEW_Summary_M_Entity record8, CellStyle textStyle, CellStyle numberStyle) {
+            
+            // R17  (Index 16)
+            Row row = sheet.getRow(16) != null ? sheet.getRow(16) : sheet.createRow(16);
+            
+            Cell cellC;
+            
+            
+         // row17
+        	row = sheet.getRow(18);
+
+        	// Column 3C - Exposures before CRM
+
+        	 cellC = row.createCell(2); // fixed index
+        	if (record8.getR17_expo_crm() != null) {
+        		cellC.setCellValue(record8.getR17_expo_crm().doubleValue());
+        		cellC.setCellStyle(numberStyle);
+        	} else {
+        		cellC.setCellValue("");
+        		cellC.setCellStyle(textStyle);
+        	}
+
+        	
+        	// row58
+        			row = sheet.getRow(57);
+        			 cellC = row.createCell(2); // fixed index
+        			if (record8.getR58_expo_crm() != null) {
+        				cellC.setCellValue(record8.getR58_expo_crm().doubleValue());
+        				cellC.setCellStyle(numberStyle);
+        			} else {
+        				cellC.setCellValue("");
+        				cellC.setCellStyle(textStyle);
+        			}
+        			
+        			
+        			
+        			// row61
+        			row = sheet.getRow(60);
+        			cellC = row.createCell(2); // fixed index
+        			if (record8.getR61_expo_crm() != null) {
+        				cellC.setCellValue(record8.getR61_expo_crm().doubleValue());
+        			cellC.setCellStyle(numberStyle);
+        			} else {
+        				cellC.setCellValue("");
+        				cellC.setCellStyle(textStyle);
+        		}
+
+
+
+
+        	// row85
+        			row = sheet.getRow(84);
+        			cellC = row.createCell(2); // fixed index
+        			if (record8.getR85_expo_crm() != null) {
+        				cellC.setCellValue(record8.getR85_expo_crm().doubleValue());
+        				cellC.setCellStyle(numberStyle);
+        			} else {
+        				cellC.setCellValue("");
+        				cellC.setCellStyle(textStyle);
+
+        			}
+
+
+
+        	// row90
+        			row = sheet.getRow(89);
+        			cellC = row.createCell(2); // fixed index
+        			if (record8.getR90_expo_crm() != null) {
+        				cellC.setCellValue(record8.getR90_expo_crm().doubleValue());
+        				cellC.setCellStyle(numberStyle);
+        			} else {
+        				cellC.setCellValue("");
+        				cellC.setCellStyle(textStyle);
+        			}
+
+
+        	// row94
+        			row = sheet.getRow(93);
+        			cellC = row.createCell(2); // fixed index
+        			if (record8.getR94_expo_crm() != null) {
+        				cellC.setCellValue(record8.getR94_expo_crm().doubleValue());
+        				cellC.setCellStyle(numberStyle);
+        			} else {
+        				cellC.setCellValue("");
+        				cellC.setCellStyle(textStyle);
+        			}
+
+        	// row115
+        			row = sheet.getRow(114);
+        			cellC = row.createCell(2); // fixed index
+        			if (record8.getR115_expo_crm() != null) {
+        				cellC.setCellValue(record8.getR115_expo_crm().doubleValue());
+        				cellC.setCellStyle(numberStyle);
+        			} else {
+        				cellC.setCellValue("");
+        				cellC.setCellStyle(textStyle);
+        			}
+
+        	// row122
+        			row = sheet.getRow(121);
+        			cellC = row.createCell(2); // fixed index
+        			if (record8.getR122_expo_crm() != null) {
+        				cellC.setCellValue(record8.getR122_expo_crm().doubleValue());
+        				cellC.setCellStyle(numberStyle);
+        			} else {
+        				cellC.setCellValue("");
+        				cellC.setCellStyle(textStyle);
+
+
+        			}
+
+
+
+        	// row127
+        			row = sheet.getRow(126);
+        			cellC = row.createCell(2); // fixed index
+        			if (record8.getR127_expo_crm() != null) {
+        				cellC.setCellValue(record8.getR127_expo_crm().doubleValue());
+        				cellC.setCellStyle(numberStyle);
+        			} else {
+        				cellC.setCellValue("");
+        				cellC.setCellStyle(textStyle);
+        			}
+
+
+
+
+
+        	// row129
+        			row = sheet.getRow(128);
+        			cellC = row.createCell(2); // fixed index
+        			if (record8.getR129_expo_crm() != null) {
+        				cellC.setCellValue(record8.getR129_expo_crm().doubleValue());
+        				cellC.setCellStyle(numberStyle);
+        			} else {
+        				cellC.setCellValue("");
+        				cellC.setCellStyle(textStyle);
+        			}
+
+
+        	// row159
+        			row = sheet.getRow(158);
+        			// Column C - Nominal Principal Amount
+        			cellC = row.createCell(2); // fixed index
+        			if (record8.getR159_nom_pri_amt() != null) {
+        			    cellC.setCellValue(record8.getR159_nom_pri_amt().doubleValue());
+        			    cellC.setCellStyle(numberStyle);
+        			} else {
+        			    cellC.setCellValue("");
+        			    cellC.setCellStyle(textStyle);
+        			}
+
+        }
+
 			
 	
 	public byte[] getM_SRWA_12A_NewDetailExcel(String filename, String fromdate, String todate, String currency, String dtltype,
@@ -45306,6 +45457,8 @@ private void populateEntity6Data(Sheet sheet, M_SRWA_12A_NEW_Summary_Entity6 rec
 				.getdatabydateListarchival(dateformat.parse(todate), version);
 		List<M_SRWA_12A_New_Archival_Summary_Entity8> dataList7 = m_srwa_12a_new_Archival_Summary_Repo8
 				.getdatabydateListarchival(dateformat.parse(todate), version);
+		List<M_SRWA_12A_NEW_Archival_Summary_M_Entity> dataList8 = m_srwa_12a_new_Archival_SummaryM_Repo
+				.getdatabydateListarchival(dateformat.parse(todate), version);
 		
 
 		if (dataList.isEmpty()&& dataList1.isEmpty() && dataList2.isEmpty() && dataList3.isEmpty() && dataList4.isEmpty() && dataList5.isEmpty() && dataList6.isEmpty()) {
@@ -45392,6 +45545,8 @@ private void populateEntity6Data(Sheet sheet, M_SRWA_12A_NEW_Summary_Entity6 rec
 			  if (!dataList6.isEmpty()) { archivalpopulateEntity7Data(sheet, dataList6.get(0),
 					  textStyle, numberStyle); }
 			 if (!dataList7.isEmpty()) { archivalpopulateEntity8Data(sheet, dataList7.get(0),
+					  textStyle, numberStyle); }
+			 if (!dataList8.isEmpty()) { archivalpopulateEntity9Data(sheet, dataList8.get(0),
 					  textStyle, numberStyle); }
 					 
 
@@ -89874,6 +90029,162 @@ if (record3.getR134_crm_sub_rwa_org_cou() != null) {
 
 
             }
+            
+            private void archivalpopulateEntity9Data(Sheet sheet, M_SRWA_12A_NEW_Archival_Summary_M_Entity record8, CellStyle textStyle, CellStyle numberStyle) {
+                
+                // R17  (Index 16)
+                Row row = sheet.getRow(16) != null ? sheet.getRow(16) : sheet.createRow(16);
+                
+                Cell cellC;
+                
+                
+             // row17
+            	row = sheet.getRow(18);
+
+            	// Column 3C - Exposures before CRM
+
+            	 cellC = row.createCell(2); // fixed index
+            	if (record8.getR17_expo_crm() != null) {
+            		cellC.setCellValue(record8.getR17_expo_crm().doubleValue());
+            		cellC.setCellStyle(numberStyle);
+            	} else {
+            		cellC.setCellValue("");
+            		cellC.setCellStyle(textStyle);
+            	}
+
+            	
+            	// row58
+            			row = sheet.getRow(57);
+            			 cellC = row.createCell(2); // fixed index
+            			if (record8.getR58_expo_crm() != null) {
+            				cellC.setCellValue(record8.getR58_expo_crm().doubleValue());
+            				cellC.setCellStyle(numberStyle);
+            			} else {
+            				cellC.setCellValue("");
+            				cellC.setCellStyle(textStyle);
+            			}
+            			
+            			
+            			
+            			// row61
+            			row = sheet.getRow(60);
+            			cellC = row.createCell(2); // fixed index
+            			if (record8.getR61_expo_crm() != null) {
+            				cellC.setCellValue(record8.getR61_expo_crm().doubleValue());
+            			cellC.setCellStyle(numberStyle);
+            			} else {
+            				cellC.setCellValue("");
+            				cellC.setCellStyle(textStyle);
+            		}
+
+
+
+
+            	// row85
+            			row = sheet.getRow(84);
+            			cellC = row.createCell(2); // fixed index
+            			if (record8.getR85_expo_crm() != null) {
+            				cellC.setCellValue(record8.getR85_expo_crm().doubleValue());
+            				cellC.setCellStyle(numberStyle);
+            			} else {
+            				cellC.setCellValue("");
+            				cellC.setCellStyle(textStyle);
+
+            			}
+
+
+
+            	// row90
+            			row = sheet.getRow(89);
+            			cellC = row.createCell(2); // fixed index
+            			if (record8.getR90_expo_crm() != null) {
+            				cellC.setCellValue(record8.getR90_expo_crm().doubleValue());
+            				cellC.setCellStyle(numberStyle);
+            			} else {
+            				cellC.setCellValue("");
+            				cellC.setCellStyle(textStyle);
+            			}
+
+
+            	// row94
+            			row = sheet.getRow(93);
+            			cellC = row.createCell(2); // fixed index
+            			if (record8.getR94_expo_crm() != null) {
+            				cellC.setCellValue(record8.getR94_expo_crm().doubleValue());
+            				cellC.setCellStyle(numberStyle);
+            			} else {
+            				cellC.setCellValue("");
+            				cellC.setCellStyle(textStyle);
+            			}
+
+            	// row115
+            			row = sheet.getRow(114);
+            			cellC = row.createCell(2); // fixed index
+            			if (record8.getR115_expo_crm() != null) {
+            				cellC.setCellValue(record8.getR115_expo_crm().doubleValue());
+            				cellC.setCellStyle(numberStyle);
+            			} else {
+            				cellC.setCellValue("");
+            				cellC.setCellStyle(textStyle);
+            			}
+
+            	// row122
+            			row = sheet.getRow(121);
+            			cellC = row.createCell(2); // fixed index
+            			if (record8.getR122_expo_crm() != null) {
+            				cellC.setCellValue(record8.getR122_expo_crm().doubleValue());
+            				cellC.setCellStyle(numberStyle);
+            			} else {
+            				cellC.setCellValue("");
+            				cellC.setCellStyle(textStyle);
+
+
+            			}
+
+
+
+            	// row127
+            			row = sheet.getRow(126);
+            			cellC = row.createCell(2); // fixed index
+            			if (record8.getR127_expo_crm() != null) {
+            				cellC.setCellValue(record8.getR127_expo_crm().doubleValue());
+            				cellC.setCellStyle(numberStyle);
+            			} else {
+            				cellC.setCellValue("");
+            				cellC.setCellStyle(textStyle);
+            			}
+
+
+
+
+
+            	// row129
+            			row = sheet.getRow(128);
+            			cellC = row.createCell(2); // fixed index
+            			if (record8.getR129_expo_crm() != null) {
+            				cellC.setCellValue(record8.getR129_expo_crm().doubleValue());
+            				cellC.setCellStyle(numberStyle);
+            			} else {
+            				cellC.setCellValue("");
+            				cellC.setCellStyle(textStyle);
+            			}
+
+
+            	// row159
+            			row = sheet.getRow(158);
+            			// Column C - Nominal Principal Amount
+            			cellC = row.createCell(2); // fixed index
+            			if (record8.getR159_nom_pri_amt() != null) {
+            			    cellC.setCellValue(record8.getR159_nom_pri_amt().doubleValue());
+            			    cellC.setCellStyle(numberStyle);
+            			} else {
+            			    cellC.setCellValue("");
+            			    cellC.setCellStyle(textStyle);
+            			}
+
+            }
+            
+            
 	
 	
 	public void updateReport1(M_SRWA_12A_New_Summary_Entity1 updatedEntity) {

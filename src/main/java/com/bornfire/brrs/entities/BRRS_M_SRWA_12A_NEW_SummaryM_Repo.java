@@ -13,11 +13,10 @@ public interface BRRS_M_SRWA_12A_NEW_SummaryM_Repo extends JpaRepository<M_SRWA_
 
 	
     
+	 @Query(value = "SELECT * FROM BRRS_M_SRWA_12A_NEW_SUMMARYTABLE_M WHERE TRUNC(REPORT_DATE) = TRUNC(:reportdate)", nativeQuery = true)
+	    List<M_SRWA_12A_NEW_Summary_M_Entity> getdatabydateList(@Param("reportdate") Date reportdate);
     
-    
-    @Query(value = "SELECT * FROM BRRS_M_SRWA_12A_NEW_SUMMARYTABLE_M WHERE TRUNC(REPORT_DATE) = TRUNC(:reportdate)", nativeQuery = true)
-    List<M_SRWA_12A_NEW_Summary_M_Entity> getdatabydateList(@Param("reportdate") Date reportdate);
-
+   
 
 }
 
