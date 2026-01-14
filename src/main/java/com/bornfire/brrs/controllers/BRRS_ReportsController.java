@@ -447,29 +447,7 @@ public class BRRS_ReportsController {
 	}
 
 	
-	@RequestMapping(value = "/updateReportMDISB1", method = { RequestMethod.GET, RequestMethod.POST })
-	@ResponseBody
-	public ResponseEntity<String> updateAllReports(
-			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-
-			@ModelAttribute MDISB1_Summary_Entity_Manual request1
-
-	) {
-		try {
-
-			// set date into all 4 entities
-			request1.setReport_date(asondate);
-
-			// call services
-			BRRS_MDISB1_ReportService.updateReport(request1);
-
-			return ResponseEntity.ok("Updated Successfully.");
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
-		}
-	}
-
+	
 	@Autowired
 	private BRRS_M_UNCONS_INVEST_ReportService UNCreportService;
 
@@ -2435,6 +2413,47 @@ public ResponseEntity<String> updateAllReports(
 	}
 
 
+	@RequestMapping(value = "/updateReportMDISB1", method = { RequestMethod.GET, RequestMethod.POST })
+	/*@ResponseBody
+	
+	 * public ResponseEntity<String> updateAllReports(
+	 * 
+	 * @RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date
+	 * asondate,
+	 * 
+	 * @ModelAttribute MDISB1_Summary_Entity_Manual request1
+	 * 
+	 * ) { try {
+	 * 
+	 * // set date into all 4 entities request1.setReport_date(asondate);
+	 * 
+	 * // call services BRRS_MDISB1_ReportService.updateReport(request1);
+	 * 
+	 * return ResponseEntity.ok("Updated Successfully."); } catch (Exception e) {
+	 * e.printStackTrace(); return
+	 * ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).
+	 * body("Update Failed: " + e.getMessage()); } }
+	 */
+	
+	@PostMapping("/MDISB1updateAll")
+	@ResponseBody
+	public ResponseEntity<String> updateMDISB1(
+	        @RequestParam @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+	        @RequestParam Map<String, String> allParams) {
+
+	    try {
+	        System.out.println("Came to MDISB1 controller");
+
+	        BRRS_MDISB1_ReportService.updateDetailFromForm(asondate, allParams);
+
+	        return ResponseEntity.ok("Updated Successfully.");
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return ResponseEntity
+	                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                .body("Update Failed : " + e.getMessage());
+	    }
+	}
 	
 	@Autowired
 	BRRS_SCH_17_ReportService brrs_sch_17_reportservice;
