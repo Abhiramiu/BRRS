@@ -20,14 +20,6 @@ PURPOSE		: BRRSREPORT
 	<link rel="stylesheet" th:href="@{/css/CustomButton.css}" />
 	<link rel="icon" th:href="@{/favicon.ico}" type="image/x-icon" />
 
-	<!-- JavaScript -->
-	<!-- jQuery core (required first) -->
-
-	<!-- ✅ Your manually placed jQuery validation
-	<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
-	 <script th:src="/jquery/jquery.validate.min.js"></script>
-	 -->
-
 	<!-- jQuery (required first) -->
 	<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
 	<!-- <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script> -->
@@ -214,25 +206,6 @@ PURPOSE		: BRRSREPORT
 			transition: 0.3s ease;
 		}
 
-		/* When input or select is focused or has a value, move the label up 
-      .form-control:focus ~ .form-legend,
-      .form-control:not (:placeholder-shown) ~ .form-legend {
-        top: -8px;
-        font-size: 1rem;
-        color: #007bff;
-      } */
-
-		/* Hover effect when the input/select is focused 
-      .form-control:focus:hover ~ .form-legend {
-        color: #0056b3;
-        /* Darker shade of blue on hover 
-      }
-*/
-		/* Ensure the label returns to the normal color after focus or hover is removed
-      .form-control:not (:focus) ~ .form-legend {
-        color: #aaa;
-        /* Normal label color
-      } */
 	</style>
  <style>
         /* Red border for invalid inputs */
@@ -656,12 +629,6 @@ PURPOSE		: BRRSREPORT
 		}
 
 		window.onload = function () {
-			/* setTimeout(function() {
-					var selectedTab = document.getElementById("selectedTab").value;
-					alert(selectedTab);
-					activateTab(selectedTab);
-				}, 10000); */ // 10,000 milliseconds = 10 seconds
-
 			var selectedTab = document.getElementById("selectedTab").value;
 			activateTab(selectedTab);
 		};
@@ -1354,14 +1321,14 @@ PURPOSE		: BRRSREPORT
                                     <thead class="thead-light">
 										<tr>
 											<th></th>
-											<th>S No</th>
+											<th style="text-align:left;">S No</th>
 											<th>CUST_ID</th>
-											<th>ACCT_NUMBER</th>
-											<th>ACCT_NAME</th>
+											<th style="text-align:left;">ACCT_NUMBER</th>
+											<th style="text-align:left;">ACCT_NAME</th>
 											<th style="text-align:right;">ACCT_BALANCE_IN_PULA</th>
-											<th>REPORT LABEL</th>
-											<th>REPORT ADDL CRITERIA1</th>
-											<th>REPORT_DATE</th>
+											<th style="text-align:left;">REPORT LABEL</th>
+											<th style="text-align:left;">REPORT ADDL CRITERIA1</th>
+											<th style="text-align:left;">REPORT_DATE</th>
 										</tr>
 
 									</thead>
@@ -1380,10 +1347,10 @@ PURPOSE		: BRRSREPORT
 											</td>
 
 
-											<td th:text="${srlno.index + 1}"></td>
-											<td th:text="${report.custId}"></td>
-											<td th:text="${report.acctNumber}"></td>
-											<td th:text="${report.acctName}"></td>
+											<td style="text-align:left;" th:text="${srlno.index + 1}"></td>
+											<td style="text-align:left;" th:text="${report.custId}"></td>
+											<td style="text-align:left;" th:text="${report.acctNumber}"></td>
+											<td style="text-align:left;" th:text="${report.acctName}"></td>
 											<td style="text-align:right;"
 												th:text="${#numbers.formatDecimal(report.acctBalanceInPula == null ? 0 : report.acctBalanceInPula, 1, 'COMMA', 0, 'POINT')}">
 											</td>
@@ -1391,9 +1358,9 @@ PURPOSE		: BRRSREPORT
 
 
 
-											<td th:text="${report.reportLabel}"></td>
-											<td th:text="${report.reportAddlCriteria1}"></td>
-											<td th:text="${#dates.format(report.reportDate, 'dd-MM-yyyy')}"></td>
+											<td style="text-align:left;" th:text="${report.reportLabel}"></td>
+											<td style="text-align:left;" th:text="${report.reportAddlCriteria1}"></td>
+											<td style="text-align:left;" th:text="${#dates.format(report.reportDate, 'dd-MM-yyyy')}"></td>
 										</tr>
 									</tbody>
 								</table>
