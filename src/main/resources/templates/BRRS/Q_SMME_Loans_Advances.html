@@ -388,43 +388,43 @@ PURPOSE		: BRRSREPORT
 			cursor: pointer;
 		}
 
-		/* 🚌 Bus display style box */
-		/* 🚌 Bus display style box */
-		.boards {
-			transform: translateY(6px);
-			background-color: rgb(107, 122, 143);
-			color: white;
-			padding: 5px 80px;
-			border-radius: 8px;
-			overflow: hidden;
-			white-space: nowrap;
-			flex: 1;
-			/* ✅ makes it take available space dynamically */
-			min-width: 200px;
-			box-shadow: 0 0 10px rgb(107, 122, 143);
-			position: relative;
-		}
-
-		/* ✨ Scrolling animation */
-		.scrolling-text {
-			display: inline-block;
-			font-family: "Courier New", monospace;
-			font-weight: bold;
-			letter-spacing: 1px;
-			animation: scroll-left 10s linear infinite;
-		}
-
-		/* Animation keyframes */
-		@keyframes scroll-left {
-			0% {
-				transform: translateX(100%);
-			}
-
-			100% {
-				transform: translateX(-100%);
-			}
-		}
 	</style>
+	
+<style>
+
+/* 🚌 Bus display style box */
+.boards {
+	transform: translateY(6px);
+	background-color: rgb(107, 122, 143);
+	color: white;
+	padding: 5px 5px;
+	border-radius: 8px;
+	overflow: hidden;
+	white-space: nowrap;
+	flex: 1; /* ✅ makes it take available space dynamically */
+	min-width: 200px;
+	box-shadow: 0 0 10px rgb(107, 122, 143);
+	position: relative;
+}
+
+/* ✨ Scrolling animation */
+.scrolling-text {
+	display: inline-block;
+	font-family: "Courier New", monospace;
+	font-weight: bold;
+	letter-spacing: 1px;
+	animation: scroll-left 10s linear infinite;
+}
+
+@keyframes scroll-left {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+</style>
 	<script th:inline="javascript">
 		/*<![CDATA[*/
 		const reportId = /*[[${reportid}]]*/ null;
@@ -859,14 +859,14 @@ PURPOSE		: BRRSREPORT
 						const a = document.createElement('a');
 						a.href = url;
 						// ✅ Use .xls to match your backend
-						a.download = filename + ".xls";
+						a.download = filename + ".xlsx";
 						document.body.appendChild(a);
 						a.click();
 
 						window.URL.revokeObjectURL(url);
 						document.body.removeChild(a);
 
-						showResultModal('BRRS', filename + ' downloaded successfully.');
+						showResultModal('BRRS', filename + '.xlsx downloaded successfully.');
 					} else {
 						showResultModal('Information', 'No data found to download.');
 					}
@@ -954,8 +954,12 @@ PURPOSE		: BRRSREPORT
 						<!-- Title -->
 						<h5
 							style="font-family: arial; font-size: 20px; padding-top:10px; font-weight: bold; color: white;">
-							QUARTERLY SCHEDULE: Q-SMME LOANS: SMME LOANS AND ADVANCES </h5>
+							(4) QUARTERLY SCHEDULE: Q-SMME LOANS: SMME LOANS AND ADVANCES (P'000) </h5>
 					</div>
+					<!-- Moving bus-board text -->
+						<div class="boards">
+							<p class="scrolling-text"> BANK OF BOTSWANA - BANKING SUPERVISION DEPARTMENT</p>
+						</div>
 					<div class="custom-tab-btn-group nav-buttons" style="width: fit-content;margin-left:auto;">
 						<input type="hidden" id="selectedTab" th:value="${displaymode}">
 						<span class="white-text"
@@ -984,7 +988,7 @@ PURPOSE		: BRRSREPORT
 						    data-todate=${todate},
                             data-type=${type},
                             data-version=${version},
-						    data-filename='Q_SMME_LA',
+						    data-filename='Q_SMME_LADetail',
 						  "><i class="fa fa-download"></i></button>
 					</div>
 				</div>

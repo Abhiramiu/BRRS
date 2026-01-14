@@ -4205,7 +4205,7 @@ public class RegulatoryReportServices {
 		} else if (filename.equals("MDISB4Detail")) {
 			fileData = BRRS_MDISB4_ReportService.getMDISB4DetailExcel(filename, fromdate, todate, currency, dtltype,
 					type, version);
-		} else if (filename.equals("Q_SMME_LA")) {
+		} else if (filename.equals("Q_SMME_LADetail")) {
 			fileData = BRRS_Q_SMME_loans_Advances_reportService.BRRS_Q_SMMEDetailExcel(filename, fromdate, todate,
 					currency, dtltype, type, version);
 		} else if (filename.equals("M_CA2Detail")) {
