@@ -4374,7 +4374,7 @@ public class RegulatoryReportServices {
 					dtltype, type, version);
 		}
 
-		else if ("SCH_17".equals(filename)) {
+		else if ("SCH_17Detail".equals(filename)) {
 
 			fileData = brrs_sch_17_reportservice.getSCH_17DetailExcel(filename, fromdate, todate, currency, dtltype,
 					type, version);
