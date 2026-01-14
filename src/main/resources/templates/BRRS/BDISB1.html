@@ -707,18 +707,17 @@ function cancelModify() {
 				isDetailsModal = false;
 			}
 		}
+		
 
 		function fileupload_all(btn) {
+
 		    var asondate = btn.getAttribute("data-todate");
 		    const type = btn.getAttribute("data-type"); // MAIN / RESUB / ARCHIVAL
-		    
-		 // ✅ Mark RESUB once
-		    isResubmissionUpdate = (type && type.toUpperCase() === 'RESUB');
-		    
-		    $('#loader').modal('show');
 
-		    // Pre-calculations
-		    
+		    // Mark RESUB once
+		    isResubmissionUpdate = (type && type.toUpperCase() === 'RESUB');
+
+		    $('#loader').modal('show');
 		    console.log("✅ Calculations executed successfully");
 
 		    // Remove commas from numeric inputs
@@ -729,67 +728,65 @@ function cancelModify() {
 		        }
 		    });
 
+		    // Form validation
 		    if (!$("#fileupload").valid()) {
 		        $('#loader').modal('hide');
 		        return;
 		    }
 
-		    // ✅ One combined FormData for all entities
-		    const formData = new FormData();
-		    formData.append("asondate", asondate);
-		    formData.append("type", type);
+		    // ✅ SERIALIZED FORM DATA (NO MULTIPART)
+		    const formData =
+		        $('#fileupload').serialize()
+		        + '&asondate=' + encodeURIComponent(asondate)
+		        + '&type=' + encodeURIComponent(type);
 
-		  
-		 // Append only named inputs
-		    $('#fileupload').find(':input[name]').each(function () {
-		        formData.append(this.name, this.value);
+		    console.log("✅ Form data prepared");
+
+		    // Select API dynamically
+		    let apiUrl = './BDISB1updateAll';
+		    if (type && type.toUpperCase() === 'RESUB') {
+		        apiUrl = './UpdateBDISB1_ReSub';
+		    }
+
+		    // ✅ AJAX CALL
+		    $.ajax({
+		        url: apiUrl,
+		        type: 'POST',
+		        data: formData,
+		        dataType: 'text',
+
+		        success: function (response) {
+		            $("#resultModalLabel").text("BRRS");
+		            $("#resultModalBody").text(response);
+		            $("#resultModal").modal("show");
+
+		            // Redirect only after modal close (RESUB only)
+		            $("#resultModal")
+		                .off("hidden.bs.modal")
+		                .on("hidden.bs.modal", function () {
+		                    if (isResubmissionUpdate) {
+		                        window.location.href = previousUrl
+		                            ? previousUrl
+		                            : "/BRRS/Resubmission?rptcode=BDISB1";
+		                    }
+		                });
+		        },
+
+		        error: function (jqXHR) {
+		            console.log("Error response:", jqXHR.responseText);
+		            $("#resultModalLabel").text("Error");
+		            $("#resultModalBody").text("Update failed. Check console for details.");
+		            $("#resultModal").modal("show");
+		        },
+
+		        complete: function () {
+		            $('#loader').modal('hide');
+		        }
 		    });
-		    console.log("✅ Entity executed successfully");    
-
-
-		    
-			//Select API endpoint dynamically
-			let apiUrl = './BDISB1updateAll'; // normal update
-			if (type && type.toUpperCase() === 'RESUB') {
-				apiUrl = './UpdateBDISB1_ReSub'; // Resubmission endpoint
-			}
-
-		    // ✅ Single AJAX call with type info
-		 	    $.ajax({
-			        url: apiUrl,
-			        type: 'POST',
-			        data: formData,
-			        processData: false,
-			        contentType: false,
-			        dataType: 'text',
-			        success: function (response) {
-			            $("#resultModalLabel").text("BRRS");
-			            $("#resultModalBody").text(response);
-			            $("#resultModal").modal("show");
-
-			        //  Wait for user to close the modal manually
-					     $("#resultModal").off("hidden.bs.modal").on("hidden.bs.modal", function () {
-					    	 if (isResubmissionUpdate) {
-					    		 console.log("✅ came to resubmission");
-					    		 window.location.href = previousUrl
-					    		 ? previousUrl 
-					    				 : "/BRRS/Resubmission?rptcode=BDISB1";
-					    	 } // reload ONLY when modal is closed
-					    });
-					},
-			        error: function (jqXHR) {
-			            console.log("Error response:", jqXHR.responseText);
-			            $("#resultModalLabel").text("Error");
-			            $("#resultModalBody").text("Update failed. Check console for details.");
-			            $("#resultModal").modal("show");
-			        },
-			        complete: function () {
-			            $('#loader').modal('hide');
-			        }
-			    });
 
 		    console.log("✅ AJAX executed successfully");
-		}    
+		}
+
 		</script>
 
 		 <script th:inline="javascript">
