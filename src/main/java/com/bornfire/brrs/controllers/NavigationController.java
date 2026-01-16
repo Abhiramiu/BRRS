@@ -1815,7 +1815,7 @@ public class NavigationController {
 		List<String> headers = Arrays.asList("SOL ID", "CUST ID", "GENDER", "ACCOUNT NO", "ACCT NAME", "SCHM_CODE",
 				"SCHM DESC", "ACCT OPN DATE", "ACCT CLS DATE", "BALANCE AS ON", "CCY", "BAL EQUI TO BWP", "INT RATE",
 				"100", "STATUS", "MATURITY DATE", "GL SUB HEAD CODE", "GL SUB HEAD DESC", "TYPE OF ACCOUNTS", "SEGMENT",
-				"PERIOD", "EFFECTIVE INTEREST RATE", "REPORT DATE");
+				"PERIOD", "EFFECTIVE INTEREST RATE","SMME", "PIP","RISK CAT","CONSTITUTION", "REPORT DATE");
 		return createExcelTemplate("DEPOSIT BOOK", "DEPOSIT BOOK.xlsx", headers);
 	}
 
@@ -1827,8 +1827,8 @@ public class NavigationController {
 				"ACCT CLS FLG", "CLOSE DATE", "GENDER", "CLASSFICATION CODE", "CONSTITUTION CODE", "MATURITY DATE",
 				"GL SUB HEAD CODE", "GL SUB HEAD DESC", "TENOR(MONTH)", "EMI", "SEGMENT", "FACILITY", "PAST DUE",
 				"PAST DUE DAYS", "ASSET", "PROVISION", "UNSECURED", "INT BUCKET", "STAFF", "SMME", "LABOD", "NEW A/C",
-				"UNDRAWN", "SECTOR", "Period", "Effective Interest Rate", "STAGE", "ECL PROVISION", "REPORT DATE",
-				"MAT BUCKET");
+				"UNDRAWN", "SECTOR", "Period", "Effective Interest Rate", "STAGE", "ECL PROVISION", 
+				"MAT BUCKET", "REPORT DATE");
 		return createExcelTemplate("LOAN BOOK", "LOAN BOOK.xlsx", headers);
 	}
 

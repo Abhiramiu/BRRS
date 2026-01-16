@@ -195,10 +195,10 @@ public class BFDB_Services {
 	                "SOL_ID, CUSTOMER_ID, GENDER, ACCOUNT_NO, CUSTOMER_NAME, SCHM_CODE, SCHM_DESC, " +
 	                "ACCT_OPEN_DATE, ACCT_CLOSE_DATE, BALANCE_AS_ON, CURRENCY, BAL_EQUI_TO_BWP, " +
 	                "RATE_OF_INTEREST, HUNDRED, STATUS, MATURITY_DATE, GL_SUB_HEAD_CODE, GL_SUB_HEAD_DESC, " +
-	                "TYPE_OF_ACCOUNTS, SEGMENT, PERIOD, EFFECTIVE_INTEREST_RATE, " +
+	                "TYPE_OF_ACCOUNTS, SEGMENT, PERIOD, EFFECTIVE_INTEREST_RATE, SMME, PIP, RISK_CAT, CONSTITUTION," +
 	                "REPORT_DATE, ENTRY_TIME, MODIFY_TIME, VERIFY_TIME, ENTRY_USER, ENTRY_FLG, MODIFY_USER, VERIFY_USER, " +
 	                "MODIFY_FLG, VERIFY_FLG, DEL_FLG, DEL_USER, UPLOAD_DATE, REPORT_CODE, VERSION" +
-	                ") VALUES (" + String.join(",", Collections.nCopies(37, "?")) + ")";
+	                ") VALUES (" + String.join(",", Collections.nCopies(41, "?")) + ")";
 	        stmtBFDB = conn.prepareStatement(insertBFDB);
 
 	        // GENERAL_MASTER_TABLE insert query
@@ -206,10 +206,10 @@ public class BFDB_Services {
 	                "SOL_ID, CUSTOMER_ID, CUSTOMER_NAME, ACCOUNT_NO, GENDER, SCHM_CODE, SCHM_DESC, " +
 	                "ACCT_OPEN_DATE, ACCT_CLOSE_DATE, BALANCE_AS_ON, CURRENCY, BAL_EQUI_TO_BWP, " +
 	                "RATE_OF_INTEREST, HUNDRED, STATUS, MATURITY_DATE, GL_SUB_HEAD_CODE, " +
-	                "GL_SUB_HEAD_DESC, TYPE_OF_ACCOUNTS, SEGMENT, PERIOD, EFFECTIVE_INTEREST_RATE, " +
+	                "GL_SUB_HEAD_DESC, TYPE_OF_ACCOUNTS, SEGMENT, PERIOD, EFFECTIVE_INTEREST_RATE, SMME, PIP, RISK_CAT, CONSTITUTION," +
 	                "REPORT_DATE, ENTRY_TIME, MODIFY_TIME, VERIFY_TIME, UPLOAD_DATE, ENTRY_USER, MODIFY_USER, VERIFY_USER, " +
 	                "ENTRY_FLG, MODIFY_FLG, VERIFY_FLG, DEL_FLG, BFDB_FLG, REPORT_CODE, VERSION" +
-	                ") VALUES (" + String.join(",", Collections.nCopies(37, "?")) + ")";
+	                ") VALUES (" + String.join(",", Collections.nCopies(41, "?")) + ")";
 	        stmtMaster = conn.prepareStatement(insertMaster);
 
 	        // NEW: GENERAL_MASTER_SRC insert query (same structure as GENERAL_MASTER_TABLE)
@@ -217,10 +217,10 @@ public class BFDB_Services {
 	                "SOL_ID, CUSTOMER_ID, CUSTOMER_NAME, ACCOUNT_NO, GENDER, SCHM_CODE, SCHM_DESC, " +
 	                "ACCT_OPEN_DATE, ACCT_CLOSE_DATE, BALANCE_AS_ON, CURRENCY, BAL_EQUI_TO_BWP, " +
 	                "RATE_OF_INTEREST, HUNDRED, STATUS, MATURITY_DATE, GL_SUB_HEAD_CODE, " +
-	                "GL_SUB_HEAD_DESC, TYPE_OF_ACCOUNTS, SEGMENT, PERIOD, EFFECTIVE_INTEREST_RATE, " +
+	                "GL_SUB_HEAD_DESC, TYPE_OF_ACCOUNTS, SEGMENT, PERIOD, EFFECTIVE_INTEREST_RATE, SMME, PIP, RISK_CAT, CONSTITUTION," +
 	                "REPORT_DATE, ENTRY_TIME, MODIFY_TIME, VERIFY_TIME, UPLOAD_DATE, ENTRY_USER, MODIFY_USER, VERIFY_USER, " +
 	                "ENTRY_FLG, MODIFY_FLG, VERIFY_FLG, DEL_FLG, BFDB_FLG, REPORT_CODE, VERSION" +
-	                ") VALUES (" + String.join(",", Collections.nCopies(37, "?")) + ")";
+	                ") VALUES (" + String.join(",", Collections.nCopies(41, "?")) + ")";
 	        stmtMasterSrc = conn.prepareStatement(insertMasterSrc);
 
 	        int count = 0;
@@ -247,7 +247,7 @@ public class BFDB_Services {
 	            try {
 	                // Key fields
 	                String accountNo = getCellStringSafe(row, 3, formatter, evaluator);
-	                java.sql.Date reportDate = getCellDateSafe(row, 22, formatter, evaluator);
+	                java.sql.Date reportDate = getCellDateSafe(row, 26, formatter, evaluator);
 
 	                if (accountNo == null || accountNo.trim().isEmpty() || reportDate == null) {
 	                    skippedCount++;
@@ -329,6 +329,10 @@ public class BFDB_Services {
 	                stmtBFDB.setString(++col, getCellStringSafe(row, 19, formatter, evaluator));      // SEGMENT
 	                stmtBFDB.setString(++col, getCellStringSafe(row, 20, formatter, evaluator));      // PERIOD
 	                stmtBFDB.setBigDecimal(++col, getCellDecimalSafe(row, 21, formatter, evaluator)); // EFFECTIVE_INTEREST_RATE
+	                stmtBFDB.setString(++col, getCellStringSafe(row, 22, formatter, evaluator));      // SMME
+	                stmtBFDB.setString(++col, getCellStringSafe(row, 23, formatter, evaluator));      // PIP
+	                stmtBFDB.setString(++col, getCellStringSafe(row, 24, formatter, evaluator));      // RISK_CAT
+	                stmtBFDB.setString(++col, getCellStringSafe(row, 25, formatter, evaluator));      // CONSTITUTION 
 	                stmtBFDB.setDate(++col, reportDate);                                              // REPORT_DATE
 	                stmtBFDB.setDate(++col, currentTime);                                             // ENTRY_TIME
 	                stmtBFDB.setDate(++col, currentTime);                                             // MODIFY_TIME
@@ -370,6 +374,10 @@ public class BFDB_Services {
 	                stmtMaster.setString(++col, getCellStringSafe(row, 19, formatter, evaluator));   // SEGMENT
 	                stmtMaster.setString(++col, getCellStringSafe(row, 20, formatter, evaluator));   // PERIOD
 	                stmtMaster.setBigDecimal(++col, getCellDecimalSafe(row, 21, formatter, evaluator)); // EFFECTIVE_INTEREST_RATE
+	                stmtMaster.setString(++col, getCellStringSafe(row, 22, formatter, evaluator));   // SMME
+	                stmtMaster.setString(++col, getCellStringSafe(row, 23, formatter, evaluator));   // PIP
+	                stmtMaster.setString(++col, getCellStringSafe(row, 24, formatter, evaluator));   // RISK_CAT
+	                stmtMaster.setString(++col, getCellStringSafe(row, 25, formatter, evaluator));   // CONSTITUTION
 	                stmtMaster.setDate(++col, reportDate);                                            // REPORT_DATE
 	                stmtMaster.setDate(++col, currentTime);                                           // ENTRY_TIME
 	                stmtMaster.setDate(++col, currentTime);                                           // MODIFY_TIME
@@ -411,6 +419,11 @@ public class BFDB_Services {
 	                stmtMasterSrc.setString(++col, getCellStringSafe(row, 19, formatter, evaluator));   // SEGMENT
 	                stmtMasterSrc.setString(++col, getCellStringSafe(row, 20, formatter, evaluator));   // PERIOD
 	                stmtMasterSrc.setBigDecimal(++col, getCellDecimalSafe(row, 21, formatter, evaluator)); // EFFECTIVE_INTEREST_RATE
+	                stmtMasterSrc.setString(++col, getCellStringSafe(row, 22, formatter, evaluator));   // SMME
+	                stmtMasterSrc.setString(++col, getCellStringSafe(row, 23, formatter, evaluator));   // PIP
+	                stmtMasterSrc.setString(++col, getCellStringSafe(row, 24, formatter, evaluator));   // RISK_CAT
+	                stmtMasterSrc.setString(++col, getCellStringSafe(row, 25, formatter, evaluator));   // CONSTITUTION
+	                
 	                stmtMasterSrc.setDate(++col, reportDate);                                            // REPORT_DATE
 	                stmtMasterSrc.setDate(++col, currentTime);                                           // ENTRY_TIME
 	                stmtMasterSrc.setDate(++col, currentTime);                                           // MODIFY_TIME

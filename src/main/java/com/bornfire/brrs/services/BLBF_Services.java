@@ -198,7 +198,7 @@ public class BLBF_Services {
 
 				try {
 					String accountNo = getCellStringSafe(row, 2, formatter, evaluator);
-					java.sql.Date reportDate = getCellDateSafe(row, 46, formatter, evaluator);
+					java.sql.Date reportDate = getCellDateSafe(row, 47, formatter, evaluator);
 
 					// Get current max version for L_BOOK
 					stmtGetMaxVersionLBook.setString(1, accountNo);
@@ -302,8 +302,8 @@ public class BLBF_Services {
 					stmtBLBF.setBigDecimal(++col, getCellDecimalSafe(row, 43, formatter, evaluator)); // EFFECTIVE_INTEREST_RATE
 					stmtBLBF.setString(++col, getCellStringSafe(row, 44, formatter, evaluator)); // STAGE
 					stmtBLBF.setBigDecimal(++col, getCellDecimalSafe(row, 45, formatter, evaluator)); // ECL_PROVISION
-					stmtBLBF.setDate(++col, reportDate);
-					stmtBLBF.setString(++col, getCellStringSafe(row, 47, formatter, evaluator)); // MAT_BUCKET
+					stmtBLBF.setDate(++col, reportDate);                  // REPORT_DATE
+					stmtBLBF.setString(++col, getCellStringSafe(row, 46, formatter, evaluator)); // MAT_BUCKET
 					stmtBLBF.setDate(++col, new java.sql.Date(System.currentTimeMillis())); // ENTRY_TIME
 					stmtBLBF.setDate(++col, new java.sql.Date(System.currentTimeMillis())); // MODIFY_TIME
 					stmtBLBF.setDate(++col, new java.sql.Date(System.currentTimeMillis())); // VERIFY_TIME
@@ -365,7 +365,7 @@ public class BLBF_Services {
 					stmtInsertMaster.setBigDecimal(++col, getCellDecimalSafe(row, 43, formatter, evaluator)); // EFFECTIVE_INTEREST_RATE
 					stmtInsertMaster.setString(++col, getCellStringSafe(row, 44, formatter, evaluator)); // STAGE
 					stmtInsertMaster.setBigDecimal(++col, getCellDecimalSafe(row, 45, formatter, evaluator)); // ECL_PROVISION
-					stmtInsertMaster.setString(++col, getCellStringSafe(row, 47, formatter, evaluator)); // MAT_BUCKET
+					stmtInsertMaster.setString(++col, getCellStringSafe(row, 46, formatter, evaluator)); // MAT_BUCKET
 					stmtInsertMaster.setDate(++col, new java.sql.Date(System.currentTimeMillis())); // ENTRY_TIME
 					stmtInsertMaster.setDate(++col, new java.sql.Date(System.currentTimeMillis())); // MODIFY_TIME
 					stmtInsertMaster.setDate(++col, new java.sql.Date(System.currentTimeMillis())); // VERIFY_TIME
@@ -432,7 +432,7 @@ public class BLBF_Services {
 					stmtInsertSrc.setBigDecimal(++col, getCellDecimalSafe(row, 43, formatter, evaluator)); // EFFECTIVE_INTEREST_RATE
 					stmtInsertSrc.setString(++col, getCellStringSafe(row, 44, formatter, evaluator)); // STAGE
 					stmtInsertSrc.setBigDecimal(++col, getCellDecimalSafe(row, 45, formatter, evaluator)); // ECL_PROVISION
-					stmtInsertSrc.setString(++col, getCellStringSafe(row, 47, formatter, evaluator)); // MAT_BUCKET
+					stmtInsertSrc.setString(++col, getCellStringSafe(row, 46, formatter, evaluator)); // MAT_BUCKET
 					stmtInsertSrc.setDate(++col, new java.sql.Date(System.currentTimeMillis())); // ENTRY_TIME
 					stmtInsertSrc.setDate(++col, new java.sql.Date(System.currentTimeMillis())); // MODIFY_TIME
 					stmtInsertSrc.setDate(++col, new java.sql.Date(System.currentTimeMillis())); // VERIFY_TIME
