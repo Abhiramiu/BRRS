@@ -49,9 +49,9 @@ public interface BRRS_M_DEP3_Detail_Repo extends JpaRepository<M_DEP3_Detail_Ent
    int getdatacount(Date reportdate);
    
 	  @Query(value =
-	  "select * from BRRS_M_DEP3_DETAILTABLE where REPORT_LABLE =?1 and REPORT_ADDL_CRITERIA_1=?2 AND REPORT_DATE=?3"
+	  "select * from BRRS_M_DEP3_DETAILTABLE where REPORT_LABEL =?1 and REPORT_ADDL_CRITERIA_1=?2 AND REPORT_DATE=?3"
 	  , nativeQuery = true) List<M_DEP3_Detail_Entity>
-	  GetDataByRowIdAndColumnId(String reportLable,String reportAddlCriteria_1,Date reportdate);
+	  GetDataByRowIdAndColumnId(String reportLabel,String reportAddlCriteria_1,Date reportdate);
 	  
 	  @Query(value = "SELECT * FROM BRRS_M_DEP3_DETAILTABLE WHERE ACCT_NUMBER = :acctNumber", nativeQuery = true)
 	    M_DEP3_Detail_Entity findByAcctnumber(@Param("acctNumber") String acctNumber);

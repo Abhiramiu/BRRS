@@ -848,7 +848,7 @@ function cancelModify() {
  console.log("✅ AJAX executed successfully");
 } */
 
-function fileupload_all(btn) {
+function fileuploads(btn) {
     var asondate = btn.getAttribute("data-todate");
     const type = btn.getAttribute("data-type"); // MAIN / RESUB / ARCHIVAL
     
@@ -886,6 +886,7 @@ function fileupload_all(btn) {
         formData.append(this.name, this.value);
     });
     console.log("✅ Entity executed successfully");    
+
 
 
     
@@ -1090,40 +1091,40 @@ function fileupload_all(btn) {
                         <td style="text-align: right; font-weight:bold;">1</td>
                         <td colspan=2 style="text-align: left; font-weight:bold;">Simplified approach</td>
                         <td></td>
-                        <td id="R9" style="text-align:right;padding-left:20px;">
+                        <td id="R9" style="text-align:right;">
   <input class="display-input Show_input "
   type="text"
   th:value="${report.R9_INTEREST_RATES != null ? #numbers.formatDecimal(report.R9_INTEREST_RATES, 1, 'COMMA', 0, 'POINT') : '0'}"
   id="R9_INTEREST_RATES" name="R9_C4_INTEREST_RATES"
   style="background-color: #FFFFFF; width: 180px; padding-left: 20px; height: 28px; border-color: transparent; text-align: right;"
   readonly /></td>
-  <td id="R9" style="text-align:right;padding-left:20px;">
+  <td id="R9" style="text-align:right;">
   <input class="display-input Show_input "
   type="text"
   th:value="${report.R9_EQUITIES != null ? #numbers.formatDecimal(report.R9_EQUITIES, 1, 'COMMA', 0, 'POINT') : '0'}"
   id="R9_EQUITIES" name="R9_C5_EQUITIES"
   style="background-color: #FFFFFF; width: 180px; padding-left: 20px; height: 28px; border-color: transparent; text-align: right;"
   readonly /></td>
-  <td id="R9" style="text-align:right;padding-left:20px;">
+  <td id="R9" style="text-align:right;">
   <input class="display-input Show_input "
   type="text"
   th:value="${report.R9_FOREIGN_EXC_GOLD != null ? #numbers.formatDecimal(report.R9_FOREIGN_EXC_GOLD, 1, 'COMMA', 0, 'POINT') : '0'}"
   id="R9_FOREIGN_EXC_GOLD" name="R9_C6_FOREIGN_EXC_GOLD"
   style="background-color: #FFFFFF; width: 180px; padding-left: 20px; height: 28px; border-color: transparent; text-align: right;"
   readonly /></td>
-  <td id="R9" style="text-align:right;padding-left:20px;">
+  <td id="R9" style="text-align:right;">
   <input class="display-input Show_input "
   type="text"
   th:value="${report.R9_COMMODITIES != null ? #numbers.formatDecimal(report.R9_COMMODITIES, 1, 'COMMA', 0, 'POINT') : '0'}"
   id="R9_COMMODITIES" name="R9_C7_COMMODITIES"
   style="background-color: #FFFFFF; width: 180px; padding-left: 20px; height: 28px; border-color: transparent; text-align: right;"
   readonly /></td>
-  <td id="R9" style="background-color: rgb(107, 122, 143); color: white; text-align:right;">
-  <input class="display-input Show_inputnonEditable "
+  <td id="R9" style="background-color: #FFFFFF; text-align:right;">
+  <input class="display-input Show_input"
   type="text"
   th:value="${report.R9_TOTAL != null ? #numbers.formatDecimal(report.R9_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
   id="R9_TOTAL" name="R9_C8_TOTAL"
-  style="background-color: rgb(107, 122, 143); color: white; width: 180px; padding-left: 20px; height: 28px; border-color: transparent; text-align: right;"
+  style="background-color: #FFFFFF;width: 180px; padding-left: 20px; height: 28px; border-color: transparent; text-align: right;"
   readonly /></td>  
                       </tr>
                       <tr>
@@ -1167,12 +1168,12 @@ function fileupload_all(btn) {
   readonly /></td>  
         
        
-        <td id="R11" style="background-color: rgb(107, 122, 143); color: white; text-align:right;">
- <input class="display-input Show_inputnonEditable"
+        <td id="R11" style="background-color: #FFFFFF; text-align:right;">
+ <input class="display-input Show_input"
  type="text"
  th:value="${report.R11_TOTAL != null ? #numbers.formatDecimal(report.R11_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
  id="R11_TOTAL" name="R11_C8_TOTAL"
- style="background-color: rgb(107, 122, 143); color: white; width: 180px; padding-left: 20px; height: 28px; border-color: transparent; text-align: right;"
+ style="background-color: #FFFFFF; width: 180px; padding-left: 20px; height: 28px; border-color: transparent; text-align: right;"
  readonly /></td>
                         
                     </tr>
@@ -1279,23 +1280,23 @@ style="text-align: right; width:248px; background-color: rgb(107, 122, 143); col
                     </tr>
                     <tr class="no-border" style="height:28px;">
                      <td   colspan="8"></td>
-                     <td id="R15" style="background-color: #FFFFFF; text-align:right;padding-left:20px;">
- <input class="display-input Show_input"
- type="text"
- th:value="${report.R15_TOTAL != null ? #numbers.formatDecimal(report.R15_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
- id="R15_TOTAL" name="R15_C8_TOTAL"
- style="background-color: #FFFFFF; width: 180px; padding-left: 20px; height: 28px; border-color: transparent; text-align: right;"
- readonly /></td>
+<td id="R15" style="text-align:right;">
+  <input class="display-input Show_input "
+  type="text"
+  th:value="${report.R15_TOTAL != null ? #numbers.formatDecimal(report.R15_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
+  id="R15_TOTAL" name="R15_C8_TOTAL"
+  style="background-color: #FFFFFF; width: 180px; padding-left: 20px; height: 28px; border-color: transparent; text-align: right;"
+  readonly /></td>
                     </tr>
                     <tr class="no-border" style="height:28px;">
                      <td   colspan="8"></td>
-                     <td id="R16" style="background-color: #FFFFFF; text-align:right;padding-left:20px;">
- <input class="display-input Show_input"
- type="text"
- th:value="${report.R16_TOTAL != null ? #numbers.formatDecimal(report.R16_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
- id="R16_TOTAL" name="R16_C8_TOTAL"
- style="background-color: #FFFFFF; width: 180px; padding-left: 20px; height: 28px; border-color: transparent; text-align: right;"
- readonly /></td>
+                     <td id="R16" style="text-align:right;">
+  <input class="display-input Show_input "
+  type="text"
+  th:value="${report.R16_TOTAL != null ? #numbers.formatDecimal(report.R16_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
+  id="R16_TOTAL" name="R16_C8_TOTAL"
+  style="background-color: #FFFFFF; width: 180px; padding-left: 20px; height: 28px; border-color: transparent; text-align: right;"
+  readonly /></td>
                     </tr>   
 
                     </tbody>

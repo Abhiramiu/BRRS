@@ -1011,13 +1011,6 @@ function fileuploads(btn) {
     $('#fileupload').find(':input[name]').each(function () {
         formData.append(this.name, this.value);
 
-/*         let originalName = this.name;  
-        let value = this.value;
-
-        // Convert: R6_C2_COMPANY_NAME → R6_COMPANY_NAME
-        let fixedName = originalName.replace(/_C\d+_/, '_');
-        console.log(originalName, "→", fixedName);
-        formData.append(fixedName, value); */
         for (let i = 10; i <= 14; i++) {
             ["INTEREST_RATES", "EQUITIES", "FOREIGN_EXC_GOLD", "COMMODITIES","TOTAL"].forEach(field => {
                 const input = $("#R" + i + "_" + field);

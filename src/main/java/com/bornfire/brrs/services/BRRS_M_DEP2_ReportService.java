@@ -158,14 +158,14 @@ public class BRRS_M_DEP2_ReportService {
 				parsedDate = dateformat.parse(todate);
 			}
 
-			String reportLable = null;
+			String reportLabel = null;
 			String reportAddlCriteria1 = null;
 
 			// ✅ Split the filter string here
 			if (filter != null && filter.contains(",")) {
 				String[] parts = filter.split(",");
 				if (parts.length >= 2) {
-					reportLable = parts[0];
+					reportLabel = parts[0];
 					reportAddlCriteria1 = parts[1];
 				}
 			}
@@ -175,8 +175,8 @@ public class BRRS_M_DEP2_ReportService {
 				System.out.println(version);
 				// 🔹 Archival branch
 				List<M_DEP2_Archival_Detail_Entity> T1Dt1;
-				if (reportLable != null && reportAddlCriteria1 != null) {
-					T1Dt1 = M_DEP2_Archival_Detail_Repo.GetDataByRowIdAndColumnId(reportLable, reportAddlCriteria1, parsedDate, version);
+				if (reportLabel != null && reportAddlCriteria1 != null) {
+					T1Dt1 = M_DEP2_Archival_Detail_Repo.GetDataByRowIdAndColumnId(reportLabel, reportAddlCriteria1, parsedDate, version);
 				} else {
 					T1Dt1 = M_DEP2_Archival_Detail_Repo.getdatabydateList(parsedDate, version);
 					totalPages = M_DEP2_Detail_Repo.getdatacount(parsedDate);
@@ -193,8 +193,8 @@ public class BRRS_M_DEP2_ReportService {
 				System.out.println("Praveen");
 				// 🔹 Current branch
 				List<M_DEP2_Detail_Entity> T1Dt1;
-				if (reportLable != null && reportAddlCriteria1 != null) {
-					T1Dt1 = M_DEP2_Detail_Repo.GetDataByRowIdAndColumnId(reportLable, reportAddlCriteria1, parsedDate);
+				if (reportLabel != null && reportAddlCriteria1 != null) {
+					T1Dt1 = M_DEP2_Detail_Repo.GetDataByRowIdAndColumnId(reportLabel, reportAddlCriteria1, parsedDate);
 				} else {
 					T1Dt1 = M_DEP2_Detail_Repo.getdatabydateList(parsedDate);
 					totalPages = M_DEP2_Detail_Repo.getdatacount(parsedDate);
@@ -5604,7 +5604,7 @@ public class BRRS_M_DEP2_ReportService {
 						balanceCell.setCellValue(0);
 					}
 					balanceCell.setCellStyle(balanceStyle);
-					row.createCell(4).setCellValue(item.getReportLable());
+					row.createCell(4).setCellValue(item.getReportLabel());
 					row.createCell(5).setCellValue(item.getReportAddlCriteria1());
 					row.createCell(6)
 							.setCellValue(item.getReportDate() != null
@@ -11029,7 +11029,7 @@ public class BRRS_M_DEP2_ReportService {
 					}
 					balanceCell.setCellStyle(balanceStyle);
 
-					row.createCell(4).setCellValue(item.getReportLable());
+					row.createCell(4).setCellValue(item.getReportLabel());
 					row.createCell(5).setCellValue(item.getReportAddlCriteria1());
 					row.createCell(6)
 							.setCellValue(item.getReportDate() != null

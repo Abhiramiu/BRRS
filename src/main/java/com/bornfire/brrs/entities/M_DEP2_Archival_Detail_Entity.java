@@ -27,8 +27,8 @@ public class M_DEP2_Archival_Detail_Entity {
 	   @Column(name = "REPORT_ADDL_CRITERIA_3")
 	   private String reportAddlCriteria3;
 	  
-	   @Column(name = "REPORT_LABLE")
-	   private String reportLable;
+	   @Column(name = "REPORT_LABEL")
+	   private String reportLabel;
 	   @Column(name = "REPORT_REMARKS")
 	   private String reportRemarks;
 	   @Column(name = "MODIFICATION_REMARKS")
@@ -98,11 +98,11 @@ public class M_DEP2_Archival_Detail_Entity {
 	public void setReportAddlCriteria1(String reportAddlCriteria1) {
 		this.reportAddlCriteria1 = reportAddlCriteria1;
 	}
-	public String getReportLable() {
-		return reportLable;
+	public String getReportLabel() {
+		return reportLabel;
 	}
-	public void setReportLable(String reportLable) {
-		this.reportLable = reportLable;
+	public void setReportLabel(String reportLabel) {
+		this.reportLabel = reportLabel;
 	}
 	public String getReportRemarks() {
 		return reportRemarks;

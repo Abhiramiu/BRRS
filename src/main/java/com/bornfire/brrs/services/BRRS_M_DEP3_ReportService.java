@@ -448,7 +448,7 @@ dataStyle.setBorderRight(border);
 //ACCT BALANCE style (right aligned with thousand separator)
 CellStyle balanceStyle = workbook.createCellStyle();
 balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
-balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("#,###"));
+balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("#,##0"));
 balanceStyle.setBorderTop(border);
 balanceStyle.setBorderBottom(border);
 balanceStyle.setBorderLeft(border);
@@ -461,7 +461,7 @@ balanceStyle.setBorderRight(border);
 
 //Header row
 String[] headers = {
-"CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE IN PULA", "REPORT LABLE", "REPORT ADDL CRITERIA1",
+"CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE IN PULA", "REPORT LABEL", "REPORT ADDL CRITERIA1",
 "REPORT_DATE"
 };
 
@@ -501,7 +501,7 @@ balanceCell.setCellValue(0);
 }
 balanceCell.setCellStyle(balanceStyle);
 
-		row.createCell(4).setCellValue(item.getReportLable());
+		row.createCell(4).setCellValue(item.getReportLabel());
 		row.createCell(5).setCellValue(item.getReportAddlCriteria1());
 		row.createCell(6)
 				.setCellValue(item.getReportDate() != null
@@ -2424,7 +2424,7 @@ dataStyle.setBorderRight(border);
 // ACCT BALANCE style (right aligned with 3 decimals)
 CellStyle balanceStyle = workbook.createCellStyle();
 balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
-balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("#,###"));
+balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("#,##0"));
 balanceStyle.setBorderTop(border);
 balanceStyle.setBorderBottom(border);
 balanceStyle.setBorderLeft(border);
@@ -2433,7 +2433,7 @@ balanceStyle.setBorderRight(border);
 
 // Header row
 String[] headers = {
-"CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE IN PULA", "REPORT LABLE", "REPORT ADDL CRITERIA", "REPORT_DATE"
+"CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE IN PULA", "REPORT LABEL", "REPORT ADDL CRITERIA", "REPORT_DATE"
 };
 
 XSSFRow headerRow = sheet.createRow(0);
@@ -2483,7 +2483,7 @@ balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
 
 balanceCell.setCellStyle(balanceStyle);
 
-row.createCell(4).setCellValue(item.getReportLable());
+row.createCell(4).setCellValue(item.getReportLabel());
 row.createCell(5).setCellValue(item.getReportAddlCriteria1());
 row.createCell(6).setCellValue(
 item.getReportDate() != null ?
