@@ -1028,7 +1028,7 @@ PURPOSE		: BRRSREPORT
 		function showdetailsbyRowAndColumn(a) {
 			var rowId = a.getAttribute('RowId') || "";
 			var columnId = a.getAttribute('ColumnId') || "";
-			
+
 			var cellValue = a.textContent || a.innerText;
 
 			// ✅ At least one columnId should have value
@@ -1055,7 +1055,7 @@ PURPOSE		: BRRSREPORT
 					var Callurl = /*[[@{'/Reports/' + ${reportid} + '/Details'(asondate=${asondate}, fromdate=${fromdate}, todate=${todate}, currency=${currency}, dtltype=${dtltype},type=${type},version=${version})}]]*/ "";
 
 					// ✅ Append filter params
-					Callurl += "&filter=" + encodeURIComponent(rowId + "," + columnId );
+					Callurl += "&filter=" + encodeURIComponent(rowId + "," + columnId);
 
 					window.location.href = Callurl;
 				};
@@ -1422,7 +1422,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align: right; width: 250px;  padding-left:10px; ">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R7_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R7_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R7_TOTAL_DEPOSIT_EXCEED" name="R7_C9_R7_TOTAL_DEPOSIT_EXCEED"
+														id="R7_TOTAL_DEPOSIT_EXCEED"
+														name="R7_C9_R7_TOTAL_DEPOSIT_EXCEED"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
@@ -1460,7 +1461,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align: right; width: 250px;  padding-left:10px; ">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R8_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R8_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R8_TOTAL_DEPOSIT_EXCEED" name="R8_C9_R8_TOTAL_DEPOSIT_EXCEED"
+														id="R8_TOTAL_DEPOSIT_EXCEED"
+														name="R8_C9_R8_TOTAL_DEPOSIT_EXCEED"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
@@ -5141,13 +5143,15 @@ PURPOSE		: BRRSREPORT
 				        : '0'}">
 											</td>
 
-										
+
 											<td th:text="${report.report_label != null ? report.report_label : '-'}">
 											</td>
 											<td
 												th:text="${report.report_addl_criteria_1 != null ? report.report_addl_criteria_1 : '-'}">
 											</td>
-											<td th:text="${report.report_date != null ? #dates.format(report.report_date, 'dd-MM-yyyy') : '-'}"></td>
+											<td
+												th:text="${report.report_date != null ? #dates.format(report.report_date, 'dd-MM-yyyy') : '-'}">
+											</td>
 										</tr>
 									</tbody>
 								</table>
@@ -5208,40 +5212,40 @@ PURPOSE		: BRRSREPORT
 							<!-- Row 3 -->
 							<div class="row formline" style="margin-top:10px;">
 								<label class="col-sm-2">Report Label</label>
-																<div class="col-sm-3">
-																	<input type="text" th:field="*{report_label}" class="form-control form-control-sm"
-																		readonly />
-																</div>
+								<div class="col-sm-3">
+									<input type="text" th:field="*{report_label}" class="form-control form-control-sm"
+										readonly />
+								</div>
 
 								<div class="col-sm-1"></div>
 								<label class="col-sm-2">Report Addl Criteria 1</label>
-																<div class="col-sm-3">
-																	<input type="text" th:field="*{report_addl_criteria_1}"
-																		class="form-control form-control-sm" readonly />
-																</div>
-								
+								<div class="col-sm-3">
+									<input type="text" th:field="*{report_addl_criteria_1}"
+										class="form-control form-control-sm" readonly />
+								</div>
+
 							</div>
 
 							<!-- Row 4 -->
+							<!-- Row 4 in your DetailForm -->
 							<div class="row formline" style="margin-top:10px;">
-								<label class="col-sm-2">Report Date</label>
-																	<div class="col-sm-3">
-																		<input type="date" name="report_Date" class="form-control form-control-sm"
-																			th:value="${#dates.format(Data.report_date, 'yyyy-MM-dd')}" readonly />
-																	</div>
-
-								
+							    <label class="col-sm-2">Report Date</label>
+							    <div class="col-sm-3">
+							        <!-- Changed name to report_date (lowercase) -->
+							        <input type="date" name="report_date" class="form-control form-control-sm"
+							            th:value="${#dates.format(Data.report_date, 'yyyy-MM-dd')}" readonly />
+							    </div>
 							</div>
 
-							
 
-								
 
-								<!-- Update Button -->
-								<div style="text-align:center; margin-top:20px;">
-									<button type="button" class="custom-tab-btn" th:if="${formmode == 'edit'}"
-										onclick="submitUpdate()">Update</button>
-								</div>
+
+
+							<!-- Update Button -->
+							<div style="text-align:center; margin-top:20px;">
+								<button type="button" class="custom-tab-btn" th:if="${formmode == 'edit'}"
+									onclick="submitUpdate()">Update</button>
+							</div>
 						</form>
 					</div>
 				</div>

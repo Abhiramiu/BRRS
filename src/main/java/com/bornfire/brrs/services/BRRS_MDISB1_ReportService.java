@@ -5492,76 +5492,75 @@ public class BRRS_MDISB1_ReportService {
 
 	@Transactional
 	public ResponseEntity<?> updateDetailEdit(HttpServletRequest request) {
-		try {
+	    try {
+	        String acctNo = request.getParameter("acct_number");
+	        String provisionStr = request.getParameter("acct_balance_in_pula");
+	        String acctName = request.getParameter("acct_name");
+	        
+	        // Try to get from request (lowercase now)
+	        String reportDateStr = request.getParameter("report_date"); 
 
-			String acctNo = request.getParameter("acct_number");
-			String provisionStr = request.getParameter("acct_balance_in_pula");
-			String acctName = request.getParameter("acct_name");
-			String reportDateStr = request.getParameter("report_date");
+	        MDISB1_Detail_Entity existing = MDISB1_Detail_Repo.findByAcctnumber(acctNo);
+	        if (existing == null) {
+	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Record not found.");
+	        }
 
-			System.out.println(reportDateStr);
+	        boolean isChanged = false;
 
-			logger.info("Received update for ACCT_NO: {}", acctNo);
+	        // ... (Your logic for updating acctName and acct_balance_in_pula) ...
+	        // Example logic check:
+	        if (provisionStr != null && !provisionStr.isEmpty()) {
+	            BigDecimal newProv = new BigDecimal(provisionStr);
+	            if (existing.getAcct_balance_in_pula() == null || existing.getAcct_balance_in_pula().compareTo(newProv) != 0) {
+	                existing.setAcct_balance_in_pula(newProv);
+	                isChanged = true;
+	            }
+	        }
 
-			MDISB1_Detail_Entity existing = MDISB1_Detail_Repo.findByAcctnumber(acctNo);
-			if (existing == null) {
-				logger.warn("No record found for ACCT_NO: {}", acctNo);
-				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Record not found for update.");
-			}
+	        if (isChanged) {
+	            MDISB1_Detail_Repo.save(existing);
+	            logger.info("Record updated for account: {}", acctNo);
 
-			boolean isChanged = false;
+	            // --- PROCEDURE TRIGGER LOGIC ---
+	            
+	            String finalDateStr = "";
+	            SimpleDateFormat procFormat = new SimpleDateFormat("dd-MM-yyyy");
 
-			if (acctName != null && !acctName.isEmpty()) {
-				if (existing.getAcct_name() == null || !existing.getAcct_name().equals(acctName)) {
-					existing.setAcct_name(acctName);
-					isChanged = true;
-					logger.info("Account name updated to {}", acctName);
-				}
-			}
+	            if (reportDateStr != null && !reportDateStr.isEmpty()) {
+	                // Case A: Use the date sent from the form
+	                SimpleDateFormat incomingFormat = new SimpleDateFormat("yyyy-MM-dd");
+	                finalDateStr = procFormat.format(incomingFormat.parse(reportDateStr));
+	            } else if (existing.getReport_date() != null) {
+	                // Case B: Fallback - Use the date already in the Database (Existing Entity)
+	                finalDateStr = procFormat.format(existing.getReport_date());
+	                logger.info("Using fallback date from Database: {}", finalDateStr);
+	            }
 
-			if (provisionStr != null && !provisionStr.isEmpty()) {
-				BigDecimal newProvision = new BigDecimal(provisionStr);
-				if (existing.getAcct_balance_in_pula() == null
-						|| existing.getAcct_balance_in_pula().compareTo(newProvision) != 0) {
-					existing.setAcct_balance_in_pula(newProvision);
-					isChanged = true;
-					logger.info("Provision updated to {}", newProvision);
-				}
-			}
-			if (isChanged) {
-				MDISB1_Detail_Repo.save(existing);
-				logger.info("Record updated successfully for account {}", acctNo);
+	            if (!finalDateStr.isEmpty()) {
+	                final String dateToPass = finalDateStr;
+	                TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+	                    @Override
+	                    public void afterCommit() {
+	                        try {
+	                            logger.info("Triggering Procedure: BRRS_MDISB1_SUMMARY_PROCEDURE({})", dateToPass);
+	                            jdbcTemplate.update("BEGIN BRRS_MDISB1_SUMMARY_PROCEDURE(?); END;", dateToPass);
+	                        } catch (Exception e) {
+	                            logger.error("Procedure Error: ", e);
+	                        }
+	                    }
+	                });
+	            } else {
+	                logger.warn("Procedure not triggered: No date found in request or database.");
+	            }
 
-				// Format date for procedure
-				String formattedDate = new SimpleDateFormat("dd-MM-yyyy")
-						.format(new SimpleDateFormat("yyyy-MM-dd").parse(reportDateStr));
-
-				// Run summary procedure after commit
-				TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
-					@Override
-					public void afterCommit() {
-						try {
-							logger.info("Transaction committed — calling BRRS_MDISB1_SUMMARY_PROCEDURE({})",
-									formattedDate);
-							jdbcTemplate.update("BEGIN BRRS_MDISB1_SUMMARY_PROCEDURE(?); END;", formattedDate);
-							logger.info("Procedure executed successfully after commit.");
-						} catch (Exception e) {
-							logger.error("Error executing procedure after commit", e);
-						}
-					}
-				});
-
-				return ResponseEntity.ok("Record updated successfully!");
-			} else {
-				logger.info("No changes detected for ACCT_NO: {}", acctNo);
-				return ResponseEntity.ok("No changes were made.");
-			}
-
-		} catch (Exception e) {
-			logger.error("Error updating MDISB1 record", e);
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body("Error updating record: " + e.getMessage());
-		}
+	            return ResponseEntity.ok("Record updated successfully!");
+	        } else {
+	            return ResponseEntity.ok("No changes detected.");
+	        }
+	    } catch (Exception e) {
+	        logger.error("Update failed", e);
+	        return ResponseEntity.status(500).body("Error: " + e.getMessage());
+	    }
 	}
 
 	public byte[] getExcelMDISB1ARCHIVAL(String filename, String reportId, String fromdate, String todate,
@@ -10467,72 +10466,64 @@ public class BRRS_MDISB1_ReportService {
 	 * // 🔹 Save MDISB1_Summary_repo3.save(existing); }
 	 */
 
-	
-	 public void updateDetailFromForm(Date reportDate, Map<String, String> params) {
+	public void updateDetailFromForm(Date reportDate, Map<String, String> params) {
 
-	        System.out.println("Updating MDISB1 detail table");
+		System.out.println("Updating MDISB1 detail table");
 
-	        for (Map.Entry<String, String> entry : params.entrySet()) {
+		for (Map.Entry<String, String> entry : params.entrySet()) {
 
-	            String key = entry.getKey();
-	            String value = entry.getValue();
+			String key = entry.getKey();
+			String value = entry.getValue();
 
-	            // Expected: R10_C2_r10_31_3_25_amt
-	            if (!key.matches("R\\d+_C\\d+_.*")) {
-	                continue;
-	            }
+			// Expected: R10_C2_r10_31_3_25_amt
+			if (!key.matches("R\\d+_C\\d+_.*")) {
+				continue;
+			}
 
-	            String[] parts = key.split("_");
-	            String reportLabel = parts[0];       // R10
-	            String addlCriteria = parts[1];      // C2 or C3
+			String[] parts = key.split("_");
+			String reportLabel = parts[0]; // R10
+			String addlCriteria = parts[1]; // C2 or C3
 
-	            BigDecimal amount =
-	                    (value == null || value.isEmpty())
-	                            ? BigDecimal.ZERO
-	                            : new BigDecimal(value);
+			BigDecimal amount = (value == null || value.isEmpty()) ? BigDecimal.ZERO : new BigDecimal(value);
 
-	            List<MDISB1_Detail_Entity> rows =
-	            		BRRS_MDISB1_Detail_Repo.findByReportDateAndReportLableAndReportAddlCriteria1(
-	                            reportDate, reportLabel, addlCriteria
-	                    );
+			List<MDISB1_Detail_Entity> rows = BRRS_MDISB1_Detail_Repo
+					.findByReportDateAndReportLableAndReportAddlCriteria1(reportDate, reportLabel, addlCriteria);
 
-	            System.out.println("Rows fetching for Reportdate is : "+reportDate +" Report label is : " +reportLabel +" Column is : "+addlCriteria);
-	           System.out.println("data size is : "+rows.size());
-	          
-	           for (MDISB1_Detail_Entity row : rows) {
+			System.out.println("Rows fetching for Reportdate is : " + reportDate + " Report label is : " + reportLabel
+					+ " Column is : " + addlCriteria);
+			System.out.println("data size is : " + rows.size());
 
-	        	    //System.out.println("Row PK = " + row.getId());
-	        	    System.out.println("Before update acct = " + row.getAcct_balance_in_pula());
-	        	    System.out.println("Before update modifyFlg = " + row.getModify_flg());
+			for (MDISB1_Detail_Entity row : rows) {
 
-	        	    row.setAcct_balance_in_pula(amount);
-	        	    row.setModify_flg('Y');
-	        	}
+				// System.out.println("Row PK = " + row.getId());
+				System.out.println("Before update acct = " + row.getAcct_balance_in_pula());
+				System.out.println("Before update modifyFlg = " + row.getModify_flg());
 
-	            
+				row.setAcct_balance_in_pula(amount);
+				row.setModify_flg('Y');
+			}
 
-	           BRRS_MDISB1_Detail_Repo.saveAll(rows);
-	        }
+			BRRS_MDISB1_Detail_Repo.saveAll(rows);
+		}
 
-	        callSummaryProcedure(reportDate);
-	    }
+		callSummaryProcedure(reportDate);
+	}
 
-	    private void callSummaryProcedure(Date reportDate) {
+	private void callSummaryProcedure(Date reportDate) {
 
-	        String sql = "{ call BRRS_MDISB1_SUMMARY_PROCEDURE(?) }";
+		String sql = "{ call BRRS_MDISB1_SUMMARY_PROCEDURE(?) }";
 
-	        jdbcTemplate.update(connection -> {
-	            CallableStatement cs = connection.prepareCall(sql);
+		jdbcTemplate.update(connection -> {
+			CallableStatement cs = connection.prepareCall(sql);
 
-	            SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
-	            sdf.setLenient(false);
+			SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+			sdf.setLenient(false);
 
-	            cs.setString(1, sdf.format(reportDate));
-	            return cs;
-	        });
+			cs.setString(1, sdf.format(reportDate));
+			return cs;
+		});
 
-	        System.out.println("✅ MDISB1 Summary procedure executed");
-	    }
-	    
-	
+		System.out.println("✅ MDISB1 Summary procedure executed");
+	}
+
 }
