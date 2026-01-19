@@ -30,6 +30,9 @@ public interface BRRS_MDISB1_Detail_Repo extends JpaRepository<MDISB1_Detail_Ent
 		 
 	@Query(value = "SELECT * FROM BRRS_MDISB1_DETAILTABLE WHERE ACCT_NUMBER = :acct_number", nativeQuery = true)
 	 MDISB1_Detail_Entity findByAcctnumber(@Param("acct_number") String acct_number);
+	
+	@Query(value = "SELECT * FROM BRRS_MDISB1_DETAILTABLE WHERE SNO = :Sno", nativeQuery = true)
+	MDISB1_Detail_Entity findBySno(@Param("Sno") String Sno);
 
 }
 

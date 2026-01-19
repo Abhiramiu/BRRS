@@ -780,7 +780,7 @@ PURPOSE		: BRRSREPORT
 						window.URL.revokeObjectURL(url);
 						document.body.removeChild(a);
 
-						showResultModal('Success', filename + ' downloaded successfully.');
+						showResultModal('BRRS', filename + ' downloaded successfully.');
 					} else {
 						showResultModal('Information', 'No data was available to create a download.');
 					}
@@ -803,11 +803,6 @@ PURPOSE		: BRRSREPORT
 
 		}
 		function closemodel() {
-			$('#alert').modal('hide');
-			$('#resultModal').modal('hide');
-
-		}
-		function closemodels() {
 			$("#resultModal").modal("hide");
 			$('#loader').modal('hide');
 
@@ -815,6 +810,11 @@ PURPOSE		: BRRSREPORT
 			setTimeout(function () {
 				location.reload();
 			}, 300);
+		}
+		function closemodels() {
+			$('#alert').modal('hide');
+			$('#resultModal').modal('hide');
+
 		}
 
 		function showResultModal(title, message) {
@@ -826,6 +826,14 @@ PURPOSE		: BRRSREPORT
 			$('#resultModal').modal('show');
 		}
 
+		function showResultModal1(title, message) {
+			// Set the text for the modal elements
+			$('#resultModalLabel1').text(title);
+			$('#resultModalBody1').text(message);
+
+			// Show the modal
+			$('#resultModal1').modal('show');
+		}
 	</script>
 
 	<script th:inline="javascript">
@@ -868,9 +876,9 @@ PURPOSE		: BRRSREPORT
 
 					// Show message via modal
 					if (response && response.toLowerCase().includes('success')) {
-						showResultModal('BRRS', response);
+						showResultModal1('BRRS', response);
 					} else {
-						showResultModal('Information', response || 'No data updated.');
+						showResultModal1('Information', response || 'No data updated.');
 					}
 
 					// ✅ Redirect back to the previous page after short delay
@@ -887,7 +895,7 @@ PURPOSE		: BRRSREPORT
 					$('#loader').modal('hide');
 					console.error("Update error:", error);
 
-					showResultModal('Error', 'Failed to update record. Please try again.');
+					showResultModal1('Error', 'Failed to update record. Please try again.');
 
 					// ✅ On error also return to previous page after delay
 					setTimeout(() => {
@@ -1500,7 +1508,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align: right; width: 250px;  padding-left:10px; ">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R9_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R9_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R9_TOTAL_DEPOSIT_EXCEED" name="R9_C9_TOTAL_DEPOSIT_EXCEED"
+														id="R9_TOTAL_DEPOSIT_EXCEED"
+														name="R9_C9_R9_TOTAL_DEPOSIT_EXCEED"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
@@ -1539,7 +1548,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align: right; width: 250px;  padding-left:10px; ">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R10_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R10_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R10_TOTAL_DEPOSIT_EXCEED" name="R10_C9_TOTAL_DEPOSIT_EXCEED"
+														id="R10_TOTAL_DEPOSIT_EXCEED"
+														name="R10_C9_R10_TOTAL_DEPOSIT_EXCEED"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
@@ -1577,7 +1587,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align: right; width: 250px;  padding-left:10px; ">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R11_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R11_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R11_TOTAL_DEPOSIT_EXCEED" name="R11_TOTAL_DEPOSIT_EXCEED"
+														id="R11_TOTAL_DEPOSIT_EXCEED"
+														name="R11_C9_R11_TOTAL_DEPOSIT_EXCEED"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
@@ -1615,7 +1626,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align: right; width: 250px;  padding-left:10px; ">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R12_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R12_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R12_TOTAL_DEPOSIT_EXCEED" name="R12_TOTAL_DEPOSIT_EXCEED"
+														id="R12_TOTAL_DEPOSIT_EXCEED"
+														name="R12_C9_R12_TOTAL_DEPOSIT_EXCEED"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
@@ -1652,7 +1664,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align: right;background-color: rgb(107, 122, 143);color: white;">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R13_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R13_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R13_TOTAL_DEPOSIT_EXCEED" name="R13_TOTAL_DEPOSIT_EXCEED"
+														id="R13_TOTAL_DEPOSIT_EXCEED"
+														name="R13_C9_R13_TOTAL_DEPOSIT_EXCEED"
 														style="background-color: rgb(107, 122, 143);color: white; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
@@ -1705,7 +1718,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align: right; width: 250px;  padding-left:10px; ">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R15_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R15_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R15_TOTAL_DEPOSIT_EXCEED" name="R15_TOTAL_DEPOSIT_EXCEED"
+														id="R15_TOTAL_DEPOSIT_EXCEED"
+														name="R15_C9_R15_TOTAL_DEPOSIT_EXCEED"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
@@ -1743,7 +1757,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align: right; width: 250px;  padding-left:10px; ">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R16_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R16_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R16_TOTAL_DEPOSIT_EXCEED" name="R16_TOTAL_DEPOSIT_EXCEED"
+														id="R16_TOTAL_DEPOSIT_EXCEED"
+														name="R16_C9_R16_TOTAL_DEPOSIT_EXCEED"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
@@ -1781,7 +1796,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align: right; width: 250px;  padding-left:10px; ">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R17_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R17_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R17_TOTAL_DEPOSIT_EXCEED" name="R17_TOTAL_DEPOSIT_EXCEED"
+														id="R17_TOTAL_DEPOSIT_EXCEED"
+														name="R17_C9_R17_TOTAL_DEPOSIT_EXCEED"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
@@ -1819,7 +1835,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align: right; width: 250px;  padding-left:10px; ">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R18_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R18_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R18_TOTAL_DEPOSIT_EXCEED" name="R18_TOTAL_DEPOSIT_EXCEED"
+														id="R18_TOTAL_DEPOSIT_EXCEED"
+														name="R18_C9_R18_TOTAL_DEPOSIT_EXCEED"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
@@ -1857,7 +1874,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align: right; width: 250px;  padding-left:10px; ">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R19_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R19_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R19_TOTAL_DEPOSIT_EXCEED" name="R19_TOTAL_DEPOSIT_EXCEED"
+														id="R19_TOTAL_DEPOSIT_EXCEED"
+														name="R19_C9_R19_TOTAL_DEPOSIT_EXCEED"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
@@ -1895,7 +1913,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align: right; width: 250px;  padding-left:10px; ">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R20_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R20_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0,'POINT') : '0'}"
-														id="R20_TOTAL_DEPOSIT_EXCEED" name="R20_TOTAL_DEPOSIT_EXCEED"
+														id="R20_TOTAL_DEPOSIT_EXCEED"
+														name="R20_C9_R20_TOTAL_DEPOSIT_EXCEED"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
@@ -1930,7 +1949,7 @@ PURPOSE		: BRRSREPORT
 												 style="text-align: right; width: 250px;  padding-left:10px; ">
 												 <input class="display-input Show_input " type="text"
 												 th:value="${report.R21_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R21_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-												 id="R21_TOTAL_DEPOSIT_EXCEED" name="R21_TOTAL_DEPOSIT_EXCEED"
+												 id="R21_TOTAL_DEPOSIT_EXCEED" name="R21__C9_R21TOTAL_DEPOSIT_EXCEED"
 												 style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 												 readonly />
 												</td>-->
@@ -1985,7 +2004,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align: right; width: 250px;  padding-left:10px; ">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R23_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R23_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R23_TOTAL_DEPOSIT_EXCEED" name="R23_TOTAL_DEPOSIT_EXCEED"
+														id="R23_TOTAL_DEPOSIT_EXCEED"
+														name="R23_C9_R23_TOTAL_DEPOSIT_EXCEED"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
@@ -2023,7 +2043,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align: right; width: 250px;  padding-left:10px; ">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R24_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R24_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R24_TOTAL_DEPOSIT_EXCEED" name="R24_TOTAL_DEPOSIT_EXCEED"
+														id="R24_TOTAL_DEPOSIT_EXCEED"
+														name="R24_C9_R24_TOTAL_DEPOSIT_EXCEED"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
@@ -2061,7 +2082,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align: right; width: 250px;  padding-left:10px; ">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R25_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R25_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R25_TOTAL_DEPOSIT_EXCEED" name="R25_TOTAL_DEPOSIT_EXCEED"
+														id="R25_TOTAL_DEPOSIT_EXCEED"
+														name="R25_C9_R25_TOTAL_DEPOSIT_EXCEED"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
@@ -2099,7 +2121,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align: right; width: 250px;  padding-left:10px; ">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R26_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R26_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R26_TOTAL_DEPOSIT_EXCEED" name="R26_TOTAL_DEPOSIT_EXCEED"
+														id="R26_TOTAL_DEPOSIT_EXCEED"
+														name="R26_C9_R26_TOTAL_DEPOSIT_EXCEED"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
@@ -2137,7 +2160,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align: right; width: 250px;  padding-left:10px; ">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R27_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R27_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R27_TOTAL_DEPOSIT_EXCEED" name="R27_TOTAL_DEPOSIT_EXCEED"
+														id="R27_TOTAL_DEPOSIT_EXCEED"
+														name="R27_C9_R27_TOTAL_DEPOSIT_EXCEED"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
@@ -2175,7 +2199,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align: right; width: 250px;  padding-left:10px; ">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R28_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R28_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R28_TOTAL_DEPOSIT_EXCEED" name="R28_TOTAL_DEPOSIT_EXCEED"
+														id="R28_TOTAL_DEPOSIT_EXCEED"
+														name="R28_C9_R28_TOTAL_DEPOSIT_EXCEED"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
@@ -2210,7 +2235,7 @@ PURPOSE		: BRRSREPORT
 												 style="text-align: right; width: 250px;  padding-left:10px; ">
 												 <input class="display-input Show_input " type="text"
 												 th:value="${report.R29_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R29_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-												 id="R29_TOTAL_DEPOSIT_EXCEED" name="R29_TOTAL_DEPOSIT_EXCEED"
+												 id="R29_TOTAL_DEPOSIT_EXCEED" name="R29_C9_R29_TOTAL_DEPOSIT_EXCEED"
 												 style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 												 readonly />
 												</td>-->
@@ -2264,7 +2289,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align: right; width: 250px;  padding-left:10px; ">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R31_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R31_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R31_TOTAL_DEPOSIT_EXCEED" name="R31_TOTAL_DEPOSIT_EXCEED"
+														id="R31_TOTAL_DEPOSIT_EXCEED"
+														name="R31_C9_R31_TOTAL_DEPOSIT_EXCEED"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
@@ -2302,7 +2328,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align: right; width: 250px;  padding-left:10px; ">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R32_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R32_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R32_TOTAL_DEPOSIT_EXCEED" name="R32_TOTAL_DEPOSIT_EXCEED"
+														id="R32_TOTAL_DEPOSIT_EXCEED"
+														name="R32_C9_R32_TOTAL_DEPOSIT_EXCEED"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
@@ -2340,7 +2367,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align: right; width: 250px;  padding-left:10px; ">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R33_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R33_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R33_TOTAL_DEPOSIT_EXCEED" name="R33_TOTAL_DEPOSIT_EXCEED"
+														id="R33_TOTAL_DEPOSIT_EXCEED"
+														name="R33_C9_R33_TOTAL_DEPOSIT_EXCEED"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
@@ -2378,7 +2406,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align: right; width: 250px;  padding-left:10px; ">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R34_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R34_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R34_TOTAL_DEPOSIT_EXCEED" name="R34_TOTAL_DEPOSIT_EXCEED"
+														id="R34_TOTAL_DEPOSIT_EXCEED"
+														name="R34_C9_R34_TOTAL_DEPOSIT_EXCEED"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
@@ -2416,7 +2445,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align: right; width: 250px;  padding-left:10px; ">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R35_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R35_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R35_TOTAL_DEPOSIT_EXCEED" name="R35_TOTAL_DEPOSIT_EXCEED"
+														id="R35_TOTAL_DEPOSIT_EXCEED"
+														name="R35_C9_R35_TOTAL_DEPOSIT_EXCEED"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
@@ -2454,7 +2484,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align: right; width: 250px;  padding-left:10px; ">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R36_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R36_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R36_TOTAL_DEPOSIT_EXCEED" name="R36_TOTAL_DEPOSIT_EXCEED"
+														id="R36_TOTAL_DEPOSIT_EXCEED"
+														name="R36_C9_R36_TOTAL_DEPOSIT_EXCEED"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
@@ -2489,7 +2520,7 @@ PURPOSE		: BRRSREPORT
 																						 style="text-align: right; width: 250px;  padding-left:10px; ">
 																						 <input class="display-input Show_input " type="text"
 																						 th:value="${report.R37_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R37_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-																						 id="R37_TOTAL_DEPOSIT_EXCEED" name="R37_TOTAL_DEPOSIT_EXCEED"
+																						 id="R37_TOTAL_DEPOSIT_EXCEED" name="R37_C9_R37_TOTAL_DEPOSIT_EXCEED"
 																						 style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 																						 readonly />
 																						</td>-->
@@ -2544,7 +2575,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align: right; width: 250px;  padding-left:10px; ">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R39_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R39_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R39_TOTAL_DEPOSIT_EXCEED" name="R39_TOTAL_DEPOSIT_EXCEED"
+														id="R39_TOTAL_DEPOSIT_EXCEED"
+														name="R39_C9_R39_TOTAL_DEPOSIT_EXCEED"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
@@ -2582,7 +2614,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align: right; width: 250px;  padding-left:10px; ">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R40_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R40_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R40_TOTAL_DEPOSIT_EXCEED" name="R40_TOTAL_DEPOSIT_EXCEED"
+														id="R40_TOTAL_DEPOSIT_EXCEED"
+														name="R40_C9_R40_TOTAL_DEPOSIT_EXCEED"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
@@ -2622,7 +2655,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align: right; width: 250px;  padding-left:10px; ">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R41_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R41_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R41_TOTAL_DEPOSIT_EXCEED" name="R41_TOTAL_DEPOSIT_EXCEED"
+														id="R41_TOTAL_DEPOSIT_EXCEED"
+														name="R41_C9_R41_TOTAL_DEPOSIT_EXCEED"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
@@ -2660,7 +2694,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align: right; width: 250px;  padding-left:10px; ">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R42_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R42_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R42_TOTAL_DEPOSIT_EXCEED" name="R42_TOTAL_DEPOSIT_EXCEED"
+														id="R42_TOTAL_DEPOSIT_EXCEED"
+														name="R42_C9_R42_TOTAL_DEPOSIT_EXCEED"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
@@ -2698,7 +2733,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align: right; width: 250px;  padding-left:10px; ">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R43_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R43_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R43_TOTAL_DEPOSIT_EXCEED" name="R43_TOTAL_DEPOSIT_EXCEED"
+														id="R43_TOTAL_DEPOSIT_EXCEED"
+														name="R43_C9_R43_TOTAL_DEPOSIT_EXCEED"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
@@ -2736,7 +2772,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align: right; width: 250px;  padding-left:10px; ">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R44_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R44_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R44_TOTAL_DEPOSIT_EXCEED" name="R44_TOTAL_DEPOSIT_EXCEED"
+														id="R44_TOTAL_DEPOSIT_EXCEED"
+														name="R44_C9_R44_TOTAL_DEPOSIT_EXCEED"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
@@ -2771,7 +2808,7 @@ PURPOSE		: BRRSREPORT
 												 style="text-align: right; width: 250px;  padding-left:10px; ">
 												 <input class="display-input Show_input " type="text"
 												 th:value="${report.R45_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R45_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-												 id="R45_TOTAL_DEPOSIT_EXCEED" name="R45_TOTAL_DEPOSIT_EXCEED"
+												 id="R45_TOTAL_DEPOSIT_EXCEED" name="R45_C9_R45_TOTAL_DEPOSIT_EXCEED"
 												 style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 												 readonly />
 												</td>-->
@@ -2827,7 +2864,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align: right; width: 250px;  padding-left:10px; ">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R47_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R47_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R47_TOTAL_DEPOSIT_EXCEED" name="R47_TOTAL_DEPOSIT_EXCEED"
+														id="R47_TOTAL_DEPOSIT_EXCEED"
+														name="R47_C9_R47_TOTAL_DEPOSIT_EXCEED"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
@@ -2866,7 +2904,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align: right; width: 250px;  padding-left:10px; ">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R48_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R48_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R48_TOTAL_DEPOSIT_EXCEED" name="R48_TOTAL_DEPOSIT_EXCEED"
+														id="R48_TOTAL_DEPOSIT_EXCEED"
+														name="R48_C9_R48_TOTAL_DEPOSIT_EXCEED"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
@@ -2904,7 +2943,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align: right; width: 250px;  padding-left:10px; ">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R49_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R49_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R49_TOTAL_DEPOSIT_EXCEED" name="R49_TOTAL_DEPOSIT_EXCEED"
+														id="R49_TOTAL_DEPOSIT_EXCEED"
+														name="R49_C9_R49_TOTAL_DEPOSIT_EXCEED"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
@@ -2942,7 +2982,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align: right; width: 250px;  padding-left:10px; ">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R50_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R50_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R50_TOTAL_DEPOSIT_EXCEED" name="R50_TOTAL_DEPOSIT_EXCEED"
+														id="R50_TOTAL_DEPOSIT_EXCEED"
+														name="R50_C9_R50_TOTAL_DEPOSIT_EXCEED"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
@@ -2980,7 +3021,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align: right; width: 250px;  padding-left:10px; ">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R51_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R51_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R51_TOTAL_DEPOSIT_EXCEED" name="R51_TOTAL_DEPOSIT_EXCEED"
+														id="R51_TOTAL_DEPOSIT_EXCEED"
+														name="R51_C9_R51_TOTAL_DEPOSIT_EXCEED"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
@@ -3018,7 +3060,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align: right; width: 250px;  padding-left:10px; ">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R52_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R52_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R52_TOTAL_DEPOSIT_EXCEED" name="R52_TOTAL_DEPOSIT_EXCEED"
+														id="R52_TOTAL_DEPOSIT_EXCEED"
+														name="R52_C9_R52_TOTAL_DEPOSIT_EXCEED"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
@@ -3053,7 +3096,7 @@ PURPOSE		: BRRSREPORT
 																						 style="text-align: right; width: 250px;  padding-left:10px; ">
 																						 <input class="display-input Show_input " type="text"
 																						 th:value="${report.R53_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R53_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-																						 id="R53_TOTAL_DEPOSIT_EXCEED" name="R53_TOTAL_DEPOSIT_EXCEED"
+																						 id="R53_TOTAL_DEPOSIT_EXCEED" name="R53_C9_R53_TOTAL_DEPOSIT_EXCEED"
 																						 style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 																						 readonly />
 																						</td>-->
@@ -3109,7 +3152,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align: right; width: 250px;  padding-left:10px; ">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R55_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R55_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R55_TOTAL_DEPOSIT_EXCEED" name="R55_TOTAL_DEPOSIT_EXCEED"
+														id="R55_TOTAL_DEPOSIT_EXCEED"
+														name="R55_C9_R55_TOTAL_DEPOSIT_EXCEED"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
@@ -3147,7 +3191,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align: right; width: 250px;  padding-left:10px; ">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R56_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R56_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R56_TOTAL_DEPOSIT_EXCEED" name="R56_TOTAL_DEPOSIT_EXCEED"
+														id="R56_TOTAL_DEPOSIT_EXCEED"
+														name="R56_C9_R56_TOTAL_DEPOSIT_EXCEED"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
@@ -3185,7 +3230,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align: right; width: 250px;  padding-left:10px; ">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R57_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R57_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R57_TOTAL_DEPOSIT_EXCEED" name="R57_TOTAL_DEPOSIT_EXCEED"
+														id="R57_TOTAL_DEPOSIT_EXCEED"
+														name="R57_C9_R57_TOTAL_DEPOSIT_EXCEED"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
@@ -3223,7 +3269,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align: right; width: 250px;  padding-left:10px; ">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R58_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R58_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R58_TOTAL_DEPOSIT_EXCEED" name="R58_TOTAL_DEPOSIT_EXCEED"
+														id="R58_TOTAL_DEPOSIT_EXCEED"
+														name="R58_C9_R58_TOTAL_DEPOSIT_EXCEED"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
@@ -3261,7 +3308,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align: right; width: 250px;  padding-left:10px; ">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R59_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R59_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R59_TOTAL_DEPOSIT_EXCEED" name="R59_TOTAL_DEPOSIT_EXCEED"
+														id="R59_TOTAL_DEPOSIT_EXCEED"
+														name="R59_C9_R59_TOTAL_DEPOSIT_EXCEED"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
@@ -3299,7 +3347,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align: right; width: 250px;  padding-left:10px; ">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R60_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R60_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R60_TOTAL_DEPOSIT_EXCEED" name="R60_TOTAL_DEPOSIT_EXCEED"
+														id="R60_TOTAL_DEPOSIT_EXCEED"
+														name="R60_C9_R60_TOTAL_DEPOSIT_EXCEED"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
@@ -3334,7 +3383,7 @@ PURPOSE		: BRRSREPORT
 												 style="text-align: right; width: 250px;  padding-left:10px; ">
 												 <input class="display-input Show_input " type="text"
 												 th:value="${report.R61_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R61_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-												 id="R61_TOTAL_DEPOSIT_EXCEED" name="R61_TOTAL_DEPOSIT_EXCEED"
+												 id="R61_TOTAL_DEPOSIT_EXCEED" name="R61_C9_R61_TOTAL_DEPOSIT_EXCEED"
 												 style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 												 readonly />
 												</td>-->
@@ -3388,7 +3437,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align: right; width: 250px;  padding-left:10px; ">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R63_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R63_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R63_TOTAL_DEPOSIT_EXCEED" name="R63_TOTAL_DEPOSIT_EXCEED"
+														id="R63_TOTAL_DEPOSIT_EXCEED"
+														name="R63_C9_R63_TOTAL_DEPOSIT_EXCEED"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
@@ -3426,7 +3476,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align: right; width: 250px;  padding-left:10px; ">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R64_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R64_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R64_TOTAL_DEPOSIT_EXCEED" name="R64_TOTAL_DEPOSIT_EXCEED"
+														id="R64_TOTAL_DEPOSIT_EXCEED"
+														name="R64_C9_R64_TOTAL_DEPOSIT_EXCEED"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
@@ -3464,7 +3515,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align: right; width: 250px;  padding-left:10px; ">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R65_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R65_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R65_TOTAL_DEPOSIT_EXCEED" name="R65_TOTAL_DEPOSIT_EXCEED"
+														id="R65_TOTAL_DEPOSIT_EXCEED"
+														name="R65_C9_R65_TOTAL_DEPOSIT_EXCEED"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
@@ -3502,7 +3554,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align: right; width: 250px;  padding-left:10px; ">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R66_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R66_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R66_TOTAL_DEPOSIT_EXCEED" name="R66_TOTAL_DEPOSIT_EXCEED"
+														id="R66_TOTAL_DEPOSIT_EXCEED"
+														name="R66_C9_R66_TOTAL_DEPOSIT_EXCEED"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
@@ -3540,7 +3593,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align: right; width: 250px;  padding-left:10px; ">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R67_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R67_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R67_TOTAL_DEPOSIT_EXCEED" name="R67_TOTAL_DEPOSIT_EXCEED"
+														id="R67_TOTAL_DEPOSIT_EXCEED"
+														name="R67_C9_R67_TOTAL_DEPOSIT_EXCEED"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
@@ -3578,7 +3632,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align: right; width: 250px;  padding-left:10px; ">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R68_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R68_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R68_TOTAL_DEPOSIT_EXCEED" name="R68_TOTAL_DEPOSIT_EXCEED"
+														id="R68_TOTAL_DEPOSIT_EXCEED"
+														name="R68_C9_R68_TOTAL_DEPOSIT_EXCEED"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
@@ -3613,7 +3668,7 @@ PURPOSE		: BRRSREPORT
 												 style="text-align: right; width: 250px;  padding-left:10px; ">
 												 <input class="display-input Show_input " type="text"
 												 th:value="${report.R69_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R69_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-												 id="R69_TOTAL_DEPOSIT_EXCEED" name="R69_TOTAL_DEPOSIT_EXCEED"
+												 id="R69_TOTAL_DEPOSIT_EXCEED" name="R69_C9_R69_TOTAL_DEPOSIT_EXCEED"
 												 style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 												 readonly />
 												</td>-->
@@ -3669,7 +3724,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align: right; width: 250px;  padding-left:10px; ">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R71_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R71_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R71_TOTAL_DEPOSIT_EXCEED" name="R71_TOTAL_DEPOSIT_EXCEED"
+														id="R71_TOTAL_DEPOSIT_EXCEED"
+														name="R71_C9_R71_TOTAL_DEPOSIT_EXCEED"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
@@ -3707,7 +3763,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align: right; width: 250px;  padding-left:10px; ">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R72_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R72_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R72_TOTAL_DEPOSIT_EXCEED" name="R72_TOTAL_DEPOSIT_EXCEED"
+														id="R72_TOTAL_DEPOSIT_EXCEED"
+														name="R72_C9_R72_TOTAL_DEPOSIT_EXCEED"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
@@ -3745,7 +3802,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align: right; width: 250px;  padding-left:10px; ">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R73_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R73_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R73_TOTAL_DEPOSIT_EXCEED" name="R73_TOTAL_DEPOSIT_EXCEED"
+														id="R73_TOTAL_DEPOSIT_EXCEED"
+														name="R73_C9_R73_TOTAL_DEPOSIT_EXCEED"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
@@ -3783,7 +3841,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align: right; width: 250px;  padding-left:10px; ">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R74_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R74_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R74_TOTAL_DEPOSIT_EXCEED" name="R74_TOTAL_DEPOSIT_EXCEED"
+														id="R74_TOTAL_DEPOSIT_EXCEED"
+														name="R74_C9_R74_TOTAL_DEPOSIT_EXCEED"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
@@ -3821,7 +3880,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align: right; width: 250px;  padding-left:10px; ">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R75_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R75_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R75_TOTAL_DEPOSIT_EXCEED" name="R75_TOTAL_DEPOSIT_EXCEED"
+														id="R75_TOTAL_DEPOSIT_EXCEED"
+														name="R75_C9_R75_TOTAL_DEPOSIT_EXCEED"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
@@ -3859,7 +3919,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align: right; width: 250px;  padding-left:10px; ">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R76_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R76_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R76_TOTAL_DEPOSIT_EXCEED" name="R76_TOTAL_DEPOSIT_EXCEED"
+														id="R76_TOTAL_DEPOSIT_EXCEED"
+														name="R76_C9_R76_TOTAL_DEPOSIT_EXCEED"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
@@ -3894,7 +3955,7 @@ PURPOSE		: BRRSREPORT
 												 style="text-align: right; width: 250px;  padding-left:10px; ">
 												 <input class="display-input Show_input " type="text"
 												 th:value="${report.R77_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R77_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-												 id="R77_TOTAL_DEPOSIT_EXCEED" name="R77_TOTAL_DEPOSIT_EXCEED"
+												 id="R77_TOTAL_DEPOSIT_EXCEED" name="R77_C9_R77_TOTAL_DEPOSIT_EXCEED"
 												 style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 												 readonly />
 												</td>-->
@@ -3949,7 +4010,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align: right; width: 250px;  padding-left:10px; ">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R79_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R79_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R79_TOTAL_DEPOSIT_EXCEED" name="R79_TOTAL_DEPOSIT_EXCEED"
+														id="R79_TOTAL_DEPOSIT_EXCEED"
+														name="R79_C9_R79_TOTAL_DEPOSIT_EXCEED"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
@@ -3987,7 +4049,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align: right; width: 250px;  padding-left:10px; ">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R80_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R80_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R80_TOTAL_DEPOSIT_EXCEED" name="R80_TOTAL_DEPOSIT_EXCEED"
+														id="R80_TOTAL_DEPOSIT_EXCEED"
+														name="R80_C9_R80_TOTAL_DEPOSIT_EXCEED"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
@@ -4025,7 +4088,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align: right; width: 250px;  padding-left:10px; ">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R81_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R81_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R81_TOTAL_DEPOSIT_EXCEED" name="R81_TOTAL_DEPOSIT_EXCEED"
+														id="R81_TOTAL_DEPOSIT_EXCEED"
+														name="R81_C9_R81_TOTAL_DEPOSIT_EXCEED"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
@@ -4063,7 +4127,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align: right; width: 250px;  padding-left:10px; ">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R82_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R82_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R82_TOTAL_DEPOSIT_EXCEED" name="R82_TOTAL_DEPOSIT_EXCEED"
+														id="R82_TOTAL_DEPOSIT_EXCEED"
+														name="R82_C9_R82_TOTAL_DEPOSIT_EXCEED"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
@@ -4101,7 +4166,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align: right; width: 250px;  padding-left:10px; ">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R83_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R83_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R83_TOTAL_DEPOSIT_EXCEED" name="R83_TOTAL_DEPOSIT_EXCEED"
+														id="R83_TOTAL_DEPOSIT_EXCEED"
+														name="R83_C9_R83_TOTAL_DEPOSIT_EXCEED"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
@@ -4139,7 +4205,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align: right; width: 250px;  padding-left:10px; ">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R84_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R84_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R84_TOTAL_DEPOSIT_EXCEED" name="R84_TOTAL_DEPOSIT_EXCEED"
+														id="R84_TOTAL_DEPOSIT_EXCEED"
+														name="R84_C9_R84_TOTAL_DEPOSIT_EXCEED"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
@@ -4174,7 +4241,7 @@ PURPOSE		: BRRSREPORT
 												 style="text-align: right; width: 250px;  padding-left:10px; ">
 												 <input class="display-input Show_input " type="text"
 												 th:value="${report.R85_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R85_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-												 id="R85_TOTAL_DEPOSIT_EXCEED" name="R85_TOTAL_DEPOSIT_EXCEED"
+												 id="R85_TOTAL_DEPOSIT_EXCEED" name="R85_C9_R85_TOTAL_DEPOSIT_EXCEED"
 												 style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 												 readonly />
 												</td>-->
@@ -4231,7 +4298,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align: right; width: 250px;  padding-left:10px; ">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R87_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R87_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R87_TOTAL_DEPOSIT_EXCEED" name="R87_TOTAL_DEPOSIT_EXCEED"
+														id="R87_TOTAL_DEPOSIT_EXCEED"
+														name="R87_C9_R87_TOTAL_DEPOSIT_EXCEED"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
@@ -4269,7 +4337,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align: right; width: 250px;  padding-left:10px; ">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R88_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R88_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R88_TOTAL_DEPOSIT_EXCEED" name="R88_TOTAL_DEPOSIT_EXCEED"
+														id="R88_TOTAL_DEPOSIT_EXCEED"
+														name="R88_C9_R88_TOTAL_DEPOSIT_EXCEED"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
@@ -4307,7 +4376,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align: right; width: 250px;  padding-left:10px; ">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R89_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R89_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R89_TOTAL_DEPOSIT_EXCEED" name="R89_TOTAL_DEPOSIT_EXCEED"
+														id="R89_TOTAL_DEPOSIT_EXCEED"
+														name="R89_C9_R89_TOTAL_DEPOSIT_EXCEED"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
@@ -4345,7 +4415,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align: right; width: 250px;  padding-left:10px; ">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R90_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R90_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R90_TOTAL_DEPOSIT_EXCEED" name="R90_TOTAL_DEPOSIT_EXCEED"
+														id="R90_TOTAL_DEPOSIT_EXCEED"
+														name="R90_C9_R90_TOTAL_DEPOSIT_EXCEED"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
@@ -4383,7 +4454,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align: right; width: 250px;  padding-left:10px; ">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R91_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R91_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R91_TOTAL_DEPOSIT_EXCEED" name="R91_TOTAL_DEPOSIT_EXCEED"
+														id="R91_TOTAL_DEPOSIT_EXCEED"
+														name="R91_C9_R91_TOTAL_DEPOSIT_EXCEED"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
@@ -4421,7 +4493,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align: right; width: 250px;  padding-left:10px; ">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R92_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R92_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R92_TOTAL_DEPOSIT_EXCEED" name="R92_TOTAL_DEPOSIT_EXCEED"
+														id="R92_TOTAL_DEPOSIT_EXCEED"
+														name="R92_C9_R92_TOTAL_DEPOSIT_EXCEED"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
@@ -4456,7 +4529,7 @@ PURPOSE		: BRRSREPORT
 												 style="text-align: right; width: 250px;  padding-left:10px; ">
 												 <input class="display-input Show_input " type="text"
 												 th:value="${report.R93_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R93_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-												 id="R93_TOTAL_DEPOSIT_EXCEED" name="R93_TOTAL_DEPOSIT_EXCEED"
+												 id="R93_TOTAL_DEPOSIT_EXCEED" name="R93_C9_R93_TOTAL_DEPOSIT_EXCEED"
 												 style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 												 readonly />
 												</td>-->
@@ -4512,7 +4585,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align: right; width: 250px;  padding-left:10px; ">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R95_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R95_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R95_TOTAL_DEPOSIT_EXCEED" name="R95_TOTAL_DEPOSIT_EXCEED"
+														id="R95_TOTAL_DEPOSIT_EXCEED"
+														name="R95_C9_R95_TOTAL_DEPOSIT_EXCEED"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
@@ -4550,7 +4624,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align: right; width: 250px;  padding-left:10px; ">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R96_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R96_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R96_TOTAL_DEPOSIT_EXCEED" name="R96_TOTAL_DEPOSIT_EXCEED"
+														id="R96_TOTAL_DEPOSIT_EXCEED"
+														name="R96_C9_R96_TOTAL_DEPOSIT_EXCEED"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
@@ -4588,7 +4663,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align: right; width: 250px;  padding-left:10px; ">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R97_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R97_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R97_TOTAL_DEPOSIT_EXCEED" name="R97_TOTAL_DEPOSIT_EXCEED"
+														id="R97_TOTAL_DEPOSIT_EXCEED"
+														name="R97_C9_R97_TOTAL_DEPOSIT_EXCEED"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
@@ -4626,7 +4702,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align: right; width: 250px;  padding-left:10px; ">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R98_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R98_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R98_TOTAL_DEPOSIT_EXCEED" name="R98_TOTAL_DEPOSIT_EXCEED"
+														id="R98_TOTAL_DEPOSIT_EXCEED"
+														name="R98_C9_R98_TOTAL_DEPOSIT_EXCEED"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
@@ -4664,7 +4741,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align: right; width: 250px;  padding-left:10px; ">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R99_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R99_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R99_TOTAL_DEPOSIT_EXCEED" name="R99_TOTAL_DEPOSIT_EXCEED"
+														id="R99_TOTAL_DEPOSIT_EXCEED"
+														name="R99_C9_R99_TOTAL_DEPOSIT_EXCEED"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
@@ -4702,7 +4780,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align: right; width: 250px;  padding-left:10px; ">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R100_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R100_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R100_TOTAL_DEPOSIT_EXCEED" name="R100_TOTAL_DEPOSIT_EXCEED"
+														id="R100_TOTAL_DEPOSIT_EXCEED"
+														name="R100_C9_R100_TOTAL_DEPOSIT_EXCEED"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
@@ -4737,7 +4816,7 @@ PURPOSE		: BRRSREPORT
 												 style="text-align: right; width: 250px;  padding-left:10px; ">
 												 <input class="display-input Show_input " type="text"
 												 th:value="${report.R101_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R101_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-												 id="R101_TOTAL_DEPOSIT_EXCEED" name="R101_TOTAL_DEPOSIT_EXCEED"
+												 id="R101_TOTAL_DEPOSIT_EXCEED" name="R101_C9_R101_TOTAL_DEPOSIT_EXCEED"
 												 style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 												 readonly />
 												</td>-->
@@ -4792,7 +4871,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align: right; width: 250px;  padding-left:10px; ">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R103_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R103_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R103_TOTAL_DEPOSIT_EXCEED" name="R103_TOTAL_DEPOSIT_EXCEED"
+														id="R103_TOTAL_DEPOSIT_EXCEED"
+														name="R103_C9_R103_TOTAL_DEPOSIT_EXCEED"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
@@ -4830,7 +4910,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align: right; width: 250px;  padding-left:10px; ">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R104_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R104_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R104_TOTAL_DEPOSIT_EXCEED" name="R104_TOTAL_DEPOSIT_EXCEED"
+														id="R104_TOTAL_DEPOSIT_EXCEED"
+														name="R104_C9_R104_TOTAL_DEPOSIT_EXCEED"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
@@ -4868,7 +4949,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align: right; width: 250px;  padding-left:10px; ">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R105_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R105_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R105_TOTAL_DEPOSIT_EXCEED" name="R105_TOTAL_DEPOSIT_EXCEED"
+														id="R105_TOTAL_DEPOSIT_EXCEED"
+														name="R105_C9_R105_TOTAL_DEPOSIT_EXCEED"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
@@ -4906,7 +4988,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align: right; width: 250px;  padding-left:10px; ">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R106_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R106_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R106_TOTAL_DEPOSIT_EXCEED" name="R106_TOTAL_DEPOSIT_EXCEED"
+														id="R106_TOTAL_DEPOSIT_EXCEED"
+														name="R106_C9_R106_TOTAL_DEPOSIT_EXCEED"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
@@ -4944,7 +5027,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align: right; width: 250px;  padding-left:10px; ">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R107_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R107_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R107_TOTAL_DEPOSIT_EXCEED" name="R107_TOTAL_DEPOSIT_EXCEED"
+														id="R107_TOTAL_DEPOSIT_EXCEED"
+														name="R107_C9_R107_TOTAL_DEPOSIT_EXCEED"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
@@ -4982,7 +5066,8 @@ PURPOSE		: BRRSREPORT
 													style="text-align: right; width: 250px;  padding-left:10px; ">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R108_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R108_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R108_TOTAL_DEPOSIT_EXCEED" name="R108_TOTAL_DEPOSIT_EXCEED"
+														id="R108_TOTAL_DEPOSIT_EXCEED"
+														name="R108_C9_R108_TOTAL_DEPOSIT_EXCEED"
 														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
@@ -5017,7 +5102,7 @@ PURPOSE		: BRRSREPORT
 												 style="text-align: right; width: 250px;  padding-left:10px; ">
 												 <input class="display-input Show_input " type="text"
 												 th:value="${report.R109_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R109_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-												 id="R109_TOTAL_DEPOSIT_EXCEED" name="R109_TOTAL_DEPOSIT_EXCEED"
+												 id="R109_TOTAL_DEPOSIT_EXCEED" name="R109_C9_R109_TOTAL_DEPOSIT_EXCEED"
 												 style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 												 readonly />
 												</td>-->
@@ -5069,7 +5154,7 @@ PURPOSE		: BRRSREPORT
 												 style="text-align: right; width: 250px;  padding-left:10px; ">
 												 <input class="display-input Show_input " type="text"
 												 th:value="${report.R111_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R111_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-												 id="R111_TOTAL_DEPOSIT_EXCEED" name="R111_TOTAL_DEPOSIT_EXCEED"
+												 id="R111_TOTAL_DEPOSIT_EXCEED" name="R111_C9_R111_TOTAL_DEPOSIT_EXCEED"
 												 style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
 												 readonly />
 												</td>-->
@@ -5229,12 +5314,12 @@ PURPOSE		: BRRSREPORT
 							<!-- Row 4 -->
 							<!-- Row 4 in your DetailForm -->
 							<div class="row formline" style="margin-top:10px;">
-							    <label class="col-sm-2">Report Date</label>
-							    <div class="col-sm-3">
-							        <!-- Changed name to report_date (lowercase) -->
-							        <input type="date" name="report_date" class="form-control form-control-sm"
-							            th:value="${#dates.format(Data.report_date, 'yyyy-MM-dd')}" readonly />
-							    </div>
+								<label class="col-sm-2">Report Date</label>
+								<div class="col-sm-3">
+									<!-- Changed name to report_date (lowercase) -->
+									<input type="date" name="report_date" class="form-control form-control-sm"
+										th:value="${#dates.format(Data.report_date, 'yyyy-MM-dd')}" readonly />
+								</div>
 							</div>
 
 
@@ -5292,7 +5377,7 @@ PURPOSE		: BRRSREPORT
 					<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
 						<p id="resultModalBody"></p>
 						<!-- Your custom styled button -->
-						<button type="button" class="custom-tab-btn" onclick="closemodels()"
+						<button type="button" class="custom-tab-btn" onclick="closemodel()"
 							data-dismiss="modal">OK</button>
 					</div>
 				</div>
@@ -5312,7 +5397,7 @@ PURPOSE		: BRRSREPORT
 					<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
 						<p id="resultModalBody1"></p>
 						<!-- Your custom styled button -->
-						<button type="button" class="custom-tab-btn" onclick="closemodel()"
+						<button type="button" class="custom-tab-btn" onclick="closemodels()"
 							data-dismiss="modal">OK</button>
 					</div>
 				</div>

@@ -398,7 +398,7 @@ public class RegulatoryReportServices {
 	BRRS_AS_11_ReportService BRRS_AS_11_Reportservice;
 
 	@Autowired
-	BRRS_M_OPTR_NEW_ReportService BRRS_M_OPTR_NEW_ReportService;<<<<<<
+	BRRS_M_OPTR_NEW_ReportService BRRS_M_OPTR_NEW_ReportService;
 
 	/*
 	 * @Autowired BRRS_Q_STAFF_Report_Service BRRS_Q_STAFF_report_service;
@@ -1811,19 +1811,16 @@ public class RegulatoryReportServices {
 				}
 				break;
 
-			case "M_INT_RATES_FCA_NEW":
-				try {
-
-					repfile = brrs_m_int_rates_fca_new_reportservice.getM_INTRATESFCACExcel(filename, reportId,
-							fromdate,
-
-							todate,
-							currency, dtltype, type, version);
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
+			/*
+			 * case "M_INT_RATES_FCA_NEW": try {
+			 * 
+			 * repfile =
+			 * BRRS_M_INT_RATES_FCA_NEW_ReportService.getM_INTRATESFCACExcel(filename,
+			 * reportId, fromdate,
+			 * 
+			 * todate, currency, dtltype, type, version); } catch (Exception e) { // TODO
+			 * Auto-generated catch block e.printStackTrace(); } break;
+			 */
 
 			case "M_FAS":
 				try {
@@ -3419,8 +3416,10 @@ public class RegulatoryReportServices {
 				List<Object[]> intratesfcanewList = BRRS_M_INT_RATES_FCA_NEW_ReportService
 						.getM_INT_RATES_FCA_NEWArchival();
 
-				List<Object[]> intratesfcanewList = brrs_m_int_rates_fca_new_reportservice
-						.getM_INT_RATES_FCACArchival();
+				/*
+				 * List<Object[]> intratesfcanewList = brrs_m_int_rates_fca_new_reportservice
+				 * .getM_INT_RATES_FCACArchival();
+				 */
 
 				archivalData.addAll(intratesfcanewList);
 				System.out.println("Fetched M_INT_RATES_FCA archival data: " + intratesfcanewList.size());
