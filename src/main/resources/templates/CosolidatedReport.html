@@ -1,0 +1,631 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<link rel="icon" th:href="@{/images/client_Logo_bkp.png}"
+	type="image/x-icon">
+
+<!-- CSS -->
+<link rel="stylesheet"
+	th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}" />
+<link rel="stylesheet"
+	th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}" />
+<link rel="stylesheet"
+	th:href="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.css}" />
+<link rel="stylesheet"
+	th:href="@{/webjars/datatables/1.10.19/css/jquery.dataTables.min.css}" />
+<link rel="stylesheet" th:href="@{/css/CustomButton.css}" />
+
+
+<!-- JavaScript -->
+<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+<script th:src="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.js}"></script>
+<script th:src="@{/webjars/popper.js/1.14.7/umd/popper.min.js}"></script>
+<script th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
+<script
+	th:src="@{/webjars/jquery-validation/1.19.0/jquery.validate.min.js}"></script>
+<script th:src="@{/webjars/jquery-form/4.2.2/jquery.form.min.js}"></script>
+<script
+	th:src="@{/webjars/datatables/1.10.19/js/jquery.dataTables.min.js}"></script>
+<script
+	th:src="@{/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js}"></script>
+
+<style>
+/* Adjust container below fixed header */
+.container-fluid {
+	margin-top: 70px;
+	padding: 20px;
+	zoom: 95%;
+}
+
+/* Back button */
+.back-btn {
+	background: linear-gradient(145deg, #ffffff, #f5f5f5);
+	color: #333;
+	border: 1px solid #ddd;
+	padding: 8px 16px;
+	border-radius: 8px;
+	cursor: pointer;
+	font-weight: 600;
+	font-size: 14px;
+	transition: all 0.3s ease;
+	box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Hover effect */
+.back-btn:hover {
+	background: linear-gradient(145deg, #f0f0f0, orange);
+	color: #000;
+	transform: translateY(-2px) scale(1.05);
+	box-shadow: 4px 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Active (when clicked) */
+.back-btn:active {
+	transform: scale(0.97);
+	box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* Inline form */
+.inline-form {
+	font-family: Verdana, Geneva, Tahoma, sans-serif;
+	padding: 10px 0;
+}
+
+/* Flex container for form groups */
+.formline {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 20px;
+	/* space between fields */
+}
+
+/* Form group */
+.form-group {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	/* space between label and input */
+}
+
+/* Labels */
+.form-group label {
+	white-space: nowrap;
+	font-size: 0.875rem;
+}
+
+/* Inputs & selects */
+.inline-input, .inline-select {
+	border: 1.5px solid #ccc;
+	border-radius: 5px;
+	padding: 4px 8px;
+	width: 200px;
+	/* unified width */
+	transition: border-color 0.3s, box-shadow 0.3s;
+	font-size: 0.875rem;
+}
+
+/* Focus effect */
+.inline-input:focus, .inline-select:focus {
+	border-color: #007bff;
+	box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+	outline: none;
+}
+
+/* Inline Date Input */
+.inline-date {
+	padding: 6px 10px;
+	font-size: 14px;
+	font-family: Verdana, Geneva, Tahoma, sans-serif;
+	border: 1px solid #ccc;
+	border-radius: 6px;
+	background-color: #fff;
+	color: #333;
+	transition: all 0.3s ease;
+	outline: none;
+}
+
+/* Hover effect */
+.inline-date:hover {
+	border-color: #888;
+}
+
+/* Focus effect */
+.inline-date:focus {
+	border-color: #4a90e2;
+	/* blue highlight */
+	box-shadow: 0 0 6px rgba(74, 144, 226, 0.5);
+}
+
+/* Disabled state */
+.inline-date:disabled {
+	background-color: #f5f5f5;
+	color: #999;
+	cursor: not-allowed;
+}
+
+/* Feedback spans */
+.feedback {
+	font-size: 0.8rem;
+	color: red;
+}
+
+/* Make modal content rounded & elegant */
+#staticBackdrop .modal-content {
+	border-radius: 15px;
+	border: none;
+	box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+	background: #f8f9fa;
+	/* light background */
+	font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+/* Header */
+#staticBackdrop .modal-header {
+	background: #34495e;
+	color: white;
+	border-top-left-radius: 15px;
+	border-top-right-radius: 15px;
+	border-bottom: none;
+	padding: 15px 20px;
+	text-align: center;
+}
+
+#staticBackdrop .modal-title {
+	font-weight: 600;
+	font-size: 18px;
+	font-family: Verdana, Geneva, Tahoma, sans-serif;
+	text-align: center;
+}
+
+/* Body */
+#staticBackdrop .modal-body {
+	padding: 25px;
+	font-weight: 600;
+	font-size: 19px;
+	color: #2c3e50;
+	line-height: 1.5;
+	font-family: Verdana, Geneva, Tahoma, sans-serif;
+	text-align: center;
+}
+
+/* Footer */
+#staticBackdrop .modal-footer {
+	border-top: none;
+	padding: 15px 20px;
+	display: flex;
+	justify-content: flex-end;
+	gap: 10px;
+}
+
+/* Buttons */
+#staticBackdrop .btn {
+	border-radius: 8px;
+	padding: 8px 20px;
+	font-size: 14px;
+	font-weight: 500;
+}
+
+#staticBackdrop .btn-secondary {
+	background: #95a5a6;
+	border: none;
+}
+
+#staticBackdrop .btn-secondary:hover {
+	background: #7f8c8d;
+}
+
+#staticBackdrop .btn-primary {
+	background: #e74c3c;
+	border: none;
+}
+
+#staticBackdrop .btn-primary:hover {
+	background: #c0392b;
+}
+
+#staticBackdrop .modal-dialog {
+	max-width: 500px;
+}
+
+#notification-container {
+	position: fixed;
+	top: 85px;
+	right: 20px;
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	z-index: 9999;
+}
+
+.notification {
+	background: black;
+	color: white;
+	font-family: Verdana, Geneva, Tahoma, sans-serif;
+	font-weight: 600;
+	padding: 15px 20px;
+	border-radius: 8px;
+	min-width: 250px;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	animation: slideIn 0.4s ease, fadeOut 0.5s ease forwards;
+	animation-delay: 0s, 3.5s;
+}
+
+.notification.success {
+	border-left: 5px solid #22c55e;
+}
+
+.notification.error {
+	border-left: 5px solid #ef4444;
+}
+
+.notification.info {
+	border-left: 5px solid #3b82f6;
+}
+
+.notification span {
+	flex: 1;
+	margin-right: 10px;
+}
+
+.notification button {
+	background: transparent;
+	border: none;
+	color: #888;
+	cursor: pointer;
+	font-size: 18px;
+}
+
+.loader {
+	width: fit-content;
+	font-weight: bold;
+	font-family: monospace;
+	font-size: 30px;
+	overflow: hidden;
+}
+
+.loader::before {
+	content: "Loading...";
+	color: #0000;
+	text-shadow: 0 0 0 #000, 10ch 0 0 #fff, 20ch 0 0 #000;
+	background: linear-gradient(90deg, #0000 calc(100%/ 3), #000 0
+		calc(2 * 100%/ 3), #0000 0) left/300% 100%;
+	animation: l23 2s infinite;
+}
+
+@
+keyframes l23 { 50% {
+	background-position: center;
+	text-shadow: -10ch 0 0 #000, 0 0 0 #fff, 10ch 0 0 #000
+}
+
+100%
+{
+background-position
+
+
+:
+
+ 
+
+right
+
+
+;
+text-shadow
+
+
+:
+
+ 
+
+-20
+ch
+
+ 
+
+0
+0
+#000
+,
+-10
+ch
+
+ 
+
+0
+0
+#fff
+,
+0
+0
+0
+#000
+
+
+			
+
+}
+}
+@
+keyframes slideIn {from { opacity:0;
+	transform: translateX(100%);
+}
+
+to {
+	opacity: 1;
+	transform: translateX(0);
+}
+
+}
+@
+keyframes fadeOut {to { opacity:0;
+	transform: translateX(100%);
+}
+
+}
+
+/* Responsive: stack vertically on small screens */
+@media ( max-width : 768px) {
+	.formline {
+		flex-direction: column;
+		align-items: flex-start;
+	}
+	.form-group {
+		width: 100%;
+	}
+	.inline-input, .inline-select {
+		width: 100%;
+	}
+}
+</style>
+<style>
+.orange-loader {
+	border: 6px solid rgba(255, 165, 0, 0.2);
+	/* Light orange background ring */
+	border-top: 6px solid orange;
+	/* Main spinning color */
+	border-radius: 50%;
+	width: 80px;
+	height: 80px;
+	animation: spin 1s linear infinite;
+	margin: auto;
+}
+
+@
+keyframes spin { 0% {
+	transform: rotate(0deg);
+}
+100%
+{
+transform
+
+
+:
+
+ 
+
+rotate
+
+
+(360
+deg
+);
+
+
+			
+
+}
+}
+</style>
+<style>
+below Styles is for Report date validation
+.validation-message {
+	margin-top: 5px;
+	padding: 5px 10px;
+	border-radius: 4px;
+	font-size: 12px;
+	display: none;
+}
+
+.validation-message.error {
+	background: #ffebee;
+	color: #c62828;
+	border: 1px solid #ef5350;
+	display: block;
+}
+
+.validation-message.success {
+	background: #e8f5e9;
+	color: #2e7d32;
+	border: 1px solid #66bb6a;
+	display: block;
+}
+</style>
+<script>
+
+		function back() {
+			window.history.back();
+		}
+		function list() {
+			location.href = 'MCBL?formmode=list';
+		}
+
+   function downloadfile() {
+    var rawDate = document.getElementById("report_date").value;
+			var reportid = "";
+			var asondate = toDDMMYYYYMMM(rawDate);
+var todate   = toDDMMYYYYMMM(rawDate);
+            alert(asondate);
+			var fromdate = "";
+			 
+			var currency = "";
+			var subreportid = "";
+			var secid = "";
+			var dtltype = "";
+		var filename = "BRRS_Consolidated_Report";
+			var type = "BRRS";
+			var version = "";
+
+			$('#loader').modal('show');
+			$.ajax({
+                 url: './Reports/downloadConsolidatedExcel',
+				 type: 'GET',
+        data: {
+            asondate: asondate,
+            todate: todate,
+            type: type,
+            filename: filename
+            
+        },
+				xhrFields: {
+					responseType: 'blob'
+				},
+				success: function (data) {
+					$('#loader').modal('hide');
+					if (data && data.size > 100) {
+						const blob = new Blob([data], { type: 'application/vnd.ms-excel' });
+						const url = window.URL.createObjectURL(blob);
+						const a = document.createElement('a');
+						a.style.display = 'none';
+						a.href = url;
+						a.download = filename;
+						document.body.appendChild(a);
+						a.click();
+						window.URL.revokeObjectURL(url);
+						document.body.removeChild(a);
+						showResultModal('BRRS', filename + ' downloaded successfully.');
+					} else {
+						showResultModal('Information', 'No data was available to create a download.');
+					}
+				},
+				error: function (jqXHR, textStatus, errorThrown) {
+					$('#loader').modal('hide');
+					console.error("Download failed:", textStatus, errorThrown);
+					showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
+				}
+			});
+		}
+function toDDMMYYYYMMM(dateStr) {
+    if (!dateStr) return "";
+    let d = dateStr.split("-");
+    let monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    let month = monthNames[parseInt(d[1],10)-1];
+    return d[0] + "-" + month + "-" + d[2];  // 31-Oct-2025
+}
+
+
+	function showResultModal(title, message) {
+			// Set the text for the modal elements
+			$('#resultModalLabel').text(title);
+			$('#resultModalBody').text(message);
+
+			// Show the modal
+			$('#resultModal').modal('show');
+		}
+
+		function closemodel() {
+			$('#alert').modal('hide');
+			$('#resultModal').modal('hide');
+
+		}	  
+		   
+		</script>
+
+		      
+</head>
+
+<title>CONSOLIDATED Excel</title>
+
+<body>
+	<!-- Header -->
+	<div th:insert="HeaderMenu :: header" class="fixed-top"></div>
+
+	<!-- Main Container -->
+	<div class="container-fluid">
+		<div class="card">
+			<div class="row" th:if="${formmode == 'list'}">
+				<div class="col-sm-12 finuserapply">
+					<div class="card">
+						<div
+							class="card-header d-flex justify-content-between align-items-center">
+
+							<!-- Left Section -->
+							<div class="d-flex align-items-center">
+								<button type="button" class="custom-tab-btn" id="btnBack"
+									onclick="back();" title="Back">
+									<i class="fa fa-arrow-left" style="color: black;"></i>
+								</button>
+
+								<h6
+									style="font-family: Verdana; font-weight: bold; margin: 0; font-size: 1.25rem;"
+									th:if="${formmode}=='list'">Consolidated Report - DOWNLOAD</h6>
+							</div>
+						</div>
+						<div class="card-body">
+							<!-- Dropdowns -->
+							<div class="row align-items-center formline"
+								style="margin-bottom: 0px;">
+								<!-- Empty space -->
+								<div class="col-sm-auto"></div>
+
+								<!-- File Type -->
+								<label class="col-sm-1"></label>
+								<div class="col-sm-2">
+								</div>
+								<!-- Report Date -->
+								<label class="col-sm-1">Report Date</label>
+								<div class="col-sm-3">
+									 <input  type="date" id="report_date" name="report_date" onchange="downloadfile()"
+											 class="form-control form-control-sm month-end-date-picker" />
+								</div>
+							         </div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+		<!-- Loader Modal -->
+		<div class="modal fade" id="loader" data-bs-backdrop="static"
+			data-bs-keyboard="false" tabindex="-1">
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content"
+					style="background: transparent; border: none; box-shadow: none;">
+					<div class="modal-body d-flex justify-content-center">
+						<div class="loader"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+        	<!-- Custom Alert/Result Modal (Matches your existing style) -->
+	<div class="modal fade" id="resultModal">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<!-- Your custom styled header -->
+				<div class="menu-title-header">
+					<div class="modal-title" id="resultModalLabel" style="text-align: center; color: white;">
+						<!-- Title will be set by JavaScript -->
+					</div>
+				</div>
+				<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+					<p id="resultModalBody"></p>
+					<!-- Your custom styled button -->
+					<button type="button" class="custom-tab-btn" onclick="closemodel()" data-dismiss="modal">OK</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+</html>

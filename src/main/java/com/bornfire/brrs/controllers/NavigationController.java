@@ -2184,4 +2184,24 @@ public class NavigationController {
 
 		return redirectUrl;
 	}
+
+
+	@RequestMapping(value = "CONSOLIDATED_REPORT", method = { RequestMethod.GET, RequestMethod.POST })
+	public String CONSOLIDATED_REPORT(@RequestParam(required = false) String formmode, @RequestParam(required = false) String tranid,
+			@RequestParam(required = false) Optional<Integer> page,
+			@RequestParam(value = "size", required = false) Optional<Integer> size, Model md, HttpServletRequest req,
+			@RequestParam(value = "date", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+		md.addAttribute("activeMenu", "Reports");
+		md.addAttribute("activePage", "CentralBank");
+		String USERID = (String) req.getSession().getAttribute("USERID");
+		md.addAttribute("USERID", USERID);
+		logger.info("==> Entered CosolidatedReport controller || Formmode: {}", formmode);
+		
+			if (formmode == null || formmode.equals("list")) {
+				md.addAttribute("formmode", "list");
+			}
+
+		return "CosolidatedReport";
+	}
+
 }

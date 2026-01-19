@@ -12,6 +12,9 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.Locale;
+import java.util.Date;
+import java.text.SimpleDateFormat;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
@@ -176,7 +179,7 @@ public class RegulatoryReportServices {
 	@Autowired
 	BRRS_Q_SMME_Intrest_Income_New_ReportService BRRS_Q_SMME_Intrest_Income_New_ReportService;
 
-		@Autowired
+	@Autowired
 	BRRS_Q_SMME_Loans_Advances_New_ReportService BRRS_Q_SMME_Loans_Advances_New_ReportService;
 
 	@Autowired
@@ -187,10 +190,9 @@ public class RegulatoryReportServices {
 
 	@Autowired
 	BRRS_M_SRWA_12A_ReportService brrs_m_srwa_12a_reportservice;
-	
+
 	@Autowired
-	BRRS_M_SRWA_12A_New_ReportService  brrs_M_SRWA_12A_New_reportservice;
-	
+	BRRS_M_SRWA_12A_New_ReportService brrs_M_SRWA_12A_New_reportservice;
 
 	@Autowired
 	BRRS_M_OB_ReportService BRRS_M_OB_ReportService;
@@ -211,8 +213,9 @@ public class RegulatoryReportServices {
 	BRRS_M_OPTR_ReportService BRRS_M_OPTR_ReportService;
 
 	@Autowired
+
 	BRRS_M_INT_RATES_FCA_ReportService BRRS_M_INT_RATES_FCA_ReportService;
-	
+
 	@Autowired
 	BRRS_M_INT_RATES_FCA_NEW_ReportService BRRS_M_INT_RATES_FCA_NEW_ReportService;
 
@@ -395,7 +398,7 @@ public class RegulatoryReportServices {
 	BRRS_AS_11_ReportService BRRS_AS_11_Reportservice;
 
 	@Autowired
-	BRRS_M_OPTR_NEW_ReportService BRRS_M_OPTR_NEW_ReportService;
+	BRRS_M_OPTR_NEW_ReportService BRRS_M_OPTR_NEW_ReportService;<<<<<<
 
 	/*
 	 * @Autowired BRRS_Q_STAFF_Report_Service BRRS_Q_STAFF_report_service;
@@ -719,7 +722,7 @@ public class RegulatoryReportServices {
 						currency, dtltype, pageable, type, version);
 				break;
 
-					case "Q_SMME_LA_NEW":
+			case "Q_SMME_LA_NEW":
 
 				repsummary = BRRS_Q_SMME_Loans_Advances_New_ReportService.getBRRS_Q_SMMEView(reportId, fromdate, todate,
 						currency, dtltype, pageable, type, version);
@@ -744,15 +747,14 @@ public class RegulatoryReportServices {
 						dtltype,
 						pageable, type, version);
 				break;
-				
-				
+
 			case "M_SRWA_12A_New":
 
-						repsummary = brrs_M_SRWA_12A_New_reportservice.getM_SRWA_12ANewView(reportId, fromdate, todate, currency, dtltype,
-								pageable, type, version);
+				repsummary = brrs_M_SRWA_12A_New_reportservice.getM_SRWA_12ANewView(reportId, fromdate, todate,
+						currency, dtltype,
+						pageable, type, version);
 
-						break;
-				
+				break;
 
 			case "M_OB":
 				repsummary = BRRS_M_OB_ReportService.getM_OBview(reportId, fromdate, todate, currency, dtltype,
@@ -1320,7 +1322,7 @@ public class RegulatoryReportServices {
 						currency, dtltype, pageable, Filter, type, version);
 				break;
 
-					case "Q_SMME_LA_NEW":
+			case "Q_SMME_LA_NEW":
 				repdetail = BRRS_Q_SMME_Loans_Advances_New_ReportService.getBRRS_Q_SMMEcurrentDtl(reportId, fromdate,
 						todate,
 						currency, dtltype, pageable, Filter, type, version);
@@ -1334,10 +1336,11 @@ public class RegulatoryReportServices {
 				repdetail = brrs_m_srwa_12a_reportservice.getM_SRWA_12AcurrentDtl(reportId, fromdate, todate, currency,
 						dtltype, pageable, Filter, type, version);
 				break;
-				
+
 			case "M_SRWA_12A_New":
 
-				repdetail = brrs_M_SRWA_12A_New_reportservice.getM_SRWA_12A_NewcurrentDtl(reportId, fromdate, todate, currency,
+				repdetail = brrs_M_SRWA_12A_New_reportservice.getM_SRWA_12A_NewcurrentDtl(reportId, fromdate, todate,
+						currency,
 						dtltype,
 						pageable, Filter, type, version);
 				break;
@@ -1452,18 +1455,19 @@ public class RegulatoryReportServices {
 						pageable,
 						Filter, type, version);
 				break;
-				
-				
+
 			case "M_INT_RATES_FCA":
 
-				repdetail = BRRS_M_INT_RATES_FCA_ReportService.getM_INT_RATES_FCAcurrentDtl(reportId, fromdate, todate, currency, dtltype,
+				repdetail = BRRS_M_INT_RATES_FCA_ReportService.getM_INT_RATES_FCAcurrentDtl(reportId, fromdate, todate,
+						currency, dtltype,
 						pageable,
 						Filter, type, version);
 				break;
-				
+
 			case "M_INT_RATES_FCA_NEW":
 
-				repdetail = BRRS_M_INT_RATES_FCA_NEW_ReportService.getM_INT_RATES_FCA_NEWcurrentDtl(reportId, fromdate, todate, currency, dtltype,
+				repdetail = BRRS_M_INT_RATES_FCA_NEW_ReportService.getM_INT_RATES_FCA_NEWcurrentDtl(reportId, fromdate,
+						todate, currency, dtltype,
 						pageable,
 						Filter, type, version);
 				break;
@@ -1576,10 +1580,11 @@ public class RegulatoryReportServices {
 				repdetail = BRRS_BDISB2_ReportService.getBDISB2currentDtl(reportId, fromdate, todate, currency, dtltype,
 						pageable, Filter, type, version);
 				break;
-				
+
 			case "M_SRWA_12F":
 
-				repdetail = BRRS_M_SRWA_12F_reportservice.getM_SRWA12FcurrentDtl(reportId, fromdate, todate, currency, dtltype,
+				repdetail = BRRS_M_SRWA_12F_reportservice.getM_SRWA12FcurrentDtl(reportId, fromdate, todate, currency,
+						dtltype,
 						pageable, Filter, type, version);
 				break;
 
@@ -1808,7 +1813,10 @@ public class RegulatoryReportServices {
 
 			case "M_INT_RATES_FCA_NEW":
 				try {
-					repfile = BRRS_M_INT_RATES_FCA_NEW_ReportService.getM_INTRATESFCANEWExcel(filename, reportId, fromdate,
+
+					repfile = brrs_m_int_rates_fca_new_reportservice.getM_INTRATESFCACExcel(filename, reportId,
+							fromdate,
+
 							todate,
 							currency, dtltype, type, version);
 				} catch (Exception e) {
@@ -2234,7 +2242,7 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
-				
+
 			case "Q_SMME_LA_NEW":
 				try {
 					repfile = BRRS_Q_SMME_Loans_Advances_New_ReportService.getQ_SMMEExcel(filename, reportId, fromdate,
@@ -2277,7 +2285,7 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
-				
+
 			case "M_SRWA_12A_New":
 				try {
 
@@ -2289,8 +2297,6 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
-				
-				
 
 			case "M_OB":
 				try {
@@ -2970,8 +2976,7 @@ public class RegulatoryReportServices {
 			return BRRS_Q_SMME_Loans_Advances_New_ReportService.BRRS_Q_SMMEDetailExcel(filename, fromdate, todate,
 					currency,
 					dtltype, type, version);
-		} 
-		 else if ("M_LIQ".equals(filename)) {
+		} else if ("M_LIQ".equals(filename)) {
 			return BRRS_M_LIQ_reportservice.getM_LIQDetailExcel(filename, fromdate, todate, currency, dtltype, type,
 					version);
 		} else if ("M_LCRDetail".equals(filename)) {
@@ -3059,7 +3064,7 @@ public class RegulatoryReportServices {
 			return brrs_bdisb1_reportservice.getBDISB1DetailExcel(filename, fromdate, todate, currency,
 					dtltype, type, version);
 		}
-		
+
 		else if ("M_SRWA_12FDetail".equals(filename)) {
 			return BRRS_M_SRWA_12F_reportservice.getM_SRWA_12FDetailExcel(filename, fromdate, todate, currency,
 					dtltype, type, version);
@@ -3074,23 +3079,23 @@ public class RegulatoryReportServices {
 			return BRRS_M_OPTR_NEW_ReportService.getM_OPTR_NEWDetailExcel(filename, fromdate, todate, currency,
 					dtltype, type, version);
 		}
+
 		// else if ("Q_STAFFDetail".equals(filename)) {
 		// return BRRS_Q_STAFF_report_service.getQ_STAFFDetailExcel(filename, fromdate,
 		// todate, currency,
 		// dtltype, type, version);
 		// }
 
-		
 		else if ("M_INTRATESFCADetailExcel".equals(filename)) {
 			return BRRS_M_INT_RATES_FCA_ReportService.getM_INTRATESFCADetailExcel(filename, fromdate, todate, currency,
 					dtltype, type, version);
 		}
-		
+
 		else if ("M_INTRATESFCANEWDetailExcel".equals(filename)) {
-			return BRRS_M_INT_RATES_FCA_NEW_ReportService.getM_INTRATESFCANEWDetailExcel(filename, fromdate, todate, currency,
+			return BRRS_M_INT_RATES_FCA_NEW_ReportService.getM_INTRATESFCANEWDetailExcel(filename, fromdate, todate,
+					currency,
 					dtltype, type, version);
 		}
-		
 
 		else if ("MDISB5Detail".equals(filename)) {
 			return BRRS_MDISB5_ReportService.getMDISB5DetailExcel(filename, fromdate, todate, currency,
@@ -3410,7 +3415,13 @@ public class RegulatoryReportServices {
 				break;
 
 			case "M_INT_RATES_FCA_NEW":
-				List<Object[]> intratesfcanewList = BRRS_M_INT_RATES_FCA_NEW_ReportService.getM_INT_RATES_FCA_NEWArchival();
+
+				List<Object[]> intratesfcanewList = BRRS_M_INT_RATES_FCA_NEW_ReportService
+						.getM_INT_RATES_FCA_NEWArchival();
+
+				List<Object[]> intratesfcanewList = brrs_m_int_rates_fca_new_reportservice
+						.getM_INT_RATES_FCACArchival();
+
 				archivalData.addAll(intratesfcanewList);
 				System.out.println("Fetched M_INT_RATES_FCA archival data: " + intratesfcanewList.size());
 				break;
@@ -3447,7 +3458,7 @@ public class RegulatoryReportServices {
 				}
 				break;
 
-					case "Q_SMME_LA_NEW":
+			case "Q_SMME_LA_NEW":
 				try {
 					archivalData = BRRS_Q_SMME_Loans_Advances_New_ReportService.getQ_SMMEArchival();
 				} catch (Exception e) {
@@ -3483,7 +3494,7 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
-				
+
 			case "M_SRWA_12A_New":
 				try {
 					archivalData = brrs_M_SRWA_12A_New_reportservice.getM_SRWA_12A_NewArchival();
@@ -3492,8 +3503,6 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
-				
-				
 
 			case "M_GALOR":
 				try {
@@ -4242,11 +4251,10 @@ public class RegulatoryReportServices {
 		} else if (filename.equals("Q_SMMEDetail")) {
 			fileData = BRRS_Q_SMME_Intrest_Income_New_ReportService.BRRS_Q_SMMEDetailExcel(filename, fromdate, todate,
 					currency, dtltype, type, version);
-		}else if (filename.equals("Q_SMMEDetail")) {
+		} else if (filename.equals("Q_SMMEDetail")) {
 			fileData = BRRS_Q_SMME_Loans_Advances_New_ReportService.BRRS_Q_SMMEDetailExcel(filename, fromdate, todate,
 					currency, dtltype, type, version);
-		}  
-		else if ("M_FASDetail".equals(filename)) {
+		} else if ("M_FASDetail".equals(filename)) {
 			fileData = BRRS_M_FAS_reportservice.BRRS_M_FASDetailExcel(filename, fromdate, todate, currency, dtltype,
 					type, version);
 		} else if ("M_SRWA_12A".equals(filename)) {
@@ -4255,13 +4263,13 @@ public class RegulatoryReportServices {
 					dtltype, type, version);
 
 		}
-		
+
 		else if ("M_SRWA_12A_New".equals(filename)) {
 
-		fileData = brrs_M_SRWA_12A_New_reportservice.getM_SRWA_12A_NewDetailExcel(filename, fromdate, todate,
-				currency,
-				dtltype, type, version);
-	}
+			fileData = brrs_M_SRWA_12A_New_reportservice.getM_SRWA_12A_NewDetailExcel(filename, fromdate, todate,
+					currency,
+					dtltype, type, version);
+		}
 
 		else if ("M_GMIRT_Detail".equals(filename)) {
 
@@ -4490,20 +4498,19 @@ public class RegulatoryReportServices {
 
 		// else if ("Q_STAFFDetail".equals(filename)) {
 
-		
-		
 		else if ("M_INTRATESFCADetail".equals(filename)) {
 
-			fileData = BRRS_M_INT_RATES_FCA_ReportService.getM_INTRATESFCADetailExcel(filename, fromdate, todate, currency,
+			fileData = BRRS_M_INT_RATES_FCA_ReportService.getM_INTRATESFCADetailExcel(filename, fromdate, todate,
+					currency,
 					dtltype, type, version);
 		}
-		
+
 		else if ("M_INTRATESFCANEWDetail".equals(filename)) {
 
-			fileData = BRRS_M_INT_RATES_FCA_NEW_ReportService.getM_INTRATESFCANEWDetailExcel(filename, fromdate, todate, currency,
+			fileData = BRRS_M_INT_RATES_FCA_NEW_ReportService.getM_INTRATESFCANEWDetailExcel(filename, fromdate, todate,
+					currency,
 					dtltype, type, version);
 		}
-
 
 		// fileData = BRRS_Q_STAFF_report_service.getQ_STAFFDetailExcel(filename,
 		// fromdate, todate, currency,
@@ -4520,7 +4527,7 @@ public class RegulatoryReportServices {
 			fileData = brrs_bdisb1_reportservice.getBDISB1DetailExcel(filename, fromdate, todate, currency,
 					dtltype, type, version);
 		}
-		
+
 		else if ("M_SRWA_12FDetail".equals(filename)) {
 
 			fileData = BRRS_M_SRWA_12F_reportservice.getM_SRWA_12FDetailExcel(filename, fromdate, todate, currency,
@@ -4735,7 +4742,7 @@ public class RegulatoryReportServices {
 					modelAndView = BRRS_Q_SMME_Intrest_Income_New_ReportService
 							.getViewOrEditPage(request.getParameter("acctNo"), request.getParameter("formmode"));
 					break;
-					case "Q_SMME_LA_NEW":
+				case "Q_SMME_LA_NEW":
 					modelAndView = BRRS_Q_SMME_Loans_Advances_New_ReportService
 							.getViewOrEditPage(request.getParameter("acctNo"), request.getParameter("formmode"));
 					break;
@@ -5083,7 +5090,7 @@ public class RegulatoryReportServices {
 				case "Q_SMME_NEW":
 					response = BRRS_Q_SMME_Intrest_Income_New_ReportService.updateDetailEdit(request);
 					break;
-						case "Q_SMME_LA_NEW":
+				case "Q_SMME_LA_NEW":
 					response = BRRS_Q_SMME_Loans_Advances_New_ReportService.updateDetailEdit(request);
 					break;
 				case "ADISB1":
@@ -5648,19 +5655,17 @@ public class RegulatoryReportServices {
 	}
 
 	public byte[] getConsolidatedDownloadFile(String filename, String asondate, String fromdate, String todate,
-			String currency, String type, String version) throws ParseException {
+			String currency, String type, String version, String dtltype) throws ParseException {
 
 		// List of all reports you want to include
-		List<String> reportList = Arrays.asList("M_SFINP1", "M_SFINP2", "M_LA1", "M_LA2", "M_LA3", "M_LA4", "M_LA5",
-				"M_CA1", "M_CA3", "M_CA4", "M_CA5", "M_CA7", "M_SP", "M_PI", "M_MRC", "M_IRB", "M_DEP1", "M_DEP2",
-				"M_DEP3", "M_PLL", "M_UNCONS_INVEST", "M_SRWA_12F", "M_SRWA_12C", "M_SRWA_12H", "M_AIDP", "M_LIQ");
+		List<String> reportList = Arrays.asList("M_LA4", "M_CA4");
 		System.out.println(todate);
 
-		SimpleDateFormat inputFormat = new SimpleDateFormat("dd/MM/yyyy");
+		SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MMM-dd", Locale.ENGLISH);
 		Date date = inputFormat.parse(todate);
 
 		// 2️⃣ Format to required pattern (Date → String)
-		SimpleDateFormat outputFormat = new SimpleDateFormat("dd-MMM-yyyy");
+		SimpleDateFormat outputFormat = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
 		String formattedDate = outputFormat.format(date);
 		// Workbook for consolidated report
 		XSSFWorkbook workbook = new XSSFWorkbook();
@@ -5674,10 +5679,12 @@ public class RegulatoryReportServices {
 
 		for (String report : reportList) {
 			try {
-				byte[] fileData = generateReport(report, filename, asondate, fromdate, formattedDate, currency, type,
+				byte[] fileData = generateReport(report, filename, asondate, fromdate, formattedDate, currency, dtltype,
+						type,
 						version);
+				System.out.println(fileData + "    fileData");
 
-				if (fileData != null && fileData.length > 0) {
+				if (fileData != null) {
 					try (Workbook reportWorkbook = new XSSFWorkbook(new java.io.ByteArrayInputStream(fileData))) {
 						// Copy first sheet from each report into consolidated workbook
 						for (int i = 0; i < reportWorkbook.getNumberOfSheets(); i++) {
@@ -5686,11 +5693,6 @@ public class RegulatoryReportServices {
 							copySheet(srcSheet, newSheet);
 						}
 
-						// Log success
-						Row successRow = errorSheet.createRow(errorRowNum++);
-						successRow.createCell(0).setCellValue(report);
-						successRow.createCell(1).setCellValue("SUCCESS");
-						successRow.createCell(2).setCellValue("Report added successfully");
 					}
 				} else {
 					// Log missing data
@@ -5722,7 +5724,7 @@ public class RegulatoryReportServices {
 	}
 
 	private byte[] generateReport(String reportName, String filename, String asondate, String fromdate, String todate,
-			String currency, String type, String version) {
+			String currency, String dtltype, String type, String version) {
 
 		try {
 			// ✅ Convert date formats if needed (example: 30/09/2025 → 30-Sep-2025)
@@ -5730,13 +5732,16 @@ public class RegulatoryReportServices {
 			SimpleDateFormat outputFormat = new SimpleDateFormat("dd-MMM-yyyy");
 
 			if (fromdate != null && !fromdate.isEmpty()) {
-				fromdate = outputFormat.format(inputFormat.parse(fromdate));
+				Date d = outputFormat.parse(fromdate);
+				fromdate = outputFormat.format(d);
 			}
 			if (todate != null && !todate.isEmpty()) {
-				todate = outputFormat.format(inputFormat.parse(todate));
+				Date d = outputFormat.parse(todate);
+				todate = outputFormat.format(d);
 			}
 			if (asondate != null && !asondate.isEmpty()) {
-				asondate = outputFormat.format(inputFormat.parse(asondate));
+				Date d = outputFormat.parse(asondate);
+				asondate = outputFormat.format(d);
 			}
 
 			System.out.println("Service: Generating report for " + reportName);
@@ -5744,15 +5749,17 @@ public class RegulatoryReportServices {
 
 			// ✅ Switch case for all reports
 			switch (reportName) {
-				case "M_SFINP2":
-					return BRRS_M_SFINP2_reportservice.BRRS_M_SFINP2Excel(filename, reportName, fromdate, todate,
-							currency,
-							"DETAIL", type, version);
+				// case "M_SFINP2":
+				// return BRRS_M_SFINP2_reportservice.BRRS_M_SFINP2Excel("M_SFINP2.xlsx",
+				// reportName, fromdate, todate,
+				// currency,
+				// dtltype, type, version);
 
-				case "M_SFINP1":
-					return BRRS_M_SFINP1_reportservice.getM_SFINP1Excel(filename, reportName, fromdate, todate,
-							currency,
-							"DETAIL", type, version);
+				// case "M_SFINP1":
+				// return BRRS_M_SFINP1_reportservice.getM_SFINP1Excel("M_SFINP1.xlsx",
+				// reportName, fromdate, todate,
+				// currency,
+				// dtltype, type, version);
 
 				case "M_LA1":
 					return BRRS_M_LA1_reportservice.BRRS_M_LA1Excel(filename, reportName, fromdate, todate, currency,
@@ -5763,21 +5770,35 @@ public class RegulatoryReportServices {
 							currency,
 							"DETAIL", type, version);
 
-				case "M_LA2":
-					return BRRS_M_LA2_reportservice.BRRS_M_LA2Excel(filename, reportName, fromdate, todate, currency,
-							"DETAIL", type, version);
+				// case "M_LA1":
+				// return BRRS_M_LA1_reportservice.BRRS_M_LA1Excel("M_LA1.xlsx", reportName,
+				// fromdate, todate, currency,
+				// dtltype, type, version);
 
-				case "M_LA3":
-					return BRRS_M_LA3_reportservice.BRRS_M_LA3Excel(filename, reportName, fromdate, todate, currency,
-							"DETAIL", type, version);
+				// case "M_LA1_NEW":
+				// return BRRS_M_LA1_reportservice_new.BRRS_M_LA1Excel(filename, reportName,
+				// fromdate, todate, currency,
+				// dtltype, type, version);
+
+				// case "M_LA2":
+				// return BRRS_M_LA2_reportservice.BRRS_M_LA2Excel("M_LA2.xlsx", reportName,
+				// fromdate, todate, currency,
+				// dtltype, type, version);
+
+				// case "M_LA3":
+				// return BRRS_M_LA3_reportservice.BRRS_M_LA3Excel("M_LA3.xlsx", reportName,
+				// fromdate, todate, currency,
+				// dtltype, type, version);
 
 				case "M_LA4":
-					return BRRS_M_LA4_reportservice.BRRS_M_LA4Excel(filename, reportName, fromdate, todate, currency,
-							"DETAIL", type, version);
+					return BRRS_M_LA4_reportservice.BRRS_M_LA4Excel("M_LA4.xlsx", reportName, fromdate, todate,
+							currency,
+							dtltype, type, version);
 
 				case "M_CA4":
-					return BRRS_M_CA4_reportservice.getBRRS_M_CA4Excel(filename, reportName, fromdate, todate, currency,
-							"DETAIL", type, version);
+					return BRRS_M_CA4_reportservice.getBRRS_M_CA4Excel("M_CA4.xlsx", reportName, fromdate, todate,
+							currency,
+							dtltype, type, version);
 
 				// 🟩 Add more report cases as needed...
 				// case "M_SOMETHING":
@@ -5909,7 +5930,7 @@ public class RegulatoryReportServices {
 	}
 
 	public byte[] generateConsolidatedExcel(String asondate, String fromdate, String todate, String currency,
-			String type, String version) {
+			String type, String version, String dtltype) {
 		logger.info("Starting consolidated Excel generation for all 70 reports.");
 
 		// Create final workbook
@@ -5917,17 +5938,16 @@ public class RegulatoryReportServices {
 				ByteArrayOutputStream out = new ByteArrayOutputStream()) {
 
 			// List of all report names (update with all 70)
-			List<String> reportNames = Arrays.asList("M_LA1", "M_LA2", "M_LA3", "M_LA4", "M_CA4", "M_PLL", "M_DEP3",
-					"M_AIDP", "M_IRB", "M_LIQ"
-			// ... add all remaining report codes
-			);
+			List<String> reportNames = Arrays.asList("M_LA4", "M_CA4");
 
 			for (String reportName : reportNames) {
 				logger.info("Processing report: {}", reportName);
 
 				// Generate individual report byte[]
-				byte[] reportBytes = generateReport(reportName, reportName, asondate, fromdate, todate, currency, type,
+				byte[] reportBytes = generateReport(reportName, reportName, asondate, fromdate, todate, currency,
+						dtltype, type,
 						version);
+				System.out.println(reportBytes + "  reportBytestesting");
 
 				if (reportBytes == null || reportBytes.length == 0) {
 					logger.warn("Skipping {} — no data found or generation failed.", reportName);

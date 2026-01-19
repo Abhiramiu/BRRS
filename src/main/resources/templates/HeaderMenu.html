@@ -1654,23 +1654,8 @@ th:if="${session.DOMAINID != null and #strings.containsIgnoreCase(session.DOMAIN
 
 
 							</li>-->
-							<li class="nav-item dropdown" style=" text-align: center;"
-								th:if="${session.DOMAINID != null and #strings.containsIgnoreCase(session.DOMAINID, 'AUDIT_US')}">
-
-								<a href="#" class="dropdown-toggle">Consolidated Download</a>
-								<ul class="dropdown-menu">
-
-									<li>
-										<a href="#" class="nav-link" id="Consolidated_Excel"
-											onclick="contentLoadExcel(this)">Excel</a>
-									</li>
-									<li>
-										<a href="#" class="nav-link" id="Consolidated_Pdf"
-											onclick="contentLoad(this)">Pdf</a>
-									</li>
-								</ul>
-							</li>
-
+                           <a href="#" class="dropdown-toggle" id="CONSOLIDATED_REPORT" onclick="contentLoad(this)">Consolidated Excel
+									Upload</a>
 
 							<!-- <li class="nav-item dropdown" style=" text-align: center;">
 							<a href="#" class="dropdown-toggle">BRRS Reports</a>
