@@ -673,7 +673,7 @@ function cancelModify() {
 			}
 		}
 
-		function fileuploads(btn) {
+		function fileuploads_all(btn) {
 		    var asondate = btn.getAttribute("data-todate");
 		    const type = btn.getAttribute("data-type"); // MAIN / RESUB / ARCHIVAL
 		    
@@ -699,18 +699,11 @@ function cancelModify() {
 		        return;
 		    }
 
-		    // ✅ One combined FormData for all entities
-		    const formData = new FormData();
-		    formData.append("asondate", asondate);
-		    formData.append("type", type);
 
-		  
-		 // Append only named inputs
-		    $('#fileupload').find(':input[name]').each(function () {
-		        formData.append(this.name, this.value);
-		    });
-		    console.log("✅ Entity executed successfully");    
-
+			const formData =
+				        $('#fileupload').serialize()
+				        + '&asondate=' + encodeURIComponent(asondate)
+				        + '&type=' + encodeURIComponent(type);
 
 		    
 			//Select API endpoint dynamically
@@ -724,8 +717,6 @@ function cancelModify() {
 			        url: apiUrl,
 			        type: 'POST',
 			        data: formData,
-			        processData: false,
-			        contentType: false,
 			        dataType: 'text',
 			        success: function (response) {
 			            $("#resultModalLabel").text("BRRS");
@@ -1064,7 +1055,7 @@ function cancelModify() {
         <div style="text-align: center; margin-top: 10px;">
 
          <button id="submitButton" type="button" class="custom-tab-btn Show_input" form="fileupload"
-          th:attr="data-todate=${asondate}, data-type=${type}" onclick="fileuploads(this);" style="display: none;">
+          th:attr="data-todate=${asondate}, data-type=${type}" onclick="fileuploads_all(this);" style="display: none;">
           Submit</button>
         </div>
        </form>
