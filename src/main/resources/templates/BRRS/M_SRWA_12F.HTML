@@ -697,7 +697,7 @@ function cancelModify() {
 
 	</script>
 	
-		<script>
+	<script>
 		
 		// This function is for closing the modal after an action is complete.
 		// It hides the result and loader modals and reloads the page.
@@ -854,6 +854,7 @@ function cancelModify() {
 
 	</script>
 	
+	
 
 	<script>
 
@@ -879,21 +880,17 @@ function cancelModify() {
 			}
 		}
 
-		function fileuploads(btn) {
+		function fileupload_all(btn) {
+
 		    var asondate = btn.getAttribute("data-todate");
 		    const type = btn.getAttribute("data-type"); // MAIN / RESUB / ARCHIVAL
-		    
-		    // ✅ Mark RESUB once
+
+		    // Mark RESUB once
 		    isResubmissionUpdate = (type && type.toUpperCase() === 'RESUB');
-		    
+
 		    $('#loader').modal('show');
 
-		    // Pre-calculations
-		    // Pre-calculations
-		    calculateAll_RISK_WEIGHTED_AMT();
-	        calculateR37_EXPOSURE_AMT();
-	        calculateR37_RISK_WEIGHTED_AMT();
-		    
+		    // ✅ OLD PRE-CALC LOGIC (LIKE BEFORE)
 		    console.log("✅ Calculations executed successfully");
 
 		    // Remove commas from numeric inputs
@@ -904,117 +901,107 @@ function cancelModify() {
 		        }
 		    });
 
+		    // Form validation
 		    if (!$("#fileupload").valid()) {
 		        $('#loader').modal('hide');
 		        return;
 		    }
 
-		    // ✅ One combined FormData for all entities
+		    // ✅ NEW STYLE (FormData) BUT OLD BEHAVIOR
 		    const formData = new FormData();
 		    formData.append("asondate", asondate);
 		    formData.append("type", type);
 
-		  
-		 // Append only named inputs
+		    // Append each input ONCE (no duplication)
 		    $('#fileupload').find(':input[name]').each(function () {
 		        formData.append(this.name, this.value);
+		    });
 
-		/*         let originalName = this.name;  
-		        let value = this.value;
+		    console.log("✅ FormData prepared");
 
-		        // Convert: R6_C2_COMPANY_NAME → R6_COMPANY_NAME
-		        let fixedName = originalName.replace(/_C\d+_/, '_');
-		        console.log(originalName, "→", fixedName);
-		        formData.append(fixedName, value); */
-		        for (let i = 11; i <= 37; i++) {
-		            ["NAME_OF_CORPORATE", "CREDIT_RATING", "RATING_AGENCY", "EXPOSURE_AMT",
-						"RISK_WEIGHT", "RISK_WEIGHTED_AMT"].forEach(field => {
-		                const input = $("#R" + i + "_" + field);
-		                if (input.length) {
-		                    formData.append(input.attr("name"), input.val());
-		                }
-		            });
+		    // Select API dynamically (OLD LOGIC)
+		    let apiUrl = './SRWA12FupdateAll';
+		    if (type && type.toUpperCase() === 'RESUB') {
+		        apiUrl = './UpdateM_SRWA_12F_ReSub';
+		    }
+
+		    // ✅ AJAX CALL (NEW STYLE)
+		    $.ajax({
+		        url: apiUrl,
+		        type: 'POST',
+		        data: formData,
+		        processData: false,
+		        contentType: false,
+		        dataType: 'text',
+
+		        success: function (response) {
+		            $("#resultModalLabel").text("BRRS");
+		            $("#resultModalBody").text(response);
+		            $("#resultModal").modal("show");
+
+		            // Redirect after modal close (OLD LOGIC)
+		            $("#resultModal")
+		                .off("hidden.bs.modal")
+		                .on("hidden.bs.modal", function () {
+		                    if (isResubmissionUpdate) {
+		                        window.location.href = previousUrl
+		                            ? previousUrl
+		                            : "/BRRS/Resubmission?rptcode=M_SRWA_12F";
+		                    }
+		                });
+		        },
+
+		        error: function (jqXHR) {
+		            console.log("Error response:", jqXHR.responseText);
+		            $("#resultModalLabel").text("Error");
+		            $("#resultModalBody").text("Update failed. Check console.");
+		            $("#resultModal").modal("show");
+		        },
+
+		        complete: function () {
+		            $('#loader').modal('hide');
 		        }
 		    });
-		    console.log("✅ Entity executed successfully");    
-
-
-		    
-			//Select API endpoint dynamically
-			let apiUrl = './SRWA12FupdateAll'; // normal update
-			if (type && type.toUpperCase() === 'RESUB') {
-				apiUrl = './UpdateM_SRWA_12F_ReSub'; // Resubmission endpoint
-			}
-
-		    // ✅ Single AJAX call with type info
-		 	    $.ajax({
-			        url: apiUrl,
-			        type: 'POST',
-			        data: formData,
-			        processData: false,
-			        contentType: false,
-			        dataType: 'text',
-			        success: function (response) {
-			            $("#resultModalLabel").text("BRRS");
-			            $("#resultModalBody").text(response);
-			            $("#resultModal").modal("show");
-
-					    //  Wait for user to close the modal manually
-					     $("#resultModal").off("hidden.bs.modal").on("hidden.bs.modal", function () {
-					    	 if (isResubmissionUpdate) {
-					    		 window.location.href = previousUrl
-					    		 ? previousUrl 
-					    				 : "/BRRS/Resubmission?rptcode=MDISB5";
-					    	 } // reload ONLY when modal is closed
-					    });
-					},
-			        error: function (jqXHR) {
-			            console.log("Error response:", jqXHR.responseText);
-			            $("#resultModalLabel").text("Error");
-			            $("#resultModalBody").text("Update failed. Check console for details.");
-			            $("#resultModal").modal("show");
-			        },
-			        complete: function () {
-			            $('#loader').modal('hide');
-			        }
-			    });
 
 		    console.log("✅ AJAX executed successfully");
-		}    
+		}
+
 		</script>
 
-		<script th:inline="javascript">
-		$(document).ready(function () {
-		var table = $('#reportdetails').DataTable({
-			scrollY: "500px",
-		  scrollX: true,
-		  scrollCollapse: true,
-		  autoWidth: false,
-		  paging: true,
-		  searching: true,
-		  lengthChange: false,
-		  ordering: true,
-		  pageLength: 100,
-		  fixedHeader: true, // ✅ You can simply set it to true
-		// ✅ Column width settings
-		columnDefs: [
-		  { width: "100px", targets: 1 }  ,  // Cust ID column
-		],
+		 <script th:inline="javascript">
+		      $(document).ready(function () {
+		        var table = $('#reportdetails').DataTable({
+		          scrollY: "550px",
+		          scrollX: true,
+		          scrollCollapse: true,
+		          autoWidth: false,
+		          paging: true,
+		          searching: true,
+		          lengthChange: false,
+		          ordering: true,
+		          pageLength: 100,
+		          fixedHeader: true, // ✅ You can simply set it to true
+		       // ✅ Column width settings
+		        columnDefs: [
+		          { width: "100px", targets: 1 }  ,  // Cust ID column
+		       ],
 
-		  dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t'
-		});
+		          dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t'
+		        });
 
-		// ✅ Fix alignment on resize / zoom
-		$(window).on('resize', function () {
-		  table.columns.adjust().draw(false);
-		});
+		        // ✅ Fix alignment on resize / zoom
+		        $(window).on('resize', function () {
+		          table.columns.adjust().draw(false);
+		        });
 
-		// ✅ Fix initial misalignment if loaded at non-100% zoom
-		setTimeout(function () {
-		  table.columns.adjust().draw(false);
-		}, 500);
-		});
-		</script>
+		        // ✅ Fix initial misalignment if loaded at non-100% zoom
+		        setTimeout(function () {
+		          table.columns.adjust().draw(false);
+		        }, 500);
+		      });
+		    </script>
+
+
 
 
 </head>
@@ -1155,7 +1142,7 @@ function cancelModify() {
                th:value="${#strings.defaultString(report.R11_CREDIT_RATING, 'N/A')}"
                id="R11_CREDIT_RATING"
                name="R11_C2_CREDIT_RATING"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               style="background-color:#FFFFFF;width:90%;height: 28px; border-color: transparent; text-align: left;"
                readonly />
     </td>
 
@@ -1164,7 +1151,7 @@ function cancelModify() {
                th:value="${#strings.defaultString(report.R11_RATING_AGENCY, 'N/A')}"
                id="R11_RATING_AGENCY"
                name="R11_C3_RATING_AGENCY"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align: left;"
                readonly />
     </td>
 
@@ -1173,7 +1160,7 @@ function cancelModify() {
                th:value="${report.R11_EXPOSURE_AMT != null ? #numbers.formatDecimal(report.R11_EXPOSURE_AMT, 1,'COMMA', 0, 'POINT') : '0'}"
                id="R11_EXPOSURE_AMT"
                name="R11_C4_EXPOSURE_AMT"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               style="background-color:#FFFFFF; width:90%;height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
 
@@ -1182,7 +1169,7 @@ function cancelModify() {
                th:value="${report.R11_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R11_RISK_WEIGHT, 1,'COMMA', 0, 'POINT') : '0'}"
                id="R11_RISK_WEIGHT"
                name="R11_C5_RISK_WEIGHT"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
 
@@ -1192,7 +1179,7 @@ function cancelModify() {
                th:value="${report.R11_RISK_WEIGHTED_AMT != null ? #numbers.formatDecimal(report.R11_RISK_WEIGHTED_AMT, 1,'COMMA', 0, 'POINT') : '0'}"
                id="R11_RISK_WEIGHTED_AMT"
                name="R11_C6_RISK_WEIGHTED_AMT"
-               style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;"
+               style="background-color: rgb(107, 122, 143); color: white; width:90%;height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
 </tr>
@@ -1212,7 +1199,7 @@ function cancelModify() {
                th:value="${#strings.defaultString(report.R12_CREDIT_RATING, 'N/A')}"
                id="R12_CREDIT_RATING"
                name="R12_C2_CREDIT_RATING"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align: left;"
                readonly />
     </td>
 
@@ -1221,7 +1208,7 @@ function cancelModify() {
                th:value="${#strings.defaultString(report.R12_RATING_AGENCY, 'N/A')}"
                id="R12_RATING_AGENCY"
                name="R12_C3_RATING_AGENCY"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align: left;"
                readonly />
     </td>
 
@@ -1230,7 +1217,7 @@ function cancelModify() {
                th:value="${report.R12_EXPOSURE_AMT != null ? #numbers.formatDecimal(report.R12_EXPOSURE_AMT, 1,'COMMA', 0, 'POINT') : '0'}"
                id="R12_EXPOSURE_AMT"
                name="R12_C4_EXPOSURE_AMT"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
 
@@ -1239,7 +1226,7 @@ function cancelModify() {
                th:value="${report.R12_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R12_RISK_WEIGHT, 1,'COMMA', 0, 'POINT') : '0'}"
                id="R12_RISK_WEIGHT"
                name="R12_C5_RISK_WEIGHT"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
 
@@ -1249,7 +1236,7 @@ function cancelModify() {
                th:value="${report.R12_RISK_WEIGHTED_AMT != null ? #numbers.formatDecimal(report.R12_RISK_WEIGHTED_AMT, 1,'COMMA', 0, 'POINT') : '0'}"
                id="R12_RISK_WEIGHTED_AMT"
                name="R12_C6_RISK_WEIGHTED_AMT"
-               style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;"
+               style="background-color: rgb(107, 122, 143); color: white;width:90%; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
 </tr>
@@ -1269,7 +1256,7 @@ function cancelModify() {
                th:value="${#strings.defaultString(report.R13_CREDIT_RATING, 'N/A')}"
                id="R13_CREDIT_RATING"
                name="R13_C2_CREDIT_RATING"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align:left;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align:left;"
                readonly />
     </td>
 
@@ -1278,7 +1265,7 @@ function cancelModify() {
                th:value="${#strings.defaultString(report.R13_RATING_AGENCY, 'N/A')}"
                id="R13_RATING_AGENCY"
                name="R13_C3_RATING_AGENCY"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align: left;"
                readonly />
     </td>
 
@@ -1287,7 +1274,7 @@ function cancelModify() {
                th:value="${report.R13_EXPOSURE_AMT != null ? #numbers.formatDecimal(report.R13_EXPOSURE_AMT, 1,'COMMA', 0, 'POINT') : '0'}"
                id="R13_EXPOSURE_AMT"
                name="R13_C4_EXPOSURE_AMT"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
 
@@ -1296,7 +1283,7 @@ function cancelModify() {
                th:value="${report.R13_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R13_RISK_WEIGHT, 1,'COMMA', 0, 'POINT') : '0'}"
                id="R13_RISK_WEIGHT"
                name="R13_C5_RISK_WEIGHT"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
 
@@ -1306,7 +1293,7 @@ function cancelModify() {
                th:value="${report.R13_RISK_WEIGHTED_AMT != null ? #numbers.formatDecimal(report.R13_RISK_WEIGHTED_AMT, 1,'COMMA', 0, 'POINT') : '0'}"
                id="R13_RISK_WEIGHTED_AMT"
                name="R13_C6_RISK_WEIGHTED_AMT"
-               style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;"
+               style="background-color: rgb(107, 122, 143); color: white; width:90%; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
 </tr>
@@ -1326,7 +1313,7 @@ function cancelModify() {
                th:value="${#strings.defaultString(report.R14_CREDIT_RATING, 'N/A')}"
                id="R14_CREDIT_RATING"
                name="R14_C2_CREDIT_RATING"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align:left;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align:left;"
                readonly />
     </td>
 
@@ -1335,7 +1322,7 @@ function cancelModify() {
                th:value="${#strings.defaultString(report.R14_RATING_AGENCY, 'N/A')}"
                id="R14_RATING_AGENCY"
                name="R14_C3_RATING_AGENCY"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align: left;"
                readonly />
     </td>
 
@@ -1344,7 +1331,7 @@ function cancelModify() {
                th:value="${report.R14_EXPOSURE_AMT != null ? #numbers.formatDecimal(report.R14_EXPOSURE_AMT, 1,'COMMA', 0, 'POINT') : '0'}"
                id="R14_EXPOSURE_AMT"
                name="R14_C4_EXPOSURE_AMT"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
 
@@ -1353,7 +1340,7 @@ function cancelModify() {
                th:value="${report.R14_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R14_RISK_WEIGHT, 1,'COMMA', 0, 'POINT') : '0'}"
                id="R14_RISK_WEIGHT"
                name="R14_C5_RISK_WEIGHT"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
 
@@ -1363,7 +1350,7 @@ function cancelModify() {
                th:value="${report.R14_RISK_WEIGHTED_AMT != null ? #numbers.formatDecimal(report.R14_RISK_WEIGHTED_AMT, 1,'COMMA', 0, 'POINT') : '0'}"
                id="R14_RISK_WEIGHTED_AMT"
                name="R14_C6_RISK_WEIGHTED_AMT"
-               style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;"
+               style="background-color: rgb(107, 122, 143); color: white;width:90%; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
 </tr>
@@ -1383,7 +1370,7 @@ function cancelModify() {
                th:value="${#strings.defaultString(report.R15_CREDIT_RATING, 'N/A')}"
                id="R15_CREDIT_RATING"
                name="R15_C2_CREDIT_RATING"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align:left;"
+               style="background-color:#FFFFFF; width:90%; height: 28px; border-color: transparent; text-align:left;"
                readonly />
     </td>
 
@@ -1392,7 +1379,7 @@ function cancelModify() {
                th:value="${#strings.defaultString(report.R15_RATING_AGENCY, 'N/A')}"
                id="R15_RATING_AGENCY"
                name="R15_C3_RATING_AGENCY"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align: left;"
                readonly />
     </td>
 
@@ -1401,7 +1388,7 @@ function cancelModify() {
                th:value="${report.R15_EXPOSURE_AMT != null ? #numbers.formatDecimal(report.R15_EXPOSURE_AMT, 1,'COMMA', 0, 'POINT') : '0'}"
                id="R15_EXPOSURE_AMT"
                name="R15_C4_EXPOSURE_AMT"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
 
@@ -1410,7 +1397,7 @@ function cancelModify() {
                th:value="${report.R15_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R15_RISK_WEIGHT, 1,'COMMA', 0, 'POINT') : '0'}"
                id="R15_RISK_WEIGHT"
                name="R15_C5_RISK_WEIGHT"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
 
@@ -1440,7 +1427,7 @@ function cancelModify() {
                th:value="${#strings.defaultString(report.R16_CREDIT_RATING, 'N/A')}"
                id="R16_CREDIT_RATING"
                name="R16_C2_CREDIT_RATING"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align:left;"
+               style="background-color:#FFFFFF; width:90%; height: 28px; border-color: transparent; text-align:left;"
                readonly />
     </td>
 
@@ -1449,7 +1436,7 @@ function cancelModify() {
                th:value="${#strings.defaultString(report.R16_RATING_AGENCY, 'N/A')}"
                id="R16_RATING_AGENCY"
                name="R16_C3_RATING_AGENCY"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               style="background-color:#FFFFFF; width:90%; height: 28px; border-color: transparent; text-align: left;"
                readonly />
     </td>
 
@@ -1458,7 +1445,7 @@ function cancelModify() {
                th:value="${report.R16_EXPOSURE_AMT != null ? #numbers.formatDecimal(report.R16_EXPOSURE_AMT, 1,'COMMA', 0, 'POINT') : '0'}"
                id="R16_EXPOSURE_AMT"
                name="R16_C4_EXPOSURE_AMT"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
 
@@ -1467,7 +1454,7 @@ function cancelModify() {
                th:value="${report.R16_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R16_RISK_WEIGHT, 1,'COMMA', 0, 'POINT') : '0'}"
                id="R16_RISK_WEIGHT"
                name="R16_C5_RISK_WEIGHT"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               style="background-color:#FFFFFF; width:90%; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
 
@@ -1497,7 +1484,7 @@ function cancelModify() {
                th:value="${#strings.defaultString(report.R17_CREDIT_RATING, 'N/A')}"
                id="R17_CREDIT_RATING"
                name="R17_C2_CREDIT_RATING"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align:left;"
+               style="background-color:#FFFFFF; width:90%; height: 28px; border-color: transparent; text-align:left;"
                readonly />
     </td>
 
@@ -1506,7 +1493,7 @@ function cancelModify() {
                th:value="${#strings.defaultString(report.R17_RATING_AGENCY, 'N/A')}"
                id="R17_RATING_AGENCY"
                name="R17_C3_RATING_AGENCY"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align: left;"
                readonly />
     </td>
 
@@ -1515,7 +1502,7 @@ function cancelModify() {
                th:value="${report.R17_EXPOSURE_AMT != null ? #numbers.formatDecimal(report.R17_EXPOSURE_AMT, 1,'COMMA', 0, 'POINT') : '0'}"
                id="R17_EXPOSURE_AMT"
                name="R17_C4_EXPOSURE_AMT"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               style="background-color:#FFFFFF; width:90%; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
 
@@ -1524,7 +1511,7 @@ function cancelModify() {
                th:value="${report.R17_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R17_RISK_WEIGHT, 1,'COMMA', 0, 'POINT') : '0'}"
                id="R17_RISK_WEIGHT"
                name="R17_C5_RISK_WEIGHT"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               style="background-color:#FFFFFF; width:90%; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
 
@@ -1554,7 +1541,7 @@ function cancelModify() {
                th:value="${#strings.defaultString(report.R18_CREDIT_RATING, 'N/A')}"
                id="R18_CREDIT_RATING"
                name="R18_C2_CREDIT_RATING"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align:left;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align:left;"
                readonly />
     </td>
 
@@ -1563,7 +1550,7 @@ function cancelModify() {
                th:value="${#strings.defaultString(report.R18_RATING_AGENCY, 'N/A')}"
                id="R18_RATING_AGENCY"
                name="R18_C3_RATING_AGENCY"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align: left;"
                readonly />
     </td>
 
@@ -1572,7 +1559,7 @@ function cancelModify() {
                th:value="${report.R18_EXPOSURE_AMT != null ? #numbers.formatDecimal(report.R18_EXPOSURE_AMT, 1,'COMMA', 0, 'POINT') : '0'}"
                id="R18_EXPOSURE_AMT"
                name="R18_C4_EXPOSURE_AMT"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
 
@@ -1581,7 +1568,7 @@ function cancelModify() {
                th:value="${report.R18_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R18_RISK_WEIGHT, 1,'COMMA', 0, 'POINT') : '0'}"
                id="R18_RISK_WEIGHT"
                name="R18_C5_RISK_WEIGHT"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
 
@@ -1611,7 +1598,7 @@ function cancelModify() {
                th:value="${#strings.defaultString(report.R19_CREDIT_RATING, 'N/A')}"
                id="R19_CREDIT_RATING"
                name="R19_C2_CREDIT_RATING"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align:left;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align:left;"
                readonly />
     </td>
 
@@ -1620,7 +1607,7 @@ function cancelModify() {
                th:value="${#strings.defaultString(report.R19_RATING_AGENCY, 'N/A')}"
                id="R19_RATING_AGENCY"
                name="R19_C3_RATING_AGENCY"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align: left;"
                readonly />
     </td>
 
@@ -1629,7 +1616,7 @@ function cancelModify() {
                th:value="${report.R19_EXPOSURE_AMT != null ? #numbers.formatDecimal(report.R19_EXPOSURE_AMT, 1,'COMMA', 0, 'POINT') : '0'}"
                id="R19_EXPOSURE_AMT"
                name="R19_C4_EXPOSURE_AMT"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               style="background-color:#FFFFFF; width:90%; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
 
@@ -1638,7 +1625,7 @@ function cancelModify() {
                th:value="${report.R19_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R19_RISK_WEIGHT, 1,'COMMA', 0, 'POINT') : '0'}"
                id="R19_RISK_WEIGHT"
                name="R19_C5_RISK_WEIGHT"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               style="background-color:#FFFFFF; width:90%; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
 
@@ -1668,7 +1655,7 @@ function cancelModify() {
                th:value="${#strings.defaultString(report.R20_CREDIT_RATING, 'N/A')}"
                id="R20_CREDIT_RATING"
                name="R20_C2_CREDIT_RATING"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align:left;"
+               style="background-color:#FFFFFF; width:90%; height: 28px; border-color: transparent; text-align:left;"
                readonly />
     </td>
 
@@ -1677,7 +1664,7 @@ function cancelModify() {
                th:value="${#strings.defaultString(report.R20_RATING_AGENCY, 'N/A')}"
                id="R20_RATING_AGENCY"
                name="R20_C3_RATING_AGENCY"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align: left;"
                readonly />
     </td>
 
@@ -1686,7 +1673,7 @@ function cancelModify() {
                th:value="${report.R20_EXPOSURE_AMT != null ? #numbers.formatDecimal(report.R20_EXPOSURE_AMT, 1,'COMMA', 0, 'POINT') : '0'}"
                id="R20_EXPOSURE_AMT"
                name="R20_C4_EXPOSURE_AMT"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
 
@@ -1695,7 +1682,7 @@ function cancelModify() {
                th:value="${report.R20_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R20_RISK_WEIGHT, 1,'COMMA', 0, 'POINT') : '0'}"
                id="R20_RISK_WEIGHT"
                name="R20_C5_RISK_WEIGHT"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
 
@@ -1725,7 +1712,7 @@ function cancelModify() {
                th:value="${#strings.defaultString(report.R21_CREDIT_RATING, 'N/A')}"
                id="R21_CREDIT_RATING"
                name="R21_C2_CREDIT_RATING"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align:left;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align:left;"
                readonly />
     </td>
 
@@ -1734,7 +1721,7 @@ function cancelModify() {
                th:value="${#strings.defaultString(report.R21_RATING_AGENCY, 'N/A')}"
                id="R21_RATING_AGENCY"
                name="R21_C3_RATING_AGENCY"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align: left;"
                readonly />
     </td>
 
@@ -1743,7 +1730,7 @@ function cancelModify() {
                th:value="${report.R21_EXPOSURE_AMT != null ? #numbers.formatDecimal(report.R21_EXPOSURE_AMT, 1,'COMMA', 0, 'POINT') : '0'}"
                id="R21_EXPOSURE_AMT"
                name="R21_C4_EXPOSURE_AMT"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
 
@@ -1752,7 +1739,7 @@ function cancelModify() {
                th:value="${report.R21_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R21_RISK_WEIGHT, 1,'COMMA', 0, 'POINT') : '0'}"
                id="R21_RISK_WEIGHT"
                name="R21_C5_RISK_WEIGHT"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
 
@@ -1782,7 +1769,7 @@ function cancelModify() {
                th:value="${#strings.defaultString(report.R22_CREDIT_RATING, 'N/A')}"
                id="R22_CREDIT_RATING"
                name="R22_C2_CREDIT_RATING"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align:left;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align:left;"
                readonly />
     </td>
 
@@ -1791,7 +1778,7 @@ function cancelModify() {
                th:value="${#strings.defaultString(report.R22_RATING_AGENCY, 'N/A')}"
                id="R22_RATING_AGENCY"
                name="R22_C3_RATING_AGENCY"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               style="background-color:#FFFFFF; width:90%; height: 28px; border-color: transparent; text-align: left;"
                readonly />
     </td>
 
@@ -1800,7 +1787,7 @@ function cancelModify() {
                th:value="${report.R22_EXPOSURE_AMT != null ? #numbers.formatDecimal(report.R22_EXPOSURE_AMT, 1,'COMMA', 0, 'POINT') : '0'}"
                id="R22_EXPOSURE_AMT"
                name="R22_C4_EXPOSURE_AMT"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               style="background-color:#FFFFFF; width:90%; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
 
@@ -1809,7 +1796,7 @@ function cancelModify() {
                th:value="${report.R22_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R22_RISK_WEIGHT, 1,'COMMA', 0, 'POINT') : '0'}"
                id="R22_RISK_WEIGHT"
                name="R22_C5_RISK_WEIGHT"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               style="background-color:#FFFFFF; width:90%; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
 
@@ -1839,7 +1826,7 @@ function cancelModify() {
                th:value="${#strings.defaultString(report.R23_CREDIT_RATING, 'N/A')}"
                id="R23_CREDIT_RATING"
                name="R23_C2_CREDIT_RATING"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align:left;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align:left;"
                readonly />
     </td>
 
@@ -1848,7 +1835,7 @@ function cancelModify() {
                th:value="${#strings.defaultString(report.R23_RATING_AGENCY, 'N/A')}"
                id="R23_RATING_AGENCY"
                name="R23_C3_RATING_AGENCY"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align: left;"
                readonly />
     </td>
 
@@ -1857,7 +1844,7 @@ function cancelModify() {
                th:value="${report.R23_EXPOSURE_AMT != null ? #numbers.formatDecimal(report.R23_EXPOSURE_AMT, 1,'COMMA', 0, 'POINT') : '0'}"
                id="R23_EXPOSURE_AMT"
                name="R23_C4_EXPOSURE_AMT"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               style="background-color:#FFFFFF; width:90%; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
 
@@ -1866,7 +1853,7 @@ function cancelModify() {
                th:value="${report.R23_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R23_RISK_WEIGHT, 1,'COMMA', 0, 'POINT') : '0'}"
                id="R23_RISK_WEIGHT"
                name="R23_C5_RISK_WEIGHT"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
 
@@ -1896,7 +1883,7 @@ function cancelModify() {
                th:value="${#strings.defaultString(report.R24_CREDIT_RATING, 'N/A')}"
                id="R24_CREDIT_RATING"
                name="R24_C2_CREDIT_RATING"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align:left;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align:left;"
                readonly />
     </td>
 
@@ -1905,7 +1892,7 @@ function cancelModify() {
                th:value="${#strings.defaultString(report.R24_RATING_AGENCY, 'N/A')}"
                id="R24_RATING_AGENCY"
                name="R24_C3_RATING_AGENCY"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align: left;"
                readonly />
     </td>
 
@@ -1914,7 +1901,7 @@ function cancelModify() {
                th:value="${report.R24_EXPOSURE_AMT != null ? #numbers.formatDecimal(report.R24_EXPOSURE_AMT, 1,'COMMA', 0, 'POINT') : '0'}"
                id="R24_EXPOSURE_AMT"
                name="R24_C4_EXPOSURE_AMT"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
 
@@ -1923,7 +1910,7 @@ function cancelModify() {
                th:value="${report.R24_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R24_RISK_WEIGHT, 1,'COMMA', 0, 'POINT') : '0'}"
                id="R24_RISK_WEIGHT"
                name="R24_C5_RISK_WEIGHT"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
 
@@ -1953,7 +1940,7 @@ function cancelModify() {
                th:value="${#strings.defaultString(report.R25_CREDIT_RATING, 'N/A')}"
                id="R25_CREDIT_RATING"
                name="R25_C2_CREDIT_RATING"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align:left;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align:left;"
                readonly />
     </td>
 
@@ -1962,7 +1949,7 @@ function cancelModify() {
                th:value="${#strings.defaultString(report.R25_RATING_AGENCY, 'N/A')}"
                id="R25_RATING_AGENCY"
                name="R25_C3_RATING_AGENCY"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align: left;"
                readonly />
     </td>
 
@@ -1971,7 +1958,7 @@ function cancelModify() {
                th:value="${report.R25_EXPOSURE_AMT != null ? #numbers.formatDecimal(report.R25_EXPOSURE_AMT, 1,'COMMA', 0, 'POINT') : '0'}"
                id="R25_EXPOSURE_AMT"
                name="R25_C4_EXPOSURE_AMT"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
 
@@ -1980,7 +1967,7 @@ function cancelModify() {
                th:value="${report.R25_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R25_RISK_WEIGHT, 1,'COMMA', 0, 'POINT') : '0'}"
                id="R25_RISK_WEIGHT"
                name="R25_C5_RISK_WEIGHT"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               style="background-color:#FFFFFF; width:90%; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
 
@@ -2010,7 +1997,7 @@ function cancelModify() {
                th:value="${#strings.defaultString(report.R26_CREDIT_RATING, 'N/A')}"
                id="R26_CREDIT_RATING"
                name="R26_C2_CREDIT_RATING"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align:left;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align:left;"
                readonly />
     </td>
 
@@ -2019,7 +2006,7 @@ function cancelModify() {
                th:value="${#strings.defaultString(report.R26_RATING_AGENCY, 'N/A')}"
                id="R26_RATING_AGENCY"
                name="R26_C3_RATING_AGENCY"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align: left;"
                readonly />
     </td>
 
@@ -2028,7 +2015,7 @@ function cancelModify() {
                th:value="${report.R26_EXPOSURE_AMT != null ? #numbers.formatDecimal(report.R26_EXPOSURE_AMT, 1,'COMMA', 0, 'POINT') : '0'}"
                id="R26_EXPOSURE_AMT"
                name="R26_C4_EXPOSURE_AMT"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
 
@@ -2037,7 +2024,7 @@ function cancelModify() {
                th:value="${report.R26_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R26_RISK_WEIGHT, 1,'COMMA', 0, 'POINT') : '0'}"
                id="R26_RISK_WEIGHT"
                name="R26_C5_RISK_WEIGHT"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
 
@@ -2067,7 +2054,7 @@ function cancelModify() {
                th:value="${#strings.defaultString(report.R27_CREDIT_RATING, 'N/A')}"
                id="R27_CREDIT_RATING"
                name="R27_C2_CREDIT_RATING"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align:left;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align:left;"
                readonly />
     </td>
 
@@ -2076,7 +2063,7 @@ function cancelModify() {
                th:value="${#strings.defaultString(report.R27_RATING_AGENCY, 'N/A')}"
                id="R27_RATING_AGENCY"
                name="R27_C3_RATING_AGENCY"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align: left;"
                readonly />
     </td>
 
@@ -2085,7 +2072,7 @@ function cancelModify() {
                th:value="${report.R27_EXPOSURE_AMT != null ? #numbers.formatDecimal(report.R27_EXPOSURE_AMT, 1,'COMMA', 0, 'POINT') : '0'}"
                id="R27_EXPOSURE_AMT"
                name="R27_C4_EXPOSURE_AMT"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               style="background-color:#FFFFFF; width:90%; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
 
@@ -2094,7 +2081,7 @@ function cancelModify() {
                th:value="${report.R27_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R27_RISK_WEIGHT, 1,'COMMA', 0, 'POINT') : '0'}"
                id="R27_RISK_WEIGHT"
                name="R27_C5_RISK_WEIGHT"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
 
@@ -2124,7 +2111,7 @@ function cancelModify() {
                th:value="${#strings.defaultString(report.R28_CREDIT_RATING, 'N/A')}"
                id="R28_CREDIT_RATING"
                name="R28_C2_CREDIT_RATING"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align:left;"
+               style="background-color:#FFFFFF; width:90%; height: 28px; border-color: transparent; text-align:left;"
                readonly />
     </td>
 
@@ -2133,7 +2120,7 @@ function cancelModify() {
                th:value="${#strings.defaultString(report.R28_RATING_AGENCY, 'N/A')}"
                id="R28_RATING_AGENCY"
                name="R28_C3_RATING_AGENCY"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               style="background-color:#FFFFFF; width:90%; height: 28px; border-color: transparent; text-align: left;"
                readonly />
     </td>
 
@@ -2142,7 +2129,7 @@ function cancelModify() {
                th:value="${report.R28_EXPOSURE_AMT != null ? #numbers.formatDecimal(report.R28_EXPOSURE_AMT, 1,'COMMA', 0, 'POINT') : '0'}"
                id="R28_EXPOSURE_AMT"
                name="R28_C4_EXPOSURE_AMT"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               style="background-color:#FFFFFF;width:90%;  height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
 
@@ -2151,7 +2138,7 @@ function cancelModify() {
                th:value="${report.R28_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R28_RISK_WEIGHT, 1,'COMMA', 0, 'POINT') : '0'}"
                id="R28_RISK_WEIGHT"
                name="R28_C5_RISK_WEIGHT"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               style="background-color:#FFFFFF; width:90%;height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
 
@@ -2181,7 +2168,7 @@ function cancelModify() {
                th:value="${#strings.defaultString(report.R29_CREDIT_RATING, 'N/A')}"
                id="R29_CREDIT_RATING"
                name="R29_C2_CREDIT_RATING"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align:left;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align:left;"
                readonly />
     </td>
 
@@ -2190,7 +2177,7 @@ function cancelModify() {
                th:value="${#strings.defaultString(report.R29_RATING_AGENCY, 'N/A')}"
                id="R29_RATING_AGENCY"
                name="R29_C3_RATING_AGENCY"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align: left;"
                readonly />
     </td>
 
@@ -2199,7 +2186,7 @@ function cancelModify() {
                th:value="${report.R29_EXPOSURE_AMT != null ? #numbers.formatDecimal(report.R29_EXPOSURE_AMT, 1,'COMMA', 0, 'POINT') : '0'}"
                id="R29_EXPOSURE_AMT"
                name="R29_C4_EXPOSURE_AMT"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
 
@@ -2208,7 +2195,7 @@ function cancelModify() {
                th:value="${report.R29_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R29_RISK_WEIGHT, 1,'COMMA', 0, 'POINT') : '0'}"
                id="R29_RISK_WEIGHT"
                name="R29_C5_RISK_WEIGHT"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
 
@@ -2238,7 +2225,7 @@ function cancelModify() {
                th:value="${#strings.defaultString(report.R30_CREDIT_RATING, 'N/A')}"
                id="R30_CREDIT_RATING"
                name="R30_C2_CREDIT_RATING"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align:left;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align:left;"
                readonly />
     </td>
 
@@ -2247,7 +2234,7 @@ function cancelModify() {
                th:value="${#strings.defaultString(report.R30_RATING_AGENCY, 'N/A')}"
                id="R30_RATING_AGENCY"
                name="R30_C3_RATING_AGENCY"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               style="background-color:#FFFFFF; width:90%; height: 28px; border-color: transparent; text-align: left;"
                readonly />
     </td>
 
@@ -2256,7 +2243,7 @@ function cancelModify() {
                th:value="${report.R30_EXPOSURE_AMT != null ? #numbers.formatDecimal(report.R30_EXPOSURE_AMT, 1,'COMMA', 0, 'POINT') : '0'}"
                id="R30_EXPOSURE_AMT"
                name="R30_C4_EXPOSURE_AMT"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               style="background-color:#FFFFFF; width:90%; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
 
@@ -2265,7 +2252,7 @@ function cancelModify() {
                th:value="${report.R30_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R30_RISK_WEIGHT, 1,'COMMA', 0, 'POINT') : '0'}"
                id="R30_RISK_WEIGHT"
                name="R30_C5_RISK_WEIGHT"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               style="background-color:#FFFFFF;width:90%;  height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
 
@@ -2295,7 +2282,7 @@ function cancelModify() {
                th:value="${#strings.defaultString(report.R31_CREDIT_RATING, 'N/A')}"
                id="R31_CREDIT_RATING"
                name="R31_C2_CREDIT_RATING"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align:left;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align:left;"
                readonly />
     </td>
 
@@ -2304,7 +2291,7 @@ function cancelModify() {
                th:value="${#strings.defaultString(report.R31_RATING_AGENCY, 'N/A')}"
                id="R31_RATING_AGENCY"
                name="R31_C3_RATING_AGENCY"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align: left;"
                readonly />
     </td>
 
@@ -2313,7 +2300,7 @@ function cancelModify() {
                th:value="${report.R31_EXPOSURE_AMT != null ? #numbers.formatDecimal(report.R31_EXPOSURE_AMT, 1,'COMMA', 0, 'POINT') : '0'}"
                id="R31_EXPOSURE_AMT"
                name="R31_C4_EXPOSURE_AMT"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
 
@@ -2322,7 +2309,7 @@ function cancelModify() {
                th:value="${report.R31_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R31_RISK_WEIGHT, 1,'COMMA', 0, 'POINT') : '0'}"
                id="R31_RISK_WEIGHT"
                name="R31_C5_RISK_WEIGHT"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
 
@@ -2352,7 +2339,7 @@ function cancelModify() {
                th:value="${#strings.defaultString(report.R32_CREDIT_RATING, 'N/A')}"
                id="R32_CREDIT_RATING"
                name="R32_C2_CREDIT_RATING"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align:left;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align:left;"
                readonly />
     </td>
 
@@ -2361,7 +2348,7 @@ function cancelModify() {
                th:value="${#strings.defaultString(report.R32_RATING_AGENCY, 'N/A')}"
                id="R32_RATING_AGENCY"
                name="R32_C3_RATING_AGENCY"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align: left;"
                readonly />
     </td>
 
@@ -2370,7 +2357,7 @@ function cancelModify() {
                th:value="${report.R32_EXPOSURE_AMT != null ? #numbers.formatDecimal(report.R32_EXPOSURE_AMT, 1,'COMMA', 0, 'POINT') : '0'}"
                id="R32_EXPOSURE_AMT"
                name="R32_C4_EXPOSURE_AMT"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
 
@@ -2379,7 +2366,7 @@ function cancelModify() {
                th:value="${report.R32_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R32_RISK_WEIGHT, 1,'COMMA', 0, 'POINT') : '0'}"
                id="R32_RISK_WEIGHT"
                name="R32_C5_RISK_WEIGHT"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
 
@@ -2409,7 +2396,7 @@ function cancelModify() {
                th:value="${#strings.defaultString(report.R33_CREDIT_RATING, 'N/A')}"
                id="R33_CREDIT_RATING"
                name="R33_C2_CREDIT_RATING"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align:left;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align:left;"
                readonly />
     </td>
 
@@ -2418,7 +2405,7 @@ function cancelModify() {
                th:value="${#strings.defaultString(report.R33_RATING_AGENCY, 'N/A')}"
                id="R33_RATING_AGENCY"
                name="R33_C3_RATING_AGENCY"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align: left;"
                readonly />
     </td>
 
@@ -2427,7 +2414,7 @@ function cancelModify() {
                th:value="${report.R33_EXPOSURE_AMT != null ? #numbers.formatDecimal(report.R33_EXPOSURE_AMT, 1,'COMMA', 0, 'POINT') : '0'}"
                id="R33_EXPOSURE_AMT"
                name="R33_C4_EXPOSURE_AMT"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
 
@@ -2436,7 +2423,7 @@ function cancelModify() {
                th:value="${report.R33_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R33_RISK_WEIGHT, 1,'COMMA', 0, 'POINT') : '0'}"
                id="R33_RISK_WEIGHT"
                name="R33_C5_RISK_WEIGHT"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
 
@@ -2466,7 +2453,7 @@ function cancelModify() {
                th:value="${#strings.defaultString(report.R34_CREDIT_RATING, 'N/A')}"
                id="R34_CREDIT_RATING"
                name="R34_C2_CREDIT_RATING"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align:left;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align:left;"
                readonly />
     </td>
 
@@ -2475,7 +2462,7 @@ function cancelModify() {
                th:value="${#strings.defaultString(report.R34_RATING_AGENCY, 'N/A')}"
                id="R34_RATING_AGENCY"
                name="R34_C3_RATING_AGENCY"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align: left;"
                readonly />
     </td>
 
@@ -2484,7 +2471,7 @@ function cancelModify() {
                th:value="${report.R34_EXPOSURE_AMT != null ? #numbers.formatDecimal(report.R34_EXPOSURE_AMT, 1,'COMMA', 0, 'POINT') : '0'}"
                id="R34_EXPOSURE_AMT"
                name="R34_C4_EXPOSURE_AMT"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               style="background-color:#FFFFFF; width:90%; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
 
@@ -2493,7 +2480,7 @@ function cancelModify() {
                th:value="${report.R34_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R34_RISK_WEIGHT, 1,'COMMA', 0, 'POINT') : '0'}"
                id="R34_RISK_WEIGHT"
                name="R34_C5_RISK_WEIGHT"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
 
@@ -2523,7 +2510,7 @@ function cancelModify() {
                th:value="${#strings.defaultString(report.R35_CREDIT_RATING, 'N/A')}"
                id="R35_CREDIT_RATING"
                name="R35_C2_CREDIT_RATING"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align:left;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align:left;"
                readonly />
     </td>
 
@@ -2532,7 +2519,7 @@ function cancelModify() {
                th:value="${#strings.defaultString(report.R35_RATING_AGENCY, 'N/A')}"
                id="R35_RATING_AGENCY"
                name="R35_C3_RATING_AGENCY"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align: left;"
                readonly />
     </td>
 
@@ -2541,7 +2528,7 @@ function cancelModify() {
                th:value="${report.R35_EXPOSURE_AMT != null ? #numbers.formatDecimal(report.R35_EXPOSURE_AMT, 1,'COMMA', 0, 'POINT') : '0'}"
                id="R35_EXPOSURE_AMT"
                name="R35_C4_EXPOSURE_AMT"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
 
@@ -2550,7 +2537,7 @@ function cancelModify() {
                th:value="${report.R35_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R35_RISK_WEIGHT, 1,'COMMA', 0, 'POINT') : '0'}"
                id="R35_RISK_WEIGHT"
                name="R35_C5_RISK_WEIGHT"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               style="background-color:#FFFFFF; width:90%; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
 
@@ -2580,7 +2567,7 @@ function cancelModify() {
                th:value="${#strings.defaultString(report.R36_CREDIT_RATING, 'N/A')}"
                id="R36_CREDIT_RATING"
                name="R36_C2_CREDIT_RATING"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align:left;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align:left;"
                readonly />
     </td>
 
@@ -2589,7 +2576,7 @@ function cancelModify() {
                th:value="${#strings.defaultString(report.R36_RATING_AGENCY, 'N/A')}"
                id="R36_RATING_AGENCY"
                name="R36_C3_RATING_AGENCY"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align: left;"
                readonly />
     </td>
 
@@ -2598,7 +2585,7 @@ function cancelModify() {
                th:value="${report.R36_EXPOSURE_AMT != null ? #numbers.formatDecimal(report.R36_EXPOSURE_AMT, 1,'COMMA', 0, 'POINT') : '0'}"
                id="R36_EXPOSURE_AMT"
                name="R36_C4_EXPOSURE_AMT"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
 
@@ -2607,7 +2594,7 @@ function cancelModify() {
                th:value="${report.R36_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R36_RISK_WEIGHT, 1,'COMMA', 0, 'POINT') : '0'}"
                id="R36_RISK_WEIGHT"
                name="R36_C5_RISK_WEIGHT"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               style="background-color:#FFFFFF; width:90%; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
 
@@ -2689,7 +2676,7 @@ function cancelModify() {
         <div style="text-align: center; margin-top: 10px;">
 
          <button id="submitButton" type="button" class="custom-tab-btn Show_input" form="fileupload"
-          th:attr="data-todate=${asondate}, data-type=${type}" onclick="fileuploads(this);" style="display: none;">
+          th:attr="data-todate=${asondate}, data-type=${type}" onclick="fileupload_all(this);" style="display: none;">
           Submit</button>
         </div>
        </form>
@@ -2740,9 +2727,7 @@ function cancelModify() {
 				<td style="text-align:center;" th:text="${srlno.index + 1}"></td>
 	              
 
-<td style="text-align:right !important;"
-    th:text="${#numbers.formatDecimal(report.NAME_OF_CORPORATE, 1, 'COMMA', 0, 'POINT')}">
-</td>
+<td th:text="${report != null && report.NAME_OF_CORPORATE != null ? report.NAME_OF_CORPORATE : ' '}"></td>
 
 <td style="text-align:right !important;"
     th:text="${#numbers.formatDecimal(report.EXPOSURE_AMT, 1, 'COMMA', 0, 'POINT')}">
