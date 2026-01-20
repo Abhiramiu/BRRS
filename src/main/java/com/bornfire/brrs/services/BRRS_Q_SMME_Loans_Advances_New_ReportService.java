@@ -79,8 +79,8 @@ public class BRRS_Q_SMME_Loans_Advances_New_ReportService {
 
     SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
-    public ModelAndView getBRRS_Q_SMMEView(String reportId, String fromdate, String todate, String currency,
-            String dtltype, Pageable pageable, String type, String version) {
+    public ModelAndView getBRRS_Q_SMMEView(String reportId, String fromdate, String todate, 
+			String currency, String dtltype, Pageable pageable, String type, BigDecimal version)  {
         ModelAndView mv = new ModelAndView();
         Session hs = sessionFactory.getCurrentSession();
         int pageSize = pageable.getPageSize();
@@ -197,12 +197,12 @@ public class BRRS_Q_SMME_Loans_Advances_New_ReportService {
     }
 
     public byte[] getQ_SMMEExcel(String filename, String reportId, String fromdate, String todate, String currency,
-            String dtltype, String type, String version) throws Exception {
+			String dtltype, String type, BigDecimal version) throws Exception {
         logger.info("Service: Starting Excel generation process in memory.");
 
         // ARCHIVAL check
         System.out.println(type + "   " + version);
-        if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && !version.trim().isEmpty()) {
+        if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && version != null) {
             logger.info("Service: Generating ARCHIVAL report for version {}", version);
             return getSummaryExcelARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
 
@@ -944,10 +944,10 @@ public class BRRS_Q_SMME_Loans_Advances_New_ReportService {
         return Q_SMMEArchivallist;
     }
 
-    public byte[] getSummaryExcelARCHIVAL(String filename, String reportId, String fromdate, String todate,
-            String currency, String dtltype, String type, String version) throws Exception {
+    public byte[] getSummaryExcelARCHIVAL(String filename, String reportId, String fromdate,
+			String todate,
+			String currency, String dtltype, String type, BigDecimal version) throws Exception {
         logger.info("Service: Starting Excel generation process in memory.");
-        System.out.println("Gopika Excel Archival");
         if (type.equals("ARCHIVAL") & version != null) {
 
         }

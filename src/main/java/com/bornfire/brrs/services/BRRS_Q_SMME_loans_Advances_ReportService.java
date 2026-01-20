@@ -60,7 +60,7 @@ import com.bornfire.brrs.entities.BRRS_Q_SMME_loans_Advances_Summary_Repo;
 @Component
 @Service
 
-public class BRRS_Q_SMME_loans_Advances_ReportService{
+public class BRRS_Q_SMME_loans_Advances_ReportService {
 	private static final Logger logger = LoggerFactory.getLogger(BRRS_Q_SMME_loans_Advances_ReportService.class);
 
 	@Autowired
@@ -82,8 +82,7 @@ public class BRRS_Q_SMME_loans_Advances_ReportService{
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
 	public ModelAndView getBRRS_Q_SMMEView(String reportId, String fromdate, String todate,
-			String currency, String dtltype, Pageable pageable,
-			String type, String version) {
+			String currency, String dtltype, Pageable pageable, String type, BigDecimal version) {
 
 		ModelAndView mv = new ModelAndView();
 		Session hs = sessionFactory.getCurrentSession();
@@ -94,22 +93,21 @@ public class BRRS_Q_SMME_loans_Advances_ReportService{
 		try {
 			Date d1 = dateformat.parse(todate);
 
+			// ---------- CASE 1: ARCHIVAL ----------
+			if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
+				List<Q_SMME_loans_Advances_Archival_Summary_Entity> T1Master = Q_SMME_Archival_Summary_Repo
+						.getdatabydateListarchival(todate, version);
+				mv.addObject("reportsummary", T1Master);
+				System.out.println("T1Master" + T1Master);
+			}
 
-	 // ---------- CASE 1: ARCHIVAL ----------
-        if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
-            List<Q_SMME_loans_Advances_Archival_Summary_Entity> T1Master = 
-                Q_SMME_Archival_Summary_Repo.getdatabydateListarchival(todate, version);
-            mv.addObject("reportsummary", T1Master);
-			System.out.println("T1Master"+T1Master);
-        }
-
-        // ---------- CASE 3: NORMAL ----------
-        else {
-            List<Q_SMME_loans_Advances_Summary_Entity> T1Master = 
-                q_SMME_Summary_Repo.getdatabydateList(dateformat.parse(todate));
-            System.out.println("T1Master Size "+T1Master.size());
-            mv.addObject("reportsummary", T1Master);
-        }
+			// ---------- CASE 3: NORMAL ----------
+			else {
+				List<Q_SMME_loans_Advances_Summary_Entity> T1Master = q_SMME_Summary_Repo
+						.getdatabydateList(dateformat.parse(todate));
+				System.out.println("T1Master Size " + T1Master.size());
+				mv.addObject("reportsummary", T1Master);
+			}
 
 		} catch (ParseException e) {
 			e.printStackTrace();
@@ -196,12 +194,12 @@ public class BRRS_Q_SMME_loans_Advances_ReportService{
 	}
 
 	public byte[] getQ_SMMEExcel(String filename, String reportId, String fromdate, String todate, String currency,
-			String dtltype, String type, String version) throws Exception {
+			String dtltype, String type, BigDecimal version)  throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.");
 
 		// ARCHIVAL check
 		System.out.println(type + "   " + version);
-		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && !version.trim().isEmpty()) {
+		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && version != null) {
 			logger.info("Service: Generating ARCHIVAL report for version {}", version);
 			return getSummaryExcelARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
 
@@ -821,7 +819,8 @@ public class BRRS_Q_SMME_loans_Advances_ReportService{
 			balanceStyle.setBorderLeft(border);
 			balanceStyle.setBorderRight(border);
 			// Header row
-			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE",  "REPORT LABEL", "REPORT ADDL CRITERIA1",
+			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "REPORT LABEL",
+					"REPORT ADDL CRITERIA1",
 					"REPORT_DATE" };
 			XSSFRow headerRow = sheet.createRow(0);
 			for (int i = 0; i < headers.length; i++) {
@@ -855,9 +854,9 @@ public class BRRS_Q_SMME_loans_Advances_ReportService{
 					balanceCell.setCellStyle(balanceStyle);
 					row.createCell(4).setCellValue(item.getReportLabel());
 					row.createCell(5).setCellValue(item.getReportAddlCriteria1());
-					                row.createCell(6).setCellValue(item.getReportDate() != null
-                        ? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
-                        : "");
+					row.createCell(6).setCellValue(item.getReportDate() != null
+							? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
+							: "");
 					// Apply data style for all other cells
 					for (int j = 0; j < 7; j++) {
 						if (j != 3) {
@@ -896,8 +895,9 @@ public class BRRS_Q_SMME_loans_Advances_ReportService{
 		return Q_SMMEArchivallist;
 	}
 
-	public byte[] getSummaryExcelARCHIVAL(String filename, String reportId, String fromdate, String todate,
-			String currency, String dtltype, String type, String version) throws Exception {
+	public byte[] getSummaryExcelARCHIVAL(String filename, String reportId, String fromdate,
+			String todate,
+			String currency, String dtltype, String type, BigDecimal version) throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.");
 		System.out.println("Gopika Excel Archival");
 		if (type.equals("ARCHIVAL") & version != null) {
@@ -1522,7 +1522,8 @@ public class BRRS_Q_SMME_loans_Advances_ReportService{
 			balanceStyle.setBorderRight(border);
 
 			// --- Header row ---
-			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE",  "REPORT LABEL", "REPORT ADDL CRITERIA1",
+			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "REPORT LABEL",
+					"REPORT ADDL CRITERIA1",
 					"REPORT_DATE" };
 			XSSFRow headerRow = sheet.createRow(0);
 
