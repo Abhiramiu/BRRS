@@ -860,8 +860,9 @@ function calculateR64Totals() {
 									            return;
 									        }
 				const acctNo = elem.getAttribute("data-acctNo");
+				const SNO = elem.getAttribute("data-SNo");
 				const asondate = elem.getAttribute("data-asondate");
-				location.href = `/BRRS/Reports/${reportId}/Detailspage?formmode=${mode}&acctNo=${acctNo}&asondate=${asondate}`;
+				location.href = `/BRRS/Reports/${reportId}/Detailspage?formmode=${mode}&SNO=${SNO}&asondate=${asondate}`;
 			}
 		</script>
 			<script>
@@ -998,7 +999,7 @@ function calculateR64Totals() {
 			    });
 			    // ✅ Step 5: Send AJAX
 			    $.ajax({
-			        url: './updateReport',
+			        url: './updateReportM_LA4',
 			        type: 'POST',
 			        data: formData,
 			        processData: false,
@@ -1209,7 +1210,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r11FactoringDebtors != null
 		                        ? reportsummary2[stat.index].r11FactoringDebtors
 		                        : 0}"
-		            id="r11_FACTORING_DEBTORS" name="r11FactoringDebtors"
+		            id="r11_FACTORING_DEBTORS" name="R11_C2_FACTORING_DEBTORS"
 		            style="background-color: rgb(107, 122, 143);color: white; width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -1219,7 +1220,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r11Leasing != null
 		                        ? reportsummary2[stat.index].r11Leasing
 		                        : 0}"
-		            id="r11_LEASING" name="r11Leasing"
+		            id="r11_LEASING" name="R11_C3_LEASING"
 		            style="background-color: rgb(107, 122, 143);color: white; width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -1246,7 +1247,7 @@ function calculateR64Totals() {
 			            ? #numbers.formatDecimal(reportsummary2[stat.index].r12FactoringDebtors, 0, 'COMMA', 0, 'POINT')
 			            : '0'
 			        }"
-			        id="r12_FACTORING_DEBTORS" name="r12FactoringDebtors"
+			        id="r12_FACTORING_DEBTORS" name="R12_C2_FACTORING_DEBTORS"
 			        style="width: 150px; height: 28px; border-color: transparent; text-align: right;"
 			        readonly />
 			</td>
@@ -1257,7 +1258,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r12Leasing != null
 		                        ?  #numbers.formatDecimal( reportsummary2[stat.index].r12Leasing, 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r12_LEASING" name="r12Leasing"
+		            id="r12_LEASING" name="R12_C3_LEASING"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -1283,17 +1284,17 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r13FactoringDebtors != null
 		                        ? #numbers.formatDecimal( reportsummary2[stat.index].r13FactoringDebtors , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r13_FACTORING_DEBTORS" name="r13FactoringDebtors"
+		            id="r13_FACTORING_DEBTORS" name="R13_C2_FACTORING_DEBTORS"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
-		    <!-- R13 - Leasing -->
+	    <!-- R13 - Leasing -->
 		    <td id="r13_C3" style=" text-align: right;">
 		        <input class="display-input Show_input" type="text"
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r13Leasing != null
 		                        ? #numbers.formatDecimal(reportsummary2[stat.index].r13Leasing , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r13_LEASING" name="r13Leasing"
+		            id="r13_LEASING" name="R13_C3_LEASING"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -1319,7 +1320,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r14FactoringDebtors != null
 		                        ? #numbers.formatDecimal(reportsummary2[stat.index].r14FactoringDebtors , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r14_FACTORING_DEBTORS" name="r14FactoringDebtors"
+		            id="r14_FACTORING_DEBTORS" name="R14_C2_FACTORING_DEBTORS"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -1329,7 +1330,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r14Leasing != null
 		                        ? #numbers.formatDecimal(reportsummary2[stat.index].r14Leasing , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r14_LEASING" name="r14Leasing"
+		            id="r14_LEASING" name="R14_C3_LEASING"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -1356,7 +1357,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r15FactoringDebtors != null
 		                        ? #numbers.formatDecimal( reportsummary2[stat.index].r15FactoringDebtors , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r15_FACTORING_DEBTORS" name="r15FactoringDebtors"
+		            id="r15_FACTORING_DEBTORS" name="R15_C2_FACTORING_DEBTORS"
 		            style="background-color: rgb(107, 122, 143);color: white; width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -1366,7 +1367,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r15Leasing != null
 		                        ?  #numbers.formatDecimal( reportsummary2[stat.index].r15Leasing , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r15_LEASING" name="r15Leasing"
+		            id="r15_LEASING" name="R15_C3_LEASING"
 		            style="background-color: rgb(107, 122, 143);color: white; width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -1393,7 +1394,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r16FactoringDebtors != null
 		                        ?  #numbers.formatDecimal( reportsummary2[stat.index].r16FactoringDebtors , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r16_FACTORING_DEBTORS" name="r16FactoringDebtors"
+		            id="r16_FACTORING_DEBTORS" name="R16_C2_FACTORING_DEBTORS"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -1403,7 +1404,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r16Leasing != null
 		                        ? #numbers.formatDecimal( reportsummary2[stat.index].r16Leasing , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r16_LEASING" name="r16Leasing"
+		            id="r16_LEASING" name="R16_C3_LEASING"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -1432,7 +1433,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r17FactoringDebtors != null
 		                        ? #numbers.formatDecimal(reportsummary2[stat.index].r17FactoringDebtors , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r17_FACTORING_DEBTORS" name="r17FactoringDebtors"
+		            id="r17_FACTORING_DEBTORS" name="R17_C2_FACTORING_DEBTORS"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -1442,7 +1443,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r17Leasing != null
 		                        ?  #numbers.formatDecimal( reportsummary2[stat.index].r17Leasing , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r17_LEASING" name="r17Leasing"
+		            id="r17_LEASING" name="R17_C3_LEASING"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -1468,7 +1469,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r18FactoringDebtors != null
 		                        ? #numbers.formatDecimal( reportsummary2[stat.index].r18FactoringDebtors , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r18_FACTORING_DEBTORS" name="r18FactoringDebtors"
+		            id="r18_FACTORING_DEBTORS" name="R18_C2_FACTORING_DEBTORS"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -1478,7 +1479,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r18Leasing != null
 		                        ?  #numbers.formatDecimal(reportsummary2[stat.index].r18Leasing , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r18_LEASING" name="r18Leasing"
+		            id="r18_LEASING" name="R18_C3_LEASING"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -1505,7 +1506,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r19FactoringDebtors != null
 		                        ? #numbers.formatDecimal( reportsummary2[stat.index].r19FactoringDebtors , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r19_FACTORING_DEBTORS" name="r19FactoringDebtors"
+		            id="r19_FACTORING_DEBTORS" name="R19_C2_FACTORING_DEBTORS"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -1515,7 +1516,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r19Leasing != null
 		                        ? #numbers.formatDecimal( reportsummary2[stat.index].r19Leasing , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r19_LEASING" name="r19Leasing"
+		            id="r19_LEASING" name="R19_C3_LEASING"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -1542,7 +1543,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r20FactoringDebtors != null
 		                        ? #numbers.formatDecimal( reportsummary2[stat.index].r20FactoringDebtors , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r20_FACTORING_DEBTORS" name="r20FactoringDebtors"
+		            id="r20_FACTORING_DEBTORS" name="R20_C2_FACTORING_DEBTORS"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -1552,7 +1553,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r20Leasing != null
 		                        ? #numbers.formatDecimal( reportsummary2[stat.index].r20Leasing , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r20_LEASING" name="r20Leasing"
+		            id="r20_LEASING" name="R20_C3_LEASING"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -1580,7 +1581,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r21FactoringDebtors != null
 		                        ? #numbers.formatDecimal( reportsummary2[stat.index].r21FactoringDebtors , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r21_FACTORING_DEBTORS" name="r21FactoringDebtors"
+		            id="r21_FACTORING_DEBTORS" name="R21_C2_FACTORING_DEBTORS"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -1590,7 +1591,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r21Leasing != null
 		                        ?  #numbers.formatDecimal(reportsummary2[stat.index].r21Leasing , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r21_LEASING" name="r21Leasing"
+		            id="r21_LEASING" name="R21_C3_LEASING"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -1618,7 +1619,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r22FactoringDebtors != null
 		                        ?   #numbers.formatDecimal( reportsummary2[stat.index].r22FactoringDebtors , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r22_FACTORING_DEBTORS" name="r22FactoringDebtors"
+		            id="r22_FACTORING_DEBTORS" name="R22_C2_FACTORING_DEBTORS"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -1628,7 +1629,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r22Leasing != null
 		                        ? #numbers.formatDecimal( reportsummary2[stat.index].r22Leasing , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r22_LEASING" name="r22Leasing"
+		            id="r22_LEASING" name="R22_C3_LEASING"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -1654,7 +1655,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r23FactoringDebtors != null
 		                        ?  #numbers.formatDecimal(reportsummary2[stat.index].r23FactoringDebtors , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r23_FACTORING_DEBTORS" name="r23FactoringDebtors"
+		            id="r23_FACTORING_DEBTORS" name="R23_C2_FACTORING_DEBTORS"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -1664,7 +1665,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r23Leasing != null
 		                        ? #numbers.formatDecimal( reportsummary2[stat.index].r23Leasing , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r23_LEASING" name="r23Leasing"
+		            id="r23_LEASING" name="R23_C3_LEASING"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -1691,7 +1692,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r24FactoringDebtors != null
 		                        ? #numbers.formatDecimal( reportsummary2[stat.index].r24FactoringDebtors , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r24_FACTORING_DEBTORS" name="r24FactoringDebtors"
+		            id="r24_FACTORING_DEBTORS" name="R24_C2_FACTORING_DEBTORS"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -1701,7 +1702,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r24Leasing != null
 		                        ? #numbers.formatDecimal( reportsummary2[stat.index].r24Leasing , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r24_LEASING" name="r24Leasing"
+		            id="r24_LEASING" name="R24_C3_LEASING"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -1728,7 +1729,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r25FactoringDebtors != null
 		                        ? #numbers.formatDecimal( reportsummary2[stat.index].r25FactoringDebtors , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r25_FACTORING_DEBTORS" name="r25FactoringDebtors"
+		            id="r25_FACTORING_DEBTORS" name="R25_C2_FACTORING_DEBTORS"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -1738,7 +1739,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r25Leasing != null
 		                        ? #numbers.formatDecimal( reportsummary2[stat.index].r25Leasing , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r25_LEASING" name="r25Leasing"
+		            id="r25_LEASING" name="R25_C3_LEASING"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -1766,7 +1767,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r26FactoringDebtors != null
 		                        ? #numbers.formatDecimal( reportsummary2[stat.index].r26FactoringDebtors , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r26_FACTORING_DEBTORS" name="r26FactoringDebtors"
+		            id="r26_FACTORING_DEBTORS" name="R26_C2_FACTORING_DEBTORS"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -1776,7 +1777,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r26Leasing != null
 		                        ?  #numbers.formatDecimal(reportsummary2[stat.index].r26Leasing , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r26_LEASING" name="r26Leasing"
+		            id="r26_LEASING" name="R26_C3_LEASING"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -1802,7 +1803,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r27FactoringDebtors != null
 		                        ? #numbers.formatDecimal( reportsummary2[stat.index].r27FactoringDebtors , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r27_FACTORING_DEBTORS" name="r27FactoringDebtors"
+		            id="r27_FACTORING_DEBTORS" name="R27_C2_FACTORING_DEBTORS"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -1812,7 +1813,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r27Leasing != null
 		                        ? #numbers.formatDecimal( reportsummary2[stat.index].r27Leasing , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r27_LEASING" name="r27Leasing"
+		            id="r27_LEASING" name="R27_C3_LEASING"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -1838,7 +1839,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r28FactoringDebtors != null
 		                        ? #numbers.formatDecimal(  reportsummary2[stat.index].r28FactoringDebtors , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r28_FACTORING_DEBTORS" name="r28FactoringDebtors"
+		            id="r28_FACTORING_DEBTORS" name="R28_C2_FACTORING_DEBTORS"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -1848,7 +1849,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r28Leasing != null
 		                        ? #numbers.formatDecimal( reportsummary2[stat.index].r28Leasing , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r28_LEASING" name="r28Leasing"
+		            id="r28_LEASING" name="R28_C3_LEASING"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -1875,7 +1876,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r29FactoringDebtors != null
 		                        ? #numbers.formatDecimal(reportsummary2[stat.index].r29FactoringDebtors , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r29_FACTORING_DEBTORS" name="r29FactoringDebtors"
+		            id="r29_FACTORING_DEBTORS" name="R29_C2_FACTORING_DEBTORS"
 		            style="background-color: rgb(107, 122, 143);color: white; width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -1885,7 +1886,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r29Leasing != null
 		                        ? #numbers.formatDecimal(reportsummary2[stat.index].r29Leasing , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r29_LEASING" name="r29Leasing"
+		            id="r29_LEASING" name="R29_C3_LEASING"
 		            style="background-color: rgb(107, 122, 143);color: white; width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -1912,7 +1913,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r30FactoringDebtors != null
 		                        ?  #numbers.formatDecimal( reportsummary2[stat.index].r30FactoringDebtors , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r30_FACTORING_DEBTORS" name="r30FactoringDebtors"
+		            id="r30_FACTORING_DEBTORS" name="R30_C2_FACTORING_DEBTORS"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -1922,7 +1923,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r30Leasing != null
 		                        ? #numbers.formatDecimal(reportsummary2[stat.index].r30Leasing , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r30_LEASING" name="r30Leasing"
+		            id="r30_LEASING" name="R30_C3_LEASING"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -1948,7 +1949,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r31FactoringDebtors != null
 		                        ? #numbers.formatDecimal( reportsummary2[stat.index].r31FactoringDebtors , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r31_FACTORING_DEBTORS" name="r31FactoringDebtors"
+		            id="r31_FACTORING_DEBTORS" name="R31_C2_FACTORING_DEBTORS"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -1958,7 +1959,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r31Leasing != null
 		                        ? #numbers.formatDecimal( reportsummary2[stat.index].r31Leasing , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r31_LEASING" name="r31Leasing"
+		            id="r31_LEASING" name="R31_C3_LEASING"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -1984,7 +1985,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r32FactoringDebtors != null
 		                        ? #numbers.formatDecimal(reportsummary2[stat.index].r32FactoringDebtors , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r32_FACTORING_DEBTORS" name="r32FactoringDebtors"
+		            id="r32_FACTORING_DEBTORS" name="R32_C2_FACTORING_DEBTORS"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -1994,7 +1995,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r32Leasing != null
 		                        ? #numbers.formatDecimal( reportsummary2[stat.index].r32Leasing , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r32_LEASING" name="r32Leasing"
+		            id="r32_LEASING" name="R32_C3_LEASING"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -2020,7 +2021,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r33FactoringDebtors != null
 		                        ? #numbers.formatDecimal( reportsummary2[stat.index].r33FactoringDebtors , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r33_FACTORING_DEBTORS" name="r33FactoringDebtors"
+		            id="r33_FACTORING_DEBTORS" name="R33_C2_FACTORING_DEBTORS"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -2030,7 +2031,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r33Leasing != null
 		                        ?  #numbers.formatDecimal(  reportsummary2[stat.index].r33Leasing , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r33_LEASING" name="r33Leasing"
+		            id="r33_LEASING" name="R33_C3_LEASING"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -2056,7 +2057,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r34FactoringDebtors != null
 		                        ? #numbers.formatDecimal(  reportsummary2[stat.index].r34FactoringDebtors , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r34_FACTORING_DEBTORS" name="r34FactoringDebtors"
+		            id="r34_FACTORING_DEBTORS" name="R34_C2_FACTORING_DEBTORS"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -2066,7 +2067,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r34Leasing != null
 		                        ? #numbers.formatDecimal(  reportsummary2[stat.index].r34Leasing , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r34_LEASING" name="r34Leasing"
+		            id="r34_LEASING" name="R34_C3_LEASING"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -2092,7 +2093,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r35FactoringDebtors != null
 		                        ?  #numbers.formatDecimal(reportsummary2[stat.index].r35FactoringDebtors , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r35_FACTORING_DEBTORS" name="r35FactoringDebtors"
+		            id="r35_FACTORING_DEBTORS" name="R35_C2_FACTORING_DEBTORS"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -2102,7 +2103,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r35Leasing != null
 		                        ?   #numbers.formatDecimal( reportsummary2[stat.index].r35Leasing , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r35_LEASING" name="r35Leasing"
+		            id="r35_LEASING" name="R35_C3_LEASING"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -2128,7 +2129,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r36FactoringDebtors != null
 		                        ?  #numbers.formatDecimal( reportsummary2[stat.index].r36FactoringDebtors , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r36_FACTORING_DEBTORS" name="r36FactoringDebtors"
+		            id="r36_FACTORING_DEBTORS" name="R36_C2_FACTORING_DEBTORS"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -2138,7 +2139,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r36Leasing != null
 		                        ?  #numbers.formatDecimal( reportsummary2[stat.index].r36Leasing , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r36_LEASING" name="r36Leasing"
+		            id="r36_LEASING" name="R36_C3_LEASING"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -2164,7 +2165,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r37FactoringDebtors != null
 		                        ? #numbers.formatDecimal(reportsummary2[stat.index].r37FactoringDebtors , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r37_FACTORING_DEBTORS" name="r37FactoringDebtors"
+		            id="r37_FACTORING_DEBTORS" name="R37_C2_FACTORING_DEBTORS"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -2174,7 +2175,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r37Leasing != null
 		                        ? #numbers.formatDecimal( reportsummary2[stat.index].r37Leasing , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r37_LEASING" name="r37Leasing"
+		            id="r37_LEASING" name="R37_C3_LEASING"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -2200,7 +2201,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r38FactoringDebtors != null
 		                        ?  #numbers.formatDecimal( reportsummary2[stat.index].r38FactoringDebtors , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r38_FACTORING_DEBTORS" name="r38FactoringDebtors"
+		            id="r38_FACTORING_DEBTORS" name="R38_C2_FACTORING_DEBTORS"
 		            style="background-color: rgb(107, 122, 143);color: white; width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -2210,7 +2211,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r38Leasing != null
 		                        ?  #numbers.formatDecimal(  reportsummary2[stat.index].r38Leasing , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r38_LEASING" name="r38Leasing"
+		            id="r38_LEASING" name="R38_C3_LEASING"
 		            style="background-color: rgb(107, 122, 143);color: white; width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -2236,7 +2237,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r39FactoringDebtors != null
 		                        ?  #numbers.formatDecimal(reportsummary2[stat.index].r39FactoringDebtors , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r39_FACTORING_DEBTORS" name="r39FactoringDebtors"
+		            id="r39_FACTORING_DEBTORS" name="R39_C2_FACTORING_DEBTORS"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -2246,7 +2247,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r39Leasing != null
 		                        ? #numbers.formatDecimal( reportsummary2[stat.index].r39Leasing , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r39_LEASING" name="r39Leasing"
+		            id="r39_LEASING" name="R39_C3_LEASING"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -2272,7 +2273,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r40FactoringDebtors != null
 		                        ? #numbers.formatDecimal( reportsummary2[stat.index].r40FactoringDebtors , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r40_FACTORING_DEBTORS" name="r40FactoringDebtors"
+		            id="r40_FACTORING_DEBTORS" name="R40_C2_FACTORING_DEBTORS"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -2282,7 +2283,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r40Leasing != null
 		                        ? #numbers.formatDecimal( reportsummary2[stat.index].r40Leasing , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r40_LEASING" name="r40Leasing"
+		            id="r40_LEASING" name="R40_C3_LEASING"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -2308,7 +2309,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r41FactoringDebtors != null
 		                        ?  #numbers.formatDecimal( reportsummary2[stat.index].r41FactoringDebtors , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r41_FACTORING_DEBTORS" name="r41FactoringDebtors"
+		            id="r41_FACTORING_DEBTORS" name="R41_C2_FACTORING_DEBTORS"
 		            style="background-color: rgb(107, 122, 143);color: white; width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -2318,7 +2319,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r41Leasing != null
 		                        ?   #numbers.formatDecimal( reportsummary2[stat.index].r41Leasing , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r41_LEASING" name="r41Leasing"
+		            id="r41_LEASING" name="R41_C3_LEASING"
 		            style="background-color: rgb(107, 122, 143);color: white; width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -2344,7 +2345,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r42FactoringDebtors != null
 		                        ?     #numbers.formatDecimal(reportsummary2[stat.index].r42FactoringDebtors , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r42_FACTORING_DEBTORS" name="r42FactoringDebtors"
+		            id="r42_FACTORING_DEBTORS" name="R42_C2_FACTORING_DEBTORS"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -2354,7 +2355,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r42Leasing != null
 		                        ?      #numbers.formatDecimal( reportsummary2[stat.index].r42Leasing , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r42_LEASING" name="r42Leasing"
+		            id="r42_LEASING" name="R42_C3_LEASING"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -2380,7 +2381,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r43FactoringDebtors != null
 		                        ?  #numbers.formatDecimal( reportsummary2[stat.index].r43FactoringDebtors , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r43_FACTORING_DEBTORS" name="r43FactoringDebtors"
+		            id="r43_FACTORING_DEBTORS" name="R43_C2_FACTORING_DEBTORS"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -2390,7 +2391,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r43Leasing != null
 		                        ?  #numbers.formatDecimal( reportsummary2[stat.index].r43Leasing , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r43_LEASING" name="r43Leasing"
+		            id="r43_LEASING" name="R43_C3_LEASING"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -2416,7 +2417,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r44FactoringDebtors != null
 		                        ? #numbers.formatDecimal(reportsummary2[stat.index].r44FactoringDebtors , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r44_FACTORING_DEBTORS" name="r44FactoringDebtors"
+		            id="r44_FACTORING_DEBTORS" name="R44_C2_FACTORING_DEBTORS"
 		            style="background-color: rgb(107, 122, 143);color: white; width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -2426,7 +2427,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r44Leasing != null
 		                        ? #numbers.formatDecimal( reportsummary2[stat.index].r44Leasing , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r44_LEASING" name="r44Leasing"
+		            id="r44_LEASING" name="R44_C3_LEASING"
 		            style="background-color: rgb(107, 122, 143);color: white; width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -2452,7 +2453,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r45FactoringDebtors != null
 		                        ? #numbers.formatDecimal( reportsummary2[stat.index].r45FactoringDebtors , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r45_FACTORING_DEBTORS" name="r45FactoringDebtors"
+		            id="r45_FACTORING_DEBTORS" name="R45_C2_FACTORING_DEBTORS"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -2462,7 +2463,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r45Leasing != null
 		                        ? #numbers.formatDecimal( reportsummary2[stat.index].r45Leasing , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r45_LEASING" name="r45Leasing"
+		            id="r45_LEASING" name="R45_C3_LEASING"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -2488,7 +2489,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r46FactoringDebtors != null
 		                        ? #numbers.formatDecimal(reportsummary2[stat.index].r46FactoringDebtors , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r46_FACTORING_DEBTORS" name="r46FactoringDebtors"
+		            id="r46_FACTORING_DEBTORS" name="R46_C2_FACTORING_DEBTORS"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -2498,7 +2499,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r46Leasing != null
 		                        ?  #numbers.formatDecimal(reportsummary2[stat.index].r46Leasing , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r46_LEASING" name="r46Leasing"
+		            id="r46_LEASING" name="R46_C3_LEASING"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -2524,7 +2525,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r47FactoringDebtors != null
 		                        ?  #numbers.formatDecimal( reportsummary2[stat.index].r47FactoringDebtors , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r47_FACTORING_DEBTORS" name="r47FactoringDebtors"
+		            id="r47_FACTORING_DEBTORS" name="R47_C2_FACTORING_DEBTORS"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -2534,7 +2535,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r47Leasing != null
 		                        ? #numbers.formatDecimal( reportsummary2[stat.index].r47Leasing , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r47_LEASING" name="r47Leasing"
+		            id="r47_LEASING" name="R47_C3_LEASING"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -2560,7 +2561,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r48FactoringDebtors != null
 		                        ?  #numbers.formatDecimal( reportsummary2[stat.index].r48FactoringDebtors , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r48_FACTORING_DEBTORS" name="r48FactoringDebtors"
+		            id="r48_FACTORING_DEBTORS" name="R48_C2_FACTORING_DEBTORS"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -2570,7 +2571,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r48Leasing != null
 		                        ? #numbers.formatDecimal( reportsummary2[stat.index].r48Leasing , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r48_LEASING" name="r48Leasing"
+		            id="r48_LEASING" name="R48_C3_LEASING"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -2596,7 +2597,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r49FactoringDebtors != null
 		                        ?  #numbers.formatDecimal(  reportsummary2[stat.index].r49FactoringDebtors , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r49_FACTORING_DEBTORS" name="r49FactoringDebtors"
+		            id="r49_FACTORING_DEBTORS" name="R49_C2_FACTORING_DEBTORS"
 		            style="background-color: rgb(107, 122, 143);color: white; width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -2606,7 +2607,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r49Leasing != null
 		                        ?  #numbers.formatDecimal(  reportsummary2[stat.index].r49Leasing , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r49_LEASING" name="r49Leasing"
+		            id="r49_LEASING" name="R49_C3_LEASING"
 		            style="background-color: rgb(107, 122, 143);color: white; width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -2632,7 +2633,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r50FactoringDebtors != null
 		                        ?  #numbers.formatDecimal( reportsummary2[stat.index].r50FactoringDebtors , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r50_FACTORING_DEBTORS" name="r50FactoringDebtors"
+		            id="r50_FACTORING_DEBTORS" name="R50_C2_FACTORING_DEBTORS"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -2642,7 +2643,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r50Leasing != null
 		                        ?   #numbers.formatDecimal(reportsummary2[stat.index].r50Leasing , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r50_LEASING" name="r50Leasing"
+		            id="r50_LEASING" name="R50_C3_LEASING"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -2668,7 +2669,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r51FactoringDebtors != null
 		                        ? #numbers.formatDecimal( reportsummary2[stat.index].r51FactoringDebtors , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r51_FACTORING_DEBTORS" name="r51FactoringDebtors"
+		            id="r51_FACTORING_DEBTORS" name="R51_C2_FACTORING_DEBTORS"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -2678,7 +2679,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r51Leasing != null
 		                        ? #numbers.formatDecimal( reportsummary2[stat.index].r51Leasing , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r51_LEASING" name="r51Leasing"
+		            id="r51_LEASING" name="R51_C3_LEASING"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -2704,7 +2705,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r52FactoringDebtors != null
 		                        ? #numbers.formatDecimal( reportsummary2[stat.index].r52FactoringDebtors , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r52_FACTORING_DEBTORS" name="r52FactoringDebtors"
+		            id="r52_FACTORING_DEBTORS" name="R52_C2_FACTORING_DEBTORS"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -2714,7 +2715,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r52Leasing != null
 		                        ? #numbers.formatDecimal( reportsummary2[stat.index].r52Leasing , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r52_LEASING" name="r52Leasing"
+		            id="r52_LEASING" name="R52_C3_LEASING"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -2740,7 +2741,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r53FactoringDebtors != null
 		                        ?  #numbers.formatDecimal(reportsummary2[stat.index].r53FactoringDebtors , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r53_FACTORING_DEBTORS" name="r53FactoringDebtors"
+		            id="r53_FACTORING_DEBTORS" name="R53_C2_FACTORING_DEBTORS"
 		            style="background-color: rgb(107, 122, 143);color: white; width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -2750,7 +2751,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r53Leasing != null
 		                        ? #numbers.formatDecimal(reportsummary2[stat.index].r53Leasing , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r53_LEASING" name="r53Leasing"
+		            id="r53_LEASING" name="R53_C3_LEASING"
 		            style="background-color: rgb(107, 122, 143);color: white; width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -2777,7 +2778,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r54FactoringDebtors != null
 		                        ?  #numbers.formatDecimal( reportsummary2[stat.index].r54FactoringDebtors , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r54_FACTORING_DEBTORS" name="r54FactoringDebtors"
+		            id="r54_FACTORING_DEBTORS" name="R54_C2_FACTORING_DEBTORS"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -2787,7 +2788,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r54Leasing != null
 		                        ? #numbers.formatDecimal( reportsummary2[stat.index].r54Leasing , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r54_LEASING" name="r54Leasing"
+		            id="r54_LEASING" name="R54_C3_LEASING"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -2815,7 +2816,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r55FactoringDebtors != null
 		                        ? #numbers.formatDecimal( reportsummary2[stat.index].r55FactoringDebtors , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r55_FACTORING_DEBTORS" name="r55FactoringDebtors"
+		            id="r55_FACTORING_DEBTORS" name="R55_C2_FACTORING_DEBTORS"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -2826,7 +2827,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r55Leasing != null
 		                        ? #numbers.formatDecimal( reportsummary2[stat.index].r55Leasing , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r55_LEASING" name="r55Leasing"
+		            id="r55_LEASING" name="R55_C3_LEASING"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -2854,7 +2855,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r56FactoringDebtors != null
 		                        ? #numbers.formatDecimal( reportsummary2[stat.index].r56FactoringDebtors , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r56_FACTORING_DEBTORS" name="r56FactoringDebtors"
+		            id="r56_FACTORING_DEBTORS" name="R56_C2_FACTORING_DEBTORS"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -2865,7 +2866,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r56Leasing != null
 		                        ?  #numbers.formatDecimal( reportsummary2[stat.index].r56Leasing , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r56_LEASING" name="r56Leasing"
+		            id="r56_LEASING" name="R56_C3_LEASING"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -2893,7 +2894,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r57FactoringDebtors != null
 		                        ?  #numbers.formatDecimal( reportsummary2[stat.index].r57FactoringDebtors , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r57_FACTORING_DEBTORS" name="r57FactoringDebtors"
+		            id="r57_FACTORING_DEBTORS" name="R57_C2_FACTORING_DEBTORS"
 		            style="background-color: rgb(107, 122, 143);color: white; width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -2904,7 +2905,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r57Leasing != null
 		                        ? #numbers.formatDecimal( reportsummary2[stat.index].r57Leasing , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r57_LEASING" name="r57Leasing"
+		            id="r57_LEASING" name="R57_C3_LEASING"
 		            style="background-color: rgb(107, 122, 143);color: white; width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -2932,7 +2933,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r58FactoringDebtors != null
 		                        ?  #numbers.formatDecimal( reportsummary2[stat.index].r58FactoringDebtors , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r58_FACTORING_DEBTORS" name="r58FactoringDebtors"
+		            id="r58_FACTORING_DEBTORS" name="R58_C2_FACTORING_DEBTORS"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -2943,7 +2944,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r58Leasing != null
 		                        ? #numbers.formatDecimal(reportsummary2[stat.index].r58Leasing , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r58_LEASING" name="r58Leasing"
+		            id="r58_LEASING" name="R58_C3_LEASING"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -2971,7 +2972,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r59FactoringDebtors != null
 		                        ? #numbers.formatDecimal( reportsummary2[stat.index].r59FactoringDebtors , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r59_FACTORING_DEBTORS" name="r59FactoringDebtors"
+		            id="r59_FACTORING_DEBTORS" name="R59_C2_FACTORING_DEBTORS"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -2982,7 +2983,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r59Leasing != null
 		                        ? #numbers.formatDecimal(reportsummary2[stat.index].r59Leasing , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r59_LEASING" name="r59Leasing"
+		            id="r59_LEASING" name="R59_C3_LEASING"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -3010,7 +3011,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r60FactoringDebtors != null
 		                        ? #numbers.formatDecimal( reportsummary2[stat.index].r60FactoringDebtors , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r60_FACTORING_DEBTORS" name="r60FactoringDebtors"
+		            id="r60_FACTORING_DEBTORS" name="R60_C2_FACTORING_DEBTORS"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -3021,7 +3022,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r60Leasing != null
 		                        ? #numbers.formatDecimal( reportsummary2[stat.index].r60Leasing , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r60_LEASING" name="r60Leasing"
+		            id="r60_LEASING" name="R60_C3_LEASING"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -3049,7 +3050,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r61FactoringDebtors != null
 		                        ? #numbers.formatDecimal( reportsummary2[stat.index].r61FactoringDebtors , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r61_FACTORING_DEBTORS" name="r61FactoringDebtors"
+		            id="r61_FACTORING_DEBTORS" name="R61_C2_FACTORING_DEBTORS"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -3060,7 +3061,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r61Leasing != null
 		                        ? #numbers.formatDecimal( reportsummary2[stat.index].r61Leasing , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r61_LEASING" name="r61Leasing"
+		            id="r61_LEASING" name="R61_C3_LEASING"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -3088,7 +3089,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r62FactoringDebtors != null
 		                        ? #numbers.formatDecimal( reportsummary2[stat.index].r62FactoringDebtors , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r62_FACTORING_DEBTORS" name="r62FactoringDebtors"
+		            id="r62_FACTORING_DEBTORS" name="R62_C2_FACTORING_DEBTORS"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -3099,7 +3100,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r62Leasing != null
 		                        ? #numbers.formatDecimal( reportsummary2[stat.index].r62Leasing , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r62_LEASING" name="r62Leasing"
+		            id="r62_LEASING" name="R62_C3_LEASING"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -3127,7 +3128,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r63FactoringDebtors != null
 		                        ? #numbers.formatDecimal( reportsummary2[stat.index].r63FactoringDebtors , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r63_FACTORING_DEBTORS" name="r63FactoringDebtors"
+		            id="r63_FACTORING_DEBTORS" name="R63_C2_FACTORING_DEBTORS"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -3138,7 +3139,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r63Leasing != null
 		                        ? #numbers.formatDecimal(reportsummary2[stat.index].r63Leasing , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r63_LEASING" name="r63Leasing"
+		            id="r63_LEASING" name="R63_C3_LEASING"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -3166,7 +3167,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r64FactoringDebtors != null
 		                        ? #numbers.formatDecimal(reportsummary2[stat.index].r64FactoringDebtors , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r64_FACTORING_DEBTORS" name="r64FactoringDebtors"
+		            id="r64_FACTORING_DEBTORS" name="R64_C2_FACTORING_DEBTORS"
 		            style="background-color: rgb(107, 122, 143);color: white; width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -3177,7 +3178,7 @@ function calculateR64Totals() {
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r64Leasing != null
 		                        ? #numbers.formatDecimal( reportsummary2[stat.index].r64Leasing , 0, 'COMMA', 0, 'POINT')
 		                        : 0}"
-		            id="r64_LEASING" name="r64Leasing"
+		            id="r64_LEASING" name="R64_C3_LEASING"
 		            style="background-color: rgb(107, 122, 143);color: white; width: 150px; height: 28px; border-color: transparent; text-align: right;"
 		            readonly />
 		    </td>
@@ -3190,7 +3191,7 @@ function calculateR64Totals() {
 		    <td id="r64_C6" style="background-color: rgb(107, 122, 143);color: white; text-align: right;"
 		       
 		        th:text="${#numbers.formatDecimal(row1.r64Total,1,'COMMA',0,'POINT')}"></td>
-		</tr>
+		</tr> 
 											</tbody>
 		
 								</table>
@@ -3220,13 +3221,15 @@ function calculateR64Totals() {
 													id="reportdetails">
 													<thead class="thead-light">
 														
-														<tr>
+														
 															<th> </th>
 															<th>S No</th>
 															<th>CUST ID</th>
 															<th>ACCT NUMBER</th>
 															<th>ACCT NAME</th>
 															<th>ACCT BALANCE IN PULA</th>
+															   <th>FACTORING DEBTORS </th>
+															   <th>LEASING</th>
 															<!--<th>APPROVED LIMIT</th>-->
 															<th>REPORT LABEL</th>
 															<th>REPORT ADDL CRITERIA </th>
@@ -3238,21 +3241,24 @@ function calculateR64Totals() {
 													<tbody style="font-family: Arial;">
 														<tr th:each="report, srlno : ${reportdetails}">
 															<td>
-															                                <a data-toggle="tooltip" class="editrec" title="Click to Edit this Record">
-															                                    <i class="fas fa-edit" style="color: black; cursor:pointer;"
-															                                        th:attr="data-acctNo=${report.acct_number},
+															                                <a data-toggle="tooltip" class="editrec" title="Click to Edit this Record"
+															                                   th:if="${report.report_Remarks != 'MAN'}"> <i class="fas fa-edit" style="color: black; cursor:pointer;"
+															                                        th:attr="data-acctNo=${report.acct_number},data-SNo=${report.sno},
 															                                                 data-asondate=${#dates.format(report.report_date, 'dd-MM-yyyy')},
 															                                                 data-type=${type}"
 															                                        onclick="openDetail(this, 'edit')">
 															                                    </i>
 															                                </a>
 															                            </td>
-															<td th:text="${srlno.index + 1}"></td>
+															<td th:text="${report.sno}"></td>
 															<td th:text="${report.cust_id != null ? report.cust_id : '-'}"></td>
 															<td th:text="${report.acct_number != null ? report.acct_number : '-'}"></td>
 															<td th:text="${report.acct_name != null ? report.acct_name : '-'}"></td>
 															
 															<td style="text-align:right;" th:text="${#numbers.formatDecimal(report.acct_balance_in_pula,1,'COMMA',0,'POINT')}"></td>
+															
+															<td style="text-align:right;" th:text="${#numbers.formatDecimal(report.factoring_debtors,1,'COMMA',0,'POINT')}"></td>
+															<td style="text-align:right;" th:text="${#numbers.formatDecimal(report.leasing,1,'COMMA',0,'POINT')}"></td>
 															<!--<td align="right" th:text="${report.sanction_limit != null
 																													? #numbers.formatDecimal(report.sanction_limit, 1, 2) : '0.00'}"></td>
 															-->
@@ -3333,6 +3339,10 @@ function calculateR64Totals() {
 											  th:value="${#dates.format(Data.report_date, 'yyyy-MM-dd')}"readonly />
 									      </div>
 									  </div>
+									  <div class="col-sm-3">
+									  		<input type="hidden" th:field="*{sno}"
+									  		class="form-control form-control-sm" readonly />
+									  		</div>
 								 
 									  
 									  
