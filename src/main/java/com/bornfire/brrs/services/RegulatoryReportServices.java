@@ -790,6 +790,11 @@ public class RegulatoryReportServices {
 				repsummary = BRRS_Q_SMME_loans_Advances_reportService.getBRRS_Q_SMMEView(reportId,
 						fromdate, todate, currency, dtltype, pageable, type, version);
 				break;
+				
+			case "MDISB1":
+				  repsummary = brrs_mdisb1_reportservice.getMDISB1View(reportId, fromdate,
+				  todate, currency, dtltype, pageable, type, version);
+				 break;
 
 			/*
 			 * case "AML":
@@ -900,14 +905,7 @@ public class RegulatoryReportServices {
 			 * 
 			 * break;
 			 * 
-			 * case "MDISB1":
-			 * 
-			 * repsummary = brrs_mdisb1_reportservice.getMDISB1View(reportId, fromdate,
-			 * todate, currency, dtltype,
-			 * 
-			 * pageable, type, version);
-			 * 
-			 * break;
+			 
 			 * 
 			 * case "MDISB2":
 			 * 
@@ -1593,6 +1591,15 @@ public class RegulatoryReportServices {
 				} catch (Exception e) { // TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				break;
+				
+			case "MDISB1": 
+				try { 
+					repfile = brrs_mdisb1_reportservice.getMDISB1Excel(filename, reportId, fromdate,
+				 todate, currency, dtltype, type, version);
+					} catch (Exception e) { // TODO Auto-generated catch block
+				 e.printStackTrace(); 
+				 } 
 				break;
 
 			/*
