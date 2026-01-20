@@ -1,5 +1,6 @@
 package com.bornfire.brrs.entities;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -11,20 +12,20 @@ public interface BRRS_MDISB5_Archival_Summary_Repo1 extends JpaRepository<MDISB5
 
     // Fetch specific archival data by report date & version
     @Query(value = "SELECT * FROM BRRS_MDISB5_ARCHIVALTABLE_SUMMARY1 " + "WHERE REPORT_DATE = ?1 AND REPORT_VERSION = ?2",nativeQuery = true)
-    List<MDISB5_Archival_Summary_Entity1> getdatabydateListarchival(Date reportDate, String reportVersion);
+    List<MDISB5_Archival_Summary_Entity1> getdatabydateListarchival(Date reportDate, BigDecimal reportVersion);
 
     //  Fetch latest archival version for given date (no version input)
     @Query(value = "SELECT * FROM BRRS_MDISB5_ARCHIVALTABLE_SUMMARY1 " +"WHERE REPORT_DATE = ?1 AND REPORT_VERSION IS NOT NULL " + 
-    "ORDER BY TO_NUMBER(REPORT_VERSION) DESC " + "FETCH FIRST 1 ROWS ONLY",nativeQuery = true)
+    "ORDER BY REPORT_VERSION DESC " + "FETCH FIRST 1 ROWS ONLY",nativeQuery = true)
     Optional<MDISB5_Archival_Summary_Entity1> getLatestArchivalVersionByDate(Date reportDate);
 
     // Fetch by primary key (used internally by Spring Data JPA)
-    Optional<MDISB5_Summary_Entity1> findByReportDateAndReportVersion(Date reportDate, String reportVersion);
+    Optional<MDISB5_Summary_Entity1> findByReportDateAndReportVersion(Date reportDate, BigDecimal reportVersion);
     
     //Current Report Version Only Shown 
     @Query(value = "SELECT *  FROM BRRS_MDISB5_ARCHIVALTABLE_SUMMARY1 WHERE REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION DESC FETCH FIRST 1 ROWS ONLY ", nativeQuery = true)
     List<MDISB5_Archival_Summary_Entity1> getdatabydateListWithVersion();
 
-    @Query(value = "SELECT *  FROM BRRS_MDISB5_ARCHIVALTABLE_SUMMARY1 WHERE REPORT_VERSION IS NOT NULL ", nativeQuery = true)
+    @Query(value = "SELECT *  FROM BRRS_MDISB5_ARCHIVALTABLE_SUMMARY1 WHERE REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION DESC", nativeQuery = true)
     List<MDISB5_Archival_Summary_Entity1> getdatabydateListWithVersionAll();
 }

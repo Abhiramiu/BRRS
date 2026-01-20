@@ -79,7 +79,7 @@ public class MDISB5_Summary_Entity1 {
 	private Date reportDate;
     
 	@Column(name = "REPORT_VERSION")
-	private String reportVersion;
+	private BigDecimal reportVersion;
     private String REPORT_FREQUENCY;
     private String REPORT_CODE;
     private String REPORT_DESC;
@@ -629,13 +629,13 @@ public class MDISB5_Summary_Entity1 {
 
 
 
-	public String getReportVersion() {
+	public BigDecimal getReportVersion() {
 		return reportVersion;
 	}
 
 
 
-	public void setReportVersion(String reportVersion) {
+	public void setReportVersion(BigDecimal reportVersion) {
 		this.reportVersion = reportVersion;
 	}
 
