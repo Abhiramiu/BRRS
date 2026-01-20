@@ -157,11 +157,11 @@ public class BDGF_Services {
 	                "ACCT_OPEN_DATE, AMOUNT_DEPOSITED, CURRENCY, PERIOD, RATE_OF_INTEREST, HUNDRED, BAL_EQUI_TO_BWP, " +
 	                "OUTSTANDING_BALANCE, OUSTNDNG_BAL_UGX, MATURITY_DATE, MATURITY_AMOUNT, SCHEME, CR_PREF_INT_RATE, " +
 	                "SEGMENT, REFERENCE_DATE, DIFFERENCE, LIQGAP_BUCKET, MDEP2A_BUCKET, MDEP_BUCKET, PERIOD_DAYS, " +
-	                "EFFECTIVE_INTEREST_RATE, REPORT_CODE, REPORT_DATE, VERSION, " +
+	                "EFFECTIVE_INTEREST_RATE, SLS_BUCKET, REPORT_CODE, REPORT_DATE, VERSION, " +
 	                "ENTRY_TIME, MODIFY_TIME, VERIFY_TIME, UPLOAD_DATE, " +
 	                "ENTRY_USER, MODIFY_USER, VERIFY_USER, DEL_USER, " +
 	                "ENTRY_FLG, MODIFY_FLG, VERIFY_FLG, DEL_FLG, BDGF_FLG) " +
-	                "VALUES (" + String.join(",", Collections.nCopies(41, "?")) + ")";
+	                "VALUES (" + String.join(",", Collections.nCopies(42, "?")) + ")";
 	        PreparedStatement stmtInsertMaster = conn.prepareStatement(insertMaster);
 	        
 	        // 🟢 Insert new record in GENERAL_MASTER_SRC with VERSION (same structure)
@@ -169,11 +169,11 @@ public class BDGF_Services {
 	                "ACCT_OPEN_DATE, AMOUNT_DEPOSITED, CURRENCY, PERIOD, RATE_OF_INTEREST, HUNDRED, BAL_EQUI_TO_BWP, " +
 	                "OUTSTANDING_BALANCE, OUSTNDNG_BAL_UGX, MATURITY_DATE, MATURITY_AMOUNT, SCHEME, CR_PREF_INT_RATE, " +
 	                "SEGMENT, REFERENCE_DATE, DIFFERENCE, LIQGAP_BUCKET, MDEP2A_BUCKET, MDEP_BUCKET, PERIOD_DAYS, " +
-	                "EFFECTIVE_INTEREST_RATE, REPORT_CODE, REPORT_DATE, VERSION, " +
+	                "EFFECTIVE_INTEREST_RATE, SLS_BUCKET, REPORT_CODE, REPORT_DATE, VERSION, " +
 	                "ENTRY_TIME, MODIFY_TIME, VERIFY_TIME, UPLOAD_DATE, " +
 	                "ENTRY_USER, MODIFY_USER, VERIFY_USER, DEL_USER, " +
 	                "ENTRY_FLG, MODIFY_FLG, VERIFY_FLG, DEL_FLG, BDGF_FLG) " +
-	                "VALUES (" + String.join(",", Collections.nCopies(41, "?")) + ")";
+	                "VALUES (" + String.join(",", Collections.nCopies(42, "?")) + ")";
 	        PreparedStatement stmtInsertSrc = conn.prepareStatement(insertSrc);
 	        
 	        // 🟩 Insert SQL for DEP_GENERAL with VERSION
@@ -182,11 +182,11 @@ public class BDGF_Services {
 	                "CURRENCY, PERIOD, RATE_OF_INTEREST, HUNDRED, BAL_EQUI_TO_BWP, OUTSTANDING_BALANCE, " +
 	                "OUSTNDNG_BAL_UGX, MATURITY_DATE, MATURITY_AMOUNT, SCHEME, CR_PREF_INT_RATE, SEGMENT, " +
 	                "REFERENCE_DATE, DIFFERENCE, LIQGAP_BUCKET, MDEP2A_BUCKET, MDEP_BUCKET, PERIOD_DAYS, " +
-	                "EFFECTIVE_INTEREST_RATE, REPORT_DATE, REPORT_CODE, VERSION, " +
+	                "EFFECTIVE_INTEREST_RATE, SLS_BUCKET, REPORT_DATE, REPORT_CODE, VERSION, " +
 	                "ENTRY_DATE, MODIFY_DATE, VERIFY_DATE, UPLOAD_DATE, " +
 	                "ENTRY_USER, MODIFY_USER, VERIFY_USER, DEL_USER, " +
 	                "ENTRY_FLG, MODIFY_FLG, VERIFY_FLG, DEL_FLG) " +
-	                "VALUES (" + String.join(",", Collections.nCopies(41, "?")) + ")";
+	                "VALUES (" + String.join(",", Collections.nCopies(42, "?")) + ")";
 	        PreparedStatement stmtInsertBDGF = conn.prepareStatement(insertSql);
 	        
 	        int count = 0;
@@ -206,7 +206,7 @@ public class BDGF_Services {
 	            
 	            try {
 	                String accountNo = getCellStringSafe(row, 2, formatter, evaluator);
-	                java.sql.Date reportDate = getCellDateSafe(row, 26, formatter, evaluator);
+	                java.sql.Date reportDate = getCellDateSafe(row, 27, formatter, evaluator);
 	                java.sql.Date currentDate = new java.sql.Date(System.currentTimeMillis());
 	                
 	                // 🔍 Step 1: Get max version for DEP_GENERAL
@@ -300,6 +300,7 @@ public class BDGF_Services {
 	                stmtInsertBDGF.setString(++col, getCellStringSafe(row, 23, formatter, evaluator));
 	                stmtInsertBDGF.setBigDecimal(++col, getCellDecimalSafe(row, 24, formatter, evaluator));
 	                stmtInsertBDGF.setBigDecimal(++col, getCellDecimalSafe(row, 25, formatter, evaluator));
+	                stmtInsertBDGF.setString(++col, getCellStringSafe(row, 26, formatter, evaluator));
 	                stmtInsertBDGF.setDate(++col, reportDate);
 	                stmtInsertBDGF.setString(++col, "DEPG");
 	                stmtInsertBDGF.setInt(++col, newVersionBDGF);
@@ -344,6 +345,7 @@ public class BDGF_Services {
 	                stmtInsertMaster.setString(++col, getCellStringSafe(row, 23, formatter, evaluator));
 	                stmtInsertMaster.setBigDecimal(++col, getCellDecimalSafe(row, 24, formatter, evaluator));
 	                stmtInsertMaster.setBigDecimal(++col, getCellDecimalSafe(row, 25, formatter, evaluator));
+	                stmtInsertMaster.setString(++col, getCellStringSafe(row, 26, formatter, evaluator));
 	                stmtInsertMaster.setString(++col, "DEPG");
 	                stmtInsertMaster.setDate(++col, reportDate);
 	                stmtInsertMaster.setInt(++col, newVersionMaster);
@@ -389,6 +391,7 @@ public class BDGF_Services {
 	                stmtInsertSrc.setString(++col, getCellStringSafe(row, 23, formatter, evaluator));
 	                stmtInsertSrc.setBigDecimal(++col, getCellDecimalSafe(row, 24, formatter, evaluator));
 	                stmtInsertSrc.setBigDecimal(++col, getCellDecimalSafe(row, 25, formatter, evaluator));
+	                stmtInsertSrc.setString(++col, getCellStringSafe(row, 26, formatter, evaluator));
 	                stmtInsertSrc.setString(++col, "DEPG");
 	                stmtInsertSrc.setDate(++col, reportDate);
 	                stmtInsertSrc.setInt(++col, newVersionSrc);

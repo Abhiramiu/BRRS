@@ -1805,8 +1805,8 @@ public class NavigationController {
 		List<String> headers = Arrays.asList("SOL ID", "S No", "A/C No", "Customer ID", "Customer Name", "Open Date",
 				"Amount Deposited", "Currency", "Period", "Rate of Interest", "100", "BAL EQUI TO BWP",
 				"Outstanding Balance", "Oustndng Bal UGX", "Maturity Date", "Maturity Amount", "Scheme",
-				"Cr Pref Int Rate", "SEGMENT", "REFERENCE DATE", "DIFFERENCE", "DAYS", "PERIOD",
-				"EFFECTIVE INTEREST RATE", "REPORT DATE");
+				"Cr Pref Int Rate", "SEGMENT", "REFERENCE DATE", "DIFFERENCE", "LIQGAP BUCKET","MDEP2A BUCKET","MDEP BUCKET", "PERIOD",
+				"EFFECTIVE INTEREST RATE", "SLS BUCKET","REPORT DATE");
 		return createExcelTemplate("DEPOSIT GENERAL", "DEPOSIT GENERAL.xlsx", headers);
 	}
 
