@@ -784,25 +784,7 @@ public class BRRS_Q_SMME_Intrest_Income_New_ReportService {
                         R38cell3.setCellStyle(textStyle);
                     }
 
-                    // ================== ROW 40 ==================
-                    row = sheet.getRow(39);
-                    Cell R39cell2 = row.createCell(6);
-                    if (record.getR40_res_carry_amt() != null) {
-                        R39cell2.setCellValue(record.getR40_res_carry_amt().doubleValue());
-                        R39cell2.setCellStyle(numberStyle);
-                    } else {
-                        R39cell2.setCellValue("");
-                        R39cell2.setCellStyle(textStyle);
-                    }
-
-                    Cell R39cell3 = row.createCell(7);
-                    if (record.getR40_non_res_carry_amt() != null) {
-                        R39cell3.setCellValue(record.getR40_non_res_carry_amt().doubleValue());
-                        R39cell3.setCellStyle(numberStyle);
-                    } else {
-                        R39cell3.setCellValue("");
-                        R39cell3.setCellStyle(textStyle);
-                    }
+               
 
                 }
                 workbook.setForceFormulaRecalculation(true);
@@ -1532,25 +1514,7 @@ public class BRRS_Q_SMME_Intrest_Income_New_ReportService {
                         R38cell3.setCellStyle(textStyle);
                     }
 
-                    // ================== ROW 40 ==================
-                    row = sheet.getRow(39);
-                    Cell R39cell2 = row.createCell(6);
-                    if (record.getR40_res_carry_amt() != null) {
-                        R39cell2.setCellValue(record.getR40_res_carry_amt().doubleValue());
-                        R39cell2.setCellStyle(numberStyle);
-                    } else {
-                        R39cell2.setCellValue("");
-                        R39cell2.setCellStyle(textStyle);
-                    }
-
-                    Cell R39cell3 = row.createCell(7);
-                    if (record.getR40_non_res_carry_amt() != null) {
-                        R39cell3.setCellValue(record.getR40_non_res_carry_amt().doubleValue());
-                        R39cell3.setCellStyle(numberStyle);
-                    } else {
-                        R39cell3.setCellValue("");
-                        R39cell3.setCellStyle(textStyle);
-                    }
+                
 
                 }
 

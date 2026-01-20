@@ -503,25 +503,25 @@ public class BRRS_Q_SMME_Loans_Advances_New_ReportService {
                         R24cell3.setCellStyle(textStyle);
                     }
 
-                    // ================== ROW 26 ==================
-                    row = sheet.getRow(25);
-                    Cell R25cell2 = row.createCell(5);
-                    if (record.getR26_res_carry_amt() != null) {
-                        R25cell2.setCellValue(record.getR26_res_carry_amt().doubleValue());
-                        R25cell2.setCellStyle(numberStyle);
-                    } else {
-                        R25cell2.setCellValue("");
-                        R25cell2.setCellStyle(textStyle);
-                    }
+                    // // ================== ROW 26 ==================
+                    // row = sheet.getRow(25);
+                    // Cell R25cell2 = row.createCell(5);
+                    // if (record.getR26_res_carry_amt() != null) {
+                    //     R25cell2.setCellValue(record.getR26_res_carry_amt().doubleValue());
+                    //     R25cell2.setCellStyle(numberStyle);
+                    // } else {
+                    //     R25cell2.setCellValue("");
+                    //     R25cell2.setCellStyle(textStyle);
+                    // }
 
-                    Cell R25cell3 = row.createCell(6);
-                    if (record.getR26_non_res_carry_amt() != null) {
-                        R25cell3.setCellValue(record.getR26_non_res_carry_amt().doubleValue());
-                        R25cell3.setCellStyle(numberStyle);
-                    } else {
-                        R25cell3.setCellValue("");
-                        R25cell3.setCellStyle(textStyle);
-                    }
+                    // Cell R25cell3 = row.createCell(6);
+                    // if (record.getR26_non_res_carry_amt() != null) {
+                    //     R25cell3.setCellValue(record.getR26_non_res_carry_amt().doubleValue());
+                    //     R25cell3.setCellStyle(numberStyle);
+                    // } else {
+                    //     R25cell3.setCellValue("");
+                    //     R25cell3.setCellStyle(textStyle);
+                    // }
 
                     // ================== ROW 27 ==================
                     row = sheet.getRow(26);
@@ -783,25 +783,25 @@ public class BRRS_Q_SMME_Loans_Advances_New_ReportService {
                         R38cell3.setCellStyle(textStyle);
                     }
 
-                    // ================== ROW 40 ==================
-                    row = sheet.getRow(39);
-                    Cell R39cell2 = row.createCell(5);
-                    if (record.getR40_res_carry_amt() != null) {
-                        R39cell2.setCellValue(record.getR40_res_carry_amt().doubleValue());
-                        R39cell2.setCellStyle(numberStyle);
-                    } else {
-                        R39cell2.setCellValue("");
-                        R39cell2.setCellStyle(textStyle);
-                    }
+                    // // ================== ROW 40 ==================
+                    // row = sheet.getRow(39);
+                    // Cell R39cell2 = row.createCell(5);
+                    // if (record.getR40_res_carry_amt() != null) {
+                    //     R39cell2.setCellValue(record.getR40_res_carry_amt().doubleValue());
+                    //     R39cell2.setCellStyle(numberStyle);
+                    // } else {
+                    //     R39cell2.setCellValue("");
+                    //     R39cell2.setCellStyle(textStyle);
+                    // }
 
-                    Cell R39cell3 = row.createCell(6);
-                    if (record.getR40_non_res_carry_amt() != null) {
-                        R39cell3.setCellValue(record.getR40_non_res_carry_amt().doubleValue());
-                        R39cell3.setCellStyle(numberStyle);
-                    } else {
-                        R39cell3.setCellValue("");
-                        R39cell3.setCellStyle(textStyle);
-                    }
+                    // Cell R39cell3 = row.createCell(6);
+                    // if (record.getR40_non_res_carry_amt() != null) {
+                    //     R39cell3.setCellValue(record.getR40_non_res_carry_amt().doubleValue());
+                    //     R39cell3.setCellStyle(numberStyle);
+                    // } else {
+                    //     R39cell3.setCellValue("");
+                    //     R39cell3.setCellStyle(textStyle);
+                    // }
 
                 }
                 workbook.setForceFormulaRecalculation(true);
@@ -821,7 +821,6 @@ public class BRRS_Q_SMME_Loans_Advances_New_ReportService {
         try {
             logger.info("Generating Excel for BRRSQ_SMME Details...");
             System.out.println("came to Detail download service");
-            System.out.println("Gopika");
             if (type.equals("ARCHIVAL") & version != null) {
                 byte[] ARCHIVALreport = getDetailExcelARCHIVAL(filename, fromdate, todate, currency, dtltype, type,
                         version);
@@ -1252,25 +1251,25 @@ public class BRRS_Q_SMME_Loans_Advances_New_ReportService {
                         R24cell3.setCellStyle(textStyle);
                     }
 
-                    // ================== ROW 26 ==================
-                    row = sheet.getRow(25);
-                    Cell R25cell2 = row.createCell(5);
-                    if (record.getR26_res_carry_amt() != null) {
-                        R25cell2.setCellValue(record.getR26_res_carry_amt().doubleValue());
-                        R25cell2.setCellStyle(numberStyle);
-                    } else {
-                        R25cell2.setCellValue("");
-                        R25cell2.setCellStyle(textStyle);
-                    }
+                    // // ================== ROW 26 ==================
+                    // row = sheet.getRow(25);
+                    // Cell R25cell2 = row.createCell(5);
+                    // if (record.getR26_res_carry_amt() != null) {
+                    //     R25cell2.setCellValue(record.getR26_res_carry_amt().doubleValue());
+                    //     R25cell2.setCellStyle(numberStyle);
+                    // } else {
+                    //     R25cell2.setCellValue("");
+                    //     R25cell2.setCellStyle(textStyle);
+                    // }
 
-                    Cell R25cell3 = row.createCell(6);
-                    if (record.getR26_non_res_carry_amt() != null) {
-                        R25cell3.setCellValue(record.getR26_non_res_carry_amt().doubleValue());
-                        R25cell3.setCellStyle(numberStyle);
-                    } else {
-                        R25cell3.setCellValue("");
-                        R25cell3.setCellStyle(textStyle);
-                    }
+                    // Cell R25cell3 = row.createCell(6);
+                    // if (record.getR26_non_res_carry_amt() != null) {
+                    //     R25cell3.setCellValue(record.getR26_non_res_carry_amt().doubleValue());
+                    //     R25cell3.setCellStyle(numberStyle);
+                    // } else {
+                    //     R25cell3.setCellValue("");
+                    //     R25cell3.setCellStyle(textStyle);
+                    // }
 
                     // ================== ROW 27 ==================
                     row = sheet.getRow(26);
@@ -1532,24 +1531,24 @@ public class BRRS_Q_SMME_Loans_Advances_New_ReportService {
                     }
 
                     // ================== ROW 40 ==================
-                    row = sheet.getRow(39);
-                    Cell R39cell2 = row.createCell(5);
-                    if (record.getR40_res_carry_amt() != null) {
-                        R39cell2.setCellValue(record.getR40_res_carry_amt().doubleValue());
-                        R39cell2.setCellStyle(numberStyle);
-                    } else {
-                        R39cell2.setCellValue("");
-                        R39cell2.setCellStyle(textStyle);
-                    }
+                    // row = sheet.getRow(39);
+                    // Cell R39cell2 = row.createCell(5);
+                    // if (record.getR40_res_carry_amt() != null) {
+                    //     R39cell2.setCellValue(record.getR40_res_carry_amt().doubleValue());
+                    //     R39cell2.setCellStyle(numberStyle);
+                    // } else {
+                    //     R39cell2.setCellValue("");
+                    //     R39cell2.setCellStyle(textStyle);
+                    // }
 
-                    Cell R39cell3 = row.createCell(6);
-                    if (record.getR40_non_res_carry_amt() != null) {
-                        R39cell3.setCellValue(record.getR40_non_res_carry_amt().doubleValue());
-                        R39cell3.setCellStyle(numberStyle);
-                    } else {
-                        R39cell3.setCellValue("");
-                        R39cell3.setCellStyle(textStyle);
-                    }
+                    // Cell R39cell3 = row.createCell(6);
+                    // if (record.getR40_non_res_carry_amt() != null) {
+                    //     R39cell3.setCellValue(record.getR40_non_res_carry_amt().doubleValue());
+                    //     R39cell3.setCellStyle(numberStyle);
+                    // } else {
+                    //     R39cell3.setCellValue("");
+                    //     R39cell3.setCellStyle(textStyle);
+                    // }
 
                 }
 

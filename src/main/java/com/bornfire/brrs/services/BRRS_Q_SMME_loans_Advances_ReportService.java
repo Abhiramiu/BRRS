@@ -855,10 +855,9 @@ public class BRRS_Q_SMME_loans_Advances_ReportService{
 					balanceCell.setCellStyle(balanceStyle);
 					row.createCell(4).setCellValue(item.getReportLabel());
 					row.createCell(5).setCellValue(item.getReportAddlCriteria1());
-					row.createCell(6)
-							.setCellValue(item.getReportDate() != null
-									? new SimpleDateFormat("dd/MM/yyyy").format(item.getReportDate())
-									: "");
+					                row.createCell(6).setCellValue(item.getReportDate() != null
+                        ? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
+                        : "");
 					// Apply data style for all other cells
 					for (int j = 0; j < 7; j++) {
 						if (j != 3) {
