@@ -1069,34 +1069,44 @@ PURPOSE		: BRRSREPORT
 
 			var cellValue = a.textContent || a.innerText;
 
-			// ✅ At least one columnId should have value
-			const hasAnyColumnId =
-				(columnId && columnId.trim() !== "");
+			const hasAnyColumnId = (columnId && columnId.trim() !== "");
 
 			if (cellValue !== '0' && hasAnyColumnId) {
+
 				document.getElementById("cellresultModalLabel").innerText =
 					"Do you want to open details for Row: " + rowId +
-					" | Column: " + (columnId || "") + "";
+					" | Column: " + columnId;
 
 				$('#cellresultModal').modal('show');
 
-				document.querySelector('.yes-btn').onclick = function () {
+				// ✅ Remove old handler before assigning
+				var yesBtn = document.querySelector('#cellresultModal .yes-btn');
+				yesBtn.onclick = null;
+
+				yesBtn.onclick = function () {
+
 					$('#cellresultModal').modal('hide');
 
-					const loader = bootstrap.Modal.getOrCreateInstance(document.getElementById('loader'), {
-						backdrop: 'static',
-						keyboard: false
-					});
+					const loader = bootstrap.Modal.getOrCreateInstance(
+						document.getElementById('loader'),
+						{ backdrop: 'static', keyboard: false }
+					);
 					$('#loader').modal('show');
 
-					// ✅ Thymeleaf-compatible URL
-					var Callurl = /*[[@{'/Reports/' + ${reportid} + '/Details'(asondate=${asondate}, fromdate=${fromdate}, todate=${todate}, currency=${currency}, dtltype=${dtltype},type=${type},version=${version})}]]*/ "";
+					var Callurl = /*[[@{'/Reports/' + ${reportid} + '/Details'
+						(asondate=${asondate},
+						 fromdate=${fromdate},
+						 todate=${todate},
+						 currency=${currency},
+						 dtltype=${dtltype},
+						 type=${type},
+						 version=${version})}]]*/ "";
 
-					// ✅ Append filter params
 					Callurl += "&filter=" + encodeURIComponent(rowId + "," + columnId);
 
 					window.location.href = Callurl;
 				};
+
 			} else {
 				showResultModal("Alert", "No Records available for this selected cell.");
 			}

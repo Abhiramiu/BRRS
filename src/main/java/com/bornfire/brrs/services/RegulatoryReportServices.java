@@ -795,6 +795,13 @@ public class RegulatoryReportServices {
 				  repsummary = brrs_mdisb1_reportservice.getMDISB1View(reportId, fromdate,
 				  todate, currency, dtltype, pageable, type, version);
 				 break;
+				 
+			case "MDISB2":
+				  repsummary = brrs_mdisb2_reportservice.getMDISB2View(reportId, fromdate,
+				  todate, currency, dtltype, pageable, type, version);
+				 break;
+				 
+				 
 			case "SCH_17":
 				  repsummary = brrs_sch_17_reportservice.getSCH_17View(reportId, fromdate,
 				  todate, currency, dtltype, pageable, type, version);
@@ -1615,6 +1622,15 @@ public class RegulatoryReportServices {
 				 e.printStackTrace(); 
 				 } 
 				break;
+				
+			case "MDISB2": 
+				try { 
+					repfile = brrs_mdisb2_reportservice.getMDISB2Excel(filename, reportId, fromdate,
+				 todate, currency, dtltype, type, version);
+					} catch (Exception e) { // TODO Auto-generated catch block
+				 e.printStackTrace(); 
+				 } 
+				break;
 
 			/*
 			 * case "M_CA4": try { repfile =
@@ -2153,16 +2169,7 @@ public class RegulatoryReportServices {
 			 * (Exception e) { // TODO Auto-generated catch block e.printStackTrace(); }
 			 * break;
 			 * 
-			 * case "MDISB1": try { repfile =
-			 * brrs_mdisb1_reportservice.getMDISB1Excel(filename, reportId, fromdate,
-			 * todate, currency, dtltype, type, version); } catch (Exception e) { // TODO
-			 * Auto-generated catch block e.printStackTrace(); } break;
-			 * 
-			 * case "MDISB2": try { repfile =
-			 * brrs_mdisb2_reportservice.getMDISB2Excel(filename, reportId, fromdate,
-			 * todate, currency, dtltype, type, version); } catch (Exception e) { // TODO
-			 * Auto-generated catch block e.printStackTrace(); } break;
-			 * 
+			 
 			 * case "MDISB3": try { repfile =
 			 * brrs_mdisb3_reportservice.getMDISB3Excel(filename, reportId, fromdate,
 			 * todate, currency, dtltype, type, version); } catch (Exception e) { // TODO

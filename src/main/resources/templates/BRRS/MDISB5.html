@@ -65,8 +65,8 @@ PURPOSE		: BRRS_MDISB5REPORT
 			border-color: #0c0c0c;
 		}
 
-		 .btn-primary:not (:disabled):not (.disabled).active,
-		.btn-primary:not (:disabled):not (.disabled):active,
+		 .btn-primary:not(:disabled):not(.disabled).active,
+		.btn-primary:not(:disabled):not(.disabled):active,
 		.show>.btn-primary.dropdown-toggle {
 			color: #fff;
 			background-color: #cc0000;
@@ -203,7 +203,7 @@ PURPOSE		: BRRS_MDISB5REPORT
 
 
 /* When input or select is focused or has a value, move the label up */
-.form-control:focus ~.form-legend, .form-control:not (:placeholder-shown
+.form-control:focus ~.form-legend, .form-control:not(:placeholder-shown
 	 )~.form-legend {
 	top: -8px;
 	font-size: 1rem;
@@ -217,7 +217,7 @@ PURPOSE		: BRRS_MDISB5REPORT
 }
 
 /* Ensure the label returns to the normal color after focus or hover is removed */
-.form-control:not (:focus )~.form-legend {
+.form-control:not(:focus )~.form-legend {
 	color: #aaa;
 	/* Normal label color */
 }
@@ -378,7 +378,7 @@ label.error {
 
 		function showsummary() {
 			$('#loader').modal('show');
-			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/;
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/
 			location.href = Callurl;
 		}
 

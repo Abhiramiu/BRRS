@@ -20,7 +20,6 @@ public class MDISB2_Summary_Entity1 {
 	private BigDecimal	r7_deposit_foreign_amount;
 	private BigDecimal	r7_total_number;
 	private BigDecimal	r7_total_amount;
-	private BigDecimal	r7_total_deposit_exceed;
 	private BigDecimal	r7_total_deposit_bank;
 	private String	r8_deposit_size;
 	private String	r8_deposit_type;
@@ -30,7 +29,6 @@ public class MDISB2_Summary_Entity1 {
 	private BigDecimal	r8_deposit_foreign_amount;
 	private BigDecimal	r8_total_number;
 	private BigDecimal	r8_total_amount;
-	private BigDecimal	r8_total_deposit_exceed;
 	private BigDecimal	r8_total_deposit_bank;
 	private String	r9_deposit_size;
 	private String	r9_deposit_type;
@@ -40,7 +38,6 @@ public class MDISB2_Summary_Entity1 {
 	private BigDecimal	r9_deposit_foreign_amount;
 	private BigDecimal	r9_total_number;
 	private BigDecimal	r9_total_amount;
-	private BigDecimal	r9_total_deposit_exceed;
 	private BigDecimal	r9_total_deposit_bank;
 	private String	r10_deposit_size;
 	private String	r10_deposit_type;
@@ -50,7 +47,6 @@ public class MDISB2_Summary_Entity1 {
 	private BigDecimal	r10_deposit_foreign_amount;
 	private BigDecimal	r10_total_number;
 	private BigDecimal	r10_total_amount;
-	private BigDecimal	r10_total_deposit_exceed;
 	private BigDecimal	r10_total_deposit_bank;
 	private String	r11_deposit_size;
 	private String	r11_deposit_type;
@@ -60,7 +56,6 @@ public class MDISB2_Summary_Entity1 {
 	private BigDecimal	r11_deposit_foreign_amount;
 	private BigDecimal	r11_total_number;
 	private BigDecimal	r11_total_amount;
-	private BigDecimal	r11_total_deposit_exceed;
 	private BigDecimal	r11_total_deposit_bank;
 	private String	r12_deposit_size;
 	private String	r12_deposit_type;
@@ -70,7 +65,6 @@ public class MDISB2_Summary_Entity1 {
 	private BigDecimal	r12_deposit_foreign_amount;
 	private BigDecimal	r12_total_number;
 	private BigDecimal	r12_total_amount;
-	private BigDecimal	r12_total_deposit_exceed;
 	private BigDecimal	r12_total_deposit_bank;
 	private String	r13_deposit_size;
 	private String	r13_deposit_type;
@@ -80,7 +74,6 @@ public class MDISB2_Summary_Entity1 {
 	private BigDecimal	r13_deposit_foreign_amount;
 	private BigDecimal	r13_total_number;
 	private BigDecimal	r13_total_amount;
-	private BigDecimal	r13_total_deposit_exceed;
 	private BigDecimal	r13_total_deposit_bank;
 	private String	r14_deposit_size;
 	private String	r14_deposit_type;
@@ -90,7 +83,6 @@ public class MDISB2_Summary_Entity1 {
 	private BigDecimal	r14_deposit_foreign_amount;
 	private BigDecimal	r14_total_number;
 	private BigDecimal	r14_total_amount;
-	private BigDecimal	r14_total_deposit_exceed;
 	private BigDecimal	r14_total_deposit_bank;
 	private String	r15_deposit_size;
 	private String	r15_deposit_type;
@@ -100,7 +92,6 @@ public class MDISB2_Summary_Entity1 {
 	private BigDecimal	r15_deposit_foreign_amount;
 	private BigDecimal	r15_total_number;
 	private BigDecimal	r15_total_amount;
-	private BigDecimal	r15_total_deposit_exceed;
 	private BigDecimal	r15_total_deposit_bank;
 	private String	r16_deposit_size;
 	private String	r16_deposit_type;
@@ -110,7 +101,6 @@ public class MDISB2_Summary_Entity1 {
 	private BigDecimal	r16_deposit_foreign_amount;
 	private BigDecimal	r16_total_number;
 	private BigDecimal	r16_total_amount;
-	private BigDecimal	r16_total_deposit_exceed;
 	private BigDecimal	r16_total_deposit_bank;
 	private String	r17_deposit_size;
 	private String	r17_deposit_type;
@@ -120,7 +110,6 @@ public class MDISB2_Summary_Entity1 {
 	private BigDecimal	r17_deposit_foreign_amount;
 	private BigDecimal	r17_total_number;
 	private BigDecimal	r17_total_amount;
-	private BigDecimal	r17_total_deposit_exceed;
 	private BigDecimal	r17_total_deposit_bank;
 	private String	r18_deposit_size;
 	private String	r18_deposit_type;
@@ -130,7 +119,6 @@ public class MDISB2_Summary_Entity1 {
 	private BigDecimal	r18_deposit_foreign_amount;
 	private BigDecimal	r18_total_number;
 	private BigDecimal	r18_total_amount;
-	private BigDecimal	r18_total_deposit_exceed;
 	private BigDecimal	r18_total_deposit_bank;
 	private String	r19_deposit_size;
 	private String	r19_deposit_type;
@@ -140,7 +128,6 @@ public class MDISB2_Summary_Entity1 {
 	private BigDecimal	r19_deposit_foreign_amount;
 	private BigDecimal	r19_total_number;
 	private BigDecimal	r19_total_amount;
-	private BigDecimal	r19_total_deposit_exceed;
 	private BigDecimal	r19_total_deposit_bank;
 	private String	r20_deposit_size;
 	private String	r20_deposit_type;
@@ -150,7 +137,6 @@ public class MDISB2_Summary_Entity1 {
 	private BigDecimal	r20_deposit_foreign_amount;
 	private BigDecimal	r20_total_number;
 	private BigDecimal	r20_total_amount;
-	private BigDecimal	r20_total_deposit_exceed;
 	private BigDecimal	r20_total_deposit_bank;
 	private String	r21_deposit_size;
 	private String	r21_deposit_type;
@@ -160,7 +146,6 @@ public class MDISB2_Summary_Entity1 {
 	private BigDecimal	r21_deposit_foreign_amount;
 	private BigDecimal	r21_total_number;
 	private BigDecimal	r21_total_amount;
-	private BigDecimal	r21_total_deposit_exceed;
 	private BigDecimal	r21_total_deposit_bank;
 	private String	r22_deposit_size;
 	private String	r22_deposit_type;
@@ -170,7 +155,6 @@ public class MDISB2_Summary_Entity1 {
 	private BigDecimal	r22_deposit_foreign_amount;
 	private BigDecimal	r22_total_number;
 	private BigDecimal	r22_total_amount;
-	private BigDecimal	r22_total_deposit_exceed;
 	private BigDecimal	r22_total_deposit_bank;
 	private String	r23_deposit_size;
 	private String	r23_deposit_type;
@@ -180,7 +164,6 @@ public class MDISB2_Summary_Entity1 {
 	private BigDecimal	r23_deposit_foreign_amount;
 	private BigDecimal	r23_total_number;
 	private BigDecimal	r23_total_amount;
-	private BigDecimal	r23_total_deposit_exceed;
 	private BigDecimal	r23_total_deposit_bank;
 	private String	r24_deposit_size;
 	private String	r24_deposit_type;
@@ -190,7 +173,6 @@ public class MDISB2_Summary_Entity1 {
 	private BigDecimal	r24_deposit_foreign_amount;
 	private BigDecimal	r24_total_number;
 	private BigDecimal	r24_total_amount;
-	private BigDecimal	r24_total_deposit_exceed;
 	private BigDecimal	r24_total_deposit_bank;
 	private String	r25_deposit_size;
 	private String	r25_deposit_type;
@@ -200,7 +182,6 @@ public class MDISB2_Summary_Entity1 {
 	private BigDecimal	r25_deposit_foreign_amount;
 	private BigDecimal	r25_total_number;
 	private BigDecimal	r25_total_amount;
-	private BigDecimal	r25_total_deposit_exceed;
 	private BigDecimal	r25_total_deposit_bank;
 	private String	r26_deposit_size;
 	private String	r26_deposit_type;
@@ -210,7 +191,6 @@ public class MDISB2_Summary_Entity1 {
 	private BigDecimal	r26_deposit_foreign_amount;
 	private BigDecimal	r26_total_number;
 	private BigDecimal	r26_total_amount;
-	private BigDecimal	r26_total_deposit_exceed;
 	private BigDecimal	r26_total_deposit_bank;
 	private String	r27_deposit_size;
 	private String	r27_deposit_type;
@@ -220,7 +200,6 @@ public class MDISB2_Summary_Entity1 {
 	private BigDecimal	r27_deposit_foreign_amount;
 	private BigDecimal	r27_total_number;
 	private BigDecimal	r27_total_amount;
-	private BigDecimal	r27_total_deposit_exceed;
 	private BigDecimal	r27_total_deposit_bank;
 	private String	r28_deposit_size;
 	private String	r28_deposit_type;
@@ -230,7 +209,6 @@ public class MDISB2_Summary_Entity1 {
 	private BigDecimal	r28_deposit_foreign_amount;
 	private BigDecimal	r28_total_number;
 	private BigDecimal	r28_total_amount;
-	private BigDecimal	r28_total_deposit_exceed;
 	private BigDecimal	r28_total_deposit_bank;
 	private String	r29_deposit_size;
 	private String	r29_deposit_type;
@@ -240,7 +218,6 @@ public class MDISB2_Summary_Entity1 {
 	private BigDecimal	r29_deposit_foreign_amount;
 	private BigDecimal	r29_total_number;
 	private BigDecimal	r29_total_amount;
-	private BigDecimal	r29_total_deposit_exceed;
 	private BigDecimal	r29_total_deposit_bank;
 	private String	r30_deposit_size;
 	private String	r30_deposit_type;
@@ -250,7 +227,6 @@ public class MDISB2_Summary_Entity1 {
 	private BigDecimal	r30_deposit_foreign_amount;
 	private BigDecimal	r30_total_number;
 	private BigDecimal	r30_total_amount;
-	private BigDecimal	r30_total_deposit_exceed;
 	private BigDecimal	r30_total_deposit_bank;
 	private String	r31_deposit_size;
 	private String	r31_deposit_type;
@@ -260,7 +236,6 @@ public class MDISB2_Summary_Entity1 {
 	private BigDecimal	r31_deposit_foreign_amount;
 	private BigDecimal	r31_total_number;
 	private BigDecimal	r31_total_amount;
-	private BigDecimal	r31_total_deposit_exceed;
 	private BigDecimal	r31_total_deposit_bank;
 	private String	r32_deposit_size;
 	private String	r32_deposit_type;
@@ -270,7 +245,6 @@ public class MDISB2_Summary_Entity1 {
 	private BigDecimal	r32_deposit_foreign_amount;
 	private BigDecimal	r32_total_number;
 	private BigDecimal	r32_total_amount;
-	private BigDecimal	r32_total_deposit_exceed;
 	private BigDecimal	r32_total_deposit_bank;
 	private String	r33_deposit_size;
 	private String	r33_deposit_type;
@@ -280,7 +254,6 @@ public class MDISB2_Summary_Entity1 {
 	private BigDecimal	r33_deposit_foreign_amount;
 	private BigDecimal	r33_total_number;
 	private BigDecimal	r33_total_amount;
-	private BigDecimal	r33_total_deposit_exceed;
 	private BigDecimal	r33_total_deposit_bank;
 	private String	r34_deposit_size;
 	private String	r34_deposit_type;
@@ -290,7 +263,6 @@ public class MDISB2_Summary_Entity1 {
 	private BigDecimal	r34_deposit_foreign_amount;
 	private BigDecimal	r34_total_number;
 	private BigDecimal	r34_total_amount;
-	private BigDecimal	r34_total_deposit_exceed;
 	private BigDecimal	r34_total_deposit_bank;
 	private String	r35_deposit_size;
 	private String	r35_deposit_type;
@@ -300,7 +272,6 @@ public class MDISB2_Summary_Entity1 {
 	private BigDecimal	r35_deposit_foreign_amount;
 	private BigDecimal	r35_total_number;
 	private BigDecimal	r35_total_amount;
-	private BigDecimal	r35_total_deposit_exceed;
 	private BigDecimal	r35_total_deposit_bank;
 	private String	r36_deposit_size;
 	private String	r36_deposit_type;
@@ -310,7 +281,6 @@ public class MDISB2_Summary_Entity1 {
 	private BigDecimal	r36_deposit_foreign_amount;
 	private BigDecimal	r36_total_number;
 	private BigDecimal	r36_total_amount;
-	private BigDecimal	r36_total_deposit_exceed;
 	private BigDecimal	r36_total_deposit_bank;
 	private String	r37_deposit_size;
 	private String	r37_deposit_type;
@@ -320,7 +290,6 @@ public class MDISB2_Summary_Entity1 {
 	private BigDecimal	r37_deposit_foreign_amount;
 	private BigDecimal	r37_total_number;
 	private BigDecimal	r37_total_amount;
-	private BigDecimal	r37_total_deposit_exceed;
 	private BigDecimal	r37_total_deposit_bank;
 	private String	r38_deposit_size;
 	private String	r38_deposit_type;
@@ -330,7 +299,6 @@ public class MDISB2_Summary_Entity1 {
 	private BigDecimal	r38_deposit_foreign_amount;
 	private BigDecimal	r38_total_number;
 	private BigDecimal	r38_total_amount;
-	private BigDecimal	r38_total_deposit_exceed;
 	private BigDecimal	r38_total_deposit_bank;
 	private String	r39_deposit_size;
 	private String	r39_deposit_type;
@@ -340,7 +308,6 @@ public class MDISB2_Summary_Entity1 {
 	private BigDecimal	r39_deposit_foreign_amount;
 	private BigDecimal	r39_total_number;
 	private BigDecimal	r39_total_amount;
-	private BigDecimal	r39_total_deposit_exceed;
 	private BigDecimal	r39_total_deposit_bank;
 	private String	r40_deposit_size;
 	private String	r40_deposit_type;
@@ -350,7 +317,6 @@ public class MDISB2_Summary_Entity1 {
 	private BigDecimal	r40_deposit_foreign_amount;
 	private BigDecimal	r40_total_number;
 	private BigDecimal	r40_total_amount;
-	private BigDecimal	r40_total_deposit_exceed;
 	private BigDecimal	r40_total_deposit_bank;
 	private String	r41_deposit_size;
 	private String	r41_deposit_type;
@@ -360,7 +326,6 @@ public class MDISB2_Summary_Entity1 {
 	private BigDecimal	r41_deposit_foreign_amount;
 	private BigDecimal	r41_total_number;
 	private BigDecimal	r41_total_amount;
-	private BigDecimal	r41_total_deposit_exceed;
 	private BigDecimal	r41_total_deposit_bank;
 	private String	r42_deposit_size;
 	private String	r42_deposit_type;
@@ -370,7 +335,6 @@ public class MDISB2_Summary_Entity1 {
 	private BigDecimal	r42_deposit_foreign_amount;
 	private BigDecimal	r42_total_number;
 	private BigDecimal	r42_total_amount;
-	private BigDecimal	r42_total_deposit_exceed;
 	private BigDecimal	r42_total_deposit_bank;
 	private String	r43_deposit_size;
 	private String	r43_deposit_type;
@@ -380,7 +344,6 @@ public class MDISB2_Summary_Entity1 {
 	private BigDecimal	r43_deposit_foreign_amount;
 	private BigDecimal	r43_total_number;
 	private BigDecimal	r43_total_amount;
-	private BigDecimal	r43_total_deposit_exceed;
 	private BigDecimal	r43_total_deposit_bank;
 	private String	r44_deposit_size;
 	private String	r44_deposit_type;
@@ -390,7 +353,6 @@ public class MDISB2_Summary_Entity1 {
 	private BigDecimal	r44_deposit_foreign_amount;
 	private BigDecimal	r44_total_number;
 	private BigDecimal	r44_total_amount;
-	private BigDecimal	r44_total_deposit_exceed;
 	private BigDecimal	r44_total_deposit_bank;
 	private String	r45_deposit_size;
 	private String	r45_deposit_type;
@@ -400,7 +362,6 @@ public class MDISB2_Summary_Entity1 {
 	private BigDecimal	r45_deposit_foreign_amount;
 	private BigDecimal	r45_total_number;
 	private BigDecimal	r45_total_amount;
-	private BigDecimal	r45_total_deposit_exceed;
 	private BigDecimal	r45_total_deposit_bank;
 	private String	r46_deposit_size;
 	private String	r46_deposit_type;
@@ -410,7 +371,6 @@ public class MDISB2_Summary_Entity1 {
 	private BigDecimal	r46_deposit_foreign_amount;
 	private BigDecimal	r46_total_number;
 	private BigDecimal	r46_total_amount;
-	private BigDecimal	r46_total_deposit_exceed;
 	private BigDecimal	r46_total_deposit_bank;
 	private String	r47_deposit_size;
 	private String	r47_deposit_type;
@@ -420,7 +380,6 @@ public class MDISB2_Summary_Entity1 {
 	private BigDecimal	r47_deposit_foreign_amount;
 	private BigDecimal	r47_total_number;
 	private BigDecimal	r47_total_amount;
-	private BigDecimal	r47_total_deposit_exceed;
 	private BigDecimal	r47_total_deposit_bank;
 	private String	r48_deposit_size;
 	private String	r48_deposit_type;
@@ -430,7 +389,6 @@ public class MDISB2_Summary_Entity1 {
 	private BigDecimal	r48_deposit_foreign_amount;
 	private BigDecimal	r48_total_number;
 	private BigDecimal	r48_total_amount;
-	private BigDecimal	r48_total_deposit_exceed;
 	private BigDecimal	r48_total_deposit_bank;
 	private String	r49_deposit_size;
 	private String	r49_deposit_type;
@@ -440,7 +398,6 @@ public class MDISB2_Summary_Entity1 {
 	private BigDecimal	r49_deposit_foreign_amount;
 	private BigDecimal	r49_total_number;
 	private BigDecimal	r49_total_amount;
-	private BigDecimal	r49_total_deposit_exceed;
 	private BigDecimal	r49_total_deposit_bank;
 	private String	r50_deposit_size;
 	private String	r50_deposit_type;
@@ -450,7 +407,6 @@ public class MDISB2_Summary_Entity1 {
 	private BigDecimal	r50_deposit_foreign_amount;
 	private BigDecimal	r50_total_number;
 	private BigDecimal	r50_total_amount;
-	private BigDecimal	r50_total_deposit_exceed;
 	private BigDecimal	r50_total_deposit_bank;
 	private String	r51_deposit_size;
 	private String	r51_deposit_type;
@@ -460,7 +416,6 @@ public class MDISB2_Summary_Entity1 {
 	private BigDecimal	r51_deposit_foreign_amount;
 	private BigDecimal	r51_total_number;
 	private BigDecimal	r51_total_amount;
-	private BigDecimal	r51_total_deposit_exceed;
 	private BigDecimal	r51_total_deposit_bank;
 	private String	r52_deposit_size;
 	private String	r52_deposit_type;
@@ -470,7 +425,6 @@ public class MDISB2_Summary_Entity1 {
 	private BigDecimal	r52_deposit_foreign_amount;
 	private BigDecimal	r52_total_number;
 	private BigDecimal	r52_total_amount;
-	private BigDecimal	r52_total_deposit_exceed;
 	private BigDecimal	r52_total_deposit_bank;
 	private String	r53_deposit_size;
 	private String	r53_deposit_type;
@@ -480,7 +434,6 @@ public class MDISB2_Summary_Entity1 {
 	private BigDecimal	r53_deposit_foreign_amount;
 	private BigDecimal	r53_total_number;
 	private BigDecimal	r53_total_amount;
-	private BigDecimal	r53_total_deposit_exceed;
 	private BigDecimal	r53_total_deposit_bank;
 	private String	r54_deposit_size;
 	private String	r54_deposit_type;
@@ -490,7 +443,6 @@ public class MDISB2_Summary_Entity1 {
 	private BigDecimal	r54_deposit_foreign_amount;
 	private BigDecimal	r54_total_number;
 	private BigDecimal	r54_total_amount;
-	private BigDecimal	r54_total_deposit_exceed;
 	private BigDecimal	r54_total_deposit_bank;
 	private String	r55_deposit_size;
 	private String	r55_deposit_type;
@@ -500,7 +452,6 @@ public class MDISB2_Summary_Entity1 {
 	private BigDecimal	r55_deposit_foreign_amount;
 	private BigDecimal	r55_total_number;
 	private BigDecimal	r55_total_amount;
-	private BigDecimal	r55_total_deposit_exceed;
 	private BigDecimal	r55_total_deposit_bank;
 	private String	r56_deposit_size;
 	private String	r56_deposit_type;
@@ -510,7 +461,6 @@ public class MDISB2_Summary_Entity1 {
 	private BigDecimal	r56_deposit_foreign_amount;
 	private BigDecimal	r56_total_number;
 	private BigDecimal	r56_total_amount;
-	private BigDecimal	r56_total_deposit_exceed;
 	private BigDecimal	r56_total_deposit_bank;
 	private String	r57_deposit_size;
 	private String	r57_deposit_type;
@@ -520,7 +470,6 @@ public class MDISB2_Summary_Entity1 {
 	private BigDecimal	r57_deposit_foreign_amount;
 	private BigDecimal	r57_total_number;
 	private BigDecimal	r57_total_amount;
-	private BigDecimal	r57_total_deposit_exceed;
 	private BigDecimal	r57_total_deposit_bank;
 	private String	r58_deposit_size;
 	private String	r58_deposit_type;
@@ -530,7 +479,6 @@ public class MDISB2_Summary_Entity1 {
 	private BigDecimal	r58_deposit_foreign_amount;
 	private BigDecimal	r58_total_number;
 	private BigDecimal	r58_total_amount;
-	private BigDecimal	r58_total_deposit_exceed;
 	private BigDecimal	r58_total_deposit_bank;
 	private String	r59_deposit_size;
 	private String	r59_deposit_type;
@@ -540,7 +488,6 @@ public class MDISB2_Summary_Entity1 {
 	private BigDecimal	r59_deposit_foreign_amount;
 	private BigDecimal	r59_total_number;
 	private BigDecimal	r59_total_amount;
-	private BigDecimal	r59_total_deposit_exceed;
 	private BigDecimal	r59_total_deposit_bank;
 	private String	r60_deposit_size;
 	private String	r60_deposit_type;
@@ -550,7 +497,6 @@ public class MDISB2_Summary_Entity1 {
 	private BigDecimal	r60_deposit_foreign_amount;
 	private BigDecimal	r60_total_number;
 	private BigDecimal	r60_total_amount;
-	private BigDecimal	r60_total_deposit_exceed;
 	private BigDecimal	r60_total_deposit_bank;
 	private String	r61_deposit_size;
 	private String	r61_deposit_type;
@@ -560,7 +506,6 @@ public class MDISB2_Summary_Entity1 {
 	private BigDecimal	r61_deposit_foreign_amount;
 	private BigDecimal	r61_total_number;
 	private BigDecimal	r61_total_amount;
-	private BigDecimal	r61_total_deposit_exceed;
 	private BigDecimal	r61_total_deposit_bank;
 	private String	r62_deposit_size;
 	private String	r62_deposit_type;
@@ -570,7 +515,6 @@ public class MDISB2_Summary_Entity1 {
 	private BigDecimal	r62_deposit_foreign_amount;
 	private BigDecimal	r62_total_number;
 	private BigDecimal	r62_total_amount;
-	private BigDecimal	r62_total_deposit_exceed;
 	private BigDecimal	r62_total_deposit_bank;
 	private String	r63_deposit_size;
 	private String	r63_deposit_type;
@@ -580,7 +524,6 @@ public class MDISB2_Summary_Entity1 {
 	private BigDecimal	r63_deposit_foreign_amount;
 	private BigDecimal	r63_total_number;
 	private BigDecimal	r63_total_amount;
-	private BigDecimal	r63_total_deposit_exceed;
 	private BigDecimal	r63_total_deposit_bank;
 	private String	r64_deposit_size;
 	private String	r64_deposit_type;
@@ -590,7 +533,6 @@ public class MDISB2_Summary_Entity1 {
 	private BigDecimal	r64_deposit_foreign_amount;
 	private BigDecimal	r64_total_number;
 	private BigDecimal	r64_total_amount;
-	private BigDecimal	r64_total_deposit_exceed;
 	private BigDecimal	r64_total_deposit_bank;
 	private String	r65_deposit_size;
 	private String	r65_deposit_type;
@@ -600,7 +542,6 @@ public class MDISB2_Summary_Entity1 {
 	private BigDecimal	r65_deposit_foreign_amount;
 	private BigDecimal	r65_total_number;
 	private BigDecimal	r65_total_amount;
-	private BigDecimal	r65_total_deposit_exceed;
 	private BigDecimal	r65_total_deposit_bank;
 	private String	r66_deposit_size;
 	private String	r66_deposit_type;
@@ -610,7 +551,6 @@ public class MDISB2_Summary_Entity1 {
 	private BigDecimal	r66_deposit_foreign_amount;
 	private BigDecimal	r66_total_number;
 	private BigDecimal	r66_total_amount;
-	private BigDecimal	r66_total_deposit_exceed;
 	private BigDecimal	r66_total_deposit_bank;
 	private String	r67_deposit_size;
 	private String	r67_deposit_type;
@@ -620,7 +560,6 @@ public class MDISB2_Summary_Entity1 {
 	private BigDecimal	r67_deposit_foreign_amount;
 	private BigDecimal	r67_total_number;
 	private BigDecimal	r67_total_amount;
-	private BigDecimal	r67_total_deposit_exceed;
 	private BigDecimal	r67_total_deposit_bank;
 	private String	r68_deposit_size;
 	private String	r68_deposit_type;
@@ -630,7 +569,6 @@ public class MDISB2_Summary_Entity1 {
 	private BigDecimal	r68_deposit_foreign_amount;
 	private BigDecimal	r68_total_number;
 	private BigDecimal	r68_total_amount;
-	private BigDecimal	r68_total_deposit_exceed;
 	private BigDecimal	r68_total_deposit_bank;
 	private String	r69_deposit_size;
 	private String	r69_deposit_type;
@@ -640,7 +578,6 @@ public class MDISB2_Summary_Entity1 {
 	private BigDecimal	r69_deposit_foreign_amount;
 	private BigDecimal	r69_total_number;
 	private BigDecimal	r69_total_amount;
-	private BigDecimal	r69_total_deposit_exceed;
 	private BigDecimal	r69_total_deposit_bank;
 	private String	r70_deposit_size;
 	private String	r70_deposit_type;
@@ -650,7 +587,6 @@ public class MDISB2_Summary_Entity1 {
 	private BigDecimal	r70_deposit_foreign_amount;
 	private BigDecimal	r70_total_number;
 	private BigDecimal	r70_total_amount;
-	private BigDecimal	r70_total_deposit_exceed;
 	private BigDecimal	r70_total_deposit_bank;
 	private String	r71_deposit_size;
 	private String	r71_deposit_type;
@@ -660,7 +596,6 @@ public class MDISB2_Summary_Entity1 {
 	private BigDecimal	r71_deposit_foreign_amount;
 	private BigDecimal	r71_total_number;
 	private BigDecimal	r71_total_amount;
-	private BigDecimal	r71_total_deposit_exceed;
 	private BigDecimal	r71_total_deposit_bank;
 	private String	r72_deposit_size;
 	private String	r72_deposit_type;
@@ -670,7 +605,6 @@ public class MDISB2_Summary_Entity1 {
 	private BigDecimal	r72_deposit_foreign_amount;
 	private BigDecimal	r72_total_number;
 	private BigDecimal	r72_total_amount;
-	private BigDecimal	r72_total_deposit_exceed;
 	private BigDecimal	r72_total_deposit_bank;
 	private String	r73_deposit_size;
 	private String	r73_deposit_type;
@@ -680,7 +614,6 @@ public class MDISB2_Summary_Entity1 {
 	private BigDecimal	r73_deposit_foreign_amount;
 	private BigDecimal	r73_total_number;
 	private BigDecimal	r73_total_amount;
-	private BigDecimal	r73_total_deposit_exceed;
 	private BigDecimal	r73_total_deposit_bank;
 	private String	r74_deposit_size;
 	private String	r74_deposit_type;
@@ -690,7 +623,6 @@ public class MDISB2_Summary_Entity1 {
 	private BigDecimal	r74_deposit_foreign_amount;
 	private BigDecimal	r74_total_number;
 	private BigDecimal	r74_total_amount;
-	private BigDecimal	r74_total_deposit_exceed;
 	private BigDecimal	r74_total_deposit_bank;
 	private String	r75_deposit_size;
 	private String	r75_deposit_type;
@@ -700,7 +632,6 @@ public class MDISB2_Summary_Entity1 {
 	private BigDecimal	r75_deposit_foreign_amount;
 	private BigDecimal	r75_total_number;
 	private BigDecimal	r75_total_amount;
-	private BigDecimal	r75_total_deposit_exceed;
 	private BigDecimal	r75_total_deposit_bank;
 	private String	r76_deposit_size;
 	private String	r76_deposit_type;
@@ -710,7 +641,6 @@ public class MDISB2_Summary_Entity1 {
 	private BigDecimal	r76_deposit_foreign_amount;
 	private BigDecimal	r76_total_number;
 	private BigDecimal	r76_total_amount;
-	private BigDecimal	r76_total_deposit_exceed;
 	private BigDecimal	r76_total_deposit_bank;
 	private String	r77_deposit_size;
 	private String	r77_deposit_type;
@@ -720,7 +650,6 @@ public class MDISB2_Summary_Entity1 {
 	private BigDecimal	r77_deposit_foreign_amount;
 	private BigDecimal	r77_total_number;
 	private BigDecimal	r77_total_amount;
-	private BigDecimal	r77_total_deposit_exceed;
 	private BigDecimal	r77_total_deposit_bank;
 	private String	r78_deposit_size;
 	private String	r78_deposit_type;
@@ -730,7 +659,6 @@ public class MDISB2_Summary_Entity1 {
 	private BigDecimal	r78_deposit_foreign_amount;
 	private BigDecimal	r78_total_number;
 	private BigDecimal	r78_total_amount;
-	private BigDecimal	r78_total_deposit_exceed;
 	private BigDecimal	r78_total_deposit_bank;
 	private String	r79_deposit_size;
 	private String	r79_deposit_type;
@@ -740,7 +668,6 @@ public class MDISB2_Summary_Entity1 {
 	private BigDecimal	r79_deposit_foreign_amount;
 	private BigDecimal	r79_total_number;
 	private BigDecimal	r79_total_amount;
-	private BigDecimal	r79_total_deposit_exceed;
 	private BigDecimal	r79_total_deposit_bank;
 	private String	r80_deposit_size;
 	private String	r80_deposit_type;
@@ -750,7 +677,6 @@ public class MDISB2_Summary_Entity1 {
 	private BigDecimal	r80_deposit_foreign_amount;
 	private BigDecimal	r80_total_number;
 	private BigDecimal	r80_total_amount;
-	private BigDecimal	r80_total_deposit_exceed;
 	private BigDecimal	r80_total_deposit_bank;
 	private String	r81_deposit_size;
 	private String	r81_deposit_type;
@@ -760,7 +686,6 @@ public class MDISB2_Summary_Entity1 {
 	private BigDecimal	r81_deposit_foreign_amount;
 	private BigDecimal	r81_total_number;
 	private BigDecimal	r81_total_amount;
-	private BigDecimal	r81_total_deposit_exceed;
 	private BigDecimal	r81_total_deposit_bank;
 	private String	r82_deposit_size;
 	private String	r82_deposit_type;
@@ -770,7 +695,6 @@ public class MDISB2_Summary_Entity1 {
 	private BigDecimal	r82_deposit_foreign_amount;
 	private BigDecimal	r82_total_number;
 	private BigDecimal	r82_total_amount;
-	private BigDecimal	r82_total_deposit_exceed;
 	private BigDecimal	r82_total_deposit_bank;
 	private String	r83_deposit_size;
 	private String	r83_deposit_type;
@@ -780,7 +704,6 @@ public class MDISB2_Summary_Entity1 {
 	private BigDecimal	r83_deposit_foreign_amount;
 	private BigDecimal	r83_total_number;
 	private BigDecimal	r83_total_amount;
-	private BigDecimal	r83_total_deposit_exceed;
 	private BigDecimal	r83_total_deposit_bank;
 	private String	r84_deposit_size;
 	private String	r84_deposit_type;
@@ -790,7 +713,6 @@ public class MDISB2_Summary_Entity1 {
 	private BigDecimal	r84_deposit_foreign_amount;
 	private BigDecimal	r84_total_number;
 	private BigDecimal	r84_total_amount;
-	private BigDecimal	r84_total_deposit_exceed;
 	private BigDecimal	r84_total_deposit_bank;
 	private String	r85_deposit_size;
 	private String	r85_deposit_type;
@@ -800,7 +722,6 @@ public class MDISB2_Summary_Entity1 {
 	private BigDecimal	r85_deposit_foreign_amount;
 	private BigDecimal	r85_total_number;
 	private BigDecimal	r85_total_amount;
-	private BigDecimal	r85_total_deposit_exceed;
 	private BigDecimal	r85_total_deposit_bank;
 	private String	r86_deposit_size;
 	private String	r86_deposit_type;
@@ -810,8 +731,8 @@ public class MDISB2_Summary_Entity1 {
 	private BigDecimal	r86_deposit_foreign_amount;
 	private BigDecimal	r86_total_number;
 	private BigDecimal	r86_total_amount;
-	private BigDecimal	r86_total_deposit_exceed;
 	private BigDecimal	r86_total_deposit_bank;
+
 	@Id
 	private Date	report_date;
 	private String	report_version;
@@ -869,12 +790,6 @@ public class MDISB2_Summary_Entity1 {
 	public void setR7_total_amount(BigDecimal r7_total_amount) {
 		this.r7_total_amount = r7_total_amount;
 	}
-	public BigDecimal getR7_total_deposit_exceed() {
-		return r7_total_deposit_exceed;
-	}
-	public void setR7_total_deposit_exceed(BigDecimal r7_total_deposit_exceed) {
-		this.r7_total_deposit_exceed = r7_total_deposit_exceed;
-	}
 	public BigDecimal getR7_total_deposit_bank() {
 		return r7_total_deposit_bank;
 	}
@@ -928,12 +843,6 @@ public class MDISB2_Summary_Entity1 {
 	}
 	public void setR8_total_amount(BigDecimal r8_total_amount) {
 		this.r8_total_amount = r8_total_amount;
-	}
-	public BigDecimal getR8_total_deposit_exceed() {
-		return r8_total_deposit_exceed;
-	}
-	public void setR8_total_deposit_exceed(BigDecimal r8_total_deposit_exceed) {
-		this.r8_total_deposit_exceed = r8_total_deposit_exceed;
 	}
 	public BigDecimal getR8_total_deposit_bank() {
 		return r8_total_deposit_bank;
@@ -989,12 +898,6 @@ public class MDISB2_Summary_Entity1 {
 	public void setR9_total_amount(BigDecimal r9_total_amount) {
 		this.r9_total_amount = r9_total_amount;
 	}
-	public BigDecimal getR9_total_deposit_exceed() {
-		return r9_total_deposit_exceed;
-	}
-	public void setR9_total_deposit_exceed(BigDecimal r9_total_deposit_exceed) {
-		this.r9_total_deposit_exceed = r9_total_deposit_exceed;
-	}
 	public BigDecimal getR9_total_deposit_bank() {
 		return r9_total_deposit_bank;
 	}
@@ -1048,12 +951,6 @@ public class MDISB2_Summary_Entity1 {
 	}
 	public void setR10_total_amount(BigDecimal r10_total_amount) {
 		this.r10_total_amount = r10_total_amount;
-	}
-	public BigDecimal getR10_total_deposit_exceed() {
-		return r10_total_deposit_exceed;
-	}
-	public void setR10_total_deposit_exceed(BigDecimal r10_total_deposit_exceed) {
-		this.r10_total_deposit_exceed = r10_total_deposit_exceed;
 	}
 	public BigDecimal getR10_total_deposit_bank() {
 		return r10_total_deposit_bank;
@@ -1109,12 +1006,6 @@ public class MDISB2_Summary_Entity1 {
 	public void setR11_total_amount(BigDecimal r11_total_amount) {
 		this.r11_total_amount = r11_total_amount;
 	}
-	public BigDecimal getR11_total_deposit_exceed() {
-		return r11_total_deposit_exceed;
-	}
-	public void setR11_total_deposit_exceed(BigDecimal r11_total_deposit_exceed) {
-		this.r11_total_deposit_exceed = r11_total_deposit_exceed;
-	}
 	public BigDecimal getR11_total_deposit_bank() {
 		return r11_total_deposit_bank;
 	}
@@ -1168,12 +1059,6 @@ public class MDISB2_Summary_Entity1 {
 	}
 	public void setR12_total_amount(BigDecimal r12_total_amount) {
 		this.r12_total_amount = r12_total_amount;
-	}
-	public BigDecimal getR12_total_deposit_exceed() {
-		return r12_total_deposit_exceed;
-	}
-	public void setR12_total_deposit_exceed(BigDecimal r12_total_deposit_exceed) {
-		this.r12_total_deposit_exceed = r12_total_deposit_exceed;
 	}
 	public BigDecimal getR12_total_deposit_bank() {
 		return r12_total_deposit_bank;
@@ -1229,12 +1114,6 @@ public class MDISB2_Summary_Entity1 {
 	public void setR13_total_amount(BigDecimal r13_total_amount) {
 		this.r13_total_amount = r13_total_amount;
 	}
-	public BigDecimal getR13_total_deposit_exceed() {
-		return r13_total_deposit_exceed;
-	}
-	public void setR13_total_deposit_exceed(BigDecimal r13_total_deposit_exceed) {
-		this.r13_total_deposit_exceed = r13_total_deposit_exceed;
-	}
 	public BigDecimal getR13_total_deposit_bank() {
 		return r13_total_deposit_bank;
 	}
@@ -1288,12 +1167,6 @@ public class MDISB2_Summary_Entity1 {
 	}
 	public void setR14_total_amount(BigDecimal r14_total_amount) {
 		this.r14_total_amount = r14_total_amount;
-	}
-	public BigDecimal getR14_total_deposit_exceed() {
-		return r14_total_deposit_exceed;
-	}
-	public void setR14_total_deposit_exceed(BigDecimal r14_total_deposit_exceed) {
-		this.r14_total_deposit_exceed = r14_total_deposit_exceed;
 	}
 	public BigDecimal getR14_total_deposit_bank() {
 		return r14_total_deposit_bank;
@@ -1349,12 +1222,6 @@ public class MDISB2_Summary_Entity1 {
 	public void setR15_total_amount(BigDecimal r15_total_amount) {
 		this.r15_total_amount = r15_total_amount;
 	}
-	public BigDecimal getR15_total_deposit_exceed() {
-		return r15_total_deposit_exceed;
-	}
-	public void setR15_total_deposit_exceed(BigDecimal r15_total_deposit_exceed) {
-		this.r15_total_deposit_exceed = r15_total_deposit_exceed;
-	}
 	public BigDecimal getR15_total_deposit_bank() {
 		return r15_total_deposit_bank;
 	}
@@ -1408,12 +1275,6 @@ public class MDISB2_Summary_Entity1 {
 	}
 	public void setR16_total_amount(BigDecimal r16_total_amount) {
 		this.r16_total_amount = r16_total_amount;
-	}
-	public BigDecimal getR16_total_deposit_exceed() {
-		return r16_total_deposit_exceed;
-	}
-	public void setR16_total_deposit_exceed(BigDecimal r16_total_deposit_exceed) {
-		this.r16_total_deposit_exceed = r16_total_deposit_exceed;
 	}
 	public BigDecimal getR16_total_deposit_bank() {
 		return r16_total_deposit_bank;
@@ -1469,12 +1330,6 @@ public class MDISB2_Summary_Entity1 {
 	public void setR17_total_amount(BigDecimal r17_total_amount) {
 		this.r17_total_amount = r17_total_amount;
 	}
-	public BigDecimal getR17_total_deposit_exceed() {
-		return r17_total_deposit_exceed;
-	}
-	public void setR17_total_deposit_exceed(BigDecimal r17_total_deposit_exceed) {
-		this.r17_total_deposit_exceed = r17_total_deposit_exceed;
-	}
 	public BigDecimal getR17_total_deposit_bank() {
 		return r17_total_deposit_bank;
 	}
@@ -1528,12 +1383,6 @@ public class MDISB2_Summary_Entity1 {
 	}
 	public void setR18_total_amount(BigDecimal r18_total_amount) {
 		this.r18_total_amount = r18_total_amount;
-	}
-	public BigDecimal getR18_total_deposit_exceed() {
-		return r18_total_deposit_exceed;
-	}
-	public void setR18_total_deposit_exceed(BigDecimal r18_total_deposit_exceed) {
-		this.r18_total_deposit_exceed = r18_total_deposit_exceed;
 	}
 	public BigDecimal getR18_total_deposit_bank() {
 		return r18_total_deposit_bank;
@@ -1589,12 +1438,6 @@ public class MDISB2_Summary_Entity1 {
 	public void setR19_total_amount(BigDecimal r19_total_amount) {
 		this.r19_total_amount = r19_total_amount;
 	}
-	public BigDecimal getR19_total_deposit_exceed() {
-		return r19_total_deposit_exceed;
-	}
-	public void setR19_total_deposit_exceed(BigDecimal r19_total_deposit_exceed) {
-		this.r19_total_deposit_exceed = r19_total_deposit_exceed;
-	}
 	public BigDecimal getR19_total_deposit_bank() {
 		return r19_total_deposit_bank;
 	}
@@ -1648,12 +1491,6 @@ public class MDISB2_Summary_Entity1 {
 	}
 	public void setR20_total_amount(BigDecimal r20_total_amount) {
 		this.r20_total_amount = r20_total_amount;
-	}
-	public BigDecimal getR20_total_deposit_exceed() {
-		return r20_total_deposit_exceed;
-	}
-	public void setR20_total_deposit_exceed(BigDecimal r20_total_deposit_exceed) {
-		this.r20_total_deposit_exceed = r20_total_deposit_exceed;
 	}
 	public BigDecimal getR20_total_deposit_bank() {
 		return r20_total_deposit_bank;
@@ -1709,12 +1546,6 @@ public class MDISB2_Summary_Entity1 {
 	public void setR21_total_amount(BigDecimal r21_total_amount) {
 		this.r21_total_amount = r21_total_amount;
 	}
-	public BigDecimal getR21_total_deposit_exceed() {
-		return r21_total_deposit_exceed;
-	}
-	public void setR21_total_deposit_exceed(BigDecimal r21_total_deposit_exceed) {
-		this.r21_total_deposit_exceed = r21_total_deposit_exceed;
-	}
 	public BigDecimal getR21_total_deposit_bank() {
 		return r21_total_deposit_bank;
 	}
@@ -1768,12 +1599,6 @@ public class MDISB2_Summary_Entity1 {
 	}
 	public void setR22_total_amount(BigDecimal r22_total_amount) {
 		this.r22_total_amount = r22_total_amount;
-	}
-	public BigDecimal getR22_total_deposit_exceed() {
-		return r22_total_deposit_exceed;
-	}
-	public void setR22_total_deposit_exceed(BigDecimal r22_total_deposit_exceed) {
-		this.r22_total_deposit_exceed = r22_total_deposit_exceed;
 	}
 	public BigDecimal getR22_total_deposit_bank() {
 		return r22_total_deposit_bank;
@@ -1829,12 +1654,6 @@ public class MDISB2_Summary_Entity1 {
 	public void setR23_total_amount(BigDecimal r23_total_amount) {
 		this.r23_total_amount = r23_total_amount;
 	}
-	public BigDecimal getR23_total_deposit_exceed() {
-		return r23_total_deposit_exceed;
-	}
-	public void setR23_total_deposit_exceed(BigDecimal r23_total_deposit_exceed) {
-		this.r23_total_deposit_exceed = r23_total_deposit_exceed;
-	}
 	public BigDecimal getR23_total_deposit_bank() {
 		return r23_total_deposit_bank;
 	}
@@ -1888,12 +1707,6 @@ public class MDISB2_Summary_Entity1 {
 	}
 	public void setR24_total_amount(BigDecimal r24_total_amount) {
 		this.r24_total_amount = r24_total_amount;
-	}
-	public BigDecimal getR24_total_deposit_exceed() {
-		return r24_total_deposit_exceed;
-	}
-	public void setR24_total_deposit_exceed(BigDecimal r24_total_deposit_exceed) {
-		this.r24_total_deposit_exceed = r24_total_deposit_exceed;
 	}
 	public BigDecimal getR24_total_deposit_bank() {
 		return r24_total_deposit_bank;
@@ -1949,12 +1762,6 @@ public class MDISB2_Summary_Entity1 {
 	public void setR25_total_amount(BigDecimal r25_total_amount) {
 		this.r25_total_amount = r25_total_amount;
 	}
-	public BigDecimal getR25_total_deposit_exceed() {
-		return r25_total_deposit_exceed;
-	}
-	public void setR25_total_deposit_exceed(BigDecimal r25_total_deposit_exceed) {
-		this.r25_total_deposit_exceed = r25_total_deposit_exceed;
-	}
 	public BigDecimal getR25_total_deposit_bank() {
 		return r25_total_deposit_bank;
 	}
@@ -2008,12 +1815,6 @@ public class MDISB2_Summary_Entity1 {
 	}
 	public void setR26_total_amount(BigDecimal r26_total_amount) {
 		this.r26_total_amount = r26_total_amount;
-	}
-	public BigDecimal getR26_total_deposit_exceed() {
-		return r26_total_deposit_exceed;
-	}
-	public void setR26_total_deposit_exceed(BigDecimal r26_total_deposit_exceed) {
-		this.r26_total_deposit_exceed = r26_total_deposit_exceed;
 	}
 	public BigDecimal getR26_total_deposit_bank() {
 		return r26_total_deposit_bank;
@@ -2069,12 +1870,6 @@ public class MDISB2_Summary_Entity1 {
 	public void setR27_total_amount(BigDecimal r27_total_amount) {
 		this.r27_total_amount = r27_total_amount;
 	}
-	public BigDecimal getR27_total_deposit_exceed() {
-		return r27_total_deposit_exceed;
-	}
-	public void setR27_total_deposit_exceed(BigDecimal r27_total_deposit_exceed) {
-		this.r27_total_deposit_exceed = r27_total_deposit_exceed;
-	}
 	public BigDecimal getR27_total_deposit_bank() {
 		return r27_total_deposit_bank;
 	}
@@ -2128,12 +1923,6 @@ public class MDISB2_Summary_Entity1 {
 	}
 	public void setR28_total_amount(BigDecimal r28_total_amount) {
 		this.r28_total_amount = r28_total_amount;
-	}
-	public BigDecimal getR28_total_deposit_exceed() {
-		return r28_total_deposit_exceed;
-	}
-	public void setR28_total_deposit_exceed(BigDecimal r28_total_deposit_exceed) {
-		this.r28_total_deposit_exceed = r28_total_deposit_exceed;
 	}
 	public BigDecimal getR28_total_deposit_bank() {
 		return r28_total_deposit_bank;
@@ -2189,12 +1978,6 @@ public class MDISB2_Summary_Entity1 {
 	public void setR29_total_amount(BigDecimal r29_total_amount) {
 		this.r29_total_amount = r29_total_amount;
 	}
-	public BigDecimal getR29_total_deposit_exceed() {
-		return r29_total_deposit_exceed;
-	}
-	public void setR29_total_deposit_exceed(BigDecimal r29_total_deposit_exceed) {
-		this.r29_total_deposit_exceed = r29_total_deposit_exceed;
-	}
 	public BigDecimal getR29_total_deposit_bank() {
 		return r29_total_deposit_bank;
 	}
@@ -2248,12 +2031,6 @@ public class MDISB2_Summary_Entity1 {
 	}
 	public void setR30_total_amount(BigDecimal r30_total_amount) {
 		this.r30_total_amount = r30_total_amount;
-	}
-	public BigDecimal getR30_total_deposit_exceed() {
-		return r30_total_deposit_exceed;
-	}
-	public void setR30_total_deposit_exceed(BigDecimal r30_total_deposit_exceed) {
-		this.r30_total_deposit_exceed = r30_total_deposit_exceed;
 	}
 	public BigDecimal getR30_total_deposit_bank() {
 		return r30_total_deposit_bank;
@@ -2309,12 +2086,6 @@ public class MDISB2_Summary_Entity1 {
 	public void setR31_total_amount(BigDecimal r31_total_amount) {
 		this.r31_total_amount = r31_total_amount;
 	}
-	public BigDecimal getR31_total_deposit_exceed() {
-		return r31_total_deposit_exceed;
-	}
-	public void setR31_total_deposit_exceed(BigDecimal r31_total_deposit_exceed) {
-		this.r31_total_deposit_exceed = r31_total_deposit_exceed;
-	}
 	public BigDecimal getR31_total_deposit_bank() {
 		return r31_total_deposit_bank;
 	}
@@ -2368,12 +2139,6 @@ public class MDISB2_Summary_Entity1 {
 	}
 	public void setR32_total_amount(BigDecimal r32_total_amount) {
 		this.r32_total_amount = r32_total_amount;
-	}
-	public BigDecimal getR32_total_deposit_exceed() {
-		return r32_total_deposit_exceed;
-	}
-	public void setR32_total_deposit_exceed(BigDecimal r32_total_deposit_exceed) {
-		this.r32_total_deposit_exceed = r32_total_deposit_exceed;
 	}
 	public BigDecimal getR32_total_deposit_bank() {
 		return r32_total_deposit_bank;
@@ -2429,12 +2194,6 @@ public class MDISB2_Summary_Entity1 {
 	public void setR33_total_amount(BigDecimal r33_total_amount) {
 		this.r33_total_amount = r33_total_amount;
 	}
-	public BigDecimal getR33_total_deposit_exceed() {
-		return r33_total_deposit_exceed;
-	}
-	public void setR33_total_deposit_exceed(BigDecimal r33_total_deposit_exceed) {
-		this.r33_total_deposit_exceed = r33_total_deposit_exceed;
-	}
 	public BigDecimal getR33_total_deposit_bank() {
 		return r33_total_deposit_bank;
 	}
@@ -2488,12 +2247,6 @@ public class MDISB2_Summary_Entity1 {
 	}
 	public void setR34_total_amount(BigDecimal r34_total_amount) {
 		this.r34_total_amount = r34_total_amount;
-	}
-	public BigDecimal getR34_total_deposit_exceed() {
-		return r34_total_deposit_exceed;
-	}
-	public void setR34_total_deposit_exceed(BigDecimal r34_total_deposit_exceed) {
-		this.r34_total_deposit_exceed = r34_total_deposit_exceed;
 	}
 	public BigDecimal getR34_total_deposit_bank() {
 		return r34_total_deposit_bank;
@@ -2549,12 +2302,6 @@ public class MDISB2_Summary_Entity1 {
 	public void setR35_total_amount(BigDecimal r35_total_amount) {
 		this.r35_total_amount = r35_total_amount;
 	}
-	public BigDecimal getR35_total_deposit_exceed() {
-		return r35_total_deposit_exceed;
-	}
-	public void setR35_total_deposit_exceed(BigDecimal r35_total_deposit_exceed) {
-		this.r35_total_deposit_exceed = r35_total_deposit_exceed;
-	}
 	public BigDecimal getR35_total_deposit_bank() {
 		return r35_total_deposit_bank;
 	}
@@ -2608,12 +2355,6 @@ public class MDISB2_Summary_Entity1 {
 	}
 	public void setR36_total_amount(BigDecimal r36_total_amount) {
 		this.r36_total_amount = r36_total_amount;
-	}
-	public BigDecimal getR36_total_deposit_exceed() {
-		return r36_total_deposit_exceed;
-	}
-	public void setR36_total_deposit_exceed(BigDecimal r36_total_deposit_exceed) {
-		this.r36_total_deposit_exceed = r36_total_deposit_exceed;
 	}
 	public BigDecimal getR36_total_deposit_bank() {
 		return r36_total_deposit_bank;
@@ -2669,12 +2410,6 @@ public class MDISB2_Summary_Entity1 {
 	public void setR37_total_amount(BigDecimal r37_total_amount) {
 		this.r37_total_amount = r37_total_amount;
 	}
-	public BigDecimal getR37_total_deposit_exceed() {
-		return r37_total_deposit_exceed;
-	}
-	public void setR37_total_deposit_exceed(BigDecimal r37_total_deposit_exceed) {
-		this.r37_total_deposit_exceed = r37_total_deposit_exceed;
-	}
 	public BigDecimal getR37_total_deposit_bank() {
 		return r37_total_deposit_bank;
 	}
@@ -2728,12 +2463,6 @@ public class MDISB2_Summary_Entity1 {
 	}
 	public void setR38_total_amount(BigDecimal r38_total_amount) {
 		this.r38_total_amount = r38_total_amount;
-	}
-	public BigDecimal getR38_total_deposit_exceed() {
-		return r38_total_deposit_exceed;
-	}
-	public void setR38_total_deposit_exceed(BigDecimal r38_total_deposit_exceed) {
-		this.r38_total_deposit_exceed = r38_total_deposit_exceed;
 	}
 	public BigDecimal getR38_total_deposit_bank() {
 		return r38_total_deposit_bank;
@@ -2789,12 +2518,6 @@ public class MDISB2_Summary_Entity1 {
 	public void setR39_total_amount(BigDecimal r39_total_amount) {
 		this.r39_total_amount = r39_total_amount;
 	}
-	public BigDecimal getR39_total_deposit_exceed() {
-		return r39_total_deposit_exceed;
-	}
-	public void setR39_total_deposit_exceed(BigDecimal r39_total_deposit_exceed) {
-		this.r39_total_deposit_exceed = r39_total_deposit_exceed;
-	}
 	public BigDecimal getR39_total_deposit_bank() {
 		return r39_total_deposit_bank;
 	}
@@ -2848,12 +2571,6 @@ public class MDISB2_Summary_Entity1 {
 	}
 	public void setR40_total_amount(BigDecimal r40_total_amount) {
 		this.r40_total_amount = r40_total_amount;
-	}
-	public BigDecimal getR40_total_deposit_exceed() {
-		return r40_total_deposit_exceed;
-	}
-	public void setR40_total_deposit_exceed(BigDecimal r40_total_deposit_exceed) {
-		this.r40_total_deposit_exceed = r40_total_deposit_exceed;
 	}
 	public BigDecimal getR40_total_deposit_bank() {
 		return r40_total_deposit_bank;
@@ -2909,12 +2626,6 @@ public class MDISB2_Summary_Entity1 {
 	public void setR41_total_amount(BigDecimal r41_total_amount) {
 		this.r41_total_amount = r41_total_amount;
 	}
-	public BigDecimal getR41_total_deposit_exceed() {
-		return r41_total_deposit_exceed;
-	}
-	public void setR41_total_deposit_exceed(BigDecimal r41_total_deposit_exceed) {
-		this.r41_total_deposit_exceed = r41_total_deposit_exceed;
-	}
 	public BigDecimal getR41_total_deposit_bank() {
 		return r41_total_deposit_bank;
 	}
@@ -2968,12 +2679,6 @@ public class MDISB2_Summary_Entity1 {
 	}
 	public void setR42_total_amount(BigDecimal r42_total_amount) {
 		this.r42_total_amount = r42_total_amount;
-	}
-	public BigDecimal getR42_total_deposit_exceed() {
-		return r42_total_deposit_exceed;
-	}
-	public void setR42_total_deposit_exceed(BigDecimal r42_total_deposit_exceed) {
-		this.r42_total_deposit_exceed = r42_total_deposit_exceed;
 	}
 	public BigDecimal getR42_total_deposit_bank() {
 		return r42_total_deposit_bank;
@@ -3029,12 +2734,6 @@ public class MDISB2_Summary_Entity1 {
 	public void setR43_total_amount(BigDecimal r43_total_amount) {
 		this.r43_total_amount = r43_total_amount;
 	}
-	public BigDecimal getR43_total_deposit_exceed() {
-		return r43_total_deposit_exceed;
-	}
-	public void setR43_total_deposit_exceed(BigDecimal r43_total_deposit_exceed) {
-		this.r43_total_deposit_exceed = r43_total_deposit_exceed;
-	}
 	public BigDecimal getR43_total_deposit_bank() {
 		return r43_total_deposit_bank;
 	}
@@ -3088,12 +2787,6 @@ public class MDISB2_Summary_Entity1 {
 	}
 	public void setR44_total_amount(BigDecimal r44_total_amount) {
 		this.r44_total_amount = r44_total_amount;
-	}
-	public BigDecimal getR44_total_deposit_exceed() {
-		return r44_total_deposit_exceed;
-	}
-	public void setR44_total_deposit_exceed(BigDecimal r44_total_deposit_exceed) {
-		this.r44_total_deposit_exceed = r44_total_deposit_exceed;
 	}
 	public BigDecimal getR44_total_deposit_bank() {
 		return r44_total_deposit_bank;
@@ -3149,12 +2842,6 @@ public class MDISB2_Summary_Entity1 {
 	public void setR45_total_amount(BigDecimal r45_total_amount) {
 		this.r45_total_amount = r45_total_amount;
 	}
-	public BigDecimal getR45_total_deposit_exceed() {
-		return r45_total_deposit_exceed;
-	}
-	public void setR45_total_deposit_exceed(BigDecimal r45_total_deposit_exceed) {
-		this.r45_total_deposit_exceed = r45_total_deposit_exceed;
-	}
 	public BigDecimal getR45_total_deposit_bank() {
 		return r45_total_deposit_bank;
 	}
@@ -3208,12 +2895,6 @@ public class MDISB2_Summary_Entity1 {
 	}
 	public void setR46_total_amount(BigDecimal r46_total_amount) {
 		this.r46_total_amount = r46_total_amount;
-	}
-	public BigDecimal getR46_total_deposit_exceed() {
-		return r46_total_deposit_exceed;
-	}
-	public void setR46_total_deposit_exceed(BigDecimal r46_total_deposit_exceed) {
-		this.r46_total_deposit_exceed = r46_total_deposit_exceed;
 	}
 	public BigDecimal getR46_total_deposit_bank() {
 		return r46_total_deposit_bank;
@@ -3269,12 +2950,6 @@ public class MDISB2_Summary_Entity1 {
 	public void setR47_total_amount(BigDecimal r47_total_amount) {
 		this.r47_total_amount = r47_total_amount;
 	}
-	public BigDecimal getR47_total_deposit_exceed() {
-		return r47_total_deposit_exceed;
-	}
-	public void setR47_total_deposit_exceed(BigDecimal r47_total_deposit_exceed) {
-		this.r47_total_deposit_exceed = r47_total_deposit_exceed;
-	}
 	public BigDecimal getR47_total_deposit_bank() {
 		return r47_total_deposit_bank;
 	}
@@ -3328,12 +3003,6 @@ public class MDISB2_Summary_Entity1 {
 	}
 	public void setR48_total_amount(BigDecimal r48_total_amount) {
 		this.r48_total_amount = r48_total_amount;
-	}
-	public BigDecimal getR48_total_deposit_exceed() {
-		return r48_total_deposit_exceed;
-	}
-	public void setR48_total_deposit_exceed(BigDecimal r48_total_deposit_exceed) {
-		this.r48_total_deposit_exceed = r48_total_deposit_exceed;
 	}
 	public BigDecimal getR48_total_deposit_bank() {
 		return r48_total_deposit_bank;
@@ -3389,12 +3058,6 @@ public class MDISB2_Summary_Entity1 {
 	public void setR49_total_amount(BigDecimal r49_total_amount) {
 		this.r49_total_amount = r49_total_amount;
 	}
-	public BigDecimal getR49_total_deposit_exceed() {
-		return r49_total_deposit_exceed;
-	}
-	public void setR49_total_deposit_exceed(BigDecimal r49_total_deposit_exceed) {
-		this.r49_total_deposit_exceed = r49_total_deposit_exceed;
-	}
 	public BigDecimal getR49_total_deposit_bank() {
 		return r49_total_deposit_bank;
 	}
@@ -3448,12 +3111,6 @@ public class MDISB2_Summary_Entity1 {
 	}
 	public void setR50_total_amount(BigDecimal r50_total_amount) {
 		this.r50_total_amount = r50_total_amount;
-	}
-	public BigDecimal getR50_total_deposit_exceed() {
-		return r50_total_deposit_exceed;
-	}
-	public void setR50_total_deposit_exceed(BigDecimal r50_total_deposit_exceed) {
-		this.r50_total_deposit_exceed = r50_total_deposit_exceed;
 	}
 	public BigDecimal getR50_total_deposit_bank() {
 		return r50_total_deposit_bank;
@@ -3509,12 +3166,6 @@ public class MDISB2_Summary_Entity1 {
 	public void setR51_total_amount(BigDecimal r51_total_amount) {
 		this.r51_total_amount = r51_total_amount;
 	}
-	public BigDecimal getR51_total_deposit_exceed() {
-		return r51_total_deposit_exceed;
-	}
-	public void setR51_total_deposit_exceed(BigDecimal r51_total_deposit_exceed) {
-		this.r51_total_deposit_exceed = r51_total_deposit_exceed;
-	}
 	public BigDecimal getR51_total_deposit_bank() {
 		return r51_total_deposit_bank;
 	}
@@ -3568,12 +3219,6 @@ public class MDISB2_Summary_Entity1 {
 	}
 	public void setR52_total_amount(BigDecimal r52_total_amount) {
 		this.r52_total_amount = r52_total_amount;
-	}
-	public BigDecimal getR52_total_deposit_exceed() {
-		return r52_total_deposit_exceed;
-	}
-	public void setR52_total_deposit_exceed(BigDecimal r52_total_deposit_exceed) {
-		this.r52_total_deposit_exceed = r52_total_deposit_exceed;
 	}
 	public BigDecimal getR52_total_deposit_bank() {
 		return r52_total_deposit_bank;
@@ -3629,12 +3274,6 @@ public class MDISB2_Summary_Entity1 {
 	public void setR53_total_amount(BigDecimal r53_total_amount) {
 		this.r53_total_amount = r53_total_amount;
 	}
-	public BigDecimal getR53_total_deposit_exceed() {
-		return r53_total_deposit_exceed;
-	}
-	public void setR53_total_deposit_exceed(BigDecimal r53_total_deposit_exceed) {
-		this.r53_total_deposit_exceed = r53_total_deposit_exceed;
-	}
 	public BigDecimal getR53_total_deposit_bank() {
 		return r53_total_deposit_bank;
 	}
@@ -3688,12 +3327,6 @@ public class MDISB2_Summary_Entity1 {
 	}
 	public void setR54_total_amount(BigDecimal r54_total_amount) {
 		this.r54_total_amount = r54_total_amount;
-	}
-	public BigDecimal getR54_total_deposit_exceed() {
-		return r54_total_deposit_exceed;
-	}
-	public void setR54_total_deposit_exceed(BigDecimal r54_total_deposit_exceed) {
-		this.r54_total_deposit_exceed = r54_total_deposit_exceed;
 	}
 	public BigDecimal getR54_total_deposit_bank() {
 		return r54_total_deposit_bank;
@@ -3749,12 +3382,6 @@ public class MDISB2_Summary_Entity1 {
 	public void setR55_total_amount(BigDecimal r55_total_amount) {
 		this.r55_total_amount = r55_total_amount;
 	}
-	public BigDecimal getR55_total_deposit_exceed() {
-		return r55_total_deposit_exceed;
-	}
-	public void setR55_total_deposit_exceed(BigDecimal r55_total_deposit_exceed) {
-		this.r55_total_deposit_exceed = r55_total_deposit_exceed;
-	}
 	public BigDecimal getR55_total_deposit_bank() {
 		return r55_total_deposit_bank;
 	}
@@ -3808,12 +3435,6 @@ public class MDISB2_Summary_Entity1 {
 	}
 	public void setR56_total_amount(BigDecimal r56_total_amount) {
 		this.r56_total_amount = r56_total_amount;
-	}
-	public BigDecimal getR56_total_deposit_exceed() {
-		return r56_total_deposit_exceed;
-	}
-	public void setR56_total_deposit_exceed(BigDecimal r56_total_deposit_exceed) {
-		this.r56_total_deposit_exceed = r56_total_deposit_exceed;
 	}
 	public BigDecimal getR56_total_deposit_bank() {
 		return r56_total_deposit_bank;
@@ -3869,12 +3490,6 @@ public class MDISB2_Summary_Entity1 {
 	public void setR57_total_amount(BigDecimal r57_total_amount) {
 		this.r57_total_amount = r57_total_amount;
 	}
-	public BigDecimal getR57_total_deposit_exceed() {
-		return r57_total_deposit_exceed;
-	}
-	public void setR57_total_deposit_exceed(BigDecimal r57_total_deposit_exceed) {
-		this.r57_total_deposit_exceed = r57_total_deposit_exceed;
-	}
 	public BigDecimal getR57_total_deposit_bank() {
 		return r57_total_deposit_bank;
 	}
@@ -3928,12 +3543,6 @@ public class MDISB2_Summary_Entity1 {
 	}
 	public void setR58_total_amount(BigDecimal r58_total_amount) {
 		this.r58_total_amount = r58_total_amount;
-	}
-	public BigDecimal getR58_total_deposit_exceed() {
-		return r58_total_deposit_exceed;
-	}
-	public void setR58_total_deposit_exceed(BigDecimal r58_total_deposit_exceed) {
-		this.r58_total_deposit_exceed = r58_total_deposit_exceed;
 	}
 	public BigDecimal getR58_total_deposit_bank() {
 		return r58_total_deposit_bank;
@@ -3989,12 +3598,6 @@ public class MDISB2_Summary_Entity1 {
 	public void setR59_total_amount(BigDecimal r59_total_amount) {
 		this.r59_total_amount = r59_total_amount;
 	}
-	public BigDecimal getR59_total_deposit_exceed() {
-		return r59_total_deposit_exceed;
-	}
-	public void setR59_total_deposit_exceed(BigDecimal r59_total_deposit_exceed) {
-		this.r59_total_deposit_exceed = r59_total_deposit_exceed;
-	}
 	public BigDecimal getR59_total_deposit_bank() {
 		return r59_total_deposit_bank;
 	}
@@ -4048,12 +3651,6 @@ public class MDISB2_Summary_Entity1 {
 	}
 	public void setR60_total_amount(BigDecimal r60_total_amount) {
 		this.r60_total_amount = r60_total_amount;
-	}
-	public BigDecimal getR60_total_deposit_exceed() {
-		return r60_total_deposit_exceed;
-	}
-	public void setR60_total_deposit_exceed(BigDecimal r60_total_deposit_exceed) {
-		this.r60_total_deposit_exceed = r60_total_deposit_exceed;
 	}
 	public BigDecimal getR60_total_deposit_bank() {
 		return r60_total_deposit_bank;
@@ -4109,12 +3706,6 @@ public class MDISB2_Summary_Entity1 {
 	public void setR61_total_amount(BigDecimal r61_total_amount) {
 		this.r61_total_amount = r61_total_amount;
 	}
-	public BigDecimal getR61_total_deposit_exceed() {
-		return r61_total_deposit_exceed;
-	}
-	public void setR61_total_deposit_exceed(BigDecimal r61_total_deposit_exceed) {
-		this.r61_total_deposit_exceed = r61_total_deposit_exceed;
-	}
 	public BigDecimal getR61_total_deposit_bank() {
 		return r61_total_deposit_bank;
 	}
@@ -4168,12 +3759,6 @@ public class MDISB2_Summary_Entity1 {
 	}
 	public void setR62_total_amount(BigDecimal r62_total_amount) {
 		this.r62_total_amount = r62_total_amount;
-	}
-	public BigDecimal getR62_total_deposit_exceed() {
-		return r62_total_deposit_exceed;
-	}
-	public void setR62_total_deposit_exceed(BigDecimal r62_total_deposit_exceed) {
-		this.r62_total_deposit_exceed = r62_total_deposit_exceed;
 	}
 	public BigDecimal getR62_total_deposit_bank() {
 		return r62_total_deposit_bank;
@@ -4229,12 +3814,6 @@ public class MDISB2_Summary_Entity1 {
 	public void setR63_total_amount(BigDecimal r63_total_amount) {
 		this.r63_total_amount = r63_total_amount;
 	}
-	public BigDecimal getR63_total_deposit_exceed() {
-		return r63_total_deposit_exceed;
-	}
-	public void setR63_total_deposit_exceed(BigDecimal r63_total_deposit_exceed) {
-		this.r63_total_deposit_exceed = r63_total_deposit_exceed;
-	}
 	public BigDecimal getR63_total_deposit_bank() {
 		return r63_total_deposit_bank;
 	}
@@ -4288,12 +3867,6 @@ public class MDISB2_Summary_Entity1 {
 	}
 	public void setR64_total_amount(BigDecimal r64_total_amount) {
 		this.r64_total_amount = r64_total_amount;
-	}
-	public BigDecimal getR64_total_deposit_exceed() {
-		return r64_total_deposit_exceed;
-	}
-	public void setR64_total_deposit_exceed(BigDecimal r64_total_deposit_exceed) {
-		this.r64_total_deposit_exceed = r64_total_deposit_exceed;
 	}
 	public BigDecimal getR64_total_deposit_bank() {
 		return r64_total_deposit_bank;
@@ -4349,12 +3922,6 @@ public class MDISB2_Summary_Entity1 {
 	public void setR65_total_amount(BigDecimal r65_total_amount) {
 		this.r65_total_amount = r65_total_amount;
 	}
-	public BigDecimal getR65_total_deposit_exceed() {
-		return r65_total_deposit_exceed;
-	}
-	public void setR65_total_deposit_exceed(BigDecimal r65_total_deposit_exceed) {
-		this.r65_total_deposit_exceed = r65_total_deposit_exceed;
-	}
 	public BigDecimal getR65_total_deposit_bank() {
 		return r65_total_deposit_bank;
 	}
@@ -4408,12 +3975,6 @@ public class MDISB2_Summary_Entity1 {
 	}
 	public void setR66_total_amount(BigDecimal r66_total_amount) {
 		this.r66_total_amount = r66_total_amount;
-	}
-	public BigDecimal getR66_total_deposit_exceed() {
-		return r66_total_deposit_exceed;
-	}
-	public void setR66_total_deposit_exceed(BigDecimal r66_total_deposit_exceed) {
-		this.r66_total_deposit_exceed = r66_total_deposit_exceed;
 	}
 	public BigDecimal getR66_total_deposit_bank() {
 		return r66_total_deposit_bank;
@@ -4469,12 +4030,6 @@ public class MDISB2_Summary_Entity1 {
 	public void setR67_total_amount(BigDecimal r67_total_amount) {
 		this.r67_total_amount = r67_total_amount;
 	}
-	public BigDecimal getR67_total_deposit_exceed() {
-		return r67_total_deposit_exceed;
-	}
-	public void setR67_total_deposit_exceed(BigDecimal r67_total_deposit_exceed) {
-		this.r67_total_deposit_exceed = r67_total_deposit_exceed;
-	}
 	public BigDecimal getR67_total_deposit_bank() {
 		return r67_total_deposit_bank;
 	}
@@ -4528,12 +4083,6 @@ public class MDISB2_Summary_Entity1 {
 	}
 	public void setR68_total_amount(BigDecimal r68_total_amount) {
 		this.r68_total_amount = r68_total_amount;
-	}
-	public BigDecimal getR68_total_deposit_exceed() {
-		return r68_total_deposit_exceed;
-	}
-	public void setR68_total_deposit_exceed(BigDecimal r68_total_deposit_exceed) {
-		this.r68_total_deposit_exceed = r68_total_deposit_exceed;
 	}
 	public BigDecimal getR68_total_deposit_bank() {
 		return r68_total_deposit_bank;
@@ -4589,12 +4138,6 @@ public class MDISB2_Summary_Entity1 {
 	public void setR69_total_amount(BigDecimal r69_total_amount) {
 		this.r69_total_amount = r69_total_amount;
 	}
-	public BigDecimal getR69_total_deposit_exceed() {
-		return r69_total_deposit_exceed;
-	}
-	public void setR69_total_deposit_exceed(BigDecimal r69_total_deposit_exceed) {
-		this.r69_total_deposit_exceed = r69_total_deposit_exceed;
-	}
 	public BigDecimal getR69_total_deposit_bank() {
 		return r69_total_deposit_bank;
 	}
@@ -4648,12 +4191,6 @@ public class MDISB2_Summary_Entity1 {
 	}
 	public void setR70_total_amount(BigDecimal r70_total_amount) {
 		this.r70_total_amount = r70_total_amount;
-	}
-	public BigDecimal getR70_total_deposit_exceed() {
-		return r70_total_deposit_exceed;
-	}
-	public void setR70_total_deposit_exceed(BigDecimal r70_total_deposit_exceed) {
-		this.r70_total_deposit_exceed = r70_total_deposit_exceed;
 	}
 	public BigDecimal getR70_total_deposit_bank() {
 		return r70_total_deposit_bank;
@@ -4709,12 +4246,6 @@ public class MDISB2_Summary_Entity1 {
 	public void setR71_total_amount(BigDecimal r71_total_amount) {
 		this.r71_total_amount = r71_total_amount;
 	}
-	public BigDecimal getR71_total_deposit_exceed() {
-		return r71_total_deposit_exceed;
-	}
-	public void setR71_total_deposit_exceed(BigDecimal r71_total_deposit_exceed) {
-		this.r71_total_deposit_exceed = r71_total_deposit_exceed;
-	}
 	public BigDecimal getR71_total_deposit_bank() {
 		return r71_total_deposit_bank;
 	}
@@ -4768,12 +4299,6 @@ public class MDISB2_Summary_Entity1 {
 	}
 	public void setR72_total_amount(BigDecimal r72_total_amount) {
 		this.r72_total_amount = r72_total_amount;
-	}
-	public BigDecimal getR72_total_deposit_exceed() {
-		return r72_total_deposit_exceed;
-	}
-	public void setR72_total_deposit_exceed(BigDecimal r72_total_deposit_exceed) {
-		this.r72_total_deposit_exceed = r72_total_deposit_exceed;
 	}
 	public BigDecimal getR72_total_deposit_bank() {
 		return r72_total_deposit_bank;
@@ -4829,12 +4354,6 @@ public class MDISB2_Summary_Entity1 {
 	public void setR73_total_amount(BigDecimal r73_total_amount) {
 		this.r73_total_amount = r73_total_amount;
 	}
-	public BigDecimal getR73_total_deposit_exceed() {
-		return r73_total_deposit_exceed;
-	}
-	public void setR73_total_deposit_exceed(BigDecimal r73_total_deposit_exceed) {
-		this.r73_total_deposit_exceed = r73_total_deposit_exceed;
-	}
 	public BigDecimal getR73_total_deposit_bank() {
 		return r73_total_deposit_bank;
 	}
@@ -4888,12 +4407,6 @@ public class MDISB2_Summary_Entity1 {
 	}
 	public void setR74_total_amount(BigDecimal r74_total_amount) {
 		this.r74_total_amount = r74_total_amount;
-	}
-	public BigDecimal getR74_total_deposit_exceed() {
-		return r74_total_deposit_exceed;
-	}
-	public void setR74_total_deposit_exceed(BigDecimal r74_total_deposit_exceed) {
-		this.r74_total_deposit_exceed = r74_total_deposit_exceed;
 	}
 	public BigDecimal getR74_total_deposit_bank() {
 		return r74_total_deposit_bank;
@@ -4949,12 +4462,6 @@ public class MDISB2_Summary_Entity1 {
 	public void setR75_total_amount(BigDecimal r75_total_amount) {
 		this.r75_total_amount = r75_total_amount;
 	}
-	public BigDecimal getR75_total_deposit_exceed() {
-		return r75_total_deposit_exceed;
-	}
-	public void setR75_total_deposit_exceed(BigDecimal r75_total_deposit_exceed) {
-		this.r75_total_deposit_exceed = r75_total_deposit_exceed;
-	}
 	public BigDecimal getR75_total_deposit_bank() {
 		return r75_total_deposit_bank;
 	}
@@ -5008,12 +4515,6 @@ public class MDISB2_Summary_Entity1 {
 	}
 	public void setR76_total_amount(BigDecimal r76_total_amount) {
 		this.r76_total_amount = r76_total_amount;
-	}
-	public BigDecimal getR76_total_deposit_exceed() {
-		return r76_total_deposit_exceed;
-	}
-	public void setR76_total_deposit_exceed(BigDecimal r76_total_deposit_exceed) {
-		this.r76_total_deposit_exceed = r76_total_deposit_exceed;
 	}
 	public BigDecimal getR76_total_deposit_bank() {
 		return r76_total_deposit_bank;
@@ -5069,12 +4570,6 @@ public class MDISB2_Summary_Entity1 {
 	public void setR77_total_amount(BigDecimal r77_total_amount) {
 		this.r77_total_amount = r77_total_amount;
 	}
-	public BigDecimal getR77_total_deposit_exceed() {
-		return r77_total_deposit_exceed;
-	}
-	public void setR77_total_deposit_exceed(BigDecimal r77_total_deposit_exceed) {
-		this.r77_total_deposit_exceed = r77_total_deposit_exceed;
-	}
 	public BigDecimal getR77_total_deposit_bank() {
 		return r77_total_deposit_bank;
 	}
@@ -5128,12 +4623,6 @@ public class MDISB2_Summary_Entity1 {
 	}
 	public void setR78_total_amount(BigDecimal r78_total_amount) {
 		this.r78_total_amount = r78_total_amount;
-	}
-	public BigDecimal getR78_total_deposit_exceed() {
-		return r78_total_deposit_exceed;
-	}
-	public void setR78_total_deposit_exceed(BigDecimal r78_total_deposit_exceed) {
-		this.r78_total_deposit_exceed = r78_total_deposit_exceed;
 	}
 	public BigDecimal getR78_total_deposit_bank() {
 		return r78_total_deposit_bank;
@@ -5189,12 +4678,6 @@ public class MDISB2_Summary_Entity1 {
 	public void setR79_total_amount(BigDecimal r79_total_amount) {
 		this.r79_total_amount = r79_total_amount;
 	}
-	public BigDecimal getR79_total_deposit_exceed() {
-		return r79_total_deposit_exceed;
-	}
-	public void setR79_total_deposit_exceed(BigDecimal r79_total_deposit_exceed) {
-		this.r79_total_deposit_exceed = r79_total_deposit_exceed;
-	}
 	public BigDecimal getR79_total_deposit_bank() {
 		return r79_total_deposit_bank;
 	}
@@ -5248,12 +4731,6 @@ public class MDISB2_Summary_Entity1 {
 	}
 	public void setR80_total_amount(BigDecimal r80_total_amount) {
 		this.r80_total_amount = r80_total_amount;
-	}
-	public BigDecimal getR80_total_deposit_exceed() {
-		return r80_total_deposit_exceed;
-	}
-	public void setR80_total_deposit_exceed(BigDecimal r80_total_deposit_exceed) {
-		this.r80_total_deposit_exceed = r80_total_deposit_exceed;
 	}
 	public BigDecimal getR80_total_deposit_bank() {
 		return r80_total_deposit_bank;
@@ -5309,12 +4786,6 @@ public class MDISB2_Summary_Entity1 {
 	public void setR81_total_amount(BigDecimal r81_total_amount) {
 		this.r81_total_amount = r81_total_amount;
 	}
-	public BigDecimal getR81_total_deposit_exceed() {
-		return r81_total_deposit_exceed;
-	}
-	public void setR81_total_deposit_exceed(BigDecimal r81_total_deposit_exceed) {
-		this.r81_total_deposit_exceed = r81_total_deposit_exceed;
-	}
 	public BigDecimal getR81_total_deposit_bank() {
 		return r81_total_deposit_bank;
 	}
@@ -5368,12 +4839,6 @@ public class MDISB2_Summary_Entity1 {
 	}
 	public void setR82_total_amount(BigDecimal r82_total_amount) {
 		this.r82_total_amount = r82_total_amount;
-	}
-	public BigDecimal getR82_total_deposit_exceed() {
-		return r82_total_deposit_exceed;
-	}
-	public void setR82_total_deposit_exceed(BigDecimal r82_total_deposit_exceed) {
-		this.r82_total_deposit_exceed = r82_total_deposit_exceed;
 	}
 	public BigDecimal getR82_total_deposit_bank() {
 		return r82_total_deposit_bank;
@@ -5429,12 +4894,6 @@ public class MDISB2_Summary_Entity1 {
 	public void setR83_total_amount(BigDecimal r83_total_amount) {
 		this.r83_total_amount = r83_total_amount;
 	}
-	public BigDecimal getR83_total_deposit_exceed() {
-		return r83_total_deposit_exceed;
-	}
-	public void setR83_total_deposit_exceed(BigDecimal r83_total_deposit_exceed) {
-		this.r83_total_deposit_exceed = r83_total_deposit_exceed;
-	}
 	public BigDecimal getR83_total_deposit_bank() {
 		return r83_total_deposit_bank;
 	}
@@ -5488,12 +4947,6 @@ public class MDISB2_Summary_Entity1 {
 	}
 	public void setR84_total_amount(BigDecimal r84_total_amount) {
 		this.r84_total_amount = r84_total_amount;
-	}
-	public BigDecimal getR84_total_deposit_exceed() {
-		return r84_total_deposit_exceed;
-	}
-	public void setR84_total_deposit_exceed(BigDecimal r84_total_deposit_exceed) {
-		this.r84_total_deposit_exceed = r84_total_deposit_exceed;
 	}
 	public BigDecimal getR84_total_deposit_bank() {
 		return r84_total_deposit_bank;
@@ -5549,12 +5002,6 @@ public class MDISB2_Summary_Entity1 {
 	public void setR85_total_amount(BigDecimal r85_total_amount) {
 		this.r85_total_amount = r85_total_amount;
 	}
-	public BigDecimal getR85_total_deposit_exceed() {
-		return r85_total_deposit_exceed;
-	}
-	public void setR85_total_deposit_exceed(BigDecimal r85_total_deposit_exceed) {
-		this.r85_total_deposit_exceed = r85_total_deposit_exceed;
-	}
 	public BigDecimal getR85_total_deposit_bank() {
 		return r85_total_deposit_bank;
 	}
@@ -5608,12 +5055,6 @@ public class MDISB2_Summary_Entity1 {
 	}
 	public void setR86_total_amount(BigDecimal r86_total_amount) {
 		this.r86_total_amount = r86_total_amount;
-	}
-	public BigDecimal getR86_total_deposit_exceed() {
-		return r86_total_deposit_exceed;
-	}
-	public void setR86_total_deposit_exceed(BigDecimal r86_total_deposit_exceed) {
-		this.r86_total_deposit_exceed = r86_total_deposit_exceed;
 	}
 	public BigDecimal getR86_total_deposit_bank() {
 		return r86_total_deposit_bank;
@@ -5673,6 +5114,8 @@ public class MDISB2_Summary_Entity1 {
 		super();
 		// TODO Auto-generated constructor stub
 	}
+	
+	
 	
 	
 }
