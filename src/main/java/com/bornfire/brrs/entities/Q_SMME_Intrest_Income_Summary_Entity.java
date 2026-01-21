@@ -112,7 +112,7 @@ private BigDecimal r44_non_res_carry_amt;
     @Temporal(TemporalType.DATE)
     @Column(name = "REPORT_DATE")
 	private Date REPORT_DATE;
-private String report_version;
+private BigDecimal report_version;
 private String report_frequency;
 private String report_code;
 private String report_desc;
@@ -1040,12 +1040,12 @@ private String del_flg;
 	}
 
 
-	public String getReport_version() {
+	public BigDecimal getReport_version() {
 		return report_version;
 	}
 
 
-	public void setReport_version(String report_version) {
+	public void setReport_version(BigDecimal report_version) {
 		this.report_version = report_version;
 	}
 

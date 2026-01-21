@@ -888,7 +888,7 @@ public class BRRS_Q_SMME_Intrest_Income_New_ReportService {
                     row.createCell(5).setCellValue(item.getReportAddlCriteria1());
                     row.createCell(6)
                             .setCellValue(item.getReportDate() != null
-                                    ? new SimpleDateFormat("dd/MM/yyyy").format(item.getReportDate())
+                                    ? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
                                     : "");
                     // Apply data style for all other cells
                     for (int j = 0; j < 7; j++) {

@@ -99,7 +99,7 @@ public class BRRS_Q_SMME_Intrest_Income_ReportService {
 			System.out.println(version);
 			try {
 				Date d1 = dateformat.parse(todate);
-				T1Master = Q_SMME_Archival_Summary_Repo.getdatabydateListarchival(todate, version);
+				T1Master = Q_SMME_Archival_Summary_Repo.getdatabydateListarchival(d1, version);
 				
 
 			} catch (ParseException e) {
@@ -208,7 +208,7 @@ public class BRRS_Q_SMME_Intrest_Income_ReportService {
 
 		// ARCHIVAL check
 		System.out.println(type+"   "+version);
-		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && version != null) {
+		if ("ARCHIVAL".equalsIgnoreCase(type) && version.compareTo(BigDecimal.ZERO) > 0) {
 			logger.info("Service: Generating ARCHIVAL report for version {}", version);
 			return getSummaryExcelARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
 			
@@ -858,7 +858,7 @@ public class BRRS_Q_SMME_Intrest_Income_ReportService {
 			balanceStyle.setBorderLeft(border);
 			balanceStyle.setBorderRight(border);
 			// Header row
-			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE",  "REPORT LABEL", "REPORT ADDL CRITERIA1",
+			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE IN PULA",  "REPORT LABEL", "REPORT ADDL CRITERIA1",
 					"REPORT_DATE" };
 			XSSFRow headerRow = sheet.createRow(0);
 			for (int i = 0; i < headers.length; i++) {
@@ -894,7 +894,7 @@ public class BRRS_Q_SMME_Intrest_Income_ReportService {
 					row.createCell(5).setCellValue(item.getReportAddlCriteria1());
 					row.createCell(6)
 							.setCellValue(item.getReportDate() != null
-									? new SimpleDateFormat("dd/MM/yyyy").format(item.getReportDate())
+									? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
 									: "");
 					// Apply data style for all other cells
 					for (int j = 0; j < 7; j++) {
@@ -943,7 +943,7 @@ public class BRRS_Q_SMME_Intrest_Income_ReportService {
 
 		}
 		List<Q_SMME_Intrest_Income_Archival_Summary_Entity> dataList = Q_SMME_Archival_Summary_Repo
-				.getdatabydateListarchival(todate, version);
+				.getdatabydateListarchival(dateformat.parse(todate), version);
 
 		if (dataList.isEmpty()) {
 			logger.warn("Service: No data found for Q_SMME report. Returning empty result.");

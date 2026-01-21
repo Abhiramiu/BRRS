@@ -1,5 +1,6 @@
 package com.bornfire.brrs.entities;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -12,7 +13,7 @@ public interface BRRS_Q_SMME_Intrest_Income_Archival_Summary_Repo extends JpaRep
     List<Object> getQ_SMMEarchival();
 
     @Query(value = "select * from BRRS_Q_SMME_INTREST_INCOME_ARCHIVALTABLE_SUMMARY where REPORT_DATE = to_date(?1,'dd-MM-yyyy') and REPORT_VERSION = ?2", nativeQuery = true)
-    List<Q_SMME_Intrest_Income_Archival_Summary_Entity> getdatabydateListarchival(String report_date, Object version);
+    List<Q_SMME_Intrest_Income_Archival_Summary_Entity> getdatabydateListarchival(Date reportDate, BigDecimal reportVersion);
 }
 
 
