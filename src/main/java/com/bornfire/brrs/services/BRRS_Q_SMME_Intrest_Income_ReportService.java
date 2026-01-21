@@ -55,7 +55,6 @@ import com.bornfire.brrs.entities.Q_SMME_Intrest_Income_Detail_Entity;
 import com.bornfire.brrs.entities.Q_SMME_Intrest_Income_Summary_Entity;
 import com.bornfire.brrs.entities.BRRS_Q_SMME_Intrest_Income_Summary_Repo;
 
-
 @Component
 @Service
 
@@ -68,22 +67,20 @@ public class BRRS_Q_SMME_Intrest_Income_ReportService {
 	private Environment env;
 	@Autowired
 	BRRS_Q_SMME_Intrest_Income_Detail_Repo q_SMME_Detail_Repo;
-	
+
 	@Autowired
 	BRRS_Q_SMME_Intrest_Income_Summary_Repo q_SMME_Summary_Repo;
 
-	
 	@Autowired
 	BRRS_Q_SMME_Intrest_Income_Archival_Detail_Repo Q_SMME_Archival_Detail_Repo;
 
 	@Autowired
 	BRRS_Q_SMME_Intrest_Income_Archival_Summary_Repo Q_SMME_Archival_Summary_Repo;
 
-
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
-	public ModelAndView getBRRS_Q_SMMEView(String reportId, String fromdate, String todate, 
-			String currency, String dtltype, Pageable pageable, String type, BigDecimal version)  {
+	public ModelAndView getBRRS_Q_SMMEView(String reportId, String fromdate, String todate,
+			String currency, String dtltype, Pageable pageable, String type, BigDecimal version) {
 		ModelAndView mv = new ModelAndView();
 		Session hs = sessionFactory.getCurrentSession();
 		int pageSize = pageable.getPageSize();
@@ -100,7 +97,6 @@ public class BRRS_Q_SMME_Intrest_Income_ReportService {
 			try {
 				Date d1 = dateformat.parse(todate);
 				T1Master = Q_SMME_Archival_Summary_Repo.getdatabydateListarchival(d1, version);
-				
 
 			} catch (ParseException e) {
 				e.printStackTrace();
@@ -126,7 +122,6 @@ public class BRRS_Q_SMME_Intrest_Income_ReportService {
 		return mv;
 	}
 
-	
 	public ModelAndView getBRRS_Q_SMMEcurrentDtl(String reportId, String fromdate, String todate, String currency,
 			String dtltype, Pageable pageable, String filter, String type, String version) {
 		int pageSize = pageable != null ? pageable.getPageSize() : 10;
@@ -155,7 +150,8 @@ public class BRRS_Q_SMME_Intrest_Income_ReportService {
 				// 🔹 Archival branch
 				List<Q_SMME_Intrest_Income_Archival_Detail_Entity> T1Dt1;
 				if (reportLabel != null && reportAddlCriteria1 != null) {
-					T1Dt1 = Q_SMME_Archival_Detail_Repo.GetDataByRowIdAndColumnId(reportLabel, reportAddlCriteria1, parsedDate, version);
+					T1Dt1 = Q_SMME_Archival_Detail_Repo.GetDataByRowIdAndColumnId(reportLabel, reportAddlCriteria1,
+							parsedDate, version);
 				} else {
 					T1Dt1 = Q_SMME_Archival_Detail_Repo.getdatabydateList(todate, version);
 					totalPages = q_SMME_Detail_Repo.getdatacount(parsedDate);
@@ -166,7 +162,7 @@ public class BRRS_Q_SMME_Intrest_Income_ReportService {
 				mv.addObject("reportmaster12", T1Dt1);
 				System.out.println("ARCHIVAL COUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
 			} else {
-				
+
 				// 🔹 Current branch
 				List<Q_SMME_Intrest_Income_Detail_Entity> T1Dt1;
 				if (reportLabel != null && reportAddlCriteria1 != null) {
@@ -200,27 +196,22 @@ public class BRRS_Q_SMME_Intrest_Income_ReportService {
 		return mv;
 	}
 
-
-
 	public byte[] getQ_SMMEExcel(String filename, String reportId, String fromdate, String todate, String currency,
 			String dtltype, String type, BigDecimal version) throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.");
+		logger.info("DownloadFile: reportId={}, filename={}", reportId, filename, type, version);
+
+		// Convert string to Date
+		Date reportDate = dateformat.parse(todate);
 
 		// ARCHIVAL check
-		System.out.println(type+"   "+version);
-		if ("ARCHIVAL".equalsIgnoreCase(type) && version.compareTo(BigDecimal.ZERO) > 0) {
+		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && version != null) {
 			logger.info("Service: Generating ARCHIVAL report for version {}", version);
 			return getSummaryExcelARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
-			
 		}
 
-		// Fetch data
-		List<Q_SMME_Intrest_Income_Summary_Entity> dataList = q_SMME_Summary_Repo.getdatabydateList(dateformat.parse(todate));
-
-		if (dataList.isEmpty()) {
-			logger.warn("Service: No data found for Q_SMME report. Returning empty result.");
-			return new byte[0];
-		}
+		// Default (LIVE) case
+		List<Q_SMME_Intrest_Income_Summary_Entity> dataList = q_SMME_Summary_Repo.getdatabydateList(reportDate);
 
 		String templateDir = env.getProperty("output.exportpathtemp");
 		String templateFileName = filename;
@@ -231,10 +222,11 @@ public class BRRS_Q_SMME_Intrest_Income_ReportService {
 		logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
 
 		if (!Files.exists(templatePath)) {
+			// This specific exception will be caught by the controller.
 			throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
 		}
-
 		if (!Files.isReadable(templatePath)) {
+			// A specific exception for permission errors.
 			throw new SecurityException(
 					"Template file exists but is not readable (check permissions): " + templatePath.toAbsolutePath());
 		}
@@ -242,8 +234,9 @@ public class BRRS_Q_SMME_Intrest_Income_ReportService {
 		// This try-with-resources block is perfect. It guarantees all resources are
 		// closed automatically.
 		try (InputStream templateInputStream = Files.newInputStream(templatePath);
-			 Workbook workbook = WorkbookFactory.create(templateInputStream);
-			 ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+				Workbook workbook = WorkbookFactory.create(templateInputStream);
+				ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+
 			Sheet sheet = workbook.getSheetAt(0);
 
 			// --- Style Definitions ---
@@ -255,6 +248,7 @@ public class BRRS_Q_SMME_Intrest_Income_ReportService {
 			dateStyle.setBorderTop(BorderStyle.THIN);
 			dateStyle.setBorderLeft(BorderStyle.THIN);
 			dateStyle.setBorderRight(BorderStyle.THIN);
+
 			CellStyle textStyle = workbook.createCellStyle();
 			textStyle.setBorderBottom(BorderStyle.THIN);
 			textStyle.setBorderTop(BorderStyle.THIN);
@@ -265,6 +259,7 @@ public class BRRS_Q_SMME_Intrest_Income_ReportService {
 			Font font = workbook.createFont();
 			font.setFontHeightInPoints((short) 8); // size 8
 			font.setFontName("Arial");
+
 			CellStyle numberStyle = workbook.createCellStyle();
 			// numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
 			numberStyle.setBorderBottom(BorderStyle.THIN);
@@ -273,6 +268,7 @@ public class BRRS_Q_SMME_Intrest_Income_ReportService {
 			numberStyle.setBorderRight(BorderStyle.THIN);
 			numberStyle.setFont(font);
 			// --- End of Style Definitions ---
+
 			int startRow = 15;
 
 			if (!dataList.isEmpty()) {
@@ -799,14 +795,13 @@ public class BRRS_Q_SMME_Intrest_Income_ReportService {
 			// Write the final workbook content to the in-memory stream.
 			workbook.write(out);
 			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-			
-			
+
 			return out.toByteArray();
 		}
 	}
 
 	public byte[] BRRS_Q_SMMEDetailExcel(String filename, String fromdate, String todate, String currency,
-										   String dtltype, String type, String version) {
+			String dtltype, String type, String version) {
 
 		try {
 			logger.info("Generating Excel for BRRSQ_SMME Details...");
@@ -858,7 +853,8 @@ public class BRRS_Q_SMME_Intrest_Income_ReportService {
 			balanceStyle.setBorderLeft(border);
 			balanceStyle.setBorderRight(border);
 			// Header row
-			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE IN PULA",  "REPORT LABEL", "REPORT ADDL CRITERIA1",
+			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE IN PULA", "REPORT LABEL",
+					"REPORT ADDL CRITERIA1",
 					"REPORT_DATE" };
 			XSSFRow headerRow = sheet.createRow(0);
 			for (int i = 0; i < headers.length; i++) {
@@ -874,7 +870,7 @@ public class BRRS_Q_SMME_Intrest_Income_ReportService {
 			// Get data
 			Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
 			List<Q_SMME_Intrest_Income_Detail_Entity> reportData = q_SMME_Detail_Repo.getdatabydateList(parsedToDate);
-			
+
 			if (reportData != null && !reportData.isEmpty()) {
 				int rowIndex = 1;
 				for (Q_SMME_Intrest_Income_Detail_Entity item : reportData) {
@@ -938,7 +934,6 @@ public class BRRS_Q_SMME_Intrest_Income_ReportService {
 			String todate,
 			String currency, String dtltype, String type, BigDecimal version) throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.");
-		System.out.println("Gopika Excel Archival");
 		if (type.equals("ARCHIVAL") & version != null) {
 
 		}
@@ -971,8 +966,8 @@ public class BRRS_Q_SMME_Intrest_Income_ReportService {
 		// This try-with-resources block is perfect. It guarantees all resources are
 		// closed automatically.
 		try (InputStream templateInputStream = Files.newInputStream(templatePath);
-			 Workbook workbook = WorkbookFactory.create(templateInputStream);
-			 ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+				Workbook workbook = WorkbookFactory.create(templateInputStream);
+				ByteArrayOutputStream out = new ByteArrayOutputStream()) {
 
 			Sheet sheet = workbook.getSheetAt(0);
 
@@ -1524,8 +1519,8 @@ public class BRRS_Q_SMME_Intrest_Income_ReportService {
 					}
 					// 44 is Calculation Part
 
-
-				}workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
+				}
+				workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
 			} else {
 
 			}
@@ -1538,135 +1533,136 @@ public class BRRS_Q_SMME_Intrest_Income_ReportService {
 			return out.toByteArray();
 		}
 	}
-public byte[] getDetailExcelARCHIVAL(String filename,
-                                     String fromdate,
-                                     String todate,
-                                     String currency,
-                                     String dtltype,
-                                     String type,
-                                     String version) {
-    try {
-        logger.info("Generating Excel for BRRS_Q_SMME ARCHIVAL Details...");
-        System.out.println("came to Detail download service");
 
-        // --- Create workbook and sheet ---
-        XSSFWorkbook workbook = new XSSFWorkbook();
-        XSSFSheet sheet = workbook.createSheet("Q_SMMEDetail");
+	public byte[] getDetailExcelARCHIVAL(String filename,
+			String fromdate,
+			String todate,
+			String currency,
+			String dtltype,
+			String type,
+			String version) {
+		try {
+			logger.info("Generating Excel for BRRS_Q_SMME ARCHIVAL Details...");
+			System.out.println("came to Detail download service");
 
-        BorderStyle border = BorderStyle.THIN;
+			// --- Create workbook and sheet ---
+			XSSFWorkbook workbook = new XSSFWorkbook();
+			XSSFSheet sheet = workbook.createSheet("Q_SMMEDetail");
 
-        // Header style
-        CellStyle headerStyle = workbook.createCellStyle();
-        Font headerFont = workbook.createFont();
-        headerFont.setBold(true);
-        headerFont.setFontHeightInPoints((short) 10);
-        headerStyle.setFont(headerFont);
-        headerStyle.setAlignment(HorizontalAlignment.LEFT);
-        headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
-        headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-        headerStyle.setBorderTop(border);
-        headerStyle.setBorderBottom(border);
-        headerStyle.setBorderLeft(border);
-        headerStyle.setBorderRight(border);
+			BorderStyle border = BorderStyle.THIN;
 
-        // Right-aligned header style for ACCT BALANCE
-        CellStyle rightAlignedHeaderStyle = workbook.createCellStyle();
-        rightAlignedHeaderStyle.cloneStyleFrom(headerStyle);
-        rightAlignedHeaderStyle.setAlignment(HorizontalAlignment.RIGHT);
+			// Header style
+			CellStyle headerStyle = workbook.createCellStyle();
+			Font headerFont = workbook.createFont();
+			headerFont.setBold(true);
+			headerFont.setFontHeightInPoints((short) 10);
+			headerStyle.setFont(headerFont);
+			headerStyle.setAlignment(HorizontalAlignment.LEFT);
+			headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+			headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+			headerStyle.setBorderTop(border);
+			headerStyle.setBorderBottom(border);
+			headerStyle.setBorderLeft(border);
+			headerStyle.setBorderRight(border);
 
-        // Data style
-        CellStyle dataStyle = workbook.createCellStyle();
-        dataStyle.setAlignment(HorizontalAlignment.LEFT);
-        dataStyle.setBorderTop(border);
-        dataStyle.setBorderBottom(border);
-        dataStyle.setBorderLeft(border);
-        dataStyle.setBorderRight(border);
+			// Right-aligned header style for ACCT BALANCE
+			CellStyle rightAlignedHeaderStyle = workbook.createCellStyle();
+			rightAlignedHeaderStyle.cloneStyleFrom(headerStyle);
+			rightAlignedHeaderStyle.setAlignment(HorizontalAlignment.RIGHT);
 
-        // Balance style
-        CellStyle balanceStyle = workbook.createCellStyle();
-        balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
-        balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("#,##0"));
-        balanceStyle.setBorderTop(border);
-        balanceStyle.setBorderBottom(border);
-        balanceStyle.setBorderLeft(border);
-        balanceStyle.setBorderRight(border);
+			// Data style
+			CellStyle dataStyle = workbook.createCellStyle();
+			dataStyle.setAlignment(HorizontalAlignment.LEFT);
+			dataStyle.setBorderTop(border);
+			dataStyle.setBorderBottom(border);
+			dataStyle.setBorderLeft(border);
+			dataStyle.setBorderRight(border);
 
-        // --- Header row ---
-        String[] headers = {"CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE",  "REPORT LABEL", "REPORT ADDL CRITERIA1", "REPORT_DATE"};
-        XSSFRow headerRow = sheet.createRow(0);
+			// Balance style
+			CellStyle balanceStyle = workbook.createCellStyle();
+			balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
+			balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("#,##0"));
+			balanceStyle.setBorderTop(border);
+			balanceStyle.setBorderBottom(border);
+			balanceStyle.setBorderLeft(border);
+			balanceStyle.setBorderRight(border);
 
-        for (int i = 0; i < headers.length; i++) {
-            Cell cell = headerRow.createCell(i);
-            cell.setCellValue(headers[i]);
-            if (i == 3) {
-                cell.setCellStyle(rightAlignedHeaderStyle);
-            } else {
-                cell.setCellStyle(headerStyle);
-            }
-            sheet.setColumnWidth(i, 5000);
-        }
+			// --- Header row ---
+			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "REPORT LABEL",
+					"REPORT ADDL CRITERIA1", "REPORT_DATE" };
+			XSSFRow headerRow = sheet.createRow(0);
 
-        // --- Fetch data from DB ---
-       // Date parsedToDate = new SimpleDateFormat("dd-MM-yyyy").parse(todate); // ✅ match with controller
-        List<Q_SMME_Intrest_Income_Archival_Detail_Entity> reportData =
-                Q_SMME_Archival_Detail_Repo.getdatabydateList(todate, version);
+			for (int i = 0; i < headers.length; i++) {
+				Cell cell = headerRow.createCell(i);
+				cell.setCellValue(headers[i]);
+				if (i == 3) {
+					cell.setCellStyle(rightAlignedHeaderStyle);
+				} else {
+					cell.setCellStyle(headerStyle);
+				}
+				sheet.setColumnWidth(i, 5000);
+			}
 
-        logger.info("Fetched {} rows from DB for ARCHIVAL", reportData != null ? reportData.size() : 0);
+			// --- Fetch data from DB ---
+			// Date parsedToDate = new SimpleDateFormat("dd-MM-yyyy").parse(todate); // ✅
+			// match with controller
+			List<Q_SMME_Intrest_Income_Archival_Detail_Entity> reportData = Q_SMME_Archival_Detail_Repo
+					.getdatabydateList(todate, version);
 
-        if (reportData != null && !reportData.isEmpty()) {
-            int rowIndex = 1;
-            for (Q_SMME_Intrest_Income_Archival_Detail_Entity item : reportData) {
-                XSSFRow row = sheet.createRow(rowIndex++);
+			logger.info("Fetched {} rows from DB for ARCHIVAL", reportData != null ? reportData.size() : 0);
 
-                row.createCell(0).setCellValue(item.getCustId());
-                row.createCell(1).setCellValue(item.getAcctNumber());
-                row.createCell(2).setCellValue(item.getAcctName());
+			if (reportData != null && !reportData.isEmpty()) {
+				int rowIndex = 1;
+				for (Q_SMME_Intrest_Income_Archival_Detail_Entity item : reportData) {
+					XSSFRow row = sheet.createRow(rowIndex++);
 
-                // Balance
-                Cell balanceCell = row.createCell(3);
-                balanceCell.setCellValue(item.getAcctBalanceInPula() != null
-                        ? item.getAcctBalanceInPula().doubleValue()
-                        : 0);
-                balanceCell.setCellStyle(balanceStyle);
+					row.createCell(0).setCellValue(item.getCustId());
+					row.createCell(1).setCellValue(item.getAcctNumber());
+					row.createCell(2).setCellValue(item.getAcctName());
 
-                row.createCell(4).setCellValue(item.getReportLabel());
-                row.createCell(5).setCellValue(item.getReportAddlCriteria1());
-                row.createCell(6).setCellValue(item.getReportDate() != null
-                        ? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
-                        : "");
+					// Balance
+					Cell balanceCell = row.createCell(3);
+					balanceCell.setCellValue(item.getAcctBalanceInPula() != null
+							? item.getAcctBalanceInPula().doubleValue()
+							: 0);
+					balanceCell.setCellStyle(balanceStyle);
 
-                // Apply data style except balance column
-                for (int j = 0; j < 7; j++) {
-                    if (j != 3) {
-                        row.getCell(j).setCellStyle(dataStyle);
-                    }
-                }
-            }
-        } else {
-            logger.info("⚠️ No data found for BRRS_Q_SMME ARCHIVAL — only header will be written.");
-        }
+					row.createCell(4).setCellValue(item.getReportLabel());
+					row.createCell(5).setCellValue(item.getReportAddlCriteria1());
+					row.createCell(6).setCellValue(item.getReportDate() != null
+							? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
+							: "");
 
-        // --- Write to byte[] ---
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        workbook.write(bos);
-        workbook.close();
+					// Apply data style except balance column
+					for (int j = 0; j < 7; j++) {
+						if (j != 3) {
+							row.getCell(j).setCellStyle(dataStyle);
+						}
+					}
+				}
+			} else {
+				logger.info("⚠️ No data found for BRRS_Q_SMME ARCHIVAL — only header will be written.");
+			}
 
-        logger.info("Excel generation completed with {} row(s).", reportData != null ? reportData.size() : 0);
-        return bos.toByteArray();
+			// --- Write to byte[] ---
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			workbook.write(bos);
+			workbook.close();
 
-    } catch (Exception e) {
-        logger.error("Error generating BRRS_Q_SMME Excel", e);
-        return new byte[0]; 
-    }
-}
+			logger.info("Excel generation completed with {} row(s).", reportData != null ? reportData.size() : 0);
+			return bos.toByteArray();
 
-	
-	
+		} catch (Exception e) {
+			logger.error("Error generating BRRS_Q_SMME Excel", e);
+			return new byte[0];
+		}
+	}
+
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
 	public ModelAndView getViewOrEditPage(String acctNo, String formMode) {
-		ModelAndView mv = new ModelAndView("BRRS/Q_SMME"); 
+		ModelAndView mv = new ModelAndView("BRRS/Q_SMME");
 
 		if (acctNo != null) {
 			Q_SMME_Intrest_Income_Detail_Entity q_smmeIi = q_SMME_Detail_Repo.findByAcctnumber(acctNo);
@@ -1681,6 +1677,7 @@ public byte[] getDetailExcelARCHIVAL(String filename,
 		mv.addObject("formmode", formMode != null ? formMode : "edit");
 		return mv;
 	}
+
 	@Transactional
 	public ResponseEntity<?> updateDetailEdit(HttpServletRequest request) {
 		try {
@@ -1764,8 +1761,5 @@ public byte[] getDetailExcelARCHIVAL(String filename,
 					.body("Error updating record: " + e.getMessage());
 		}
 	}
-
-	
-	
 
 }
