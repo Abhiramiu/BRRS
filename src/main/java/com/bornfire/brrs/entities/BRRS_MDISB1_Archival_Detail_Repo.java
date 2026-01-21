@@ -16,4 +16,3 @@ public interface BRRS_MDISB1_Archival_Detail_Repo extends JpaRepository<MDISB1_A
 	List<MDISB1_Archival_Detail_Entity> GetDataByRowIdAndColumnId(String rowId,String columnId,Date reportdate,String version);
 }
 
-	
