@@ -297,6 +297,7 @@ public class BRRS_ReportsController {
 			e.printStackTrace();
 		}
 		try {
+			System.out.println("came to controller");
 			byte[] excelData = regreportServices.getDownloadFile(reportid, filename, asondate, fromdate, todate,
 					currency, subreportid, secid, dtltype, reportingTime, instancecode, filter, type, version);
 
@@ -308,7 +309,7 @@ public class BRRS_ReportsController {
 			ByteArrayResource resource = new ByteArrayResource(excelData);
 
 			HttpHeaders headers = new HttpHeaders();
-			filename = filename + ".xls";
+			filename = filename + ".xlsx";
 			headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename);
 
 			logger.info("Controller: Sending file '{}' to client ({} bytes).", filename, excelData.length);
@@ -4075,7 +4076,7 @@ public class BRRS_ReportsController {
 		}
 	}
 
-	@GetMapping("/downloadConsolidatedExcel")
+	/*@GetMapping("/downloadConsolidatedExcel")
 	public void downloadConsolidatedExcel(@RequestParam(required = false) String asondate,
 			@RequestParam(required = false) String fromdate,
 			@RequestParam(required = false) String todate,
@@ -4093,6 +4094,6 @@ public class BRRS_ReportsController {
 		response.setHeader("Content-Disposition", "attachment; filename=" + filename + ".xlsx");
 		response.getOutputStream().write(file);
 		response.getOutputStream().flush();
-	}
+	}*/
 
 }

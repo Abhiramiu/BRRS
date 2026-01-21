@@ -112,7 +112,7 @@ public class BRRS_SCH_17_ReportService {
 
 	
 	public ModelAndView getSCH_17View(String reportId, String fromdate, String todate, String currency, String dtltype,
-			Pageable pageable, String type, String version) {
+			Pageable pageable, String type, BigDecimal version) {
 
 		ModelAndView mv = new ModelAndView();
 		
@@ -120,7 +120,7 @@ public class BRRS_SCH_17_ReportService {
 		System.out.println("testing");
 		System.out.println(version);
 
-		if ("ARCHIVAL".equals(type) && version != null && !version.isEmpty()) {
+		if ("ARCHIVAL".equals(type) && version != null) {
 
 		    System.out.println("ARCHIVAL MODE");
 		    System.out.println("version = " + version);
@@ -130,6 +130,7 @@ public class BRRS_SCH_17_ReportService {
 		 
 		    try {
 		        Date dt = dateformat.parse(todate);
+
 
 		        T1Master = SCH_17_Archival_Summary_Repo.getdatabydateListarchival(dt, version);
 
@@ -274,12 +275,14 @@ public class BRRS_SCH_17_ReportService {
 	
 
 	public byte[] getSCH_17Excel(String filename, String reportId, String fromdate, String todate, String currency,
-			String dtltype, String type, String version) throws Exception {
+			String dtltype, String type, BigDecimal version) throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.sch17");
 
 		// ARCHIVAL check
-		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && !version.trim().isEmpty()) {
-			logger.info("Service: Generating ARCHIVAL report for version {}", version);
+		if ("ARCHIVAL".equalsIgnoreCase(type)
+		        && version != null
+		        && version.compareTo(BigDecimal.ZERO) >= 0) {
+				logger.info("Service: Generating ARCHIVAL report for version {}", version);
 			return getExcelSCH_17ARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
 		}
 
@@ -287,7 +290,7 @@ public class BRRS_SCH_17_ReportService {
 
 		List<SCH_17_Summary_Entity> dataList = SCH_17_summary_repo.getdatabydateList(dateformat.parse(todate));
 	
-
+		System.out.println("DATA SIZE IS : "+dataList.size());
 		if (dataList.isEmpty()) {
 			logger.warn("Service: No data found for  SCH_17 report. Returning empty result.");
 			return new byte[0];
@@ -531,14 +534,14 @@ public class BRRS_SCH_17_ReportService {
 
 	
 	public byte[] getExcelSCH_17ARCHIVAL(String filename, String reportId, String fromdate, String todate,
-			String currency, String dtltype, String type, String version) throws Exception {
+			String currency, String dtltype, String type, BigDecimal version) throws Exception {
 
 		logger.info("Service: Starting Excel generation process in memory.");
 
 		if (type.equals("ARCHIVAL") & version != null) {
 
 		}
-		
+
 		List<SCH_17_Archival_Summary_Entity> dataList = SCH_17_Archival_Summary_Repo
 				.getdatabydateListarchival(dateformat.parse(todate), version);
 	

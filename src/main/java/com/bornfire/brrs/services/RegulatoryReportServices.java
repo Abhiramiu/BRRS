@@ -795,8 +795,13 @@ public class RegulatoryReportServices {
 				  repsummary = brrs_mdisb1_reportservice.getMDISB1View(reportId, fromdate,
 				  todate, currency, dtltype, pageable, type, version);
 				 break;
-
-			/*
+			case "SCH_17":
+				  repsummary = brrs_sch_17_reportservice.getSCH_17View(reportId, fromdate,
+				  todate, currency, dtltype, pageable, type, version);
+				 
+			 break;
+			
+			 /*
 			 * case "AML":
 			 * 
 			 * repsummary = brrs_aml_reportservice.getAMLView(reportId, fromdate, todate,
@@ -1494,6 +1499,15 @@ public class RegulatoryReportServices {
 
 		switch (reportId) {
 
+		case "SCH_17": try {
+			  System.out.println("came to Regulatory service");
+			  repfile = brrs_sch_17_reportservice.getSCH_17Excel(filename, reportId,
+			  fromdate, todate, currency, dtltype, type, version); 
+			  }
+			catch (Exception e) {
+			  // TODO Auto-generated catch block e.printStackTrace(); 
+			} break;
+			
 			/*
 			 * case "M_SFINP2": try { repfile =
 			 * BRRS_M_SFINP2_reportservice.BRRS_M_SFINP2Excel(filename, reportId, fromdate,
@@ -4965,11 +4979,11 @@ public class RegulatoryReportServices {
 		return resubmissionData;
 	}
 
-	public byte[] getConsolidatedDownloadFile(String filename, String asondate, String fromdate, String todate,
+/*	public byte[] getConsolidatedDownloadFile(String filename, String asondate, String fromdate, String todate,
 			String currency, String type, String version, String dtltype) throws ParseException {
 
 		// List of all reports you want to include
-		List<String> reportList = Arrays.asList("M_LA4", "M_CA4");
+		List<String> reportList = Arrays.asList("SCH_17","M_LA4", "M_CA4");
 		System.out.println(todate);
 
 		SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MMM-dd", Locale.ENGLISH);
@@ -5032,9 +5046,9 @@ public class RegulatoryReportServices {
 
 		return null;
 	}
-
-	private byte[] generateReport(String reportName, String filename, String asondate, String fromdate, String todate,
-			String currency, String dtltype, String type, String version) {
+*/
+	/*private byte[] generateReport(String reportName, String filename, String asondate, String fromdate, String todate,
+			String currency, String dtltype, String type, BigDecimal version) {
 
 		try {
 			// ✅ Convert date formats if needed (example: 30/09/2025 → 30-Sep-2025)
@@ -5059,48 +5073,19 @@ public class RegulatoryReportServices {
 
 			// ✅ Switch case for all reports
 			switch (reportName) {
-				// case "M_SFINP2":
-				// return BRRS_M_SFINP2_reportservice.BRRS_M_SFINP2Excel("M_SFINP2.xlsx",
-				// reportName, fromdate, todate,
-				// currency,
-				// dtltype, type, version);
-
-				// case "M_SFINP1":
-				// return BRRS_M_SFINP1_reportservice.getM_SFINP1Excel("M_SFINP1.xlsx",
-				// reportName, fromdate, todate,
-				// currency,
-				// dtltype, type, version);
+				
 
 				case "M_LA1":
 					return BRRS_M_LA1_reportservice.BRRS_M_LA1Excel(filename, reportName, fromdate, todate, currency,
 							"DETAIL", type, version);
 
+				
 				case "M_LA1_NEW":
 					return BRRS_M_LA1_reportservice_new.BRRS_M_LA1Excel(filename, reportName, fromdate, todate,
 							currency,
 							"DETAIL", type, version);
 
-				// case "M_LA1":
-				// return BRRS_M_LA1_reportservice.BRRS_M_LA1Excel("M_LA1.xlsx", reportName,
-				// fromdate, todate, currency,
-				// dtltype, type, version);
-
-				// case "M_LA1_NEW":
-				// return BRRS_M_LA1_reportservice_new.BRRS_M_LA1Excel(filename, reportName,
-				// fromdate, todate, currency,
-				// dtltype, type, version);
-
-				// case "M_LA2":
-				// return BRRS_M_LA2_reportservice.BRRS_M_LA2Excel("M_LA2.xlsx", reportName,
-				// fromdate, todate, currency,
-				// dtltype, type, version);
-
-				// case "M_LA3":
-				// return BRRS_M_LA3_reportservice.BRRS_M_LA3Excel("M_LA3.xlsx", reportName,
-				// fromdate, todate, currency,
-				// dtltype, type, version);
-
-				case "M_LA4":
+								case "M_LA4":
 					return BRRS_M_LA4_reportservice.BRRS_M_LA4Excel("M_LA4.xlsx", reportName, fromdate, todate,
 							currency,
 							dtltype, type, version);
@@ -5110,9 +5095,9 @@ public class RegulatoryReportServices {
 							currency,
 							dtltype, type, version);
 
-				// 🟩 Add more report cases as needed...
-				// case "M_SOMETHING":
-				// return someService.someExcel(...);
+				case "SCH_17":
+					return brrs_sch_17_reportservice.getSCH_17Excel("SCH_17.xlsx", reportName, fromdate, todate, currency,
+							"DETAIL", type, version);
 
 				default:
 					System.out.println("Service: Unknown report name: " + reportName);
@@ -5238,8 +5223,8 @@ public class RegulatoryReportServices {
 			dest.setColumnWidth(c, src.getColumnWidth(c));
 		}
 	}
-
-	public byte[] generateConsolidatedExcel(String asondate, String fromdate, String todate, String currency,
+*/
+/*	public byte[] generateConsolidatedExcel(String asondate, String fromdate, String todate, String currency,
 			String type, String version, String dtltype) {
 		logger.info("Starting consolidated Excel generation for all 70 reports.");
 
@@ -5291,7 +5276,7 @@ public class RegulatoryReportServices {
 			return null;
 		}
 	}
-
+*/
 	private void copySheetContent(Sheet src, Sheet dest) {
 		int rowCount = 0;
 

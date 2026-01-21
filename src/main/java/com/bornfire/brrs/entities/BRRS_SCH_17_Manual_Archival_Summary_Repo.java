@@ -1,5 +1,6 @@
 package com.bornfire.brrs.entities;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -16,5 +17,5 @@ public interface BRRS_SCH_17_Manual_Archival_Summary_Repo extends JpaRepository<
     List<Object> getSCH_17archival();
 
     @Query(value = "select * from BRRS_SCH_17_MANUAL_ARCHIVALTABLE_SUMMARY where REPORT_DATE = ?1 and REPORT_VERSION = ?2", nativeQuery = true)
-    List<SCH_17_Archival_Manual_Summary_Entity> getdatabydateListarchival(Date report_date, String report_version);
+    List<SCH_17_Archival_Manual_Summary_Entity> getdatabydateListarchival(Date report_date, BigDecimal report_version);
 }

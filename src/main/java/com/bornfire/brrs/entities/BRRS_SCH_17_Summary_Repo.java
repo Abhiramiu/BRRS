@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface BRRS_SCH_17_Summary_Repo extends JpaRepository<SCH_17_Summary_Entity, Date> {
 
-	@Query(value = "select * from BRRS_SCH_17_SUMMARYTABLE ", nativeQuery = true)
+	@Query(value = "select * from BRRS_SCH_17_SUMMARYTABLE WHERE REPORT_DATE=?1", nativeQuery = true)
 	List<SCH_17_Summary_Entity> getdatabydateList(Date reportdate);
 
 }
