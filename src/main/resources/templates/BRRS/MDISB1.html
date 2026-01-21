@@ -511,6 +511,30 @@ PURPOSE		: BRRSREPORT
 			// ❌ If user clicks CANCEL, nothing happens
 		}
 	</script>
+	
+	<script>
+	    // Open modal instead of confirm()
+	    function openCancelModal() {
+	        $("#cancelConfirmModal").modal("show");
+	    }
+
+	    // When user clicks YES
+	    function confirmCancelModify() {
+
+	        // Close modal
+	        $("#cancelConfirmModal").modal("hide");
+
+	        // Reset UI
+	        $(".Show_input").attr("readonly", true).attr("disabled", true);
+	        $("#submitButton, #btnBack_edit").hide();
+	        $("#btnBack").show();
+	        $("#cancelRecord").hide();
+	        $("#addRecord").show();
+
+	        // Reload page
+	        location.reload();
+	    }
+	</script>
 
 	<script>
 		$(document).ready(function () {
@@ -749,19 +773,25 @@ PURPOSE		: BRRSREPORT
 			);
 			loader.show();
 
-			$.ajax({
-				url: './downloadExcel?reportid=' + reportid +
-					'&fromdate=' + fromdate +
-					'&asondate=' + asondate +
-					'&todate=' + todate +
-					'&currency=' + currency +
-					'&subreportid=' + subreportid +
-					'&secid=' + secid +
-					'&filename=' + filename +
-					'&type=' + type +
-					'&version=' + version,
-				type: 'GET',
-				xhrFields: {responseType: 'blob'},
+			var url = './downloadExcel?reportid=' + reportid +
+			       '&fromdate=' + fromdate +
+			       '&asondate=' + asondate +
+			       '&todate=' + todate +
+			       '&currency=' + currency +
+			       '&subreportid=' + subreportid +
+			       '&secid=' + secid +
+			       '&filename=' + filename +
+			       '&type=' + type;
+
+			   // ✅ ONLY append version if valid
+			   if (version && version.trim() !== '') {
+			       url += '&version=' + version;
+			   }
+					   
+					   $.ajax({
+					          url: url,
+					          type: 'GET',
+					          xhrFields: { responseType: 'blob' },
 
 				success: function (data) {
 
@@ -1298,9 +1328,14 @@ PURPOSE		: BRRSREPORT
 							th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
 							id="addRecord">Modify</button>
 
-						<!-- Cancel button (hidden initially) -->
-						<button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord"
-							onclick="cancelModify();" style="display: none;">Cancel</button>
+							<button type="button"
+							        class="custom-tab-btn"
+							        title="Cancel editing"
+							        id="cancelRecord"
+							        style="display:none;"
+							        onclick="openCancelModal();">
+							    Cancel
+							</button>
 
 
 
@@ -1313,7 +1348,7 @@ PURPOSE		: BRRSREPORT
 		                     data-dtltype=${dtltype}, 
 		                     data-filename='MDISB1.xlsx',
 		                     data-type=${type},
-		                     data-version=${version}" onclick="downloadfile(this);">
+		                      data-version=${version != null ? version : ''}" onclick="downloadfile(this);">
 							<i class="fa fa-download"></i>
 						</button>
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
@@ -5402,6 +5437,48 @@ PURPOSE		: BRRSREPORT
 					</div>
 				</div>
 			</div>
+		</div>
+		
+		<div class="modal fade" id="cancelConfirmModal" tabindex="-1" aria-hidden="true">
+		    <div class="modal-dialog modal-dialog-centered">
+		        <div class="modal-content">
+
+		            <!-- Header -->
+		            <div class="menu-title-header"
+		                style="background-color:#6c7a91; padding:8px; border-radius:5px 5px 0 0;">
+		                <div class="modal-title"
+		                    style="text-align:center; color:white;">
+		                    Are you sure you want to cancel changes?
+		                </div>
+		            </div>
+
+		            <!-- Body -->
+		            <div class="modal-body"
+		                style="text-align:center; font-size:1.1rem;">
+		                
+		               
+
+		                <button type="button"
+		                        class="custom-tab-btn cancel-btn"
+		                        data-bs-dismiss="modal"
+		                        style="margin-right:10px; border:2px solid #6c7a91;
+		                               background:white; color:black;
+		                               border-radius:20px; padding:5px 15px;">
+		                    Cancel
+		                </button>
+
+		                <button type="button"
+		                        class="custom-tab-btn yes-btn"
+		                        onclick="confirmCancelModify();"
+		                        style="background:#6c7a91; color:white;
+		                               border:none; border-radius:20px;
+		                               padding:5px 20px;">
+		                    Yes
+		                </button>
+		            </div>
+
+		        </div>
+		    </div>
 		</div>
 
 		<!-- Custom Cellresult Modal -->
