@@ -289,13 +289,13 @@ public class BRRS_MDISB5_ReportService {
 
 			// Parse key parts
 			String[] parts = key.split("_");
-			String reportLable = parts[0]; // R6, R7...
+			String reportLabel = parts[0]; // R6, R7...
 			String addlCriteria = parts[1]; // C1, C2...
 			String columnName = key.replaceFirst("R\\d+_C\\d+_", "");
 
 			// Fetch matching rows
 			List<MDISB5_Detail_Entity> rows = BRRS_MDISB5_Detail_Repo
-					.findByReportDateAndReportLableAndReportAddlCriteria1(reportDate, reportLable, addlCriteria);
+					.findByReportDateAndReportLableAndReportAddlCriteria1(reportDate, reportLabel, addlCriteria);
 
 			for (MDISB5_Detail_Entity row : rows) {
 
@@ -368,109 +368,7 @@ public class BRRS_MDISB5_ReportService {
 				"✅ Summary procedure executed for date: " + new SimpleDateFormat("dd-MM-yyyy").format(reportDate));
 	}
 
-	/*
-	 * public void updateReport1(MDISB5_Summary_Entity1 updatedEntity) {
-	 * System.out.println("Came to services1"); System.out.println("Report Date: " +
-	 * updatedEntity.getReportDate());
-	 * 
-	 * MDISB5_Summary_Entity1 existing = BRRS_MDISB5_Summary_Repo1
-	 * .findTopByReportDateOrderByReportVersionDesc(updatedEntity.getReportDate())
-	 * .orElseThrow(() -> new RuntimeException( "Record not found for REPORT_DATE: "
-	 * + updatedEntity.getReportDate()));
-	 * 
-	 * try { // 1️⃣ Loop from R5 to R15 and copy fields for (int i = 5; i <= 15;
-	 * i++) { String prefix = "R" + i + "_";
-	 * 
-	 * String[] fields = { "NAME_OF_SHAREHOLDER", "PERCENTAGE_SHAREHOLDING",
-	 * "NUMBER_OF_ACCOUNTS","AMOUNT"};
-	 * 
-	 * for (String field : fields) { String getterName = "get" + prefix + field;
-	 * String setterName = "set" + prefix + field;
-	 * 
-	 * try { Method getter = MDISB5_Summary_Entity1.class.getMethod(getterName);
-	 * Method setter = MDISB5_Summary_Entity1.class.getMethod(setterName,
-	 * getter.getReturnType());
-	 * 
-	 * Object newValue = getter.invoke(updatedEntity); setter.invoke(existing,
-	 * newValue);
-	 * 
-	 * } catch (NoSuchMethodException e) { // Skip missing fields continue; } } }
-	 * 
-	 * 
-	 * } catch (Exception e) { throw new
-	 * RuntimeException("Error while updating report fields", e); }
-	 * 
-	 * // 3️⃣ Save updated entity BRRS_MDISB5_Summary_Repo1.save(existing); }
-	 * 
-	 * 
-	 * public void updateReport2(MDISB5_Summary_Entity2 updatedEntity) {
-	 * System.out.println("Came to services2"); System.out.println("Report Date: " +
-	 * updatedEntity.getReportDate());
-	 * 
-	 * MDISB5_Summary_Entity2 existing = BRRS_MDISB5_Summary_Repo2
-	 * .findTopByReportDateOrderByReportVersionDesc(updatedEntity.getReportDate())
-	 * .orElseThrow(() -> new RuntimeException( "Record not found for REPORT_DATE: "
-	 * + updatedEntity.getReportDate()));
-	 * 
-	 * try { // 1️⃣ Loop from R20 to R33 and copy fields for (int i = 20; i <= 33;
-	 * i++) { String prefix = "R" + i + "_";
-	 * 
-	 * String[] fields = { "NAME_OF_BOARD_MEMBERS", "EXECUTIVE_OR_NONEXECUTIVE",
-	 * "NUMBER_OF_ACCOUNTS","AMOUNT"};
-	 * 
-	 * for (String field : fields) { String getterName = "get" + prefix + field;
-	 * String setterName = "set" + prefix + field;
-	 * 
-	 * try { Method getter = MDISB5_Summary_Entity2.class.getMethod(getterName);
-	 * Method setter = MDISB5_Summary_Entity2.class.getMethod(setterName,
-	 * getter.getReturnType());
-	 * 
-	 * Object newValue = getter.invoke(updatedEntity); setter.invoke(existing,
-	 * newValue);
-	 * 
-	 * } catch (NoSuchMethodException e) { // Skip missing fields continue; } } }
-	 * 
-	 * 
-	 * } catch (Exception e) { throw new
-	 * RuntimeException("Error while updating report fields", e); }
-	 * 
-	 * // 3️⃣ Save updated entity BRRS_MDISB5_Summary_Repo2.save(existing); }
-	 * 
-	 * 
-	 * public void updateReport3(MDISB5_Summary_Entity3 updatedEntity) {
-	 * System.out.println("Came to services3"); System.out.println("Report Date: " +
-	 * updatedEntity.getReportDate());
-	 * 
-	 * MDISB5_Summary_Entity3 existing = BRRS_MDISB5_Summary_Repo3
-	 * .findTopByReportDateOrderByReportVersionDesc(updatedEntity.getReportDate())
-	 * .orElseThrow(() -> new RuntimeException( "Record not found for REPORT_DATE: "
-	 * + updatedEntity.getReportDate()));
-	 * 
-	 * try { // 1️⃣ Loop from R37 to R44 and copy fields for (int i = 37; i <= 44;
-	 * i++) { String prefix = "R" + i + "_";
-	 * 
-	 * String[] fields = { "NAME", "DESIGNATION_OR_POSITION",
-	 * "NUMBER_OF_ACCOUNTS","AMOUNT"};
-	 * 
-	 * for (String field : fields) { String getterName = "get" + prefix + field;
-	 * String setterName = "set" + prefix + field;
-	 * 
-	 * try { Method getter = MDISB5_Summary_Entity3.class.getMethod(getterName);
-	 * Method setter = MDISB5_Summary_Entity3.class.getMethod(setterName,
-	 * getter.getReturnType());
-	 * 
-	 * Object newValue = getter.invoke(updatedEntity); setter.invoke(existing,
-	 * newValue);
-	 * 
-	 * } catch (NoSuchMethodException e) { // Skip missing fields continue; } } }
-	 * 
-	 * 
-	 * } catch (Exception e) { throw new
-	 * RuntimeException("Error while updating report fields", e); }
-	 * 
-	 * // 3️⃣ Save updated entity BRRS_MDISB5_Summary_Repo3.save(existing); }
-	 * 
-	 */	
+	
 	public byte[] getMDISB5Excel(String filename, String reportId, String fromdate, String todate, String currency,
 			String dtltype, String type, BigDecimal version) throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.");
@@ -6674,7 +6572,7 @@ public class BRRS_MDISB5_ReportService {
 		String[] headers = {
 		"CUST ID", "ACCT NO", "ACCT NAME","NAME OF SHAREHOLDER","PERCENTAGE SHAREHOLDING ","NAME OF BOARD MEMBERS",
 		"EXECUTIVE OR NONEXECUTIVE","NAME","DESIGNATION OR POSITION","NUMBER OF ACCOUNTS",
-		"AMOUNT", "REPORT LABLE", "REPORT ADDL CRITERIA1", "REPORT DATE"
+		"AMOUNT", "REPORT LABEL", "REPORT ADDL CRITERIA1", "REPORT DATE"
 		};
 
 		XSSFRow headerRow = sheet.createRow(0);
@@ -6739,7 +6637,7 @@ public class BRRS_MDISB5_ReportService {
 		}
 		amountCell.setCellStyle(balanceStyle);
 
-				row.createCell(11).setCellValue(item.getReportLable());
+				row.createCell(11).setCellValue(item.getReportLabel());
 				row.createCell(12).setCellValue(item.getReportAddlCriteria1());
 				row.createCell(13)
 						.setCellValue(item.getReportDate() != null
@@ -6826,7 +6724,7 @@ public class BRRS_MDISB5_ReportService {
 		String[] headers = {
 				"CUST ID", "ACCT NO", "ACCT NAME","NAME OF SHAREHOLDER","PERCENTAGE SHAREHOLDING ","NAME OF BOARD MEMBERS",
 				"EXECUTIVE OR NONEXECUTIVE","NAME","DESIGNATION OR POSITION","NUMBER OF ACCOUNTS",
-				"AMOUNT", "REPORT LABLE", "REPORT ADDL CRITERIA1", "REPORT DATE"
+				"AMOUNT", "REPORT LABEL", "REPORT ADDL CRITERIA1", "REPORT DATE"
 		};
 
 		XSSFRow headerRow = sheet.createRow(0);
@@ -6852,19 +6750,6 @@ public class BRRS_MDISB5_ReportService {
 		for (MDISB5_Archival_Detail_Entity item : reportData) {
 		XSSFRow row = sheet.createRow(rowIndex++);
 
-		//row.createCell(0).setCellValue(item.getCustId());
-		//row.createCell(1).setCellValue(item.getAcctNumber());
-		//row.createCell(2).setCellValue(item.getAcctName());
-		//
-		////ACCT BALANCE (right aligned, 3 decimal places with comma separator)
-		//Cell balanceCell = row.createCell(3);
-		//
-		//if (item.getAcctBalanceInpula() != null) {
-		//balanceCell.setCellValue(item.getAcctBalanceInpula().doubleValue());
-		//} else {
-		//balanceCell.setCellValue(0);
-		//}
-		//
 		//Create style with thousand separator and decimal point
 		DataFormat format = workbook.createDataFormat();
 
@@ -6874,23 +6759,7 @@ public class BRRS_MDISB5_ReportService {
 		//Right alignment (optional)
 		balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
 
-		//balanceCell.setCellStyle(balanceStyle);
 
-		//row.createCell(4).setCellValue(item.getReportLable());
-		//row.createCell(5).setCellValue(item.getReportAddlCriteria1());
-		//row.createCell(6).setCellValue(
-		//item.getReportDate() != null ?
-		//new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate()) : ""
-		//);
-		//
-		////Apply data style for all other cells
-		//for (int j = 0; j < 7; j++) {
-		//if (j != 3) {
-		//row.getCell(j).setCellStyle(dataStyle);
-		//}
-		//}
-		//}
-		//}
 		row.createCell(0).setCellValue(item.getCustId());
 		row.createCell(1).setCellValue(item.getAcctNumber());
 		row.createCell(2).setCellValue(item.getAcctName());
@@ -6930,7 +6799,7 @@ public class BRRS_MDISB5_ReportService {
 		}
 		amountCell.setCellStyle(balanceStyle);
 
-				row.createCell(11).setCellValue(item.getReportLable());
+				row.createCell(11).setCellValue(item.getReportLabel());
 				row.createCell(12).setCellValue(item.getReportAddlCriteria1());
 				row.createCell(13)
 						.setCellValue(item.getReportDate() != null

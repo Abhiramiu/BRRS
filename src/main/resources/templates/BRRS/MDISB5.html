@@ -402,58 +402,74 @@ label.error {
 			activateTab(selectedTab);
 		};
 		function downloadfile(button) {
-			var reportid = button.getAttribute('data-reportid');
-			var asondate = button.getAttribute('data-asondate');
-			var fromdate = button.getAttribute('data-fromdate');
-			var todate = button.getAttribute('data-todate');
-			var currency = button.getAttribute('data-currency');
-			var subreportid = button.getAttribute('data-subreportid');
-			var secid = button.getAttribute('data-secid');
-			var dtltype = button.getAttribute('data-dtltype');
-			var filename = button.getAttribute('data-filename');
-			var type = button.getAttribute('data-type');
-			var version = button.getAttribute('data-version');
 
-			$('#loader').modal('show');
-			$.ajax({
-				url: './downloadExcel?reportid=' + reportid +
-					'&fromdate=' + fromdate +
-					'&asondate=' + asondate +
-					'&todate=' + todate +
-					'&currency=' + currency +
-					'&subreportid=' + subreportid +
-					'&secid=' + secid +
-					'&type=' + type +
-					'&version=' + version +
-					'&filename=' + filename,
-				type: 'GET',
-				xhrFields: {
-					responseType: 'blob'
-				},
-				success: function (data) {
-					$('#loader').modal('hide');
-					if (data && data.size > 100) {
-						const blob = new Blob([data], { type: 'application/vnd.ms-excel' });
-						const url = window.URL.createObjectURL(blob);
-						const a = document.createElement('a');
-						a.style.display = 'none';
-						a.href = url;
-						a.download = filename;
-						document.body.appendChild(a);
-						a.click();
-						window.URL.revokeObjectURL(url);
-						document.body.removeChild(a);
-						showResultModal('BRRS', filename + ' downloaded successfully.');
-					} else {
-						showResultModal('Information', 'No data was available to create a download.');
-					}
-				},
-				error: function (jqXHR, textStatus, errorThrown) {
-					$('#loader').modal('hide');
-					console.error("Download failed:", textStatus, errorThrown);
-					showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
-				}
-			});
+		    var reportid = button.getAttribute('data-reportid');
+		    var asondate = button.getAttribute('data-asondate');
+		    var fromdate = button.getAttribute('data-fromdate');
+		    var todate = button.getAttribute('data-todate');
+		    var currency = button.getAttribute('data-currency');
+		    var subreportid = button.getAttribute('data-subreportid');
+		    var secid = button.getAttribute('data-secid');
+		    var dtltype = button.getAttribute('data-dtltype');
+		    var filename = button.getAttribute('data-filename');
+		    var type = button.getAttribute('data-type');
+		    var version = button.getAttribute('data-version');
+
+		    var loader = new bootstrap.Modal(
+		        document.getElementById('loader'),
+		        { backdrop: 'static', keyboard: false }
+		    );
+		    loader.show();
+
+		    // ✅ Build URL safely
+		    var url = './downloadExcel?reportid=' + reportid +
+		        '&fromdate=' + fromdate +
+		        '&asondate=' + asondate +
+		        '&todate=' + todate +
+		        '&currency=' + currency +
+		        '&subreportid=' + subreportid +
+		        '&secid=' + secid +
+		        '&filename=' + filename +
+		        '&type=' + type;
+
+		    // ✅ ONLY append version if valid
+		    if (version && version.trim() !== '') {
+		        url += '&version=' + version;
+		    }
+
+		    $.ajax({
+		        url: url,
+		        type: 'GET',
+		        xhrFields: { responseType: 'blob' },
+
+		        success: function (data) {
+		            $('#loader').modal('hide');
+
+		            if (data && data.size > 100) {
+		                const blob = new Blob([data], {
+		                    type: 'application/vnd.ms-excel'
+		                });
+		                const url = window.URL.createObjectURL(blob);
+		                const a = document.createElement('a');
+		                a.style.display = 'none';
+		                a.href = url;
+		                a.download = filename;
+		                document.body.appendChild(a);
+		                a.click();
+		                window.URL.revokeObjectURL(url);
+		                document.body.removeChild(a);
+
+		                showResultModal('BRRS', filename + ' downloaded successfully.');
+		            } else {
+		                showResultModal('Information', 'No data was available to create a download.');
+		            }
+		        },
+
+		        error: function () {
+		            $('#loader').modal('hide');
+		            showResultModal('Error', 'An error occurred while downloading the file.');
+		        }
+		    });
 		}
 
 
@@ -560,13 +576,13 @@ label.error {
 			      const a = document.createElement('a');
 			      a.style.display = 'none';
 			      a.href = url;
-			      a.download = filename;
+			      a.download = filename  + ".xlsx";
 			      document.body.appendChild(a);
 			      a.click();
 			      window.URL.revokeObjectURL(url);
 			      document.body.removeChild(a);
 
-			      showResultModal('BRRS', filename + ' downloaded successfully');
+			      showResultModal('BRRS', filename + '.xlsx downloaded successfully.');
 			     } else {
 			      showResultModal('Information', 'No data was available to create a download.');
 			     }
@@ -847,7 +863,7 @@ function cancelModify() {
 						<h5
 							style="font-family: arial; font-size: 20px; font-weight: bold; color: white; margin-right:10px;">
 
-							DEPOSIT LIABILITIES TO SHAREHOLDERS, DIRECTORS, KEY <br> MANAGEMENT PERSONNEL AND OTHER RELATED PERSONS - MDISB5 </h5>
+							MDISB5 - DEPOSIT LIABILITIES TO SHAREHOLDERS, DIRECTORS, KEY <br> MANAGEMENT PERSONNEL AND OTHER RELATED PERSONS </h5>
 
 
 						<!-- Moving bus-board text -->
@@ -892,7 +908,7 @@ function cancelModify() {
                     				 data-dtltype=${dtltype},
                     				 data-filename='MDISB5.xlsx',
 					 				 data-type=${type},
-					    			 data-version=${version}" onclick="downloadfile(this);">
+					    			 data-version=${version != null ? version : ''}" onclick="downloadfile(this);">
 							<i class="fa fa-download"></i>
 						</button>
 
@@ -2249,7 +2265,7 @@ function cancelModify() {
           <th style="text-align:left;">DESIGNATION_OR_POSITION</th>
           <th style="text-align:left;">NUMBER_OF_ACCOUNTS</th>
           <th style="text-align:right;">AMOUNT</th>
-          <th style="text-align:left;"> REPORT LABLE</th>
+          <th style="text-align:left;"> REPORT LABEL</th>
           <th>REPORT ADDL CRITERIA</th>
           <th>REPORT DATE</th>
          </tr>
@@ -2269,7 +2285,7 @@ function cancelModify() {
           <td style="text-align:left;" th:text="${report.DESIGNATION_OR_POSITION}"></td>
           <td style="text-align:left;" th:text="${report.NUMBER_OF_ACCOUNTS}"></td>
           <td style="text-align:right;" th:text="${#numbers.formatDecimal(report.AMOUNT,1,'COMMA',0,'POINT')}"></td>
-          <td style="text-align:left;" th:text="${report.reportLable}"></td>
+          <td style="text-align:left;" th:text="${report.reportLabel}"></td>
           <td th:text="${report.reportAddlCriteria1}"></td>
           <td th:text="${#dates.format(report.reportDate,'dd-MM-yyyy')}"></td>
 

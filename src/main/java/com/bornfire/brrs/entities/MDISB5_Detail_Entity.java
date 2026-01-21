@@ -30,8 +30,8 @@ public class MDISB5_Detail_Entity {
 	    @Column(name = "DATA_TYPE", length = 100)
 	    private String dataType;
 
-	    @Column(name = "REPORT_LABLE", length = 10)
-	    private String reportLable;
+	    @Column(name = "REPORT_LABEL", length = 10)
+	    private String reportLabel;
 	    
 	    @Column(name = "REPORT_ADDL_CRITERIA_1", length = 10)
 	    private String reportAddlCriteria1;
@@ -169,15 +169,15 @@ public class MDISB5_Detail_Entity {
 
 
 
-		public String getReportLable() {
-			return reportLable;
+		public String getReportLabel() {
+			return reportLabel;
 		}
 
 
 
 
-		public void setReportLable(String reportLable) {
-			this.reportLable = reportLable;
+		public void setReportLable(String reportLabel) {
+			this.reportLabel = reportLabel;
 		}
 
 
