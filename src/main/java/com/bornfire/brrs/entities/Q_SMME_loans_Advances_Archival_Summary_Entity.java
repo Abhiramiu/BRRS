@@ -315,7 +315,7 @@ public class Q_SMME_loans_Advances_Archival_Summary_Entity {
     private Date reportDate;
 
     @Column(name = "REPORT_VERSION", length = 100)
-    private String reportVersion;
+    private BigDecimal reportVersion;
 
     @Column(name = "REPORT_FREQUENCY", length = 100)
     private String reportFrequency;
@@ -1064,11 +1064,11 @@ public class Q_SMME_loans_Advances_Archival_Summary_Entity {
         this.reportDate = reportDate;
     }
 
-    public String getReportVersion() {
+    public BigDecimal getReportVersion() {
         return reportVersion;
     }
 
-    public void setReportVersion(String reportVersion) {
+    public void setReportVersion(BigDecimal reportVersion) {
         this.reportVersion = reportVersion;
     }
 

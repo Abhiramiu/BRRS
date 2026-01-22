@@ -473,7 +473,8 @@ PURPOSE		: BRRSREPORT
 			Maker_Checker_Function();
 		});
 
-		// if logged user is a Checker, checker cannot modify, if user is maker , then maker cant download
+		// if logged user is a Checker, checker cannot modify, if user is maker , then maker cant 
+		
 		function Maker_Checker_Function() {
 			$.ajax({
 				url: "/BRRS/getUserRole",
@@ -941,7 +942,8 @@ function downloadfile(button) {
                      				 data-dtltype=${dtltype}, 
                      				 data-filename='Q_SMME_INT.xlsx',
 					 				 data-type=${type},
-					    			 data-version=${version}" onclick="downloadfile(this);">
+					    			 
+            data-version=${version != null ? version : ''}" onclick="downloadfile(this);">
 							<i class="fa fa-download"></i>
 						</button>
 					

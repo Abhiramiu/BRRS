@@ -197,79 +197,80 @@ public class BRRS_Q_SMME_Intrest_Income_New_ReportService {
         return mv;
     }
 
-    public byte[] getQ_SMMEExcel(String filename, String reportId, String fromdate, String todate, String currency,
+public byte[] getQ_SMMEExcel(String filename, String reportId, String fromdate, String todate, String currency,
 			String dtltype, String type, BigDecimal version) throws Exception {
-        logger.info("Service: Starting Excel generation process in memory.");
+		logger.info("Service: Starting Excel generation process in memory.");
+		logger.info("DownloadFile: reportId={}, filename={}", reportId, filename, type, version);
 
-        // ARCHIVAL check
-        System.out.println(type + "   " + version);
-        if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && version != null) {
-            logger.info("Service: Generating ARCHIVAL report for version {}", version);
-            return getSummaryExcelARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
+		// Convert string to Date
+		Date reportDate = dateformat.parse(todate);
 
-        }
+		// ARCHIVAL check
+		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && version != null) {
+			logger.info("Service: Generating ARCHIVAL report for version {}", version);
+			return getSummaryExcelARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
+		}
 
-        // Fetch data
-        List<Q_SMME_Intrest_Income_New_Summary_Entity> dataList = q_SMME_Summary_Repo
-                .getdatabydateList(dateformat.parse(todate));
+		// Default (LIVE) case
+		List<Q_SMME_Intrest_Income_New_Summary_Entity> dataList = q_SMME_Summary_Repo.getdatabydateList(reportDate);
 
-        if (dataList.isEmpty()) {
-            logger.warn("Service: No data found for Q_SMME report. Returning empty result.");
-            return new byte[0];
-        }
+		String templateDir = env.getProperty("output.exportpathtemp");
+		String templateFileName = filename;
+		System.out.println(filename);
+		Path templatePath = Paths.get(templateDir, templateFileName);
+		System.out.println(templatePath);
 
-        String templateDir = env.getProperty("output.exportpathtemp");
-        String templateFileName = filename;
-        System.out.println(filename);
-        Path templatePath = Paths.get(templateDir, templateFileName);
-        System.out.println(templatePath);
+		logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
 
-        logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
+		if (!Files.exists(templatePath)) {
+			// This specific exception will be caught by the controller.
+			throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
+		}
+		if (!Files.isReadable(templatePath)) {
+			// A specific exception for permission errors.
+			throw new SecurityException(
+					"Template file exists but is not readable (check permissions): " + templatePath.toAbsolutePath());
+		}
 
-        if (!Files.exists(templatePath)) {
-            throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
-        }
+		// This try-with-resources block is perfect. It guarantees all resources are
+		// closed automatically.
+		try (InputStream templateInputStream = Files.newInputStream(templatePath);
+				Workbook workbook = WorkbookFactory.create(templateInputStream);
+				ByteArrayOutputStream out = new ByteArrayOutputStream()) {
 
-        if (!Files.isReadable(templatePath)) {
-            throw new SecurityException(
-                    "Template file exists but is not readable (check permissions): " + templatePath.toAbsolutePath());
-        }
+			Sheet sheet = workbook.getSheetAt(0);
 
-        // This try-with-resources block is perfect. It guarantees all resources are
-        // closed automatically.
-        try (InputStream templateInputStream = Files.newInputStream(templatePath);
-                Workbook workbook = WorkbookFactory.create(templateInputStream);
-                ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-            Sheet sheet = workbook.getSheetAt(0);
+			// --- Style Definitions ---
+			CreationHelper createHelper = workbook.getCreationHelper();
 
-            // --- Style Definitions ---
-            CreationHelper createHelper = workbook.getCreationHelper();
+			CellStyle dateStyle = workbook.createCellStyle();
+			dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
+			dateStyle.setBorderBottom(BorderStyle.THIN);
+			dateStyle.setBorderTop(BorderStyle.THIN);
+			dateStyle.setBorderLeft(BorderStyle.THIN);
+			dateStyle.setBorderRight(BorderStyle.THIN);
 
-            CellStyle dateStyle = workbook.createCellStyle();
-            dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
-            dateStyle.setBorderBottom(BorderStyle.THIN);
-            dateStyle.setBorderTop(BorderStyle.THIN);
-            dateStyle.setBorderLeft(BorderStyle.THIN);
-            dateStyle.setBorderRight(BorderStyle.THIN);
-            CellStyle textStyle = workbook.createCellStyle();
-            textStyle.setBorderBottom(BorderStyle.THIN);
-            textStyle.setBorderTop(BorderStyle.THIN);
-            textStyle.setBorderLeft(BorderStyle.THIN);
-            textStyle.setBorderRight(BorderStyle.THIN);
+			CellStyle textStyle = workbook.createCellStyle();
+			textStyle.setBorderBottom(BorderStyle.THIN);
+			textStyle.setBorderTop(BorderStyle.THIN);
+			textStyle.setBorderLeft(BorderStyle.THIN);
+			textStyle.setBorderRight(BorderStyle.THIN);
 
-            // Create the font
-            Font font = workbook.createFont();
-            font.setFontHeightInPoints((short) 8); // size 8
-            font.setFontName("Arial");
-            CellStyle numberStyle = workbook.createCellStyle();
-            // numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
-            numberStyle.setBorderBottom(BorderStyle.THIN);
-            numberStyle.setBorderTop(BorderStyle.THIN);
-            numberStyle.setBorderLeft(BorderStyle.THIN);
-            numberStyle.setBorderRight(BorderStyle.THIN);
-            numberStyle.setFont(font);
-            // --- End of Style Definitions ---
-            int startRow = 14;
+			// Create the font
+			Font font = workbook.createFont();
+			font.setFontHeightInPoints((short) 8); // size 8
+			font.setFontName("Arial");
+
+			CellStyle numberStyle = workbook.createCellStyle();
+			// numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
+			numberStyle.setBorderBottom(BorderStyle.THIN);
+			numberStyle.setBorderTop(BorderStyle.THIN);
+			numberStyle.setBorderLeft(BorderStyle.THIN);
+			numberStyle.setBorderRight(BorderStyle.THIN);
+			numberStyle.setFont(font);
+			// --- End of Style Definitions ---
+
+			int startRow = 14;
 
             if (!dataList.isEmpty()) {
                 for (int i = 0; i < dataList.size(); i++) {
