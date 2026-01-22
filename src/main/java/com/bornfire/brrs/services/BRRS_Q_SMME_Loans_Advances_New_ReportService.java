@@ -503,25 +503,25 @@ public class BRRS_Q_SMME_Loans_Advances_New_ReportService {
                         R24cell3.setCellStyle(textStyle);
                     }
 
-                    // // ================== ROW 26 ==================
-                    // row = sheet.getRow(25);
-                    // Cell R25cell2 = row.createCell(5);
-                    // if (record.getR26_res_carry_amt() != null) {
-                    //     R25cell2.setCellValue(record.getR26_res_carry_amt().doubleValue());
-                    //     R25cell2.setCellStyle(numberStyle);
-                    // } else {
-                    //     R25cell2.setCellValue("");
-                    //     R25cell2.setCellStyle(textStyle);
-                    // }
+                    // ================== ROW 26 ==================
+                    row = sheet.getRow(25);
+                    Cell R25cell2 = row.createCell(5);
+                    if (record.getR26_res_carry_amt() != null) {
+                        R25cell2.setCellValue(record.getR26_res_carry_amt().doubleValue());
+                        R25cell2.setCellStyle(numberStyle);
+                    } else {
+                        R25cell2.setCellValue("");
+                        R25cell2.setCellStyle(textStyle);
+                    }
 
-                    // Cell R25cell3 = row.createCell(6);
-                    // if (record.getR26_non_res_carry_amt() != null) {
-                    //     R25cell3.setCellValue(record.getR26_non_res_carry_amt().doubleValue());
-                    //     R25cell3.setCellStyle(numberStyle);
-                    // } else {
-                    //     R25cell3.setCellValue("");
-                    //     R25cell3.setCellStyle(textStyle);
-                    // }
+                    Cell R25cell3 = row.createCell(6);
+                    if (record.getR26_non_res_carry_amt() != null) {
+                        R25cell3.setCellValue(record.getR26_non_res_carry_amt().doubleValue());
+                        R25cell3.setCellStyle(numberStyle);
+                    } else {
+                        R25cell3.setCellValue("");
+                        R25cell3.setCellStyle(textStyle);
+                    }
 
                     // ================== ROW 27 ==================
                     row = sheet.getRow(26);
