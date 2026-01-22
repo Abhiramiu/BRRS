@@ -877,14 +877,17 @@ PURPOSE		: BRRSREPORT
 	<script>
 		function openDetail(elem, mode) {
 
-			var type = elem.getAttribute('data-type');
+			const urlParams = new URLSearchParams(window.location.search);
+			const type = urlParams.get("type");
 
 			if (type === "ARCHIVAL") {
-				showResultModal('BRRS', "Archived Data cannot be modified");
+				showResultModal1('BRRS', "Archived Data cannot be modified");
 				return;
 			}
+
 			const acctNo = elem.getAttribute("data-acctNo");
 			const asondate = elem.getAttribute("data-asondate");
+
 			location.href = `/BRRS/Reports/${reportId}/Detailspage?formmode=${mode}&acctNo=${acctNo}&asondate=${asondate}`;
 		}
 	</script>
@@ -5260,8 +5263,7 @@ PURPOSE		: BRRSREPORT
 													title="Click to Edit this Record">
 													<i class="fas fa-edit" style="color: black; cursor:pointer;"
 														th:attr="data-acctNo=${report.acct_number},
-														
-																		data-asondate=${#dates.format(report.report_date, 'dd-MM-yyyy')}"
+														data-asondate=${#dates.format(report.report_date, 'dd-MM-yyyy')}	"
 														onclick="openDetail(this, 'edit')"></i>
 
 												</a>
@@ -5442,10 +5444,10 @@ PURPOSE		: BRRSREPORT
 						</div>
 					</div>
 					<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
-						<p id="resultModalBody1"></p>
+						<p id="resultModalBody"></p>
 						<!-- Your custom styled button -->
 						<button type="button" class="custom-tab-btn" onclick="closemodels()"
-							data-dismiss="modal">OK</button>
+							data-dismiss="modal">OKs</button>
 					</div>
 				</div>
 			</div>
