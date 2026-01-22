@@ -1,5 +1,6 @@
 package com.bornfire.brrs.entities;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -21,7 +22,7 @@ List<BDISB1_Summary_Entity> getdatabydateListWithVersion(String todate);
     Optional<BDISB1_Summary_Entity> findTopByReportDateOrderByReportVersionDesc(Date reportDate);
 
     // Check if a version exists for a report date
-    Optional<BDISB1_Summary_Entity> findByReportDateAndReportVersion(Date reportDate, String reportVersion);
+    Optional<BDISB1_Summary_Entity> findByReportDateAndReportVersion(Date reportDate, BigDecimal reportVersion);
 
         @Query(value = "SELECT *  FROM BRRS_BDISB1_SUMMARYTABLE WHERE REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION DESC FETCH FIRST 1 ROWS ONLY ", nativeQuery = true)
     List<BDISB1_Summary_Entity> getdatabydateListWithVersion();

@@ -25,7 +25,7 @@ public class BDISB1_Summary_Entity {
 	private Date reportDate;
 	
 	@Column(name = "REPORT_VERSION")
-	private String reportVersion;
+	private BigDecimal reportVersion;
 	
 	//@Column(name = "REPORT_RESUBDATE")
 	//@Temporal(TemporalType.TIMESTAMP)
@@ -261,10 +261,10 @@ public class BDISB1_Summary_Entity {
 	public void setReportDate(Date reportDate) {
 		this.reportDate = reportDate;
 	}
-	public String getReportVersion() {
+	public BigDecimal getReportVersion() {
 		return reportVersion;
 	}
-	public void setReportVersion(String reportVersion) {
+	public void setReportVersion(BigDecimal reportVersion) {
 		this.reportVersion = reportVersion;
 	}
 	public String getReport_frequency() {

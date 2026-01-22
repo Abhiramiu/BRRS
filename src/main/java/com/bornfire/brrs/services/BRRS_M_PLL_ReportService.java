@@ -83,7 +83,7 @@ public class BRRS_M_PLL_ReportService {
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
 	public ModelAndView getM_PLLView(String reportId, String fromdate, String todate, String currency, String dtltype,
-			Pageable pageable, String type, String version) {
+			Pageable pageable, String type, BigDecimal version) {
 		ModelAndView mv = new ModelAndView();
 		Session hs = sessionFactory.getCurrentSession();
 		int pageSize = pageable.getPageSize();
@@ -223,11 +223,11 @@ public class BRRS_M_PLL_ReportService {
 	}
 
 	public byte[] getM_PLLExcel(String filename, String reportId, String fromdate, String todate, String currency,
-			String dtltype, String type, String version) throws Exception {
+			String dtltype, String type, BigDecimal version) throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.");
 
 		// ARCHIVAL check
-		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && !version.trim().isEmpty()) {
+		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
 			logger.info("Service: Generating ARCHIVAL report for version {}", version);
 			return getExcelM_PLLARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
 		}
@@ -989,7 +989,7 @@ public class BRRS_M_PLL_ReportService {
 	}
 
 	public byte[] getExcelM_PLLARCHIVAL(String filename, String reportId, String fromdate, String todate,
-			String currency, String dtltype, String type, String version) throws Exception {
+			String currency, String dtltype, String type, BigDecimal version) throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.");
 		if (type.equals("ARCHIVAL") & version != null) {
 

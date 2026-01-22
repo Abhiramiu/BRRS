@@ -96,7 +96,7 @@ public class BRRS_BDISB2_ReportService {
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
 	public ModelAndView getBDISB2View(String reportId, String fromdate, String todate, String currency, String dtltype,
-			Pageable pageable, String type, String version) {
+			Pageable pageable, String type, BigDecimal version) {
 		ModelAndView mv = new ModelAndView();
 		Session hs = sessionFactory.getCurrentSession();
 
@@ -519,7 +519,7 @@ public class BRRS_BDISB2_ReportService {
 	 */
 
 	public byte[] getBDISB2Excel(String filename, String reportId, String fromdate, String todate, String currency,
-			String dtltype, String type, String version) throws Exception {
+			String dtltype, String type, BigDecimal version) throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.");
 		logger.info("DownloadFile: reportId={}, filename={}", reportId, filename, type, version);
 
@@ -527,12 +527,13 @@ public class BRRS_BDISB2_ReportService {
 		Date reportDate = dateformat.parse(todate);
 
 		// ARCHIVAL check
-		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && !version.trim().isEmpty()) {
+		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null ) {
+			
 			logger.info("Service: Generating ARCHIVAL report for version {}", version);
 			return getExcelBDISB2ARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
 		}
 		// RESUB check
-		else if ("RESUB".equalsIgnoreCase(type) && version != null && !version.trim().isEmpty()) {
+		else if ("RESUB".equalsIgnoreCase(type) && version != null ) {
 			logger.info("Service: Generating RESUB report for version {}", version);
 
 			List<BDISB2_Archival_Summary_Entity> T1Master = BRRS_BDISB2_Archival_Summary_Repo
@@ -2184,7 +2185,7 @@ public class BRRS_BDISB2_ReportService {
 //
 
 	public byte[] getExcelBDISB2ARCHIVAL(String filename, String reportId, String fromdate, String todate,
-			String currency, String dtltype, String type, String version) throws Exception {
+			String currency, String dtltype, String type, BigDecimal version) throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.");
 		if ("ARCHIVAL".equals(type) && version != null) {
 		}
@@ -3878,13 +3879,13 @@ public class BRRS_BDISB2_ReportService {
 			Optional<BDISB2_Archival_Summary_Entity> latestArchivalOpt = BRRS_BDISB2_Archival_Summary_Repo
 					.getLatestArchivalVersionByDate(reportDate);
 
-			int newVersion = 1;
+			BigDecimal newVersion = BigDecimal.ONE;
+
 			if (latestArchivalOpt.isPresent()) {
-				try {
-					newVersion = Integer.parseInt(latestArchivalOpt.get().getReportVersion()) + 1;
-				} catch (NumberFormatException e) {
-					newVersion = 1;
-				}
+			    BigDecimal latestVersion = latestArchivalOpt.get().getReportVersion();
+			    newVersion = (latestVersion != null)
+			            ? latestVersion.add(BigDecimal.ONE)
+			            : BigDecimal.ONE;
 			}
 
 			boolean exists = BRRS_BDISB2_Archival_Summary_Repo
@@ -4200,7 +4201,7 @@ public class BRRS_BDISB2_ReportService {
 			 * METADATA =========================================================
 			 */
 			archivalEntity.setReportDate(reportDate);
-			archivalEntity.setReportVersion(String.valueOf(newVersion));
+			archivalEntity.setReportVersion(newVersion);
 			archivalEntity.setReportResubDate(new Date());
 
 			/*
@@ -4221,55 +4222,9 @@ public class BRRS_BDISB2_ReportService {
 		return (value == null || value.trim().isEmpty()) ? BigDecimal.ZERO : new BigDecimal(value.replace(",", ""));
 	}
 
-	/*
-	 * // Resubmit the values , latest version and Resub Date public void
-	 * updateReportReSub(BDISB2_Summary_Entity updatedEntity) {
-	 * System.out.println("Came to Resub Service");
-	 * System.out.println("Report Date: " + updatedEntity.getReportDate());
-	 * 
-	 * Date reportDate = updatedEntity.getReportDate(); int newVersion = 1;
-	 * 
-	 * try { // Fetch the latest archival version for this report date
-	 * Optional<BDISB2_Archival_Summary_Entity> latestArchivalOpt =
-	 * BRRS_BDISB2_Archival_Summary_Repo
-	 * .getLatestArchivalVersionByDate(reportDate);
-	 * 
-	 * // Determine next version number if (latestArchivalOpt.isPresent()) {
-	 * BDISB2_Archival_Summary_Entity latestArchival = latestArchivalOpt.get(); try
-	 * { newVersion = Integer.parseInt(latestArchival.getReportVersion()) + 1; }
-	 * catch (NumberFormatException e) {
-	 * System.err.println("Invalid version format. Defaulting to version 1");
-	 * newVersion = 1; } } else {
-	 * System.out.println("No previous archival found for date: " + reportDate); }
-	 * 
-	 * // Prevent duplicate version number boolean exists =
-	 * BRRS_BDISB2_Archival_Summary_Repo
-	 * .findByReportDateAndReportVersion(reportDate, String.valueOf(newVersion))
-	 * .isPresent(); if (exists) { throw new RuntimeException("Version " +
-	 * newVersion + " already exists for report date " + reportDate); }
-	 * 
-	 * // Copy summary entity to archival entity BDISB2_Archival_Summary_Entity
-	 * archivalEntity = new BDISB2_Archival_Summary_Entity();
-	 * org.springframework.beans.BeanUtils.copyProperties(updatedEntity,
-	 * archivalEntity);
-	 * 
-	 * archivalEntity.setReportDate(reportDate);
-	 * archivalEntity.setReportVersion(String.valueOf(newVersion));
-	 * archivalEntity.setReportResubDate(new Date());
-	 * 
-	 * System.out.println("Saving new archival version: " + newVersion);
-	 * 
-	 * // Save new version to repository
-	 * BRRS_BDISB2_Archival_Summary_Repo.save(archivalEntity);
-	 * 
-	 * System.out.println(" Saved archival version successfully: " + newVersion);
-	 * 
-	 * } catch (Exception e) { e.printStackTrace(); throw new
-	 * RuntimeException("Error while creating archival resubmission record", e); } }
-	 */
 	/// Downloaded for Archival & Resub
 	public byte[] BRRS_BDISB2ResubExcel(String filename, String reportId, String fromdate, String todate,
-			String currency, String dtltype, String type, String version) throws Exception {
+			String currency, String dtltype, String type, BigDecimal version) throws Exception {
 
 		logger.info("Service: Starting Excel generation process in memory for RESUB Excel.");
 
@@ -5954,7 +5909,6 @@ public class BRRS_BDISB2_ReportService {
 			balanceStyle.setBorderLeft(border);
 			balanceStyle.setBorderRight(border);
 
-
 			String[] headers = { "COMPANY_NAME ", "COMPANY_REG_NUM", "ACCT_NUM", "ACCT BALANCE IN PULA", "REPORT LABEL",
 					"REPORT ADDL CRITERIA1", "REPORT_DATE" };
 
@@ -5986,9 +5940,9 @@ public class BRRS_BDISB2_ReportService {
 
 					Cell bankSpecSingleCell = row.createCell(2);
 					if (item.getACCT_NUM() != null) {
-					    bankSpecSingleCell.setCellValue(item.getACCT_NUM().toString()); // TEXT
+						bankSpecSingleCell.setCellValue(item.getACCT_NUM().toString()); // TEXT
 					} else {
-					    bankSpecSingleCell.setCellValue("");
+						bankSpecSingleCell.setCellValue("");
 					}
 					bankSpecSingleCell.setCellStyle(dataStyle);
 
@@ -6111,7 +6065,6 @@ public class BRRS_BDISB2_ReportService {
 				for (BDISB2_Archival_Detail_Entity item : reportData) {
 					XSSFRow row = sheet.createRow(rowIndex++);
 
-
 //
 //Create style with thousand separator and decimal point
 					DataFormat format = workbook.createDataFormat();
@@ -6144,12 +6097,11 @@ public class BRRS_BDISB2_ReportService {
 
 					Cell bankSpecSingleCell = row.createCell(2);
 					if (item.getACCT_NUM() != null) {
-					    bankSpecSingleCell.setCellValue(item.getACCT_NUM().toString()); // TEXT
+						bankSpecSingleCell.setCellValue(item.getACCT_NUM().toString()); // TEXT
 					} else {
-					    bankSpecSingleCell.setCellValue("");
+						bankSpecSingleCell.setCellValue("");
 					}
 					bankSpecSingleCell.setCellStyle(dataStyle);
-
 
 //ACCT BALANCE (right aligned, 3 decimal places)
 					Cell balanceCell = row.createCell(3);

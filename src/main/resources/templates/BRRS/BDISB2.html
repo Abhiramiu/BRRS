@@ -4,7 +4,8 @@ CREATED BY	: HARIHARAN M V
 CREATED ON	: 8.12.2025
 PURPOSE		: BDISB2 BRRSREPORT
 -->
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
 
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -13,10 +14,14 @@ PURPOSE		: BDISB2 BRRSREPORT
 <!-- CSS -->
 
 
-<link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}">
-<link rel="stylesheet" type="text/css" th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}">
-<link rel="stylesheet" type="text/css" th:href="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.css}">
-<link rel="stylesheet" type="text/css" th:href="@{/webjars/datatables/1.10.19/css/jquery.dataTables.min.css}">
+<link rel="stylesheet" type="text/css"
+	th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}">
+<link rel="stylesheet" type="text/css"
+	th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}">
+<link rel="stylesheet" type="text/css"
+	th:href="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.css}">
+<link rel="stylesheet" type="text/css"
+	th:href="@{/webjars/datatables/1.10.19/css/jquery.dataTables.min.css}">
 <link rel="stylesheet" th:href="@{/css/CustomButton.css}" />
 <link rel="icon" th:href="@{/favicon.ico}" type="image/x-icon" />
 <!-- JavaScript -->
@@ -30,14 +35,16 @@ PURPOSE		: BDISB2 BRRSREPORT
 <!-- <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script> -->
 <!-- ✅ jQuery Validation -->
 <script src="/webjars/jquery-validation/1.19.0/jquery.validate.min.js"
- th:src="@{/webjars/jquery-validation/1.19.0/jquery.validate.min.js}"></script>
+	th:src="@{/webjars/jquery-validation/1.19.0/jquery.validate.min.js}"></script>
 <!-- Bootstrap + Others -->
 <script th:src="@{/webjars/popper.js/1.14.7/umd/popper.min.js}"></script>
 <script th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
 <script th:src="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.js}"></script>
 <script th:src="@{/webjars/jquery-form/4.2.2/jquery.form.min.js}"></script>
-<script th:src="@{/webjars/datatables/1.10.19/js/jquery.dataTables.min.js}"></script>
-<script th:src="@{/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js}"></script>
+<script
+	th:src="@{/webjars/datatables/1.10.19/js/jquery.dataTables.min.js}"></script>
+<script
+	th:src="@{/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js}"></script>
 <style>
 .btns {
 	float: right;
@@ -201,7 +208,6 @@ td {
 	transition: 0.3s ease;
 }
 
-
 /* When input or select is focused or has a value, move the label up */
 .form-control:focus ~.form-legend, .form-control:not (:placeholder-shown
 	 )~.form-legend {
@@ -221,7 +227,6 @@ td {
 	color: #aaa;
 	/* Normal label color */
 }
-
 
 /* 🚌 Bus display style box */
 .boards {
@@ -247,16 +252,21 @@ td {
 	animation: scroll-left 10s linear infinite;
 }
 
-@keyframes scroll-left {
-  0% {
-    transform: translateX(100%);
-  }
-  100% {
-    transform: translateX(-100%);
-  }
+@
+keyframes scroll-left { 0% {
+	transform: translateX(100%);
 }
+100%
+{
+transform
+:
+ 
+translateX
+(-100%);
 
-
+  
+}
+}
 </style>
 <style>
 /* Red border for invalid inputs */
@@ -315,19 +325,16 @@ label.error {
 	cursor: pointer;
 	/* Optional: pointer cursor */
 }
-
 </style>
- <style>
-  #reports,
-  #reports th,
-  #reports td {
-   border: 1px solid black !important;
-  }
+<style>
+#reports, #reports th, #reports td {
+	border: 1px solid black !important;
+}
 
-  #reports {
-   border-collapse: collapse;
-  }
- </style>
+#reports {
+	border-collapse: collapse;
+}
+</style>
 
 <script>
     // Capture referrer ONCE when page loads
@@ -430,58 +437,74 @@ label.error {
 			activateTab(selectedTab);
 		};
 		function downloadfile(button) {
-			var reportid = button.getAttribute('data-reportid');
-			var asondate = button.getAttribute('data-asondate');
-			var fromdate = button.getAttribute('data-fromdate');
-			var todate = button.getAttribute('data-todate');
-			var currency = button.getAttribute('data-currency');
-			var subreportid = button.getAttribute('data-subreportid');
-			var secid = button.getAttribute('data-secid');
-			var dtltype = button.getAttribute('data-dtltype');
-			var filename = button.getAttribute('data-filename');
-			var type = button.getAttribute('data-type');
-			var version = button.getAttribute('data-version');
-			$('#loader').modal('show');
-			$.ajax({
-				url: './downloadExcel?reportid=' + reportid +
-					'&fromdate=' + fromdate +
-					'&asondate=' + asondate +
-					'&todate=' + todate +
-					'&currency=' + currency +
-					'&subreportid=' + subreportid +
-					'&secid=' + secid +
-					'&filename=' + filename +
-					'&type=' + type +
-					'&version=' + version,
-				type: 'GET',
-				xhrFields: {
-					responseType: 'blob'
-				},
-				success: function (data) {
-					$('#loader').modal('hide');
-					if (data && data.size > 100) {
-						const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
-						const url = window.URL.createObjectURL(blob);
-						const a = document.createElement('a');
-						a.style.display = 'none';
-						a.href = url;
-						a.download = filename;
-						document.body.appendChild(a);
-						a.click();
-						window.URL.revokeObjectURL(url);
-						document.body.removeChild(a);
-						showResultModal('BRRS', 'BDISB2.xlsx downloaded successfully.');
-					} else {
-						showResultModal('Information', 'No data was available to create a download.');
-					}
-				},
-				error: function (jqXHR, textStatus, errorThrown) {
-					$('#loader').modal('hide');
-					console.error("Download failed:", textStatus, errorThrown);
-					showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
-				}
-			});
+		    var reportid = button.getAttribute('data-reportid');
+		    var asondate = button.getAttribute('data-asondate');
+		    var fromdate = button.getAttribute('data-fromdate');
+		    var todate = button.getAttribute('data-todate');
+		    var currency = button.getAttribute('data-currency');
+		    var subreportid = button.getAttribute('data-subreportid');
+		    var secid = button.getAttribute('data-secid');
+		    var dtltype = button.getAttribute('data-dtltype');
+		    var filename = button.getAttribute('data-filename');
+		    var type = button.getAttribute('data-type');
+		    var version = button.getAttribute('data-version');
+
+		    $('#loader').modal('show');
+
+		    // ✅ build URL without version first
+		    var url = './downloadExcel?reportid=' + reportid +
+		        '&fromdate=' + fromdate +
+		        '&asondate=' + asondate +
+		        '&todate=' + todate +
+		        '&currency=' + currency +
+		        '&subreportid=' + subreportid +
+		        '&secid=' + secid +
+		        '&filename=' + filename +
+		        '&type=' + type;
+
+		    // ✅ append version ONLY if valid
+		    if (version && version.trim() !== '') {
+		        url += '&version=' + version;
+		    }
+
+		    $.ajax({
+		        url: url,
+		        type: 'GET',
+		        xhrFields: { responseType: 'blob' },
+
+		        success: function (data) {
+		            $('#loader').modal('hide');
+
+		            if (data && data.size > 100) {
+		                const blob = new Blob([data], {
+		                    type: 'application/vnd.ms-excel'
+		                });
+		                const url = window.URL.createObjectURL(blob);
+		                const a = document.createElement('a');
+
+		                a.style.display = 'none';
+		                a.href = url;
+		                a.download = filename;
+		                document.body.appendChild(a);
+		                a.click();
+
+		                window.URL.revokeObjectURL(url);
+		                document.body.removeChild(a);
+
+		                showResultModal('BRRS', filename + ' downloaded successfully.');
+		            } else {
+		                showResultModal('Information', 'No data was available to create a download.');
+		            }
+		        },
+
+		        error: function (jqXHR, textStatus, errorThrown) {
+		            $('#loader').modal('hide');
+		            console.error("Download failed:", textStatus, errorThrown);
+		            showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
+		        }
+		    });
 		}
+
 		function editRecord() {
 			showResultModal('Alert', 'Development in progress');
 
@@ -608,7 +631,7 @@ label.error {
 	</script>
 
 
- 
+
 
 <script>
 	// Show Modify (enable inputs & dropdowns)
@@ -767,7 +790,7 @@ function fileuploads_all(btn) {
 }    
 </script>
 
- <script th:inline="javascript">
+<script th:inline="javascript">
       $(document).ready(function () {
         var table = $('#reportdetails').DataTable({
           scrollY: "550px",
@@ -807,69 +830,83 @@ function fileuploads_all(btn) {
 <title>BRRS</title>
 
 <body>
- <div class="container-fluid" style="padding-left: 0px; padding-right: 0px;">
-  <div class="row">
-   <div th:insert="HeaderMenu :: header"></div>
-   <div class="card">
-    <div class="card-header"
-     style="background-color: rgb(107, 122, 143); display: flex; align-items: center; justify-content: space-between;">
-     <div style="display: flex; align-items: center;" onclick="back();">
-      <!-- ⬅️ Left circular arrow -->
-      <div class="left-arrow-circle">
-       <i class="fa fa-arrow-left"></i>
-      </div>
-      <!-- Title -->
-      <h5
-       style="font-family: arial; font-size: 20px; padding-top: 10px; font-weight: bold; color: white; margin-right: 10px;">
-       BDISB2-SINGLE CUSTOMER VIEW COMPANY DISAGGREGATE RECORDS</h5>
-     </div>
-     <!-- Moving bus-board text -->
-     <div class="boards">
-      <p class="scrolling-text">BANK OF BOTSWANA - BANKING SUPERVISION DEPARTMENT</p>
-     </div>
-     <div class="custom-tab-btn-group nav-buttons" style="display: flex; color: white; align-items: center;">
-      <!-- 📅 Date -->
-      <span class="white-text" style="color: white !important; font-size: 16px; margin-right: 20px; margin-left: 10px;">Report
-       Date: <span th:text="${#strings.replace(asondate, '/', '-')}">30-06-2025</span>
-      </span>
-      <!-- Buttons -->
-      <input type="hidden" id="selectedTab" th:value="${displaymode}">
-      <button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showsummary();"
-       th:if="${displaymode == 'Details'}">Summary</button>
-      <button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails();"
-       th:if="${displaymode == 'summary'}">Details</button>
+	<div class="container-fluid"
+		style="padding-left: 0px; padding-right: 0px;">
+		<div class="row">
+			<div th:insert="HeaderMenu :: header"></div>
+			<div class="card">
+				<div class="card-header"
+					style="background-color: rgb(107, 122, 143); display: flex; align-items: center; justify-content: space-between;">
+					<div style="display: flex; align-items: center;" onclick="back();">
+						<!-- ⬅️ Left circular arrow -->
+						<div class="left-arrow-circle">
+							<i class="fa fa-arrow-left"></i>
+						</div>
+						<!-- Title -->
+						<h5
+							style="font-family: arial; font-size: 20px; padding-top: 10px; font-weight: bold; color: white; margin-right: 10px;">
+							BDISB2-SINGLE CUSTOMER VIEW COMPANY DISAGGREGATE RECORDS</h5>
+					</div>
+					<!-- Moving bus-board text -->
+					<div class="boards">
+						<p class="scrolling-text">BANK OF BOTSWANA - BANKING
+							SUPERVISION DEPARTMENT</p>
+					</div>
+					<div class="custom-tab-btn-group nav-buttons"
+						style="display: flex; color: white; align-items: center;">
+						<!-- 📅 Date -->
+						<span class="white-text"
+							style="color: white !important; font-size: 16px; margin-right: 20px; margin-left: 10px;">Report
+							Date: <span th:text="${#strings.replace(asondate, '/', '-')}">30-06-2025</span>
+						</span>
+						<!-- Buttons -->
+						<input type="hidden" id="selectedTab" th:value="${displaymode}">
+						<button type="button" class="custom-tab-btn"
+							id="custom-tab-btnSummary" onclick="showsummary();"
+							th:if="${displaymode == 'Details'}">Summary</button>
+						<button type="button" class="custom-tab-btn"
+							id="custom-tab-btnDetails" onclick="showdetails();"
+							th:if="${displaymode == 'summary'}">Details</button>
 
-      <!-- Modify button -->
-      <button type="button" class="custom-tab-btn" onclick="showmodify(this);" title="Click to EDIT Records"
-       th:if="${displaymode != 'Details' and type != 'ARCHIVAL'}"
-       th:classappend="${session.PERMISSIONS == 'W'} and ${dtltype == 'report'} ? 'addedit' " id="addRecord">Modify</button>
-
-
-      <!-- Cancel button (hidden initially) -->
-      <button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord" onclick="cancelModify();"
-       style="display: none;">Cancel</button>
-
-
-      <button type="button" class="custom-tab-btn" id="custom-tab-btnAdd" th:if="${displaymode == 'summary'}"
-       th:attr="data-reportid=${reportid},
-                   				 data-asondate=${asondate},
-                   				 data-fromdate=${fromdate},
-                    				 data-todate=${todate},
-                    				 data-currency=${currency}, 
-                    				 data-dtltype=${dtltype},
-                    				 data-filename='BDISB2.xlsx',
-					 				 data-type=${type},
-					    			 data-version=${version}"
-       onclick="downloadfile(this);">
-       <i class="fa fa-download"></i>
-      </button>
+						<!-- Modify button -->
+						<button type="button" class="custom-tab-btn"
+							onclick="showmodify(this);" title="Click to EDIT Records"
+							th:if="${displaymode != 'Details' and type != 'ARCHIVAL'}"
+							th:classappend="${session.PERMISSIONS == 'W'} and ${dtltype == 'report'} ? 'addedit' "
+							id="addRecord">Modify</button>
 
 
+						<!-- Cancel button (hidden initially) -->
+						<button type="button" class="custom-tab-btn"
+							title="Cancel editing" id="cancelRecord"
+							onclick="cancelModify();" style="display: none;">Cancel</button>
 
 
-      <button type="button" class="custom-tab-btn" id="custom-tab-btnAdd" th:if="${displaymode == 'Details'}"
-       onclick="startReport(this);"
-       th:attr="
+						<button type="button" class="custom-tab-btn"
+							id="custom-tab-btnAdd" th:if="${displaymode == 'summary'}"
+							th:attr="
+            data-reportid=${reportid},
+            data-asondate=${asondate},
+            data-fromdate=${fromdate},
+            data-todate=${todate},
+            data-currency=${currency},
+            data-dtltype=${dtltype},
+            data-filename='BDISB2.xlsx',
+            data-type=${type},
+            data-version=${version != null ? version : ''}
+        "
+							onclick="downloadfile(this);">
+							<i class="fa fa-download"></i>
+						</button>
+
+
+
+
+
+						<button type="button" class="custom-tab-btn"
+							id="custom-tab-btnAdd" th:if="${displaymode == 'Details'}"
+							onclick="startReport(this);"
+							th:attr="
 								    data-fromdate=${fromdate},
 								    data-todate=${todate},
 									data-currency=${currency},  
@@ -878,919 +915,1117 @@ function fileuploads_all(btn) {
 									data-type=${type},
 												data-version=${version}
 								  ">
-       <i class="fa fa-download"></i>
-      </button>
-
-
-
-     </div>
-
-    </div>
-    <div th:if="${displaymode == 'summary'}">
-     <div class="row">
-      <div class="col-sm-12">
-       <form action="#" method="POST" id="fileupload">
-        <input type="hidden" name="asondate" id="asondate" th:value="${asondate}" />
-
-        <div class="table-wrapper table-responsive scrollable-table-container" style="border-right: 1px solid #dee2e6;">
-
-
-         <table class="sticky-header-table table table-bordered table-hover table-sm table-condensed" id="reports">    
-    <colgroup>
-        <col style="width: 450px;">  <!-- Col 1 -->
-        <col style="width: 260px;">  <!-- Col 2 -->
-        <col style="width: 260px;">  <!-- Col 3 -->
-        <col style="width: 260px;">  <!-- Col 4 -->
-        <col style="width: 260px;">  <!-- Col 5 -->
-        <col style="width: 260px;">  <!-- Col 6 -->
-        <col style="width: 260px;">  <!-- Col 7 -->
-        <col style="width: 260px;">  <!-- Col 8 -->
-        <col style="width: 240px;">  <!-- Col 9 -->
-        <col style="width: 290px;">  <!-- Col 10 -->
-        <col style="width: 260px;">  <!-- Col 11 -->
-        <col style="width: 260px;">  <!-- Col 12 -->
-        <col style="width: 290px;">  <!-- Col 13 -->
-        <col style="width: 260px;">  <!-- Col 14 -->
-        <col style="width: 260px;">  <!-- Col 15 -->
-        <col style="width: 260px;">  <!-- Col 16 -->
-        <col style="width: 260px;">  <!-- Col 17 -->
-    </colgroup>
-          
-          <thead class="thead-light" style="background-color: #D8D8D8;">
-          
-           <tr style="background-color: #b3b6b9;">
-            <th style="text-align: left; color: black;">Bank Specific Single Customer View Record Number</th>
-            <th style="text-align: left; color: black;">Company Name</th>
-            <th style="text-align: left; color: black;">Company Registration Number</th>
-            <th style="text-align: left; color: black;">Business<br>Physical Address</th>
-            <th style="text-align: left; color: black;">Postal Address</th>
-            <th style="text-align: left; color: black;">Country of<br>Registration</th>
-            <th style="text-align: left; color: black;">Company<br>Email</th>
-            <th style="text-align: left; color: black;">Company<br>Landline</th>
-            <th style="text-align: left; color: black;">Company<br>Mobile Phone Number</th>
-            <th style="text-align: left; color: black;">Product Type</th>
-            <th style="text-align: left; color: black;">Account Number</th>
-            <th style="text-align: left; color: black;">Status of Account</th>
-            <th style="text-align: left; color: black;">Account Status - "Fit for Straight<br>Through Payout" OR "Not Fit for
-            <br>Straight Through Payout"</th>
-            <th style="text-align: left; color: black;">Account Branch</th>
-            <th style="text-align: right; color: black;">Account Balance(Pula)</th>
-            <th style="text-align: left; color: black;">Currency of Account</th>
-            <th style="text-align: left; color: black;">Exchange Rate</th>
-           </tr>
-           
-          </thead>
-
-
-
-          <tbody id="entity" th:each="report: ${reportsummary}" style="font-family: Arial;">
-           <tr>
-
-            <td id="R6"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R6_BANK_SPEC_SINGLE_CUST_REC_NUM, 'N/A')}" id="R6_BANK_SPEC_SINGLE_CUST_REC_NUM"
-             name="R6_C1_BANK_SPEC_SINGLE_CUST_REC_NUM"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-            
-             <td id="R6"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R6_COMPANY_NAME, 'N/A')}" id="R6_COMPANY_NAME"
-             name="R6_C2_COMPANY_NAME"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-            
-            <td id="R6"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R6_COMPANY_REG_NUM, 'N/A')}" id="R6_COMPANY_REG_NUM"
-             name="R6_C3_COMPANY_REG_NUM"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R6"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R6_BUSINEES_PHY_ADDRESS, 'N/A')}" id="R6_BUSINEES_PHY_ADDRESS"
-             name="R6_C4_BUSINEES_PHY_ADDRESS"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R6"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R6_POSTAL_ADDRESS, 'N/A')}" id="R6_POSTAL_ADDRESS"
-             name="R6_C5_POSTAL_ADDRESS"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R6"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R6_COUNTRY_OF_REG, 'N/A')}" id="R6_COUNTRY_OF_REG"
-             name="R6_C6_COUNTRY_OF_REG"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R6"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R6_COMPANY_EMAIL, 'N/A')}" id="R6_COMPANY_EMAIL"
-             name="R6_C7_COMPANY_EMAIL"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R6"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R6_COMPANY_LANDLINE, 'N/A')}" id="R6_COMPANY_LANDLINE"
-             name="R6_C8_COMPANY_LANDLINE"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-            <td id="R6"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R6_COMPANY_MOB_PHONE_NUM, 'N/A')}" id="R6_COMPANY_MOB_PHONE_NUM"
-             name="R6_C9_COMPANY_MOB_PHONE_NUM"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R6"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R6_PRODUCT_TYPE, 'N/A')}" id="R6_PRODUCT_TYPE"
-             name="R6_C10_PRODUCT_TYPE"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R6" style="text-align: left;"><input class="display-input Show_input" type="text"
-             th:value="${report.R6_ACCT_NUM != null ? #numbers.formatDecimal(report.R6_ACCT_NUM, 0, 'NONE', 0, 'POINT') : '0'}"
-             id="R6_ACCT_NUM" name="R6_C11_ACCT_NUM"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R6"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R6_STATUS_OF_ACCT, 'N/A')}" id="R6_STATUS_OF_ACCT"
-             name="R6_C12_STATUS_OF_ACCT"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R6"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R6_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT, 'N/A')}"
-             id="R6_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT"
-             name="R6_C13_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R6"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R6_ACCT_BRANCH, 'N/A')}" id="R6_ACCT_BRANCH"
-             name="R6_C14_ACCT_BRANCH"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R6" style="text-align: right;"><input class="display-input Show_input" type="text"
-             th:value="${report.R6_ACCT_BALANCE_PULA != null ? #numbers.formatDecimal(report.R6_ACCT_BALANCE_PULA, 1, 'COMMA', 0, 'POINT') : '0'}"
-             id="R6_ACCT_BALANCE_PULA" name="R6_C15_ACCT_BALANCE_PULA"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
-             readonly /></td>
-
-            <td id="R6"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R6_CURRENCY_OF_ACCT, 'N/A')}" id="R6_CURRENCY_OF_ACCT"
-             name="R6_C16_CURRENCY_OF_ACCT"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R6" style="text-align: left;"><input class="display-input Show_input" type="text"
-             th:value="${report.R6_EXCHANGE_RATE != null ? #numbers.formatDecimal(report.R6_EXCHANGE_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
-             id="R6_EXCHANGE_RATE" name="R6_C17_EXCHANGE_RATE"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-         </tr>
-                    <tr>
-
-            <td id="R7"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R7_BANK_SPEC_SINGLE_CUST_REC_NUM, 'N/A')}" id="R7_BANK_SPEC_SINGLE_CUST_REC_NUM"
-             name="R7_C1_BANK_SPEC_SINGLE_CUST_REC_NUM"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-            
-             <td id="R7"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R7_COMPANY_NAME, 'N/A')}" id="R7_COMPANY_NAME"
-             name="R7_C2_COMPANY_NAME"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-            
-            <td id="R7"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R7_COMPANY_REG_NUM, 'N/A')}" id="R7_COMPANY_REG_NUM"
-             name="R7_C3_COMPANY_REG_NUM"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R7"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R7_BUSINEES_PHY_ADDRESS, 'N/A')}" id="R7_BUSINEES_PHY_ADDRESS"
-             name="R7_C4_BUSINEES_PHY_ADDRESS"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R7"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R7_POSTAL_ADDRESS, 'N/A')}" id="R7_POSTAL_ADDRESS"
-             name="R7_C5_POSTAL_ADDRESS"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R7"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R7_COUNTRY_OF_REG, 'N/A')}" id="R7_COUNTRY_OF_REG"
-             name="R7_C6_COUNTRY_OF_REG"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R7"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R7_COMPANY_EMAIL, 'N/A')}" id="R7_COMPANY_EMAIL"
-             name="R7_C7_COMPANY_EMAIL"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R7"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R7_COMPANY_LANDLINE, 'N/A')}" id="R7_COMPANY_LANDLINE"
-             name="R7_C8_COMPANY_LANDLINE"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-            <td id="R7"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R7_COMPANY_MOB_PHONE_NUM, 'N/A')}" id="R7_COMPANY_MOB_PHONE_NUM"
-             name="R7_C9_COMPANY_MOB_PHONE_NUM"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R7"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R7_PRODUCT_TYPE, 'N/A')}" id="R7_PRODUCT_TYPE"
-             name="R7_C10_PRODUCT_TYPE"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R7" style="text-align: left;"><input class="display-input Show_input" type="text"
-             th:value="${report.R7_ACCT_NUM != null ? #numbers.formatDecimal(report.R7_ACCT_NUM, 0, 'NONE', 0, 'POINT') : '0'}"
-             id="R7_ACCT_NUM" name="R7_C11_ACCT_NUM"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R7"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R7_STATUS_OF_ACCT, 'N/A')}" id="R7_STATUS_OF_ACCT"
-             name="R7_C12_STATUS_OF_ACCT"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R7"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R7_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT, 'N/A')}"
-             id="R7_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT"
-             name="R7_C13_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R7"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R7_ACCT_BRANCH, 'N/A')}" id="R7_ACCT_BRANCH"
-             name="R7_C14_ACCT_BRANCH"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R7" style="text-align: right;"><input class="display-input Show_input" type="text"
-             th:value="${report.R7_ACCT_BALANCE_PULA != null ? #numbers.formatDecimal(report.R7_ACCT_BALANCE_PULA, 1, 'COMMA', 0, 'POINT') : '0'}"
-             id="R7_ACCT_BALANCE_PULA" name="R7_C15_ACCT_BALANCE_PULA"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
-             readonly /></td>
-
-            <td id="R7"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R7_CURRENCY_OF_ACCT, 'N/A')}" id="R7_CURRENCY_OF_ACCT"
-             name="R7_C16_CURRENCY_OF_ACCT"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R7" style="text-align: left;"><input class="display-input Show_input" type="text"
-             th:value="${report.R7_EXCHANGE_RATE != null ? #numbers.formatDecimal(report.R7_EXCHANGE_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
-             id="R7_EXCHANGE_RATE" name="R7_C17_EXCHANGE_RATE"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-         </tr>
-                    <tr>
-
-            <td id="R8"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R8_BANK_SPEC_SINGLE_CUST_REC_NUM, 'N/A')}" id="R8_BANK_SPEC_SINGLE_CUST_REC_NUM"
-             name="R8_C1_BANK_SPEC_SINGLE_CUST_REC_NUM"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-            
-             <td id="R8"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R8_COMPANY_NAME, 'N/A')}" id="R8_COMPANY_NAME"
-             name="R8_C2_COMPANY_NAME"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-            
-            <td id="R8"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R8_COMPANY_REG_NUM, 'N/A')}" id="R8_COMPANY_REG_NUM"
-             name="R8_C3_COMPANY_REG_NUM"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R8"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R8_BUSINEES_PHY_ADDRESS, 'N/A')}" id="R8_BUSINEES_PHY_ADDRESS"
-             name="R8_C4_BUSINEES_PHY_ADDRESS"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R8"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R8_POSTAL_ADDRESS, 'N/A')}" id="R8_POSTAL_ADDRESS"
-             name="R8_C5_POSTAL_ADDRESS"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R8"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R8_COUNTRY_OF_REG, 'N/A')}" id="R8_COUNTRY_OF_REG"
-             name="R8_C6_COUNTRY_OF_REG"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R8"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R8_COMPANY_EMAIL, 'N/A')}" id="R8_COMPANY_EMAIL"
-             name="R8_C7_COMPANY_EMAIL"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R8"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R8_COMPANY_LANDLINE, 'N/A')}" id="R8_COMPANY_LANDLINE"
-             name="R8_C8_COMPANY_LANDLINE"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-            <td id="R8"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R8_COMPANY_MOB_PHONE_NUM, 'N/A')}" id="R8_COMPANY_MOB_PHONE_NUM"
-             name="R8_C9_COMPANY_MOB_PHONE_NUM"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R8"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R8_PRODUCT_TYPE, 'N/A')}" id="R8_PRODUCT_TYPE"
-             name="R8_C10_PRODUCT_TYPE"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R8" style="text-align: left;"><input class="display-input Show_input" type="text"
-             th:value="${report.R8_ACCT_NUM != null ? #numbers.formatDecimal(report.R8_ACCT_NUM, 0, 'NONE', 0, 'POINT') : '0'}"
-             id="R8_ACCT_NUM" name="R8_C11_ACCT_NUM"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R8"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R8_STATUS_OF_ACCT, 'N/A')}" id="R8_STATUS_OF_ACCT"
-             name="R8_C12_STATUS_OF_ACCT"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R8"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R8_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT, 'N/A')}"
-             id="R8_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT"
-             name="R8_C13_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R8"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R8_ACCT_BRANCH, 'N/A')}" id="R8_ACCT_BRANCH"
-             name="R8_C14_ACCT_BRANCH"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R8" style="text-align: right;"><input class="display-input Show_input" type="text"
-             th:value="${report.R8_ACCT_BALANCE_PULA != null ? #numbers.formatDecimal(report.R8_ACCT_BALANCE_PULA, 1, 'COMMA', 0, 'POINT') : '0'}"
-             id="R8_ACCT_BALANCE_PULA" name="R8_C15_ACCT_BALANCE_PULA"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
-             readonly /></td>
-
-            <td id="R8"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R8_CURRENCY_OF_ACCT, 'N/A')}" id="R8_CURRENCY_OF_ACCT"
-             name="R8_C16_CURRENCY_OF_ACCT"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R8" style="text-align: left;"><input class="display-input Show_input" type="text"
-             th:value="${report.R8_EXCHANGE_RATE != null ? #numbers.formatDecimal(report.R8_EXCHANGE_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
-             id="R8_EXCHANGE_RATE" name="R8_C17_EXCHANGE_RATE"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-         </tr>
-                    <tr>
-
-            <td id="R9"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R9_BANK_SPEC_SINGLE_CUST_REC_NUM, 'N/A')}" id="R9_BANK_SPEC_SINGLE_CUST_REC_NUM"
-             name="R9_C1_BANK_SPEC_SINGLE_CUST_REC_NUM"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-            
-             <td id="R9"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R9_COMPANY_NAME, 'N/A')}" id="R9_COMPANY_NAME"
-             name="R9_C2_COMPANY_NAME"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-            
-            <td id="R9"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R9_COMPANY_REG_NUM, 'N/A')}" id="R9_COMPANY_REG_NUM"
-             name="R9_C3_COMPANY_REG_NUM"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R9"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R9_BUSINEES_PHY_ADDRESS, 'N/A')}" id="R9_BUSINEES_PHY_ADDRESS"
-             name="R9_C4_BUSINEES_PHY_ADDRESS"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R9"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R9_POSTAL_ADDRESS, 'N/A')}" id="R9_POSTAL_ADDRESS"
-             name="R9_C5_POSTAL_ADDRESS"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R9"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R9_COUNTRY_OF_REG, 'N/A')}" id="R9_COUNTRY_OF_REG"
-             name="R9_C6_COUNTRY_OF_REG"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R9"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R9_COMPANY_EMAIL, 'N/A')}" id="R9_COMPANY_EMAIL"
-             name="R9_C7_COMPANY_EMAIL"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R9"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R9_COMPANY_LANDLINE, 'N/A')}" id="R9_COMPANY_LANDLINE"
-             name="R9_C8_COMPANY_LANDLINE"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-            <td id="R9"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R9_COMPANY_MOB_PHONE_NUM, 'N/A')}" id="R9_COMPANY_MOB_PHONE_NUM"
-             name="R9_C9_COMPANY_MOB_PHONE_NUM"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R9"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R9_PRODUCT_TYPE, 'N/A')}" id="R9_PRODUCT_TYPE"
-             name="R9_C10_PRODUCT_TYPE"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R9" style="text-align: left;"><input class="display-input Show_input" type="text"
-             th:value="${report.R9_ACCT_NUM != null ? #numbers.formatDecimal(report.R9_ACCT_NUM, 0, 'NONE', 0, 'POINT') : '0'}"
-             id="R9_ACCT_NUM" name="R9_C11_ACCT_NUM"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R9"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R9_STATUS_OF_ACCT, 'N/A')}" id="R9_STATUS_OF_ACCT"
-             name="R9_C12_STATUS_OF_ACCT"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R9"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R9_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT, 'N/A')}"
-             id="R9_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT"
-             name="R9_C13_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R9"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R9_ACCT_BRANCH, 'N/A')}" id="R9_ACCT_BRANCH"
-             name="R9_C14_ACCT_BRANCH"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R9" style="text-align: right;"><input class="display-input Show_input" type="text"
-             th:value="${report.R9_ACCT_BALANCE_PULA != null ? #numbers.formatDecimal(report.R9_ACCT_BALANCE_PULA, 1, 'COMMA', 0, 'POINT') : '0'}"
-             id="R9_ACCT_BALANCE_PULA" name="R9_C15_ACCT_BALANCE_PULA"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
-             readonly /></td>
-
-            <td id="R9"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R9_CURRENCY_OF_ACCT, 'N/A')}" id="R9_CURRENCY_OF_ACCT"
-             name="R9_C16_CURRENCY_OF_ACCT"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R9" style="text-align: left;"><input class="display-input Show_input" type="text"
-             th:value="${report.R9_EXCHANGE_RATE != null ? #numbers.formatDecimal(report.R9_EXCHANGE_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
-             id="R9_EXCHANGE_RATE" name="R9_C17_EXCHANGE_RATE"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-         </tr>
-                    <tr>
-
-            <td id="R10"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R10_BANK_SPEC_SINGLE_CUST_REC_NUM, 'N/A')}" id="R10_BANK_SPEC_SINGLE_CUST_REC_NUM"
-             name="R10_C1_BANK_SPEC_SINGLE_CUST_REC_NUM"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-            
-             <td id="R10"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R10_COMPANY_NAME, 'N/A')}" id="R10_COMPANY_NAME"
-             name="R10_C2_COMPANY_NAME"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-            
-            <td id="R10"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R10_COMPANY_REG_NUM, 'N/A')}" id="R10_COMPANY_REG_NUM"
-             name="R10_C3_COMPANY_REG_NUM"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R10"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R10_BUSINEES_PHY_ADDRESS, 'N/A')}" id="R10_BUSINEES_PHY_ADDRESS"
-             name="R10_C4_BUSINEES_PHY_ADDRESS"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R10"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R10_POSTAL_ADDRESS, 'N/A')}" id="R10_POSTAL_ADDRESS"
-             name="R10_C5_POSTAL_ADDRESS"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R10"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R10_COUNTRY_OF_REG, 'N/A')}" id="R10_COUNTRY_OF_REG"
-             name="R10_C6_COUNTRY_OF_REG"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R10"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R10_COMPANY_EMAIL, 'N/A')}" id="R10_COMPANY_EMAIL"
-             name="R10_C7_COMPANY_EMAIL"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R10"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R10_COMPANY_LANDLINE, 'N/A')}" id="R10_COMPANY_LANDLINE"
-             name="R10_C8_COMPANY_LANDLINE"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-            <td id="R10"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R10_COMPANY_MOB_PHONE_NUM, 'N/A')}" id="R10_COMPANY_MOB_PHONE_NUM"
-             name="R10_C9_COMPANY_MOB_PHONE_NUM"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R10"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R10_PRODUCT_TYPE, 'N/A')}" id="R10_PRODUCT_TYPE"
-             name="R10_C10_PRODUCT_TYPE"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R10" style="text-align: left;"><input class="display-input Show_input" type="text"
-             th:value="${report.R10_ACCT_NUM != null ? #numbers.formatDecimal(report.R10_ACCT_NUM, 0, 'NONE', 0, 'POINT') : '0'}"
-             id="R10_ACCT_NUM" name="R10_C11_ACCT_NUM"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R10"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R10_STATUS_OF_ACCT, 'N/A')}" id="R10_STATUS_OF_ACCT"
-             name="R10_C12_STATUS_OF_ACCT"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R10"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R10_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT, 'N/A')}"
-             id="R10_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT"
-             name="R10_C13_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R10"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R10_ACCT_BRANCH, 'N/A')}" id="R10_ACCT_BRANCH"
-             name="R10_C14_ACCT_BRANCH"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R10" style="text-align: right;"><input class="display-input Show_input" type="text"
-             th:value="${report.R10_ACCT_BALANCE_PULA != null ? #numbers.formatDecimal(report.R10_ACCT_BALANCE_PULA, 1, 'COMMA', 0, 'POINT') : '0'}"
-             id="R10_ACCT_BALANCE_PULA" name="R10_C15_ACCT_BALANCE_PULA"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
-             readonly /></td>
-
-            <td id="R10"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R10_CURRENCY_OF_ACCT, 'N/A')}" id="R10_CURRENCY_OF_ACCT"
-             name="R10_C16_CURRENCY_OF_ACCT"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R10" style="text-align: left;"><input class="display-input Show_input" type="text"
-             th:value="${report.R10_EXCHANGE_RATE != null ? #numbers.formatDecimal(report.R10_EXCHANGE_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
-             id="R10_EXCHANGE_RATE" name="R10_C17_EXCHANGE_RATE"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-         </tr>
-                    <tr>
-
-            <td id="R11"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R11_BANK_SPEC_SINGLE_CUST_REC_NUM, 'N/A')}" id="R11_BANK_SPEC_SINGLE_CUST_REC_NUM"
-             name="R11_C1_BANK_SPEC_SINGLE_CUST_REC_NUM"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-            
-             <td id="R11"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R11_COMPANY_NAME, 'N/A')}" id="R11_COMPANY_NAME"
-             name="R11_C2_COMPANY_NAME"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-            
-            <td id="R11"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R11_COMPANY_REG_NUM, 'N/A')}" id="R11_COMPANY_REG_NUM"
-             name="R11_C3_COMPANY_REG_NUM"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R11"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R11_BUSINEES_PHY_ADDRESS, 'N/A')}" id="R11_BUSINEES_PHY_ADDRESS"
-             name="R11_C4_BUSINEES_PHY_ADDRESS"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R11"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R11_POSTAL_ADDRESS, 'N/A')}" id="R11_POSTAL_ADDRESS"
-             name="R11_C5_POSTAL_ADDRESS"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R11"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R11_COUNTRY_OF_REG, 'N/A')}" id="R11_COUNTRY_OF_REG"
-             name="R11_C6_COUNTRY_OF_REG"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R11"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R11_COMPANY_EMAIL, 'N/A')}" id="R11_COMPANY_EMAIL"
-             name="R11_C7_COMPANY_EMAIL"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R11"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R11_COMPANY_LANDLINE, 'N/A')}" id="R11_COMPANY_LANDLINE"
-             name="R11_C8_COMPANY_LANDLINE"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-            <td id="R11"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R11_COMPANY_MOB_PHONE_NUM, 'N/A')}" id="R11_COMPANY_MOB_PHONE_NUM"
-             name="R11_C9_COMPANY_MOB_PHONE_NUM"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R11"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R11_PRODUCT_TYPE, 'N/A')}" id="R11_PRODUCT_TYPE"
-             name="R11_C10_PRODUCT_TYPE"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R11" style="text-align: left;"><input class="display-input Show_input" type="text"
-             th:value="${report.R11_ACCT_NUM != null ? #numbers.formatDecimal(report.R11_ACCT_NUM, 0, 'NONE', 0, 'POINT') : '0'}"
-             id="R11_ACCT_NUM" name="R11_C11_ACCT_NUM"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R11"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R11_STATUS_OF_ACCT, 'N/A')}" id="R11_STATUS_OF_ACCT"
-             name="R11_C12_STATUS_OF_ACCT"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R11"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R11_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT, 'N/A')}"
-             id="R11_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT"
-             name="R11_C13_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R11"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R11_ACCT_BRANCH, 'N/A')}" id="R11_ACCT_BRANCH"
-             name="R11_C14_ACCT_BRANCH"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R11" style="text-align: right;"><input class="display-input Show_input" type="text"
-             th:value="${report.R11_ACCT_BALANCE_PULA != null ? #numbers.formatDecimal(report.R11_ACCT_BALANCE_PULA, 1, 'COMMA', 0, 'POINT') : '0'}"
-             id="R11_ACCT_BALANCE_PULA" name="R11_C15_ACCT_BALANCE_PULA"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
-             readonly /></td>
-
-            <td id="R11"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R11_CURRENCY_OF_ACCT, 'N/A')}" id="R11_CURRENCY_OF_ACCT"
-             name="R11_C16_CURRENCY_OF_ACCT"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R11" style="text-align: left;"><input class="display-input Show_input" type="text"
-             th:value="${report.R11_EXCHANGE_RATE != null ? #numbers.formatDecimal(report.R11_EXCHANGE_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
-             id="R11_EXCHANGE_RATE" name="R11_C17_EXCHANGE_RATE"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-         </tr>
-                    <tr>
-
-            <td id="R12"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R12_BANK_SPEC_SINGLE_CUST_REC_NUM, 'N/A')}" id="R12_BANK_SPEC_SINGLE_CUST_REC_NUM"
-             name="R12_C1_BANK_SPEC_SINGLE_CUST_REC_NUM"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-            
-             <td id="R12"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R12_COMPANY_NAME, 'N/A')}" id="R12_COMPANY_NAME"
-             name="R12_C2_COMPANY_NAME"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-            
-            <td id="R12"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R12_COMPANY_REG_NUM, 'N/A')}" id="R12_COMPANY_REG_NUM"
-             name="R12_C3_COMPANY_REG_NUM"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R12"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R12_BUSINEES_PHY_ADDRESS, 'N/A')}" id="R12_BUSINEES_PHY_ADDRESS"
-             name="R12_C4_BUSINEES_PHY_ADDRESS"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R12"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R12_POSTAL_ADDRESS, 'N/A')}" id="R12_POSTAL_ADDRESS"
-             name="R12_C5_POSTAL_ADDRESS"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R12"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R12_COUNTRY_OF_REG, 'N/A')}" id="R12_COUNTRY_OF_REG"
-             name="R12_C6_COUNTRY_OF_REG"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R12"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R12_COMPANY_EMAIL, 'N/A')}" id="R12_COMPANY_EMAIL"
-             name="R12_C7_COMPANY_EMAIL"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R12"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R12_COMPANY_LANDLINE, 'N/A')}" id="R12_COMPANY_LANDLINE"
-             name="R12_C8_COMPANY_LANDLINE"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-            <td id="R12"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R12_COMPANY_MOB_PHONE_NUM, 'N/A')}" id="R12_COMPANY_MOB_PHONE_NUM"
-             name="R12_C9_COMPANY_MOB_PHONE_NUM"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R12"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R12_PRODUCT_TYPE, 'N/A')}" id="R12_PRODUCT_TYPE"
-             name="R12_C10_PRODUCT_TYPE"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R12" style="text-align: left;"><input class="display-input Show_input" type="text"
-             th:value="${report.R12_ACCT_NUM != null ? #numbers.formatDecimal(report.R12_ACCT_NUM, 0, 'NONE', 0, 'POINT') : '0'}"
-             id="R12_ACCT_NUM" name="R12_C11_ACCT_NUM"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R12"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R12_STATUS_OF_ACCT, 'N/A')}" id="R12_STATUS_OF_ACCT"
-             name="R12_C12_STATUS_OF_ACCT"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R12"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R12_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT, 'N/A')}"
-             id="R12_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT"
-             name="R12_C13_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R12"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R12_ACCT_BRANCH, 'N/A')}" id="R12_ACCT_BRANCH"
-             name="R12_C14_ACCT_BRANCH"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R12" style="text-align: right;"><input class="display-input Show_input" type="text"
-             th:value="${report.R12_ACCT_BALANCE_PULA != null ? #numbers.formatDecimal(report.R12_ACCT_BALANCE_PULA, 1, 'COMMA', 0, 'POINT') : '0'}"
-             id="R12_ACCT_BALANCE_PULA" name="R12_C15_ACCT_BALANCE_PULA"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
-             readonly /></td>
-
-            <td id="R12"><input class="display-input Show_input" type="text"
-             th:value="${#strings.defaultString(report.R12_CURRENCY_OF_ACCT, 'N/A')}" id="R12_CURRENCY_OF_ACCT"
-             name="R12_C16_CURRENCY_OF_ACCT"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-
-            <td id="R12" style="text-align: left;"><input class="display-input Show_input" type="text"
-             th:value="${report.R12_EXCHANGE_RATE != null ? #numbers.formatDecimal(report.R12_EXCHANGE_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
-             id="R12_EXCHANGE_RATE" name="R12_C17_EXCHANGE_RATE"
-             style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
-             readonly /></td>
-         </tr>
-         
-          </tbody>
-         </table>
-
-
-
-
-        </div>
-        <div style="text-align: center; margin-top: 10px;">
-
-         <button id="submitButton" type="button" class="custom-tab-btn Show_input" form="fileupload"
-          th:attr="data-todate=${asondate}, data-type=${type}" onclick="fileuploads_all(this);" style="display: none;">
-          Submit</button>
-        </div>
-       </form>
-      </div>
-     </div>
-    </div>
-<!--  DETAIL -->
-            <div th:if="${displaymode == 'Details'}">
-             <div class="row">
-              <div class="col-sm-12" style="max-height:90vh; ">
-               <div class="table-container" 
-                style="border-right: 1px solid #dee2e6; ">
-                <table class="table table-striped table-bordered table-hover"
-                 id="reportdetails">
-                 <thead class="thead-light">
-
-         <tr>
-          <th>S No</th>
-          <th style="text-align:left;">COMPANY_NAME</th>
-          <th style="text-align:left;">COMPANY_REG_NUM</th>
-          <th style="text-align:left;">ACCT_NUM</th>
-          <th style="text-align:right;">ACCT BALANCE IN PULA</th>
-          <th style="text-align:left;"> REPORT LABEL</th>
-          <th>REPORT ADDL CRITERIA</th>
-          <th>REPORT DATE</th>
-         </tr>
-        </thead>
-
-        <tbody style="font-family: Arial;">
-         <tr th:each="report, srlno : ${reportdetails}">
-                    <td th:text="${srlno.index + 1}"></td>
-          <td style="text-align:left;" th:text="${report.COMPANY_NAME}"></td>
-          <td style="text-align:left;" th:text="${report.COMPANY_REG_NUM}"></td>
-          <td style="text-align:left;" th:text="${report.ACCT_NUM}"></td>
-          <td style="text-align:right;" th:text="${#numbers.formatDecimal(report.ACCT_BALANCE_PULA,1,'COMMA',0,'POINT')}"></td>
-          <td style="text-align:left;" th:text="${report.reportLabel}"></td>
-          <td th:text="${report.reportAddlCriteria1}"></td>
-          <td th:text="${#dates.format(report.reportDate,'dd-MM-yyyy')}"></td>
-
-         </tr>
-        </tbody>
-       </table>
-
-      </div>
-
-      
-     </div>
-    </div>
-   </div>
-    
-   </div>
-  </div>
- </div>
- <!-- Custom Cellresult Modal -->
- <div class="modal fade" id="cellresultModal">
-  <div class="modal-dialog modal-dialog-centered">
-   <div class="modal-content">
-
-    <!-- Custom header -->
-    <div class="menu-title-header" style="background-color: #6c7a91; padding: 8px; border-radius: 5px 5px 0 0;">
-     <div class="modal-title" id="cellresultModalLabel" style="text-align: center; color: white;">Do you want to
-      open the report?</div>
-    </div>
-
-    <div class="modal-body" style="text-align: center; font-size: 1.1rem;">
-     <button type="button" class="custom-tab-btn cancel-btn" data-bs-dismiss="modal"
-      style="margin-right: 10px; border: 2px solid #6c7a91; background: white; color: black; border-radius: 20px; padding: 5px 15px;">
-      Cancel</button>
-     <button type="button" class="custom-tab-btn yes-btn"
-      style="background: #6c7a91; color: white; border: none; border-radius: 20px; padding: 5px 20px;">Yes</button>
-    </div>
-   </div>
-  </div>
- </div>
-
-
- <div class="modal fade" id="loader" data-backdrop="static" data-keyboard="false">
-  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-   <div class="modal-content" style="background: transparent;">
-    <div class="modal-body" style="text-align: center">
-     <div>
-      <img th:src=@{/images/loader.gif} id="bfirelogo"
-       style="width: 153px; height: auto; margin-left: 18px; background-color: transparent; border-color: transparent;"
-       alt="Bornfire">
-     </div>
-    </div>
-   </div>
-  </div>
- </div>
- <!-- Custom Alert/Result Modal (Matches your existing style) -->
- <div class="modal fade" id="resultModal">
-  <div class="modal-dialog modal-dialog-centered">
-   <div class="modal-content">
-    <!-- Your custom styled header -->
-    <div class="menu-title-header">
-     <div class="modal-title" id="resultModalLabel" style="text-align: center; color: white;">
-      <!-- Title will be set by JavaScript -->
-     </div>
-    </div>
-    <div class="modal-body" style="text-align: center; font-size: 1.1rem;">
-     <p id="resultModalBody"></p>
-     <!-- Your custom styled button -->
-     <button type="button" class="custom-tab-btn" onclick="closemodel()" data-bs-dismiss="modal">OK</button>
-    </div>
-   </div>
-  </div>
- </div>
+							<i class="fa fa-download"></i>
+						</button>
+
+
+
+					</div>
+
+				</div>
+				<div th:if="${displaymode == 'summary'}">
+					<div class="row">
+						<div class="col-sm-12">
+							<form action="#" method="POST" id="fileupload">
+								<input type="hidden" name="asondate" id="asondate"
+									th:value="${asondate}" />
+
+								<div
+									class="table-wrapper table-responsive scrollable-table-container"
+									style="border-right: 1px solid #dee2e6;">
+
+
+									<table
+										class="sticky-header-table table table-bordered table-hover table-sm table-condensed"
+										id="reports">
+										<colgroup>
+											<col style="width: 450px;">
+											<!-- Col 1 -->
+											<col style="width: 260px;">
+											<!-- Col 2 -->
+											<col style="width: 260px;">
+											<!-- Col 3 -->
+											<col style="width: 260px;">
+											<!-- Col 4 -->
+											<col style="width: 260px;">
+											<!-- Col 5 -->
+											<col style="width: 260px;">
+											<!-- Col 6 -->
+											<col style="width: 260px;">
+											<!-- Col 7 -->
+											<col style="width: 260px;">
+											<!-- Col 8 -->
+											<col style="width: 240px;">
+											<!-- Col 9 -->
+											<col style="width: 290px;">
+											<!-- Col 10 -->
+											<col style="width: 260px;">
+											<!-- Col 11 -->
+											<col style="width: 260px;">
+											<!-- Col 12 -->
+											<col style="width: 290px;">
+											<!-- Col 13 -->
+											<col style="width: 260px;">
+											<!-- Col 14 -->
+											<col style="width: 260px;">
+											<!-- Col 15 -->
+											<col style="width: 260px;">
+											<!-- Col 16 -->
+											<col style="width: 260px;">
+											<!-- Col 17 -->
+										</colgroup>
+
+										<thead class="thead-light" style="background-color: #D8D8D8;">
+
+											<tr style="background-color: #b3b6b9;">
+												<th style="text-align: left; color: black;">Bank
+													Specific Single Customer View Record Number</th>
+												<th style="text-align: left; color: black;">Company
+													Name</th>
+												<th style="text-align: left; color: black;">Company
+													Registration Number</th>
+												<th style="text-align: left; color: black;">Business<br>Physical
+													Address
+												</th>
+												<th style="text-align: left; color: black;">Postal
+													Address</th>
+												<th style="text-align: left; color: black;">Country of<br>Registration
+												</th>
+												<th style="text-align: left; color: black;">Company<br>Email
+												</th>
+												<th style="text-align: left; color: black;">Company<br>Landline
+												</th>
+												<th style="text-align: left; color: black;">Company<br>Mobile
+													Phone Number
+												</th>
+												<th style="text-align: left; color: black;">Product
+													Type</th>
+												<th style="text-align: left; color: black;">Account
+													Number</th>
+												<th style="text-align: left; color: black;">Status of
+													Account</th>
+												<th style="text-align: left; color: black;">Account
+													Status - "Fit for Straight<br>Through Payout" OR "Not
+													Fit for <br>Straight Through Payout"
+												</th>
+												<th style="text-align: left; color: black;">Account
+													Branch</th>
+												<th style="text-align: right; color: black;">Account
+													Balance(Pula)</th>
+												<th style="text-align: left; color: black;">Currency of
+													Account</th>
+												<th style="text-align: left; color: black;">Exchange
+													Rate</th>
+											</tr>
+
+										</thead>
+
+
+
+										<tbody id="entity" th:each="report: ${reportsummary}"
+											style="font-family: Arial;">
+											<tr>
+
+												<td id="R6"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R6_BANK_SPEC_SINGLE_CUST_REC_NUM, 'N/A')}"
+													id="R6_BANK_SPEC_SINGLE_CUST_REC_NUM"
+													name="R6_C1_BANK_SPEC_SINGLE_CUST_REC_NUM"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R6"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R6_COMPANY_NAME, 'N/A')}"
+													id="R6_COMPANY_NAME" name="R6_C2_COMPANY_NAME"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R6"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R6_COMPANY_REG_NUM, 'N/A')}"
+													id="R6_COMPANY_REG_NUM" name="R6_C3_COMPANY_REG_NUM"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R6"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R6_BUSINEES_PHY_ADDRESS, 'N/A')}"
+													id="R6_BUSINEES_PHY_ADDRESS"
+													name="R6_C4_BUSINEES_PHY_ADDRESS"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R6"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R6_POSTAL_ADDRESS, 'N/A')}"
+													id="R6_POSTAL_ADDRESS" name="R6_C5_POSTAL_ADDRESS"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R6"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R6_COUNTRY_OF_REG, 'N/A')}"
+													id="R6_COUNTRY_OF_REG" name="R6_C6_COUNTRY_OF_REG"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R6"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R6_COMPANY_EMAIL, 'N/A')}"
+													id="R6_COMPANY_EMAIL" name="R6_C7_COMPANY_EMAIL"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R6"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R6_COMPANY_LANDLINE, 'N/A')}"
+													id="R6_COMPANY_LANDLINE" name="R6_C8_COMPANY_LANDLINE"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+												<td id="R6"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R6_COMPANY_MOB_PHONE_NUM, 'N/A')}"
+													id="R6_COMPANY_MOB_PHONE_NUM"
+													name="R6_C9_COMPANY_MOB_PHONE_NUM"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R6"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R6_PRODUCT_TYPE, 'N/A')}"
+													id="R6_PRODUCT_TYPE" name="R6_C10_PRODUCT_TYPE"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R6" style="text-align: left;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.R6_ACCT_NUM != null ? #numbers.formatDecimal(report.R6_ACCT_NUM, 0, 'NONE', 0, 'POINT') : '0'}"
+													id="R6_ACCT_NUM" name="R6_C11_ACCT_NUM"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R6"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R6_STATUS_OF_ACCT, 'N/A')}"
+													id="R6_STATUS_OF_ACCT" name="R6_C12_STATUS_OF_ACCT"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R6"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R6_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT, 'N/A')}"
+													id="R6_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT"
+													name="R6_C13_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R6"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R6_ACCT_BRANCH, 'N/A')}"
+													id="R6_ACCT_BRANCH" name="R6_C14_ACCT_BRANCH"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R6" style="text-align: right;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.R6_ACCT_BALANCE_PULA != null ? #numbers.formatDecimal(report.R6_ACCT_BALANCE_PULA, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="R6_ACCT_BALANCE_PULA" name="R6_C15_ACCT_BALANCE_PULA"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="R6"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R6_CURRENCY_OF_ACCT, 'N/A')}"
+													id="R6_CURRENCY_OF_ACCT" name="R6_C16_CURRENCY_OF_ACCT"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R6" style="text-align: left;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.R6_EXCHANGE_RATE != null ? #numbers.formatDecimal(report.R6_EXCHANGE_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="R6_EXCHANGE_RATE" name="R6_C17_EXCHANGE_RATE"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+											</tr>
+											<tr>
+
+												<td id="R7"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R7_BANK_SPEC_SINGLE_CUST_REC_NUM, 'N/A')}"
+													id="R7_BANK_SPEC_SINGLE_CUST_REC_NUM"
+													name="R7_C1_BANK_SPEC_SINGLE_CUST_REC_NUM"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R7"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R7_COMPANY_NAME, 'N/A')}"
+													id="R7_COMPANY_NAME" name="R7_C2_COMPANY_NAME"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R7"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R7_COMPANY_REG_NUM, 'N/A')}"
+													id="R7_COMPANY_REG_NUM" name="R7_C3_COMPANY_REG_NUM"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R7"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R7_BUSINEES_PHY_ADDRESS, 'N/A')}"
+													id="R7_BUSINEES_PHY_ADDRESS"
+													name="R7_C4_BUSINEES_PHY_ADDRESS"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R7"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R7_POSTAL_ADDRESS, 'N/A')}"
+													id="R7_POSTAL_ADDRESS" name="R7_C5_POSTAL_ADDRESS"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R7"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R7_COUNTRY_OF_REG, 'N/A')}"
+													id="R7_COUNTRY_OF_REG" name="R7_C6_COUNTRY_OF_REG"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R7"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R7_COMPANY_EMAIL, 'N/A')}"
+													id="R7_COMPANY_EMAIL" name="R7_C7_COMPANY_EMAIL"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R7"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R7_COMPANY_LANDLINE, 'N/A')}"
+													id="R7_COMPANY_LANDLINE" name="R7_C8_COMPANY_LANDLINE"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+												<td id="R7"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R7_COMPANY_MOB_PHONE_NUM, 'N/A')}"
+													id="R7_COMPANY_MOB_PHONE_NUM"
+													name="R7_C9_COMPANY_MOB_PHONE_NUM"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R7"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R7_PRODUCT_TYPE, 'N/A')}"
+													id="R7_PRODUCT_TYPE" name="R7_C10_PRODUCT_TYPE"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R7" style="text-align: left;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.R7_ACCT_NUM != null ? #numbers.formatDecimal(report.R7_ACCT_NUM, 0, 'NONE', 0, 'POINT') : '0'}"
+													id="R7_ACCT_NUM" name="R7_C11_ACCT_NUM"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R7"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R7_STATUS_OF_ACCT, 'N/A')}"
+													id="R7_STATUS_OF_ACCT" name="R7_C12_STATUS_OF_ACCT"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R7"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R7_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT, 'N/A')}"
+													id="R7_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT"
+													name="R7_C13_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R7"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R7_ACCT_BRANCH, 'N/A')}"
+													id="R7_ACCT_BRANCH" name="R7_C14_ACCT_BRANCH"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R7" style="text-align: right;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.R7_ACCT_BALANCE_PULA != null ? #numbers.formatDecimal(report.R7_ACCT_BALANCE_PULA, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="R7_ACCT_BALANCE_PULA" name="R7_C15_ACCT_BALANCE_PULA"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="R7"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R7_CURRENCY_OF_ACCT, 'N/A')}"
+													id="R7_CURRENCY_OF_ACCT" name="R7_C16_CURRENCY_OF_ACCT"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R7" style="text-align: left;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.R7_EXCHANGE_RATE != null ? #numbers.formatDecimal(report.R7_EXCHANGE_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="R7_EXCHANGE_RATE" name="R7_C17_EXCHANGE_RATE"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+											</tr>
+											<tr>
+
+												<td id="R8"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R8_BANK_SPEC_SINGLE_CUST_REC_NUM, 'N/A')}"
+													id="R8_BANK_SPEC_SINGLE_CUST_REC_NUM"
+													name="R8_C1_BANK_SPEC_SINGLE_CUST_REC_NUM"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R8"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R8_COMPANY_NAME, 'N/A')}"
+													id="R8_COMPANY_NAME" name="R8_C2_COMPANY_NAME"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R8"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R8_COMPANY_REG_NUM, 'N/A')}"
+													id="R8_COMPANY_REG_NUM" name="R8_C3_COMPANY_REG_NUM"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R8"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R8_BUSINEES_PHY_ADDRESS, 'N/A')}"
+													id="R8_BUSINEES_PHY_ADDRESS"
+													name="R8_C4_BUSINEES_PHY_ADDRESS"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R8"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R8_POSTAL_ADDRESS, 'N/A')}"
+													id="R8_POSTAL_ADDRESS" name="R8_C5_POSTAL_ADDRESS"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R8"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R8_COUNTRY_OF_REG, 'N/A')}"
+													id="R8_COUNTRY_OF_REG" name="R8_C6_COUNTRY_OF_REG"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R8"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R8_COMPANY_EMAIL, 'N/A')}"
+													id="R8_COMPANY_EMAIL" name="R8_C7_COMPANY_EMAIL"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R8"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R8_COMPANY_LANDLINE, 'N/A')}"
+													id="R8_COMPANY_LANDLINE" name="R8_C8_COMPANY_LANDLINE"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+												<td id="R8"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R8_COMPANY_MOB_PHONE_NUM, 'N/A')}"
+													id="R8_COMPANY_MOB_PHONE_NUM"
+													name="R8_C9_COMPANY_MOB_PHONE_NUM"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R8"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R8_PRODUCT_TYPE, 'N/A')}"
+													id="R8_PRODUCT_TYPE" name="R8_C10_PRODUCT_TYPE"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R8" style="text-align: left;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.R8_ACCT_NUM != null ? #numbers.formatDecimal(report.R8_ACCT_NUM, 0, 'NONE', 0, 'POINT') : '0'}"
+													id="R8_ACCT_NUM" name="R8_C11_ACCT_NUM"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R8"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R8_STATUS_OF_ACCT, 'N/A')}"
+													id="R8_STATUS_OF_ACCT" name="R8_C12_STATUS_OF_ACCT"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R8"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R8_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT, 'N/A')}"
+													id="R8_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT"
+													name="R8_C13_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R8"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R8_ACCT_BRANCH, 'N/A')}"
+													id="R8_ACCT_BRANCH" name="R8_C14_ACCT_BRANCH"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R8" style="text-align: right;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.R8_ACCT_BALANCE_PULA != null ? #numbers.formatDecimal(report.R8_ACCT_BALANCE_PULA, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="R8_ACCT_BALANCE_PULA" name="R8_C15_ACCT_BALANCE_PULA"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="R8"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R8_CURRENCY_OF_ACCT, 'N/A')}"
+													id="R8_CURRENCY_OF_ACCT" name="R8_C16_CURRENCY_OF_ACCT"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R8" style="text-align: left;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.R8_EXCHANGE_RATE != null ? #numbers.formatDecimal(report.R8_EXCHANGE_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="R8_EXCHANGE_RATE" name="R8_C17_EXCHANGE_RATE"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+											</tr>
+											<tr>
+
+												<td id="R9"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R9_BANK_SPEC_SINGLE_CUST_REC_NUM, 'N/A')}"
+													id="R9_BANK_SPEC_SINGLE_CUST_REC_NUM"
+													name="R9_C1_BANK_SPEC_SINGLE_CUST_REC_NUM"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R9"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R9_COMPANY_NAME, 'N/A')}"
+													id="R9_COMPANY_NAME" name="R9_C2_COMPANY_NAME"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R9"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R9_COMPANY_REG_NUM, 'N/A')}"
+													id="R9_COMPANY_REG_NUM" name="R9_C3_COMPANY_REG_NUM"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R9"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R9_BUSINEES_PHY_ADDRESS, 'N/A')}"
+													id="R9_BUSINEES_PHY_ADDRESS"
+													name="R9_C4_BUSINEES_PHY_ADDRESS"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R9"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R9_POSTAL_ADDRESS, 'N/A')}"
+													id="R9_POSTAL_ADDRESS" name="R9_C5_POSTAL_ADDRESS"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R9"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R9_COUNTRY_OF_REG, 'N/A')}"
+													id="R9_COUNTRY_OF_REG" name="R9_C6_COUNTRY_OF_REG"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R9"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R9_COMPANY_EMAIL, 'N/A')}"
+													id="R9_COMPANY_EMAIL" name="R9_C7_COMPANY_EMAIL"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R9"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R9_COMPANY_LANDLINE, 'N/A')}"
+													id="R9_COMPANY_LANDLINE" name="R9_C8_COMPANY_LANDLINE"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+												<td id="R9"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R9_COMPANY_MOB_PHONE_NUM, 'N/A')}"
+													id="R9_COMPANY_MOB_PHONE_NUM"
+													name="R9_C9_COMPANY_MOB_PHONE_NUM"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R9"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R9_PRODUCT_TYPE, 'N/A')}"
+													id="R9_PRODUCT_TYPE" name="R9_C10_PRODUCT_TYPE"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R9" style="text-align: left;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.R9_ACCT_NUM != null ? #numbers.formatDecimal(report.R9_ACCT_NUM, 0, 'NONE', 0, 'POINT') : '0'}"
+													id="R9_ACCT_NUM" name="R9_C11_ACCT_NUM"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R9"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R9_STATUS_OF_ACCT, 'N/A')}"
+													id="R9_STATUS_OF_ACCT" name="R9_C12_STATUS_OF_ACCT"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R9"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R9_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT, 'N/A')}"
+													id="R9_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT"
+													name="R9_C13_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R9"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R9_ACCT_BRANCH, 'N/A')}"
+													id="R9_ACCT_BRANCH" name="R9_C14_ACCT_BRANCH"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R9" style="text-align: right;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.R9_ACCT_BALANCE_PULA != null ? #numbers.formatDecimal(report.R9_ACCT_BALANCE_PULA, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="R9_ACCT_BALANCE_PULA" name="R9_C15_ACCT_BALANCE_PULA"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="R9"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R9_CURRENCY_OF_ACCT, 'N/A')}"
+													id="R9_CURRENCY_OF_ACCT" name="R9_C16_CURRENCY_OF_ACCT"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R9" style="text-align: left;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.R9_EXCHANGE_RATE != null ? #numbers.formatDecimal(report.R9_EXCHANGE_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="R9_EXCHANGE_RATE" name="R9_C17_EXCHANGE_RATE"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+											</tr>
+											<tr>
+
+												<td id="R10"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R10_BANK_SPEC_SINGLE_CUST_REC_NUM, 'N/A')}"
+													id="R10_BANK_SPEC_SINGLE_CUST_REC_NUM"
+													name="R10_C1_BANK_SPEC_SINGLE_CUST_REC_NUM"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R10"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R10_COMPANY_NAME, 'N/A')}"
+													id="R10_COMPANY_NAME" name="R10_C2_COMPANY_NAME"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R10"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R10_COMPANY_REG_NUM, 'N/A')}"
+													id="R10_COMPANY_REG_NUM" name="R10_C3_COMPANY_REG_NUM"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R10"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R10_BUSINEES_PHY_ADDRESS, 'N/A')}"
+													id="R10_BUSINEES_PHY_ADDRESS"
+													name="R10_C4_BUSINEES_PHY_ADDRESS"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R10"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R10_POSTAL_ADDRESS, 'N/A')}"
+													id="R10_POSTAL_ADDRESS" name="R10_C5_POSTAL_ADDRESS"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R10"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R10_COUNTRY_OF_REG, 'N/A')}"
+													id="R10_COUNTRY_OF_REG" name="R10_C6_COUNTRY_OF_REG"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R10"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R10_COMPANY_EMAIL, 'N/A')}"
+													id="R10_COMPANY_EMAIL" name="R10_C7_COMPANY_EMAIL"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R10"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R10_COMPANY_LANDLINE, 'N/A')}"
+													id="R10_COMPANY_LANDLINE" name="R10_C8_COMPANY_LANDLINE"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+												<td id="R10"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R10_COMPANY_MOB_PHONE_NUM, 'N/A')}"
+													id="R10_COMPANY_MOB_PHONE_NUM"
+													name="R10_C9_COMPANY_MOB_PHONE_NUM"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R10"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R10_PRODUCT_TYPE, 'N/A')}"
+													id="R10_PRODUCT_TYPE" name="R10_C10_PRODUCT_TYPE"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R10" style="text-align: left;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.R10_ACCT_NUM != null ? #numbers.formatDecimal(report.R10_ACCT_NUM, 0, 'NONE', 0, 'POINT') : '0'}"
+													id="R10_ACCT_NUM" name="R10_C11_ACCT_NUM"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R10"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R10_STATUS_OF_ACCT, 'N/A')}"
+													id="R10_STATUS_OF_ACCT" name="R10_C12_STATUS_OF_ACCT"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R10"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R10_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT, 'N/A')}"
+													id="R10_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT"
+													name="R10_C13_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R10"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R10_ACCT_BRANCH, 'N/A')}"
+													id="R10_ACCT_BRANCH" name="R10_C14_ACCT_BRANCH"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R10" style="text-align: right;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.R10_ACCT_BALANCE_PULA != null ? #numbers.formatDecimal(report.R10_ACCT_BALANCE_PULA, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="R10_ACCT_BALANCE_PULA" name="R10_C15_ACCT_BALANCE_PULA"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="R10"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R10_CURRENCY_OF_ACCT, 'N/A')}"
+													id="R10_CURRENCY_OF_ACCT" name="R10_C16_CURRENCY_OF_ACCT"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R10" style="text-align: left;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.R10_EXCHANGE_RATE != null ? #numbers.formatDecimal(report.R10_EXCHANGE_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="R10_EXCHANGE_RATE" name="R10_C17_EXCHANGE_RATE"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+											</tr>
+											<tr>
+
+												<td id="R11"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R11_BANK_SPEC_SINGLE_CUST_REC_NUM, 'N/A')}"
+													id="R11_BANK_SPEC_SINGLE_CUST_REC_NUM"
+													name="R11_C1_BANK_SPEC_SINGLE_CUST_REC_NUM"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R11"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R11_COMPANY_NAME, 'N/A')}"
+													id="R11_COMPANY_NAME" name="R11_C2_COMPANY_NAME"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R11"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R11_COMPANY_REG_NUM, 'N/A')}"
+													id="R11_COMPANY_REG_NUM" name="R11_C3_COMPANY_REG_NUM"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R11"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R11_BUSINEES_PHY_ADDRESS, 'N/A')}"
+													id="R11_BUSINEES_PHY_ADDRESS"
+													name="R11_C4_BUSINEES_PHY_ADDRESS"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R11"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R11_POSTAL_ADDRESS, 'N/A')}"
+													id="R11_POSTAL_ADDRESS" name="R11_C5_POSTAL_ADDRESS"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R11"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R11_COUNTRY_OF_REG, 'N/A')}"
+													id="R11_COUNTRY_OF_REG" name="R11_C6_COUNTRY_OF_REG"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R11"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R11_COMPANY_EMAIL, 'N/A')}"
+													id="R11_COMPANY_EMAIL" name="R11_C7_COMPANY_EMAIL"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R11"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R11_COMPANY_LANDLINE, 'N/A')}"
+													id="R11_COMPANY_LANDLINE" name="R11_C8_COMPANY_LANDLINE"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+												<td id="R11"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R11_COMPANY_MOB_PHONE_NUM, 'N/A')}"
+													id="R11_COMPANY_MOB_PHONE_NUM"
+													name="R11_C9_COMPANY_MOB_PHONE_NUM"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R11"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R11_PRODUCT_TYPE, 'N/A')}"
+													id="R11_PRODUCT_TYPE" name="R11_C10_PRODUCT_TYPE"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R11" style="text-align: left;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.R11_ACCT_NUM != null ? #numbers.formatDecimal(report.R11_ACCT_NUM, 0, 'NONE', 0, 'POINT') : '0'}"
+													id="R11_ACCT_NUM" name="R11_C11_ACCT_NUM"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R11"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R11_STATUS_OF_ACCT, 'N/A')}"
+													id="R11_STATUS_OF_ACCT" name="R11_C12_STATUS_OF_ACCT"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R11"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R11_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT, 'N/A')}"
+													id="R11_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT"
+													name="R11_C13_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R11"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R11_ACCT_BRANCH, 'N/A')}"
+													id="R11_ACCT_BRANCH" name="R11_C14_ACCT_BRANCH"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R11" style="text-align: right;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.R11_ACCT_BALANCE_PULA != null ? #numbers.formatDecimal(report.R11_ACCT_BALANCE_PULA, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="R11_ACCT_BALANCE_PULA" name="R11_C15_ACCT_BALANCE_PULA"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="R11"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R11_CURRENCY_OF_ACCT, 'N/A')}"
+													id="R11_CURRENCY_OF_ACCT" name="R11_C16_CURRENCY_OF_ACCT"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R11" style="text-align: left;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.R11_EXCHANGE_RATE != null ? #numbers.formatDecimal(report.R11_EXCHANGE_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="R11_EXCHANGE_RATE" name="R11_C17_EXCHANGE_RATE"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+											</tr>
+											<tr>
+
+												<td id="R12"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R12_BANK_SPEC_SINGLE_CUST_REC_NUM, 'N/A')}"
+													id="R12_BANK_SPEC_SINGLE_CUST_REC_NUM"
+													name="R12_C1_BANK_SPEC_SINGLE_CUST_REC_NUM"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R12"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R12_COMPANY_NAME, 'N/A')}"
+													id="R12_COMPANY_NAME" name="R12_C2_COMPANY_NAME"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R12"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R12_COMPANY_REG_NUM, 'N/A')}"
+													id="R12_COMPANY_REG_NUM" name="R12_C3_COMPANY_REG_NUM"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R12"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R12_BUSINEES_PHY_ADDRESS, 'N/A')}"
+													id="R12_BUSINEES_PHY_ADDRESS"
+													name="R12_C4_BUSINEES_PHY_ADDRESS"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R12"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R12_POSTAL_ADDRESS, 'N/A')}"
+													id="R12_POSTAL_ADDRESS" name="R12_C5_POSTAL_ADDRESS"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R12"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R12_COUNTRY_OF_REG, 'N/A')}"
+													id="R12_COUNTRY_OF_REG" name="R12_C6_COUNTRY_OF_REG"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R12"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R12_COMPANY_EMAIL, 'N/A')}"
+													id="R12_COMPANY_EMAIL" name="R12_C7_COMPANY_EMAIL"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R12"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R12_COMPANY_LANDLINE, 'N/A')}"
+													id="R12_COMPANY_LANDLINE" name="R12_C8_COMPANY_LANDLINE"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+												<td id="R12"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R12_COMPANY_MOB_PHONE_NUM, 'N/A')}"
+													id="R12_COMPANY_MOB_PHONE_NUM"
+													name="R12_C9_COMPANY_MOB_PHONE_NUM"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R12"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R12_PRODUCT_TYPE, 'N/A')}"
+													id="R12_PRODUCT_TYPE" name="R12_C10_PRODUCT_TYPE"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R12" style="text-align: left;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.R12_ACCT_NUM != null ? #numbers.formatDecimal(report.R12_ACCT_NUM, 0, 'NONE', 0, 'POINT') : '0'}"
+													id="R12_ACCT_NUM" name="R12_C11_ACCT_NUM"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R12"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R12_STATUS_OF_ACCT, 'N/A')}"
+													id="R12_STATUS_OF_ACCT" name="R12_C12_STATUS_OF_ACCT"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R12"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R12_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT, 'N/A')}"
+													id="R12_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT"
+													name="R12_C13_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R12"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R12_ACCT_BRANCH, 'N/A')}"
+													id="R12_ACCT_BRANCH" name="R12_C14_ACCT_BRANCH"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R12" style="text-align: right;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.R12_ACCT_BALANCE_PULA != null ? #numbers.formatDecimal(report.R12_ACCT_BALANCE_PULA, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="R12_ACCT_BALANCE_PULA" name="R12_C15_ACCT_BALANCE_PULA"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="R12"><input class="display-input Show_input"
+													type="text"
+													th:value="${#strings.defaultString(report.R12_CURRENCY_OF_ACCT, 'N/A')}"
+													id="R12_CURRENCY_OF_ACCT" name="R12_C16_CURRENCY_OF_ACCT"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+
+												<td id="R12" style="text-align: left;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.R12_EXCHANGE_RATE != null ? #numbers.formatDecimal(report.R12_EXCHANGE_RATE, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="R12_EXCHANGE_RATE" name="R12_C17_EXCHANGE_RATE"
+													style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: left;"
+													readonly /></td>
+											</tr>
+
+										</tbody>
+									</table>
+
+
+
+
+								</div>
+								<div style="text-align: center; margin-top: 10px;">
+
+									<button id="submitButton" type="button"
+										class="custom-tab-btn Show_input" form="fileupload"
+										th:attr="data-todate=${asondate}, data-type=${type}"
+										onclick="fileuploads_all(this);" style="display: none;">
+										Submit</button>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+				<!--  DETAIL -->
+				<div th:if="${displaymode == 'Details'}">
+					<div class="row">
+						<div class="col-sm-12" style="max-height: 90vh;">
+							<div class="table-container"
+								style="border-right: 1px solid #dee2e6;">
+								<table class="table table-striped table-bordered table-hover"
+									id="reportdetails">
+									<thead class="thead-light">
+
+										<tr>
+											<th>S No</th>
+											<th style="text-align: left;">COMPANY_NAME</th>
+											<th style="text-align: left;">COMPANY_REG_NUM</th>
+											<th style="text-align: left;">ACCT_NUM</th>
+											<th style="text-align: right;">ACCT BALANCE IN PULA</th>
+											<th style="text-align: left;">REPORT LABEL</th>
+											<th>REPORT ADDL CRITERIA</th>
+											<th>REPORT DATE</th>
+										</tr>
+									</thead>
+
+									<tbody style="font-family: Arial;">
+										<tr th:each="report, srlno : ${reportdetails}">
+											<td th:text="${srlno.index + 1}"></td>
+											<td style="text-align: left;"
+												th:text="${report.COMPANY_NAME}"></td>
+											<td style="text-align: left;"
+												th:text="${report.COMPANY_REG_NUM}"></td>
+											<td style="text-align: left;" th:text="${report.ACCT_NUM}"></td>
+											<td style="text-align: right;"
+												th:text="${#numbers.formatDecimal(report.ACCT_BALANCE_PULA,1,'COMMA',0,'POINT')}"></td>
+											<td style="text-align: left;" th:text="${report.reportLabel}"></td>
+											<td th:text="${report.reportAddlCriteria1}"></td>
+											<td
+												th:text="${#dates.format(report.reportDate,'dd-MM-yyyy')}"></td>
+
+										</tr>
+									</tbody>
+								</table>
+
+							</div>
+
+
+						</div>
+					</div>
+				</div>
+
+			</div>
+		</div>
+	</div>
+	<!-- Custom Cellresult Modal -->
+	<div class="modal fade" id="cellresultModal">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+
+				<!-- Custom header -->
+				<div class="menu-title-header"
+					style="background-color: #6c7a91; padding: 8px; border-radius: 5px 5px 0 0;">
+					<div class="modal-title" id="cellresultModalLabel"
+						style="text-align: center; color: white;">Do you want to
+						open the report?</div>
+				</div>
+
+				<div class="modal-body"
+					style="text-align: center; font-size: 1.1rem;">
+					<button type="button" class="custom-tab-btn cancel-btn"
+						data-bs-dismiss="modal"
+						style="margin-right: 10px; border: 2px solid #6c7a91; background: white; color: black; border-radius: 20px; padding: 5px 15px;">
+						Cancel</button>
+					<button type="button" class="custom-tab-btn yes-btn"
+						style="background: #6c7a91; color: white; border: none; border-radius: 20px; padding: 5px 20px;">Yes</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<div class="modal fade" id="loader" data-backdrop="static"
+		data-keyboard="false">
+		<div
+			class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+			<div class="modal-content" style="background: transparent;">
+				<div class="modal-body" style="text-align: center">
+					<div>
+						<img th:src=@{/images/loader.gif} id="bfirelogo"
+							style="width: 153px; height: auto; margin-left: 18px; background-color: transparent; border-color: transparent;"
+							alt="Bornfire">
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- Custom Alert/Result Modal (Matches your existing style) -->
+	<div class="modal fade" id="resultModal">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<!-- Your custom styled header -->
+				<div class="menu-title-header">
+					<div class="modal-title" id="resultModalLabel"
+						style="text-align: center; color: white;">
+						<!-- Title will be set by JavaScript -->
+					</div>
+				</div>
+				<div class="modal-body"
+					style="text-align: center; font-size: 1.1rem;">
+					<p id="resultModalBody"></p>
+					<!-- Your custom styled button -->
+					<button type="button" class="custom-tab-btn" onclick="closemodel()"
+						data-bs-dismiss="modal">OK</button>
+				</div>
+			</div>
+		</div>
+	</div>
 
 </body>
 
@@ -1905,19 +2140,18 @@ div.dataTables_wrapper div.dataTables_info {
 }
 /* 1. Force table to obey colgroup */
 #reports {
-    table-layout: fixed !important;
+	table-layout: fixed !important;
 }
 
 /* 2. Make header cells follow colgroup width */
 #reports th {
-    width: inherit !important;
+	width: inherit !important;
 }
 
 /* 3. Prevent empty headers from collapsing */
 #reports th:empty::after {
-    content: "\00A0";
+	content: "\00A0";
 }
-
 </style>
 
 

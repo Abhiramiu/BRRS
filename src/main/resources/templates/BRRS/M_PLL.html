@@ -432,6 +432,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 
 
 		function downloadfile(button) {
+
 		    var reportid = button.getAttribute('data-reportid');
 		    var asondate = button.getAttribute('data-asondate');
 		    var fromdate = button.getAttribute('data-fromdate');
@@ -441,28 +442,37 @@ PURPOSE		: BRRS_M_PLLREPORT
 		    var secid = button.getAttribute('data-secid');
 		    var dtltype = button.getAttribute('data-dtltype');
 		    var filename = button.getAttribute('data-filename');
-			var type = button.getAttribute('data-type');
-			var version = button.getAttribute('data-version');
+		    var type = button.getAttribute('data-type');
+		    var version = button.getAttribute('data-version');
 
 		    $('#loader').modal('show');
 
+		    // ✅ Build URL safely
+		    var url = './downloadExcel?reportid=' + reportid +
+		        '&fromdate=' + fromdate +
+		        '&asondate=' + asondate +
+		        '&todate=' + todate +
+		        '&currency=' + currency +
+		        '&subreportid=' + subreportid +
+		        '&secid=' + secid +
+		        '&filename=' + filename +
+		        '&type=' + type;
+
+		    // ✅ Append version ONLY if valid
+		    if (version && version.trim() !== '') {
+		        url += '&version=' + version;
+		    }
+
 		    $.ajax({
-		        url: './downloadExcel?reportid=' + reportid +
-		            '&fromdate=' + fromdate +
-		            '&asondate=' + asondate +
-		            '&todate=' + todate +
-		            '&currency=' + currency +
-		            '&subreportid=' + subreportid +
-		            '&secid=' + secid +
-		            '&filename=' + filename +
-					'&type=' + type +
-					'&version=' + version,
+		        url: url,
 		        type: 'GET',
 		        xhrFields: { responseType: 'blob' },
 
 		        success: function (data) {
 		            if (data && data.size > 100) {
-		                const blob = new Blob([data], { type: 'application/vnd.ms-excel' });
+		                const blob = new Blob([data], {
+		                    type: 'application/vnd.ms-excel'
+		                });
 		                const url = window.URL.createObjectURL(blob);
 		                const a = document.createElement('a');
 
@@ -488,12 +498,11 @@ PURPOSE		: BRRS_M_PLLREPORT
 		        },
 
 		        complete: function () {
-		            // 🔥 THIS ALWAYS RUNS (success or error or exceptions)
+		            // 🔥 Always hide loader (success / error)
 		            $('#loader').modal('hide');
 		        }
 		    });
 		}
-
 
 		function closemodel() {
 			// Hide the modals
@@ -1004,18 +1013,23 @@ PURPOSE		: BRRS_M_PLLREPORT
 							th:if="${displaymode == 'Details'}">Summary</button>
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails();"
 							th:if="${displaymode == 'summary'}">Details</button>
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'summary'}" th:attr="data-reportid=${reportid}, 
-                     data-asondate=${asondate}, 
-                     data-fromdate=${fromdate}, 
-                     data-todate=${todate}, 
-                     data-currency=${currency},  
-                     data-dtltype=${dtltype}, 
-                     data-filename='M_PLL.xlsx',
-                     data-type=${type},
-                     data-version=${version}" onclick="downloadfile(this);">
-							<i class="fa fa-download"></i>
-						</button>
+						<button type="button" class="custom-tab-btn"
+        th:if="${displaymode == 'summary'}"
+        th:attr="
+            data-reportid=${reportid},
+            data-asondate=${asondate},
+            data-fromdate=${fromdate},
+            data-todate=${todate},
+            data-currency=${currency},
+            data-dtltype=${dtltype},
+            data-filename='M_PLL.xlsx',
+            data-type=${type},
+            data-version=${version != null ? version : ''}
+        "
+        onclick="downloadfile(this);">
+    <i class="fa fa-download"></i>
+</button>
+
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
 							th:if="${displaymode == 'Details'}" onclick="startReport(this);" th:attr="
 		    data-fromdate=${fromdate},

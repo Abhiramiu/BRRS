@@ -96,7 +96,7 @@ public class BRRS_BDISB3_ReportService {
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
 	public ModelAndView getM_BDISB3View(String reportId, String fromdate, String todate, String currency,
-			String dtltype, Pageable pageable, String type, String version) {
+			String dtltype, Pageable pageable, String type,  BigDecimal version) {
 		ModelAndView mv = new ModelAndView();
 		Session hs = sessionFactory.getCurrentSession();
 
@@ -350,7 +350,7 @@ public class BRRS_BDISB3_ReportService {
 	}
 
 	public byte[] getBDISB3Excel(String filename, String reportId, String fromdate, String todate, String currency,
-			String dtltype, String type, String version) throws Exception {
+			String dtltype, String type, BigDecimal version) throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.");
 		logger.info("DownloadFile: reportId={}, filename={}", reportId, filename, type, version);
 
@@ -358,12 +358,12 @@ public class BRRS_BDISB3_ReportService {
 		Date reportDate = dateformat.parse(todate);
 
 // ARCHIVAL check
-		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && !version.trim().isEmpty()) {
+		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null ) {
 			logger.info("Service: Generating ARCHIVAL report for version {}", version);
 			return getExcelBDISB3ARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
 		}
 // RESUB check
-		else if ("RESUB".equalsIgnoreCase(type) && version != null && !version.trim().isEmpty()) {
+		else if ("RESUB".equalsIgnoreCase(type) && version != null ) {
 			logger.info("Service: Generating RESUB report for version {}", version);
 
 			List<BDISB3_Archival_Summary_Entity> T1Master = BDISB3_Archival_Summary_Repo
@@ -579,7 +579,7 @@ public class BRRS_BDISB3_ReportService {
 	}
 
 	public byte[] getExcelBDISB3ARCHIVAL(String filename, String reportId, String fromdate, String todate,
-			String currency, String dtltype, String type, String version) throws Exception {
+			String currency, String dtltype, String type, BigDecimal version) throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.");
 		if ("ARCHIVAL".equals(type) && version != null) {
 		}
@@ -860,17 +860,18 @@ public class BRRS_BDISB3_ReportService {
 			Optional<BDISB3_Archival_Summary_Entity> latestArchivalOpt = BDISB3_Archival_Summary_Repo
 					.getLatestArchivalVersionByDate(reportDate);
 
-			int newVersion = 1;
+			BigDecimal newVersion = BigDecimal.ONE;
+
 			if (latestArchivalOpt.isPresent()) {
-				try {
-					newVersion = Integer.parseInt(latestArchivalOpt.get().getReportVersion()) + 1;
-				} catch (NumberFormatException e) {
-					newVersion = 1;
-				}
+			    BigDecimal latestVersion = latestArchivalOpt.get().getReportVersion();
+			    newVersion = (latestVersion != null)
+			            ? latestVersion.add(BigDecimal.ONE)
+			            : BigDecimal.ONE;
 			}
 
+
 			boolean exists = BDISB3_Archival_Summary_Repo
-					.findByReportDateAndReportVersion(reportDate, String.valueOf(newVersion)).isPresent();
+					.findByReportDateAndReportVersion(reportDate,newVersion).isPresent();
 
 			if (exists) {
 				throw new RuntimeException("Version " + newVersion + " already exists for report date " + reportDate);
@@ -961,7 +962,7 @@ public class BRRS_BDISB3_ReportService {
 			 * METADATA =========================================================
 			 */
 			archivalEntity.setReportDate(reportDate);
-			archivalEntity.setReportVersion(String.valueOf(newVersion));
+			archivalEntity.setReportVersion(newVersion);
 			archivalEntity.setReportResubDate(new Date());
 
 			/*
@@ -984,7 +985,7 @@ public class BRRS_BDISB3_ReportService {
 
 /// Downloaded for Archival & Resub
 	public byte[] BRRS_BDISB3ResubExcel(String filename, String reportId, String fromdate, String todate,
-			String currency, String dtltype, String type, String version) throws Exception {
+			String currency, String dtltype, String type, BigDecimal version) throws Exception {
 
 		logger.info("Service: Starting Excel generation process in memory for RESUB Excel.");
 
