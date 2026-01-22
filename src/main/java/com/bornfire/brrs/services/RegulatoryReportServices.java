@@ -757,13 +757,13 @@ public class RegulatoryReportServices {
 			 * BRRS_RECON_OF_FS_ReportService.getBRRS_Recon_Of_FS_View(reportId, fromdate,
 			 * todate, currency, dtltype, pageable, type, version); break;
 			 */
-		
-		   case "M_SRWA_12A":
-			  
-			  repsummary = brrs_m_srwa_12a_reportservice.getM_SRWA_12AView(reportId,
-			       fromdate, todate, currency, dtltype, pageable, type, version); 
-			  
-			  break;
+
+			case "M_SRWA_12A":
+
+				repsummary = brrs_m_srwa_12a_reportservice.getM_SRWA_12AView(reportId,
+						fromdate, todate, currency, dtltype, pageable, type, version);
+
+				break;
 
 			case "MDISB5":
 
@@ -794,25 +794,29 @@ public class RegulatoryReportServices {
 				repsummary = BRRS_Q_SMME_loans_Advances_reportService.getBRRS_Q_SMMEView(reportId,
 						fromdate, todate, currency, dtltype, pageable, type, version);
 				break;
-				
+
 			case "MDISB1":
-				  repsummary = brrs_mdisb1_reportservice.getMDISB1View(reportId, fromdate,
-				  todate, currency, dtltype, pageable, type, version);
-				 break;
-				 
+				repsummary = brrs_mdisb1_reportservice.getMDISB1View(reportId, fromdate,
+						todate, currency, dtltype, pageable, type, version);
+				break;
+
 			case "MDISB2":
-				  repsummary = brrs_mdisb2_reportservice.getMDISB2View(reportId, fromdate,
-				  todate, currency, dtltype, pageable, type, version);
-				 break;
-				 
-				 
+				repsummary = brrs_mdisb2_reportservice.getMDISB2View(reportId, fromdate,
+						todate, currency, dtltype, pageable, type, version);
+				break;
+
 			case "SCH_17":
-				  repsummary = brrs_sch_17_reportservice.getSCH_17View(reportId, fromdate,
-				  todate, currency, dtltype, pageable, type, version);
-				 
-			 break;
-			
-			 /*
+				repsummary = brrs_sch_17_reportservice.getSCH_17View(reportId, fromdate,
+						todate, currency, dtltype, pageable, type, version);
+
+				break;
+
+			case "COMMON_DISCLOSURE":
+
+				repsummary = BRRS_Common_Disclosure_Reportservice.getCommon_DisclosureView(reportId,
+						fromdate, todate, currency, dtltype, pageable, type, version);
+				break;
+			/*
 			 * case "AML":
 			 * 
 			 * repsummary = brrs_aml_reportservice.getAMLView(reportId, fromdate, todate,
@@ -856,11 +860,7 @@ public class RegulatoryReportServices {
 			 * 
 			 * break;
 			 * 
-			 * case "COMMON_DISCLOSURE":
 			 * 
-			 * repsummary =
-			 * BRRS_Common_Disclosure_Reportservice.getCommon_DisclosureView(reportId,
-			 * fromdate, todate, currency, dtltype, pageable, type, version);
 			 * 
 			 * break; case "Market_Risk":
 			 * 
@@ -921,7 +921,7 @@ public class RegulatoryReportServices {
 			 * 
 			 * break;
 			 * 
-			 
+			 * 
 			 * 
 			 * case "MDISB2":
 			 * 
@@ -1510,15 +1510,16 @@ public class RegulatoryReportServices {
 
 		switch (reportId) {
 
-		case "SCH_17": try {
-			  System.out.println("came to Regulatory service");
-			  repfile = brrs_sch_17_reportservice.getSCH_17Excel(filename, reportId,
-			  fromdate, todate, currency, dtltype, type, version); 
-			  }
-			catch (Exception e) {
-			  // TODO Auto-generated catch block e.printStackTrace(); 
-			} break;
-			
+			case "SCH_17":
+				try {
+					System.out.println("came to Regulatory service");
+					repfile = brrs_sch_17_reportservice.getSCH_17Excel(filename, reportId,
+							fromdate, todate, currency, dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block e.printStackTrace();
+				}
+				break;
+
 			/*
 			 * case "M_SFINP2": try { repfile =
 			 * BRRS_M_SFINP2_reportservice.BRRS_M_SFINP2Excel(filename, reportId, fromdate,
@@ -1617,34 +1618,43 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
-				
-			case "MDISB1": 
-				try { 
+
+			case "MDISB1":
+				try {
 					repfile = brrs_mdisb1_reportservice.getMDISB1Excel(filename, reportId, fromdate,
-				 todate, currency, dtltype, type, version);
-					} catch (Exception e) { // TODO Auto-generated catch block
-				 e.printStackTrace(); 
-				 } 
+							todate, currency, dtltype, type, version);
+				} catch (Exception e) { // TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				break;
-				
-			case "MDISB2": 
-				try { 
+
+			case "MDISB2":
+				try {
 					repfile = brrs_mdisb2_reportservice.getMDISB2Excel(filename, reportId, fromdate,
-				 todate, currency, dtltype, type, version);
-					} catch (Exception e) { // TODO Auto-generated catch block
-				 e.printStackTrace(); 
-				 } 
+							todate, currency, dtltype, type, version);
+				} catch (Exception e) { // TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				break;
-				
+
 			case "M_SRWA_12A":
 				try {
-				 
-				 repfile = brrs_m_srwa_12a_reportservice.getM_SRWA_12AExcel(filename,
-				 reportId, fromdate, todate, currency, dtltype, type, version); 
-				 } catch (Exception e) { // TODO Auto-generated catch block 
-					 e.printStackTrace(); 
-				 }
-				 break;
+
+					repfile = brrs_m_srwa_12a_reportservice.getM_SRWA_12AExcel(filename,
+							reportId, fromdate, todate, currency, dtltype, type, version);
+				} catch (Exception e) { // TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+
+			case "COMMON_DISCLOSURE":
+				try {
+					repfile = BRRS_Common_Disclosure_Reportservice.getCommon_DisclosureExcel(filename,
+							reportId, fromdate, todate, currency, dtltype, type, version);
+				} catch (Exception e) { // TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
 			/*
 			 * case "M_CA4": try { repfile =
@@ -2120,11 +2130,7 @@ public class RegulatoryReportServices {
 			 * (Exception e) { // TODO Auto-generated catch block e.printStackTrace(); }
 			 * break;
 			 * 
-			 * case "COMMON_DISCLOSURE": try { repfile =
-			 * BRRS_Common_Disclosure_Reportservice.getCommon_DisclosureExcel(filename,
-			 * reportId, fromdate, todate, currency, dtltype, type, version); } catch
-			 * (Exception e) { // TODO Auto-generated catch block e.printStackTrace(); }
-			 * break;
+			 * 
 			 * 
 			 * case "Market_Risk": try { repfile =
 			 * BRRS_Market_Risk_Reportservice.getMarket_RiskExcel(filename, reportId,
@@ -2178,7 +2184,7 @@ public class RegulatoryReportServices {
 			 * (Exception e) { // TODO Auto-generated catch block e.printStackTrace(); }
 			 * break;
 			 * 
-			 
+			 * 
 			 * case "MDISB3": try { repfile =
 			 * brrs_mdisb3_reportservice.getMDISB3Excel(filename, reportId, fromdate,
 			 * todate, currency, dtltype, type, version); } catch (Exception e) { // TODO
@@ -4995,304 +5001,323 @@ public class RegulatoryReportServices {
 		return resubmissionData;
 	}
 
-/*	public byte[] getConsolidatedDownloadFile(String filename, String asondate, String fromdate, String todate,
-			String currency, String type, String version, String dtltype) throws ParseException {
-
-		// List of all reports you want to include
-		List<String> reportList = Arrays.asList("SCH_17","M_LA4", "M_CA4");
-		System.out.println(todate);
-
-		SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MMM-dd", Locale.ENGLISH);
-		Date date = inputFormat.parse(todate);
-
-		// 2️⃣ Format to required pattern (Date → String)
-		SimpleDateFormat outputFormat = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
-		String formattedDate = outputFormat.format(date);
-		// Workbook for consolidated report
-		XSSFWorkbook workbook = new XSSFWorkbook();
-		Sheet errorSheet = workbook.createSheet("Status");
-		Row headerRow = errorSheet.createRow(0);
-		headerRow.createCell(0).setCellValue("Report Name");
-		headerRow.createCell(1).setCellValue("Status");
-		headerRow.createCell(2).setCellValue("Remarks");
-
-		int errorRowNum = 1;
-
-		for (String report : reportList) {
-			try {
-				byte[] fileData = generateReport(report, filename, asondate, fromdate, formattedDate, currency, dtltype,
-						type, version);
-				System.out.println(fileData + "    fileData");
-
-				if (fileData != null) {
-					try (Workbook reportWorkbook = new XSSFWorkbook(new java.io.ByteArrayInputStream(fileData))) {
-						// Copy first sheet from each report into consolidated workbook
-						for (int i = 0; i < reportWorkbook.getNumberOfSheets(); i++) {
-							Sheet srcSheet = reportWorkbook.getSheetAt(i);
-							Sheet newSheet = workbook.createSheet(report + "_" + srcSheet.getSheetName());
-							copySheet(srcSheet, newSheet);
-						}
-
-					}
-				} else {
-					// Log missing data
-					Row failRow = errorSheet.createRow(errorRowNum++);
-					failRow.createCell(0).setCellValue(report);
-					failRow.createCell(1).setCellValue("FAILED");
-					failRow.createCell(2).setCellValue("No data found");
-				}
-
-			} catch (Exception e) {
-				Row failRow = errorSheet.createRow(errorRowNum++);
-				failRow.createCell(0).setCellValue(report);
-				failRow.createCell(1).setCellValue("FAILED");
-				failRow.createCell(2).setCellValue("Error: " + e.getMessage());
-				e.printStackTrace();
-			}
-		}
-
-		// Finalize workbook
-		try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
-			workbook.write(bos);
-			workbook.close();
-			return bos.toByteArray();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		return null;
-	}
-*/
-	/*private byte[] generateReport(String reportName, String filename, String asondate, String fromdate, String todate,
-			String currency, String dtltype, String type, BigDecimal version) {
-
-		try {
-			// ✅ Convert date formats if needed (example: 30/09/2025 → 30-Sep-2025)
-			SimpleDateFormat inputFormat = new SimpleDateFormat("dd/MM/yyyy");
-			SimpleDateFormat outputFormat = new SimpleDateFormat("dd-MMM-yyyy");
-
-			if (fromdate != null && !fromdate.isEmpty()) {
-				Date d = outputFormat.parse(fromdate);
-				fromdate = outputFormat.format(d);
-			}
-			if (todate != null && !todate.isEmpty()) {
-				Date d = outputFormat.parse(todate);
-				todate = outputFormat.format(d);
-			}
-			if (asondate != null && !asondate.isEmpty()) {
-				Date d = outputFormat.parse(asondate);
-				asondate = outputFormat.format(d);
-			}
-
-			System.out.println("Service: Generating report for " + reportName);
-			System.out.println("Converted Dates: From " + fromdate + " To " + todate + " Ason " + asondate);
-
-			// ✅ Switch case for all reports
-			switch (reportName) {
-				
-
-				case "M_LA1":
-					return BRRS_M_LA1_reportservice.BRRS_M_LA1Excel(filename, reportName, fromdate, todate, currency,
-							"DETAIL", type, version);
-
-				
-				case "M_LA1_NEW":
-					return BRRS_M_LA1_reportservice_new.BRRS_M_LA1Excel(filename, reportName, fromdate, todate,
-							currency,
-							"DETAIL", type, version);
-
-								case "M_LA4":
-					return BRRS_M_LA4_reportservice.BRRS_M_LA4Excel("M_LA4.xlsx", reportName, fromdate, todate,
-							currency,
-							dtltype, type, version);
-
-				case "M_CA4":
-					return BRRS_M_CA4_reportservice.getBRRS_M_CA4Excel("M_CA4.xlsx", reportName, fromdate, todate,
-							currency,
-							dtltype, type, version);
-
-				case "SCH_17":
-					return brrs_sch_17_reportservice.getSCH_17Excel("SCH_17.xlsx", reportName, fromdate, todate, currency,
-							"DETAIL", type, version);
-
-				default:
-					System.out.println("Service: Unknown report name: " + reportName);
-					return null;
-			}
-
-		} catch (ParseException pe) {
-			System.err.println("Date parse error: " + pe.getMessage());
-			pe.printStackTrace();
-			return null;
-
-		} catch (FileNotFoundException fe) {
-			System.err.println("Template file not found: " + fe.getMessage());
-			fe.printStackTrace();
-			return null;
-
-		} catch (Exception e) {
-			System.err.println("Error generating report: " + e.getMessage());
-			e.printStackTrace();
-			return null;
-		}
-	}
-
-	private void copySheet(Sheet src, Sheet dest) {
-		if (src == null || dest == null)
-			return;
-
-		int rowCount = 0;
-		for (Row srcRow : src) {
-			if (srcRow == null)
-				continue;
-			Row destRow = dest.createRow(rowCount++);
-			short lastCell = srcRow.getLastCellNum();
-			if (lastCell < 0)
-				continue; // no cells in this row
-
-			for (int i = 0; i < lastCell; i++) {
-				Cell srcCell = srcRow.getCell(i);
-				if (srcCell == null)
-					continue;
-
-				Cell destCell = destRow.createCell(i);
-
-				// Copy cell type and value
-				CellType cellType = srcCell.getCellTypeEnum();
-				if (cellType == null) {
-					destCell.setCellValue(""); // fallback
-					continue;
-				}
-
-				int cellType1 = srcCell.getCellType(); // ✔ POI 3.x returns int
-
-				switch (cellType1) {
-
-					case Cell.CELL_TYPE_STRING:
-						destCell.setCellValue(srcCell.getStringCellValue());
-						break;
-
-					case Cell.CELL_TYPE_NUMERIC:
-						if (DateUtil.isCellDateFormatted(srcCell)) {
-							destCell.setCellValue(srcCell.getDateCellValue());
-
-							CellStyle newStyle = dest.getWorkbook().createCellStyle();
-							newStyle.cloneStyleFrom(srcCell.getCellStyle());
-							destCell.setCellStyle(newStyle);
-						} else {
-							destCell.setCellValue(srcCell.getNumericCellValue());
-						}
-						break;
-
-					case Cell.CELL_TYPE_BOOLEAN:
-						destCell.setCellValue(srcCell.getBooleanCellValue());
-						break;
-
-					case Cell.CELL_TYPE_FORMULA:
-						destCell.setCellFormula(srcCell.getCellFormula());
-						break;
-
-					case Cell.CELL_TYPE_BLANK:
-						destCell.setCellValue("");
-						break;
-
-					case Cell.CELL_TYPE_ERROR:
-						destCell.setCellErrorValue(srcCell.getErrorCellValue());
-						break;
-
-					default:
-						destCell.setCellValue(srcCell.toString());
-				}
-
-				// Optionally copy style (recommended if you want formatting preserved)
-				CellStyle srcStyle = srcCell.getCellStyle();
-				if (srcStyle != null) {
-					try {
-						CellStyle newStyle = dest.getWorkbook().createCellStyle();
-						newStyle.cloneStyleFrom(srcStyle);
-						destCell.setCellStyle(newStyle);
-					} catch (Exception e) {
-						// If style cloning fails, ignore and continue
-					}
-				}
-
-				// Optionally copy comment
-				if (srcCell.getCellComment() != null) {
-					destCell.setCellComment(srcCell.getCellComment());
-				}
-			}
-		}
-
-		// Copy merged regions from src to dest
-		for (int i = 0; i < src.getNumMergedRegions(); i++) {
-			dest.addMergedRegion(src.getMergedRegion(i));
-		}
-
-		// Optionally copy column widths
-		int maxCol = 0;
-		for (Row row : src) {
-			if (row != null && row.getLastCellNum() > maxCol) {
-				maxCol = row.getLastCellNum();
-			}
-		}
-		for (int c = 0; c < maxCol; c++) {
-			dest.setColumnWidth(c, src.getColumnWidth(c));
-		}
-	}
-*/
-/*	public byte[] generateConsolidatedExcel(String asondate, String fromdate, String todate, String currency,
-			String type, String version, String dtltype) {
-		logger.info("Starting consolidated Excel generation for all 70 reports.");
-
-		// Create final workbook
-		try (Workbook consolidatedWorkbook = new XSSFWorkbook();
-				ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-
-			// List of all report names (update with all 70)
-			List<String> reportNames = Arrays.asList("M_LA4", "M_CA4");
-
-			for (String reportName : reportNames) {
-				logger.info("Processing report: {}", reportName);
-
-				// Generate individual report byte[]
-				byte[] reportBytes = generateReport(reportName, reportName, asondate, fromdate, todate, currency,
-						dtltype, type, version);
-				System.out.println(reportBytes + "  reportBytestesting");
-
-				if (reportBytes == null || reportBytes.length == 0) {
-					logger.warn("Skipping {} — no data found or generation failed.", reportName);
-					continue;
-				}
-
-				// Convert the byte[] to workbook
-				try (InputStream in = new ByteArrayInputStream(reportBytes);
-						Workbook tempWorkbook = WorkbookFactory.create(in)) {
-
-					// Get first sheet from this workbook
-					Sheet srcSheet = tempWorkbook.getSheetAt(0);
-
-					// Create new sheet in the main workbook
-					Sheet destSheet = consolidatedWorkbook.createSheet(reportName);
-
-					// Copy content
-					copySheetContent(srcSheet, destSheet);
-				} catch (Exception e) {
-					logger.error("Error processing report: {}", reportName, e);
-				}
-			}
-
-			// Write the final consolidated workbook
-			consolidatedWorkbook.write(out);
-			logger.info("All reports successfully consolidated into one Excel file.");
-
-			return out.toByteArray();
-
-		} catch (Exception e) {
-			logger.error("Error generating consolidated Excel.", e);
-			return null;
-		}
-	}
-*/
+	/*
+	 * public byte[] getConsolidatedDownloadFile(String filename, String asondate,
+	 * String fromdate, String todate,
+	 * String currency, String type, String version, String dtltype) throws
+	 * ParseException {
+	 * 
+	 * // List of all reports you want to include
+	 * List<String> reportList = Arrays.asList("SCH_17","M_LA4", "M_CA4");
+	 * System.out.println(todate);
+	 * 
+	 * SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MMM-dd",
+	 * Locale.ENGLISH);
+	 * Date date = inputFormat.parse(todate);
+	 * 
+	 * // 2️⃣ Format to required pattern (Date → String)
+	 * SimpleDateFormat outputFormat = new SimpleDateFormat("dd-MMM-yyyy",
+	 * Locale.ENGLISH);
+	 * String formattedDate = outputFormat.format(date);
+	 * // Workbook for consolidated report
+	 * XSSFWorkbook workbook = new XSSFWorkbook();
+	 * Sheet errorSheet = workbook.createSheet("Status");
+	 * Row headerRow = errorSheet.createRow(0);
+	 * headerRow.createCell(0).setCellValue("Report Name");
+	 * headerRow.createCell(1).setCellValue("Status");
+	 * headerRow.createCell(2).setCellValue("Remarks");
+	 * 
+	 * int errorRowNum = 1;
+	 * 
+	 * for (String report : reportList) {
+	 * try {
+	 * byte[] fileData = generateReport(report, filename, asondate, fromdate,
+	 * formattedDate, currency, dtltype,
+	 * type, version);
+	 * System.out.println(fileData + "    fileData");
+	 * 
+	 * if (fileData != null) {
+	 * try (Workbook reportWorkbook = new XSSFWorkbook(new
+	 * java.io.ByteArrayInputStream(fileData))) {
+	 * // Copy first sheet from each report into consolidated workbook
+	 * for (int i = 0; i < reportWorkbook.getNumberOfSheets(); i++) {
+	 * Sheet srcSheet = reportWorkbook.getSheetAt(i);
+	 * Sheet newSheet = workbook.createSheet(report + "_" +
+	 * srcSheet.getSheetName());
+	 * copySheet(srcSheet, newSheet);
+	 * }
+	 * 
+	 * }
+	 * } else {
+	 * // Log missing data
+	 * Row failRow = errorSheet.createRow(errorRowNum++);
+	 * failRow.createCell(0).setCellValue(report);
+	 * failRow.createCell(1).setCellValue("FAILED");
+	 * failRow.createCell(2).setCellValue("No data found");
+	 * }
+	 * 
+	 * } catch (Exception e) {
+	 * Row failRow = errorSheet.createRow(errorRowNum++);
+	 * failRow.createCell(0).setCellValue(report);
+	 * failRow.createCell(1).setCellValue("FAILED");
+	 * failRow.createCell(2).setCellValue("Error: " + e.getMessage());
+	 * e.printStackTrace();
+	 * }
+	 * }
+	 * 
+	 * // Finalize workbook
+	 * try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
+	 * workbook.write(bos);
+	 * workbook.close();
+	 * return bos.toByteArray();
+	 * } catch (Exception e) {
+	 * e.printStackTrace();
+	 * }
+	 * 
+	 * return null;
+	 * }
+	 */
+	/*
+	 * private byte[] generateReport(String reportName, String filename, String
+	 * asondate, String fromdate, String todate,
+	 * String currency, String dtltype, String type, BigDecimal version) {
+	 * 
+	 * try {
+	 * // ✅ Convert date formats if needed (example: 30/09/2025 → 30-Sep-2025)
+	 * SimpleDateFormat inputFormat = new SimpleDateFormat("dd/MM/yyyy");
+	 * SimpleDateFormat outputFormat = new SimpleDateFormat("dd-MMM-yyyy");
+	 * 
+	 * if (fromdate != null && !fromdate.isEmpty()) {
+	 * Date d = outputFormat.parse(fromdate);
+	 * fromdate = outputFormat.format(d);
+	 * }
+	 * if (todate != null && !todate.isEmpty()) {
+	 * Date d = outputFormat.parse(todate);
+	 * todate = outputFormat.format(d);
+	 * }
+	 * if (asondate != null && !asondate.isEmpty()) {
+	 * Date d = outputFormat.parse(asondate);
+	 * asondate = outputFormat.format(d);
+	 * }
+	 * 
+	 * System.out.println("Service: Generating report for " + reportName);
+	 * System.out.println("Converted Dates: From " + fromdate + " To " + todate +
+	 * " Ason " + asondate);
+	 * 
+	 * // ✅ Switch case for all reports
+	 * switch (reportName) {
+	 * 
+	 * 
+	 * case "M_LA1":
+	 * return BRRS_M_LA1_reportservice.BRRS_M_LA1Excel(filename, reportName,
+	 * fromdate, todate, currency,
+	 * "DETAIL", type, version);
+	 * 
+	 * 
+	 * case "M_LA1_NEW":
+	 * return BRRS_M_LA1_reportservice_new.BRRS_M_LA1Excel(filename, reportName,
+	 * fromdate, todate,
+	 * currency,
+	 * "DETAIL", type, version);
+	 * 
+	 * case "M_LA4":
+	 * return BRRS_M_LA4_reportservice.BRRS_M_LA4Excel("M_LA4.xlsx", reportName,
+	 * fromdate, todate,
+	 * currency,
+	 * dtltype, type, version);
+	 * 
+	 * case "M_CA4":
+	 * return BRRS_M_CA4_reportservice.getBRRS_M_CA4Excel("M_CA4.xlsx", reportName,
+	 * fromdate, todate,
+	 * currency,
+	 * dtltype, type, version);
+	 * 
+	 * case "SCH_17":
+	 * return brrs_sch_17_reportservice.getSCH_17Excel("SCH_17.xlsx", reportName,
+	 * fromdate, todate, currency,
+	 * "DETAIL", type, version);
+	 * 
+	 * default:
+	 * System.out.println("Service: Unknown report name: " + reportName);
+	 * return null;
+	 * }
+	 * 
+	 * } catch (ParseException pe) {
+	 * System.err.println("Date parse error: " + pe.getMessage());
+	 * pe.printStackTrace();
+	 * return null;
+	 * 
+	 * } catch (FileNotFoundException fe) {
+	 * System.err.println("Template file not found: " + fe.getMessage());
+	 * fe.printStackTrace();
+	 * return null;
+	 * 
+	 * } catch (Exception e) {
+	 * System.err.println("Error generating report: " + e.getMessage());
+	 * e.printStackTrace();
+	 * return null;
+	 * }
+	 * }
+	 * 
+	 * private void copySheet(Sheet src, Sheet dest) {
+	 * if (src == null || dest == null)
+	 * return;
+	 * 
+	 * int rowCount = 0;
+	 * for (Row srcRow : src) {
+	 * if (srcRow == null)
+	 * continue;
+	 * Row destRow = dest.createRow(rowCount++);
+	 * short lastCell = srcRow.getLastCellNum();
+	 * if (lastCell < 0)
+	 * continue; // no cells in this row
+	 * 
+	 * for (int i = 0; i < lastCell; i++) {
+	 * Cell srcCell = srcRow.getCell(i);
+	 * if (srcCell == null)
+	 * continue;
+	 * 
+	 * Cell destCell = destRow.createCell(i);
+	 * 
+	 * // Copy cell type and value
+	 * CellType cellType = srcCell.getCellTypeEnum();
+	 * if (cellType == null) {
+	 * destCell.setCellValue(""); // fallback
+	 * continue;
+	 * }
+	 * 
+	 * int cellType1 = srcCell.getCellType(); // ✔ POI 3.x returns int
+	 * 
+	 * switch (cellType1) {
+	 * 
+	 * case Cell.CELL_TYPE_STRING:
+	 * destCell.setCellValue(srcCell.getStringCellValue());
+	 * break;
+	 * 
+	 * case Cell.CELL_TYPE_NUMERIC:
+	 * if (DateUtil.isCellDateFormatted(srcCell)) {
+	 * destCell.setCellValue(srcCell.getDateCellValue());
+	 * 
+	 * CellStyle newStyle = dest.getWorkbook().createCellStyle();
+	 * newStyle.cloneStyleFrom(srcCell.getCellStyle());
+	 * destCell.setCellStyle(newStyle);
+	 * } else {
+	 * destCell.setCellValue(srcCell.getNumericCellValue());
+	 * }
+	 * break;
+	 * 
+	 * case Cell.CELL_TYPE_BOOLEAN:
+	 * destCell.setCellValue(srcCell.getBooleanCellValue());
+	 * break;
+	 * 
+	 * case Cell.CELL_TYPE_FORMULA:
+	 * destCell.setCellFormula(srcCell.getCellFormula());
+	 * break;
+	 * 
+	 * case Cell.CELL_TYPE_BLANK:
+	 * destCell.setCellValue("");
+	 * break;
+	 * 
+	 * case Cell.CELL_TYPE_ERROR:
+	 * destCell.setCellErrorValue(srcCell.getErrorCellValue());
+	 * break;
+	 * 
+	 * default:
+	 * destCell.setCellValue(srcCell.toString());
+	 * }
+	 * 
+	 * // Optionally copy style (recommended if you want formatting preserved)
+	 * CellStyle srcStyle = srcCell.getCellStyle();
+	 * if (srcStyle != null) {
+	 * try {
+	 * CellStyle newStyle = dest.getWorkbook().createCellStyle();
+	 * newStyle.cloneStyleFrom(srcStyle);
+	 * destCell.setCellStyle(newStyle);
+	 * } catch (Exception e) {
+	 * // If style cloning fails, ignore and continue
+	 * }
+	 * }
+	 * 
+	 * // Optionally copy comment
+	 * if (srcCell.getCellComment() != null) {
+	 * destCell.setCellComment(srcCell.getCellComment());
+	 * }
+	 * }
+	 * }
+	 * 
+	 * // Copy merged regions from src to dest
+	 * for (int i = 0; i < src.getNumMergedRegions(); i++) {
+	 * dest.addMergedRegion(src.getMergedRegion(i));
+	 * }
+	 * 
+	 * // Optionally copy column widths
+	 * int maxCol = 0;
+	 * for (Row row : src) {
+	 * if (row != null && row.getLastCellNum() > maxCol) {
+	 * maxCol = row.getLastCellNum();
+	 * }
+	 * }
+	 * for (int c = 0; c < maxCol; c++) {
+	 * dest.setColumnWidth(c, src.getColumnWidth(c));
+	 * }
+	 * }
+	 */
+	/*
+	 * public byte[] generateConsolidatedExcel(String asondate, String fromdate,
+	 * String todate, String currency,
+	 * String type, String version, String dtltype) {
+	 * logger.info("Starting consolidated Excel generation for all 70 reports.");
+	 * 
+	 * // Create final workbook
+	 * try (Workbook consolidatedWorkbook = new XSSFWorkbook();
+	 * ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+	 * 
+	 * // List of all report names (update with all 70)
+	 * List<String> reportNames = Arrays.asList("M_LA4", "M_CA4");
+	 * 
+	 * for (String reportName : reportNames) {
+	 * logger.info("Processing report: {}", reportName);
+	 * 
+	 * // Generate individual report byte[]
+	 * byte[] reportBytes = generateReport(reportName, reportName, asondate,
+	 * fromdate, todate, currency,
+	 * dtltype, type, version);
+	 * System.out.println(reportBytes + "  reportBytestesting");
+	 * 
+	 * if (reportBytes == null || reportBytes.length == 0) {
+	 * logger.warn("Skipping {} — no data found or generation failed.", reportName);
+	 * continue;
+	 * }
+	 * 
+	 * // Convert the byte[] to workbook
+	 * try (InputStream in = new ByteArrayInputStream(reportBytes);
+	 * Workbook tempWorkbook = WorkbookFactory.create(in)) {
+	 * 
+	 * // Get first sheet from this workbook
+	 * Sheet srcSheet = tempWorkbook.getSheetAt(0);
+	 * 
+	 * // Create new sheet in the main workbook
+	 * Sheet destSheet = consolidatedWorkbook.createSheet(reportName);
+	 * 
+	 * // Copy content
+	 * copySheetContent(srcSheet, destSheet);
+	 * } catch (Exception e) {
+	 * logger.error("Error processing report: {}", reportName, e);
+	 * }
+	 * }
+	 * 
+	 * // Write the final consolidated workbook
+	 * consolidatedWorkbook.write(out);
+	 * logger.info("All reports successfully consolidated into one Excel file.");
+	 * 
+	 * return out.toByteArray();
+	 * 
+	 * } catch (Exception e) {
+	 * logger.error("Error generating consolidated Excel.", e);
+	 * return null;
+	 * }
+	 * }
+	 */
 	private void copySheetContent(Sheet src, Sheet dest) {
 		int rowCount = 0;
 

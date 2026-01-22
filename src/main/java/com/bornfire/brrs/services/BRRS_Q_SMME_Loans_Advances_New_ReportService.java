@@ -867,7 +867,7 @@ public class BRRS_Q_SMME_Loans_Advances_New_ReportService {
             balanceStyle.setBorderLeft(border);
             balanceStyle.setBorderRight(border);
             // Header row
-            String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE",  "REPORT LABLE", "REPORT ADDL CRITERIA1",
+            String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE IN PULA",  "REPORT LABEL", "REPORT ADDL CRITERIA1",
                     "REPORT_DATE" };
             XSSFRow headerRow = sheet.createRow(0);
             for (int i = 0; i < headers.length; i++) {

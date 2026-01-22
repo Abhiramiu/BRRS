@@ -92,7 +92,7 @@ public class Common_Disclosure_Archival_Summary_Entity {
     private String R14_SOURCE_REF;
 
     @Column(name = "REPORT_VERSION", length = 100)
-    private String REPORT_VERSION;
+    private BigDecimal REPORT_VERSION;
 
     @Column(name = "REPORT_FREQUENCY", length = 100)
     private String REPORT_FREQUENCY;
@@ -312,11 +312,11 @@ public class Common_Disclosure_Archival_Summary_Entity {
         R14_SOURCE_REF = r14_SOURCE_REF;
     }
 
-    public String getREPORT_VERSION() {
+    public BigDecimal getREPORT_VERSION() {
         return REPORT_VERSION;
     }
 
-    public void setREPORT_VERSION(String rEPORT_VERSION) {
+    public void setREPORT_VERSION(BigDecimal rEPORT_VERSION) {
         REPORT_VERSION = rEPORT_VERSION;
     }
 

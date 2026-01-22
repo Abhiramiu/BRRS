@@ -450,6 +450,7 @@ PURPOSE		: BRRSREPORT
 
 
         function downloadfile(button) {
+
             var reportid = button.getAttribute('data-reportid');
             var asondate = button.getAttribute('data-asondate');
             var fromdate = button.getAttribute('data-fromdate');
@@ -462,30 +463,40 @@ PURPOSE		: BRRSREPORT
             var type = button.getAttribute('data-type');
             var version = button.getAttribute('data-version');
 
-
-            var loader = new bootstrap.Modal(document.getElementById('loader'), { backdrop: 'static', keyboard: false });
+            var loader = new bootstrap.Modal(
+                document.getElementById('loader'),
+                { backdrop: 'static', keyboard: false }
+            );
             loader.show();
 
+            // ✅ Build URL safely
+            var url = './downloadExcel?reportid=' + reportid +
+                '&fromdate=' + fromdate +
+                '&asondate=' + asondate +
+                '&todate=' + todate +
+                '&currency=' + currency +
+                '&subreportid=' + subreportid +
+                '&secid=' + secid +
+                '&filename=' + filename +
+                '&type=' + type;
+
+            // ✅ ONLY append version if valid
+            if (version && version.trim() !== '') {
+                url += '&version=' + version;
+            }
+
             $.ajax({
-                url: './downloadExcel?reportid=' + reportid +
-                    '&fromdate=' + fromdate +
-                    '&asondate=' + asondate +
-                    '&todate=' + todate +
-                    '&currency=' + currency +
-                    '&subreportid=' + subreportid +
-                    '&secid=' + secid +
-                    '&filename=' + filename +
-                    '&type=' + type +
-                    '&version=' + version,
+                url: url,
                 type: 'GET',
-                xhrFields: {
-                    responseType: 'blob'
-                },
+                xhrFields: { responseType: 'blob' },
+
                 success: function (data) {
                     $('#loader').modal('hide');
 
                     if (data && data.size > 100) {
-                        const blob = new Blob([data], { type: 'application/vnd.ms-excel' });
+                        const blob = new Blob([data], {
+                            type: 'application/vnd.ms-excel'
+                        });
                         const url = window.URL.createObjectURL(blob);
                         const a = document.createElement('a');
                         a.style.display = 'none';
@@ -501,10 +512,10 @@ PURPOSE		: BRRSREPORT
                         showResultModal('Information', 'No data was available to create a download.');
                     }
                 },
-                error: function (jqXHR, textStatus, errorThrown) {
+
+                error: function () {
                     $('#loader').modal('hide');
-                    console.error("Download failed:", textStatus, errorThrown);
-                    showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
+                    showResultModal('Error', 'An error occurred while downloading the file.');
                 }
             });
         }
@@ -1204,7 +1215,7 @@ PURPOSE		: BRRSREPORT
                      				 data-dtltype=${dtltype}, 
                      				 data-filename='Common_Disclosure.xlsx',
 					 				 data-type=${type},
-					    			 data-version=${version}" onclick="downloadfile(this);">
+                                     data-version=${version != null ? version : ''}" onclick="downloadfile(this);">
                             <i class="fa fa-download"></i>
                         </button>
                         <button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
@@ -1310,7 +1321,7 @@ PURPOSE		: BRRSREPORT
                                                     style="padding-left: 20px;font-weight: bold;background-color: #D8D8D8;">
                                                 </td>
                                                 <td th:text="${#numbers.formatDecimal(reportsummary.R12_COMPONENT_OF_REGU, 0, 'COMMA', 0, 'POINT')}"
-                                                    style="text-align:right;" th:attr="RowId='R12', ColumnId='C2'"
+                                                    style="text-align:right;font-weight: bold;" th:attr="RowId='R12', ColumnId='C2'"
                                                     onclick="showdetailsbyRowAndColumn(this)"></td>
                                                 <td th:text="${reportsummary.R12_SOURCE_REF}"></td>
                                             </tr>

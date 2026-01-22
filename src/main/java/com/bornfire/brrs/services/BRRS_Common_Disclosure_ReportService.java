@@ -81,16 +81,15 @@ public class BRRS_Common_Disclosure_ReportService {
 
     SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
-    public ModelAndView getCommon_DisclosureView(String reportId, String fromdate, String todate, String currency,
-            String dtltype,
-            Pageable pageable, String type, String version) {
+    public ModelAndView getCommon_DisclosureView(String reportId, String fromdate, String todate,
+			String currency, String dtltype, Pageable pageable, String type, BigDecimal version) {
 
         ModelAndView mv = new ModelAndView();
 
         System.out.println("testing");
         System.out.println(version);
 
-        if ("ARCHIVAL".equals(type) && version != null && !version.isEmpty()) {
+       if (type.equals("ARCHIVAL") & version != null) {
 
             System.out.println("ARCHIVAL MODE");
             System.out.println("version = " + version);
@@ -98,9 +97,9 @@ public class BRRS_Common_Disclosure_ReportService {
             List<Common_Disclosure_Archival_Summary_Entity> T1Master = new ArrayList<>();
 
             try {
-                Date dt = dateformat.parse(todate);
+                	Date d1 = dateformat.parse(todate);
 
-                T1Master = Common_Disclosure_Archival_Summary_Repo.getdatabydateListarchival(dt, version);
+                T1Master = Common_Disclosure_Archival_Summary_Repo.getdatabydateListarchival(d1, version);
 
                 System.out.println("T1Master size = " + T1Master.size());
 
@@ -224,14 +223,13 @@ public class BRRS_Common_Disclosure_ReportService {
 
     public byte[] getCommon_DisclosureExcel(String filename, String reportId, String fromdate, String todate,
             String currency,
-            String dtltype, String type, String version) throws Exception {
+            String dtltype, String type, BigDecimal version) throws Exception {
         logger.info("Service: Starting Excel generation process in memory.");
 
         // ARCHIVAL check
-        if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && !version.trim().isEmpty()) {
+       		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && version != null) {
             logger.info("Service: Generating ARCHIVAL report for version {}", version);
-            return getExcelCommon_DisclosureARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type,
-                    version);
+            return getExcelCommon_DisclosureARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
         }
 
         // Fetch data
@@ -428,7 +426,7 @@ public class BRRS_Common_Disclosure_ReportService {
     }
 
     public byte[] getExcelCommon_DisclosureARCHIVAL(String filename, String reportId, String fromdate, String todate,
-            String currency, String dtltype, String type, String version) throws Exception {
+            String currency, String dtltype, String type, BigDecimal version) throws Exception {
 
         logger.info("Service: Starting Excel generation process in memory.");
 
@@ -437,7 +435,7 @@ public class BRRS_Common_Disclosure_ReportService {
         }
 
         List<Common_Disclosure_Archival_Summary_Entity> dataList = Common_Disclosure_Archival_Summary_Repo
-                .getdatabydateListarchival(dateformat.parse(todate), version);
+              .getdatabydateListarchival(dateformat.parse(todate), version);
 
         if (dataList.isEmpty()) {
             logger.warn("Service: No data found for Common_Disclosure report. Returning empty result.");
@@ -700,7 +698,7 @@ public class BRRS_Common_Disclosure_ReportService {
             balanceStyle.setBorderRight(border);
 
             // Header row
-            String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "REPORT LABLE",
+            String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE IN PULA", "REPORT LABEL",
                     "REPORT ADDL CRITERIA1", "REPORT_DATE" };
 
             XSSFRow headerRow = sheet.createRow(0);
@@ -823,7 +821,7 @@ public class BRRS_Common_Disclosure_ReportService {
             balanceStyle.setBorderRight(border);
 
             // Header row
-            String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "REPORT LABLE",
+            String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE IN PULA", "REPORT LABEL",
                     "REPORT ADDL CRITERIA1", "REPORT_DATE" };
 
             XSSFRow headerRow = sheet.createRow(0);
