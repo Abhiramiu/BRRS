@@ -48,7 +48,6 @@ import org.springframework.transaction.support.TransactionSynchronizationAdapter
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.bornfire.brrs.entities.BRRS_M_PLL_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_M_SRWA_12A_Archival_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_M_SRWA_12A_Archival_SummaryM_Repo;
 import com.bornfire.brrs.entities.BRRS_M_SRWA_12A_Archival_Summary_Repo1;
@@ -67,7 +66,6 @@ import com.bornfire.brrs.entities.BRRS_M_SRWA_12A_Summary5_Repo;
 import com.bornfire.brrs.entities.BRRS_M_SRWA_12A_Summary6_Repo;
 import com.bornfire.brrs.entities.BRRS_M_SRWA_12A_Summary7_Repo;
 import com.bornfire.brrs.entities.BRRS_M_SRWA_12A_SummaryM_Repo;
-import com.bornfire.brrs.entities.M_PLL_Detail_Entity;
 import com.bornfire.brrs.entities.M_SRWA_12A_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.M_SRWA_12A_Archival_Summary_Entity1;
 import com.bornfire.brrs.entities.M_SRWA_12A_Archival_Summary_Entity2;
@@ -161,7 +159,7 @@ public class BRRS_M_SRWA_12A_ReportService {
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
 	public ModelAndView getM_SRWA_12AView(String reportId, String fromdate, String todate, String currency,
-			String dtltype, Pageable pageable, String type, String version) {
+			String dtltype, Pageable pageable, String type, BigDecimal version) {
 
 		ModelAndView mv = new ModelAndView();
 		Session hs = sessionFactory.getCurrentSession();
@@ -357,14 +355,14 @@ public class BRRS_M_SRWA_12A_ReportService {
 	}
 
 	public byte[] getM_SRWA_12AExcel(String filename, String reportId, String fromdate, String todate, String currency,
-			String dtltype, String type, String version) throws Exception {
+			String dtltype, String type, BigDecimal version) throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.");
 		
 		
 		
 		// ARCHIVAL check
-				if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && !version.trim().isEmpty()) {
-					logger.info("Service: Generating ARCHIVAL report for version {}", version);
+		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && version != null) {
+			logger.info("Service: Generating ARCHIVAL report for version {}", version);
 					return getExcelM_SRWA_12AARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
 				}
 
@@ -30487,7 +30485,7 @@ private void populateEntity8Data(Sheet sheet, M_SRWA_12A_Summary_M_Entity record
 	}	
 	
 	public byte[] getExcelM_SRWA_12AARCHIVAL(String filename, String reportId, String fromdate, String todate,
-			String currency, String dtltype, String type, String version) throws Exception {
+			String currency, String dtltype, String type, BigDecimal version) throws Exception {
 
 		logger.info("Service: Starting Excel generation process in memory.");
 

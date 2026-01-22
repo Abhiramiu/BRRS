@@ -79,7 +79,7 @@ import com.bornfire.brrs.entities.M_SRWA_12A_New_Archival_Summary_Entity6;
 import com.bornfire.brrs.entities.M_SRWA_12A_New_Archival_Summary_Entity7;
 import com.bornfire.brrs.entities.M_SRWA_12A_New_Archival_Summary_Entity8;
 import com.bornfire.brrs.entities.M_SRWA_12A_New_Summary_Entity1;
-import com.bornfire.brrs.entities.M_SRWA_12A_Summary_M_Entity;
+
 
 
 
@@ -299,7 +299,7 @@ public class BRRS_M_SRWA_12A_New_ReportService {
 			String rowId = null;
 			String columnId = null;
 
-			// ✅ Split the filter string here
+			// âœ… Split the filter string here
 						if (filter != null && filter.contains(",")) {
 							String[] parts = filter.split(",");
 							if (parts.length >= 2) {
@@ -311,7 +311,7 @@ public class BRRS_M_SRWA_12A_New_ReportService {
 			System.out.println(type);
 			if ("ARCHIVAL".equals(type) && version != null) {
 				System.out.println(type);
-				// 🔹 Archival branch
+				//  Archival branch
 				List<M_SRWA_12A_NEW_Archival_Detail_Entity> T1Dt1;
 				if (rowId != null && columnId != null) {
 					T1Dt1 = m_srwa_12a_new_Archival_Detail_Repo.GetDataByRowIdAndColumnId(rowId, columnId, parsedDate, version);
@@ -324,7 +324,7 @@ public class BRRS_M_SRWA_12A_New_ReportService {
 				System.out.println("ARCHIVAL COUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
 
 			} else {
-				// 🔹 Current branch
+				//  Current branch
 			List<M_SRWA_12A_NEW_Detail_Entity> T1Dt1;
 
 			if (rowId != null && columnId != null) {
@@ -45255,7 +45255,7 @@ private void populateEntity6Data(Sheet sheet, M_SRWA_12A_NEW_Summary_Entity6 rec
 					}
 				}
 			} else {
-				logger.info("No data found for M_SRWA_12A_NEW — only header will be written.");
+				logger.info("No data found for M_SRWA_12A_NEW â€” only header will be written.");
 			}
 
 			// Write to byte[]
@@ -45415,7 +45415,7 @@ private void populateEntity6Data(Sheet sheet, M_SRWA_12A_NEW_Summary_Entity6 rec
 					}
 				}
 			} else {
-				logger.info("No data found for M_SRWA_12A_NEW — only header will be written.");
+				logger.info("No data found for M_SRWA_12A_NEW â€” only header will be written.");
 			}
 
 // Write to byte[]
@@ -45550,7 +45550,7 @@ private void populateEntity6Data(Sheet sheet, M_SRWA_12A_NEW_Summary_Entity6 rec
 					  textStyle, numberStyle); }
 					 
 
-			workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
+			 workbook.setForceFormulaRecalculation(true);
 			workbook.write(out);
 			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
 			return out.toByteArray();
@@ -90194,7 +90194,7 @@ if (record3.getR134_crm_sub_rwa_org_cou() != null) {
 		
 	    
 	    
-	    // 🔹 Use TRUNC-based query instead of findById
+	    //  Use TRUNC-based query instead of findById
 	    List<M_SRWA_12A_New_Summary_Entity1> existingList =
 	            brrs_m_srwa_12a_new_summary1_repo.getdatabydateList(updatedEntity.getReport_date());
 
@@ -90207,7 +90207,7 @@ if (record3.getR134_crm_sub_rwa_org_cou() != null) {
 	    
 	    
 	    try {
-	        // 1️⃣ Loop from R17 to R52 and copy fields
+	        // 1ï¸âƒ£ Loop from R17 to R52 and copy fields
 	    	
 	        for (int i = 17; i <= 52; i++) {
 				
@@ -90259,7 +90259,7 @@ if (record3.getR134_crm_sub_rwa_org_cou() != null) {
 	        throw new RuntimeException("Error while updating report fields", e);
 	    }
 
-	    // 3️⃣ Save updated entity
+	    // 3ï¸âƒ£ Save updated entity
 	    brrs_m_srwa_12a_new_summary1_repo.save(existing);
 	}
 
@@ -90274,7 +90274,7 @@ if (record3.getR134_crm_sub_rwa_org_cou() != null) {
 	                    "Record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
 
 	    try {
-	        // 1️⃣ Loop from R53 to R87 and copy fields
+	        // 1ï¸âƒ£ Loop from R53 to R87 and copy fields
 	    	
 	        for (int i = 53; i <= 87; i++) {
 				
@@ -90326,7 +90326,7 @@ if (record3.getR134_crm_sub_rwa_org_cou() != null) {
 	        throw new RuntimeException("Error while updating report fields", e);
 	    }
 
-	    // 3️⃣ Save updated entity
+	    // 3ï¸âƒ£ Save updated entity
 	    brrs_m_srwa_12a_new_summary2_repo.save(existing);
 	}
 	
@@ -90342,7 +90342,7 @@ if (record3.getR134_crm_sub_rwa_org_cou() != null) {
 	                    "Record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
 
 	    try {
-	        // 1️⃣ Loop from R100 to R133 and copy fields
+	        // 1ï¸âƒ£ Loop from R100 to R133 and copy fields
 	    	
 	        for (int i = 88; i <= 122; i++) {
 				
@@ -90394,7 +90394,7 @@ if (record3.getR134_crm_sub_rwa_org_cou() != null) {
 	        throw new RuntimeException("Error while updating report fields", e);
 	    }
 
-	    // 3️⃣ Save updated entity
+	    // 3ï¸âƒ£ Save updated entity
 	    brrs_m_srwa_12a_new_summary3_repo.save(existing);
 	}
 	
@@ -90408,7 +90408,7 @@ public void updateReport4(M_SRWA_12A_NEW_Summary_Entity4 updatedEntity) {
 	                    "Record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
 
 	    try {
-	        // 1️⃣ Loop from R100 to R133 and copy fields
+	        // 1ï¸âƒ£ Loop from R100 to R133 and copy fields
 	    	
 	        for (int i = 123; i <= 134; i++) {
 				
@@ -90460,7 +90460,7 @@ public void updateReport4(M_SRWA_12A_NEW_Summary_Entity4 updatedEntity) {
 	        throw new RuntimeException("Error while updating report fields", e);
 	    }
 
-	    // 3️⃣ Save updated entity
+	    // 3ï¸âƒ£ Save updated entity
 	    brrs_m_srwa_12a_new_summary4_repo.save(existing);
 	}
 	
@@ -90482,7 +90482,7 @@ public void updateReport4(M_SRWA_12A_NEW_Summary_Entity4 updatedEntity) {
 	                    "Record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
 
 	    try {
-	        // 1️⃣ Loop from R145 to R178 and copy fields
+	        // 1ï¸âƒ£ Loop from R145 to R178 and copy fields
 	    	
 	        for (int i = 145; i <= 178; i++) {
 				
@@ -90541,7 +90541,7 @@ public void updateReport4(M_SRWA_12A_NEW_Summary_Entity4 updatedEntity) {
 	        throw new RuntimeException("Error while updating report fields", e);
 	    }
 
-	    // 3️⃣ Save updated entity
+	    // 3ï¸âƒ£ Save updated entity
 	    brrs_m_srwa_12a_new_summary5_repo.save(existing);
 	}
 	
@@ -90556,7 +90556,7 @@ public void updateReport4(M_SRWA_12A_NEW_Summary_Entity4 updatedEntity) {
 	                    "Record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
 
 	    try {
-	        // 1️⃣ Loop from R100 to R133 and copy fields
+	        // 1ï¸âƒ£ Loop from R100 to R133 and copy fields
 	    	
 	        for (int i = 179; i <= 212; i++) {
 				
@@ -90615,7 +90615,7 @@ public void updateReport4(M_SRWA_12A_NEW_Summary_Entity4 updatedEntity) {
 	        throw new RuntimeException("Error while updating report fields", e);
 	    }
 
-	    // 3️⃣ Save updated entity
+	    // 3ï¸âƒ£ Save updated entity
 	    brrs_m_srwa_12a_new_summary6_repo.save(existing);
 	}
 	
@@ -90630,7 +90630,7 @@ public void updateReport4(M_SRWA_12A_NEW_Summary_Entity4 updatedEntity) {
 	                    "Record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
 
 	    try {
-	        // 1️⃣ Loop from R100 to R133 and copy fields
+	        // 1ï¸âƒ£ Loop from R100 to R133 and copy fields
 	    	
 	        for (int i = 213; i <= 246; i++) {
 				
@@ -90689,7 +90689,7 @@ public void updateReport4(M_SRWA_12A_NEW_Summary_Entity4 updatedEntity) {
 	        throw new RuntimeException("Error while updating report fields", e);
 	    }
 
-	    // 3️⃣ Save updated entity
+	    // 3ï¸âƒ£ Save updated entity
 	    brrs_m_srwa_12a_new_summary7_repo.save(existing);
 	}
 	
@@ -90704,7 +90704,7 @@ public void updateReport4(M_SRWA_12A_NEW_Summary_Entity4 updatedEntity) {
 	                    "Record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
 
 	    try {
-	        // 1️⃣ Loop from R100 to R133 and copy fields
+	        // 1ï¸âƒ£ Loop from R100 to R133 and copy fields
 	    	
 	        for (int i = 247; i <= 254; i++) {
 				
@@ -90763,7 +90763,7 @@ public void updateReport4(M_SRWA_12A_NEW_Summary_Entity4 updatedEntity) {
 	        throw new RuntimeException("Error while updating report fields", e);
 	    }
 
-	    // 3️⃣ Save updated entity
+	    // 3ï¸âƒ£ Save updated entity
 	    brrs_m_srwa_12a_new_summary8_repo.save(existing);
 	}
 	
