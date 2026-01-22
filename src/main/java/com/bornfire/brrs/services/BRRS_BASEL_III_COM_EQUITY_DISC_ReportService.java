@@ -3,6 +3,7 @@ package com.bornfire.brrs.services;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -50,18 +51,18 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 import org.springframework.web.servlet.ModelAndView;
 
 import com.bornfire.brrs.entities.BASEL_III_COM_EQUITY_DISC_Archival_Detail_Entity;
+import com.bornfire.brrs.entities.BASEL_III_COM_EQUITY_DISC_Archival_Manual_Summary_Entity;
 import com.bornfire.brrs.entities.BASEL_III_COM_EQUITY_DISC_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.BASEL_III_COM_EQUITY_DISC_Detail_Entity;
+import com.bornfire.brrs.entities.BASEL_III_COM_EQUITY_DISC_Manual_Summary_Entity;
 import com.bornfire.brrs.entities.BASEL_III_COM_EQUITY_DISC_Summary_Entity;
 import com.bornfire.brrs.entities.BRRS_BASEL_III_COM_EQUITY_DISC_Archival_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_BASEL_III_COM_EQUITY_DISC_Archival_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_BASEL_III_COM_EQUITY_DISC_Detail_Repo;
+import com.bornfire.brrs.entities.BRRS_BASEL_III_COM_EQUITY_DISC_Manual_Archival_Summary_Repo;
+import com.bornfire.brrs.entities.BRRS_BASEL_III_COM_EQUITY_DISC_Manual_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_BASEL_III_COM_EQUITY_DISC_Summary_Repo;
-import com.bornfire.brrs.entities.BRRS_CAP_RATIO_BUFFER_Detail_Repo;
-import com.bornfire.brrs.entities.CAP_RATIO_BUFFER_Archival_Detail_Entity;
-import com.bornfire.brrs.entities.CAP_RATIO_BUFFER_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.CAP_RATIO_BUFFER_Detail_Entity;
-import com.bornfire.brrs.entities.CAP_RATIO_BUFFER_Summary_Entity;
+import com.bornfire.brrs.entities.M_SCI_E_Manual_Summary_Entity;
 
 @Component
 @Service
@@ -88,10 +89,13 @@ public class BRRS_BASEL_III_COM_EQUITY_DISC_ReportService {
 	BRRS_BASEL_III_COM_EQUITY_DISC_Detail_Repo B_III_CETD_detail_repo;
 	
 	
-	
-	
-	
 	  @Autowired BRRS_BASEL_III_COM_EQUITY_DISC_Archival_Detail_Repo B_III_CETD_Archival_Detail_Repo;
+	  
+	  @Autowired BRRS_BASEL_III_COM_EQUITY_DISC_Manual_Summary_Repo B_III_CETD_Manual_Summary_Repo;
+	  
+	  @Autowired BRRS_BASEL_III_COM_EQUITY_DISC_Manual_Archival_Summary_Repo B_III_CETD_Manual_Archival_Summary_Repo;
+	  
+	  
 	 
 
 	
@@ -103,7 +107,7 @@ public class BRRS_BASEL_III_COM_EQUITY_DISC_ReportService {
 
 	
 	public ModelAndView getB_III_CETDView(String reportId, String fromdate, String todate, String currency, String dtltype,
-			Pageable pageable, String type, String version) {
+			Pageable pageable, String type, BigDecimal version) {
 
 		ModelAndView mv = new ModelAndView();
 		
@@ -111,17 +115,19 @@ public class BRRS_BASEL_III_COM_EQUITY_DISC_ReportService {
 		System.out.println("testing");
 		System.out.println(version);
 
-		if ("ARCHIVAL".equals(type) && version != null && !version.isEmpty()) {
+		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && version != null) {
 
 		    System.out.println("ARCHIVAL MODE");
 		    System.out.println("version = " + version);
 
 		    List<BASEL_III_COM_EQUITY_DISC_Archival_Summary_Entity> T1Master = new ArrayList<>();
+		    List<BASEL_III_COM_EQUITY_DISC_Archival_Manual_Summary_Entity> T2Master = new ArrayList<>();
 		 
 		    try {
 		        Date dt = dateformat.parse(todate);
 
 		        T1Master = B_III_CETD_Archival_Summary_Repo.getdatabydateListarchival(dt, version);
+		        T2Master = B_III_CETD_Manual_Archival_Summary_Repo.getdatabydateListarchival(dt, version);
 
 		        System.out.println("T1Master size = " + T1Master.size());
 		      
@@ -131,15 +137,18 @@ public class BRRS_BASEL_III_COM_EQUITY_DISC_ReportService {
 		    }
 
 		    mv.addObject("reportsummary", T1Master);
+		    mv.addObject("reportsummary1", T2Master);
 		 
 		} else {
 
 			List<BASEL_III_COM_EQUITY_DISC_Summary_Entity> T1Master = new ArrayList<BASEL_III_COM_EQUITY_DISC_Summary_Entity>();
+			List<BASEL_III_COM_EQUITY_DISC_Manual_Summary_Entity> T2Master = new ArrayList<BASEL_III_COM_EQUITY_DISC_Manual_Summary_Entity>();
 		
 			try {
 				Date d1 = dateformat.parse(todate);
 				
 				T1Master = B_III_CETD_summary_repo.getdatabydateList(dateformat.parse(todate));
+				T2Master = B_III_CETD_Manual_Summary_Repo.getdatabydateList(dateformat.parse(todate));
 			
 				System.out.println("T1Master size " + T1Master.size());
 				mv.addObject("report_date", dateformat.format(d1));
@@ -148,7 +157,7 @@ public class BRRS_BASEL_III_COM_EQUITY_DISC_ReportService {
 				e.printStackTrace();
 			}
 			mv.addObject("reportsummary", T1Master);
-			
+			  mv.addObject("reportsummary1", T2Master);
 		}
 
 	
@@ -199,6 +208,7 @@ public class BRRS_BASEL_III_COM_EQUITY_DISC_ReportService {
 				System.out.println(type);
 				// 🔹 Archival branch
 				List<BASEL_III_COM_EQUITY_DISC_Archival_Detail_Entity> T1Dt1;
+				
 				if (reportLable != null && reportAddlCriteria_1 != null) {
 					T1Dt1 = B_III_CETD_Archival_Detail_Repo.GetDataByRowIdAndColumnId(reportLable, reportAddlCriteria_1, parsedDate, version);
 				} else {
@@ -253,11 +263,11 @@ public class BRRS_BASEL_III_COM_EQUITY_DISC_ReportService {
 	
 
 	public byte[] getB_III_CETDExcel(String filename, String reportId, String fromdate, String todate, String currency,
-			String dtltype, String type, String version) throws Exception {
+			String dtltype, String type, BigDecimal version) throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.");
 
 		// ARCHIVAL check
-		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && !version.trim().isEmpty()) {
+		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && version != null) {
 			logger.info("Service: Generating ARCHIVAL report for version {}", version);
 			return getExcelB_III_CETDARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
 		}
@@ -265,6 +275,7 @@ public class BRRS_BASEL_III_COM_EQUITY_DISC_ReportService {
 		// Fetch data
 
 		List<BASEL_III_COM_EQUITY_DISC_Summary_Entity> dataList = B_III_CETD_summary_repo.getdatabydateList(dateformat.parse(todate));
+		List<BASEL_III_COM_EQUITY_DISC_Manual_Summary_Entity> dataList1 = B_III_CETD_Manual_Summary_Repo.getdatabydateList(dateformat.parse(todate));
 	
 
 		if (dataList.isEmpty()) {
@@ -333,7 +344,7 @@ public class BRRS_BASEL_III_COM_EQUITY_DISC_ReportService {
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
 					BASEL_III_COM_EQUITY_DISC_Summary_Entity record = dataList.get(i);
-				
+					BASEL_III_COM_EQUITY_DISC_Manual_Summary_Entity record1 = dataList1.get(i);
 					System.out.println("rownumber=" + startRow + i);
 					Row row = sheet.getRow(startRow + i);
 					if (row == null) {
@@ -376,11 +387,11 @@ public class BRRS_BASEL_III_COM_EQUITY_DISC_ReportService {
 					if (cellC == null) cellC = row.createCell(4);
 					cellC.setCellValue(record.getR11_amount() != null ? record.getR11_amount().doubleValue() : 0);
 
-					// R12
-					row = sheet.getRow(11);
-					cellC = row.getCell(4);
-					if (cellC == null) cellC = row.createCell(4);
-					cellC.setCellValue(record.getR12_amount() != null ? record.getR12_amount().doubleValue() : 0);
+					/*
+					 * // R12 row = sheet.getRow(11); cellC = row.getCell(4); if (cellC == null)
+					 * cellC = row.createCell(4); cellC.setCellValue(record.getR12_amount() != null
+					 * ? record.getR12_amount().doubleValue() : 0);
+					 */
 
 					
 
@@ -516,11 +527,11 @@ public class BRRS_BASEL_III_COM_EQUITY_DISC_ReportService {
 					if (cellC == null) cellC = row.createCell(4);
 					cellC.setCellValue(record.getR35_amount() != null ? record.getR35_amount().doubleValue() : 0);
 
-					// R36
-					row = sheet.getRow(35);
-					cellC = row.getCell(4);
-					if (cellC == null) cellC = row.createCell(4);
-					cellC.setCellValue(record.getR36_amount() != null ? record.getR36_amount().doubleValue() : 0);
+					/*
+					 * // R36 row = sheet.getRow(35); cellC = row.getCell(4); if (cellC == null)
+					 * cellC = row.createCell(4); cellC.setCellValue(record.getR36_amount() != null
+					 * ? record.getR36_amount().doubleValue() : 0);
+					 */
 
 					
 
@@ -622,11 +633,11 @@ public class BRRS_BASEL_III_COM_EQUITY_DISC_ReportService {
 					if (cellC == null) cellC = row.createCell(4);
 					cellC.setCellValue(record.getR54_amount() != null ? record.getR54_amount().doubleValue() : 0);
 
-					// R55
-					row = sheet.getRow(54);
-					cellC = row.getCell(4);
-					if (cellC == null) cellC = row.createCell(4);
-					cellC.setCellValue(record.getR55_amount() != null ? record.getR55_amount().doubleValue() : 0);
+					/*
+					 * // R55 row = sheet.getRow(54); cellC = row.getCell(4); if (cellC == null)
+					 * cellC = row.createCell(4); cellC.setCellValue(record.getR55_amount() != null
+					 * ? record.getR55_amount().doubleValue() : 0);
+					 */
 
 				
 
@@ -660,12 +671,11 @@ public class BRRS_BASEL_III_COM_EQUITY_DISC_ReportService {
 					if (cellC == null) cellC = row.createCell(4);
 					cellC.setCellValue(record.getR61_amount() != null ? record.getR61_amount().doubleValue() : 0);
 
-					// R62
-					row = sheet.getRow(61);
-					cellC = row.getCell(4);
-					if (cellC == null) cellC = row.createCell(4);
-					cellC.setCellValue(record.getR62_amount() != null ? record.getR62_amount().doubleValue() : 0);
-
+					/*
+					 * // R62 row = sheet.getRow(61); cellC = row.getCell(4); if (cellC == null)
+					 * cellC = row.createCell(4); cellC.setCellValue(record.getR62_amount() != null
+					 * ? record.getR62_amount().doubleValue() : 0);
+					 */
 				
 
 					// R64
@@ -709,24 +719,21 @@ public class BRRS_BASEL_III_COM_EQUITY_DISC_ReportService {
 					cellC = row.getCell(4);
 					if (cellC == null) cellC = row.createCell(4);
 					cellC.setCellValue(record.getR70_amount() != null ? record.getR70_amount().doubleValue() : 0);
-
-					// R71
-					row = sheet.getRow(70);
-					cellC = row.getCell(4);
-					if (cellC == null) cellC = row.createCell(4);
-					cellC.setCellValue(record.getR71_amount() != null ? record.getR71_amount().doubleValue() : 0);
-
-					// R72
-					row = sheet.getRow(71);
-					cellC = row.getCell(4);
-					if (cellC == null) cellC = row.createCell(4);
-					cellC.setCellValue(record.getR72_amount() != null ? record.getR72_amount().doubleValue() : 0);
+					/*
+					 * // R71 row = sheet.getRow(70); cellC = row.getCell(4); if (cellC == null)
+					 * cellC = row.createCell(4); cellC.setCellValue(record.getR71_amount() != null
+					 * ? record.getR71_amount().doubleValue() : 0);
+					 * 
+					 * // R72 row = sheet.getRow(71); cellC = row.getCell(4); if (cellC == null)
+					 * cellC = row.createCell(4); cellC.setCellValue(record.getR72_amount() != null
+					 * ? record.getR72_amount().doubleValue() : 0);
+					 */
 
 					// R73
 					row = sheet.getRow(72);
 					cellC = row.getCell(4);
 					if (cellC == null) cellC = row.createCell(4);
-					cellC.setCellValue(record.getR73_amount() != null ? record.getR73_amount().doubleValue() : 0);
+					cellC.setCellValue(record1.getR73_amount() != null ? record1.getR73_amount().doubleValue() : 0);
 
 				
 
@@ -739,7 +746,7 @@ public class BRRS_BASEL_III_COM_EQUITY_DISC_ReportService {
 				
 				}
 
-				workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
+				workbook.setForceFormulaRecalculation(true);
 			} else {
 
 			}
@@ -756,7 +763,7 @@ public class BRRS_BASEL_III_COM_EQUITY_DISC_ReportService {
 
 	
 	public byte[] getExcelB_III_CETDARCHIVAL(String filename, String reportId, String fromdate, String todate,
-			String currency, String dtltype, String type, String version) throws Exception {
+			String currency, String dtltype, String type, BigDecimal version) throws Exception {
 
 		logger.info("Service: Starting Excel generation process in memory.");
 
@@ -765,6 +772,9 @@ public class BRRS_BASEL_III_COM_EQUITY_DISC_ReportService {
 		}
 		
 		List<BASEL_III_COM_EQUITY_DISC_Archival_Summary_Entity> dataList = B_III_CETD_Archival_Summary_Repo
+				.getdatabydateListarchival(dateformat.parse(todate), version);
+		
+		List<BASEL_III_COM_EQUITY_DISC_Archival_Manual_Summary_Entity> dataList1 = B_III_CETD_Manual_Archival_Summary_Repo
 				.getdatabydateListarchival(dateformat.parse(todate), version);
 	
 
@@ -836,6 +846,7 @@ public class BRRS_BASEL_III_COM_EQUITY_DISC_ReportService {
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
 					BASEL_III_COM_EQUITY_DISC_Archival_Summary_Entity record = dataList.get(i);
+					BASEL_III_COM_EQUITY_DISC_Archival_Manual_Summary_Entity record1 = dataList1.get(i);
 				
 					System.out.println("rownumber=" + startRow + i);
 					Row row = sheet.getRow(startRow + i);
@@ -878,11 +889,11 @@ public class BRRS_BASEL_III_COM_EQUITY_DISC_ReportService {
 					if (cellC == null) cellC = row.createCell(4);
 					cellC.setCellValue(record.getR11_amount() != null ? record.getR11_amount().doubleValue() : 0);
 
-					// R12
-					row = sheet.getRow(11);
-					cellC = row.getCell(4);
-					if (cellC == null) cellC = row.createCell(4);
-					cellC.setCellValue(record.getR12_amount() != null ? record.getR12_amount().doubleValue() : 0);
+//					// R12
+//					row = sheet.getRow(11);
+//					cellC = row.getCell(4);
+//					if (cellC == null) cellC = row.createCell(4);
+//					cellC.setCellValue(record.getR12_amount() != null ? record.getR12_amount().doubleValue() : 0);
 
 					
 
@@ -1018,11 +1029,11 @@ public class BRRS_BASEL_III_COM_EQUITY_DISC_ReportService {
 					if (cellC == null) cellC = row.createCell(4);
 					cellC.setCellValue(record.getR35_amount() != null ? record.getR35_amount().doubleValue() : 0);
 
-					// R36
-					row = sheet.getRow(35);
-					cellC = row.getCell(4);
-					if (cellC == null) cellC = row.createCell(4);
-					cellC.setCellValue(record.getR36_amount() != null ? record.getR36_amount().doubleValue() : 0);
+//					// R36
+//					row = sheet.getRow(35);
+//					cellC = row.getCell(4);
+//					if (cellC == null) cellC = row.createCell(4);
+//					cellC.setCellValue(record.getR36_amount() != null ? record.getR36_amount().doubleValue() : 0);
 
 					
 
@@ -1124,12 +1135,11 @@ public class BRRS_BASEL_III_COM_EQUITY_DISC_ReportService {
 					if (cellC == null) cellC = row.createCell(4);
 					cellC.setCellValue(record.getR54_amount() != null ? record.getR54_amount().doubleValue() : 0);
 
-					// R55
-					row = sheet.getRow(54);
-					cellC = row.getCell(4);
-					if (cellC == null) cellC = row.createCell(4);
-					cellC.setCellValue(record.getR55_amount() != null ? record.getR55_amount().doubleValue() : 0);
-
+					/*
+					 * // R55 row = sheet.getRow(54); cellC = row.getCell(4); if (cellC == null)
+					 * cellC = row.createCell(4); cellC.setCellValue(record.getR55_amount() != null
+					 * ? record.getR55_amount().doubleValue() : 0);
+					 */
 				
 
 					// R57
@@ -1162,11 +1172,11 @@ public class BRRS_BASEL_III_COM_EQUITY_DISC_ReportService {
 					if (cellC == null) cellC = row.createCell(4);
 					cellC.setCellValue(record.getR61_amount() != null ? record.getR61_amount().doubleValue() : 0);
 
-					// R62
-					row = sheet.getRow(61);
-					cellC = row.getCell(4);
-					if (cellC == null) cellC = row.createCell(4);
-					cellC.setCellValue(record.getR62_amount() != null ? record.getR62_amount().doubleValue() : 0);
+//					// R62
+//					row = sheet.getRow(61);
+//					cellC = row.getCell(4);
+//					if (cellC == null) cellC = row.createCell(4);
+//					cellC.setCellValue(record.getR62_amount() != null ? record.getR62_amount().doubleValue() : 0);
 
 				
 
@@ -1212,23 +1222,21 @@ public class BRRS_BASEL_III_COM_EQUITY_DISC_ReportService {
 					if (cellC == null) cellC = row.createCell(4);
 					cellC.setCellValue(record.getR70_amount() != null ? record.getR70_amount().doubleValue() : 0);
 
-					// R71
-					row = sheet.getRow(70);
-					cellC = row.getCell(4);
-					if (cellC == null) cellC = row.createCell(4);
-					cellC.setCellValue(record.getR71_amount() != null ? record.getR71_amount().doubleValue() : 0);
-
-					// R72
-					row = sheet.getRow(71);
-					cellC = row.getCell(4);
-					if (cellC == null) cellC = row.createCell(4);
-					cellC.setCellValue(record.getR72_amount() != null ? record.getR72_amount().doubleValue() : 0);
+					/*
+					 * // R71 row = sheet.getRow(70); cellC = row.getCell(4); if (cellC == null)
+					 * cellC = row.createCell(4); cellC.setCellValue(record.getR71_amount() != null
+					 * ? record.getR71_amount().doubleValue() : 0);
+					 * 
+					 * // R72 row = sheet.getRow(71); cellC = row.getCell(4); if (cellC == null)
+					 * cellC = row.createCell(4); cellC.setCellValue(record.getR72_amount() != null
+					 * ? record.getR72_amount().doubleValue() : 0);
+					 */
 
 					// R73
 					row = sheet.getRow(72);
 					cellC = row.getCell(4);
 					if (cellC == null) cellC = row.createCell(4);
-					cellC.setCellValue(record.getR73_amount() != null ? record.getR73_amount().doubleValue() : 0);
+					cellC.setCellValue(record1.getR73_amount() != null ? record1.getR73_amount().doubleValue() : 0);
 
 				
 
@@ -1253,6 +1261,80 @@ public class BRRS_BASEL_III_COM_EQUITY_DISC_ReportService {
 	}
 	
 	
+	public void updateReport(BASEL_III_COM_EQUITY_DISC_Manual_Summary_Entity updatedEntity) {
+	    System.out.println("Came to services");
+	    System.out.println("Report Date: " + updatedEntity.getReport_date());
+
+	    //  Use your query to fetch by date
+	    List<BASEL_III_COM_EQUITY_DISC_Manual_Summary_Entity> list = B_III_CETD_Manual_Summary_Repo
+	        .getdatabydateList(updatedEntity.getReport_date());
+
+	    BASEL_III_COM_EQUITY_DISC_Manual_Summary_Entity existing;
+	    if (list.isEmpty()) {
+	        // Record not found — optionally create it
+	        System.out.println("No record found for REPORT_DATE: " + updatedEntity.getReport_date());
+	        existing = new BASEL_III_COM_EQUITY_DISC_Manual_Summary_Entity();
+	        existing.setReport_date(updatedEntity.getReport_date());
+	    } else {
+	        existing = list.get(0);
+	    }
+
+	    try {
+	        //  Only for specific row numbers
+	        int[] rows = {73};
+
+	        for (int row : rows) {
+	            String prefix = "R" + row + "_";
+
+	            // Fields to update
+	            String[] fields = {"amount"};
+
+	            for (String field : fields) {
+	                String getterName = "get" + prefix + field; // e.g. getR45_amount
+	                String setterName = "set" + prefix + field; // e.g. setR45_amount
+
+	                try {
+	                    Method getter = BASEL_III_COM_EQUITY_DISC_Manual_Summary_Entity.class.getMethod(getterName);
+	                    Method setter = BASEL_III_COM_EQUITY_DISC_Manual_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+
+	                    Object newValue = getter.invoke(updatedEntity);
+	                    setter.invoke(existing, newValue);
+
+	                } catch (NoSuchMethodException e) {
+	                    // Skip missing fields gracefully
+	                    continue;
+	                }
+	            }
+	        }
+
+	        // Metadata
+	        existing.setReport_version(updatedEntity.getReport_version());
+	        existing.setReport_frequency(updatedEntity.getReport_frequency());
+	        existing.setReport_code(updatedEntity.getReport_code());
+	        existing.setReport_desc(updatedEntity.getReport_desc());
+	        existing.setEntity_flg(updatedEntity.getEntity_flg());
+	        existing.setModify_flg(updatedEntity.getModify_flg());
+	        existing.setDel_flg(updatedEntity.getDel_flg());
+
+	    } catch (Exception e) {
+	        throw new RuntimeException("Error while updating BASEL_III_COM_EQUITY_DISC Summary fields", e);
+	    }
+
+	    //  FIRST COMMIT — forces immediate commit
+	    B_III_CETD_Manual_Summary_Repo.saveAndFlush(existing);
+	    System.out.println("BASEL_III_COM_EQUITY_DISC Summary updated and COMMITTED");
+
+	    //  Execute procedure with updated data
+	    String oracleDate = new SimpleDateFormat("dd-MM-yyyy")
+	            .format(updatedEntity.getReport_date())
+	            .toUpperCase();
+
+	    String sql = "BEGIN BRRS.BRRS_BASEL_III_COM_EQUITY_DISC_SUMMARY_PROCEDURE ('" + oracleDate + "'); END;";
+	    jdbcTemplate.execute(sql);
+
+	    System.out.println("Procedure executed for date: " + oracleDate);
+	}
+	
 
 	
 	
@@ -1268,6 +1350,7 @@ public class BRRS_BASEL_III_COM_EQUITY_DISC_ReportService {
 		List<Object> B_III_CETDArchivallist = new ArrayList<>();
 		try {
 			B_III_CETDArchivallist = B_III_CETD_Archival_Summary_Repo.getB_III_CETDarchival();
+			B_III_CETDArchivallist = B_III_CETD_Manual_Archival_Summary_Repo.getB_III_CETDarchival();
 		
 			System.out.println("countser" + B_III_CETDArchivallist.size());
 			
@@ -1332,7 +1415,7 @@ public class BRRS_BASEL_III_COM_EQUITY_DISC_ReportService {
 			// ACCT BALANCE style (right aligned with 3 decimals)
 			CellStyle balanceStyle = workbook.createCellStyle();
 			balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
-			balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0.000"));
+			balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0"));
 			balanceStyle.setBorderTop(border);
 			balanceStyle.setBorderBottom(border);
 			balanceStyle.setBorderLeft(border);
@@ -1372,7 +1455,7 @@ public class BRRS_BASEL_III_COM_EQUITY_DISC_ReportService {
 					if (item.getAcctBalanceInpula() != null) {
 						balanceCell.setCellValue(item.getAcctBalanceInpula().doubleValue());
 					} else {
-						balanceCell.setCellValue(0.000);
+						balanceCell.setCellValue(0);
 					}
 					balanceCell.setCellStyle(balanceStyle);
 
@@ -1460,7 +1543,7 @@ public class BRRS_BASEL_III_COM_EQUITY_DISC_ReportService {
 // ACCT BALANCE style (right aligned with 3 decimals)
 			CellStyle balanceStyle = workbook.createCellStyle();
 			balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
-			balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0.000"));
+			balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0"));
 			balanceStyle.setBorderTop(border);
 			balanceStyle.setBorderBottom(border);
 			balanceStyle.setBorderLeft(border);
@@ -1502,7 +1585,7 @@ public class BRRS_BASEL_III_COM_EQUITY_DISC_ReportService {
 					if (item.getAcctBalanceInpula() != null) {
 						balanceCell.setCellValue(item.getAcctBalanceInpula().doubleValue());
 					} else {
-						balanceCell.setCellValue(0.000);
+						balanceCell.setCellValue(0);
 					}
 					balanceCell.setCellStyle(balanceStyle);
 

@@ -652,65 +652,75 @@ window.onload = function() {
 
 
 function downloadfile(button) {
-			var reportid = button.getAttribute('data-reportid');
-			var asondate = button.getAttribute('data-asondate');
-			var fromdate = button.getAttribute('data-fromdate');
-			var todate = button.getAttribute('data-todate');
-			var currency = button.getAttribute('data-currency');
-			var subreportid = button.getAttribute('data-subreportid');
-			var secid = button.getAttribute('data-secid');
-			var dtltype = button.getAttribute('data-dtltype');
-			var filename = button.getAttribute('data-filename');
-			var type = button.getAttribute('data-type');
-			var version = button.getAttribute('data-version');
 
+    var reportid = button.getAttribute('data-reportid');
+    var asondate = button.getAttribute('data-asondate');
+    var fromdate = button.getAttribute('data-fromdate');
+    var todate = button.getAttribute('data-todate');
+    var currency = button.getAttribute('data-currency');
+    var subreportid = button.getAttribute('data-subreportid');
+    var secid = button.getAttribute('data-secid');
+    var dtltype = button.getAttribute('data-dtltype');
+    var filename = button.getAttribute('data-filename');
+    var type = button.getAttribute('data-type');
+    var version = button.getAttribute('data-version');
 
-			var loader = new bootstrap.Modal(document.getElementById('loader'), {backdrop: 'static',keyboard: false});
-			loader.show();
+    var loader = new bootstrap.Modal(
+        document.getElementById('loader'),
+        { backdrop: 'static', keyboard: false }
+    );
+    loader.show();
 
-			$.ajax({
-				url: './downloadExcel?reportid=' + reportid +
-					'&fromdate=' + fromdate +
-					'&asondate=' + asondate +
-					'&todate=' + todate +
-					'&currency=' + currency +
-					'&subreportid=' + subreportid +
-					'&secid=' + secid +
-					'&filename=' + filename +
-					'&type=' + type +
-					'&version=' + version,
-				type: 'GET',
-				xhrFields: {
-					responseType: 'blob'
-				},
-				success: function (data) {
-					$('#loader').modal('hide');
+    // ✅ Build URL safely
+    var url = './downloadExcel?reportid=' + reportid +
+        '&fromdate=' + fromdate +
+        '&asondate=' + asondate +
+        '&todate=' + todate +
+        '&currency=' + currency +
+        '&subreportid=' + subreportid +
+        '&secid=' + secid +
+        '&filename=' + filename +
+        '&type=' + type;
 
-					if (data && data.size > 100) {
-						const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
-						const url = window.URL.createObjectURL(blob);
-						const a = document.createElement('a');
-						a.style.display = 'none';
-						a.href = url;
-						a.download = filename;
-						document.body.appendChild(a);
-						a.click();
-						window.URL.revokeObjectURL(url);
-						document.body.removeChild(a);
+    // ✅ ONLY append version if valid
+    if (version && version.trim() !== '') {
+        url += '&version=' + version;
+    }
 
-						showResultModal('BRRS', filename + ' downloaded successfully.');
-					} else {
-						showResultModal('Information', 'No data was available to create a download.');
-					}
-				},
-				error: function (jqXHR, textStatus, errorThrown) {
-					$('#loader').modal('hide');
-					console.error("Download failed:", textStatus, errorThrown);
-					showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
-				}
-			});
-		}
+    $.ajax({
+        url: url,
+        type: 'GET',
+        xhrFields: { responseType: 'blob' },
 
+        success: function (data) {
+            $('#loader').modal('hide');
+
+            if (data && data.size > 100) {
+                const blob = new Blob([data], {
+                    type: 'application/vnd.ms-excel'
+                });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+
+                showResultModal('BRRS', filename + ' downloaded successfully.');
+            } else {
+                showResultModal('Information', 'No data was available to create a download.');
+            }
+        },
+
+        error: function () {
+            $('#loader').modal('hide');
+            showResultModal('Error', 'An error occurred while downloading the file.');
+        }
+    });
+}
 function editRecord(){
 	showResultModal('Alert', 'Development in progress');
 	
@@ -897,6 +907,10 @@ function showmodify(btn) {
     
     
 
+//Apply gray background only to r73_amount
+  if ($("#r73_amount").length) {
+      $("#r73_amount").css("background-color", "#d3d3d3");
+  }
 
 
 
@@ -942,6 +956,97 @@ function cancelModify() {
 	
 
 	</script>
+
+
+<script>
+	
+
+	// This function is for closing the modal after an action is complete.
+	// It hides the result and loader modals and reloads the page.
+	function closemodel() {
+	    $("#resultModal").modal("hide");
+	    $('#loader').modal('hide');
+
+	    // Reload the page after a short delay to ensure the modal animation completes smoothly.
+	    setTimeout(function () {
+	        location.reload();
+	    }, 300);
+	}
+
+	function fileuploads(btn) {
+	    const asondate = btn.getAttribute("data-todate");
+	    const type = btn.getAttribute("data-type");
+
+	    // Show loader
+	    $('#loader').modal('show');
+
+	    try {
+	        // ✅ Step 1: Calculate totals
+	       /*  calculateR14Totals(); */
+	    
+	    
+	        // ✅ Step 2: Remove commas from all text inputs
+	        $("#fileupload input[type='text']").each(function () {
+	            $(this).val($(this).val().replace(/,/g, ''));
+	        });
+
+	        // ✅ Step 3: Validate form
+	        if (!$("#fileupload").valid()) {
+	            $('#loader').modal('hide');
+	            return;
+	        }
+
+	        // ✅ Step 4: Build FormData
+	        const formData = new FormData();
+	        formData.append("asondate", asondate);
+	        formData.append("type", type);
+
+	        $('#fileupload').find(':input').each(function () {
+	            const name = $(this).attr('name');
+	            if (name) {
+	                formData.append(name, $(this).val());
+	            }
+	        });
+
+	        // ✅ Step 5: AJAX submission
+	        $.ajax({
+	            url: './B_III_CETDupdateAll',
+	            type: 'POST',
+	            data: formData,
+	            processData: false,
+	            contentType: false,
+	            dataType: 'text',
+	            success: function () {
+	                $("#resultModalLabel").text("BRRS");
+	                $("#resultModalBody").text(" Updated Successfully.");
+	                $("#resultModal").modal("show");
+	            },
+	            error: function (jqXHR) {
+	                console.error("Error response:", jqXHR.responseText);
+	                $("#resultModalLabel").text("Error");
+	                $("#resultModalBody").text("Update failed. Check console for details.");
+	                $("#resultModal").modal("show");
+	            },
+	            complete: function () {
+	                $('#loader').modal('hide');
+	            }
+	        });
+
+	    } catch (error) {
+	        console.error("Error in fileuploads function:", error);
+	        $('#loader').modal('hide');
+	        $("#resultModalLabel").text("Error");
+	        $("#resultModalBody").text("Unexpected error occurred. Check console.");
+	        $("#resultModal").modal("show");
+	    }
+	}
+
+
+
+
+
+	</script>
+
 
 
 
@@ -1009,15 +1114,15 @@ function cancelModify() {
 							
 							
 								<!-- Modify button -->
-					<!-- 	<button type="button" class="custom-tab-btn"
+						<button type="button" class="custom-tab-btn"
 							onclick="showmodify(this);" title="Click to EDIT Records"
 							th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
-							th:if="${type != 'ARCHIVAL'}" id="addRecord">Modify</button> -->
+							th:if="${type != 'ARCHIVAL'}" id="addRecord">Modify</button>
 
 						<!-- Cancel button (hidden initially) -->
-					<!-- 	<button type="button" class="custom-tab-btn"
+						<button type="button" class="custom-tab-btn"
 							title="Cancel editing" id="cancelRecord"
-							onclick="cancelModify();" style="display: none;">Cancel</button> -->
+							onclick="cancelModify();" style="display: none;">Cancel</button>
 							
 							
 							
@@ -1033,7 +1138,7 @@ function cancelModify() {
                      				 data-dtltype=${dtltype}, 
                      				 data-filename='B_III_CETD.xlsx',
 					 				 data-type=${type},
-					    			 data-version=${version}"
+					    			  data-version=${version != null ? version : ''}"
 							onclick="downloadfile(this);">
 							<i class="fa fa-download"></i>
 						</button>
@@ -1083,12 +1188,12 @@ function cancelModify() {
 									</thead>
 
 
-									<tbody th:each="report: ${reportsummary}"
+									<tbody th:each="report1: ${reportsummary1}"
 										style="font-family: Arial;">
 
 										
                                    
-                                   	<tr >
+                                   	<tr  th:each="report: ${reportsummary}" >
 
 
                                            <td    style="text-align: right; "
@@ -1114,7 +1219,7 @@ function cancelModify() {
 										</tr>
                                    
                                    <!-- R8 to R75 -->
-<tr>
+<tr  th:each="report: ${reportsummary}">
     <td style="text-align: right;">2</td>
     <td style="text-align: left;" th:text="${report?.r8_product ?: ''}"></td>
    <td style="text-align: right; padding-right:10px;"
@@ -1127,7 +1232,7 @@ function cancelModify() {
 
 </tr>
 
-<tr>
+<tr  th:each="report: ${reportsummary}">
     <td style="text-align: right;">3</td>
     <td style="text-align: left;" th:text="${report?.r9_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
@@ -1138,7 +1243,7 @@ function cancelModify() {
         onclick="showdetailsbyRowAndColumn(this)"></td>
 </tr>
 
-<tr>
+<tr  th:each="report: ${reportsummary}">
     <td style="text-align: right;">4</td>
     <td style="text-align: left;" th:text="${report?.r10_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
@@ -1149,7 +1254,7 @@ function cancelModify() {
         onclick="showdetailsbyRowAndColumn(this)"></td>
 </tr>
 
-<tr>
+<tr  th:each="report: ${reportsummary}">
     <td style="text-align: right;">5</td>
     <td style="text-align: left;" th:text="${report?.r11_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
@@ -1160,7 +1265,7 @@ function cancelModify() {
         onclick="showdetailsbyRowAndColumn(this)"></td>
 </tr>
 
-<tr>
+<tr  th:each="report: ${reportsummary}">
     <td style="text-align: right;">6</td>
     <td style="text-align: left; font-weight:bold;" th:text="${report?.r12_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
@@ -1183,7 +1288,7 @@ function cancelModify() {
 
 
 
-<tr>
+<tr   th:each="report: ${reportsummary}">
     <td style="text-align: right;">7</td>
     <td style="text-align: left;" th:text="${report?.r14_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
@@ -1194,7 +1299,7 @@ function cancelModify() {
         onclick="showdetailsbyRowAndColumn(this)"></td>
 </tr>
 
-<tr>
+<tr th:each="report: ${reportsummary}">
     <td style="text-align: right;">8</td>
     <td style="text-align: left;" th:text="${report?.r15_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
@@ -1207,7 +1312,7 @@ function cancelModify() {
 
 
 <!-- R16 -->
-<tr>
+<tr th:each="report: ${reportsummary}">
     <td style="text-align: right;">9</td>
     <td style="text-align: left;" th:text="${report?.r16_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
@@ -1219,7 +1324,7 @@ function cancelModify() {
 </tr>
 
 <!-- R17 -->
-<tr>
+<tr  th:each="report: ${reportsummary}">
     <td style="text-align: right;">10</td>
     <td style="text-align: left;" th:text="${report?.r17_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
@@ -1231,7 +1336,7 @@ function cancelModify() {
 </tr>
 
 <!-- R18 -->
-<tr>
+<tr  th:each="report: ${reportsummary}">
     <td style="text-align: right;">11</td>
     <td style="text-align: left;" th:text="${report?.r18_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
@@ -1243,7 +1348,7 @@ function cancelModify() {
 </tr>
 
 <!-- R19 -->
-<tr>
+<tr  th:each="report: ${reportsummary}">
     <td style="text-align: right;">12</td>
     <td style="text-align: left;" th:text="${report?.r19_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
@@ -1255,7 +1360,7 @@ function cancelModify() {
 </tr>
 
 <!-- R20 -->
-<tr>
+<tr  th:each="report: ${reportsummary}">
     <td style="text-align: right;">13</td>
     <td style="text-align: left;" th:text="${report?.r20_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
@@ -1267,7 +1372,7 @@ function cancelModify() {
 </tr>
 
 <!-- R21 -->
-<tr>
+<tr  th:each="report: ${reportsummary}">
     <td style="text-align: right;">14</td>
     <td style="text-align: left;" th:text="${report?.r21_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
@@ -1279,7 +1384,7 @@ function cancelModify() {
 </tr>
 
 <!-- R22 -->
-<tr>
+<tr  th:each="report: ${reportsummary}">
     <td style="text-align: right;">15</td>
     <td style="text-align: left;" th:text="${report?.r22_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
@@ -1291,7 +1396,7 @@ function cancelModify() {
 </tr>
 
 <!-- R23 -->
-<tr>
+<tr  th:each="report: ${reportsummary}">
     <td style="text-align: right;">16</td>
     <td style="text-align: left;" th:text="${report?.r23_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
@@ -1300,10 +1405,10 @@ function cancelModify() {
               : ''}"
         th:attr="RowId='R23', ColumnId='C2'"
         onclick="showdetailsbyRowAndColumn(this)"></td>
-</tr>
+</tr >
 
 <!-- R24 -->
-<tr>
+<tr  th:each="report: ${reportsummary}">
     <td style="text-align: right;">17</td>
     <td style="text-align: left;" th:text="${report?.r24_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
@@ -1315,7 +1420,7 @@ function cancelModify() {
 </tr>
 
 <!-- R25 -->
-<tr>
+<tr  th:each="report: ${reportsummary}">
     <td style="text-align: right;">18</td>
     <td style="text-align: left;" th:text="${report?.r25_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
@@ -1325,7 +1430,7 @@ function cancelModify() {
 </tr>
 
 <!-- R26 -->
-<tr>
+<tr  th:each="report: ${reportsummary}">
     <td style="text-align: right;">19</td>
     <td style="text-align: left;" th:text="${report?.r26_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
@@ -1337,7 +1442,7 @@ function cancelModify() {
 </tr>
 
 <!-- R27 -->
-<tr>
+<tr  th:each="report: ${reportsummary}">
     <td style="text-align: right;">20</td>
     <td style="text-align: left;" th:text="${report?.r27_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
@@ -1349,7 +1454,7 @@ function cancelModify() {
 </tr>
 
 <!-- R28 -->
-<tr>
+<tr  th:each="report: ${reportsummary}">
     <td style="text-align: right;">21</td>
     <td style="text-align: left;" th:text="${report?.r28_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
@@ -1361,7 +1466,7 @@ function cancelModify() {
 </tr>
 
 <!-- R29 -->
-<tr>
+<tr  th:each="report: ${reportsummary}">
     <td style="text-align: right;">22</td>
     <td style="text-align: left;" th:text="${report?.r29_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
@@ -1373,7 +1478,7 @@ function cancelModify() {
 </tr>
 
 <!-- R30 -->
-<tr>
+<tr  th:each="report: ${reportsummary}">
     <td style="text-align: right;">23</td>
     <td style="text-align: left;" th:text="${report?.r30_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
@@ -1385,7 +1490,7 @@ function cancelModify() {
 </tr>
 
 <!-- R31 -->
-<tr>
+<tr  th:each="report: ${reportsummary}">
     <td style="text-align: right;">24</td>
     <td style="text-align: left;" th:text="${report?.r31_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
@@ -1397,7 +1502,7 @@ function cancelModify() {
 </tr>
 
 <!-- R32 -->
-<tr>
+<tr  th:each="report: ${reportsummary}">
     <td style="text-align: right;">25</td>
     <td style="text-align: left;" th:text="${report?.r32_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
@@ -1409,7 +1514,7 @@ function cancelModify() {
 </tr>
 
 <!-- R33 -->
-<tr>
+<tr  th:each="report: ${reportsummary}">
     <td style="text-align: right;">23</td>
     <td style="text-align: left;" th:text="${report?.r33_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
@@ -1421,7 +1526,7 @@ function cancelModify() {
 </tr>
 
 <!-- R34 -->
-<tr>
+<tr  th:each="report: ${reportsummary}">
     <td style="text-align: right;">24</td>
     <td style="text-align: left;" th:text="${report?.r34_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
@@ -1433,7 +1538,7 @@ function cancelModify() {
 </tr>
 
 <!-- R35 -->
-<tr>
+<tr  th:each="report: ${reportsummary}">
     <td style="text-align: right;">25</td>
     <td style="text-align: left ; font-weight:bold; " th:text="${report?.r35_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
@@ -1445,7 +1550,7 @@ function cancelModify() {
 </tr>
 
 <!-- R36 -->
-<tr>
+<tr  th:each="report: ${reportsummary}">
     <td style="text-align: right;">26</td>
     <td style="text-align: left; font-weight:bold; " th:text="${report?.r36_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
@@ -1458,7 +1563,7 @@ function cancelModify() {
 
 <!-- R37 -->
 
-<tr>
+<tr  th:each="report: ${reportsummary}">
     
 
     <td colspan="3" style="text-align: center;  height: 30px;  font-weight:bold;   padding:10px; ">Additional Tier I capital: instruments 		
@@ -1468,7 +1573,7 @@ function cancelModify() {
 </tr>
 
 <!-- R38 -->
-<tr>
+<tr  th:each="report: ${reportsummary}">
     <td style="text-align: right;">30</td>
     <td style="text-align: left;" th:text="${report?.r38_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
@@ -1480,7 +1585,7 @@ function cancelModify() {
 </tr>
 
 <!-- R39 -->
-<tr>
+<tr  th:each="report: ${reportsummary}">
     <td style="text-align: right;">31</td>
     <td style="text-align: left;" th:text="${report?.r39_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
@@ -1492,7 +1597,7 @@ function cancelModify() {
 </tr>
 
 <!-- R40 -->
-<tr>
+<tr  th:each="report: ${reportsummary}">
     <td style="text-align: right;">32</td>
     <td style="text-align: left;" th:text="${report?.r40_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
@@ -1504,7 +1609,7 @@ function cancelModify() {
 </tr>
 
 <!-- R41 -->
-<tr>
+<tr  th:each="report: ${reportsummary}">
     <td style="text-align: right;">31</td>
     <td style="text-align: left;" th:text="${report?.r41_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
@@ -1516,7 +1621,7 @@ function cancelModify() {
 </tr>
 
 <!-- R42 -->
-<tr>
+<tr  th:each="report: ${reportsummary}">
     <td style="text-align: right;">32</td>
     <td style="text-align: left;" th:text="${report?.r42_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
@@ -1528,7 +1633,7 @@ function cancelModify() {
 </tr>
 
 <!-- R43 -->
-<tr>
+<tr  th:each="report: ${reportsummary}">
     <td style="text-align: right;">35</td>
     <td style="text-align: left;" th:text="${report?.r43_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
@@ -1540,7 +1645,7 @@ function cancelModify() {
 </tr>
 
 <!-- R44 -->
-<tr>
+<tr  th:each="report: ${reportsummary}">
     <td style="text-align: right;">33</td>
     <td style="text-align: left; font-weight:bold;" th:text="${report?.r44_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
@@ -1552,7 +1657,7 @@ function cancelModify() {
 </tr>
 
 <!-- R45 -->
-<tr>
+<tr >
     
 
     <td colspan="3" style="text-align: center;  height: 30px;  font-weight:bold;   padding:10px; ">Additional Tier I capital: regulatory adjustments 		
@@ -1563,7 +1668,7 @@ function cancelModify() {
 
 
 <!-- R46 -->
-<tr>
+<tr  th:each="report: ${reportsummary}">
     <td style="text-align: right;">34</td>
     <td style="text-align: left;" th:text="${report?.r46_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
@@ -1575,7 +1680,7 @@ function cancelModify() {
 </tr>
 
 <!-- R47 -->
-<tr>
+<tr  th:each="report: ${reportsummary}">
     <td style="text-align: right;">35</td>
     <td style="text-align: left;" th:text="${report?.r47_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
@@ -1587,7 +1692,7 @@ function cancelModify() {
 </tr>
 
 <!-- R48 -->
-<tr>
+<tr  th:each="report: ${reportsummary}">
     <td style="text-align: right;">36</td>
     <td rowspan="2" style="text-align: left;" th:text="${report?.r48_product ?: ''}"></td>
     <td  rowspan="2" style="text-align: right; padding-right:10px;"
@@ -1599,7 +1704,7 @@ function cancelModify() {
 </tr>
 
 <!-- R49 -->
-<tr>
+<tr  >
     <td style="text-align: right;">37</td>
     
    
@@ -1608,7 +1713,7 @@ function cancelModify() {
 </tr>
 
 <!-- R50 -->
-<tr>
+<tr  th:each="report: ${reportsummary}">
     <td style="text-align: right;">38</td>
     <td style="text-align: left;" th:text="${report?.r50_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
@@ -1620,7 +1725,7 @@ function cancelModify() {
 </tr>
 
 <!-- R51 -->
-<tr>
+<tr  th:each="report: ${reportsummary}">
     <td style="text-align: right;">39</td>
     <td style="text-align: left;" th:text="${report?.r51_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
@@ -1632,7 +1737,7 @@ function cancelModify() {
 </tr>
 
 <!-- R52 -->
-<tr>
+<tr  th:each="report: ${reportsummary}">
     <td style="text-align: right;">40</td>
     <td style="text-align: left;" th:text="${report?.r52_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
@@ -1644,7 +1749,7 @@ function cancelModify() {
 </tr>
 
 <!-- R53 -->
-<tr>
+<tr  th:each="report: ${reportsummary}">
     <td style="text-align: right;">41</td>
     <td style="text-align: left; font-weight:bold;" th:text="${report?.r53_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px; font-weight:bold;"
@@ -1656,7 +1761,7 @@ function cancelModify() {
 </tr>
 
 <!-- R54 -->
-<tr>
+<tr  th:each="report: ${reportsummary}">
     <td style="text-align: right;">42</td>
     <td style="text-align: left; font-weight:bold;" th:text="${report?.r54_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px; font-weight:bold;"
@@ -1668,7 +1773,7 @@ function cancelModify() {
 </tr>
 
 <!-- R55 -->
-<tr>
+<tr  th:each="report: ${reportsummary}">
     <td style="text-align: right;">43</td>
     <td style="text-align: left; font-weight:bold;" th:text="${report?.r55_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px; font-weight:bold;"
@@ -1691,7 +1796,7 @@ function cancelModify() {
 
 
 <!-- R57 -->
-<tr>
+<tr  th:each="report: ${reportsummary}">
     <td style="text-align: right;">44</td>
     <td style="text-align: left;" th:text="${report?.r57_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
@@ -1703,7 +1808,7 @@ function cancelModify() {
 </tr>
 
 <!-- R58 -->
-<tr>
+<tr  th:each="report: ${reportsummary}">
     <td style="text-align: right;">45</td>
     <td style="text-align: left;" th:text="${report?.r58_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
@@ -1715,7 +1820,7 @@ function cancelModify() {
 </tr>
 
 <!-- R59 -->
-<tr>
+<tr  th:each="report: ${reportsummary}">
     <td style="text-align: right;">46</td>
     <td style="text-align: left;" th:text="${report?.r59_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
@@ -1727,7 +1832,7 @@ function cancelModify() {
 </tr>
 
 <!-- R60 -->
-<tr>
+<tr   th:each="report: ${reportsummary}">
     <td style="text-align: right;">49</td>
     <td style="text-align: left;" th:text="${report?.r60_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
@@ -1739,7 +1844,7 @@ function cancelModify() {
 </tr>
 
 <!-- R61 -->
-<tr>
+<tr th:each="report: ${reportsummary}">
     <td style="text-align: right;">47</td>
     <td style="text-align: left;" th:text="${report?.r61_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
@@ -1751,7 +1856,7 @@ function cancelModify() {
 </tr>
 
 <!-- R62 -->
-<tr>
+<tr  th:each="report: ${reportsummary}">
     <td style="text-align: right;">48</td>
     <td style="text-align: left; font-weight:bold;" th:text="${report?.r62_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px; font-weight:bold;"
@@ -1762,7 +1867,7 @@ function cancelModify() {
         onclick="showdetailsbyRowAndColumn(this)"></td>
 </tr>
 
-<tr>
+<tr   th:each="report: ${reportsummary}">
     
 
     <td colspan="3" style="text-align: center;  height: 30px;  font-weight:bold;   padding:10px; ">Tier II capital: regulatory adjustments		
@@ -1773,7 +1878,7 @@ function cancelModify() {
 </tr>
 
 <!-- R64 -->
-<tr>
+<tr  th:each="report: ${reportsummary}">
     <td style="text-align: right;">49</td>
     <td style="text-align: left;" th:text="${report?.r64_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
@@ -1785,7 +1890,7 @@ function cancelModify() {
 </tr>
 
 <!-- R65 -->
-<tr>
+<tr th:each="report: ${reportsummary}">
     <td style="text-align: right;">50</td>
     <td style="text-align: left;" th:text="${report?.r65_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
@@ -1797,7 +1902,7 @@ function cancelModify() {
 </tr>
 
 <!-- R66 -->
-<tr>
+<tr  th:each="report: ${reportsummary}">
     <td style="text-align: right;">51<br><br>52</td>
     <td style="text-align: left;" >Investments in the capital of banking, financial and insurance entities that are outside the scope of regulatory consolidation, net <br>of eligible short positions, where the bank does not own more than 10% of the issued common share capital of the entity<br> (amount above the 10% threshold).
 
@@ -1821,7 +1926,7 @@ function cancelModify() {
 </tr> -->
 
 <!-- R68 -->
-<tr>
+<tr  th:each="report: ${reportsummary}">
     <td style="text-align: right;">52</td>
     <td style="text-align: left;" th:text="${report?.r68_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
@@ -1833,7 +1938,7 @@ function cancelModify() {
 </tr>
 
 <!-- R69 -->
-<tr>
+<tr  th:each="report: ${reportsummary}">
     <td style="text-align: right;">53</td>
     <td style="text-align: left;" th:text="${report?.r69_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
@@ -1845,7 +1950,7 @@ function cancelModify() {
 </tr>
 
 <!-- R70 -->
-<tr>
+<tr  th:each="report: ${reportsummary}">
     <td style="text-align: right;">54</td>
     <td style="text-align: left; font-weight:bold;" th:text="${report?.r70_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
@@ -1857,7 +1962,7 @@ function cancelModify() {
 </tr>
 
 <!-- R71 -->
-<tr>
+<tr  th:each="report: ${reportsummary}">
     <td style="text-align: right;">55</td>
     <td style="text-align: left; font-weight:bold;" th:text="${report?.r71_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
@@ -1869,7 +1974,7 @@ function cancelModify() {
 </tr>
 
 <!-- R72 -->
-<tr>
+<tr  th:each="report: ${reportsummary}">
     <td style="text-align: right;">56</td>
     <td style="text-align: left; font-weight:bold;" th:text="${report?.r72_product ?: ''}"></td>
     <td style="text-align: right; padding-right:10px;"
@@ -1881,15 +1986,16 @@ function cancelModify() {
 </tr>
 
 <!-- R73 -->
-<tr>
+<tr  th:each="report: ${reportsummary}">
     <td style="text-align: right;">57</td>
     <td style="text-align: left; font-weight:bold;" th:text="${report?.r73_product ?: ''}"></td>
-    <td style="text-align: right; padding-right:10px;"
-      th:text="${report?.r73_amount != null 
-              ? #numbers.formatDecimal(report.r73_amount, 1, 'COMMA', 0, 'POINT') 
-              : ''}"
-        th:attr="RowId='R73', ColumnId='C2'"
-        onclick="showdetailsbyRowAndColumn(this)"></td>
+   <td id="ROW73" style="padding-left: 20px; font-weight: bold; text-align: right;">
+        <input class="display-input Show_input" type="text"
+            th:value="${report1.r73_amount != null ? #numbers.formatDecimal(report1.r73_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
+            id="r73_amount" name="r73_amount"
+            style="background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+            readonly />
+    </td>
 </tr>
 
 

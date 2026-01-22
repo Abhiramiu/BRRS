@@ -777,6 +777,14 @@ public class RegulatoryReportServices {
 			 * BRRS_RECON_OF_FS_ReportService.getBRRS_Recon_Of_FS_View(reportId, fromdate,
 			 * todate, currency, dtltype, pageable, type, version); break;
 			 */
+		
+		
+		  case "B_III_CETD":
+					  
+					  repsummary = b_III_cetd_ReportService.getB_III_CETDView(reportId, fromdate,
+					  todate, currency, dtltype, pageable, type, version);
+					  
+					  break;
 
 			case "M_SRWA_12A":
 
@@ -1690,6 +1698,17 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
+				
+				
+			case "B_III_CETD":
+				 try {
+				
+				 repfile = b_III_cetd_ReportService.getB_III_CETDExcel(filename, reportId,
+				 fromdate, todate, currency, dtltype, type, version);
+				 } catch (Exception e) {
+				 // TODO Auto-generated catch block 
+					 e.printStackTrace();
+					 } break;
 
 			case "COMMON_DISCLOSURE":
 				try {

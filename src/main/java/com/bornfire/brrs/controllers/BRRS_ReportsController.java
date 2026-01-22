@@ -45,6 +45,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.bornfire.brrs.dto.ReportLineItemDTO;
 import com.bornfire.brrs.entities.*;
 import com.bornfire.brrs.services.BRRS_ADISB1_ReportService;
+import com.bornfire.brrs.services.BRRS_BASEL_III_COM_EQUITY_DISC_ReportService;
 import com.bornfire.brrs.services.BRRS_BDISB1_ReportService;
 import com.bornfire.brrs.services.BRRS_BDISB2_ReportService;
 import com.bornfire.brrs.services.BRRS_BDISB3_ReportService;
@@ -864,6 +865,30 @@ public class BRRS_ReportsController {
 			request.setReport_date(asondate);
 			// call services
 			brrs_m_sci_e_reportservice.updateReport(request);
+
+			return ResponseEntity.ok(" Updated Successfully");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Update Failed: " + e.getMessage());
+		}
+	}
+	
+	@Autowired
+	BRRS_BASEL_III_COM_EQUITY_DISC_ReportService b_III_cetd_ReportService;
+
+	@RequestMapping(value = "/B_III_CETDupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<String> updateReport(
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+			@ModelAttribute BASEL_III_COM_EQUITY_DISC_Manual_Summary_Entity request) {
+		try {
+			System.out.println("came to single controller");
+
+			// ✅ set the asondate into entity
+			request.setReport_date(asondate);
+			// call services
+			b_III_cetd_ReportService.updateReport(request);
 
 			return ResponseEntity.ok(" Updated Successfully");
 		} catch (Exception e) {
