@@ -372,16 +372,16 @@ public class BRRS_Common_Disclosure_ReportService {
                     }
 
                     // ROW 12
-                    row = sheet.getRow(11);
+                    // row = sheet.getRow(11);
 
-                    cellC = row.getCell(4);
-                    if (cellC == null)
-                        cellC = row.createCell(4);
-                    if (record.getR12_COMPONENT_OF_REGU() != null) {
-                        cellC.setCellValue(record.getR12_COMPONENT_OF_REGU().doubleValue());
-                    } else {
-                        cellC.setCellValue(0);
-                    }
+                    // cellC = row.getCell(4);
+                    // if (cellC == null)
+                    //     cellC = row.createCell(4);
+                    // if (record.getR12_COMPONENT_OF_REGU() != null) {
+                    //     cellC.setCellValue(record.getR12_COMPONENT_OF_REGU().doubleValue());
+                    // } else {
+                    //     cellC.setCellValue(0);
+                    // }
 
                     // ROW 13
                     row = sheet.getRow(12);
@@ -410,7 +410,7 @@ public class BRRS_Common_Disclosure_ReportService {
 
                 }
 
-                workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
+                workbook.setForceFormulaRecalculation(true);
             } else {
 
             }
@@ -608,7 +608,7 @@ public class BRRS_Common_Disclosure_ReportService {
 
                 }
 
-                workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
+                workbook.setForceFormulaRecalculation(true);
             } else {
 
             }

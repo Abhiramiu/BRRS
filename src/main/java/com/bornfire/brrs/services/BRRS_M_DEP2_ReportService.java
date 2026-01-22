@@ -85,8 +85,8 @@ public class BRRS_M_DEP2_ReportService {
 
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
-	public ModelAndView getM_DEP2View(String reportId, String fromdate, String todate, String currency,
-			String dtltype, Pageable pageable, String type, String version) {
+	public ModelAndView getM_DEP2View(String reportId, String fromdate, String todate,
+			String currency, String dtltype, Pageable pageable, String type, BigDecimal version) {
 
 		ModelAndView mv = new ModelAndView();
 //		Session hs = sessionFactory.getCurrentSession();
@@ -103,7 +103,7 @@ public class BRRS_M_DEP2_ReportService {
 				// T1Master = hs.createQuery("from BRF1_REPORT_ENTITY a where a.report_date = ?1
 				// ", BRF1_REPORT_ENTITY.class)
 				// .setParameter(1, df.parse(todate)).getResultList();
-				T1Master = M_DEP2_Archival_Summary_Repo.getdatabydateListarchival(dateformat.parse(todate), version);
+				T1Master = M_DEP2_Archival_Summary_Repo.getdatabydateListarchival(d1, version);
 
 			} catch (ParseException e) {
 				e.printStackTrace();
@@ -227,13 +227,12 @@ public class BRRS_M_DEP2_ReportService {
 	}
 
 	public byte[] BRRS_M_DEP2Excel(String filename, String reportId, String fromdate, String todate, String currency,
-			String dtltype, String type, String version) throws Exception {
+			String dtltype, String type, BigDecimal version)throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.");
 		System.out.println(type);
 		System.out.println(version);
 		if (type.equals("ARCHIVAL") & version != null) {
-			byte[] ARCHIVALreport = getExcelM_DEP2ARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type,
-					version);
+			byte[] ARCHIVALreport = getExcelM_DEP2ARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
 			return ARCHIVALreport;
 		}
 
@@ -5649,7 +5648,7 @@ public class BRRS_M_DEP2_ReportService {
 	}
 
 	public byte[] getExcelM_DEP2ARCHIVAL(String filename, String reportId, String fromdate, String todate,
-			String currency, String dtltype, String type, String version) throws Exception {
+			String currency, String dtltype, String type, BigDecimal version) throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.");
 		if (type.equals("ARCHIVAL") & version != null) {
 

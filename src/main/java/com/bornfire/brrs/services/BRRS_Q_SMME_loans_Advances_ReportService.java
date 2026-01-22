@@ -752,7 +752,7 @@ public class BRRS_Q_SMME_loans_Advances_ReportService {
 					}
 
 				}
-				workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
+				workbook.setForceFormulaRecalculation(true);
 			} else {
 
 			}
@@ -1454,7 +1454,7 @@ public class BRRS_Q_SMME_loans_Advances_ReportService {
 					}
 
 				}
-				workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
+				workbook.setForceFormulaRecalculation(true);
 			} else {
 
 			}

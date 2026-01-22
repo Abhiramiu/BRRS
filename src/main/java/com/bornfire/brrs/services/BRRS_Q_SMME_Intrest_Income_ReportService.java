@@ -788,7 +788,7 @@ public class BRRS_Q_SMME_Intrest_Income_ReportService {
 					// 44 is Calculation Part
 
 				}
-				workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
+				workbook.setForceFormulaRecalculation(true);
 			} else {
 
 			}
@@ -1520,7 +1520,7 @@ public class BRRS_Q_SMME_Intrest_Income_ReportService {
 					// 44 is Calculation Part
 
 				}
-				workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
+				workbook.setForceFormulaRecalculation(true);
 			} else {
 
 			}

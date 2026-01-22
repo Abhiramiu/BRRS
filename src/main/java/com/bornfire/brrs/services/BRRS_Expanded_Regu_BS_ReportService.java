@@ -83,7 +83,7 @@ public class BRRS_Expanded_Regu_BS_ReportService<BBRS_Expanded_Regu_BS_Detail_Re
     SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
     public ModelAndView getBRRS_Expanded_Regu_BS_View(String reportId, String fromdate, String todate, String currency,
-            String dtltype, Pageable pageable, String type, String version) {
+            String dtltype, Pageable pageable, String type, BigDecimal version) {
         ModelAndView mv = new ModelAndView();
         Session hs = sessionFactory.getCurrentSession();
         int pageSize = pageable.getPageSize();
@@ -204,12 +204,12 @@ public class BRRS_Expanded_Regu_BS_ReportService<BBRS_Expanded_Regu_BS_Detail_Re
 
     public byte[] getExpanded_Regu_BSExcel(String filename, String reportId, String fromdate, String todate,
             String currency,
-            String dtltype, String type, String version) throws Exception {
+            String dtltype, String type, BigDecimal version) throws Exception {
         logger.info("Service: Starting Excel generation process in memory.");
 
         // ARCHIVAL check
         System.out.println(type + "   " + version);
-        if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && !version.trim().isEmpty()) {
+        if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && version != null) {
             logger.info("Service: Generating ARCHIVAL report for version {}", version);
             return getSummaryExcelARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
 
@@ -882,7 +882,7 @@ public class BRRS_Expanded_Regu_BS_ReportService<BBRS_Expanded_Regu_BS_Detail_Re
     }
 
     public byte[] getSummaryExcelARCHIVAL(String filename, String reportId, String fromdate, String todate,
-            String currency, String dtltype, String type, String version) throws Exception {
+            String currency, String dtltype, String type, BigDecimal version) throws Exception {
         logger.info("Service: Starting Excel generation process in memory.");
 
         if (type.equals("ARCHIVAL") & version != null) {

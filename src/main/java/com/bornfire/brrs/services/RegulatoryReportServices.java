@@ -846,6 +846,16 @@ public class RegulatoryReportServices {
 				repsummary = BRRS_Common_Disclosure_Reportservice.getCommon_DisclosureView(reportId,
 						fromdate, todate, currency, dtltype, pageable, type, version);
 				break;
+
+							case "EXPANDED_REGU_BS":
+
+				repsummary = BRRS_Expanded_Regu_BS_ReportService.getBRRS_Expanded_Regu_BS_View(reportId,
+						fromdate, todate, currency, dtltype, pageable, type, version);
+
+				break;
+
+						 case "M_DEP2": repsummary = BRRS_M_DEP2_reportservice.getM_DEP2View(reportId,
+			 fromdate, todate, currency, dtltype, pageable, type, version); break;
 			/*
 			 * case "AML":
 			 * 
@@ -1712,7 +1722,7 @@ public class RegulatoryReportServices {
 					 e.printStackTrace();
 					 } break;
 
-			case "COMMON_DISCLOSURE":
+						case "COMMON_DISCLOSURE":
 				try {
 					repfile = BRRS_Common_Disclosure_Reportservice.getCommon_DisclosureExcel(filename,
 							reportId, fromdate, todate, currency, dtltype, type, version);
@@ -1720,7 +1730,28 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
+				
+						
+				case "EXPANDED_REGU_BS":
+				try {
+					repfile = BRRS_Expanded_Regu_BS_ReportService.getExpanded_Regu_BSExcel(filename,
+							reportId, fromdate, todate, currency, dtltype, type, version);
+				} catch (Exception e) { // TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
+			
+
+			 case "M_DEP2":
+				try {
+					repfile = BRRS_M_DEP2_reportservice.BRRS_M_DEP2Excel(filename,
+							reportId, fromdate, todate, currency, dtltype, type, version);
+				} catch (Exception e) { // TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+			 
 			case "M_PLL": try { repfile =
 					  BRRS_M_PLL_reportservice.getM_PLLExcel(filename, reportId, fromdate, todate,
 					  currency, dtltype, type, version); 
