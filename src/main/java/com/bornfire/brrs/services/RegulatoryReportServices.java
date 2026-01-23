@@ -794,6 +794,13 @@ public class RegulatoryReportServices {
 						fromdate, todate, currency, dtltype, pageable, type, version);
 
 				break;
+				
+			  case "M_DEP1": 
+					 
+					 repsummary = BRRS_M_DEP1_reportservice.getM_DEP1View(reportId,
+						 fromdate, todate, currency, dtltype, pageable, type, version);
+					 
+					 break;
 
 			case "MDISB5":
 
@@ -1907,10 +1914,7 @@ public class RegulatoryReportServices {
 			 * todate, currency, dtltype, type, version); } catch (Exception e) { // TODO
 			 * Auto-generated catch block e.printStackTrace(); } break;
 			 * 
-			 * case "M_DEP1": try { repfile =
-			 * BRRS_M_DEP1_reportservice.BRRS_M_DEP1Excel(filename, reportId, fromdate,
-			 * todate, currency, dtltype, type, version); } catch (Exception e) { // TODO
-			 * Auto-generated catch block e.printStackTrace(); } break;
+
 			 * 
 			 * case "M_UNCONS_INVEST": try { repfile =
 			 * BRRS_M_UNCONS_INVEST_reportservice.BRRS_M_UNCONS_INVESTExcel(filename,
@@ -2356,6 +2360,16 @@ public class RegulatoryReportServices {
 				}
 				break;
 				
+			 case "M_DEP1": 
+				 try { 
+					 
+					 repfile =
+					  BRRS_M_DEP1_reportservice.BRRS_M_DEP1Excel(filename, 
+							  reportId, fromdate,
+					 todate, currency, dtltype, type, version); } 
+				 catch (Exception e) { 
+					 // TODOAuto-generated catch block
+					   e.printStackTrace(); } break;
 			
 			
 			
