@@ -46,6 +46,9 @@ public class Common_Disclosure_Detail_Entity {
     @Column(name = "ACCT_BALANCE_IN_PULA", precision = 24, scale = 3)
     private BigDecimal acctBalanceInpula;
 
+        @Column(name = "AVERAGE", precision = 24, scale = 3)
+    private BigDecimal average;
+
     @Column(name = "REPORT_DATE")
     @DateTimeFormat(pattern = "dd-MM-yyyy")
     private Date reportDate;
@@ -252,4 +255,11 @@ public class Common_Disclosure_Detail_Entity {
         super();
     }
 
+    public BigDecimal getAverage() {
+        return average;
+    }
+
+    public void setAverage(BigDecimal average) {
+        this.average = average;
+    }
 }

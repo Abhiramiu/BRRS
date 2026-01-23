@@ -449,76 +449,76 @@ PURPOSE		: BRRSREPORT
         };
 
 
-  		function downloadfile(button) {
+        function downloadfile(button) {
 
-    var reportid = button.getAttribute('data-reportid');
-    var asondate = button.getAttribute('data-asondate');
-    var fromdate = button.getAttribute('data-fromdate');
-    var todate = button.getAttribute('data-todate');
-    var currency = button.getAttribute('data-currency');
-    var subreportid = button.getAttribute('data-subreportid');
-    var secid = button.getAttribute('data-secid');
-    var dtltype = button.getAttribute('data-dtltype');
-    var filename = button.getAttribute('data-filename');
-    var type = button.getAttribute('data-type');
-    var version = button.getAttribute('data-version');
+            var reportid = button.getAttribute('data-reportid');
+            var asondate = button.getAttribute('data-asondate');
+            var fromdate = button.getAttribute('data-fromdate');
+            var todate = button.getAttribute('data-todate');
+            var currency = button.getAttribute('data-currency');
+            var subreportid = button.getAttribute('data-subreportid');
+            var secid = button.getAttribute('data-secid');
+            var dtltype = button.getAttribute('data-dtltype');
+            var filename = button.getAttribute('data-filename');
+            var type = button.getAttribute('data-type');
+            var version = button.getAttribute('data-version');
 
-    var loader = new bootstrap.Modal(
-        document.getElementById('loader'),
-        { backdrop: 'static', keyboard: false }
-    );
-    loader.show();
+            var loader = new bootstrap.Modal(
+                document.getElementById('loader'),
+                { backdrop: 'static', keyboard: false }
+            );
+            loader.show();
 
-    // ✅ Build URL safely
-    var url = './downloadExcel?reportid=' + reportid +
-        '&fromdate=' + fromdate +
-        '&asondate=' + asondate +
-        '&todate=' + todate +
-        '&currency=' + currency +
-        '&subreportid=' + subreportid +
-        '&secid=' + secid +
-        '&filename=' + filename +
-        '&type=' + type;
+            // ✅ Build URL safely
+            var url = './downloadExcel?reportid=' + reportid +
+                '&fromdate=' + fromdate +
+                '&asondate=' + asondate +
+                '&todate=' + todate +
+                '&currency=' + currency +
+                '&subreportid=' + subreportid +
+                '&secid=' + secid +
+                '&filename=' + filename +
+                '&type=' + type;
 
-    // ✅ ONLY append version if valid
-    if (version && version.trim() !== '') {
-        url += '&version=' + version;
-    }
-
-    $.ajax({
-        url: url,
-        type: 'GET',
-        xhrFields: { responseType: 'blob' },
-
-        success: function (data) {
-            $('#loader').modal('hide');
-
-            if (data && data.size > 100) {
-                const blob = new Blob([data], {
-                    type: 'application/vnd.ms-excel'
-                });
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.style.display = 'none';
-                a.href = url;
-                a.download = filename;
-                document.body.appendChild(a);
-                a.click();
-                window.URL.revokeObjectURL(url);
-                document.body.removeChild(a);
-
-                showResultModal('BRRS', filename + ' downloaded successfully.');
-            } else {
-                showResultModal('Information', 'No data was available to create a download.');
+            // ✅ ONLY append version if valid
+            if (version && version.trim() !== '') {
+                url += '&version=' + version;
             }
-        },
 
-        error: function () {
-            $('#loader').modal('hide');
-            showResultModal('Error', 'An error occurred while downloading the file.');
+            $.ajax({
+                url: url,
+                type: 'GET',
+                xhrFields: { responseType: 'blob' },
+
+                success: function (data) {
+                    $('#loader').modal('hide');
+
+                    if (data && data.size > 100) {
+                        const blob = new Blob([data], {
+                            type: 'application/vnd.ms-excel'
+                        });
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.style.display = 'none';
+                        a.href = url;
+                        a.download = filename;
+                        document.body.appendChild(a);
+                        a.click();
+                        window.URL.revokeObjectURL(url);
+                        document.body.removeChild(a);
+
+                        showResultModal('BRRS', filename + ' downloaded successfully.');
+                    } else {
+                        showResultModal('Information', 'No data was available to create a download.');
+                    }
+                },
+
+                error: function () {
+                    $('#loader').modal('hide');
+                    showResultModal('Error', 'An error occurred while downloading the file.');
+                }
+            });
         }
-    });
-}
 
 
         function closemodel() {
@@ -1321,7 +1321,7 @@ PURPOSE		: BRRSREPORT
                                                     style="padding-left: 20px;font-weight: bold;background-color: #D8D8D8;">
                                                 </td>
                                                 <td th:text="${#numbers.formatDecimal(reportsummary.R12_COMPONENT_OF_REGU, 0, 'COMMA', 0, 'POINT')}"
-                                                    style="text-align:right;font-weight: bold;" ></td>
+                                                    style="text-align:right;font-weight: bold;"></td>
                                                 <td th:text="${reportsummary.R12_SOURCE_REF}"></td>
                                             </tr>
 
@@ -1381,8 +1381,10 @@ PURPOSE		: BRRSREPORT
                                     <th>ACCT_NUMBER</th>
                                     <th>ACCT_NAME</th>
                                     <th style="text-align:right;">ACCT_BALANCE_IN_PULA</th>
+                                    <th style="text-align:right;">AVERAGE</th>
                                     <th>REPORT LABEL</th>
                                     <th>REPORT ADDL CRITERIA1</th>
+                                    
                                     <th>REPORT_DATE</th>
                                 </tr>
 
@@ -1407,7 +1409,9 @@ PURPOSE		: BRRSREPORT
                                     <td style="text-align:right;"
                                         th:text="${#numbers.formatDecimal(report.acctBalanceInpula == null ? 0 : report.acctBalanceInpula, 1, 'COMMA', 0, 'POINT')}">
                                     </td>
-
+                                    <td style="text-align:right" th:text="${report.average != null ?
+      #numbers.formatDecimal(report.average, 1, 'COMMA', 0, 'POINT') : '0'}">
+                                    </td>
                                     <td th:text="${report.reportLabel}"></td>
                                     <td th:text="${report.reportAddlCriteria1}"></td>
                                     <td th:text="${#dates.format(report.reportDate, 'dd-MM-yyyy')}"></td>
@@ -1454,38 +1458,46 @@ PURPOSE		: BRRSREPORT
                             <input type="text" th:field="*{acctName}" class="form-control form-control-sm" readonly />
                         </div>
 
-                        <div class="col-sm-1"></div>
+                                 <div class="col-sm-1"></div>
 
-                        <label class="col-sm-2">Acct Balance</label>
-                        <div class="col-sm-3">
-                            <input type="number" step="0.01" th:field="*{acctBalanceInpula}"
-                                class="form-control form-control-sm" style="text-align:right;" />
-                        </div>
-                    </div>
+                                <label class="col-sm-2">Acct Balance</label>
+                                <div class="col-sm-3">
+                                    <input type="number" step="0.01" th:field="*{acctBalanceInpula}"
+                                        class="form-control form-control-sm" style="text-align:right;" />
+                                </div>
+                            </div>
 
-                    <div class="row formline" style="margin-top:10px;">
-                        <label class="col-sm-2">Report Label</label>
-                        <div class="col-sm-3">
-                            <input type="text" th:field="*{reportLabel}" class="form-control form-control-sm"
-                                readonly />
-                        </div>
+                            <div class="row formline" style="margin-top:10px;">
+                                <label class="col-sm-2">Average</label>
+                                <div class="col-sm-3">
+                                    <input type="number" step="0.01" th:field="*{average}"
+                                        class="form-control form-control-sm" style="text-align:right;" />
+                                </div>
 
-                        <div class="col-sm-1"></div>
+                                <div class="col-sm-1"></div>
 
-                        <label class="col-sm-2">Report Addl Criteria 1</label>
-                        <div class="col-sm-3">
-                            <input type="text" th:field="*{reportAddlCriteria1}" class="form-control form-control-sm"
-                                readonly />
-                        </div>
-                    </div>
+                                <label class="col-sm-2">Report Label</label>
+                                <div class="col-sm-3">
+                                    <input type="text" th:field="*{reportLabel}" class="form-control form-control-sm"
+                                        readonly />
+                                </div>
+                            </div>
 
-                    <div class="row formline" style="margin-top:10px;">
-                        <label class="col-sm-2">Report Date</label>
-                        <div class="col-sm-3">
-                            <input type="date" name="reportDate" class="form-control form-control-sm" readonly
-                                th:value="${#dates.format(Common_DisclosureData.reportDate, 'yyyy-MM-dd')}" />
-                        </div>
-                    </div>
+                            <div class="row formline" style="margin-top:10px;">
+                                <label class="col-sm-2">Report Addl Criteria 1</label>
+                                <div class="col-sm-3">
+                                    <input type="text" th:field="*{reportAddlCriteria1}"
+                                        class="form-control form-control-sm" readonly />
+                                </div>
+
+                                <div class="col-sm-1"></div>
+
+                                <label class="col-sm-2">Report Date</label>
+                                <div class="col-sm-3">
+                                    <input type="date" name="reportDate" class="form-control form-control-sm" readonly
+                                        th:value="${#dates.format(Common_DisclosureData.reportDate, 'yyyy-MM-dd')}" />
+                                </div>
+                            </div>
 
                     <div style="text-align:center; margin-top:20px;">
                         <button type="button" class="custom-tab-btn" th:if="${formmode == 'edit'}"

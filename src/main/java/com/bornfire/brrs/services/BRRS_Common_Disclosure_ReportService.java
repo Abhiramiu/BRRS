@@ -82,14 +82,14 @@ public class BRRS_Common_Disclosure_ReportService {
     SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
     public ModelAndView getCommon_DisclosureView(String reportId, String fromdate, String todate,
-			String currency, String dtltype, Pageable pageable, String type, BigDecimal version) {
+            String currency, String dtltype, Pageable pageable, String type, BigDecimal version) {
 
         ModelAndView mv = new ModelAndView();
 
         System.out.println("testing");
         System.out.println(version);
 
-       if (type.equals("ARCHIVAL") & version != null) {
+        if (type.equals("ARCHIVAL") & version != null) {
 
             System.out.println("ARCHIVAL MODE");
             System.out.println("version = " + version);
@@ -97,7 +97,7 @@ public class BRRS_Common_Disclosure_ReportService {
             List<Common_Disclosure_Archival_Summary_Entity> T1Master = new ArrayList<>();
 
             try {
-                	Date d1 = dateformat.parse(todate);
+                Date d1 = dateformat.parse(todate);
 
                 T1Master = Common_Disclosure_Archival_Summary_Repo.getdatabydateListarchival(d1, version);
 
@@ -227,9 +227,10 @@ public class BRRS_Common_Disclosure_ReportService {
         logger.info("Service: Starting Excel generation process in memory.");
 
         // ARCHIVAL check
-       		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && version != null) {
+        if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && version != null) {
             logger.info("Service: Generating ARCHIVAL report for version {}", version);
-            return getExcelCommon_DisclosureARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
+            return getExcelCommon_DisclosureARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type,
+                    version);
         }
 
         // Fetch data
@@ -310,7 +311,7 @@ public class BRRS_Common_Disclosure_ReportService {
                         row = sheet.createRow(startRow + i);
                     }
 
-  // A TABLE
+                    // A TABLE
                     // ---------- R7 (Row 7 -> index 6) ----------
                     row = sheet.getRow(6);
                     Cell cellC = row.getCell(4);
@@ -376,11 +377,11 @@ public class BRRS_Common_Disclosure_ReportService {
 
                     // cellC = row.getCell(4);
                     // if (cellC == null)
-                    //     cellC = row.createCell(4);
+                    // cellC = row.createCell(4);
                     // if (record.getR12_COMPONENT_OF_REGU() != null) {
-                    //     cellC.setCellValue(record.getR12_COMPONENT_OF_REGU().doubleValue());
+                    // cellC.setCellValue(record.getR12_COMPONENT_OF_REGU().doubleValue());
                     // } else {
-                    //     cellC.setCellValue(0);
+                    // cellC.setCellValue(0);
                     // }
 
                     // ROW 13
@@ -406,7 +407,6 @@ public class BRRS_Common_Disclosure_ReportService {
                     } else {
                         cellC.setCellValue(0);
                     }
-
 
                 }
 
@@ -435,7 +435,7 @@ public class BRRS_Common_Disclosure_ReportService {
         }
 
         List<Common_Disclosure_Archival_Summary_Entity> dataList = Common_Disclosure_Archival_Summary_Repo
-              .getdatabydateListarchival(dateformat.parse(todate), version);
+                .getdatabydateListarchival(dateformat.parse(todate), version);
 
         if (dataList.isEmpty()) {
             logger.warn("Service: No data found for Common_Disclosure report. Returning empty result.");
@@ -698,7 +698,7 @@ public class BRRS_Common_Disclosure_ReportService {
             balanceStyle.setBorderRight(border);
 
             // Header row
-            String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE IN PULA", "REPORT LABEL",
+            String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE IN PULA", "AVERAGE", "REPORT LABEL",
                     "REPORT ADDL CRITERIA1", "REPORT_DATE" };
 
             XSSFRow headerRow = sheet.createRow(0);
@@ -728,6 +728,7 @@ public class BRRS_Common_Disclosure_ReportService {
                     row.createCell(0).setCellValue(item.getCustId());
                     row.createCell(1).setCellValue(item.getAcctNumber());
                     row.createCell(2).setCellValue(item.getAcctName());
+
                     // ACCT BALANCE (right aligned, 3 decimal places)
                     Cell balanceCell = row.createCell(3);
                     if (item.getAcctBalanceInpula() != null) {
@@ -737,15 +738,24 @@ public class BRRS_Common_Disclosure_ReportService {
                     }
                     balanceCell.setCellStyle(balanceStyle);
 
-                    row.createCell(4).setCellValue(item.getReportLabel());
-                    row.createCell(5).setCellValue(item.getReportAddlCriteria1());
-                    row.createCell(6)
+                    // AVERAGE (right aligned, 3 decimal places)
+                    Cell balanceCell1 = row.createCell(4);
+                    if (item.getAverage() != null) {
+                        balanceCell1.setCellValue(item.getAverage().doubleValue());
+                    } else {
+                        balanceCell1.setCellValue(0);
+                    }
+                    balanceCell1.setCellStyle(balanceStyle);
+
+                    row.createCell(5).setCellValue(item.getReportLabel());
+                    row.createCell(6).setCellValue(item.getReportAddlCriteria1());
+                    row.createCell(7)
                             .setCellValue(item.getReportDate() != null
                                     ? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
                                     : "");
 
                     // Apply data style for all other cells
-                    for (int j = 0; j < 7; j++) {
+                    for (int j = 0; j < 8; j++) {
                         if (j != 3) {
                             row.getCell(j).setCellStyle(dataStyle);
                         }
@@ -821,7 +831,7 @@ public class BRRS_Common_Disclosure_ReportService {
             balanceStyle.setBorderRight(border);
 
             // Header row
-            String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE IN PULA", "REPORT LABEL",
+            String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE IN PULA", "AVERAGE", "REPORT LABEL",
                     "REPORT ADDL CRITERIA1", "REPORT_DATE" };
 
             XSSFRow headerRow = sheet.createRow(0);
@@ -862,15 +872,24 @@ public class BRRS_Common_Disclosure_ReportService {
                     }
                     balanceCell.setCellStyle(balanceStyle);
 
-                    row.createCell(4).setCellValue(item.getReportLabel());
-                    row.createCell(5).setCellValue(item.getReportAddlCriteria1());
-                    row.createCell(6)
+                    // AVERAGE (right aligned, 3 decimal places)
+                    Cell balanceCell1 = row.createCell(4);
+                    if (item.getAverage() != null) {
+                        balanceCell1.setCellValue(item.getAverage().doubleValue());
+                    } else {
+                        balanceCell1.setCellValue(0);
+                    }
+                    balanceCell1.setCellStyle(balanceStyle);
+
+                    row.createCell(5).setCellValue(item.getReportLabel());
+                    row.createCell(6).setCellValue(item.getReportAddlCriteria1());
+                    row.createCell(7)
                             .setCellValue(item.getReportDate() != null
                                     ? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
                                     : "");
 
                     // Apply data style for all other cells
-                    for (int j = 0; j < 7; j++) {
+                    for (int j = 0; j < 8; j++) {
                         if (j != 3) {
                             row.getCell(j).setCellStyle(dataStyle);
                         }
@@ -924,6 +943,7 @@ public class BRRS_Common_Disclosure_ReportService {
         try {
             String acctNo = request.getParameter("acctNumber");
             String acctBalanceInpula = request.getParameter("acctBalanceInpula");
+            String average = request.getParameter("average");
             String acctName = request.getParameter("acctName");
             String reportDateStr = request.getParameter("reportDate");
 
@@ -954,7 +974,15 @@ public class BRRS_Common_Disclosure_ReportService {
                     logger.info("Balance updated to {}", newacctBalanceInpula);
                 }
             }
-
+            if (average != null && !average.isEmpty()) {
+                BigDecimal newaverage = new BigDecimal(average);
+                if (existing.getAverage() == null ||
+                        existing.getAverage().compareTo(newaverage) != 0) {
+                    existing.setAverage(newaverage);
+                    isChanged = true;
+                    logger.info("Balance updated to {}", newaverage);
+                }
+            }
             if (isChanged) {
                 brrs_Common_Disclosure_detail_repo.save(existing);
                 logger.info("Record updated successfully for account {}", acctNo);
