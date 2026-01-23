@@ -1,6 +1,7 @@
 package com.bornfire.brrs.entities;
 
 import java.util.Date;
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,5 +15,5 @@ public interface BRRS_M_SRWA_12A_New_Archival_Summary6_Repo extends JpaRepositor
     List<Object> getM_SRWA_12NewAarchival();
 
     @Query(value = "select * from BRRS_M_SRWA_12A_NEW_ARCHIVALTABLE_SUMMARY6 where REPORT_DATE = ?1 and REPORT_VERSION = ?2", nativeQuery = true)
-    List<M_SRWA_12A_New_Archival_Summary_Entity6> getdatabydateListarchival(Date report_date, String report_version);
+    List<M_SRWA_12A_New_Archival_Summary_Entity6> getdatabydateListarchival(Date report_date, BigDecimal report_version);
 }

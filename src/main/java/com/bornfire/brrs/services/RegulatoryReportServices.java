@@ -436,6 +436,13 @@ public class RegulatoryReportServices {
 				  currency, dtltype, pageable, type, version); 
 		break;
 		
+		case "M_SRWA_12A_New":
+			  
+			 repsummary = brrs_M_SRWA_12A_New_reportservice.getM_SRWA_12ANewView(reportId,
+			 fromdate, todate, currency, dtltype, pageable, type, version);
+			 
+			  break;
+		
 		
 				  
 		/*
@@ -648,12 +655,7 @@ public class RegulatoryReportServices {
 			 * 
 			 * 
 			 * 
-			 * case "M_SRWA_12A_New":
 			 * 
-			 * repsummary = brrs_M_SRWA_12A_New_reportservice.getM_SRWA_12ANewView(reportId,
-			 * fromdate, todate, currency, dtltype, pageable, type, version);
-			 * 
-			 * break;
 			 * 
 			 * case "M_OB": repsummary = BRRS_M_OB_ReportService.getM_OBview(reportId,
 			 * fromdate, todate, currency, dtltype, pageable, type, version); break;
@@ -1993,12 +1995,7 @@ public class RegulatoryReportServices {
 			 * 
 			 * 
 			 * 
-			 * case "M_SRWA_12A_New": try {
 			 * 
-			 * repfile = brrs_M_SRWA_12A_New_reportservice.getM_SRWA_12A_NewExcel(filename,
-			 * reportId, fromdate, todate, currency, dtltype, type, version); } catch
-			 * (Exception e) { // TODO Auto-generated catch block e.printStackTrace(); }
-			 * break;
 			 * 
 			 * case "M_OB": try { repfile = BRRS_M_OB_ReportService.getM_OBExcel(filename,
 			 * reportId, fromdate, todate, currency, dtltype, type, version); } catch
@@ -2315,6 +2312,22 @@ public class RegulatoryReportServices {
 			 * todate, currency, dtltype, type, version); } catch (Exception e) { // TODO
 			 * Auto-generated catch block e.printStackTrace(); } break;
 			 */
+			
+			
+				  
+			case "M_SRWA_12A_New":
+				try {
+
+					repfile = brrs_M_SRWA_12A_New_reportservice.getM_SRWA_12A_NewExcel(filename,
+							reportId, fromdate, todate, currency, dtltype, type, version);
+				} catch (Exception e) { // TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+				
+			
+			
+			
 		}
 		
 		return repfile;

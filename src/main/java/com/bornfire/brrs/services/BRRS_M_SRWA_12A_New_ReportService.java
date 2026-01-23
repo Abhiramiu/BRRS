@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -166,7 +167,7 @@ public class BRRS_M_SRWA_12A_New_ReportService {
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
 		public ModelAndView getM_SRWA_12ANewView(String reportId, String fromdate, String todate, String currency,
-			String dtltype, Pageable pageable, String type, String version) {
+			String dtltype, Pageable pageable, String type, BigDecimal version) {
 
 		ModelAndView mv = new ModelAndView();
 		Session hs = sessionFactory.getCurrentSession();
@@ -365,13 +366,13 @@ public class BRRS_M_SRWA_12A_New_ReportService {
 	
 
 	public byte[] getM_SRWA_12A_NewExcel(String filename, String reportId, String fromdate, String todate, String currency,
-			String dtltype, String type, String version) throws Exception {
+			String dtltype, String type, BigDecimal version) throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.");
 		
 		
 		
 		// ARCHIVAL check
-				if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && !version.trim().isEmpty()) {
+		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && version != null) {
 					logger.info("Service: Generating ARCHIVAL report for version {}", version);
 					return getExcelM_SRWA_12ANewARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
 				}
@@ -45433,7 +45434,7 @@ private void populateEntity6Data(Sheet sheet, M_SRWA_12A_NEW_Summary_Entity6 rec
 	}	
 	
 	public byte[] getExcelM_SRWA_12ANewARCHIVAL(String filename, String reportId, String fromdate, String todate,
-			String currency, String dtltype, String type, String version) throws Exception {
+			String currency, String dtltype, String type, BigDecimal version) throws Exception {
 
 		logger.info("Service: Starting Excel generation process in memory.");
 
