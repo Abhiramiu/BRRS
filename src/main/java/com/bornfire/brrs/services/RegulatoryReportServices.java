@@ -610,9 +610,7 @@ public class RegulatoryReportServices {
 		 * case "M_SECL": repsummary = brrs_m_secl_reportservice.getM_SECLView(reportId,
 		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
 		 * 
-		 * case "M_INT_RATES": repsummary =
-		 * brrs_m_int_rates_reportservice.getM_INTRATESView(reportId, fromdate, todate,
-		 * currency, dtltype, pageable, type, version); break;
+		 * 
 		 * 
 		 * case "M_LARADV": repsummary =
 		 * brrs_m_laradv_reportservice.getM_LARADVView(reportId, fromdate, todate,
@@ -666,13 +664,7 @@ public class RegulatoryReportServices {
 		 * case "M_OPTR": repsummary = BRRS_M_OPTR_ReportService.getMOPTRView(reportId,
 		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
 		 * 
-		 * case "M_INT_RATES_FCA": repsummary =
-		 * BRRS_M_INT_RATES_FCA_ReportService.getINT_RATES_FCAView(reportId, fromdate,
-		 * todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "M_INT_RATES_FCA_NEW": repsummary =
-		 * BRRS_M_INT_RATES_FCA_NEW_ReportService.getINT_RATES_FCA_NEWView(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
+	
 		 * 
 		 * case "M_SEC": repsummary = brrs_m_sec_reportservice.getM_SECView(reportId,
 		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
@@ -770,6 +762,19 @@ public class RegulatoryReportServices {
 		 * BRRS_RECON_OF_FS_ReportService.getBRRS_Recon_Of_FS_View(reportId, fromdate,
 		 * todate, currency, dtltype, pageable, type, version); break;
 		 */
+			
+			 case "M_INT_RATES_FCA": repsummary =
+					 BRRS_M_INT_RATES_FCA_ReportService.getINT_RATES_FCAView(reportId, fromdate,
+					  todate, currency, dtltype, pageable, type, version); break;
+					  
+					  case "M_INT_RATES_FCA_NEW": repsummary =
+					  BRRS_M_INT_RATES_FCA_NEW_ReportService.getINT_RATES_FCA_NEWView(reportId,
+					  fromdate, todate, currency, dtltype, pageable, type, version); break;
+					  
+					  
+					  case "M_INT_RATES": repsummary =
+								  brrs_m_int_rates_reportservice.getM_INTRATESView(reportId, fromdate, todate,
+								  currency, dtltype, pageable, type, version); break;
 
 		case "B_III_CETD":
 
@@ -1773,20 +1778,7 @@ public class RegulatoryReportServices {
 		 * fromdate, todate, currency, dtltype, type, version); } catch (Exception e) {
 		 * // TODO Auto-generated catch block e.printStackTrace(); } break;
 		 * 
-		 * case "M_INT_RATES_FCA": try { repfile =
-		 * BRRS_M_INT_RATES_FCA_ReportService.getM_INTRATESFCAExcel(filename, reportId,
-		 * fromdate, todate, currency, dtltype, type, version); } catch (Exception e) {
-		 * // TODO Auto-generated catch block e.printStackTrace(); } break;
 		 * 
-		 * 
-		 * case "M_INT_RATES_FCA_NEW": try {
-		 * 
-		 * repfile =
-		 * BRRS_M_INT_RATES_FCA_NEW_ReportService.getM_INTRATESFCACExcel(filename,
-		 * reportId, fromdate,
-		 * 
-		 * todate, currency, dtltype, type, version); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
 		 * 
 		 * 
 		 * case "M_FAS": try { repfile =
@@ -1953,10 +1945,7 @@ public class RegulatoryReportServices {
 		 * todate, currency, dtltype, type, version); } catch (Exception e) { // TODO
 		 * Auto-generated catch block e.printStackTrace(); } break;
 		 * 
-		 * case "M_INT_RATES": try { repfile =
-		 * brrs_m_int_rates_reportservice.getM_INTRATESExcel(filename, reportId,
-		 * fromdate, todate, currency, dtltype, type, version); } catch (Exception e) {
-		 * // TODO Auto-generated catch block e.printStackTrace(); } break;
+		 * 
 		 * 
 		 * case "M_LARADV": try { repfile =
 		 * brrs_m_laradv_reportservice.getM_LARADVExcel(filename, reportId, fromdate,
@@ -2320,6 +2309,30 @@ public class RegulatoryReportServices {
 		 * todate, currency, dtltype, type, version); } catch (Exception e) { // TODO
 		 * Auto-generated catch block e.printStackTrace(); } break;
 		 */
+			
+		case "M_INT_RATES": try { repfile =
+				  brrs_m_int_rates_reportservice.getM_INTRATESExcel(filename, reportId,
+				 fromdate, todate, currency, dtltype, type, version); } 
+		catch (Exception e) {
+				  // TODO Auto-generated catch block
+					 e.printStackTrace(); }
+		break;
+			
+		case "M_INT_RATES_FCA": try { repfile =
+				  BRRS_M_INT_RATES_FCA_ReportService.getM_INTRATESFCAExcel(filename, reportId,
+				 fromdate, todate, currency, dtltype, type, version); } 
+		catch (Exception e) {
+				  // TODO Auto-generated catch block
+					 e.printStackTrace(); } break;
+				  
+				 
+				  case "M_INT_RATES_FCA_NEW": try {
+				  
+				  repfile =
+				  BRRS_M_INT_RATES_FCA_NEW_ReportService.getM_INTRATESFCANEWExcel(filename, reportId,
+							 fromdate, todate, currency, dtltype, type, version); }  catch (Exception e) {
+					  // TODO  }Auto-generated catch block
+				  e.printStackTrace(); } break;
 
 		case "M_SRWA_12A_New":
 			try {

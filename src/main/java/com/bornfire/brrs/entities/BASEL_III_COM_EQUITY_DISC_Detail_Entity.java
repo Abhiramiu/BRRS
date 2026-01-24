@@ -52,8 +52,11 @@ public class BASEL_III_COM_EQUITY_DISC_Detail_Entity {
   @Column(name = "DATA_ENTRY_VERSION")
   private String dataEntryVersion;
 
-  @Column(name = "ACCT_BALANCE_IN_PULA", precision = 24, scale = 3)
+  @Column(name = "ACCT_BALANCE_IN_PULA", precision = 18, scale = 2)
   private BigDecimal acctBalanceInpula;
+  
+  @Column(name = "AVERAGE", precision = 18, scale = 2)
+  private BigDecimal average;
 
 
   @Column(name = "REPORT_DATE")
@@ -92,6 +95,15 @@ public class BASEL_III_COM_EQUITY_DISC_Detail_Entity {
 
   @Column(name = "DEL_FLG")
   private char delFlg;
+  
+  @Column(name = "GLSH_CODE", length = 50)
+  private String glshCode;
+  
+  @Column(name = "GL_CODE", length = 50)
+  private String glCode;
+  
+  @Column(name = "SNO")
+  private BigDecimal sno;
 
 public String getCustId() {
 	return custId;
@@ -181,6 +193,14 @@ public void setAcctBalanceInpula(BigDecimal acctBalanceInpula) {
 	this.acctBalanceInpula = acctBalanceInpula;
 }
 
+public BigDecimal getAverage() {
+	return average;
+}
+
+public void setAverage(BigDecimal average) {
+	this.average = average;
+}
+
 public Date getReportDate() {
 	return reportDate;
 }
@@ -261,10 +281,35 @@ public void setDelFlg(char delFlg) {
 	this.delFlg = delFlg;
 }
 
+public String getGlshCode() {
+	return glshCode;
+}
+
+public void setGlshCode(String glshCode) {
+	this.glshCode = glshCode;
+}
+
+public String getGlCode() {
+	return glCode;
+}
+
+public void setGlCode(String glCode) {
+	this.glCode = glCode;
+}
+
+public BigDecimal getSno() {
+	return sno;
+}
+
+public void setSno(BigDecimal sno) {
+	this.sno = sno;
+}
+
 public BASEL_III_COM_EQUITY_DISC_Detail_Entity() {
 	super();
 	// TODO Auto-generated constructor stub
 }
+
 
 
   

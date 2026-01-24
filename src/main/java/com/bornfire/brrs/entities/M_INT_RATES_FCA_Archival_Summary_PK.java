@@ -1,19 +1,20 @@
 package com.bornfire.brrs.entities;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Objects;
 
 public class M_INT_RATES_FCA_Archival_Summary_PK implements Serializable {
 
     private Date reportDate;
-    private String reportVersion;
+    private BigDecimal reportVersion;
 
     // default constructor
     public M_INT_RATES_FCA_Archival_Summary_PK() {}
 
     // parameterized constructor
-    public M_INT_RATES_FCA_Archival_Summary_PK(Date reportDate, String reportVersion) {
+    public M_INT_RATES_FCA_Archival_Summary_PK(Date reportDate, BigDecimal reportVersion) {
         this.reportDate = reportDate;
         this.reportVersion = reportVersion;
     }
@@ -37,7 +38,7 @@ public class M_INT_RATES_FCA_Archival_Summary_PK implements Serializable {
     public Date getReportDate() { return reportDate; }
     public void setReportDate(Date reportDate) { this.reportDate = reportDate; }
 
-    public String getReportVersion() { return reportVersion; }
-    public void setReportVersion(String reportVersion) { this.reportVersion = reportVersion; }
+    public BigDecimal getReportVersion() { return reportVersion; }
+    public void setReportVersion(BigDecimal reportVersion) { this.reportVersion = reportVersion; }
 }
 

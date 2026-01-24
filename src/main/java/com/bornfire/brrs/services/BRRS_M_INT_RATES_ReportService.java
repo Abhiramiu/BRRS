@@ -84,7 +84,7 @@ public class BRRS_M_INT_RATES_ReportService {
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
 	public ModelAndView getM_INTRATESView(String reportId, String fromdate, String todate, 
-			String currency, String dtltype, Pageable pageable, String type, String version) 
+			String currency, String dtltype, Pageable pageable, String type, BigDecimal version) 
 	{
 		ModelAndView mv = new ModelAndView();
 		Session hs = sessionFactory.getCurrentSession();
@@ -250,7 +250,7 @@ public class BRRS_M_INT_RATES_ReportService {
 	
 	
 	public byte[] getM_INTRATESExcel(String filename, String reportId, String fromdate, String todate, String currency,
-			 String dtltype, String type, String version) throws Exception {
+			 String dtltype, String type, BigDecimal version) throws Exception {
 logger.info("Service: Starting Excel generation process in memory.");
 logger.info("DownloadFile: reportId={}, filename={}", reportId, filename, type, version);
 
@@ -258,12 +258,12 @@ logger.info("DownloadFile: reportId={}, filename={}", reportId, filename, type, 
 Date reportDate = dateformat.parse(todate);
 
 // ARCHIVAL check
-if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && !version.trim().isEmpty()) {
+if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && version != null) {
 logger.info("Service: Generating ARCHIVAL report for version {}", version);
 return getExcelM_INTRATESARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
 }
 // RESUB check
-else if ("RESUB".equalsIgnoreCase(type) && version != null && !version.trim().isEmpty()) {
+else if ("RESUB".equalsIgnoreCase(type) && version != null && version != null) {
 logger.info("Service: Generating RESUB report for version {}", version);
 
 
@@ -1399,7 +1399,7 @@ if (!dataList1.isEmpty()) {
 
 	public byte[] getExcelM_INTRATESARCHIVAL(String filename, String reportId, String fromdate,
 			String todate,
-			String currency, String dtltype, String type, String version) throws Exception {
+			String currency, String dtltype, String type, BigDecimal version) throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.");
 		if ("ARCHIVAL".equals(type) && version != null) {
 		}
@@ -2590,66 +2590,59 @@ return archivalList;
 }
 
 
-//Resubmit the values , latest version and Resub Date
-public void updateReportReSub(M_INT_RATES_Summary_Entity updatedEntity) {
-System.out.println("Came to Resub Service");
-System.out.println("Report Date: " + updatedEntity.getReportDate());
-
-Date reportDate = updatedEntity.getReportDate();
-int newVersion = 1;
-
-try {
-//Fetch the latest archival version for this report date
-Optional<M_INT_RATES_Archival_Summary_Entity> latestArchivalOpt = M_INT_RATES_Archival_Summary_Repo
-.getLatestArchivalVersionByDate(reportDate);
-
-//Determine next version number
-if (latestArchivalOpt.isPresent()) {
-M_INT_RATES_Archival_Summary_Entity latestArchival = latestArchivalOpt.get();
-try {
-newVersion = Integer.parseInt(latestArchival.getReportVersion()) + 1;
-} catch (NumberFormatException e) {
-System.err.println("Invalid version format. Defaulting to version 1");
-newVersion = 1;
-}
-} else {
-System.out.println("No previous archival found for date: " + reportDate);
-}
-
-//Prevent duplicate version number
-boolean exists = M_INT_RATES_Archival_Summary_Repo
-.findByReportDateAndReportVersion(reportDate, String.valueOf(newVersion))
-.isPresent();
-
-if (exists) {
-throw new RuntimeException("Version " + newVersion + " already exists for report date " + reportDate);
-}
-
-//Copy summary entity to archival entity
-M_INT_RATES_Archival_Summary_Entity archivalEntity = new M_INT_RATES_Archival_Summary_Entity();
-org.springframework.beans.BeanUtils.copyProperties(updatedEntity, archivalEntity);
-
-archivalEntity.setReportDate(reportDate);
-archivalEntity.setReportVersion(String.valueOf(newVersion));
-archivalEntity.setReportResubDate(new Date());
-
-System.out.println("Saving new archival version: " + newVersion);
-
-//Save new version to repository
-M_INT_RATES_Archival_Summary_Repo.save(archivalEntity);
-
-System.out.println(" Saved archival version successfully: " + newVersion);
-
-} catch (Exception e) {
-e.printStackTrace();
-throw new RuntimeException("Error while creating archival resubmission record", e);
-}
-}
+/*
+ * //Resubmit the values , latest version and Resub Date public void
+ * updateReportReSub(M_INT_RATES_Summary_Entity updatedEntity) {
+ * System.out.println("Came to Resub Service");
+ * System.out.println("Report Date: " + updatedEntity.getReportDate());
+ * 
+ * Date reportDate = updatedEntity.getReportDate(); int newVersion = 1;
+ * 
+ * try { //Fetch the latest archival version for this report date
+ * Optional<M_INT_RATES_Archival_Summary_Entity> latestArchivalOpt =
+ * M_INT_RATES_Archival_Summary_Repo
+ * .getLatestArchivalVersionByDate(reportDate);
+ * 
+ * //Determine next version number if (latestArchivalOpt.isPresent()) {
+ * M_INT_RATES_Archival_Summary_Entity latestArchival = latestArchivalOpt.get();
+ * try { newVersion = Integer.parseInt(latestArchival.getReportVersion()) + 1; }
+ * catch (NumberFormatException e) {
+ * System.err.println("Invalid version format. Defaulting to version 1");
+ * newVersion = 1; } } else {
+ * System.out.println("No previous archival found for date: " + reportDate); }
+ * 
+ * //Prevent duplicate version number boolean exists =
+ * M_INT_RATES_Archival_Summary_Repo
+ * .findByReportDateAndReportVersion(reportDate, BigDecimal.valueOf(newVersion))
+ * .isPresent();
+ * 
+ * if (exists) { throw new RuntimeException("Version " + newVersion +
+ * " already exists for report date " + reportDate); }
+ * 
+ * //Copy summary entity to archival entity M_INT_RATES_Archival_Summary_Entity
+ * archivalEntity = new M_INT_RATES_Archival_Summary_Entity();
+ * org.springframework.beans.BeanUtils.copyProperties(updatedEntity,
+ * archivalEntity);
+ * 
+ * archivalEntity.setReportDate(reportDate);
+ * archivalEntity.setReportVersion(BigDecimal.valueOf(newVersion));
+ * archivalEntity.setReportResubDate(new Date());
+ * 
+ * System.out.println("Saving new archival version: " + newVersion);
+ * 
+ * //Save new version to repository
+ * M_INT_RATES_Archival_Summary_Repo.save(archivalEntity);
+ * 
+ * System.out.println(" Saved archival version successfully: " + newVersion);
+ * 
+ * } catch (Exception e) { e.printStackTrace(); throw new
+ * RuntimeException("Error while creating archival resubmission record", e); } }
+ */
 
 /// Downloaded for Archival & Resub
 public byte[] BRRS_M_INTRATESResubExcel(String filename, String reportId, String fromdate,
 String todate, String currency, String dtltype,
-String type, String version) throws Exception {
+String type, BigDecimal version) throws Exception {
 
 logger.info("Service: Starting Excel generation process in memory for RESUB Excel.");
 

@@ -1653,6 +1653,7 @@ public class BRRS_BASEL_III_COM_EQUITY_DISC_ReportService {
 		try {
 			String acctNo = request.getParameter("acctNumber");
 			String acctBalanceInpula = request.getParameter("acctBalanceInpula");
+			String average = request.getParameter("average");
 			String acctName = request.getParameter("acctName");
 			String reportDateStr = request.getParameter("reportDate");
 
@@ -1681,6 +1682,17 @@ public class BRRS_BASEL_III_COM_EQUITY_DISC_ReportService {
 		            	 existing.setAcctBalanceInpula(newacctBalanceInpula);
 		                isChanged = true;
 		                logger.info("Balance updated to {}", newacctBalanceInpula);
+		            }
+		        }
+			 
+			 
+			 if (average != null && !average.isEmpty()) {
+		            BigDecimal newaverage = new BigDecimal(average);
+		            if (existing.getAverage()  == null ||
+		                existing.getAverage().compareTo(newaverage) != 0) {
+		            	 existing.setAverage(newaverage);
+		                isChanged = true;
+		                logger.info("Balance updated to {}", newaverage);
 		            }
 		        }
 		        

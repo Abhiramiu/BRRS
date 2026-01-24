@@ -1114,10 +1114,18 @@ function cancelModify() {
 							
 							
 								<!-- Modify button -->
-						<button type="button" class="custom-tab-btn"
+					<!-- 	<button type="button" class="custom-tab-btn"
 							onclick="showmodify(this);" title="Click to EDIT Records"
 							th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
-							th:if="${type != 'ARCHIVAL'}" id="addRecord">Modify</button>
+							th:if="${type != 'ARCHIVAL'}" id="addRecord">Modify</button> -->
+							<!-- Modify button -->
+                        <button type="button" class="custom-tab-btn" onclick="showmodify(this);"
+                            title="Click to EDIT Records" th:if="${type != 'ARCHIVAL'
+                and !#strings.contains(#httpServletRequest.requestURI, '/Details')}"
+                            th:classappend="${session.PERMISSIONS == 'W' and dtltype == 'report'} ? 'addedit' : ''"
+                            id="addRecord">
+                            Modify
+                        </button>
 
 						<!-- Cancel button (hidden initially) -->
 						<button type="button" class="custom-tab-btn"
@@ -2045,6 +2053,7 @@ function cancelModify() {
 											<th>ACCT_NUMBER</th>
 											<th>ACCT_NAME</th>
 											<th style="text-align:right;">ACCT_BALANCE_IN_PULA</th>
+											<th style="text-align:right;">AVERAGE</th>
 											<th>REPORT LABEL</th>
 											<th>REPORT ADDL CRITERIA1</th>
 											<th>REPORT_DATE</th>
@@ -2073,6 +2082,10 @@ function cancelModify() {
 
 											<td style="text-align:right !important;"
     th:text="${#numbers.formatDecimal(report.acctBalanceInpula, 1, 'COMMA', 0, 'POINT')}">
+</td>
+
+<td style="text-align:right !important;"
+    th:text="${#numbers.formatDecimal(report.average, 1, 'COMMA', 0, 'POINT')}">
 </td>
 
 
@@ -2141,14 +2154,24 @@ function cancelModify() {
 
 							<div class="col-sm-1"></div>
 
-							<label class="col-sm-2">Report Addl Criteria 1</label>
+							<label class="col-sm-2">Average</label>
 							<div class="col-sm-3">
-								<input type="text" th:field="*{reportAddlCriteria_1}" class="form-control form-control-sm"
-									readonly />
+								<input type="number" step="0.01" th:field="*{average}"class="form-control form-control-sm" style="text-align:right;"
+									 />
 							</div>
 						</div>
 
 						<div class="row formline" style="margin-top:10px;">
+						
+						
+						<label class="col-sm-2">Report Addl Criteria 1</label>
+							<div class="col-sm-3">
+								<input type="text" th:field="*{reportAddlCriteria_1}" class="form-control form-control-sm"
+									readonly />
+							</div>
+						
+						<div class="col-sm-1"></div>
+						
 							<label class="col-sm-2">Report Date</label>
 							<div class="col-sm-3">
 								<input type="date" name="reportDate" class="form-control form-control-sm"readonly
