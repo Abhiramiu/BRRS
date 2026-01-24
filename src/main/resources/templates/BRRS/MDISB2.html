@@ -307,7 +307,8 @@ PURPOSE		: BRRSREPORT
 			var readonlyIds = [
 
 
-				"R13_TOTAL_DEPOSIT_EXCEED"
+				"R13_TOTAL_DEPOSIT_EXCEED",
+				"R21_TOTAL_DEPOSIT_EXCEED"
 
 
 
@@ -580,6 +581,7 @@ PURPOSE		: BRRSREPORT
 
 			calculateR13Totals();
 
+
 			// ✅ Step 2: Remove commas safely
 			$("#fileupload input[type='text']").each(function () {
 				const cleanValue = $(this).val().replace(/,/g, '');
@@ -844,6 +846,7 @@ PURPOSE		: BRRSREPORT
 		function closemodels() {
 			$('#alert').modal('hide');
 			$('#resultModal').modal('hide');
+			$('#resultModal1').modal('hide');
 
 		}
 
@@ -875,14 +878,17 @@ PURPOSE		: BRRSREPORT
 	<script>
 		function openDetail(elem, mode) {
 
-			var type = elem.getAttribute('data-type');
+			const urlParams = new URLSearchParams(window.location.search);
+			const type = urlParams.get("type");
 
 			if (type === "ARCHIVAL") {
-				showResultModal('BRRS', "Archived Data cannot be modified");
+				showResultModal1('BRRS', "Archived Data cannot be modified");
 				return;
 			}
+
 			const acctNo = elem.getAttribute("data-acctNo");
 			const asondate = elem.getAttribute("data-asondate");
+
 			location.href = `/BRRS/Reports/${reportId}/Detailspage?formmode=${mode}&acctNo=${acctNo}&asondate=${asondate}`;
 		}
 	</script>
@@ -1089,7 +1095,7 @@ PURPOSE		: BRRSREPORT
 
 					const loader = bootstrap.Modal.getOrCreateInstance(
 						document.getElementById('loader'),
-						{ backdrop: 'static', keyboard: false }
+						{backdrop: 'static', keyboard: false}
 					);
 					$('#loader').modal('show');
 
@@ -1112,7 +1118,6 @@ PURPOSE		: BRRSREPORT
 			}
 		}
 	</script>
-
 
 	<style>
 		/* Keep the header fixed and aligned */
@@ -1308,7 +1313,7 @@ PURPOSE		: BRRSREPORT
 
 						<!-- Title -->
 						<h5 class="header-title">
-							MDISB2 Household Deposits by Size and Type of Account
+							MDISB2 	Corporate Deposits by Size and Type of Account
 						</h5>
 
 
@@ -1407,9 +1412,10 @@ PURPOSE		: BRRSREPORT
 												<th colspan="2"
 													style="background-color: rgb(107, 122, 143);color: white;">
 													FOREIGN CURRENCY DEPOSITS</th>
-												<th colspan="2"
-													style="background-color: rgb(107, 122, 143);color: white;">
-													TOTAL</th>
+													<th colspan="2"
+													    style="background-color: rgb(107, 122, 143); color: white; text-align: center;">
+													    TOTAL
+													</th>
 												<th style="background-color: rgb(107, 122, 143);color: white;">total
 													deposits exceed this level </th>
 												<th style="background-color: rgb(107, 122, 143);color: white;">covered
@@ -1987,17 +1993,18 @@ PURPOSE		: BRRSREPORT
 												<td style="text-align: right;background-color: rgb(107, 122, 143);color: white;"
 													th:text="${#numbers.formatDecimal(report.r21_total_amount, 0, 'COMMA', 0, 'POINT')}">
 												</td>
-												<!--<td th:each="report: ${reportsummary2}" id="R21"
-												 style="text-align: right; width: 250px;  padding-left:10px; ">
-												 <input class="display-input Show_input " type="text"
-												 th:value="${report.R21_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R21_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-												 id="R21_TOTAL_DEPOSIT_EXCEED" name="R21__C9_R21TOTAL_DEPOSIT_EXCEED"
-												 style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
-												 readonly />
-												</td>-->
-												<td
+												<td th:each="report: ${reportsummary2}" id="R21"
 													style="text-align: right;background-color: rgb(107, 122, 143);color: white;">
+													<input class="display-input Show_input " type="text"
+														th:value="${report.R21_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R21_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="R21_TOTAL_DEPOSIT_EXCEED"
+														name="R21__C9_R21TOTAL_DEPOSIT_EXCEED"
+														style="background-color: rgb(107, 122, 143);color: white; width: 250px; height: 28px; border-color: transparent; text-align: right; "
+														readonly />
 												</td>
+												<!--<td
+													style="text-align: right;background-color: rgb(107, 122, 143);color: white;">
+												</td>-->
 												<td style="text-align: right;background-color: rgb(107, 122, 143);color: white;"
 													th:text="${#numbers.formatDecimal(report.r21_total_deposit_bank, 0, 'COMMA', 0, 'POINT')}">
 												</td>
@@ -2273,17 +2280,18 @@ PURPOSE		: BRRSREPORT
 												<td style="text-align: right;background-color: rgb(107, 122, 143);color: white;"
 													th:text="${#numbers.formatDecimal(report.r29_total_amount, 0, 'COMMA', 0, 'POINT')}">
 												</td>
-												<!--<td th:each="report: ${reportsummary2}" id="R29"
-												 style="text-align: right; width: 250px;  padding-left:10px; ">
-												 <input class="display-input Show_input " type="text"
-												 th:value="${report.R29_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R29_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-												 id="R29_TOTAL_DEPOSIT_EXCEED" name="R29_C9_R29_TOTAL_DEPOSIT_EXCEED"
-												 style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
-												 readonly />
-												</td>-->
-												<td
+												<td th:each="report: ${reportsummary2}" id="R29"
 													style="text-align: right;background-color: rgb(107, 122, 143);color: white;">
+													<input class="display-input Show_input " type="text"
+														th:value="${report.R29_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R29_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="R29_TOTAL_DEPOSIT_EXCEED"
+														name="R29_C9_R29_TOTAL_DEPOSIT_EXCEED"
+														style="background-color: rgb(107, 122, 143);color: white; width: 250px; height: 28px; border-color: transparent; text-align: right; "
+														readonly />
 												</td>
+												<!--<td
+													style="text-align: right;background-color: rgb(107, 122, 143);color: white;">
+												</td>-->
 												<td style="text-align: right;background-color: rgb(107, 122, 143);color: white;"
 													th:text="${#numbers.formatDecimal(report.r29_total_deposit_bank, 0, 'COMMA', 0, 'POINT')}">
 												</td>
@@ -2558,17 +2566,18 @@ PURPOSE		: BRRSREPORT
 												<td style="text-align: right;background-color: rgb(107, 122, 143);color: white;"
 													th:text="${#numbers.formatDecimal(report.r37_total_amount, 0, 'COMMA', 0, 'POINT')}">
 												</td>
-												<!--<td th:each="report: ${reportsummary2}" id="R37"
-																						 style="text-align: right; width: 250px;  padding-left:10px; ">
-																						 <input class="display-input Show_input " type="text"
-																						 th:value="${report.R37_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R37_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-																						 id="R37_TOTAL_DEPOSIT_EXCEED" name="R37_C9_R37_TOTAL_DEPOSIT_EXCEED"
-																						 style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
-																						 readonly />
-																						</td>-->
-												<td
+												<td th:each="report: ${reportsummary2}" id="R37"
 													style="text-align: right;background-color: rgb(107, 122, 143);color: white;">
+													<input class="display-input Show_input " type="text"
+														th:value="${report.R37_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R37_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="R37_TOTAL_DEPOSIT_EXCEED"
+														name="R37_C9_R37_TOTAL_DEPOSIT_EXCEED"
+														style="background-color: rgb(107, 122, 143);color: white; width: 250px; height: 28px; border-color: transparent; text-align: right; "
+														readonly />
 												</td>
+												<!--<td
+													style="text-align: right;background-color: rgb(107, 122, 143);color: white;">
+												</td>-->
 												<td style="text-align: right;background-color: rgb(107, 122, 143);color: white;"
 													th:text="${#numbers.formatDecimal(report.r37_total_deposit_bank, 0, 'COMMA', 0, 'POINT')}">
 												</td>
@@ -2846,17 +2855,18 @@ PURPOSE		: BRRSREPORT
 												<td style="text-align: right;background-color: rgb(107, 122, 143);color: white;"
 													th:text="${#numbers.formatDecimal(report.r45_total_amount, 0, 'COMMA', 0, 'POINT')}">
 												</td>
-												<!--<td th:each="report: ${reportsummary2}" id="R45"
-												 style="text-align: right; width: 250px;  padding-left:10px; ">
-												 <input class="display-input Show_input " type="text"
-												 th:value="${report.R45_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R45_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-												 id="R45_TOTAL_DEPOSIT_EXCEED" name="R45_C9_R45_TOTAL_DEPOSIT_EXCEED"
-												 style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
-												 readonly />
-												</td>-->
-												<td
+												<td th:each="report: ${reportsummary2}" id="R45"
 													style="text-align: right;background-color: rgb(107, 122, 143);color: white;">
+													<input class="display-input Show_input " type="text"
+														th:value="${report.R45_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R45_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="R45_TOTAL_DEPOSIT_EXCEED"
+														name="R45_C9_R45_TOTAL_DEPOSIT_EXCEED"
+														style="background-color: rgb(107, 122, 143);color: white; width: 250px; height: 28px; border-color: transparent; text-align: right; "
+														readonly />
 												</td>
+												<!--<td
+													style="text-align: right;background-color: rgb(107, 122, 143);color: white;">
+												</td>-->
 
 												<td style="text-align: right;background-color: rgb(107, 122, 143);color: white;"
 													th:text="${#numbers.formatDecimal(report.r45_total_deposit_bank, 0, 'COMMA', 0, 'POINT')}">
@@ -3134,18 +3144,19 @@ PURPOSE		: BRRSREPORT
 												<td style="text-align: right;background-color: rgb(107, 122, 143);color: white;"
 													th:text="${#numbers.formatDecimal(report.r53_total_amount, 0, 'COMMA', 0, 'POINT')}">
 												</td>
-												<!--<td th:each="report: ${reportsummary2}" id="R53"
-																						 style="text-align: right; width: 250px;  padding-left:10px; ">
-																						 <input class="display-input Show_input " type="text"
-																						 th:value="${report.R53_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R53_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-																						 id="R53_TOTAL_DEPOSIT_EXCEED" name="R53_C9_R53_TOTAL_DEPOSIT_EXCEED"
-																						 style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
-																						 readonly />
-																						</td>-->
-
-												<td
+												<td th:each="report: ${reportsummary2}" id="R53"
 													style="text-align: right;background-color: rgb(107, 122, 143);color: white;">
+													<input class="display-input Show_input " type="text"
+														th:value="${report.R53_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R53_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="R53_TOTAL_DEPOSIT_EXCEED"
+														name="R53_C9_R53_TOTAL_DEPOSIT_EXCEED"
+														style="background-color: rgb(107, 122, 143);color: white; width: 250px; height: 28px; border-color: transparent; text-align: right; "
+														readonly />
 												</td>
+
+												<!--<td
+													style="text-align: right;background-color: rgb(107, 122, 143);color: white;">
+												</td>-->
 												<td style="text-align: right;background-color: rgb(107, 122, 143);color: white;"
 													th:text="${#numbers.formatDecimal(report.r53_total_deposit_bank, 0, 'COMMA', 0, 'POINT')}">
 												</td>
@@ -3421,17 +3432,18 @@ PURPOSE		: BRRSREPORT
 												<td style="text-align: right;background-color: rgb(107, 122, 143);color: white;"
 													th:text="${#numbers.formatDecimal(report.r61_total_amount, 0, 'COMMA', 0, 'POINT')}">
 												</td>
-												<!--<td th:each="report: ${reportsummary2}" id="R61"
-												 style="text-align: right; width: 250px;  padding-left:10px; ">
-												 <input class="display-input Show_input " type="text"
-												 th:value="${report.R61_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R61_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-												 id="R61_TOTAL_DEPOSIT_EXCEED" name="R61_C9_R61_TOTAL_DEPOSIT_EXCEED"
-												 style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
-												 readonly />
-												</td>-->
-												<td
+												<td th:each="report: ${reportsummary2}" id="R61"
 													style="text-align: right;background-color: rgb(107, 122, 143);color: white;">
+													<input class="display-input Show_input " type="text"
+														th:value="${report.R61_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R61_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="R61_TOTAL_DEPOSIT_EXCEED"
+														name="R61_C9_R61_TOTAL_DEPOSIT_EXCEED"
+														style="background-color: rgb(107, 122, 143);color: white; width: 250px; height: 28px; border-color: transparent; text-align: right; "
+														readonly />
 												</td>
+												<!--<td
+													style="text-align: right;background-color: rgb(107, 122, 143);color: white;">
+												</td>-->
 												<td style="text-align: right;background-color: rgb(107, 122, 143);color: white;"
 													th:text="${#numbers.formatDecimal(report.r61_total_deposit_bank, 0, 'COMMA', 0, 'POINT')}">
 												</td>
@@ -3706,18 +3718,19 @@ PURPOSE		: BRRSREPORT
 												<td style="text-align: right;background-color: rgb(107, 122, 143);color: white;"
 													th:text="${#numbers.formatDecimal(report.r69_total_amount, 0, 'COMMA', 0, 'POINT')}">
 												</td>
-												<!--<td th:each="report: ${reportsummary2}" id="R69"
-												 style="text-align: right; width: 250px;  padding-left:10px; ">
-												 <input class="display-input Show_input " type="text"
-												 th:value="${report.R69_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R69_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-												 id="R69_TOTAL_DEPOSIT_EXCEED" name="R69_C9_R69_TOTAL_DEPOSIT_EXCEED"
-												 style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
-												 readonly />
-												</td>-->
-
-												<td
+												<td th:each="report: ${reportsummary2}" id="R69"
 													style="text-align: right;background-color: rgb(107, 122, 143);color: white;">
+													<input class="display-input Show_input " type="text"
+														th:value="${report.R69_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R69_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="R69_TOTAL_DEPOSIT_EXCEED"
+														name="R69_C9_R69_TOTAL_DEPOSIT_EXCEED"
+														style="background-color: rgb(107, 122, 143);color: white; width: 250px; height: 28px; border-color: transparent; text-align: right; "
+														readonly />
 												</td>
+
+												<!--<td
+													style="text-align: right;background-color: rgb(107, 122, 143);color: white;">
+												</td>-->
 												<td style="text-align: right;background-color: rgb(107, 122, 143);color: white;"
 													th:text="${#numbers.formatDecimal(report.r69_total_deposit_bank, 0, 'COMMA', 0, 'POINT')}">
 												</td>
@@ -3993,17 +4006,18 @@ PURPOSE		: BRRSREPORT
 												<td style="text-align: right;background-color: rgb(107, 122, 143);color: white;"
 													th:text="${#numbers.formatDecimal(report.r77_total_amount, 0, 'COMMA', 0, 'POINT')}">
 												</td>
-												<!--<td th:each="report: ${reportsummary2}" id="R77"
-												 style="text-align: right; width: 250px;  padding-left:10px; ">
-												 <input class="display-input Show_input " type="text"
-												 th:value="${report.R77_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R77_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-												 id="R77_TOTAL_DEPOSIT_EXCEED" name="R77_C9_R77_TOTAL_DEPOSIT_EXCEED"
-												 style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
-												 readonly />
-												</td>-->
-												<td
+												<td th:each="report: ${reportsummary2}" id="R77"
 													style="text-align: right;background-color: rgb(107, 122, 143);color: white;">
+													<input class="display-input Show_input " type="text"
+														th:value="${report.R77_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R77_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="R77_TOTAL_DEPOSIT_EXCEED"
+														name="R77_C9_R77_TOTAL_DEPOSIT_EXCEED"
+														style="background-color: rgb(107, 122, 143);color: white; width: 250px; height: 28px; border-color: transparent; text-align: right; "
+														readonly />
 												</td>
+												<!--<td
+													style="text-align: right;background-color: rgb(107, 122, 143);color: white;">
+												</td>-->
 												<td style="text-align: right;background-color: rgb(107, 122, 143);color: white;"
 													th:text="${#numbers.formatDecimal(report.r77_total_deposit_bank, 0, 'COMMA', 0, 'POINT')}">
 												</td>
@@ -4279,17 +4293,18 @@ PURPOSE		: BRRSREPORT
 												<td style="text-align: right;background-color: rgb(107, 122, 143);color: white;"
 													th:text="${#numbers.formatDecimal(report.r85_total_amount, 0, 'COMMA', 0, 'POINT')}">
 												</td>
-												<!--<td th:each="report: ${reportsummary2}" id="R85"
-												 style="text-align: right; width: 250px;  padding-left:10px; ">
-												 <input class="display-input Show_input " type="text"
-												 th:value="${report.R85_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R85_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-												 id="R85_TOTAL_DEPOSIT_EXCEED" name="R85_C9_R85_TOTAL_DEPOSIT_EXCEED"
-												 style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
-												 readonly />
-												</td>-->
-												<td
+												<td th:each="report: ${reportsummary2}" id="R85"
 													style="text-align: right;background-color: rgb(107, 122, 143);color: white;">
+													<input class="display-input Show_input " type="text"
+														th:value="${report.R85_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R85_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="R85_TOTAL_DEPOSIT_EXCEED"
+														name="R85_C9_R85_TOTAL_DEPOSIT_EXCEED"
+														style="background-color: rgb(107, 122, 143);color: white; width: 250px; height: 28px; border-color: transparent; text-align: right; "
+														readonly />
 												</td>
+												<!--<td
+													style="text-align: right;background-color: rgb(107, 122, 143);color: white;">
+												</td>-->
 												<td style="text-align: right;background-color: rgb(107, 122, 143);color: white;"
 													th:text="${#numbers.formatDecimal(report.r85_total_deposit_bank, 0, 'COMMA', 0, 'POINT')}">
 												</td>
@@ -4567,18 +4582,19 @@ PURPOSE		: BRRSREPORT
 												<td style="text-align: right;background-color: rgb(107, 122, 143);color: white;"
 													th:text="${#numbers.formatDecimal(report.r93_total_amount, 0, 'COMMA', 0, 'POINT')}">
 												</td>
-												<!--<td th:each="report: ${reportsummary2}" id="R93"
-												 style="text-align: right; width: 250px;  padding-left:10px; ">
-												 <input class="display-input Show_input " type="text"
-												 th:value="${report.R93_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R93_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-												 id="R93_TOTAL_DEPOSIT_EXCEED" name="R93_C9_R93_TOTAL_DEPOSIT_EXCEED"
-												 style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
-												 readonly />
-												</td>-->
-
-												<td
+												<td th:each="report: ${reportsummary2}" id="R93"
 													style="text-align: right;background-color: rgb(107, 122, 143);color: white;">
+													<input class="display-input Show_input " type="text"
+														th:value="${report.R93_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R93_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="R93_TOTAL_DEPOSIT_EXCEED"
+														name="R93_C9_R93_TOTAL_DEPOSIT_EXCEED"
+														style="background-color: rgb(107, 122, 143);color: white; width: 250px; height: 28px; border-color: transparent; text-align: right; "
+														readonly />
 												</td>
+
+												<!--<td
+													style="text-align: right;background-color: rgb(107, 122, 143);color: white;">
+												</td>-->
 												<td style="text-align: right;background-color: rgb(107, 122, 143);color: white;"
 													th:text="${#numbers.formatDecimal(report.r93_total_deposit_bank, 0, 'COMMA', 0, 'POINT')}">
 												</td>
@@ -4854,17 +4870,18 @@ PURPOSE		: BRRSREPORT
 												<td style="text-align: right;background-color: rgb(107, 122, 143);color: white;"
 													th:text="${#numbers.formatDecimal(report.r101_total_amount, 0, 'COMMA', 0, 'POINT')}">
 												</td>
-												<!--<td th:each="report: ${reportsummary2}" id="R101"
-												 style="text-align: right; width: 250px;  padding-left:10px; ">
-												 <input class="display-input Show_input " type="text"
-												 th:value="${report.R101_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R101_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-												 id="R101_TOTAL_DEPOSIT_EXCEED" name="R101_C9_R101_TOTAL_DEPOSIT_EXCEED"
-												 style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
-												 readonly />
-												</td>-->
-												<td
+												<td th:each="report: ${reportsummary2}" id="R101"
 													style="text-align: right;background-color: rgb(107, 122, 143);color: white;">
+													<input class="display-input Show_input " type="text"
+														th:value="${report.R101_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R101_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="R101_TOTAL_DEPOSIT_EXCEED"
+														name="R101_C9_R101_TOTAL_DEPOSIT_EXCEED"
+														style="background-color: rgb(107, 122, 143);color: white; width: 250px; height: 28px; border-color: transparent; text-align: right; "
+														readonly />
 												</td>
+												<!--<td
+													style="text-align: right;background-color: rgb(107, 122, 143);color: white;">
+												</td>-->
 												<td style="text-align: right;background-color: rgb(107, 122, 143);color: white;"
 													th:text="${#numbers.formatDecimal(report.r101_total_deposit_bank, 0, 'COMMA', 0, 'POINT')}">
 												</td>
@@ -5140,17 +5157,18 @@ PURPOSE		: BRRSREPORT
 												<td style="text-align: right;background-color: rgb(107, 122, 143);color: white;"
 													th:text="${#numbers.formatDecimal(report.r109_total_amount, 0, 'COMMA', 0, 'POINT')}">
 												</td>
-												<!--<td th:each="report: ${reportsummary2}" id="R109"
-												 style="text-align: right; width: 250px;  padding-left:10px; ">
-												 <input class="display-input Show_input " type="text"
-												 th:value="${report.R109_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R109_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-												 id="R109_TOTAL_DEPOSIT_EXCEED" name="R109_C9_R109_TOTAL_DEPOSIT_EXCEED"
-												 style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
-												 readonly />
-												</td>-->
-												<td
+												<td th:each="report: ${reportsummary2}" id="R109"
 													style="text-align: right;background-color: rgb(107, 122, 143);color: white;">
+													<input class="display-input Show_input " type="text"
+														th:value="${report.R109_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R109_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="R109_TOTAL_DEPOSIT_EXCEED"
+														name="R109_C9_R109_TOTAL_DEPOSIT_EXCEED"
+														style="background-color: rgb(107, 122, 143);color: white; width: 250px; height: 28px; border-color: transparent; text-align: right; "
+														readonly />
 												</td>
+												<!--<td
+													style="text-align: right;background-color: rgb(107, 122, 143);color: white;">
+												</td>-->
 												<td style="text-align: right;background-color: rgb(107, 122, 143);color: white;"
 													th:text="${#numbers.formatDecimal(report.r109_total_deposit_bank, 0, 'COMMA', 0, 'POINT')}">
 												</td>
@@ -5192,18 +5210,19 @@ PURPOSE		: BRRSREPORT
 												<td style="text-align: right;background-color: rgb(107, 122, 143);color: white;"
 													th:text="${#numbers.formatDecimal(report.r111_total_amount, 0, 'COMMA', 0, 'POINT')}">
 												</td>
-												<!--<td th:each="report: ${reportsummary2}" id="R111"
-												 style="text-align: right; width: 250px;  padding-left:10px; ">
-												 <input class="display-input Show_input " type="text"
-												 th:value="${report.R111_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R111_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
-												 id="R111_TOTAL_DEPOSIT_EXCEED" name="R111_C9_R111_TOTAL_DEPOSIT_EXCEED"
-												 style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right; "
-												 readonly />
-												</td>-->
-
-												<td
+												<td th:each="report: ${reportsummary2}" id="R111"
 													style="text-align: right;background-color: rgb(107, 122, 143);color: white;">
+													<input class="display-input Show_input " type="text"
+														th:value="${report.R111_TOTAL_DEPOSIT_EXCEED != null ? #numbers.formatDecimal(report.R111_TOTAL_DEPOSIT_EXCEED, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="R111_TOTAL_DEPOSIT_EXCEED"
+														name="R111_C9_R111_TOTAL_DEPOSIT_EXCEED"
+														style="background-color: rgb(107, 122, 143);color: white; width: 250px; height: 28px; border-color: transparent; text-align: right; "
+														readonly />
 												</td>
+
+												<!--<td
+													style="text-align: right;background-color: rgb(107, 122, 143);color: white;">
+												</td>-->
 												<td style="text-align: right;background-color: rgb(107, 122, 143);color: white;"
 													th:text="${#numbers.formatDecimal(report.r111_total_deposit_bank, 0, 'COMMA', 0, 'POINT')}">
 												</td>
@@ -5255,7 +5274,7 @@ PURPOSE		: BRRSREPORT
 													title="Click to Edit this Record">
 													<i class="fas fa-edit" style="color: black; cursor:pointer;"
 														th:attr="data-acctNo=${report.acct_number},
-																data-asondate=${#dates.format(report.report_date, 'dd-MM-yyyy')}"
+														data-asondate=${#dates.format(report.report_date, 'dd-MM-yyyy')}	"
 														onclick="openDetail(this, 'edit')"></i>
 
 												</a>
@@ -5265,8 +5284,8 @@ PURPOSE		: BRRSREPORT
 											<td th:text="${report.acct_number != null ? report.acct_number : '-'}"></td>
 											<td th:text="${report.acct_name != null ? report.acct_name : '-'}"></td>
 											<td style="text-align:right !important;" th:text="${report.acct_balance_in_pula != null 
-														        ? #numbers.formatDecimal(report.acct_balance_in_pula, 1, 'COMMA', 0, 'POINT') 
-														        : '0'}">
+				        ? #numbers.formatDecimal(report.acct_balance_in_pula, 1, 'COMMA', 0, 'POINT') 
+				        : '0'}">
 											</td>
 
 
@@ -5463,14 +5482,14 @@ PURPOSE		: BRRSREPORT
 
 
 						<button type="button" class="custom-tab-btn cancel-btn" data-bs-dismiss="modal" style="margin-right:10px; border:2px solid #6c7a91;
-												                               background:white; color:black;
-												                               border-radius:20px; padding:5px 15px;">
+		                               background:white; color:black;
+		                               border-radius:20px; padding:5px 15px;">
 							Cancel
 						</button>
 
 						<button type="button" class="custom-tab-btn yes-btn" onclick="confirmCancelModify();" style="background:#6c7a91; color:white;
-												                               border:none; border-radius:20px;
-												                               padding:5px 20px;">
+		                               border:none; border-radius:20px;
+		                               padding:5px 20px;">
 							Yes
 						</button>
 					</div>

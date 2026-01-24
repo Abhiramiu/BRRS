@@ -52,6 +52,7 @@ import com.bornfire.brrs.services.BRRS_BDISB3_ReportService;
 import com.bornfire.brrs.services.BRRS_FORMAT_II_ReportService;
 import com.bornfire.brrs.services.BRRS_GL_SCH_ReportService;
 import com.bornfire.brrs.services.BRRS_MDISB1_ReportService;
+import com.bornfire.brrs.services.BRRS_MDISB2_ReportService;
 import com.bornfire.brrs.services.BRRS_MDISB5_ReportService;
 import com.bornfire.brrs.services.BRRS_M_AIDP_ReportService;
 import com.bornfire.brrs.services.BRRS_M_BOP_ReportService;
@@ -163,6 +164,9 @@ public class BRRS_ReportsController {
 
 	@Autowired
 	BRRS_MDISB1_ReportService BRRS_MDISB1_ReportService;
+	
+	@Autowired
+	BRRS_MDISB2_ReportService BRRS_MDISB2_ReportService;
 
 	private String pagesize;
 
@@ -2567,6 +2571,51 @@ public class BRRS_ReportsController {
 		}
 	}
 
+	
+	@RequestMapping(value = "/updateReportMDISB2", method = { RequestMethod.GET, RequestMethod.POST })
+	/*
+	 * @ResponseBody
+	 * 
+	 * public ResponseEntity<String> updateAllReports(
+	 * 
+	 * @RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date
+	 * asondate,
+	 * 
+	 * @ModelAttribute MDISB2_Summary_Entity_Manual request1
+	 * 
+	 * ) { try {
+	 * 
+	 * // set date into all 4 entities request1.setReport_date(asondate);
+	 * 
+	 * // call services BRRS_MDISB2_ReportService.updateReport(request1);
+	 * 
+	 * return ResponseEntity.ok("Updated Successfully."); } catch (Exception e) {
+	 * e.printStackTrace(); return
+	 * ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).
+	 * body("Update Failed: " + e.getMessage()); } }
+	 */
+
+	@PostMapping("/MDISB2updateAll")
+	@ResponseBody
+	public ResponseEntity<String> updateMDISB2(
+			@RequestParam @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+			@RequestParam Map<String, String> allParams) {
+
+		try {
+			System.out.println("Came to MDISB2 controller");
+
+			BRRS_MDISB2_ReportService.updateDetailFromForm(asondate, allParams);
+
+			return ResponseEntity.ok("Updated Successfully.");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity
+					.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Update Failed : " + e.getMessage());
+		}
+	}
+
+	
 	@Autowired
 	BRRS_SCH_17_ReportService brrs_sch_17_reportservice;
 
