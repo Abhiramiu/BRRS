@@ -962,7 +962,7 @@ function cancelModify() {
     <td id="ROW10" style="font-weight: bold;">USD</td>
     <td id="ROW10" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
         <input class="display-input Show_input" type="text"
-               th:value="${report.R10_CURRENT != null ? #numbers.formatDecimal(report.R10_CURRENT, 1, 'COMMA', 0, 'POINT') : '0'}"
+            th:value="${report.R10_CURRENT != null ? #numbers.formatDecimal(report.R10_CURRENT, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R10_CURRENT" name="R10_C1_CURRENT"
                style="background-color: #FFFFFF; height: 28px;  border-color: transparent; text-align: right;" readonly />
     </td>

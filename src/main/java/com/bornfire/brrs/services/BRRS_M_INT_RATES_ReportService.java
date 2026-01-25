@@ -1,37 +1,40 @@
 package com.bornfire.brrs.services;
 
 import java.io.ByteArrayOutputStream;
-
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.CallableStatement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.ss.usermodel.FillPatternType;
+
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.IndexedColors;
+
 import org.apache.poi.ss.usermodel.BorderStyle;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CreationHelper;
-import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.Font;
-import org.apache.poi.ss.usermodel.HorizontalAlignment;
-import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
@@ -43,19 +46,15 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.bornfire.brrs.entities.BDISB1_Summary_Entity;
+import com.bornfire.brrs.entities.BRRS_M_INT_RATES_Archival_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_M_INT_RATES_Archival_Summary_Repo;
+import com.bornfire.brrs.entities.BRRS_M_INT_RATES_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_M_INT_RATES_Summary_Repo;
-import com.bornfire.brrs.entities.BRRS_M_SRWA_12F_Archival_Summary_Repo;
-
-import com.bornfire.brrs.entities.BRRS_M_SRWA_12F_Summary_Repo;
+import com.bornfire.brrs.entities.M_INT_RATES_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.M_INT_RATES_Archival_Summary_Entity;
+import com.bornfire.brrs.entities.M_INT_RATES_Detail_Entity;
 import com.bornfire.brrs.entities.M_INT_RATES_Summary_Entity;
-import com.bornfire.brrs.entities.M_SECL_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.M_SECL_Summary_Entity;
-import com.bornfire.brrs.entities.M_SRWA_12F_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.M_SRWA_12F_Summary_Entity;
-
-import java.math.BigDecimal;
 
 @Component
 @Service
@@ -68,12 +67,15 @@ public class BRRS_M_INT_RATES_ReportService {
 
 	@Autowired
 	SessionFactory sessionFactory;
+	
+	@Autowired
+	private JdbcTemplate jdbcTemplate;
 
 	@Autowired
-	BRRS_M_SRWA_12F_Summary_Repo M_SRWA_12F_Summary_Repo;
+	BRRS_M_INT_RATES_Detail_Repo M_INT_RATES_Detail_Repo;
 
 	@Autowired
-	BRRS_M_SRWA_12F_Archival_Summary_Repo M_SRWA_12F_Archival_Summary_Repo;
+	BRRS_M_INT_RATES_Archival_Detail_Repo  M_INT_RATES_Archival_Detail_Repo;
 	
 	@Autowired
 	BRRS_M_INT_RATES_Summary_Repo M_INT_RATES_Summary_Repo;
@@ -114,11 +116,12 @@ public class BRRS_M_INT_RATES_ReportService {
 
         // ---------- CASE 3: NORMAL ----------
         else {
-            List<M_INT_RATES_Summary_Entity> T1Master = 
-                M_INT_RATES_Summary_Repo.getdatabydateListWithVersion(todate);
-            System.out.println("T1Master Size "+T1Master.size());
-            mv.addObject("reportsummary", T1Master);
+        	List<M_INT_RATES_Summary_Entity> T1Master = M_INT_RATES_Summary_Repo.getdatabydateList(dateformat.parse(todate));
+    		System.out.println("T1Master Size " + T1Master.size());
+    		mv.addObject("reportsummary", T1Master);
         }
+        
+        
 
 		} catch (ParseException e) {
 			e.printStackTrace();
@@ -130,58 +133,86 @@ public class BRRS_M_INT_RATES_ReportService {
 		return mv;
 	}
 		
-//		
-//		else if ("RESUB".equalsIgnoreCase(type) && version != null) {
-//            List<M_SRWA_12G_Resub_Summary_Entity1> T1Master = new ArrayList<M_SRWA_12G_Resub_Summary_Entity1>();
-//    
-//            try {
-//				Date d1 = dateformat.parse(todate);
-//            T1Master = BRRS_M_SRWA_12G_Resub_Summary_Repo1.getdatabydateListResub(dateformat.parse(todate), version);
-//             
-//            T2Master = BRRS_M_SRWA_12G_Resub_Summary_Repo2.getdatabydateListResub(dateformat.parse(todate), version);
-//            
-//            T3Master = BRRS_M_SRWA_12G_Resub_Summary_Repo3.getdatabydateListResub(dateformat.parse(todate), version);
-//            
-//            } catch (ParseException e) {
-//				e.printStackTrace();
-//			}
-//                
-//                mv.addObject("reportsummary1", T1Master);
-//                mv.addObject("reportsummary2", T2Master);
-//                mv.addObject("reportsummary3", T3Master);
-//		}
-//		
-//		
-//		else {
-//			List<M_SRWA_12G_Summary_Entity> T1Master = new ArrayList<M_SRWA_12G_Summary_Entity>();
-//	
-//			
-//			try {
-//				Date d1 = dateformat.parse(todate);
-//
-//				T1Master = BRRS_M_SRWA_12G_Summary_Repo.getdatabydateList(dateformat.parse(todate));
-//		
-//				
-//				
-//				
-//				System.out.println("Size of t1master is :"+T1Master.size());
-//				
-//				
-//			} catch (ParseException e) {
-//				e.printStackTrace();
-//			}
-//			mv.addObject("reportsummary1", T1Master);
-//		
-//		}
-//
-//		
-//		// T1rep = t1CurProdServiceRepo.getT1CurProdServices(d1);
-//		mv.setViewName("BRRS/M_SRWA_12G");
-//		mv.addObject("displaymode", "summary");
-//		System.out.println("scv" + mv.getViewName());
-//		return mv;
-//	}
 
+	
+	public ModelAndView getM_INT_RATEScurrentDtl(String reportId, String fromdate, String todate, String currency,
+			String dtltype, Pageable pageable, String Filter, String type, String version) {
+
+		int pageSize = pageable != null ? pageable.getPageSize() : 10;
+		int currentPage = pageable != null ? pageable.getPageNumber() : 0;
+		int totalPages = 0;
+
+		ModelAndView mv = new ModelAndView();
+		Session hs = sessionFactory.getCurrentSession();
+
+		try {
+			Date parsedDate = null;
+			if (todate != null && !todate.isEmpty()) {
+				parsedDate = dateformat.parse(todate);
+			}
+
+			String reportLable = null;
+			String reportAddlCriteria_1 = null;
+
+			// ✅ Split filter string into rowId & columnId
+			if (Filter != null && Filter.contains(",")) {
+				String[] parts = Filter.split(",");
+				if (parts.length >= 2) {
+					reportLable = parts[0];
+					reportAddlCriteria_1 = parts[1];
+				}
+			}
+			System.out.println(type);
+			if ("ARCHIVAL".equals(type) && version != null) {
+				System.out.println(type);
+				// 🔹 Archival branch
+				List<M_INT_RATES_Archival_Detail_Entity> T1Dt1;
+				if (reportLable != null && reportAddlCriteria_1 != null) {
+					T1Dt1 = M_INT_RATES_Archival_Detail_Repo.GetDataByRowIdAndColumnId(reportLable, reportAddlCriteria_1, parsedDate, version);
+				} else {
+					T1Dt1 = M_INT_RATES_Archival_Detail_Repo.getdatabydateList(parsedDate, version);
+				}
+
+				mv.addObject("reportdetails", T1Dt1);
+				mv.addObject("reportmaster12", T1Dt1);
+				System.out.println("ARCHIVAL COUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
+
+			} else {
+				// 🔹 Current branch
+				List<M_INT_RATES_Detail_Entity> T1Dt1;
+				if (reportLable != null && reportAddlCriteria_1 != null) {
+					T1Dt1 = M_INT_RATES_Detail_Repo.GetDataByRowIdAndColumnId(reportLable, reportAddlCriteria_1, parsedDate);
+				} else {
+					T1Dt1 = M_INT_RATES_Detail_Repo.getdatabydateList(parsedDate);
+					System.out.println("bdisb2 size is : " + T1Dt1.size());
+					totalPages = M_INT_RATES_Detail_Repo.getdatacount(parsedDate);
+					mv.addObject("pagination", "YES");
+				}
+
+				mv.addObject("reportdetails", T1Dt1);
+				mv.addObject("reportmaster12", T1Dt1);
+				System.out.println("LISTCOUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
+			}
+
+		} catch (ParseException e) {
+			e.printStackTrace();
+			mv.addObject("errorMessage", "Invalid date format: " + todate);
+		} catch (Exception e) {
+			e.printStackTrace();
+			mv.addObject("errorMessage", "Unexpected error: " + e.getMessage());
+		}
+
+		// ✅ Common attributes
+		mv.setViewName("BRRS/M_INT_RATES");
+		mv.addObject("displaymode", "Details");
+		mv.addObject("currentPage", currentPage);
+		System.out.println("totalPages: " + (int) Math.ceil((double) totalPages / 100));
+		mv.addObject("totalPages", (int) Math.ceil((double) totalPages / 100));
+		mv.addObject("reportsflag", "reportsflag");
+		mv.addObject("menu", reportId);
+
+		return mv;
+	}
 	
 	
 	public void updateReport(M_INT_RATES_Summary_Entity updatedEntity) {
@@ -2557,37 +2588,56 @@ return resubList;
 }
 
 
-//Archival View
-public List<Object[]> getM_INTRATESArchival() {
-List<Object[]> archivalList = new ArrayList<>();
+/*
+ * //Archival View public List<Object[]> getM_INTRATESArchival() {
+ * List<Object[]> archivalList = new ArrayList<>();
+ * 
+ * try { List<M_INT_RATES_Archival_Summary_Entity> repoData =
+ * M_INT_RATES_Archival_Summary_Repo .getdatabydateListWithVersionAll();
+ * 
+ * if (repoData != null && !repoData.isEmpty()) { for
+ * (M_INT_RATES_Archival_Summary_Entity entity : repoData) { Object[] row = new
+ * Object[] { entity.getReportDate(), entity.getReportVersion() };
+ * archivalList.add(row); }
+ * 
+ * System.out.println("Fetched " + archivalList.size() + " archival records");
+ * M_INT_RATES_Archival_Summary_Entity first = repoData.get(0);
+ * System.out.println("Latest archival version: " + first.getReportVersion()); }
+ * else { System.out.println("No archival data found."); }
+ * 
+ * } catch (Exception e) {
+ * System.err.println("Error fetching M_INT_RATES Archival data: " +
+ * e.getMessage()); e.printStackTrace(); }
+ * 
+ * return archivalList; }
+ */
 
-try {
-List<M_INT_RATES_Archival_Summary_Entity> repoData = M_INT_RATES_Archival_Summary_Repo
-.getdatabydateListWithVersionAll();
+public List<Object> getM_INT_RATESArchival() {
+	List<Object> M_INT_RATESArchivallist = new ArrayList<>();
+	try {
+		M_INT_RATESArchivallist = M_INT_RATES_Archival_Summary_Repo.getM_INTRATESarchival();
+	
+	
+		System.out.println("countser" + M_INT_RATESArchivallist.size());
+		
+	} catch (Exception e) {
+		// Log the exception
+		System.err.println("Error fetching M_INT_RATESArchivallist Archival data: " + e.getMessage());
+		e.printStackTrace();
 
-if (repoData != null && !repoData.isEmpty()) {
-for (M_INT_RATES_Archival_Summary_Entity entity : repoData) {
-Object[] row = new Object[] {
-entity.getReportDate(), 
-entity.getReportVersion() 
-};
-archivalList.add(row);
+		// Optionally, you can rethrow it or return empty list
+		// throw new RuntimeException("Failed to fetch data", e);
+	}
+	return M_INT_RATESArchivallist;
 }
 
-System.out.println("Fetched " + archivalList.size() + " archival records");
-M_INT_RATES_Archival_Summary_Entity first = repoData.get(0);
-System.out.println("Latest archival version: " + first.getReportVersion());
-} else {
-System.out.println("No archival data found.");
-}
 
-} catch (Exception e) {
-System.err.println("Error fetching M_INT_RATES Archival data: " + e.getMessage());
-e.printStackTrace();
-}
 
-return archivalList;
-}
+
+
+
+
+
 
 
 /*
@@ -3749,6 +3799,344 @@ if (!dataList1.isEmpty()) {
 	return out.toByteArray();
 			}
 		}
+
+
+
+public void updateDetailFromForm(Date reportDate, Map<String, String> params) {
+
+	System.out.println("came to service for update ");
+
+	for (Map.Entry<String, String> entry : params.entrySet()) {
+
+		String key = entry.getKey();
+		String value = entry.getValue();
+
+		// ✅ Allow only valid keys for required columns
+		if (!key.matches("R\\d+_C\\d+_(" + "NOMINAL_INTEREST_RATE|" + "AVG_EFFECTIVE_RATE|" + "VOLUME|" 	
+				+ ")")) {
+			continue;
+		}
+
+		if (value == null || value.trim().isEmpty()) {
+			value = "0";
+		}
+
+		String[] parts = key.split("_");
+		String reportLabel = parts[0]; // R1, R2, etc.
+		String addlCriteria = parts[1]; // C1, C2, etc.
+		String column = String.join("_", Arrays.copyOfRange(parts, 2, parts.length));
+
+		BigDecimal amount = new BigDecimal(value);
+
+		List<M_INT_RATES_Detail_Entity> rows = M_INT_RATES_Detail_Repo
+				.findByReportDateAndReportLableAndReportAddlCriteria1(reportDate, reportLabel, addlCriteria);
+
+		for (M_INT_RATES_Detail_Entity row : rows) {
+
+			if ("NOMINAL_INTEREST_RATE".equals(column)) {
+				row.setNOMINAL_INTEREST_RATE(amount);
+
+			} else if ("AVG_EFFECTIVE_RATE".equals(column)) {
+				row.setAVG_EFFECTIVE_RATE(amount);
+
+			} else if ("VOLUME".equals(column)) {
+				row.setVOLUME(amount);
+
+			} 
+		}
+
+		M_INT_RATES_Detail_Repo.saveAll(rows);
+	}
+
+	// ✅ CALL ORACLE PROCEDURE AFTER ALL UPDATES
+	callSummaryProcedure(reportDate);
+}
+
+private void callSummaryProcedure(Date reportDate) {
+
+	String sql = "{ call BRRS_M_INT_RATES_SUMMARY_PROCEDURE(?) }";
+
+	jdbcTemplate.update(connection -> {
+		CallableStatement cs = connection.prepareCall(sql);
+
+		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+		sdf.setLenient(false);
+
+		String formattedDate = sdf.format(reportDate);
+
+		cs.setString(1, formattedDate);
+		return cs;
+	});
+
+	System.out.println(
+			"✅ Summary procedure executed for date: " + new SimpleDateFormat("dd-MM-yyyy").format(reportDate));
+}
+
+
+
+
+public byte[] getM_INT_RATESDetailExcel(String filename, String fromdate, String todate, String currency, String dtltype,
+		String type, String version) {
+
+	try {
+		logger.info("Generating Excel for BDISB1 Details...");
+		System.out.println("came to Detail download service");
+
+		// ================= ARCHIVAL HANDLING =================
+		if ("ARCHIVAL".equals(type) && version != null) {
+			return getM_INT_RATESDetailExcelARCHIVAL(filename, fromdate, todate, currency, dtltype, type, version);
+		}
+
+		// ================= WORKBOOK & SHEET =================
+		XSSFWorkbook workbook = new XSSFWorkbook();
+		XSSFSheet sheet = workbook.createSheet("M_INT_RATESDetail");
+
+		BorderStyle border = BorderStyle.THIN;
+
+		// ================= HEADER STYLE =================
+		CellStyle headerStyle = workbook.createCellStyle();
+		Font headerFont = workbook.createFont();
+		headerFont.setBold(true);
+		headerFont.setFontHeightInPoints((short) 10);
+		headerStyle.setFont(headerFont);
+		headerStyle.setAlignment(HorizontalAlignment.LEFT);
+		headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+		headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+		headerStyle.setBorderTop(border);
+		headerStyle.setBorderBottom(border);
+		headerStyle.setBorderLeft(border);
+		headerStyle.setBorderRight(border);
+
+		CellStyle rightHeaderStyle = workbook.createCellStyle();
+		rightHeaderStyle.cloneStyleFrom(headerStyle);
+		rightHeaderStyle.setAlignment(HorizontalAlignment.RIGHT);
+
+		// ================= DATA STYLES =================
+		CellStyle textStyle = workbook.createCellStyle();
+		textStyle.setAlignment(HorizontalAlignment.LEFT);
+		textStyle.setBorderTop(border);
+		textStyle.setBorderBottom(border);
+		textStyle.setBorderLeft(border);
+		textStyle.setBorderRight(border);
+
+		CellStyle amountStyle = workbook.createCellStyle();
+		amountStyle.setAlignment(HorizontalAlignment.RIGHT);
+		amountStyle.setDataFormat(workbook.createDataFormat().getFormat("#,##0"));
+		amountStyle.setBorderTop(border);
+		amountStyle.setBorderBottom(border);
+		amountStyle.setBorderLeft(border);
+		amountStyle.setBorderRight(border);
+
+		// ================= HEADER ROW =================
+		String[] headers = { "NOMINAL_INTEREST_RATE", "AVG_EFFECTIVE_RATE", "VOLUME", 
+				"REPORT LABEL", "REPORT ADDL CRITERIA1", "REPORT DATE" };
+
+		XSSFRow headerRow = sheet.createRow(0);
+		for (int i = 0; i < headers.length; i++) {
+			Cell cell = headerRow.createCell(i);
+			cell.setCellValue(headers[i]);
+			cell.setCellStyle((i == 4) ? rightHeaderStyle : headerStyle);
+			sheet.setColumnWidth(i, 6000);
+		}
+
+		// ================= DATA FETCH =================
+		Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
+		List<M_INT_RATES_Detail_Entity> reportData = M_INT_RATES_Detail_Repo.getdatabydateList(parsedToDate);
+
+		// ================= DATA ROWS =================
+		int rowIndex = 1;
+
+		if (reportData != null && !reportData.isEmpty()) {
+			for (M_INT_RATES_Detail_Entity item : reportData) {
+
+				XSSFRow row = sheet.createRow(rowIndex++);
+
+				Cell c0 = row.createCell(0);
+				c0.setCellValue(item.getNOMINAL_INTEREST_RATE() != null ? item.getNOMINAL_INTEREST_RATE().doubleValue() : 0);
+				c0.setCellStyle(amountStyle);
+
+				
+				Cell c1 = row.createCell(1);
+				c1.setCellValue(item.getAVG_EFFECTIVE_RATE() != null ? item.getAVG_EFFECTIVE_RATE().doubleValue() : 0);
+				c1.setCellStyle(amountStyle);
+
+				Cell c2 = row.createCell(2);
+				c2.setCellValue(item.getVOLUME() != null ? item.getVOLUME().doubleValue() : 0);
+				c2.setCellStyle(amountStyle);
+
+			
+
+			
+				// Column 5 - REPORT LABEL
+				 c2 = row.createCell(3);
+				c2.setCellValue(item.getReportLable());
+				c2.setCellStyle(textStyle);
+
+				// Column 6 - REPORT ADDL CRITERIA 1
+				Cell c3 = row.createCell(4);
+				c3.setCellValue(item.getReportAddlCriteria1());
+				c3.setCellStyle(textStyle);
+
+				// Column 7 - REPORT DATE
+				Cell c4 = row.createCell(5);
+				c4.setCellValue(item.getReportDate() != null
+						? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
+						: "");
+				c4.setCellStyle(textStyle);
+			}
+		} else {
+			logger.info("No data found for M_INT_RATES — only header written.");
+		}
+
+		// ================= WRITE FILE =================
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		workbook.write(bos);
+		workbook.close();
+
+		logger.info("Excel generation completed with {} row(s).", reportData != null ? reportData.size() : 0);
+
+		return bos.toByteArray();
+
+	} catch (Exception e) {
+		logger.error("Error generating M_INT_RATES Excel", e);
+		return new byte[0];
+	}
+}
+
+public byte[] getM_INT_RATESDetailExcelARCHIVAL(String filename, String fromdate, String todate, String currency,
+		String dtltype, String type, String version) {
+
+	try {
+		logger.info("Generating Excel for BRRS_M_INT_RATES ARCHIVAL Details...");
+		System.out.println("came to Detail download service");
+
+		// ================= WORKBOOK & SHEET =================
+		XSSFWorkbook workbook = new XSSFWorkbook();
+		XSSFSheet sheet = workbook.createSheet("M_INT_RATESDetail");
+
+		BorderStyle border = BorderStyle.THIN;
+
+		// ================= HEADER STYLE =================
+		CellStyle headerStyle = workbook.createCellStyle();
+		Font headerFont = workbook.createFont();
+		headerFont.setBold(true);
+		headerFont.setFontHeightInPoints((short) 10);
+		headerStyle.setFont(headerFont);
+		headerStyle.setAlignment(HorizontalAlignment.LEFT);
+		headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+		headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+		headerStyle.setBorderTop(border);
+		headerStyle.setBorderBottom(border);
+		headerStyle.setBorderLeft(border);
+		headerStyle.setBorderRight(border);
+
+		CellStyle rightHeaderStyle = workbook.createCellStyle();
+		rightHeaderStyle.cloneStyleFrom(headerStyle);
+		rightHeaderStyle.setAlignment(HorizontalAlignment.RIGHT);
+
+		// ================= DATA STYLES =================
+		CellStyle textStyle = workbook.createCellStyle();
+		textStyle.setAlignment(HorizontalAlignment.LEFT);
+		textStyle.setBorderTop(border);
+		textStyle.setBorderBottom(border);
+		textStyle.setBorderLeft(border);
+		textStyle.setBorderRight(border);
+
+		CellStyle amountStyle = workbook.createCellStyle();
+		amountStyle.setAlignment(HorizontalAlignment.RIGHT);
+		amountStyle.setDataFormat(workbook.createDataFormat().getFormat("#,##0"));
+		amountStyle.setBorderTop(border);
+		amountStyle.setBorderBottom(border);
+		amountStyle.setBorderLeft(border);
+		amountStyle.setBorderRight(border);
+
+		// ================= HEADER ROW =================
+		String[] headers = { "NOMINAL_INTEREST_RATE", "AVG_EFFECTIVE_RATE", "VOLUME", 
+				"REPORT LABEL", "REPORT ADDL CRITERIA1", "REPORT DATE" };
+
+		XSSFRow headerRow = sheet.createRow(0);
+		for (int i = 0; i < headers.length; i++) {
+			Cell cell = headerRow.createCell(i);
+			cell.setCellValue(headers[i]);
+			cell.setCellStyle((i == 4) ? rightHeaderStyle : headerStyle);
+			sheet.setColumnWidth(i, 6000);
+		}
+
+		// ================= DATA FETCH =================
+		Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
+		List<M_INT_RATES_Archival_Detail_Entity> reportData = M_INT_RATES_Archival_Detail_Repo.getdatabydateList(parsedToDate,
+				version);
+
+		// ================= DATA ROWS =================
+		int rowIndex = 1;
+
+		if (reportData != null && !reportData.isEmpty()) {
+			for (M_INT_RATES_Archival_Detail_Entity item : reportData) {
+
+				XSSFRow row = sheet.createRow(rowIndex++);
+
+				Cell c0 = row.createCell(0);
+				c0.setCellValue(item.getNOMINAL_INTEREST_RATE() != null ? item.getNOMINAL_INTEREST_RATE().doubleValue() : 0);
+				c0.setCellStyle(amountStyle);
+
+				
+				Cell c1 = row.createCell(1);
+				c1.setCellValue(item.getAVG_EFFECTIVE_RATE() != null ? item.getAVG_EFFECTIVE_RATE().doubleValue() : 0);
+				c1.setCellStyle(amountStyle);
+
+				Cell c2 = row.createCell(2);
+				c2.setCellValue(item.getVOLUME() != null ? item.getVOLUME().doubleValue() : 0);
+				c2.setCellStyle(amountStyle);
+
+			
+
+			
+				// Column 5 - REPORT LABEL
+				 c2 = row.createCell(3);
+				c2.setCellValue(item.getReportLable());
+				c2.setCellStyle(textStyle);
+
+				// Column 6 - REPORT ADDL CRITERIA 1
+				Cell c3 = row.createCell(4);
+				c3.setCellValue(item.getReportAddlCriteria1());
+				c3.setCellStyle(textStyle);
+
+				// Column 7 - REPORT DATE
+				Cell c4 = row.createCell(5);
+				c4.setCellValue(item.getReportDate() != null
+						? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
+						: "");
+				c4.setCellStyle(textStyle);
+			}
+		} else {
+			logger.info("No archival data found for M_INT_RATES — only header written.");
+		}
+
+		// ================= WRITE FILE =================
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		workbook.write(bos);
+		workbook.close();
+
+		logger.info("ARCHIVAL Excel generation completed with {} row(s).",
+				reportData != null ? reportData.size() : 0);
+
+		return bos.toByteArray();
+
+	} catch (Exception e) {
+		logger.error("Error generating M_INT_RATES ARCHIVAL Excel", e);
+		return new byte[0];
+	}
+}
+
+
+
+
+
+
+
+
+
+
 
 
 

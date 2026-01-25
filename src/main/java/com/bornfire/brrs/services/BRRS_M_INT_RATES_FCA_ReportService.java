@@ -53,10 +53,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.bornfire.brrs.entities.BDISB1_Archival_Detail_Entity;
-import com.bornfire.brrs.entities.BDISB1_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.BDISB1_Detail_Entity;
-import com.bornfire.brrs.entities.BDISB1_Summary_Entity;
+
 import com.bornfire.brrs.entities.BRRS_M_INT_RATES_Archival_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_M_INT_RATES_FCA_Archival_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_M_INT_RATES_FCA_Archival_Summary_Repo;
@@ -65,20 +62,12 @@ import com.bornfire.brrs.entities.BRRS_M_INT_RATES_FCA_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_M_INT_RATES_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_M_SRWA_12F_Archival_Summary_Repo;
 
-import com.bornfire.brrs.entities.BRRS_M_SRWA_12F_Summary_Repo;
-import com.bornfire.brrs.entities.M_INT_RATES_Archival_Summary_Entity;
+
 import com.bornfire.brrs.entities.M_INT_RATES_FCA_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.M_INT_RATES_FCA_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.M_INT_RATES_FCA_Detail_Entity;
 import com.bornfire.brrs.entities.M_INT_RATES_FCA_Summary_Entity;
-import com.bornfire.brrs.entities.M_INT_RATES_Summary_Entity;
-import com.bornfire.brrs.entities.M_OPTR_Archival_Detail_Entity;
-import com.bornfire.brrs.entities.M_OPTR_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.M_OPTR_Detail_Entity;
-import com.bornfire.brrs.entities.M_OPTR_Summary_Entity;
-import com.bornfire.brrs.entities.M_SECL_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.M_SECL_Summary_Entity;
-import com.bornfire.brrs.entities.M_SRWA_12F_Summary_Entity;
+
 
 import java.math.BigDecimal;
 
@@ -97,17 +86,11 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 	@Autowired
 	SessionFactory sessionFactory;
 
-	@Autowired
-	BRRS_M_SRWA_12F_Summary_Repo M_SRWA_12F_Summary_Repo;
+	
 
-	@Autowired
-	BRRS_M_SRWA_12F_Archival_Summary_Repo M_SRWA_12F_Archival_Summary_Repo;
+	
 
-	@Autowired
-	BRRS_M_INT_RATES_Summary_Repo M_INT_RATES_Summary_Repo;
-
-	@Autowired
-	BRRS_M_INT_RATES_Archival_Summary_Repo M_INT_RATES_Archival_Summary_Repo;
+	
 
 	@Autowired
 	BRRS_M_INT_RATES_FCA_Summary_Repo M_INT_RATES_FCA_Summary_Repo;
@@ -137,7 +120,7 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 			// ---------- CASE 1: ARCHIVAL ----------
 			if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
-				List<M_INT_RATES_Archival_Summary_Entity> T1Master = M_INT_RATES_Archival_Summary_Repo
+				List<M_INT_RATES_FCA_Archival_Summary_Entity> T1Master = M_INT_RATES_FCA_Archival_Summary_Repo
 						.getdatabydateListarchival(d1, version);
 
 				mv.addObject("reportsummary", T1Master);
@@ -1057,27 +1040,25 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 		}
 	}
 
-//	public List<Object> getM_INTRATESFCAarchival() {
-//		List<Object> M_INTRATESFCAArchivallist = new ArrayList<>();
-////		List<Object> M_FXRArchivallist2 = new ArrayList<>();
-////		List<Object> M_FXRArchivallist3 = new ArrayList<>();
-//		try {
-//			M_INTRATESFCAArchivallist = M_INT_RATES_FCA_Archival_Summary_Repo.getM_INTRATESFCAarchival();
-//			
-//			
-//			System.out.println("countser" + M_INTRATESFCAArchivallist.size());
-////			System.out.println("countser" + M_FXRArchivallist.size());
-////			System.out.println("countser" + M_FXRArchivallist.size());
-//		} catch (Exception e) {
-//			// Log the exception
-//			System.err.println("Error fetching M_SECL Archival data: " + e.getMessage());
-//			e.printStackTrace();
-//
-//			// Optionally, you can rethrow it or return empty list
-//			// throw new RuntimeException("Failed to fetch data", e);
-//		}
-//		return M_INTRATESFCAArchivallist;
-//	}
+	/*
+	 * public List<Object> getM_INTRATESFCAarchival() { List<Object>
+	 * M_INTRATESFCAArchivallist = new ArrayList<>(); List<Object>
+	 * M_FXRArchivallist2 = new ArrayList<>(); List<Object> M_FXRArchivallist3 = new
+	 * ArrayList<>(); try { M_INTRATESFCAArchivallist =
+	 * M_INT_RATES_FCA_Archival_Summary_Repo.getM_INTRATESFCAarchival();
+	 * 
+	 * 
+	 * System.out.println("countser" + M_INTRATESFCAArchivallist.size());
+	 * System.out.println("countser" + M_FXRArchivallist.size());
+	 * System.out.println("countser" + M_FXRArchivallist.size()); } catch (Exception
+	 * e) { // Log the exception
+	 * System.err.println("Error fetching M_SECL Archival data: " + e.getMessage());
+	 * e.printStackTrace();
+	 * 
+	 * // Optionally, you can rethrow it or return empty list // throw new
+	 * RuntimeException("Failed to fetch data", e); } return
+	 * M_INTRATESFCAArchivallist; }
+	 */
 
 	public byte[] getExcelM_INTRATESFCAARCHIVAL(String filename, String reportId, String fromdate, String todate,
 			String currency, String dtltype, String type, BigDecimal version) throws Exception {
@@ -1715,34 +1696,29 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 		return resubList;
 	}
 
-//Archival View
-	public List<Object[]> getM_INT_RATES_FCAArchival() {
-		List<Object[]> archivalList = new ArrayList<>();
-
-		try {
-			List<M_INT_RATES_FCA_Archival_Summary_Entity> repoData = M_INT_RATES_FCA_Archival_Summary_Repo
-					.getdatabydateListWithVersionAll();
-
-			if (repoData != null && !repoData.isEmpty()) {
-				for (M_INT_RATES_FCA_Archival_Summary_Entity entity : repoData) {
-					Object[] row = new Object[] { entity.getReportDate(), entity.getReportVersion() };
-					archivalList.add(row);
-				}
-
-				System.out.println("Fetched " + archivalList.size() + " archival records");
-				M_INT_RATES_FCA_Archival_Summary_Entity first = repoData.get(0);
-				System.out.println("Latest archival version: " + first.getReportVersion());
-			} else {
-				System.out.println("No archival data found.");
-			}
-
-		} catch (Exception e) {
-			System.err.println("Error fetching M_INT_RATES_FCA Archival data: " + e.getMessage());
-			e.printStackTrace();
-		}
-
-		return archivalList;
-	}
+	/*
+	 * //Archival View public List<Object[]> getM_INT_RATES_FCAArchival() {
+	 * List<Object[]> archivalList = new ArrayList<>();
+	 * 
+	 * try { List<M_INT_RATES_FCA_Archival_Summary_Entity> repoData =
+	 * M_INT_RATES_FCA_Archival_Summary_Repo .getdatabydateListWithVersionAll();
+	 * 
+	 * if (repoData != null && !repoData.isEmpty()) { for
+	 * (M_INT_RATES_FCA_Archival_Summary_Entity entity : repoData) { Object[] row =
+	 * new Object[] { entity.getReportDate(), entity.getReportVersion() };
+	 * archivalList.add(row); }
+	 * 
+	 * System.out.println("Fetched " + archivalList.size() + " archival records");
+	 * M_INT_RATES_FCA_Archival_Summary_Entity first = repoData.get(0);
+	 * System.out.println("Latest archival version: " + first.getReportVersion()); }
+	 * else { System.out.println("No archival data found."); }
+	 * 
+	 * } catch (Exception e) {
+	 * System.err.println("Error fetching M_INT_RATES_FCA Archival data: " +
+	 * e.getMessage()); e.printStackTrace(); }
+	 * 
+	 * return archivalList; }
+	 */
 
 	/*
 	 * @Transactional public void updateReportReSub(M_INT_RATES_FCA_Summary_Entity
@@ -2911,5 +2887,29 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 			return new byte[0];
 		}
 	}
+	
+	
+	
+	public List<Object> getM_INT_RATES_FCAArchival() {
+		List<Object> M_INT_RATES_FCAArchivallist = new ArrayList<>();
+		try {
+			M_INT_RATES_FCAArchivallist = M_INT_RATES_FCA_Archival_Summary_Repo.getM_INTRATESFCAarchival();
+		
+		
+			System.out.println("countser" + M_INT_RATES_FCAArchivallist.size());
+			
+		} catch (Exception e) {
+			// Log the exception
+			System.err.println("Error fetching M_INT_RATES_FCAArchivallist Archival data: " + e.getMessage());
+			e.printStackTrace();
+
+			// Optionally, you can rethrow it or return empty list
+			// throw new RuntimeException("Failed to fetch data", e);
+		}
+		return M_INT_RATES_FCAArchivallist;
+	}
+	
+	
+		
 
 }

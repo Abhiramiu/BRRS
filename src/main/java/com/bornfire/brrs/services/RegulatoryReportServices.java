@@ -1353,6 +1353,12 @@ public class RegulatoryReportServices {
 			repdetail = BRRS_M_INT_RATES_FCA_ReportService.getM_INT_RATES_FCAcurrentDtl(reportId, fromdate, todate,
 					currency, dtltype, pageable, Filter, type, version);
 			break;
+			
+		case "M_INT_RATES":
+
+			repdetail = brrs_m_int_rates_reportservice.getM_INT_RATEScurrentDtl(reportId, fromdate, todate,
+					currency, dtltype, pageable, Filter, type, version);
+			break;
 
 		case "M_INT_RATES_FCA_NEW":
 
@@ -2552,6 +2558,15 @@ public class RegulatoryReportServices {
 					dtltype, type, version);
 		}
 
+		
+		
+		else if ("M_INTRATESDetail".equals(filename)) {
+			return brrs_m_int_rates_reportservice.getM_INT_RATESDetailExcel(filename, fromdate, todate, currency,
+					dtltype, type, version);
+		}
+		
+		
+		
 		else if ("M_INTRATESFCANEWDetailExcel".equals(filename)) {
 			return BRRS_M_INT_RATES_FCA_NEW_ReportService.getM_INTRATESFCANEWDetailExcel(filename, fromdate, todate,
 					currency, dtltype, type, version);
@@ -2868,10 +2883,24 @@ public class RegulatoryReportServices {
 		// }
 		// break;
 
+		
+			
 		case "M_INT_RATES_FCA":
-			List<Object[]> intratesfcaList = BRRS_M_INT_RATES_FCA_ReportService.getM_INT_RATES_FCAArchival();
-			archivalData.addAll(intratesfcaList);
-			System.out.println("Fetched M_INT_RATES_FCA archival data: " + intratesfcaList.size());
+			try {
+				archivalData = BRRS_M_INT_RATES_FCA_ReportService.getM_INT_RATES_FCAArchival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+			
+		case "M_INT_RATES":
+			try {
+				archivalData = brrs_m_int_rates_reportservice.getM_INT_RATESArchival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			break;
 
 		case "M_INT_RATES_FCA_NEW":
@@ -3356,11 +3385,13 @@ public class RegulatoryReportServices {
 		// }
 		// break;
 
-		case "M_INT_RATES":
-			List<Object[]> intratesList = brrs_m_int_rates_reportservice.getM_INTRATESArchival();
-			archivalData.addAll(intratesList);
-			System.out.println("Fetched M_INT_RATES archival data: " + intratesList.size());
-			break;
+		/*
+		 * case "M_INT_RATES": List<Object[]> intratesList =
+		 * brrs_m_int_rates_reportservice.getM_INTRATESArchival();
+		 * archivalData.addAll(intratesList);
+		 * System.out.println("Fetched M_INT_RATES archival data: " +
+		 * intratesList.size()); break;
+		 */
 
 		case "M_RPD":
 			List<Object[]> RPDList = BRRS_M_RPD_ReportService.getM_RPDArchival();
@@ -3959,6 +3990,15 @@ public class RegulatoryReportServices {
 			fileData = BRRS_M_INT_RATES_FCA_ReportService.getM_INTRATESFCADetailExcel(filename, fromdate, todate,
 					currency, dtltype, type, version);
 		}
+		
+		
+		else if ("M_INTRATESDetail".equals(filename)) {
+
+			fileData = brrs_m_int_rates_reportservice.getM_INT_RATESDetailExcel(filename, fromdate, todate,
+					currency, dtltype, type, version);
+		}
+		
+		
 
 		else if ("M_INTRATESFCANEWDetail".equals(filename)) {
 
