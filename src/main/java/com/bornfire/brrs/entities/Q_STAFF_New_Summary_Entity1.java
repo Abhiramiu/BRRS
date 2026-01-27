@@ -5,15 +5,13 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.IdClass;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import org.springframework.format.annotation.DateTimeFormat;
 @Entity
-@Table(name = "BRRS_Q_STAFF_ARCHIVALTABLE_SUMMARY1")
-@IdClass(Q_STAFF_Archival_Summary1_PK.class)
-public class Q_STAFF_Archival_Summary_Entity1 {
+@Table(name = "BRRS_Q_STAFF_NEW_SUMMARYTABLE1")
+public class Q_STAFF_New_Summary_Entity1 {
 
 private String R9_STAFF_COMPLEMENT;
 private BigDecimal R9_LOCAL;
@@ -44,20 +42,14 @@ private BigDecimal R15_LOCAL;
 private BigDecimal R15_EXPARIATES;
 private BigDecimal R15_TOTAL;
 
-
-	@Id
 	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern = "dd/MM/yyyy")
+	@Id
 	@Column(name = "REPORT_DATE")
 	private Date reportDate;
-
-	@Id
 	@Column(name = "REPORT_VERSION")
 	private BigDecimal reportVersion;
-
-	@Column(name = "REPORT_RESUBDATE")
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date reportResubDate;
-
+  
    private String REPORT_FREQUENCY;
    private String REPORT_CODE;
    private String REPORT_DESC;
@@ -246,12 +238,6 @@ private BigDecimal R15_TOTAL;
    public void setReportVersion(BigDecimal reportVersion) {
      this.reportVersion = reportVersion;
    }
-   public Date getReportResubDate() {
-     return reportResubDate;
-   }
-   public void setReportResubDate(Date reportResubDate) {
-     this.reportResubDate = reportResubDate;
-   }
    public String getREPORT_FREQUENCY() {
     return REPORT_FREQUENCY;
    }
@@ -289,7 +275,7 @@ private BigDecimal R15_TOTAL;
     DEL_FLG = dEL_FLG;
    }
 
-   public Q_STAFF_Archival_Summary_Entity1() {
+   public Q_STAFF_New_Summary_Entity1() {
     super();
    }
 

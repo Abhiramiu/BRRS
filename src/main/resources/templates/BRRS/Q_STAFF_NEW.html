@@ -723,9 +723,7 @@ PURPOSE		: BWRBRREPORT
 				"R9_STAFF_COMPLEMENT", "R10_STAFF_COMPLEMENT", "R11_STAFF_COMPLEMENT", "R12_STAFF_COMPLEMENT", "R13_STAFF_COMPLEMENT", "R15_STAFF_COMPLEMENT",
 				"R21_SENIOR_MANAGEMENT_COMPENSATION", "R22_SENIOR_MANAGEMENT_COMPENSATION", "R23_SENIOR_MANAGEMENT_COMPENSATION", "R24_STR21_SENIOR_MANAGEMENT_COMPENSATIONAFF_COMPLEMENT", "R25_SENIOR_MANAGEMENT_COMPENSATION", "R26_SENIOR_MANAGEMENT_COMPENSATION", "R27_SENIOR_MANAGEMENT_COMPENSATION", "R28_SENIOR_MANAGEMENT_COMPENSATION",
 				"R33_STAFF_LOANS", "R34_STAFF_LOANS", "R35_STAFF_LOANS", "R36_STAFF_LOANS", "R37_STAFF_LOANS", "R38_STAFF_LOANS",
-				"R15_LOCAL", "R15_EXPARIATES", "R9_TOTAL", "R10_TOTAL", "R11_TOTAL", "R12_TOTAL",
-				"R13_TOTAL", "R14_TOTAL", "R15_TOTAL", "R28_LOCAL", "R28_EXPARIATES", "R21_TOTAL",
-				"R22_TOTAL", "R23_TOTAL", "R24_TOTAL", "R25_TOTAL", "R26_TOTAL", "R27_TOTAL", "R28_TOTAL",
+				"R15_LOCAL", "R15_EXPARIATES","R15_TOTAL", "R28_LOCAL", "R28_EXPARIATES",  "R28_TOTAL",
 				"R38_ORIGINAL_AMT", "R38_BALANCE_OUTSTANDING", "R38_NO_OF_ACS"
 			];
 			//"R33_INTEREST_RATE", "R34_INTEREST_RATE", "RR35_INTEREST_RATE35_STAFF_LOANS", "R36_INTEREST_RATE", "R37_INTEREST_RATE", "R38_INTEREST_RATE",
@@ -742,7 +740,8 @@ PURPOSE		: BWRBRREPORT
 				let fields = [
 
 					"_LOCAL",
-					"_EXPARIATES"
+					"_EXPARIATES",
+					"_TOTAL"
 				];
 
 				fields.forEach(field => {
@@ -756,7 +755,8 @@ PURPOSE		: BWRBRREPORT
 				let fields = [
 
 					"_LOCAL",
-					"_EXPARIATES"
+					"_EXPARIATES",
+					"_TOTAL"
 				];
 
 				fields.forEach(field => {
@@ -830,25 +830,27 @@ PURPOSE		: BWRBRREPORT
 
 	<SCRIPT>
 		// ---- R15 TOTAL (R9–R14) ----
-		function calculateR15Totals() {
-			let localTotal = 0, expatriatesTotal = 0, grandTotal = 0;
+// ---- R15 TOTAL (R9–R14) ----
+function calculateR15Totals() {
+    let localTotal = 0;
+    let expatriatesTotal = 0;
+    let grandTotal = 0;
 
-			for (let i = 9; i <= 14; i++) {
-				let l = parseFloat($("#R" + i + "_LOCAL").val().replace(/,/g, "")) || 0;
-				let e = parseFloat($("#R" + i + "_EXPARIATES").val().replace(/,/g, "")) || 0;
+    for (let i = 9; i <= 14; i++) {
+        let l = parseFloat($("#R" + i + "_LOCAL").val().replace(/,/g, "")) || 0;
+        let e = parseFloat($("#R" + i + "_EXPARIATES").val().replace(/,/g, "")) || 0;
+        let t = parseFloat($("#R" + i + "_TOTAL").val().replace(/,/g, "")) || 0;
 
-				let rowTotal = l + e;
-				$("#R" + i + "_TOTAL").val(rowTotal.toLocaleString('en-US'));
+        localTotal += l;
+        expatriatesTotal += e;
+        grandTotal += t;
+    }
 
-				localTotal += l;
-				expatriatesTotal += e;
-				grandTotal += rowTotal;
-			}
+    $("#R15_LOCAL").val(localTotal.toLocaleString('en-US'));
+    $("#R15_EXPARIATES").val(expatriatesTotal.toLocaleString('en-US'));
+    $("#R15_TOTAL").val(grandTotal.toLocaleString('en-US'));
+}
 
-			$("#R15_LOCAL").val(localTotal.toLocaleString('en-US'));
-			$("#R15_EXPARIATES").val(expatriatesTotal.toLocaleString('en-US'));
-			$("#R15_TOTAL").val(grandTotal.toLocaleString('en-US'));
-		}
 
 		// ---- R28 TOTAL (R21–R27) ----
 		function calculateR28Totals() {
@@ -857,19 +859,26 @@ PURPOSE		: BWRBRREPORT
 			for (let i = 21; i <= 27; i++) {
 				let l = parseFloat($("#R" + i + "_LOCAL").val().replace(/,/g, "")) || 0;
 				let e = parseFloat($("#R" + i + "_EXPARIATES").val().replace(/,/g, "")) || 0;
+				 let t = parseFloat($("#R" + i + "_TOTAL").val().replace(/,/g, "")) || 0;
 
-				let rowTotal = l + e;
-				$("#R" + i + "_TOTAL").val(rowTotal.toLocaleString('en-US'));
 
 				localTotal += l;
 				expatriatesTotal += e;
-				grandTotal += rowTotal;
+				grandTotal += t;
 			}
 
 			$("#R28_LOCAL").val(localTotal.toLocaleString('en-US'));
 			$("#R28_EXPARIATES").val(expatriatesTotal.toLocaleString('en-US'));
 			$("#R28_TOTAL").val(grandTotal.toLocaleString('en-US'));
 		}
+function calculateR21Total() {
+    let l = parseFloat($("#R21_LOCAL").val().replace(/,/g, "")) || 0;
+    let e = parseFloat($("#R21_EXPARIATES").val().replace(/,/g, "")) || 0;
+
+    let total = l + e;
+
+    $("#R21_TOTAL").val(total.toLocaleString('en-US'));
+}
 
 		// ---- R38 TOTAL (R33–R37) ----
 		function calculateR38Totals() {
@@ -896,15 +905,20 @@ PURPOSE		: BWRBRREPORT
 			calculateR38Totals();
 
 			for (let i = 9; i <= 14; i++) {
-				$("#R" + i + "_LOCAL, #R" + i + "_EXPARIATES").on("input", calculateR15Totals);
+				   $("#R" + i + "_LOCAL, #R" + i + "_EXPARIATES, #R" + i + "_TOTAL")
+            .on("input", calculateR15Totals);
 			}
 			for (let i = 21; i <= 27; i++) {
-				$("#R" + i + "_LOCAL, #R" + i + "_EXPARIATES").on("input", calculateR28Totals);
+				   $("#R" + i + "_LOCAL, #R" + i + "_EXPARIATES, #R" + i + "_TOTAL")
+            .on("input", calculateR28Totals);
 			}
 			for (let i = 33; i <= 37; i++) {
 				$("#R" + i + "_ORIGINAL_AMT, #R" + i + "_BALANCE_OUTSTANDING, #R" + i + "_NO_OF_ACS")
 					.on("input", calculateR38Totals);
 			}
+			$(document).ready(function () {
+    $("#R21_LOCAL, #R21_EXPARIATES").on("input", calculateR21Total);
+});
 		});
 
   function closemodels() {
@@ -959,6 +973,7 @@ PURPOSE		: BWRBRREPORT
 			calculateR15Totals();
 			calculateR28Totals();
 			calculateR38Totals();
+			calculateR21Total();
 
 			// Step 2: Remove commas
 			$("#fileupload input[type='text']").each(function () {
@@ -982,7 +997,7 @@ PURPOSE		: BWRBRREPORT
 			});
 
 			// Step 5: Select API endpoint dynamically
-			let apiUrl = './Q_STAFFupdateAll'; // normal update
+			let apiUrl = './Q_STAFFNewupdateAll'; // normal update
 			if (type && type.toUpperCase() === 'RESUB') {
 				apiUrl = './UpdateQ_STAFF_ReSub'; // Resubmission endpoint
 			}
@@ -1047,7 +1062,7 @@ PURPOSE		: BWRBRREPORT
 						<h5
 							style="font-family: arial; font-size: 20px; font-weight: bold; color: white; margin: 0 10px;">
 
-							(8) QUARTERLY SCHEDULE: Q-STAFF: <br> STAFFING AND EMPLOYMENT </h5>
+							(31) QUARTERLY SCHEDULE: Q-STAFF: <br> STAFFING AND EMPLOYMENT </h5>
 
 						<!-- Moving bus-board text -->
 						<div class="boards">
@@ -1086,7 +1101,7 @@ PURPOSE		: BWRBRREPORT
                     				 data-todate=${todate},
                     				 data-currency=${currency}, 
                     				 data-dtltype=${dtltype},
-                    				 data-filename='Q_STAFF.xlsx',
+                    				 data-filename='Q_STAFF_NEW.xlsx',
 					 				 data-type=${type},
 					    			 data-version=${version != null ? version : ''}" onclick="downloadfile(this);">
 							<i class="fa fa-download"></i>
@@ -1126,7 +1141,7 @@ PURPOSE		: BWRBRREPORT
 											<tr style="background-color: #D8D8D8;">
 												<th
 													style="text-align: left; vertical-align:center;width: 500px;border: 1px solid black;background-color: #D8D8D8; ">
-													(8A) STAFF COMPLEMENT </th>
+													(31A) STAFF COMPLEMENT </th>
 												<th
 													style="text-align: right; vertical-align:center;background-color: #D8D8D8;">
 													Local</th>
@@ -1164,10 +1179,10 @@ PURPOSE		: BWRBRREPORT
 												</td>
 
 												<td id="ROW9"
-													style="font-weight: bold;padding-left: 20px;background-color: rgb(107, 122, 143);">
+													style="font-weight: bold;padding-left: 20px;">
 													<input class="display-input Show_input " type="text"
-														th:value="${report.R9_TOTAL }" id="R9_TOTAL" name="R9_TOTAL"
-														style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"
+														th:value="${report.R9_TOTAL!= null ? #numbers.formatDecimal(report.R9_TOTAL, 0, 'COMMA', 0, 'POINT') : '0'}" id="R9_TOTAL" name="R9_TOTAL"
+														style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
 											</tr>
@@ -1195,10 +1210,10 @@ PURPOSE		: BWRBRREPORT
 												</td>
 
 												<td id="ROW10"
-													style="font-weight: bold;padding-left: 20px;background-color: rgb(107, 122, 143);">
+													style="font-weight: bold;padding-left: 20px;">
 													<input class="display-input Show_input" type="text"
-														th:value="${report.R10_TOTAL }" id="R10_TOTAL" name="R10_TOTAL"
-														style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white; "
+														th:value="${report.R10_TOTAL!= null ? #numbers.formatDecimal(report.R10_TOTAL, 0, 'COMMA', 0, 'POINT') : '0'}" id="R10_TOTAL" name="R10_TOTAL"
+														style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
 											</tr>
@@ -1225,10 +1240,10 @@ PURPOSE		: BWRBRREPORT
 												</td>
 
 												<td id="ROW11"
-													style="font-weight: bold;padding-left: 20px;background-color: rgb(107, 122, 143);">
+													style="font-weight: bold;padding-left: 20px;">
 													<input class="display-input Show_input" type="text"
-														th:value="${report.R11_TOTAL }" id="R11_TOTAL" name="R11_TOTAL"
-														style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"
+														th:value="${report.R11_TOTAL != null ? #numbers.formatDecimal(report.R11_TOTAL, 0, 'COMMA', 0, 'POINT') : '0'}" id="R11_TOTAL" name="R11_TOTAL"
+														style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
 											</tr>
@@ -1255,10 +1270,10 @@ PURPOSE		: BWRBRREPORT
 												</td>
 
 												<td id="ROW12"
-													style=" font-weight: bold;padding-left: 20px;background-color: rgb(107, 122, 143);">
+													style=" font-weight: bold;padding-left: 20px;">
 													<input class="display-input Show_input" type="text"
-														th:value="${report.R12_TOTAL }" id="R12_TOTAL" name="R12_TOTAL"
-														style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"
+														th:value="${report.R12_TOTAL!= null ? #numbers.formatDecimal(report.R12_TOTAL, 0, 'COMMA', 0, 'POINT') : '0'}" id="R12_TOTAL" name="R12_TOTAL"
+														style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
 											</tr>
@@ -1285,10 +1300,10 @@ PURPOSE		: BWRBRREPORT
 												</td>
 
 												<td id="ROW13"
-													style=" font-weight: bold;padding-left: 20px;background-color: rgb(107, 122, 143);">
+													style=" font-weight: bold;padding-left: 20px;">
 													<input class="display-input Show_input" type="text"
-														th:value="${report.R13_TOTAL }" id="R13_TOTAL" name="R13_TOTAL"
-														style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"
+														th:value="${report.R13_TOTAL!= null ? #numbers.formatDecimal(report.R13_TOTAL, 0, 'COMMA', 0, 'POINT') : '0'}" id="R13_TOTAL" name="R13_TOTAL"
+														style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
 											</tr>
@@ -1315,10 +1330,10 @@ PURPOSE		: BWRBRREPORT
 												</td>
 
 												<td id="ROW14"
-													style="font-weight: bold;padding-left: 20px;background-color: rgb(107, 122, 143);">
+													style="font-weight: bold;padding-left: 20px;">
 													<input class="display-input Show_input" type="text"
-														th:value="${report.R14_TOTAL }" id="R14_TOTAL" name="R14_TOTAL"
-														style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"
+														th:value="${report.R14_TOTAL!= null ? #numbers.formatDecimal(report.R14_TOTAL, 0, 'COMMA', 0, 'POINT') : '0'}" id="R14_TOTAL" name="R14_TOTAL"
+														style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
 											</tr>
@@ -1365,7 +1380,7 @@ PURPOSE		: BWRBRREPORT
 											<tr style="background-color: #D8D8D8;">
 
 												<th style="text-align: left;width: 500px;background-color: #D8D8D8;">
-													(8B) KEY MANAGEMENT COMPENSATION
+													(31B) KEY MANAGEMENT COMPENSATION
 												</th>
 												<th
 													style="text-align: right; vertical-align:center;background-color: #D8D8D8; ">
@@ -1404,10 +1419,10 @@ PURPOSE		: BWRBRREPORT
 												</td>
 
 												<td id="ROW21"
-													style=" font-weight: bold;padding-left: 20px;background-color: rgb(107, 122, 143);">
+													style=" font-weight: bold;padding-left: 20px;">
 													<input class="display-input Show_input" type="text"
-														th:value="${report.R21_TOTAL }" id="R21_TOTAL" name="R21_TOTAL"
-														style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"
+														th:value="${report.R21_TOTAL}" id="R21_TOTAL" name="R21_TOTAL"
+														style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
 											</tr>
@@ -1434,10 +1449,10 @@ PURPOSE		: BWRBRREPORT
 												</td>
 
 												<td id="ROW22"
-													style="font-weight: bold;padding-left: 20px;background-color: rgb(107, 122, 143);">
+													style="font-weight: bold;padding-left: 20px;">
 													<input class="display-input Show_input" type="text"
-														th:value="${report.R22_TOTAL }" id="R22_TOTAL" name="R22_TOTAL"
-														style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"
+														th:value="${report.R22_TOTAL!= null ? #numbers.formatDecimal(report.R22_TOTAL, 0, 'COMMA', 0, 'POINT') : '0'}" id="R22_TOTAL" name="R22_TOTAL"
+														style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
 											</tr>
@@ -1465,10 +1480,10 @@ PURPOSE		: BWRBRREPORT
 												</td>
 
 												<td id="ROW23"
-													style="font-weight: bold;padding-left: 20px;background-color: rgb(107, 122, 143);">
+													style="font-weight: bold;padding-left: 20px;">
 													<input class="display-input Show_input" type="text"
-														th:value="${report.R23_TOTAL }" id="R23_TOTAL" name="R23_TOTAL"
-														style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"
+														th:value="${report.R23_TOTAL!= null ? #numbers.formatDecimal(report.R23_TOTAL, 0, 'COMMA', 0, 'POINT') : '0'}" id="R23_TOTAL" name="R23_TOTAL"
+														style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
 											</tr>
@@ -1496,10 +1511,10 @@ PURPOSE		: BWRBRREPORT
 												</td>
 
 												<td id="ROW24"
-													style=" font-weight: bold;padding-left: 20px;background-color: rgb(107, 122, 143);">
+													style=" font-weight: bold;padding-left: 20px;">
 													<input class="display-input Show_input" type="text"
-														th:value="${report.R24_TOTAL }" id="R24_TOTAL" name="R24_TOTAL"
-														style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"
+														th:value="${report.R24_TOTAL!= null ? #numbers.formatDecimal(report.R24_TOTAL, 0, 'COMMA', 0, 'POINT') : '0'}" id="R24_TOTAL" name="R24_TOTAL"
+														style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
 											</tr>
@@ -1527,10 +1542,10 @@ PURPOSE		: BWRBRREPORT
 												</td>
 
 												<td id="ROW25"
-													style=" font-weight: bold;padding-left: 20px;background-color: rgb(107, 122, 143);">
+													style=" font-weight: bold;padding-left: 20px;">
 													<input class="display-input Show_input" type="text"
-														th:value="${report.R25_TOTAL }" id="R25_TOTAL" name="R25_TOTAL"
-														style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"
+														th:value="${report.R25_TOTAL!= null ? #numbers.formatDecimal(report.R25_TOTAL, 0, 'COMMA', 0, 'POINT') : '0'}" id="R25_TOTAL" name="R25_TOTAL"
+														style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
 											</tr>
@@ -1558,10 +1573,10 @@ PURPOSE		: BWRBRREPORT
 												</td>
 
 												<td id="ROW26"
-													style=" font-weight: bold;padding-left: 20px;background-color: rgb(107, 122, 143);">
+													style=" font-weight: bold;padding-left: 20px;">
 													<input class="display-input Show_input" type="text"
-														th:value="${report.R26_TOTAL }" id="R26_TOTAL" name="R26_TOTAL"
-														style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"
+														th:value="${report.R26_TOTAL!= null ? #numbers.formatDecimal(report.R26_TOTAL, 0, 'COMMA', 0, 'POINT') : '0'}" id="R26_TOTAL" name="R26_TOTAL"
+														style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
 											</tr>
@@ -1589,10 +1604,10 @@ PURPOSE		: BWRBRREPORT
 												</td>
 
 												<td id="ROW27"
-													style=" font-weight: bold;padding-left: 20px;background-color: rgb(107, 122, 143);">
+													style=" font-weight: bold;padding-left: 20px;">
 													<input class="display-input Show_input" type="text"
-														th:value="${report.R27_TOTAL }" id="R27_TOTAL" name="R27_TOTAL"
-														style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"
+														th:value="${report.R27_TOTAL!= null ? #numbers.formatDecimal(report.R27_TOTAL, 0, 'COMMA', 0, 'POINT') : '0'}" id="R27_TOTAL" name="R27_TOTAL"
+														style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
 											</tr>
@@ -1637,7 +1652,7 @@ PURPOSE		: BWRBRREPORT
 
 										<thead class="thead-light">
 											<tr style="background-color: #D8D8D8;">
-												<th style="text-align: left; width: 800px;">(8C) STAFF LOANS</th>
+												<th style="text-align: left; width: 800px;">(31C) STAFF LOANS</th>
 												<th style="text-align: right; width: 290px;">Original Amount</th>
 												<th style="text-align: right; width: 275px;">Balance Outstanding</th>
 												<th style="text-align: right; width: 275px;">No. of A/Cs</th>

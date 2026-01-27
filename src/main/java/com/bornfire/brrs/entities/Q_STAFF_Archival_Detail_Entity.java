@@ -73,12 +73,6 @@ public class Q_STAFF_Archival_Detail_Entity {
     @Column(name = "DEL_FLG", length = 1)
     private String delFlg;
 
-    @Column(name = "AGGREGATE_BALANCE")
-    private BigDecimal AGGREGATE_BALANCE;
-
-    @Column(name = "COMPENSATABLE_AMOUNT")
-    private BigDecimal COMPENSATABLE_AMOUNT;
-
     @Column(name = "DATA_ENTRY_VERSION", length = 100)
     private String dataEntryVersion;
 
@@ -255,21 +249,8 @@ public class Q_STAFF_Archival_Detail_Entity {
         this.delFlg = delFlg;
     }
 
-    public BigDecimal getAGGREGATE_BALANCE() {
-        return AGGREGATE_BALANCE;
-    }
 
-    public void setAGGREGATE_BALANCE(BigDecimal aGGREGATE_BALANCE) {
-        AGGREGATE_BALANCE = aGGREGATE_BALANCE;
-    }
 
-    public BigDecimal getCOMPENSATABLE_AMOUNT() {
-        return COMPENSATABLE_AMOUNT;
-    }
-
-    public void setCOMPENSATABLE_AMOUNT(BigDecimal cOMPENSATABLE_AMOUNT) {
-        COMPENSATABLE_AMOUNT = cOMPENSATABLE_AMOUNT;
-    }
 
     public String getDataEntryVersion() {
         return dataEntryVersion;

@@ -14,7 +14,7 @@ public interface BRRS_Q_STAFF_Archival_Detail_Repo extends JpaRepository<Q_STAFF
 
 	@Query(value = "select * from BRRS_Q_STAFF_ARCHIVALTABLE_DETAIL where REPORT_DATE=?1 AND DATA_ENTRY_VERSION=?2", nativeQuery = true)
 	List<Q_STAFF_Archival_Detail_Entity> getdatabydateList(Date reportdate,String DATA_ENTRY_VERSION);
-	
+
 	@Query(value = "select * from BRRS_Q_STAFF_ARCHIVALTABLE_DETAIL where REPORT_LABLE =?1 and REPORT_ADDL_CRITERIA_1=?2 AND REPORT_DATE=?3 AND DATA_ENTRY_VERSION=?4", nativeQuery = true)
 	List<Q_STAFF_Archival_Detail_Entity> GetDataByRowIdAndColumnId(String reportLable,String reportAddlCriteria_1,Date reportdate,String DATA_ENTRY_VERSION);
 

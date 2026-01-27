@@ -50,62 +50,61 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 import org.springframework.web.servlet.ModelAndView;
 import java.util.Map;
 import java.util.Arrays;
-import com.bornfire.brrs.entities.BRRS_Q_STAFF_Archival_Detail_Repo;
-import com.bornfire.brrs.entities.BRRS_Q_STAFF_Archival_Summary_Repo1;
-import com.bornfire.brrs.entities.BRRS_Q_STAFF_Archival_Summary_Repo2;
-import com.bornfire.brrs.entities.BRRS_Q_STAFF_Archival_Summary_Repo3;
-import com.bornfire.brrs.entities.BRRS_Q_STAFF_Detail_Repo;
-import com.bornfire.brrs.entities.BRRS_Q_STAFF_Summary_Repo1;
-import com.bornfire.brrs.entities.BRRS_Q_STAFF_Summary_Repo2;
-import com.bornfire.brrs.entities.BRRS_Q_STAFF_Summary_Repo3;
-import com.bornfire.brrs.entities.Q_BRANCHNET_Archival_Summary_Entity1;
-import com.bornfire.brrs.entities.Q_STAFF_Detail_Entity;
-import com.bornfire.brrs.entities.Q_STAFF_Archival_Detail_Entity;
-import com.bornfire.brrs.entities.Q_STAFF_Archival_Summary_Entity1;
-import com.bornfire.brrs.entities.Q_STAFF_Archival_Summary_Entity2;
-import com.bornfire.brrs.entities.Q_STAFF_Archival_Summary_Entity3;
-import com.bornfire.brrs.entities.Q_STAFF_Summary_Entity1;
-import com.bornfire.brrs.entities.Q_STAFF_Summary_Entity2;
-import com.bornfire.brrs.entities.Q_STAFF_Summary_Entity3;
+import com.bornfire.brrs.entities.BRRS_Q_STAFF_New_Archival_Detail_Repo;
+import com.bornfire.brrs.entities.BRRS_Q_STAFF_New_Archival_Summary_Repo1;
+import com.bornfire.brrs.entities.BRRS_Q_STAFF_New_Archival_Summary_Repo2;
+import com.bornfire.brrs.entities.BRRS_Q_STAFF_New_Archival_Summary_Repo3;
+import com.bornfire.brrs.entities.BRRS_Q_STAFF_New_Detail_Repo;
+import com.bornfire.brrs.entities.BRRS_Q_STAFF_New_Summary_Repo1;
+import com.bornfire.brrs.entities.BRRS_Q_STAFF_New_Summary_Repo2;
+import com.bornfire.brrs.entities.BRRS_Q_STAFF_New_Summary_Repo3;
+import com.bornfire.brrs.entities.Q_STAFF_New_Detail_Entity;
+import com.bornfire.brrs.entities.Q_STAFF_New_Archival_Detail_Entity;
+import com.bornfire.brrs.entities.Q_STAFF_New_Archival_Summary_Entity1;
+import com.bornfire.brrs.entities.Q_STAFF_New_Archival_Summary_Entity2;
+import com.bornfire.brrs.entities.Q_STAFF_New_Archival_Summary_Entity3;
+import com.bornfire.brrs.entities.Q_STAFF_New_Summary_Entity1;
+import com.bornfire.brrs.entities.Q_STAFF_New_Summary_Entity2;
+import com.bornfire.brrs.entities.Q_STAFF_New_Summary_Entity3;
 
 @Component
 @Service
 
-public class BRRS_Q_STAFF_Report_Service {
-	private static final Logger logger = LoggerFactory.getLogger(BRRS_Q_STAFF_Report_Service.class);
+public class BRRS_Q_STAFF_New_Report_Service {
+	private static final Logger logger = LoggerFactory.getLogger(BRRS_Q_STAFF_New_Report_Service.class);
  
 	@Autowired
 	SessionFactory sessionFactory;
 	@Autowired
 	private Environment env;
 
-	@Autowired
-	BRRS_Q_STAFF_Detail_Repo Q_STAFF_Detail_Repo;
+	// @Autowired
+	// BRRS_Q_STAFF_New_Detail_Repo Q_STAFF_New_Detail_Repo;
 
 	@Autowired
-	BRRS_Q_STAFF_Summary_Repo1 Q_STAFF_Summary_Repo1;
-
-    @Autowired
-	BRRS_Q_STAFF_Summary_Repo2 Q_STAFF_Summary_Repo2;
+	BRRS_Q_STAFF_New_Summary_Repo1 Q_STAFF_New_Summary_Repo1;
 
     @Autowired
-	BRRS_Q_STAFF_Summary_Repo3 Q_STAFF_Summary_Repo3;
+	BRRS_Q_STAFF_New_Summary_Repo2 Q_STAFF_New_Summary_Repo2;
+
+    @Autowired
+	BRRS_Q_STAFF_New_Summary_Repo3 Q_STAFF_New_Summary_Repo3;
+
+	// @Autowired
+	// BRRS_Q_STAFF_New_Archival_Detail_Repo Q_STAFF_New_Archival_Detail_Repo;
 
 	@Autowired
-	BRRS_Q_STAFF_Archival_Detail_Repo Q_STAFF_Archival_Detail_Repo;
-
-	@Autowired
-	BRRS_Q_STAFF_Archival_Summary_Repo1 Q_STAFF_Archival_Summary_Repo1;
+	BRRS_Q_STAFF_New_Archival_Summary_Repo1 Q_STAFF_New_Archival_Summary_Repo1;
     
 	@Autowired
-	BRRS_Q_STAFF_Archival_Summary_Repo2 Q_STAFF_Archival_Summary_Repo2;
+	BRRS_Q_STAFF_New_Archival_Summary_Repo2 Q_STAFF_New_Archival_Summary_Repo2;
     
 	@Autowired
-	BRRS_Q_STAFF_Archival_Summary_Repo3 Q_STAFF_Archival_Summary_Repo3;
+	BRRS_Q_STAFF_New_Archival_Summary_Repo3 Q_STAFF_New_Archival_Summary_Repo3;
 
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
-	public ModelAndView getQ_STAFFView(String reportId, String fromdate, String todate,
+	public ModelAndView getQ_STAFF_NewView(String reportId, String fromdate, String todate,
 			String currency, String dtltype, Pageable pageable, String type, BigDecimal version) {
 		ModelAndView mv = new ModelAndView();
 		Session hs = sessionFactory.getCurrentSession();
@@ -118,15 +117,15 @@ public class BRRS_Q_STAFF_Report_Service {
 
 		if (type.equals("ARCHIVAL") & version != null) {
 			System.out.println(type);
-			List<Q_STAFF_Archival_Summary_Entity1> T1Master = new ArrayList<Q_STAFF_Archival_Summary_Entity1>();
-			List<Q_STAFF_Archival_Summary_Entity2> T2Master = new ArrayList<Q_STAFF_Archival_Summary_Entity2>();
-			List<Q_STAFF_Archival_Summary_Entity3> T3Master = new ArrayList<Q_STAFF_Archival_Summary_Entity3>();
+			List<Q_STAFF_New_Archival_Summary_Entity1> T1Master = new ArrayList<Q_STAFF_New_Archival_Summary_Entity1>();
+			List<Q_STAFF_New_Archival_Summary_Entity2> T2Master = new ArrayList<Q_STAFF_New_Archival_Summary_Entity2>();
+			List<Q_STAFF_New_Archival_Summary_Entity3> T3Master = new ArrayList<Q_STAFF_New_Archival_Summary_Entity3>();
 			System.out.println(version);
 			try {
 				Date d1 = dateformat.parse(todate);
-				T1Master =Q_STAFF_Archival_Summary_Repo1.getdatabydateListarchival(d1, version);
-				T2Master =Q_STAFF_Archival_Summary_Repo2.getdatabydateListarchival(d1, version);
-				T3Master =Q_STAFF_Archival_Summary_Repo3.getdatabydateListarchival(d1, version);
+				T1Master =Q_STAFF_New_Archival_Summary_Repo1.getdatabydateListarchival(d1, version);
+				T2Master =Q_STAFF_New_Archival_Summary_Repo2.getdatabydateListarchival(d1, version);
+				T3Master =Q_STAFF_New_Archival_Summary_Repo3.getdatabydateListarchival(d1, version);
 
 			} catch (ParseException e) {
 				e.printStackTrace();
@@ -136,15 +135,15 @@ public class BRRS_Q_STAFF_Report_Service {
                 mv.addObject("reportsummary1", T2Master);
                 mv.addObject("reportsummary2", T3Master);
 		} else {
-			List<Q_STAFF_Summary_Entity1> T1Master = new ArrayList<Q_STAFF_Summary_Entity1>();
-			List<Q_STAFF_Summary_Entity2> T2Master = new ArrayList<Q_STAFF_Summary_Entity2>();
-			List<Q_STAFF_Summary_Entity3> T3Master = new ArrayList<Q_STAFF_Summary_Entity3>();
+			List<Q_STAFF_New_Summary_Entity1> T1Master = new ArrayList<Q_STAFF_New_Summary_Entity1>();
+			List<Q_STAFF_New_Summary_Entity2> T2Master = new ArrayList<Q_STAFF_New_Summary_Entity2>();
+			List<Q_STAFF_New_Summary_Entity3> T3Master = new ArrayList<Q_STAFF_New_Summary_Entity3>();
 			try {
 				Date d1 = dateformat.parse(todate);
 
-				T1Master =Q_STAFF_Summary_Repo1.getdatabydateList(dateformat.parse(todate));
-				T2Master =Q_STAFF_Summary_Repo2.getdatabydateList(dateformat.parse(todate));
-				T3Master =Q_STAFF_Summary_Repo3.getdatabydateList(dateformat.parse(todate));
+				T1Master =Q_STAFF_New_Summary_Repo1.getdatabydateList(dateformat.parse(todate));
+				T2Master =Q_STAFF_New_Summary_Repo2.getdatabydateList(dateformat.parse(todate));
+				T3Master =Q_STAFF_New_Summary_Repo3.getdatabydateList(dateformat.parse(todate));
 
 			} catch (ParseException e) {
 				e.printStackTrace();
@@ -154,96 +153,96 @@ public class BRRS_Q_STAFF_Report_Service {
                 mv.addObject("reportsummary2", T3Master);
 		}
 
-		mv.setViewName("BRRS/Q_STAFF");
+		mv.setViewName("BRRS/Q_STAFF_NEW");
 		mv.addObject("displaymode", "summary");
 		System.out.println("scv" + mv.getViewName());
 		return mv;
 	}
 
-public ModelAndView getQ_STAFFcurrentDtl(String reportId, String fromdate, String todate, String currency,
-			String dtltype, Pageable pageable, String Filter, String type, String version) {
+// public ModelAndView getQ_STAFF_NewcurrentDtl(String reportId, String fromdate, String todate, String currency,
+// 			String dtltype, Pageable pageable, String Filter, String type, String version) {
 
-		int pageSize = pageable != null ? pageable.getPageSize() : 10;
-		int currentPage = pageable != null ? pageable.getPageNumber() : 0;
-		int totalPages = 0;
+// 		int pageSize = pageable != null ? pageable.getPageSize() : 10;
+// 		int currentPage = pageable != null ? pageable.getPageNumber() : 0;
+// 		int totalPages = 0;
 
-		ModelAndView mv = new ModelAndView();
-		// Session hs = sessionFactory.getCurrentSession();
+// 		ModelAndView mv = new ModelAndView();
+// 		// Session hs = sessionFactory.getCurrentSession();
 
-		try {
-			Date parsedDate = null;
-			if (todate != null && !todate.isEmpty()) {
-				parsedDate = dateformat.parse(todate);
-			}
+// 		try {
+// 			Date parsedDate = null;
+// 			if (todate != null && !todate.isEmpty()) {
+// 				parsedDate = dateformat.parse(todate);
+// 			}
 
-			String rowId = null;
-			String columnId = null;
+// 			String rowId = null;
+// 			String columnId = null;
 
-			// ✅ Split filter string into rowId & columnId
-			if (Filter != null && Filter.contains(",")) {
-				String[] parts = Filter.split(",");
-				if (parts.length >= 2) {
-					rowId = parts[0];
-					columnId = parts[1];
-				}
-			}
-			System.out.println(type);
-			if ("ARCHIVAL".equals(type) && version != null) {
-				System.out.println(type);
-				// 🔹 Archival branch
-				List<Q_STAFF_Archival_Detail_Entity> T1Dt1;
-				if (rowId != null && columnId != null) {
-					T1Dt1 = Q_STAFF_Archival_Detail_Repo.GetDataByRowIdAndColumnId(rowId, columnId, parsedDate, version);
-				} else {
-					T1Dt1 = Q_STAFF_Archival_Detail_Repo.getdatabydateList(parsedDate, version);
-				}
+// 			// ✅ Split filter string into rowId & columnId
+// 			if (Filter != null && Filter.contains(",")) {
+// 				String[] parts = Filter.split(",");
+// 				if (parts.length >= 2) {
+// 					rowId = parts[0];
+// 					columnId = parts[1];
+// 				}
+// 			}
+// 			System.out.println(type);
+// 			if ("ARCHIVAL".equals(type) && version != null) {
+// 				System.out.println(type);
+// 				// 🔹 Archival branch
+// 				List<Q_STAFF_New_Archival_Detail_Entity> T1Dt1;
+// 				if (rowId != null && columnId != null) {
+// 					T1Dt1 = Q_STAFF_New_Archival_Detail_Repo.GetDataByRowIdAndColumnId(rowId, columnId, parsedDate, version);
+// 				} else {
+// 					T1Dt1 = Q_STAFF_New_Archival_Detail_Repo.getdatabydateList(parsedDate, version);
+// 				}
 
-				mv.addObject("reportdetails", T1Dt1);
-				mv.addObject("reportmaster12", T1Dt1);
-				System.out.println("ARCHIVAL COUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
+// 				mv.addObject("reportdetails", T1Dt1);
+// 				mv.addObject("reportmaster12", T1Dt1);
+// 				System.out.println("ARCHIVAL COUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
 
-			} else {
-				System.out.println(
-						"row id is: " + rowId + " column id is : " + columnId + " date parsed is : " + parsedDate);
-				// 🔹 Current branch
-				List<Q_STAFF_Detail_Entity> T1Dt1;
-				if (rowId != null && columnId != null) {
-					T1Dt1 = Q_STAFF_Detail_Repo.GetDataByRowIdAndColumnId(rowId, columnId, parsedDate);
-				} else {
-					T1Dt1 = Q_STAFF_Detail_Repo.getdatabydateList(parsedDate, currentPage, pageSize);
-					totalPages = Q_STAFF_Detail_Repo.getdatacount(parsedDate);
-					mv.addObject("pagination", "YES");
-				}
+// 			} else {
+// 				System.out.println(
+// 						"row id is: " + rowId + " column id is : " + columnId + " date parsed is : " + parsedDate);
+// 				// 🔹 Current branch
+// 				List<Q_STAFF_New_Detail_Entity> T1Dt1;
+// 				if (rowId != null && columnId != null) {
+// 					T1Dt1 = Q_STAFF_New_Detail_Repo.GetDataByRowIdAndColumnId(rowId, columnId, parsedDate);
+// 				} else {
+// 					T1Dt1 = Q_STAFF_New_Detail_Repo.getdatabydateList(parsedDate, currentPage, pageSize);
+// 					totalPages = Q_STAFF_New_Detail_Repo.getdatacount(parsedDate);
+// 					mv.addObject("pagination", "YES");
+// 				}
 
-				mv.addObject("reportdetails", T1Dt1);
-				mv.addObject("reportmaster12", T1Dt1);
-				System.out.println("LISTCOUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
-			}
+// 				mv.addObject("reportdetails", T1Dt1);
+// 				mv.addObject("reportmaster12", T1Dt1);
+// 				System.out.println("LISTCOUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
+// 			}
 
-		} catch (ParseException e) {
-			e.printStackTrace();
-			mv.addObject("errorMessage", "Invalid date format: " + todate);
-		} catch (Exception e) {
-			e.printStackTrace();
-			mv.addObject("errorMessage", "Unexpected error: " + e.getMessage());
-		}
+// 		} catch (ParseException e) {
+// 			e.printStackTrace();
+// 			mv.addObject("errorMessage", "Invalid date format: " + todate);
+// 		} catch (Exception e) {
+// 			e.printStackTrace();
+// 			mv.addObject("errorMessage", "Unexpected error: " + e.getMessage());
+// 		}
 
-		// ✅ Common attributes
-		mv.setViewName("BRRS/Q_STAFF");
-		mv.addObject("displaymode", "Details");
-		mv.addObject("currentPage", currentPage);
-		System.out.println("totalPages: " + (int) Math.ceil((double) totalPages / 100));
-		mv.addObject("totalPages", (int) Math.ceil((double) totalPages / 100));
-		mv.addObject("reportsflag", "reportsflag");
-		mv.addObject("menu", reportId);
+// 		// ✅ Common attributes
+// 		mv.setViewName("BRRS/Q_STAFF_NEW");
+// 		mv.addObject("displaymode", "Details");
+// 		mv.addObject("currentPage", currentPage);
+// 		System.out.println("totalPages: " + (int) Math.ceil((double) totalPages / 100));
+// 		mv.addObject("totalPages", (int) Math.ceil((double) totalPages / 100));
+// 		mv.addObject("reportsflag", "reportsflag");
+// 		mv.addObject("menu", reportId);
 
-		return mv;
-	}
-    public void updateReport(Q_STAFF_Summary_Entity1 updatedEntity) {
+// 		return mv;
+// 	}
+    public void updateReport(Q_STAFF_New_Summary_Entity1 updatedEntity) {
         System.out.println("Came to services 1");
         System.out.println("Report Date: " + updatedEntity.getReportDate());
 
-        Q_STAFF_Summary_Entity1 existing = Q_STAFF_Summary_Repo1.findById(updatedEntity.getReportDate())
+        Q_STAFF_New_Summary_Entity1 existing = Q_STAFF_New_Summary_Repo1.findById(updatedEntity.getReportDate())
                 .orElseThrow(() -> new RuntimeException(
                         "Record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
 
@@ -259,8 +258,8 @@ public ModelAndView getQ_STAFFcurrentDtl(String reportId, String fromdate, Strin
                     String setterName = "set" + prefix + field;
 
                     try {
-                        Method getter = Q_STAFF_Summary_Entity1.class.getMethod(getterName);
-                        Method setter = Q_STAFF_Summary_Entity1.class.getMethod(setterName, getter.getReturnType());
+                        Method getter = Q_STAFF_New_Summary_Entity1.class.getMethod(getterName);
+                        Method setter = Q_STAFF_New_Summary_Entity1.class.getMethod(setterName, getter.getReturnType());
 
                         Object newValue = getter.invoke(updatedEntity);
                         setter.invoke(existing, newValue);
@@ -277,22 +276,22 @@ public ModelAndView getQ_STAFFcurrentDtl(String reportId, String fromdate, Strin
         }
         System.out.println("Testing 1");
         // 3ï¸âƒ£ Save updated entity
-        Q_STAFF_Summary_Repo1.save(existing);
+        Q_STAFF_New_Summary_Repo1.save(existing);
 
     }
 
-    public void updateReport2(Q_STAFF_Summary_Entity2 updatedEntity) {
+    public void updateReport2(Q_STAFF_New_Summary_Entity2 updatedEntity) {
         System.out.println("Came to services 2");
         System.out.println("Report Date: " + updatedEntity.getReportDate());
 
-        Q_STAFF_Summary_Entity2 existing = Q_STAFF_Summary_Repo2
+        Q_STAFF_New_Summary_Entity2 existing = Q_STAFF_New_Summary_Repo2
                 .findById(updatedEntity.getReportDate())
                 .orElse(null);
 
         if (existing == null) {
             System.out.println("âš ï¸ No existing record found â€” creating new record for date: "
                     + updatedEntity.getReportDate());
-            Q_STAFF_Summary_Repo2.save(updatedEntity);
+            Q_STAFF_New_Summary_Repo2.save(updatedEntity);
             return;
         }
 
@@ -306,8 +305,8 @@ public ModelAndView getQ_STAFFcurrentDtl(String reportId, String fromdate, Strin
                     String setterName = "set" + prefix + field;
 
                     try {
-                        Method getter = Q_STAFF_Summary_Entity2.class.getMethod(getterName);
-                        Method setter = Q_STAFF_Summary_Entity2.class.getMethod(setterName, getter.getReturnType());
+                        Method getter = Q_STAFF_New_Summary_Entity2.class.getMethod(getterName);
+                        Method setter = Q_STAFF_New_Summary_Entity2.class.getMethod(setterName, getter.getReturnType());
                         Object newValue = getter.invoke(updatedEntity);
                         setter.invoke(existing, newValue);
                     } catch (NoSuchMethodException e) {
@@ -319,21 +318,21 @@ public ModelAndView getQ_STAFFcurrentDtl(String reportId, String fromdate, Strin
             throw new RuntimeException("Error while updating report fields", e);
         }
 
-        Q_STAFF_Summary_Repo2.save(existing);
+        Q_STAFF_New_Summary_Repo2.save(existing);
     }
 
-    public void updateReport3(Q_STAFF_Summary_Entity3 updatedEntity) {
+    public void updateReport3(Q_STAFF_New_Summary_Entity3 updatedEntity) {
         System.out.println("Came to services 3");
         System.out.println("Report Date: " + updatedEntity.getReportDate());
 
-        Q_STAFF_Summary_Entity3 existing = Q_STAFF_Summary_Repo3
+        Q_STAFF_New_Summary_Entity3 existing = Q_STAFF_New_Summary_Repo3
                 .findById(updatedEntity.getReportDate())
                 .orElse(null);
 
         if (existing == null) {
             System.out.println("âš ï¸ No existing record found â€” creating new record for date: "
                     + updatedEntity.getReportDate());
-            Q_STAFF_Summary_Repo3.save(updatedEntity);
+            Q_STAFF_New_Summary_Repo3.save(updatedEntity);
             return;
         }
 
@@ -348,8 +347,8 @@ public ModelAndView getQ_STAFFcurrentDtl(String reportId, String fromdate, Strin
                     String setterName = "set" + prefix + field;
 
                     try {
-                        Method getter = Q_STAFF_Summary_Entity3.class.getMethod(getterName);
-                        Method setter = Q_STAFF_Summary_Entity3.class.getMethod(setterName, getter.getReturnType());
+                        Method getter = Q_STAFF_New_Summary_Entity3.class.getMethod(getterName);
+                        Method setter = Q_STAFF_New_Summary_Entity3.class.getMethod(setterName, getter.getReturnType());
                         Object newValue = getter.invoke(updatedEntity);
                         setter.invoke(existing, newValue);
                     } catch (NoSuchMethodException e) {
@@ -361,12 +360,12 @@ public ModelAndView getQ_STAFFcurrentDtl(String reportId, String fromdate, Strin
             throw new RuntimeException("Error while updating report fields", e);
         }
 
-        Q_STAFF_Summary_Repo3.save(existing);
+        Q_STAFF_New_Summary_Repo3.save(existing);
     }
 
 
 
-	public byte[] BRRS_Q_STAFFExcel(String filename, String reportId, String fromdate, String todate, String currency,
+	public byte[] BRRS_Q_STAFF_NewExcel(String filename, String reportId, String fromdate, String todate, String currency,
 			String dtltype, String type, BigDecimal version) throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.");
 		logger.info("DownloadFile: reportId={}, filename={}", reportId, filename, type, version);
@@ -381,9 +380,9 @@ public ModelAndView getQ_STAFFcurrentDtl(String reportId, String fromdate, Strin
 		}
 
 		// Default (LIVE) case
-		List<Q_STAFF_Summary_Entity1> dataList =Q_STAFF_Summary_Repo1.getdatabydateList(reportDate);
-			List<Q_STAFF_Summary_Entity2> dataList1 =Q_STAFF_Summary_Repo2.getdatabydateList(reportDate);
-				List<Q_STAFF_Summary_Entity3> dataList2 =Q_STAFF_Summary_Repo3.getdatabydateList(reportDate);
+		List<Q_STAFF_New_Summary_Entity1> dataList =Q_STAFF_New_Summary_Repo1.getdatabydateList(reportDate);
+			List<Q_STAFF_New_Summary_Entity2> dataList1 =Q_STAFF_New_Summary_Repo2.getdatabydateList(reportDate);
+				List<Q_STAFF_New_Summary_Entity3> dataList2 =Q_STAFF_New_Summary_Repo3.getdatabydateList(reportDate);
 
 		String templateDir = env.getProperty("output.exportpathtemp");
 		String templateFileName = filename;
@@ -444,9 +443,9 @@ int startRow = 8;
 
             if (!dataList.isEmpty()) {
                 for (int i = 0; i < dataList.size(); i++) {
-                    Q_STAFF_Summary_Entity1 record = dataList.get(i);
-                    Q_STAFF_Summary_Entity2 record1 = dataList1.get(i);
-                    Q_STAFF_Summary_Entity3 record2 = dataList2.get(i);
+                    Q_STAFF_New_Summary_Entity1 record = dataList.get(i);
+                    Q_STAFF_New_Summary_Entity2 record1 = dataList1.get(i);
+                    Q_STAFF_New_Summary_Entity3 record2 = dataList2.get(i);
 
                     System.out.println("rownumber=" + startRow + i);
                     Row row = sheet.getRow(startRow + i);
@@ -455,7 +454,7 @@ int startRow = 8;
                     }
 
                     // R9 Col B
-                    Cell R9cell1 = row.createCell(1);
+                    Cell R9cell1 = row.createCell(2);
                     if (record.getR9_LOCAL() != null) {
                         R9cell1.setCellValue(record.getR9_LOCAL().doubleValue());
                         R9cell1.setCellStyle(numberStyle);
@@ -465,7 +464,7 @@ int startRow = 8;
                     }
 
                     // R9 Col C
-                    Cell R9cell2 = row.createCell(2);
+                    Cell R9cell2 = row.createCell(3);
                     if (record.getR9_EXPARIATES() != null) {
                         R9cell2.setCellValue(record.getR9_EXPARIATES().doubleValue());
                         R9cell2.setCellStyle(numberStyle);
@@ -476,7 +475,7 @@ int startRow = 8;
                     // R10 Col B
                     row = sheet.getRow(9);
                     // R10 Col B
-                    Cell R10cell1 = row.createCell(1);
+                    Cell R10cell1 = row.createCell(2);
                     if (record.getR10_LOCAL() != null) {
                         R10cell1.setCellValue(record.getR10_LOCAL().doubleValue());
                         R10cell1.setCellStyle(numberStyle);
@@ -486,7 +485,7 @@ int startRow = 8;
                     }
 
                     // R10 Col C
-                    Cell R10cell2 = row.createCell(2);
+                    Cell R10cell2 = row.createCell(3);
                     if (record.getR10_EXPARIATES() != null) {
                         R10cell2.setCellValue(record.getR10_EXPARIATES().doubleValue());
                         R10cell2.setCellStyle(numberStyle);
@@ -497,7 +496,7 @@ int startRow = 8;
                     // R11 Col B
                     row = sheet.getRow(10);
                     // R11 Col B
-                    Cell R11cell1 = row.createCell(1);
+                    Cell R11cell1 = row.createCell(2);
                     if (record.getR11_LOCAL() != null) {
                         R11cell1.setCellValue(record.getR11_LOCAL().doubleValue());
                         R11cell1.setCellStyle(numberStyle);
@@ -507,7 +506,7 @@ int startRow = 8;
                     }
 
                     // R11 Col C
-                    Cell R11cell2 = row.createCell(2);
+                    Cell R11cell2 = row.createCell(3);
                     if (record.getR11_EXPARIATES() != null) {
                         R11cell2.setCellValue(record.getR11_EXPARIATES().doubleValue());
                         R11cell2.setCellStyle(numberStyle);
@@ -518,7 +517,7 @@ int startRow = 8;
                     // R12 Col B
                     row = sheet.getRow(11);
 
-                    Cell R12cell1 = row.createCell(1);
+                    Cell R12cell1 = row.createCell(2);
                     if (record.getR12_LOCAL() != null) {
                         R12cell1.setCellValue(record.getR12_LOCAL().doubleValue());
                         R12cell1.setCellStyle(numberStyle);
@@ -528,7 +527,7 @@ int startRow = 8;
                     }
 
                     // R12 Col C
-                    Cell R12cell2 = row.createCell(2);
+                    Cell R12cell2 = row.createCell(3);
                     if (record.getR12_EXPARIATES() != null) {
                         R12cell2.setCellValue(record.getR12_EXPARIATES().doubleValue());
                         R12cell2.setCellStyle(numberStyle);
@@ -539,7 +538,7 @@ int startRow = 8;
                     // R13 Col B
                     row = sheet.getRow(12);
 
-                    Cell R13cell1 = row.createCell(1);
+                    Cell R13cell1 = row.createCell(2);
                     if (record.getR13_LOCAL() != null) {
                         R13cell1.setCellValue(record.getR13_LOCAL().doubleValue());
                         R13cell1.setCellStyle(numberStyle);
@@ -549,7 +548,7 @@ int startRow = 8;
                     }
 
                     // R13 Col C
-                    Cell R13cell2 = row.createCell(2);
+                    Cell R13cell2 = row.createCell(3);
                     if (record.getR13_EXPARIATES() != null) {
                         R13cell2.setCellValue(record.getR13_EXPARIATES().doubleValue());
                         R13cell2.setCellStyle(numberStyle);
@@ -559,7 +558,7 @@ int startRow = 8;
                     }
                     // R14 Col B
                     row = sheet.getRow(13);
-                    Cell R14cell1 = row.createCell(1);
+                    Cell R14cell1 = row.createCell(2);
                     if (record.getR14_LOCAL() != null) {
                         R14cell1.setCellValue(record.getR14_LOCAL().doubleValue());
                         R14cell1.setCellStyle(numberStyle);
@@ -569,7 +568,7 @@ int startRow = 8;
                     }
 
                     // R14 Col C
-                    Cell R14cell2 = row.createCell(2);
+                    Cell R14cell2 = row.createCell(3);
                     if (record.getR14_EXPARIATES() != null) {
                         R14cell2.setCellValue(record.getR14_EXPARIATES().doubleValue());
                         R14cell2.setCellStyle(numberStyle);
@@ -581,7 +580,7 @@ int startRow = 8;
                     // TABLE 2
                     // R21 Col B
                     row = sheet.getRow(20);
-                    Cell R21cell1 = row.createCell(1);
+                    Cell R21cell1 = row.createCell(2);
                     if (record1.getR21_LOCAL() != null) {
                         R21cell1.setCellValue(record1.getR21_LOCAL().doubleValue());
                         R21cell1.setCellStyle(numberStyle);
@@ -590,7 +589,7 @@ int startRow = 8;
                         R21cell1.setCellStyle(textStyle);
                     }
                     // R21 COL C
-                    Cell R21cell2 = row.createCell(2);
+                    Cell R21cell2 = row.createCell(3);
                     if (record1.getR21_EXPARIATES() != null) {
                         R21cell2.setCellValue(record1.getR21_EXPARIATES().doubleValue());
                         R21cell2.setCellStyle(numberStyle);
@@ -600,7 +599,7 @@ int startRow = 8;
                     }
                     // R22 Col B
                     row = sheet.getRow(21);
-                    Cell R22cell1 = row.createCell(1);
+                    Cell R22cell1 = row.createCell(2);
                     if (record1.getR22_LOCAL() != null) {
                         R22cell1.setCellValue(record1.getR22_LOCAL().doubleValue());
                         R22cell1.setCellStyle(numberStyle);
@@ -610,7 +609,7 @@ int startRow = 8;
                     }
 
                     // R22 Col C
-                    Cell R22cell2 = row.createCell(2);
+                    Cell R22cell2 = row.createCell(3);
                     if (record1.getR22_EXPARIATES() != null) {
                         R22cell2.setCellValue(record1.getR22_EXPARIATES().doubleValue());
                         R22cell2.setCellStyle(numberStyle);
@@ -621,7 +620,7 @@ int startRow = 8;
                     // R23 Col B
                     row = sheet.getRow(22);
                     // R23 Col B
-                    Cell R23cell1 = row.createCell(1);
+                    Cell R23cell1 = row.createCell(2);
                     if (record1.getR23_LOCAL() != null) {
                         R23cell1.setCellValue(record1.getR23_LOCAL().doubleValue());
                         R23cell1.setCellStyle(numberStyle);
@@ -631,7 +630,7 @@ int startRow = 8;
                     }
 
                     // R23 Col C
-                    Cell R23cell2 = row.createCell(2);
+                    Cell R23cell2 = row.createCell(3);
                     if (record1.getR23_EXPARIATES() != null) {
                         R23cell2.setCellValue(record1.getR23_EXPARIATES().doubleValue());
                         R23cell2.setCellStyle(numberStyle);
@@ -642,7 +641,7 @@ int startRow = 8;
                     // R24 Col B
                     row = sheet.getRow(23);
                     // R24 Col B
-                    Cell R24cell1 = row.createCell(1);
+                    Cell R24cell1 = row.createCell(2);
                     if (record1.getR24_LOCAL() != null) {
                         R24cell1.setCellValue(record1.getR24_LOCAL().doubleValue());
                         R24cell1.setCellStyle(numberStyle);
@@ -652,7 +651,7 @@ int startRow = 8;
                     }
 
                     // R24 Col C
-                    Cell R24cell2 = row.createCell(2);
+                    Cell R24cell2 = row.createCell(3);
                     if (record1.getR24_EXPARIATES() != null) {
                         R24cell2.setCellValue(record1.getR24_EXPARIATES().doubleValue());
                         R24cell2.setCellStyle(numberStyle);
@@ -663,7 +662,7 @@ int startRow = 8;
                     // R25 Col B
                     row = sheet.getRow(24);
                     // R25 Col B
-                    Cell R25cell1 = row.createCell(1);
+                    Cell R25cell1 = row.createCell(2);
                     if (record1.getR25_LOCAL() != null) {
                         R25cell1.setCellValue(record1.getR25_LOCAL().doubleValue());
                         R25cell1.setCellStyle(numberStyle);
@@ -673,7 +672,7 @@ int startRow = 8;
                     }
 
                     // R25 Col C
-                    Cell R25cell2 = row.createCell(2);
+                    Cell R25cell2 = row.createCell(3);
                     if (record1.getR25_EXPARIATES() != null) {
                         R25cell2.setCellValue(record1.getR25_EXPARIATES().doubleValue());
                         R25cell2.setCellStyle(numberStyle);
@@ -684,7 +683,7 @@ int startRow = 8;
                     // R26 Col B
                     row = sheet.getRow(25);
                     // R26 Col B
-                    Cell R26cell1 = row.createCell(1);
+                    Cell R26cell1 = row.createCell(2);
                     if (record1.getR26_LOCAL() != null) {
                         R26cell1.setCellValue(record1.getR26_LOCAL().doubleValue());
                         R26cell1.setCellStyle(numberStyle);
@@ -694,7 +693,7 @@ int startRow = 8;
                     }
 
                     // R26 Col C
-                    Cell R26cell2 = row.createCell(2);
+                    Cell R26cell2 = row.createCell(3);
                     if (record1.getR26_EXPARIATES() != null) {
                         R26cell2.setCellValue(record1.getR26_EXPARIATES().doubleValue());
                         R26cell2.setCellStyle(numberStyle);
@@ -705,7 +704,7 @@ int startRow = 8;
                     // R27 Col B
                     row = sheet.getRow(26);
                     // R27 Col B
-                    Cell R27cell1 = row.createCell(1);
+                    Cell R27cell1 = row.createCell(2);
                     if (record1.getR27_LOCAL() != null) {
                         R27cell1.setCellValue(record1.getR27_LOCAL().doubleValue());
                         R27cell1.setCellStyle(numberStyle);
@@ -715,7 +714,7 @@ int startRow = 8;
                     }
 
                     // R27 Col C
-                    Cell R27cell2 = row.createCell(2);
+                    Cell R27cell2 = row.createCell(3);
                     if (record1.getR27_EXPARIATES() != null) {
                         R27cell2.setCellValue(record1.getR27_EXPARIATES().doubleValue());
                         R27cell2.setCellStyle(numberStyle);
@@ -943,160 +942,15 @@ int startRow = 8;
         }
     }
 
-	public byte[] getQ_STAFFDetailExcel(String filename, String fromdate, String todate, String currency,
-			String dtltype, String type, String version) {
-
-		try {
-			logger.info("Generating Excel for BRRSQ_SMME Details...");
-			System.out.println("came to Detail download service");
-			System.out.println("Gopika");
-			if (type.equals("ARCHIVAL") & version != null) {
-				byte[] ARCHIVALreport = getDetailExcelARCHIVAL(filename, fromdate, todate, currency, dtltype, type,
-						version);
-				return ARCHIVALreport;
-			}
-			XSSFWorkbook workbook = new XSSFWorkbook();
-			XSSFSheet sheet = workbook.createSheet("BRRS_Q_SMMEDetails");
-
-			// Common border style
-			BorderStyle border = BorderStyle.THIN;
-			// Header style (left aligned)
-			CellStyle headerStyle = workbook.createCellStyle();
-			Font headerFont = workbook.createFont();
-			headerFont.setBold(true);
-			headerFont.setFontHeightInPoints((short) 10);
-			headerStyle.setFont(headerFont);
-			headerStyle.setAlignment(HorizontalAlignment.LEFT);
-			headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
-			headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-			headerStyle.setBorderTop(border);
-			headerStyle.setBorderBottom(border);
-			headerStyle.setBorderLeft(border);
-			headerStyle.setBorderRight(border);
-
-			// Right-aligned header style for ACCT BALANCE
-			CellStyle rightAlignedHeaderStyle = workbook.createCellStyle();
-			rightAlignedHeaderStyle.cloneStyleFrom(headerStyle);
-			rightAlignedHeaderStyle.setAlignment(HorizontalAlignment.RIGHT);
-
-			// Default data style (left aligned)
-			CellStyle dataStyle = workbook.createCellStyle();
-			dataStyle.setAlignment(HorizontalAlignment.LEFT);
-			dataStyle.setBorderTop(border);
-			dataStyle.setBorderBottom(border);
-			dataStyle.setBorderLeft(border);
-			dataStyle.setBorderRight(border);
-
-			// ACCT BALANCE style (right aligned with 3 decimals)
-			CellStyle balanceStyle = workbook.createCellStyle();
-			balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
-			balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("#,##0"));
-			balanceStyle.setBorderTop(border);
-			balanceStyle.setBorderBottom(border);
-			balanceStyle.setBorderLeft(border);
-			balanceStyle.setBorderRight(border);
-			// Header row
-			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE IN PULA", "REPORT LABEL",
-					"REPORT ADDL CRITERIA1",
-					"REPORT_DATE" };
-			XSSFRow headerRow = sheet.createRow(0);
-			for (int i = 0; i < headers.length; i++) {
-				Cell cell = headerRow.createCell(i);
-				cell.setCellValue(headers[i]);
-				if (i == 3) { // ACCT BALANCE
-					cell.setCellStyle(rightAlignedHeaderStyle);
-				} else {
-					cell.setCellStyle(headerStyle);
-				}
-				sheet.setColumnWidth(i, 5000);
-			}
-			// Get data
-			Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
-			List<Q_STAFF_Detail_Entity> reportData =Q_STAFF_Detail_Repo.getdatabydateList(parsedToDate);
-
-			if (reportData != null && !reportData.isEmpty()) {
-				int rowIndex = 1;
-				for (Q_STAFF_Detail_Entity item : reportData) {
-					XSSFRow row = sheet.createRow(rowIndex++);
-					row.createCell(0).setCellValue(item.getCustId());
-					row.createCell(1).setCellValue(item.getAcctNumber());
-					row.createCell(2).setCellValue(item.getAcctName());
-					// ACCT BALANCE (right aligned, 3 decimal places)
-					Cell balanceCell = row.createCell(3);
-					if (item.getAcctBalanceInPula() != null) {
-						balanceCell.setCellValue(item.getAcctBalanceInPula().doubleValue());
-					} else {
-						balanceCell.setCellValue(0);
-					}
-					balanceCell.setCellStyle(balanceStyle);
-					row.createCell(4).setCellValue(item.getReportLable());
-					row.createCell(5).setCellValue(item.getReportAddlCriteria1());
-					row.createCell(6)
-							.setCellValue(item.getReportDate() != null
-									? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
-									: "");
-					// Apply data style for all other cells
-					for (int j = 0; j < 7; j++) {
-						if (j != 3) {
-							row.getCell(j).setCellStyle(dataStyle);
-						}
-					}
-				}
-			} else {
-				logger.info("No data found for BRRS_Q_SMME — only header will be written.");
-			}
-			// Write to byte[]
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			workbook.write(bos);
-			workbook.close();
-			logger.info("Excel generation completed with {} row(s).", reportData != null ? reportData.size() : 0);
-			return bos.toByteArray();
-		} catch (Exception e) {
-			logger.error("Error generating BRRS_Q_SMME Excel", e);
-			return new byte[0];
-		}
-	}
-
 //Archival View
-// public List<Object[]> getQ_STAFFArchival() {
-// List<Object[]> archivalList = new ArrayList<>();
-
-// try {
-// List<Q_STAFF_Archival_Summary_Entity1> repoData = Q_STAFF_Archival_Summary_Repo1.getdatabydateListWithVersionAll();
-
-// if (repoData != null && !repoData.isEmpty()) {
-// for (Q_STAFF_Archival_Summary_Entity1 entity : repoData) {
-// Object[] row = new Object[] {
-// entity.getReportDate(), 
-// entity.getReportVersion() 
-// };
-// archivalList.add(row);
-// }
-
-// System.out.println("Fetched " + archivalList.size() + " archival records");
-// Q_STAFF_Archival_Summary_Entity1 first = repoData.get(0);
-// System.out.println("Latest archival version: " + first.getReportVersion());
-// } else {
-// System.out.println("No archival data found.");
-// }
-
-// } catch (Exception e) {
-// System.err.println("Error fetching Q_STAFF Archival data: " + e.getMessage());
-// e.printStackTrace();
-// }
-
-// return archivalList;
-// }
-
-
-    public List<Object[]> getQ_STAFFArchival() {
+    public List<Object[]> getQ_STAFF_NewArchival() {
         List<Object[]> archivalList = new ArrayList<>();
         try {
-            List<Q_STAFF_Archival_Summary_Entity1> latestArchivalList = Q_STAFF_Archival_Summary_Repo1
+            List<Q_STAFF_New_Archival_Summary_Entity1> latestArchivalList = Q_STAFF_New_Archival_Summary_Repo1
                     .getdatabydateListWithVersion();
 
             if (latestArchivalList != null && !latestArchivalList.isEmpty()) {
-                for (Q_STAFF_Archival_Summary_Entity1 entity : latestArchivalList) {
+                for (Q_STAFF_New_Archival_Summary_Entity1 entity : latestArchivalList) {
                     archivalList.add(new Object[] {
                             entity.getReportDate(),
                             entity.getReportVersion()
@@ -1116,6 +970,7 @@ int startRow = 8;
 
 
 
+
 	public byte[] getSummaryExcelARCHIVAL(String filename, String reportId, String fromdate,
 			String todate,
 			String currency, String dtltype, String type, BigDecimal version) throws Exception {
@@ -1123,16 +978,16 @@ int startRow = 8;
 		if (type.equals("ARCHIVAL") & version != null) {
 
 		}
-		List<Q_STAFF_Archival_Summary_Entity1> dataList =Q_STAFF_Archival_Summary_Repo1
+		List<Q_STAFF_New_Archival_Summary_Entity1> dataList =Q_STAFF_New_Archival_Summary_Repo1
 				.getdatabydateListarchival(dateformat.parse(todate), version);
 
-                	List<Q_STAFF_Archival_Summary_Entity2> dataList1 =Q_STAFF_Archival_Summary_Repo2
+                	List<Q_STAFF_New_Archival_Summary_Entity2> dataList1 =Q_STAFF_New_Archival_Summary_Repo2
 				.getdatabydateListarchival(dateformat.parse(todate), version);
-                	List<Q_STAFF_Archival_Summary_Entity3> dataList2 =Q_STAFF_Archival_Summary_Repo3
+                	List<Q_STAFF_New_Archival_Summary_Entity3> dataList2 =Q_STAFF_New_Archival_Summary_Repo3
 				.getdatabydateListarchival(dateformat.parse(todate), version);
 
 		if (dataList.isEmpty()) {
-			logger.warn("Service: No data found forQ_STAFF report. Returning empty result.");
+			logger.warn("Service: No data found forQ_STAFF_New report. Returning empty result.");
 			return new byte[0];
 		}
 
@@ -1196,9 +1051,9 @@ int startRow = 8;
 
             if (!dataList.isEmpty()) {
                 for (int i = 0; i < dataList.size(); i++) {
-                    Q_STAFF_Archival_Summary_Entity1 record = dataList.get(i);
-                    Q_STAFF_Archival_Summary_Entity2 record1 = dataList1.get(i);
-                    Q_STAFF_Archival_Summary_Entity3 record2 = dataList2.get(i);
+                    Q_STAFF_New_Archival_Summary_Entity1 record = dataList.get(i);
+                    Q_STAFF_New_Archival_Summary_Entity2 record1 = dataList1.get(i);
+                    Q_STAFF_New_Archival_Summary_Entity3 record2 = dataList2.get(i);
                     System.out.println("rownumber=" + startRow + i);
                     Row row = sheet.getRow(startRow + i);
                     if (row == null) {
@@ -1693,133 +1548,6 @@ int startRow = 8;
 			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
 
 			return out.toByteArray();
-		}
-	}
-
-	public byte[] getDetailExcelARCHIVAL(String filename,
-			String fromdate,
-			String todate,
-			String currency,
-			String dtltype,
-			String type,
-			String version) {
-		try {
-			logger.info("Generating Excel for BRRS_Q_SMME ARCHIVAL Details...");
-			System.out.println("came to Detail download service");
-
-			// --- Create workbook and sheet ---
-			XSSFWorkbook workbook = new XSSFWorkbook();
-			XSSFSheet sheet = workbook.createSheet("Q_SMMEDetail");
-
-			BorderStyle border = BorderStyle.THIN;
-
-			// Header style
-			CellStyle headerStyle = workbook.createCellStyle();
-			Font headerFont = workbook.createFont();
-			headerFont.setBold(true);
-			headerFont.setFontHeightInPoints((short) 10);
-			headerStyle.setFont(headerFont);
-			headerStyle.setAlignment(HorizontalAlignment.LEFT);
-			headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
-			headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-			headerStyle.setBorderTop(border);
-			headerStyle.setBorderBottom(border);
-			headerStyle.setBorderLeft(border);
-			headerStyle.setBorderRight(border);
-
-			// Right-aligned header style for ACCT BALANCE
-			CellStyle rightAlignedHeaderStyle = workbook.createCellStyle();
-			rightAlignedHeaderStyle.cloneStyleFrom(headerStyle);
-			rightAlignedHeaderStyle.setAlignment(HorizontalAlignment.RIGHT);
-
-			// Data style
-			CellStyle dataStyle = workbook.createCellStyle();
-			dataStyle.setAlignment(HorizontalAlignment.LEFT);
-			dataStyle.setBorderTop(border);
-			dataStyle.setBorderBottom(border);
-			dataStyle.setBorderLeft(border);
-			dataStyle.setBorderRight(border);
-
-			// Balance style
-			CellStyle balanceStyle = workbook.createCellStyle();
-			balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
-			balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("#,##0"));
-			balanceStyle.setBorderTop(border);
-			balanceStyle.setBorderBottom(border);
-			balanceStyle.setBorderLeft(border);
-			balanceStyle.setBorderRight(border);
-
-			// --- Header row ---
-			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "REPORT LABEL",
-					"REPORT ADDL CRITERIA1", "REPORT_DATE" };
-			XSSFRow headerRow = sheet.createRow(0);
-
-			for (int i = 0; i < headers.length; i++) {
-				Cell cell = headerRow.createCell(i);
-				cell.setCellValue(headers[i]);
-				if (i == 3) {
-					cell.setCellStyle(rightAlignedHeaderStyle);
-				} else {
-					cell.setCellStyle(headerStyle);
-				}
-				sheet.setColumnWidth(i, 5000);
-			}
-
-			// --- Fetch data from DB ---
-			// Date parsedToDate = new SimpleDateFormat("dd-MM-yyyy").parse(todate); // ✅
-			// match with controller
-            	Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
-			List<Q_STAFF_Archival_Detail_Entity> reportData =Q_STAFF_Archival_Detail_Repo
-					.getdatabydateList(parsedToDate, version);
-
-                    
-
-			logger.info("Fetched {} rows from DB for ARCHIVAL", reportData != null ? reportData.size() : 0);
-
-			if (reportData != null && !reportData.isEmpty()) {
-				int rowIndex = 1;
-				for (Q_STAFF_Archival_Detail_Entity item : reportData) {
-					XSSFRow row = sheet.createRow(rowIndex++);
-
-					row.createCell(0).setCellValue(item.getCustId());
-					row.createCell(1).setCellValue(item.getAcctNumber());
-					row.createCell(2).setCellValue(item.getAcctName());
-
-					// Balance
-					Cell balanceCell = row.createCell(3);
-					balanceCell.setCellValue(item.getAcctBalanceInPula() != null
-							? item.getAcctBalanceInPula().doubleValue()
-							: 0);
-					balanceCell.setCellStyle(balanceStyle);
-
-					row.createCell(4).setCellValue(item.getReportLable());
-					row.createCell(5).setCellValue(item.getReportAddlCriteria1());
-					row.createCell(6).setCellValue(item.getReportDate() != null
-							? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
-							: "");
-
-					// Apply data style except balance column
-					for (int j = 0; j < 7; j++) {
-						if (j != 3) {
-							row.getCell(j).setCellStyle(dataStyle);
-						}
-					}
-				}
-			} else {
-				logger.info("⚠️ No data found for BRRS_Q_SMME ARCHIVAL — only header will be written.");
-			}
-
-			// --- Write to byte[] ---
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			workbook.write(bos);
-			workbook.close();
-
-			logger.info("Excel generation completed with {} row(s).", reportData != null ? reportData.size() : 0);
-			return bos.toByteArray();
-
-		} catch (Exception e) {
-			logger.error("Error generating BRRS_Q_SMME Excel", e);
-			return new byte[0];
 		}
 	}
 

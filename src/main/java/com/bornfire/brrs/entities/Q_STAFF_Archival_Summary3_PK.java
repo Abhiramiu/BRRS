@@ -4,18 +4,18 @@ package com.bornfire.brrs.entities;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
-
+import java.math.BigDecimal;
 public class Q_STAFF_Archival_Summary3_PK implements Serializable {
 
     private Date reportDate;
-    private String reportVersion;
+    private BigDecimal reportVersion;
 
     // default constructor
     public Q_STAFF_Archival_Summary3_PK() {
     }
 
     // parameterized constructor
-    public Q_STAFF_Archival_Summary3_PK(Date reportDate, String reportVersion) {
+    public Q_STAFF_Archival_Summary3_PK(Date reportDate, BigDecimal reportVersion) {
         this.reportDate = reportDate;
         this.reportVersion = reportVersion;
     }
@@ -46,11 +46,11 @@ public class Q_STAFF_Archival_Summary3_PK implements Serializable {
         this.reportDate = reportDate;
     }
 
-    public String getReportVersion() {
+    public BigDecimal getReportVersion() {
         return reportVersion;
     }
 
-    public void setReportVersion(String reportVersion) {
+    public void setReportVersion(BigDecimal reportVersion) {
         this.reportVersion = reportVersion;
     }
 }

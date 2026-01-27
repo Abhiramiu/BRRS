@@ -11,8 +11,8 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-@Table(name = "BRRS_Q_STAFF_DETAILTABLE")
-public class Q_STAFF_Detail_Entity {
+@Table(name = "BRRS_Q_STAFF_NEW_ARCHIVALTABLE_DETAIL")
+public class Q_STAFF_New_Archival_Detail_Entity {
 
     @Id
     @Column(name = "SNO", length = 20)
@@ -99,6 +99,11 @@ public class Q_STAFF_Detail_Entity {
 
     @Column(name = "INTEREST_RATE", precision = 20, scale = 0)
     private BigDecimal interest_rate;
+
+    public Q_STAFF_New_Archival_Detail_Entity() {
+        super();
+        // TODO Auto-generated constructor stub
+    }
 
     public String getSno() {
         return sno;
@@ -245,6 +250,8 @@ public class Q_STAFF_Detail_Entity {
     }
 
 
+
+
     public String getDataEntryVersion() {
         return dataEntryVersion;
     }
@@ -316,11 +323,5 @@ public class Q_STAFF_Detail_Entity {
     public void setInterest_rate(BigDecimal interest_rate) {
         this.interest_rate = interest_rate;
     }
-
-    public Q_STAFF_Detail_Entity() {
-        super();
-        // TODO Auto-generated constructor stub
-    }
-
 
 }

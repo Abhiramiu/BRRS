@@ -11,8 +11,8 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-@Table(name = "BRRS_Q_STAFF_DETAILTABLE")
-public class Q_STAFF_Detail_Entity {
+@Table(name = "BRRS_Q_STAFF_NEW_DETAILTABLE")
+public class Q_STAFF_New_Detail_Entity {
 
     @Id
     @Column(name = "SNO", length = 20)
@@ -317,7 +317,7 @@ public class Q_STAFF_Detail_Entity {
         this.interest_rate = interest_rate;
     }
 
-    public Q_STAFF_Detail_Entity() {
+    public Q_STAFF_New_Detail_Entity() {
         super();
         // TODO Auto-generated constructor stub
     }

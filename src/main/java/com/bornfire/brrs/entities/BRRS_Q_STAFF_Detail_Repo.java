@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -31,5 +32,8 @@ public interface BRRS_Q_STAFF_Detail_Repo extends JpaRepository<Q_STAFF_Detail_E
     @Query(value = "select * from BRRS_Q_STAFF_DETAILTABLE where REPORT_LABLE =?1 and REPORT_ADDL_CRITERIA_1=?2 AND REPORT_DATE=?3", nativeQuery = true)
     List<Q_STAFF_Detail_Entity> GetDataByRowIdAndColumnId(String reportLable, String reportAddlCriteria_1,
             Date reportdate);
+
+            	@Query(value = "SELECT * FROM BRRS_Q_STAFF_DETAILTABLE WHERE ACCT_NUMBER = :acctNumber", nativeQuery = true)
+		Q_STAFF_Detail_Entity findByAcctnumber(@Param("acctNumber") String acctNumber);
 
 }

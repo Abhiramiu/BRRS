@@ -11,9 +11,9 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import org.springframework.format.annotation.DateTimeFormat;
 @Entity
-@Table(name = "BRRS_Q_STAFF_ARCHIVALTABLE_SUMMARY3")
-@IdClass(Q_STAFF_Archival_Summary3_PK.class)
-public class Q_STAFF_Archival_Summary_Entity3 {
+@Table(name = "BRRS_Q_STAFF_NEW_ARCHIVALTABLE_SUMMARY3")
+@IdClass(Q_STAFF_New_Archival_Summary3_PK.class)
+public class Q_STAFF_New_Archival_Summary_Entity3 {
   private String  R33_STAFF_LOANS;
 private BigDecimal R33_ORIGINAL_AMT;
 private BigDecimal R33_BALANCE_OUTSTANDING;
@@ -302,7 +302,7 @@ private BigDecimal R38_INTEREST_RATE;
     DEL_FLG = dEL_FLG;
    }
    
-   public Q_STAFF_Archival_Summary_Entity3() {
+   public Q_STAFF_New_Archival_Summary_Entity3() {
     super();
    }
 

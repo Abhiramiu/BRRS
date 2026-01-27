@@ -12,8 +12,8 @@ import javax.persistence.TemporalType;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
-@Table(name = "BRRS_Q_STAFF_SUMMARYTABLE2")
-public class Q_STAFF_Summary_Entity2 {
+@Table(name = "BRRS_Q_STAFF_NEW_SUMMARYTABLE2")
+public class Q_STAFF_New_Summary_Entity2 {
 
   private String R21_SENIOR_MANAGEMENT_COMPENSATION;
   private BigDecimal R21_LOCAL;
@@ -383,7 +383,7 @@ public class Q_STAFF_Summary_Entity2 {
     DEL_FLG = dEL_FLG;
   }
 
-  public Q_STAFF_Summary_Entity2() {
+  public Q_STAFF_New_Summary_Entity2() {
     super();
   }
 
