@@ -341,13 +341,9 @@ PURPOSE		: BWRBRREPORT
 		}
 
 		//to fetch summary from the database - called from the summary button
-		function showdetails() {
-			var Callurl;
-			$('#loader').modal('show');
-			Callurl = /*[[@{'/Reports/'+${reportid}+'/Details'(asondate=${asondate},fromdate=${fromdate},todate=${todate},currency=${currency},dtltype=${dtltype},type=${type},version=${version})}]]*/
-				location.href = Callurl;
-			console.log(Callurl);
-
+		function showdetails(){
+		    isDetailsModal = true; // mark that this modal is from Details
+		    showResultModal('BRRS', 'Details page not available for Manual Report');
 		}
 		function showsummary() {
 			$('#loader').modal('show');
