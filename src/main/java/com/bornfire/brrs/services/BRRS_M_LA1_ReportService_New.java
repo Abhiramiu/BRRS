@@ -90,7 +90,8 @@ public class BRRS_M_LA1_ReportService_New {
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
 	public ModelAndView getM_LA1View(String reportId, String fromdate, String todate, String currency, String dtltype,
-			Pageable pageable, String type, String version) {
+			Pageable pageable, String type, BigDecimal version) {
+		
 
 		ModelAndView mv = new ModelAndView();
 		Session hs = sessionFactory.getCurrentSession();
@@ -102,11 +103,7 @@ public class BRRS_M_LA1_ReportService_New {
 			List<M_LA1_Archival_Summary_Entity_New> T1Master = new ArrayList<M_LA1_Archival_Summary_Entity_New>();
 			try {
 				Date d1 = dateformat.parse(todate);
-				// T1rep = t1CurProdServiceRepo.getT1CurProdServices(d1);
-
-				// T1Master = hs.createQuery("from BRF1_REPORT_ENTITY a where a.report_date = ?1
-				// ", BRF1_REPORT_ENTITY.class)
-				// .setParameter(1, df.parse(todate)).getResultList();
+			
 				T1Master = M_LA1_Archival_Summary_Repo_New.getdatabydateListarchival(dateformat.parse(todate), version);
 
 			} catch (ParseException e) {
@@ -119,11 +116,7 @@ public class BRRS_M_LA1_ReportService_New {
 			List<M_LA1_Summary_Entity_New> T1Master = new ArrayList<M_LA1_Summary_Entity_New>();
 			try {
 				Date d1 = dateformat.parse(todate);
-				// T1rep = t1CurProdServiceRepo.getT1CurProdServices(d1);
-
-				// T1Master = hs.createQuery("from BRF1_REPORT_ENTITY a where a.report_date = ?1
-				// ", BRF1_REPORT_ENTITY.class)
-				// .setParameter(1, df.parse(todate)).getResultList();
+				
 				T1Master = BRRS_M_LA1_Summary_Repo_New.getdatabydateList(dateformat.parse(todate));
 
 			} catch (ParseException e) {
@@ -132,14 +125,8 @@ public class BRRS_M_LA1_ReportService_New {
 			mv.addObject("reportsummary", T1Master);
 		}
 
-		// T1rep = t1CurProdServiceRepo.getT1CurProdServices(d1);
-
 		mv.setViewName("BRRS/M_LA1_NEW");
-
-		// mv.addObject("reportmaster", T1Master);
 		mv.addObject("displaymode", "summary");
-		// mv.addObject("reportsflag", "reportsflag");
-		// mv.addObject("menu", reportId);
 		System.out.println("scv" + mv.getViewName());
 
 		return mv;
@@ -247,10 +234,10 @@ public class BRRS_M_LA1_ReportService_New {
 	}
 
 	public byte[] BRRS_M_LA1Excel(String filename, String reportId, String fromdate, String todate, String currency,
-			String dtltype, String type, String version) throws Exception {
+			String dtltype, String type, BigDecimal version) throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.");
 		// ARCHIVAL check
-				if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && !version.trim().isEmpty()) {
+				if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && version != null) {
 					logger.info("Service: Generating ARCHIVAL report for version {}", version);
 					return getExcelM_LA1ARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
 				}
@@ -2089,7 +2076,7 @@ public class BRRS_M_LA1_ReportService_New {
 	}
 
 	public byte[] getExcelM_LA1ARCHIVAL(String filename, String reportId, String fromdate, String todate,
-			String currency, String dtltype, String type, String version) throws Exception {
+			String currency, String dtltype, String type, BigDecimal version) throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.");
 		if (type.equals("ARCHIVAL") & version != null) {
 
@@ -4166,4 +4153,5 @@ public class BRRS_M_LA1_ReportService_New {
 	    }
 	}
 
+	
 }
