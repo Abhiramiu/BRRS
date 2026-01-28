@@ -205,6 +205,9 @@ public class RegulatoryReportServices {
 
 	@Autowired
 	BRRS_M_INT_RATES_ReportService brrs_m_int_rates_reportservice;
+	
+	@Autowired
+	BRRS_M_INT_RATES_NEW_ReportService brrs_m_int_new_rates_reportservice;
 
 	@Autowired
 	BRRS_M_RPD_ReportService BRRS_M_RPD_ReportService;
@@ -781,6 +784,11 @@ public class RegulatoryReportServices {
 
 			case "M_INT_RATES":
 				repsummary = brrs_m_int_rates_reportservice.getM_INTRATESView(reportId, fromdate, todate,
+						currency, dtltype, pageable, type, version);
+				break;
+				
+			case "M_INT_RATES_NEW":
+				repsummary = brrs_m_int_new_rates_reportservice.getM_INTRATESNEWView(reportId, fromdate, todate,
 						currency, dtltype, pageable, type, version);
 				break;
 
@@ -1397,6 +1405,14 @@ public class RegulatoryReportServices {
 				repdetail = brrs_m_int_rates_reportservice.getM_INT_RATEScurrentDtl(reportId, fromdate, todate,
 						currency, dtltype, pageable, Filter, type, version);
 				break;
+				
+			case "M_INT_RATES_NEW":
+
+				repdetail = brrs_m_int_new_rates_reportservice.getM_INT_RATESNEWcurrentDtl(reportId, fromdate, todate,
+						currency, dtltype, pageable, Filter, type, version);
+				break;
+				
+				
 
 			case "M_INT_RATES_FCA_NEW":
 
@@ -2388,6 +2404,16 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
+				
+			case "M_INT_RATES_NEW":
+				try {
+					repfile = brrs_m_int_new_rates_reportservice.getM_INTRATESNEWExcel(filename, reportId,
+							fromdate, todate, currency, dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
 			case "M_INT_RATES_FCA":
 				try {
@@ -2633,6 +2659,12 @@ public class RegulatoryReportServices {
 			return brrs_m_int_rates_reportservice.getM_INT_RATESDetailExcel(filename, fromdate, todate, currency,
 					dtltype, type, version);
 		}
+		
+		else if ("M_INTRATESNEWDetail".equals(filename)) {
+			return brrs_m_int_new_rates_reportservice.getM_INT_RATESNEWDetailExcel(filename, fromdate, todate, currency,
+					dtltype, type, version);
+		}
+		
 
 		else if ("M_INTRATESFCANEWDetailExcel".equals(filename)) {
 			return BRRS_M_INT_RATES_FCA_NEW_ReportService.getM_INTRATESFCANEWDetailExcel(filename, fromdate, todate,
@@ -2967,6 +2999,17 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
+				
+			case "M_INT_RATES_NEW":
+				try {
+					archivalData = brrs_m_int_new_rates_reportservice.getM_INT_RATESNEWArchival();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+				
+				
 
 			case "M_INT_RATES_FCA_NEW":
 
@@ -4063,6 +4106,12 @@ public class RegulatoryReportServices {
 		else if ("M_INTRATESDetail".equals(filename)) {
 
 			fileData = brrs_m_int_rates_reportservice.getM_INT_RATESDetailExcel(filename, fromdate, todate,
+					currency, dtltype, type, version);
+		}
+		
+		else if ("M_INTRATESNEWDetail".equals(filename)) {
+
+			fileData = brrs_m_int_new_rates_reportservice.getM_INT_RATESNEWDetailExcel(filename, fromdate, todate,
 					currency, dtltype, type, version);
 		}
 

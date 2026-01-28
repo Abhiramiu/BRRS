@@ -1,7 +1,6 @@
 package com.bornfire.brrs.controllers;
 
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.text.DateFormat;
@@ -73,6 +72,7 @@ import com.bornfire.brrs.services.BRRS_M_GMIRT_ReportService;
 import com.bornfire.brrs.services.BRRS_M_GP_ReportService;
 import com.bornfire.brrs.services.BRRS_M_INT_RATES_FCA_NEW_ReportService;
 import com.bornfire.brrs.services.BRRS_M_INT_RATES_FCA_ReportService;
+import com.bornfire.brrs.services.BRRS_M_INT_RATES_NEW_ReportService;
 import com.bornfire.brrs.services.BRRS_M_INT_RATES_ReportService;
 import com.bornfire.brrs.services.BRRS_M_IS_ReportService;
 import com.bornfire.brrs.services.BRRS_M_LA1_ReportService;
@@ -120,9 +120,6 @@ import com.bornfire.brrs.services.BRRS_Q_STAFF_Report_Service;
 import com.bornfire.brrs.services.BRRS_SCH_17_ReportService;
 import com.bornfire.brrs.services.RegulatoryReportServices;
 import com.bornfire.brrs.services.ReportCodeMappingService;
-
-import com.bornfire.brrs.services.BRRS_M_OPTR_NEW_ReportService;
-import com.bornfire.brrs.services.BRRS_MDISB1_ReportService;
 
 @Controller
 @ConfigurationProperties("default")
@@ -1797,6 +1794,33 @@ public class BRRS_ReportsController {
 
 			// call services
 			INTRATESreportService.updateReport(request1);
+
+			return ResponseEntity.ok("Updated Successfully.");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
+		}
+	}
+	
+	
+	
+	@Autowired
+	BRRS_M_INT_RATES_NEW_ReportService brrs_m_int_new_rates_reportservice;
+
+	@RequestMapping(value = "/INTRATESNEWupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<String> updateAllReports(
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+			@ModelAttribute M_INT_RATES_NEW_Summary_Entity request1
+
+	) {
+		try {
+			System.out.println("Came to single controller");
+			// set date into all 4 entities
+			request1.setReport_date(asondate);
+
+			// call services
+			brrs_m_int_new_rates_reportservice.updateReport(request1);
 
 			return ResponseEntity.ok("Updated Successfully.");
 		} catch (Exception e) {
