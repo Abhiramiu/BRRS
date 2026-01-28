@@ -401,8 +401,8 @@ PURPOSE		: BRRSREPORT
 		function showsummary() {
 			var loader = new bootstrap.Modal(document.getElementById('loader'), {backdrop: 'static', keyboard: false});
 			loader.show();
-			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type},version=${version}, asondate=${asondate})}]]*/
-				location.href = Callurl;
+						var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type},version=${version}, asondate=${asondate})}]]*/
+						location.href = Callurl;
 
 		}
 	</script>
@@ -437,73 +437,79 @@ PURPOSE		: BRRSREPORT
 
 		function downloadfile(button) {
 
-		    var reportid = button.getAttribute('data-reportid');
-		    var asondate = button.getAttribute('data-asondate');
-		    var fromdate = button.getAttribute('data-fromdate');
-		    var todate = button.getAttribute('data-todate');
-		    var currency = button.getAttribute('data-currency');
-		    var subreportid = button.getAttribute('data-subreportid');
-		    var secid = button.getAttribute('data-secid');
-		    var dtltype = button.getAttribute('data-dtltype');
-		    var filename = button.getAttribute('data-filename');
-		    var type = button.getAttribute('data-type');
-		    var version = button.getAttribute('data-version');
+					var reportid = button.getAttribute('data-reportid');
+					var asondate = button.getAttribute('data-asondate');
+					var fromdate = button.getAttribute('data-fromdate');
+					var todate = button.getAttribute('data-todate');
+					var currency = button.getAttribute('data-currency');
+					var subreportid = button.getAttribute('data-subreportid');
+					var secid = button.getAttribute('data-secid');
+					var dtltype = button.getAttribute('data-dtltype');
+					var filename = button.getAttribute('data-filename');
+					var type = button.getAttribute('data-type');
+					var version = button.getAttribute('data-version');
 
-		    // Show loader modal (Bootstrap 5)
-		    var loader = new bootstrap.Modal(
-		        document.getElementById('loader'),
-		        { backdrop: 'static', keyboard: false }
-		    );
-		    loader.show();
+					// Show loader modal (Bootstrap 5)
+					var loader = new bootstrap.Modal(
+						document.getElementById('loader'),
+						{backdrop: 'static', keyboard: false}
+					);
+					loader.show();
 
-		    $.ajax({
-		        url: './downloadExcel?reportid=' + reportid +
-		            '&fromdate=' + fromdate +
-		            '&asondate=' + asondate +
-		            '&todate=' + todate +
-		            '&currency=' + currency +
-		            '&subreportid=' + subreportid +
-		            '&secid=' + secid +
-		            '&filename=' + filename +
-		            '&type=' + type +
-		            '&version=' + version,
-		        type: 'GET',
-		        xhrFields: { responseType: 'blob' },
+					var url = './downloadExcel?reportid=' + reportid +
+						'&fromdate=' + fromdate +
+						'&asondate=' + asondate +
+						'&todate=' + todate +
+						'&currency=' + currency +
+						'&subreportid=' + subreportid +
+						'&secid=' + secid +
+						'&filename=' + filename +
+						'&type=' + type;
 
-		        success: function (data) {
+					// ✅ ONLY append version if valid
+					if (version && version.trim() !== '') {
+						url += '&version=' + version;
+					}
 
-		            if (data && data.size > 100) {
-		                const blob = new Blob([data], { type: 'application/vnd.ms-excel' });
-		                const url = window.URL.createObjectURL(blob);
-		                const a = document.createElement('a');
+					$.ajax({
+						url: url,
+						type: 'GET',
+						xhrFields: {responseType: 'blob'},
 
-		                a.style.display = 'none';
-		                a.href = url;
-		                a.download = filename;
+						success: function (data) {
 
-		                document.body.appendChild(a);
-		                a.click();
+							if (data && data.size > 100) {
+								const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
+								const url = window.URL.createObjectURL(blob);
+								const a = document.createElement('a');
 
-		                window.URL.revokeObjectURL(url);
-		                document.body.removeChild(a);
+								a.style.display = 'none';
+								a.href = url;
+								a.download = filename;
 
-		                showResultModal('BRRS', filename + ' downloaded successfully.');
-		            } else {
-		                showResultModal('Information', 'No data was available to create a download.');
-		            }
-		        },
+								document.body.appendChild(a);
+								a.click();
 
-		        error: function (jqXHR, textStatus, errorThrown) {
-		            console.error("Download failed:", textStatus, errorThrown);
-		            showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
-		        },
+								window.URL.revokeObjectURL(url);
+								document.body.removeChild(a);
 
-		        complete: function () {
-		            // Hide loader ALWAYS (success, error, timeout, exception)
-		            loader.hide();
-		        }
-		    });
-		}
+								showResultModal('BRRS', filename + ' downloaded successfully.');
+							} else {
+								showResultModal('Information', 'No data was available to create a download.');
+							}
+						},
+
+						error: function (jqXHR, textStatus, errorThrown) {
+							console.error("Download failed:", textStatus, errorThrown);
+							showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
+						},
+
+						complete: function () {
+							// Hide loader ALWAYS (success, error, timeout, exception)
+							loader.hide();
+						}
+					});
+				}
 
 		function editRecord() {
 			showResultModal('Alert', 'Development in progress');
@@ -611,15 +617,15 @@ PURPOSE		: BRRSREPORT
 	<script>
 
 		function startReport(button) {
-			const alertMsg = document.getElementById("alertMessage");
-			const filename = button.getAttribute('data-filename');
-			const fromdate = button.getAttribute('data-fromdate');
-			const todate = button.getAttribute('data-todate');
-			const currency = button.getAttribute('data-currency');
-			const dtltype = button.getAttribute('data-dtltype');
-			const type = button.getAttribute('data-type');
-			const version = button.getAttribute('data-version');
-			const sessionfilename = sessionStorage.getItem("filename");
+					const alertMsg = document.getElementById("alertMessage");
+					const filename = button.getAttribute('data-filename');
+					const fromdate = button.getAttribute('data-fromdate');
+					const todate = button.getAttribute('data-todate');
+					const currency = button.getAttribute('data-currency');
+					const dtltype = button.getAttribute('data-dtltype');
+					const type = button.getAttribute('data-type');
+					const version = button.getAttribute('data-version');
+					const sessionfilename = sessionStorage.getItem("filename");
 
 			if (sessionfilename == filename) {
 				alertMsg.innerHTML = 'Download request already Processing...';
@@ -1012,7 +1018,7 @@ PURPOSE		: BRRSREPORT
 		                     data-dtltype=${dtltype}, 
 		                     data-filename='M_LA1.xlsx',
 		                     data-type=${type},
-		                     data-version=${version}" onclick="downloadfile(this);">
+		                      data-version=${version != null ? version : ''}" onclick="downloadfile(this);">
 							<i class="fa fa-download"></i>
 						</button>
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"

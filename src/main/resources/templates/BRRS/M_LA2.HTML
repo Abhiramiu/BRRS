@@ -438,22 +438,32 @@ PURPOSE		: BWRBRREPORT
 			var filename = button.getAttribute('data-filename');
 			var type = button.getAttribute('data-type');
 			var version = button.getAttribute('data-version');
-			$('#loader').modal('show');
+			// Show loader modal (Bootstrap 5)
+						var loader = new bootstrap.Modal(
+							document.getElementById('loader'),
+							{backdrop: 'static', keyboard: false}
+						);
+						loader.show();
+
+						var url = './downloadExcel?reportid=' + reportid +
+							'&fromdate=' + fromdate +
+							'&asondate=' + asondate +
+							'&todate=' + todate +
+							'&currency=' + currency +
+							'&subreportid=' + subreportid +
+							'&secid=' + secid +
+							'&filename=' + filename +
+							'&type=' + type;
+
+						// ✅ ONLY append version if valid
+						if (version && version.trim() !== '') {
+							url += '&version=' + version;
+						}
 			$.ajax({
-				url: './downloadExcel?reportid=' + reportid +
-					'&fromdate=' + fromdate +
-					'&asondate=' + asondate +
-					'&todate=' + todate +
-					'&currency=' + currency +
-					'&subreportid=' + subreportid +
-					'&secid=' + secid +
-					'&filename=' + filename +
-					'&type=' + type +
-					'&version=' + version,
-				type: 'GET',
-				xhrFields: {
-					responseType: 'blob'
-				},
+				url: url,
+								type: 'GET',
+								xhrFields: {responseType: 'blob'},
+								
 				success: function (data) {
 					$('#loader').modal('hide');
 					if (data && data.size > 100) {
@@ -745,7 +755,7 @@ function cancelModify() {
                     				 data-dtltype=${dtltype},
                     				 data-filename='M_LA2.xlsx',
 					 				 data-type=${type},
-					    			 data-version=${version}" onclick="downloadfile(this);">
+					    			 data-version=${version != null ? version : ''}"  onclick="downloadfile(this);">
 							<i class="fa fa-download"></i>
 						</button>
 						
