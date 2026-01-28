@@ -57,6 +57,7 @@ import com.bornfire.brrs.entities.M_INT_RATES_NEW_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.M_INT_RATES_NEW_Detail_Entity;
 import com.bornfire.brrs.entities.M_INT_RATES_NEW_Summary_Entity;
 import com.bornfire.brrs.entities.M_INT_RATES_Summary_Entity;
+import com.bornfire.brrs.entities.M_SCI_E_Manual_Summary_Entity;
 
 @Component
 @Service
@@ -221,11 +222,21 @@ public class BRRS_M_INT_RATES_NEW_ReportService {
 		System.out.println("Came to services");
 		System.out.println("Report Date: " + updatedEntity.getReport_date());
 
+		 //  Use your query to fetch by date
+	    List<M_INT_RATES_NEW_Summary_Entity> list = M_INT_RATES_NEW_Summary_Repo
+	        .getdatabydateList(updatedEntity.getReport_date());
+
+	    M_INT_RATES_NEW_Summary_Entity existing;
+	    if (list.isEmpty()) {
+	        // Record not found — optionally create it
+	        System.out.println("No record found for REPORT_DATE: " + updatedEntity.getReport_date());
+	        existing = new M_INT_RATES_NEW_Summary_Entity();
+	        existing.setReport_date(updatedEntity.getReport_date());
+	    } else {
+	        existing = list.get(0);
+	    }
 		
 		
-		M_INT_RATES_NEW_Summary_Entity existing = M_INT_RATES_NEW_Summary_Repo.findById(updatedEntity.getReport_date())
-		            .orElseThrow(() -> new RuntimeException(
-		                    "Record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
 
 		try {
 			// 1️⃣ Loop through R14 to R100
