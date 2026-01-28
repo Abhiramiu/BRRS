@@ -48,15 +48,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
+
 import org.springframework.web.servlet.ModelAndView;
 
-import com.bornfire.brrs.entities.BDISB1_Archival_Detail_Entity;
-import com.bornfire.brrs.entities.BDISB1_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.BDISB1_Detail_Entity;
-import com.bornfire.brrs.entities.BDISB1_Summary_Entity;
+
 import com.bornfire.brrs.entities.BRRS_M_INT_RATES_Archival_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_M_INT_RATES_FCA_NEW_Archival_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_M_INT_RATES_FCA_NEW_Archival_Summary_Repo;
@@ -65,8 +60,7 @@ import com.bornfire.brrs.entities.BRRS_M_INT_RATES_FCA_NEW_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_M_INT_RATES_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_M_SRWA_12F_Archival_Summary_Repo;
 
-import com.bornfire.brrs.entities.BRRS_M_SRWA_12F_Summary_Repo;
-import com.bornfire.brrs.entities.M_INT_RATES_Archival_Summary_Entity;
+
 import com.bornfire.brrs.entities.M_INT_RATES_FCA_NEW_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.M_INT_RATES_FCA_NEW_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.M_INT_RATES_FCA_NEW_Detail_Entity;
@@ -97,8 +91,7 @@ public class BRRS_M_INT_RATES_FCA_NEW_ReportService {
 	@Autowired
 	SessionFactory sessionFactory;
 
-	@Autowired
-	BRRS_M_SRWA_12F_Summary_Repo M_SRWA_12F_Summary_Repo;
+	
 
 	@Autowired
 	BRRS_M_SRWA_12F_Archival_Summary_Repo M_SRWA_12F_Archival_Summary_Repo;
@@ -137,7 +130,7 @@ public class BRRS_M_INT_RATES_FCA_NEW_ReportService {
 
 			// ---------- CASE 1: ARCHIVAL ----------
 			if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
-				List<M_INT_RATES_Archival_Summary_Entity> T1Master = M_INT_RATES_Archival_Summary_Repo
+				List<M_INT_RATES_FCA_NEW_Archival_Summary_Entity> T1Master = M_INT_RATES_FCA_NEW_Archival_Summary_Repo
 						.getdatabydateListarchival(d1, version);
 
 				mv.addObject("reportsummary", T1Master);
@@ -185,15 +178,15 @@ public class BRRS_M_INT_RATES_FCA_NEW_ReportService {
 				parsedDate = dateformat.parse(todate);
 			}
 
-			String rowId = null;
-			String columnId = null;
+			String reportLable = null;
+			String reportAddlCriteria_1 = null;
 
 			// ✅ Split filter string into rowId & columnId
 			if (Filter != null && Filter.contains(",")) {
 				String[] parts = Filter.split(",");
 				if (parts.length >= 2) {
-					rowId = parts[0];
-					columnId = parts[1];
+					reportLable = parts[0];
+					reportAddlCriteria_1 = parts[1];
 				}
 			}
 			System.out.println(type);
@@ -201,8 +194,8 @@ public class BRRS_M_INT_RATES_FCA_NEW_ReportService {
 				System.out.println(type);
 				// 🔹 Archival branch
 				List<M_INT_RATES_FCA_NEW_Archival_Detail_Entity> T1Dt1;
-				if (rowId != null && columnId != null) {
-					T1Dt1 = M_INT_RATES_FCA_NEW_Archival_Detail_Repo.GetDataByRowIdAndColumnId(rowId, columnId,
+				if (reportLable != null && reportAddlCriteria_1 != null) {
+					T1Dt1 = M_INT_RATES_FCA_NEW_Archival_Detail_Repo.GetDataByRowIdAndColumnId(reportLable, reportAddlCriteria_1,
 							parsedDate, version);
 				} else {
 					T1Dt1 = M_INT_RATES_FCA_NEW_Archival_Detail_Repo.getdatabydateList(parsedDate, version);
@@ -215,8 +208,8 @@ public class BRRS_M_INT_RATES_FCA_NEW_ReportService {
 			} else {
 				// 🔹 Current branch
 				List<M_INT_RATES_FCA_NEW_Detail_Entity> T1Dt1;
-				if (rowId != null && columnId != null) {
-					T1Dt1 = M_INT_RATES_FCA_NEW_Detail_Repo.GetDataByRowIdAndColumnId(rowId, columnId, parsedDate);
+				if (reportLable != null && reportAddlCriteria_1 != null) {
+					T1Dt1 = M_INT_RATES_FCA_NEW_Detail_Repo.GetDataByRowIdAndColumnId(reportLable, reportAddlCriteria_1, parsedDate);
 				} else {
 					T1Dt1 = M_INT_RATES_FCA_NEW_Detail_Repo.getdatabydateList(parsedDate);
 					System.out.println("bdisb2 size is : " + T1Dt1.size());

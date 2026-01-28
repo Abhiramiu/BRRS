@@ -184,7 +184,7 @@ public class BRRS_M_INT_RATES_ReportService {
 					T1Dt1 = M_INT_RATES_Detail_Repo.GetDataByRowIdAndColumnId(reportLable, reportAddlCriteria_1, parsedDate);
 				} else {
 					T1Dt1 = M_INT_RATES_Detail_Repo.getdatabydateList(parsedDate);
-					System.out.println("bdisb2 size is : " + T1Dt1.size());
+					System.out.println("M_INT_RATES size is : " + T1Dt1.size());
 					totalPages = M_INT_RATES_Detail_Repo.getdatacount(parsedDate);
 					mv.addObject("pagination", "YES");
 				}

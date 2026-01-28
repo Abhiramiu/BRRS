@@ -168,15 +168,15 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 				parsedDate = dateformat.parse(todate);
 			}
 
-			String rowId = null;
-			String columnId = null;
+			String reportLable = null;
+			String reportAddlCriteria_1 = null;
 
 			// ✅ Split filter string into rowId & columnId
 			if (Filter != null && Filter.contains(",")) {
 				String[] parts = Filter.split(",");
 				if (parts.length >= 2) {
-					rowId = parts[0];
-					columnId = parts[1];
+					reportLable = parts[0];
+					reportAddlCriteria_1 = parts[1];
 				}
 			}
 			System.out.println(type);
@@ -184,8 +184,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 				System.out.println(type);
 				// 🔹 Archival branch
 				List<M_INT_RATES_FCA_Archival_Detail_Entity> T1Dt1;
-				if (rowId != null && columnId != null) {
-					T1Dt1 = M_INT_RATES_FCA_Archival_Detail_Repo.GetDataByRowIdAndColumnId(rowId, columnId, parsedDate,
+				if (reportLable != null && reportAddlCriteria_1 != null) {
+					T1Dt1 = M_INT_RATES_FCA_Archival_Detail_Repo.GetDataByRowIdAndColumnId(reportLable, reportAddlCriteria_1, parsedDate,
 							version);
 				} else {
 					T1Dt1 = M_INT_RATES_FCA_Archival_Detail_Repo.getdatabydateList(parsedDate, version);
@@ -198,8 +198,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 			} else {
 				// 🔹 Current branch
 				List<M_INT_RATES_FCA_Detail_Entity> T1Dt1;
-				if (rowId != null && columnId != null) {
-					T1Dt1 = M_INT_RATES_FCA_Detail_Repo.GetDataByRowIdAndColumnId(rowId, columnId, parsedDate);
+				if (reportLable != null && reportAddlCriteria_1 != null) {
+					T1Dt1 = M_INT_RATES_FCA_Detail_Repo.GetDataByRowIdAndColumnId(reportLable, reportAddlCriteria_1, parsedDate);
 				} else {
 					T1Dt1 = M_INT_RATES_FCA_Detail_Repo.getdatabydateList(parsedDate);
 					System.out.println("bdisb2 size is : " + T1Dt1.size());
