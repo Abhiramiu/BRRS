@@ -719,25 +719,7 @@ function cancelModify() {
 		 // Append only named inputs
 		    $('#fileupload').find(':input[name]').each(function () {
 		        formData.append(this.name, this.value);
-		        for (let i = 10; i <= 15; i++) {
-		            [   "TOTAL",
-				    	"CURRENT_AMT",
-				        "CALL_AMT",
-				        "SAVINGS",
-				        "NOTICE_0_31_DAYS",
-				        "NOTICE_32_88_DAYS",
-				        "91_DEPOSIT_DAY",
-				        "FD_1_6_MONTHS",
-				        "FD_7_12_MONTHS",
-				        "FD_13_18_MONTHS",
-				        "FD_19_24_MONTHS",
-				        "FD_OVER_24_MONTHS"].forEach(field => {
-		                const input = $("#R" + i + "_" + field);
-		                if (input.length) {
-		                    formData.append(input.attr("name"), input.val());
-		                }
-		            });
-		        }
+		        
 		    });
 		    console.log("✅ Entity executed successfully");    
 

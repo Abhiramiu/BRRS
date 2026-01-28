@@ -328,90 +328,89 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 				"✅ Summary procedure executed for date: " + new SimpleDateFormat("dd-MM-yyyy").format(reportDate));
 	}
 
-//	public void updateReport(M_INT_RATES_FCA_Summary_Entity updatedEntity) {
-//		System.out.println("Came to services");
-//		System.out.println("Report Date: " + updatedEntity.getReportDate());
+	public void updateReport(M_INT_RATES_FCA_Summary_Entity updatedEntity) {
+		System.out.println("Came to services");
+		System.out.println("Report Date: " + updatedEntity.getReportDate());
 
-//		M_INT_RATES_FCA_Summary_Entity existing = M_INT_RATES_FCA_Summary_Repo.findById(updatedEntity.getReportDate())
-//				.orElseThrow(() -> new RuntimeException(
-//						"Record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
+		M_INT_RATES_FCA_Summary_Entity existing = M_INT_RATES_FCA_Summary_Repo.findById(updatedEntity.getReportDate())
+				.orElseThrow(() -> new RuntimeException(
+						"Record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
 
-//		try {
-//			// 1️⃣ Loop through R14 to R100
-//			for (int i = 10; i <= 14; i++) {
-//				String prefix = "R" + i + "_";
+		try {
+			// 1️⃣ Loop through R14 to R100
+			for (int i = 10; i <= 14; i++) {
+				String prefix = "R" + i + "_";
 
-//				String[] fields = {"CURRENT",
-//				        "CALL",
-//				        "SAVINGS",
-//				        "NOTICE_0_31_DAYS",
-//				        "NOTICE_32_88_DAYS",
-//				        "91_DEPOSIT_DAY",
-//				        "FD_1_6_MONTHS",
-//				        "FD_7_12_MONTHS",
-//				        "FD_13_18_MONTHS",
-//				        "FD_19_24_MONTHS",
-//				        "FD_OVER_24_MONTHS",
-//				        "TOTAL"};
+				String[] fields = {"CURRENT",
+				        "CALL",
+				        "SAVINGS",
+				        "NOTICE_0_31_DAYS",
+				        "NOTICE_32_88_DAYS",
+				        "91_DEPOSIT_DAY",
+				        "FD_1_6_MONTHS",
+				        "FD_7_12_MONTHS",
+				        "FD_13_18_MONTHS",
+				        "FD_19_24_MONTHS",
+				        "FD_OVER_24_MONTHS",
+				        "TOTAL"};
 
-//				for (String field : fields) {
-//					String getterName = "get" + prefix + field;
-//					String setterName = "set" + prefix + field;
+				for (String field : fields) {
+					String getterName = "get" + prefix + field;
+					String setterName = "set" + prefix + field;
 
-//					try {
-//						Method getter = M_INT_RATES_FCA_Summary_Entity.class.getMethod(getterName);
-//						Method setter = M_INT_RATES_FCA_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+					try {
+						Method getter = M_INT_RATES_FCA_Summary_Entity.class.getMethod(getterName);
+						Method setter = M_INT_RATES_FCA_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
 
-//						Object newValue = getter.invoke(updatedEntity);
-//						setter.invoke(existing, newValue);
+						Object newValue = getter.invoke(updatedEntity);
+						setter.invoke(existing, newValue);
 
-//					} catch (NoSuchMethodException e) {
+					} catch (NoSuchMethodException e) {
 	// Skip missing fields
-//						continue;
-//					}
-//				}
-//			}
-
+						continue;
+					}
+				}
+			}
 	// 2️⃣ Handle R100 total fields using same structure
-//			String prefix = "R15_";
-//			String[] totalFields = { "CURRENCY","CURRENT",
-//			        "CALL",
-//			        "SAVINGS",
-//			        "NOTICE_0_31_DAYS",
-//			        "NOTICE_32_88_DAYS",
-//			        "91_DEPOSIT_DAY",
-//			        "FD_1_6_MONTHS",
-//			        "FD_7_12_MONTHS",
-//			        "FD_13_18_MONTHS",
-//			        "FD_19_24_MONTHS",
-//			        "FD_OVER_24_MONTHS",
-//			        "TOTAL"};
+			String prefix = "R15_";
+			String[] totalFields = { "CURRENCY","CURRENT",
+			        "CALL",
+			        "SAVINGS",
+			        "NOTICE_0_31_DAYS",
+			        "NOTICE_32_88_DAYS",
+			        "91_DEPOSIT_DAY",
+			        "FD_1_6_MONTHS",
+			        "FD_7_12_MONTHS",
+			        "FD_13_18_MONTHS",
+			        "FD_19_24_MONTHS",
+			        "FD_OVER_24_MONTHS",
+			        "TOTAL"};
 
-//			for (String field : totalFields) {
-//				String getterName = "get" + prefix + field;
-//				String setterName = "set" + prefix + field;
+			for (String field : totalFields) {
+				String getterName = "get" + prefix + field;
+				String setterName = "set" + prefix + field;
 
-//				try {
-//					Method getter = M_INT_RATES_FCA_Summary_Entity.class.getMethod(getterName);
-//					Method setter = M_INT_RATES_FCA_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+				try {
+					Method getter = M_INT_RATES_FCA_Summary_Entity.class.getMethod(getterName);
+					Method setter = M_INT_RATES_FCA_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
 
-//					Object newValue = getter.invoke(updatedEntity);
-//					setter.invoke(existing, newValue);
+					Object newValue = getter.invoke(updatedEntity);
+					setter.invoke(existing, newValue);
 
-//				} catch (NoSuchMethodException e) {
+				} catch (NoSuchMethodException e) {
 	// Skip missing total fields
-//					continue;
-//				}
-//			}
+					continue;
+				}
+			}
 
-//		} catch (Exception e) {
-//			throw new RuntimeException("Error while updating report fields", e);
-//		}
+		} catch (Exception e) {
+			throw new RuntimeException("Error while updating report fields", e);
+		}
 
 	// Save updated entity
-//		System.out.println("abc");
-//		M_INT_RATES_FCA_Summary_Repo.save(existing);
-//	}
+		System.out.println("abc");
+		M_INT_RATES_FCA_Summary_Repo.save(existing);
+	}
 
 	public byte[] getM_INTRATESFCAExcel(String filename, String reportId, String fromdate, String todate,
 			String currency, String dtltype, String type, BigDecimal version) throws Exception {

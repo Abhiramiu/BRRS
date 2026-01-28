@@ -2012,6 +2012,8 @@ public class BRRS_ReportsController {
 	 * ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 	 * .body("Update Failed: " + e.getMessage()); } }
 	 */
+	
+	
 	@Autowired
 	private BRRS_M_FXR_ReportService brrs_m_fxr_reportservice;
 
