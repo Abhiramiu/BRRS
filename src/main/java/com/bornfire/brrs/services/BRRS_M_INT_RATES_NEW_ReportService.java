@@ -243,7 +243,7 @@ public class BRRS_M_INT_RATES_NEW_ReportService {
 			for (int i = 11; i <= 35; i++) {
 				String prefix = "R" + i + "_";
 
-				String[] fields = { "LENDING", "NOMINAL_INTEREST_RATE", "AVG_EFFECTIVE_RATE"};
+				String[] fields = { "nominal_interest_rate", "avg_effective_rate"};
 
 				for (String field : fields) {
 					String getterName = "get" + prefix + field;
@@ -708,6 +708,30 @@ if (!dataList1.isEmpty()) {
 					}
 
 					
+					row = sheet.getRow(23);
+					if (row == null) {
+					    row = sheet.createRow(23);
+					}
+
+					cell1 = row.createCell(1);
+					if (record.getR24_nominal_interest_rate() != null) {
+					    cell1.setCellValue(record.getR24_nominal_interest_rate().doubleValue());
+					    cell1.setCellStyle(numberStyle);
+					} else {
+					    cell1.setCellValue("");
+					    cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record.getR24_avg_effective_rate() != null) {
+					    cell2.setCellValue(record.getR24_avg_effective_rate().doubleValue());
+					    cell2.setCellStyle(numberStyle);
+					} else {
+					    cell2.setCellValue("");
+					    cell2.setCellStyle(textStyle);
+					}
+
+					
 
 					row = sheet.getRow(24);
 					if (row == null) {
@@ -1000,7 +1024,7 @@ if (!dataList1.isEmpty()) {
 					
 					
 				}
-				workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
+				
 			} else {
 				
 			}
@@ -1454,7 +1478,7 @@ if (!dataList1.isEmpty()) {
 
 						cell1 = row.createCell(1);
 						if (record.getR24_nominal_interest_rate() != null) {
-						    cell1.setCellValue(record.getR24_nominal_interest_rate().doubleValue());  // <-- use text if 200-200
+						    cell1.setCellValue(record.getR24_nominal_interest_rate().doubleValue());  // 
 						    cell1.setCellStyle(numberStyle);
 						} else {
 						    cell1.setCellValue("");
@@ -1760,7 +1784,7 @@ if (!dataList1.isEmpty()) {
 
 						
 					}
-					workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
+					
 				} else {
 					
 				}
@@ -2629,7 +2653,7 @@ if (!dataList1.isEmpty()) {
 
 			
 		}
-		workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
+		
 	} else {
 		
 	}

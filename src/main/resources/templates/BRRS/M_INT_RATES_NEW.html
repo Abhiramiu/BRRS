@@ -596,7 +596,7 @@ function fileuploads(btn) {
 	    // --- Entity fields (R10-R17) ---
 	    for (let i = 11; i <= 35; i++) {
 	        [ "nominal_interest_rate", "avg_effective_rate"].forEach(field => {
-	            const input = $("#R" + i + "_" + field);
+	            const input = $("#r" + i + "_" + field);
 	            if (input.length) {
 	                formData.append(input.attr("name"), input.val());
 	            }
@@ -821,7 +821,7 @@ function fileuploads(btn) {
 						<!-- 📅 Date -->
 						<span class="white-text"
 							style="color: white !important; font-size: 16px;margin-left: 10px; margin-right: 20px;">Report
-							Date:<span th:text="${#strings.replace(asondate, '/', '-')}">2025-09-18</span>
+							Date:<span th:text="${#strings.replace(asondate, '/', '-')}"></span>
 						</span>
 						<!-- Buttons -->
 						<input type="hidden" id="selectedTab" th:value="${displaymode}">

@@ -3217,6 +3217,17 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
+			
+
+		case "M_INT_RATES_NEW":
+			try {
+				repfile = brrs_m_int_new_rates_reportservice.getM_INTRATESNEWExcel(filename, reportId, fromdate, todate,
+						currency, dtltype, type, version);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
 
 		case "M_INT_RATES_FCA":
 			try {
@@ -3993,32 +4004,7 @@ public class RegulatoryReportServices {
 			// }
 			// break;
 
-			case "M_INT_RATES_FCA":
-				try {
-					archivalData = BRRS_M_INT_RATES_FCA_ReportService.getM_INT_RATES_FCAArchival();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
-
-			case "M_INT_RATES":
-				try {
-					archivalData = brrs_m_int_rates_reportservice.getM_INT_RATESArchival();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
-				
-			case "M_INT_RATES_NEW":
-				try {
-					archivalData = brrs_m_int_new_rates_reportservice.getM_INT_RATESNEWArchival();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
+			
 				
 				
 
@@ -4040,6 +4026,28 @@ public class RegulatoryReportServices {
 				List<Object[]> srwabList = brrs_m_srwa_12b_reportservice.getM_SRWA_12BArchival();
 				archivalData.addAll(srwabList);
 				System.out.println("Fetched M_SRWA_12B archival data: " + srwabList.size());
+				break;
+				
+			/*
+			 * case "M_INT_RATES_FCA": try { archivalData =
+			 * BRRS_M_INT_RATES_FCA_ReportService.getM_INT_RATES_FCAArchival(); } catch
+			 * (Exception e) { // TODO Auto-generated catch block e.printStackTrace(); }
+			 * break;
+			 */
+
+			/*
+			 * case "M_INT_RATES": try { archivalData =
+			 * brrs_m_int_rates_reportservice.getM_INT_RATESArchival(); } catch (Exception
+			 * e) { // TODO Auto-generated catch block e.printStackTrace(); } break;
+			 */
+				
+			case "M_INT_RATES_NEW":
+				try {
+					archivalData = brrs_m_int_new_rates_reportservice.getM_INT_RATESNEWArchival();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				break;
 
 			// case "Q_BRANCHNET":
