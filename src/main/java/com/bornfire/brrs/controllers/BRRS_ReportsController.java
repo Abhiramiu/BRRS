@@ -1305,6 +1305,36 @@ public class BRRS_ReportsController {
 					.body("Update Failed: " + e.getMessage());
 		}
 	}
+	
+	
+	
+	
+	
+	@Autowired
+	BRRS_M_INT_RATES_ReportService INT_RATES_reportService;
+
+	@PostMapping("/INTRATESupdateAll")
+	@ResponseBody
+	public ResponseEntity<String> updateINTRATESReports(
+			@RequestParam @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+			@RequestParam Map<String, String> allParams) {
+		try {
+			System.out.println("Came to INT_RATES controller");
+
+			INT_RATES_reportService.updateDetailFromForm(asondate, allParams);
+
+			return ResponseEntity.ok("Updated Successfully.");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity
+					.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Update Failed: " + e.getMessage());
+		}
+	}
+	
+	
+	
+	
 
 	/*
 	 * @RequestMapping(value = "/UpdateM_INT_RATES_FCA_NEWReSub", method = {

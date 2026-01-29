@@ -3829,8 +3829,8 @@ public void updateDetailFromForm(Date reportDate, Map<String, String> params) {
 			} else if ("AVG_EFFECTIVE_RATE".equals(column)) {
 				row.setAVG_EFFECTIVE_RATE(amount);
 
-			} else if ("VOLUME".equals(column)) {
-				row.setVOLUME(amount);
+			} else if ("VOLUME_AMT".equals(column)) {
+				row.setVOLUME_AMT(amount);
 
 			} 
 		}
@@ -3951,7 +3951,7 @@ public byte[] getM_INT_RATESDetailExcel(String filename, String fromdate, String
 				c1.setCellStyle(amountStyle);
 
 				Cell c2 = row.createCell(2);
-				c2.setCellValue(item.getVOLUME() != null ? item.getVOLUME().doubleValue() : 0);
+				c2.setCellValue(item.getVOLUME_AMT() != null ? item.getVOLUME_AMT().doubleValue() : 0);
 				c2.setCellStyle(amountStyle);
 
 			
@@ -4075,7 +4075,7 @@ public byte[] getM_INT_RATESDetailExcelARCHIVAL(String filename, String fromdate
 				c1.setCellStyle(amountStyle);
 
 				Cell c2 = row.createCell(2);
-				c2.setCellValue(item.getVOLUME() != null ? item.getVOLUME().doubleValue() : 0);
+				c2.setCellValue(item.getVOLUME_AMT() != null ? item.getVOLUME_AMT().doubleValue() : 0);
 				c2.setCellStyle(amountStyle);
 
 			
