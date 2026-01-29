@@ -2644,7 +2644,7 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 			String dtltype, String type, String version) {
 
 		try {
-			logger.info("Generating Excel for M_OPTR Details...");
+			logger.info("Generating Excel forM_INTRATESFCA Details...");
 			System.out.println("came to Detail download service");
 
 			// ================= ARCHIVAL HANDLING =================

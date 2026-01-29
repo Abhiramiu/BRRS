@@ -2663,7 +2663,7 @@ public class BRRS_M_INT_RATES_FCA_NEW_ReportService {
 			String dtltype, String type, String version) {
 
 		try {
-			logger.info("Generating Excel for M_OPTR Details...");
+			logger.info("Generating Excel for M_INTRATESFCANEWDetail Details...");
 			System.out.println("came to Detail download service");
 
 			// ================= ARCHIVAL HANDLING =================
@@ -2673,7 +2673,7 @@ public class BRRS_M_INT_RATES_FCA_NEW_ReportService {
 
 			// ================= WORKBOOK & SHEET =================
 			XSSFWorkbook workbook = new XSSFWorkbook();
-			XSSFSheet sheet = workbook.createSheet("BDISB3Detail");
+			XSSFSheet sheet = workbook.createSheet("M_INTRATESFCANEWDetail");
 
 			BorderStyle border = BorderStyle.THIN;
 
@@ -2793,7 +2793,7 @@ public class BRRS_M_INT_RATES_FCA_NEW_ReportService {
 
 			// ================= WORKBOOK & SHEET =================
 			XSSFWorkbook workbook = new XSSFWorkbook();
-			XSSFSheet sheet = workbook.createSheet("M_OPTRDetail");
+			XSSFSheet sheet = workbook.createSheet("M_INTRATESFCANEWARCHIVALDetail");
 
 			BorderStyle border = BorderStyle.THIN;
 
