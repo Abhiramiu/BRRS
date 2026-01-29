@@ -47,4 +47,7 @@ public interface BRRS_M_SRWA_12F_Archival_Summary_Repo
                    "ORDER BY TO_NUMBER(REPORT_VERSION) ASC",
            nativeQuery = true)
     List<M_SRWA_12F_Archival_Summary_Entity> getdatabydateListWithVersionAll();
+
+      @Query(value = "select REPORT_DATE, REPORT_VERSION from BRRS_M_SRWA_12F_ARCHIVALTABLE_SUMMARY order by REPORT_VERSION", nativeQuery = true)
+    List<Object> getM_SRWA_12Farchival();
 }

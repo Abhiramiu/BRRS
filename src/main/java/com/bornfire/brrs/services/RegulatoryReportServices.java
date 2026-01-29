@@ -1193,6 +1193,12 @@ public class RegulatoryReportServices {
 					dtltype, pageable, type, version);
 			break;
 
+									case "PL_SCHS":
+		 repsummary = BRRS_PL_SCHS_Reportservice.getPL_SCHSView(reportId, fromdate,
+		  todate, currency, dtltype, pageable, type, version);
+		  
+		  break;
+
 		/*
 		 * case "AML":
 		 * 
@@ -2708,6 +2714,15 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
+
+					  		case "PL_SCHS":
+			try {
+				repfile = BRRS_PL_SCHS_Reportservice.getPL_SCHSExcel(filename, reportId, fromdate, todate, currency,
+						dtltype, type, version);
+			} catch (Exception e) { // TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
 
 		/*
 		 * case "M_CA4": try { repfile =
@@ -4421,10 +4436,13 @@ public class RegulatoryReportServices {
 			// New Archival
 			
 			case "M_SRWA_12F":
-				List<Object[]> srwafList = BRRS_M_SRWA_12F_reportservice.getM_SRWA_12FArchival();
-				archivalData.addAll(srwafList);
-				System.out.println("Fetched M_SRWA_12F archival data: " + srwafList.size());
-				break;
+					try {
+					archivalData = BRRS_M_SRWA_12F_reportservice.getM_SRWA_12FArchival();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
 					case "M_SRWA_12H":
 				List<Object[]> srwaList1 = BRRS_M_SRWA_12H_reportservice.getM_SRWA_12HArchival();
 				archivalData.addAll(srwaList1);
