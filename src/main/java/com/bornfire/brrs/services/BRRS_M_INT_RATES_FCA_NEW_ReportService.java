@@ -615,6 +615,15 @@ public class BRRS_M_INT_RATES_FCA_NEW_ReportService {
 						cell11.setCellValue("");
 						cell11.setCellStyle(textStyle);
 					}
+					
+					Cell cell12 = row.createCell(12);
+					if (record.getR10_TOTAL() != null) {
+						cell12.setCellValue(record.getR10_TOTAL().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
 
 					// ---------- R11 ----------
 					row = sheet.getRow(10);
@@ -719,6 +728,15 @@ public class BRRS_M_INT_RATES_FCA_NEW_ReportService {
 					} else {
 						cell11.setCellValue("");
 						cell11.setCellStyle(textStyle);
+					}
+					
+					cell12 = row.createCell(12);
+					if (record.getR11_TOTAL() != null) {
+						cell12.setCellValue(record.getR11_TOTAL().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
 					}
 
 					// ---------- R12 ----------
@@ -825,6 +843,15 @@ public class BRRS_M_INT_RATES_FCA_NEW_ReportService {
 						cell11.setCellValue("");
 						cell11.setCellStyle(textStyle);
 					}
+					
+					cell12 = row.createCell(12);
+					if (record.getR12_TOTAL() != null) {
+						cell12.setCellValue(record.getR12_TOTAL().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
 
 					// ---------- R13 ----------
 					row = sheet.getRow(12);
@@ -929,6 +956,15 @@ public class BRRS_M_INT_RATES_FCA_NEW_ReportService {
 					} else {
 						cell11.setCellValue("");
 						cell11.setCellStyle(textStyle);
+					}
+					
+				 cell12 = row.createCell(12);
+					if (record.getR13_TOTAL() != null) {
+						cell12.setCellValue(record.getR13_TOTAL().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
 					}
 
 					// ---------- R14 ----------
@@ -1035,9 +1071,17 @@ public class BRRS_M_INT_RATES_FCA_NEW_ReportService {
 						cell11.setCellValue("");
 						cell11.setCellStyle(textStyle);
 					}
-
+					
+				 cell12 = row.createCell(12);
+					if (record.getR14_TOTAL() != null) {
+						cell12.setCellValue(record.getR14_TOTAL().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
 				}
-				workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
+				
 			} else {
 
 			}
@@ -1248,6 +1292,15 @@ public class BRRS_M_INT_RATES_FCA_NEW_ReportService {
 						cell11.setCellValue("");
 						cell11.setCellStyle(textStyle);
 					}
+					
+					Cell cell12 = row.createCell(12);
+					if (record.getR10_TOTAL() != null) {
+						cell12.setCellValue(record.getR10_TOTAL().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
 
 					// ---------- R11 ----------
 					row = sheet.getRow(10);
@@ -1352,6 +1405,15 @@ public class BRRS_M_INT_RATES_FCA_NEW_ReportService {
 					} else {
 						cell11.setCellValue("");
 						cell11.setCellStyle(textStyle);
+					}
+					
+					cell12 = row.createCell(12);
+					if (record.getR11_TOTAL() != null) {
+						cell12.setCellValue(record.getR11_TOTAL().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
 					}
 
 					// ---------- R12 ----------
@@ -1458,6 +1520,15 @@ public class BRRS_M_INT_RATES_FCA_NEW_ReportService {
 						cell11.setCellValue("");
 						cell11.setCellStyle(textStyle);
 					}
+					
+					cell12 = row.createCell(12);
+					if (record.getR12_TOTAL() != null) {
+						cell12.setCellValue(record.getR12_TOTAL().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
 
 					// ---------- R13 ----------
 					row = sheet.getRow(12);
@@ -1562,6 +1633,15 @@ public class BRRS_M_INT_RATES_FCA_NEW_ReportService {
 					} else {
 						cell11.setCellValue("");
 						cell11.setCellStyle(textStyle);
+					}
+					
+				 cell12 = row.createCell(12);
+					if (record.getR13_TOTAL() != null) {
+						cell12.setCellValue(record.getR13_TOTAL().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
 					}
 
 					// ---------- R14 ----------
@@ -1668,9 +1748,17 @@ public class BRRS_M_INT_RATES_FCA_NEW_ReportService {
 						cell11.setCellValue("");
 						cell11.setCellStyle(textStyle);
 					}
-
+					
+				 cell12 = row.createCell(12);
+					if (record.getR14_TOTAL() != null) {
+						cell12.setCellValue(record.getR14_TOTAL().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
 				}
-				workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
+				
 			} else {
 
 			}
@@ -2223,6 +2311,15 @@ public class BRRS_M_INT_RATES_FCA_NEW_ReportService {
 						cell11.setCellValue("");
 						cell11.setCellStyle(textStyle);
 					}
+					
+					Cell cell12 = row.createCell(12);
+					if (record.getR10_TOTAL() != null) {
+						cell12.setCellValue(record.getR10_TOTAL().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
 
 					// ---------- R11 ----------
 					row = sheet.getRow(10);
@@ -2327,6 +2424,15 @@ public class BRRS_M_INT_RATES_FCA_NEW_ReportService {
 					} else {
 						cell11.setCellValue("");
 						cell11.setCellStyle(textStyle);
+					}
+					
+					cell12 = row.createCell(12);
+					if (record.getR11_TOTAL() != null) {
+						cell12.setCellValue(record.getR11_TOTAL().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
 					}
 
 					// ---------- R12 ----------
@@ -2433,6 +2539,15 @@ public class BRRS_M_INT_RATES_FCA_NEW_ReportService {
 						cell11.setCellValue("");
 						cell11.setCellStyle(textStyle);
 					}
+					
+					cell12 = row.createCell(12);
+					if (record.getR12_TOTAL() != null) {
+						cell12.setCellValue(record.getR12_TOTAL().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
 
 					// ---------- R13 ----------
 					row = sheet.getRow(12);
@@ -2537,6 +2652,15 @@ public class BRRS_M_INT_RATES_FCA_NEW_ReportService {
 					} else {
 						cell11.setCellValue("");
 						cell11.setCellStyle(textStyle);
+					}
+					
+				 cell12 = row.createCell(12);
+					if (record.getR13_TOTAL() != null) {
+						cell12.setCellValue(record.getR13_TOTAL().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
 					}
 
 					// ---------- R14 ----------
@@ -2643,9 +2767,18 @@ public class BRRS_M_INT_RATES_FCA_NEW_ReportService {
 						cell11.setCellValue("");
 						cell11.setCellStyle(textStyle);
 					}
+					
+				 cell12 = row.createCell(12);
+					if (record.getR14_TOTAL() != null) {
+						cell12.setCellValue(record.getR14_TOTAL().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
 
 				}
-				workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
+				
 			} else {
 
 			}
