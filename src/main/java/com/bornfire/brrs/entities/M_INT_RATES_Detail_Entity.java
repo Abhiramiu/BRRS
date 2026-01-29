@@ -78,8 +78,8 @@ public class M_INT_RATES_Detail_Entity {
 	    @Column(name = "AVG_EFFECTIVE_RATE")
 	    private BigDecimal AVG_EFFECTIVE_RATE;
 	    
-	    @Column(name = "VOLUME")
-	    private BigDecimal VOLUME;
+	    @Column(name = "VOLUME_AMT")
+	    private BigDecimal VOLUME_AMT;
 	    
 	   
 	    
@@ -249,12 +249,12 @@ public class M_INT_RATES_Detail_Entity {
 			AVG_EFFECTIVE_RATE = aVG_EFFECTIVE_RATE;
 		}
 
-		public BigDecimal getVOLUME() {
-			return VOLUME;
+		public BigDecimal getVOLUME_AMT() {
+			return VOLUME_AMT;
 		}
 
-		public void setVOLUME(BigDecimal vOLUME) {
-			VOLUME = vOLUME;
+		public void setVOLUME_AMT(BigDecimal vOLUME_AMT) {
+			VOLUME_AMT = vOLUME_AMT;
 		}
 
 		public String getDataEntryVersion() {
@@ -278,6 +278,7 @@ public class M_INT_RATES_Detail_Entity {
 			// TODO Auto-generated constructor stub
 		}
 
+		
 		
 	    
 

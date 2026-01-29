@@ -749,41 +749,38 @@ function fileuploads(btn) {
 			border-collapse: collapse;
 		}
 	</style>
-	<script th:inline="javascript">
-				  $(document).ready(function () {
-				    var table = $('#reportdetails').DataTable({
-				      scrollY: "550px",
-				      scrollX: true,
-				      scrollCollapse: true,
-				      autoWidth: false,
-				      paging: true,
-				      searching: true,
-				      lengthChange: false,
-				      ordering: true,
-				      pageLength: 100,
-				      fixedHeader: true, // ✅ You can simply set it to true
-					  // ✅ Column width settings
-					   columnDefs: [
-					     { width: "60px", targets: 0 },   // Edit icon column
-					     { width: "150px", targets: 1 }  ,  // S No column
-						 { width: "300px", targets: 7 }    // S No column
-					   ],
+	 <script th:inline="javascript">
+      $(document).ready(function () {
+        var table = $('#reportdetails').DataTable({
+        	scrollY: "500px",
+          scrollX: true,
+          scrollCollapse: true,
+          autoWidth: false,
+          paging: true,
+          searching: true,
+          lengthChange: false,
+          ordering: true,
+          pageLength: 100,
+          fixedHeader: true, // ✅ You can simply set it to true
+       // ✅ Column width settings
+        columnDefs: [
+          { width: "100px", targets: 1 }  ,  // Cust ID column
+       ],
 
-				      dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t'
-				    });
+          dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t'
+        });
 
-				    // ✅ Fix alignment on resize / zoom
-				    $(window).on('resize', function () {
-				      table.columns.adjust().draw(false);
-				    });
+        // ✅ Fix alignment on resize / zoom
+        $(window).on('resize', function () {
+          table.columns.adjust().draw(false);
+        });
 
-				    // ✅ Fix initial misalignment if loaded at non-100% zoom
-				    setTimeout(function () {
-				      table.columns.adjust().draw(false);
-				    }, 500);
-				  });
-				</script>
-
+        // ✅ Fix initial misalignment if loaded at non-100% zoom
+        setTimeout(function () {
+          table.columns.adjust().draw(false);
+        }, 500);
+      });
+    </script>
 	<script th:inline="javascript">
 		/*<![CDATA[*/
 		const reportId = /*[[${reportid}]]*/ null;
@@ -916,7 +913,7 @@ function fileuploads(btn) {
                type="text"
                th:value="${report.r11_nominal_interest_rate != null ? #numbers.formatDecimal(report.r11_nominal_interest_rate, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r11_nominal_interest_rate"
-               name="r11_nominal_interest_rate"
+               name="r11_C2_nominal_interest_rate"
                style="background-color: #FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -926,7 +923,7 @@ function fileuploads(btn) {
                type="text"
                th:value="${report.r11_avg_effective_rate != null ? #numbers.formatDecimal(report.r11_avg_effective_rate, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r11_avg_effective_rate"
-               name="r11_avg_effective_rate"
+               name="r11_C3_avg_effective_rate"
                style="background-color:#FFFFFF;width: 400px; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -945,7 +942,7 @@ function fileuploads(btn) {
                type="text"
                th:value="${report.r12_nominal_interest_rate != null ? #numbers.formatDecimal(report.r12_nominal_interest_rate, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r12_nominal_interest_rate"
-               name="r12_nominal_interest_rate"
+               name="r12_C2_nominal_interest_rate"
                style="background-color: #FFFFFF;width: 400px;  height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -955,7 +952,7 @@ function fileuploads(btn) {
                type="text"
                th:value="${report.r12_avg_effective_rate != null ? #numbers.formatDecimal(report.r12_avg_effective_rate, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r12_avg_effective_rate"
-               name="r12_avg_effective_rate"
+               name="r12_C3_avg_effective_rate"
                style="background-color:#FFFFFF;width: 400px; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -974,7 +971,7 @@ function fileuploads(btn) {
                type="text"
                th:value="${report.r13_nominal_interest_rate != null ? #numbers.formatDecimal(report.r13_nominal_interest_rate, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r13_nominal_interest_rate"
-               name="r13_nominal_interest_rate"
+               name="r13_C2_nominal_interest_rate"
                style="background-color: #FFFFFF;width: 400px;  height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -984,7 +981,7 @@ function fileuploads(btn) {
                type="text"
                th:value="${report.r13_avg_effective_rate != null ? #numbers.formatDecimal(report.r13_avg_effective_rate, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r13_avg_effective_rate"
-               name="r13_avg_effective_rate"
+               name="r13_C3_avg_effective_rate"
                style="background-color:#FFFFFF;width: 400px; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -1003,7 +1000,7 @@ function fileuploads(btn) {
                type="text"
                th:value="${report.r14_nominal_interest_rate != null ? #numbers.formatDecimal(report.r14_nominal_interest_rate, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r14_nominal_interest_rate"
-               name="r14_nominal_interest_rate"
+               name="r14_C2_nominal_interest_rate"
                style="background-color: #FFFFFF;width: 400px; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -1013,7 +1010,7 @@ function fileuploads(btn) {
                type="text"
                th:value="${report.r14_avg_effective_rate != null ? #numbers.formatDecimal(report.r14_avg_effective_rate, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r14_avg_effective_rate"
-               name="r14_avg_effective_rate"
+               name="r14_C3_avg_effective_rate"
                style="background-color:#FFFFFF;width: 400px; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -1032,7 +1029,7 @@ function fileuploads(btn) {
                type="text"
                th:value="${report.r15_nominal_interest_rate != null ? #numbers.formatDecimal(report.r15_nominal_interest_rate, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r15_nominal_interest_rate"
-               name="r15_nominal_interest_rate"
+               name="r15_C2_nominal_interest_rate"
                style="background-color: #FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -1042,7 +1039,7 @@ function fileuploads(btn) {
                type="text"
                th:value="${report.r15_avg_effective_rate != null ? #numbers.formatDecimal(report.r15_avg_effective_rate, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r15_avg_effective_rate"
-               name="r15_avg_effective_rate"
+               name="r15_C3_avg_effective_rate"
                style="background-color:#FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -1061,7 +1058,7 @@ function fileuploads(btn) {
                type="text"
                th:value="${report.r16_nominal_interest_rate != null ? #numbers.formatDecimal(report.r16_nominal_interest_rate, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r16_nominal_interest_rate"
-               name="r16_nominal_interest_rate"
+               name="r16_C2_nominal_interest_rate"
                style="background-color: #FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -1071,7 +1068,7 @@ function fileuploads(btn) {
                type="text"
                th:value="${report.r16_avg_effective_rate != null ? #numbers.formatDecimal(report.r16_avg_effective_rate, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r16_avg_effective_rate"
-               name="r16_avg_effective_rate"
+               name="r16_C3_avg_effective_rate"
                style="background-color:#FFFFFF;width: 400px; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -1090,7 +1087,7 @@ function fileuploads(btn) {
                type="text"
                th:value="${report.r17_nominal_interest_rate != null ? #numbers.formatDecimal(report.r17_nominal_interest_rate, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r17_nominal_interest_rate"
-               name="r17_nominal_interest_rate"
+               name="r17_C2_nominal_interest_rate"
                style="background-color: #FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -1100,7 +1097,7 @@ function fileuploads(btn) {
                type="text"
                th:value="${report.r17_avg_effective_rate != null ? #numbers.formatDecimal(report.r17_avg_effective_rate, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r17_avg_effective_rate"
-               name="r17_avg_effective_rate"
+               name="r17_C3_avg_effective_rate"
                style="background-color:#FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -1119,7 +1116,7 @@ function fileuploads(btn) {
                type="text"
                th:value="${report.r18_nominal_interest_rate != null ? #numbers.formatDecimal(report.r18_nominal_interest_rate, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r18_nominal_interest_rate"
-               name="r18_nominal_interest_rate"
+               name="r18_C2_nominal_interest_rate"
                style="background-color: #FFFFFF;width: 400px;  height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -1129,7 +1126,7 @@ function fileuploads(btn) {
                type="text"
                th:value="${report.r18_avg_effective_rate != null ? #numbers.formatDecimal(report.r18_avg_effective_rate, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r18_avg_effective_rate"
-               name="r18_avg_effective_rate"
+               name="r18_C3_avg_effective_rate"
                style="background-color:#FFFFFF;width: 400px; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -1147,7 +1144,7 @@ function fileuploads(btn) {
                type="text"
                th:value="${report.r19_nominal_interest_rate != null ? #numbers.formatDecimal(report.r19_nominal_interest_rate, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r19_nominal_interest_rate"
-               name="r19_nominal_interest_rate"
+               name="r19_C2_nominal_interest_rate"
                style="background-color: #FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -1157,7 +1154,7 @@ function fileuploads(btn) {
                type="text"
                th:value="${report.r19_avg_effective_rate != null ? #numbers.formatDecimal(report.r19_avg_effective_rate, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r19_avg_effective_rate"
-               name="r19_avg_effective_rate"
+               name="r19_C3_avg_effective_rate"
                style="background-color:#FFFFFF;width: 400px; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -1176,7 +1173,7 @@ function fileuploads(btn) {
                type="text"
                th:value="${report.r20_nominal_interest_rate != null ? #numbers.formatDecimal(report.r20_nominal_interest_rate, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r20_nominal_interest_rate"
-               name="r20_nominal_interest_rate"
+               name="r20_C2_nominal_interest_rate"
                style="background-color: #FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -1186,7 +1183,7 @@ function fileuploads(btn) {
                type="text"
                th:value="${report.r20_avg_effective_rate != null ? #numbers.formatDecimal(report.r20_avg_effective_rate, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r20_avg_effective_rate"
-               name="r20_avg_effective_rate"
+               name="r20_C3_avg_effective_rate"
                style="background-color:#FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -1205,7 +1202,7 @@ function fileuploads(btn) {
                type="text"
                th:value="${report.r21_nominal_interest_rate != null ? #numbers.formatDecimal(report.r21_nominal_interest_rate, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r21_nominal_interest_rate"
-               name="r21_nominal_interest_rate"
+               name="r21_C2_nominal_interest_rate"
                style="background-color: #FFFFFF;  width: 400px;  height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -1215,7 +1212,7 @@ function fileuploads(btn) {
                type="text"
                th:value="${report.r21_avg_effective_rate != null ? #numbers.formatDecimal(report.r21_avg_effective_rate, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r21_avg_effective_rate"
-               name="r21_avg_effective_rate"
+               name="r21_C3_avg_effective_rate"
                style="background-color:#FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -1234,7 +1231,7 @@ function fileuploads(btn) {
                type="text"
                th:value="${report.r22_nominal_interest_rate != null ? #numbers.formatDecimal(report.r22_nominal_interest_rate, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r22_nominal_interest_rate"
-               name="r22_nominal_interest_rate"
+               name="r22_C2_nominal_interest_rate"
                style="background-color: #FFFFFF; width: 400px;  height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -1244,7 +1241,7 @@ function fileuploads(btn) {
                type="text"
                th:value="${report.r22_avg_effective_rate != null ? #numbers.formatDecimal(report.r22_avg_effective_rate, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r22_avg_effective_rate"
-               name="r22_avg_effective_rate"
+               name="r22_C3_avg_effective_rate"
                style="background-color:#FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -1263,7 +1260,7 @@ function fileuploads(btn) {
                type="text"
                th:value="${report.r23_nominal_interest_rate != null ? #numbers.formatDecimal(report.r23_nominal_interest_rate, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r23_nominal_interest_rate"
-               name="r23_nominal_interest_rate"
+               name="r23_C2_nominal_interest_rate"
                style="background-color: #FFFFFF;  width: 400px; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -1273,7 +1270,7 @@ function fileuploads(btn) {
                type="text"
                th:value="${report.r23_avg_effective_rate != null ? #numbers.formatDecimal(report.r23_avg_effective_rate, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r23_avg_effective_rate"
-               name="r23_avg_effective_rate"
+               name="r23_C3_avg_effective_rate"
                style="background-color:#FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -1292,7 +1289,7 @@ function fileuploads(btn) {
            type="text"
            th:value="${#strings.isEmpty(report.r24_nominal_interest_rate) ? '0' : report.r24_nominal_interest_rate}"
            id="r24_nominal_interest_rate"
-           name="r24_nominal_interest_rate"
+           name="r24_C2_nominal_interest_rate"
          style="background-color: #FFFFFF;  width: 400px; height: 28px; border-color: transparent; text-align: right;"
            readonly />
 </td>
@@ -1302,7 +1299,7 @@ function fileuploads(btn) {
            type="text"
            th:value="${#strings.isEmpty(report.r24_avg_effective_rate) ? '0' : report.r24_avg_effective_rate}"
            id="r24_avg_effective_rate"
-           name="r24_avg_effective_rate"
+           name="r24_C3_avg_effective_rate"
            style="background-color: #FFFFFF;  width: 400px; height: 28px; border-color: transparent; text-align: right;"
            readonly />
 </td>
@@ -1322,7 +1319,7 @@ function fileuploads(btn) {
                type="text"
                th:value="${report.r25_nominal_interest_rate != null ? #numbers.formatDecimal(report.r25_nominal_interest_rate, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r25_nominal_interest_rate"
-               name="r25_nominal_interest_rate"
+               name="r25_C2_nominal_interest_rate"
                style="background-color: #FFFFFF;  width: 400px; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -1332,7 +1329,7 @@ function fileuploads(btn) {
                type="text"
                th:value="${report.r25_avg_effective_rate != null ? #numbers.formatDecimal(report.r25_avg_effective_rate, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r25_avg_effective_rate"
-               name="r25_avg_effective_rate"
+               name="r25_C3_avg_effective_rate"
                style="background-color:#FFFFFF;  width: 400px; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -1351,7 +1348,7 @@ function fileuploads(btn) {
                type="text"
                th:value="${report.r26_nominal_interest_rate != null ? #numbers.formatDecimal(report.r26_nominal_interest_rate, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r26_nominal_interest_rate"
-               name="r26_nominal_interest_rate"
+               name="r26_C2_nominal_interest_rate"
                style="background-color: #FFFFFF;  width: 400px; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -1361,7 +1358,7 @@ function fileuploads(btn) {
                type="text"
                th:value="${report.r26_avg_effective_rate != null ? #numbers.formatDecimal(report.r26_avg_effective_rate, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r26_avg_effective_rate"
-               name="r26_avg_effective_rate"
+               name="r26_C3_avg_effective_rate"
                style="background-color:#FFFFFF;  width: 400px; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -1380,7 +1377,7 @@ function fileuploads(btn) {
                type="text"
                th:value="${report.r27_nominal_interest_rate != null ? #numbers.formatDecimal(report.r27_nominal_interest_rate, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r27_nominal_interest_rate"
-               name="r27_nominal_interest_rate"
+               name="r27_C2_nominal_interest_rate"
                style="background-color: #FFFFFF;  width: 400px;  height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -1390,7 +1387,7 @@ function fileuploads(btn) {
                type="text"
                th:value="${report.r27_avg_effective_rate != null ? #numbers.formatDecimal(report.r27_avg_effective_rate, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r27_avg_effective_rate"
-               name="r27_avg_effective_rate"
+               name="r27_C3_avg_effective_rate"
                style="background-color:#FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -1408,7 +1405,7 @@ function fileuploads(btn) {
                type="text"
                th:value="${report.r28_nominal_interest_rate != null ? #numbers.formatDecimal(report.r28_nominal_interest_rate, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r28_nominal_interest_rate"
-               name="r28_nominal_interest_rate"
+               name="r28_C2_nominal_interest_rate"
                style="background-color: #FFFFFF;  width: 400px; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -1418,7 +1415,7 @@ function fileuploads(btn) {
                type="text"
                th:value="${report.r28_avg_effective_rate != null ? #numbers.formatDecimal(report.r28_avg_effective_rate, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r28_avg_effective_rate"
-               name="r28_avg_effective_rate"
+               name="r28_C3_avg_effective_rate"
                style="background-color:#FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -1437,7 +1434,7 @@ function fileuploads(btn) {
                type="text"
                th:value="${report.r29_nominal_interest_rate != null ? #numbers.formatDecimal(report.r29_nominal_interest_rate, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r29_nominal_interest_rate"
-               name="r29_nominal_interest_rate"
+               name="r29_C2_nominal_interest_rate"
                style="background-color: #FFFFFF;  width: 400px; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -1447,7 +1444,7 @@ function fileuploads(btn) {
                type="text"
                th:value="${report.r29_avg_effective_rate != null ? #numbers.formatDecimal(report.r29_avg_effective_rate, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r29_avg_effective_rate"
-               name="r29_avg_effective_rate"
+               name="r29_C3_avg_effective_rate"
                style="background-color:#FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -1466,7 +1463,7 @@ function fileuploads(btn) {
                type="text"
                th:value="${report.r30_nominal_interest_rate != null ? #numbers.formatDecimal(report.r30_nominal_interest_rate, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r30_nominal_interest_rate"
-               name="r30_nominal_interest_rate"
+               name="r30_C2_nominal_interest_rate"
                style="background-color: #FFFFFF; width: 400px;  height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -1476,7 +1473,7 @@ function fileuploads(btn) {
                type="text"
                th:value="${report.r30_avg_effective_rate != null ? #numbers.formatDecimal(report.r30_avg_effective_rate, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r30_avg_effective_rate"
-               name="r30_avg_effective_rate"
+               name="r30_C3_avg_effective_rate"
                style="background-color:#FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -1495,7 +1492,7 @@ function fileuploads(btn) {
                type="text"
                th:value="${report.r31_nominal_interest_rate != null ? #numbers.formatDecimal(report.r31_nominal_interest_rate, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r31_nominal_interest_rate"
-               name="r31_nominal_interest_rate"
+               name="r31_C2_nominal_interest_rate"
                style="background-color: #FFFFFF;  width: 400px; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -1505,7 +1502,7 @@ function fileuploads(btn) {
                type="text"
                th:value="${report.r31_avg_effective_rate != null ? #numbers.formatDecimal(report.r31_avg_effective_rate, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r31_avg_effective_rate"
-               name="r31_avg_effective_rate"
+               name="r31_C3_avg_effective_rate"
                style="background-color:#FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -1524,7 +1521,7 @@ function fileuploads(btn) {
                type="text"
                th:value="${report.r32_nominal_interest_rate != null ? #numbers.formatDecimal(report.r32_nominal_interest_rate, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r32_nominal_interest_rate"
-               name="r32_nominal_interest_rate"
+               name="r32_C2_nominal_interest_rate"
                style="background-color: #FFFFFF; width: 400px;  height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -1534,7 +1531,7 @@ function fileuploads(btn) {
                type="text"
                th:value="${report.r32_avg_effective_rate != null ? #numbers.formatDecimal(report.r32_avg_effective_rate, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r32_avg_effective_rate"
-               name="r32_avg_effective_rate"
+               name="r32_C3_avg_effective_rate"
                style="background-color:#FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -1553,7 +1550,7 @@ function fileuploads(btn) {
                type="text"
                th:value="${report.r33_nominal_interest_rate != null ? #numbers.formatDecimal(report.r33_nominal_interest_rate, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r33_nominal_interest_rate"
-               name="r33_nominal_interest_rate"
+               name="r33_C2_nominal_interest_rate"
                style="background-color: #FFFFFF;  width: 400px; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -1563,7 +1560,7 @@ function fileuploads(btn) {
                type="text"
                th:value="${report.r33_avg_effective_rate != null ? #numbers.formatDecimal(report.r33_avg_effective_rate, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r33_avg_effective_rate"
-               name="r33_avg_effective_rate"
+               name="r33_C3_avg_effective_rate"
                style="background-color:#FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -1582,7 +1579,7 @@ function fileuploads(btn) {
                type="text"
                th:value="${report.r34_nominal_interest_rate != null ? #numbers.formatDecimal(report.r34_nominal_interest_rate, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r34_nominal_interest_rate"
-               name="r34_nominal_interest_rate"
+               name="r34_C2_nominal_interest_rate"
                style="background-color: #FFFFFF;  width: 400px; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -1592,7 +1589,7 @@ function fileuploads(btn) {
                type="text"
                th:value="${report.r34_avg_effective_rate != null ? #numbers.formatDecimal(report.r34_avg_effective_rate, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r34_avg_effective_rate"
-               name="r34_avg_effective_rate"
+               name="r34_C3_avg_effective_rate"
                style="background-color:#FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -1611,7 +1608,7 @@ function fileuploads(btn) {
                type="text"
                th:value="${report.r35_nominal_interest_rate != null ? #numbers.formatDecimal(report.r35_nominal_interest_rate, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r35_nominal_interest_rate"
-               name="r35_nominal_interest_rate"
+               name="r35_C2_nominal_interest_rate"
                style="background-color: #FFFFFF;  width: 400px; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
@@ -1621,7 +1618,7 @@ function fileuploads(btn) {
                type="text"
                th:value="${report.r35_avg_effective_rate != null ? #numbers.formatDecimal(report.r35_avg_effective_rate, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r35_avg_effective_rate"
-               name="r35_avg_effective_rate"
+               name="r35_C3_avg_effective_rate"
                style="background-color:#FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
