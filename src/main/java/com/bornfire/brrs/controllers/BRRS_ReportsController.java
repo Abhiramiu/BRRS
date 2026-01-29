@@ -745,24 +745,7 @@ public class BRRS_ReportsController {
 		}
 	}
 
-	@PostMapping("/LA2updateAll")
-	@ResponseBody
-	public ResponseEntity<String> updateLA2AllReports(
-			@RequestParam @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@RequestParam Map<String, String> allParams) {
-		try {
-			System.out.println("Came to LA2 controller");
-
-			LA2reportService.updateDetailFromForm(asondate, allParams);
-
-			return ResponseEntity.ok("Detail Updated Successfully");
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity
-					.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body("Update Failed: " + e.getMessage());
-		}
-	}
+	
 
 	@Autowired
 	private BRRS_M_CA3_ReportService CA3reportService;
@@ -2581,6 +2564,7 @@ public class BRRS_ReportsController {
 		}
 	}
 
+	
 	@RequestMapping(value = "/updateReportMDISB1", method = { RequestMethod.GET, RequestMethod.POST })
 	/*
 	 * @ResponseBody
@@ -2624,6 +2608,26 @@ public class BRRS_ReportsController {
 		}
 	}
 
+	//@RequestMapping(value = "/updateReportLA2", method = { RequestMethod.GET, RequestMethod.POST })
+	@PostMapping("/LA2updateAll")
+	@ResponseBody
+	public ResponseEntity<String> updateLA2AllReports(
+			@RequestParam @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+			@RequestParam Map<String, String> allParams) {
+		try {
+			System.out.println("Came to LA2 controller");
+
+			LA2reportService.updateDetailFromForm(asondate, allParams);
+
+			return ResponseEntity.ok("Detail Updated Successfully");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity
+					.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Update Failed: " + e.getMessage());
+		}
+	}
+	
 	
 	@RequestMapping(value = "/updateReportMDISB2", method = { RequestMethod.GET, RequestMethod.POST })
 	/*

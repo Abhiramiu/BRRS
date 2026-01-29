@@ -532,13 +532,7 @@ public class RegulatoryReportServices {
 		 * case "M_PI": repsummary = BRRS_M_PI_reportservice.getM_PIView(reportId,
 		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
 		 * 
-		 * case "M_LA1": repsummary = BRRS_M_LA1_reportservice.getM_LA1View(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "M_LA1_NEW": repsummary =
-		 * BRRS_M_LA1_reportservice_new.getM_LA1View(reportId, fromdate, todate,
-		 * currency, dtltype, pageable, type, version); break;
-		 * 
+		
 		 * case "M_AIDP": repsummary = BRRS_M_AIDP_ReportService.getM_AIDPView(reportId,
 		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
 		 * 
@@ -763,6 +757,11 @@ public class RegulatoryReportServices {
 		case "M_LA1_NEW":
 			repsummary = BRRS_M_LA1_reportservice_new.getM_LA1View(reportId, fromdate, todate, currency, dtltype,
 					pageable, type, version);
+			break;
+			
+		case "M_LA2":
+			repsummary = BRRS_M_LA2_reportservice.getM_LA2View(reportId, fromdate, todate, currency, dtltype, pageable,
+					type, version);
 			break;
 
 		/*
@@ -1513,6 +1512,11 @@ public class RegulatoryReportServices {
 			repdetail = BRRS_M_LA1_reportservice_new.getM_LA1currentDtl(reportId, fromdate, todate, currency, dtltype,
 					pageable, Filter, type, version);
 			break;
+			
+		case "M_LA2":
+			repdetail = BRRS_M_LA2_reportservice.getM_LA2currentDtl(reportId, fromdate, todate, currency, dtltype,
+					pageable, Filter, type, version);
+			break;
 
 		case "M_DEP1":
 			repdetail = BRRS_M_DEP1_reportservice.getM_DEP1currentDtl(reportId, fromdate, todate, currency, dtltype,
@@ -1539,11 +1543,7 @@ public class RegulatoryReportServices {
 					pageable, Filter, type, version);
 			break;
 
-		case "M_LA2":
-			repdetail = BRRS_M_LA2_reportservice.getM_La2currentDtl(reportId, fromdate, todate, currency, dtltype,
-					pageable, Filter, type, version);
-			break;
-
+		
 		case "M_DEP3":
 			repdetail = BRRS_M_DEP3_reportservice.getM_DEP3currentDtl(reportId, fromdate, todate, currency, dtltype,
 					pageable, Filter, type, version);
@@ -2243,21 +2243,7 @@ public class RegulatoryReportServices {
 		 * (Exception e) { // TODO Auto-generated catch block e.printStackTrace(); }
 		 * break;
 		 * 
-		 * case "M_LA1": try { repfile =
-		 * BRRS_M_LA1_reportservice.BRRS_M_LA1Excel(filename, reportId, fromdate,
-		 * todate, currency, dtltype, type, version); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "M_LA1_NEW": try { repfile =
-		 * BRRS_M_LA1_reportservice_new.BRRS_M_LA1Excel(filename, reportId, fromdate,
-		 * todate, currency, dtltype, type, version); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "M_LA2": try { repfile =
-		 * BRRS_M_LA2_reportservice.BRRS_M_LA2Excel(filename, reportId, fromdate,
-		 * todate, currency, dtltype, type, version); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
-		 * 
+		
 		 * case "M_LA3": try { repfile =
 		 * BRRS_M_LA3_reportservice.BRRS_M_LA3Excel(filename, reportId, fromdate,
 		 * todate, currency, dtltype, type, version); } catch (Exception e) { // TODO
@@ -2702,6 +2688,15 @@ public class RegulatoryReportServices {
 		case "M_LA1_NEW":
 			try {
 				repfile = BRRS_M_LA1_reportservice_new.BRRS_M_LA1Excel(filename, reportId, fromdate, todate, currency,
+						dtltype, type, version);
+			} catch (Exception e) { // TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+			
+		case "M_LA2":
+			try {
+				repfile = BRRS_M_LA2_reportservice.BRRS_M_LA2Excel(filename, reportId, fromdate, todate, currency,
 						dtltype, type, version);
 			} catch (Exception e) { // TODO Auto-generated catch block
 				e.printStackTrace();
@@ -3422,7 +3417,10 @@ public class RegulatoryReportServices {
 		} else if ("M_LA1Detail".equals(filename)) {
 			return BRRS_M_LA1_reportservice_new.BRRS_M_LA1DetailExcel(filename, fromdate, todate, currency, dtltype,
 					type, version);
-		} else if ("M_DEP1Detail".equals(filename)) {
+		} else if ("M_LA2Detail".equals(filename)) {
+			return BRRS_M_LA2_reportservice.BRRS_M_LA2DetailExcel(filename, fromdate, todate, currency, dtltype, type,
+					version);
+		}else if ("M_DEP1Detail".equals(filename)) {
 			return BRRS_M_DEP1_reportservice.BRRS_M_DEP1DetailExcel(filename, fromdate, todate, currency, dtltype, type,
 					version);
 		} else if ("M_LA3Detail".equals(filename)) {
@@ -3730,6 +3728,16 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
+			
+		case "M_LA2":
+			try {
+				archivalData = BRRS_M_LA2_reportservice.getM_LA2Archival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+
 
 		case "M_CALOC":
 			try {
@@ -3763,15 +3771,7 @@ public class RegulatoryReportServices {
 			}
 			break;
 
-		case "M_LA2":
-			try {
-				archivalData = BRRS_M_LA2_reportservice.getM_LA2Archival();
-
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+		
 
 		case "M_LA3":
 			try {
@@ -4924,7 +4924,10 @@ public class RegulatoryReportServices {
 		} else if (filename.equals("M_LA1Detail")) {
 			fileData = BRRS_M_LA1_reportservice_new.BRRS_M_LA1DetailExcel(filename, fromdate, todate, currency, dtltype,
 					type, version);
-		} else if (filename.equals("M_DEP1Detail")) {
+		} else if (filename.equals("M_LA2Detail")) {
+			fileData = BRRS_M_LA2_reportservice.BRRS_M_LA2DetailExcel(filename, fromdate, todate, currency, dtltype,
+					type, version);
+		}else if (filename.equals("M_DEP1Detail")) {
 			fileData = BRRS_M_DEP1_reportservice.BRRS_M_DEP1DetailExcel(filename, fromdate, todate, currency, dtltype,
 					type, version);
 		} else if (filename.equals("M_LA3Detail")) {
@@ -5314,6 +5317,12 @@ public class RegulatoryReportServices {
 			System.out.println("Fetching M_LA1 data from: " + specificFilePath);
 			reportData = BRRS_M_LA1_reportservice_new.getReportData(specificFilePath);
 			break;
+			
+		case "M_LA2":
+			specificFilePath = baseExportPath + "M_LA2.xlsx";
+			System.out.println("Fetching M_LA2 data from: " + specificFilePath);
+			reportData = BRRS_M_LA2_reportservice.getReportData(specificFilePath);
+			break;
 
 		case "M_SFINP2":
 			System.out.println(reportCode);
@@ -5350,6 +5359,11 @@ public class RegulatoryReportServices {
 
 			case "M_LA1_NEW":
 				modelAndView = BRRS_M_LA1_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
+						request.getParameter("formmode"));
+				break;
+				
+			case "M_LA2":
+				modelAndView = BRRS_M_LA2_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
 						request.getParameter("formmode"));
 				break;
 
@@ -5705,7 +5719,11 @@ public class RegulatoryReportServices {
 			case "M_LA1_NEW":
 				response = BRRS_M_LA1_reportservice_new.updateDetailEdit(request);
 				break;
-
+				
+			/*
+			 * case "M_LA2": response = BRRS_M_LA2_reportservice.updateDetailEdit(request);
+			 * break;
+			 */
 			case "M_LA3":
 				response = BRRS_M_LA3_reportservice.updateDetailEdit(request);
 				break;
@@ -6460,14 +6478,7 @@ public class RegulatoryReportServices {
 	 * // ✅ Switch case for all reports switch (reportName) {
 	 * 
 	 * 
-	 * case "M_LA1": return BRRS_M_LA1_reportservice.BRRS_M_LA1Excel(filename,
-	 * reportName, fromdate, todate, currency, "DETAIL", type, version);
-	 * 
-	 * 
-	 * case "M_LA1_NEW": return
-	 * BRRS_M_LA1_reportservice_new.BRRS_M_LA1Excel(filename, reportName, fromdate,
-	 * todate, currency, "DETAIL", type, version);
-	 * 
+	 
 	 * case "M_LA4": return BRRS_M_LA4_reportservice.BRRS_M_LA4Excel("M_LA4.xlsx",
 	 * reportName, fromdate, todate, currency, dtltype, type, version);
 	 * 

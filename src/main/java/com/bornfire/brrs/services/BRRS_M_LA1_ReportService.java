@@ -249,12 +249,12 @@ public class BRRS_M_LA1_ReportService {
 	public byte[] BRRS_M_LA1Excel(String filename, String reportId, String fromdate, String todate, String currency,
 			String dtltype, String type, BigDecimal version) throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.");
-		// ARCHIVAL check
-				if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && version != null) {
-					logger.info("Service: Generating ARCHIVAL report for version {}", version);
-					return getExcelM_LA1ARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
-				}
 
+		// ARCHIVAL check
+		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && version != null) {
+			logger.info("Service: Generating ARCHIVAL report for version {}", version);
+			return getExcelM_LA1ARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
+		}
 		List<M_LA1_Summary_Entity> dataList = BRRS_M_LA1_Summary_Repo.getdatabydateList(dateformat.parse(todate));
 
 		if (dataList.isEmpty()) {

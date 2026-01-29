@@ -74,13 +74,13 @@ public class M_LA2_Detail_Entity {
     private Date verifyTime;
 
     @Column(name = "ENTITY_FLG", length = 1)
-    private String entityFlg;
+    private Character entityFlg;
 
     @Column(name = "MODIFY_FLG", length = 1)
-    private String modifyFlg;
+    private Character modifyFlg;
 
     @Column(name = "DEL_FLG", length = 1)
-    private String delFlg;
+    private Character delFlg;
 
     @Column(name = "REPORT_ADDL_CRITERIA_2", length = 10)
     private String reportAddlCriteria2;
@@ -250,27 +250,27 @@ public class M_LA2_Detail_Entity {
 		this.verifyTime = verifyTime;
 	}
 
-	public String getEntityFlg() {
+	public Character getEntityFlg() {
 		return entityFlg;
 	}
 
-	public void setEntityFlg(String entityFlg) {
+	public void setEntityFlg(Character entityFlg) {
 		this.entityFlg = entityFlg;
 	}
 
-	public String getModifyFlg() {
+	public Character getModifyFlg() {
 		return modifyFlg;
 	}
 
-	public void setModifyFlg(String modifyFlg) {
+	public void setModifyFlg(Character modifyFlg) {
 		this.modifyFlg = modifyFlg;
 	}
 
-	public String getDelFlg() {
+	public Character getDelFlg() {
 		return delFlg;
 	}
 
-	public void setDelFlg(String delFlg) {
+	public void setDelFlg(Character delFlg) {
 		this.delFlg = delFlg;
 	}
 
