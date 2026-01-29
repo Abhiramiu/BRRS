@@ -2654,7 +2654,7 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 			// ================= WORKBOOK & SHEET =================
 			XSSFWorkbook workbook = new XSSFWorkbook();
-			XSSFSheet sheet = workbook.createSheet("BDISB3Detail");
+			XSSFSheet sheet = workbook.createSheet("M_INTRATESFCADetail");
 
 			BorderStyle border = BorderStyle.THIN;
 
@@ -2774,7 +2774,7 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 			// ================= WORKBOOK & SHEET =================
 			XSSFWorkbook workbook = new XSSFWorkbook();
-			XSSFSheet sheet = workbook.createSheet("M_OPTRDetail");
+			XSSFSheet sheet = workbook.createSheet("M_INTRATESFCADetail");
 
 			BorderStyle border = BorderStyle.THIN;
 
