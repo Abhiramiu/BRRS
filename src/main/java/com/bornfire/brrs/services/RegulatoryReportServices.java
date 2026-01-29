@@ -80,6 +80,9 @@ public class RegulatoryReportServices {
 	BRRS_M_SRWA_12H_ReportService BRRS_M_SRWA_12H_reportservice;
 
 	@Autowired
+	BRRS_M_SRWA_12H_New_ReportService BRRS_M_SRWA_12H_new_reportservice;
+
+	@Autowired
 	BRRS_M_MRC_ReportService BRRS_M_MRC_reportservice;
 
 	@Autowired
@@ -1373,6 +1376,19 @@ public class RegulatoryReportServices {
 		 * 
 		 */
 
+				case "M_SRWA_12F":
+				repsummary = BRRS_M_SRWA_12F_reportservice.getM_SRWA12FView(reportId, fromdate, todate, currency,
+						dtltype, pageable, type, version);
+				break;
+			case "M_SRWA_12H":
+				repsummary = BRRS_M_SRWA_12H_reportservice.getM_SRWA_12HView(reportId, fromdate, todate,
+						currency, dtltype, pageable, type, version);
+				break;
+			case "M_SRWA_12H_NEW":
+				repsummary = BRRS_M_SRWA_12H_new_reportservice.getM_SRWA_12H_NewView(reportId, fromdate, todate,
+						currency, dtltype, pageable, type, version);
+				break;
+
 		}
 
 		return repsummary;
@@ -2662,6 +2678,36 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
+
+						case "M_SRWA_12F":
+				 try { 
+					repfile = BRRS_M_SRWA_12F_reportservice.getM_SRWA_12FExcel(filename, reportId,
+			  fromdate, todate, currency, dtltype, type, version); } catch (Exception e) {
+			  // TODO Auto-generated catch block 
+			  // 
+			  e.printStackTrace(); 
+			} 
+			break;
+			
+					case "M_SRWA_12H":
+				try {
+					repfile = BRRS_M_SRWA_12H_reportservice.BRRS_M_SRWA_12HExcel(filename, reportId,
+							fromdate, todate, currency, dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+
+					case "M_SRWA_12H_NEW":
+				try {
+					repfile = BRRS_M_SRWA_12H_new_reportservice.BRRS_M_SRWA_12H_NewExcel(filename, reportId,
+							fromdate, todate, currency, dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
 		/*
 		 * case "M_CA4": try { repfile =
@@ -4361,10 +4407,22 @@ public class RegulatoryReportServices {
 				break;
 
 			// New Archival
-			case "M_SRWA_12H":
+			
+			case "M_SRWA_12F":
+				List<Object[]> srwafList = BRRS_M_SRWA_12F_reportservice.getM_SRWA_12FArchival();
+				archivalData.addAll(srwafList);
+				System.out.println("Fetched M_SRWA_12F archival data: " + srwafList.size());
+				break;
+					case "M_SRWA_12H":
 				List<Object[]> srwaList1 = BRRS_M_SRWA_12H_reportservice.getM_SRWA_12HArchival();
 				archivalData.addAll(srwaList1);
 				System.out.println("Fetched M_SRWA_12H archival data: " + srwaList1.size());
+				break;
+
+					case "M_SRWA_12H_NEW":
+				List<Object[]> srwaListnew = BRRS_M_SRWA_12H_new_reportservice.getM_SRWA_12H_NewArchival();
+				archivalData.addAll(srwaListnew);
+				System.out.println("Fetched M_SRWA_12H archival data: " + srwaListnew.size());
 				break;
 
 			case "M_SRWA_12E":
@@ -4420,11 +4478,7 @@ public class RegulatoryReportServices {
 				System.out.println("Fetched M_SRWA_12G archival data: " + srwagList.size());
 				break;
 
-			case "M_SRWA_12F":
-				List<Object[]> srwafList = BRRS_M_SRWA_12F_reportservice.getM_SRWA_12FArchival();
-				archivalData.addAll(srwafList);
-				System.out.println("Fetched M_SRWA_12F archival data: " + srwafList.size());
-				break;
+	
 
 			case "M_SECL":
 				List<Object[]> seclList = brrs_m_secl_reportservice.getM_SECLArchival();

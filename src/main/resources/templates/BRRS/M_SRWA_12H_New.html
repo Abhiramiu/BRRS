@@ -1,0 +1,2725 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
+<!--
+CREATED BY	: GOPIKA B
+CREATED ON	: 14.10.2025
+PURPOSE		: BWRBRREPORT
+-->
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<!-- CSS -->
+
+
+	<link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}">
+	<link rel="stylesheet" type="text/css" th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}">
+	<link rel="stylesheet" type="text/css" th:href="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.css}">
+	<link rel="stylesheet" type="text/css" th:href="@{/webjars/datatables/1.10.19/css/jquery.dataTables.min.css}">
+	<link rel="stylesheet" th:href="@{/css/CustomButton.css}" />
+	<link rel="icon" th:href="@{/favicon.ico}" type="image/x-icon" />
+	<!-- JavaScript -->
+	<!-- jQuery core (required first) -->
+	<!-- ✅ Your manually placed jQuery validation
+	<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+	 <script th:src="/jquery/jquery.validate.min.js"></script>
+	 -->
+	<!-- jQuery (required first) -->
+	<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+	<!-- <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script> -->
+	<!-- ✅ jQuery Validation -->
+	<script src="/webjars/jquery-validation/1.19.0/jquery.validate.min.js"
+		th:src="@{/webjars/jquery-validation/1.19.0/jquery.validate.min.js}"></script>
+	<!-- Bootstrap + Others -->
+	<script th:src="@{/webjars/popper.js/1.14.7/umd/popper.min.js}"></script>
+	<script th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
+	<script th:src="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.js}"></script>
+	<script th:src="@{/webjars/jquery-form/4.2.2/jquery.form.min.js}"></script>
+	<script th:src="@{/webjars/datatables/1.10.19/js/jquery.dataTables.min.js}"></script>
+	<script th:src="@{/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js}"></script>
+	<style>
+		.btns {
+			float: right;
+			margin: 5px;
+		}
+
+		.col-sm-5 {
+			padding-bottom: 15px;
+		}
+
+		.list-body {
+			padding: 0px;
+		}
+
+		.error {
+			color: red;
+			padding-left: 10px;
+		}
+
+		.formline {
+			padding-bottom: 15px;
+		}
+
+		.btn-primary {
+			background-color: #E77400;
+			border-color: #0c0c0c;
+		}
+
+		/* .btn-primary:not (:disabled):not (.disabled).active,
+		.btn-primary:not (:disabled):not (.disabled):active,
+		.show>.btn-primary.dropdown-toggle {
+			color: #fff;
+			background-color: #cc000000;
+			border-color: #161617;
+		} */
+
+		#finusertb {
+			width: 460px;
+		}
+
+		.dataTables_wrapper .dataTables_paginate .paginate_button {
+			padding: 0px;
+		}
+	</style>
+	<style>
+		div span {
+			font-weight: bold;
+			color: white !important;
+		}
+
+		.card {
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+			border-radius: 8px;
+		}
+
+		.card-header h5 {
+			font-size: 22px;
+			color: #fff;
+			font-weight: 600;
+		}
+
+		.nav-tabs .nav-link {
+			font-weight: 500;
+			border: 1px solid #dee2e6;
+			border-bottom: none;
+			border-radius: 4px 4px 0 0;
+			background-color: #f1f1f1;
+			margin-right: 5px;
+		}
+
+		.nav-tabs .nav-link.active {
+			background-color: #ffffff;
+			border-color: #dee2e6 #dee2e6 #ffffff;
+		}
+
+		.table-responsive {
+			border: 1px solid #dee2e6;
+			border-radius: 4px;
+		}
+
+		.table-hover tbody tr:hover {
+			background-color: #f3f6f9;
+		}
+
+		thead th {
+			position: sticky;
+			top: 0;
+			background-color: #e9ecf0;
+			z-index: 1;
+		}
+
+		.table td {
+			background-color: #FFFFFF;
+		}
+
+		.card-footer {
+			padding: 10px;
+			border-top: 1px solid #ccc;
+		}
+
+		.btn-xs {
+			padding: 4px 12px;
+			font-size: 14px;
+			border-radius: 4px;
+		}
+
+		#BRRSvalidation th,
+		#usertable td {
+			vertical-align: middle;
+			text-align: left;
+			font-size: 16px;
+			font-family: Arial;
+		}
+
+		.fa-edit:hover {
+			color: #28a745;
+			transform: scale(1.1);
+		}
+
+		td {
+			border: 1px solid rgb(0, 164, 166);
+			overflow: hidden;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+		}
+	</style>
+	<style>
+		.form-group {
+			position: relative;
+			margin-bottom: 1.5rem;
+		}
+
+		.form-control {
+			width: 100%;
+			border: 2px solid #ccc;
+			border-radius: 8px;
+			font-size: 1rem;
+			outline: none;
+			background: transparent;
+			transition: border-color 0.3s ease, padding-top 0.3s ease;
+		}
+
+		.error {
+			color: red;
+			padding-top: 15px;
+		}
+
+		.form-control:focus {
+			border-color: #007bff;
+		}
+
+		.form-legend {
+			position: absolute;
+			top: 50%;
+			left: 15px;
+			transform: translateY(-50%);
+			font-size: 1rem;
+			color: #aaa;
+			background: white;
+			padding: 0 5px;
+			pointer-events: none;
+			transition: 0.3s ease;
+		}
+
+		/* When input or select is focused or has a value, move the label up
+		.form-control:focus~.form-legend,
+		.form-control:not (:placeholder-shown)~.form-legend {
+			top: -8px;
+			font-size: 1rem;
+			color: #007bff;
+		} */
+
+		/* Hover effect when the input/select is focused */
+		.form-control:focus:hover~.form-legend {
+			color: #0056b3;
+			/* Darker shade of blue on hover */
+		}
+
+		/* Ensure the label returns to the normal color after focus or hover is removed
+		.form-control:not (:focus)~.form-legend {
+			color: #aaa;
+			/* Normal label color */
+	</style>
+	<style>
+		/* Red border for invalid inputs */
+		input.error,
+		select.error {
+			border: 2px solid red !important;
+		}
+
+		/* Error message style */
+		label.error {
+			color: red;
+			font-size: 0.85em;
+			margin-top: 5px;
+			display: block;
+		}
+
+		.underline {
+			text-decoration: underline;
+			color: #08a6f1;
+			cursor: pointer;
+		}
+
+		.left-arrow-circle {
+			width: 35px;
+			height: 35px;
+			border-radius: 50%;
+			background-color: white;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			margin-right: 10px;
+			transition: background-color 0.3s, transform 0.2s;
+		}
+
+		.left-arrow-circle i {
+			color: rgb(107, 122, 143);
+		}
+
+		.left-arrow-circle:hover {
+			background-color: rgb(107, 122, 143);
+			cursor: pointer;
+			transform: scale(1.05);
+			border: 2px solid white;
+		}
+
+		.left-arrow-circle:hover i {
+			color: white;
+		}
+
+		.white-text span {
+			color: white !important;
+		}
+
+		.table-cell tbody td:hover {
+			background-color: #f0f0f0;
+			/* Hover color for cell */
+			cursor: pointer;
+			/* Optional: pointer cursor */
+		}
+
+		.table-bordered td,
+		.table-bordered th {
+			border: 1px solid #000 !important;
+		}
+	</style>
+	<style>
+		.left-arrow-circle {
+			background-color: white;
+			color: #007bff;
+			border-radius: 50%;
+			padding: 8px;
+			margin-right: 10px;
+			cursor: pointer;
+		}
+
+		/* 🚌 Bus display style box */
+		/* 🚌 Bus display style box */
+					.boards {
+						transform: translateY(6px);
+					  background-color: rgb(107, 122, 143);
+					  color: white;
+					  padding: 5px 80px;
+					  border-radius: 8px;
+					  overflow: hidden;
+					  white-space: nowrap;
+					  flex: 1; /* ✅ makes it take available space dynamically */
+					  min-width: 200px;
+					  box-shadow: 0 0 10px rgb(107, 122, 143);
+					  position: relative;
+					}
+
+		/* ✨ Scrolling animation */
+		.scrolling-text {
+			display: inline-block;
+			font-family: "Courier New", monospace;
+			font-weight: bold;
+			letter-spacing: 1px;
+			animation: scroll-left 10s linear infinite;
+		}
+
+		/* Animation keyframes */
+		@keyframes scroll-left {
+			0% {
+				transform: translateX(100%);
+			}
+
+			100% {
+				transform: translateX(-100%);
+			}
+		}
+	</style>
+	<script th:inline="javascript">
+		let isDetailsModal = false;
+		$(document).ready(function () {
+			// hide loader on normal load
+			$('#loader').modal('hide');
+		});
+		$(window).on('pageshow', function () {
+			// hide loader on back/forward nav
+			$('#loader').modal('hide');
+		});
+		$(window).on('beforeunload', function () {
+			// hide loader on leaving page
+			$('#loader').modal('hide');
+		});
+
+		
+		
+		
+		$(document).ready(function() {
+			Maker_Checker_Function(); 
+		});
+
+		// if logged user is a Checker, checker cannot modify, if user is maker , then maker cant download
+		function Maker_Checker_Function() {
+			$.ajax({
+				url: "/BRRS/getUserRole",    
+				type: "GET",
+				success: function(roleId) {
+					// console.log("User Role ID:", roleId);
+				
+					if (roleId === "ADM-C" || roleId === "USR-C" || roleId === "USER-AUDIT") {
+						const modifyBtn = document.getElementById("addRecord");
+						if (modifyBtn) modifyBtn.style.display = "none";
+					}
+
+					if (roleId === "ADM-M" || roleId === "USR-M") {
+								const button = document.getElementById("custom-tab-btnAdd");
+								if (button) button.style.display = "none";
+							}
+
+				},
+				error: function(err) {
+					console.error("Error fetching role:", err);
+		     }
+		    });
+		}
+		
+
+		function home() {
+			$("#loader").modal("toggle");
+			location.href = 'Dashboard'
+		}
+		function back() {
+			$("#loader").modal("toggle");
+			window.history.back();
+		}
+
+		//to fetch summary from the database - called from the summary button
+function showdetails() {
+    isDetailsModal = true; // mark that this modal is from Details
+    showResultModal('BRRS', 'Details page not available for Manual Report');
+}
+
+		function showsummary() {
+			$('#loader').modal('show');
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/
+				location.href = Callurl;
+		}
+
+
+	</script>
+	<script>
+		function activateTab(tabName) {
+			// Remove 'active' from all buttons
+			document.querySelectorAll('.custom-tab-btn').forEach(btn => {
+				btn.classList.remove('active');
+			});
+			// Add 'active' to selected button
+			if (tabName === 'summary') {
+				document.getElementById('custom-tab-btnSummary').classList.add('active');
+			} else if (tabName === 'Details') {
+				document.getElementById('custom-tab-btnDetails').classList.add('active');
+			}
+		}
+		window.onload = function () {
+			/* setTimeout(function() {
+				var selectedTab = document.getElementById("selectedTab").value;
+				alert(selectedTab);
+				activateTab(selectedTab);
+			}, 10000); */ // 10,000 milliseconds = 10 seconds
+
+			var selectedTab = document.getElementById("selectedTab").value;
+			activateTab(selectedTab);
+		};
+
+	function downloadfile(button) {
+
+    var reportid = button.getAttribute('data-reportid');
+    var asondate = button.getAttribute('data-asondate');
+    var fromdate = button.getAttribute('data-fromdate');
+    var todate = button.getAttribute('data-todate');
+    var currency = button.getAttribute('data-currency');
+    var subreportid = button.getAttribute('data-subreportid');
+    var secid = button.getAttribute('data-secid');
+    var dtltype = button.getAttribute('data-dtltype');
+    var filename = button.getAttribute('data-filename');
+    var type = button.getAttribute('data-type');
+    var version = button.getAttribute('data-version');
+
+    var loader = new bootstrap.Modal(
+        document.getElementById('loader'),
+        { backdrop: 'static', keyboard: false }
+    );
+    loader.show();
+
+    // ✅ Build URL safely
+    var url = './downloadExcel?reportid=' + reportid +
+        '&fromdate=' + fromdate +
+        '&asondate=' + asondate +
+        '&todate=' + todate +
+        '&currency=' + currency +
+        '&subreportid=' + subreportid +
+        '&secid=' + secid +
+        '&filename=' + filename +
+        '&type=' + type;
+
+    // ✅ ONLY append version if valid
+    if (version && version.trim() !== '') {
+        url += '&version=' + version;
+    }
+
+    $.ajax({
+        url: url,
+        type: 'GET',
+        xhrFields: { responseType: 'blob' },
+
+        success: function (data) {
+            $('#loader').modal('hide');
+
+            if (data && data.size > 100) {
+                const blob = new Blob([data], {
+                    type: 'application/vnd.ms-excel'
+                });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+
+                showResultModal('BRRS', filename + ' downloaded successfully.');
+            } else {
+                showResultModal('Information', 'No data was available to create a download.');
+            }
+        },
+
+        error: function () {
+            $('#loader').modal('hide');
+            showResultModal('Error', 'An error occurred while downloading the file.');
+        }
+    });
+}
+	
+function editRecord() {
+			showResultModal('Alert', 'Development in progress');
+
+		}
+		// function closemodel() {
+		// 	$('#alert').modal('hide');
+		// 	$('#resultModal').modal('hide');
+
+		// }
+		function showResultModal(title, message) {
+			// Set the text for the modal elements
+			$('#resultModalLabel').text(title);
+			$('#resultModalBody').text(message);
+			// Show the modal
+			$('#resultModal').modal('show');
+		}
+	</script>
+
+	<script>
+		function showmodify(btn) {
+			// IDs that must always stay readonly
+			var readonlyIds = [
+				"R81_PRODUCT",
+				"R81_ISSUER",
+				"R81_ISSUES_RATING",
+				"R81_1YR_VAL_OF_CRM",
+				"R81_1YR_5YR_VAL_OF_CRM",
+				"R81_5YR_VAL_OF_CRM"
+			];
+
+			// Make all .Show_input editable except readonlyIds
+			$(".Show_input").each(function () {
+				if (!readonlyIds.includes(this.id)) {
+					$(this).removeAttr("readonly").removeAttr("disabled");
+				}
+			});
+
+			// Change background color for R12–R80 range fields
+			for (let i = 12; i <= 80; i++) {
+				let fields = [
+					"ISSUER", "ISSUES_RATING",
+					"1YR_VAL_OF_CRM",
+					"1YR_5YR_VAL_OF_CRM",
+					"5YR_VAL_OF_CRM",
+					"OTHER", "STD_SUPERVISORY_HAIRCUT", "APPLICABLE_RISK_WEIGHT"
+				];
+
+				fields.forEach(field => {
+					let selector = `#R${i}_${field}`; // ✅ use backticks for template literals
+					if ($(selector).length) {
+						$(selector).css({
+							"background-color": "#d3d3d3"
+						});
+					}
+				});
+			}
+
+			// Toggle button visibility
+			$("#submitButton").show();
+			$("#cancelRecord").show();
+			$(btn).hide(); // hide the clicked "Modify" button
+		}
+
+		//Cancel / Reset function
+		function cancelModify() {
+			if (confirm("Are you sure you want to cancel changes? Page will reload.")) {
+				// ✅ Only when user clicks YES
+				location.reload();
+
+				$(".Show_input").attr("readonly", true).attr("disabled", true);
+
+
+
+				$("#submitButton, #btnBack_edit").hide();
+				$("#btnBack").show();
+
+				// Hide Cancel button again
+				$("#cancelRecord").hide();
+
+				// Show all Modify buttons
+				$("#addRecord").show();
+			}
+			// ❌ If user clicks CANCEL, nothing happens
+		}
+	</script>
+
+
+	<SCRIPT>
+		
+
+	</SCRIPT>
+
+
+	<script>
+ function closemodel() {
+    $("#resultModal").modal("hide");
+    $('#loader').modal('hide');
+
+    // Check if the success message is showing
+    const message = $("#resultModalBody").text();
+
+    if (message.includes("Resubmission Updated Successfully")) {
+        // ✅ Go back to the previous page
+        window.history.back();
+    } else {
+        // For other messages, just reload the same page
+        setTimeout(() => location.reload(), 300);
+    }
+}
+	</script>
+<script>
+    // Capture referrer ONCE when page loads
+    var previousUrl = document.referrer;
+    
+    
+    let isResubmissionUpdate = false;
+
+function closemodel() {
+			$("#resultModal").modal("hide");
+			$('#loader').modal('hide');
+			
+			if (isResubmissionUpdate) {
+		        return;
+		    }
+
+			// Only reload if not from Details modal
+			if (!isDetailsModal) {
+				setTimeout(function () {
+					location.reload();
+				}, 300);
+			} else {
+				// reset flag for next modal usage
+				isDetailsModal = false;
+			}
+		}
+
+
+
+		function fileuploads(btn) {
+		    var asondate = btn.getAttribute("data-todate");
+		    const type = btn.getAttribute("data-type"); // MAIN / RESUB / ARCHIVAL
+		    
+		    // ✅ Mark RESUB once
+		    isResubmissionUpdate = (type && type.toUpperCase() === 'RESUB');
+		    
+		    $('#loader').modal('show');
+
+		    console.log("✅ Calculations executed successfully");
+
+		    // Remove commas from numeric inputs
+		    $("#fileupload input[type='text']").each(function () {
+		        var val = $(this).val();
+		        if (val && val.includes(",")) {
+		            $(this).val(val.replace(/,/g, ''));
+		        }
+		    });
+
+		    if (!$("#fileupload").valid()) {
+		        $('#loader').modal('hide');
+		        return;
+		    }
+
+		    // ✅ One combined FormData for all entities
+		    const formData = new FormData();
+		    formData.append("asondate", asondate);
+		    formData.append("type", type);
+
+		  
+		 // Append only named inputs
+		    $('#fileupload').find(':input[name]').each(function () {
+		        formData.append(this.name, this.value);
+
+		/*         let originalName = this.name;  
+		        let value = this.value;
+
+		        // Convert: R6_C2_COMPANY_NAME → R6_COMPANY_NAME
+		        let fixedName = originalName.replace(/_C\d+_/, '_');
+		        console.log(originalName, "→", fixedName);
+		        formData.append(fixedName, value); */
+		    });
+		    console.log("✅ Entity executed successfully");    
+
+
+		    
+// Step 5: Select API endpoint dynamically
+let apiUrl = './UpdateM_SRWA_12HNew'; // normal update
+if (type && type.toUpperCase() === 'RESUB') {
+	apiUrl = './UpdateM_SRWA_12H_ReSub'; // Resubmission endpoint
+}
+
+// Step 6: AJAX call
+$.ajax({
+	url: apiUrl,
+	type: 'POST',
+	data: formData,
+	processData: false,
+	contentType: false,
+	dataType: 'text',
+	success: function (response) {
+		$("#resultModalLabel").text("BRRS");
+		$("#resultModalBody").text(response);
+		$("#resultModal").modal("show");
+
+					    //  Wait for user to close the modal manually
+					     $("#resultModal").off("hidden.bs.modal").on("hidden.bs.modal", function () {
+					    	 if (isResubmissionUpdate) {
+					    		 window.location.href = previousUrl
+					    		 ? previousUrl 
+					    				 : "/BRRS/Resubmission?rptcode=MDISB5";
+					    	 } // reload ONLY when modal is closed
+					    });
+					},
+			        error: function (jqXHR) {
+			            console.log("Error response:", jqXHR.responseText);
+			            $("#resultModalLabel").text("Error");
+			            $("#resultModalBody").text("Update failed. Check console for details.");
+			            $("#resultModal").modal("show");
+			        },
+			        complete: function () {
+			            $('#loader').modal('hide');
+			        }
+			    });
+
+		    console.log("✅ AJAX executed successfully");
+		}    
+		
+		</script>
+
+
+
+</head>
+<title>BRRS</title>
+
+<body>
+	<div class="container-fluid" style="padding-left: 0px; padding-right: 0px;">
+		<div class="row">
+			<div th:insert="HeaderMenu :: header"></div>
+			<div class="card">
+				<div class="card-header"
+					style="background-color: rgb(107, 122, 143); display: flex; align-items: center; justify-content: space-between;">
+					<div style="display: flex; align-items: center;" onclick="back();">
+						<!-- ⬅️ Left circular arrow -->
+						<div class="left-arrow-circle">
+							<i class="fa fa-arrow-left"></i>
+						</div>
+						<!-- Title -->
+						<h5
+							style="font-family: arial; font-size: 20px; font-weight: bold; color: white; margin: 0 10px;">
+							
+							Monthly Schedule M-SRWA 12h - Schedule of Credit Risk Mitigants </h5>
+
+								<!-- Moving bus-board text -->
+						<div class="boards">
+							<p class="scrolling-text">BANK OF BOTSWANA - BANKING SUPERVISION DEPARTMENT </p>
+						</div>
+					</div>
+					<div class="custom-tab-btn-group nav-buttons"
+						style="display: flex; color: white; align-items: center;">
+						<!-- 📅 Date -->
+						<span class="white-text"
+							style="color: white !important; font-size: 16px; margin-right: 20px;">Report Date: <span
+								th:text="${#strings.replace(asondate, '/', '-')}">2025-07-04</span>
+						</span>
+						<!-- Buttons -->
+						<input type="hidden" id="selectedTab" th:value="${displaymode}">
+						<button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showsummary();"
+							th:if="${displaymode == 'Details'}">Summary</button>
+						<button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails();"
+							th:if="${displaymode == 'summary'}">Details</button>
+						<!-- Modify button -->
+
+
+						<!-- Modify button -->
+						<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
+							title="Click to EDIT Records"
+							th:if="${type == 'RESUB' or type=='BRRS' and type != 'ARCHIVAL'}"
+							th:classappend="${session.PERMISSIONS == 'W'} and ${dtltype == 'report'} ? 'addedit' "
+							id="addRecord">
+							Modify
+						</button>
+
+
+						<!-- Cancel button (hidden initially) -->
+						<button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord"
+							onclick="cancelModify();" style="display: none;">Cancel</button>
+						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
+							th:if="${displaymode == 'summary'}" th:attr="data-reportid=${reportid},
+                   				 data-asondate=${asondate},
+                   				 data-fromdate=${fromdate},
+                    				 data-todate=${todate},
+                    				 data-currency=${currency}, 
+                    				 data-dtltype=${dtltype},
+                    				 data-filename='M_SRWA_12H_New.xlsx',
+					 				 data-type=${type},
+					    			data-version=${version != null ? version : ''}" 
+									  onclick="downloadfile(this);">
+							<i class="fa fa-download"></i>
+						</button>
+
+						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
+							th:if="${displaymode == 'Details'}" onclick="startReport(this);" th:attr="
+								    data-fromdate=${fromdate},
+								    data-todate=${todate},
+									data-currency=${currency},  
+												data-dtltype=${dtltype}, 
+								    data-filename='M_SRWA_12HDetail',
+									data-type=${type},
+												data-version=${version}
+								  ">
+							<i class="fa fa-download"></i>
+						</button>
+
+
+					</div>
+				</div>
+
+				<div th:if="${displaymode == 'summary'}">
+					<div class="row">
+						<div class="col-sm-12">
+							<form action="#" method="POST" id="fileupload">
+								<div class="table-wrapper table-responsive scrollable-table-container"
+									style="border-right: 1px solid #dee2e6; ">
+									<table
+										class="sticky-header-table table table-bordered table-cell table-sm table-condensed"
+										id="reports">
+
+										<thead class="thead-light">
+											<tr>
+												<th rowspan="2"
+													style="text-align: left; width:33%; padding-left: 20px;background-color: #D8D8D8">
+													Credit Risk Mitigant</th>
+												<th rowspan="2" style="text-align: right;background-color: #D8D8D8">
+													Issuer</th> 
+												<th rowspan="2" style="text-align: right;background-color: #D8D8D8">
+													Issues Rating</th>
+												<th colspan="4" style="text-align: center;background-color: #D8D8D8">
+													Value of CRM</th>
+												<th rowspan="2" style="text-align: right;background-color: #D8D8D8">
+													Standard Supervisory Haircut**</th>
+												<th rowspan="2" style="text-align: right;background-color: #D8D8D8">
+													Applicable Risk weight***</th>
+											</tr>
+											<tr>
+												<th style="text-align: right;background-color: #D8D8D8">&le; 1 Year
+												</th>
+												<th style="text-align: right;background-color: #D8D8D8">&gt; 1 Year,
+													&le; 5 Years</th>
+												<th style="text-align: right;background-color: #D8D8D8">&gt; 5 Years
+												</th>
+												<th style="text-align: right;background-color: #D8D8D8">Other</th>
+											</tr>
+
+
+
+										</thead>
+
+
+										<tbody th:each="report: ${reportsummary}" style="font-family: Arial;">
+											<tr>
+
+											<tr>
+
+												<td style="padding-left: 20px;">
+													<input class="display-input Show_input" type="text"
+														style=" width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;padding-left: 20px; ">
+													<input class="display-input Show_input" type="text"
+														style=" width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td
+													style="text-align: right;padding-left: 20px; background-color: #b3b6b9 ">
+													<input class="display-input Show_input" type="text"
+														style=" background-color: #b3b6b9 ; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td
+													style="text-align: right; padding-left: 20px;background-color: #b3b6b9">
+													<input class="display-input Show_input" type="text"
+														style="background-color: #b3b6b9 ; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td
+													style="text-align: right;padding-left: 20px; background-color: #b3b6b9">
+													<input class="display-input Show_input" type="text"
+														style=" background-color: #b3b6b9 ;width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td
+													style="text-align: right;padding-left: 20px; background-color: #b3b6b9">
+													<input class="display-input Show_input" type="text"
+														style="background-color: #b3b6b9 ; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td
+													style="text-align: right;padding-left: 20px; background-color: #b3b6b9">
+													<input class="display-input Show_input" type="text"
+														style="background-color: #b3b6b9 ; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td
+													style="text-align: right; padding-left: 20px;background-color: #b3b6b9">
+													<input class="display-input Show_input" type="text"
+														style="background-color: #b3b6b9 ; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td
+													style="text-align: right; padding-left: 20px;background-color: #b3b6b9">
+													<input class="display-input Show_input" type="text"
+														style="background-color: #b3b6b9 ; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+											</tr>
+											</tr>
+											<!-- <tr>			
+
+											<td style="padding-left: 20px;"> 
+											<input class="display-input Show_input" type="text"
+                                            
+                                            id="R11_PRODUCT" name="R11_PRODUCT"
+                                            style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+                                            readonly />
+											</td>  
+											<td style="text-align: right; ">
+											<input class="display-input Show_input" type="text"
+                                            th:value="${report.R11_ISSUER != null ? #numbers.formatDecimal(report.R11_ISSUER, 1, 'COMMA', 0, 'POINT') 
+: '0'}"
+                                            id="R11_ISSUER" name="R11_ISSUER"
+                                            style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+                                            readonly />
+											</td>
+											<td style="text-align: right;   ">
+											<input class="display-input Show_input" type="text"
+                                            th:value="${report.R11_ISSUES_RATING != null ? #numbers.formatDecimal(report.R11_ISSUES_RATING, 1, 'COMMA', 0, 'POINT') 
+: '0'}"
+                                            id="R11_ISSUES_RATING" name="R11_ISSUES_RATING"
+                                            style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+                                            readonly />
+											</td>
+											<td style="text-align: right;  ">
+											<input class="display-input Show_input" type="text"
+                                            th:value="${report.R11_1YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R11_1YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
+: '0'}"
+                                            id="R11_1YR_VAL_OF_CRM" name="R11_1YR_VAL_OF_CRM"
+                                            style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+                                            readonly />
+											</td>
+											<td style="text-align: right;  ">
+											<input class="display-input Show_input" type="text"
+                                            th:value="${report.R11_1YR_5YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R11_1YR_5YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
+: '0'}"
+                                            id="R11_1YR_5YR_VAL_OF_CRM" name="R11_1YR_5YR_VAL_OF_CRM"
+                                            style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+                                            readonly />
+											</td>
+											<td style="text-align: right;  ">
+											<input class="display-input Show_input" type="text"
+                                            th:value="${report.R11_5YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R11_5YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
+: '0'}"
+                                            id="R11_5YR_VAL_OF_CRM" name="R11_5YR_VAL_OF_CRM"
+                                            style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+                                            readonly />
+											</td>
+											<td style="text-align: right;  ">
+											<input class="display-input Show_input" type="text"
+                                            th:value="${report.R11_OTHER != null ? #numbers.formatDecimal(report.R11_OTHER, 1, 'COMMA', 0, 'POINT') 
+: '0'}"
+                                            id="R11_OTHER" name="R11_OTHER"
+                                            style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+                                            readonly />
+											</td>
+											<td style="text-align: right;  ">
+											<input class="display-input Show_input" type="text"
+                                            th:value="${report.R11_STD_SUPERVISORY_HAIRCUT != null ? #numbers.formatDecimal(report.R11_STD_SUPERVISORY_HAIRCUT, 1, 'COMMA', 0, 'POINT') 
+: '0'}"
+                                            id="R11_STD_SUPERVISORY_HAIRCUT" name="R11_STD_SUPERVISORY_HAIRCUT"
+                                            style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+                                            readonly />
+											</td>
+											<td style="text-align: right;  ">
+											<input class="display-input Show_input" type="text"
+                                            th:value="${report.R11_APPLICABLE_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R11_APPLICABLE_RISK_WEIGHT, 1, 'COMMA', 0, 'POINT') 
+: '0'}"
+                                            id="R11_APPLICABLE_RISK_WEIGHT" name="R11_APPLICABLE_RISK_WEIGHT"
+                                            style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+                                            readonly />
+											</td>																								
+										</tr> -->
+
+
+											<tr>
+
+												<td>
+													<input class="display-input Show_input" type="text" id="R12_PRODUCT"
+														name="R12_PRODUCT"
+														th:value="'Eligible Collateral for Credit Risk*'"
+														style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: left;text-decoration: underline;font-weight: bold;"
+														readonly />
+												</td>
+												<td style="text-align: right; ">
+													<input class="display-input Show_input" type="text" th:value="${report.R12_ISSUER != null ? #numbers.formatDecimal(report.R12_ISSUER, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R12_ISSUER" name="R12_ISSUER" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;   ">
+													<input class="display-input Show_input" type="text" th:value="${report.R12_ISSUES_RATING != null ? #numbers.formatDecimal(report.R12_ISSUES_RATING, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R12_ISSUES_RATING" name="R12_ISSUES_RATING" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R12_1YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R12_1YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R12_1YR_VAL_OF_CRM" name="R12_1YR_VAL_OF_CRM"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R12_1YR_5YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R12_1YR_5YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R12_1YR_5YR_VAL_OF_CRM" name="R12_1YR_5YR_VAL_OF_CRM"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R12_5YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R12_5YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="R12_5YR_VAL_OF_CRM" name="R12_5YR_VAL_OF_CRM"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R12_OTHER != null ? #numbers.formatDecimal(report.R12_OTHER, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R12_OTHER" name="R12_OTHER" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R12_STD_SUPERVISORY_HAIRCUT != null ? #numbers.formatDecimal(report.R12_STD_SUPERVISORY_HAIRCUT, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R12_STD_SUPERVISORY_HAIRCUT" name="R12_STD_SUPERVISORY_HAIRCUT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R12_APPLICABLE_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R12_APPLICABLE_RISK_WEIGHT, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R12_APPLICABLE_RISK_WEIGHT" name="R12_APPLICABLE_RISK_WEIGHT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+											</tr>
+
+
+											<tr>
+
+												<td style="padding-left: 20px;">
+													<input class="display-input Show_input" type="text" id="R13_PRODUCT"
+														name="R13_PRODUCT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right; ">
+													<input class="display-input Show_input" type="text" th:value="${report.R13_ISSUER != null ? #numbers.formatDecimal(report.R13_ISSUER, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R13_ISSUER" name="R13_ISSUER" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;   ">
+													<input class="display-input Show_input" type="text" th:value="${report.R13_ISSUES_RATING != null ? #numbers.formatDecimal(report.R13_ISSUES_RATING, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R13_ISSUES_RATING" name="R13_ISSUES_RATING" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R13_1YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R13_1YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R13_1YR_VAL_OF_CRM" name="R13_1YR_VAL_OF_CRM"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R13_1YR_5YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R13_1YR_5YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R13_1YR_5YR_VAL_OF_CRM" name="R13_1YR_5YR_VAL_OF_CRM"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R13_5YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R13_5YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R13_5YR_VAL_OF_CRM" name="R13_5YR_VAL_OF_CRM"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R13_OTHER != null ? #numbers.formatDecimal(report.R13_OTHER, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R13_OTHER" name="R13_OTHER" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R13_STD_SUPERVISORY_HAIRCUT != null ? #numbers.formatDecimal(report.R13_STD_SUPERVISORY_HAIRCUT, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R13_STD_SUPERVISORY_HAIRCUT" name="R13_STD_SUPERVISORY_HAIRCUT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R13_APPLICABLE_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R13_APPLICABLE_RISK_WEIGHT, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R13_APPLICABLE_RISK_WEIGHT" name="R13_APPLICABLE_RISK_WEIGHT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+											</tr>
+
+
+											<tr>
+
+												<td style="padding-left: 20px;">
+													<input class="display-input Show_input" type="text" id="R14_PRODUCT"
+														name="R14_PRODUCT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right; ">
+													<input class="display-input Show_input" type="text" th:value="${report.R14_ISSUER != null ? #numbers.formatDecimal(report.R14_ISSUER, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R14_ISSUER" name="R14_ISSUER" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;   ">
+													<input class="display-input Show_input" type="text" th:value="${report.R14_ISSUES_RATING != null ? #numbers.formatDecimal(report.R14_ISSUES_RATING, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R14_ISSUES_RATING" name="R14_ISSUES_RATING" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R14_1YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R14_1YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R14_1YR_VAL_OF_CRM" name="R14_1YR_VAL_OF_CRM"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R14_1YR_5YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R14_1YR_5YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R14_1YR_5YR_VAL_OF_CRM" name="R14_1YR_5YR_VAL_OF_CRM"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R14_5YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R14_5YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R14_5YR_VAL_OF_CRM" name="R14_5YR_VAL_OF_CRM"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R14_OTHER != null ? #numbers.formatDecimal(report.R14_OTHER, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R14_OTHER" name="R14_OTHER" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R14_STD_SUPERVISORY_HAIRCUT != null ? #numbers.formatDecimal(report.R14_STD_SUPERVISORY_HAIRCUT, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R14_STD_SUPERVISORY_HAIRCUT" name="R14_STD_SUPERVISORY_HAIRCUT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R14_APPLICABLE_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R14_APPLICABLE_RISK_WEIGHT, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R14_APPLICABLE_RISK_WEIGHT" name="R14_APPLICABLE_RISK_WEIGHT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+											</tr>
+
+
+											<tr>
+
+												<td style="padding-left: 20px;">
+													<input class="display-input Show_input" type="text" id="R15_PRODUCT"
+														name="R15_PRODUCT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right; ">
+													<input class="display-input Show_input" type="text" th:value="${report.R15_ISSUER != null ? #numbers.formatDecimal(report.R15_ISSUER, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R15_ISSUER" name="R15_ISSUER" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;   ">
+													<input class="display-input Show_input" type="text" th:value="${report.R15_ISSUES_RATING != null ? #numbers.formatDecimal(report.R15_ISSUES_RATING, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R15_ISSUES_RATING" name="R15_ISSUES_RATING" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R15_1YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R15_1YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R15_1YR_VAL_OF_CRM" name="R15_1YR_VAL_OF_CRM"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R15_1YR_5YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R15_1YR_5YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R15_1YR_5YR_VAL_OF_CRM" name="R15_1YR_5YR_VAL_OF_CRM"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text"
+														id="R15_5YR_VAL_OF_CRM" name="R15_5YR_VAL_OF_CRM" th:value="${report.R15_5YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R15_5YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
+: '0'}" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R15_OTHER != null ? #numbers.formatDecimal(report.R15_OTHER, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R15_OTHER" name="R15_OTHER" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R15_STD_SUPERVISORY_HAIRCUT != null ? #numbers.formatDecimal(report.R15_STD_SUPERVISORY_HAIRCUT, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R15_STD_SUPERVISORY_HAIRCUT" name="R15_STD_SUPERVISORY_HAIRCUT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R15_APPLICABLE_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R15_APPLICABLE_RISK_WEIGHT, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R15_APPLICABLE_RISK_WEIGHT" name="R15_APPLICABLE_RISK_WEIGHT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+											</tr>
+
+
+											<tr>
+
+												<td style="padding-left: 20px;">
+													<input class="display-input Show_input" type="text" id="R16_PRODUCT"
+														name="R16_PRODUCT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right; ">
+													<input class="display-input Show_input" type="text" th:value="${report.R16_ISSUER != null ? #numbers.formatDecimal(report.R16_ISSUER, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R16_ISSUER" name="R16_ISSUER" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;   ">
+													<input class="display-input Show_input" type="text" th:value="${report.R16_ISSUES_RATING != null ? #numbers.formatDecimal(report.R16_ISSUES_RATING, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R16_ISSUES_RATING" name="R16_ISSUES_RATING" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R16_1YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R16_1YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R16_1YR_VAL_OF_CRM" name="R16_1YR_VAL_OF_CRM"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R16_1YR_5YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R16_1YR_5YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R16_1YR_5YR_VAL_OF_CRM" name="R16_1YR_5YR_VAL_OF_CRM"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R16_5YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R16_5YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R16_5YR_VAL_OF_CRM" name="R16_5YR_VAL_OF_CRM"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R16_OTHER != null ? #numbers.formatDecimal(report.R16_OTHER, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R16_OTHER" name="R16_OTHER" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R16_STD_SUPERVISORY_HAIRCUT != null ? #numbers.formatDecimal(report.R16_STD_SUPERVISORY_HAIRCUT, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R16_STD_SUPERVISORY_HAIRCUT" name="R16_STD_SUPERVISORY_HAIRCUT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R16_APPLICABLE_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R16_APPLICABLE_RISK_WEIGHT, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R16_APPLICABLE_RISK_WEIGHT" name="R16_APPLICABLE_RISK_WEIGHT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+											</tr>
+
+
+											<tr>
+
+												<td style="padding-left: 20px;">
+													<input class="display-input Show_input" type="text" id="R17_PRODUCT"
+														name="R17_PRODUCT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right; ">
+													<input class="display-input Show_input" type="text" th:value="${report.R17_ISSUER != null ? #numbers.formatDecimal(report.R17_ISSUER, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R17_ISSUER" name="R17_ISSUER" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;   ">
+													<input class="display-input Show_input" type="text" th:value="${report.R17_ISSUES_RATING != null ? #numbers.formatDecimal(report.R17_ISSUES_RATING, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R17_ISSUES_RATING" name="R17_ISSUES_RATING" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R17_1YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R17_1YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R17_1YR_VAL_OF_CRM" name="R17_1YR_VAL_OF_CRM"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R17_1YR_5YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R17_1YR_5YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R17_1YR_5YR_VAL_OF_CRM" name="R17_1YR_5YR_VAL_OF_CRM"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R17_5YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R17_5YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R17_5YR_VAL_OF_CRM" name="R17_5YR_VAL_OF_CRM"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R17_OTHER != null ? #numbers.formatDecimal(report.R17_OTHER, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R17_OTHER" name="R17_OTHER" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R17_STD_SUPERVISORY_HAIRCUT != null ? #numbers.formatDecimal(report.R17_STD_SUPERVISORY_HAIRCUT, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R17_STD_SUPERVISORY_HAIRCUT" name="R17_STD_SUPERVISORY_HAIRCUT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R17_APPLICABLE_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R17_APPLICABLE_RISK_WEIGHT, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R17_APPLICABLE_RISK_WEIGHT" name="R17_APPLICABLE_RISK_WEIGHT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+											</tr>
+
+
+											<tr>
+
+												<td style="padding-left: 20px;">
+													<input class="display-input Show_input" type="text" id="R18_PRODUCT"
+														name="R18_PRODUCT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right; ">
+													<input class="display-input Show_input" type="text" th:value="${report.R18_ISSUER != null ? #numbers.formatDecimal(report.R18_ISSUER, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R18_ISSUER" name="R18_ISSUER" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;   ">
+													<input class="display-input Show_input" type="text" th:value="${report.R18_ISSUES_RATING != null ? #numbers.formatDecimal(report.R18_ISSUES_RATING, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R18_ISSUES_RATING" name="R18_ISSUES_RATING" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R18_1YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R18_1YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R18_1YR_VAL_OF_CRM" name="R18_1YR_VAL_OF_CRM"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R18_1YR_5YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R18_1YR_5YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R18_1YR_5YR_VAL_OF_CRM" name="R18_1YR_5YR_VAL_OF_CRM"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R18_5YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R18_5YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R18_5YR_VAL_OF_CRM" name="R18_5YR_VAL_OF_CRM"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R18_OTHER != null ? #numbers.formatDecimal(report.R18_OTHER, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R18_OTHER" name="R18_OTHER" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R18_STD_SUPERVISORY_HAIRCUT != null ? #numbers.formatDecimal(report.R18_STD_SUPERVISORY_HAIRCUT, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R18_STD_SUPERVISORY_HAIRCUT" name="R18_STD_SUPERVISORY_HAIRCUT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R18_APPLICABLE_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R18_APPLICABLE_RISK_WEIGHT, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R18_APPLICABLE_RISK_WEIGHT" name="R18_APPLICABLE_RISK_WEIGHT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+											</tr>
+
+
+											<tr>
+
+												<td style="padding-left: 20px;">
+													<input class="display-input Show_input" type="text" id="R19_PRODUCT"
+														name="R19_PRODUCT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right; ">
+													<input class="display-input Show_input" type="text" th:value="${report.R19_ISSUER != null ? #numbers.formatDecimal(report.R19_ISSUER, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R19_ISSUER" name="R19_ISSUER" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;   ">
+													<input class="display-input Show_input" type="text" th:value="${report.R19_ISSUES_RATING != null ? #numbers.formatDecimal(report.R19_ISSUES_RATING, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R19_ISSUES_RATING" name="R19_ISSUES_RATING" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R19_1YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R19_1YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R19_1YR_VAL_OF_CRM" name="R19_1YR_VAL_OF_CRM"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R19_1YR_5YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R19_1YR_5YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R19_1YR_5YR_VAL_OF_CRM" name="R19_1YR_5YR_VAL_OF_CRM"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R19_5YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R19_5YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R19_5YR_VAL_OF_CRM" name="R19_5YR_VAL_OF_CRM"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R19_OTHER != null ? #numbers.formatDecimal(report.R19_OTHER, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R19_OTHER" name="R19_OTHER" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R19_STD_SUPERVISORY_HAIRCUT != null ? #numbers.formatDecimal(report.R19_STD_SUPERVISORY_HAIRCUT, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R19_STD_SUPERVISORY_HAIRCUT" name="R19_STD_SUPERVISORY_HAIRCUT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R19_APPLICABLE_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R19_APPLICABLE_RISK_WEIGHT, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R19_APPLICABLE_RISK_WEIGHT" name="R19_APPLICABLE_RISK_WEIGHT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+											</tr>
+
+
+											<tr>
+
+												<td style="padding-left: 20px;">
+													<input class="display-input Show_input" type="text" id="R20_PRODUCT"
+														name="R20_PRODUCT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right; ">
+													<input class="display-input Show_input" type="text" th:value="${report.R20_ISSUER != null ? #numbers.formatDecimal(report.R20_ISSUER, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R20_ISSUER" name="R20_ISSUER" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;   ">
+													<input class="display-input Show_input" type="text" th:value="${report.R20_ISSUES_RATING != null ? #numbers.formatDecimal(report.R20_ISSUES_RATING, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R20_ISSUES_RATING" name="R20_ISSUES_RATING" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R20_1YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R20_1YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R20_1YR_VAL_OF_CRM" name="R20_1YR_VAL_OF_CRM"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R20_1YR_5YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R20_1YR_5YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R20_1YR_5YR_VAL_OF_CRM" name="R20_1YR_5YR_VAL_OF_CRM"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R20_5YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R20_5YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R20_5YR_VAL_OF_CRM" name="R20_5YR_VAL_OF_CRM"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R20_OTHER != null ? #numbers.formatDecimal(report.R20_OTHER, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R20_OTHER" name="R20_OTHER" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R20_STD_SUPERVISORY_HAIRCUT != null ? #numbers.formatDecimal(report.R20_STD_SUPERVISORY_HAIRCUT, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R20_STD_SUPERVISORY_HAIRCUT" name="R20_STD_SUPERVISORY_HAIRCUT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R20_APPLICABLE_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R20_APPLICABLE_RISK_WEIGHT, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R20_APPLICABLE_RISK_WEIGHT" name="R20_APPLICABLE_RISK_WEIGHT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+											</tr>
+											<tr>
+												<td style="padding-left: 20px;">
+													<input class="display-input Show_input" type="text" id="R21_PRODUCT"
+														name="R21_PRODUCT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right; ">
+													<input class="display-input Show_input" type="text" th:value="${report.R21_ISSUER != null ? #numbers.formatDecimal(report.R21_ISSUER, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R21_ISSUER" name="R21_ISSUER" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;   ">
+													<input class="display-input Show_input" type="text" th:value="${report.R21_ISSUES_RATING != null ? #numbers.formatDecimal(report.R21_ISSUES_RATING, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R21_ISSUES_RATING" name="R21_ISSUES_RATING" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R21_1YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R21_1YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R21_1YR_VAL_OF_CRM" name="R21_1YR_VAL_OF_CRM"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R21_1YR_5YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R21_1YR_5YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R21_1YR_5YR_VAL_OF_CRM" name="R21_1YR_5YR_VAL_OF_CRM"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R21_5YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R21_5YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R21_5YR_VAL_OF_CRM" name="R21_5YR_VAL_OF_CRM"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R21_OTHER != null ? #numbers.formatDecimal(report.R21_OTHER, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R21_OTHER" name="R21_OTHER" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R21_STD_SUPERVISORY_HAIRCUT != null ? #numbers.formatDecimal(report.R21_STD_SUPERVISORY_HAIRCUT, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R21_STD_SUPERVISORY_HAIRCUT" name="R21_STD_SUPERVISORY_HAIRCUT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R21_APPLICABLE_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R21_APPLICABLE_RISK_WEIGHT, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R21_APPLICABLE_RISK_WEIGHT" name="R21_APPLICABLE_RISK_WEIGHT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+											</tr>
+
+
+											<tr>
+
+												<td style="padding-left: 20px;">
+													<input class="display-input Show_input" type="text" id="R22_PRODUCT"
+														name="R22_PRODUCT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right; ">
+													<input class="display-input Show_input" type="text" th:value="${report.R22_ISSUER != null ? #numbers.formatDecimal(report.R22_ISSUER, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R22_ISSUER" name="R22_ISSUER" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;   ">
+													<input class="display-input Show_input" type="text" th:value="${report.R22_ISSUES_RATING != null ? #numbers.formatDecimal(report.R22_ISSUES_RATING, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R22_ISSUES_RATING" name="R22_ISSUES_RATING" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R22_1YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R22_1YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R22_1YR_VAL_OF_CRM" name="R22_1YR_VAL_OF_CRM"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R22_1YR_5YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R22_1YR_5YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R22_1YR_5YR_VAL_OF_CRM" name="R22_1YR_5YR_VAL_OF_CRM"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R22_5YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R22_5YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R22_5YR_VAL_OF_CRM" name="R22_5YR_VAL_OF_CRM"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R22_OTHER != null ? #numbers.formatDecimal(report.R22_OTHER, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R22_OTHER" name="R22_OTHER" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R22_STD_SUPERVISORY_HAIRCUT != null ? #numbers.formatDecimal(report.R22_STD_SUPERVISORY_HAIRCUT, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R22_STD_SUPERVISORY_HAIRCUT" name="R22_STD_SUPERVISORY_HAIRCUT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R22_APPLICABLE_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R22_APPLICABLE_RISK_WEIGHT, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R22_APPLICABLE_RISK_WEIGHT" name="R22_APPLICABLE_RISK_WEIGHT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+											</tr>
+
+
+											<tr>
+
+												<td style="padding-left: 20px;">
+													<input class="display-input Show_input" type="text" id="R23_PRODUCT"
+														name="R23_PRODUCT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right; ">
+													<input class="display-input Show_input" type="text" th:value="${report.R23_ISSUER != null ? #numbers.formatDecimal(report.R23_ISSUER, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R23_ISSUER" name="R23_ISSUER" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;   ">
+													<input class="display-input Show_input" type="text" th:value="${report.R23_ISSUES_RATING != null ? #numbers.formatDecimal(report.R23_ISSUES_RATING, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R23_ISSUES_RATING" name="R23_ISSUES_RATING" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R23_1YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R23_1YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R23_1YR_VAL_OF_CRM" name="R23_1YR_VAL_OF_CRM"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R23_1YR_5YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R23_1YR_5YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R23_1YR_5YR_VAL_OF_CRM" name="R23_1YR_5YR_VAL_OF_CRM"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R23_5YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R23_5YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R23_5YR_VAL_OF_CRM" name="R23_5YR_VAL_OF_CRM"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R23_OTHER != null ? #numbers.formatDecimal(report.R23_OTHER, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R23_OTHER" name="R23_OTHER" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R23_STD_SUPERVISORY_HAIRCUT != null ? #numbers.formatDecimal(report.R23_STD_SUPERVISORY_HAIRCUT, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R23_STD_SUPERVISORY_HAIRCUT" name="R23_STD_SUPERVISORY_HAIRCUT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R23_APPLICABLE_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R23_APPLICABLE_RISK_WEIGHT, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R23_APPLICABLE_RISK_WEIGHT" name="R23_APPLICABLE_RISK_WEIGHT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+											</tr>
+
+
+											<tr>
+
+												<td style="padding-left: 20px;">
+													<input class="display-input Show_input" type="text" id="R24_PRODUCT"
+														name="R24_PRODUCT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right; ">
+													<input class="display-input Show_input" type="text" th:value="${report.R24_ISSUER != null ? #numbers.formatDecimal(report.R24_ISSUER, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R24_ISSUER" name="R24_ISSUER" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;   ">
+													<input class="display-input Show_input" type="text" th:value="${report.R24_ISSUES_RATING != null ? #numbers.formatDecimal(report.R24_ISSUES_RATING, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R24_ISSUES_RATING" name="R24_ISSUES_RATING" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R24_1YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R24_1YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R24_1YR_VAL_OF_CRM" name="R24_1YR_VAL_OF_CRM"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R24_1YR_5YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R24_1YR_5YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R24_1YR_5YR_VAL_OF_CRM" name="R24_1YR_5YR_VAL_OF_CRM"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R24_5YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R24_5YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R24_5YR_VAL_OF_CRM" name="R24_5YR_VAL_OF_CRM"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R24_OTHER != null ? #numbers.formatDecimal(report.R24_OTHER, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R24_OTHER" name="R24_OTHER" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R24_STD_SUPERVISORY_HAIRCUT != null ? #numbers.formatDecimal(report.R24_STD_SUPERVISORY_HAIRCUT, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R24_STD_SUPERVISORY_HAIRCUT" name="R24_STD_SUPERVISORY_HAIRCUT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R24_APPLICABLE_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R24_APPLICABLE_RISK_WEIGHT, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R24_APPLICABLE_RISK_WEIGHT" name="R24_APPLICABLE_RISK_WEIGHT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+											</tr>
+
+											<tr>
+
+												<td style="padding-left: 20px;">
+													<input class="display-input Show_input" type="text" id="R25_PRODUCT"
+														name="R25_PRODUCT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right; ">
+													<input class="display-input Show_input" type="text" th:value="${report.R25_ISSUER != null ? #numbers.formatDecimal(report.R25_ISSUER, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R25_ISSUER" name="R25_ISSUER" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;   ">
+													<input class="display-input Show_input" type="text" th:value="${report.R25_ISSUES_RATING != null ? #numbers.formatDecimal(report.R25_ISSUES_RATING, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R25_ISSUES_RATING" name="R25_ISSUES_RATING" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R25_1YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R25_1YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R25_1YR_VAL_OF_CRM" name="R25_1YR_VAL_OF_CRM"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R25_1YR_5YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R25_1YR_5YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R25_1YR_5YR_VAL_OF_CRM" name="R25_1YR_5YR_VAL_OF_CRM"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R25_5YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R25_5YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R25_5YR_VAL_OF_CRM" name="R25_5YR_VAL_OF_CRM"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R25_OTHER != null ? #numbers.formatDecimal(report.R25_OTHER, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R25_OTHER" name="R25_OTHER" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R25_STD_SUPERVISORY_HAIRCUT != null ? #numbers.formatDecimal(report.R25_STD_SUPERVISORY_HAIRCUT, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R25_STD_SUPERVISORY_HAIRCUT" name="R25_STD_SUPERVISORY_HAIRCUT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R25_APPLICABLE_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R25_APPLICABLE_RISK_WEIGHT, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R25_APPLICABLE_RISK_WEIGHT" name="R25_APPLICABLE_RISK_WEIGHT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+											</tr>
+
+
+											<tr>
+
+												<td style="padding-left: 20px;">
+													<input class="display-input Show_input" type="text" id="R26_PRODUCT"
+														name="R26_PRODUCT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right; ">
+													<input class="display-input Show_input" type="text" th:value="${report.R26_ISSUER != null ? #numbers.formatDecimal(report.R26_ISSUER, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R26_ISSUER" name="R26_ISSUER" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;   ">
+													<input class="display-input Show_input" type="text" th:value="${report.R26_ISSUES_RATING != null ? #numbers.formatDecimal(report.R26_ISSUES_RATING, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R26_ISSUES_RATING" name="R26_ISSUES_RATING" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R26_1YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R26_1YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R26_1YR_VAL_OF_CRM" name="R26_1YR_VAL_OF_CRM"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R26_1YR_5YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R26_1YR_5YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R26_1YR_5YR_VAL_OF_CRM" name="R26_1YR_5YR_VAL_OF_CRM"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R26_5YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R26_5YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R26_5YR_VAL_OF_CRM" name="R26_5YR_VAL_OF_CRM"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R26_OTHER != null ? #numbers.formatDecimal(report.R26_OTHER, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R26_OTHER" name="R26_OTHER" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R26_STD_SUPERVISORY_HAIRCUT != null ? #numbers.formatDecimal(report.R26_STD_SUPERVISORY_HAIRCUT, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R26_STD_SUPERVISORY_HAIRCUT" name="R26_STD_SUPERVISORY_HAIRCUT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R26_APPLICABLE_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R26_APPLICABLE_RISK_WEIGHT, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R26_APPLICABLE_RISK_WEIGHT" name="R26_APPLICABLE_RISK_WEIGHT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+											</tr>
+
+
+											<tr>
+
+												<td style="padding-left: 20px;">
+													<input class="display-input Show_input" type="text" id="R27_PRODUCT"
+														name="R27_PRODUCT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right; ">
+													<input class="display-input Show_input" type="text" th:value="${report.R27_ISSUER != null ? #numbers.formatDecimal(report.R27_ISSUER, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R27_ISSUER" name="R27_ISSUER" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;   ">
+													<input class="display-input Show_input" type="text" th:value="${report.R27_ISSUES_RATING != null ? #numbers.formatDecimal(report.R27_ISSUES_RATING, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R27_ISSUES_RATING" name="R27_ISSUES_RATING" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R27_1YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R27_1YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R27_1YR_VAL_OF_CRM" name="R27_1YR_VAL_OF_CRM"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R27_1YR_5YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R27_1YR_5YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R27_1YR_5YR_VAL_OF_CRM" name="R27_1YR_5YR_VAL_OF_CRM"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R27_5YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R27_5YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R27_5YR_VAL_OF_CRM" name="R27_5YR_VAL_OF_CRM"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R27_OTHER != null ? #numbers.formatDecimal(report.R27_OTHER, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R27_OTHER" name="R27_OTHER" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R27_STD_SUPERVISORY_HAIRCUT != null ? #numbers.formatDecimal(report.R27_STD_SUPERVISORY_HAIRCUT, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R27_STD_SUPERVISORY_HAIRCUT" name="R27_STD_SUPERVISORY_HAIRCUT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R27_APPLICABLE_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R27_APPLICABLE_RISK_WEIGHT, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R27_APPLICABLE_RISK_WEIGHT" name="R27_APPLICABLE_RISK_WEIGHT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+											</tr>
+
+
+											<tr>
+
+												<td style="padding-left: 20px;">
+													<input class="display-input Show_input" type="text" id="R28_PRODUCT"
+														name="R28_PRODUCT"th:value="'Eligible Guarantors/Protection Providers for Credit Risk *'"
+														style="background-color: #FFFFFF; width: 450px; height: 28px; border-color: transparent; text-align: left;text-decoration: underline;font-weight: bold;"
+														readonly />
+												</td>
+												<td style="text-align: right; ">
+													<input class="display-input Show_input" type="text" th:value="${report.R28_ISSUER != null ? #numbers.formatDecimal(report.R28_ISSUER, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R28_ISSUER" name="R28_ISSUER" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;   ">
+													<input class="display-input Show_input" type="text" th:value="${report.R28_ISSUES_RATING != null ? #numbers.formatDecimal(report.R28_ISSUES_RATING, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R28_ISSUES_RATING" name="R28_ISSUES_RATING" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R28_1YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R28_1YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R28_1YR_VAL_OF_CRM" name="R28_1YR_VAL_OF_CRM"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R28_1YR_5YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R28_1YR_5YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R28_1YR_5YR_VAL_OF_CRM" name="R28_1YR_5YR_VAL_OF_CRM"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R28_5YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R28_5YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R28_5YR_VAL_OF_CRM" name="R28_5YR_VAL_OF_CRM"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R28_OTHER != null ? #numbers.formatDecimal(report.R28_OTHER, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R28_OTHER" name="R28_OTHER" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R28_STD_SUPERVISORY_HAIRCUT != null ? #numbers.formatDecimal(report.R28_STD_SUPERVISORY_HAIRCUT, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R28_STD_SUPERVISORY_HAIRCUT" name="R28_STD_SUPERVISORY_HAIRCUT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R28_APPLICABLE_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R28_APPLICABLE_RISK_WEIGHT, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R28_APPLICABLE_RISK_WEIGHT" name="R28_APPLICABLE_RISK_WEIGHT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+											</tr>
+
+
+											<tr>
+
+												<td style="padding-left: 20px;">
+													<input class="display-input Show_input" type="text" id="R29_PRODUCT"
+														name="R29_PRODUCT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right; ">
+													<input class="display-input Show_input" type="text" th:value="${report.R29_ISSUER != null ? #numbers.formatDecimal(report.R29_ISSUER, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R29_ISSUER" name="R29_ISSUER" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;   ">
+													<input class="display-input Show_input" type="text" th:value="${report.R29_ISSUES_RATING != null ? #numbers.formatDecimal(report.R29_ISSUES_RATING, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R29_ISSUES_RATING" name="R29_ISSUES_RATING" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R29_1YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R29_1YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R29_1YR_VAL_OF_CRM" name="R29_1YR_VAL_OF_CRM"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R29_1YR_5YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R29_1YR_5YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R29_1YR_5YR_VAL_OF_CRM" name="R29_1YR_5YR_VAL_OF_CRM"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R29_5YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R29_5YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R29_5YR_VAL_OF_CRM" name="R29_5YR_VAL_OF_CRM"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R29_OTHER != null ? #numbers.formatDecimal(report.R29_OTHER, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R29_OTHER" name="R29_OTHER" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R29_STD_SUPERVISORY_HAIRCUT != null ? #numbers.formatDecimal(report.R29_STD_SUPERVISORY_HAIRCUT, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R29_STD_SUPERVISORY_HAIRCUT" name="R29_STD_SUPERVISORY_HAIRCUT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R29_APPLICABLE_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R29_APPLICABLE_RISK_WEIGHT, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R29_APPLICABLE_RISK_WEIGHT" name="R29_APPLICABLE_RISK_WEIGHT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+											</tr>
+											<tr>
+												<td style="padding-left: 20px;">
+													<input class="display-input Show_input" type="text" id="R30_PRODUCT"
+														name="R30_PRODUCT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right; ">
+													<input class="display-input Show_input" type="text" th:value="${report.R30_ISSUER != null ? #numbers.formatDecimal(report.R30_ISSUER, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R30_ISSUER" name="R30_ISSUER" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;   ">
+													<input class="display-input Show_input" type="text" th:value="${report.R30_ISSUES_RATING != null ? #numbers.formatDecimal(report.R30_ISSUES_RATING, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R30_ISSUES_RATING" name="R30_ISSUES_RATING" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R30_1YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R30_1YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R30_1YR_VAL_OF_CRM" name="R30_1YR_VAL_OF_CRM"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R30_1YR_5YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R30_1YR_5YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R30_1YR_5YR_VAL_OF_CRM" name="R30_1YR_5YR_VAL_OF_CRM"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R30_5YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R30_5YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R30_5YR_VAL_OF_CRM" name="R30_5YR_VAL_OF_CRM"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R30_OTHER != null ? #numbers.formatDecimal(report.R30_OTHER, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R30_OTHER" name="R30_OTHER" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R30_STD_SUPERVISORY_HAIRCUT != null ? #numbers.formatDecimal(report.R30_STD_SUPERVISORY_HAIRCUT, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R30_STD_SUPERVISORY_HAIRCUT" name="R30_STD_SUPERVISORY_HAIRCUT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R30_APPLICABLE_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R30_APPLICABLE_RISK_WEIGHT, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R30_APPLICABLE_RISK_WEIGHT" name="R30_APPLICABLE_RISK_WEIGHT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+											</tr>
+
+											<tr>
+
+												<td style="padding-left: 20px;">
+													<input class="display-input Show_input" type="text" id="R31_PRODUCT"
+														name="R31_PRODUCT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right; ">
+													<input class="display-input Show_input" type="text" th:value="${report.R31_ISSUER != null ? #numbers.formatDecimal(report.R31_ISSUER, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R31_ISSUER" name="R31_ISSUER" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;   ">
+													<input class="display-input Show_input" type="text" th:value="${report.R31_ISSUES_RATING != null ? #numbers.formatDecimal(report.R31_ISSUES_RATING, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R31_ISSUES_RATING" name="R31_ISSUES_RATING" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R31_1YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R31_1YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R31_1YR_VAL_OF_CRM" name="R31_1YR_VAL_OF_CRM"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R31_1YR_5YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R31_1YR_5YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R31_1YR_5YR_VAL_OF_CRM" name="R31_1YR_5YR_VAL_OF_CRM"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R31_5YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R31_5YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R31_5YR_VAL_OF_CRM" name="R31_5YR_VAL_OF_CRM"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R31_OTHER != null ? #numbers.formatDecimal(report.R31_OTHER, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R31_OTHER" name="R31_OTHER" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R31_STD_SUPERVISORY_HAIRCUT != null ? #numbers.formatDecimal(report.R31_STD_SUPERVISORY_HAIRCUT, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R31_STD_SUPERVISORY_HAIRCUT" name="R31_STD_SUPERVISORY_HAIRCUT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R31_APPLICABLE_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R31_APPLICABLE_RISK_WEIGHT, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R31_APPLICABLE_RISK_WEIGHT" name="R31_APPLICABLE_RISK_WEIGHT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+											</tr>
+
+											<tr>
+
+												<td style="padding-left: 20px;">
+													<input class="display-input Show_input" type="text" id="R32_PRODUCT"
+														name="R32_PRODUCT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right; ">
+													<input class="display-input Show_input" type="text" th:value="${report.R32_ISSUER != null ? #numbers.formatDecimal(report.R32_ISSUER, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R32_ISSUER" name="R32_ISSUER" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;   ">
+													<input class="display-input Show_input" type="text" th:value="${report.R32_ISSUES_RATING != null ? #numbers.formatDecimal(report.R32_ISSUES_RATING, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R32_ISSUES_RATING" name="R32_ISSUES_RATING" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R32_1YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R32_1YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R32_1YR_VAL_OF_CRM" name="R32_1YR_VAL_OF_CRM"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R32_1YR_5YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R32_1YR_5YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R32_1YR_5YR_VAL_OF_CRM" name="R32_1YR_5YR_VAL_OF_CRM"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R32_5YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R32_5YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R32_5YR_VAL_OF_CRM" name="R32_5YR_VAL_OF_CRM"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R32_OTHER != null ? #numbers.formatDecimal(report.R32_OTHER, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R32_OTHER" name="R32_OTHER" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R32_STD_SUPERVISORY_HAIRCUT != null ? #numbers.formatDecimal(report.R32_STD_SUPERVISORY_HAIRCUT, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R32_STD_SUPERVISORY_HAIRCUT" name="R32_STD_SUPERVISORY_HAIRCUT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R32_APPLICABLE_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R32_APPLICABLE_RISK_WEIGHT, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R32_APPLICABLE_RISK_WEIGHT" name="R32_APPLICABLE_RISK_WEIGHT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+											</tr>
+
+											<tr>
+
+												<td style="padding-left: 20px;">
+													<input class="display-input Show_input" type="text" id="R33_PRODUCT"
+														name="R33_PRODUCT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right; ">
+													<input class="display-input Show_input" type="text" th:value="${report.R33_ISSUER != null ? #numbers.formatDecimal(report.R33_ISSUER, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R33_ISSUER" name="R33_ISSUER" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;   ">
+													<input class="display-input Show_input" type="text" th:value="${report.R33_ISSUES_RATING != null ? #numbers.formatDecimal(report.R33_ISSUES_RATING, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R33_ISSUES_RATING" name="R33_ISSUES_RATING" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R33_1YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R33_1YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R33_1YR_VAL_OF_CRM" name="R33_1YR_VAL_OF_CRM"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R33_1YR_5YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R33_1YR_5YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R33_1YR_5YR_VAL_OF_CRM" name="R33_1YR_5YR_VAL_OF_CRM"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R33_5YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R33_5YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R33_5YR_VAL_OF_CRM" name="R33_5YR_VAL_OF_CRM"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R33_OTHER != null ? #numbers.formatDecimal(report.R33_OTHER, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R33_OTHER" name="R33_OTHER" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R33_STD_SUPERVISORY_HAIRCUT != null ? #numbers.formatDecimal(report.R33_STD_SUPERVISORY_HAIRCUT, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R33_STD_SUPERVISORY_HAIRCUT" name="R33_STD_SUPERVISORY_HAIRCUT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R33_APPLICABLE_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R33_APPLICABLE_RISK_WEIGHT, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R33_APPLICABLE_RISK_WEIGHT" name="R33_APPLICABLE_RISK_WEIGHT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+											</tr>
+
+											<tr>
+
+												<td style="padding-left: 20px;">
+													<input class="display-input Show_input" type="text" id="R34_PRODUCT"
+														name="R34_PRODUCT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right; ">
+													<input class="display-input Show_input" type="text" th:value="${report.R34_ISSUER != null ? #numbers.formatDecimal(report.R34_ISSUER, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R34_ISSUER" name="R34_ISSUER" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;   ">
+													<input class="display-input Show_input" type="text" th:value="${report.R34_ISSUES_RATING != null ? #numbers.formatDecimal(report.R34_ISSUES_RATING, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R34_ISSUES_RATING" name="R34_ISSUES_RATING" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R34_1YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R34_1YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R34_1YR_VAL_OF_CRM" name="R34_1YR_VAL_OF_CRM"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R34_1YR_5YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R34_1YR_5YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R34_1YR_5YR_VAL_OF_CRM" name="R34_1YR_5YR_VAL_OF_CRM"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R34_5YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R34_5YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R34_5YR_VAL_OF_CRM" name="R34_5YR_VAL_OF_CRM"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R34_OTHER != null ? #numbers.formatDecimal(report.R34_OTHER, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R34_OTHER" name="R34_OTHER" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R34_STD_SUPERVISORY_HAIRCUT != null ? #numbers.formatDecimal(report.R34_STD_SUPERVISORY_HAIRCUT, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R34_STD_SUPERVISORY_HAIRCUT" name="R34_STD_SUPERVISORY_HAIRCUT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R34_APPLICABLE_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R34_APPLICABLE_RISK_WEIGHT, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R34_APPLICABLE_RISK_WEIGHT" name="R34_APPLICABLE_RISK_WEIGHT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+											</tr>
+
+											<tr>
+
+												<td style="padding-left: 20px;">
+													<input class="display-input Show_input" type="text" id="R35_PRODUCT"
+														name="R35_PRODUCT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right; ">
+													<input class="display-input Show_input" type="text" th:value="${report.R35_ISSUER != null ? #numbers.formatDecimal(report.R35_ISSUER, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R35_ISSUER" name="R35_ISSUER" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;   ">
+													<input class="display-input Show_input" type="text" th:value="${report.R35_ISSUES_RATING != null ? #numbers.formatDecimal(report.R35_ISSUES_RATING, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R35_ISSUES_RATING" name="R35_ISSUES_RATING" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R35_1YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R35_1YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R35_1YR_VAL_OF_CRM" name="R35_1YR_VAL_OF_CRM"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R35_1YR_5YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R35_1YR_5YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R35_1YR_5YR_VAL_OF_CRM" name="R35_1YR_5YR_VAL_OF_CRM"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R35_5YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R35_5YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R35_5YR_VAL_OF_CRM" name="R35_5YR_VAL_OF_CRM"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R35_OTHER != null ? #numbers.formatDecimal(report.R35_OTHER, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R35_OTHER" name="R35_OTHER" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R35_STD_SUPERVISORY_HAIRCUT != null ? #numbers.formatDecimal(report.R35_STD_SUPERVISORY_HAIRCUT, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R35_STD_SUPERVISORY_HAIRCUT" name="R35_STD_SUPERVISORY_HAIRCUT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R35_APPLICABLE_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R35_APPLICABLE_RISK_WEIGHT, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R35_APPLICABLE_RISK_WEIGHT" name="R35_APPLICABLE_RISK_WEIGHT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+											</tr>
+
+											<tr>
+
+												<td style="padding-left: 20px;">
+													<input class="display-input Show_input" type="text" id="R36_PRODUCT"
+														name="R36_PRODUCT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right; ">
+													<input class="display-input Show_input" type="text" th:value="${report.R36_ISSUER != null ? #numbers.formatDecimal(report.R36_ISSUER, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R36_ISSUER" name="R36_ISSUER" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;   ">
+													<input class="display-input Show_input" type="text" th:value="${report.R36_ISSUES_RATING != null ? #numbers.formatDecimal(report.R36_ISSUES_RATING, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R36_ISSUES_RATING" name="R36_ISSUES_RATING" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R36_1YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R36_1YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R36_1YR_VAL_OF_CRM" name="R36_1YR_VAL_OF_CRM"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R36_1YR_5YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R36_1YR_5YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R36_1YR_5YR_VAL_OF_CRM" name="R36_1YR_5YR_VAL_OF_CRM"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R36_5YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R36_5YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R36_5YR_VAL_OF_CRM" name="R36_5YR_VAL_OF_CRM"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R36_OTHER != null ? #numbers.formatDecimal(report.R36_OTHER, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R36_OTHER" name="R36_OTHER" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R36_STD_SUPERVISORY_HAIRCUT != null ? #numbers.formatDecimal(report.R36_STD_SUPERVISORY_HAIRCUT, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R36_STD_SUPERVISORY_HAIRCUT" name="R36_STD_SUPERVISORY_HAIRCUT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R36_APPLICABLE_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R36_APPLICABLE_RISK_WEIGHT, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R36_APPLICABLE_RISK_WEIGHT" name="R36_APPLICABLE_RISK_WEIGHT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+											</tr>
+
+											<tr>
+
+												<td style="padding-left: 20px;">
+													<input class="display-input Show_input" type="text" id="R37_PRODUCT"
+														name="R37_PRODUCT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right; ">
+													<input class="display-input Show_input" type="text" th:value="${report.R37_ISSUER != null ? #numbers.formatDecimal(report.R37_ISSUER, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R37_ISSUER" name="R37_ISSUER" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;   ">
+													<input class="display-input Show_input" type="text" th:value="${report.R37_ISSUES_RATING != null ? #numbers.formatDecimal(report.R37_ISSUES_RATING, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R37_ISSUES_RATING" name="R37_ISSUES_RATING" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R37_1YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R37_1YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R37_1YR_VAL_OF_CRM" name="R37_1YR_VAL_OF_CRM"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R37_1YR_5YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R37_1YR_5YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R37_1YR_5YR_VAL_OF_CRM" name="R37_1YR_5YR_VAL_OF_CRM"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R37_5YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R37_5YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R37_5YR_VAL_OF_CRM" name="R37_5YR_VAL_OF_CRM"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R37_OTHER != null ? #numbers.formatDecimal(report.R37_OTHER, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R37_OTHER" name="R37_OTHER" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R37_STD_SUPERVISORY_HAIRCUT != null ? #numbers.formatDecimal(report.R37_STD_SUPERVISORY_HAIRCUT, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R37_STD_SUPERVISORY_HAIRCUT" name="R37_STD_SUPERVISORY_HAIRCUT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text" th:value="${report.R37_APPLICABLE_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R37_APPLICABLE_RISK_WEIGHT, 1, 'COMMA', 0, 'POINT') 
+: '0'}" id="R37_APPLICABLE_RISK_WEIGHT" name="R37_APPLICABLE_RISK_WEIGHT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+											</tr>
+
+										</tbody>
+									</table>
+								</div>
+								<div style="text-align: center; margin-top: 10px;">
+									<button id="submitButton" type="button" class="custom-tab-btn Show_input"
+										form="fileupload" th:attr="data-todate=${asondate}, data-type=${type}"
+										onclick="fileuploads(this);" style="display: none;">
+										Submit
+									</button>
+
+								</div>
+							</form>
+
+						</div>
+					</div>
+				</div>
+				<div th:if="${displaymode == 'Details'}">
+					<div class="row">
+						<div class="col-sm-12">
+							<div class="table-responsive scrollable-table-container"
+								style="border-right: 1px solid #dee2e6;">
+								<table
+									class="sticky-header-table table table-bordered table-hover table-sm table-condensed"
+									id="reportss">
+									<thead class="thead-light">
+										<tr>
+											<th></th>
+											<th style="text-align: left;">CUST ID</th>
+											<th style="text-align: left;">ACCT NO</th>
+											<th>ACCT NAME</th>
+											<th style="text-align: right;">ACCT BALANCE</th>
+											<th style="text-align: left;">ROWID</th>
+											<th>COLUMNID</th>
+											<th>REPORT_DATE</th>
+										</tr>
+									</thead>
+									<tbody style="font-family: Arial;">
+										<tr th:each="report: ${reportdetails}">
+											<td><a data-toggle="tooltip" class="editrec"
+													title="Click to Edit this Record"> <i class="fas fa-edit"
+														onclick="editRecord(this)"></i>
+												</a></td>
+											<td style="text-align: left;" th:text="${report.custId}"></td>
+											<td style="text-align: left;" th:text="${report.acctNumber}"></td>
+											<td th:text="${report.acctName}"></td>
+											<!---	<td th:text="${report.acctBalanceInpula} "></td> -->
+											<td th:text="${#numbers.formatDecimal(report.acctBalanceInpula, 3, 3, 'COMMA')}"
+												style="text-align: right;"></td>
+											<td style="text-align: left;" th:text="${report.reportLable}"></td>
+											<td th:text="${report.reportAddlCriteria_1S}"></td>
+											<td th:text="${#dates.format(report.reportDate, 'dd-MM-yyyy')}"></td>
+										</tr>
+									</tbody>
+								</table>
+								<div style="margin-top:20px; text-align:center;" th:if="${pagination=='YES'}">
+
+
+
+									<a th:if="${currentPage > 0}" th:href="@{'/Reports/' + ${reportid} + '/Details'(
+																											    asondate=${asondate},                             
+																											    fromdate=${fromdate},
+																											    todate=${todate},
+																											    currency=${currency},
+																											    dtltype=${dtltype},
+																											    type=${type},
+																											    version=${version},
+																											    page=${currentPage - 100},
+																											    size=100
+																											)}">
+										Previous
+									</a>
+
+
+									<span>Page [[${currentPage / 100 + 1}]] of [[${totalPages}]]</span>
+
+
+									<a th:if="${currentPage < (totalPages - 1) * 100}" th:href="@{'/Reports/' + ${reportid} + '/Details'(
+																											    asondate=${asondate},
+																											    fromdate=${fromdate},
+																											    todate=${todate},
+																											    currency=${currency},
+																											    dtltype=${dtltype},
+																											    type=${type},
+																											    version=${version},
+																											    page=${currentPage + 100},
+																											    size=100
+																											)}">
+										Next
+									</a>
+								</div>
+
+
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Custom Cellresult Modal -->
+	<div class="modal fade" id="cellresultModal">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+
+				<!-- Custom header -->
+				<div class="menu-title-header"
+					style="background-color:#6c7a91; padding: 8px; border-radius:5px 5px 0 0;">
+					<div class="modal-title" id="cellresultModalLabel" style="text-align: center; color: white;">
+						Do you want to open the report?
+					</div>
+				</div>
+
+				<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+					<button type="button" class="custom-tab-btn cancel-btn" data-bs-dismiss="modal"
+						style="margin-right:10px; border:2px solid #6c7a91; background:white; color:black; border-radius:20px; padding:5px 15px;">
+						Cancel
+					</button>
+					<button type="button" class="custom-tab-btn yes-btn"
+						style="background:#6c7a91; color:white; border:none; border-radius:20px; padding:5px 20px;">
+						Yes
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<div class="modal fade" id="loader" data-backdrop="static" data-keyboard="false">
+		<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+			<div class="modal-content" style="background: transparent;">
+				<div class="modal-body" style="text-align: center">
+					<div>
+						<img th:src=@{/images/loader.gif} id="bfirelogo"
+							style="width: 153px; height: auto; margin-left: 18px; background-color: transparent; border-color: transparent;"
+							alt="Bornfire">
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- Custom Alert/Result Modal (Matches your existing style) -->
+	<div class="modal fade" id="resultModal">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<!-- Your custom styled header -->
+				<div class="menu-title-header">
+					<div class="modal-title" id="resultModalLabel" style="text-align: center; color: white;">
+						<!-- Title will be set by JavaScript -->
+					</div>
+				</div>
+				<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+					<p id="resultModalBody"></p>
+					<!-- Your custom styled button -->
+					<button type="button" class="custom-tab-btn" onclick="closemodel()"
+						data-bs-dismiss="modal">OK</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</body>
+
+<!-- <script>
+																									  $(document).ready(function () {
+																									    $('#BRRSvalidation').DataTable({
+																									      "paging": true,
+																									      "info": false,       // turn off "Showing x of y"
+																									      "searching": false,  // turn off search
+																									      "ordering": false,   // turn off ordering
+																									      "lengthChange": false // hide "Show x entries"
+																									    });
+																									  });
+											
+																								</script> -->
+
+<style>
+	#BRFdet td {
+		border: 1px solid #ccc;
+		padding: 8px;
+	}
+
+	#BRFdet {
+		border-collapse: collapse;
+		width: 100%;
+	}
+</style>
+
+<style>
+	/* Your existing CSS - this is the correct approach */
+	.scrollable-table-container {
+		/* This is the key: it creates the scroll context */
+		max-height: 620px;
+		/* Or a suitable height like 80vh for responsive design */
+		overflow-y: auto;
+		border: 1px solid #ccc;
+	}
+
+	/* Your existing sticky header CSS, targeting the tr elements within the thead */
+	.scrollable-table-container thead tr:nth-child(1) {
+		position: sticky;
+		top: 0;
+		;
+		z-index: 5;
+	}
+
+	.scrollable-table-container thead tr:nth-child(2) {
+		position: sticky;
+		top: 36px;
+		/* adjust based on row height */
+		;
+		z-index: 4;
+	}
+
+	.scrollable-table-container thead tr:nth-child(3) {
+		position: sticky;
+		top: 72px;
+		/* Adjust based on row height */
+		;
+		z-index: 3;
+	}
+
+	.scrollable-table-container thead tr:nth-child(4) {
+		position: sticky;
+		top: 100px;
+		/* Adjust based on row height */
+		;
+		z-index: 2;
+	}
+
+	.scrollable-table-container thead tr:nth-child(5) {
+		position: sticky;
+		top: 135px;
+		/* Adjust based on row height */
+		;
+		z-index: 1;
+	}
+</style>
+<style>
+	.inner {
+		max-height: 600px;
+		/* Adjust height as needed */
+		overflow: auto;
+		border: 1px solid #dee2e6;
+	}
+
+	/* Sticky thead */
+	#reports thead th {
+		position: sticky;
+		top: 0;
+		background-color: #f8f9fa;
+		/* Match Bootstrap thead-light */
+		z-index: 2;
+	}
+
+	div.dataTables_wrapper div.dataTables_paginate {
+		text-align: right !important;
+		float: right !important;
+		width: auto;
+		margin-top: 10px;
+	}
+
+	/* Ensure info text (e.g., "Showing 1 to X") stays on the left */
+	div.dataTables_wrapper div.dataTables_info {
+		float: left !important;
+		margin-top: 10px;
+	}
+
+	.pagination {
+		margin: 0;
+	}
+
+	.page-item.active .page-link {
+		background-color: #386276;
+		border-color: #386276;
+	}
+
+	.page-link {
+		color: #386276;
+	}
+
+	.page-link:hover {
+		color: #2a4a5c;
+	}
+
+	.form-select {
+		display: inline-block;
+		width: auto;
+	}
+</style>
+
+</html>

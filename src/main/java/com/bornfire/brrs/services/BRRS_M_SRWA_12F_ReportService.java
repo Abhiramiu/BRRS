@@ -104,7 +104,7 @@ public class BRRS_M_SRWA_12F_ReportService {
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
 	public ModelAndView getM_SRWA12FView(String reportId, String fromdate, String todate, String currency, String dtltype,
-			Pageable pageable, String type, String version) {
+			Pageable pageable, String type, BigDecimal version) {
 		ModelAndView mv = new ModelAndView();
 		Session hs = sessionFactory.getCurrentSession();
 
@@ -435,7 +435,7 @@ public class BRRS_M_SRWA_12F_ReportService {
 
 
 	public byte[] getM_SRWA_12FExcel(String filename, String reportId, String fromdate, String todate, String currency,
-									 String dtltype, String type, String version) throws Exception {
+									 String dtltype, String type, BigDecimal version) throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.");
 		logger.info("DownloadFile: reportId={}, filename={}", reportId, filename, type, version);
 
@@ -443,12 +443,12 @@ public class BRRS_M_SRWA_12F_ReportService {
 		Date reportDate = dateformat.parse(todate);
 
     // ARCHIVAL check
-    if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && !version.trim().isEmpty()) {
+     if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
         logger.info("Service: Generating ARCHIVAL report for version {}", version);
         return getExcelM_SRWA_12FARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
     }
     // RESUB check
-    else if ("RESUB".equalsIgnoreCase(type) && version != null && !version.trim().isEmpty()) {
+    else if ("RESUB".equalsIgnoreCase(type) && version != null) {
         logger.info("Service: Generating RESUB report for version {}", version);
 
        
@@ -1167,7 +1167,7 @@ public class BRRS_M_SRWA_12F_ReportService {
 
 	public byte[] getExcelM_SRWA_12FARCHIVAL(String filename, String reportId, String fromdate,
 			String todate,
-			String currency, String dtltype, String type, String version) throws Exception {
+			String currency, String dtltype, String type, BigDecimal version) throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.");
 		if ("ARCHIVAL".equals(type) && version != null) {
 		}
@@ -1884,33 +1884,65 @@ return resubList;
 }
 
 //Archival View
-public List<Object[]> getM_SRWA_12FArchival() {
-List<Object[]> archivalList = new ArrayList<>();
+// public List<Object[]> getM_SRWA_12FArchival() {
+// List<Object[]> archivalList = new ArrayList<>();
 
-try {
-List<M_SRWA_12F_Archival_Summary_Entity> repoData = M_SRWA_12F_Archival_Summary_Repo
-.getdatabydateListWithVersionAll();
+// try {
+// List<M_SRWA_12F_Archival_Summary_Entity> repoData = M_SRWA_12F_Archival_Summary_Repo
+// .getdatabydateListWithVersionAll();
 
-if (repoData != null && !repoData.isEmpty()) {
-for (M_SRWA_12F_Archival_Summary_Entity entity : repoData) {
-Object[] row = new Object[] { entity.getReportDate(), entity.getReportVersion() };
-archivalList.add(row);
-}
+// if (repoData != null && !repoData.isEmpty()) {
+// for (M_SRWA_12F_Archival_Summary_Entity entity : repoData) {
+// Object[] row = new Object[] { entity.getReportDate(), entity.getReportVersion() };
+// archivalList.add(row);
+// }
 
-System.out.println("Fetched " + archivalList.size() + " archival records");
-M_SRWA_12F_Archival_Summary_Entity first = repoData.get(0);
-System.out.println("Latest archival version: " + first.getReportVersion());
-} else {
-System.out.println("No archival data found.");
-}
+// System.out.println("Fetched " + archivalList.size() + " archival records");
+// M_SRWA_12F_Archival_Summary_Entity first = repoData.get(0);
+// System.out.println("Latest archival version: " + first.getReportVersion());
+// } else {
+// System.out.println("No archival data found.");
+// }
 
-} catch (Exception e) {
-System.err.println("Error fetching BDISB1 Archival data: " + e.getMessage());
-e.printStackTrace();
-}
+// } catch (Exception e) {
+// System.err.println("Error fetching BDISB1 Archival data: " + e.getMessage());
+// e.printStackTrace();
+// }
 
-return archivalList;
-}
+// return archivalList;
+// }
+
+	public List<Object[]> getM_SRWA_12FArchival() {
+		List<Object[]> archivalList = new ArrayList<>();
+
+		try {
+			List<M_SRWA_12F_Archival_Summary_Entity> repoData = M_SRWA_12F_Archival_Summary_Repo
+					.getdatabydateListWithVersion();
+
+			if (repoData != null && !repoData.isEmpty()) {
+				for (M_SRWA_12F_Archival_Summary_Entity entity : repoData) {
+					Object[] row = new Object[] {
+							entity.getReportDate(), 
+							entity.getReportVersion() 
+					};
+					archivalList.add(row);
+				}
+
+				System.out.println("Fetched " + archivalList.size() + " archival records");
+				M_SRWA_12F_Archival_Summary_Entity first = repoData.get(0);
+				System.out.println("Latest archival version: " + first.getReportVersion());
+			} else {
+				System.out.println("No archival data found.");
+			}
+
+		} catch (Exception e) {
+			System.err.println("Error fetching M_SRWA_12H Archival data: " + e.getMessage());
+			e.printStackTrace();
+		}
+
+		return archivalList;
+	}
+
 
 @Transactional
 public void updateReportReSub(BDISB1_Summary_Entity updatedEntity) {
@@ -1932,17 +1964,17 @@ M_SRWA_12F_Archival_Summary_Repo
 int newVersion = 1;
 if (latestArchivalOpt.isPresent()) {
 try {
-newVersion =
-Integer.parseInt(latestArchivalOpt.get().getReportVersion()) + 1;
+newVersion = latestArchivalOpt.get().getReportVersion().intValue() + 1;
+
+
 } catch (NumberFormatException e) {
 newVersion = 1;
 }
 }
 
 boolean exists =
-M_SRWA_12F_Archival_Summary_Repo
-.findByReportDateAndReportVersion(
-reportDate, String.valueOf(newVersion))
+M_SRWA_12F_Archival_Summary_Repo.findByReportDateAndReportVersion(
+reportDate, BigDecimal.valueOf(newVersion))
 .isPresent();
 
 if (exists) {
@@ -1961,7 +1993,7 @@ BeanUtils.copyProperties(latestArchivalOpt.get(), archivalEntity);
 }
 
 archivalEntity.setReportDate(reportDate);
-archivalEntity.setReportVersion(String.valueOf(newVersion));
+archivalEntity.setReportVersion(BigDecimal.valueOf(newVersion));
 archivalEntity.setModify_flg("Y");
 
 /* =========================================================
@@ -2562,7 +2594,7 @@ archivalEntity.setR11_NAME_OF_CORPORATE(value);
 * 5️⃣ SET RESUB METADATA
 * ========================================================= */
 archivalEntity.setReportDate(reportDate);
-archivalEntity.setReportVersion(String.valueOf(newVersion));
+archivalEntity.setReportVersion(BigDecimal.valueOf(newVersion));
 archivalEntity.setReportResubDate(new Date());
 
 /* =========================================================
@@ -2604,7 +2636,7 @@ Optional<M_SRWA_12F_Archival_Summary_Entity> latestArchivalOpt = M_SRWA_12F_Arch
 if (latestArchivalOpt.isPresent()) {
 M_SRWA_12F_Archival_Summary_Entity latestArchival = latestArchivalOpt.get();
 try {
-newVersion = Integer.parseInt(latestArchival.getReportVersion()) + 1;
+newVersion = latestArchival.getReportVersion().intValue() + 1;
 } catch (NumberFormatException e) {
 System.err.println("Invalid version format. Defaulting to version 1");
 newVersion = 1;
@@ -2615,7 +2647,7 @@ System.out.println("No previous archival found for date: " + reportDate);
 
 // Prevent duplicate version number
 boolean exists = M_SRWA_12F_Archival_Summary_Repo
-.findByReportDateAndReportVersion(reportDate, String.valueOf(newVersion))
+.findByReportDateAndReportVersion(reportDate, BigDecimal.valueOf(newVersion))
 .isPresent();
 
 if (exists) {
@@ -2627,7 +2659,7 @@ M_SRWA_12F_Archival_Summary_Entity archivalEntity = new M_SRWA_12F_Archival_Summ
 org.springframework.beans.BeanUtils.copyProperties(updatedEntity, archivalEntity);
 
 archivalEntity.setReportDate(reportDate);
-archivalEntity.setReportVersion(String.valueOf(newVersion));
+archivalEntity.setReportVersion(BigDecimal.valueOf(newVersion));
 archivalEntity.setReportResubDate(new Date());
 
 System.out.println("Saving new archival version: " + newVersion);
@@ -2646,7 +2678,7 @@ throw new RuntimeException("Error while creating archival resubmission record", 
 /// Downloaded for Archival & Resub
 public byte[] BRRS_M_SRWA_12FResubExcel(String filename, String reportId, String fromdate,
 String todate, String currency, String dtltype,
-String type, String version) throws Exception {
+String type, BigDecimal version) throws Exception {
 
 logger.info("Service: Starting Excel generation process in memory for RESUB Excel.");
 

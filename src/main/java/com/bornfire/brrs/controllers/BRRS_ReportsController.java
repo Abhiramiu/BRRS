@@ -106,6 +106,7 @@ import com.bornfire.brrs.services.BRRS_M_SRWA_12C_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SRWA_12D_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SRWA_12F_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SRWA_12G_ReportService;
+import com.bornfire.brrs.services.BRRS_M_SRWA_12H_New_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SRWA_12H_ReportService;
 import com.bornfire.brrs.services.BRRS_M_TBS_ReportService;
 import com.bornfire.brrs.services.BRRS_M_TOP_100_BORROWER_ReportService;
@@ -1220,7 +1221,7 @@ public class BRRS_ReportsController {
 			}
 
 			// Call service to create a new versioned row
-			M_SRWA_12FreportService.updateReportReSub(request);
+			// M_SRWA_12FreportService.updateReportReSub(request);
 
 			return ResponseEntity.ok("Resubmission Updated Successfully");
 
@@ -2963,7 +2964,7 @@ public class BRRS_ReportsController {
 			}
 
 			// Call service to create a new versioned row
-			M_SRWA_12Hservice.updateReportReSub(request);
+			// M_SRWA_12Hservice.updateReportReSub(request);
 
 			return ResponseEntity.ok("Resubmission Updated Successfully");
 
@@ -4248,5 +4249,29 @@ public ResponseEntity<String> updateAllReportsnew(
 //                 .body("Q_STAFF Resubmission Update Failed: " + e.getMessage());
 //     }
 // }
+@Autowired
+	private BRRS_M_SRWA_12H_New_ReportService M_SRWA_12HNewservice;
 
+	@RequestMapping(value = "/UpdateM_SRWA_12HNew", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<String> updateReport(
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+			@ModelAttribute M_SRWA_12H_New_Summary_Entity request,
+			HttpServletRequest req) {
+
+		try {
+			System.out.println("came to First controller");
+			SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+
+			// ✅ set the asondate into entity
+			request.setReportDate(asondate);
+
+			M_SRWA_12HNewservice.updateReport(request);
+			return ResponseEntity.ok("Updated Successfully.");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Update Failed: " + e.getMessage());
+		}
+	}
 }
