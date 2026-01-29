@@ -3877,11 +3877,23 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
-
+			
+			
 		case "M_INT_RATES_FCA_NEW":
+			try {
+				archivalData = BRRS_M_INT_RATES_FCA_NEW_ReportService.getM_INT_RATES_FCA_NEWArchival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
 
-			List<Object[]> intratesfcanewList = BRRS_M_INT_RATES_FCA_NEW_ReportService.getM_INT_RATES_FCA_NEWArchival();
-
+		/*
+		 * case "M_INT_RATES_FCA_NEW":
+		 * 
+		 * List<Object[]> intratesfcanewList =
+		 * BRRS_M_INT_RATES_FCA_NEW_ReportService.getM_INT_RATES_FCA_NEWArchival();
+		 */
 
 			/*
 			 * case "M_SRWA_12C": try { archivalData =

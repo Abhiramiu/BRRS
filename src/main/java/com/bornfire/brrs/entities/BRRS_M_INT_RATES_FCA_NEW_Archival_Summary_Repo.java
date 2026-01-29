@@ -16,6 +16,10 @@ public interface BRRS_M_INT_RATES_FCA_NEW_Archival_Summary_Repo
     // Fetch specific archival data by report date & version
     @Query(value = "SELECT * FROM BRRS_M_INT_RATES_FCA_NEW_ARCHIVALTABLE_SUMMARY " + "WHERE REPORT_DATE = ?1 AND REPORT_VERSION = ?2",nativeQuery = true)
     List<M_INT_RATES_FCA_NEW_Archival_Summary_Entity> getdatabydateListarchival(Date reportDate, BigDecimal reportVersion);
+    
+    @Query(value = "select REPORT_DATE, REPORT_VERSION from BRRS_M_INT_RATES_FCA_NEW_ARCHIVALTABLE_SUMMARY order by REPORT_VERSION", nativeQuery = true)
+    List<Object> getM_INTRATESFCANEWarchival();
+    
 
     //  Fetch latest archival version for given date (no version input)
     @Query(value = "SELECT * FROM BRRS_M_INT_RATES_FCA_NEW_ARCHIVALTABLE_SUMMARY " +"WHERE REPORT_DATE = ?1 AND REPORT_VERSION IS NOT NULL " + 

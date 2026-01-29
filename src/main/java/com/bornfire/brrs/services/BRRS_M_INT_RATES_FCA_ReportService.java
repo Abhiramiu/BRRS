@@ -1068,7 +1068,7 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 				.getdatabydateListarchival(dateformat.parse(todate), version);
 
 		if (dataList1.isEmpty()) {
-			logger.warn("Service: No data found for M_SECL report. Returning empty result.");
+			logger.warn("Service: No data found for M_INTRATESFCA report. Returning empty result.");
 			return new byte[0];
 		}
 
