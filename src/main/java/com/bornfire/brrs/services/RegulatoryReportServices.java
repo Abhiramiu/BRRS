@@ -532,7 +532,7 @@ public class RegulatoryReportServices {
 		 * case "M_PI": repsummary = BRRS_M_PI_reportservice.getM_PIView(reportId,
 		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
 		 * 
-		
+		 * 
 		 * case "M_AIDP": repsummary = BRRS_M_AIDP_ReportService.getM_AIDPView(reportId,
 		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
 		 * 
@@ -758,7 +758,7 @@ public class RegulatoryReportServices {
 			repsummary = BRRS_M_LA1_reportservice_new.getM_LA1View(reportId, fromdate, todate, currency, dtltype,
 					pageable, type, version);
 			break;
-			
+
 		case "M_LA2":
 			repsummary = BRRS_M_LA2_reportservice.getM_LA2View(reportId, fromdate, todate, currency, dtltype, pageable,
 					type, version);
@@ -1101,14 +1101,13 @@ public class RegulatoryReportServices {
 					pageable, type, version);
 
 			break;
-			
-			
+
 		case "M_EPR":
-			 
-			 repsummary = brrs_m_epr_reportservice.getM_EPRView(reportId, fromdate,
-			 todate, currency, dtltype, pageable, type, version); 
-			 
-			 break;
+
+			repsummary = brrs_m_epr_reportservice.getM_EPRView(reportId, fromdate, todate, currency, dtltype, pageable,
+					type, version);
+
+			break;
 
 		case "M_SRWA_12A":
 
@@ -1200,11 +1199,11 @@ public class RegulatoryReportServices {
 					dtltype, pageable, type, version);
 			break;
 
-									case "PL_SCHS":
-		 repsummary = BRRS_PL_SCHS_Reportservice.getPL_SCHSView(reportId, fromdate,
-		  todate, currency, dtltype, pageable, type, version);
-		  
-		  break;
+		case "PL_SCHS":
+			repsummary = BRRS_PL_SCHS_Reportservice.getPL_SCHSView(reportId, fromdate, todate, currency, dtltype,
+					pageable, type, version);
+
+			break;
 
 		/*
 		 * case "AML":
@@ -1389,18 +1388,18 @@ public class RegulatoryReportServices {
 		 * 
 		 */
 
-				case "M_SRWA_12F":
-				repsummary = BRRS_M_SRWA_12F_reportservice.getM_SRWA12FView(reportId, fromdate, todate, currency,
-						dtltype, pageable, type, version);
-				break;
-			case "M_SRWA_12H":
-				repsummary = BRRS_M_SRWA_12H_reportservice.getM_SRWA_12HView(reportId, fromdate, todate,
-						currency, dtltype, pageable, type, version);
-				break;
-			case "M_SRWA_12H_NEW":
-				repsummary = BRRS_M_SRWA_12H_new_reportservice.getM_SRWA_12H_NewView(reportId, fromdate, todate,
-						currency, dtltype, pageable, type, version);
-				break;
+		case "M_SRWA_12F":
+			repsummary = BRRS_M_SRWA_12F_reportservice.getM_SRWA12FView(reportId, fromdate, todate, currency, dtltype,
+					pageable, type, version);
+			break;
+		case "M_SRWA_12H":
+			repsummary = BRRS_M_SRWA_12H_reportservice.getM_SRWA_12HView(reportId, fromdate, todate, currency, dtltype,
+					pageable, type, version);
+			break;
+		case "M_SRWA_12H_NEW":
+			repsummary = BRRS_M_SRWA_12H_new_reportservice.getM_SRWA_12H_NewView(reportId, fromdate, todate, currency,
+					dtltype, pageable, type, version);
+			break;
 
 		}
 
@@ -1512,7 +1511,7 @@ public class RegulatoryReportServices {
 			repdetail = BRRS_M_LA1_reportservice_new.getM_LA1currentDtl(reportId, fromdate, todate, currency, dtltype,
 					pageable, Filter, type, version);
 			break;
-			
+
 		case "M_LA2":
 			repdetail = BRRS_M_LA2_reportservice.getM_LA2currentDtl(reportId, fromdate, todate, currency, dtltype,
 					pageable, Filter, type, version);
@@ -1543,7 +1542,6 @@ public class RegulatoryReportServices {
 					pageable, Filter, type, version);
 			break;
 
-		
 		case "M_DEP3":
 			repdetail = BRRS_M_DEP3_reportservice.getM_DEP3currentDtl(reportId, fromdate, todate, currency, dtltype,
 					pageable, Filter, type, version);
@@ -2060,21 +2058,16 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
-			
-			
+
 		case "M_EPR":
 			try {
 
-				repfile = brrs_m_epr_reportservice.getM_EPRExcel(filename, reportId, fromdate, todate,
-						currency, dtltype, type, version);
+				repfile = brrs_m_epr_reportservice.getM_EPRExcel(filename, reportId, fromdate, todate, currency,
+						dtltype, type, version);
 			} catch (Exception e) { // TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			break;
-			
-			
-			
-			
 
 		case "B_III_CETD":
 			try {
@@ -2243,7 +2236,7 @@ public class RegulatoryReportServices {
 		 * (Exception e) { // TODO Auto-generated catch block e.printStackTrace(); }
 		 * break;
 		 * 
-		
+		 * 
 		 * case "M_LA3": try { repfile =
 		 * BRRS_M_LA3_reportservice.BRRS_M_LA3Excel(filename, reportId, fromdate,
 		 * todate, currency, dtltype, type, version); } catch (Exception e) { // TODO
@@ -2693,7 +2686,7 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
-			
+
 		case "M_LA2":
 			try {
 				repfile = BRRS_M_LA2_reportservice.BRRS_M_LA2Excel(filename, reportId, fromdate, todate, currency,
@@ -2703,37 +2696,38 @@ public class RegulatoryReportServices {
 			}
 			break;
 
-						case "M_SRWA_12F":
-				 try { 
-					repfile = BRRS_M_SRWA_12F_reportservice.getM_SRWA_12FExcel(filename, reportId,
-			  fromdate, todate, currency, dtltype, type, version); } catch (Exception e) {
-			  // TODO Auto-generated catch block 
-			  // 
-			  e.printStackTrace(); 
-			} 
+		case "M_SRWA_12F":
+			try {
+				repfile = BRRS_M_SRWA_12F_reportservice.getM_SRWA_12FExcel(filename, reportId, fromdate, todate,
+						currency, dtltype, type, version);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				//
+				e.printStackTrace();
+			}
 			break;
-			
-					case "M_SRWA_12H":
-				try {
-					repfile = BRRS_M_SRWA_12H_reportservice.BRRS_M_SRWA_12HExcel(filename, reportId,
-							fromdate, todate, currency, dtltype, type, version);
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
 
-					case "M_SRWA_12H_NEW":
-				try {
-					repfile = BRRS_M_SRWA_12H_new_reportservice.BRRS_M_SRWA_12H_NewExcel(filename, reportId,
-							fromdate, todate, currency, dtltype, type, version);
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
+		case "M_SRWA_12H":
+			try {
+				repfile = BRRS_M_SRWA_12H_reportservice.BRRS_M_SRWA_12HExcel(filename, reportId, fromdate, todate,
+						currency, dtltype, type, version);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
 
-					  		case "PL_SCHS":
+		case "M_SRWA_12H_NEW":
+			try {
+				repfile = BRRS_M_SRWA_12H_new_reportservice.BRRS_M_SRWA_12H_NewExcel(filename, reportId, fromdate,
+						todate, currency, dtltype, type, version);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+
+		case "PL_SCHS":
 			try {
 				repfile = BRRS_PL_SCHS_Reportservice.getPL_SCHSExcel(filename, reportId, fromdate, todate, currency,
 						dtltype, type, version);
@@ -3296,7 +3290,6 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
-			
 
 		case "M_INT_RATES_NEW":
 			try {
@@ -3420,7 +3413,7 @@ public class RegulatoryReportServices {
 		} else if ("M_LA2Detail".equals(filename)) {
 			return BRRS_M_LA2_reportservice.BRRS_M_LA2DetailExcel(filename, fromdate, todate, currency, dtltype, type,
 					version);
-		}else if ("M_DEP1Detail".equals(filename)) {
+		} else if ("M_DEP1Detail".equals(filename)) {
 			return BRRS_M_DEP1_reportservice.BRRS_M_DEP1DetailExcel(filename, fromdate, todate, currency, dtltype, type,
 					version);
 		} else if ("M_LA3Detail".equals(filename)) {
@@ -3595,97 +3588,95 @@ public class RegulatoryReportServices {
 
 		List<Object> archivalData = new ArrayList<>();
 		switch (rptcode) {
-			case "M_SFINP2":
-				try {
-					archivalData = BRRS_M_SFINP2_reportservice.getM_SFINP2Archival();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
+		case "M_SFINP2":
+			try {
+				archivalData = BRRS_M_SFINP2_reportservice.getM_SFINP2Archival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
 
-			case "M_SFINP1":
-				try {
-					archivalData = BRRS_M_SFINP1_reportservice.getM_SFINP1Archival();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
+		case "M_SFINP1":
+			try {
+				archivalData = BRRS_M_SFINP1_reportservice.getM_SFINP1Archival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
 
-			case "M_LA4":
-				try {
-					archivalData = BRRS_M_LA4_reportservice.getM_LA4Archival();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
+		case "M_LA4":
+			try {
+				archivalData = BRRS_M_LA4_reportservice.getM_LA4Archival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
 
-			// case "M_IS":
-			// try {
-			// archivalData = BRRS_M_IS_reportservice.getM_ISArchival();
-			// } catch (Exception e) {
-			// // TODO Auto-generated catch block
-			// e.printStackTrace();
-			// }
-			// break;
+		// case "M_IS":
+		// try {
+		// archivalData = BRRS_M_IS_reportservice.getM_ISArchival();
+		// } catch (Exception e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// }
+		// break;
 
-			case "M_CA2":
-				try {
-					archivalData = BRRS_M_CA2_reportservice.getM_CA2Archival();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
+		case "M_CA2":
+			try {
+				archivalData = BRRS_M_CA2_reportservice.getM_CA2Archival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
 
-			case "M_OR1":
-				try {
-					archivalData = brrs_m_or1_reportservice.getM_OR1Archival();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
+		case "M_OR1":
+			try {
+				archivalData = brrs_m_or1_reportservice.getM_OR1Archival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
 
-			case "M_LIQGAP":
-				try {
-					archivalData = brrs_m_liqgap_reportservice.getM_LIQGAPArchival();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
+		case "M_LIQGAP":
+			try {
+				archivalData = brrs_m_liqgap_reportservice.getM_LIQGAPArchival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
 
-			case "M_MRC":
-				try {
-					archivalData = BRRS_M_MRC_reportservice.getM_MRCArchival();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
+		case "M_MRC":
+			try {
+				archivalData = BRRS_M_MRC_reportservice.getM_MRCArchival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
 
-			case "M_CR":
-				try {
-					archivalData = BRRS_M_CR_reportservice.getM_CRArchival();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
+		case "M_CR":
+			try {
+				archivalData = BRRS_M_CR_reportservice.getM_CRArchival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
 
-
-			case "M_SP":
-				try {
-					archivalData = BRRS_M_SP_reportservice.getM_SPArchival();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
-
+		case "M_SP":
+			try {
+				archivalData = BRRS_M_SP_reportservice.getM_SPArchival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
 
 		/*
 		 * case "M_SRWA_12C": try { archivalData =
@@ -3728,7 +3719,7 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
-			
+
 		case "M_LA2":
 			try {
 				archivalData = BRRS_M_LA2_reportservice.getM_LA2Archival();
@@ -3737,7 +3728,6 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
-
 
 		case "M_CALOC":
 			try {
@@ -3770,8 +3760,6 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
-
-		
 
 		case "M_LA3":
 			try {
@@ -3915,8 +3903,7 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
-			
-			
+
 		case "M_INT_RATES_FCA_NEW":
 			try {
 				archivalData = BRRS_M_INT_RATES_FCA_NEW_ReportService.getM_INT_RATES_FCA_NEWArchival();
@@ -3933,947 +3920,871 @@ public class RegulatoryReportServices {
 		 * BRRS_M_INT_RATES_FCA_NEW_ReportService.getM_INT_RATES_FCA_NEWArchival();
 		 */
 
-			/*
-			 * case "M_SRWA_12C": try { archivalData =
-			 * BRRS_M_SRWA_12C_reportservice.getM_SRWA_12CArchival(); } catch (Exception e)
-			 * { // TODO Auto-generated catch block e.printStackTrace(); } break;
-			 */
-
-			// case "M_SRWA_12H":
-			// try {
-			// archivalData = BRRS_M_SRWA_12H_reportservice.getM_SRWA_12HArchival();
-			// } catch (Exception e) {
-			// // TODO Auto-generated catch block
-			// e.printStackTrace();
-			// }
-			// break;
-
-			
-
-			/*case "M_FXR":
-				List<Object[]> fxrList = BRRS_M_FXR_reportservice.getM_FXRArchival();
-				archivalData.addAll(fxrList);
-				System.out.println("Fetched M_SRWA_12H archival data: " + fxrList.size());
-				break;
-
-			case "M_UNCONS_INVEST":
-				try {
-					archivalData = BRRS_M_UNCONS_INVEST_reportservice.getM_UNCONS_INVESTArchival();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
-
-			case "M_LA2":
-				try {
-					archivalData = BRRS_M_LA2_reportservice.getM_LA2Archival();
-
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
-
-			case "M_LA3":
-				try {
-					archivalData = BRRS_M_LA3_reportservice.getM_LA3Archival();
-
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
-
-			case "M_LA5":
-				try {
-					archivalData = BRRS_M_LA5_reportservice.getM_LA5Archival();
-
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
-
-			case "M_DEP2":
-				try {
-					archivalData = BRRS_M_DEP2_reportservice.getM_DEP2Archival();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
-
-			
-			 * case "M_CA3": try { archivalData =
-			 * BRRS_M_CA3_reportservice.getM_CA3Archival(); } catch (Exception e) { // TODO
-			 * Auto-generated catch block e.printStackTrace(); } break;
-			 
-
-			case "M_AIDP":
-				try {
-					archivalData = BRRS_M_AIDP_ReportService.getM_AIDPArchival();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
-
-			case "M_PLL":
-				try {
-					archivalData = BRRS_M_PLL_reportservice.getM_PLLArchival();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
-
-			case "M_DEP3":
-				try {
-					archivalData = BRRS_M_DEP3_reportservice.getM_DEP3Archival();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
-
-			case "M_IRB":
-				try {
-					archivalData = brrs_m_irb_reportService.getM_IRBArchival();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
-
-			case "M_LIQ":
-				try {
-					archivalData = BRRS_M_LIQ_reportservice.getM_LIQArchival();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
-
-			case "M_LCR":
-				try {
-					archivalData = BRRS_M_LCR_reportservice.getM_LCRArchival();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
-
-			case "M_TOP_100_BORROWER":
-				try {
-					archivalData = BRRS_M_TOP_100_BORROWER_reportservice.getM_TOP_100_BORROWERArchival();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
-
-			case "DBS10_FINCON_II_1A":
-				try {
-					archivalData = BRRS_DBS10_FINCON_II_1A_ReportService.getDBS10_FINCON_II_1AArchival();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
-
-			case "MDISB4":
-				try {
-					archivalData = BRRS_MDISB4_ReportService.getMDISB4Archival();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
-
-			// case "M_LARADV":
-			// try {
-			// archivalData = brrs_m_laradv_reportservice.getM_LARADVArchival();
-			// } catch (Exception e) {
-			// // TODO Auto-generated catch block
-			// e.printStackTrace();
-			// }
-			// break;
-
-			
-				
-				
-
-			case "M_INT_RATES_FCA_NEW":
-
-				List<Object[]> intratesfcanewList = BRRS_M_INT_RATES_FCA_NEW_ReportService
-						.getM_INT_RATES_FCA_NEWArchival();
-
-				
-				 * List<Object[]> intratesfcanewList = brrs_m_int_rates_fca_new_reportservice
-				 * .getM_INT_RATES_FCACArchival();
-				 
-
-				archivalData.addAll(intratesfcanewList);
-				System.out.println("Fetched M_INT_RATES_FCA archival data: " + intratesfcanewList.size());
-				break;
-*/
-			case "M_SRWA_12B":
-				List<Object[]> srwabList = brrs_m_srwa_12b_reportservice.getM_SRWA_12BArchival();
-				archivalData.addAll(srwabList);
-				System.out.println("Fetched M_SRWA_12B archival data: " + srwabList.size());
-				break;
-				
-			/*
-			 * case "M_INT_RATES_FCA": try { archivalData =
-			 * BRRS_M_INT_RATES_FCA_ReportService.getM_INT_RATES_FCAArchival(); } catch
-			 * (Exception e) { // TODO Auto-generated catch block e.printStackTrace(); }
-			 * break;
-			 */
-
-			/*
-			 * case "M_INT_RATES": try { archivalData =
-			 * brrs_m_int_rates_reportservice.getM_INT_RATESArchival(); } catch (Exception
-			 * e) { // TODO Auto-generated catch block e.printStackTrace(); } break;
-			 */
-				
-			case "M_INT_RATES_NEW":
-				try {
-					archivalData = brrs_m_int_new_rates_reportservice.getM_INT_RATESNEWArchival();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
-
-			// case "Q_BRANCHNET":
-			// try {
-			// archivalData = BRRS_Q_BRANCHNET_reportservice.getQ_BRANCHNETArchival();
-			// } catch (Exception e) {
-			// // TODO Auto-generated catch block
-			// e.printStackTrace();
-			// }
-			// break;
-
-			case "Q_SMME":
-				try {
-					archivalData = BRRS_Q_SMME_Intrest_Income_ReportService.getQ_SMMEArchival();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
-			case "Q_SMME_NEW":
-				try {
-					archivalData = BRRS_Q_SMME_Intrest_Income_New_ReportService.getQ_SMMEArchival();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
-
-			case "Q_SMME_LA_NEW":
-				try {
-					archivalData = BRRS_Q_SMME_Loans_Advances_New_ReportService.getQ_SMMEArchival();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
-			case "Q_SMME_LA":
-				try {
-					archivalData = BRRS_Q_SMME_loans_Advances_reportService.getQ_SMMEArchival();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
-			/*
-			 * case "M_SIR": try { archivalData =
-			 * BRRS_M_SIR_ReportService.getM_SIRArchival(); } catch (Exception e) { // TODO
-			 * Auto-generated catch block e.printStackTrace(); } break;
-			 */
-
-			/*
-			 * case "M_EPR": try { archivalData =
-			 * brrs_m_epr_reportservice.getM_EPRArchival(); } catch (Exception e) { // TODO
-			 * Auto-generated catch block e.printStackTrace(); } break;
-			 */
-
-			
-					 
-				
-			case "M_SRWA_12A":
-				try {
-					archivalData = brrs_m_srwa_12a_reportservice.getM_SRWA_12AArchival();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
-
-			case "M_SRWA_12A_New":
-				try {
-					archivalData = brrs_M_SRWA_12A_New_reportservice.getM_SRWA_12A_NewArchival();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
-
-			case "M_GALOR":
-				try {
-					archivalData = BRRS_m_galor_ReportService.getM_GALORArchival();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
-
-			/*
-			 * case "M_SRWA_12C": try { archivalData =
-			 * BRRS_M_SRWA_12C_reportservice.getM_SRWA_12CArchival(); } catch (Exception e)
-			 * { // TODO Auto-generated catch block e.printStackTrace(); } break;
-			 */
-
-			// case "M_OB":
-			// try {
-			// archivalData = BRRS_M_OB_ReportService.getM_OBArchival();
-			// } catch (Exception e) {
-			// // TODO Auto-generated catch block
-			// e.printStackTrace();
-			// }
-			// break;
-
-			case "M_OB":
-				List<Object[]> obList = BRRS_M_OB_ReportService.getM_OBArchival();
-				archivalData.addAll(obList);
-				System.out.println("Fetched M_OB archival data: " + obList.size());
-				break;
-
-			/*
-			 * case "Q_RLFA1": try { archivalData =
-			 * brrs_q_rlfa1_reportservice.getQ_RLFA1Archival(); } catch (Exception e) { //
-			 * TODO Auto-generated catch block e.printStackTrace(); } break;
-			 */
-
-			// case "M_OPTR":
-			// try {
-			// archivalData = BRRS_M_OPTR_ReportService.getM_OPTRArchival();
-			// } catch (Exception e) {
-			// // TODO Auto-generated catch block
-			// e.printStackTrace();
-			// }
-			// break;
-
-			case "M_OPTR":
-				List<Object[]> optrList = BRRS_M_OPTR_ReportService.getM_OPTRArchival();
-				archivalData.addAll(optrList);
-				System.out.println("Fetched M_OPTR archival data: " + optrList.size());
-				break;
-
-			/*
-			 * case "Q_SMME_DEP": try { archivalData =
-			 * BRRS_Q_SMME_DEP_ReportService.getQ_SMME_DEPArchival(); } catch (Exception e)
-			 * { // TODO Auto-generated catch block e.printStackTrace(); } break;
-			 * 
-			 * case "M_BOP": try { archivalData =
-			 * BRRS_M_BOP_ReportService.getM_BOPArchival(); } catch (Exception e) { // TODO
-			 * Auto-generated catch block e.printStackTrace(); } break;
-			 */
-
-			case "M_SECA":
-				try {
-					archivalData = BRRS_M_SECA_ReportService.getM_SECAArchival();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
-
-			case "M_GMIRT":
-				try {
-					archivalData = brrs_m_gmirt_reportservice.getM_GMIRTArchival();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
-
-			case "Q_ATF":
-				try {
-					archivalData = brrs_q_atf_reportservice.getQ_ATFArchival();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
-
-			case "M_SCI_E":
-				try {
-					archivalData = brrs_m_sci_e_reportservice.getM_SCI_EArchival();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
-
-			case "M_I_S_CA":
-				try {
-					archivalData = brrs_m_i_s_ca_reportservice.getM_I_S_CAArchival();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
-
-			case "CAP_RATIO_BUFFER":
-				try {
-					archivalData = brrs_cap_ratio_buffer_reportservice.getCAP_RATIO_BUFFERArchival();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
-
-			case "B_III_CETD":
-				try {
-					archivalData = b_III_cetd_ReportService.getB_III_CETDArchival();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
-
-			case "OPER_RISK_DIS":
-				try {
-					archivalData = brrs_OPER_RISK_DIS_reportservice.getOPER_RISK_DISArchival();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
-
-			case "SCOPE_OF_APP":
-				try {
-					archivalData = brrs_SCOPE_OF_APP_reportservice.getSCOPE_OF_APPArchival();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
-
-			case "Recon_Of_FS":
-				try {
-					archivalData = BRRS_RECON_OF_FS_ReportService.getRecon_Of_FSArchival();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
-
-			case "AML":
-				try {
-					archivalData = brrs_aml_reportservice.getAMLArchival();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
-			case "EXPANDED_REGU_BS":
-				try {
-					archivalData = BRRS_Expanded_Regu_BS_ReportService.getExpanded_Regu_BSArchival();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
-			case "COMMON_DISCLOSURE":
-				try {
-					archivalData = BRRS_Common_Disclosure_Reportservice.getCommon_DisclosureArchival();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
-
-			case "Market_Risk":
-				try {
-					archivalData = BRRS_Market_Risk_Reportservice.getMarket_RiskArchival();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
-
-			case "Main_Features":
-				try {
-					archivalData = BRRS_Main_Features_Reportservice.getMain_FeaturesArchival();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
-			case "PL_SCHS":
-				try {
-					archivalData = BRRS_PL_SCHS_Reportservice.getPL_SCHSArchival();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
-
-			case "CAP_ADEQ":
-				try {
-					archivalData = brrs_cap_adeq_reportservice.getCAP_ADEQArchival();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
-
-			case "CREDIT_RISK":
-				try {
-					archivalData = brrs_credit_risk_reportservice.getCREDIT_RISKArchival();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
-
-			case "SCH_17":
-				try {
-					archivalData = brrs_sch_17_reportservice.getSCH_17Archival();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
-
-			case "FORMAT_II":
-				try {
-					archivalData = brrs_format_II_reportservice.getFORMAT_IIArchival();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
-
-			// New Archival
-			
-			case "M_SRWA_12F":
-					try {
-					archivalData = BRRS_M_SRWA_12F_reportservice.getM_SRWA_12FArchival();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
-					case "M_SRWA_12H":
-				List<Object[]> srwaList1 = BRRS_M_SRWA_12H_reportservice.getM_SRWA_12HArchival();
-				archivalData.addAll(srwaList1);
-				System.out.println("Fetched M_SRWA_12H archival data: " + srwaList1.size());
-				break;
-
-					case "M_SRWA_12H_NEW":
-				List<Object[]> srwaListnew = BRRS_M_SRWA_12H_new_reportservice.getM_SRWA_12H_NewArchival();
-				archivalData.addAll(srwaListnew);
-				System.out.println("Fetched M_SRWA_12H archival data: " + srwaListnew.size());
-				break;
-
-			case "M_SRWA_12E":
-				List<Object[]> srweList1 = BRRS_M_SRWA_12E_ReportService.getM_SRWA_12EArchival();
-				archivalData.addAll(srweList1);
-				System.out.println("Fetched M_SRWA_12E archival data: " + srweList1.size());
-				break;
-			case "M_LARADV":
-				List<Object[]> LAList = brrs_m_laradv_reportservice.getM_LARADVArchival();
-				archivalData.addAll(LAList);
-				System.out.println("Fetched M_LARADV archival data: " + LAList.size());
-				break;
-
-			case "M_GP":
-				List<Object[]> GPList = BRRS_M_GP_ReportService.getM_GPArchival();
-				archivalData.addAll(GPList);
-				System.out.println("Fetched M_SRWA_12H archival data: " + GPList.size());
-				break;
-
-			case "M_IS":
-				List<Object[]> MISList = BRRS_M_IS_reportservice.getM_ISArchival();
-				archivalData.addAll(MISList);
-				System.out.println("Fetched M_IS archival data: " + MISList.size());
-				break;
-
-			case "Q_BRANCHNET":
-				List<Object[]> QBList = BRRS_Q_BRANCHNET_reportservice.getQ_BRANCHNETArchival();
-				archivalData.addAll(QBList);
-				System.out.println("Fetched M_SRWA_12H archival data: " + QBList.size());
-				break;
-
-			case "M_CA4":
-				List<Object[]> ca4List = BRRS_M_CA4_reportservice.getM_CA4Archival();
-				archivalData.addAll(ca4List);
-				System.out.println("Fetched M_CA4 archival data: " + ca4List.size());
-				break;
-
-			case "Q_RLFA2":
-				List<Object[]> rlfa2List = brrs_q_rlfa2_reportservice.getQ_RLFA2Archival();
-				archivalData.addAll(rlfa2List);
-				System.out.println("Fetched M_CA4 archival data: " + rlfa2List.size());
-				break;
-
-			case "M_EPR":
-				List<Object[]> eprList = brrs_m_epr_reportservice.getM_EPRArchival();
-				archivalData.addAll(eprList);
-				System.out.println("Fetched M_EPR archival data: " + eprList.size());
-				break;
-
-			case "M_SRWA_12G":
-				List<Object[]> srwagList = BRRS_M_SRWA_12G_reportservice.getM_SRWA_12GArchival();
-				archivalData.addAll(srwagList);
-				System.out.println("Fetched M_SRWA_12G archival data: " + srwagList.size());
-				break;
-
-	
-
-			case "M_SECL":
-				List<Object[]> seclList = brrs_m_secl_reportservice.getM_SECLArchival();
-				archivalData.addAll(seclList);
-				System.out.println("Fetched M_SECL archival data: " + seclList.size());
-				break;
-
-			case "M_OR2":
-				List<Object[]> or2List = brrs_m_or2_reportservice.getM_OR2Archival();
-				archivalData.addAll(or2List);
-				System.out.println("Fetched M_OR2 archival data: " + or2List.size());
-				break;
-
-			case "M_SEC":
-				List<Object[]> secList = brrs_m_sec_reportservice.getM_SECArchival();
-				archivalData.addAll(secList);
-				System.out.println("Fetched M_SECL archival data: " + secList.size());
-				break;
-
-			case "M_CA5":
-				List<Object[]> ca5List = BRRS_M_CA5_reportservice.getM_CA5Archival();
-				archivalData.addAll(ca5List);
-				System.out.println("Fetched M_CA6 archival data: " + ca5List.size());
-				break;
-
-			case "BDISB1":
-				List<Object[]> bdisb1List = brrs_bdisb1_reportservice.getBDISB1Archival();
-				archivalData.addAll(bdisb1List);
-				System.out.println("Fetched M_C archival data: " + bdisb1List.size());
-				break;
-
-			case "BDISB3":
-				List<Object[]> bdisb3List = brrs_bdisb3_reportservice.getBDISB3Archival();
-				archivalData.addAll(bdisb3List);
-				System.out.println("Fetched M_C archival data: " + bdisb3List.size());
-				break;
-
-			case "M_CA7":
-				List<Object[]> CA7List = BRRS_M_CA7_reportservice.getM_CA7Archival();
-				archivalData.addAll(CA7List);
-				System.out.println("Fetched M_CA6 archival data: " + CA7List.size());
-				break;
-
-			case "M_CA6":
-				List<Object[]> CA6List = BRRS_M_CA6_reportservice.getM_CA6Archival();
-				archivalData.addAll(CA6List);
-				System.out.println("Fetched M_CA6 archival data: " + CA6List.size());
-				break;
-
-			case "Q_RLFA1":
-				List<Object[]> qrlfa1List = brrs_q_rlfa1_reportservice.getQ_RLFA1Archival();
-				archivalData.addAll(qrlfa1List);
-				System.out.println("Fetched Q_RLFA1 archival data: " + qrlfa1List.size());
-				break;
-
-			case "M_BOP":
-				List<Object[]> BOPList = BRRS_M_BOP_ReportService.getM_BOPArchival();
-				archivalData.addAll(BOPList);
-				System.out.println("Fetched M_BOP archival data: " + BOPList.size());
-				break;
-
-			case "Q_SMME_DEP":
-				List<Object[]> QSMMEDEPList = BRRS_Q_SMME_DEP_ReportService.getQ_SMME_DEPArchival();
-				archivalData.addAll(QSMMEDEPList);
-				System.out.println("Fetched Q_SMME_DEP archival data: " + QSMMEDEPList.size());
-				break;
-
-			case "M_SRWA_12C":
-				List<Object[]> MSRWA12CList = BRRS_M_SRWA_12C_reportservice.getM_SRWA_12CArchival();
-				archivalData.addAll(MSRWA12CList);
-				System.out.println("Fetched Q_SMME_DEP archival data: " + MSRWA12CList.size());
-				break;
-
-			case "M_SIR":
-				List<Object[]> SIRList = BRRS_M_SIR_ReportService.getM_SIRArchival();
-				archivalData.addAll(SIRList);
-				System.out.println("Fetched M_SIR archival data: " + SIRList.size());
-				break;
-
-			// case "M_GP":
-			// try {
-			// archivalData = BRRS_M_GP_ReportService.getM_GPArchival();
-			// } catch (Exception e) {
-			// // TODO Auto-generated catch block
-			// e.printStackTrace();
-			// }
-			// break;
-
-			/*
-			 * case "M_INT_RATES": List<Object[]> intratesList =
-			 * brrs_m_int_rates_reportservice.getM_INTRATESArchival();
-			 * archivalData.addAll(intratesList);
-			 * System.out.println("Fetched M_INT_RATES archival data: " +
-			 * intratesList.size()); break;
-			 */
-
-			case "M_RPD":
-				List<Object[]> RPDList = BRRS_M_RPD_ReportService.getM_RPDArchival();
-				archivalData.addAll(RPDList);
-				System.out.println("Fetched M_SIR archival data: " + RPDList.size());
-				break;
-
-			case "M_TBS":
-				List<Object[]> TBSList = BRRS_M_TBS_ReportService.getM_TBSArchival();
-				archivalData.addAll(TBSList);
-				System.out.println("Fetched TBS archival data: " + TBSList.size());
-				break;
-
-			case "M_CA3":
-				List<Object[]> ca3List = BRRS_M_CA3_reportservice.getM_CA3Archival();
-				archivalData.addAll(ca3List);
-				System.out.println("Fetched TBS archival data: " + ca3List.size());
-				break;
-
-			case "MDISB5":
-				List<Object[]> MDISB5List = BRRS_MDISB5_ReportService.getMDISB5Archival();
-				archivalData.addAll(MDISB5List);
-				System.out.println("Fetched TBS archival data: " + MDISB5List.size());
-				break;
-
-			case "M_NOSVOS":
-				try {
-					archivalData = BRRS_M_NOSVOS_reportservice.getM_NOSVOSArchival();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
-			case "M_CA1":
-				try {
-					archivalData = BRRS_M_CA1_reportservice.getM_CA1Archival();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
-
-			case "M_PD":
-				try {
-					archivalData = BRRS_M_PD_ReportService.getM_PDArchival();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
-
-			case "M_FAS":
-				try {
-					archivalData = BRRS_M_FAS_reportservice.getM_FASArchival();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
-			case "M_DEP4":
-				List<Object[]> DEP4List = BRRS_M_DEP4_ReportService.getM_DEP4Archival();
-				archivalData.addAll(DEP4List);
-				System.out.println("Fetched DEP4 archival data: " + DEP4List.size());
-				break;
-
-			case "BDISB2":
-				List<Object[]> bdisb2List = BRRS_BDISB2_ReportService.getBDISB2Archival();
-				archivalData.addAll(bdisb2List);
-				System.out.println("Fetched BDISB2 archival data: " + bdisb2List.size());
-				break;
-
-			case "ADISB1":
-				try {
-					archivalData = BRRS_ADISB1_ReportService.getADISB1Archival();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
-
-			case "ADISB2":
-				try {
-					archivalData = BRRS_ADISB2_ReportService.getADISB2Archival();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
-
-			case "FSI":
-				try {
-					archivalData = BRRS_FSI_ReportService.getFSIArchival();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
-
-			case "RWA":
-				try {
-					archivalData = BRRS_RWA_ReportService.getRWAArchival();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
-
-			case "CPR_STRUCT_LIQ":
-				try {
-					archivalData = BRRS_CPR_STRUCT_LIQ_ReportService.getCPR_STRUCT_LIQArchival();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
-
-			case "EXPOSURES":
-				try {
-					archivalData = BRRS_EXPOSURES_ReportService.getEXPOSURESArchival();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
-
-			case "FORMAT_NEW_CPR":
-				try {
-					archivalData = BRRS_FORMAT_NEW_CPR_ReportService.getFNCArchival();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
-
-			case "MDISB1":
-				try {
-					archivalData = brrs_mdisb1_reportservice.getMDISB1Archival();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
-
-			case "MDISB2":
-				try {
-					archivalData = brrs_mdisb2_reportservice.getMDISB2Archival();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
-
-			case "MDISB3":
-				try {
-					archivalData = brrs_mdisb3_reportservice.getMDISB3Archival();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
-
-			case "MASTER":
-				try {
-					archivalData = brrs_master_reportservice.getMASTERArchival();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
-
-			case "NSFR":
-				try {
-					archivalData = BRRS_NSFR_ReportService.getNSFRArchival();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
-
-			case "TIER_1_2_CFS":
-				try {
-					archivalData = BRRS_TIER_1_2_CFS_ReportService.getTIER_1_2_CFSArchival();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
-
-			case "M_P_L":
-				try {
-					archivalData = BRRS_M_P_L_ReportService.getM_P_LArchival();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
-
-			case "GL_SCH":
-				try {
-					archivalData = brrs_gl_sch_reportservice.getGL_SCHArchival();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
-			case "AS_11":
-				try {
-					archivalData = BRRS_AS_11_Reportservice.getAS_11Archival();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
-			case "BORR_UFCE":
-				try {
-					archivalData = BRRS_BORR_UFCE_ReportService.getBORR_UFCEArchival();
-
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
-
-			case "M_OPTR_NEW":
-				List<Object[]> optrnewList = BRRS_M_OPTR_NEW_ReportService.getM_OPTR_NEWArchival();
-				archivalData.addAll(optrnewList);
-				System.out.println("Fetched M_OPTR_NEW archival data: " + optrnewList.size());
-				break;
-
-			case "Q_STAFF":
-				List<Object[]> QSList = BRRS_Q_STAFF_report_service.getQ_STAFFArchival();
-				archivalData.addAll(QSList);
-				System.out.println("Fetched Q_STAFF archival data: " + QSList.size());
-				break;
-
-					case "Q_STAFF_NEW":
-				List<Object[]> QSNList = BRRS_Q_STAFF_New_report_service.getQ_STAFF_NewArchival();
-				archivalData.addAll(QSNList);
-				System.out.println("Fetched Q_STAFF archival data: " + QSNList.size());
-				break;
-
-			default:
-				System.out.println("No archival logic defined for report: " + rptcode);
-				break;
+		/*
+		 * case "M_SRWA_12C": try { archivalData =
+		 * BRRS_M_SRWA_12C_reportservice.getM_SRWA_12CArchival(); } catch (Exception e)
+		 * { // TODO Auto-generated catch block e.printStackTrace(); } break;
+		 */
+
+		// case "M_SRWA_12H":
+		// try {
+		// archivalData = BRRS_M_SRWA_12H_reportservice.getM_SRWA_12HArchival();
+		// } catch (Exception e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// }
+		// break;
+
+		/*
+		 * case "M_FXR": List<Object[]> fxrList =
+		 * BRRS_M_FXR_reportservice.getM_FXRArchival(); archivalData.addAll(fxrList);
+		 * System.out.println("Fetched M_SRWA_12H archival data: " + fxrList.size());
+		 * break;
+		 * 
+		 * case "M_UNCONS_INVEST": try { archivalData =
+		 * BRRS_M_UNCONS_INVEST_reportservice.getM_UNCONS_INVESTArchival(); } catch
+		 * (Exception e) { // TODO Auto-generated catch block e.printStackTrace(); }
+		 * break;
+		 * 
+		 * case "M_LA2": try { archivalData =
+		 * BRRS_M_LA2_reportservice.getM_LA2Archival();
+		 * 
+		 * } catch (Exception e) { // TODO Auto-generated catch block
+		 * e.printStackTrace(); } break;
+		 * 
+		 * case "M_LA3": try { archivalData =
+		 * BRRS_M_LA3_reportservice.getM_LA3Archival();
+		 * 
+		 * } catch (Exception e) { // TODO Auto-generated catch block
+		 * e.printStackTrace(); } break;
+		 * 
+		 * case "M_LA5": try { archivalData =
+		 * BRRS_M_LA5_reportservice.getM_LA5Archival();
+		 * 
+		 * } catch (Exception e) { // TODO Auto-generated catch block
+		 * e.printStackTrace(); } break;
+		 * 
+		 * case "M_DEP2": try { archivalData =
+		 * BRRS_M_DEP2_reportservice.getM_DEP2Archival(); } catch (Exception e) { //
+		 * TODO Auto-generated catch block e.printStackTrace(); } break;
+		 * 
+		 * 
+		 * case "M_CA3": try { archivalData =
+		 * BRRS_M_CA3_reportservice.getM_CA3Archival(); } catch (Exception e) { // TODO
+		 * Auto-generated catch block e.printStackTrace(); } break;
+		 * 
+		 * 
+		 * case "M_AIDP": try { archivalData =
+		 * BRRS_M_AIDP_ReportService.getM_AIDPArchival(); } catch (Exception e) { //
+		 * TODO Auto-generated catch block e.printStackTrace(); } break;
+		 * 
+		 * case "M_PLL": try { archivalData =
+		 * BRRS_M_PLL_reportservice.getM_PLLArchival(); } catch (Exception e) { // TODO
+		 * Auto-generated catch block e.printStackTrace(); } break;
+		 * 
+		 * case "M_DEP3": try { archivalData =
+		 * BRRS_M_DEP3_reportservice.getM_DEP3Archival(); } catch (Exception e) { //
+		 * TODO Auto-generated catch block e.printStackTrace(); } break;
+		 * 
+		 * case "M_IRB": try { archivalData =
+		 * brrs_m_irb_reportService.getM_IRBArchival(); } catch (Exception e) { // TODO
+		 * Auto-generated catch block e.printStackTrace(); } break;
+		 * 
+		 * case "M_LIQ": try { archivalData =
+		 * BRRS_M_LIQ_reportservice.getM_LIQArchival(); } catch (Exception e) { // TODO
+		 * Auto-generated catch block e.printStackTrace(); } break;
+		 * 
+		 * case "M_LCR": try { archivalData =
+		 * BRRS_M_LCR_reportservice.getM_LCRArchival(); } catch (Exception e) { // TODO
+		 * Auto-generated catch block e.printStackTrace(); } break;
+		 * 
+		 * case "M_TOP_100_BORROWER": try { archivalData =
+		 * BRRS_M_TOP_100_BORROWER_reportservice.getM_TOP_100_BORROWERArchival(); }
+		 * catch (Exception e) { // TODO Auto-generated catch block e.printStackTrace();
+		 * } break;
+		 * 
+		 * case "DBS10_FINCON_II_1A": try { archivalData =
+		 * BRRS_DBS10_FINCON_II_1A_ReportService.getDBS10_FINCON_II_1AArchival(); }
+		 * catch (Exception e) { // TODO Auto-generated catch block e.printStackTrace();
+		 * } break;
+		 * 
+		 * case "MDISB4": try { archivalData =
+		 * BRRS_MDISB4_ReportService.getMDISB4Archival(); } catch (Exception e) { //
+		 * TODO Auto-generated catch block e.printStackTrace(); } break;
+		 * 
+		 * // case "M_LARADV": // try { // archivalData =
+		 * brrs_m_laradv_reportservice.getM_LARADVArchival(); // } catch (Exception e) {
+		 * // // TODO Auto-generated catch block // e.printStackTrace(); // } // break;
+		 * 
+		 * 
+		 * 
+		 * 
+		 * 
+		 * case "M_INT_RATES_FCA_NEW":
+		 * 
+		 * List<Object[]> intratesfcanewList = BRRS_M_INT_RATES_FCA_NEW_ReportService
+		 * .getM_INT_RATES_FCA_NEWArchival();
+		 * 
+		 * 
+		 * List<Object[]> intratesfcanewList = brrs_m_int_rates_fca_new_reportservice
+		 * .getM_INT_RATES_FCACArchival();
+		 * 
+		 * 
+		 * archivalData.addAll(intratesfcanewList);
+		 * System.out.println("Fetched M_INT_RATES_FCA archival data: " +
+		 * intratesfcanewList.size()); break;
+		 */
+		case "M_SRWA_12B":
+			List<Object[]> srwabList = brrs_m_srwa_12b_reportservice.getM_SRWA_12BArchival();
+			archivalData.addAll(srwabList);
+			System.out.println("Fetched M_SRWA_12B archival data: " + srwabList.size());
+			break;
+
+		/*
+		 * case "M_INT_RATES_FCA": try { archivalData =
+		 * BRRS_M_INT_RATES_FCA_ReportService.getM_INT_RATES_FCAArchival(); } catch
+		 * (Exception e) { // TODO Auto-generated catch block e.printStackTrace(); }
+		 * break;
+		 */
+
+		/*
+		 * case "M_INT_RATES": try { archivalData =
+		 * brrs_m_int_rates_reportservice.getM_INT_RATESArchival(); } catch (Exception
+		 * e) { // TODO Auto-generated catch block e.printStackTrace(); } break;
+		 */
+
+		case "M_INT_RATES_NEW":
+			try {
+				archivalData = brrs_m_int_new_rates_reportservice.getM_INT_RATESNEWArchival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+
+		// case "Q_BRANCHNET":
+		// try {
+		// archivalData = BRRS_Q_BRANCHNET_reportservice.getQ_BRANCHNETArchival();
+		// } catch (Exception e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// }
+		// break;
+
+		case "Q_SMME":
+			try {
+				archivalData = BRRS_Q_SMME_Intrest_Income_ReportService.getQ_SMMEArchival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+		case "Q_SMME_NEW":
+			try {
+				archivalData = BRRS_Q_SMME_Intrest_Income_New_ReportService.getQ_SMMEArchival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+
+		case "Q_SMME_LA_NEW":
+			try {
+				archivalData = BRRS_Q_SMME_Loans_Advances_New_ReportService.getQ_SMMEArchival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+		case "Q_SMME_LA":
+			try {
+				archivalData = BRRS_Q_SMME_loans_Advances_reportService.getQ_SMMEArchival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+		/*
+		 * case "M_SIR": try { archivalData =
+		 * BRRS_M_SIR_ReportService.getM_SIRArchival(); } catch (Exception e) { // TODO
+		 * Auto-generated catch block e.printStackTrace(); } break;
+		 */
+
+		/*
+		 * case "M_EPR": try { archivalData =
+		 * brrs_m_epr_reportservice.getM_EPRArchival(); } catch (Exception e) { // TODO
+		 * Auto-generated catch block e.printStackTrace(); } break;
+		 */
+
+		case "M_SRWA_12A":
+			try {
+				archivalData = brrs_m_srwa_12a_reportservice.getM_SRWA_12AArchival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+
+		case "M_SRWA_12A_New":
+			try {
+				archivalData = brrs_M_SRWA_12A_New_reportservice.getM_SRWA_12A_NewArchival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+
+		case "M_GALOR":
+			try {
+				archivalData = BRRS_m_galor_ReportService.getM_GALORArchival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+
+		/*
+		 * case "M_SRWA_12C": try { archivalData =
+		 * BRRS_M_SRWA_12C_reportservice.getM_SRWA_12CArchival(); } catch (Exception e)
+		 * { // TODO Auto-generated catch block e.printStackTrace(); } break;
+		 */
+
+		// case "M_OB":
+		// try {
+		// archivalData = BRRS_M_OB_ReportService.getM_OBArchival();
+		// } catch (Exception e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// }
+		// break;
+
+		case "M_OB":
+			List<Object[]> obList = BRRS_M_OB_ReportService.getM_OBArchival();
+			archivalData.addAll(obList);
+			System.out.println("Fetched M_OB archival data: " + obList.size());
+			break;
+
+		/*
+		 * case "Q_RLFA1": try { archivalData =
+		 * brrs_q_rlfa1_reportservice.getQ_RLFA1Archival(); } catch (Exception e) { //
+		 * TODO Auto-generated catch block e.printStackTrace(); } break;
+		 */
+
+		// case "M_OPTR":
+		// try {
+		// archivalData = BRRS_M_OPTR_ReportService.getM_OPTRArchival();
+		// } catch (Exception e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// }
+		// break;
+
+		case "M_OPTR":
+			List<Object[]> optrList = BRRS_M_OPTR_ReportService.getM_OPTRArchival();
+			archivalData.addAll(optrList);
+			System.out.println("Fetched M_OPTR archival data: " + optrList.size());
+			break;
+
+		/*
+		 * case "Q_SMME_DEP": try { archivalData =
+		 * BRRS_Q_SMME_DEP_ReportService.getQ_SMME_DEPArchival(); } catch (Exception e)
+		 * { // TODO Auto-generated catch block e.printStackTrace(); } break;
+		 * 
+		 * case "M_BOP": try { archivalData =
+		 * BRRS_M_BOP_ReportService.getM_BOPArchival(); } catch (Exception e) { // TODO
+		 * Auto-generated catch block e.printStackTrace(); } break;
+		 */
+
+		case "M_SECA":
+			try {
+				archivalData = BRRS_M_SECA_ReportService.getM_SECAArchival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+
+		case "M_GMIRT":
+			try {
+				archivalData = brrs_m_gmirt_reportservice.getM_GMIRTArchival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+
+		case "Q_ATF":
+			try {
+				archivalData = brrs_q_atf_reportservice.getQ_ATFArchival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+
+		case "M_SCI_E":
+			try {
+				archivalData = brrs_m_sci_e_reportservice.getM_SCI_EArchival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+
+		case "M_I_S_CA":
+			try {
+				archivalData = brrs_m_i_s_ca_reportservice.getM_I_S_CAArchival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+
+		case "CAP_RATIO_BUFFER":
+			try {
+				archivalData = brrs_cap_ratio_buffer_reportservice.getCAP_RATIO_BUFFERArchival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+
+		case "B_III_CETD":
+			try {
+				archivalData = b_III_cetd_ReportService.getB_III_CETDArchival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+
+		case "OPER_RISK_DIS":
+			try {
+				archivalData = brrs_OPER_RISK_DIS_reportservice.getOPER_RISK_DISArchival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+
+		case "SCOPE_OF_APP":
+			try {
+				archivalData = brrs_SCOPE_OF_APP_reportservice.getSCOPE_OF_APPArchival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+
+		case "Recon_Of_FS":
+			try {
+				archivalData = BRRS_RECON_OF_FS_ReportService.getRecon_Of_FSArchival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+
+		case "AML":
+			try {
+				archivalData = brrs_aml_reportservice.getAMLArchival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+		case "EXPANDED_REGU_BS":
+			try {
+				archivalData = BRRS_Expanded_Regu_BS_ReportService.getExpanded_Regu_BSArchival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+		case "COMMON_DISCLOSURE":
+			try {
+				archivalData = BRRS_Common_Disclosure_Reportservice.getCommon_DisclosureArchival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+
+		case "Market_Risk":
+			try {
+				archivalData = BRRS_Market_Risk_Reportservice.getMarket_RiskArchival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+
+		case "Main_Features":
+			try {
+				archivalData = BRRS_Main_Features_Reportservice.getMain_FeaturesArchival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+		case "PL_SCHS":
+			try {
+				archivalData = BRRS_PL_SCHS_Reportservice.getPL_SCHSArchival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+
+		case "CAP_ADEQ":
+			try {
+				archivalData = brrs_cap_adeq_reportservice.getCAP_ADEQArchival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+
+		case "CREDIT_RISK":
+			try {
+				archivalData = brrs_credit_risk_reportservice.getCREDIT_RISKArchival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+
+		case "SCH_17":
+			try {
+				archivalData = brrs_sch_17_reportservice.getSCH_17Archival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+
+		case "FORMAT_II":
+			try {
+				archivalData = brrs_format_II_reportservice.getFORMAT_IIArchival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+
+		// New Archival
+
+		case "M_SRWA_12F":
+			try {
+				archivalData = BRRS_M_SRWA_12F_reportservice.getM_SRWA_12FArchival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+		case "M_SRWA_12H":
+			List<Object[]> srwaList1 = BRRS_M_SRWA_12H_reportservice.getM_SRWA_12HArchival();
+			archivalData.addAll(srwaList1);
+			System.out.println("Fetched M_SRWA_12H archival data: " + srwaList1.size());
+			break;
+
+		case "M_SRWA_12H_NEW":
+			List<Object[]> srwaListnew = BRRS_M_SRWA_12H_new_reportservice.getM_SRWA_12H_NewArchival();
+			archivalData.addAll(srwaListnew);
+			System.out.println("Fetched M_SRWA_12H archival data: " + srwaListnew.size());
+			break;
+
+		case "M_SRWA_12E":
+			List<Object[]> srweList1 = BRRS_M_SRWA_12E_ReportService.getM_SRWA_12EArchival();
+			archivalData.addAll(srweList1);
+			System.out.println("Fetched M_SRWA_12E archival data: " + srweList1.size());
+			break;
+		case "M_LARADV":
+			List<Object[]> LAList = brrs_m_laradv_reportservice.getM_LARADVArchival();
+			archivalData.addAll(LAList);
+			System.out.println("Fetched M_LARADV archival data: " + LAList.size());
+			break;
+
+		case "M_GP":
+			List<Object[]> GPList = BRRS_M_GP_ReportService.getM_GPArchival();
+			archivalData.addAll(GPList);
+			System.out.println("Fetched M_SRWA_12H archival data: " + GPList.size());
+			break;
+
+		case "M_IS":
+			List<Object[]> MISList = BRRS_M_IS_reportservice.getM_ISArchival();
+			archivalData.addAll(MISList);
+			System.out.println("Fetched M_IS archival data: " + MISList.size());
+			break;
+
+		case "Q_BRANCHNET":
+			List<Object[]> QBList = BRRS_Q_BRANCHNET_reportservice.getQ_BRANCHNETArchival();
+			archivalData.addAll(QBList);
+			System.out.println("Fetched M_SRWA_12H archival data: " + QBList.size());
+			break;
+
+		case "M_CA4":
+			List<Object[]> ca4List = BRRS_M_CA4_reportservice.getM_CA4Archival();
+			archivalData.addAll(ca4List);
+			System.out.println("Fetched M_CA4 archival data: " + ca4List.size());
+			break;
+
+		case "Q_RLFA2":
+			List<Object[]> rlfa2List = brrs_q_rlfa2_reportservice.getQ_RLFA2Archival();
+			archivalData.addAll(rlfa2List);
+			System.out.println("Fetched M_CA4 archival data: " + rlfa2List.size());
+			break;
+
+		case "M_EPR":
+			List<Object[]> eprList = brrs_m_epr_reportservice.getM_EPRArchival();
+			archivalData.addAll(eprList);
+			System.out.println("Fetched M_EPR archival data: " + eprList.size());
+			break;
+
+		case "M_SRWA_12G":
+			List<Object[]> srwagList = BRRS_M_SRWA_12G_reportservice.getM_SRWA_12GArchival();
+			archivalData.addAll(srwagList);
+			System.out.println("Fetched M_SRWA_12G archival data: " + srwagList.size());
+			break;
+
+		case "M_SECL":
+			List<Object[]> seclList = brrs_m_secl_reportservice.getM_SECLArchival();
+			archivalData.addAll(seclList);
+			System.out.println("Fetched M_SECL archival data: " + seclList.size());
+			break;
+
+		case "M_OR2":
+			List<Object[]> or2List = brrs_m_or2_reportservice.getM_OR2Archival();
+			archivalData.addAll(or2List);
+			System.out.println("Fetched M_OR2 archival data: " + or2List.size());
+			break;
+
+		case "M_SEC":
+			List<Object[]> secList = brrs_m_sec_reportservice.getM_SECArchival();
+			archivalData.addAll(secList);
+			System.out.println("Fetched M_SECL archival data: " + secList.size());
+			break;
+
+		case "M_CA5":
+			List<Object[]> ca5List = BRRS_M_CA5_reportservice.getM_CA5Archival();
+			archivalData.addAll(ca5List);
+			System.out.println("Fetched M_CA6 archival data: " + ca5List.size());
+			break;
+
+		case "BDISB1":
+			List<Object[]> bdisb1List = brrs_bdisb1_reportservice.getBDISB1Archival();
+			archivalData.addAll(bdisb1List);
+			System.out.println("Fetched M_C archival data: " + bdisb1List.size());
+			break;
+
+		case "BDISB3":
+			List<Object[]> bdisb3List = brrs_bdisb3_reportservice.getBDISB3Archival();
+			archivalData.addAll(bdisb3List);
+			System.out.println("Fetched M_C archival data: " + bdisb3List.size());
+			break;
+
+		case "M_CA7":
+			List<Object[]> CA7List = BRRS_M_CA7_reportservice.getM_CA7Archival();
+			archivalData.addAll(CA7List);
+			System.out.println("Fetched M_CA6 archival data: " + CA7List.size());
+			break;
+
+		case "M_CA6":
+			List<Object[]> CA6List = BRRS_M_CA6_reportservice.getM_CA6Archival();
+			archivalData.addAll(CA6List);
+			System.out.println("Fetched M_CA6 archival data: " + CA6List.size());
+			break;
+
+		case "Q_RLFA1":
+			List<Object[]> qrlfa1List = brrs_q_rlfa1_reportservice.getQ_RLFA1Archival();
+			archivalData.addAll(qrlfa1List);
+			System.out.println("Fetched Q_RLFA1 archival data: " + qrlfa1List.size());
+			break;
+
+		case "M_BOP":
+			List<Object[]> BOPList = BRRS_M_BOP_ReportService.getM_BOPArchival();
+			archivalData.addAll(BOPList);
+			System.out.println("Fetched M_BOP archival data: " + BOPList.size());
+			break;
+
+		case "Q_SMME_DEP":
+			List<Object[]> QSMMEDEPList = BRRS_Q_SMME_DEP_ReportService.getQ_SMME_DEPArchival();
+			archivalData.addAll(QSMMEDEPList);
+			System.out.println("Fetched Q_SMME_DEP archival data: " + QSMMEDEPList.size());
+			break;
+
+		case "M_SRWA_12C":
+			List<Object[]> MSRWA12CList = BRRS_M_SRWA_12C_reportservice.getM_SRWA_12CArchival();
+			archivalData.addAll(MSRWA12CList);
+			System.out.println("Fetched Q_SMME_DEP archival data: " + MSRWA12CList.size());
+			break;
+
+		case "M_SIR":
+			List<Object[]> SIRList = BRRS_M_SIR_ReportService.getM_SIRArchival();
+			archivalData.addAll(SIRList);
+			System.out.println("Fetched M_SIR archival data: " + SIRList.size());
+			break;
+
+		// case "M_GP":
+		// try {
+		// archivalData = BRRS_M_GP_ReportService.getM_GPArchival();
+		// } catch (Exception e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// }
+		// break;
+
+		/*
+		 * case "M_INT_RATES": List<Object[]> intratesList =
+		 * brrs_m_int_rates_reportservice.getM_INTRATESArchival();
+		 * archivalData.addAll(intratesList);
+		 * System.out.println("Fetched M_INT_RATES archival data: " +
+		 * intratesList.size()); break;
+		 */
+
+		case "M_RPD":
+			List<Object[]> RPDList = BRRS_M_RPD_ReportService.getM_RPDArchival();
+			archivalData.addAll(RPDList);
+			System.out.println("Fetched M_SIR archival data: " + RPDList.size());
+			break;
+
+		case "M_TBS":
+			List<Object[]> TBSList = BRRS_M_TBS_ReportService.getM_TBSArchival();
+			archivalData.addAll(TBSList);
+			System.out.println("Fetched TBS archival data: " + TBSList.size());
+			break;
+
+		case "M_CA3":
+			List<Object[]> ca3List = BRRS_M_CA3_reportservice.getM_CA3Archival();
+			archivalData.addAll(ca3List);
+			System.out.println("Fetched TBS archival data: " + ca3List.size());
+			break;
+
+		case "MDISB5":
+			List<Object[]> MDISB5List = BRRS_MDISB5_ReportService.getMDISB5Archival();
+			archivalData.addAll(MDISB5List);
+			System.out.println("Fetched TBS archival data: " + MDISB5List.size());
+			break;
+
+		case "M_NOSVOS":
+			try {
+				archivalData = BRRS_M_NOSVOS_reportservice.getM_NOSVOSArchival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+		case "M_CA1":
+			try {
+				archivalData = BRRS_M_CA1_reportservice.getM_CA1Archival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+
+		case "M_PD":
+			try {
+				archivalData = BRRS_M_PD_ReportService.getM_PDArchival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+
+		case "M_FAS":
+			try {
+				archivalData = BRRS_M_FAS_reportservice.getM_FASArchival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+		case "M_DEP4":
+			List<Object[]> DEP4List = BRRS_M_DEP4_ReportService.getM_DEP4Archival();
+			archivalData.addAll(DEP4List);
+			System.out.println("Fetched DEP4 archival data: " + DEP4List.size());
+			break;
+
+		case "BDISB2":
+			List<Object[]> bdisb2List = BRRS_BDISB2_ReportService.getBDISB2Archival();
+			archivalData.addAll(bdisb2List);
+			System.out.println("Fetched BDISB2 archival data: " + bdisb2List.size());
+			break;
+
+		case "ADISB1":
+			try {
+				archivalData = BRRS_ADISB1_ReportService.getADISB1Archival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+
+		case "ADISB2":
+			try {
+				archivalData = BRRS_ADISB2_ReportService.getADISB2Archival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+
+		case "FSI":
+			try {
+				archivalData = BRRS_FSI_ReportService.getFSIArchival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+
+		case "RWA":
+			try {
+				archivalData = BRRS_RWA_ReportService.getRWAArchival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+
+		case "CPR_STRUCT_LIQ":
+			try {
+				archivalData = BRRS_CPR_STRUCT_LIQ_ReportService.getCPR_STRUCT_LIQArchival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+
+		case "EXPOSURES":
+			try {
+				archivalData = BRRS_EXPOSURES_ReportService.getEXPOSURESArchival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+
+		case "FORMAT_NEW_CPR":
+			try {
+				archivalData = BRRS_FORMAT_NEW_CPR_ReportService.getFNCArchival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+
+		case "MDISB1":
+			try {
+				archivalData = brrs_mdisb1_reportservice.getMDISB1Archival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+
+		case "MDISB2":
+			try {
+				archivalData = brrs_mdisb2_reportservice.getMDISB2Archival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+
+		case "MDISB3":
+			try {
+				archivalData = brrs_mdisb3_reportservice.getMDISB3Archival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+
+		case "MASTER":
+			try {
+				archivalData = brrs_master_reportservice.getMASTERArchival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+
+		case "NSFR":
+			try {
+				archivalData = BRRS_NSFR_ReportService.getNSFRArchival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+
+		case "TIER_1_2_CFS":
+			try {
+				archivalData = BRRS_TIER_1_2_CFS_ReportService.getTIER_1_2_CFSArchival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+
+		case "M_P_L":
+			try {
+				archivalData = BRRS_M_P_L_ReportService.getM_P_LArchival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+
+		case "GL_SCH":
+			try {
+				archivalData = brrs_gl_sch_reportservice.getGL_SCHArchival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+		case "AS_11":
+			try {
+				archivalData = BRRS_AS_11_Reportservice.getAS_11Archival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+		case "BORR_UFCE":
+			try {
+				archivalData = BRRS_BORR_UFCE_ReportService.getBORR_UFCEArchival();
+
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+
+		case "M_OPTR_NEW":
+			List<Object[]> optrnewList = BRRS_M_OPTR_NEW_ReportService.getM_OPTR_NEWArchival();
+			archivalData.addAll(optrnewList);
+			System.out.println("Fetched M_OPTR_NEW archival data: " + optrnewList.size());
+			break;
+
+		case "Q_STAFF":
+			List<Object[]> QSList = BRRS_Q_STAFF_report_service.getQ_STAFFArchival();
+			archivalData.addAll(QSList);
+			System.out.println("Fetched Q_STAFF archival data: " + QSList.size());
+			break;
+
+		case "Q_STAFF_NEW":
+			List<Object[]> QSNList = BRRS_Q_STAFF_New_report_service.getQ_STAFF_NewArchival();
+			archivalData.addAll(QSNList);
+			System.out.println("Fetched Q_STAFF archival data: " + QSNList.size());
+			break;
+
+		default:
+			System.out.println("No archival logic defined for report: " + rptcode);
+			break;
 
 		}
 		return archivalData;
@@ -4927,7 +4838,7 @@ public class RegulatoryReportServices {
 		} else if (filename.equals("M_LA2Detail")) {
 			fileData = BRRS_M_LA2_reportservice.BRRS_M_LA2DetailExcel(filename, fromdate, todate, currency, dtltype,
 					type, version);
-		}else if (filename.equals("M_DEP1Detail")) {
+		} else if (filename.equals("M_DEP1Detail")) {
 			fileData = BRRS_M_DEP1_reportservice.BRRS_M_DEP1DetailExcel(filename, fromdate, todate, currency, dtltype,
 					type, version);
 		} else if (filename.equals("M_LA3Detail")) {
@@ -5241,13 +5152,11 @@ public class RegulatoryReportServices {
 					dtltype, type, version);
 		}
 
-		
 		else if ("M_INTRATESNEWDetail".equals(filename)) {
 
 			fileData = brrs_m_int_new_rates_reportservice.getM_INT_RATESNEWDetailExcel(filename, fromdate, todate,
 					currency, dtltype, type, version);
 		}
-
 
 		else if ("M_INTRATESFCANEWDetail".equals(filename)) {
 
@@ -5317,7 +5226,7 @@ public class RegulatoryReportServices {
 			System.out.println("Fetching M_LA1 data from: " + specificFilePath);
 			reportData = BRRS_M_LA1_reportservice_new.getReportData(specificFilePath);
 			break;
-			
+
 		case "M_LA2":
 			specificFilePath = baseExportPath + "M_LA2.xlsx";
 			System.out.println("Fetching M_LA2 data from: " + specificFilePath);
@@ -5361,7 +5270,7 @@ public class RegulatoryReportServices {
 				modelAndView = BRRS_M_LA1_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
 						request.getParameter("formmode"));
 				break;
-				
+
 			case "M_LA2":
 				modelAndView = BRRS_M_LA2_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
 						request.getParameter("formmode"));
@@ -5719,7 +5628,7 @@ public class RegulatoryReportServices {
 			case "M_LA1_NEW":
 				response = BRRS_M_LA1_reportservice_new.updateDetailEdit(request);
 				break;
-				
+
 			/*
 			 * case "M_LA2": response = BRRS_M_LA2_reportservice.updateDetailEdit(request);
 			 * break;
@@ -6478,7 +6387,7 @@ public class RegulatoryReportServices {
 	 * // ✅ Switch case for all reports switch (reportName) {
 	 * 
 	 * 
-	 
+	 * 
 	 * case "M_LA4": return BRRS_M_LA4_reportservice.BRRS_M_LA4Excel("M_LA4.xlsx",
 	 * reportName, fromdate, todate, currency, dtltype, type, version);
 	 * 
