@@ -2062,20 +2062,19 @@ public class RegulatoryReportServices {
 			break;
 			
 			
+		case "M_EPR":
+			try {
+
+				repfile = brrs_m_epr_reportservice.getM_EPRExcel(filename, reportId, fromdate, todate,
+						currency, dtltype, type, version);
+			} catch (Exception e) { // TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
 			
-			 case "M_EPR":
-				 
-				 try {
-				
-				 repfile = brrs_m_epr_reportservice.getM_EPRExcel(filename, reportId,
-				 fromdate, todate, currency, dtltype, type, version);
-				 
-				 } catch (Exception e) 
-			 
-			 { // TODO Auto-generated catch block
-				 e.printStackTrace(); 
-				 
-			 } break;
+			
+			
+			
 
 		case "B_III_CETD":
 			try {
@@ -4469,7 +4468,6 @@ public class RegulatoryReportServices {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				break;
 				
 					case "M_SRWA_12H":
 				List<Object[]> srwaList1 = BRRS_M_SRWA_12H_reportservice.getM_SRWA_12HArchival();
