@@ -3792,76 +3792,66 @@ if (!dataList1.isEmpty()) {
 
 
 
-public void updateDetailFromForm(Date reportDate, Map<String, String> params) {
-
-	System.out.println("came to service for update ");
-
-	for (Map.Entry<String, String> entry : params.entrySet()) {
-
-		String key = entry.getKey();
-		String value = entry.getValue();
-
-		// ✅ Allow only valid keys for required columns
-		if (!key.matches("R\\d+_C\\d+_(" + "NOMINAL_INTEREST_RATE|" + "AVG_EFFECTIVE_RATE|" + "VOLUME|" 	
-				+ ")")) {
-			continue;
-		}
-
-		if (value == null || value.trim().isEmpty()) {
-			value = "0";
-		}
-
-		String[] parts = key.split("_");
-		String reportLabel = parts[0]; // R1, R2, etc.
-		String addlCriteria = parts[1]; // C1, C2, etc.
-		String column = String.join("_", Arrays.copyOfRange(parts, 2, parts.length));
-
-		BigDecimal amount = new BigDecimal(value);
-
-		List<M_INT_RATES_Detail_Entity> rows = M_INT_RATES_Detail_Repo
-				.findByReportDateAndReportLableAndReportAddlCriteria1(reportDate, reportLabel, addlCriteria);
-
-		for (M_INT_RATES_Detail_Entity row : rows) {
-
-			if ("NOMINAL_INTEREST_RATE".equals(column)) {
-				row.setNOMINAL_INTEREST_RATE(amount);
-
-			} else if ("AVG_EFFECTIVE_RATE".equals(column)) {
-				row.setAVG_EFFECTIVE_RATE(amount);
-
-			} else if ("VOLUME_AMT".equals(column)) {
-				row.setVOLUME_AMT(amount);
-
-			} 
-		}
-
-		M_INT_RATES_Detail_Repo.saveAll(rows);
-	}
-
-	// ✅ CALL ORACLE PROCEDURE AFTER ALL UPDATES
-	callSummaryProcedure(reportDate);
-}
-
-private void callSummaryProcedure(Date reportDate) {
-
-	String sql = "{ call BRRS_M_INT_RATES_SUMMARY_PROCEDURE(?) }";
-
-	jdbcTemplate.update(connection -> {
-		CallableStatement cs = connection.prepareCall(sql);
-
-		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
-		sdf.setLenient(false);
-
-		String formattedDate = sdf.format(reportDate);
-
-		cs.setString(1, formattedDate);
-		return cs;
-	});
-
-	System.out.println(
-			"✅ Summary procedure executed for date: " + new SimpleDateFormat("dd-MM-yyyy").format(reportDate));
-}
-
+		/*
+		 * public void updateDetailFromForm(Date reportDate, Map<String, String> params)
+		 * {
+		 * 
+		 * System.out.println("came to service for update ");
+		 * 
+		 * for (Map.Entry<String, String> entry : params.entrySet()) {
+		 * 
+		 * String key = entry.getKey(); String value = entry.getValue();
+		 * 
+		 * // ✅ Allow only valid keys for required columns if
+		 * (!key.matches("R\\d+_C\\d+_(" + "NOMINAL_INTEREST_RATE|" +
+		 * "AVG_EFFECTIVE_RATE|" + "VOLUME|" + ")")) { continue; }
+		 * 
+		 * if (value == null || value.trim().isEmpty()) { value = "0"; }
+		 * 
+		 * String[] parts = key.split("_"); String reportLabel = parts[0]; // R1, R2,
+		 * etc. String addlCriteria = parts[1]; // C1, C2, etc. String column =
+		 * String.join("_", Arrays.copyOfRange(parts, 2, parts.length));
+		 * 
+		 * BigDecimal amount = new BigDecimal(value);
+		 * 
+		 * List<M_INT_RATES_Detail_Entity> rows = M_INT_RATES_Detail_Repo
+		 * .findByReportDateAndReportLableAndReportAddlCriteria1(reportDate,
+		 * reportLabel, addlCriteria);
+		 * 
+		 * for (M_INT_RATES_Detail_Entity row : rows) {
+		 * 
+		 * if ("NOMINAL_INTEREST_RATE".equals(column)) {
+		 * row.setNOMINAL_INTEREST_RATE(amount);
+		 * 
+		 * } else if ("AVG_EFFECTIVE_RATE".equals(column)) {
+		 * row.setAVG_EFFECTIVE_RATE(amount);
+		 * 
+		 * } else if ("VOLUME_AMT".equals(column)) { row.setVOLUME_AMT(amount);
+		 * 
+		 * } }
+		 * 
+		 * M_INT_RATES_Detail_Repo.saveAll(rows); }
+		 * 
+		 * // ✅ CALL ORACLE PROCEDURE AFTER ALL UPDATES
+		 * callSummaryProcedure(reportDate); }
+		 * 
+		 * private void callSummaryProcedure(Date reportDate) {
+		 * 
+		 * String sql = "{ call BRRS_M_INT_RATES_SUMMARY_PROCEDURE(?) }";
+		 * 
+		 * jdbcTemplate.update(connection -> { CallableStatement cs =
+		 * connection.prepareCall(sql);
+		 * 
+		 * SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+		 * sdf.setLenient(false);
+		 * 
+		 * String formattedDate = sdf.format(reportDate);
+		 * 
+		 * cs.setString(1, formattedDate); return cs; });
+		 * 
+		 * System.out.println( "✅ Summary procedure executed for date: " + new
+		 * SimpleDateFormat("dd-MM-yyyy").format(reportDate)); }
+		 */
 
 
 
