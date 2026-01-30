@@ -1,18 +1,19 @@
 package com.bornfire.brrs.entities;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Objects;
 
 public class M_EPR_Archival_Summary_PK implements Serializable {
 
     private Date report_date;
-    private String report_version;
+    private BigDecimal report_version;
 
     // default constructor
     public M_EPR_Archival_Summary_PK() {}
 
     // parameterized constructor
-    public M_EPR_Archival_Summary_PK(Date report_date, String report_version) {
+    public M_EPR_Archival_Summary_PK(Date report_date, BigDecimal report_version) {
         this.report_date = report_date;
         this.report_version = report_version;
     }
@@ -36,7 +37,7 @@ public class M_EPR_Archival_Summary_PK implements Serializable {
     public Date getReport_date() { return report_date; }
     public void setReport_date(Date report_date) { this.report_date = report_date; }
 
-    public String getReport_version() { return report_version; }
-    public void setReport_version(String report_version) { this.report_version = report_version; }
+    public BigDecimal getReport_version() { return report_version; }
+    public void setReport_version(BigDecimal report_version) { this.report_version = report_version; }
 }
 

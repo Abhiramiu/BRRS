@@ -873,7 +873,7 @@ function fileuploads(btn) {
 	        [ "NOMINAL_INTEREST_RATE", "AVG_EFFECTIVE_RATE", "VOLUME"].forEach(field => {
 	            const input = $("#R" + i + "_" + field);
 	            if (input.length) {
-	                formData.append(input.attr("name"), input.val());
+	                formData.append(input.attr("id"), input.val());
 	            }
 	        });
 	    }console.log("✅ Entity executed successfully");
