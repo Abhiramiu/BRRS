@@ -336,45 +336,67 @@ PURPOSE		: BWRBRREPORT
 				transform: translateX(-100%);
 			}
 		}
+
+
+		.dropdown-item {
+			background-color: white;
+			/* default background */
+			color: #333;
+			/* text color */
+			text-decoration: none;
+			font-family: Arial, sans-serif;
+			font-weight: bold;
+			display: block;
+			padding: 8px 12px;
+		}
+
+		/* Hover effect */
+		.dropdown-item:hover {
+			background-color: white !important;
+			/* keep white on hover */
+			color: #000;
+			/* optional: darken text */
+			cursor: pointer;
+		}
 	</style>
-	    <script th:inline="javascript">
-        $(document).ready(function () {
-            var table = $('#reportdetail').DataTable({
-                scrollY: "550px",
-                // scrollX: true,
-                scrollCollapse: true,
-                autoWidth: false,
-                paging: true,
-                searching: true,
-                lengthChange: false,
-                ordering: true,
-                pageLength: 100,
-                fixedHeader: true, // ✅ You can simply set it to true
-                // ✅ Column width settings
-                columnDefs: [
-                    { width: "60px", targets: 0 },
-                    { width: "100px", targets: 1 },
-                    { width: "250px", targets: 5 },
-                    { width: "250px", targets: 7 },
+	<script th:inline="javascript">
+		$(document).ready(function () {
+			var table = $('#reportdetail').DataTable({
+				scrollY: "550px",
+				// scrollX: true,
+				scrollCollapse: true,
+				autoWidth: false,
+				paging: true,
+				searching: true,
+				lengthChange: false,
+				ordering: true,
+				pageLength: 100,
+				fixedHeader: true, // ✅ You can simply set it to true
+				// ✅ Column width settings
+				columnDefs: [
+					{ width: "60px", targets: 0 },
+					{ width: "100px", targets: 1 },
+					{ width: "250px", targets: 5 },
+					{ width: "250px", targets: 7 },
 
-                    // ⭐ Right align these 5 columns
-                    { className: "dt-right", targets: [3, 4, 5, 7, 8] }
-                ],
+					// ⭐ Right align these 5 columns
+					{ className: "dt-right", targets: [3, 4, 5, 7, 8] }
+				],
 
-                dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t'
-            });
+				dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t'
+			});
 
-            // ✅ Fix alignment on resize / zoom
-            $(window).on('resize', function () {
-                table.columns.adjust().draw(false);
-            });
+			// ✅ Fix alignment on resize / zoom
+			$(window).on('resize', function () {
+				table.columns.adjust().draw(false);
+			});
 
-            // ✅ Fix initial misalignment if loaded at non-100% zoom
-            setTimeout(function () {
-                table.columns.adjust().draw(false);
-            }, 500);
-        });
-    </script>
+			// ✅ Fix initial misalignment if loaded at non-100% zoom
+			setTimeout(function () {
+				table.columns.adjust().draw(false);
+			}, 500);
+		});
+	</script>
 
 	<script th:inline="javascript">
 		let isDetailsModal = false;
@@ -434,181 +456,109 @@ PURPOSE		: BWRBRREPORT
 		}
 
 		//to fetch summary from the database - called from the summary button
-	 function showdetails() {
-            isDetailsModal = true; // mark that this modal is from Details
-            showResultModal('BRRS', 'Details page not available for Manual Report');
-        }
+		function showdetails() {
+			$('#loader').modal('show');
+			var Callurl = /*[[@{'/Reports/' + ${reportid}(
+			        dtltype='detail',
+			        fromdate=${fromdate},
+			        todate=${todate},
+			        type=${type},
+			        asondate=${asondate},
+			        version=${version}
+			    )}]]*/
+				location.href = Callurl;
 
+		}
 		function showsummary() {
 			$('#loader').modal('show');
-			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate}, version=${version})}]]*/
 				location.href = Callurl;
 		}
 
+	</script>
+	<script th:inline="javascript">
+		function showdetailsbyRowAndColumn(a) {
+			var RowId = a.getAttribute("RowId");
+			var ColumnId = a.getAttribute("ColumnId");
+			var cellValue = a.textContent || a.innerText;
+
+			if (cellValue !== "0") {
+				// Set dynamic message in modal (instead of confirm)
+				document.getElementById("cellresultModalLabel").innerText =
+					"Do you want to open details for Row: " +
+					RowId +
+					" and Column: " +
+					ColumnId +
+					"?";
+
+				// Show custom Bootstrap modal
+				$("#cellresultModal").modal("show");
+
+				// Handle Yes button
+				document.querySelector(".yes-btn").onclick = function () {
+					$("#cellresultModal").modal("hide");
+
+					// Show loader
+					const loader = bootstrap.Modal.getOrCreateInstance(
+						document.getElementById("loader"),
+						{
+							backdrop: "static",
+							keyboard: false,
+						}
+					);
+					$("#loader").modal("show");
+
+					// Build dynamic URL
+					var Callurl =
+              /*[[@{'/Reports/' + ${reportid} + '/Details'(asondate=${asondate}, fromdate=${fromdate}, todate=${todate}, currency=${currency}, dtltype=${dtltype},type=${type},version=${version})}]]*/ "";
+					Callurl += "&filter=" + encodeURIComponent(RowId + "," + ColumnId);
+
+					location.href = Callurl;
+				};
+			} else {
+				// Use your custom alert modal instead of window.alert
+				showResultModal(
+					"Alert",
+					"No Records available for this selected cell."
+				);
+			}
+		}
+
+		let previousUrl = document.referrer;
+
+		function submitQ_STAFFUpdate() {
+
+			const formData = $('#Q_STAFFDetailForm').serialize();
+
+			$('#loader').modal('show');
+
+			$.ajax({
+				url: '/BRRS/Reports/' + reportId + '/update',
+				type: 'POST',
+				data: formData,
+
+				success: function (response) {
+					$('#loader').modal('hide');
+
+					if (response && response.toLowerCase().includes('success')) {
+						showResultModalDU('BRRS', response);
+					} else {
+						showResultModalDU('Information', response || 'No data updated.');
+					}
+				},
+
+				error: function () {
+					$('#loader').modal('hide');
+					showResultModalDU('Error', 'Failed to update record. Please try again.');
+				}
+			});
+		}
+
+
+
+
 
 	</script>
-	    <script th:inline="javascript">
-        function showdetailsbyRowAndColumn(a) {
-            var RowId = a.getAttribute("RowId");
-            var ColumnId = a.getAttribute("ColumnId");
-            var cellValue = a.textContent || a.innerText;
-
-            if (cellValue !== "0") {
-                // Set dynamic message in modal (instead of confirm)
-                document.getElementById("cellresultModalLabel").innerText =
-                    "Do you want to open details for Row: " +
-                    RowId +
-                    " and Column: " +
-                    ColumnId +
-                    "?";
-
-                // Show custom Bootstrap modal
-                $("#cellresultModal").modal("show");
-
-                // Handle Yes button
-                document.querySelector(".yes-btn").onclick = function () {
-                    $("#cellresultModal").modal("hide");
-
-                    // Show loader
-                    const loader = bootstrap.Modal.getOrCreateInstance(
-                        document.getElementById("loader"),
-                        {
-                            backdrop: "static",
-                            keyboard: false,
-                        }
-                    );
-                    $("#loader").modal("show");
-
-                    // Build dynamic URL
-                    var Callurl =
-              /*[[@{'/Reports/' + ${reportid} + '/Details'(asondate=${asondate}, fromdate=${fromdate}, todate=${todate}, currency=${currency}, dtltype=${dtltype},type=${type},version=${version})}]]*/ "";
-                    Callurl += "&filter=" + encodeURIComponent(RowId + "," + ColumnId);
-
-                    location.href = Callurl;
-                };
-            } else {
-                // Use your custom alert modal instead of window.alert
-                showResultModal(
-                    "Alert",
-                    "No Records available for this selected cell."
-                );
-            }
-        }
-
-        let previousUrl = document.referrer;
-
-        function submitQ_STAFFUpdate() {
-
-            const formData = $('#Q_STAFFDetailForm').serialize();
-
-            $('#loader').modal('show');
-
-            $.ajax({
-                url: '/BRRS/Reports/' + reportId + '/update',
-                type: 'POST',
-                data: formData,
-
-                success: function (response) {
-                    $('#loader').modal('hide');
-
-                    if (response && response.toLowerCase().includes('success')) {
-                        showResultModalDU('BRRS', response);
-                    } else {
-                        showResultModalDU('Information', response || 'No data updated.');
-                    }
-                },
-
-                error: function () {
-                    $('#loader').modal('hide');
-                    showResultModalDU('Error', 'Failed to update record. Please try again.');
-                }
-            });
-        }
-
-
-
-        function startReport(button) {
-            const alertMsg = document.getElementById("alertMessage");
-            const filename = button.getAttribute('data-filename');
-            const fromdate = button.getAttribute('data-fromdate');
-            const todate = button.getAttribute('data-todate');
-            const currency = button.getAttribute('data-currency');
-            const dtltype = button.getAttribute('data-dtltype');
-            const type = button.getAttribute('data-type');
-            const version = button.getAttribute('data-version');
-            const sessionfilename = sessionStorage.getItem("filename");
-
-            if (sessionfilename == filename) {
-                alertMsg.innerHTML = 'Download request already Processing...';
-                showAlert();
-                return;
-            }
-
-            alertMsg.innerHTML = 'Download request Processing...';
-            showAlert();
-
-            const baseUrl = '/BRRS/Reports/startreport';
-            const downloadUrl = baseUrl +
-                '?filename=' + encodeURIComponent(filename) +
-                '&fromdate=' + encodeURIComponent(fromdate) +
-                '&todate=' + encodeURIComponent(todate) +
-                '&currency=' + encodeURIComponent(currency) +
-                '&dtltype=' + encodeURIComponent(dtltype) +
-                '&type=' + encodeURIComponent(type) +
-                '&version=' + encodeURIComponent(version);
-            fetch(downloadUrl)  // ✅ no invalid characters now
-                .then(res => res.text())
-                .then(jobId => {
-
-                    alertMsg.innerHTML = 'Download request received...' + jobId;
-                    showAlert();
-                    sessionStorage.setItem("jobId", jobId);
-                    sessionStorage.setItem("filename", filename);
-                    checkReport(jobId);
-                });
-        }
-
-        function downloadDetailfile(jobId, filename) {
-
-            //$('#loader').modal('show');
-
-            $.ajax({
-                url: '/BRRS/Reports/downloaddetailExcel?jobId=' + jobId +
-                    '&filename=' + filename,
-                type: 'GET',
-                xhrFields: {
-                    responseType: 'blob'
-                },
-                success: function (data) {
-                    $('#loader').modal('hide');
-
-                    if (data && data.size > 100) {
-                        const blob = new Blob([data], { type: 'application/vnd.ms-excel' });
-                        const url = window.URL.createObjectURL(blob);
-                        const a = document.createElement('a');
-                        a.style.display = 'none';
-                        a.href = url;
-                        a.download = filename;
-                        document.body.appendChild(a);
-                        a.click();
-                        window.URL.revokeObjectURL(url);
-                        document.body.removeChild(a);
-
-                        showResultModal('BRRS', filename + ' downloaded successfully');
-                    } else {
-                        showResultModal('Information', 'No data was available to create a download.');
-                    }
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    $('#loader').modal('hide');
-                    console.error("Download failed:", textStatus, errorThrown);
-                    showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
-                }
-            });
-        }
-
-
-    </script>
 	<script>
 		function activateTab(tabName) {
 			// Remove 'active' from all buttons
@@ -632,76 +582,9 @@ PURPOSE		: BWRBRREPORT
 			var selectedTab = document.getElementById("selectedTab").value;
 			activateTab(selectedTab);
 		};
-	function downloadfile(button) {
 
-    var reportid = button.getAttribute('data-reportid');
-    var asondate = button.getAttribute('data-asondate');
-    var fromdate = button.getAttribute('data-fromdate');
-    var todate = button.getAttribute('data-todate');
-    var currency = button.getAttribute('data-currency');
-    var subreportid = button.getAttribute('data-subreportid');
-    var secid = button.getAttribute('data-secid');
-    var dtltype = button.getAttribute('data-dtltype');
-    var filename = button.getAttribute('data-filename');
-    var type = button.getAttribute('data-type');
-    var version = button.getAttribute('data-version');
 
-    var loader = new bootstrap.Modal(
-        document.getElementById('loader'),
-        { backdrop: 'static', keyboard: false }
-    );
-    loader.show();
 
-    // ✅ Build URL safely
-    var url = './downloadExcel?reportid=' + reportid +
-        '&fromdate=' + fromdate +
-        '&asondate=' + asondate +
-        '&todate=' + todate +
-        '&currency=' + currency +
-        '&subreportid=' + subreportid +
-        '&secid=' + secid +
-        '&filename=' + filename +
-        '&type=' + type;
-
-    // ✅ ONLY append version if valid
-    if (version && version.trim() !== '') {
-        url += '&version=' + version;
-    }
-
-    $.ajax({
-        url: url,
-        type: 'GET',
-        xhrFields: { responseType: 'blob' },
-
-        success: function (data) {
-            $('#loader').modal('hide');
-
-            if (data && data.size > 100) {
-                const blob = new Blob([data], {
-                    type: 'application/vnd.ms-excel'
-                });
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.style.display = 'none';
-                a.href = url;
-                a.download = filename;
-                document.body.appendChild(a);
-                a.click();
-                window.URL.revokeObjectURL(url);
-                document.body.removeChild(a);
-
-                showResultModal('BRRS', filename + ' downloaded successfully.');
-            } else {
-                showResultModal('Information', 'No data was available to create a download.');
-            }
-        },
-
-        error: function () {
-            $('#loader').modal('hide');
-            showResultModal('Error', 'An error occurred while downloading the file.');
-        }
-    });
-}
 		function editRecord() {
 			showResultModal('Alert', 'Development in progress');
 
@@ -907,15 +790,15 @@ PURPOSE		: BWRBRREPORT
 			}
 		});
 
-  function closemodels() {
-            $("#resultModal").modal("hide");
-            $('#loader').modal('hide');
+		function closemodels() {
+			$("#resultModal").modal("hide");
+			$('#loader').modal('hide');
 
-            // Reload the page after a short delay to ensure the modal animation completes smoothly.
-            setTimeout(function () {
-                location.reload();
-            }, 300);
-        }
+			// Reload the page after a short delay to ensure the modal animation completes smoothly.
+			setTimeout(function () {
+				location.reload();
+			}, 300);
+		}
 	</SCRIPT>
 
 
@@ -1026,8 +909,157 @@ PURPOSE		: BWRBRREPORT
 
 		}
 
+		//download
+		function downloadfile(button) {
+			processFile(button, 'download');
+		}
+
+		function downloadEmailFile(button) {
+			processFile(button, 'email');
+		}
+
+		/**
+		 * Unified function to handle download or email
+		 */
+		function processFile(button, action) {
+
+			var reportid = button.getAttribute('data-reportid');
+			var asondate = button.getAttribute('data-asondate');
+			var fromdate = button.getAttribute('data-fromdate');
+			var todate = button.getAttribute('data-todate');
+			var currency = button.getAttribute('data-currency');
+			var subreportid = button.getAttribute('data-subreportid');
+			var secid = button.getAttribute('data-secid');
+			var dtltype = button.getAttribute('data-dtltype');
+			var filename = button.getAttribute('data-filename');
+			var type = button.getAttribute('data-type');
+			var version = button.getAttribute('data-version');
+
+			var loader = new bootstrap.Modal(
+				document.getElementById('loader'),
+				{ backdrop: 'static', keyboard: false }
+			);
+			loader.show();
+
+			// Build URL based on action
+			var url = '';
+
+			if (action === 'download') {
+
+				url = './downloadExcel?reportid=' + reportid +
+					'&fromdate=' + fromdate +
+					'&asondate=' + asondate +
+					'&todate=' + todate +
+					'&currency=' + currency +
+					'&subreportid=' + subreportid +
+					'&secid=' + secid +
+					'&filename=' + filename +
+					'&mode=download' +
+					'&type=' + type;
+
+				if (version && version.trim() !== '') {
+					url += '&version=' + version;
+				}
+
+			} else if (action === 'email') {
+
+				url = './downloadExcel?reportid=' + reportid +
+					'&fromdate=' + fromdate +
+					'&asondate=' + asondate +
+					'&todate=' + todate +
+					'&currency=' + currency +
+					'&subreportid=' + subreportid +
+					'&secid=' + secid +
+					'&filename=' + filename +
+					'&mode=email' +
+					'&type=' + type;
+
+				if (version && version.trim() !== '') {
+					url += '&version=' + version;
+				}
+			}
+
+			// Ajax call
+			$.ajax({
+				url: url,
+				type: 'GET',
+
+				// ✅ IMPORTANT FIX – ALWAYS BLOB
+				xhrFields: { responseType: 'blob' },
+
+				success: function (data) {
+
+					$('#loader').modal('hide');
+
+					// ----- DOWNLOAD MODE -----
+					if (action === 'download') {
+
+						if (data && data.size > 100) {
+
+							downloadBlob(data, filename);
+
+							showResultModal('BRRS',
+								filename + ' downloaded successfully.');
+
+						} else {
+							showResultModal('Information',
+								'No data was available to create a download.');
+						}
+					}
+
+					// ----- EMAIL MODE -----
+					else if (action === 'email') {
+
+						if (data && data.size > 100) {
+
+							// ALSO DOWNLOAD FILE
+							downloadBlob(data, filename);
+
+							showResultModal('BRRS',
+								'Email Format ' +
+								filename + ' downloaded.');
+
+						} else {
+							showResultModal('BRRS',
+								'Email sent successfully. But no file returned for download.');
+						}
+					}
+				},
+
+				error: function () {
+					$('#loader').modal('hide');
+					showResultModal('Error',
+						'An error occurred while processing the file.');
+				}
+			});
+		}
+
+		/**
+		 * Common function to download blob
+		 */
+		function downloadBlob(data, filename) {
+
+			const blob = new Blob([data], {
+				type: 'application/vnd.ms-excel'
+			});
+
+			const downloadUrl = window.URL.createObjectURL(blob);
+
+			const a = document.createElement('a');
+			a.style.display = 'none';
+			a.href = downloadUrl;
+			a.download = filename;
+
+			document.body.appendChild(a);
+			a.click();
+
+			window.URL.revokeObjectURL(downloadUrl);
+			document.body.removeChild(a);
+		}
 
 	</script>
+
+
 </head>
 <title>Q STAFF</title>
 
@@ -1047,7 +1079,7 @@ PURPOSE		: BWRBRREPORT
 						<h5
 							style="font-family: arial; font-size: 20px; font-weight: bold; color: white; margin: 0 10px;">
 
-							(8) QUARTERLY SCHEDULE: Q-STAFF: <br> STAFFING AND EMPLOYMENT </h5>
+							(8) QUARTERLY SCHEDULE: <br>Q-STAFF: STAFFING AND EMPLOYMENT </h5>
 
 						<!-- Moving bus-board text -->
 						<div class="boards">
@@ -1064,54 +1096,83 @@ PURPOSE		: BWRBRREPORT
 						<!-- Buttons -->
 						<input type="hidden" id="selectedTab" th:value="${displaymode}">
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showsummary();"
-							th:if="${displaymode == 'Details'}">Summary</button>
-					<button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails();"
-                            th:if="${displaymode == 'summary'}">Details</button>
+							th:if="${displaymode == 'detail'}">Summary</button>
+						<button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails();"
+							th:if="${displaymode == 'summary'}">Details</button>
+
 
 						<!-- Modify button -->
 						<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
-							title="Click to EDIT Records" th:if="${type != 'ARCHIVAL'}"
-							th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
-							id="addRecord">Modify</button>
+							title="Click to EDIT Records" th:if="${type != 'ARCHIVAL'} and ${dtltype != 'detail'}"
+							th:classappend="${session.PERMISSIONS == 'W'} and ${dtltype == 'report'} ? 'addedit'"
+							id="addRecord">
+							Modify
+						</button>
+
 
 						<!-- Cancel button (hidden initially) -->
 						<button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord"
 							onclick="cancelModify();" style="display: none;">Cancel</button>
 
 
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'summary'}" th:attr="data-reportid=${reportid},
-                   				 data-asondate=${asondate},
-                   				 data-fromdate=${fromdate},
-                    				 data-todate=${todate},
-                    				 data-currency=${currency}, 
-                    				 data-dtltype=${dtltype},
-                    				 data-filename='Q_STAFF.xlsx',
-					 				 data-type=${type},
-					    			 data-version=${version != null ? version : ''}" onclick="downloadfile(this);">
-							<i class="fa fa-download"></i>
+
+						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
+							onclick="downloadfile(this)" th:if="${displaymode == 'summary' or displaymode == 'detail'}"
+							th:attr="data-reportid=${reportid},
+                   data-asondate=${asondate},
+                   data-fromdate=${fromdate},
+                   data-todate=${todate},
+                   data-currency=${currency}, 
+                   data-dtltype=${dtltype},
+                   data-filename='Q_STAFF.xlsx',
+                   data-type=${type},
+                   data-version=${version != null ? version : ''}" style="font-family: Arial;font-weight: bold;">
+							<i class="fa fa-download"></i> Download
 						</button>
+						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
+							onclick="downloadEmailFile(this)"
+							th:if="${displaymode == 'summary' or displaymode == 'detail'}" th:attr="data-reportid=${reportid},
+            data-asondate=${asondate},
+            data-fromdate=${fromdate},
+            data-todate=${todate},
+            data-currency=${currency}, 
+            data-dtltype=${dtltype},
+            data-filename='EMAIL_Q_STAFF.xlsx',
+            data-type='email',
+            data-version=${version != null ? version : ''}" style="font-family: Arial;font-weight: bold;">
+							<i class="fa fa-download"></i> Email Format
 
-
-
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'Details'}" onclick="startReport(this);" th:attr="
-								    data-fromdate=${fromdate},
-								    data-todate=${todate},
-									data-currency=${currency},  
-												data-dtltype=${dtltype}, 
-								    data-filename='Q_STAFFDetail',
-									data-type=${type},
-												data-version=${version}
-								  ">
-							<i class="fa fa-download"></i>
 						</button>
 
 
 					</div>
 
 				</div>
-				<div th:if="${displaymode == 'summary'}">
+				<p th:if="${displaymode == 'summary'and type != 'ARCHIVAL'}" style="text-align: left; font-weight: bold; 
+						color: white;  font-size: 20px;  background-color: rgb(107, 122, 143); 
+						margin-top:10px; margin-bottom:10px;padding: 5px;">Summary View - Q STAFF</p>
+
+				<!-- Detail text -->
+				<p th:if="${displaymode == 'detail' and type != 'ARCHIVAL'}" style="text-align: left; font-weight: bold;
+					 color: white;  font-size: 20px;  background-color: rgb(107, 122, 143); 
+					 margin-top:10px; margin-bottom:10px;padding: 5px;">Detail View - Q STAFF</p>
+
+				<p th:if="${type == 'ARCHIVAL' and displaymode == 'summary'}" style="text-align: left; font-weight: bold; 
+          color: white; font-size: 20px;
+          background-color: rgb(107, 122, 143); 
+          margin-top:10px; margin-bottom:10px; padding: 5px;">
+					Archival Summary View - Q STAFF
+				</p>
+
+				<p th:if="${type == 'ARCHIVAL' and displaymode == 'detail'}" style="text-align: left; font-weight: bold;
+          color: white; font-size: 20px;
+          background-color: rgb(107, 122, 143); 
+          margin-top:10px; margin-bottom:10px; padding: 5px;">
+					Archival Detail View - Q STAFF
+				</p>
+
+				<div th:if="${displaymode == 'summary' or displaymode == 'detail'}">
+
 					<div class="row">
 						<div class="col-sm-12">
 							<form action="#" method="POST" id="fileupload">
@@ -1378,7 +1439,7 @@ PURPOSE		: BWRBRREPORT
 													Total</th>
 											</tr>
 										</thead>
-										<tbody id="entity2" th:each="report: ${reportsummary1}"
+										<tbody id="entity2" th:each="report: ${reportsummary}"
 											style="font-family: Arial;">
 											<tr>
 												<td id="ROW21" style="font-weight: bold;"><input
@@ -1645,7 +1706,7 @@ PURPOSE		: BWRBRREPORT
 											</tr>
 										</thead>
 
-										<tbody id="entity3" th:each="report: ${reportsummary2}"
+										<tbody id="entity3" th:each="report: ${reportsummary}"
 											style="font-family: Arial;">
 
 											<!-- R33 -->
@@ -1897,236 +1958,236 @@ PURPOSE		: BWRBRREPORT
 						</div>
 					</div>
 				</div>
-			
-		     <!-- ------------------- -->
-                <div th:if="${displaymode == 'Details'}">
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <div class="table-responsive" style="border-right: 1px solid #dee2e6;">
-                                <table class="table table-striped table-hover table-bordereds " id="reportdetail">
-                                    <thead class="thead-light">
-                                        <tr>
-                                            <th></th>
-                                            <th>S No</th>
-                                            <th>CUST ID</th>
-                                            <th>ACCT NUMBER</th>
-                                            <th>ACCT NAME</th>
-                                            <th style="text-align:right;">ACCT BALANCE</th>
-                                            <th style="text-align:right;">AVERAGE</th>
-                                            <th>REPORT LABEL</th>
-                                            <th>REPORT ADDL CRITERIA</th>
-                                            <th>REPORT DATE</th>
-                                        </tr>
 
-                                    </thead>
+				<!-- ------------------- -->
+				<!-- <div th:if="${displaymode == 'Details'}">
+					<div class="row">
+						<div class="col-sm-12">
+							<div class="table-responsive" style="border-right: 1px solid #dee2e6;">
+								<table class="table table-striped table-hover table-bordereds " id="reportdetail">
+									<thead class="thead-light">
+										<tr>
+											<th></th>
+											<th>S No</th>
+											<th>CUST ID</th>
+											<th>ACCT NUMBER</th>
+											<th>ACCT NAME</th>
+											<th style="text-align:right;">ACCT BALANCE</th>
+											<th style="text-align:right;">AVERAGE</th>
+											<th>REPORT LABEL</th>
+											<th>REPORT ADDL CRITERIA</th>
+											<th>REPORT DATE</th>
+										</tr>
 
-                                    <tbody style="font-family: Arial;">
-                                        <tr th:each="report, srlno : ${reportdetails}">
-                                            <td>
-                                                <a data-toggle="tooltip" class="editrec"
-                                                    title="Click to Edit this Record">
-                                                    <i class="fas fa-edit" style="color: black; cursor:pointer;"
-                                                        th:attr="data-acctNo=${report.acctNumber},
+									</thead>
+
+									<tbody style="font-family: Arial;">
+										<tr th:each="report, srlno : ${reportdetails}">
+											<td>
+												<a data-toggle="tooltip" class="editrec"
+													title="Click to Edit this Record">
+													<i class="fas fa-edit" style="color: black; cursor:pointer;"
+														th:attr="data-acctNo=${report.acctNumber},
 														data-asondate=${#dates.format(report.REPORT_DATE, 'dd-MM-yyyy')},data-type=${type}"
-                                                        onclick="openPL_SCHSDetail(this, 'edit')"></i>
+														onclick="openPL_SCHSDetail(this, 'edit')"></i>
 
-                                                </a>
-                                            </td>
+												</a>
+											</td>
 
 
-                                            <td th:text="${srlno.index + 1}" style="text-align:left"></td>
-                                            <td th:text="${report.custId}" style="text-align:left"></td>
-                                            <td th:text="${report.acctNumber}" style="text-align:left"></td>
-                                            <td th:text="${report.acctName}" style="text-align:left"></td>
-                                            <td style="text-align:right;"
-                                                th:text="${#numbers.formatDecimal(report.acctBalanceInpula == null ? 0 : report.acctBalanceInpula, 1, 'COMMA', 0, 'POINT')}">
-                                            </td>
-                                            <td style="text-align:right" th:text="${report.average != null ?
+											<td th:text="${srlno.index + 1}" style="text-align:left"></td>
+											<td th:text="${report.custId}" style="text-align:left"></td>
+											<td th:text="${report.acctNumber}" style="text-align:left"></td>
+											<td th:text="${report.acctName}" style="text-align:left"></td>
+											<td style="text-align:right;"
+												th:text="${#numbers.formatDecimal(report.acctBalanceInpula == null ? 0 : report.acctBalanceInpula, 1, 'COMMA', 0, 'POINT')}">
+											</td>
+											<td style="text-align:right" th:text="${report.average != null ?
       #numbers.formatDecimal(report.average, 1, 'COMMA', 0, 'POINT') : '0'}">
-                                            </td>
+											</td>
 
-                                            <td th:text="${report.reportLabel}" style="text-align:left"></td>
-                                            <td th:text="${report.reportAddlCriteria1}" style="text-align:left"></td>
-                                            <td th:text="${#dates.format(report.REPORT_DATE, 'dd-MM-yyyy')}"
-                                                style="text-align:left"></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+											<td th:text="${report.reportLabel}" style="text-align:left"></td>
+											<td th:text="${report.reportAddlCriteria1}" style="text-align:left"></td>
+											<td th:text="${#dates.format(report.REPORT_DATE, 'dd-MM-yyyy')}"
+												style="text-align:left"></td>
+										</tr>
+									</tbody>
+								</table>
 
-                            </div>
+							</div>
 
-                            <!-- Submit Button -->
-                            <div style="text-align: center; margin-top: 15px; background-color: white;">
-                                <button id="submitButton" type="button" class="custom-tab-btn Show_input"
-                                    onclick="updateform();" style="display: none;">
-                                    Submit
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+							<!-- Submit Button -->
+				<!-- <div style="text-align: center; margin-top: 15px; background-color: white;">
+								<button id="submitButton" type="button" class="custom-tab-btn Show_input"
+									onclick="updateform();" style="display: none;">
+									Submit
+								</button>
+							</div>
+						</div>
+					</div>
+				</div> -->
 
-                <div th:if="${formmode == 'edit'}" class="card">
-
-
-                    <div class="card-body">
-                        <form th:object="${PL_SCHSData}" method="post" id="Q_STAFFDetailForm">
-                            <div class="row formline" style="margin-top:10px;">
-                                <label class="col-sm-2">Customer ID</label>
-                                <div class="col-sm-3">
-                                    <input type="text" th:field="*{custId}" class="form-control form-control-sm"
-                                        readonly />
-                                </div>
-
-                                <div class="col-sm-1"></div>
-
-                                <label class="col-sm-2">Account Number</label>
-                                <div class="col-sm-3">
-                                    <input type="text" th:field="*{acctNumber}" name="acctNumber"
-                                        class="form-control form-control-sm" readonly />
-                                </div>
-                            </div>
-
-                            <div class="row formline" style="margin-top:10px;">
-                                <label class="col-sm-2">Account Name</label>
-                                <div class="col-sm-3">
-                                    <input type="text" th:field="*{acctName}" class="form-control form-control-sm"
-                                        readonly />
-                                </div>
-
-                                <div class="col-sm-1"></div>
-
-                                <label class="col-sm-2">Acct Balance</label>
-                                <div class="col-sm-3">
-                                    <input type="number" step="0.01" th:field="*{acctBalanceInpula}"
-                                        class="form-control form-control-sm" style="text-align:right;" />
-                                </div>
-                            </div>
-
-                            <div class="row formline" style="margin-top:10px;">
-                                <label class="col-sm-2">Average</label>
-                                <div class="col-sm-3">
-                                    <input type="number" step="0.01" th:field="*{average}"
-                                        class="form-control form-control-sm" style="text-align:right;" />
-                                </div>
-
-                                <div class="col-sm-1"></div>
-
-                                <label class="col-sm-2">Report Label</label>
-                                <div class="col-sm-3">
-                                    <input type="text" th:field="*{reportLabel}" class="form-control form-control-sm"
-                                        readonly />
-                                </div>
-                            </div>
-
-                            <div class="row formline" style="margin-top:10px;">
-                                <label class="col-sm-2">Report Addl Criteria 1</label>
-                                <div class="col-sm-3">
-                                    <input type="text" th:field="*{reportAddlCriteria1}"
-                                        class="form-control form-control-sm" readonly />
-                                </div>
-
-                                <div class="col-sm-1"></div>
-
-                                <label class="col-sm-2">Report Date</label>
-                                <div class="col-sm-3">
-                                    <input type="date" name="reportDate" class="form-control form-control-sm" readonly
-                                        th:value="${#dates.format(PL_SCHSData.reportDate, 'yyyy-MM-dd')}" />
-                                </div>
-                            </div>
+				<!-- <div th:if="${formmode == 'edit'}" class="card">
 
 
-                            <div style="text-align:center; margin-top:20px;">
-                                <button type="button" class="custom-tab-btn" th:if="${formmode == 'edit'}"
-                                    onclick="submitQ_STAFFUpdate()">Update</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
+					<div class="card-body">
+						<form th:object="${PL_SCHSData}" method="post" id="Q_STAFFDetailForm">
+							<div class="row formline" style="margin-top:10px;">
+								<label class="col-sm-2">Customer ID</label>
+								<div class="col-sm-3">
+									<input type="text" th:field="*{custId}" class="form-control form-control-sm"
+										readonly />
+								</div>
+
+								<div class="col-sm-1"></div>
+
+								<label class="col-sm-2">Account Number</label>
+								<div class="col-sm-3">
+									<input type="text" th:field="*{acctNumber}" name="acctNumber"
+										class="form-control form-control-sm" readonly />
+								</div>
+							</div>
+
+							<div class="row formline" style="margin-top:10px;">
+								<label class="col-sm-2">Account Name</label>
+								<div class="col-sm-3">
+									<input type="text" th:field="*{acctName}" class="form-control form-control-sm"
+										readonly />
+								</div>
+
+								<div class="col-sm-1"></div>
+
+								<label class="col-sm-2">Acct Balance</label>
+								<div class="col-sm-3">
+									<input type="number" step="0.01" th:field="*{acctBalanceInpula}"
+										class="form-control form-control-sm" style="text-align:right;" />
+								</div>
+							</div>
+
+							<div class="row formline" style="margin-top:10px;">
+								<label class="col-sm-2">Average</label>
+								<div class="col-sm-3">
+									<input type="number" step="0.01" th:field="*{average}"
+										class="form-control form-control-sm" style="text-align:right;" />
+								</div>
+
+								<div class="col-sm-1"></div>
+
+								<label class="col-sm-2">Report Label</label>
+								<div class="col-sm-3">
+									<input type="text" th:field="*{reportLabel}" class="form-control form-control-sm"
+										readonly />
+								</div>
+							</div>
+
+							<div class="row formline" style="margin-top:10px;">
+								<label class="col-sm-2">Report Addl Criteria 1</label>
+								<div class="col-sm-3">
+									<input type="text" th:field="*{reportAddlCriteria1}"
+										class="form-control form-control-sm" readonly />
+								</div>
+
+								<div class="col-sm-1"></div>
+
+								<label class="col-sm-2">Report Date</label>
+								<div class="col-sm-3">
+									<input type="date" name="reportDate" class="form-control form-control-sm" readonly
+										th:value="${#dates.format(PL_SCHSData.reportDate, 'yyyy-MM-dd')}" />
+								</div>
+							</div>
 
 
-        <div class="modal fade" id="loader" data-backdrop="static" data-keyboard="false">
-            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-                <div class="modal-content" style="background: transparent;">
-                    <div class="modal-body" style="text-align: center">
-                        <div>
-                            <img th:src=@{/images/loader.gif} id="bfirelogo"
-                                style="width: 153px; height: auto; margin-left: 18px; background-color: transparent; border-color: transparent;"
-                                alt="Bornfire">
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+							<div style="text-align:center; margin-top:20px;">
+								<button type="button" class="custom-tab-btn" th:if="${formmode == 'edit'}"
+									onclick="submitQ_STAFFUpdate()">Update</button>
+							</div>
+						</form>
+					</div>
+				</div> -->
+			</div>
+		</div>
+
+
+		<div class="modal fade" id="loader" data-backdrop="static" data-keyboard="false">
+			<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+				<div class="modal-content" style="background: transparent;">
+					<div class="modal-body" style="text-align: center">
+						<div>
+							<img th:src=@{/images/loader.gif} id="bfirelogo"
+								style="width: 153px; height: auto; margin-left: 18px; background-color: transparent; border-color: transparent;"
+								alt="Bornfire">
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
 
 
 
-        <!-- Custom Alert/Result Modal (Matches your existing style) For Modify in Summary -->
-        <div class="modal fade" id="resultModal">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <!-- Your custom styled header -->
-                    <div class="menu-title-header">
-                        <div class="modal-title" id="resultModalLabel" style="text-align: center; color: white;">
-                            <!-- Title will be set by JavaScript -->
-                        </div>
-                    </div>
-                    <div class="modal-body" style="text-align: center; font-size: 1.1rem;">
-                        <p id="resultModalBody"></p>
-                        <!-- Your custom styled button -->
-                        <button type="button" class="custom-tab-btn" onclick="closemodels()"
-                            data-dismiss="modal">Ok</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- For Edit in Detail page -->
-        <div class="modal fade" id="resultModal1" tabindex="-1">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="menu-title-header">
-                        <div class="modal-title " id="resultModalLabel1" style="text-align: center; color: white;">
-                        </div>
-                    </div>
-                    <div class="modal-body" style="text-align: center; font-size: 1.1rem;">
-                        <p id="resultModalBody1"></p>
-                        <button type="button" class="custom-tab-btn" onclick="redirectBack()">OK</button>
-                    </div>
-                </div>
-            </div>
-        </div>
+		<!-- Custom Alert/Result Modal (Matches your existing style) For Modify in Summary -->
+		<div class="modal fade" id="resultModal">
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content">
+					<!-- Your custom styled header -->
+					<div class="menu-title-header">
+						<div class="modal-title" id="resultModalLabel" style="text-align: center; color: white;">
+							<!-- Title will be set by JavaScript -->
+						</div>
+					</div>
+					<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+						<p id="resultModalBody"></p>
+						<!-- Your custom styled button -->
+						<button type="button" class="custom-tab-btn" onclick="closemodels()"
+							data-dismiss="modal">Ok</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- For Edit in Detail page -->
+		<div class="modal fade" id="resultModal1" tabindex="-1">
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content">
+					<div class="menu-title-header">
+						<div class="modal-title " id="resultModalLabel1" style="text-align: center; color: white;">
+						</div>
+					</div>
+					<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+						<p id="resultModalBody1"></p>
+						<button type="button" class="custom-tab-btn" onclick="redirectBack()">OK</button>
+					</div>
+				</div>
+			</div>
+		</div>
 
 
-        <!-- Custom Cellresult Modal -->
-        <div class="modal fade" id="cellresultModal">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
+		<!-- Custom Cellresult Modal -->
+		<div class="modal fade" id="cellresultModal">
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content">
 
-                    <!-- Custom header -->
-                    <div class="menu-title-header"
-                        style="background-color:#6c7a91; padding: 8px; border-radius:5px 5px 0 0;">
-                        <div class="modal-title" id="cellresultModalLabel" style="text-align: center; color: white;">
-                            Do you want to open the report?
-                        </div>
-                    </div>
+					<!-- Custom header -->
+					<div class="menu-title-header"
+						style="background-color:#6c7a91; padding: 8px; border-radius:5px 5px 0 0;">
+						<div class="modal-title" id="cellresultModalLabel" style="text-align: center; color: white;">
+							Do you want to open the report?
+						</div>
+					</div>
 
-                    <div class="modal-body" style="text-align: center; font-size: 1.1rem;">
-                        <button type="button" class="custom-tab-btn cancel-btn" data-bs-dismiss="modal"
-                            style="margin-right:10px; border:2px solid #6c7a91; background:white; color:black; border-radius:20px; padding:5px 15px;">
-                            Cancel
-                        </button>
-                        <button type="button" class="custom-tab-btn yes-btn"
-                            style="background:#6c7a91; color:white; border:none; border-radius:20px; padding:5px 20px;">
-                            Yes
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
+					<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+						<button type="button" class="custom-tab-btn cancel-btn" data-bs-dismiss="modal"
+							style="margin-right:10px; border:2px solid #6c7a91; background:white; color:black; border-radius:20px; padding:5px 15px;">
+							Cancel
+						</button>
+						<button type="button" class="custom-tab-btn yes-btn"
+							style="background:#6c7a91; color:white; border:none; border-radius:20px; padding:5px 20px;">
+							Yes
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
 
-</div>
+	</div>
 
 </body>
 

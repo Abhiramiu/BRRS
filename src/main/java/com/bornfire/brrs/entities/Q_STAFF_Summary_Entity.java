@@ -11,8 +11,8 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-@Table(name = "BRRS_Q_STAFF_DETAILTABLE")
-public class Q_STAFF_Detail_Entity {
+@Table(name = "BRRS_Q_STAFF_SUMMARYTABLE")
+public class Q_STAFF_Summary_Entity {
 
     private String R9_STAFF_COMPLEMENT;
     private BigDecimal R9_LOCAL;
@@ -117,7 +117,7 @@ public class Q_STAFF_Detail_Entity {
     private String MODIFY_FLG;
     private String DEL_FLG;
 
-    public Q_STAFF_Detail_Entity() {
+    public Q_STAFF_Summary_Entity() {
         super();
     }
 

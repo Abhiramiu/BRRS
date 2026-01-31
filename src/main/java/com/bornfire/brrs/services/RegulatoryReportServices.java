@@ -438,7 +438,10 @@ public class RegulatoryReportServices {
 					dtltype, pageable, type, version);
 
 			break;
-
+case "Q_BRANCHNET": 
+			repsummary = BRRS_Q_BRANCHNET_reportservice.getQ_BRANCHNETView(reportId, fromdate, todate,
+		currency, dtltype, pageable, type, version);
+		 break;
 		/*
 		 * 
 		 * 
@@ -1851,11 +1854,11 @@ public class RegulatoryReportServices {
 					dtltype, pageable, Filter, type, version);
 			break;
 
-		case "Q_STAFF":
+		// case "Q_STAFF":
 
-			repdetail = BRRS_Q_STAFF_report_service.getQ_STAFFcurrentDtl(reportId, fromdate, todate, currency, dtltype,
-					pageable, Filter, type, version);
-			break;
+		// 	repdetail = BRRS_Q_STAFF_report_service.getQ_STAFFcurrentDtl(reportId, fromdate, todate, currency, dtltype,
+		// 			pageable, Filter, type, version);
+		// 	break;
 		// case "Q_STAFF_NEW":
 
 		// repdetail =
@@ -3342,6 +3345,15 @@ public class RegulatoryReportServices {
 				repfile = BRRS_Q_STAFF_report_service.BRRS_Q_STAFFExcel(filename, reportId, fromdate, todate, currency,
 						dtltype, type, version);
 			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			break;
+
+			 	case "Q_BRANCHNET":
+			try {
+				repfile = BRRS_Q_BRANCHNET_reportservice.BRRS_Q_BRANCHNETExcel(filename, reportId, fromdate, todate, currency,
+						dtltype, type, version);
+			} catch (Exception e) { // TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			break;

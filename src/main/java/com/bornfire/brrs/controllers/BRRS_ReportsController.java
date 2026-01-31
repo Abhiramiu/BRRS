@@ -3109,7 +3109,7 @@ public class BRRS_ReportsController {
 			}
 
 			// Call service
-			QBRANCHNET_service.updateReportReSub(request1, request2, request3, request4);
+			// QBRANCHNET_service.updateReportReSub(request1, request2, request3, request4);
 
 			return ResponseEntity.ok("Resubmission Updated Successfully");
 
@@ -4232,20 +4232,16 @@ public ResponseEntity<String> updateAllReports(
         @RequestParam(required = false)
         @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
 
-        @ModelAttribute Q_STAFF_Summary_Entity1 request1,
-        @ModelAttribute Q_STAFF_Summary_Entity2 request2,
-        @ModelAttribute Q_STAFF_Summary_Entity3 request3) {
+        @ModelAttribute Q_STAFF_Summary_Entity request1) {
 
     try {
         System.out.println("Came to single controller");
 
         request1.setReportDate(asondate);
-        request2.setReportDate(asondate);
-        request3.setReportDate(asondate);
 
         QSTAFF_service.updateReport(request1);
-        QSTAFF_service.updateReport2(request2);
-        QSTAFF_service.updateReport3(request3);
+        QSTAFF_service.updateReport2(request1);
+        QSTAFF_service.updateReport3(request1);
 
         return ResponseEntity.ok("Updated Successfully.");
 
@@ -4256,6 +4252,7 @@ public ResponseEntity<String> updateAllReports(
                 .body("Update Failed: " + e.getMessage());
     }
 }
+
 
 
 @Autowired

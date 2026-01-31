@@ -87,7 +87,7 @@ public class Q_BRANCHNET_Archival_Summary_Entity4 {
 
     @Id
     @Column(name = "REPORT_VERSION")
-    private String reportVersion;
+    private BigDecimal reportVersion;
 
     @Column(name = "REPORT_RESUBDATE")
     @Temporal(TemporalType.TIMESTAMP)
@@ -547,11 +547,11 @@ public class Q_BRANCHNET_Archival_Summary_Entity4 {
         this.reportDate = reportDate;
     }
 
-    public String getReportVersion() {
+    public BigDecimal getReportVersion() {
         return reportVersion;
     }
 
-    public void setReportVersion(String reportVersion) {
+    public void setReportVersion(BigDecimal reportVersion) {
         this.reportVersion = reportVersion;
     }
 

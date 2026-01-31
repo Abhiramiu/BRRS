@@ -88,7 +88,7 @@ public class Q_BRANCHNET_Summary_Entity4 {
 	@Column(name = "REPORT_DATE")
 	private Date reportDate;
 	@Column(name = "REPORT_VERSION")
-	private String reportVersion;
+	private BigDecimal reportVersion;
   
     private String report_frequency;
     private String report_code;
@@ -545,11 +545,11 @@ public class Q_BRANCHNET_Summary_Entity4 {
         this.reportDate = reportDate;
     }
 
-    public String getReportVersion() {
+    public BigDecimal getReportVersion() {
         return reportVersion;
     }
 
-    public void setReportVersion(String reportVersion) {
+    public void setReportVersion(BigDecimal reportVersion) {
         this.reportVersion = reportVersion;
     }
 
