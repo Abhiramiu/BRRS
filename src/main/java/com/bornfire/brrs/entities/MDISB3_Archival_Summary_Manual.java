@@ -1,0 +1,814 @@
+
+package com.bornfire.brrs.entities;
+
+import java.math.BigDecimal;
+import java.util.Date;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+@Entity
+@Table(name = "BRRS_MDISB3_ARCHIVALTABLE_MANUAL")
+
+public class MDISB3_Archival_Summary_Manual {
+	
+		private BigDecimal	R7_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R8_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R9_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R10_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R11_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R12_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R13_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R14_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R15_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R16_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R17_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R18_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R19_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R20_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R21_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R22_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R23_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R24_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R25_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R26_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R27_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R28_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R29_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R30_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R31_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R32_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R33_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R34_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R35_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R36_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R37_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R38_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R39_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R40_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R41_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R42_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R43_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R44_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R45_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R46_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R47_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R48_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R49_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R50_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R51_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R52_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R53_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R54_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R55_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R56_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R57_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R58_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R59_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R60_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R61_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R62_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R63_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R64_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R65_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R66_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R67_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R68_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R69_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R70_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R71_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R72_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R73_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R74_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R75_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R76_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R77_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R78_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R79_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R80_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R81_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R82_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R83_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R84_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R85_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R86_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R87_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R88_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R89_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R90_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R91_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R92_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R93_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R94_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R95_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R96_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R97_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R98_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R99_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R100_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R101_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R102_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R103_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R104_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R105_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R106_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R107_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R108_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R109_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R110_TOTAL_DEPOSIT_EXCEED;
+		private BigDecimal	R111_TOTAL_DEPOSIT_EXCEED;
+		@Id
+		private Date	report_date;
+		private BigDecimal	report_version;
+		private String	report_frequency;
+		private String	report_code;
+		private String	report_desc;
+		private String	entity_flg;
+		private String	modify_flg;
+		private String	del_flg;
+		public BigDecimal getR7_TOTAL_DEPOSIT_EXCEED() {
+			return R7_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR7_TOTAL_DEPOSIT_EXCEED(BigDecimal r7_TOTAL_DEPOSIT_EXCEED) {
+			R7_TOTAL_DEPOSIT_EXCEED = r7_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR8_TOTAL_DEPOSIT_EXCEED() {
+			return R8_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR8_TOTAL_DEPOSIT_EXCEED(BigDecimal r8_TOTAL_DEPOSIT_EXCEED) {
+			R8_TOTAL_DEPOSIT_EXCEED = r8_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR9_TOTAL_DEPOSIT_EXCEED() {
+			return R9_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR9_TOTAL_DEPOSIT_EXCEED(BigDecimal r9_TOTAL_DEPOSIT_EXCEED) {
+			R9_TOTAL_DEPOSIT_EXCEED = r9_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR10_TOTAL_DEPOSIT_EXCEED() {
+			return R10_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR10_TOTAL_DEPOSIT_EXCEED(BigDecimal r10_TOTAL_DEPOSIT_EXCEED) {
+			R10_TOTAL_DEPOSIT_EXCEED = r10_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR11_TOTAL_DEPOSIT_EXCEED() {
+			return R11_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR11_TOTAL_DEPOSIT_EXCEED(BigDecimal r11_TOTAL_DEPOSIT_EXCEED) {
+			R11_TOTAL_DEPOSIT_EXCEED = r11_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR12_TOTAL_DEPOSIT_EXCEED() {
+			return R12_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR12_TOTAL_DEPOSIT_EXCEED(BigDecimal r12_TOTAL_DEPOSIT_EXCEED) {
+			R12_TOTAL_DEPOSIT_EXCEED = r12_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR13_TOTAL_DEPOSIT_EXCEED() {
+			return R13_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR13_TOTAL_DEPOSIT_EXCEED(BigDecimal r13_TOTAL_DEPOSIT_EXCEED) {
+			R13_TOTAL_DEPOSIT_EXCEED = r13_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR14_TOTAL_DEPOSIT_EXCEED() {
+			return R14_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR14_TOTAL_DEPOSIT_EXCEED(BigDecimal r14_TOTAL_DEPOSIT_EXCEED) {
+			R14_TOTAL_DEPOSIT_EXCEED = r14_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR15_TOTAL_DEPOSIT_EXCEED() {
+			return R15_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR15_TOTAL_DEPOSIT_EXCEED(BigDecimal r15_TOTAL_DEPOSIT_EXCEED) {
+			R15_TOTAL_DEPOSIT_EXCEED = r15_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR16_TOTAL_DEPOSIT_EXCEED() {
+			return R16_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR16_TOTAL_DEPOSIT_EXCEED(BigDecimal r16_TOTAL_DEPOSIT_EXCEED) {
+			R16_TOTAL_DEPOSIT_EXCEED = r16_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR17_TOTAL_DEPOSIT_EXCEED() {
+			return R17_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR17_TOTAL_DEPOSIT_EXCEED(BigDecimal r17_TOTAL_DEPOSIT_EXCEED) {
+			R17_TOTAL_DEPOSIT_EXCEED = r17_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR18_TOTAL_DEPOSIT_EXCEED() {
+			return R18_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR18_TOTAL_DEPOSIT_EXCEED(BigDecimal r18_TOTAL_DEPOSIT_EXCEED) {
+			R18_TOTAL_DEPOSIT_EXCEED = r18_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR19_TOTAL_DEPOSIT_EXCEED() {
+			return R19_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR19_TOTAL_DEPOSIT_EXCEED(BigDecimal r19_TOTAL_DEPOSIT_EXCEED) {
+			R19_TOTAL_DEPOSIT_EXCEED = r19_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR20_TOTAL_DEPOSIT_EXCEED() {
+			return R20_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR20_TOTAL_DEPOSIT_EXCEED(BigDecimal r20_TOTAL_DEPOSIT_EXCEED) {
+			R20_TOTAL_DEPOSIT_EXCEED = r20_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR21_TOTAL_DEPOSIT_EXCEED() {
+			return R21_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR21_TOTAL_DEPOSIT_EXCEED(BigDecimal r21_TOTAL_DEPOSIT_EXCEED) {
+			R21_TOTAL_DEPOSIT_EXCEED = r21_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR22_TOTAL_DEPOSIT_EXCEED() {
+			return R22_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR22_TOTAL_DEPOSIT_EXCEED(BigDecimal r22_TOTAL_DEPOSIT_EXCEED) {
+			R22_TOTAL_DEPOSIT_EXCEED = r22_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR23_TOTAL_DEPOSIT_EXCEED() {
+			return R23_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR23_TOTAL_DEPOSIT_EXCEED(BigDecimal r23_TOTAL_DEPOSIT_EXCEED) {
+			R23_TOTAL_DEPOSIT_EXCEED = r23_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR24_TOTAL_DEPOSIT_EXCEED() {
+			return R24_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR24_TOTAL_DEPOSIT_EXCEED(BigDecimal r24_TOTAL_DEPOSIT_EXCEED) {
+			R24_TOTAL_DEPOSIT_EXCEED = r24_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR25_TOTAL_DEPOSIT_EXCEED() {
+			return R25_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR25_TOTAL_DEPOSIT_EXCEED(BigDecimal r25_TOTAL_DEPOSIT_EXCEED) {
+			R25_TOTAL_DEPOSIT_EXCEED = r25_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR26_TOTAL_DEPOSIT_EXCEED() {
+			return R26_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR26_TOTAL_DEPOSIT_EXCEED(BigDecimal r26_TOTAL_DEPOSIT_EXCEED) {
+			R26_TOTAL_DEPOSIT_EXCEED = r26_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR27_TOTAL_DEPOSIT_EXCEED() {
+			return R27_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR27_TOTAL_DEPOSIT_EXCEED(BigDecimal r27_TOTAL_DEPOSIT_EXCEED) {
+			R27_TOTAL_DEPOSIT_EXCEED = r27_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR28_TOTAL_DEPOSIT_EXCEED() {
+			return R28_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR28_TOTAL_DEPOSIT_EXCEED(BigDecimal r28_TOTAL_DEPOSIT_EXCEED) {
+			R28_TOTAL_DEPOSIT_EXCEED = r28_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR29_TOTAL_DEPOSIT_EXCEED() {
+			return R29_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR29_TOTAL_DEPOSIT_EXCEED(BigDecimal r29_TOTAL_DEPOSIT_EXCEED) {
+			R29_TOTAL_DEPOSIT_EXCEED = r29_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR30_TOTAL_DEPOSIT_EXCEED() {
+			return R30_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR30_TOTAL_DEPOSIT_EXCEED(BigDecimal r30_TOTAL_DEPOSIT_EXCEED) {
+			R30_TOTAL_DEPOSIT_EXCEED = r30_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR31_TOTAL_DEPOSIT_EXCEED() {
+			return R31_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR31_TOTAL_DEPOSIT_EXCEED(BigDecimal r31_TOTAL_DEPOSIT_EXCEED) {
+			R31_TOTAL_DEPOSIT_EXCEED = r31_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR32_TOTAL_DEPOSIT_EXCEED() {
+			return R32_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR32_TOTAL_DEPOSIT_EXCEED(BigDecimal r32_TOTAL_DEPOSIT_EXCEED) {
+			R32_TOTAL_DEPOSIT_EXCEED = r32_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR33_TOTAL_DEPOSIT_EXCEED() {
+			return R33_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR33_TOTAL_DEPOSIT_EXCEED(BigDecimal r33_TOTAL_DEPOSIT_EXCEED) {
+			R33_TOTAL_DEPOSIT_EXCEED = r33_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR34_TOTAL_DEPOSIT_EXCEED() {
+			return R34_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR34_TOTAL_DEPOSIT_EXCEED(BigDecimal r34_TOTAL_DEPOSIT_EXCEED) {
+			R34_TOTAL_DEPOSIT_EXCEED = r34_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR35_TOTAL_DEPOSIT_EXCEED() {
+			return R35_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR35_TOTAL_DEPOSIT_EXCEED(BigDecimal r35_TOTAL_DEPOSIT_EXCEED) {
+			R35_TOTAL_DEPOSIT_EXCEED = r35_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR36_TOTAL_DEPOSIT_EXCEED() {
+			return R36_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR36_TOTAL_DEPOSIT_EXCEED(BigDecimal r36_TOTAL_DEPOSIT_EXCEED) {
+			R36_TOTAL_DEPOSIT_EXCEED = r36_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR37_TOTAL_DEPOSIT_EXCEED() {
+			return R37_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR37_TOTAL_DEPOSIT_EXCEED(BigDecimal r37_TOTAL_DEPOSIT_EXCEED) {
+			R37_TOTAL_DEPOSIT_EXCEED = r37_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR38_TOTAL_DEPOSIT_EXCEED() {
+			return R38_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR38_TOTAL_DEPOSIT_EXCEED(BigDecimal r38_TOTAL_DEPOSIT_EXCEED) {
+			R38_TOTAL_DEPOSIT_EXCEED = r38_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR39_TOTAL_DEPOSIT_EXCEED() {
+			return R39_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR39_TOTAL_DEPOSIT_EXCEED(BigDecimal r39_TOTAL_DEPOSIT_EXCEED) {
+			R39_TOTAL_DEPOSIT_EXCEED = r39_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR40_TOTAL_DEPOSIT_EXCEED() {
+			return R40_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR40_TOTAL_DEPOSIT_EXCEED(BigDecimal r40_TOTAL_DEPOSIT_EXCEED) {
+			R40_TOTAL_DEPOSIT_EXCEED = r40_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR41_TOTAL_DEPOSIT_EXCEED() {
+			return R41_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR41_TOTAL_DEPOSIT_EXCEED(BigDecimal r41_TOTAL_DEPOSIT_EXCEED) {
+			R41_TOTAL_DEPOSIT_EXCEED = r41_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR42_TOTAL_DEPOSIT_EXCEED() {
+			return R42_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR42_TOTAL_DEPOSIT_EXCEED(BigDecimal r42_TOTAL_DEPOSIT_EXCEED) {
+			R42_TOTAL_DEPOSIT_EXCEED = r42_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR43_TOTAL_DEPOSIT_EXCEED() {
+			return R43_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR43_TOTAL_DEPOSIT_EXCEED(BigDecimal r43_TOTAL_DEPOSIT_EXCEED) {
+			R43_TOTAL_DEPOSIT_EXCEED = r43_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR44_TOTAL_DEPOSIT_EXCEED() {
+			return R44_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR44_TOTAL_DEPOSIT_EXCEED(BigDecimal r44_TOTAL_DEPOSIT_EXCEED) {
+			R44_TOTAL_DEPOSIT_EXCEED = r44_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR45_TOTAL_DEPOSIT_EXCEED() {
+			return R45_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR45_TOTAL_DEPOSIT_EXCEED(BigDecimal r45_TOTAL_DEPOSIT_EXCEED) {
+			R45_TOTAL_DEPOSIT_EXCEED = r45_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR46_TOTAL_DEPOSIT_EXCEED() {
+			return R46_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR46_TOTAL_DEPOSIT_EXCEED(BigDecimal r46_TOTAL_DEPOSIT_EXCEED) {
+			R46_TOTAL_DEPOSIT_EXCEED = r46_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR47_TOTAL_DEPOSIT_EXCEED() {
+			return R47_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR47_TOTAL_DEPOSIT_EXCEED(BigDecimal r47_TOTAL_DEPOSIT_EXCEED) {
+			R47_TOTAL_DEPOSIT_EXCEED = r47_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR48_TOTAL_DEPOSIT_EXCEED() {
+			return R48_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR48_TOTAL_DEPOSIT_EXCEED(BigDecimal r48_TOTAL_DEPOSIT_EXCEED) {
+			R48_TOTAL_DEPOSIT_EXCEED = r48_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR49_TOTAL_DEPOSIT_EXCEED() {
+			return R49_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR49_TOTAL_DEPOSIT_EXCEED(BigDecimal r49_TOTAL_DEPOSIT_EXCEED) {
+			R49_TOTAL_DEPOSIT_EXCEED = r49_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR50_TOTAL_DEPOSIT_EXCEED() {
+			return R50_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR50_TOTAL_DEPOSIT_EXCEED(BigDecimal r50_TOTAL_DEPOSIT_EXCEED) {
+			R50_TOTAL_DEPOSIT_EXCEED = r50_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR51_TOTAL_DEPOSIT_EXCEED() {
+			return R51_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR51_TOTAL_DEPOSIT_EXCEED(BigDecimal r51_TOTAL_DEPOSIT_EXCEED) {
+			R51_TOTAL_DEPOSIT_EXCEED = r51_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR52_TOTAL_DEPOSIT_EXCEED() {
+			return R52_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR52_TOTAL_DEPOSIT_EXCEED(BigDecimal r52_TOTAL_DEPOSIT_EXCEED) {
+			R52_TOTAL_DEPOSIT_EXCEED = r52_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR53_TOTAL_DEPOSIT_EXCEED() {
+			return R53_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR53_TOTAL_DEPOSIT_EXCEED(BigDecimal r53_TOTAL_DEPOSIT_EXCEED) {
+			R53_TOTAL_DEPOSIT_EXCEED = r53_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR54_TOTAL_DEPOSIT_EXCEED() {
+			return R54_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR54_TOTAL_DEPOSIT_EXCEED(BigDecimal r54_TOTAL_DEPOSIT_EXCEED) {
+			R54_TOTAL_DEPOSIT_EXCEED = r54_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR55_TOTAL_DEPOSIT_EXCEED() {
+			return R55_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR55_TOTAL_DEPOSIT_EXCEED(BigDecimal r55_TOTAL_DEPOSIT_EXCEED) {
+			R55_TOTAL_DEPOSIT_EXCEED = r55_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR56_TOTAL_DEPOSIT_EXCEED() {
+			return R56_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR56_TOTAL_DEPOSIT_EXCEED(BigDecimal r56_TOTAL_DEPOSIT_EXCEED) {
+			R56_TOTAL_DEPOSIT_EXCEED = r56_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR57_TOTAL_DEPOSIT_EXCEED() {
+			return R57_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR57_TOTAL_DEPOSIT_EXCEED(BigDecimal r57_TOTAL_DEPOSIT_EXCEED) {
+			R57_TOTAL_DEPOSIT_EXCEED = r57_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR58_TOTAL_DEPOSIT_EXCEED() {
+			return R58_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR58_TOTAL_DEPOSIT_EXCEED(BigDecimal r58_TOTAL_DEPOSIT_EXCEED) {
+			R58_TOTAL_DEPOSIT_EXCEED = r58_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR59_TOTAL_DEPOSIT_EXCEED() {
+			return R59_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR59_TOTAL_DEPOSIT_EXCEED(BigDecimal r59_TOTAL_DEPOSIT_EXCEED) {
+			R59_TOTAL_DEPOSIT_EXCEED = r59_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR60_TOTAL_DEPOSIT_EXCEED() {
+			return R60_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR60_TOTAL_DEPOSIT_EXCEED(BigDecimal r60_TOTAL_DEPOSIT_EXCEED) {
+			R60_TOTAL_DEPOSIT_EXCEED = r60_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR61_TOTAL_DEPOSIT_EXCEED() {
+			return R61_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR61_TOTAL_DEPOSIT_EXCEED(BigDecimal r61_TOTAL_DEPOSIT_EXCEED) {
+			R61_TOTAL_DEPOSIT_EXCEED = r61_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR62_TOTAL_DEPOSIT_EXCEED() {
+			return R62_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR62_TOTAL_DEPOSIT_EXCEED(BigDecimal r62_TOTAL_DEPOSIT_EXCEED) {
+			R62_TOTAL_DEPOSIT_EXCEED = r62_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR63_TOTAL_DEPOSIT_EXCEED() {
+			return R63_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR63_TOTAL_DEPOSIT_EXCEED(BigDecimal r63_TOTAL_DEPOSIT_EXCEED) {
+			R63_TOTAL_DEPOSIT_EXCEED = r63_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR64_TOTAL_DEPOSIT_EXCEED() {
+			return R64_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR64_TOTAL_DEPOSIT_EXCEED(BigDecimal r64_TOTAL_DEPOSIT_EXCEED) {
+			R64_TOTAL_DEPOSIT_EXCEED = r64_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR65_TOTAL_DEPOSIT_EXCEED() {
+			return R65_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR65_TOTAL_DEPOSIT_EXCEED(BigDecimal r65_TOTAL_DEPOSIT_EXCEED) {
+			R65_TOTAL_DEPOSIT_EXCEED = r65_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR66_TOTAL_DEPOSIT_EXCEED() {
+			return R66_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR66_TOTAL_DEPOSIT_EXCEED(BigDecimal r66_TOTAL_DEPOSIT_EXCEED) {
+			R66_TOTAL_DEPOSIT_EXCEED = r66_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR67_TOTAL_DEPOSIT_EXCEED() {
+			return R67_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR67_TOTAL_DEPOSIT_EXCEED(BigDecimal r67_TOTAL_DEPOSIT_EXCEED) {
+			R67_TOTAL_DEPOSIT_EXCEED = r67_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR68_TOTAL_DEPOSIT_EXCEED() {
+			return R68_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR68_TOTAL_DEPOSIT_EXCEED(BigDecimal r68_TOTAL_DEPOSIT_EXCEED) {
+			R68_TOTAL_DEPOSIT_EXCEED = r68_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR69_TOTAL_DEPOSIT_EXCEED() {
+			return R69_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR69_TOTAL_DEPOSIT_EXCEED(BigDecimal r69_TOTAL_DEPOSIT_EXCEED) {
+			R69_TOTAL_DEPOSIT_EXCEED = r69_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR70_TOTAL_DEPOSIT_EXCEED() {
+			return R70_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR70_TOTAL_DEPOSIT_EXCEED(BigDecimal r70_TOTAL_DEPOSIT_EXCEED) {
+			R70_TOTAL_DEPOSIT_EXCEED = r70_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR71_TOTAL_DEPOSIT_EXCEED() {
+			return R71_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR71_TOTAL_DEPOSIT_EXCEED(BigDecimal r71_TOTAL_DEPOSIT_EXCEED) {
+			R71_TOTAL_DEPOSIT_EXCEED = r71_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR72_TOTAL_DEPOSIT_EXCEED() {
+			return R72_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR72_TOTAL_DEPOSIT_EXCEED(BigDecimal r72_TOTAL_DEPOSIT_EXCEED) {
+			R72_TOTAL_DEPOSIT_EXCEED = r72_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR73_TOTAL_DEPOSIT_EXCEED() {
+			return R73_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR73_TOTAL_DEPOSIT_EXCEED(BigDecimal r73_TOTAL_DEPOSIT_EXCEED) {
+			R73_TOTAL_DEPOSIT_EXCEED = r73_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR74_TOTAL_DEPOSIT_EXCEED() {
+			return R74_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR74_TOTAL_DEPOSIT_EXCEED(BigDecimal r74_TOTAL_DEPOSIT_EXCEED) {
+			R74_TOTAL_DEPOSIT_EXCEED = r74_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR75_TOTAL_DEPOSIT_EXCEED() {
+			return R75_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR75_TOTAL_DEPOSIT_EXCEED(BigDecimal r75_TOTAL_DEPOSIT_EXCEED) {
+			R75_TOTAL_DEPOSIT_EXCEED = r75_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR76_TOTAL_DEPOSIT_EXCEED() {
+			return R76_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR76_TOTAL_DEPOSIT_EXCEED(BigDecimal r76_TOTAL_DEPOSIT_EXCEED) {
+			R76_TOTAL_DEPOSIT_EXCEED = r76_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR77_TOTAL_DEPOSIT_EXCEED() {
+			return R77_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR77_TOTAL_DEPOSIT_EXCEED(BigDecimal r77_TOTAL_DEPOSIT_EXCEED) {
+			R77_TOTAL_DEPOSIT_EXCEED = r77_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR78_TOTAL_DEPOSIT_EXCEED() {
+			return R78_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR78_TOTAL_DEPOSIT_EXCEED(BigDecimal r78_TOTAL_DEPOSIT_EXCEED) {
+			R78_TOTAL_DEPOSIT_EXCEED = r78_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR79_TOTAL_DEPOSIT_EXCEED() {
+			return R79_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR79_TOTAL_DEPOSIT_EXCEED(BigDecimal r79_TOTAL_DEPOSIT_EXCEED) {
+			R79_TOTAL_DEPOSIT_EXCEED = r79_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR80_TOTAL_DEPOSIT_EXCEED() {
+			return R80_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR80_TOTAL_DEPOSIT_EXCEED(BigDecimal r80_TOTAL_DEPOSIT_EXCEED) {
+			R80_TOTAL_DEPOSIT_EXCEED = r80_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR81_TOTAL_DEPOSIT_EXCEED() {
+			return R81_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR81_TOTAL_DEPOSIT_EXCEED(BigDecimal r81_TOTAL_DEPOSIT_EXCEED) {
+			R81_TOTAL_DEPOSIT_EXCEED = r81_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR82_TOTAL_DEPOSIT_EXCEED() {
+			return R82_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR82_TOTAL_DEPOSIT_EXCEED(BigDecimal r82_TOTAL_DEPOSIT_EXCEED) {
+			R82_TOTAL_DEPOSIT_EXCEED = r82_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR83_TOTAL_DEPOSIT_EXCEED() {
+			return R83_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR83_TOTAL_DEPOSIT_EXCEED(BigDecimal r83_TOTAL_DEPOSIT_EXCEED) {
+			R83_TOTAL_DEPOSIT_EXCEED = r83_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR84_TOTAL_DEPOSIT_EXCEED() {
+			return R84_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR84_TOTAL_DEPOSIT_EXCEED(BigDecimal r84_TOTAL_DEPOSIT_EXCEED) {
+			R84_TOTAL_DEPOSIT_EXCEED = r84_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR85_TOTAL_DEPOSIT_EXCEED() {
+			return R85_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR85_TOTAL_DEPOSIT_EXCEED(BigDecimal r85_TOTAL_DEPOSIT_EXCEED) {
+			R85_TOTAL_DEPOSIT_EXCEED = r85_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR86_TOTAL_DEPOSIT_EXCEED() {
+			return R86_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR86_TOTAL_DEPOSIT_EXCEED(BigDecimal r86_TOTAL_DEPOSIT_EXCEED) {
+			R86_TOTAL_DEPOSIT_EXCEED = r86_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR87_TOTAL_DEPOSIT_EXCEED() {
+			return R87_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR87_TOTAL_DEPOSIT_EXCEED(BigDecimal r87_TOTAL_DEPOSIT_EXCEED) {
+			R87_TOTAL_DEPOSIT_EXCEED = r87_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR88_TOTAL_DEPOSIT_EXCEED() {
+			return R88_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR88_TOTAL_DEPOSIT_EXCEED(BigDecimal r88_TOTAL_DEPOSIT_EXCEED) {
+			R88_TOTAL_DEPOSIT_EXCEED = r88_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR89_TOTAL_DEPOSIT_EXCEED() {
+			return R89_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR89_TOTAL_DEPOSIT_EXCEED(BigDecimal r89_TOTAL_DEPOSIT_EXCEED) {
+			R89_TOTAL_DEPOSIT_EXCEED = r89_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR90_TOTAL_DEPOSIT_EXCEED() {
+			return R90_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR90_TOTAL_DEPOSIT_EXCEED(BigDecimal r90_TOTAL_DEPOSIT_EXCEED) {
+			R90_TOTAL_DEPOSIT_EXCEED = r90_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR91_TOTAL_DEPOSIT_EXCEED() {
+			return R91_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR91_TOTAL_DEPOSIT_EXCEED(BigDecimal r91_TOTAL_DEPOSIT_EXCEED) {
+			R91_TOTAL_DEPOSIT_EXCEED = r91_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR92_TOTAL_DEPOSIT_EXCEED() {
+			return R92_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR92_TOTAL_DEPOSIT_EXCEED(BigDecimal r92_TOTAL_DEPOSIT_EXCEED) {
+			R92_TOTAL_DEPOSIT_EXCEED = r92_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR93_TOTAL_DEPOSIT_EXCEED() {
+			return R93_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR93_TOTAL_DEPOSIT_EXCEED(BigDecimal r93_TOTAL_DEPOSIT_EXCEED) {
+			R93_TOTAL_DEPOSIT_EXCEED = r93_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR94_TOTAL_DEPOSIT_EXCEED() {
+			return R94_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR94_TOTAL_DEPOSIT_EXCEED(BigDecimal r94_TOTAL_DEPOSIT_EXCEED) {
+			R94_TOTAL_DEPOSIT_EXCEED = r94_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR95_TOTAL_DEPOSIT_EXCEED() {
+			return R95_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR95_TOTAL_DEPOSIT_EXCEED(BigDecimal r95_TOTAL_DEPOSIT_EXCEED) {
+			R95_TOTAL_DEPOSIT_EXCEED = r95_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR96_TOTAL_DEPOSIT_EXCEED() {
+			return R96_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR96_TOTAL_DEPOSIT_EXCEED(BigDecimal r96_TOTAL_DEPOSIT_EXCEED) {
+			R96_TOTAL_DEPOSIT_EXCEED = r96_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR97_TOTAL_DEPOSIT_EXCEED() {
+			return R97_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR97_TOTAL_DEPOSIT_EXCEED(BigDecimal r97_TOTAL_DEPOSIT_EXCEED) {
+			R97_TOTAL_DEPOSIT_EXCEED = r97_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR98_TOTAL_DEPOSIT_EXCEED() {
+			return R98_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR98_TOTAL_DEPOSIT_EXCEED(BigDecimal r98_TOTAL_DEPOSIT_EXCEED) {
+			R98_TOTAL_DEPOSIT_EXCEED = r98_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR99_TOTAL_DEPOSIT_EXCEED() {
+			return R99_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR99_TOTAL_DEPOSIT_EXCEED(BigDecimal r99_TOTAL_DEPOSIT_EXCEED) {
+			R99_TOTAL_DEPOSIT_EXCEED = r99_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR100_TOTAL_DEPOSIT_EXCEED() {
+			return R100_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR100_TOTAL_DEPOSIT_EXCEED(BigDecimal r100_TOTAL_DEPOSIT_EXCEED) {
+			R100_TOTAL_DEPOSIT_EXCEED = r100_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR101_TOTAL_DEPOSIT_EXCEED() {
+			return R101_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR101_TOTAL_DEPOSIT_EXCEED(BigDecimal r101_TOTAL_DEPOSIT_EXCEED) {
+			R101_TOTAL_DEPOSIT_EXCEED = r101_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR102_TOTAL_DEPOSIT_EXCEED() {
+			return R102_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR102_TOTAL_DEPOSIT_EXCEED(BigDecimal r102_TOTAL_DEPOSIT_EXCEED) {
+			R102_TOTAL_DEPOSIT_EXCEED = r102_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR103_TOTAL_DEPOSIT_EXCEED() {
+			return R103_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR103_TOTAL_DEPOSIT_EXCEED(BigDecimal r103_TOTAL_DEPOSIT_EXCEED) {
+			R103_TOTAL_DEPOSIT_EXCEED = r103_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR104_TOTAL_DEPOSIT_EXCEED() {
+			return R104_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR104_TOTAL_DEPOSIT_EXCEED(BigDecimal r104_TOTAL_DEPOSIT_EXCEED) {
+			R104_TOTAL_DEPOSIT_EXCEED = r104_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR105_TOTAL_DEPOSIT_EXCEED() {
+			return R105_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR105_TOTAL_DEPOSIT_EXCEED(BigDecimal r105_TOTAL_DEPOSIT_EXCEED) {
+			R105_TOTAL_DEPOSIT_EXCEED = r105_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR106_TOTAL_DEPOSIT_EXCEED() {
+			return R106_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR106_TOTAL_DEPOSIT_EXCEED(BigDecimal r106_TOTAL_DEPOSIT_EXCEED) {
+			R106_TOTAL_DEPOSIT_EXCEED = r106_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR107_TOTAL_DEPOSIT_EXCEED() {
+			return R107_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR107_TOTAL_DEPOSIT_EXCEED(BigDecimal r107_TOTAL_DEPOSIT_EXCEED) {
+			R107_TOTAL_DEPOSIT_EXCEED = r107_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR108_TOTAL_DEPOSIT_EXCEED() {
+			return R108_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR108_TOTAL_DEPOSIT_EXCEED(BigDecimal r108_TOTAL_DEPOSIT_EXCEED) {
+			R108_TOTAL_DEPOSIT_EXCEED = r108_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR109_TOTAL_DEPOSIT_EXCEED() {
+			return R109_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR109_TOTAL_DEPOSIT_EXCEED(BigDecimal r109_TOTAL_DEPOSIT_EXCEED) {
+			R109_TOTAL_DEPOSIT_EXCEED = r109_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR110_TOTAL_DEPOSIT_EXCEED() {
+			return R110_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR110_TOTAL_DEPOSIT_EXCEED(BigDecimal r110_TOTAL_DEPOSIT_EXCEED) {
+			R110_TOTAL_DEPOSIT_EXCEED = r110_TOTAL_DEPOSIT_EXCEED;
+		}
+		public BigDecimal getR111_TOTAL_DEPOSIT_EXCEED() {
+			return R111_TOTAL_DEPOSIT_EXCEED;
+		}
+		public void setR111_TOTAL_DEPOSIT_EXCEED(BigDecimal r111_TOTAL_DEPOSIT_EXCEED) {
+			R111_TOTAL_DEPOSIT_EXCEED = r111_TOTAL_DEPOSIT_EXCEED;
+		}
+		public Date getReport_date() {
+			return report_date;
+		}
+		public void setReport_date(Date report_date) {
+			this.report_date = report_date;
+		}
+		public BigDecimal getReport_version() {
+			return report_version;
+		}
+		public void setReport_version(BigDecimal report_version) {
+			this.report_version = report_version;
+		}
+		public String getReport_frequency() {
+			return report_frequency;
+		}
+		public void setReport_frequency(String report_frequency) {
+			this.report_frequency = report_frequency;
+		}
+		public String getReport_code() {
+			return report_code;
+		}
+		public void setReport_code(String report_code) {
+			this.report_code = report_code;
+		}
+		public String getReport_desc() {
+			return report_desc;
+		}
+		public void setReport_desc(String report_desc) {
+			this.report_desc = report_desc;
+		}
+		public String getEntity_flg() {
+			return entity_flg;
+		}
+		public void setEntity_flg(String entity_flg) {
+			this.entity_flg = entity_flg;
+		}
+		public String getModify_flg() {
+			return modify_flg;
+		}
+		public void setModify_flg(String modify_flg) {
+			this.modify_flg = modify_flg;
+		}
+		public String getDel_flg() {
+			return del_flg;
+		}
+		public void setDel_flg(String del_flg) {
+			this.del_flg = del_flg;
+		}
+		public MDISB3_Archival_Summary_Manual() {
+			super();
+			// TODO Auto-generated constructor stub
+		}
+		
+		
+	}

@@ -1158,6 +1158,11 @@ public class RegulatoryReportServices {
 			repsummary = brrs_mdisb2_reportservice.getMDISB2View(reportId, fromdate, todate, currency, dtltype,
 					pageable, type, version);
 			break;
+			
+		case "MDISB3":
+			repsummary = brrs_mdisb3_reportservice.getMDISB3View(reportId, fromdate, todate, currency, dtltype,
+					pageable, type, version);
+			break;
 
 		case "SCH_17":
 			repsummary = brrs_sch_17_reportservice.getSCH_17View(reportId, fromdate, todate, currency, dtltype,
@@ -1790,13 +1795,14 @@ public class RegulatoryReportServices {
 			repdetail = brrs_mdisb2_reportservice.getMDISB2currentDtl(reportId, fromdate, todate, currency, dtltype,
 					pageable, Filter, type, version);
 			break;
-
+			
 		case "MDISB3":
 
 			repdetail = brrs_mdisb3_reportservice.getMDISB3currentDtl(reportId, fromdate, todate, currency, dtltype,
 					pageable, Filter, type, version);
 			break;
 
+		
 		case "MASTER":
 
 			repdetail = brrs_master_reportservice.getMASTERcurrentDtl(reportId, fromdate, todate, currency, dtltype,
@@ -2043,6 +2049,15 @@ public class RegulatoryReportServices {
 		case "MDISB2":
 			try {
 				repfile = brrs_mdisb2_reportservice.getMDISB2Excel(filename, reportId, fromdate, todate, currency,
+						dtltype, type, version);
+			} catch (Exception e) { // TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+			
+		case "MDISB3":
+			try {
+				repfile = brrs_mdisb3_reportservice.getMDISB3Excel(filename, reportId, fromdate, todate, currency,
 						dtltype, type, version);
 			} catch (Exception e) { // TODO Auto-generated catch block
 				e.printStackTrace();
@@ -4692,7 +4707,7 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
-
+			
 		case "MDISB3":
 			try {
 				archivalData = brrs_mdisb3_reportservice.getMDISB3Archival();
@@ -4702,6 +4717,7 @@ public class RegulatoryReportServices {
 			}
 			break;
 
+	
 		case "MASTER":
 			try {
 				archivalData = brrs_master_reportservice.getMASTERArchival();
@@ -5019,7 +5035,7 @@ public class RegulatoryReportServices {
 			fileData = brrs_mdisb2_reportservice.getMDISB2DetailExcel(filename, fromdate, todate, currency, dtltype,
 					type, version);
 
-		} else if (filename.equals("MDISB1Detail")) {
+		} else if (filename.equals("MDISB3Detail")) {
 			fileData = brrs_mdisb3_reportservice.getMDISB3DetailExcel(filename, fromdate, todate, currency, dtltype,
 					type, version);
 

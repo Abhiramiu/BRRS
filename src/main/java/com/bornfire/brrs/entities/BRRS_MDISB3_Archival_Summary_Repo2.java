@@ -1,5 +1,6 @@
 package com.bornfire.brrs.entities;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -14,5 +15,5 @@ public interface BRRS_MDISB3_Archival_Summary_Repo2 extends JpaRepository<MDISB3
     List<Object> getMDISB3archival();
 
     @Query(value = "select * from BRRS_MDISB3_ARCHIVALTABLE_SUMMARY2 where REPORT_DATE = ?1 and REPORT_VERSION = ?2", nativeQuery = true)
-    List<MDISB3_Archival_Summary_Entity2> getdatabydateListarchival(Date report_date, String report_version);
+    List<MDISB3_Archival_Summary_Entity2> getdatabydateListarchival(Date report_date, BigDecimal report_version);
 }

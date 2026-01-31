@@ -3,7 +3,6 @@ package com.bornfire.brrs.services;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -12,11 +11,9 @@ import java.sql.CallableStatement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
@@ -68,9 +65,6 @@ import com.bornfire.brrs.entities.MDISB1_Summary_Entity_Manual;
 import com.bornfire.brrs.entities.MDISB1_Summary_Repo1;
 import com.bornfire.brrs.entities.MDISB1_Summary_Repo2;
 import com.bornfire.brrs.entities.MDISB1_Summary_Repo3;
-import com.bornfire.brrs.entities.M_LA4_Summary_Entity2;
-import com.bornfire.brrs.entities.M_UNCONS_INVEST_Summary_Entity1;
-import com.bornfire.brrs.entities.SCH_17_Detail_Entity;
 
 @Component
 @Service

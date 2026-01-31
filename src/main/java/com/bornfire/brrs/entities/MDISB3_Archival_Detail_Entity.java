@@ -70,13 +70,13 @@ public class MDISB3_Archival_Detail_Entity {
        private Date verify_time;
 
        @Column(name = "ENTITY_FLG")
-       private String entity_flg;
+       private Character entity_flg;
 
        @Column(name = "MODIFY_FLG")
-       private String modify_flg;
+       private Character modify_flg;
 
        @Column(name = "DEL_FLG")
-       private String del_flg;
+       private Character del_flg;
 
        @Column(name = "REPORT_ADDL_CRITERIA_1")
        private String report_addl_criteria_1;
@@ -223,27 +223,27 @@ public class MDISB3_Archival_Detail_Entity {
 		   this.verify_time = verify_time;
 	   }
 
-	   public String getEntity_flg() {
+	   public Character getEntity_flg() {
 		   return entity_flg;
 	   }
 
-	   public void setEntity_flg(String entity_flg) {
+	   public void setEntity_flg(Character entity_flg) {
 		   this.entity_flg = entity_flg;
 	   }
 
-	   public String getModify_flg() {
+	   public Character getModify_flg() {
 		   return modify_flg;
 	   }
 
-	   public void setModify_flg(String modify_flg) {
+	   public void setModify_flg(Character modify_flg) {
 		   this.modify_flg = modify_flg;
 	   }
 
-	   public String getDel_flg() {
+	   public Character getDel_flg() {
 		   return del_flg;
 	   }
 
-	   public void setDel_flg(String del_flg) {
+	   public void setDel_flg(Character del_flg) {
 		   this.del_flg = del_flg;
 	   }
 

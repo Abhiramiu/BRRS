@@ -13,11 +13,14 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Table(name = "BRRS_MDISB3_DETAILTABLE")
 public class MDISB3_Detail_Entity {
 
-
+	@Id
+	@Column(name = "SNO")
+	private Long sno;
+	
 	 @Column(name = "CUST_ID")
      private String cust_id;
 
-     @Id
+     
      @Column(name = "ACCT_NUMBER")
      private String acct_number;
 
@@ -68,13 +71,13 @@ public class MDISB3_Detail_Entity {
      private Date verify_time;
 
      @Column(name = "ENTITY_FLG")
-     private String entity_flg;
+     private Character entity_flg;
 
      @Column(name = "MODIFY_FLG")
-     private String modify_flg;
+     private Character modify_flg;
 
      @Column(name = "DEL_FLG")
-     private String del_flg;
+     private Character del_flg;
 
      @Column(name = "REPORT_ADDL_CRITERIA_1")
      private String report_addl_criteria_1;
@@ -84,6 +87,14 @@ public class MDISB3_Detail_Entity {
 
      @Column(name = "REPORT_ADDL_CRITERIA_3")
      private String report_addl_criteria_3;
+
+	 public Long getSno() {
+		 return sno;
+	 }
+
+	 public void setSno(Long sno) {
+		 this.sno = sno;
+	 }
 
 	 public String getCust_id() {
 		 return cust_id;
@@ -221,27 +232,27 @@ public class MDISB3_Detail_Entity {
 		 this.verify_time = verify_time;
 	 }
 
-	 public String getEntity_flg() {
+	 public Character getEntity_flg() {
 		 return entity_flg;
 	 }
 
-	 public void setEntity_flg(String entity_flg) {
+	 public void setEntity_flg(Character entity_flg) {
 		 this.entity_flg = entity_flg;
 	 }
 
-	 public String getModify_flg() {
+	 public Character getModify_flg() {
 		 return modify_flg;
 	 }
 
-	 public void setModify_flg(String modify_flg) {
+	 public void setModify_flg(Character modify_flg) {
 		 this.modify_flg = modify_flg;
 	 }
 
-	 public String getDel_flg() {
+	 public Character getDel_flg() {
 		 return del_flg;
 	 }
 
-	 public void setDel_flg(String del_flg) {
+	 public void setDel_flg(Character del_flg) {
 		 this.del_flg = del_flg;
 	 }
 
@@ -274,8 +285,6 @@ public class MDISB3_Detail_Entity {
 		// TODO Auto-generated constructor stub
 	 }
 
-	  
-	   
-	   
+	
 
 }

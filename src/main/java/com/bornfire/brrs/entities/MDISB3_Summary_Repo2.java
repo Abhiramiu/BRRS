@@ -10,4 +10,3 @@ public interface MDISB3_Summary_Repo2 extends JpaRepository<MDISB3_Summary_Entit
 	@Query(value = "select * from BRRS_MDISB3_SUMMARYTABLE2 where REPORT_DATE =?1  ", nativeQuery = true)
     List<MDISB3_Summary_Entity2> getdatabydateList(Date reportdate);
 }
-
