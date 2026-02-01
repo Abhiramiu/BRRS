@@ -19,6 +19,9 @@ public interface BRRS_M_EPR_Archival_Summary_Repo extends JpaRepository<M_EPR_Ar
 			  , nativeQuery = true) List<M_EPR_Archival_Summary_Entity>
 			  getdatabydateListarchival(Date report_date, BigDecimal report_version);
 			 
+			  
+			  @Query(value = "select REPORT_DATE, REPORT_VERSION from BRRS_M_EPR_ARCHIVALTABLE_SUMMARY order by REPORT_VERSION", nativeQuery = true)
+			    List<Object> getM_EPRarchival();
 		    
 		//  Fetch latest archival version for given date (no version input)
 		    @Query(value = "SELECT * FROM BRRS_M_EPR_ARCHIVALTABLE_SUMMARY " +"WHERE REPORT_DATE = ?1 AND REPORT_VERSION IS NOT NULL " + "ORDER BY TO_NUMBER(REPORT_VERSION) DESC " + "FETCH FIRST 1 ROWS ONLY",nativeQuery = true)

@@ -313,7 +313,7 @@ label.error {
 
 
 
-</style>
+
 
 
 	<style>
@@ -429,12 +429,21 @@ let isDetailsModal = false;
 
 		//to fetch summary from the database - called from the summary button
 		function showdetails() {
-    isDetailsModal = true; // mark that this modal is from Details
-    showResultModal('BRRS', 'Details page not available for Manual Report');
+			 $('#loader').modal('show');
+			    var Callurl = /*[[@{'/Reports/' + ${reportid}(
+			        dtltype='detail',
+			        fromdate=${fromdate},
+			        todate=${todate},
+			        type=${type},
+			        asondate=${asondate},
+			        version=${version}
+			    )}]]*/;
+			    location.href = Callurl;
+
 }
 		function showsummary() {
 			$('#loader').modal('show');
-			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/;
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate}, version=${version})}]]*/;
 			location.href = Callurl;
 		}
 
@@ -485,29 +494,44 @@ let isDetailsModal = false;
     
     
     
-    	// ✅ Apply gray background for rows 11–22 for specified columns
-    	 for (let i = 11; i <= 22; i++) {
-    	     // Define target columns
-    	     const columns = [
-    	         "market",
-    	         "gpfsr_nom_amt",
-    	         "gpfsr_pos_att8_per_spe_ris",
-    	         "gpfsr_nom_amt1",
-    	         "gpfsr_pos_att4_per_spe_ris",
-    	         "gpfsr_nom_amt2",
-    	         "gpfsr_pos_att2_per_spe_ris",
-    	         "net_pos_gen_mar_ris"
-    	     ];
+     // ✅ Apply gray background for rows 11–23
+        for (let i = 11; i <= 23; i++) {
 
-    	     // Apply gray background color
-    	     columns.forEach(col => {
-    	         const selector = `#r${i}_${col}`;
-    	         if ($(selector).length) {
-    	             $(selector).css("background-color", "#d3d3d3");
-    	         }
-    	     });
-    	 }
-    
+            // Default columns (for rows 11–22)
+            let columns = [
+                "market",
+                "gpfsr_nom_amt",
+                "gpfsr_pos_att8_per_spe_ris",
+                "gpfsr_nom_amt1",
+                "gpfsr_pos_att4_per_spe_ris",
+                "gpfsr_nom_amt2",
+                "gpfsr_pos_att2_per_spe_ris",
+                "net_pos_gen_mar_ris"
+            ];
+
+            // 🔹 Special handling for row 23
+            if (i === 23) {
+                columns = columns.filter(col =>
+                    col !== "market" && col !== "net_pos_gen_mar_ris"
+                );
+
+                // Add charge fields
+                columns.push(
+                    "gpfsr_chrg",
+                    "gpfsr_chrg1",
+                    "gpfsr_chrg2"
+                );
+            }
+
+            // Apply gray background
+            columns.forEach(col => {
+                const selector = `#r${i}_${col}`;
+                if ($(selector).length) {
+                    $(selector).css("background-color", "#d3d3d3");
+                }
+            });
+        }
+
     
     // Toggle buttons 
     
@@ -596,77 +620,153 @@ window.onload = function() {
 };
 
 
+//download
 function downloadfile(button) {
-
-    var reportid = button.getAttribute('data-reportid');
-    var asondate = button.getAttribute('data-asondate');
-    var fromdate = button.getAttribute('data-fromdate');
-    var todate = button.getAttribute('data-todate');
-    var currency = button.getAttribute('data-currency');
-    var subreportid = button.getAttribute('data-subreportid');
-    var secid = button.getAttribute('data-secid');
-    var dtltype = button.getAttribute('data-dtltype');
-    var filename = button.getAttribute('data-filename');
-    var type = button.getAttribute('data-type');
-    var version = button.getAttribute('data-version');
-
-    var loader = new bootstrap.Modal(
-        document.getElementById('loader'),
-        { backdrop: 'static', keyboard: false }
-    );
-    loader.show();
-
-    // ✅ Build URL safely
-    var url = './downloadExcel?reportid=' + reportid +
-        '&fromdate=' + fromdate +
-        '&asondate=' + asondate +
-        '&todate=' + todate +
-        '&currency=' + currency +
-        '&subreportid=' + subreportid +
-        '&secid=' + secid +
-        '&filename=' + filename +
-        '&type=' + type;
-
-    // ✅ ONLY append version if valid
-    if (version && version.trim() !== '') {
-        url += '&version=' + version;
-    }
-
-    $.ajax({
-        url: url,
-        type: 'GET',
-        xhrFields: { responseType: 'blob' },
-
-        success: function (data) {
-            $('#loader').modal('hide');
-
-            if (data && data.size > 100) {
-                const blob = new Blob([data], {
-                    type: 'application/vnd.ms-excel'
-                });
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.style.display = 'none';
-                a.href = url;
-                a.download = filename;
-                document.body.appendChild(a);
-                a.click();
-                window.URL.revokeObjectURL(url);
-                document.body.removeChild(a);
-
-                showResultModal('BRRS', filename + ' downloaded successfully.');
-            } else {
-                showResultModal('Information', 'No data was available to create a download.');
-            }
-        },
-
-        error: function () {
-            $('#loader').modal('hide');
-            showResultModal('Error', 'An error occurred while downloading the file.');
-        }
-    });
+	processFile(button, 'download');
 }
 
+function downloadEmailFile(button) {
+	processFile(button, 'email');
+}
+
+/**
+ * Unified function to handle download or email
+ */
+function processFile(button, action) {
+
+	var reportid = button.getAttribute('data-reportid');
+	var asondate = button.getAttribute('data-asondate');
+	var fromdate = button.getAttribute('data-fromdate');
+	var todate = button.getAttribute('data-todate');
+	var currency = button.getAttribute('data-currency');
+	var subreportid = button.getAttribute('data-subreportid');
+	var secid = button.getAttribute('data-secid');
+	var dtltype = button.getAttribute('data-dtltype');
+	var filename = button.getAttribute('data-filename');
+	var type = button.getAttribute('data-type');
+	var version = button.getAttribute('data-version');
+
+	var loader = new bootstrap.Modal(
+		document.getElementById('loader'),
+		{ backdrop: 'static', keyboard: false }
+	);
+	loader.show();
+
+	// Build URL based on action
+	var url = '';
+
+	if (action === 'download') {
+
+		url = './downloadExcel?reportid=' + reportid +
+			'&fromdate=' + fromdate +
+			'&asondate=' + asondate +
+			'&todate=' + todate +
+			'&currency=' + currency +
+			'&subreportid=' + subreportid +
+			'&secid=' + secid +
+			'&filename=' + filename +
+			'&mode=download' +
+			'&type=' + type;
+
+		if (version && version.trim() !== '') {
+			url += '&version=' + version;
+		}
+
+	} else if (action === 'email') {
+
+		url = './downloadExcel?reportid=' + reportid +
+			'&fromdate=' + fromdate +
+			'&asondate=' + asondate +
+			'&todate=' + todate +
+			'&currency=' + currency +
+			'&subreportid=' + subreportid +
+			'&secid=' + secid +
+			'&filename=' + filename +
+			'&mode=email' +
+			'&type=' + type;
+
+		if (version && version.trim() !== '') {
+			url += '&version=' + version;
+		}
+	}
+
+	// Ajax call
+	$.ajax({
+		url: url,
+		type: 'GET',
+
+		// ✅ IMPORTANT FIX – ALWAYS BLOB
+		xhrFields: { responseType: 'blob' },
+
+		success: function (data) {
+
+			$('#loader').modal('hide');
+
+			// ----- DOWNLOAD MODE -----
+			if (action === 'download') {
+
+				if (data && data.size > 100) {
+
+					downloadBlob(data, filename);
+
+					showResultModal('BRRS',
+						filename + ' downloaded successfully.');
+
+				} else {
+					showResultModal('Information',
+						'No data was available to create a download.');
+				}
+			}
+
+			// ----- EMAIL MODE -----
+			else if (action === 'email') {
+
+				if (data && data.size > 100) {
+
+					// ALSO DOWNLOAD FILE
+					downloadBlob(data, filename);
+
+					showResultModal('BRRS',
+						'Email Format ' +
+						filename + ' downloaded.');
+
+				} else {
+					showResultModal('BRRS',
+						'Email sent successfully. But no file returned for download.');
+				}
+			}
+		},
+
+		error: function () {
+			$('#loader').modal('hide');
+			showResultModal('Error',
+				'An error occurred while processing the file.');
+		}
+	});
+}
+
+/**
+ * Common function to download blob
+ */
+function downloadBlob(data, filename) {
+
+	const blob = new Blob([data], {
+		type: 'application/vnd.ms-excel'
+	});
+
+	const downloadUrl = window.URL.createObjectURL(blob);
+
+	const a = document.createElement('a');
+	a.style.display = 'none';
+	a.href = downloadUrl;
+	a.download = filename;
+
+	document.body.appendChild(a);
+	a.click();
+
+	window.URL.revokeObjectURL(downloadUrl);
+	document.body.removeChild(a);
+}
 function editRecord(){
 	showResultModal('Alert', 'Development in progress');
 	
@@ -1088,23 +1188,45 @@ $(document).ready(function() {
     Report Date: <span th:text="${#strings.replace(asondate, '/', '-')}">2025-07-04</span>
 </span>
 
-						<!-- Buttons -->
-						<input type="hidden" id="selectedTab" th:value="${displaymode}">
-						<button type="button" class="custom-tab-btn"
-							id="custom-tab-btnSummary" onclick="showsummary();"
-							th:if="${displaymode == 'Details'}">Summary</button>
-						<button type="button" class="custom-tab-btn"
-							id="custom-tab-btnDetails" onclick="showdetails();"
-							th:if="${displaymode == 'summary'}">Details</button>
+					<input type="hidden" id="selectedTab" th:value="${dtltype}">
+
+<!-- DETAILS button (hide when dtltype = 'detail') -->
+<button type="button"
+        class="custom-tab-btn"
+        id="custom-tab-btnDetails"
+        onclick="showdetails()"
+        th:if="${dtltype ne 'detail'}">
+    Details
+</button>
+
+<!-- SUMMARY button (show when dtltype = 'detail') -->
+<button type="button"
+        class="custom-tab-btn"
+        id="custom-tab-btnSummary"
+        onclick="showsummary()"
+        th:if="${dtltype eq 'detail'}">
+    Summary
+</button>
+							
+							
+							
+
+
+
 							
 							
 							
 								<!-- Modify button -->
-						<button type="button" class="custom-tab-btn"
-							onclick="showmodify(this);" title="Click to EDIT Records"
-							th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
-							th:if="${type != 'ARCHIVAL'}"
-							id="addRecord">Modify</button>
+					<button type="button"
+        class="custom-tab-btn"
+        onclick="showmodify(this);"
+        title="Click to EDIT Records"
+        th:classappend="${session.PERMISSIONS == 'W' and dtltype == 'report'} ? 'addedit'"
+        th:if="${type != 'ARCHIVAL' and dtltype ne 'detail'}"
+        id="addRecord">
+    Modify
+</button>
+
 
 						<!-- Cancel button (hidden initially) -->
 						<button type="button" class="custom-tab-btn"
@@ -1113,51 +1235,62 @@ $(document).ready(function() {
 							
 							
 							
-							
-							
-							
-						<button type="button" class="custom-tab-btn"
-							id="custom-tab-btnAdd" th:if="${displaymode == 'summary'}"
-							th:attr="data-reportid=${reportid}, 
-                    				 data-asondate=${asondate}, 
-                    				 data-fromdate=${fromdate}, 
-                     				 data-todate=${todate}, 
-                     				 data-currency=${currency},  
-                     				 data-dtltype=${dtltype}, 
-                     				 data-filename='M_EPR.xlsx',
-					 				 data-type=${type},
-					    			 data-version=${version != null ? version : ''}"
-							onclick="downloadfile(this);">
-							<i class="fa fa-download"></i>
+							<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
+							onclick="downloadfile(this)" th:if="${displaymode == 'summary' or displaymode == 'Details'}"
+							th:attr="data-reportid=${reportid},
+                   data-asondate=${asondate},
+                   data-fromdate=${fromdate},
+                   data-todate=${todate},
+                   data-currency=${currency}, 
+                   data-dtltype=${dtltype},
+                   data-filename='M_EPR.xlsx',
+                   data-type=${type},
+                   data-version=${version != null ? version : ''}" style="font-family: Arial;font-weight: bold;">
+							<i class="fa fa-download"></i> Download
 						</button>
 						
-						<button type="button" class="custom-tab-btn"
-							id="custom-tab-btnAdd" th:if="${displaymode == 'Details'}"
-							th:attr="data-reportid=${reportid}, 
-             data-asondate=${asondate}, 
-             data-fromdate=${fromdate}, 
-             data-todate=${todate}, 
-             data-currency=${currency},  
-             data-dtltype=${dtltype}, 
-             data-filename='M_EPR_Detail',
-             data-type=${type},
-					data-version=${version} "
-							onclick="startReport(this)">
-							<!-- 🛠️ Fix: pass `this` -->
-							<i class="fa fa-download"></i>
+						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
+							 onclick="downloadEmailFile(this)" 
+								th:if="${displaymode == 'summary' or displaymode == 'Details'}"
+							
+							th:attr="data-reportid=${reportid},
+            data-asondate=${asondate},
+            data-fromdate=${fromdate},
+            data-todate=${todate},
+            data-currency=${currency}, 
+            data-dtltype=${dtltype},
+            data-filename='EMAIL_M_EPR.xlsx',
+            data-type='email',
+            data-version=${version != null ? version : ''}" style="font-family: Arial;font-weight: bold;">
+								<i class="fa fa-download"></i> Email Format
+							
 						</button>
+							
+							
 						
+							
 					</div>
 				</div>
+<h1 th:if="${displaymode == 'summary' and type == 'ARCHIVAL' and displaymode != 'Details'}"
+  style="text-align: center; font-family: arial;   font-weight: bold; color: white;  font-size: 20px;  
+				background-color: rgb(107, 122, 143); margin-top:10px; margin-bottom:10px;padding-top: 10px; padding-bottom: 10px; " >Archival Summary View - M-EPR </h1>
+				
+				<h1 th:if="${displaymode == 'Details' and type == 'ARCHIVAL' and displaymode != 'summary'}"
+  style="text-align: center; font-family: arial;   font-weight: bold; color: white;  font-size: 20px;  
+				background-color: rgb(107, 122, 143); margin-top:10px; margin-bottom:10px;padding-top: 10px; padding-bottom: 10px; " >Archival Detail View - M-EPR </h1>
 
+				<h1 th:if="${displaymode == 'summary'and type != 'ARCHIVAL'}"  style="text-align: center; font-family: arial;   font-weight: bold; color: white;  font-size: 20px;  
+				background-color: rgb(107, 122, 143); margin-top:10px; margin-bottom:10px;padding-top: 10px; padding-bottom: 10px; " >Summary View - M-EPR </h1>
+			<h1 th:if="${displaymode == 'Details' and type != 'ARCHIVAL'}"  style="text-align: center;   font-family: arial; font-weight: bold;  color: white; font-size: 20px; 
+			 background-color: rgb(107, 122, 143); margin-top:10px; margin-bottom:10px; padding-top: 10px; padding-bottom: 10px;  ">Detail View - M-EPR  </h1>
+				<div th:if="${displaymode == 'summary' or displaymode == 'Details'}">
 
-
-				<div th:if="${displaymode == 'summary'}">
 					<div class="row">
 						<div class="col-sm-12">
 						<form action="#" method="POST" id="fileupload">
+						
 							<div
-								class="table-wrapper table-responsive scrollable-table-container"
+								class="table-wrapper table-responsive scrollable-table-container"   
 								style="border-right: 1px solid #dee2e6;">
 								<table
 									class="sticky-header-table table table-bordered table-cell table-sm table-condensed"
@@ -1166,7 +1299,7 @@ $(document).ready(function() {
 										<tr>
 
 											<th rowspan="2"
-												style="text-align: left; font-weight: bold; background-color: #D8D8D8; padding: 10px;  width: 200px; ">Country</th>
+												style="text-align: left; font-weight: bold; background-color: #D8D8D8; padding: 10px;  width: 300px; ">Country</th>
 											<th rowspan="2"
 												style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px; width: 200px;   ">Market</th>
 											<th colspan="9"
@@ -1239,7 +1372,7 @@ $(document).ready(function() {
     <input class="display-input Show_input" type="text"
            th:value="${report.r11_market != null ? #numbers.formatDecimal(report.r11_market, 1, 'COMMA', 0, 'POINT') : '0'}"
            id="r11_market" name="r11_market"
-           style="background-color: #FFFFFF;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
+           style="background-color: #FFFFFF;  width: 300px; height: 28px; border-color: transparent; text-align: right;"
            readonly /> 
            
           
@@ -1387,7 +1520,7 @@ $(document).ready(function() {
         <input class="display-input Show_input" type="text"
                th:value="${report.r12_market != null ? #numbers.formatDecimal(report.r12_market, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r12_market" name="r12_market"
-               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+               style="background-color: #FFFFFF; width: 300px; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
     <td id="ROW12" style="font-weight: bold; text-align: right; padding-left: 40px;">
@@ -1503,7 +1636,7 @@ $(document).ready(function() {
         <input class="display-input Show_input" type="text"
                th:value="${report.r13_market != null ? #numbers.formatDecimal(report.r13_market, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r13_market" name="r13_market"
-               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+               style="background-color: #FFFFFF; width: 300px; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
     <td id="ROW13" style="font-weight: bold; text-align: right; padding-left: 40px;">
@@ -1619,7 +1752,7 @@ $(document).ready(function() {
         <input class="display-input Show_input" type="text"
                th:value="${report.r14_market != null ? #numbers.formatDecimal(report.r14_market, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r14_market" name="r14_market"
-               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+               style="background-color: #FFFFFF; width: 300px; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
     <td id="ROW14" style="font-weight: bold; text-align: right; padding-left: 40px;">
@@ -1735,7 +1868,7 @@ $(document).ready(function() {
         <input class="display-input Show_input" type="text"
                th:value="${report.r15_market != null ? #numbers.formatDecimal(report.r15_market, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r15_market" name="r15_market"
-               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+               style="background-color: #FFFFFF; width: 300px; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
     <td id="ROW15" style="font-weight: bold; text-align: right;padding-left: 40px;">
@@ -1851,7 +1984,7 @@ $(document).ready(function() {
         <input class="display-input Show_input" type="text"
                th:value="${report.r16_market != null ? #numbers.formatDecimal(report.r16_market, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r16_market" name="r16_market"
-               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+               style="background-color: #FFFFFF; width: 300px; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
     <td id="ROW16" style="font-weight: bold; text-align: right; padding-left: 40px;">
@@ -1967,7 +2100,7 @@ $(document).ready(function() {
         <input class="display-input Show_input" type="text"
                th:value="${report.r17_market != null ? #numbers.formatDecimal(report.r17_market, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r17_market" name="r17_market"
-               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+               style="background-color: #FFFFFF; width: 300px; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
     <td id="ROW17" style="font-weight: bold; text-align: right; padding-left: 40px;">
@@ -2083,7 +2216,7 @@ $(document).ready(function() {
         <input class="display-input Show_input" type="text"
                th:value="${report.r18_market != null ? #numbers.formatDecimal(report.r18_market, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r18_market" name="r18_market"
-               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+               style="background-color: #FFFFFF; width: 300px; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
     <td id="ROW18" style="font-weight: bold; text-align: right; padding-left: 40px;">
@@ -2199,7 +2332,7 @@ $(document).ready(function() {
         <input class="display-input Show_input" type="text"
                th:value="${report.r19_market != null ? #numbers.formatDecimal(report.r19_market, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r19_market" name="r19_market"
-               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+               style="background-color: #FFFFFF; width: 300px; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
     <td id="ROW19" style="font-weight: bold; text-align: right; padding-left: 40px; ">
@@ -2315,7 +2448,7 @@ $(document).ready(function() {
         <input class="display-input Show_input" type="text"
                th:value="${report.r20_market != null ? #numbers.formatDecimal(report.r20_market, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r20_market" name="r20_market"
-               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+               style="background-color: #FFFFFF; width: 300px; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
     <td id="ROW20" style="font-weight: bold; text-align: right; padding-left: 40px;">
@@ -2431,7 +2564,7 @@ $(document).ready(function() {
         <input class="display-input Show_input" type="text"
                th:value="${report.r21_market != null ? #numbers.formatDecimal(report.r21_market, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r21_market" name="r21_market"
-               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+               style="background-color: #FFFFFF; width: 300px; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
     <td id="ROW21" style="font-weight: bold; text-align: right; padding-left: 40px;">
@@ -2547,7 +2680,7 @@ $(document).ready(function() {
         <input class="display-input Show_input" type="text"
                th:value="${report.r22_market != null ? #numbers.formatDecimal(report.r22_market, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r22_market" name="r22_market"
-               style="background-color: #FFFFFF; width: 200px ; height: 28px; border-color: transparent; text-align: right;"
+               style="background-color: #FFFFFF; width: 300px ; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
     <td id="ROW22" style="font-weight: bold; text-align: right; padding-left: 40px;">
@@ -2667,26 +2800,26 @@ $(document).ready(function() {
 		<input class="display-input Show_input" type="text"
 			th:value="'Total capital charge across all countries'"
 			id="r23_market" name="r23_market"
-			style="background-color: #FFFFFF; width:730px; height: 28px; border-color: transparent; text-align: left; font-weight: bold;"
+			style="background-color: #FFFFFF; width:350px; height: 28px; border-color: transparent; text-align: left; font-weight: bold;"
 			readonly />
 			
 			
-			<!-- <input class="display-input Show_input" type="text"
+			 <input class="display-input Show_input" type="text"
 			th:value="${report.r23_gpfsr_nom_amt != null ? #numbers.formatDecimal(report.r23_gpfsr_nom_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
 			id="r23_gpfsr_nom_amt" name="r23_gpfsr_nom_amt"
-			style="background-color: #FFFFFF; width:210px; height: 28px; border-color: transparent; text-align: right; padding-right:10px;"
+			style="background-color: #FFFFFF; width:9%; height: 28px; border-color: transparent; text-align: right; padding-right:5px;"
 			readonly />
 			
 			<input class="display-input Show_input" type="text"
 			th:value="${report.r23_gpfsr_pos_att8_per_spe_ris != null ? #numbers.formatDecimal(report.r23_gpfsr_pos_att8_per_spe_ris, 1, 'COMMA', 0, 'POINT') : '0'}"
 			id="r23_gpfsr_pos_att8_per_spe_ris" name="r23_gpfsr_pos_att8_per_spe_ris"
-			style="background-color: #FFFFFF; width:200px; height: 28px; border-color: transparent; text-align: right; padding-right:15px;"
+			style="background-color: #FFFFFF; width:9.5%; height: 28px; border-color: transparent; text-align: right; padding-right:5px;"
 			readonly />
-			 -->
+			
 		<input class="display-input Show_input " type="text"
 			th:value="${report.r23_gpfsr_chrg != null ? #numbers.formatDecimal(report.r23_gpfsr_chrg, 1, 'COMMA', 0, 'POINT') : '0'}"
 			id="r23_gpfsr_chrg" name="r23_gpfsr_chrg"
-			style="background-color: #FFFFFF; width: 10%; height: 28px; border-color: transparent; text-align: right; padding-right:10px;"
+			style="background-color: #FFFFFF; width: 9.5%; height: 28px; border-color: transparent; text-align: right; padding-right:5px;"
 			readonly /> 
 			
 			
@@ -2695,13 +2828,13 @@ $(document).ready(function() {
 			<input class="display-input Show_input" type="text"
 			th:value="${report.r23_gpfsr_nom_amt1 != null ? #numbers.formatDecimal(report.r23_gpfsr_nom_amt1, 1, 'COMMA', 0, 'POINT') : '0'}"
 			id="r23_gpfsr_nom_amt1" name="r23_gpfsr_nom_amt1"
-			style="background-color: #FFFFFF; width:10%; height: 28px; border-color: transparent; text-align: right;padding-right:11px; "
+			style="background-color: #FFFFFF; width:9.5%; height: 28px; border-color: transparent; text-align: right;padding-right:5px; "
 			readonly />
 			
 			<input class="display-input Show_input" type="text"
 			th:value="${report.r23_gpfsr_pos_att4_per_spe_ris != null ? #numbers.formatDecimal(report.r23_gpfsr_pos_att4_per_spe_ris, 1, 'COMMA', 0, 'POINT') : '0'}"
 			id="r23_gpfsr_pos_att4_per_spe_ris" name="r23_gpfsr_pos_att4_per_spe_ris"
-			style="background-color: #FFFFFF; width: 9.5%; height: 28px; border-color: transparent; text-align: right; padding-right:5px;"
+			style="background-color: #FFFFFF; width: 9.3%; height: 28px; border-color: transparent; text-align: right; padding-right:5px;"
 			readonly />
 			
 				
@@ -2709,25 +2842,25 @@ $(document).ready(function() {
 			<input class="display-input Show_input" type="text"
 			th:value="${report.r23_gpfsr_chrg1 != null ? #numbers.formatDecimal(report.r23_gpfsr_chrg1, 1, 'COMMA', 0, 'POINT') : '0'}"
 			id="r23_gpfsr_chrg1" name="r23_gpfsr_chrg1"
-			style="background-color: #FFFFFF; width: 10%; height: 28px; border-color: transparent; text-align: right; padding-right:10px;"
+			style="background-color: #FFFFFF; width: 9.5%; height: 28px; border-color: transparent; text-align: right; padding-right:5px;"
 			readonly />
 			
 			<input class="display-input Show_input" type="text"
 			th:value="${report.r23_gpfsr_nom_amt2 != null ? #numbers.formatDecimal(report.r23_gpfsr_nom_amt2, 1, 'COMMA', 0, 'POINT') : '0'}"
 			id="r23_gpfsr_nom_amt2" name="r23_gpfsr_nom_amt2"
-			style="background-color: #FFFFFF; width: 10%; height: 28px; border-color: transparent; text-align: right; padding-right:10px;"
+			style="background-color: #FFFFFF; width: 9.5%; height: 28px; border-color: transparent; text-align: right; padding-right:5px;"
 			readonly />
 			
 			<input class="display-input Show_input" type="text"
 			th:value="${report.r23_gpfsr_pos_att2_per_spe_ris != null ? #numbers.formatDecimal(report.r23_gpfsr_pos_att2_per_spe_ris, 1, 'COMMA', 0, 'POINT') : '0'}"
 			id="r23_gpfsr_pos_att2_per_spe_ris" name="r23_gpfsr_pos_att2_per_spe_ris"
-			style="background-color: #FFFFFF; width: 10%; height: 28px; border-color: transparent; text-align: right; padding-right:15px;"
+			style="background-color: #FFFFFF; width:9.5%; height: 28px; border-color: transparent; text-align: right; padding-right:7px;"
 			readonly />
 			
 			<input class="display-input Show_input " type="text"
 			th:value="${report.r23_gpfsr_chrg2 != null ? #numbers.formatDecimal(report.r23_gpfsr_chrg2, 1, 'COMMA', 0, 'POINT') : '0'}"
 			id="r23_gpfsr_chrg2" name="r23_gpfsr_chrg2"
-			style="background-color: #FFFFFF; width: 9.2%; height: 28px; border-color: transparent; text-align: right;  padding-right:1px;"
+			style="background-color: #FFFFFF; width: 9.3%; height: 28px; border-color: transparent; text-align: right;  padding-right:5px;"
 			readonly />
 			
 	</td>
