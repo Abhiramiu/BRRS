@@ -2178,7 +2178,7 @@ public class BRRS_ReportsController {
 			// call services
 			brrs_m_epr_reportservice.updateReport(request);
 
-			return ResponseEntity.ok("Updated Successfully.");
+			return ResponseEntity.ok("Modified Successfully.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -4243,7 +4243,7 @@ public ResponseEntity<String> updateAllReports(
         QSTAFF_service.updateReport2(request1);
         QSTAFF_service.updateReport3(request1);
 
-        return ResponseEntity.ok("Updated Successfully.");
+        return ResponseEntity.ok("Modified Successfully.");
 
     } catch (Exception e) {
         e.printStackTrace();
