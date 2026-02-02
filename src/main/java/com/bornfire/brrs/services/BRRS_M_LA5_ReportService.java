@@ -85,7 +85,7 @@ public class BRRS_M_LA5_ReportService {
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
 	public ModelAndView getM_LA5View(String reportId, String fromdate, String todate, String currency,
-			String dtltype, Pageable pageable, String type, String version) {
+			String dtltype, Pageable pageable, String type, BigDecimal version) {
 
 		ModelAndView mv = new ModelAndView();
 		Session hs = sessionFactory.getCurrentSession();
@@ -93,7 +93,7 @@ public class BRRS_M_LA5_ReportService {
 		int currentPage = pageable.getPageNumber();
 		int startItem = currentPage * pageSize;
 
-		if (type.equals("ARCHIVAL") & version != null) {
+		if (type.equals("ARCHIVAL") & version != null & version != null) {
 			List<M_LA5_Archival_Summary_Entity> T1Master = new ArrayList<M_LA5_Archival_Summary_Entity>();
 			try {
 				Date d1 = dateformat.parse(todate);
@@ -209,7 +209,7 @@ public class BRRS_M_LA5_ReportService {
 		return mv;
 	}
 	public byte[] BRRS_M_LA5Excel(String filename, String reportId, String fromdate, String todate, String currency,
-			String dtltype, String type, String version) throws Exception {
+			String dtltype, String type, BigDecimal version) throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.");
 		System.out.println(type);
 		System.out.println(version);
@@ -4937,7 +4937,7 @@ public class BRRS_M_LA5_ReportService {
 
 
 	public byte[] getExcelM_LA5ARCHIVAL(String filename, String reportId, String fromdate, String todate, String currency,
-			String dtltype, String type, String version) throws Exception {
+			String dtltype, String type, BigDecimal version) throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.");
 		System.out.println(type);
 		System.out.println(version);

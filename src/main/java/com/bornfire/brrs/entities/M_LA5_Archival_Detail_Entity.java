@@ -10,7 +10,7 @@ import javax.persistence.Table;
 
 import org.springframework.format.annotation.DateTimeFormat;
 @Entity
-@Table(name = "BRRS_M_LA5_ARCHIVAL_DETAIL")
+@Table(name = "BRRS_M_LA5_ARCHIVALTABLE_DETAIL")
 public class M_LA5_Archival_Detail_Entity {
 	
     @Column(name = "CUST_ID")

@@ -771,6 +771,12 @@ public class RegulatoryReportServices {
 					type, version);
 			break;
 
+			
+		case "M_LA5":
+			repsummary = BRRS_M_LA5_reportservice.getM_LA5View(reportId, fromdate, todate, currency, dtltype, pageable,
+					type, version);
+			break;
+
 		/*
 		 * 
 		 * 
@@ -1518,6 +1524,11 @@ public class RegulatoryReportServices {
 			repdetail = BRRS_M_LA1_reportservice.getM_LA1currentDtl(reportId, fromdate, todate, currency, dtltype,
 					pageable, Filter, type, version);
 			break;
+			
+		case "M_LA5":
+			repdetail = BRRS_M_LA5_reportservice.getM_LA5currentDtl(reportId, fromdate, todate, currency, dtltype,
+					pageable, Filter, type, version);
+			break;
 
 		case "M_LA1_NEW":
 			repdetail = BRRS_M_LA1_reportservice_new.getM_LA1currentDtl(reportId, fromdate, todate, currency, dtltype,
@@ -1539,10 +1550,7 @@ public class RegulatoryReportServices {
 					pageable, Filter, type, version);
 			break;
 
-		case "M_LA5":
-			repdetail = BRRS_M_LA5_reportservice.getM_LA5currentDtl(reportId, fromdate, todate, currency, dtltype,
-					pageable, Filter, type, version);
-			break;
+		
 
 		case "M_DEP2":
 			repdetail = BRRS_M_DEP2_reportservice.getM_DEP2currentDtl(reportId, fromdate, todate, currency, dtltype,
@@ -2715,6 +2723,15 @@ public class RegulatoryReportServices {
 		case "M_LA2":
 			try {
 				repfile = BRRS_M_LA2_reportservice.BRRS_M_LA2Excel(filename, reportId, fromdate, todate, currency,
+						dtltype, type, version);
+			} catch (Exception e) { // TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+			
+		case "M_LA5":
+			try {
+				repfile = BRRS_M_LA5_reportservice.BRRS_M_LA5Excel(filename, reportId, fromdate, todate, currency,
 						dtltype, type, version);
 			} catch (Exception e) { // TODO Auto-generated catch block
 				e.printStackTrace();

@@ -80,6 +80,7 @@ import com.bornfire.brrs.services.BRRS_M_LA1_ReportService;
 import com.bornfire.brrs.services.BRRS_M_LA2_ReportService;
 import com.bornfire.brrs.services.BRRS_M_LA3_ReportService;
 import com.bornfire.brrs.services.BRRS_M_LA4_ReportService;
+import com.bornfire.brrs.services.BRRS_M_LA5_ReportService;
 import com.bornfire.brrs.services.BRRS_M_LARADV_ReportService;
 import com.bornfire.brrs.services.BRRS_M_LIQGAP_ReportService;
 import com.bornfire.brrs.services.BRRS_M_LIQ_ReportService;
@@ -2610,6 +2611,8 @@ public class BRRS_ReportsController {
 					.body("Update Failed : " + e.getMessage());
 		}
 	}
+
+	
 
 	//@RequestMapping(value = "/updateReportLA2", method = { RequestMethod.GET, RequestMethod.POST })
 	@PostMapping("/LA2updateAll")
