@@ -438,10 +438,17 @@ public class RegulatoryReportServices {
 					dtltype, pageable, type, version);
 
 			break;
-case "Q_BRANCHNET": 
-			repsummary = BRRS_Q_BRANCHNET_reportservice.getQ_BRANCHNETView(reportId, fromdate, todate,
-		currency, dtltype, pageable, type, version);
-		 break;
+
+		case "Q_BRANCHNET":
+			repsummary = BRRS_Q_BRANCHNET_reportservice.getQ_BRANCHNETView(reportId, fromdate, todate, currency,
+					dtltype, pageable, type, version);
+			break;
+
+		case "M_TOP_100_BORROWER":
+			repsummary = BRRS_M_TOP_100_BORROWER_reportservice.getM_TOP_100_BORROWERView(reportId, fromdate, todate,
+					currency, dtltype, pageable, type, version);
+			break;
+
 		/*
 		 * 
 		 * 
@@ -573,9 +580,6 @@ case "Q_BRANCHNET":
 		 * 
 		 * System.out.println("Enter into Method"); break;
 		 * 
-		 * case "M_TOP_100_BORROWER": repsummary =
-		 * BRRS_M_TOP_100_BORROWER_reportservice.getM_TOP_100_BORROWERView(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
 		 * 
 		 * case "DBS10_FINCON_II_1A": repsummary =
 		 * BRRS_DBS10_FINCON_II_1A_ReportService.getDBS10_FINCON_II_1AView(reportId,
@@ -1161,7 +1165,7 @@ case "Q_BRANCHNET":
 			repsummary = brrs_mdisb2_reportservice.getMDISB2View(reportId, fromdate, todate, currency, dtltype,
 					pageable, type, version);
 			break;
-			
+
 		case "MDISB3":
 			repsummary = brrs_mdisb3_reportservice.getMDISB3View(reportId, fromdate, todate, currency, dtltype,
 					pageable, type, version);
@@ -1798,14 +1802,13 @@ case "Q_BRANCHNET":
 			repdetail = brrs_mdisb2_reportservice.getMDISB2currentDtl(reportId, fromdate, todate, currency, dtltype,
 					pageable, Filter, type, version);
 			break;
-			
+
 		case "MDISB3":
 
 			repdetail = brrs_mdisb3_reportservice.getMDISB3currentDtl(reportId, fromdate, todate, currency, dtltype,
 					pageable, Filter, type, version);
 			break;
 
-		
 		case "MASTER":
 
 			repdetail = brrs_master_reportservice.getMASTERcurrentDtl(reportId, fromdate, todate, currency, dtltype,
@@ -1856,9 +1859,10 @@ case "Q_BRANCHNET":
 
 		// case "Q_STAFF":
 
-		// 	repdetail = BRRS_Q_STAFF_report_service.getQ_STAFFcurrentDtl(reportId, fromdate, todate, currency, dtltype,
-		// 			pageable, Filter, type, version);
-		// 	break;
+		// repdetail = BRRS_Q_STAFF_report_service.getQ_STAFFcurrentDtl(reportId,
+		// fromdate, todate, currency, dtltype,
+		// pageable, Filter, type, version);
+		// break;
 		// case "Q_STAFF_NEW":
 
 		// repdetail =
@@ -2057,7 +2061,7 @@ case "Q_BRANCHNET":
 				e.printStackTrace();
 			}
 			break;
-			
+
 		case "MDISB3":
 			try {
 				repfile = brrs_mdisb3_reportservice.getMDISB3Excel(filename, reportId, fromdate, todate, currency,
@@ -3349,10 +3353,10 @@ case "Q_BRANCHNET":
 			}
 			break;
 
-			 	case "Q_BRANCHNET":
+		case "Q_BRANCHNET":
 			try {
-				repfile = BRRS_Q_BRANCHNET_reportservice.BRRS_Q_BRANCHNETExcel(filename, reportId, fromdate, todate, currency,
-						dtltype, type, version);
+				repfile = BRRS_Q_BRANCHNET_reportservice.BRRS_Q_BRANCHNETExcel(filename, reportId, fromdate, todate,
+						currency, dtltype, type, version);
 			} catch (Exception e) { // TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -4719,7 +4723,7 @@ case "Q_BRANCHNET":
 				e.printStackTrace();
 			}
 			break;
-			
+
 		case "MDISB3":
 			try {
 				archivalData = brrs_mdisb3_reportservice.getMDISB3Archival();
@@ -4729,7 +4733,6 @@ case "Q_BRANCHNET":
 			}
 			break;
 
-	
 		case "MASTER":
 			try {
 				archivalData = brrs_master_reportservice.getMASTERArchival();
