@@ -362,17 +362,23 @@ label.error {
 
 		//to fetch summary from the database - called from the summary button
 		function showdetails() {
-			var Callurl;
-			$('#loader').modal('show');
-			Callurl = /*[[@{'/Reports/'+${reportid}+'/Details'(asondate=${asondate},fromdate=${fromdate},todate=${todate},currency=${currency},dtltype=${dtltype},type=${type},version=${version})}]]*/
-				location.href = Callurl;
-			console.log(Callurl);
+			 $('#loader').modal('show');
+			    var Callurl = /*[[@{'/Reports/' + ${reportid}(
+			        dtltype='detail',
+			        fromdate=${fromdate},
+			        todate=${todate},
+			        type=${type},
+			        asondate=${asondate},
+			        version=${version}
+			    )}]]*/;
+			    location.href = Callurl;
 
-		}
+}
 
-		function showsummary() {
+
+function showsummary() {
 			$('#loader').modal('show');
-			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/;
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate}, version=${version})}]]*/;
 			location.href = Callurl;
 		}
 
@@ -660,6 +666,96 @@ function cancelModify() {
 	</script>
 
 
+<script>
+function parseVal(selector) {
+    return parseFloat($(selector).val()?.replace(/,/g, "")) || 0;
+}
+
+function calculateAllTotals() {
+
+    let FIELDS = [
+        "CURRENT",
+        "CALL",
+        "SAVINGS",
+        "NOTICE_0_31_DAYS",
+        "NOTICE_32_88_DAYS",
+        "91_DEPOSIT_DAY",
+        "FD_1_6_MONTHS",
+        "FD_7_12_MONTHS",
+        "FD_13_18_MONTHS",
+        "FD_19_24_MONTHS",
+        "FD_OVER_24_MONTHS"
+    ];
+
+    let ROW_START = 10;
+    let ROW_END   = 14;
+    let TOTAL_ROW = 15;
+
+    let R15_TOTAL = 0;
+
+    // ---------- COLUMN TOTALS (R15_*) ----------
+    FIELDS.forEach(function (FIELD) {
+
+        let COL_SUM = 0;
+
+        for (let i = ROW_START; i <= ROW_END; i++) {
+            let VAL = parseVal(`#R${i}_${FIELD}`);
+            COL_SUM += VAL;
+        }
+
+        // SET R15 COLUMN VALUE
+        $(`#R${TOTAL_ROW}_${FIELD}`).val(COL_SUM.toLocaleString('en-US'));
+
+        R15_TOTAL += COL_SUM;
+    });
+
+    // ---------- ROW TOTALS (R10–R14) ----------
+    for (let i = ROW_START; i <= ROW_END; i++) {
+
+        let ROW_SUM = 0;
+
+        FIELDS.forEach(function (FIELD) {
+            ROW_SUM += parseVal(`#R${i}_${FIELD}`);
+        });
+
+        $(`#R${i}_TOTAL`).val(ROW_SUM.toLocaleString('en-US'));
+    }
+
+    // ---------- GRAND TOTAL ----------
+    $("#R15_TOTAL").val(R15_TOTAL.toLocaleString('en-US'));
+}
+
+// INITIALIZE + AUTO RECALC
+$(document).ready(function () {
+    calculateAllTotals();
+
+    let selectors = [];
+    for (let i = 10; i <= 14; i++) {
+        selectors.push(
+            `#R${i}_CURRENT,
+             #R${i}_CALL,
+             #R${i}_SAVINGS,
+             #R${i}_NOTICE_0_31_DAYS,
+             #R${i}_NOTICE_32_88_DAYS,
+             #R${i}_91_DEPOSIT_DAY,
+             #R${i}_FD_1_6_MONTHS,
+             #R${i}_FD_7_12_MONTHS,
+             #R${i}_FD_13_18_MONTHS,
+             #R${i}_FD_19_24_MONTHS,
+             #R${i}_FD_OVER_24_MONTHS`
+        );
+    }
+
+    $(selectors.join(",")).on("input", calculateAllTotals);
+});
+</script>
+
+
+
+
+
+
+
 	<script>
 
 
@@ -839,53 +935,74 @@ function cancelModify() {
        th:if="${displaymode == 'summary'}">Details</button>
 
       <!-- Modify button -->
-      <button type="button" class="custom-tab-btn" onclick="showmodify(this);" title="Click to EDIT Records"
-       th:if="${type == 'RESUB' or displaymode == 'summary' and type != 'ARCHIVAL'}"
-       th:classappend="${session.PERMISSIONS == 'W'} and ${dtltype == 'report'} ? 'addedit' " id="addRecord">Modify</button>
+      <button type="button"
+        class="custom-tab-btn"
+        onclick="showmodify(this);"
+        title="Click to EDIT Records"
+        th:classappend="${session.PERMISSIONS == 'W' and dtltype == 'report'} ? 'addedit'"
+        th:if="${type != 'ARCHIVAL' and dtltype ne 'detail'}"
+        id="addRecord">
+    Modify
+</button>
 
 
       <!-- Cancel button (hidden initially) -->
       <button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord" onclick="cancelModify();"
        style="display: none;">Cancel</button>
 
-
-      <button type="button" class="custom-tab-btn" id="custom-tab-btnAdd" th:if="${displaymode == 'summary'}"
-       th:attr="data-reportid=${reportid},
-                   				 data-asondate=${asondate},
-                   				 data-fromdate=${fromdate},
-                    				 data-todate=${todate},
-                    				 data-currency=${currency}, 
-                    				 data-dtltype=${dtltype},
-                    				 data-filename='M_INTRATESFCA.xlsx',
-					 				 data-type=${type},
-					    			   data-version=${version != null ? version : ''}"
-       onclick="downloadfile(this);">
-       <i class="fa fa-download"></i>
-      </button>
-
-
-
-
-      <button type="button" class="custom-tab-btn" id="custom-tab-btnAdd" th:if="${displaymode == 'Details'}"
-       onclick="startReport(this);"
-       th:attr="
-								    data-fromdate=${fromdate},
-								    data-todate=${todate},
-									data-currency=${currency},  
-												data-dtltype=${dtltype}, 
-								    data-filename='M_INTRATESFCADetail',
-									data-type=${type},
-												data-version=${version}
-								  ">
-       <i class="fa fa-download"></i>
-      </button>
+<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
+							onclick="downloadfile(this)" th:if="${displaymode == 'summary' or displaymode == 'Details'}"
+							th:attr="data-reportid=${reportid},
+                   data-asondate=${asondate},
+                   data-fromdate=${fromdate},
+                   data-todate=${todate},
+                   data-currency=${currency}, 
+                   data-dtltype=${dtltype},
+                   data-filename='M_INTRATESFCA.xlsx',
+                   data-type=${type},
+                   data-version=${version != null ? version : ''}" style="font-family: Arial;font-weight: bold;">
+							<i class="fa fa-download"></i> Download
+						</button>
 						
+						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
+							 onclick="downloadfile(this)" 
+								th:if="${displaymode == 'summary' or displaymode == 'Details'}"
+							
+							th:attr="data-reportid=${reportid},
+            data-asondate=${asondate},
+            data-fromdate=${fromdate},
+            data-todate=${todate},
+            data-currency=${currency}, 
+            data-dtltype=${dtltype},
+            data-filename='EMAIL_M_INTRATESFCA.xlsx',
+            data-type='email',
+            data-version=${version != null ? version : ''}" style="font-family: Arial;font-weight: bold;">
+								<i class="fa fa-download"></i> Email Format
+							
+						</button>
+
+
+     
 
 
 					</div>
 					
 				</div>
-				<div th:if="${displaymode == 'summary'}">
+				</div>
+<h1 th:if="${displaymode == 'summary' and type == 'ARCHIVAL' and displaymode != 'Details'}"
+  style="text-align: left; font-family: arial;   font-weight: bold; color: white;  font-size: 20px;  
+				background-color: rgb(107, 122, 143); margin-top:10px; margin-bottom:10px;padding-top: 10px; padding-bottom: 10px; " >Archival Summary View - M_INTRATES_FCA</h1>
+				
+				<h1 th:if="${displaymode == 'Details' and type == 'ARCHIVAL' and displaymode != 'summary'}"
+  style="text-align: left; font-family: arial;   font-weight: bold; color: white;  font-size: 20px;  
+				background-color: rgb(107, 122, 143); margin-top:10px; margin-bottom:10px;padding-top: 10px; padding-bottom: 10px; " >Archival Detail View - M_INTRATES_FCA </h1>
+
+				<h1 th:if="${displaymode == 'summary'and type != 'ARCHIVAL'}"  style="text-align: left; font-family: arial;   font-weight: bold; color: white;  font-size: 20px;  
+				background-color: rgb(107, 122, 143); margin-top:10px; margin-bottom:10px;padding-top: 10px; padding-bottom: 10px; " >Summary View - M_INTRATES_FCA </h1>
+			<h1 th:if="${displaymode == 'Details' and type != 'ARCHIVAL'}"  style="text-align: left;   font-family: arial; font-weight: bold;  color: white; font-size: 20px; 
+			 background-color: rgb(107, 122, 143); margin-top:10px; margin-bottom:10px; padding-top: 10px; padding-bottom: 10px;  ">Detail View - M_INTRATES_FCA  </h1>
+				<div th:if="${displaymode == 'summary' or displaymode == 'Details'}">
+
 					<div class="row">
 						<div class="col-sm-12">
 						<form action="#" method="POST" id="fileupload">

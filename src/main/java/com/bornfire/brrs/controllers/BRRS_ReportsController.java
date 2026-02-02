@@ -1219,27 +1219,25 @@ public class BRRS_ReportsController {
 		}
 	}
 
-	@Autowired
-	BRRS_M_INT_RATES_FCA_ReportService INT_RATES_FCAreportService;
-
-	@PostMapping("/INTRATESFCAupdateAll")
-	@ResponseBody
-	public ResponseEntity<String> updateINTRATESFCAAllReports(
-			@RequestParam @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@RequestParam Map<String, String> allParams) {
-		try {
-			System.out.println("Came to INT_RATES_FCA controller");
-
-			INT_RATES_FCAreportService.updateDetailFromForm(asondate, allParams);
-
-			return ResponseEntity.ok("Updated Successfully.");
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity
-					.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body("Update Failed: " + e.getMessage());
-		}
-	}
+	/*
+	 * @Autowired BRRS_M_INT_RATES_FCA_ReportService INT_RATES_FCAreportService;
+	 * 
+	 * @PostMapping("/INTRATESFCAupdateAll")
+	 * 
+	 * @ResponseBody public ResponseEntity<String> updateINTRATESFCAAllReports(
+	 * 
+	 * @RequestParam @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+	 * 
+	 * @RequestParam Map<String, String> allParams) { try {
+	 * System.out.println("Came to INT_RATES_FCA controller");
+	 * 
+	 * INT_RATES_FCAreportService.updateDetailFromForm(asondate, allParams);
+	 * 
+	 * return ResponseEntity.ok("Updated Successfully."); } catch (Exception e) {
+	 * e.printStackTrace(); return ResponseEntity
+	 * .status(HttpStatus.INTERNAL_SERVER_ERROR) .body("Update Failed: " +
+	 * e.getMessage()); } }
+	 */
 
 	/*
 	 * @RequestMapping(value = "/UpdateM_INT_RATES_FCA_ReSub", method = {
@@ -2003,30 +2001,31 @@ public class BRRS_ReportsController {
 		}
 	}
 
-	/*
-	 * @Autowired private BRRS_M_INT_RATES_FCA_ReportService
-	 * INTRATESFCAreportService;
-	 * 
-	 * @RequestMapping(value = "/INTRATESFCAupdateAll", method = {
-	 * RequestMethod.GET, RequestMethod.POST })
-	 * 
-	 * @ResponseBody public ResponseEntity<String> updateAllReports(
-	 * 
-	 * @RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date
-	 * asondate,
-	 * 
-	 * @ModelAttribute M_INT_RATES_FCA_Summary_Entity request1
-	 * 
-	 * ) { try { System.out.println("Came to single controller"); // set date into
-	 * all 4 entities request1.setReportDate(asondate);
-	 * 
-	 * // call services INTRATESFCAreportService.updateReport(request1);
-	 * 
-	 * return ResponseEntity.ok("Updated Successfully."); } catch (Exception e) {
-	 * e.printStackTrace(); return
-	 * ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	 * .body("Update Failed: " + e.getMessage()); } }
-	 */
+	
+	  @Autowired private BRRS_M_INT_RATES_FCA_ReportService INTRATESFCAreportService;
+	  
+	  @RequestMapping(value = "/INTRATESFCAupdateAll", method = {
+	  RequestMethod.GET, RequestMethod.POST })
+	  
+	  @ResponseBody public ResponseEntity<String> updateAllReports(
+	  
+	  @RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date
+	  asondate,
+	  
+	  @ModelAttribute M_INT_RATES_FCA_Summary_Entity request1
+	  
+	  ) { try { System.out.println("Came to single controller");
+	  // set date into all  entities
+	   request1.setReportDate(asondate);
+	  
+	  // call services 
+	   INTRATESFCAreportService.updateReport(request1);
+	  
+	  return ResponseEntity.ok("Modified Successfully."); } catch (Exception e) {
+	  e.printStackTrace(); return
+	  ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	  .body("Update Failed: " + e.getMessage()); } }
+	 
 
 	/*
 	 * @Autowired private BRRS_M_INT_RATES_FCA_NEW_ReportService
