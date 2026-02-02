@@ -17,7 +17,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Entity
 @Table(name = "BRRS_M_SRWA_12H_DETAILTABLE")
 
-public class M_SRWA_12H_Detail_Entity {
+public class M_SRWA_12H_Archival_Detail_Entity {
 
 	private String R11_PRODUCT;
 	private BigDecimal R11_ISSUER;
@@ -729,7 +729,6 @@ public class M_SRWA_12H_Detail_Entity {
 	private BigDecimal R81_STD_SUPERVISORY_HAIRCUT;
 	private BigDecimal R81_APPLICABLE_RISK_WEIGHT;
 	@Temporal(TemporalType.DATE)
-	@DateTimeFormat(pattern = "dd/MM/yyyy")
 	@Id
 	@Column(name = "REPORT_DATE")
 	private Date reportDate;
@@ -5921,7 +5920,7 @@ public class M_SRWA_12H_Detail_Entity {
 		DEL_FLG = dEL_FLG;
 	}
 
-	public M_SRWA_12H_Detail_Entity() {
+	public M_SRWA_12H_Archival_Detail_Entity() {
 		super();
 		// TODO Auto-generated constructor stub
 	}

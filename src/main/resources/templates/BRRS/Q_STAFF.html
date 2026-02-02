@@ -1049,7 +1049,7 @@ PURPOSE		: BWRBRREPORT
                    data-filename='Q_STAFF.xlsx',
                    data-type=${type},
                    data-version=${version != null ? version : ''}" style="font-family: Arial;font-weight: bold;">
-							<i class="fa fa-download"></i> Download
+							<i class="fa fa-download"></i> Excel
 						</button>
 						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
 							onclick="downloadfile(this)"
@@ -1062,7 +1062,7 @@ PURPOSE		: BWRBRREPORT
             data-filename='EMAIL_Q_STAFF.xlsx',
             data-type='email',
             data-version=${version != null ? version : ''}" style="font-family: Arial;font-weight: bold;">
-							<i class="fa fa-download"></i> Email Format
+							<i class="fa fa-download"></i> E-Mail
 
 						</button>
 
@@ -1345,10 +1345,14 @@ PURPOSE		: BWRBRREPORT
 										class="sticky-header-table table table-bordered table-hover table-sm table-condensed"
 										id="reports">
 										<thead class="thead-light">
+											<tr style="width: 100px;height: 30px;">
+												<th colspan="3"></th>
+												<th></th>
+											</tr>
 											<tr style="background-color: #D8D8D8;">
 
 												<th style="text-align: left;width: 500px;background-color: #D8D8D8;">
-													(8B) KEY MANAGEMENT COMPENSATION
+													(8B) SENIOR MANAGEMENT COMPENSATION
 												</th>
 												<th
 													style="text-align: right; vertical-align:center;background-color: #D8D8D8; ">
@@ -1620,11 +1624,11 @@ PURPOSE		: BWRBRREPORT
 
 										<thead class="thead-light">
 											<tr style="background-color: #D8D8D8;">
-												<th style="text-align: left; width: 800px;">(8C) STAFF LOANS</th>
-												<th style="text-align: right; width: 290px;">Original Amount</th>
-												<th style="text-align: right; width: 275px;">Balance Outstanding</th>
-												<th style="text-align: right; width: 275px;">No. of A/Cs</th>
-												<th style="text-align: right; width: 275px;">Interest Rate</th>
+												<th style="text-align: left; width: 800px; vertical-align:center;background-color: #D8D8D8; ">(8C) STAFF LOANS</th>
+												<th style="text-align: right; width: 290px;vertical-align:center;background-color: #D8D8D8; ">Original Amount</th>
+												<th style="text-align: right; width: 275px;vertical-align:center;background-color: #D8D8D8; ">Balance Outstanding</th>
+												<th style="text-align: right; width: 275px;vertical-align:center;background-color: #D8D8D8; ">No. of A/Cs</th>
+												<th style="text-align: right; width: 275px;vertical-align:center;background-color: #D8D8D8; ">Interest Rate</th>
 											</tr>
 										</thead>
 

@@ -52,28 +52,12 @@ import java.util.Map;
 import java.util.Arrays;
 import com.bornfire.brrs.entities.BRRS_Q_STAFF_Archival_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_Q_STAFF_Archival_Summary_Repo;
-import com.bornfire.brrs.entities.BRRS_Q_STAFF_Archival_Summary_Repo1;
-import com.bornfire.brrs.entities.BRRS_Q_STAFF_Archival_Summary_Repo2;
-import com.bornfire.brrs.entities.BRRS_Q_STAFF_Archival_Summary_Repo3;
 import com.bornfire.brrs.entities.BRRS_Q_STAFF_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_Q_STAFF_Summary_Repo;
-import com.bornfire.brrs.entities.BRRS_Q_STAFF_Summary_Repo;
-import com.bornfire.brrs.entities.BRRS_Q_STAFF_Summary_Repo;
-import com.bornfire.brrs.entities.BRRS_Q_STAFF_Summary_Repo;
-import com.bornfire.brrs.entities.Q_BRANCHNET_Archival_Summary_Entity1;
 import com.bornfire.brrs.entities.Q_STAFF_Detail_Entity;
-import com.bornfire.brrs.entities.Q_STAFF_New_Summary_Entity1;
-import com.bornfire.brrs.entities.Q_STAFF_New_Summary_Entity2;
-import com.bornfire.brrs.entities.Q_STAFF_New_Summary_Entity3;
 import com.bornfire.brrs.entities.Q_STAFF_Summary_Entity;
 import com.bornfire.brrs.entities.Q_STAFF_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.Q_STAFF_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.Q_STAFF_Archival_Summary_Entity1;
-import com.bornfire.brrs.entities.Q_STAFF_Archival_Summary_Entity2;
-import com.bornfire.brrs.entities.Q_STAFF_Archival_Summary_Entity3;
-import com.bornfire.brrs.entities.Q_STAFF_Summary_Entity;
-import com.bornfire.brrs.entities.Q_STAFF_Summary_Entity;
-import com.bornfire.brrs.entities.Q_STAFF_Summary_Entity;
 
 @Component
 @Service
@@ -167,7 +151,7 @@ public class BRRS_Q_STAFF_Report_Service {
                     mv.addObject("reportsummary", T1Master);
                 }
             }
-
+ 
         } catch (ParseException e) {
             e.printStackTrace();
         }

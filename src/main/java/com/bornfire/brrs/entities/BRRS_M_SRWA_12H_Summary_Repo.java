@@ -14,15 +14,15 @@ public interface BRRS_M_SRWA_12H_Summary_Repo
     @Query(value = "SELECT * FROM BRRS_M_SRWA_12H_SUMMARYTABLE WHERE REPORT_DATE = ?1", nativeQuery = true)
     List<M_SRWA_12H_Summary_Entity> getdatabydateList(Date rpt_date);
 
-    @Query(value = "SELECT *  FROM BRRS_M_SRWA_12H_SUMMARYTABLE WHERE REPORT_DATE = ?1   AND REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION DESC FETCH FIRST 1 ROWS ONLY ", nativeQuery = true)
-    List<M_SRWA_12H_Summary_Entity> getdatabydateListWithVersion(String todate);
+    // @Query(value = "SELECT *  FROM BRRS_M_SRWA_12H_SUMMARYTABLE WHERE REPORT_DATE = ?1   AND REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION DESC FETCH FIRST 1 ROWS ONLY ", nativeQuery = true)
+    // List<M_SRWA_12H_Summary_Entity> getdatabydateListWithVersion(String todate);
 
-    // Find the latest version for a report date
-    Optional<M_SRWA_12H_Summary_Entity> findTopByReportDateOrderByReportVersionDesc(Date reportDate);
+    // // Find the latest version for a report date
+    // Optional<M_SRWA_12H_Summary_Entity> findTopByReportDateOrderByReportVersionDesc(Date reportDate);
 
-    // Check if a version exists for a report date
-    Optional<M_SRWA_12H_Summary_Entity> findByReportDateAndReportVersion(Date reportDate, String reportVersion);
+    // // Check if a version exists for a report date
+    // Optional<M_SRWA_12H_Summary_Entity> findByReportDateAndReportVersion(Date reportDate, String reportVersion);
 
-    @Query(value = "SELECT *  FROM BRRS_M_SRWA_12H_SUMMARYTABLE WHERE REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION DESC FETCH FIRST 1 ROWS ONLY ", nativeQuery = true)
-    List<M_SRWA_12H_Summary_Entity> getdatabydateListWithVersion();
+    // @Query(value = "SELECT *  FROM BRRS_M_SRWA_12H_SUMMARYTABLE WHERE REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION DESC FETCH FIRST 1 ROWS ONLY ", nativeQuery = true)
+    // List<M_SRWA_12H_Summary_Entity> getdatabydateListWithVersion();
 }
