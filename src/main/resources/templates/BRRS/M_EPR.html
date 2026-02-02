@@ -620,152 +620,75 @@ window.onload = function() {
 };
 
 
-//download
 function downloadfile(button) {
-	processFile(button, 'download');
-}
 
-function downloadEmailFile(button) {
-	processFile(button, 'email');
-}
+    var reportid = button.getAttribute('data-reportid');
+    var asondate = button.getAttribute('data-asondate');
+    var fromdate = button.getAttribute('data-fromdate');
+    var todate = button.getAttribute('data-todate');
+    var currency = button.getAttribute('data-currency');
+    var subreportid = button.getAttribute('data-subreportid');
+    var secid = button.getAttribute('data-secid');
+    var dtltype = button.getAttribute('data-dtltype');
+    var filename = button.getAttribute('data-filename');
+    var type = button.getAttribute('data-type');
+    var version = button.getAttribute('data-version');
 
-/**
- * Unified function to handle download or email
- */
-function processFile(button, action) {
+    var loader = new bootstrap.Modal(
+        document.getElementById('loader'),
+        { backdrop: 'static', keyboard: false }
+    );
+    loader.show();
 
-	var reportid = button.getAttribute('data-reportid');
-	var asondate = button.getAttribute('data-asondate');
-	var fromdate = button.getAttribute('data-fromdate');
-	var todate = button.getAttribute('data-todate');
-	var currency = button.getAttribute('data-currency');
-	var subreportid = button.getAttribute('data-subreportid');
-	var secid = button.getAttribute('data-secid');
-	var dtltype = button.getAttribute('data-dtltype');
-	var filename = button.getAttribute('data-filename');
-	var type = button.getAttribute('data-type');
-	var version = button.getAttribute('data-version');
+    // ✅ Build URL safely
+    var url = './downloadExcel?reportid=' + reportid +
+        '&fromdate=' + fromdate +
+        '&asondate=' + asondate +
+        '&todate=' + todate +
+        '&currency=' + currency +
+        '&subreportid=' + subreportid +
+        '&secid=' + secid +
+        '&filename=' + filename +
+        '&type=' + type;
 
-	var loader = new bootstrap.Modal(
-		document.getElementById('loader'),
-		{ backdrop: 'static', keyboard: false }
-	);
-	loader.show();
+    // ✅ ONLY append version if valid
+    if (version && version.trim() !== '') {
+        url += '&version=' + version;
+    }
 
-	// Build URL based on action
-	var url = '';
+    $.ajax({
+        url: url,
+        type: 'GET',
+        xhrFields: { responseType: 'blob' },
 
-	if (action === 'download') {
+        success: function (data) {
+            $('#loader').modal('hide');
 
-		url = './downloadExcel?reportid=' + reportid +
-			'&fromdate=' + fromdate +
-			'&asondate=' + asondate +
-			'&todate=' + todate +
-			'&currency=' + currency +
-			'&subreportid=' + subreportid +
-			'&secid=' + secid +
-			'&filename=' + filename +
-			'&mode=download' +
-			'&type=' + type;
+            if (data && data.size > 100) {
+                const blob = new Blob([data], {
+                    type: 'application/vnd.ms-excel'
+                });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
 
-		if (version && version.trim() !== '') {
-			url += '&version=' + version;
-		}
+                showResultModal('BRRS', filename + ' downloaded successfully.');
+            } else {
+                showResultModal('Information', 'No data was available to create a download.');
+            }
+        },
 
-	} else if (action === 'email') {
-
-		url = './downloadExcel?reportid=' + reportid +
-			'&fromdate=' + fromdate +
-			'&asondate=' + asondate +
-			'&todate=' + todate +
-			'&currency=' + currency +
-			'&subreportid=' + subreportid +
-			'&secid=' + secid +
-			'&filename=' + filename +
-			'&mode=email' +
-			'&type=' + type;
-
-		if (version && version.trim() !== '') {
-			url += '&version=' + version;
-		}
-	}
-
-	// Ajax call
-	$.ajax({
-		url: url,
-		type: 'GET',
-
-		// ✅ IMPORTANT FIX – ALWAYS BLOB
-		xhrFields: { responseType: 'blob' },
-
-		success: function (data) {
-
-			$('#loader').modal('hide');
-
-			// ----- DOWNLOAD MODE -----
-			if (action === 'download') {
-
-				if (data && data.size > 100) {
-
-					downloadBlob(data, filename);
-
-					showResultModal('BRRS',
-						filename + ' downloaded successfully.');
-
-				} else {
-					showResultModal('Information',
-						'No data was available to create a download.');
-				}
-			}
-
-			// ----- EMAIL MODE -----
-			else if (action === 'email') {
-
-				if (data && data.size > 100) {
-
-					// ALSO DOWNLOAD FILE
-					downloadBlob(data, filename);
-
-					showResultModal('BRRS',
-						'Email Format ' +
-						filename + ' downloaded.');
-
-				} else {
-					showResultModal('BRRS',
-						'Email sent successfully. But no file returned for download.');
-				}
-			}
-		},
-
-		error: function () {
-			$('#loader').modal('hide');
-			showResultModal('Error',
-				'An error occurred while processing the file.');
-		}
-	});
-}
-
-/**
- * Common function to download blob
- */
-function downloadBlob(data, filename) {
-
-	const blob = new Blob([data], {
-		type: 'application/vnd.ms-excel'
-	});
-
-	const downloadUrl = window.URL.createObjectURL(blob);
-
-	const a = document.createElement('a');
-	a.style.display = 'none';
-	a.href = downloadUrl;
-	a.download = filename;
-
-	document.body.appendChild(a);
-	a.click();
-
-	window.URL.revokeObjectURL(downloadUrl);
-	document.body.removeChild(a);
+        error: function () {
+            $('#loader').modal('hide');
+            showResultModal('Error', 'An error occurred while downloading the file.');
+        }
+    });
 }
 function editRecord(){
 	showResultModal('Alert', 'Development in progress');
@@ -1250,7 +1173,7 @@ $(document).ready(function() {
 						</button>
 						
 						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
-							 onclick="downloadEmailFile(this)" 
+							 onclick="downloadfile(this)" 
 								th:if="${displaymode == 'summary' or displaymode == 'Details'}"
 							
 							th:attr="data-reportid=${reportid},
