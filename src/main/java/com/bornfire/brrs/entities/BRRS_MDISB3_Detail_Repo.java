@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-public interface BRRS_MDISB3_Detail_Repo extends JpaRepository<MDISB3_Detail_Entity, String> {
+public interface BRRS_MDISB3_Detail_Repo extends JpaRepository<MDISB3_Detail_Entity, Long> {
 
 	@Query(value = "select * from BRRS_MDISB3_DETAILTABLE where REPORT_DATE = ?1 AND REPORT_LABEL= ?2 AND REPORT_ADDL_CRITERIA_1= ?3", nativeQuery = true)
     List<MDISB3_Detail_Entity> findByReportDateAndReportLableAndReportAddlCriteria1(
