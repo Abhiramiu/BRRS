@@ -814,7 +814,7 @@ $(document).ready(function () {
 		  
 		 // Append only named inputs
 		    $('#fileupload').find(':input[name]').each(function () {
-		        formData.append(this.name, this.value);
+		        formData.append(this.id, this.value);
 		        
 		    });
 		    console.log("✅ Entity executed successfully");    
@@ -845,7 +845,7 @@ $(document).ready(function () {
 					    	 if (isResubmissionUpdate) {
 					    		 window.location.href = previousUrl
 					    		 ? previousUrl 
-					    				 : "/BRRS/Resubmission?rptcode=MDISB5";
+					    				 : "/BRRS/Resubmission?rptcode=M_INT_RATES_FCA";
 					    	 } // reload ONLY when modal is closed
 					    });
 					},
@@ -914,7 +914,9 @@ $(document).ready(function () {
 						<!-- Title -->
 						<h5
 							style="font-family: arial; font-size: 20px; font-weight: bold; color: white; margin-right: 10px; margin: 0 10px;">
-							(44) MONTHLY SCHEDULE: M-RATESFCA: INTEREST RATES ON FOREIGN CURRENCY DENOMINATED ACCOUNTS </h5>
+							(44) MONTHLY SCHEDULE: M-RATESFCA: 
+							<br>INTEREST RATES ON FOREIGN CURRENCY 
+							<br>DENOMINATED ACCOUNTS </h5>
 					</div>
 					<!-- Moving bus-board text -->
 						<div class="boards">
@@ -988,7 +990,7 @@ $(document).ready(function () {
 					</div>
 					
 				</div>
-				</div>
+				
 <h1 th:if="${displaymode == 'summary' and type == 'ARCHIVAL' and displaymode != 'Details'}"
   style="text-align: left; font-family: arial;   font-weight: bold; color: white;  font-size: 20px;  
 				background-color: rgb(107, 122, 143); margin-top:10px; margin-bottom:10px;padding-top: 10px; padding-bottom: 10px; " >Archival Summary View - M_INTRATES_FCA</h1>
@@ -1553,75 +1555,7 @@ $(document).ready(function () {
       </div>
      </div>
     </div>
-<!--  DETAIL -->
-            <div th:if="${displaymode == 'Details'}">
-             <div class="row">
-              <div class="col-sm-12" style="max-height:90vh; overflow-y: auto; ">
-               <div class="table-container" 
-                style="border-right: 1px solid #dee2e6; ">
-                <table class="table table-striped table-bordered table-hover"
-                 id="reportdetails">
-                 <thead class="thead-light">
 
-         <tr>
-               <!-- <th></th> -->
-		<th style="width:60px; text-align:center; white-space: nowrap;">
-    S No
-</th>
-
-		<th style="text-align:right; white-space: nowrap;">
-    CURRENT
-</th>
-
-		<th style="text-align:right !important;">CALL</th>
-		<th style="text-align:right !important;">SAVINGS</th>
-		<th style="text-align:left;">REPORT LABLE</th>
-		<th>REPORT ADDL CRITERIA 1</th>
-		<th>REPORT DATE</th>
-
-            </tr>
-        </thead>
-
-        <tbody style="font-family: Arial;">
-            <tr th:each="report, srlno: ${reportdetails}">
-                <!-- <td>
-                    <a data-toggle="tooltip" class="editrec" title="Click to Edit this Record">
-                        <i class="fas fa-edit" style="color: black; cursor:pointer;"
-                            th:attr="data-acctNo=${report.acctNumber},
-                            data-asondate=${#dates.format(report.reportDate, 'dd-MM-yyyy')},
-                            data-type=${type}"
-                            onclick="openDetail(this, 'edit')"></i>
-                    </a>
-                </td> -->
-	
-				<td style="text-align:center;" th:text="${srlno.index + 1}"></td>
-	              
-
-<td style="text-align:right !important;"
-    th:text="${#numbers.formatDecimal(report.CURRENT_AMT, 1, 'COMMA', 0, 'POINT')}">
-</td>
-
-<td style="text-align:right !important;"
-    th:text="${#numbers.formatDecimal(report.CALL_AMT, 1, 'COMMA', 0, 'POINT')}">
-</td>
-<td style="text-align:right !important;"
-    th:text="${#numbers.formatDecimal(report.SAVINGS, 1, 'COMMA', 0, 'POINT')}">
-</td>
-                <td style="text-align:left;" th:text="${report.reportLable}"></td>
-
-                <td th:text="${report.reportAddlCriteria1}"></td>
-
-                <td th:text="${#dates.format(report.reportDate,'dd-MM-yyyy')}"></td>
-            </tr>
-        </tbody>
-       </table>
-
-      </div>
-
-      
-     </div>
-    </div>
-   </div>
     
    </div>
   </div>

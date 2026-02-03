@@ -4042,7 +4042,7 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 	   try {
 			// 1️⃣ Loop through R14 to R100
-			for (int i = 10; i <= 14; i++) {
+			for (int i = 10; i <= 15; i++) {
 				String prefix = "R" + i + "_";
 
 				String[] fields = {"CURRENT",

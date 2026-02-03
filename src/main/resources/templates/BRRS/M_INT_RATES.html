@@ -341,17 +341,24 @@ PURPOSE		: BWRBRREPORT
 		}
 
 		//to fetch summary from the database - called from the summary button
-		function showdetails(){
-			var Callurl;
-			$('#loader').modal('show');
-			Callurl = /*[[@{'/Reports/'+${reportid}+'/Details'(asondate=${asondate},fromdate=${fromdate},todate=${todate},currency=${currency},dtltype=${dtltype},type=${type},version=${version})}]]*/
-				location.href = Callurl;
-			console.log(Callurl);
+		function showdetails() {
+			 $('#loader').modal('show');
+			    var Callurl = /*[[@{'/Reports/' + ${reportid}(
+			        dtltype='detail',
+			        fromdate=${fromdate},
+			        todate=${todate},
+			        type=${type},
+			        asondate=${asondate},
+			        version=${version}
+			    )}]]*/;
+			    location.href = Callurl;
 
-		}
-		function showsummary() {
+}
+
+
+function showsummary() {
 			$('#loader').modal('show');
-			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate}, version=${version})}]]*/;
 			location.href = Callurl;
 		}
 
@@ -1085,7 +1092,8 @@ function fileuploads(btn) {
 						<!-- Title -->
 						<h5
 							style="font-family: arial; font-size: 20px; font-weight: bold; color: white; margin-right: 10px; margin: 0 10px;">
-							(43) MONTHLY SCHEDULE: M-INTRATES: DEPOSIT AND LENDING INTEREST RATES</h5>
+							(43) MONTHLY SCHEDULE: M-INTRATES: 
+							<br>DEPOSIT AND LENDING INTEREST RATES</h5>
 					</div>
 					<!-- Moving bus-board text -->
 						<div class="boards">
@@ -1106,43 +1114,51 @@ function fileuploads(btn) {
 							th:if="${displaymode == 'summary'}">Details</button>
 				
 						<!-- Modify button -->
-						<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
-							title="Click to EDIT Records"
-							th:if="${type == 'RESUB' or type=='BRRS' and type != 'ARCHIVAL'}"
-							th:classappend="${session.PERMISSIONS == 'W'} and ${dtltype == 'report'} ? 'addedit' "
-							id="addRecord">
-							Modify
-						</button>
+						<button type="button"
+        class="custom-tab-btn"
+        onclick="showmodify(this);"
+        title="Click to EDIT Records"
+        th:classappend="${session.PERMISSIONS == 'W' and dtltype == 'report'} ? 'addedit'"
+        th:if="${type != 'ARCHIVAL' and dtltype ne 'detail'}"
+        id="addRecord">
+    Modify
+</button>
 
 
 						<!-- Cancel button (hidden initially) -->
 						<button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord"
 							onclick="cancelModify();" style="display: none;">Cancel</button>
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'summary'}" th:attr="data-reportid=${reportid},
-                   				 data-asondate=${asondate},
-                   				 data-fromdate=${fromdate},
-                    				 data-todate=${todate},
-                    				 data-currency=${currency}, 
-                    				 data-dtltype=${dtltype},
-                    				 data-filename='M_INTRATES.xlsx',
-					 				 data-type=${type},
-					    			  data-version=${version != null ? version : ''}"
-									  onclick="downloadfile(this);">
-							<i class="fa fa-download"></i>
+							
+							
+						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
+							onclick="downloadfile(this)" th:if="${displaymode == 'summary' or displaymode == 'Details'}"
+							th:attr="data-reportid=${reportid},
+                   data-asondate=${asondate},
+                   data-fromdate=${fromdate},
+                   data-todate=${todate},
+                   data-currency=${currency}, 
+                   data-dtltype=${dtltype},
+                   data-filename='M_INTRATES.xlsx',
+                   data-type=${type},
+                   data-version=${version != null ? version : ''}" style="font-family: Arial;font-weight: bold;">
+							<i class="fa fa-download"></i>  Excel
 						</button>
-
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'Details'}" onclick="startReport(this);" th:attr="
-								    data-fromdate=${fromdate},
-								    data-todate=${todate},
-									data-currency=${currency},  
-												data-dtltype=${dtltype}, 
-								    data-filename='M_INTRATESDetail',
-									data-type=${type},
-												data-version=${version}
-								  ">
-							<i class="fa fa-download"></i>
+						
+						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
+							 onclick="downloadfile(this)" 
+								th:if="${displaymode == 'summary' or displaymode == 'Details'}"
+							
+							th:attr="data-reportid=${reportid},
+            data-asondate=${asondate},
+            data-fromdate=${fromdate},
+            data-todate=${todate},
+            data-currency=${currency}, 
+            data-dtltype=${dtltype},
+            data-filename='EMAIL_M_INTRATES.xlsx',
+            data-type='email',
+            data-version=${version != null ? version : ''}" style="font-family: Arial;font-weight: bold;">
+								<i class="fa fa-download"></i>  E- Mail
+							
 						</button>
 
 
@@ -1150,7 +1166,21 @@ function fileuploads(btn) {
 					</div>
 					
 				</div>
-				<div th:if="${displaymode == 'summary'}">
+				
+				
+				<h1 th:if="${displaymode == 'summary' and type == 'ARCHIVAL' and displaymode != 'Details'}"
+  style="text-align: left; font-family: arial;   font-weight: bold; color: white;  font-size: 20px;  
+				background-color: rgb(107, 122, 143); margin-top:10px; margin-bottom:10px;padding-top: 10px; padding-bottom: 10px; " >Archival Summary View - M_INTRATES</h1>
+				
+				<h1 th:if="${displaymode == 'Details' and type == 'ARCHIVAL' and displaymode != 'summary'}"
+  style="text-align: left; font-family: arial;   font-weight: bold; color: white;  font-size: 20px;  
+				background-color: rgb(107, 122, 143); margin-top:10px; margin-bottom:10px;padding-top: 10px; padding-bottom: 10px; " >Archival Detail View - M_INTRATES</h1>
+
+				<h1 th:if="${displaymode == 'summary'and type != 'ARCHIVAL'}"  style="text-align: left; font-family: arial;   font-weight: bold; color: white;  font-size: 20px;  
+				background-color: rgb(107, 122, 143); margin-top:10px; margin-bottom:10px;padding-top: 10px; padding-bottom: 10px; " >Summary View - M_INTRATES </h1>
+			<h1 th:if="${displaymode == 'Details' and type != 'ARCHIVAL'}"  style="text-align: left;   font-family: arial; font-weight: bold;  color: white; font-size: 20px; 
+			 background-color: rgb(107, 122, 143); margin-top:10px; margin-bottom:10px; padding-top: 10px; padding-bottom: 10px;  ">Detail View - M_INTRATES</h1>
+				<div th:if="${displaymode == 'summary' or displaymode == 'Details'}">
 					<div class="row">
 						<div class="col-sm-12">
 						<form action="#" method="POST" id="fileupload">
@@ -2394,63 +2424,7 @@ function fileuploads(btn) {
 					
 					
 					
-			           <div th:if="${displaymode == 'Details'}">
-             <div class="row">
-              <div class="col-sm-12" style="max-height:90vh; overflow-y: auto; ">
-               <div class="table-container" 
-                style="border-right: 1px solid #dee2e6; ">
-                <table class="table table-striped table-bordered table-hover"
-                 id="reportdetails">
-                 <thead class="thead-light">
-
-         <tr>
-               <!-- <th></th> -->
-		<th style="width:60px; text-align:center; white-space: nowrap;">
-    S No
-</th>
-
-		<th style="text-align:right !important;">NOMINAL_INTEREST_RATE</th>
-		<th style="text-align:right !important;">AVG_EFFECTIVE_RATE</th>
-		<th style="text-align:right !important;">VOLUME</th>
-		<th style="text-align:left;">REPORT LABEL</th>
-		<th>REPORT ADDL CRITERIA 1</th>
-		<th>REPORT DATE</th>
-
-            </tr>
-        </thead>
-
-        <tbody style="font-family: Arial;">
-            <tr th:each="report, srlno: ${reportdetails}">
-                
-	
-				<td style="text-align:center;" th:text="${srlno.index + 1}"></td>
-	              
-
-<td style="text-align:right !important;"
-    th:text="${#numbers.formatDecimal(report.NOMINAL_INTEREST_RATE, 1, 'COMMA', 0, 'POINT')}">
-</td>
-
-<td style="text-align:right !important;"
-    th:text="${#numbers.formatDecimal(report.AVG_EFFECTIVE_RATE, 1, 'COMMA', 0, 'POINT')}">
-</td>
-<td style="text-align:right !important;"
-    th:text="${#numbers.formatDecimal(report.VOLUME_AMT, 1, 'COMMA', 0, 'POINT')}">
-</td>
-                <td style="text-align:left;" th:text="${report.reportLable}"></td>
-
-                <td th:text="${report.reportAddlCriteria1}"></td>
-
-                <td th:text="${#dates.format(report.reportDate,'dd-MM-yyyy')}"></td>
-            </tr>
-        </tbody>
-       </table>
-
-      </div>
-
-      
-     </div>
-    </div>
-   </div>		
+			           
 				</div>
 				
 			</div>

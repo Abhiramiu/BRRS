@@ -1721,11 +1721,12 @@ public class RegulatoryReportServices {
 		 * fromdate, todate, currency, dtltype, pageable, Filter, type, version); break;
 		 */
 
-		case "M_INT_RATES":
-
-			repdetail = brrs_m_int_rates_reportservice.getM_INT_RATEScurrentDtl(reportId, fromdate, todate, currency,
-					dtltype, pageable, Filter, type, version);
-			break;
+		/*
+		 * case "M_INT_RATES":
+		 * 
+		 * repdetail = brrs_m_int_rates_reportservice.getM_INT_RATEScurrentDtl(reportId,
+		 * fromdate, todate, currency, dtltype, pageable, Filter, type, version); break;
+		 */
 
 		case "M_INT_RATES_NEW":
 
@@ -3595,10 +3596,11 @@ public class RegulatoryReportServices {
 		 * fromdate, todate, currency, dtltype, type, version); }
 		 */
 
-		else if ("M_INTRATESDetail".equals(filename)) {
-			return brrs_m_int_rates_reportservice.getM_INT_RATESDetailExcel(filename, fromdate, todate, currency,
-					dtltype, type, version);
-		}
+		/*
+		 * else if ("M_INTRATESDetail".equals(filename)) { return
+		 * brrs_m_int_rates_reportservice.getM_INT_RATESDetailExcel(filename, fromdate,
+		 * todate, currency, dtltype, type, version); }
+		 */
 
 		else if ("M_INTRATESNEWDetail".equals(filename)) {
 			return brrs_m_int_new_rates_reportservice.getM_INT_RATESNEWDetailExcel(filename, fromdate, todate, currency,
@@ -5182,11 +5184,12 @@ public class RegulatoryReportServices {
 		 * fromdate, todate, currency, dtltype, type, version); }
 		 */
 
-		else if ("M_INTRATESDetail".equals(filename)) {
-
-			fileData = brrs_m_int_rates_reportservice.getM_INT_RATESDetailExcel(filename, fromdate, todate, currency,
-					dtltype, type, version);
-		}
+		/*
+		 * else if ("M_INTRATESDetail".equals(filename)) {
+		 * 
+		 * fileData = brrs_m_int_rates_reportservice.getM_INT_RATESDetailExcel(filename,
+		 * fromdate, todate, currency, dtltype, type, version); }
+		 */
 
 		else if ("M_INTRATESNEWDetail".equals(filename)) {
 
