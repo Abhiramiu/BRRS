@@ -54,7 +54,9 @@ import com.bornfire.brrs.entities.BRRS_M_SIR_Detail_Repo;
 import com.bornfire.brrs.entities.M_SIR_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.M_SIR_Detail_Entity;
 import com.bornfire.brrs.entities.M_SIR_Summary_Entity;
-import com.bornfire.brrs.entities.Q_STAFF_Archival_Summary_Entity;
+import com.bornfire.brrs.entities.M_SIR_Archival_Summary_Entity;
+import com.bornfire.brrs.entities.M_SIR_Detail_Entity;
+import com.bornfire.brrs.entities.M_SIR_Summary_Entity;
 import com.bornfire.brrs.entities.BRRS_M_SIR_Summary_Repo;
 import com.bornfire.brrs.entities.M_CA7_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.M_CA7_Summary_Entity;
@@ -76,8 +78,9 @@ public class BRRS_M_SIR_ReportService {
 
 	@Autowired
 	BRRS_M_SIR_Archival_Summary_Repo BRRS_M_SIR_Archival_Summary_Repo;
-
+	@Autowired
 	BRRS_M_SIR_Detail_Repo M_SIR_Detail_Repo;
+	@Autowired
 	BRRS_M_SIR_Archival_Detail_Repo M_SIR_Archival_Detail_Repo;
 
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
@@ -153,156 +156,370 @@ public class BRRS_M_SIR_ReportService {
 		return mv;
 	}
 
-	// ==========================================================
-	// MAIN METHOD
-	// ==========================================================
+    @Transactional
+    public void updateReport(M_SIR_Summary_Entity updatedEntity) {
 
-	@Transactional
-	public void updateReport(M_SIR_Summary_Entity entity) {
+        System.out.println("Came to services 1");
+        System.out.println("Report Date: " + updatedEntity.getReportDate());
 
-		System.out.println("Report Date: " + entity.getReportDate());
+        // 🔹 Fetch existing SUMMARY
+        M_SIR_Summary_Entity existingSummary = BRRS_M_SIR_Summary_Repo.findById(updatedEntity.getReportDate())
+                .orElseThrow(() -> new RuntimeException(
+                        "Record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
 
-		// 1️⃣ Load SUMMARY
-		M_SIR_Summary_Entity existingSummary = BRRS_M_SIR_Summary_Repo.findById(entity.getReportDate())
-				.orElseThrow(() -> new RuntimeException("Record not found for REPORT_DATE: " + entity.getReportDate()));
+        // 🔹 Fetch or create DETAIL
+        M_SIR_Detail_Entity detailEntity = M_SIR_Detail_Repo.findById(updatedEntity.getReportDate())
+                .orElseGet(() -> {
+                    M_SIR_Detail_Entity d = new M_SIR_Detail_Entity();
+                    d.setReportDate(updatedEntity.getReportDate());
+                    return d;
+                });
 
-		// 2️⃣ Load DETAIL (create if not present)
-		M_SIR_Detail_Entity existingDetail = M_SIR_Detail_Repo.findById(entity.getReportDate()).orElseGet(() -> {
-			M_SIR_Detail_Entity d = new M_SIR_Detail_Entity();
-			d.setReportDate(entity.getReportDate());
-			return d;
-		});
+        try {
+        // 1️⃣ Loop from R11 to R50 and copy fields
+        for (int i = 13; i <= 17; i++) {
+            String prefix = "R" + i + "_";
+            String[] fields = { "amt_6m", "risk_6m", "capital_6m", "amt_6to24m",
+                                "risk_6to24m", "capital_6to24m", "amt_gt24m",
+                                "risk_gt24m", "capital_gt24m"};
 
-		// 3️⃣ Copy all fields into BOTH
-		copyFields(entity, existingSummary);
-		copyFields(entity, existingDetail);
+            for (String field : fields) {
+                String getterName = "get" + prefix + field;
+                String setterName = "set" + prefix + field;
 
-		// 4️⃣ Save BOTH
-		BRRS_M_SIR_Summary_Repo.save(existingSummary);
-		M_SIR_Detail_Repo.save(existingDetail);
-	}
+             
+                try {
+                    // Getter from UPDATED entity
+                    Method getter = M_SIR_Summary_Entity.class.getMethod(getterName);
 
-	// ==========================================================
-	// COPY ALL LOGIC
-	// ==========================================================
+                    Object newValue = getter.invoke(updatedEntity);
 
-	private void copyFields(M_SIR_Summary_Entity source, Object target) {
+                    // SUMMARY setter
+                    Method summarySetter = M_SIR_Summary_Entity.class.getMethod(
+                            setterName, getter.getReturnType());
 
-		try {
+                    summarySetter.invoke(existingSummary, newValue);
 
-			// ---- R13 to R17 ----
-			copyRange(source, target, 13, 17);
-			copyTotal(source, target, "R12");
+                    // DETAIL setter
+                    Method detailSetter = M_SIR_Detail_Entity.class.getMethod(
+                            setterName, getter.getReturnType());
 
-			// ---- R19 to R23 ----
-			copyRange(source, target, 19, 23);
-			copyTotal(source, target, "R18");
+                    detailSetter.invoke(detailEntity, newValue);
 
-			// ---- R24 to R26 ----
-			copyRange(source, target, 24, 26);
+                }  catch (NoSuchMethodException e) {
+                    // Skip missing fields
+                    continue;
+                }
+            }
+        }
+        String[] totalFields = { "amt_6m", "risk_6m", "capital_6m", "amt_6to24m",
+                "risk_6to24m", "capital_6to24m", "amt_gt24m",
+                "risk_gt24m", "capital_gt24m" };
+        for (String field : totalFields) {
+            String getterName = "getR12_" + field;
+            String setterName = "setR12_" + field;
 
-			// ---- R28 to R32 ----
-			copyRange(source, target, 28, 32);
-			copyTotal(source, target, "R27");
+          
+                try {
+                    // Getter from UPDATED entity
+                    Method getter = M_SIR_Summary_Entity.class.getMethod(getterName);
 
-			// ---- R33 ----
-			copySingleFields(source, target, "R33", new String[] { "capital_6m", "capital_6to24m", "capital_gt24m" });
+                    Object newValue = getter.invoke(updatedEntity);
 
-			// ---- R35 ----
-			copySingleFields(source, target, "R35", new String[] { "tot_spec_risk_ch" });
+                    // SUMMARY setter
+                    Method summarySetter = M_SIR_Summary_Entity.class.getMethod(
+                            setterName, getter.getReturnType());
 
-		} catch (Exception e) {
-			throw new RuntimeException("Error while copying fields", e);
-		}
-	}
+                    summarySetter.invoke(existingSummary, newValue);
 
-	// ==========================================================
-	// RANGE COPY (R13-17, R19-23, R24-26, R28-32)
-	// ==========================================================
+                    // DETAIL setter
+                    Method detailSetter = M_SIR_Detail_Entity.class.getMethod(
+                            setterName, getter.getReturnType());
 
-	private void copyRange(Object source, Object target, int from, int to) throws Exception {
+                    detailSetter.invoke(detailEntity, newValue);
 
-		String[] fields = { "amt_6m", "risk_6m", "capital_6m", "amt_6to24m", "risk_6to24m", "capital_6to24m",
-				"amt_gt24m", "risk_gt24m", "capital_gt24m" };
+                }  catch (NoSuchMethodException e) {
+                // Skip if not present
+                continue;
+            }
+        }
 
-		for (int i = from; i <= to; i++) {
+    } catch (Exception e) {
+        throw new RuntimeException("Error while updating report fields", e);
+    }
 
-			String prefix = "R" + i + "_";
+	try {
+		
+        for (int i = 19; i <= 23; i++) {
+            String prefix = "R" + i + "_";
+            String[] fields = { "amt_6m", "risk_6m", "capital_6m", "amt_6to24m",
+                                "risk_6to24m", "capital_6to24m", "amt_gt24m",
+                                "risk_gt24m", "capital_gt24m"};
 
-			for (String field : fields) {
+            for (String field : fields) {
+                String getterName = "get" + prefix + field;
+                String setterName = "set" + prefix + field;
 
-				String getterName = "get" + prefix + field;
-				String setterName = "set" + prefix + field;
+                
+                try {
+                    // Getter from UPDATED entity
+                    Method getter = M_SIR_Summary_Entity.class.getMethod(getterName);
 
-				try {
-					Method getter = source.getClass().getMethod(getterName);
+                    Object newValue = getter.invoke(updatedEntity);
 
-					Method setter = target.getClass().getMethod(setterName, getter.getReturnType());
+                    // SUMMARY setter
+                    Method summarySetter = M_SIR_Summary_Entity.class.getMethod(
+                            setterName, getter.getReturnType());
 
-					Object value = getter.invoke(source);
-					setter.invoke(target, value);
+                    summarySetter.invoke(existingSummary, newValue);
 
-				} catch (NoSuchMethodException e) {
-					continue; // skip missing
-				}
-			}
-		}
-	}
+                    // DETAIL setter
+                    Method detailSetter = M_SIR_Detail_Entity.class.getMethod(
+                            setterName, getter.getReturnType());
 
-	// ==========================================================
-	// TOTAL ROW COPY (R12, R18, R27)
-	// ==========================================================
+                    detailSetter.invoke(detailEntity, newValue);
 
-	private void copyTotal(Object source, Object target, String row) throws Exception {
+                } catch (NoSuchMethodException e) {
+                    // Skip missing fields
+                    continue;
+                }
+            }
+        }
+        String[] totalFields = { "amt_6m", "risk_6m", "capital_6m", "amt_6to24m",
+                "risk_6to24m", "capital_6to24m", "amt_gt24m",
+                "risk_gt24m", "capital_gt24m" };
+        for (String field : totalFields) {
+            String getterName = "getR18_" + field;
+            String setterName = "setR18_" + field;
 
-		String[] fields = { "amt_6m", "risk_6m", "capital_6m", "amt_6to24m", "risk_6to24m", "capital_6to24m",
-				"amt_gt24m", "risk_gt24m", "capital_gt24m" };
+          
+                try {
+                    // Getter from UPDATED entity
+                    Method getter = M_SIR_Summary_Entity.class.getMethod(getterName);
 
-		for (String field : fields) {
+                    Object newValue = getter.invoke(updatedEntity);
 
-			String getterName = "get" + row + "_" + field;
-			String setterName = "set" + row + "_" + field;
+                    // SUMMARY setter
+                    Method summarySetter = M_SIR_Summary_Entity.class.getMethod(
+                            setterName, getter.getReturnType());
 
-			try {
+                    summarySetter.invoke(existingSummary, newValue);
 
-				Method getter = source.getClass().getMethod(getterName);
+                    // DETAIL setter
+                    Method detailSetter = M_SIR_Detail_Entity.class.getMethod(
+                            setterName, getter.getReturnType());
 
-				Method setter = target.getClass().getMethod(setterName, getter.getReturnType());
+                    detailSetter.invoke(detailEntity, newValue);
 
-				Object value = getter.invoke(source);
-				setter.invoke(target, value);
+                }  catch (NoSuchMethodException e) {
+                // Skip if not present
+                continue;
+            }
+        }
 
-			} catch (NoSuchMethodException e) {
-				continue;
-			}
-		}
-	}
+    } catch (Exception e) {
+        throw new RuntimeException("Error while updating report fields", e);
+    }
+	
+	//------------------------------------------------------------------------
+try {
+		
+for (int i = 24; i <= 26; i++) {
+    String prefix = "R" + i + "_";
+    String[] fields = { "amt_6m", "risk_6m", "capital_6m", "amt_6to24m",
+                        "risk_6to24m", "capital_6to24m", "amt_gt24m",
+                        "risk_gt24m", "capital_gt24m"};
 
-	// ==========================================================
-	// SINGLE FIELDS (R33, R35)
-	// ==========================================================
+            for (String field : fields) {
+                String getterName = "get" + prefix + field;
+                String setterName = "set" + prefix + field;
 
-	private void copySingleFields(Object source, Object target, String prefix, String[] fields) throws Exception {
+              
+                try {
+                    // Getter from UPDATED entity
+                    Method getter = M_SIR_Summary_Entity.class.getMethod(getterName);
 
-		for (String field : fields) {
+                    Object newValue = getter.invoke(updatedEntity);
 
-			String getterName = "get" + prefix + "_" + field;
-			String setterName = "set" + prefix + "_" + field;
+                    // SUMMARY setter
+                    Method summarySetter = M_SIR_Summary_Entity.class.getMethod(
+                            setterName, getter.getReturnType());
 
-			try {
+                    summarySetter.invoke(existingSummary, newValue);
 
-				Method getter = source.getClass().getMethod(getterName);
+                    // DETAIL setter
+                    Method detailSetter = M_SIR_Detail_Entity.class.getMethod(
+                            setterName, getter.getReturnType());
 
-				Method setter = target.getClass().getMethod(setterName, getter.getReturnType());
+                    detailSetter.invoke(detailEntity, newValue);
 
-				Object value = getter.invoke(source);
-				setter.invoke(target, value);
+                }  catch (NoSuchMethodException e) {
+                    // Skip missing fields
+                    continue;
+                }
+            }
+        }
+}
 
-			} catch (NoSuchMethodException e) {
-				continue;
-			}
-		}
-	}
+catch (Exception e) {
+        throw new RuntimeException("Error while updating report fields", e);
+    }
+
+try {
+
+for (int i = 28; i <= 32; i++) {
+    String prefix = "R" + i + "_";
+    String[] fields = { "amt_6m", "risk_6m", "capital_6m", "amt_6to24m",
+                        "risk_6to24m", "capital_6to24m", "amt_gt24m",
+                        "risk_gt24m", "capital_gt24m"};
+
+    for (String field : fields) {
+        String getterName = "get" + prefix + field;
+        String setterName = "set" + prefix + field;
+
+     
+                try {
+                    // Getter from UPDATED entity
+                    Method getter = M_SIR_Summary_Entity.class.getMethod(getterName);
+
+                    Object newValue = getter.invoke(updatedEntity);
+
+                    // SUMMARY setter
+                    Method summarySetter = M_SIR_Summary_Entity.class.getMethod(
+                            setterName, getter.getReturnType());
+
+                    summarySetter.invoke(existingSummary, newValue);
+
+                    // DETAIL setter
+                    Method detailSetter = M_SIR_Detail_Entity.class.getMethod(
+                            setterName, getter.getReturnType());
+
+                    detailSetter.invoke(detailEntity, newValue);
+
+                }  catch (NoSuchMethodException e) {
+            // Skip missing fields
+            continue;
+        }
+    }
+}
+String[] totalFields = { "amt_6m", "risk_6m", "capital_6m", "amt_6to24m",
+        "risk_6to24m", "capital_6to24m", "amt_gt24m",
+        "risk_gt24m", "capital_gt24m" };
+for (String field : totalFields) {
+    String getterName = "getR27_" + field;
+    String setterName = "setR27_" + field;
+
+    
+                try {
+                    // Getter from UPDATED entity
+                    Method getter = M_SIR_Summary_Entity.class.getMethod(getterName);
+
+                    Object newValue = getter.invoke(updatedEntity);
+
+                    // SUMMARY setter
+                    Method summarySetter = M_SIR_Summary_Entity.class.getMethod(
+                            setterName, getter.getReturnType());
+
+                    summarySetter.invoke(existingSummary, newValue);
+
+                    // DETAIL setter
+                    Method detailSetter = M_SIR_Detail_Entity.class.getMethod(
+                            setterName, getter.getReturnType());
+
+                    detailSetter.invoke(detailEntity, newValue);
+
+                }  catch (NoSuchMethodException e) {
+        // Skip if not present
+        continue;
+    }
+}
+
+} catch (Exception e) {
+throw new RuntimeException("Error while updating report fields", e);
+}
+
+try {
+String[] fields = { "capital_6m",
+                     "capital_6to24m",
+                     "capital_gt24m" };
+
+String prefix = "R33_";
+
+for (String field : fields) {
+    String getterName = "get" + prefix + field;
+    String setterName = "set" + prefix + field;
+
+   
+                try {
+                    // Getter from UPDATED entity
+                    Method getter = M_SIR_Summary_Entity.class.getMethod(getterName);
+
+                    Object newValue = getter.invoke(updatedEntity);
+
+                    // SUMMARY setter
+                    Method summarySetter = M_SIR_Summary_Entity.class.getMethod(
+                            setterName, getter.getReturnType());
+
+                    summarySetter.invoke(existingSummary, newValue);
+
+                    // DETAIL setter
+                    Method detailSetter = M_SIR_Detail_Entity.class.getMethod(
+                            setterName, getter.getReturnType());
+
+                    detailSetter.invoke(detailEntity, newValue);
+
+                } catch (NoSuchMethodException e) {
+        // Skip missing fields
+        continue;
+    }
+}
+} catch (Exception e) {
+throw new RuntimeException("Error while updating R33 fields", e);
+}
+try {
+String[] fields = { "tot_spec_risk_ch" }; // 👈 only the suffix
+
+String prefix = "R35_";
+
+for (String field : fields) {
+    String getterName = "get" + prefix + field;
+    String setterName = "set" + prefix + field;
+
+    
+                try {
+                    // Getter from UPDATED entity
+                    Method getter = M_SIR_Summary_Entity.class.getMethod(getterName);
+
+                    Object newValue = getter.invoke(updatedEntity);
+
+                    // SUMMARY setter
+                    Method summarySetter = M_SIR_Summary_Entity.class.getMethod(
+                            setterName, getter.getReturnType());
+
+                    summarySetter.invoke(existingSummary, newValue);
+
+                    // DETAIL setter
+                    Method detailSetter = M_SIR_Detail_Entity.class.getMethod(
+                            setterName, getter.getReturnType());
+
+                    detailSetter.invoke(detailEntity, newValue);
+
+                }  catch (NoSuchMethodException e) {
+        // Skip missing fields
+        continue;
+    }
+}
+} catch (Exception e) {
+throw new RuntimeException("Error while updating R35 fields", e);
+}
+
+
+	// 3️⃣ Save updated entity
+	   BRRS_M_SIR_Summary_Repo.save(existingSummary);
+	   M_SIR_Detail_Repo.save(detailEntity);
+}
+
+
 
 	public byte[] getM_SIRExcel(String filename, String reportId, String fromdate, String todate, String currency,
 			String dtltype, String type, BigDecimal version) throws Exception {
@@ -3241,27 +3458,43 @@ public class BRRS_M_SIR_ReportService {
 	}
 
 	// Archival
-	public List<Object[]> getM_SIRArchival() {
-		List<Object[]> archivalList = new ArrayList<>();
+//	public List<Object[]> getM_SIRArchival() {
+//		List<Object[]> archivalList = new ArrayList<>();
+//		try {
+//			List<M_SIR_Archival_Summary_Entity> latestArchivalList = BRRS_M_SIR_Archival_Summary_Repo
+//					.getdatabydateListWithVersion();
+//
+//			if (latestArchivalList != null && !latestArchivalList.isEmpty()) {
+//				for (M_SIR_Archival_Summary_Entity entity : latestArchivalList) {
+//					archivalList.add(new Object[] { entity.getReportDate(), entity.getReportVersion() });
+//				}
+//				System.out.println("Fetched " + archivalList.size() + " record(s)");
+//			} else {
+//				System.out.println("No archival data found.");
+//			}
+//
+//		} catch (Exception e) {
+//			System.err.println("Error fetching M_SIR Resub data: " + e.getMessage());
+//			e.printStackTrace();
+//		}
+//		return archivalList;
+//	}
+	public List<Object> getM_SIRArchival() {
+		List<Object> archivalList = new ArrayList<>();
 		try {
-			List<M_SIR_Archival_Summary_Entity> latestArchivalList = BRRS_M_SIR_Archival_Summary_Repo
-					.getdatabydateListWithVersion();
-
-			if (latestArchivalList != null && !latestArchivalList.isEmpty()) {
-				for (M_SIR_Archival_Summary_Entity entity : latestArchivalList) {
-					archivalList.add(new Object[] { entity.getReportDate(), entity.getReportVersion() });
-				}
-				System.out.println("Fetched " + archivalList.size() + " record(s)");
-			} else {
-				System.out.println("No archival data found.");
-			}
-
+			archivalList = BRRS_M_SIR_Archival_Summary_Repo.getM_SIRarchival();
+			System.out.println("countser" + archivalList.size());
 		} catch (Exception e) {
-			System.err.println("Error fetching Q_staff Resub data: " + e.getMessage());
+			// Log the exception
+			System.err.println("Error fetching M_SIR Archival data: " + e.getMessage());
 			e.printStackTrace();
+
+			// Optionally, you can rethrow it or return empty list
+			// throw new RuntimeException("Failed to fetch data", e);
 		}
 		return archivalList;
 	}
+
 
 	/// RESUB VIEW
 //		public List<Object[]> getM_SIRResub() {
@@ -4541,75 +4774,60 @@ public class BRRS_M_SIR_ReportService {
 			return new byte[0];
 		}
 
-		String templateDir = env.getProperty("output.exportpathtemp");
-		String templateFileName = filename;
-		System.out.println(filename);
-		Path templatePath = Paths.get(templateDir, templateFileName);
-		System.out.println(templatePath);
+		  String templateDir = env.getProperty("output.exportpathtemp");
+        String templateFileName = filename;
+        System.out.println(filename);
+        Path templatePath = Paths.get(templateDir, templateFileName);
+        System.out.println(templatePath);
 
-		logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
+        logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
 
-		if (!Files.exists(templatePath)) {
-			// This specific exception will be caught by the controller.
-			throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
-		}
-		if (!Files.isReadable(templatePath)) {
-			// A specific exception for permission errors.
-			throw new SecurityException(
-					"Template file exists but is not readable (check permissions): " + templatePath.toAbsolutePath());
-		}
+        if (!Files.exists(templatePath)) {
+            // This specific exception will be caught by the controller.
+            throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
+        }
+        if (!Files.isReadable(templatePath)) {
+            // A specific exception for permission errors.
+            throw new SecurityException(
+                    "Template file exists but is not readable (check permissions): " + templatePath.toAbsolutePath());
+        }
 
-		// This try-with-resources block is perfect. It guarantees all resources are
-		// closed automatically.
-		try (InputStream templateInputStream = Files.newInputStream(templatePath);
-				Workbook workbook = WorkbookFactory.create(templateInputStream);
-				ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+        // This try-with-resources block is perfect. It guarantees all resources are
+        // closed automatically.
+        try (InputStream templateInputStream = Files.newInputStream(templatePath);
+                Workbook workbook = WorkbookFactory.create(templateInputStream);
+                ByteArrayOutputStream out = new ByteArrayOutputStream()) {
 
-			Sheet sheet = workbook.getSheetAt(0);
+            Sheet sheet = workbook.getSheetAt(0);
 
-			// --- Style Definitions ---
-			CreationHelper createHelper = workbook.getCreationHelper();
+            // --- Style Definitions ---
+            CreationHelper createHelper = workbook.getCreationHelper();
 
-			CellStyle dateStyle = workbook.createCellStyle();
-			dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
-			dateStyle.setBorderBottom(BorderStyle.THIN);
-			dateStyle.setBorderTop(BorderStyle.THIN);
-			dateStyle.setBorderLeft(BorderStyle.THIN);
-			dateStyle.setBorderRight(BorderStyle.THIN);
+            CellStyle dateStyle = workbook.createCellStyle();
+            dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
+            dateStyle.setBorderBottom(BorderStyle.THIN);
+            dateStyle.setBorderTop(BorderStyle.THIN);
+            dateStyle.setBorderLeft(BorderStyle.THIN);
+            dateStyle.setBorderRight(BorderStyle.THIN);
 
-			CellStyle textStyle = workbook.createCellStyle();
-			textStyle.setBorderBottom(BorderStyle.THIN);
-			textStyle.setBorderTop(BorderStyle.THIN);
-			textStyle.setBorderLeft(BorderStyle.THIN);
-			textStyle.setBorderRight(BorderStyle.THIN);
+            CellStyle textStyle = workbook.createCellStyle();
+            textStyle.setBorderBottom(BorderStyle.THIN);
+            textStyle.setBorderTop(BorderStyle.THIN);
+            textStyle.setBorderLeft(BorderStyle.THIN);
+            textStyle.setBorderRight(BorderStyle.THIN);
 
-			// Create the font
-			Font font = workbook.createFont();
-			font.setFontHeightInPoints((short) 8); // size 8
-			font.setFontName("Arial");
+            // Create the font
+            Font font = workbook.createFont();
+            font.setFontHeightInPoints((short) 8); // size 8
+            font.setFontName("Arial");
 
-			CellStyle numberStyle = workbook.createCellStyle();
-			// numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
-			numberStyle.setBorderBottom(BorderStyle.THIN);
-			numberStyle.setBorderTop(BorderStyle.THIN);
-			numberStyle.setBorderLeft(BorderStyle.THIN);
-			numberStyle.setBorderRight(BorderStyle.THIN);
+            CellStyle numberStyle = workbook.createCellStyle();
+            // numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
+            numberStyle.setBorderBottom(BorderStyle.THIN);
+            numberStyle.setBorderTop(BorderStyle.THIN);
+            numberStyle.setBorderLeft(BorderStyle.THIN);
+            numberStyle.setBorderRight(BorderStyle.THIN);
 			numberStyle.setFont(font);
-			// Create pure light green style (Excel highlight green)
-			XSSFCellStyle greenStyle = (XSSFCellStyle) workbook.createCellStyle();
-			greenStyle.cloneStyleFrom(textStyle);
-
-			byte[] rgb = new byte[] { (byte) 146, (byte) 208, (byte) 80 }; // exact Excel light green
-			XSSFColor green = new XSSFColor(rgb, null);
-
-			greenStyle.setFillForegroundColor(green);
-			greenStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-
-			greenStyle.setDataFormat(workbook.createDataFormat().getFormat("#,##0"));
-			CellStyle percentStyle = workbook.createCellStyle();
-			percentStyle.cloneStyleFrom(numberStyle);
-			percentStyle.setDataFormat(workbook.createDataFormat().getFormat("0.00%"));
-			percentStyle.setAlignment(HorizontalAlignment.RIGHT);
 			int startRow = 11;
 
 			if (!dataList.isEmpty()) {
@@ -4629,7 +4847,7 @@ public class BRRS_M_SIR_ReportService {
 					Cell cell1 = row.createCell(2);
 					if (record.getR12_amt_6m() != null) {
 						cell1.setCellValue(record.getR12_amt_6m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -4639,7 +4857,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(4);
 					if (record.getR12_capital_6m() != null) {
 						cell1.setCellValue(record.getR12_capital_6m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -4650,7 +4868,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(5);
 					if (record.getR12_amt_6to24m() != null) {
 						cell1.setCellValue(record.getR12_amt_6to24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -4660,7 +4878,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(7);
 					if (record.getR12_capital_6to24m() != null) {
 						cell1.setCellValue(record.getR12_capital_6to24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -4671,7 +4889,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(8);
 					if (record.getR12_amt_gt24m() != null) {
 						cell1.setCellValue(record.getR12_amt_gt24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -4682,7 +4900,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(10);
 					if (record.getR12_capital_gt24m() != null) {
 						cell1.setCellValue(record.getR12_capital_gt24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -4708,7 +4926,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(4);
 					if (record.getR13_capital_6m() != null) {
 						cell1.setCellValue(record.getR13_capital_6m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -4727,7 +4945,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(7);
 					if (record.getR13_capital_6to24m() != null) {
 						cell1.setCellValue(record.getR13_capital_6to24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -4745,7 +4963,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(10);
 					if (record.getR13_capital_gt24m() != null) {
 						cell1.setCellValue(record.getR13_capital_gt24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -4770,7 +4988,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(4);
 					if (record.getR14_capital_6m() != null) {
 						cell1.setCellValue(record.getR14_capital_6m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -4789,7 +5007,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(7);
 					if (record.getR14_capital_6to24m() != null) {
 						cell1.setCellValue(record.getR14_capital_6to24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -4807,7 +5025,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(10);
 					if (record.getR14_capital_gt24m() != null) {
 						cell1.setCellValue(record.getR14_capital_gt24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -4832,7 +5050,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(4);
 					if (record.getR15_capital_6m() != null) {
 						cell1.setCellValue(record.getR15_capital_6m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -4851,7 +5069,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(7);
 					if (record.getR15_capital_6to24m() != null) {
 						cell1.setCellValue(record.getR15_capital_6to24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -4869,7 +5087,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(10);
 					if (record.getR15_capital_gt24m() != null) {
 						cell1.setCellValue(record.getR15_capital_gt24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -4892,7 +5110,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(4);
 					if (record.getR16_capital_6m() != null) {
 						cell1.setCellValue(record.getR16_capital_6m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -4911,7 +5129,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(7);
 					if (record.getR16_capital_6to24m() != null) {
 						cell1.setCellValue(record.getR16_capital_6to24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -4930,7 +5148,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(10);
 					if (record.getR16_capital_gt24m() != null) {
 						cell1.setCellValue(record.getR16_capital_gt24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -4953,7 +5171,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(4);
 					if (record.getR17_capital_6m() != null) {
 						cell1.setCellValue(record.getR17_capital_6m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -4972,7 +5190,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(7);
 					if (record.getR17_capital_6to24m() != null) {
 						cell1.setCellValue(record.getR17_capital_6to24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -4991,7 +5209,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(10);
 					if (record.getR17_capital_gt24m() != null) {
 						cell1.setCellValue(record.getR17_capital_gt24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -5006,7 +5224,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(2);
 					if (record.getR18_amt_6m() != null) {
 						cell1.setCellValue(record.getR18_amt_6m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -5015,7 +5233,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(4);
 					if (record.getR18_capital_6m() != null) {
 						cell1.setCellValue(record.getR18_capital_6m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -5026,7 +5244,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(5);
 					if (record.getR18_amt_6to24m() != null) {
 						cell1.setCellValue(record.getR18_amt_6to24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -5035,7 +5253,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(7);
 					if (record.getR18_capital_6to24m() != null) {
 						cell1.setCellValue(record.getR18_capital_6to24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -5046,7 +5264,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(8);
 					if (record.getR18_amt_gt24m() != null) {
 						cell1.setCellValue(record.getR18_amt_gt24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -5055,7 +5273,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(10);
 					if (record.getR18_capital_gt24m() != null) {
 						cell1.setCellValue(record.getR18_capital_gt24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -5078,7 +5296,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(4);
 					if (record.getR19_capital_6m() != null) {
 						cell1.setCellValue(record.getR19_capital_6m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -5097,7 +5315,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(7);
 					if (record.getR19_capital_6to24m() != null) {
 						cell1.setCellValue(record.getR19_capital_6to24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -5116,7 +5334,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(10);
 					if (record.getR19_capital_gt24m() != null) {
 						cell1.setCellValue(record.getR19_capital_gt24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -5139,7 +5357,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(4);
 					if (record.getR20_capital_6m() != null) {
 						cell1.setCellValue(record.getR20_capital_6m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -5158,7 +5376,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(7);
 					if (record.getR20_capital_6to24m() != null) {
 						cell1.setCellValue(record.getR20_capital_6to24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -5177,7 +5395,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(10);
 					if (record.getR20_capital_gt24m() != null) {
 						cell1.setCellValue(record.getR20_capital_gt24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -5200,7 +5418,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(4);
 					if (record.getR21_capital_6m() != null) {
 						cell1.setCellValue(record.getR21_capital_6m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -5219,7 +5437,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(7);
 					if (record.getR21_capital_6to24m() != null) {
 						cell1.setCellValue(record.getR21_capital_6to24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -5238,7 +5456,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(10);
 					if (record.getR21_capital_gt24m() != null) {
 						cell1.setCellValue(record.getR21_capital_gt24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -5261,7 +5479,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(4);
 					if (record.getR22_capital_6m() != null) {
 						cell1.setCellValue(record.getR22_capital_6m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -5280,7 +5498,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(7);
 					if (record.getR22_capital_6to24m() != null) {
 						cell1.setCellValue(record.getR22_capital_6to24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -5299,7 +5517,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(10);
 					if (record.getR22_capital_gt24m() != null) {
 						cell1.setCellValue(record.getR22_capital_gt24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -5322,7 +5540,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(4);
 					if (record.getR23_capital_6m() != null) {
 						cell1.setCellValue(record.getR23_capital_6m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -5341,7 +5559,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(7);
 					if (record.getR23_capital_6to24m() != null) {
 						cell1.setCellValue(record.getR23_capital_6to24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -5360,7 +5578,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(10);
 					if (record.getR23_capital_gt24m() != null) {
 						cell1.setCellValue(record.getR23_capital_gt24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -5383,7 +5601,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(4);
 					if (record.getR24_capital_6m() != null) {
 						cell1.setCellValue(record.getR24_capital_6m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -5402,7 +5620,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(7);
 					if (record.getR24_capital_6to24m() != null) {
 						cell1.setCellValue(record.getR24_capital_6to24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -5421,7 +5639,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(10);
 					if (record.getR24_capital_gt24m() != null) {
 						cell1.setCellValue(record.getR24_capital_gt24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -5442,7 +5660,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(4);
 					if (record.getR25_capital_6m() != null) {
 						cell1.setCellValue(record.getR25_capital_6m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -5461,7 +5679,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(7);
 					if (record.getR25_capital_6to24m() != null) {
 						cell1.setCellValue(record.getR25_capital_6to24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -5480,7 +5698,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(10);
 					if (record.getR25_capital_gt24m() != null) {
 						cell1.setCellValue(record.getR25_capital_gt24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -5503,7 +5721,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(4);
 					if (record.getR26_capital_6m() != null) {
 						cell1.setCellValue(record.getR26_capital_6m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -5522,7 +5740,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(7);
 					if (record.getR26_capital_6to24m() != null) {
 						cell1.setCellValue(record.getR26_capital_6to24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -5541,7 +5759,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(10);
 					if (record.getR26_capital_gt24m() != null) {
 						cell1.setCellValue(record.getR26_capital_gt24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -5556,7 +5774,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(2);
 					if (record.getR27_amt_6m() != null) {
 						cell1.setCellValue(record.getR27_amt_6m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -5565,7 +5783,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(4);
 					if (record.getR27_capital_6m() != null) {
 						cell1.setCellValue(record.getR27_capital_6m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -5576,7 +5794,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(5);
 					if (record.getR27_amt_6to24m() != null) {
 						cell1.setCellValue(record.getR27_amt_6to24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -5585,7 +5803,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(7);
 					if (record.getR27_capital_6to24m() != null) {
 						cell1.setCellValue(record.getR27_capital_6to24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -5596,7 +5814,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(8);
 					if (record.getR27_amt_gt24m() != null) {
 						cell1.setCellValue(record.getR27_amt_gt24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -5605,7 +5823,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(10);
 					if (record.getR27_capital_gt24m() != null) {
 						cell1.setCellValue(record.getR27_capital_gt24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -5628,7 +5846,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(4);
 					if (record.getR28_capital_6m() != null) {
 						cell1.setCellValue(record.getR28_capital_6m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -5647,7 +5865,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(7);
 					if (record.getR28_capital_6to24m() != null) {
 						cell1.setCellValue(record.getR28_capital_6to24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -5666,7 +5884,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(10);
 					if (record.getR28_capital_gt24m() != null) {
 						cell1.setCellValue(record.getR28_capital_gt24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -5689,7 +5907,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(4);
 					if (record.getR29_capital_6m() != null) {
 						cell1.setCellValue(record.getR29_capital_6m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -5708,7 +5926,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(7);
 					if (record.getR29_capital_6to24m() != null) {
 						cell1.setCellValue(record.getR29_capital_6to24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -5727,7 +5945,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(10);
 					if (record.getR29_capital_gt24m() != null) {
 						cell1.setCellValue(record.getR29_capital_gt24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -5750,7 +5968,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(4);
 					if (record.getR30_capital_6m() != null) {
 						cell1.setCellValue(record.getR30_capital_6m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -5769,7 +5987,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(7);
 					if (record.getR30_capital_6to24m() != null) {
 						cell1.setCellValue(record.getR30_capital_6to24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -5788,7 +6006,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(10);
 					if (record.getR30_capital_gt24m() != null) {
 						cell1.setCellValue(record.getR30_capital_gt24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -5811,7 +6029,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(4);
 					if (record.getR31_capital_6m() != null) {
 						cell1.setCellValue(record.getR31_capital_6m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -5830,7 +6048,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(7);
 					if (record.getR31_capital_6to24m() != null) {
 						cell1.setCellValue(record.getR31_capital_6to24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -5849,7 +6067,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(10);
 					if (record.getR31_capital_gt24m() != null) {
 						cell1.setCellValue(record.getR31_capital_gt24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -5872,7 +6090,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(4);
 					if (record.getR32_capital_6m() != null) {
 						cell1.setCellValue(record.getR32_capital_6m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -5891,7 +6109,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(7);
 					if (record.getR32_capital_6to24m() != null) {
 						cell1.setCellValue(record.getR32_capital_6to24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -5910,7 +6128,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(10);
 					if (record.getR32_capital_gt24m() != null) {
 						cell1.setCellValue(record.getR32_capital_gt24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -5924,7 +6142,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(4);
 					if (record.getR33_capital_6m() != null) {
 						cell1.setCellValue(record.getR33_capital_6m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -5934,7 +6152,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(7);
 					if (record.getR33_capital_6to24m() != null) {
 						cell1.setCellValue(record.getR33_capital_6to24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -5944,7 +6162,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(10);
 					if (record.getR33_capital_gt24m() != null) {
 						cell1.setCellValue(record.getR33_capital_gt24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -5955,7 +6173,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(4);
 					if (record.getR35_tot_spec_risk_ch() != null) {
 						cell1.setCellValue(record.getR35_tot_spec_risk_ch().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -5981,79 +6199,64 @@ public class BRRS_M_SIR_ReportService {
 				.getdatabydateListarchival(dateformat.parse(todate), version);
 
 		if (dataList.isEmpty()) {
-			logger.warn("Service: No data found forQ_STAFF report. Returning empty result.");
+			logger.warn("Service: No data found forM_SIR report. Returning empty result.");
 			return new byte[0];
 		}
 
-		String templateDir = env.getProperty("output.exportpathtemp");
-		String templateFileName = filename;
-		System.out.println(filename);
-		Path templatePath = Paths.get(templateDir, templateFileName);
-		System.out.println(templatePath);
+		  String templateDir = env.getProperty("output.exportpathtemp");
+        String templateFileName = filename;
+        System.out.println(filename);
+        Path templatePath = Paths.get(templateDir, templateFileName);
+        System.out.println(templatePath);
 
-		logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
+        logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
 
-		if (!Files.exists(templatePath)) {
-			// This specific exception will be caught by the controller.
-			throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
-		}
-		if (!Files.isReadable(templatePath)) {
-			// A specific exception for permission errors.
-			throw new SecurityException(
-					"Template file exists but is not readable (check permissions): " + templatePath.toAbsolutePath());
-		}
+        if (!Files.exists(templatePath)) {
+            // This specific exception will be caught by the controller.
+            throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
+        }
+        if (!Files.isReadable(templatePath)) {
+            // A specific exception for permission errors.
+            throw new SecurityException(
+                    "Template file exists but is not readable (check permissions): " + templatePath.toAbsolutePath());
+        }
 
-		// This try-with-resources block is perfect. It guarantees all resources are
-		// closed automatically.
-		try (InputStream templateInputStream = Files.newInputStream(templatePath);
-				Workbook workbook = WorkbookFactory.create(templateInputStream);
-				ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+        // This try-with-resources block is perfect. It guarantees all resources are
+        // closed automatically.
+        try (InputStream templateInputStream = Files.newInputStream(templatePath);
+                Workbook workbook = WorkbookFactory.create(templateInputStream);
+                ByteArrayOutputStream out = new ByteArrayOutputStream()) {
 
-			Sheet sheet = workbook.getSheetAt(0);
+            Sheet sheet = workbook.getSheetAt(0);
 
-			// --- Style Definitions ---
-			CreationHelper createHelper = workbook.getCreationHelper();
+            // --- Style Definitions ---
+            CreationHelper createHelper = workbook.getCreationHelper();
 
-			CellStyle dateStyle = workbook.createCellStyle();
-			dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
-			dateStyle.setBorderBottom(BorderStyle.THIN);
-			dateStyle.setBorderTop(BorderStyle.THIN);
-			dateStyle.setBorderLeft(BorderStyle.THIN);
-			dateStyle.setBorderRight(BorderStyle.THIN);
+            CellStyle dateStyle = workbook.createCellStyle();
+            dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
+            dateStyle.setBorderBottom(BorderStyle.THIN);
+            dateStyle.setBorderTop(BorderStyle.THIN);
+            dateStyle.setBorderLeft(BorderStyle.THIN);
+            dateStyle.setBorderRight(BorderStyle.THIN);
 
-			CellStyle textStyle = workbook.createCellStyle();
-			textStyle.setBorderBottom(BorderStyle.THIN);
-			textStyle.setBorderTop(BorderStyle.THIN);
-			textStyle.setBorderLeft(BorderStyle.THIN);
-			textStyle.setBorderRight(BorderStyle.THIN);
+            CellStyle textStyle = workbook.createCellStyle();
+            textStyle.setBorderBottom(BorderStyle.THIN);
+            textStyle.setBorderTop(BorderStyle.THIN);
+            textStyle.setBorderLeft(BorderStyle.THIN);
+            textStyle.setBorderRight(BorderStyle.THIN);
 
-			// Create the font
-			Font font = workbook.createFont();
-			font.setFontHeightInPoints((short) 8); // size 8
-			font.setFontName("Arial");
+            // Create the font
+            Font font = workbook.createFont();
+            font.setFontHeightInPoints((short) 8); // size 8
+            font.setFontName("Arial");
 
-			CellStyle numberStyle = workbook.createCellStyle();
-			// numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
-			numberStyle.setBorderBottom(BorderStyle.THIN);
-			numberStyle.setBorderTop(BorderStyle.THIN);
-			numberStyle.setBorderLeft(BorderStyle.THIN);
-			numberStyle.setBorderRight(BorderStyle.THIN);
+            CellStyle numberStyle = workbook.createCellStyle();
+            // numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
+            numberStyle.setBorderBottom(BorderStyle.THIN);
+            numberStyle.setBorderTop(BorderStyle.THIN);
+            numberStyle.setBorderLeft(BorderStyle.THIN);
+            numberStyle.setBorderRight(BorderStyle.THIN);
 			numberStyle.setFont(font);
-			// Create pure light green style (Excel highlight green)
-			XSSFCellStyle greenStyle = (XSSFCellStyle) workbook.createCellStyle();
-			greenStyle.cloneStyleFrom(textStyle);
-
-			byte[] rgb = new byte[] { (byte) 146, (byte) 208, (byte) 80 }; // exact Excel light green
-			XSSFColor green = new XSSFColor(rgb, null);
-
-			greenStyle.setFillForegroundColor(green);
-			greenStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-
-			greenStyle.setDataFormat(workbook.createDataFormat().getFormat("#,##0"));
-			CellStyle percentStyle = workbook.createCellStyle();
-			percentStyle.cloneStyleFrom(numberStyle);
-			percentStyle.setDataFormat(workbook.createDataFormat().getFormat("0.00%"));
-			percentStyle.setAlignment(HorizontalAlignment.RIGHT);
 			int startRow = 11;
 
 			if (!dataList.isEmpty()) {
@@ -6073,7 +6276,7 @@ public class BRRS_M_SIR_ReportService {
 					Cell cell1 = row.createCell(2);
 					if (record.getR12_amt_6m() != null) {
 						cell1.setCellValue(record.getR12_amt_6m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -6083,7 +6286,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(4);
 					if (record.getR12_capital_6m() != null) {
 						cell1.setCellValue(record.getR12_capital_6m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -6094,7 +6297,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(5);
 					if (record.getR12_amt_6to24m() != null) {
 						cell1.setCellValue(record.getR12_amt_6to24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -6104,7 +6307,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(7);
 					if (record.getR12_capital_6to24m() != null) {
 						cell1.setCellValue(record.getR12_capital_6to24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -6115,7 +6318,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(8);
 					if (record.getR12_amt_gt24m() != null) {
 						cell1.setCellValue(record.getR12_amt_gt24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -6126,7 +6329,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(10);
 					if (record.getR12_capital_gt24m() != null) {
 						cell1.setCellValue(record.getR12_capital_gt24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -6152,7 +6355,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(4);
 					if (record.getR13_capital_6m() != null) {
 						cell1.setCellValue(record.getR13_capital_6m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -6171,7 +6374,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(7);
 					if (record.getR13_capital_6to24m() != null) {
 						cell1.setCellValue(record.getR13_capital_6to24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -6189,7 +6392,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(10);
 					if (record.getR13_capital_gt24m() != null) {
 						cell1.setCellValue(record.getR13_capital_gt24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -6214,7 +6417,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(4);
 					if (record.getR14_capital_6m() != null) {
 						cell1.setCellValue(record.getR14_capital_6m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -6233,7 +6436,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(7);
 					if (record.getR14_capital_6to24m() != null) {
 						cell1.setCellValue(record.getR14_capital_6to24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -6251,7 +6454,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(10);
 					if (record.getR14_capital_gt24m() != null) {
 						cell1.setCellValue(record.getR14_capital_gt24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -6276,7 +6479,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(4);
 					if (record.getR15_capital_6m() != null) {
 						cell1.setCellValue(record.getR15_capital_6m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -6295,7 +6498,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(7);
 					if (record.getR15_capital_6to24m() != null) {
 						cell1.setCellValue(record.getR15_capital_6to24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -6313,7 +6516,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(10);
 					if (record.getR15_capital_gt24m() != null) {
 						cell1.setCellValue(record.getR15_capital_gt24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -6336,7 +6539,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(4);
 					if (record.getR16_capital_6m() != null) {
 						cell1.setCellValue(record.getR16_capital_6m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -6355,7 +6558,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(7);
 					if (record.getR16_capital_6to24m() != null) {
 						cell1.setCellValue(record.getR16_capital_6to24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -6374,7 +6577,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(10);
 					if (record.getR16_capital_gt24m() != null) {
 						cell1.setCellValue(record.getR16_capital_gt24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -6397,7 +6600,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(4);
 					if (record.getR17_capital_6m() != null) {
 						cell1.setCellValue(record.getR17_capital_6m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -6416,7 +6619,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(7);
 					if (record.getR17_capital_6to24m() != null) {
 						cell1.setCellValue(record.getR17_capital_6to24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -6435,7 +6638,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(10);
 					if (record.getR17_capital_gt24m() != null) {
 						cell1.setCellValue(record.getR17_capital_gt24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -6450,7 +6653,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(2);
 					if (record.getR18_amt_6m() != null) {
 						cell1.setCellValue(record.getR18_amt_6m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -6459,7 +6662,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(4);
 					if (record.getR18_capital_6m() != null) {
 						cell1.setCellValue(record.getR18_capital_6m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -6470,7 +6673,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(5);
 					if (record.getR18_amt_6to24m() != null) {
 						cell1.setCellValue(record.getR18_amt_6to24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -6479,7 +6682,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(7);
 					if (record.getR18_capital_6to24m() != null) {
 						cell1.setCellValue(record.getR18_capital_6to24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -6490,7 +6693,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(8);
 					if (record.getR18_amt_gt24m() != null) {
 						cell1.setCellValue(record.getR18_amt_gt24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -6499,7 +6702,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(10);
 					if (record.getR18_capital_gt24m() != null) {
 						cell1.setCellValue(record.getR18_capital_gt24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -6522,7 +6725,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(4);
 					if (record.getR19_capital_6m() != null) {
 						cell1.setCellValue(record.getR19_capital_6m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -6541,7 +6744,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(7);
 					if (record.getR19_capital_6to24m() != null) {
 						cell1.setCellValue(record.getR19_capital_6to24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -6560,7 +6763,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(10);
 					if (record.getR19_capital_gt24m() != null) {
 						cell1.setCellValue(record.getR19_capital_gt24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -6583,7 +6786,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(4);
 					if (record.getR20_capital_6m() != null) {
 						cell1.setCellValue(record.getR20_capital_6m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -6602,7 +6805,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(7);
 					if (record.getR20_capital_6to24m() != null) {
 						cell1.setCellValue(record.getR20_capital_6to24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -6621,7 +6824,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(10);
 					if (record.getR20_capital_gt24m() != null) {
 						cell1.setCellValue(record.getR20_capital_gt24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -6644,7 +6847,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(4);
 					if (record.getR21_capital_6m() != null) {
 						cell1.setCellValue(record.getR21_capital_6m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -6663,7 +6866,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(7);
 					if (record.getR21_capital_6to24m() != null) {
 						cell1.setCellValue(record.getR21_capital_6to24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -6682,7 +6885,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(10);
 					if (record.getR21_capital_gt24m() != null) {
 						cell1.setCellValue(record.getR21_capital_gt24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -6705,7 +6908,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(4);
 					if (record.getR22_capital_6m() != null) {
 						cell1.setCellValue(record.getR22_capital_6m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -6724,7 +6927,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(7);
 					if (record.getR22_capital_6to24m() != null) {
 						cell1.setCellValue(record.getR22_capital_6to24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -6743,7 +6946,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(10);
 					if (record.getR22_capital_gt24m() != null) {
 						cell1.setCellValue(record.getR22_capital_gt24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -6766,7 +6969,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(4);
 					if (record.getR23_capital_6m() != null) {
 						cell1.setCellValue(record.getR23_capital_6m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -6785,7 +6988,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(7);
 					if (record.getR23_capital_6to24m() != null) {
 						cell1.setCellValue(record.getR23_capital_6to24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -6804,7 +7007,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(10);
 					if (record.getR23_capital_gt24m() != null) {
 						cell1.setCellValue(record.getR23_capital_gt24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -6827,7 +7030,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(4);
 					if (record.getR24_capital_6m() != null) {
 						cell1.setCellValue(record.getR24_capital_6m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -6846,7 +7049,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(7);
 					if (record.getR24_capital_6to24m() != null) {
 						cell1.setCellValue(record.getR24_capital_6to24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -6865,7 +7068,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(10);
 					if (record.getR24_capital_gt24m() != null) {
 						cell1.setCellValue(record.getR24_capital_gt24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -6886,7 +7089,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(4);
 					if (record.getR25_capital_6m() != null) {
 						cell1.setCellValue(record.getR25_capital_6m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -6905,7 +7108,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(7);
 					if (record.getR25_capital_6to24m() != null) {
 						cell1.setCellValue(record.getR25_capital_6to24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -6924,7 +7127,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(10);
 					if (record.getR25_capital_gt24m() != null) {
 						cell1.setCellValue(record.getR25_capital_gt24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -6947,7 +7150,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(4);
 					if (record.getR26_capital_6m() != null) {
 						cell1.setCellValue(record.getR26_capital_6m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -6966,7 +7169,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(7);
 					if (record.getR26_capital_6to24m() != null) {
 						cell1.setCellValue(record.getR26_capital_6to24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -6985,7 +7188,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(10);
 					if (record.getR26_capital_gt24m() != null) {
 						cell1.setCellValue(record.getR26_capital_gt24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -7000,7 +7203,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(2);
 					if (record.getR27_amt_6m() != null) {
 						cell1.setCellValue(record.getR27_amt_6m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -7009,7 +7212,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(4);
 					if (record.getR27_capital_6m() != null) {
 						cell1.setCellValue(record.getR27_capital_6m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -7020,7 +7223,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(5);
 					if (record.getR27_amt_6to24m() != null) {
 						cell1.setCellValue(record.getR27_amt_6to24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -7029,7 +7232,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(7);
 					if (record.getR27_capital_6to24m() != null) {
 						cell1.setCellValue(record.getR27_capital_6to24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -7040,7 +7243,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(8);
 					if (record.getR27_amt_gt24m() != null) {
 						cell1.setCellValue(record.getR27_amt_gt24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -7049,7 +7252,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(10);
 					if (record.getR27_capital_gt24m() != null) {
 						cell1.setCellValue(record.getR27_capital_gt24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -7072,7 +7275,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(4);
 					if (record.getR28_capital_6m() != null) {
 						cell1.setCellValue(record.getR28_capital_6m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -7091,7 +7294,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(7);
 					if (record.getR28_capital_6to24m() != null) {
 						cell1.setCellValue(record.getR28_capital_6to24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -7110,7 +7313,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(10);
 					if (record.getR28_capital_gt24m() != null) {
 						cell1.setCellValue(record.getR28_capital_gt24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -7133,7 +7336,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(4);
 					if (record.getR29_capital_6m() != null) {
 						cell1.setCellValue(record.getR29_capital_6m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -7152,7 +7355,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(7);
 					if (record.getR29_capital_6to24m() != null) {
 						cell1.setCellValue(record.getR29_capital_6to24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -7171,7 +7374,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(10);
 					if (record.getR29_capital_gt24m() != null) {
 						cell1.setCellValue(record.getR29_capital_gt24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -7194,7 +7397,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(4);
 					if (record.getR30_capital_6m() != null) {
 						cell1.setCellValue(record.getR30_capital_6m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -7213,7 +7416,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(7);
 					if (record.getR30_capital_6to24m() != null) {
 						cell1.setCellValue(record.getR30_capital_6to24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -7232,7 +7435,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(10);
 					if (record.getR30_capital_gt24m() != null) {
 						cell1.setCellValue(record.getR30_capital_gt24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -7255,7 +7458,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(4);
 					if (record.getR31_capital_6m() != null) {
 						cell1.setCellValue(record.getR31_capital_6m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -7274,7 +7477,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(7);
 					if (record.getR31_capital_6to24m() != null) {
 						cell1.setCellValue(record.getR31_capital_6to24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -7293,7 +7496,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(10);
 					if (record.getR31_capital_gt24m() != null) {
 						cell1.setCellValue(record.getR31_capital_gt24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -7316,7 +7519,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(4);
 					if (record.getR32_capital_6m() != null) {
 						cell1.setCellValue(record.getR32_capital_6m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -7335,7 +7538,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(7);
 					if (record.getR32_capital_6to24m() != null) {
 						cell1.setCellValue(record.getR32_capital_6to24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -7354,7 +7557,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(10);
 					if (record.getR32_capital_gt24m() != null) {
 						cell1.setCellValue(record.getR32_capital_gt24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -7368,7 +7571,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(4);
 					if (record.getR33_capital_6m() != null) {
 						cell1.setCellValue(record.getR33_capital_6m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -7378,7 +7581,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(7);
 					if (record.getR33_capital_6to24m() != null) {
 						cell1.setCellValue(record.getR33_capital_6to24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -7388,7 +7591,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(10);
 					if (record.getR33_capital_gt24m() != null) {
 						cell1.setCellValue(record.getR33_capital_gt24m().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -7399,7 +7602,7 @@ public class BRRS_M_SIR_ReportService {
 					cell1 = row.createCell(4);
 					if (record.getR35_tot_spec_risk_ch() != null) {
 						cell1.setCellValue(record.getR35_tot_spec_risk_ch().doubleValue());
-						cell1.setCellStyle(greenStyle);
+						cell1.setCellStyle(numberStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);

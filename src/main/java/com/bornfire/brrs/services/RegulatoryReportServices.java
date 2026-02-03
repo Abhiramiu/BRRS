@@ -4205,14 +4205,14 @@ public class RegulatoryReportServices {
 		 * brrs_m_epr_reportservice.getM_EPRArchival(); } catch (Exception e) { // TODO
 		 * Auto-generated catch block e.printStackTrace(); } break;
 		 */
-//		case "M_SIR":
-//			try {
-//				archivalData = BRRS_M_SIR_ReportService.getM_SIRArchival();
-//			} catch (Exception e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//			break;
+		case "M_SIR":
+			try {
+				archivalData = BRRS_M_SIR_ReportService.getM_SIRArchival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
 		case "M_SRWA_12A":
 			try {
 				archivalData = brrs_m_srwa_12a_reportservice.getM_SRWA_12AArchival();
@@ -4625,11 +4625,11 @@ public class RegulatoryReportServices {
 			System.out.println("Fetched Q_SMME_DEP archival data: " + MSRWA12CList.size());
 			break;
 
-		case "M_SIR":
-			List<Object[]> SIRList = BRRS_M_SIR_ReportService.getM_SIRArchival();
-			archivalData.addAll(SIRList);
-			System.out.println("Fetched M_SIR archival data: " + SIRList.size());
-			break;
+//		case "M_SIR":
+//			List<Object[]> SIRList = BRRS_M_SIR_ReportService.getM_SIRArchival();
+//			archivalData.addAll(SIRList);
+//			System.out.println("Fetched M_SIR archival data: " + SIRList.size());
+//			break;
 
 		// case "M_GP":
 		// try {

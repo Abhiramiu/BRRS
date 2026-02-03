@@ -282,13 +282,12 @@ public class M_SIR_Detail_Entity {
     private BigDecimal r35_tot_spec_risk_ch;
 
 	@Temporal(TemporalType.DATE)
-	@DateTimeFormat(pattern = "dd/MM/yyyy")
 	@Id
 	@Column(name = "REPORT_DATE")
 	private Date reportDate;
 	
 	@Column(name = "REPORT_VERSION")
-	private String reportVersion;
+	private BigDecimal reportVersion;
     private String report_frequency;
     private String report_code;
     private String report_desc;
@@ -1628,10 +1627,10 @@ public class M_SIR_Detail_Entity {
 	public void setReportDate(Date reportDate) {
 		this.reportDate = reportDate;
 	}
-	public String getReportVersion() {
+	public BigDecimal getReportVersion() {
 		return reportVersion;
 	}
-	public void setReportVersion(String reportVersion) {
+	public void setReportVersion(BigDecimal reportVersion) {
 		this.reportVersion = reportVersion;
 	}
 	public String getReport_frequency() {
