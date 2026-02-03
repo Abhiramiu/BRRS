@@ -3082,38 +3082,38 @@ public class BRRS_ReportsController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
 		}
 	}
-	@RequestMapping(value = "/UpdateQ_BRANCHNETReSub", method = { RequestMethod.GET, RequestMethod.POST })
-	@ResponseBody
-	public ResponseEntity<String> updateReportReSub(
-			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@ModelAttribute Q_BRANCHNET_Summary_Entity1 request1,
-			@ModelAttribute Q_BRANCHNET_Summary_Entity2 request2,
-			@ModelAttribute Q_BRANCHNET_Summary_Entity3 request3,
-			@ModelAttribute Q_BRANCHNET_Summary_Entity4 request4,
-			HttpServletRequest req) {
-
-		try {
-			System.out.println("Came to Q_BRANCHNET Resub Controller");
-
-			if (asondate != null) {
-				request1.setReportDate(asondate);
-				request2.setReportDate(asondate);
-				request3.setReportDate(asondate);
-				request4.setReportDate(asondate);
-				System.out.println("Set Report Date: " + asondate);
-			}
-
-			// Call service
-			// QBRANCHNET_service.updateReportReSub(request1, request2, request3, request4);
-
-			return ResponseEntity.ok("Resubmission Updated Successfully");
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body("Q_BRANCHNET Resubmission Update Failed: " + e.getMessage());
-		}
-	}
+//	@RequestMapping(value = "/UpdateQ_BRANCHNETReSub", method = { RequestMethod.GET, RequestMethod.POST })
+//	@ResponseBody
+//	public ResponseEntity<String> updateReportReSub(
+//			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+//			@ModelAttribute Q_BRANCHNET_Summary_Entity1 request1,
+//			@ModelAttribute Q_BRANCHNET_Summary_Entity2 request2,
+//			@ModelAttribute Q_BRANCHNET_Summary_Entity3 request3,
+//			@ModelAttribute Q_BRANCHNET_Summary_Entity4 request4,
+//			HttpServletRequest req) {
+//
+//		try {
+//			System.out.println("Came to Q_BRANCHNET Resub Controller");
+//
+//			if (asondate != null) {
+//				request1.setReportDate(asondate);
+//				request2.setReportDate(asondate);
+//				request3.setReportDate(asondate);
+//				request4.setReportDate(asondate);
+//				System.out.println("Set Report Date: " + asondate);
+//			}
+//
+//			// Call service
+//			// QBRANCHNET_service.updateReportReSub(request1, request2, request3, request4);
+//
+//			return ResponseEntity.ok("Resubmission Updated Successfully");
+//
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+//					.body("Q_BRANCHNET Resubmission Update Failed: " + e.getMessage());
+//		}
+//	}
 
 	@Autowired
 	BRRS_M_IS_ReportService M_IS_Service;
