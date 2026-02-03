@@ -3043,7 +3043,7 @@ public class BRRS_M_EPR_ReportService {
 
 		
 
-		List<M_EPR_Detail_Entity> dataList = brrs_m_epr_detail_repo
+		List<M_EPR_Summary_Entity> dataList = brrs_m_epr_summary_repo
 				.getdatabydateList(dateformat.parse(todate));
 
 		if (dataList.isEmpty()) {
@@ -3111,7 +3111,7 @@ public class BRRS_M_EPR_ReportService {
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
-					M_EPR_Detail_Entity record = dataList.get(i);
+					M_EPR_Summary_Entity record = dataList.get(i);
 					System.out.println("rownumber=" + startRow + i);
 					Row row = sheet.getRow(startRow + i);
 					if (row == null) {
@@ -5122,7 +5122,7 @@ public class BRRS_M_EPR_ReportService {
 
 		}
 
-		List<M_EPR_Archival_Detail_Entity> dataList = m_epr_Archival_Detail_Repo
+		List<M_EPR_Archival_Summary_Entity> dataList = m_epr_Archival_Summary_Repo
 				.getdatabydateListarchival(dateformat.parse(todate), version);
 
 		if (dataList.isEmpty()) {
@@ -5190,7 +5190,7 @@ public class BRRS_M_EPR_ReportService {
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
-					M_EPR_Archival_Detail_Entity record = dataList.get(i);
+					M_EPR_Archival_Summary_Entity record = dataList.get(i);
 					System.out.println("rownumber=" + startRow + i);
 					Row row = sheet.getRow(startRow + i);
 					if (row == null) {

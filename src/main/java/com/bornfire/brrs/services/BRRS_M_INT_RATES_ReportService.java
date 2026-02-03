@@ -3815,7 +3815,7 @@ public byte[] BRRS_M_INT_RATESEmailExcel(String filename, String reportId, Strin
 
 	
 
-	List<M_INT_RATES_Detail_Entity> dataList = M_INT_RATES_Detail_Repo
+	List<M_INT_RATES_Summary_Entity> dataList = M_INT_RATES_Summary_Repo
 			.getdatabydateList(dateformat.parse(todate));
 
 	if (dataList.isEmpty()) {
@@ -3883,7 +3883,7 @@ public byte[] BRRS_M_INT_RATESEmailExcel(String filename, String reportId, Strin
 
 		if (!dataList.isEmpty()) {
 			for (int i = 0; i < dataList.size(); i++) {
-				M_INT_RATES_Detail_Entity record = dataList.get(i);
+				M_INT_RATES_Summary_Entity record = dataList.get(i);
 				System.out.println("rownumber=" + startRow + i);
 				Row row = sheet.getRow(startRow + i);
 				if (row == null) {
@@ -4556,7 +4556,7 @@ public byte[] BRRS_M_INT_RATESARCHIVALEmailExcel(String filename, String reportI
 
 	}
 
-	List<M_INT_RATES_Archival_Detail_Entity> dataList = M_INT_RATES_Archival_Detail_Repo
+	List<M_INT_RATES_Archival_Summary_Entity> dataList = M_INT_RATES_Archival_Summary_Repo
 			.getdatabydateListarchival(dateformat.parse(todate), version);
 
 	if (dataList.isEmpty()) {
@@ -4624,7 +4624,7 @@ public byte[] BRRS_M_INT_RATESARCHIVALEmailExcel(String filename, String reportI
 
 		if (!dataList.isEmpty()) {
 			for (int i = 0; i < dataList.size(); i++) {
-				M_INT_RATES_Archival_Detail_Entity record = dataList.get(i);
+				M_INT_RATES_Archival_Summary_Entity record = dataList.get(i);
 				System.out.println("rownumber=" + startRow + i);
 				Row row = sheet.getRow(startRow + i);
 				if (row == null) {

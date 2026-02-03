@@ -2461,7 +2461,7 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 		
 
-		List<M_INT_RATES_FCA_Detail_Entity> dataList = M_INT_RATES_FCA_Detail_Repo
+		List<M_INT_RATES_FCA_Summary_Entity> dataList = M_INT_RATES_FCA_Summary_Repo
 				.getdatabydateList(dateformat.parse(todate));
 
 		if (dataList.isEmpty()) {
@@ -2529,7 +2529,7 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
-					M_INT_RATES_FCA_Detail_Entity record = dataList.get(i);
+					M_INT_RATES_FCA_Summary_Entity record = dataList.get(i);
 					System.out.println("rownumber=" + startRow + i);
 					Row row = sheet.getRow(startRow + i);
 					if (row == null) {
@@ -3244,7 +3244,7 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 		}
 
-		List<M_INT_RATES_FCA_Archival_Detail_Entity> dataList = M_INT_RATES_FCA_Archival_Detail_Repo
+		List<M_INT_RATES_FCA_Archival_Summary_Entity> dataList = M_INT_RATES_FCA_Archival_Summary_Repo
 				.getdatabydateListarchival(dateformat.parse(todate), version);
 
 		if (dataList.isEmpty()) {
@@ -3312,7 +3312,7 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
-					M_INT_RATES_FCA_Archival_Detail_Entity record = dataList.get(i);
+					M_INT_RATES_FCA_Archival_Summary_Entity record = dataList.get(i);
 					System.out.println("rownumber=" + startRow + i);
 					Row row = sheet.getRow(startRow + i);
 					if (row == null) {
