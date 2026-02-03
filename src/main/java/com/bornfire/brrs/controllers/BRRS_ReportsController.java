@@ -4220,7 +4220,7 @@ public class BRRS_ReportsController {
 	@Autowired
 	BRRS_M_SIR_ReportService BRRS_M_SIR_ReportService;
 
-	@RequestMapping(value = "/Q_STAFFupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
+	@RequestMapping(value = "/MSIRupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public ResponseEntity<String> updateAllReports(
 
