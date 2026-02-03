@@ -24,9 +24,49 @@
 		}
 	</style>
 
+<style>
+.btn-wrapper {
+	display: flex;
+	max-width: 1500px;
+	position: relative;
+}
 
+.btn-container {
+	display: flex;
+	gap: 8px;
+	overflow-x: hidden;
+	padding-bottom: 500px;
+	margin-bottom: -500px;
+	pointer-events: none;
+	scroll-behavior: smooth;
+	white-space: nowrap;
+}
 
-	<style>
+.btn-container>* {
+	pointer-events: auto;
+}
+
+.nav-arrow {
+	border: none;
+	background: transparent;
+	cursor: pointer;
+	padding: 6px 10px;
+	padding-bottom: 15px;
+	user-select: none;
+	z-index: 10;
+}
+
+.nav-arrow:disabled {
+	opacity: 0.3;
+	cursor: default;
+}
+
+.px-5 {
+	padding-right: 0px !important;
+}
+</style>
+
+<style>
 		nav {
 			background-color: #fafafa;
 		}
@@ -186,7 +226,7 @@
 
 	<style>
 		.nav-links a {
-			color: #354a5f !important;
+			/* color: #354a5f !important; */
 			font-weight: bold;
 
 			/* color: black !important; */
@@ -368,7 +408,7 @@
 			border-color: rgb(107, 122, 143);
 			text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 		}
-
+		
 		/* Dropdown Toggle Styles */
 		.dropdown-toggle {
 			display: inline-block;
@@ -833,7 +873,6 @@
 			left: 100%;
 			top: 0;
 			margin-top: -12px;
-			margin-left: 10px;
 		}
 
 		/* Show only the relevant submenu on hover */
@@ -1203,10 +1242,13 @@
 					th:style="'background-image: url(' + @{/images/rtbg.jpg} + '); background-size: cover; background-position: center; min-height: 35px;'">
 
 					<!-- Bottom row: Menu -->
-					<div class="px-5 py-1" style="height:40px">
+					<div class="px-5 py-1" style="height:40px;padding-right: 0px; ">
+					<div class="btn-wrapper">
+  						<button class="nav-arrow left" onclick="scrollBtns(-1)"><span style="font-size:25px">‹</span></button>
+   						<div class="btn-container" id="btnContainer">
 						<ul class="nav-links d-flex gap-4">
-							<li class="nav-item"><a class="nav-link" th:href="@{/Dashboard}"
-									style=" text-align: center; color: black;">Home</a>
+							<li class="nav-item"><a class="nav-link" th:href="@{/Dashboard}" id="Dashboard" onclick="contentLoad(this)"
+									style=" text-align: center;">Home</a>
 							</li>
 							<li class="nav-item dropdown" style="text-align: center;"
 								th:if="${session.DOMAINID != null and #strings.containsIgnoreCase(session.DOMAINID, 'admin')}">
@@ -1680,9 +1722,18 @@ th:if="${session.DOMAINID != null and #strings.containsIgnoreCase(session.DOMAIN
 								
 								
 						</li> -->
+						
+ 
+						<li class="nav-item"><a class="nav-link" th:href="@{/Dashboard}" id="Dashboard" onclick="contentLoad(this)"
+									style=" text-align: center;">sampleeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee</a>
+							</li>
 
 
 						</ul>
+						</div>
+
+   					<button class="nav-arrow right" onclick="scrollBtns(1)"><span style="font-size:25px">›</span></button>
+					</div>
 					</div>
 
 					<!-- Centered Title -->
@@ -1925,10 +1976,11 @@ th:if="${session.DOMAINID != null and #strings.containsIgnoreCase(session.DOMAIN
 				activeLink.classList.add("active");
 
 				// Also highlight parent .dropdown-toggle
-				const dropdown = activeLink.closest(".nav-item.dropdown");
-				if (dropdown) {
-					const toggle = dropdown.querySelector(".dropdown-toggle");
-					if (toggle) toggle.classList.add("active");
+				let dropdown = activeLink;
+				while (dropdown = dropdown.closest('.dropdown-menu')) {
+   					dropdown = dropdown.parentElement;
+				    const toggle = dropdown.querySelector('a');
+				    if (toggle) toggle.classList.add("active");
 				}
 			}
 		}
@@ -1998,6 +2050,31 @@ th:if="${session.DOMAINID != null and #strings.containsIgnoreCase(session.DOMAIN
 		$('#errorModal').modal('show');
 	}
 </script>
+<script>
+const container = document.getElementById("btnContainer");
+const leftArrow = document.querySelector(".nav-arrow.left");
+const rightArrow = document.querySelector(".nav-arrow.right");
+
+function updateArrows() {
+    const maxScroll = container.scrollWidth - container.clientWidth;
+
+    leftArrow.style.display =
+        container.scrollLeft <= 0 ? "none" : "block";
+
+    rightArrow.style.display =
+        container.scrollLeft >= maxScroll - 1 ? "none" : "block";
+}
+
+function scrollBtns(direction) {
+    const scrollAmount = 140; 
+    container.scrollLeft += direction * scrollAmount;
+}
+
+container.addEventListener("scroll", updateArrows);
+
+window.addEventListener("load", updateArrows);
+</script>
+
 
 
 </html>
