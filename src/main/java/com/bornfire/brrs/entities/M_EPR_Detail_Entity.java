@@ -249,6 +249,7 @@ public class M_EPR_Detail_Entity {
 	private String	entity_flg;
 	private String	modify_flg;
 	private String	 del_flg;
+	
 	public BigDecimal getR11_market() {
 		return r11_market;
 	}
