@@ -2132,33 +2132,7 @@ public class BRRS_ReportsController {
 	 * .body("Resubmission Update Failed: " + e.getMessage()); } }
 	 */
 	
-	@Autowired
 
-	BRRS_M_SIR_ReportService BRRS_M_SIR_ReportService;
-
-	@RequestMapping(value = "/MSIRupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
-	@ResponseBody
-	public ResponseEntity<String> updateAllReports(
-			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@RequestParam(required = false) String type, @ModelAttribute M_SIR_Summary_Entity request1) {
-		try {
-			System.out.println("Came to single controller");
-			System.out.println(type);
-			// set date into all 4 entities
-			request1.setReportDate(asondate);
-
-			if (type.equals("ARCHIVAL")) {
-				M_SIR_Archival_Summary_Entity Archivalrequest1 = new M_SIR_Archival_Summary_Entity();
-				BeanUtils.copyProperties(request1, Archivalrequest1);
-			} else {
-				BRRS_M_SIR_ReportService.updateReport(request1);
-			}
-			return ResponseEntity.ok("Updated Successfully.");
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
-		}
-	}
 
 	@Autowired
 	private BRRS_M_EPR_ReportService brrs_m_epr_reportservice;
@@ -3567,7 +3541,7 @@ public class BRRS_ReportsController {
 			}
 
 			// Call service to create a new versioned row
-			BRRS_M_SIR_ReportService.updateReportReSub(request);
+//			BRRS_M_SIR_ReportService.updateReportReSub(request);
 
 			return ResponseEntity.ok("Resubmission Updated Successfully");
 
@@ -4216,7 +4190,62 @@ public class BRRS_ReportsController {
 		response.getOutputStream().write(file);
 		response.getOutputStream().flush();
 	}*/
+//	@Autowired
+//
+//	BRRS_M_SIR_ReportService BRRS_M_SIR_ReportService;
+//
+//	@RequestMapping(value = "/MSIRupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
+//	@ResponseBody
+//	public ResponseEntity<String> updateAllReports(
+//			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+//			@RequestParam(required = false) String type, @ModelAttribute M_SIR_Summary_Entity request1) {
+//		try {
+//			System.out.println("Came to single controller");
+//			System.out.println(type);
+//			// set date into all 4 entities
+//			request1.setReportDate(asondate);
+//
+//			if (type.equals("ARCHIVAL")) {
+//				M_SIR_Archival_Summary_Entity Archivalrequest1 = new M_SIR_Archival_Summary_Entity();
+//				BeanUtils.copyProperties(request1, Archivalrequest1);
+//			} else {
+//				BRRS_M_SIR_ReportService.updateReport(request1);
+//			}
+//			return ResponseEntity.ok("Updated Successfully.");
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
+//		}
+//	}
+	@Autowired
+	BRRS_M_SIR_ReportService BRRS_M_SIR_ReportService;
 
+	@RequestMapping(value = "/Q_STAFFupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<String> updateAllReports(
+
+	        @RequestParam(required = false)
+	        @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+
+	        @ModelAttribute M_SIR_Summary_Entity request1) {
+
+	    try {
+	        System.out.println("Came to single controller");
+
+	        request1.setReportDate(asondate);
+
+	        BRRS_M_SIR_ReportService.updateReport(request1);
+
+	        return ResponseEntity.ok("Modified Successfully.");
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return ResponseEntity
+	                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                .body("Update Failed: " + e.getMessage());
+	    }
+	}
+	
 @Autowired
 BRRS_Q_STAFF_Report_Service QSTAFF_service;
 

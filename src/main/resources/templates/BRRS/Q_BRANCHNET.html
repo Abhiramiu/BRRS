@@ -1036,7 +1036,7 @@ PURPOSE		: BWRBRREPORT
 
                         <!-- Title -->
                         <h5 class="header-title">
-                            (13) QUARTERLY SCHEDLE: Q-BRANCHNET: BRANCH NETWORK
+                            (13) QUARTERLY SCHEDLE <br> Q-BRANCHNET: BRANCH NETWORK
                         </h5>
 
                         <!-- 🚌 Bus display box -->
@@ -1057,7 +1057,7 @@ PURPOSE		: BWRBRREPORT
                         <!-- Buttons -->
                         <input type="hidden" id="selectedTab" th:value="${displaymode}">
                         <button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showsummary();"
-                            th:if="${displaymode == 'Details'}">Summary</button>
+                            th:if="${displaymode == 'detail'}">Summary</button>
                         <button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails();"
                             th:if="${displaymode == 'summary'}">Details</button>
                         <!-- Modify button -->
@@ -1100,10 +1100,35 @@ PURPOSE		: BWRBRREPORT
 							<i class="fa fa-download"></i> E-Mail
 
 						</button>
-                    </div>
-                </div>
-            </div>
-            <div th:if="${displaymode == 'summary'}">
+
+
+											</div>
+
+										</div>
+										<p th:if="${displaymode == 'summary'and type != 'ARCHIVAL'}" style="text-align: left; font-weight: bold; 
+												color: white;  font-size: 20px;  background-color: rgb(107, 122, 143); 
+												margin-top:10px; margin-bottom:10px;padding: 5px;">Summary View - Q BRANCHNET</p>
+
+										<!-- Detail text -->
+										<p th:if="${displaymode == 'detail' and type != 'ARCHIVAL'}" style="text-align: left; font-weight: bold;
+											 color: white;  font-size: 20px;  background-color: rgb(107, 122, 143); 
+											 margin-top:10px; margin-bottom:10px;padding: 5px;">Detail View - Q BRANCHNET</p>
+
+										<p th:if="${type == 'ARCHIVAL' and displaymode == 'summary'}" style="text-align: left; font-weight: bold; 
+						          color: white; font-size: 20px;
+						          background-color: rgb(107, 122, 143); 
+						          margin-top:10px; margin-bottom:10px; padding: 5px;">
+											Archival Summary View - Q BRANCHNET
+										</p>
+
+										<p th:if="${type == 'ARCHIVAL' and displaymode == 'detail'}" style="text-align: left; font-weight: bold;
+						          color: white; font-size: 20px;
+						          background-color: rgb(107, 122, 143); 
+						          margin-top:10px; margin-bottom:10px; padding: 5px;">
+											Archival Detail View - Q BRANCHNET
+										</p>
+
+										<div th:if="${displaymode == 'summary' or displaymode == 'detail'}">
                 <div class="row">
                     <div class="col-sm-12">
                         <form action="#" method="POST" id="fileupload">

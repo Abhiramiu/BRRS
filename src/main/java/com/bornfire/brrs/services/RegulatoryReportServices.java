@@ -448,6 +448,10 @@ public class RegulatoryReportServices {
 			repsummary = BRRS_M_TOP_100_BORROWER_reportservice.getM_TOP_100_BORROWERView(reportId, fromdate, todate,
 					currency, dtltype, pageable, type, version);
 			break;
+		case "M_SIR":
+			repsummary = BRRS_M_SIR_ReportService.getM_SIRView(reportId, fromdate, todate,
+					currency, dtltype, pageable, type, version);
+			break;
 
 		/*
 		 * 
@@ -2163,6 +2167,15 @@ public class RegulatoryReportServices {
 		case "M_LCR":
 			try {
 				repfile = BRRS_M_LCR_reportservice.getM_LCRExcel(filename, reportId, fromdate, todate, currency,
+						dtltype, type, version);
+			} catch (Exception e) { // TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+			
+		case "M_SIR":
+			try {
+				repfile = BRRS_M_SIR_ReportService.getM_SIRExcel(filename, reportId, fromdate, todate, currency,
 						dtltype, type, version);
 			} catch (Exception e) { // TODO Auto-generated catch block
 				e.printStackTrace();
@@ -4168,7 +4181,14 @@ public class RegulatoryReportServices {
 		 * brrs_m_epr_reportservice.getM_EPRArchival(); } catch (Exception e) { // TODO
 		 * Auto-generated catch block e.printStackTrace(); } break;
 		 */
-
+//		case "M_SIR":
+//			try {
+//				archivalData = BRRS_M_SIR_ReportService.getM_SIRArchival();
+//			} catch (Exception e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//			break;
 		case "M_SRWA_12A":
 			try {
 				archivalData = brrs_m_srwa_12a_reportservice.getM_SRWA_12AArchival();
@@ -6250,18 +6270,18 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
-
-		case "M_SIR":
-			try {
-				List<Object[]> resubList = BRRS_M_SIR_ReportService.getM_SIRResub();
-				resubmissionData.addAll(resubList);
-				System.out.println("Resubmission data fetched for SIR: " + resubList.size());
-			} catch (Exception e) {
-				System.err.println("Error fetching resubmission data for M_SIR: " + e.getMessage());
-				e.printStackTrace();
-			}
-
-			break;
+//
+//		case "M_SIR":
+//			try {
+//				List<Object[]> resubList = BRRS_M_SIR_ReportService.getM_SIRResub();
+//				resubmissionData.addAll(resubList);
+//				System.out.println("Resubmission data fetched for SIR: " + resubList.size());
+//			} catch (Exception e) {
+//				System.err.println("Error fetching resubmission data for M_SIR: " + e.getMessage());
+//				e.printStackTrace();
+//			}
+//
+//			break;
 		case "M_RPD":
 			try {
 				List<Object[]> resubList = BRRS_M_RPD_ReportService.getM_RPDResub();
