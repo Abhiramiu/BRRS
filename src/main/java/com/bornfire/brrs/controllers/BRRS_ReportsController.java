@@ -3063,32 +3063,25 @@ public class BRRS_ReportsController {
 	public ResponseEntity<String> updateAllReports(
 			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
 
-			@ModelAttribute Q_BRANCHNET_Summary_Entity1 request1,
-			@ModelAttribute Q_BRANCHNET_Summary_Entity2 request2,
-			@ModelAttribute Q_BRANCHNET_Summary_Entity3 request3,
-			@ModelAttribute Q_BRANCHNET_Summary_Entity4 request4) {
+			@ModelAttribute Q_BRANCHNET_Summary_Entity request1) {
 		try {
 			System.out.println("Came to single controller");
 
 			// set date into all 3 entities
 			request1.setReportDate(asondate);
-			request2.setReportDate(asondate);
-			request3.setReportDate(asondate);
-			request4.setReportDate(asondate);
 
 			// call services
 			QBRANCHNET_service.QBranchnetUpdate1(request1);
-			QBRANCHNET_service.QBranchnetUpdate2(request2);
-			QBRANCHNET_service.QBranchnetUpdate3(request3);
-			QBRANCHNET_service.QBranchnetUpdate4(request4);
+			QBRANCHNET_service.QBranchnetUpdate2(request1);
+			QBRANCHNET_service.QBranchnetUpdate3(request1);
+			QBRANCHNET_service.QBranchnetUpdate4(request1);
 
-			return ResponseEntity.ok("Updated Successfully.");
+			return ResponseEntity.ok("Modified Successfully.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
 		}
 	}
-
 	@RequestMapping(value = "/UpdateQ_BRANCHNETReSub", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public ResponseEntity<String> updateReportReSub(
