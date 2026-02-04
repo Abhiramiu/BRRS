@@ -2223,6 +2223,32 @@ public class BRRS_ReportsController {
 		}
 	}
 
+	@Autowired
+	private BRRS_M_CR_ReportService BRRS_M_CR_reportservice;
+
+	@RequestMapping(value = "/M_CRupdate", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<String> updateReport(
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+			@ModelAttribute M_CR_Summary_Entity request) {
+
+		try {
+			System.out.println("came to single controller");
+
+			// ✅ set the asondate into entity
+			request.setReport_date(asondate);
+			
+
+			// call services
+			BRRS_M_CR_reportservice.updateReport(request);
+
+			return ResponseEntity.ok("Modified Successfully.");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
+		}
+	}
+
 	/*
 	 * @RequestMapping(value = "/UpdateM_EPR_ReSub", method = { RequestMethod.GET,
 	 * RequestMethod.POST })

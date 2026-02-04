@@ -1190,6 +1190,13 @@ public class RegulatoryReportServices {
 					type, version);
 
 			break;	
+			
+		case "M_CR":
+
+			repsummary = BRRS_M_CR_reportservice.getM_CRView(reportId, fromdate, todate, currency, dtltype, pageable,
+					type, version);
+
+			break;	
 		
 
 		case "M_SRWA_12A":
@@ -2204,6 +2211,17 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
+			
+		case "M_CR":
+			try {
+
+				repfile = BRRS_M_CR_reportservice.getM_CRExcel(filename, reportId, fromdate, todate, currency,
+						dtltype, type, version);
+			} catch (Exception e) { // TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+
 
 		case "B_III_CETD":
 			try {
@@ -3877,14 +3895,7 @@ public class RegulatoryReportServices {
 			}
 			break;
 
-		case "M_CR":
-			try {
-				archivalData = BRRS_M_CR_reportservice.getM_CRArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+		
 
 		case "M_SP":
 			try {
@@ -4674,6 +4685,12 @@ public class RegulatoryReportServices {
 			List<Object[]> la2List = BRRS_M_LA2_reportservice.getM_LA2Archival();
 			archivalData.addAll(la2List);
 			System.out.println("Fetched M_LA2archival data: " + la2List.size());
+			break;
+			
+		case "M_CR":
+			List<Object[]> crList = BRRS_M_CR_reportservice.getM_CRArchival();
+			archivalData.addAll(crList);
+			System.out.println("Fetched M_CRarchival data: " + crList.size());
 			break;
 
 			
@@ -6279,6 +6296,17 @@ public class RegulatoryReportServices {
 				System.out.println("Resubmission data fetched for M_LA2: " + resubList.size());
 			} catch (Exception e) {
 				System.err.println("Error fetching resubmission data for M_LA2: " + e.getMessage());
+				e.printStackTrace();
+			}
+			break;
+			
+		case "M_CR":
+			try {
+				List<Object[]> resubList = BRRS_M_CR_reportservice.getM_CRResub();
+				resubmissionData.addAll(resubList);
+				System.out.println("Resubmission data fetched for M_CR: " + resubList.size());
+			} catch (Exception e) {
+				System.err.println("Error fetching resubmission data for M_CR: " + e.getMessage());
 				e.printStackTrace();
 			}
 			break;

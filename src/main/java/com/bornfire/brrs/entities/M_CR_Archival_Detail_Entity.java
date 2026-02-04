@@ -12,8 +12,8 @@ import javax.persistence.TemporalType;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
-@Table(name = "BRRS_M_CR_SUMMARYTABLE")
-public class M_CR_Summary_Entity {
+@Table(name = "BRRS_M_CR_ARCHIVALTABLE_DETAIL")
+public class M_CR_Archival_Detail_Entity {
 
 	private String R10_PRODUCT;
 	private BigDecimal R10_TOTAL_LONG_POS;
@@ -803,7 +803,7 @@ public class M_CR_Summary_Entity {
 		DEL_FLG = dEL_FLG;
 	}
 
-	public M_CR_Summary_Entity() {
+	public M_CR_Archival_Detail_Entity() {
 		super();
 	}
 

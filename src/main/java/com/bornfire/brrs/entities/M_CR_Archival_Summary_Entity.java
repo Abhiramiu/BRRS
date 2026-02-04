@@ -12,7 +12,7 @@ import javax.persistence.TemporalType;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
-@Table(name = "BRRS_M_CR_ARCHIVAL_TABLE_SUMMARY")
+@Table(name = "BRRS_M_CR_ARCHIVALTABLE_SUMMARY")
 public class M_CR_Archival_Summary_Entity {
 
 	private String R10_PRODUCT;
@@ -100,7 +100,7 @@ public class M_CR_Archival_Summary_Entity {
 	@DateTimeFormat(pattern = "dd/MM/yyyy")
 	@Id
 	private Date report_date;
-	private String REPORT_VERSION;
+	private BigDecimal REPORT_VERSION;
 	private String REPORT_CODE;
 	private String REPORT_DESC;
 	private String ENTITY_FLG;
@@ -755,11 +755,11 @@ public class M_CR_Archival_Summary_Entity {
 		this.report_date = report_date;
 	}
 
-	public String getREPORT_VERSION() {
+	public BigDecimal getREPORT_VERSION() {
 		return REPORT_VERSION;
 	}
 
-	public void setREPORT_VERSION(String rEPORT_VERSION) {
+	public void setREPORT_VERSION(BigDecimal rEPORT_VERSION) {
 		REPORT_VERSION = rEPORT_VERSION;
 	}
 

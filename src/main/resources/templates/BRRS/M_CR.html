@@ -1,35 +1,42 @@
 <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
-<!--
-CREATED BY	: SURESH
-CREATED ON	: 10.09.2025
-PURPOSE		: BWRBRREPORT
+
+<!-- 
+CREATED BY	: ISHWARYA 
+CREATED ON	: 01.09.2025
+PURPOSE		: BRRS REPORT
 -->
+
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1">
+
 	<!-- CSS -->
-	
-	
 	<link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}">
 	<link rel="stylesheet" type="text/css" th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}">
 	<link rel="stylesheet" type="text/css" th:href="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.css}">
 	<link rel="stylesheet" type="text/css" th:href="@{/webjars/datatables/1.10.19/css/jquery.dataTables.min.css}">
 	<link rel="stylesheet" th:href="@{/css/CustomButton.css}" />
 	<link rel="icon" th:href="@{/favicon.ico}" type="image/x-icon" />
+
 	<!-- JavaScript -->
 	<!-- jQuery core (required first) -->
+
+
 	<!-- ✅ Your manually placed jQuery validation
 	<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
 	 <script th:src="/jquery/jquery.validate.min.js"></script>
 	 -->
+
 	<!-- jQuery (required first) -->
 	<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
 	<!-- <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script> -->
+
 	<!-- ✅ jQuery Validation -->
 	<script src="/webjars/jquery-validation/1.19.0/jquery.validate.min.js"
 		th:src="@{/webjars/jquery-validation/1.19.0/jquery.validate.min.js}"></script>
+
 	<!-- Bootstrap + Others -->
 	<script th:src="@{/webjars/popper.js/1.14.7/umd/popper.min.js}"></script>
 	<script th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
@@ -37,6 +44,9 @@ PURPOSE		: BWRBRREPORT
 	<script th:src="@{/webjars/jquery-form/4.2.2/jquery.form.min.js}"></script>
 	<script th:src="@{/webjars/datatables/1.10.19/js/jquery.dataTables.min.js}"></script>
 	<script th:src="@{/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js}"></script>
+
+
+
 	<style>
 		.btns {
 			float: right;
@@ -65,8 +75,8 @@ PURPOSE		: BWRBRREPORT
 			border-color: #0c0c0c;
 		}
 
-		.btn-primary:not (:disabled):not (.disabled).active,
-		.btn-primary:not (:disabled):not (.disabled):active,
+		.btn-primary:not(:disabled):not(.disabled).active,
+		.btn-primary:not(:disabled):not(.disabled):active,
 		.show>.btn-primary.dropdown-toggle {
 			color: #fff;
 			background-color: #cc000000;
@@ -81,6 +91,10 @@ PURPOSE		: BWRBRREPORT
 			padding: 0px;
 		}
 	</style>
+
+
+
+
 	<style>
 		div span {
 			font-weight: bold;
@@ -143,7 +157,7 @@ PURPOSE		: BWRBRREPORT
 			border-radius: 4px;
 		}
 
-		#BRRSvalidation th,
+		#BRFvalidation th,
 		#usertable td {
 			vertical-align: middle;
 			text-align: left;
@@ -163,78 +177,8 @@ PURPOSE		: BWRBRREPORT
 			text-overflow: ellipsis;
 		}
 	</style>
-	
-	<style>
-				.header-bar {
-				  display: flex;
-				  align-items: center;
-				  flex-wrap: wrap; /* ✅ allows wrapping on smaller screens */
-				  gap: 10px; /* spacing between elements */
-				  cursor: pointer;
-				}
 
-				/* 🔘 Circular arrow */
-				.left-arrow-circle {
-				  width: 35px;
-				  height: 35px;
-				  border-radius: 50%;
-				  background-color: white;
-				  color: #1f3a93;
-				  display: flex;
-				  align-items: center;
-				  justify-content: center;
-				  margin-right: 10px;
-				}
 
-				.left-arrow-circle i {
-				  font-size: 18px;
-				}
-
-				/* 🏷️ Title */
-				.header-title {
-				  font-family: Arial, sans-serif;
-				  font-size: 20px;
-				  font-weight: bold;
-				  color: white;
-				  margin: 0;
-				  flex-shrink: 0;
-				}
-
-				/* 🚌 Bus display style box */
-				.boards {
-					transform: translateY(6px);
-				  background-color: rgb(107, 122, 143);
-				  color: white;
-				  padding: 5px 45px;
-				  border-radius: 8px;
-				  overflow: hidden;
-				  white-space: nowrap;
-				  flex: 1; /* ✅ makes it take available space dynamically */
-				  min-width: 200px;
-				  box-shadow: 0 0 10px rgb(107, 122, 143);
-				  position: relative;
-				}
-
-				/* ✨ Scrolling animation */
-				.scrolling-text {
-				  display: inline-block;
-				  font-family: "Courier New", monospace;
-				  font-weight: bold;
-				  letter-spacing: 1px;
-				  animation: scroll-left 10s linear infinite;
-				}
-
-				@keyframes scroll-left {
-				  0% {
-				    transform: translateX(100%);
-				  }
-				  100% {
-				    transform: translateX(-100%);
-				  }
-				}
-
-				</style>
-	
 	<style>
 		.form-group {
 			position: relative;
@@ -275,7 +219,7 @@ PURPOSE		: BWRBRREPORT
 
 		/* When input or select is focused or has a value, move the label up */
 		.form-control:focus~.form-legend,
-		.form-control:not (:placeholder-shown)~.form-legend {
+		.form-control:not(:placeholder-shown)~.form-legend {
 			top: -8px;
 			font-size: 1rem;
 			color: #007bff;
@@ -288,11 +232,24 @@ PURPOSE		: BWRBRREPORT
 		}
 
 		/* Ensure the label returns to the normal color after focus or hover is removed */
-		.form-control:not (:focus)~.form-legend {
+		.form-control:not(:focus)~.form-legend {
 			color: #aaa;
 			/* Normal label color */
 		}
+
+		.table-cell tbody td:hover {
+			background-color: #f0f0f0;
+			/* Hover color for cell */
+			cursor: pointer;
+			/* Optional: pointer cursor */
+		}
+
+		.table-bordered td,
+		.table-bordered th {
+			border: 1px solid #000 !important;
+		}
 	</style>
+
 	<style>
 		/* Red border for invalid inputs */
 		input.error,
@@ -345,20 +302,79 @@ PURPOSE		: BWRBRREPORT
 			color: white !important;
 		}
 
-		.table-cell tbody td:hover {
-			background-color: #f0f0f0;
-			/* Hover color for cell */
-			cursor: pointer;
-			/* Optional: pointer cursor */
-		}
-
-		.table-bordered td,
-		.table-bordered th {
-			border: 1px solid #000 !important;
+		.green-cell {
+			background-color: rgb(107, 122, 143) !important;
+			color: white !important;
 		}
 	</style>
+
+
+
+
+
+
+	<style>
+		.left-arrow-circle {
+			background-color: white;
+			color: #007bff;
+			border-radius: 50%;
+			padding: 8px;
+			margin-right: 10px;
+			cursor: pointer;
+		}
+
+		/* 🚌 Bus display style box */
+		/* 🚌 Bus display style box */
+		.boards {
+			transform: translateY(6px);
+			background-color: rgb(107, 122, 143);
+			color: white;
+			padding: 5px 80px;
+			border-radius: 8px;
+			overflow: hidden;
+			white-space: nowrap;
+			flex: 1;
+			/* ✅ makes it take available space dynamically */
+			min-width: 200px;
+			box-shadow: 0 0 10px rgb(107, 122, 143);
+			position: relative;
+		}
+
+		/* ✨ Scrolling animation */
+		.scrolling-text {
+			display: inline-block;
+			font-family: "Courier New", monospace;
+			font-weight: bold;
+			letter-spacing: 1px;
+			animation: scroll-left 10s linear infinite;
+		}
+
+		/* Animation keyframes */
+		@keyframes scroll-left {
+		    0% {
+		        transform: translateX(100%);
+		    }
+
+		    100% {
+		        transform: translateX(-100%);
+		    }
+		}
+
+	</style>
+
+
+
+
+
+
+
+
+
+
 	<script th:inline="javascript">
-	let isDetailsModal = false;
+
+
+		let isDetailsModal = false;
 		$(document).ready(function () {
 			// hide loader on normal load
 			$('#loader').modal('hide');
@@ -372,36 +388,35 @@ PURPOSE		: BWRBRREPORT
 			$('#loader').modal('hide');
 		});
 
-		
-		$(document).ready(function() {
-			Maker_Checker_Function(); 
+
+		$(document).ready(function () {
+			Maker_Checker_Function();
 		});
 
 		// if logged user is a Checker, checker cannot modify, if user is maker , then maker cant download
 		function Maker_Checker_Function() {
 			$.ajax({
-				url: "/BRRS/getUserRole",    
+				url: "/BRRS/getUserRole",
 				type: "GET",
-				success: function(roleId) {
+				success: function (roleId) {
 					// console.log("User Role ID:", roleId);
-				
+
 					if (roleId === "ADM-C" || roleId === "USR-C" || roleId === "USER-AUDIT") {
 						const modifyBtn = document.getElementById("addRecord");
 						if (modifyBtn) modifyBtn.style.display = "none";
 					}
 
 					if (roleId === "ADM-M" || roleId === "USR-M") {
-								const button = document.getElementById("custom-tab-btnAdd");
-								if (button) button.style.display = "none";
-							}
+						const button = document.getElementById("custom-tab-btnAdd");
+						if (button) button.style.display = "none";
+					}
 
 				},
-				error: function(err) {
+				error: function (err) {
 					console.error("Error fetching role:", err);
-		     }
-		    });
+				}
+			});
 		}
-
 		function home() {
 			$("#loader").modal("toggle");
 			location.href = 'Dashboard'
@@ -413,24 +428,148 @@ PURPOSE		: BWRBRREPORT
 
 		//to fetch summary from the database - called from the summary button
 		function showdetails() {
-			isDetailsModal = true;
-			showResultModal('BRRS',' Details page not available for Manual Report');
-		}
+			$('#loader').modal('show');
+			var Callurl = /*[[@{'/Reports/' + ${reportid}(
+			        dtltype='detail',
+			        fromdate=${fromdate},
+			        todate=${todate},
+			        type=${type},
+			        asondate=${asondate},
+			        version=${version}
+			    )}]]*/
+				location.href = Callurl;
 
+		}
 		function showsummary() {
 			$('#loader').modal('show');
-			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/;
-			location.href = Callurl;
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate}, version=${version})}]]*/
+				location.href = Callurl;
 		}
 
 
 	</script>
+
+
+
+
+
+
 	<script>
+		// Show Modify (enable inputs & dropdowns)
+	function showmodify(btn) {
+	    $(".Show_input").removeAttr("readonly").removeAttr("disabled").css({
+	        "background-color": "#d3d3d3", // Set light gray background
+	        
+	    });
+
+	//     for (let i = 10; i <= 17; i++) {
+	//         $("#R" + i + "_TOTAL_LONG_POS_TEXT").hide();
+	//         $("#R" + i + "_TOTAL_SHORT_POS_TEXT").hide();
+	//         $("#R" + i + "_GROSS_OPEN_POS_TEXT").hide();
+	//         $("#R" + i + "_CHARGE_BASIS_RISK_TEXT").hide();
+	//         $("#R" + i + "_CAPITAL_CHARGE_BASIS_RISK_TEXT").hide();
+	//         $("#R" + i + "_NET_OPEN_POS_TEXT").hide();
+	//         $("#R" + i + "_CHARGE_DIR_RISK_TEXT").hide();   
+	//         $("#R" + i + "_CAPITAL_CHARGE_DIR_RISK_TEXT").hide();
+	//         $("#R" + i + "_TOTAL_CAPITAL_CHARGE_TEXT").hide();
+	        
+	//         $("#R" + i + "_TOTAL_LONG_POS").show();
+	//         $("#R" + i + "_TOTAL_SHORT_POS").show();
+	//         $("#R" + i + "_GROSS_OPEN_POS").show();
+	//         $("#R" + i + "_CHARGE_BASIS_RISK").show();
+	//         $("#R" + i + "_CAPITAL_CHARGE_BASIS_RISK").show();
+	//         $("#R" + i + "_NET_OPEN_POS").show();
+	//         $("#R" + i + "_CHARGE_DIR_RISK").show();
+	//         $("#R" + i + "_CAPITAL_CHARGE_DIR_RISK").show();
+	//         $("#R" + i + "_TOTAL_CAPITAL_CHARGE").show();
+	        
+	//     }
+	    
+	    // Toggle buttons
+	    $("#submitButton, #btnBack_edit").show();
+	    $("#btnBack").hide();
+	    
+	    // Show Cancel button only when Modify is clicked
+	    $("#cancelRecord").show();
+	    
+	    // Optionally hide the clicked Modify button
+	    $(btn).hide();
+	}
+
+	//Cancel / Reset function
+	function cancelModify() {
+	    if (confirm("Are you sure you want to cancel changes? Page will reload.")) {
+	        // ✅ Only when user clicks YES
+	        location.reload();
+	        
+	        $(".Show_input").attr("readonly", true).attr("disabled", true);
+
+	       //  for (let i = 11; i <= 50; i++) {
+	       //      $("#R" + i + "_TOTAL_LONG_POS_TEXT").show();
+	       //  $("#R" + i + "_TOTAL_SHORT_POS_TEXT").show();
+	       //  $("#R" + i + "_GROSS_OPEN_POS_TEXT").show();
+	       //  $("#R" + i + "_CHARGE_BASIS_RISK_TEXT").show();
+	       //  $("#R" + i + "_CAPITAL_CHARGE_BASIS_RISK_TEXT").show();
+	       //  $("#R" + i + "_NET_OPEN_POS_TEXT").show();
+	       //  $("#R" + i + "_CHARGE_DIR_RISK_TEXT").show();   
+	       //  $("#R" + i + "_CAPITAL_CHARGE_DIR_RISK_TEXT").show();
+	       //  $("#R" + i + "_TOTAL_CAPITAL_CHARGE_TEXT").show();
+	        
+	       //  $("#R" + i + "_TOTAL_LONG_POS").hide();
+	       //  $("#R" + i + "_TOTAL_SHORT_POS").hide();
+	       //  $("#R" + i + "_GROSS_OPEN_POS").hide();
+	       //  $("#R" + i + "_CHARGE_BASIS_RISK").hide();
+	       //  $("#R" + i + "_CAPITAL_CHARGE_BASIS_RISK").hide();
+	       //  $("#R" + i + "_NET_OPEN_POS").hide();
+	       //  $("#R" + i + "_CHARGE_DIR_RISK").hide();
+	       //  $("#R" + i + "_CAPITAL_CHARGE_DIR_RISK").hide();
+	       //  $("#R" + i + "_TOTAL_CAPITAL_CHARGE").hide();
+	       //  }
+
+	        $("#submitButton, #btnBack_edit").hide();
+	        $("#btnBack").show();
+
+	        // Hide Cancel button again
+	        $("#cancelRecord").hide();
+
+	        // Show all Modify buttons
+	        $("#addRecord").show();
+	    }
+	    // ❌ If user clicks CANCEL, nothing happens
+	}
+
+
+		
+
+		</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	<script>
+
 		function activateTab(tabName) {
 			// Remove 'active' from all buttons
 			document.querySelectorAll('.custom-tab-btn').forEach(btn => {
 				btn.classList.remove('active');
 			});
+
 			// Add 'active' to selected button
 			if (tabName === 'summary') {
 				document.getElementById('custom-tab-btnSummary').classList.add('active');
@@ -438,6 +577,7 @@ PURPOSE		: BWRBRREPORT
 				document.getElementById('custom-tab-btnDetails').classList.add('active');
 			}
 		}
+
 		window.onload = function () {
 			/* setTimeout(function() {
 				var selectedTab = document.getElementById("selectedTab").value;
@@ -448,7 +588,10 @@ PURPOSE		: BWRBRREPORT
 			var selectedTab = document.getElementById("selectedTab").value;
 			activateTab(selectedTab);
 		};
+
+
 		function downloadfile(button) {
+
 			var reportid = button.getAttribute('data-reportid');
 			var asondate = button.getAttribute('data-asondate');
 			var fromdate = button.getAttribute('data-fromdate');
@@ -461,17 +604,161 @@ PURPOSE		: BWRBRREPORT
 			var type = button.getAttribute('data-type');
 			var version = button.getAttribute('data-version');
 
-			$('#loader').modal('show');
+			var loader = new bootstrap.Modal(
+				document.getElementById('loader'),
+				{backdrop: 'static', keyboard: false}
+			);
+			loader.show();
+
+			// ✅ Build URL safely
+			var url = './downloadExcel?reportid=' + reportid +
+				'&fromdate=' + fromdate +
+				'&asondate=' + asondate +
+				'&todate=' + todate +
+				'&currency=' + currency +
+				'&subreportid=' + subreportid +
+				'&secid=' + secid +
+				'&filename=' + filename +
+				'&type=' + type;
+
+			// ✅ ONLY append version if valid
+			if (version && version.trim() !== '') {
+				url += '&version=' + version;
+			}
+
 			$.ajax({
-				url: './downloadExcel?reportid=' + reportid +
-					'&fromdate=' + fromdate +
-					'&asondate=' + asondate +
-					'&todate=' + todate +
-					'&currency=' + currency +
-					'&subreportid=' + subreportid +
-					'&secid=' + secid +
-					'&type=' + type +
-					'&version=' + version +
+				url: url,
+				type: 'GET',
+				xhrFields: {responseType: 'blob'},
+
+				success: function (data) {
+					$('#loader').modal('hide');
+
+					if (data && data.size > 100) {
+						const blob = new Blob([data], {
+							type: 'application/vnd.ms-excel'
+						});
+						const url = window.URL.createObjectURL(blob);
+						const a = document.createElement('a');
+						a.style.display = 'none';
+						a.href = url;
+						a.download = filename;
+						document.body.appendChild(a);
+						a.click();
+						window.URL.revokeObjectURL(url);
+						document.body.removeChild(a);
+
+						showResultModal('BRRS', filename + ' downloaded successfully.');
+					} else {
+						showResultModal('Information', 'No data was available to create a download.');
+					}
+				},
+
+				error: function () {
+					$('#loader').modal('hide');
+					showResultModal('Error', 'An error occurred while downloading the file.');
+				}
+			});
+		}
+		function editRecord() {
+			showResultModal('Alert', 'Development in progress');
+
+		}
+		function closemodel() {
+			$('#alert').modal('hide');
+			$('#resultModal').modal('hide');
+
+		}
+
+		function showResultModal(title, message) {
+			// Set the text for the modal elements
+			$('#resultModalLabel').text(title);
+			$('#resultModalBody').text(message);
+
+			// Show the modal
+			$('#resultModal').modal('show');
+		}
+
+	</script>
+
+	<script>
+
+		function startReport(button) {
+			const alertMsg = document.getElementById("alertMessage");
+			const filename = button.getAttribute('data-filename');
+			const fromdate = button.getAttribute('data-fromdate');
+			const todate = button.getAttribute('data-todate');
+			const currency = button.getAttribute('data-currency');
+			const dtltype = button.getAttribute('data-dtltype');
+			const type = button.getAttribute('data-type');
+			const version = button.getAttribute('data-version');
+			const sessionfilename = sessionStorage.getItem("filename");
+
+			if (sessionfilename == filename) {
+				alertMsg.innerHTML = 'Download request already Processing...';
+				showAlert();
+				return;
+			}
+
+			alertMsg.innerHTML = 'Download request Processing...';
+			showAlert();
+
+			const baseUrl = '/BCDRS/Reports/startreport';
+			const downloadUrl = baseUrl +
+				'?filename=' + encodeURIComponent(filename) +
+				'&fromdate=' + encodeURIComponent(fromdate) +
+				'&todate=' + encodeURIComponent(todate) +
+				'&currency=' + encodeURIComponent(currency) +
+				'&dtltype=' + encodeURIComponent(dtltype) +
+				'&type=' + encodeURIComponent(type) +
+				'&version=' + encodeURIComponent(version);
+			fetch(downloadUrl)  // ✅ no invalid characters now
+				.then(res => res.text())
+				.then(jobId => {
+
+					alertMsg.innerHTML = 'Download request received...' + jobId;
+					showAlert();
+					sessionStorage.setItem("jobId", jobId);
+					sessionStorage.setItem("filename", filename);
+					checkReport(jobId);
+				});
+		}
+
+		function checkReport(jobId) {
+			const alertMsg = document.getElementById("alertMessage");
+			fetch('/BCDRS/Reports/checkreport?jobId=' + encodeURIComponent(jobId))
+				.then(res => res.text())
+				.then(status => {
+					if (status === "READY") {
+						alertMsg.innerHTML = 'Report is ready! Downloading…';
+						showAlert();
+						const filename = sessionStorage.getItem("filename");
+						downloadDetailfile(jobId, filename)
+						sessionStorage.removeItem("jobId");
+						sessionStorage.removeItem("filename");
+
+					} else if (status === "PROCESSING") {
+						alertMsg.innerHTML = 'Download Is Processing…';
+						showAlert();
+						setTimeout(() => checkReport(jobId), 5000);
+					}
+					else if (status === "ERROR") {
+						alertMsg.innerHTML = 'No data was available to create a download.';
+						showAlert();
+						sessionStorage.removeItem("jobId");
+						sessionStorage.removeItem("filename");
+					}
+				});
+		}
+
+
+
+		function downloadDetailfile(jobId, filename) {
+
+			//$('#loader').modal('show');
+
+			$.ajax({
+				url: '/BCDRS/Reports/downloaddetailExcel?jobId=' + jobId +
 					'&filename=' + filename,
 				type: 'GET',
 				xhrFields: {
@@ -479,6 +766,7 @@ PURPOSE		: BWRBRREPORT
 				},
 				success: function (data) {
 					$('#loader').modal('hide');
+
 					if (data && data.size > 100) {
 						const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
 						const url = window.URL.createObjectURL(blob);
@@ -490,6 +778,7 @@ PURPOSE		: BWRBRREPORT
 						a.click();
 						window.URL.revokeObjectURL(url);
 						document.body.removeChild(a);
+
 						showResultModal('BRRS', filename + ' downloaded successfully.');
 					} else {
 						showResultModal('Information', 'No data was available to create a download.');
@@ -504,381 +793,326 @@ PURPOSE		: BWRBRREPORT
 		}
 
 
-		function editRecord() {
-			showResultModal('Alert', 'Development in progress');
+	</script>
 
-		}
-		function closemodel() {
-			$('#alert').modal('hide');
-			$('#resultModal').modal('hide');
+	<script th:inline="javascript">
+		function showdetailsbyRowAndColumn(a) {
+			var rowId = a.getAttribute('RowId');
+			var columnId = a.getAttribute('ColumnId');
+			var cellValue = a.textContent || a.innerText;
 
-		}
-		function showResultModal(title, message) {
-			// Set the text for the modal elements
-			$('#resultModalLabel').text(title);
-			$('#resultModalBody').text(message);
-			// Show the modal
-			$('#resultModal').modal('show');
+			if (cellValue !== '0') {
+				// Set dynamic message in modal (instead of confirm)
+				document.getElementById("cellresultModalLabel").innerText =
+					"Do you want to open details for Row: " + rowId + " and Column: " + columnId + "?";
+
+				// Show custom Bootstrap modal
+				$('#cellresultModal').modal('show');
+
+				// Handle Yes button
+				document.querySelector('.yes-btn').onclick = function () {
+					$('#cellresultModal').modal('hide');
+
+					// Show loader
+					const loader = bootstrap.Modal.getOrCreateInstance(document.getElementById('loader'), {
+						backdrop: 'static',
+						keyboard: false
+					});
+					$('#loader').modal('show');
+
+					// Build dynamic URL
+					var Callurl = /*[[@{'/Reports/' + ${reportid} + '/Details'(asondate=${asondate}, fromdate=${fromdate}, todate=${todate}, currency=${currency}, dtltype=${dtltype},type=${type},version=${version})}]]*/ "";
+					Callurl += "&filter=" + encodeURIComponent(rowId + "," + columnId);
+
+					location.href = Callurl;
+				};
+			} else {
+				// Use your custom alert modal instead of window.alert
+				showResultModal("Alert", "No Records available for this selected cell.");
+			}
 		}
 	</script>
-	
-	
-		
-	
-	
-	
-	
-	
-	<script>
-	// Show Modify (enable inputs & dropdowns)
-function showmodify(btn) {
-    $(".Show_input").removeAttr("readonly").removeAttr("disabled").css({
-        "background-color": "#d3d3d3", // Set light gray background
-        
-    });
-
-//     for (let i = 10; i <= 17; i++) {
-//         $("#R" + i + "_TOTAL_LONG_POS_TEXT").hide();
-//         $("#R" + i + "_TOTAL_SHORT_POS_TEXT").hide();
-//         $("#R" + i + "_GROSS_OPEN_POS_TEXT").hide();
-//         $("#R" + i + "_CHARGE_BASIS_RISK_TEXT").hide();
-//         $("#R" + i + "_CAPITAL_CHARGE_BASIS_RISK_TEXT").hide();
-//         $("#R" + i + "_NET_OPEN_POS_TEXT").hide();
-//         $("#R" + i + "_CHARGE_DIR_RISK_TEXT").hide();   
-//         $("#R" + i + "_CAPITAL_CHARGE_DIR_RISK_TEXT").hide();
-//         $("#R" + i + "_TOTAL_CAPITAL_CHARGE_TEXT").hide();
-        
-//         $("#R" + i + "_TOTAL_LONG_POS").show();
-//         $("#R" + i + "_TOTAL_SHORT_POS").show();
-//         $("#R" + i + "_GROSS_OPEN_POS").show();
-//         $("#R" + i + "_CHARGE_BASIS_RISK").show();
-//         $("#R" + i + "_CAPITAL_CHARGE_BASIS_RISK").show();
-//         $("#R" + i + "_NET_OPEN_POS").show();
-//         $("#R" + i + "_CHARGE_DIR_RISK").show();
-//         $("#R" + i + "_CAPITAL_CHARGE_DIR_RISK").show();
-//         $("#R" + i + "_TOTAL_CAPITAL_CHARGE").show();
-        
-//     }
-    
-    // Toggle buttons
-    $("#submitButton, #btnBack_edit").show();
-    $("#btnBack").hide();
-    
-    // Show Cancel button only when Modify is clicked
-    $("#cancelRecord").show();
-    
-    // Optionally hide the clicked Modify button
-    $(btn).hide();
-}
-
-//Cancel / Reset function
-function cancelModify() {
-    if (confirm("Are you sure you want to cancel changes? Page will reload.")) {
-        // ✅ Only when user clicks YES
-        location.reload();
-        
-        $(".Show_input").attr("readonly", true).attr("disabled", true);
-
-       //  for (let i = 11; i <= 50; i++) {
-       //      $("#R" + i + "_TOTAL_LONG_POS_TEXT").show();
-       //  $("#R" + i + "_TOTAL_SHORT_POS_TEXT").show();
-       //  $("#R" + i + "_GROSS_OPEN_POS_TEXT").show();
-       //  $("#R" + i + "_CHARGE_BASIS_RISK_TEXT").show();
-       //  $("#R" + i + "_CAPITAL_CHARGE_BASIS_RISK_TEXT").show();
-       //  $("#R" + i + "_NET_OPEN_POS_TEXT").show();
-       //  $("#R" + i + "_CHARGE_DIR_RISK_TEXT").show();   
-       //  $("#R" + i + "_CAPITAL_CHARGE_DIR_RISK_TEXT").show();
-       //  $("#R" + i + "_TOTAL_CAPITAL_CHARGE_TEXT").show();
-        
-       //  $("#R" + i + "_TOTAL_LONG_POS").hide();
-       //  $("#R" + i + "_TOTAL_SHORT_POS").hide();
-       //  $("#R" + i + "_GROSS_OPEN_POS").hide();
-       //  $("#R" + i + "_CHARGE_BASIS_RISK").hide();
-       //  $("#R" + i + "_CAPITAL_CHARGE_BASIS_RISK").hide();
-       //  $("#R" + i + "_NET_OPEN_POS").hide();
-       //  $("#R" + i + "_CHARGE_DIR_RISK").hide();
-       //  $("#R" + i + "_CAPITAL_CHARGE_DIR_RISK").hide();
-       //  $("#R" + i + "_TOTAL_CAPITAL_CHARGE").hide();
-       //  }
-
-        $("#submitButton, #btnBack_edit").hide();
-        $("#btnBack").show();
-
-        // Hide Cancel button again
-        $("#cancelRecord").hide();
-
-        // Show all Modify buttons
-        $("#addRecord").show();
-    }
-    // ❌ If user clicks CANCEL, nothing happens
-}
 
 
-	
 
-	</script>
-	
 	<SCRIPT>
-	
-	function calculateR17Totals() {
-	    let totalLP = 0;
-	    let totalSP = 0;
-	    let totalGP = 0;
-	    let totalCapitalcharge = 0;
-	    let totalNP = 0;
-	    let totalDirRisk = 0;
-	    let totalCommodity = 0;
 
-	    for (let i = 10; i <= 16; i++) {
-	        // Get numeric values, remove commas
-	        let LPVal = parseFloat($("#R" + i + "_TOTAL_LONG_POS").val().replace(/,/g, "")) || 0;
-	        let SPVal = parseFloat($("#R" + i + "_TOTAL_SHORT_POS").val().replace(/,/g, "")) || 0;
-	        let GPVal = parseFloat($("#R" + i + "_GROSS_OPEN_POS").val().replace(/,/g, "")) || 0;
-	        let CapitalchargeVal = parseFloat($("#R" + i + "_CAPITAL_CHARGE_BASIS_RISK").val().replace(/,/g, "")) || 0;
-	        let NPVal = parseFloat($("#R" + i + "_NET_OPEN_POS").val().replace(/,/g, "")) || 0;
-	        let DirRiskVal = parseFloat($("#R" + i + "_CAPITAL_CHARGE_DIR_RISK").val().replace(/,/g, "")) || 0;
-	        let CommodityVal = parseFloat($("#R" + i + "_TOTAL_CAPITAL_CHARGE").val().replace(/,/g, "")) || 0;
+		//Calculating Totals for 25'th row
+		function calculateR17Totals() {
+			    let totalLP = 0;
+			    let totalSP = 0;
+			    let totalGP = 0;
+			    let totalCapitalcharge = 0;
+			    let totalNP = 0;
+			    let totalDirRisk = 0;
+			    let totalCommodity = 0;
 
-	        totalLP += LPVal;
-	        totalSP += SPVal;
-	        totalGP += GPVal;
-	        totalCapitalcharge += CapitalchargeVal;
-	        totalNP += NPVal;
-	        totalDirRisk += DirRiskVal;
-	        totalCommodity += CommodityVal;
-	    }
+			    for (let i = 10; i <= 16; i++) {
+			        // Get numeric values, remove commas
+			        let LPVal = parseFloat($("#R" + i + "_TOTAL_LONG_POS").val().replace(/,/g, "")) || 0;
+			        let SPVal = parseFloat($("#R" + i + "_TOTAL_SHORT_POS").val().replace(/,/g, "")) || 0;
+			        let GPVal = parseFloat($("#R" + i + "_GROSS_OPEN_POS").val().replace(/,/g, "")) || 0;
+			        let CapitalchargeVal = parseFloat($("#R" + i + "_CAPITAL_CHARGE_BASIS_RISK").val().replace(/,/g, "")) || 0;
+			        let NPVal = parseFloat($("#R" + i + "_NET_OPEN_POS").val().replace(/,/g, "")) || 0;
+			        let DirRiskVal = parseFloat($("#R" + i + "_CAPITAL_CHARGE_DIR_RISK").val().replace(/,/g, "")) || 0;
+			        let CommodityVal = parseFloat($("#R" + i + "_TOTAL_CAPITAL_CHARGE").val().replace(/,/g, "")) || 0;
 
-	    // Set totals with 2 decimal formatting
-	    $("#R17_TOTAL_LONG_POS").val(
-	        totalLP.toLocaleString('en-US')
-	    );
-	    $("#R17_TOTAL_SHORT_POS").val(
-	        totalSP.toLocaleString('en-US')
-	    );
-	    $("#R17_GROSS_OPEN_POS").val(
-	        totalGP.toLocaleString('en-US')
-	    );
-	    $("#R17_CAPITAL_CHARGE_BASIS_RISK").val(
-	        totalCapitalcharge.toLocaleString('en-US')
-	    );
-	    $("#R17_NET_OPEN_POS").val(
-	        totalNP.toLocaleString('en-US')
-	    );
-	    $("#R17_CAPITAL_CHARGE_DIR_RISK").val(
-	        totalDirRisk.toLocaleString('en-US')
-	    );
-	    $("#R17_TOTAL_CAPITAL_CHARGE").val(
-	        totalCommodity.toLocaleString('en-US')
-	    );
-	}
+			        totalLP += LPVal;
+			        totalSP += SPVal;
+			        totalGP += GPVal;
+			        totalCapitalcharge += CapitalchargeVal;
+			        totalNP += NPVal;
+			        totalDirRisk += DirRiskVal;
+			        totalCommodity += CommodityVal;
+			    }
 
-	
-	function calculateR10Totals() {
-	    let Capital = 0;
-	    let Net = 0;
-	    let Dir_Risk = 0;
-	    let Commodity = 0;
+			    // Set totals with 2 decimal formatting
+			    $("#R17_TOTAL_LONG_POS").val(
+			        totalLP.toLocaleString('en-US')
+			    );
+			    $("#R17_TOTAL_SHORT_POS").val(
+			        totalSP.toLocaleString('en-US')
+			    );
+			    $("#R17_GROSS_OPEN_POS").val(
+			        totalGP.toLocaleString('en-US')
+			    );
+			    $("#R17_CAPITAL_CHARGE_BASIS_RISK").val(
+			        totalCapitalcharge.toLocaleString('en-US')
+			    );
+			    $("#R17_NET_OPEN_POS").val(
+			        totalNP.toLocaleString('en-US')
+			    );
+			    $("#R17_CAPITAL_CHARGE_DIR_RISK").val(
+			        totalDirRisk.toLocaleString('en-US')
+			    );
+			    $("#R17_TOTAL_CAPITAL_CHARGE").val(
+			        totalCommodity.toLocaleString('en-US')
+			    );
+			}
 
-	    for (let i = 10; i <= 16; i++) {
+			
+			function calculateR10Totals() {
+			    let Capital = 0;
+			    let Net = 0;
+			    let Dir_Risk = 0;
+			    let Commodity = 0;
 
-	        let GrossVal = parseFloat($("#R" + i + "_GROSS_OPEN_POS").val().replace(/,/g, "")) || 0;
-	        let ChargeVal = 0.03;
-	        Capital = Math.round(GrossVal * ChargeVal);
+			    for (let i = 10; i <= 16; i++) {
 
-	        $("#R" + i + "_CAPITAL_CHARGE_BASIS_RISK").val(
-	            Capital.toLocaleString('en-US')
-	        );
+			        let GrossVal = parseFloat($("#R" + i + "_GROSS_OPEN_POS").val().replace(/,/g, "")) || 0;
+			        let ChargeVal = 0.03;
+			        Capital = Math.round(GrossVal * ChargeVal);
 
-	        let LongVal = parseFloat($("#R" + i + "_TOTAL_LONG_POS").val().replace(/,/g, "")) || 0;
-	        let ShortVal = parseFloat($("#R" + i + "_TOTAL_SHORT_POS").val().replace(/,/g, "")) || 0;
+			        $("#R" + i + "_CAPITAL_CHARGE_BASIS_RISK").val(
+			            Capital.toLocaleString('en-US')
+			        );
 
-	        Net = Math.round(LongVal - ShortVal);
+			        let LongVal = parseFloat($("#R" + i + "_TOTAL_LONG_POS").val().replace(/,/g, "")) || 0;
+			        let ShortVal = parseFloat($("#R" + i + "_TOTAL_SHORT_POS").val().replace(/,/g, "")) || 0;
 
-	        $("#R" + i + "_NET_OPEN_POS").val(
-	            Net.toLocaleString('en-US')
-	        );
+			        Net = Math.round(LongVal - ShortVal);
 
-	        let RiskVal = 0.15;
-	        Dir_Risk = Math.round(Net * RiskVal);
+			        $("#R" + i + "_NET_OPEN_POS").val(
+			            Net.toLocaleString('en-US')
+			        );
 
-	        $("#R" + i + "_CAPITAL_CHARGE_DIR_RISK").val(
-	            Dir_Risk.toLocaleString('en-US')
-	        );
+			        let RiskVal = 0.15;
+			        Dir_Risk = Math.round(Net * RiskVal);
 
-	        Commodity = Math.round(Dir_Risk + Capital);
+			        $("#R" + i + "_CAPITAL_CHARGE_DIR_RISK").val(
+			            Dir_Risk.toLocaleString('en-US')
+			        );
 
-	        $("#R" + i + "_TOTAL_CAPITAL_CHARGE").val(
-	            Commodity.toLocaleString('en-US')
-	        );
-	    }
-	}
+			        Commodity = Math.round(Dir_Risk + Capital);
 
-	   
+			        $("#R" + i + "_TOTAL_CAPITAL_CHARGE").val(
+			            Commodity.toLocaleString('en-US')
+			        );
+			    }
+			}
 
-	// Call on page load
-	$(document).ready(function() {
-	    calculateR10Totals();	
-		calculateR17Totals();
-	    // Attach listener only to R11-R50 amount fields
-	    for (let i = 10; i <= 16; i++) {
-	        $("#R" + i + "_TOTAL_LONG_POS, " +
-			"#R" + i + "_TOTAL_SHORT_POS, " +
-			"#R" + i + "_GROSS_OPEN_POS, " +
-			"#R" + i + "_CAPITAL_CHARGE_BASIS_RISK, " +
-			"#R" + i + "_NET_OPEN_POS, " +
-			"#R" + i + "_CAPITAL_CHARGE_DIR_RISK, " +
-			"#R" + i + "_TOTAL_CAPITAL_CHARGE").on("input", function() {
-	            calculateR10Totals();
-	        });
-	    }
+			   
 
-		 for (let i = 10; i <= 16; i++) {
-	        $("#R" + i + "_TOTAL_LONG_POS, " +
-			"#R" + i + "_TOTAL_SHORT_POS, " +
-			"#R" + i + "_GROSS_OPEN_POS, " +
-			"#R" + i + "_CAPITAL_CHARGE_BASIS_RISK, " +
-			"#R" + i + "_NET_OPEN_POS, " +
-			"#R" + i + "_CAPITAL_CHARGE_DIR_RISK, " +
-			"#R" + i + "_TOTAL_CAPITAL_CHARGE").on("input", function() {
-	            calculateR17Totals();
-	        });
-	    }
-	});
+			// Call on page load
+			$(document).ready(function() {
+			    calculateR10Totals();	
+				calculateR17Totals();
+			    // Attach listener only to R11-R50 amount fields
+			    for (let i = 10; i <= 16; i++) {
+			        $("#R" + i + "_TOTAL_LONG_POS, " +
+					"#R" + i + "_TOTAL_SHORT_POS, " +
+					"#R" + i + "_GROSS_OPEN_POS, " +
+					"#R" + i + "_CAPITAL_CHARGE_BASIS_RISK, " +
+					"#R" + i + "_NET_OPEN_POS, " +
+					"#R" + i + "_CAPITAL_CHARGE_DIR_RISK, " +
+					"#R" + i + "_TOTAL_CAPITAL_CHARGE").on("input", function() {
+			            calculateR10Totals();
+			        });
+			    }
+
+				 for (let i = 10; i <= 16; i++) {
+			        $("#R" + i + "_TOTAL_LONG_POS, " +
+					"#R" + i + "_TOTAL_SHORT_POS, " +
+					"#R" + i + "_GROSS_OPEN_POS, " +
+					"#R" + i + "_CAPITAL_CHARGE_BASIS_RISK, " +
+					"#R" + i + "_NET_OPEN_POS, " +
+					"#R" + i + "_CAPITAL_CHARGE_DIR_RISK, " +
+					"#R" + i + "_TOTAL_CAPITAL_CHARGE").on("input", function() {
+			            calculateR17Totals();
+			        });
+			    }
+			});
 
 
-</SCRIPT>
+
+	</SCRIPT>
+
+
+
+
 
 
 	<script>
-	
-
-	// This function is for closing the modal after an action is complete.
-	// It hides the result and loader modals and reloads the page.
-	function closemodel() {
-	    /* $("#resultModal").modal("hide");
-	    $('#loader').modal('hide');
-
-	    // Reload the page after a short delay to ensure the modal animation completes smoothly.
-	    setTimeout(function () {
-	        location.reload();
-	    }, 300); */
-	    
-	    $("#resultModal").modal("hide");
-        $('#loader').modal('hide');
-
-        // Only reload if not from Details modal
-        if (!isDetailsModal) {
-            setTimeout(function () {
-                location.reload();
-            }, 300);
-        } else {
-            // reset flag for next modal usage
-            isDetailsModal = false;
-        }
-	}
 
 
+		// This function is for closing the modal after an action is complete.
+		// It hides the result and loader modals and reloads the page.
+		function closemodel() {
+			$("#resultModal").modal("hide");
+			$('#loader').modal('hide');
 
-	function fileuploads(btn) {
-	    var asondate = btn.getAttribute("data-todate");
+			// Only reload if not from Details modal
+			if (!isDetailsModal) {
+				setTimeout(function () {
+					location.reload();
+				}, 300);
+			} else {
+				// reset flag for next modal usage
+				isDetailsModal = false;
+			}
+		}
 
-	    // Show the loading spinner modal to provide visual feedback to the user.
-	    $('#loader').modal('show');
+		// This is the main function that orchestrates the entire form submission process.
+		// It is triggered by the "Update" button click.
+		// Make the function global so onclick="fileuploads(this)" can see it
+		function fileuploads(btn) {
+			    var asondate = btn.getAttribute("data-todate");
 
-	    // 1. Pre-submission steps:
-	    // Ensure all total fields are correctly calculated before we proceed.
-	    calculateR10Totals();
-	    calculateR17Totals();
+			    // Show the loading spinner modal to provide visual feedback to the user.
+			    $('#loader').modal('show');
 
-	    // Remove commas from all number input fields. This is a crucial step
-	    // as commas can cause issues when the data is sent to the backend.
-	    $("#fileupload input[type='text']").each(function () {
-	        var val = $(this).val();
-	        if (val && val.includes(",")) {
-	            $(this).val(val.replace(/,/g, ''));
-	        }
-	    });
+			    // 1. Pre-submission steps:
+			    // Ensure all total fields are correctly calculated before we proceed.
+			    calculateR10Totals();
+			    calculateR17Totals();
 
-	    // Check if the form is valid. If not, hide the loader and stop the function.
-	    if (!$("#fileupload").valid()) {
-	        $('#loader').modal('hide');
-	        return;
-	    }
+			    // Remove commas from all number input fields. This is a crucial step
+			    // as commas can cause issues when the data is sent to the backend.
+			    $("#fileupload input[type='text']").each(function () {
+			        var val = $(this).val();
+			        if (val && val.includes(",")) {
+			            $(this).val(val.replace(/,/g, ''));
+			        }
+			    });
 
-	    // 2. Prepare for splitting the submission:
-	    // Get all form fields once to avoid repeated DOM lookups, which improves performance.
-	    const $form = $('#fileupload');
-	    const $inputs = $form.find(':input');
+			    // Check if the form is valid. If not, hide the loader and stop the function.
+			    if (!$("#fileupload").valid()) {
+			        $('#loader').modal('hide');
+			        return;
+			    }
 
-	    // This helper function isolates form fields for a specific "entity" or section.
-	    // It takes a range of row numbers (e.g., 11 to 50) and a total field prefix.
-	    const getEntityFields = (start, end, totalPrefix) => {
-	        // Use jQuery's filter method to select only the fields we need.
-	        return $inputs.filter(function () {
-	        	
-	            const name = $(this).attr('name');
-	            if (!name) return false;
+			    // 2. Prepare for splitting the submission:
+			    // Get all form fields once to avoid repeated DOM lookups, which improves performance.
+			    const $form = $('#fileupload');
+			    const $inputs = $form.find(':input');
 
-	            // Check for fields based on their row number (e.g., R11_, R12_, etc.)
-	            const rowNumberMatch = name.match(/R(\d+)_/);
-	            if (rowNumberMatch) {
-	                const rowNumber = parseInt(rowNumberMatch[1], 10);
-	                return rowNumber >= start && rowNumber <= end;
-	            }
+			    // This helper function isolates form fields for a specific "entity" or section.
+			    // It takes a range of row numbers (e.g., 11 to 50) and a total field prefix.
+			    const getEntityFields = (start, end, totalPrefix) => {
+			        // Use jQuery's filter method to select only the fields we need.
+			        return $inputs.filter(function () {
+			        	
+			            const name = $(this).attr('name');
+			            if (!name) return false;
 
-	            // Also, check for the specific total fields for this entity.
-	            return name.startsWith(totalPrefix);
-	        });
-	    };
+			            // Check for fields based on their row number (e.g., R11_, R12_, etc.)
+			            const rowNumberMatch = name.match(/R(\d+)_/);
+			            if (rowNumberMatch) {
+			                const rowNumber = parseInt(rowNumberMatch[1], 10);
+			                return rowNumber >= start && rowNumber <= end;
+			            }
 
-	    // 3. Create FormData objects for each entity:
-	    // Create a new FormData object for the first entity and append its fields.
-	    const formData1 = new FormData();
-	    formData1.append("asondate", asondate); // Append the date to the data.
-	    getEntityFields(10, 17, "R17_TOT").each(function () {
-	        formData1.append($(this).attr('name'), $(this).val());
-	    });
+			            // Also, check for the specific total fields for this entity.
+			            return name.startsWith(totalPrefix);
+			        });
+			    };
 
-	    // 4. Send the data:
-	    // Create an array of jQuery AJAX promises. Each promise represents a single HTTP request.
-	    const deferreds = [
-	        $.ajax({ url: './updateCRAll', type: 'POST', data: formData1, processData: false, contentType: false, dataType: 'text' })
-	    ];
+			    // 3. Create FormData objects for each entity:
+			    // Create a new FormData object for the first entity and append its fields.
+			    const formData1 = new FormData();
+			    formData1.append("asondate", asondate); // Append the date to the data.
+			    getEntityFields(10, 17, "R17_TOT").each(function () {
+			        formData1.append($(this).attr('name'), $(this).val());
+			    });
 
-	    // 5. Handle the result:
-	    // Use $.when() to handle the outcome of all four requests simultaneously.
-	    // It will trigger the .done() callback only if ALL requests are successful.
-	    $.when(...deferreds)
-	        .done(function() {
-	            // This code runs if all four updates succeed.
-	            $("#resultModalLabel").text("BRRS");
-	            $("#resultModalBody").text("Updated successfully.");
-	            $("#resultModal").modal("show");
-	        })
-	        .fail(function(jqXHR) {
-	            // This code runs if even one of the updates fails.
-	            console.log("Error response:", jqXHR.responseText);
-	            $("#resultModalLabel").text("Error");
-	            $("#resultModalBody").text("One or more updates failed. Check console for details.");
-	            $("#resultModal").modal("show");
-	        })
-	        .always(function() {
-	             // This code always runs, regardless of success or failure.
-	             // It's a good place to hide the loader.
-	             $('#loader').modal('hide');
-	        });
-	}
-	
-	
+			    // 4. Send the data:
+			    // Create an array of jQuery AJAX promises. Each promise represents a single HTTP request.
+			    const deferreds = [
+			        $.ajax({ url: './updateCRAll', type: 'POST', data: formData1, processData: false, contentType: false, dataType: 'text' })
+			    ];
+
+			    // 5. Handle the result:
+			    // Use $.when() to handle the outcome of all four requests simultaneously.
+			    // It will trigger the .done() callback only if ALL requests are successful.
+			    $.when(...deferreds)
+			        .done(function() {
+			            // This code runs if all four updates succeed.
+			            $("#resultModalLabel").text("BRRS");
+			            $("#resultModalBody").text("Updated successfully.");
+			            $("#resultModal").modal("show");
+			        })
+			        .fail(function(jqXHR) {
+			            // This code runs if even one of the updates fails.
+			            console.log("Error response:", jqXHR.responseText);
+			            $("#resultModalLabel").text("Error");
+			            $("#resultModalBody").text("One or more updates failed. Check console for details.");
+			            $("#resultModal").modal("show");
+			        })
+			        .always(function() {
+			             // This code always runs, regardless of success or failure.
+			             // It's a good place to hide the loader.
+			             $('#loader').modal('hide');
+			        });
+			}
+
+
+
 
 	</script>
+
+
+
+
+
+
+
+
+
+
+
+
 </head>
-<title>BRRS</title>
+
+
+
+<title>M_CR</title>
 
 <body>
 	<div class="container-fluid" style="padding-left: 0px; padding-right: 0px;">
 		<div class="row">
+
 			<div th:insert="HeaderMenu :: header"></div>
+
 			<div class="card">
 				<div class="card-header"
 					style="background-color: rgb(107, 122, 143); display: flex; align-items: center; justify-content: space-between;">
@@ -887,989 +1121,990 @@ function cancelModify() {
 						<div class="left-arrow-circle">
 							<i class="fa fa-arrow-left"></i>
 						</div>
+
 						<!-- Title -->
 						<h5
-							style="font-family: arial; font-size: 20px; padding-top: 10px; font-weight: bold; color: white;">
-							(21) MONTHLY SCHEDULE: M-CR: COMMODITIES RISK</h5>
+							style="font-family: arial; font-size: 20px; font-weight: bold; color: white; margin: 0 10px;">
+							(21) MONTHLY SCHEDULE: M-CR: COMMODITIES RISK
+						</h5>
 
-						<div class="boards" style="margin-left: 20px;">
+
+						<!-- Moving bus-board text -->
+						<div class="boards">
 							<p class="scrolling-text">BANK OF BOTSWANA - BANKING
 								SUPERVISION DEPARTMENT</p>
 						</div>
+S
+
 					</div>
+
 					<div class="custom-tab-btn-group nav-buttons"
 						style="display: flex; color: white; align-items: center;">
 						<!-- 📅 Date -->
-						<span class="white-text"
-							style="color: white !important; font-size: 16px; margin-right: 20px;">Report
-							Date: <span th:text="${#strings.replace(asondate, '/', '-')}">2025-09-18</span>
-						</span>
-						<!-- Buttons -->
-						<input type="hidden" id="selectedTab" th:value="${displaymode}">
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showsummary();"
-							th:if="${displaymode == 'Details'}">Summary</button>
-							
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails();"
-							th:if="${displaymode == 'summary'}">Details</button>
-						
-<!-- Modify button -->
-<!-- <button type="button" class="custom-tab-btn"
-        onclick="showmodify(this);"
-        title="Click to EDIT Records"
-        th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
-        id="addRecord">Modify</button> -->
+						<span class="white-text" style="color: white !important; font-size: 16px; margin-right: 20px;">
+							Report Date: <span th:text="${#strings.replace(asondate, '/', '-')}">2025-07-04</span>
+						</span> <input type="hidden" id="selectedTab" th:value="${dtltype}">
+
+						<!-- DETAILS button (hide when dtltype = 'detail') -->
+						<button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails()"
+							th:if="${dtltype ne 'detail'}">Details</button>
+
+						<!-- SUMMARY button (show when dtltype = 'detail') -->
+						<button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showsummary()"
+							th:if="${dtltype eq 'detail'}">Summary</button>
 
 
-		<button type="button"
-        class="custom-tab-btn"
-        onclick="showmodify(this);"
-        title="Click to EDIT Records"
-        th:if="${type != 'ARCHIVAL'}"
-        th:classappend="${session.PERMISSIONS == 'W' and dtltype == 'report'} ? 'addedit' : ''"
-        id="addRecord">
-    Modify
-</button>
 
 
-<!-- Cancel button (hidden initially) -->
-<button type="button" class="custom-tab-btn"
-        title="Cancel editing"
-        id="cancelRecord"
-        onclick="cancelModify();"
-        style="display: none;">Cancel</button>
 
 
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'summary'}" th:attr="data-reportid=${reportid},
-                   				 data-asondate=${asondate},
-                   				 data-fromdate=${fromdate},
-                    				 data-todate=${todate},
-                    				 data-currency=${currency}, 
-                    				 data-dtltype=${dtltype},
-                    				 data-filename='M_CR.xlsx',
-					 				 data-type=${type},
-					    			 data-version=${version}" onclick="downloadfile(this);">
-							<i class="fa fa-download"></i>
+
+
+
+						<!-- Modify button -->
+						<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
+							title="Click to EDIT Records"
+							th:classappend="${session.PERMISSIONS == 'W' and dtltype == 'report'} ? 'addedit'"
+							th:if="${type != 'ARCHIVAL' and dtltype ne 'detail'}" id="addRecord">Modify</button>
+
+
+						<!-- Cancel button (hidden initially) -->
+						<button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord"
+							onclick="cancelModify();" style="display: none;">Cancel</button>
+
+
+
+						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
+							onclick="downloadfile(this)" th:if="${displaymode == 'summary' or displaymode == 'Details'}"
+							th:attr="data-reportid=${reportid},
+                   data-asondate=${asondate},
+                   data-fromdate=${fromdate},
+                   data-todate=${todate},
+                   data-currency=${currency}, 
+                   data-dtltype=${dtltype},
+                   data-filename='M_CR.xlsx',
+                   data-type=${type},
+                   data-version=${version != null ? version : ''}" style="font-family: Arial; font-weight: bold;">
+							<i class="fa fa-download"></i> Download
 						</button>
-						
-						
 
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'Details'}" onclick="startReport(this);" th:attr="
-								    data-fromdate=${fromdate},
-								    data-todate=${todate},
-									data-currency=${currency},  
-												data-dtltype=${dtltype}, 
-								    data-filename='M_CRDetail',
-									data-type=${type},
-												data-version=${version}
-								  ">
-							<i class="fa fa-download"></i>
+						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
+							onclick="downloadfile(this)" th:if="${displaymode == 'summary' or displaymode == 'Details'}"
+							th:attr="data-reportid=${reportid},
+            data-asondate=${asondate},
+            data-fromdate=${fromdate},
+            data-todate=${todate},
+            data-currency=${currency}, 
+            data-dtltype=${dtltype},
+            data-filename='EMAIL_M_CR.xlsx',
+            data-type='email',
+            data-version=${version != null ? version : ''}" style="font-family: Arial; font-weight: bold;">
+							<i class="fa fa-download"></i> Email Format
+
 						</button>
+
+
 
 
 					</div>
-					
 				</div>
-<div th:if="${displaymode == 'summary'}">
-       <div class="row">
-              <div class="col-sm-12">
-              <form action="#" method="POST" id="fileupload">
-                     <div class="table-wrapper table-responsive scrollable-table-container"
-                            style="border-right: 1px solid #dee2e6; ">
-              <table
-                     class="sticky-header-table table table-bordered table-hover table-sm table-condensed"
-                     id="reports">
-              <thead class="thead-light">
-              <tr style="background-color: #b3b6b9;">
-                     <th style="text-align: left; vertical-align:top;">Commodity</th>
-                     <th style="text-align: right; vertical-align:top; width: 150px;">Total Long position</th>
-                     <th style="text-align: right; vertical-align:top; width: 150px;">Total Short Position</th>
-                     <th style="text-align: right; vertical-align:top; width: 150px;">Gross Open Position</th>
-                     <th style="text-align: center; vertical-align:top; width: 250px;">Charge for Basis Risk, Interest Rate Risk and Forward Gap Risk (3 percent of Gross Position)</th>
-                     <th style="text-align: right; vertical-align:top; width: 250px;">Capital Charge for Basis Risk, Interest Rate Risk and Forward Gap Risk</th>
-                     <th style="text-align: right; vertical-align:top; width: 150px;">Net Open position</th>
-                     <th style="text-align: center; vertical-align:top; width: 150px;">Charge for Directional Risk (15 percent of Net Open Position)</th>
-                     <th style="text-align: right; vertical-align:top; width: 150px;">Capitla Charge for Directional Risk</th>
-                     <th style="text-align: right; vertical-align:top; width: 150px;">Total Capital Charge by Commodity</th>
-                                   
-              </tr>
-
-                            
-              </thead>
-		<tbody id="entity" th:each="report: ${reportsummary}" style="font-family: Arial;">
-
-
-              <tr>
-                  <td style="padding-left: 20px"></td>
-                  <td style="text-align: right; padding-left: 20px">(P'000)</td>
-                  <td style="text-align: right; padding-left: 20px">(P'000)</td>
-                  <td style="text-align: right; padding-left: 20px">(P'000)</td>
-                  <td style="text-align: center; padding-left: 20px">Percent</td>
-                  <td style="text-align: right; padding-left: 20px">(P'000)</td>
-                  <td style="text-align: right; padding-left: 20px">(P'000)</td>
-                  <td style="text-align: center; padding-left: 20px">Percent</td>
-                  <td style="text-align: right; padding-left: 20px">(P'000)</td>
-                  <td style="text-align: right; padding-left: 20px">(P'000)</td>
-              </tr>
-
-<!-- R11 ROW -->
-<tr>
-
-	<!-- <td style="padding-left: 20px" th:text="${report.R10_PRODUCT}"></td> -->
-
-    <td id="ROW10" style=" font-weight: bold;">
-        <input type="text"
-               th:value="${#strings.defaultString(report.R10_PRODUCT, 'N/A')}"
-               id="R10_PRODUCT"
-               name="R10_PRODUCT"
-               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
-               readonly />
-    </td>
-
-    <td id="ROW10" style="padding-left: 20px; font-weight: bold;">
-        <input class="display-input Show_input"
-               type="text"
-			   th:value="${report.R10_TOTAL_LONG_POS != null ? #numbers.formatDecimal(report.R10_TOTAL_LONG_POS, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R10_TOTAL_LONG_POS"
-               name="R10_TOTAL_LONG_POS"
-               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-               readonly />
-    </td>
-
-    <td id="ROW10" style="padding-left: 20px; font-weight: bold;">
-        <input class="display-input Show_input"
-               type="text"
-			   th:value="${report.R10_TOTAL_SHORT_POS != null ? #numbers.formatDecimal(report.R10_TOTAL_SHORT_POS, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R10_TOTAL_SHORT_POS"
-               name="R10_TOTAL_SHORT_POS"
-               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-               readonly />
-    </td>
-
-    <td id="ROW10" style="padding-left: 20px; font-weight: bold;">
-        <input class="display-input Show_input"
-               type="text"
-			   th:value="${report.R10_GROSS_OPEN_POS != null ? #numbers.formatDecimal(report.R10_GROSS_OPEN_POS, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R10_GROSS_OPEN_POS"
-               name="R10_GROSS_OPEN_POS"
-               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-               readonly />
-    </td>
-
-<!--     <td id="ROW10" style="padding-left: 20px; background-color: #808080;">
-        <input 
-               type="text"
-               th:value="0.03"
-               id="R10_CHARGE_BASIS_RISK"
-               name="R10_CHARGE_BASIS_RISK"
-               style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;"
-               readonly />
-    </td> -->
-    <td style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;">0.03</td>
-
-    <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
-    <input type="text"
-    th:value="${report.R10_CAPITAL_CHARGE_BASIS_RISK != null ? #numbers.formatDecimal(report.R10_CAPITAL_CHARGE_BASIS_RISK, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="R10_CAPITAL_CHARGE_BASIS_RISK"
-           name="R10_CAPITAL_CHARGE_BASIS_RISK"
-           style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-    </td>
-
-    <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
-    <input type="text"
-    th:value="${report.R10_NET_OPEN_POS != null ? #numbers.formatDecimal(report.R10_NET_OPEN_POS, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="R10_NET_OPEN_POS"
-           name="R10_NET_OPEN_POS"
-           style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-    </td>
-
- <!--     <td id="ROW10" style="padding-left: 20px; background-color: #808080;">
-        <input 
-               type="text"
-               th:value="0.03"
-               id="R10_CHARGE_BASIS_RISK"
-               name="R10_CHARGE_BASIS_RISK"
-               style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;"
-               readonly />
-    </td> -->
-    <td style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;">0.15</td>
-
-    <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
-    <input type="text"
-    th:value="${report.R10_CAPITAL_CHARGE_DIR_RISK != null ? #numbers.formatDecimal(report.R10_CAPITAL_CHARGE_DIR_RISK, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="R10_CAPITAL_CHARGE_DIR_RISK"
-           name="R10_CAPITAL_CHARGE_DIR_RISK"
-           style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-    </td>
-
-    <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
-    <input type="text"
-    th:value="${report.R10_TOTAL_CAPITAL_CHARGE != null ? #numbers.formatDecimal(report.R10_TOTAL_CAPITAL_CHARGE, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="R10_TOTAL_CAPITAL_CHARGE"
-           name="R10_TOTAL_CAPITAL_CHARGE"
-           style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-    </td>
-
-</tr>
-<!-- ================== R11 ================== -->
-<tr>
-    <td id="ROW11" style="font-weight: bold;">
-        <input type="text"
-               th:value="${#strings.defaultString(report.R11_PRODUCT, 'N/A')}"
-               id="R11_PRODUCT"
-               name="R11_PRODUCT"
-               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
-               readonly />
-    </td>
-
-    <td id="ROW11" style="padding-left: 20px; font-weight: bold;">
-        <input class="display-input Show_input"
-               type="text"
-               th:value="${report.R11_TOTAL_LONG_POS != null ? #numbers.formatDecimal(report.R11_TOTAL_LONG_POS, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R11_TOTAL_LONG_POS"
-               name="R11_TOTAL_LONG_POS"
-               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-               readonly />
-    </td>
-
-    <td id="ROW11" style="padding-left: 20px; font-weight: bold;">
-        <input class="display-input Show_input"
-               type="text"
-               th:value="${report.R11_TOTAL_SHORT_POS != null ? #numbers.formatDecimal(report.R11_TOTAL_SHORT_POS, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R11_TOTAL_SHORT_POS"
-               name="R11_TOTAL_SHORT_POS"
-               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-               readonly />
-    </td>
-
-    <td id="ROW11" style="padding-left: 20px; font-weight: bold;">
-        <input class="display-input Show_input"
-               type="text"
-               th:value="${report.R11_GROSS_OPEN_POS != null ? #numbers.formatDecimal(report.R11_GROSS_OPEN_POS, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R11_GROSS_OPEN_POS"
-               name="R11_GROSS_OPEN_POS"
-               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-               readonly />
-    </td>
-
-<!--     <td id="ROW10" style="padding-left: 20px; background-color: #808080;">
-        <input 
-               type="text"
-               th:value="0.03"
-               id="R10_CHARGE_BASIS_RISK"
-               name="R10_CHARGE_BASIS_RISK"
-               style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;"
-               readonly />
-    </td> -->
-       <td style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;">0.03</td>
-
-    <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
-    <input type="text"
-    th:value="${report.R11_CAPITAL_CHARGE_BASIS_RISK != null ? #numbers.formatDecimal(report.R11_CAPITAL_CHARGE_BASIS_RISK, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="R11_CAPITAL_CHARGE_BASIS_RISK"
-           name="R11_CAPITAL_CHARGE_BASIS_RISK"
-           style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-    </td>
-
-    <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
-    <input type="text"
-    th:value="${report.R11_NET_OPEN_POS != null ? #numbers.formatDecimal(report.R11_NET_OPEN_POS, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="R11_NET_OPEN_POS"
-           name="R11_NET_OPEN_POS"
-           style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-    </td>
-
- <!--     <td id="ROW10" style="padding-left: 20px; background-color: #808080;">
-        <input 
-               type="text"
-               th:value="0.03"
-               id="R11_CHARGE_BASIS_RISK"
-               name="R11_CHARGE_BASIS_RISK"
-               style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;"
-               readonly />
-    </td> -->
-    <td style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;">0.15</td>
-
-    <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
-    <input type="text"
-    th:value="${report.R11_CAPITAL_CHARGE_DIR_RISK != null ? #numbers.formatDecimal(report.R11_CAPITAL_CHARGE_DIR_RISK, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="R11_CAPITAL_CHARGE_DIR_RISK"
-           name="R11_CAPITAL_CHARGE_DIR_RISK"
-           style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-    </td>
-
-    <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
-    <input type="text"
-    th:value="${report.R11_TOTAL_CAPITAL_CHARGE != null ? #numbers.formatDecimal(report.R11_TOTAL_CAPITAL_CHARGE, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="R11_TOTAL_CAPITAL_CHARGE"
-           name="R11_TOTAL_CAPITAL_CHARGE"
-           style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-    </td>
-</tr>
-
-<!-- ================== R12 ================== -->
-<tr>
-    <td id="ROW12" style="padding-left: 20px; font-weight: bold;">
-        <!-- <input class="display-input Show_input"
-               type="text"
-               th:value="${#strings.defaultString(report.R12_PRODUCT, 'N/A')}"
-               id="R12_PRODUCT"
-               name="R12_PRODUCT"
-               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
-               readonly /> -->
-    </td>
-
-    <td id="ROW12" style="padding-left: 20px; font-weight: bold;">
-        <input class="display-input Show_input"
-               type="text"
-               th:value="${report.R12_TOTAL_LONG_POS != null ? #numbers.formatDecimal(report.R12_TOTAL_LONG_POS, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R12_TOTAL_LONG_POS"
-               name="R12_TOTAL_LONG_POS"
-               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-               readonly />
-    </td>
-
-    <td id="ROW12" style="padding-left: 20px; font-weight: bold;">
-        <input class="display-input Show_input"
-        	   type="text"
-               th:value="${report.R12_TOTAL_SHORT_POS != null ? #numbers.formatDecimal(report.R12_TOTAL_SHORT_POS, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R12_TOTAL_SHORT_POS"
-               name="R12_TOTAL_SHORT_POS"
-               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-               readonly />
-    </td>
-
-    <td id="ROW12" style="padding-left: 20px; font-weight: bold;">
-        <input class="display-input Show_input"
-               type="text"
-               th:value="${report.R12_GROSS_OPEN_POS != null ? #numbers.formatDecimal(report.R12_GROSS_OPEN_POS, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R12_GROSS_OPEN_POS"
-               name="R12_GROSS_OPEN_POS"
-               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-               readonly />
-    </td>
-
-    <!--     <td id="ROW10" style="padding-left: 20px; background-color: #808080;">
-        <input 
-               type="text"
-               th:value="0.03"
-               id="R10_CHARGE_BASIS_RISK"
-               name="R10_CHARGE_BASIS_RISK"
-               style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;"
-               readonly />
-    </td> -->
-       <td style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;">0.03</td>
-
-    <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
-    <input type="text"
-    th:value="${report.R12_CAPITAL_CHARGE_BASIS_RISK != null ? #numbers.formatDecimal(report.R12_CAPITAL_CHARGE_BASIS_RISK, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="R12_CAPITAL_CHARGE_BASIS_RISK"
-           name="R12_CAPITAL_CHARGE_BASIS_RISK"
-           style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-    </td>
-
-    <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
-    <input type="text"
-    th:value="${report.R12_NET_OPEN_POS != null ? #numbers.formatDecimal(report.R12_NET_OPEN_POS, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="R12_NET_OPEN_POS"
-           name="R12_NET_OPEN_POS"
-           style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-    </td>
-
- <!--     <td id="ROW10" style="padding-left: 20px; background-color: #808080;">
-        <input 
-               type="text"
-               th:value="0.03"
-               id="R12_CHARGE_BASIS_RISK"
-               name="R12_CHARGE_BASIS_RISK"
-               style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;"
-               readonly />
-    </td> -->
-    <td style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;">0.15</td>
-
-    <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
-    <input type="text"
-    th:value="${report.R12_CAPITAL_CHARGE_DIR_RISK != null ? #numbers.formatDecimal(report.R12_CAPITAL_CHARGE_DIR_RISK, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="R12_CAPITAL_CHARGE_DIR_RISK"
-           name="R12_CAPITAL_CHARGE_DIR_RISK"
-           style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-    </td>
-
-    <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
-    <input type="text"
-    th:value="${report.R12_TOTAL_CAPITAL_CHARGE != null ? #numbers.formatDecimal(report.R12_TOTAL_CAPITAL_CHARGE, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="R12_TOTAL_CAPITAL_CHARGE"
-           name="R12_TOTAL_CAPITAL_CHARGE"
-           style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-    </td>
-</tr>
-
-<!-- ================== R13 ================== -->
-<tr>
-    <td id="ROW13" style="padding-left: 20px; font-weight: bold;">
-        <!-- <input class="display-input Show_input"
-               type="text"
-               th:value="${#strings.defaultString(report.R13_PRODUCT, 'N/A')}"
-               id="R13_PRODUCT"
-               name="R13_PRODUCT"
-               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
-               readonly /> -->
-    </td>
-
-    <td id="ROW13" style="padding-left: 20px; font-weight: bold;">
-        <input class="display-input Show_input"
-               type="text"
-               th:value="${report.R13_TOTAL_LONG_POS != null ? #numbers.formatDecimal(report.R13_TOTAL_LONG_POS, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R13_TOTAL_LONG_POS"
-               name="R13_TOTAL_LONG_POS"
-               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-               readonly />
-    </td>
-
-    <td id="ROW13" style="padding-left: 20px; font-weight: bold;">
-        <input class="display-input Show_input"
-               type="text"
-               th:value="${report.R13_TOTAL_SHORT_POS != null ? #numbers.formatDecimal(report.R13_TOTAL_SHORT_POS, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R13_TOTAL_SHORT_POS"
-               name="R13_TOTAL_SHORT_POS"
-               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-               readonly />
-    </td>
-
-    <td id="ROW13" style="padding-left: 20px; font-weight: bold;">
-        <input class="display-input Show_input"
-               type="text"
-               th:value="${report.R13_GROSS_OPEN_POS != null ? #numbers.formatDecimal(report.R13_GROSS_OPEN_POS, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R13_GROSS_OPEN_POS"
-               name="R13_GROSS_OPEN_POS"
-               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-               readonly />
-    </td>
-
-<!--     <td id="ROW10" style="padding-left: 20px; background-color: #808080;">
-        <input 
-               type="text"
-               th:value="0.03"
-               id="R10_CHARGE_BASIS_RISK"
-               name="R10_CHARGE_BASIS_RISK"
-               style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;"
-               readonly />
-    </td> -->
-        <td style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;">0.03</td>
-
-    <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
-    <input type="text"
-    th:value="${report.R13_CAPITAL_CHARGE_BASIS_RISK != null ? #numbers.formatDecimal(report.R13_CAPITAL_CHARGE_BASIS_RISK, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="R13_CAPITAL_CHARGE_BASIS_RISK"
-           name="R13_CAPITAL_CHARGE_BASIS_RISK"
-           style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-    </td>
-
-    <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
-    <input type="text"
-    th:value="${report.R13_NET_OPEN_POS != null ? #numbers.formatDecimal(report.R13_NET_OPEN_POS, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="R13_NET_OPEN_POS"
-           name="R13_NET_OPEN_POS"
-           style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-    </td>
-
- <!--     <td id="ROW10" style="padding-left: 20px; background-color: #808080;">
-        <input 
-               type="text"
-               th:value="0.03"
-               id="R13_CHARGE_BASIS_RISK"
-               name="R13_CHARGE_BASIS_RISK"
-               style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;"
-               readonly />
-    </td> -->
-    <td style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;">0.15</td>
-
-    <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
-    <input type="text"
-    th:value="${report.R13_CAPITAL_CHARGE_DIR_RISK != null ? #numbers.formatDecimal(report.R13_CAPITAL_CHARGE_DIR_RISK, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="R13_CAPITAL_CHARGE_DIR_RISK"
-           name="R13_CAPITAL_CHARGE_DIR_RISK"
-           style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-    </td>
-
-    <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
-    <input type="text"
-    th:value="${report.R13_TOTAL_CAPITAL_CHARGE != null ? #numbers.formatDecimal(report.R13_TOTAL_CAPITAL_CHARGE, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="R13_TOTAL_CAPITAL_CHARGE"
-           name="R13_TOTAL_CAPITAL_CHARGE"
-           style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-    </td>
-</tr>
-
-<!-- ================== R14 ================== -->
-<tr>
-    <td id="ROW14" style="padding-left: 20px; font-weight: bold;">
-        <!-- <input class="display-input Show_input"
-               type="text"
-               th:value="${#strings.defaultString(report.R14_PRODUCT, 'N/A')}"
-               id="R14_PRODUCT"
-               name="R14_PRODUCT"
-               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
-               readonly /> -->
-    </td>
-
-    <td id="ROW14" style="padding-left: 20px; font-weight: bold;">
-        <input class="display-input Show_input"
-               type="text"
-               th:value="${report.R14_TOTAL_LONG_POS != null ? #numbers.formatDecimal(report.R14_TOTAL_LONG_POS, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R14_TOTAL_LONG_POS"
-               name="R14_TOTAL_LONG_POS"
-               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-               readonly />
-    </td>
-
-    <td id="ROW14" style="padding-left: 20px; font-weight: bold;">
-        <input class="display-input Show_input"
-               type="text"
-               th:value="${report.R14_TOTAL_SHORT_POS != null ? #numbers.formatDecimal(report.R14_TOTAL_SHORT_POS, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R14_TOTAL_SHORT_POS"
-               name="R14_TOTAL_SHORT_POS"
-               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-               readonly />
-    </td>
-
-    <td id="ROW14" style="padding-left: 20px; font-weight: bold;">
-        <input class="display-input Show_input"
-               type="text"
-               th:value="${report.R14_GROSS_OPEN_POS != null ? #numbers.formatDecimal(report.R14_GROSS_OPEN_POS, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R14_GROSS_OPEN_POS"
-               name="R14_GROSS_OPEN_POS"
-               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-               readonly />
-    </td>
-
-<!--     <td id="ROW10" style="padding-left: 20px; background-color: #808080;">
-        <input 
-               type="text"
-               th:value="0.03"
-               id="R10_CHARGE_BASIS_RISK"
-               name="R10_CHARGE_BASIS_RISK"
-               style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;"
-               readonly />
-    </td> -->
-      <td style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;">0.03</td>
-
-    <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
-    <input type="text"
-    th:value="${report.R14_CAPITAL_CHARGE_BASIS_RISK != null ? #numbers.formatDecimal(report.R14_CAPITAL_CHARGE_BASIS_RISK, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="R14_CAPITAL_CHARGE_BASIS_RISK"
-           name="R14_CAPITAL_CHARGE_BASIS_RISK"
-           style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-    </td>
-
-    <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
-    <input type="text"
-    th:value="${report.R14_NET_OPEN_POS != null ? #numbers.formatDecimal(report.R14_NET_OPEN_POS, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="R14_NET_OPEN_POS"
-           name="R14_NET_OPEN_POS"
-           style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-    </td>
-
- <!--     <td id="ROW10" style="padding-left: 20px; background-color: #808080;">
-        <input 
-               type="text"
-               th:value="0.03"
-               id="R14_CHARGE_BASIS_RISK"
-               name="R14_CHARGE_BASIS_RISK"
-               style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;"
-               readonly />
-    </td> -->
-    <td style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;">0.15</td>
-
-    <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
-    <input type="text"
-    th:value="${report.R14_CAPITAL_CHARGE_DIR_RISK != null ? #numbers.formatDecimal(report.R14_CAPITAL_CHARGE_DIR_RISK, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="R14_CAPITAL_CHARGE_DIR_RISK"
-           name="R14_CAPITAL_CHARGE_DIR_RISK"
-           style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-    </td>
-
-    <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
-    <input type="text"
-    th:value="${report.R14_TOTAL_CAPITAL_CHARGE != null ? #numbers.formatDecimal(report.R14_TOTAL_CAPITAL_CHARGE, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="R14_TOTAL_CAPITAL_CHARGE"
-           name="R14_TOTAL_CAPITAL_CHARGE"
-           style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-    </td>
-</tr>
-
-<!-- ================== R15 ================== -->
-<tr>
-    <td id="ROW15" style="padding-left: 20px; font-weight: bold;">
-        <!-- <input class="display-input Show_input"
-               type="text"
-               th:value="${#strings.defaultString(report.R15_PRODUCT, 'N/A')}"
-               id="R15_PRODUCT"
-               name="R15_PRODUCT"
-               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
-               readonly /> -->
-    </td>
-
-    <td id="ROW15" style="padding-left: 20px; font-weight: bold;">
-        <input class="display-input Show_input"
-               type="text"
-               th:value="${report.R15_TOTAL_LONG_POS != null ? #numbers.formatDecimal(report.R15_TOTAL_LONG_POS, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R15_TOTAL_LONG_POS"
-               name="R15_TOTAL_LONG_POS"
-               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-               readonly />
-    </td>
-
-    <td id="ROW15" style="padding-left: 20px; font-weight: bold;">
-        <input class="display-input Show_input"
-               type="text"
-               th:value="${report.R15_TOTAL_SHORT_POS != null ? #numbers.formatDecimal(report.R15_TOTAL_SHORT_POS, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R15_TOTAL_SHORT_POS"
-               name="R15_TOTAL_SHORT_POS"
-               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-               readonly />
-    </td>
-
-    <td id="ROW15" style="padding-left: 20px; font-weight: bold;">
-        <input class="display-input Show_input"
-               type="text"
-               th:value="${report.R15_GROSS_OPEN_POS != null ? #numbers.formatDecimal(report.R15_GROSS_OPEN_POS, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R15_GROSS_OPEN_POS"
-               name="R15_GROSS_OPEN_POS"
-               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-               readonly />
-    </td>
-
-<!--     <td id="ROW10" style="padding-left: 20px; background-color: #808080;">
-        <input 
-               type="text"
-               th:value="0.03"
-               id="R10_CHARGE_BASIS_RISK"
-               name="R10_CHARGE_BASIS_RISK"
-               style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;"
-               readonly />
-    </td> -->
-      <td style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;">0.03</td>
-
-    <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
-    <input type="text"
-    th:value="${report.R15_CAPITAL_CHARGE_BASIS_RISK != null ? #numbers.formatDecimal(report.R15_CAPITAL_CHARGE_BASIS_RISK, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="R15_CAPITAL_CHARGE_BASIS_RISK"
-           name="R15_CAPITAL_CHARGE_BASIS_RISK"
-           style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-    </td>
-
-    <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
-    <input type="text"
-    th:value="${report.R15_NET_OPEN_POS != null ? #numbers.formatDecimal(report.R15_NET_OPEN_POS, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="R15_NET_OPEN_POS"
-           name="R15_NET_OPEN_POS"
-           style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-    </td>
-
- <!--     <td id="ROW10" style="padding-left: 20px; background-color: #808080;">
-        <input 
-               type="text"
-               th:value="0.03"
-               id="R15_CHARGE_BASIS_RISK"
-               name="R15_CHARGE_BASIS_RISK"
-               style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;"
-               readonly />
-    </td> -->
-    <td style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;">0.15</td>
-
-    <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
-    <input type="text"
-    th:value="${report.R15_CAPITAL_CHARGE_DIR_RISK != null ? #numbers.formatDecimal(report.R15_CAPITAL_CHARGE_DIR_RISK, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="R15_CAPITAL_CHARGE_DIR_RISK"
-           name="R15_CAPITAL_CHARGE_DIR_RISK"
-           style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-    </td>
-
-    <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
-    <input type="text"
-    th:value="${report.R15_TOTAL_CAPITAL_CHARGE != null ? #numbers.formatDecimal(report.R15_TOTAL_CAPITAL_CHARGE, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="R15_TOTAL_CAPITAL_CHARGE"
-           name="R15_TOTAL_CAPITAL_CHARGE"
-           style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-    </td>
-</tr>
-
-<!-- ================== R16 ================== -->
-<tr>
-    <td id="ROW16" style="padding-left: 20px; font-weight: bold;">
-       <!--  <input class="display-input Show_input"
-               type="text"
-               th:value="${#strings.defaultString(report.R16_PRODUCT, 'N/A')}"
-               id="R16_PRODUCT"
-               name="R16_PRODUCT"
-               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
-               readonly /> -->
-    </td>
-
-    <td id="ROW16" style="padding-left: 20px; font-weight: bold;">
-        <input class="display-input Show_input"
-               type="text"
-               th:value="${report.R16_TOTAL_LONG_POS != null ? #numbers.formatDecimal(report.R16_TOTAL_LONG_POS, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R16_TOTAL_LONG_POS"
-               name="R16_TOTAL_LONG_POS"
-               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-               readonly />
-    </td>
-
-    <td id="ROW16" style="padding-left: 20px; font-weight: bold;">
-        <input class="display-input Show_input"
-               type="text"
-               th:value="${report.R16_TOTAL_SHORT_POS != null ? #numbers.formatDecimal(report.R16_TOTAL_SHORT_POS, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R16_TOTAL_SHORT_POS"
-               name="R16_TOTAL_SHORT_POS"
-               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-               readonly />
-    </td>
-
-    <td id="ROW16" style="padding-left: 20px; font-weight: bold;">
-        <input class="display-input Show_input"
-               type="text"
-               th:value="${report.R16_GROSS_OPEN_POS != null ? #numbers.formatDecimal(report.R16_GROSS_OPEN_POS, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R16_GROSS_OPEN_POS"
-               name="R16_GROSS_OPEN_POS"
-               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-               readonly />
-    </td>
-
-<!--     <td id="ROW10" style="padding-left: 20px; background-color: #808080;">
-        <input 
-               type="text"
-               th:value="0.03"
-               id="R10_CHARGE_BASIS_RISK"
-               name="R10_CHARGE_BASIS_RISK"
-               style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;"
-               readonly />
-    </td> -->
-     <td style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;">0.03</td>
-
-    <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
-    <input type="text"
-    th:value="${report.R16_CAPITAL_CHARGE_BASIS_RISK != null ? #numbers.formatDecimal(report.R16_CAPITAL_CHARGE_BASIS_RISK, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="R16_CAPITAL_CHARGE_BASIS_RISK"
-           name="R16_CAPITAL_CHARGE_BASIS_RISK"
-           style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-    </td>
-
-    <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
-    <input type="text"
-    th:value="${report.R16_NET_OPEN_POS != null ? #numbers.formatDecimal(report.R16_NET_OPEN_POS, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="R16_NET_OPEN_POS"
-           name="R16_NET_OPEN_POS"
-           style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-    </td>
-
- <!--     <td id="ROW10" style="padding-left: 20px; background-color: #808080;">
-        <input 
-               type="text"
-               th:value="0.03"
-               id="R16_CHARGE_BASIS_RISK"
-               name="R16_CHARGE_BASIS_RISK"
-               style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;"
-               readonly />
-    </td> -->
-    <td style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;">0.15</td>
-
-    <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
-    <input type="text"
-    th:value="${report.R16_CAPITAL_CHARGE_DIR_RISK != null ? #numbers.formatDecimal(report.R16_CAPITAL_CHARGE_DIR_RISK, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="R16_CAPITAL_CHARGE_DIR_RISK"
-           name="R16_CAPITAL_CHARGE_DIR_RISK"
-           style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-    </td>
-
-    <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
-    <input type="text"
-    th:value="${report.R16_TOTAL_CAPITAL_CHARGE != null ? #numbers.formatDecimal(report.R16_TOTAL_CAPITAL_CHARGE, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="R16_TOTAL_CAPITAL_CHARGE"
-           name="R16_TOTAL_CAPITAL_CHARGE"
-           style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-    </td>
-</tr>
-
-<!-- ================== R17 ================== -->
-<tr>
-    <td id="ROW17" style="font-weight: bold;">Total</td>
-    
-    <!-- <input class="display-input Show_input"
-               type="text"
-               th:value="${#strings.defaultString(report.R17_PRODUCT, 'N/A')}"
-               id="R17_PRODUCT"
-               name="R17_PRODUCT"
-               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
-               readonly /> -->
-
-	<td id="ROW17" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
-        <input type="text"
-        		th:value="${report.R17_TOTAL_LONG_POS != null ? #numbers.formatDecimal(report.R17_TOTAL_LONG_POS, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R17_TOTAL_LONG_POS"
-               name="R17_TOTAL_LONG_POS"
-               style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
-               readonly />
-    </td>
-
-	<td id="ROW17" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
-        <input type="text"
-        th:value="${report.R17_TOTAL_SHORT_POS != null ? #numbers.formatDecimal(report.R17_TOTAL_SHORT_POS, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R17_TOTAL_SHORT_POS"
-               name="R17_TOTAL_SHORT_POS"
-               style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
-               readonly />
-    </td>
-
-	<td id="ROW17" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
-        <input type="text"
-        th:value="${report.R17_GROSS_OPEN_POS != null ? #numbers.formatDecimal(report.R17_GROSS_OPEN_POS, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R17_GROSS_OPEN_POS"
-               name="R17_GROSS_OPEN_POS"
-               style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
-               readonly />
-    </td>
-
-    <td id="ROW17" style="padding-left: 20px;">
-        <input type="text"
-               th:value="0"
-               id="R17_CHARGE_BASIS_RISK"
-               name="R17_CHARGE_BASIS_RISK"
-               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; font-weight: bold; text-align: right;"
-               readonly />
-    </td>
-
-    <td id="ROW17" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
-        <input type="text"
-        th:value="${report.R17_CAPITAL_CHARGE_BASIS_RISK != null ? #numbers.formatDecimal(report.R17_CAPITAL_CHARGE_BASIS_RISK, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R17_CAPITAL_CHARGE_BASIS_RISK"
-               name="R17_CAPITAL_CHARGE_BASIS_RISK"
-               style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
-               readonly />
-    </td>
-
-    <td id="ROW17" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
-        <input type="text"
-        th:value="${report.R17_NET_OPEN_POS != null ? #numbers.formatDecimal(report.R17_NET_OPEN_POS, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R17_NET_OPEN_POS"
-               name="R17_NET_OPEN_POS"
-               style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
-               readonly />
-    </td>
-
-    <td id="ROW17" style="padding-left: 20px;">
-        <input type="text"
-               th:value="0"
-               id="R17_CHARGE_DIR_RISK"
-               name="R17_CHARGE_DIR_RISK"
-               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; font-weight: bold; text-align: right;"
-               readonly />
-    </td>
-
-    <td id="ROW17" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
-        <input type="text"
-        th:value="${report.R17_CAPITAL_CHARGE_DIR_RISK != null ? #numbers.formatDecimal(report.R17_CAPITAL_CHARGE_DIR_RISK, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R17_CAPITAL_CHARGE_DIR_RISK"
-               name="R17_CAPITAL_CHARGE_DIR_RISK"
-               style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
-               readonly />
-    </td>
-
-    <td id="ROW17" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
-        <input type="text"
-        th:value="${report.R17_TOTAL_CAPITAL_CHARGE != null ? #numbers.formatDecimal(report.R17_TOTAL_CAPITAL_CHARGE, 1, 'COMMA', 0, 'POINT') : '0'}"
-               id="R17_TOTAL_CAPITAL_CHARGE"
-               name="R17_TOTAL_CAPITAL_CHARGE"
-               style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
-               readonly />
-    </td>
-</tr>
-
-
-
-
-	</tbody>
-	</table>
-								
-
-
-</div>
-<div style="text-align: center; margin-top: 10px;">
-								
-    <button id="submitButton" 
-            type="button"
-            class="custom-tab-btn Show_input submitButton" 
-            form="fileupload"
-            th:attr="data-todate=${asondate}" 
-            onclick="fileuploads(this);" 
-            style="display: none;">
-        Submit
-    </button>
-</div>
+				<h1 th:if="${displaymode == 'summary' and type == 'ARCHIVAL' and displaymode != 'Details'}"
+					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">
+					Archival
+					Summary View - M_CR</h1>
+
+				<h1 th:if="${displaymode == 'Details' and type == 'ARCHIVAL' and displaymode != 'summary'}"
+					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">
+					Archival
+					Detail View - M_CR</h1>
+
+				<h1 th:if="${displaymode == 'summary'and type != 'ARCHIVAL'}"
+					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">
+					Summary
+					View - M_CR</h1>
+				<h1 th:if="${displaymode == 'Details' and type != 'ARCHIVAL'}"
+					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">
+					Detail
+					View - M_CR</h1>
+				<div th:if="${displaymode == 'summary' or displaymode == 'Details'}">
+
+					<div class="row">
+						<div class="col-sm-12">
+							<form action="#" method="POST" id="fileupload">
+
+								<div class="table-wrapper table-responsive scrollable-table-container"
+									style="border-right: 1px solid #dee2e6;">
+									  <table
+									                     class="sticky-header-table table table-bordered table-hover table-sm table-condensed"
+									                     id="reports">
+									              <thead class="thead-light">
+									              <tr style="background-color: #b3b6b9;">
+									                     <th style="text-align: left; vertical-align:top;">Commodity</th>
+									                     <th style="text-align: right; vertical-align:top; width: 150px;">Total Long position</th>
+									                     <th style="text-align: right; vertical-align:top; width: 150px;">Total Short Position</th>
+									                     <th style="text-align: right; vertical-align:top; width: 150px;">Gross Open Position</th>
+									                     <th style="text-align: center; vertical-align:top; width: 250px;">Charge for Basis Risk, Interest Rate Risk and Forward Gap Risk (3 percent of Gross Position)</th>
+									                     <th style="text-align: right; vertical-align:top; width: 250px;">Capital Charge for Basis Risk, Interest Rate Risk and Forward Gap Risk</th>
+									                     <th style="text-align: right; vertical-align:top; width: 150px;">Net Open position</th>
+									                     <th style="text-align: center; vertical-align:top; width: 150px;">Charge for Directional Risk (15 percent of Net Open Position)</th>
+									                     <th style="text-align: right; vertical-align:top; width: 150px;">Capitla Charge for Directional Risk</th>
+									                     <th style="text-align: right; vertical-align:top; width: 150px;">Total Capital Charge by Commodity</th>
+									                                   
+									              </tr>
+
+									                            
+									              </thead>
+											<tbody id="entity" th:each="report: ${reportsummary}" style="font-family: Arial;">
+
+
+									              <tr>
+									                  <td style="padding-left: 20px"></td>
+									                  <td style="text-align: right; padding-left: 20px">(P'000)</td>
+									                  <td style="text-align: right; padding-left: 20px">(P'000)</td>
+									                  <td style="text-align: right; padding-left: 20px">(P'000)</td>
+									                  <td style="text-align: center; padding-left: 20px">Percent</td>
+									                  <td style="text-align: right; padding-left: 20px">(P'000)</td>
+									                  <td style="text-align: right; padding-left: 20px">(P'000)</td>
+									                  <td style="text-align: center; padding-left: 20px">Percent</td>
+									                  <td style="text-align: right; padding-left: 20px">(P'000)</td>
+									                  <td style="text-align: right; padding-left: 20px">(P'000)</td>
+									              </tr>
+
+									<!-- R11 ROW -->
+									<tr>
+
+										<!-- <td style="padding-left: 20px" th:text="${report.R10_PRODUCT}"></td> -->
+
+									    <td id="ROW10" style=" font-weight: bold;">
+									        <input type="text"
+									               th:value="${#strings.defaultString(report.R10_PRODUCT, 'N/A')}"
+									               id="R10_PRODUCT"
+									               name="R10_PRODUCT"
+									               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+									               readonly />
+									    </td>
+
+									    <td id="ROW10" style="padding-left: 20px; font-weight: bold;">
+									        <input class="display-input Show_input"
+									               type="text"
+												   th:value="${report.R10_TOTAL_LONG_POS != null ? #numbers.formatDecimal(report.R10_TOTAL_LONG_POS, 1, 'COMMA', 0, 'POINT') : '0'}"
+									               id="R10_TOTAL_LONG_POS"
+									               name="R10_TOTAL_LONG_POS"
+									               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+									               readonly />
+									    </td>
+
+									    <td id="ROW10" style="padding-left: 20px; font-weight: bold;">
+									        <input class="display-input Show_input"
+									               type="text"
+												   th:value="${report.R10_TOTAL_SHORT_POS != null ? #numbers.formatDecimal(report.R10_TOTAL_SHORT_POS, 1, 'COMMA', 0, 'POINT') : '0'}"
+									               id="R10_TOTAL_SHORT_POS"
+									               name="R10_TOTAL_SHORT_POS"
+									               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+									               readonly />
+									    </td>
+
+									    <td id="ROW10" style="padding-left: 20px; font-weight: bold;">
+									        <input class="display-input Show_input"
+									               type="text"
+												   th:value="${report.R10_GROSS_OPEN_POS != null ? #numbers.formatDecimal(report.R10_GROSS_OPEN_POS, 1, 'COMMA', 0, 'POINT') : '0'}"
+									               id="R10_GROSS_OPEN_POS"
+									               name="R10_GROSS_OPEN_POS"
+									               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+									               readonly />
+									    </td>
+
+									<!--     <td id="ROW10" style="padding-left: 20px; background-color: #808080;">
+									        <input 
+									               type="text"
+									               th:value="0.03"
+									               id="R10_CHARGE_BASIS_RISK"
+									               name="R10_CHARGE_BASIS_RISK"
+									               style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;"
+									               readonly />
+									    </td> -->
+									    <td style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;">0.03</td>
+
+									    <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
+									    <input type="text"
+									    th:value="${report.R10_CAPITAL_CHARGE_BASIS_RISK != null ? #numbers.formatDecimal(report.R10_CAPITAL_CHARGE_BASIS_RISK, 1, 'COMMA', 0, 'POINT') : '0'}"
+									           id="R10_CAPITAL_CHARGE_BASIS_RISK"
+									           name="R10_CAPITAL_CHARGE_BASIS_RISK"
+									           style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
+									           readonly />
+									    </td>
+
+									    <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
+									    <input type="text"
+									    th:value="${report.R10_NET_OPEN_POS != null ? #numbers.formatDecimal(report.R10_NET_OPEN_POS, 1, 'COMMA', 0, 'POINT') : '0'}"
+									           id="R10_NET_OPEN_POS"
+									           name="R10_NET_OPEN_POS"
+									           style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
+									           readonly />
+									    </td>
+
+									 <!--     <td id="ROW10" style="padding-left: 20px; background-color: #808080;">
+									        <input 
+									               type="text"
+									               th:value="0.03"
+									               id="R10_CHARGE_BASIS_RISK"
+									               name="R10_CHARGE_BASIS_RISK"
+									               style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;"
+									               readonly />
+									    </td> -->
+									    <td style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;">0.15</td>
+
+									    <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
+									    <input type="text"
+									    th:value="${report.R10_CAPITAL_CHARGE_DIR_RISK != null ? #numbers.formatDecimal(report.R10_CAPITAL_CHARGE_DIR_RISK, 1, 'COMMA', 0, 'POINT') : '0'}"
+									           id="R10_CAPITAL_CHARGE_DIR_RISK"
+									           name="R10_CAPITAL_CHARGE_DIR_RISK"
+									           style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
+									           readonly />
+									    </td>
+
+									    <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
+									    <input type="text"
+									    th:value="${report.R10_TOTAL_CAPITAL_CHARGE != null ? #numbers.formatDecimal(report.R10_TOTAL_CAPITAL_CHARGE, 1, 'COMMA', 0, 'POINT') : '0'}"
+									           id="R10_TOTAL_CAPITAL_CHARGE"
+									           name="R10_TOTAL_CAPITAL_CHARGE"
+									           style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
+									           readonly />
+									    </td>
+
+									</tr>
+									<!-- ================== R11 ================== -->
+									<tr>
+									    <td id="ROW11" style="font-weight: bold;">
+									        <input type="text"
+									               th:value="${#strings.defaultString(report.R11_PRODUCT, 'N/A')}"
+									               id="R11_PRODUCT"
+									               name="R11_PRODUCT"
+									               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+									               readonly />
+									    </td>
+
+									    <td id="ROW11" style="padding-left: 20px; font-weight: bold;">
+									        <input class="display-input Show_input"
+									               type="text"
+									               th:value="${report.R11_TOTAL_LONG_POS != null ? #numbers.formatDecimal(report.R11_TOTAL_LONG_POS, 1, 'COMMA', 0, 'POINT') : '0'}"
+									               id="R11_TOTAL_LONG_POS"
+									               name="R11_TOTAL_LONG_POS"
+									               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+									               readonly />
+									    </td>
+
+									    <td id="ROW11" style="padding-left: 20px; font-weight: bold;">
+									        <input class="display-input Show_input"
+									               type="text"
+									               th:value="${report.R11_TOTAL_SHORT_POS != null ? #numbers.formatDecimal(report.R11_TOTAL_SHORT_POS, 1, 'COMMA', 0, 'POINT') : '0'}"
+									               id="R11_TOTAL_SHORT_POS"
+									               name="R11_TOTAL_SHORT_POS"
+									               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+									               readonly />
+									    </td>
+
+									    <td id="ROW11" style="padding-left: 20px; font-weight: bold;">
+									        <input class="display-input Show_input"
+									               type="text"
+									               th:value="${report.R11_GROSS_OPEN_POS != null ? #numbers.formatDecimal(report.R11_GROSS_OPEN_POS, 1, 'COMMA', 0, 'POINT') : '0'}"
+									               id="R11_GROSS_OPEN_POS"
+									               name="R11_GROSS_OPEN_POS"
+									               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+									               readonly />
+									    </td>
+
+									<!--     <td id="ROW10" style="padding-left: 20px; background-color: #808080;">
+									        <input 
+									               type="text"
+									               th:value="0.03"
+									               id="R10_CHARGE_BASIS_RISK"
+									               name="R10_CHARGE_BASIS_RISK"
+									               style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;"
+									               readonly />
+									    </td> -->
+									       <td style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;">0.03</td>
+
+									    <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
+									    <input type="text"
+									    th:value="${report.R11_CAPITAL_CHARGE_BASIS_RISK != null ? #numbers.formatDecimal(report.R11_CAPITAL_CHARGE_BASIS_RISK, 1, 'COMMA', 0, 'POINT') : '0'}"
+									           id="R11_CAPITAL_CHARGE_BASIS_RISK"
+									           name="R11_CAPITAL_CHARGE_BASIS_RISK"
+									           style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
+									           readonly />
+									    </td>
+
+									    <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
+									    <input type="text"
+									    th:value="${report.R11_NET_OPEN_POS != null ? #numbers.formatDecimal(report.R11_NET_OPEN_POS, 1, 'COMMA', 0, 'POINT') : '0'}"
+									           id="R11_NET_OPEN_POS"
+									           name="R11_NET_OPEN_POS"
+									           style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
+									           readonly />
+									    </td>
+
+									 <!--     <td id="ROW10" style="padding-left: 20px; background-color: #808080;">
+									        <input 
+									               type="text"
+									               th:value="0.03"
+									               id="R11_CHARGE_BASIS_RISK"
+									               name="R11_CHARGE_BASIS_RISK"
+									               style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;"
+									               readonly />
+									    </td> -->
+									    <td style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;">0.15</td>
+
+									    <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
+									    <input type="text"
+									    th:value="${report.R11_CAPITAL_CHARGE_DIR_RISK != null ? #numbers.formatDecimal(report.R11_CAPITAL_CHARGE_DIR_RISK, 1, 'COMMA', 0, 'POINT') : '0'}"
+									           id="R11_CAPITAL_CHARGE_DIR_RISK"
+									           name="R11_CAPITAL_CHARGE_DIR_RISK"
+									           style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
+									           readonly />
+									    </td>
+
+									    <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
+									    <input type="text"
+									    th:value="${report.R11_TOTAL_CAPITAL_CHARGE != null ? #numbers.formatDecimal(report.R11_TOTAL_CAPITAL_CHARGE, 1, 'COMMA', 0, 'POINT') : '0'}"
+									           id="R11_TOTAL_CAPITAL_CHARGE"
+									           name="R11_TOTAL_CAPITAL_CHARGE"
+									           style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
+									           readonly />
+									    </td>
+									</tr>
+
+									<!-- ================== R12 ================== -->
+									<tr>
+									    <td id="ROW12" style="padding-left: 20px; font-weight: bold;">
+									        <!-- <input class="display-input Show_input"
+									               type="text"
+									               th:value="${#strings.defaultString(report.R12_PRODUCT, 'N/A')}"
+									               id="R12_PRODUCT"
+									               name="R12_PRODUCT"
+									               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+									               readonly /> -->
+									    </td>
+
+									    <td id="ROW12" style="padding-left: 20px; font-weight: bold;">
+									        <input class="display-input Show_input"
+									               type="text"
+									               th:value="${report.R12_TOTAL_LONG_POS != null ? #numbers.formatDecimal(report.R12_TOTAL_LONG_POS, 1, 'COMMA', 0, 'POINT') : '0'}"
+									               id="R12_TOTAL_LONG_POS"
+									               name="R12_TOTAL_LONG_POS"
+									               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+									               readonly />
+									    </td>
+
+									    <td id="ROW12" style="padding-left: 20px; font-weight: bold;">
+									        <input class="display-input Show_input"
+									        	   type="text"
+									               th:value="${report.R12_TOTAL_SHORT_POS != null ? #numbers.formatDecimal(report.R12_TOTAL_SHORT_POS, 1, 'COMMA', 0, 'POINT') : '0'}"
+									               id="R12_TOTAL_SHORT_POS"
+									               name="R12_TOTAL_SHORT_POS"
+									               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+									               readonly />
+									    </td>
+
+									    <td id="ROW12" style="padding-left: 20px; font-weight: bold;">
+									        <input class="display-input Show_input"
+									               type="text"
+									               th:value="${report.R12_GROSS_OPEN_POS != null ? #numbers.formatDecimal(report.R12_GROSS_OPEN_POS, 1, 'COMMA', 0, 'POINT') : '0'}"
+									               id="R12_GROSS_OPEN_POS"
+									               name="R12_GROSS_OPEN_POS"
+									               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+									               readonly />
+									    </td>
+
+									    <!--     <td id="ROW10" style="padding-left: 20px; background-color: #808080;">
+									        <input 
+									               type="text"
+									               th:value="0.03"
+									               id="R10_CHARGE_BASIS_RISK"
+									               name="R10_CHARGE_BASIS_RISK"
+									               style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;"
+									               readonly />
+									    </td> -->
+									       <td style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;">0.03</td>
+
+									    <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
+									    <input type="text"
+									    th:value="${report.R12_CAPITAL_CHARGE_BASIS_RISK != null ? #numbers.formatDecimal(report.R12_CAPITAL_CHARGE_BASIS_RISK, 1, 'COMMA', 0, 'POINT') : '0'}"
+									           id="R12_CAPITAL_CHARGE_BASIS_RISK"
+									           name="R12_CAPITAL_CHARGE_BASIS_RISK"
+									           style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
+									           readonly />
+									    </td>
+
+									    <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
+									    <input type="text"
+									    th:value="${report.R12_NET_OPEN_POS != null ? #numbers.formatDecimal(report.R12_NET_OPEN_POS, 1, 'COMMA', 0, 'POINT') : '0'}"
+									           id="R12_NET_OPEN_POS"
+									           name="R12_NET_OPEN_POS"
+									           style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
+									           readonly />
+									    </td>
+
+									 <!--     <td id="ROW10" style="padding-left: 20px; background-color: #808080;">
+									        <input 
+									               type="text"
+									               th:value="0.03"
+									               id="R12_CHARGE_BASIS_RISK"
+									               name="R12_CHARGE_BASIS_RISK"
+									               style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;"
+									               readonly />
+									    </td> -->
+									    <td style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;">0.15</td>
+
+									    <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
+									    <input type="text"
+									    th:value="${report.R12_CAPITAL_CHARGE_DIR_RISK != null ? #numbers.formatDecimal(report.R12_CAPITAL_CHARGE_DIR_RISK, 1, 'COMMA', 0, 'POINT') : '0'}"
+									           id="R12_CAPITAL_CHARGE_DIR_RISK"
+									           name="R12_CAPITAL_CHARGE_DIR_RISK"
+									           style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
+									           readonly />
+									    </td>
+
+									    <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
+									    <input type="text"
+									    th:value="${report.R12_TOTAL_CAPITAL_CHARGE != null ? #numbers.formatDecimal(report.R12_TOTAL_CAPITAL_CHARGE, 1, 'COMMA', 0, 'POINT') : '0'}"
+									           id="R12_TOTAL_CAPITAL_CHARGE"
+									           name="R12_TOTAL_CAPITAL_CHARGE"
+									           style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
+									           readonly />
+									    </td>
+									</tr>
+
+									<!-- ================== R13 ================== -->
+									<tr>
+									    <td id="ROW13" style="padding-left: 20px; font-weight: bold;">
+									        <!-- <input class="display-input Show_input"
+									               type="text"
+									               th:value="${#strings.defaultString(report.R13_PRODUCT, 'N/A')}"
+									               id="R13_PRODUCT"
+									               name="R13_PRODUCT"
+									               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+									               readonly /> -->
+									    </td>
+
+									    <td id="ROW13" style="padding-left: 20px; font-weight: bold;">
+									        <input class="display-input Show_input"
+									               type="text"
+									               th:value="${report.R13_TOTAL_LONG_POS != null ? #numbers.formatDecimal(report.R13_TOTAL_LONG_POS, 1, 'COMMA', 0, 'POINT') : '0'}"
+									               id="R13_TOTAL_LONG_POS"
+									               name="R13_TOTAL_LONG_POS"
+									               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+									               readonly />
+									    </td>
+
+									    <td id="ROW13" style="padding-left: 20px; font-weight: bold;">
+									        <input class="display-input Show_input"
+									               type="text"
+									               th:value="${report.R13_TOTAL_SHORT_POS != null ? #numbers.formatDecimal(report.R13_TOTAL_SHORT_POS, 1, 'COMMA', 0, 'POINT') : '0'}"
+									               id="R13_TOTAL_SHORT_POS"
+									               name="R13_TOTAL_SHORT_POS"
+									               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+									               readonly />
+									    </td>
+
+									    <td id="ROW13" style="padding-left: 20px; font-weight: bold;">
+									        <input class="display-input Show_input"
+									               type="text"
+									               th:value="${report.R13_GROSS_OPEN_POS != null ? #numbers.formatDecimal(report.R13_GROSS_OPEN_POS, 1, 'COMMA', 0, 'POINT') : '0'}"
+									               id="R13_GROSS_OPEN_POS"
+									               name="R13_GROSS_OPEN_POS"
+									               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+									               readonly />
+									    </td>
+
+									<!--     <td id="ROW10" style="padding-left: 20px; background-color: #808080;">
+									        <input 
+									               type="text"
+									               th:value="0.03"
+									               id="R10_CHARGE_BASIS_RISK"
+									               name="R10_CHARGE_BASIS_RISK"
+									               style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;"
+									               readonly />
+									    </td> -->
+									        <td style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;">0.03</td>
+
+									    <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
+									    <input type="text"
+									    th:value="${report.R13_CAPITAL_CHARGE_BASIS_RISK != null ? #numbers.formatDecimal(report.R13_CAPITAL_CHARGE_BASIS_RISK, 1, 'COMMA', 0, 'POINT') : '0'}"
+									           id="R13_CAPITAL_CHARGE_BASIS_RISK"
+									           name="R13_CAPITAL_CHARGE_BASIS_RISK"
+									           style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
+									           readonly />
+									    </td>
+
+									    <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
+									    <input type="text"
+									    th:value="${report.R13_NET_OPEN_POS != null ? #numbers.formatDecimal(report.R13_NET_OPEN_POS, 1, 'COMMA', 0, 'POINT') : '0'}"
+									           id="R13_NET_OPEN_POS"
+									           name="R13_NET_OPEN_POS"
+									           style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
+									           readonly />
+									    </td>
+
+									 <!--     <td id="ROW10" style="padding-left: 20px; background-color: #808080;">
+									        <input 
+									               type="text"
+									               th:value="0.03"
+									               id="R13_CHARGE_BASIS_RISK"
+									               name="R13_CHARGE_BASIS_RISK"
+									               style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;"
+									               readonly />
+									    </td> -->
+									    <td style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;">0.15</td>
+
+									    <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
+									    <input type="text"
+									    th:value="${report.R13_CAPITAL_CHARGE_DIR_RISK != null ? #numbers.formatDecimal(report.R13_CAPITAL_CHARGE_DIR_RISK, 1, 'COMMA', 0, 'POINT') : '0'}"
+									           id="R13_CAPITAL_CHARGE_DIR_RISK"
+									           name="R13_CAPITAL_CHARGE_DIR_RISK"
+									           style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
+									           readonly />
+									    </td>
+
+									    <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
+									    <input type="text"
+									    th:value="${report.R13_TOTAL_CAPITAL_CHARGE != null ? #numbers.formatDecimal(report.R13_TOTAL_CAPITAL_CHARGE, 1, 'COMMA', 0, 'POINT') : '0'}"
+									           id="R13_TOTAL_CAPITAL_CHARGE"
+									           name="R13_TOTAL_CAPITAL_CHARGE"
+									           style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
+									           readonly />
+									    </td>
+									</tr>
+
+									<!-- ================== R14 ================== -->
+									<tr>
+									    <td id="ROW14" style="padding-left: 20px; font-weight: bold;">
+									        <!-- <input class="display-input Show_input"
+									               type="text"
+									               th:value="${#strings.defaultString(report.R14_PRODUCT, 'N/A')}"
+									               id="R14_PRODUCT"
+									               name="R14_PRODUCT"
+									               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+									               readonly /> -->
+									    </td>
+
+									    <td id="ROW14" style="padding-left: 20px; font-weight: bold;">
+									        <input class="display-input Show_input"
+									               type="text"
+									               th:value="${report.R14_TOTAL_LONG_POS != null ? #numbers.formatDecimal(report.R14_TOTAL_LONG_POS, 1, 'COMMA', 0, 'POINT') : '0'}"
+									               id="R14_TOTAL_LONG_POS"
+									               name="R14_TOTAL_LONG_POS"
+									               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+									               readonly />
+									    </td>
+
+									    <td id="ROW14" style="padding-left: 20px; font-weight: bold;">
+									        <input class="display-input Show_input"
+									               type="text"
+									               th:value="${report.R14_TOTAL_SHORT_POS != null ? #numbers.formatDecimal(report.R14_TOTAL_SHORT_POS, 1, 'COMMA', 0, 'POINT') : '0'}"
+									               id="R14_TOTAL_SHORT_POS"
+									               name="R14_TOTAL_SHORT_POS"
+									               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+									               readonly />
+									    </td>
+
+									    <td id="ROW14" style="padding-left: 20px; font-weight: bold;">
+									        <input class="display-input Show_input"
+									               type="text"
+									               th:value="${report.R14_GROSS_OPEN_POS != null ? #numbers.formatDecimal(report.R14_GROSS_OPEN_POS, 1, 'COMMA', 0, 'POINT') : '0'}"
+									               id="R14_GROSS_OPEN_POS"
+									               name="R14_GROSS_OPEN_POS"
+									               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+									               readonly />
+									    </td>
+
+									<!--     <td id="ROW10" style="padding-left: 20px; background-color: #808080;">
+									        <input 
+									               type="text"
+									               th:value="0.03"
+									               id="R10_CHARGE_BASIS_RISK"
+									               name="R10_CHARGE_BASIS_RISK"
+									               style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;"
+									               readonly />
+									    </td> -->
+									      <td style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;">0.03</td>
+
+									    <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
+									    <input type="text"
+									    th:value="${report.R14_CAPITAL_CHARGE_BASIS_RISK != null ? #numbers.formatDecimal(report.R14_CAPITAL_CHARGE_BASIS_RISK, 1, 'COMMA', 0, 'POINT') : '0'}"
+									           id="R14_CAPITAL_CHARGE_BASIS_RISK"
+									           name="R14_CAPITAL_CHARGE_BASIS_RISK"
+									           style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
+									           readonly />
+									    </td>
+
+									    <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
+									    <input type="text"
+									    th:value="${report.R14_NET_OPEN_POS != null ? #numbers.formatDecimal(report.R14_NET_OPEN_POS, 1, 'COMMA', 0, 'POINT') : '0'}"
+									           id="R14_NET_OPEN_POS"
+									           name="R14_NET_OPEN_POS"
+									           style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
+									           readonly />
+									    </td>
+
+									 <!--     <td id="ROW10" style="padding-left: 20px; background-color: #808080;">
+									        <input 
+									               type="text"
+									               th:value="0.03"
+									               id="R14_CHARGE_BASIS_RISK"
+									               name="R14_CHARGE_BASIS_RISK"
+									               style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;"
+									               readonly />
+									    </td> -->
+									    <td style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;">0.15</td>
+
+									    <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
+									    <input type="text"
+									    th:value="${report.R14_CAPITAL_CHARGE_DIR_RISK != null ? #numbers.formatDecimal(report.R14_CAPITAL_CHARGE_DIR_RISK, 1, 'COMMA', 0, 'POINT') : '0'}"
+									           id="R14_CAPITAL_CHARGE_DIR_RISK"
+									           name="R14_CAPITAL_CHARGE_DIR_RISK"
+									           style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
+									           readonly />
+									    </td>
+
+									    <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
+									    <input type="text"
+									    th:value="${report.R14_TOTAL_CAPITAL_CHARGE != null ? #numbers.formatDecimal(report.R14_TOTAL_CAPITAL_CHARGE, 1, 'COMMA', 0, 'POINT') : '0'}"
+									           id="R14_TOTAL_CAPITAL_CHARGE"
+									           name="R14_TOTAL_CAPITAL_CHARGE"
+									           style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
+									           readonly />
+									    </td>
+									</tr>
+
+									<!-- ================== R15 ================== -->
+									<tr>
+									    <td id="ROW15" style="padding-left: 20px; font-weight: bold;">
+									        <!-- <input class="display-input Show_input"
+									               type="text"
+									               th:value="${#strings.defaultString(report.R15_PRODUCT, 'N/A')}"
+									               id="R15_PRODUCT"
+									               name="R15_PRODUCT"
+									               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+									               readonly /> -->
+									    </td>
+
+									    <td id="ROW15" style="padding-left: 20px; font-weight: bold;">
+									        <input class="display-input Show_input"
+									               type="text"
+									               th:value="${report.R15_TOTAL_LONG_POS != null ? #numbers.formatDecimal(report.R15_TOTAL_LONG_POS, 1, 'COMMA', 0, 'POINT') : '0'}"
+									               id="R15_TOTAL_LONG_POS"
+									               name="R15_TOTAL_LONG_POS"
+									               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+									               readonly />
+									    </td>
+
+									    <td id="ROW15" style="padding-left: 20px; font-weight: bold;">
+									        <input class="display-input Show_input"
+									               type="text"
+									               th:value="${report.R15_TOTAL_SHORT_POS != null ? #numbers.formatDecimal(report.R15_TOTAL_SHORT_POS, 1, 'COMMA', 0, 'POINT') : '0'}"
+									               id="R15_TOTAL_SHORT_POS"
+									               name="R15_TOTAL_SHORT_POS"
+									               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+									               readonly />
+									    </td>
+
+									    <td id="ROW15" style="padding-left: 20px; font-weight: bold;">
+									        <input class="display-input Show_input"
+									               type="text"
+									               th:value="${report.R15_GROSS_OPEN_POS != null ? #numbers.formatDecimal(report.R15_GROSS_OPEN_POS, 1, 'COMMA', 0, 'POINT') : '0'}"
+									               id="R15_GROSS_OPEN_POS"
+									               name="R15_GROSS_OPEN_POS"
+									               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+									               readonly />
+									    </td>
+
+									<!--     <td id="ROW10" style="padding-left: 20px; background-color: #808080;">
+									        <input 
+									               type="text"
+									               th:value="0.03"
+									               id="R10_CHARGE_BASIS_RISK"
+									               name="R10_CHARGE_BASIS_RISK"
+									               style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;"
+									               readonly />
+									    </td> -->
+									      <td style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;">0.03</td>
+
+									    <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
+									    <input type="text"
+									    th:value="${report.R15_CAPITAL_CHARGE_BASIS_RISK != null ? #numbers.formatDecimal(report.R15_CAPITAL_CHARGE_BASIS_RISK, 1, 'COMMA', 0, 'POINT') : '0'}"
+									           id="R15_CAPITAL_CHARGE_BASIS_RISK"
+									           name="R15_CAPITAL_CHARGE_BASIS_RISK"
+									           style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
+									           readonly />
+									    </td>
+
+									    <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
+									    <input type="text"
+									    th:value="${report.R15_NET_OPEN_POS != null ? #numbers.formatDecimal(report.R15_NET_OPEN_POS, 1, 'COMMA', 0, 'POINT') : '0'}"
+									           id="R15_NET_OPEN_POS"
+									           name="R15_NET_OPEN_POS"
+									           style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
+									           readonly />
+									    </td>
+
+									 <!--     <td id="ROW10" style="padding-left: 20px; background-color: #808080;">
+									        <input 
+									               type="text"
+									               th:value="0.03"
+									               id="R15_CHARGE_BASIS_RISK"
+									               name="R15_CHARGE_BASIS_RISK"
+									               style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;"
+									               readonly />
+									    </td> -->
+									    <td style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;">0.15</td>
+
+									    <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
+									    <input type="text"
+									    th:value="${report.R15_CAPITAL_CHARGE_DIR_RISK != null ? #numbers.formatDecimal(report.R15_CAPITAL_CHARGE_DIR_RISK, 1, 'COMMA', 0, 'POINT') : '0'}"
+									           id="R15_CAPITAL_CHARGE_DIR_RISK"
+									           name="R15_CAPITAL_CHARGE_DIR_RISK"
+									           style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
+									           readonly />
+									    </td>
+
+									    <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
+									    <input type="text"
+									    th:value="${report.R15_TOTAL_CAPITAL_CHARGE != null ? #numbers.formatDecimal(report.R15_TOTAL_CAPITAL_CHARGE, 1, 'COMMA', 0, 'POINT') : '0'}"
+									           id="R15_TOTAL_CAPITAL_CHARGE"
+									           name="R15_TOTAL_CAPITAL_CHARGE"
+									           style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
+									           readonly />
+									    </td>
+									</tr>
+
+									<!-- ================== R16 ================== -->
+									<tr>
+									    <td id="ROW16" style="padding-left: 20px; font-weight: bold;">
+									       <!--  <input class="display-input Show_input"
+									               type="text"
+									               th:value="${#strings.defaultString(report.R16_PRODUCT, 'N/A')}"
+									               id="R16_PRODUCT"
+									               name="R16_PRODUCT"
+									               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+									               readonly /> -->
+									    </td>
+
+									    <td id="ROW16" style="padding-left: 20px; font-weight: bold;">
+									        <input class="display-input Show_input"
+									               type="text"
+									               th:value="${report.R16_TOTAL_LONG_POS != null ? #numbers.formatDecimal(report.R16_TOTAL_LONG_POS, 1, 'COMMA', 0, 'POINT') : '0'}"
+									               id="R16_TOTAL_LONG_POS"
+									               name="R16_TOTAL_LONG_POS"
+									               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+									               readonly />
+									    </td>
+
+									    <td id="ROW16" style="padding-left: 20px; font-weight: bold;">
+									        <input class="display-input Show_input"
+									               type="text"
+									               th:value="${report.R16_TOTAL_SHORT_POS != null ? #numbers.formatDecimal(report.R16_TOTAL_SHORT_POS, 1, 'COMMA', 0, 'POINT') : '0'}"
+									               id="R16_TOTAL_SHORT_POS"
+									               name="R16_TOTAL_SHORT_POS"
+									               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+									               readonly />
+									    </td>
+
+									    <td id="ROW16" style="padding-left: 20px; font-weight: bold;">
+									        <input class="display-input Show_input"
+									               type="text"
+									               th:value="${report.R16_GROSS_OPEN_POS != null ? #numbers.formatDecimal(report.R16_GROSS_OPEN_POS, 1, 'COMMA', 0, 'POINT') : '0'}"
+									               id="R16_GROSS_OPEN_POS"
+									               name="R16_GROSS_OPEN_POS"
+									               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+									               readonly />
+									    </td>
+
+									<!--     <td id="ROW10" style="padding-left: 20px; background-color: #808080;">
+									        <input 
+									               type="text"
+									               th:value="0.03"
+									               id="R10_CHARGE_BASIS_RISK"
+									               name="R10_CHARGE_BASIS_RISK"
+									               style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;"
+									               readonly />
+									    </td> -->
+									     <td style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;">0.03</td>
+
+									    <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
+									    <input type="text"
+									    th:value="${report.R16_CAPITAL_CHARGE_BASIS_RISK != null ? #numbers.formatDecimal(report.R16_CAPITAL_CHARGE_BASIS_RISK, 1, 'COMMA', 0, 'POINT') : '0'}"
+									           id="R16_CAPITAL_CHARGE_BASIS_RISK"
+									           name="R16_CAPITAL_CHARGE_BASIS_RISK"
+									           style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
+									           readonly />
+									    </td>
+
+									    <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
+									    <input type="text"
+									    th:value="${report.R16_NET_OPEN_POS != null ? #numbers.formatDecimal(report.R16_NET_OPEN_POS, 1, 'COMMA', 0, 'POINT') : '0'}"
+									           id="R16_NET_OPEN_POS"
+									           name="R16_NET_OPEN_POS"
+									           style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
+									           readonly />
+									    </td>
+
+									 <!--     <td id="ROW10" style="padding-left: 20px; background-color: #808080;">
+									        <input 
+									               type="text"
+									               th:value="0.03"
+									               id="R16_CHARGE_BASIS_RISK"
+									               name="R16_CHARGE_BASIS_RISK"
+									               style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;"
+									               readonly />
+									    </td> -->
+									    <td style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;">0.15</td>
+
+									    <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
+									    <input type="text"
+									    th:value="${report.R16_CAPITAL_CHARGE_DIR_RISK != null ? #numbers.formatDecimal(report.R16_CAPITAL_CHARGE_DIR_RISK, 1, 'COMMA', 0, 'POINT') : '0'}"
+									           id="R16_CAPITAL_CHARGE_DIR_RISK"
+									           name="R16_CAPITAL_CHARGE_DIR_RISK"
+									           style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
+									           readonly />
+									    </td>
+
+									    <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
+									    <input type="text"
+									    th:value="${report.R16_TOTAL_CAPITAL_CHARGE != null ? #numbers.formatDecimal(report.R16_TOTAL_CAPITAL_CHARGE, 1, 'COMMA', 0, 'POINT') : '0'}"
+									           id="R16_TOTAL_CAPITAL_CHARGE"
+									           name="R16_TOTAL_CAPITAL_CHARGE"
+									           style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
+									           readonly />
+									    </td>
+									</tr>
+
+									<!-- ================== R17 ================== -->
+									<tr>
+									    <td id="ROW17" style="font-weight: bold;">Total</td>
+									    
+									    <!-- <input class="display-input Show_input"
+									               type="text"
+									               th:value="${#strings.defaultString(report.R17_PRODUCT, 'N/A')}"
+									               id="R17_PRODUCT"
+									               name="R17_PRODUCT"
+									               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+									               readonly /> -->
+
+										<td id="ROW17" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
+									        <input type="text"
+									        		th:value="${report.R17_TOTAL_LONG_POS != null ? #numbers.formatDecimal(report.R17_TOTAL_LONG_POS, 1, 'COMMA', 0, 'POINT') : '0'}"
+									               id="R17_TOTAL_LONG_POS"
+									               name="R17_TOTAL_LONG_POS"
+									               style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
+									               readonly />
+									    </td>
+
+										<td id="ROW17" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
+									        <input type="text"
+									        th:value="${report.R17_TOTAL_SHORT_POS != null ? #numbers.formatDecimal(report.R17_TOTAL_SHORT_POS, 1, 'COMMA', 0, 'POINT') : '0'}"
+									               id="R17_TOTAL_SHORT_POS"
+									               name="R17_TOTAL_SHORT_POS"
+									               style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
+									               readonly />
+									    </td>
+
+										<td id="ROW17" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
+									        <input type="text"
+									        th:value="${report.R17_GROSS_OPEN_POS != null ? #numbers.formatDecimal(report.R17_GROSS_OPEN_POS, 1, 'COMMA', 0, 'POINT') : '0'}"
+									               id="R17_GROSS_OPEN_POS"
+									               name="R17_GROSS_OPEN_POS"
+									               style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
+									               readonly />
+									    </td>
+
+									    <td id="ROW17" style="padding-left: 20px;">
+									        <input type="text"
+									               th:value="0"
+									               id="R17_CHARGE_BASIS_RISK"
+									               name="R17_CHARGE_BASIS_RISK"
+									               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; font-weight: bold; text-align: right;"
+									               readonly />
+									    </td>
+
+									    <td id="ROW17" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
+									        <input type="text"
+									        th:value="${report.R17_CAPITAL_CHARGE_BASIS_RISK != null ? #numbers.formatDecimal(report.R17_CAPITAL_CHARGE_BASIS_RISK, 1, 'COMMA', 0, 'POINT') : '0'}"
+									               id="R17_CAPITAL_CHARGE_BASIS_RISK"
+									               name="R17_CAPITAL_CHARGE_BASIS_RISK"
+									               style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
+									               readonly />
+									    </td>
+
+									    <td id="ROW17" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
+									        <input type="text"
+									        th:value="${report.R17_NET_OPEN_POS != null ? #numbers.formatDecimal(report.R17_NET_OPEN_POS, 1, 'COMMA', 0, 'POINT') : '0'}"
+									               id="R17_NET_OPEN_POS"
+									               name="R17_NET_OPEN_POS"
+									               style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
+									               readonly />
+									    </td>
+
+									    <td id="ROW17" style="padding-left: 20px;">
+									        <input type="text"
+									               th:value="0"
+									               id="R17_CHARGE_DIR_RISK"
+									               name="R17_CHARGE_DIR_RISK"
+									               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; font-weight: bold; text-align: right;"
+									               readonly />
+									    </td>
+
+									    <td id="ROW17" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
+									        <input type="text"
+									        th:value="${report.R17_CAPITAL_CHARGE_DIR_RISK != null ? #numbers.formatDecimal(report.R17_CAPITAL_CHARGE_DIR_RISK, 1, 'COMMA', 0, 'POINT') : '0'}"
+									               id="R17_CAPITAL_CHARGE_DIR_RISK"
+									               name="R17_CAPITAL_CHARGE_DIR_RISK"
+									               style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
+									               readonly />
+									    </td>
+
+									    <td id="ROW17" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
+									        <input type="text"
+									        th:value="${report.R17_TOTAL_CAPITAL_CHARGE != null ? #numbers.formatDecimal(report.R17_TOTAL_CAPITAL_CHARGE, 1, 'COMMA', 0, 'POINT') : '0'}"
+									               id="R17_TOTAL_CAPITAL_CHARGE"
+									               name="R17_TOTAL_CAPITAL_CHARGE"
+									               style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
+									               readonly />
+									    </td>
+									</tr>
+
+
+
+
+										</tbody>
+										</table>
+								</div>
+								<div style="text-align: center; margin-top: 10px;">
+
+									<button id="submitButton" type="button" class="custom-tab-btn Show_input"
+										form="fileupload" th:attr="data-todate=${asondate}" onclick="fileuploads(this);"
+										style="display: none;">Submit</button>
+								</div>
+
 							</form>
+
 						</div>
 					</div>
 				</div>
-				
+
+
+
 			</div>
+
+
+
 		</div>
+
+
+
 	</div>
-	
-	<!-- Custom Cellresult Modal -->
-		<div class="modal fade" id="cellresultModal">
-		  <div class="modal-dialog modal-dialog-centered">
-		    <div class="modal-content">
-		      
-		      <!-- Custom header -->
-		      <div class="menu-title-header" style="background-color:#6c7a91; padding: 8px; border-radius:5px 5px 0 0;">
-		        <div class="modal-title" id="cellresultModalLabel" style="text-align: center; color: white;">
-		          Do you want to open the report?
-		        </div>
-		      </div>
 
-		      <div class="modal-body" style="text-align: center; font-size: 1.1rem;">
-		        <button type="button" class="custom-tab-btn cancel-btn" data-bs-dismiss="modal"  style="margin-right:10px; border:2px solid #6c7a91; background:white; color:black; border-radius:20px; padding:5px 15px;">
-		          Cancel
-		        </button>
-		        <button type="button" class="custom-tab-btn yes-btn" style="background:#6c7a91; color:white; border:none; border-radius:20px; padding:5px 20px;">
-		          Yes
-		        </button>
-		      </div>
-		    </div>
-		  </div>
-		</div>
 
-	
+
 	<div class="modal fade" id="loader" data-backdrop="static" data-keyboard="false">
 		<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
 			<div class="modal-content" style="background: transparent;">
@@ -1883,6 +2118,9 @@ function cancelModify() {
 			</div>
 		</div>
 	</div>
+
+
+
 	<!-- Custom Alert/Result Modal (Matches your existing style) -->
 	<div class="modal fade" id="resultModal">
 		<div class="modal-dialog modal-dialog-centered">
@@ -1896,44 +2134,51 @@ function cancelModify() {
 				<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
 					<p id="resultModalBody"></p>
 					<!-- Your custom styled button -->
-					<button type="button" class="custom-tab-btn" onclick="closemodel()" data-bs-dismiss="modal">OK</button>
+					<button type="button" class="custom-tab-btn" onclick="closemodel()" data-dismiss="modal">OK</button>
 				</div>
 			</div>
 		</div>
 	</div>
 
+	<!-- Custom Cellresult Modal -->
+	<div class="modal fade" id="cellresultModal">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+
+				<!-- Custom header -->
+				<div class="menu-title-header"
+					style="background-color: #6c7a91; padding: 8px; border-radius: 5px 5px 0 0;">
+					<div class="modal-title" id="cellresultModalLabel" style="text-align: center; color: white;">Do you
+						want to
+						open the report?</div>
+				</div>
+
+				<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+					<button type="button" class="custom-tab-btn cancel-btn" data-bs-dismiss="modal"
+						style="margin-right: 10px; border: 2px solid #6c7a91; background: white; color: black; border-radius: 20px; padding: 5px 15px;">
+						Cancel</button>
+					<button type="button" class="custom-tab-btn yes-btn"
+						style="background: #6c7a91; color: white; border: none; border-radius: 20px; padding: 5px 20px;">
+						Yes</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+
 </body>
 
-<!-- <script>
-															  $(document).ready(function () {
-															    $('#BRRSvalidation').DataTable({
-															      "paging": true,
-															      "info": false,       // turn off "Showing x of y"
-															      "searching": false,  // turn off search
-															      "ordering": false,   // turn off ordering
-															      "lengthChange": false // hide "Show x entries"
-															    });
-															  });
-	
-														</script> -->
-														
-														<style>
-														  #BRFdet td {
-														    border: 1px solid #ccc;
-														    padding: 8px;
-														  }
 
-														  #BRFdet {
-														    border-collapse: collapse;
-														    width: 100%;
-														  }
-														</style>
-														
+
+
+
+
 <style>
 	/* Your existing CSS - this is the correct approach */
 	.scrollable-table-container {
 		/* This is the key: it creates the scroll context */
-		max-height: 590px;
+		max-height: 820px;
 		/* Or a suitable height like 80vh for responsive design */
 		overflow-y: auto;
 		border: 1px solid #ccc;
@@ -1979,67 +2224,59 @@ function cancelModify() {
 		z-index: 1;
 	}
 </style>
+
+
 <style>
-.inner {
-	max-height: 600px;
-	/* Adjust height as needed */
-	overflow: auto;
-	border: 1px solid #dee2e6;
-}
+	.inner {
+		max-height: 600px;
+		/* Adjust height as needed */
+		overflow: auto;
+		border: 1px solid #dee2e6;
+	}
 
-/* Sticky thead */
-#reports thead th {
-	position: sticky;
-	top: 0;
-	background-color: #f8f9fa;
-	/* Match Bootstrap thead-light */
-	z-index: 2;
-}
+	/* Sticky thead */
+	#reports thead th {
+		position: sticky;
+		top: 0;
+		background-color: #f8f9fa;
+		/* Match Bootstrap thead-light */
+		z-index: 2;
+	}
 
-div.dataTables_wrapper div.dataTables_paginate {
-	text-align: right !important;
-	float: right !important;
-	width: auto;
-	margin-top: 10px;
-}
+	div.dataTables_wrapper div.dataTables_paginate {
+		text-align: right !important;
+		float: right !important;
+		width: auto;
+		margin-top: 10px;
+	}
 
-/* Ensure info text (e.g., "Showing 1 to X") stays on the left */
-div.dataTables_wrapper div.dataTables_info {
-	float: left !important;
-	margin-top: 10px;
-}
+	/* Ensure info text (e.g., "Showing 1 to X") stays on the left */
+	div.dataTables_wrapper div.dataTables_info {
+		float: left !important;
+		margin-top: 10px;
+	}
 
-.pagination {
-	margin: 0;
-}
+	.pagination {
+		margin: 0;
+	}
 
-.page-item.active .page-link {
-	background-color: #386276;
-	border-color: #386276;
-}
+	.page-item.active .page-link {
+		background-color: #386276;
+		border-color: #386276;
+	}
 
-.page-link {
-	color: #386276;
-}
+	.page-link {
+		color: #386276;
+	}
 
-.page-link:hover {
-	color: #2a4a5c;
-}
+	.page-link:hover {
+		color: #2a4a5c;
+	}
 
-.form-select {
-	display: inline-block;
-	width: auto;
-}
-
-#submitButton {
-	background-color: #ffffff !important;
-	color: black !important;
-}
-
-#submitButton:hover {
-  background-color: rgb(107, 122, 143) !important;
-  color: white !important;
-}
+	.form-select {
+		display: inline-block;
+		width: auto;
+	}
 </style>
 
 </html>
