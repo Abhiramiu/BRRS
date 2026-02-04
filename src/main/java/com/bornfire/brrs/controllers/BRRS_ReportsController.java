@@ -2067,32 +2067,32 @@ public class BRRS_ReportsController {
 	 * ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 	 * .body("Update Failed: " + e.getMessage()); } }
 	 */
-	@Autowired
-	private BRRS_M_FXR_ReportService brrs_m_fxr_reportservice;
-
-	@RequestMapping(value = "/FXRupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
-	@ResponseBody
-	public ResponseEntity<String> updateAllReports(
-			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@ModelAttribute M_FXR_Summary_Entity1 request1, @ModelAttribute M_FXR_Summary_Entity2 request2,
-			@ModelAttribute M_FXR_Summary_Entity3 request3) {
-		try {
-			System.out.println("Came to single controller");
-			// set date into all 3 entities
-			request1.setReportDate(asondate);
-			request2.setReportDate(asondate);
-			request3.setReportDate(asondate);
-
-			// call services
-			brrs_m_fxr_reportservice.updateReport1(request1);
-			brrs_m_fxr_reportservice.updateReport2(request2);
-			brrs_m_fxr_reportservice.updateReport3(request3);
-			return ResponseEntity.ok("Updated Successfully.");
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
-		}
-	}
+//	@Autowired
+//	private BRRS_M_FXR_ReportService brrs_m_fxr_reportservice;
+//
+//	@RequestMapping(value = "/FXRupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
+//	@ResponseBody
+//	public ResponseEntity<String> updateAllReports(
+//			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+//			@ModelAttribute M_FXR_Summary_Entity1 request1, @ModelAttribute M_FXR_Summary_Entity2 request2,
+//			@ModelAttribute M_FXR_Summary_Entity3 request3) {
+//		try {
+//			System.out.println("Came to single controller");
+//			// set date into all 3 entities
+//			request1.setReportDate(asondate);
+//			request2.setReportDate(asondate);
+//			request3.setReportDate(asondate);
+//
+//			// call services
+//			brrs_m_fxr_reportservice.updateReport1(request1);
+//			brrs_m_fxr_reportservice.updateReport2(request2);
+//			brrs_m_fxr_reportservice.updateReport3(request3);
+//			return ResponseEntity.ok("Updated Successfully.");
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
+//		}
+//	}
 	@Autowired
 	BRRS_M_SRWA_12F_ReportService M_SRWA_12FreportService;
 
@@ -3499,36 +3499,36 @@ public class BRRS_ReportsController {
 		}
 	}
 
-	@RequestMapping(value = "/UpdateM_FXR_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
-	@ResponseBody
-	public ResponseEntity<String> updateReportReSubAll(
-			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@ModelAttribute M_FXR_Summary_Entity1 request1,
-			@ModelAttribute M_FXR_Summary_Entity2 request2,
-			@ModelAttribute M_FXR_Summary_Entity3 request3,
-			HttpServletRequest req) {
-
-		try {
-			System.out.println("Came to M_FXR Resub Controller");
-
-			if (asondate != null) {
-				request1.setReportDate(asondate);
-				request2.setReportDate(asondate);
-				request3.setReportDate(asondate);
-				System.out.println("🗓 Set Report Date: " + asondate);
-			}
-
-			// ✅ Call service
-			brrs_m_fxr_reportservice.updateReportReSub(request1, request2, request3);
-
-			return ResponseEntity.ok("Resubmission Updated Successfully");
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body("M_FXR Resubmission Update Failed: " + e.getMessage());
-		}
-	}
+//	@RequestMapping(value = "/UpdateM_FXR_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
+//	@ResponseBody
+//	public ResponseEntity<String> updateReportReSubAll(
+//			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+//			@ModelAttribute M_FXR_Summary_Entity1 request1,
+//			@ModelAttribute M_FXR_Summary_Entity2 request2,
+//			@ModelAttribute M_FXR_Summary_Entity3 request3,
+//			HttpServletRequest req) {
+//
+//		try {
+//			System.out.println("Came to M_FXR Resub Controller");
+//
+//			if (asondate != null) {
+//				request1.setReportDate(asondate);
+//				request2.setReportDate(asondate);
+//				request3.setReportDate(asondate);
+//				System.out.println("🗓 Set Report Date: " + asondate);
+//			}
+//
+//			// ✅ Call service
+//			brrs_m_fxr_reportservice.updateReportReSub(request1, request2, request3);
+//
+//			return ResponseEntity.ok("Resubmission Updated Successfully");
+//
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+//					.body("M_FXR Resubmission Update Failed: " + e.getMessage());
+//		}
+//	}
 
 	@Autowired
 	private com.bornfire.brrs.services.BRRS_M_SRWA_12E_ReportService BRRS_M_SRWA_12E_ReportService;
@@ -4368,7 +4368,36 @@ public ResponseEntity<String> updateAllReports(
     }
 }
 
+@Autowired
+BRRS_M_FXR_ReportService M_FXR_service;
 
+@RequestMapping(value = "/FXRupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
+@ResponseBody
+public ResponseEntity<String> updateAllReports(
+
+        @RequestParam(required = false)
+        @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+
+        @ModelAttribute M_FXR_Summary_Entity request1) {
+
+    try {
+        System.out.println("Came to single controller");
+
+        request1.setReportDate(asondate);
+
+        M_FXR_service.updateReport1(request1);
+        M_FXR_service.updateReport2(request1);
+        M_FXR_service.updateReport3(request1);
+
+        return ResponseEntity.ok("Modified Successfully.");
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Update Failed: " + e.getMessage());
+    }
+}
 
 @Autowired
 BRRS_Q_STAFF_New_Report_Service QSTAFF_New_service;

@@ -490,7 +490,10 @@ public class RegulatoryReportServices {
 			repsummary = brrs_m_gmirt_reportservice.getM_GMIRTView(reportId, fromdate, todate, currency, dtltype,
 					pageable, type, version);
 			break;
-
+		case "M_FXR": 
+			repsummary = BRRS_M_FXR_reportservice.getM_FXRView(reportId,
+				  fromdate, todate, currency, dtltype, pageable, type, version); 
+			break;
 		/*
 		 * 
 		 * 
@@ -2346,7 +2349,16 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
+		case "M_FXR":
+			try {
 
+				repfile = BRRS_M_FXR_reportservice.getM_FXRExcel(filename, reportId, fromdate, todate, currency,
+						dtltype, type, version);
+
+			} catch (Exception e) { // TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
 		/*
 		 * case "M_CA4": try { repfile =
 		 * BRRS_M_CA4_reportservice.getBRRS_M_CA4Excel(filename, reportId, fromdate,
