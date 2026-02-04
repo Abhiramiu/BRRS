@@ -6,12 +6,9 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-
-
 public interface BRRS_M_LA2_Detail_Repo extends JpaRepository<M_LA2_Detail_Entity, Date> {
 
-	 @Query(value = "SELECT * FROM BRRS_M_LA2_DETAILTABLE WHERE REPORT_DATE = ?1", nativeQuery = true)
-	    List<M_LA2_Detail_Entity> getdatabydateList(Date reportdate);
+	@Query(value = "SELECT * FROM BRRS_M_LA2_DETAILTABLE WHERE REPORT_DATE = ?1", nativeQuery = true)
+	List<M_LA2_Detail_Entity> getdatabydateList(Date reportdate);
 
 }
-    

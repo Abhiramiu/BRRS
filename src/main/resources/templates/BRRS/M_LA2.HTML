@@ -904,7 +904,7 @@ PURPOSE		: BRRS REPORT
 					"TOTAL"
 
 				].forEach(field => {
-					const input = $("#r" + i + "_" + field);
+					const input = $("#R" + i + "_" + field);
 					if (input.length) {
 						formData1.append(input.attr("name"), input.val());
 					}
@@ -988,7 +988,8 @@ PURPOSE		: BRRS REPORT
 						<!-- Title -->
 						<h5
 							style="font-family: arial; font-size: 20px; font-weight: bold; color: white; margin: 0 10px;">
-							(26) MONTHLY SCHEDULE: M-LA2: LOANS AND ADVANCES OF <br> PUBLIC NON-FINANCIAL CORPORATIONS BY
+							(26) MONTHLY SCHEDULE: M-LA2: LOANS AND ADVANCES OF <br> PUBLIC NON-FINANCIAL CORPORATIONS
+							BY
 							ECONOMIC SECTOR
 						</h5>
 
@@ -1099,14 +1100,15 @@ PURPOSE		: BRRS REPORT
 								<div class="table-wrapper table-responsive scrollable-table-container"
 									style="border-right: 1px solid #dee2e6;">
 									<table
-										class="sticky-header-table table table-bordered table-hover table-sm table-condensed" id="reports">
+										class="sticky-header-table table table-bordered table-hover table-sm table-condensed"
+										id="reports">
 										<thead class="thead-light">
-											
+
 											<tr>
 												<th colspan="2" style="background-color: #D8D8D8;">
 													Sector Analysis of public non-financial corporations </th>
 											</tr>
-											
+
 											<tr>
 												<th
 													style="text-align: left; vertical-align:center; width: 700px;background-color: #D8D8D8;">
@@ -1118,13 +1120,13 @@ PURPOSE		: BRRS REPORT
 											</tr>
 
 										</thead>
-										
+
 										<tbody id="entity" th:each="report: ${reportsummary}"
 											style="font-family: Arial;">
 
 
-											
->
+
+											>
 
 
 											<tr>
@@ -1134,7 +1136,7 @@ PURPOSE		: BRRS REPORT
 													style="padding-left: 20px; font-weight: bold;text-align: right;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R12_TOTAL != null ? #numbers.formatDecimal(report.R12_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R12_TOTAL" name="R12_C2_TOTAL"
+														id="R12_TOTAL" name="R12_TOTAL"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
@@ -1148,7 +1150,7 @@ PURPOSE		: BRRS REPORT
 													style="padding-left: 20px; font-weight: bold;text-align: right;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R13_TOTAL != null ? #numbers.formatDecimal(report.R13_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R13_TOTAL" name="R13_C2_TOTAL"
+														id="R13_TOTAL" name="R13_TOTAL"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
@@ -1160,7 +1162,7 @@ PURPOSE		: BRRS REPORT
 													style="padding-left: 20px; font-weight: bold;text-align: right;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R14_TOTAL != null ? #numbers.formatDecimal(report.R14_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R14_TOTAL" name="R14_C2_TOTAL"
+														id="R14_TOTAL" name="R14_TOTAL"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
@@ -1173,7 +1175,7 @@ PURPOSE		: BRRS REPORT
 													style="padding-left: 20px; font-weight: bold;text-align: right;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R15_TOTAL != null ? #numbers.formatDecimal(report.R15_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R15_TOTAL" name="R15_C2_TOTAL"
+														id="R15_TOTAL" name="R15_TOTAL"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
@@ -1188,7 +1190,7 @@ PURPOSE		: BRRS REPORT
 													style="padding-left: 20px; font-weight: bold;text-align: right;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R16_TOTAL != null ? #numbers.formatDecimal(report.R16_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R16_TOTAL" name="R16_C2_TOTAL"
+														id="R16_TOTAL" name="R16_TOTAL"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
@@ -1201,7 +1203,7 @@ PURPOSE		: BRRS REPORT
 													style="padding-left: 20px; font-weight: bold;text-align: right;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R17_TOTAL != null ? #numbers.formatDecimal(report.R17_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R17_TOTAL" name="R17_C2_TOTAL"
+														id="R17_TOTAL" name="R17_TOTAL"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
@@ -1214,7 +1216,7 @@ PURPOSE		: BRRS REPORT
 													style="padding-left: 20px; font-weight: bold;text-align: right;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R18_TOTAL != null ? #numbers.formatDecimal(report.R18_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R18_TOTAL" name="R18_C2_TOTAL"
+														id="R18_TOTAL" name="R18_TOTAL"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
@@ -1227,7 +1229,7 @@ PURPOSE		: BRRS REPORT
 													style="padding-left: 20px; font-weight: bold;text-align: right;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R19_TOTAL != null ? #numbers.formatDecimal(report.R19_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R19_TOTAL" name="R19_C2_TOTAL"
+														id="R19_TOTAL" name="R19_TOTAL"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
@@ -1240,7 +1242,7 @@ PURPOSE		: BRRS REPORT
 													style="padding-left: 20px; font-weight: bold;text-align: right;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R20_TOTAL != null ? #numbers.formatDecimal(report.R20_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R20_TOTAL" name="R20_C2_TOTAL"
+														id="R20_TOTAL" name="R20_TOTAL"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
@@ -1253,7 +1255,7 @@ PURPOSE		: BRRS REPORT
 													style="padding-left: 21px; font-weight: bold;text-align: right;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R21_TOTAL != null ? #numbers.formatDecimal(report.R21_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R21_TOTAL" name="R21_C2_TOTAL"
+														id="R21_TOTAL" name="R21_TOTAL"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
@@ -1266,7 +1268,7 @@ PURPOSE		: BRRS REPORT
 													style="padding-left: 22px; font-weight: bold;text-align: right;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R22_TOTAL != null ? #numbers.formatDecimal(report.R22_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R22_TOTAL" name="R22_C2_TOTAL"
+														id="R22_TOTAL" name="R22_TOTAL"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
@@ -1279,7 +1281,7 @@ PURPOSE		: BRRS REPORT
 													style="padding-left: 23px; font-weight: bold;text-align: right;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R23_TOTAL != null ? #numbers.formatDecimal(report.R23_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R23_TOTAL" name="R23_C2_TOTAL"
+														id="R23_TOTAL" name="R23_TOTAL"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
@@ -1292,7 +1294,7 @@ PURPOSE		: BRRS REPORT
 													style="padding-left: 24px; font-weight: bold;text-align: right;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R24_TOTAL != null ? #numbers.formatDecimal(report.R24_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R24_TOTAL" name="R24_C2_TOTAL"
+														id="R24_TOTAL" name="R24_TOTAL"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
@@ -1305,7 +1307,7 @@ PURPOSE		: BRRS REPORT
 													style="padding-left: 25px; font-weight: bold;text-align: right;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R25_TOTAL != null ? #numbers.formatDecimal(report.R25_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
-														id="R25_TOTAL" name="R25_C2_TOTAL"
+														id="R25_TOTAL" name="R25_TOTAL"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
@@ -1318,7 +1320,7 @@ PURPOSE		: BRRS REPORT
 												<td id="ROW26"
 													style="background-color: rgb(107, 122, 143);color: white;padding-left: 20px; font-weight: bold;text-align: right;">
 													<input class="display-input Show_input" type="text" id="R26_TOTAL"
-														name="R26_C2_TOTAL"
+														name="R26_TOTAL"
 														style="background-color: rgb(107, 122, 143);color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
