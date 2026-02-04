@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -12,24 +13,18 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
+
+import javax.transaction.Transactional;
 
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CreationHelper;
-import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.Font;
-import org.apache.poi.ss.usermodel.HorizontalAlignment;
-import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
@@ -41,13 +36,14 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.bornfire.brrs.entities.BRRS_M_BOP_Archival_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_M_BOP_Archival_Summary_Repo;
+import com.bornfire.brrs.entities.BRRS_M_BOP_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_M_BOP_Summary_Repo;
+import com.bornfire.brrs.entities.M_BOP_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.M_BOP_Archival_Summary_Entity;
+import com.bornfire.brrs.entities.M_BOP_Detail_Entity;
 import com.bornfire.brrs.entities.M_BOP_Summary_Entity;
-import com.bornfire.brrs.entities.Q_RLFA1_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.Q_RLFA2_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.Q_RLFA2_Summary_Entity;
 
 
 
@@ -73,6 +69,13 @@ public class BRRS_M_BOP_ReportService {
 	
 	@Autowired
 	BRRS_M_BOP_Archival_Summary_Repo M_BOP_Archival_Summary_Repo; 
+	
+	
+	@Autowired
+	BRRS_M_BOP_Detail_Repo M_BOP_Detail_Repo;
+
+	@Autowired
+	BRRS_M_BOP_Archival_Detail_Repo M_BOP_Archival_Detail_Repo;
 
 	
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
@@ -118,46 +121,88 @@ public class BRRS_M_BOP_ReportService {
 	 */
 	
 	
-	 public ModelAndView getBRRS_M_BOPview(String reportId, String fromdate, String
-			  todate, String currency, String dtltype, Pageable pageable, String type,
-			  String version) {
-			  
-			  ModelAndView mv = new ModelAndView(); Session hs =
-			  sessionFactory.getCurrentSession();
-			  
-			  int pageSize = pageable.getPageSize(); int currentPage =
-			  pageable.getPageNumber(); int startItem = currentPage * pageSize;
-			  
-			  try { Date d1 = dateformat.parse(todate);
-			  
-			  // ---------- CASE 1: ARCHIVAL ---------- 
-			  if
-			  ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
-			  List<M_BOP_Archival_Summary_Entity> T1Master =
-					  M_BOP_Archival_Summary_Repo.getdatabydateListarchival(d1, version);
-			  
-			  mv.addObject("reportsummary", T1Master); }
-			  
-			  // ---------- CASE 2: RESUB ---------- 
-			  else if
-			  ("RESUB".equalsIgnoreCase(type) && version != null) {
-			  List<M_BOP_Archival_Summary_Entity> T1Master =
-					  M_BOP_Archival_Summary_Repo.getdatabydateListarchival(d1, version);
-			  
-			  mv.addObject("reportsummary", T1Master); }
-			  
-			  // ---------- CASE 3: NORMAL ---------- 
-			  else { List<M_BOP_Summary_Entity>
-			  T1Master =
-					  M_BOP_Summary_Repo.getdatabydateListWithVersion(todate);
-			  System.out.println("T1Master Size "+T1Master.size());
-			  mv.addObject("reportsummary", T1Master); }
-			  
-			  } catch (ParseException e) { e.printStackTrace(); }
-			  
-			  mv.setViewName("BRRS/M_BOP"); mv.addObject("displaymode", "summary");
-			  System.out.println("View set to: " + mv.getViewName()); return mv; }
+	public ModelAndView getBRRS_M_BOPview(
+	        String reportId,
+	        String fromdate,
+	        String todate,
+	        String currency,
+	        String dtltype,
+	        Pageable pageable,
+	        String type,
+	        BigDecimal version) {
 
+	    ModelAndView mv = new ModelAndView();
+	    Session hs = sessionFactory.getCurrentSession();
+
+	    int pageSize = pageable.getPageSize();
+	    int currentPage = pageable.getPageNumber();
+	    int startItem = currentPage * pageSize;
+
+	    try {
+	        Date d1 = dateformat.parse(todate);
+
+	        // ---------- CASE 1: ARCHIVAL ----------
+	        if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
+
+	            List<M_BOP_Archival_Summary_Entity> T1Master =
+	                    M_BOP_Archival_Summary_Repo.getdatabydateListarchival(d1, version);
+	            mv.addObject("displaymode", "summary");
+	            mv.addObject("reportsummary", T1Master);
+	        }
+
+	        // ---------- CASE 2: RESUB ----------
+	        else if ("RESUB".equalsIgnoreCase(type) && version != null) {
+
+	            List<M_BOP_Archival_Summary_Entity> T1Master =
+	                    M_BOP_Archival_Summary_Repo.getdatabydateListarchival(d1, version);
+	            mv.addObject("displaymode", "summary");
+	            mv.addObject("reportsummary", T1Master);
+	        }
+
+	        // ---------- CASE 3: NORMAL ----------
+	        else {
+
+	            List<M_BOP_Summary_Entity> T1Master =
+	                    M_BOP_Summary_Repo.getdatabydateList(dateformat.parse(todate));
+	            mv.addObject("displaymode", "summary");
+	            System.out.println("T1Master Size " + T1Master.size());
+	            mv.addObject("reportsummary", T1Master);
+	        }
+
+	        // ---------- CASE 4: DETAIL (NEW, ONLY ADDITION) ----------
+	        if ("detail".equalsIgnoreCase(dtltype)) {
+
+	            // DETAIL + ARCHIVAL
+	            if (version != null) {
+
+	                List<M_BOP_Archival_Detail_Entity> T1Master =
+	                       M_BOP_Archival_Detail_Repo
+	                                .getdatabydateListarchival(d1, version);
+	                mv.addObject("displaymode", "Details");
+	                mv.addObject("reportsummary", T1Master);
+	            }
+	            // DETAIL + NORMAL
+	            else {
+
+	                List<M_BOP_Detail_Entity> T1Master =
+	                        M_BOP_Detail_Repo
+	                                .getdatabydateList(dateformat.parse(todate));
+	                mv.addObject("displaymode", "Details");
+	                mv.addObject("reportsummary", T1Master);
+	            }
+	        }
+
+	    } catch (ParseException e) {
+	        e.printStackTrace();
+	    }
+
+	    mv.setViewName("BRRS/M_BOP");
+	   
+	    System.out.println("View set to: " + mv.getViewName());
+
+	    return mv;
+	}
+	
 	 
 	/*
 	 * public ModelAndView getM_BOPcurrentDtl( String reportId, String fromdate,
@@ -214,45 +259,37 @@ public class BRRS_M_BOP_ReportService {
 	 * return mv; }
 	 */
 	
-	public byte[] getBRRS_M_BOPExcel(String filename,String reportId, String fromdate, String todate, String currency, String dtltype, String type, String version) throws Exception {
-		logger.info("Service: Starting Excel generation process in memory."); 
+	public byte[] getM_BOPExcel(String filename, String reportId, String fromdate, String todate, String currency,
+			String dtltype, String type, BigDecimal version) throws Exception {
+		logger.info("Service: Starting Excel generation process in memory.");
+		
 		
 		
 		// ARCHIVAL check
-		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && !version.trim().isEmpty()) {
-			logger.info("Service: Generating ARCHIVAL report for version {}", version);
-			return getExcelM_BOPARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
-		} 
+        if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
+            logger.info("Service: Generating ARCHIVAL report for version {}", version);
+            return getExcelM_BOPARCHIVAL(filename, reportId, fromdate, todate,
+                    currency, dtltype, type, version);
+        }
+        // Email check
+         if ("email".equalsIgnoreCase(type)  && version == null) {
+            logger.info("Service: Generating Email report for version {}", version);
+            return BRRS_M_BOPEmailExcel(filename, reportId, fromdate, todate, currency, dtltype, type, version);
+        } else if ("email".equalsIgnoreCase(type) && version != null) {
+            logger.info("Service: Generating Email report for version {}", version);
+            return BRRS_M_BOPARCHIVALEmailExcel(filename, reportId, fromdate, todate,
+                    currency, dtltype, type, version);
 
-		
-		else if ("RESUB".equalsIgnoreCase(type) && version != null && !version.trim().isEmpty()) {
-		    logger.info("Service: Generating RESUB report for version {}", version);
+        }
 
-		    try {
-		        // ✅ Use pattern matching "31-Jul-2025"
-		        SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
-		        Date report_date = sdf.parse(fromdate);  // or use asondate if that's your date source
+	    /* ===================== NORMAL ===================== */
+	    List<M_BOP_Summary_Entity> dataList =
+	            M_BOP_Summary_Repo.getdatabydateList(dateformat.parse(todate));
 
-		        List<M_BOP_Archival_Summary_Entity> T1Master =
-		        		M_BOP_Archival_Summary_Repo.getdatabydateListarchival(report_date, version);
-
-		        // ✅ Generate Excel
-		        return BRRS_M_BOPResubExcel(filename, reportId, fromdate, todate, currency, dtltype, type, version);
-
-		    } catch (ParseException e) {
-		        logger.error("Invalid report date format: {}", fromdate, e);
-		        throw new RuntimeException("Date format must be dd-MMM-yyyy (e.g. 31-Jul-2025)");
-		    }
-		}
-		
-		
-		
-		List<M_BOP_Summary_Entity> dataList =M_BOP_Summary_Repo.getdatabydateList(dateformat.parse(todate)) ;
-
-		if (dataList.isEmpty()) {
-			logger.warn("Service: No data found for BRRSM_BOP report. Returning empty result.");
-			return new byte[0];
-		}
+	    if (dataList.isEmpty()) {
+	        logger.warn("Service: No data found for M_BOP report. Returning empty result.");
+	        return new byte[0];
+	    }
 
 		String templateDir = env.getProperty("output.exportpathtemp");
 		String templateFileName = filename;
@@ -1513,39 +1550,53 @@ public class BRRS_M_BOP_ReportService {
 	 * RuntimeException("Failed to fetch data", e); } return M_BOPArchivallist; }
 	 */
 	
-	public List<Object[]> getM_BOPArchival() {
-		List<Object[]> archivalList = new ArrayList<>();
-
+	/*
+	 * public List<Object[]> getM_BOPArchival() { List<Object[]> archivalList = new
+	 * ArrayList<>();
+	 * 
+	 * try { List<M_BOP_Archival_Summary_Entity> repoData =
+	 * M_BOP_Archival_Summary_Repo .getdatabydateListWithVersionAll();
+	 * 
+	 * if (repoData != null && !repoData.isEmpty()) { for
+	 * (M_BOP_Archival_Summary_Entity entity : repoData) { Object[] row = new
+	 * Object[] { entity.getReport_date(), entity.getReport_version() };
+	 * archivalList.add(row); }
+	 * 
+	 * System.out.println("Fetched " + archivalList.size() + " archival records");
+	 * M_BOP_Archival_Summary_Entity first = repoData.get(0);
+	 * System.out.println("Latest archival version: " + first.getReport_version());
+	 * } else { System.out.println("No archival data found."); }
+	 * 
+	 * } catch (Exception e) {
+	 * System.err.println("Error fetching M_BOP Archival data: " + e.getMessage());
+	 * e.printStackTrace(); }
+	 * 
+	 * return archivalList; }
+	 */
+	
+	
+	public List<Object> getM_BOPArchival() {
+		List<Object> M_BOPArchivallist = new ArrayList<>();
 		try {
-			List<M_BOP_Archival_Summary_Entity> repoData = M_BOP_Archival_Summary_Repo
-					.getdatabydateListWithVersionAll();
-
-			if (repoData != null && !repoData.isEmpty()) {
-				for (M_BOP_Archival_Summary_Entity entity : repoData) {
-					Object[] row = new Object[] {
-							entity.getReport_date(), 
-							entity.getReport_version() 
-					};
-					archivalList.add(row);
-				}
-
-				System.out.println("Fetched " + archivalList.size() + " archival records");
-				M_BOP_Archival_Summary_Entity first = repoData.get(0);
-				System.out.println("Latest archival version: " + first.getReport_version());
-			} else {
-				System.out.println("No archival data found.");
-			}
-
+			M_BOPArchivallist = M_BOP_Archival_Summary_Repo.getM_BOP_archival();
+		
+		
+			System.out.println("countser" + M_BOPArchivallist.size());
+			
 		} catch (Exception e) {
-			System.err.println("Error fetching M_BOP Archival data: " + e.getMessage());
+			// Log the exception
+			System.err.println("Error fetching M_BOPArchivallist Archival data: " + e.getMessage());
 			e.printStackTrace();
-		}
 
-		return archivalList;
+			// Optionally, you can rethrow it or return empty list
+			// throw new RuntimeException("Failed to fetch data", e);
+		}
+		return M_BOPArchivallist;
 	}
 	
+	
 	public byte[] getExcelM_BOPARCHIVAL(String filename, String reportId, String fromdate, String todate,
-			   String currency, String dtltype, String type, String version) throws Exception {
+			   String currency, String dtltype, String type, BigDecimal version) throws Exception {
 		
 		logger.info("Service: Starting Excel generation process in memory.");
 		
@@ -2812,16 +2863,28 @@ public class BRRS_M_BOP_ReportService {
 	
 	
 	
-	
+	@Transactional
 	public void updateReport(M_BOP_Summary_Entity updatedEntity) {
+
 	    System.out.println("Came to services");
 	    System.out.println("Report Date: " + updatedEntity.getReport_date());
 
-	    M_BOP_Summary_Entity existing = M_BOP_Summary_Repo.findById(updatedEntity.getReport_date())
-	            .orElseThrow(() -> new RuntimeException(
-	                    "Record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
+	    // 1️⃣ Fetch existing SUMMARY
+	     M_BOP_Summary_Entity existingSummary =
+	            M_BOP_Summary_Repo.findById(updatedEntity.getReport_date())
+	                    .orElseThrow(() -> new RuntimeException(
+	                            "Summary record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
 
-	    try {
+	    // 2️⃣ Fetch or create DETAIL
+	      M_BOP_Detail_Entity existingDetail =
+	            M_BOP_Detail_Repo.findById(updatedEntity.getReport_date())
+	                    .orElseGet(() -> {
+	                          M_BOP_Detail_Entity d = new   M_BOP_Detail_Entity();
+	                        d.setReport_date(updatedEntity.getReport_date());
+	                        return d;
+	                    });
+
+	  try {
 	        // 1️⃣ Loop from R10 to R63 and copy fields
 	    	
 	        for (int i = 13; i <= 36; i++) {
@@ -2838,31 +2901,44 @@ public class BRRS_M_BOP_ReportService {
 	        	        "cp" };
 
 	            for (String field : fields) {
-	            	   String getterName = "get" + prefix + field; // e.g., getR10_orig_amt
-	                   String setterName = "set" + prefix + field; // e.g., setR10_orig_amt
+
+	                String getterName = "get" + prefix + field;
+	                String setterName = "set" + prefix + field;
 
 	                try {
-	                    Method getter = M_BOP_Summary_Entity.class.getMethod(getterName);
-	                    Method setter = M_BOP_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+	                    Method getter =
+	                              M_BOP_Summary_Entity.class.getMethod(getterName);
+
+	                    Method summarySetter =
+	                              M_BOP_Summary_Entity.class.getMethod(
+	                                    setterName, getter.getReturnType());
+
+	                    Method detailSetter =
+	                              M_BOP_Detail_Entity.class.getMethod(
+	                                    setterName, getter.getReturnType());
 
 	                    Object newValue = getter.invoke(updatedEntity);
-	                    setter.invoke(existing, newValue);
+
+	                    // ✅ set into SUMMARY
+	                    summarySetter.invoke(existingSummary, newValue);
+
+	                    // ✅ set into DETAIL
+	                    detailSetter.invoke(existingDetail, newValue);
 
 	                } catch (NoSuchMethodException e) {
-	                    // Skip missing fields
+	                    // skip missing fields safely
 	                    continue;
 	                }
 	            }
 	        }
 
-	       
-
 	    } catch (Exception e) {
 	        throw new RuntimeException("Error while updating report fields", e);
 	    }
 
-	    // 3️⃣ Save updated entity
-	    M_BOP_Summary_Repo.save(existing);
+	    // 3️⃣ Save BOTH (same transaction)
+	    M_BOP_Summary_Repo.save(existingSummary);
+	    M_BOP_Detail_Repo.save(existingDetail);
 	}
 
 	
@@ -2896,66 +2972,56 @@ public class BRRS_M_BOP_ReportService {
 	
 	
 	
-	public void updateReportResub(M_BOP_Summary_Entity updatedEntity) {
-	    System.out.println("Came to Resub Service");
-	    System.out.println("Report Date: " + updatedEntity.getReport_date());
-
-	    // Use entity field directly (same name as in entity)
-	    Date report_date = updatedEntity.getReport_date();
-	    int newVersion = 1;
-
-	    try {
-	        // ✅ use the same variable name as in repo method
-	        Optional<M_BOP_Archival_Summary_Entity> latestArchivalOpt =
-	        		M_BOP_Archival_Summary_Repo.getLatestArchivalVersionByDate(report_date);
-
-	        // Determine next version
-	        if (latestArchivalOpt.isPresent()) {
-	        	M_BOP_Archival_Summary_Entity latestArchival = latestArchivalOpt.get();
-	            try {
-	                newVersion = Integer.parseInt(latestArchival.getReport_version()) + 1;
-	            } catch (NumberFormatException e) {
-	                System.err.println("Invalid version format. Defaulting to version 1");
-	                newVersion = 1;
-	            }
-	        } else {
-	            System.out.println("No previous archival found for date: " + report_date);
-	        }
-
-	        // Prevent duplicate version
-	        boolean exists = M_BOP_Archival_Summary_Repo
-	                .findByReport_dateAndReport_version(report_date, String.valueOf(newVersion))
-	                .isPresent();
-
-	        if (exists) {
-	            throw new RuntimeException("Version " + newVersion + " already exists for report date " + report_date);
-	        }
-
-	        // Copy summary entity to archival entity
-	        M_BOP_Archival_Summary_Entity archivalEntity = new M_BOP_Archival_Summary_Entity();
-	        org.springframework.beans.BeanUtils.copyProperties(updatedEntity, archivalEntity);
-
-	        archivalEntity.setReport_date(report_date);
-	        archivalEntity.setReport_version(String.valueOf(newVersion));
-	        archivalEntity.setReportResubDate(new Date());
-
-	        System.out.println("Saving new archival version: " + newVersion);
-	        M_BOP_Archival_Summary_Repo.save(archivalEntity);
-
-	        System.out.println("Saved archival version successfully: " + newVersion);
-
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        throw new RuntimeException("Error while creating archival resubmission record", e);
-	    }
-	}
-	
+	/*
+	 * public void updateReportResub(M_BOP_Summary_Entity updatedEntity) {
+	 * System.out.println("Came to Resub Service");
+	 * System.out.println("Report Date: " + updatedEntity.getReport_date());
+	 * 
+	 * // Use entity field directly (same name as in entity) Date report_date =
+	 * updatedEntity.getReport_date(); int newVersion = 1;
+	 * 
+	 * try { // ✅ use the same variable name as in repo method
+	 * Optional<M_BOP_Archival_Summary_Entity> latestArchivalOpt =
+	 * M_BOP_Archival_Summary_Repo.getLatestArchivalVersionByDate(report_date);
+	 * 
+	 * // Determine next version if (latestArchivalOpt.isPresent()) {
+	 * M_BOP_Archival_Summary_Entity latestArchival = latestArchivalOpt.get(); try {
+	 * newVersion = Integer.parseInt(latestArchival.getReport_version()) + 1; }
+	 * catch (NumberFormatException e) {
+	 * System.err.println("Invalid version format. Defaulting to version 1");
+	 * newVersion = 1; } } else {
+	 * System.out.println("No previous archival found for date: " + report_date); }
+	 * 
+	 * // Prevent duplicate version boolean exists = M_BOP_Archival_Summary_Repo
+	 * .findByReport_dateAndReport_version(report_date,
+	 * BigDecimal.valueOf(newVersion)) .isPresent();
+	 * 
+	 * if (exists) { throw new RuntimeException("Version " + newVersion +
+	 * " already exists for report date " + report_date); }
+	 * 
+	 * // Copy summary entity to archival entity M_BOP_Archival_Summary_Entity
+	 * archivalEntity = new M_BOP_Archival_Summary_Entity();
+	 * org.springframework.beans.BeanUtils.copyProperties(updatedEntity,
+	 * archivalEntity);
+	 * 
+	 * archivalEntity.setReport_date(report_date);
+	 * archivalEntity.setReport_version(BigDecimal.valueOf(newVersion));
+	 * archivalEntity.setReportResubDate(new Date());
+	 * 
+	 * System.out.println("Saving new archival version: " + newVersion);
+	 * M_BOP_Archival_Summary_Repo.save(archivalEntity);
+	 * 
+	 * System.out.println("Saved archival version successfully: " + newVersion);
+	 * 
+	 * } catch (Exception e) { e.printStackTrace(); throw new
+	 * RuntimeException("Error while creating archival resubmission record", e); } }
+	 */
 
 
 	/// Downloaded for Archival & Resub
 	public byte[] BRRS_M_BOPResubExcel(String filename, String reportId, String fromdate,
         String todate, String currency, String dtltype,
-        String type, String version) throws Exception {
+        String type, BigDecimal version) throws Exception {
 
     logger.info("Service: Starting Excel generation process in memory for RESUB Excel.");
 
@@ -4128,6 +4194,2611 @@ public class BRRS_M_BOP_ReportService {
 
 	}
 
+	public byte[] BRRS_M_BOPEmailExcel(String filename, String reportId, String fromdate, String todate,
+			String currency, String dtltype, String type, BigDecimal version) throws Exception {
+
+		logger.info("Service: Starting Excel generation process in memory.");
+
+		
+
+		List<M_BOP_Summary_Entity> dataList = M_BOP_Summary_Repo
+				.getdatabydateList(dateformat.parse(todate));
+
+		if (dataList.isEmpty()) {
+			logger.warn("Service: No data found for M_BOP_email report. Returning empty result.");
+			return new byte[0];
+		}
+
+		String templateDir = env.getProperty("output.exportpathtemp");
+		String templateFileName = filename;
+		System.out.println(filename);
+		Path templatePath = Paths.get(templateDir, templateFileName);
+		System.out.println(templatePath);
+
+		logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
+
+		if (!Files.exists(templatePath)) {
+// This specific exception will be caught by the controller.
+			throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
+		}
+		if (!Files.isReadable(templatePath)) {
+// A specific exception for permission errors.
+			throw new SecurityException(
+					"Template file exists but is not readable (check permissions): " + templatePath.toAbsolutePath());
+		}
+
+// This try-with-resources block is perfect. It guarantees all resources are
+// closed automatically.
+		try (InputStream templateInputStream = Files.newInputStream(templatePath);
+				Workbook workbook = WorkbookFactory.create(templateInputStream);
+				ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+
+			Sheet sheet = workbook.getSheetAt(0);
+
+// --- Style Definitions ---
+			CreationHelper createHelper = workbook.getCreationHelper();
+
+			CellStyle dateStyle = workbook.createCellStyle();
+			dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
+			dateStyle.setBorderBottom(BorderStyle.THIN);
+			dateStyle.setBorderTop(BorderStyle.THIN);
+			dateStyle.setBorderLeft(BorderStyle.THIN);
+			dateStyle.setBorderRight(BorderStyle.THIN);
+
+			CellStyle textStyle = workbook.createCellStyle();
+			textStyle.setBorderBottom(BorderStyle.THIN);
+			textStyle.setBorderTop(BorderStyle.THIN);
+			textStyle.setBorderLeft(BorderStyle.THIN);
+			textStyle.setBorderRight(BorderStyle.THIN);
+
+// Create the font
+			Font font = workbook.createFont();
+			font.setFontHeightInPoints((short) 8); // size 8
+			font.setFontName("Arial");
+
+			CellStyle numberStyle = workbook.createCellStyle();
+// numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
+			numberStyle.setBorderBottom(BorderStyle.THIN);
+			numberStyle.setBorderTop(BorderStyle.THIN);
+			numberStyle.setBorderLeft(BorderStyle.THIN);
+			numberStyle.setBorderRight(BorderStyle.THIN);
+			numberStyle.setFont(font);
+// --- End of Style Definitions ---
+
+			int startRow = 12;
+
+			if (!dataList.isEmpty()) {
+				for (int i = 0; i < dataList.size(); i++) {
+					M_BOP_Summary_Entity record = dataList.get(i);
+					System.out.println("rownumber=" + startRow + i);
+					Row row = sheet.getRow(startRow + i);
+					if (row == null) {
+						row = sheet.createRow(startRow + i);
+					}
+					
+					
+					
+					//row13
+					// Column B
+					Cell cell2 = row.createCell(1);
+					if (record.getR13_open_position() != null) {
+						cell2.setCellValue(record.getR13_open_position().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+					//row13
+					// Column C
+					Cell cell3 = row.createCell(2);
+					if (record.getR13_cpdm_dt_inc() != null) {
+						cell3.setCellValue(record.getR13_cpdm_dt_inc().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+					//row13
+					// Column D
+					Cell cell4 = row.createCell(3);
+					if (record.getR13_cpdm_dt_dec() != null) {
+						cell4.setCellValue(record.getR13_cpdm_dt_dec().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+					
+					//row13
+					// Column F
+					Cell cell6 = row.createCell(5);
+					if (record.getR13_cpdm_dt_der() != null) {
+						cell6.setCellValue(record.getR13_cpdm_dt_der().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+                   // Column G
+					Cell cell7 = row.createCell(6);
+					if (record.getR13_cpdm_dt_dto() != null) {
+						cell7.setCellValue(record.getR13_cpdm_dt_dto().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					
+					//ROW 14
+					row = sheet.getRow(13);
+                     // Column B
+					cell2 = row.createCell(1);
+					if (record.getR14_open_position() != null) {
+						cell2.setCellValue(record.getR14_open_position().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					//row14
+					// Column C
+					cell3 = row.createCell(2);
+					if (record.getR14_cpdm_dt_inc() != null) {
+						cell3.setCellValue(record.getR14_cpdm_dt_inc().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+					//row14
+					// Column D
+					cell4 = row.createCell(3);
+					if (record.getR14_cpdm_dt_dec() != null) {
+						cell4.setCellValue(record.getR14_cpdm_dt_dec().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+					
+					//row14
+					// Column f
+					cell6 = row.createCell(5);
+					if (record.getR14_cpdm_dt_der() != null) {
+						cell6.setCellValue(record.getR14_cpdm_dt_der().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					//row14
+					//column g
+					
+					cell7 = row.createCell(6);
+					if (record.getR14_cpdm_dt_dto() != null) {
+						cell7.setCellValue(record.getR14_cpdm_dt_dto().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+	                
+
+					
+					
+
+					
+
+// ROW 15
+row = sheet.getRow(14);
+// Column B
+cell2 = row.createCell(1);
+if (record.getR15_open_position() != null) {
+    cell2.setCellValue(record.getR15_open_position().doubleValue());
+    cell2.setCellStyle(numberStyle);
+} else {
+    cell2.setCellValue("");
+    cell2.setCellStyle(textStyle);
+}
+// Column C
+cell3 = row.createCell(2);
+if (record.getR15_cpdm_dt_inc() != null) {
+    cell3.setCellValue(record.getR15_cpdm_dt_inc().doubleValue());
+    cell3.setCellStyle(numberStyle);
+} else {
+    cell3.setCellValue("");
+    cell3.setCellStyle(textStyle);
+}
+// Column D
+cell4 = row.createCell(3);
+if (record.getR15_cpdm_dt_dec() != null) {
+    cell4.setCellValue(record.getR15_cpdm_dt_dec().doubleValue());
+    cell4.setCellStyle(numberStyle);
+} else {
+    cell4.setCellValue("");
+    cell4.setCellStyle(textStyle);
+}
+// Column F
+cell6 = row.createCell(5);
+if (record.getR15_cpdm_dt_der() != null) {
+    cell6.setCellValue(record.getR15_cpdm_dt_der().doubleValue());
+    cell6.setCellStyle(numberStyle);
+} else {
+    cell6.setCellValue("");
+    cell6.setCellStyle(textStyle);
+}
+// Column G
+cell7 = row.createCell(6);
+if (record.getR15_cpdm_dt_dto() != null) {
+    cell7.setCellValue(record.getR15_cpdm_dt_dto().doubleValue());
+    cell7.setCellStyle(numberStyle);
+} else {
+    cell7.setCellValue("");
+    cell7.setCellStyle(textStyle);
+}
+
+// ROW 16
+row = sheet.getRow(15);
+// Column B
+cell2 = row.createCell(1);
+if (record.getR16_open_position() != null) {
+    cell2.setCellValue(record.getR16_open_position().doubleValue());
+    cell2.setCellStyle(numberStyle);
+} else {
+    cell2.setCellValue("");
+    cell2.setCellStyle(textStyle);
+}
+// Column C
+cell3 = row.createCell(2);
+if (record.getR16_cpdm_dt_inc() != null) {
+    cell3.setCellValue(record.getR16_cpdm_dt_inc().doubleValue());
+    cell3.setCellStyle(numberStyle);
+} else {
+    cell3.setCellValue("");
+    cell3.setCellStyle(textStyle);
+}
+// Column D
+cell4 = row.createCell(3);
+if (record.getR16_cpdm_dt_dec() != null) {
+    cell4.setCellValue(record.getR16_cpdm_dt_dec().doubleValue());
+    cell4.setCellStyle(numberStyle);
+} else {
+    cell4.setCellValue("");
+    cell4.setCellStyle(textStyle);
+}
+// Column F
+cell6 = row.createCell(5);
+if (record.getR16_cpdm_dt_der() != null) {
+    cell6.setCellValue(record.getR16_cpdm_dt_der().doubleValue());
+    cell6.setCellStyle(numberStyle);
+} else {
+    cell6.setCellValue("");
+    cell6.setCellStyle(textStyle);
+}
+// Column G
+cell7 = row.createCell(6);
+if (record.getR16_cpdm_dt_dto() != null) {
+    cell7.setCellValue(record.getR16_cpdm_dt_dto().doubleValue());
+    cell7.setCellStyle(numberStyle);
+} else {
+    cell7.setCellValue("");
+    cell7.setCellStyle(textStyle);
+}
+
+// ROW 17
+row = sheet.getRow(16);
+// Column B
+cell2 = row.createCell(1);
+if (record.getR17_open_position() != null) {
+    cell2.setCellValue(record.getR17_open_position().doubleValue());
+    cell2.setCellStyle(numberStyle);
+} else {
+    cell2.setCellValue("");
+    cell2.setCellStyle(textStyle);
+}
+// Column C
+cell3 = row.createCell(2);
+if (record.getR17_cpdm_dt_inc() != null) {
+    cell3.setCellValue(record.getR17_cpdm_dt_inc().doubleValue());
+    cell3.setCellStyle(numberStyle);
+} else {
+    cell3.setCellValue("");
+    cell3.setCellStyle(textStyle);
+}
+// Column D
+cell4 = row.createCell(3);
+if (record.getR17_cpdm_dt_dec() != null) {
+    cell4.setCellValue(record.getR17_cpdm_dt_dec().doubleValue());
+    cell4.setCellStyle(numberStyle);
+} else {
+    cell4.setCellValue("");
+    cell4.setCellStyle(textStyle);
+}
+// Column F
+cell6 = row.createCell(5);
+if (record.getR17_cpdm_dt_der() != null) {
+    cell6.setCellValue(record.getR17_cpdm_dt_der().doubleValue());
+    cell6.setCellStyle(numberStyle);
+} else {
+    cell6.setCellValue("");
+    cell6.setCellStyle(textStyle);
+}
+// Column G
+cell7 = row.createCell(6);
+if (record.getR17_cpdm_dt_dto() != null) {
+    cell7.setCellValue(record.getR17_cpdm_dt_dto().doubleValue());
+    cell7.setCellStyle(numberStyle);
+} else {
+    cell7.setCellValue("");
+    cell7.setCellStyle(textStyle);
+}
+
+// ROW 18
+row = sheet.getRow(17);
+// Column B
+cell2 = row.createCell(1);
+if (record.getR18_open_position() != null) {
+    cell2.setCellValue(record.getR18_open_position().doubleValue());
+    cell2.setCellStyle(numberStyle);
+} else {
+    cell2.setCellValue("");
+    cell2.setCellStyle(textStyle);
+}
+// Column C
+cell3 = row.createCell(2);
+if (record.getR18_cpdm_dt_inc() != null) {
+    cell3.setCellValue(record.getR18_cpdm_dt_inc().doubleValue());
+    cell3.setCellStyle(numberStyle);
+} else {
+    cell3.setCellValue("");
+    cell3.setCellStyle(textStyle);
+}
+// Column D
+cell4 = row.createCell(3);
+if (record.getR18_cpdm_dt_dec() != null) {
+    cell4.setCellValue(record.getR18_cpdm_dt_dec().doubleValue());
+    cell4.setCellStyle(numberStyle);
+} else {
+    cell4.setCellValue("");
+    cell4.setCellStyle(textStyle);
+}
+// Column F
+cell6 = row.createCell(5);
+if (record.getR18_cpdm_dt_der() != null) {
+    cell6.setCellValue(record.getR18_cpdm_dt_der().doubleValue());
+    cell6.setCellStyle(numberStyle);
+} else {
+    cell6.setCellValue("");
+    cell6.setCellStyle(textStyle);
+}
+// Column G
+cell7 = row.createCell(6);
+if (record.getR18_cpdm_dt_dto() != null) {
+    cell7.setCellValue(record.getR18_cpdm_dt_dto().doubleValue());
+    cell7.setCellStyle(numberStyle);
+} else {
+    cell7.setCellValue("");
+    cell7.setCellStyle(textStyle);
+}
+
+// ROW 19
+row = sheet.getRow(18);
+// Column B
+cell2 = row.createCell(1);
+if (record.getR19_open_position() != null) {
+    cell2.setCellValue(record.getR19_open_position().doubleValue());
+    cell2.setCellStyle(numberStyle);
+} else {
+    cell2.setCellValue("");
+    cell2.setCellStyle(textStyle);
+}
+// Column C
+cell3 = row.createCell(2);
+if (record.getR19_cpdm_dt_inc() != null) {
+    cell3.setCellValue(record.getR19_cpdm_dt_inc().doubleValue());
+    cell3.setCellStyle(numberStyle);
+} else {
+    cell3.setCellValue("");
+    cell3.setCellStyle(textStyle);
+}
+// Column D
+cell4 = row.createCell(3);
+if (record.getR19_cpdm_dt_dec() != null) {
+    cell4.setCellValue(record.getR19_cpdm_dt_dec().doubleValue());
+    cell4.setCellStyle(numberStyle);
+} else {
+    cell4.setCellValue("");
+    cell4.setCellStyle(textStyle);
+}
+// Column F
+cell6 = row.createCell(5);
+if (record.getR19_cpdm_dt_der() != null) {
+    cell6.setCellValue(record.getR19_cpdm_dt_der().doubleValue());
+    cell6.setCellStyle(numberStyle);
+} else {
+    cell6.setCellValue("");
+    cell6.setCellStyle(textStyle);
+}
+// Column G
+cell7 = row.createCell(6);
+if (record.getR19_cpdm_dt_dto() != null) {
+    cell7.setCellValue(record.getR19_cpdm_dt_dto().doubleValue());
+    cell7.setCellStyle(numberStyle);
+} else {
+    cell7.setCellValue("");
+    cell7.setCellStyle(textStyle);
+}
+
+// ROW 20
+row = sheet.getRow(19);
+// Column B
+cell2 = row.createCell(1);
+if (record.getR20_open_position() != null) {
+    cell2.setCellValue(record.getR20_open_position().doubleValue());
+    cell2.setCellStyle(numberStyle);
+} else {
+    cell2.setCellValue("");
+    cell2.setCellStyle(textStyle);
+}
+// Column C
+cell3 = row.createCell(2);
+if (record.getR20_cpdm_dt_inc() != null) {
+    cell3.setCellValue(record.getR20_cpdm_dt_inc().doubleValue());
+    cell3.setCellStyle(numberStyle);
+} else {
+    cell3.setCellValue("");
+    cell3.setCellStyle(textStyle);
+}
+// Column D
+cell4 = row.createCell(3);
+if (record.getR20_cpdm_dt_dec() != null) {
+    cell4.setCellValue(record.getR20_cpdm_dt_dec().doubleValue());
+    cell4.setCellStyle(numberStyle);
+} else {
+    cell4.setCellValue("");
+    cell4.setCellStyle(textStyle);
+}
+// Column F
+cell6 = row.createCell(5);
+if (record.getR20_cpdm_dt_der() != null) {
+    cell6.setCellValue(record.getR20_cpdm_dt_der().doubleValue());
+    cell6.setCellStyle(numberStyle);
+} else {
+    cell6.setCellValue("");
+    cell6.setCellStyle(textStyle);
+}
+// Column G
+cell7 = row.createCell(6);
+if (record.getR20_cpdm_dt_dto() != null) {
+    cell7.setCellValue(record.getR20_cpdm_dt_dto().doubleValue());
+    cell7.setCellStyle(numberStyle);
+} else {
+    cell7.setCellValue("");
+    cell7.setCellStyle(textStyle);
+}
+
+// ROW 21
+row = sheet.getRow(20);
+// Column B
+cell2 = row.createCell(1);
+if (record.getR21_open_position() != null) {
+    cell2.setCellValue(record.getR21_open_position().doubleValue());
+    cell2.setCellStyle(numberStyle);
+} else {
+    cell2.setCellValue("");
+    cell2.setCellStyle(textStyle);
+}
+// Column C
+cell3 = row.createCell(2);
+if (record.getR21_cpdm_dt_inc() != null) {
+    cell3.setCellValue(record.getR21_cpdm_dt_inc().doubleValue());
+    cell3.setCellStyle(numberStyle);
+} else {
+    cell3.setCellValue("");
+    cell3.setCellStyle(textStyle);
+}
+// Column D
+cell4 = row.createCell(3);
+if (record.getR21_cpdm_dt_dec() != null) {
+    cell4.setCellValue(record.getR21_cpdm_dt_dec().doubleValue());
+    cell4.setCellStyle(numberStyle);
+} else {
+    cell4.setCellValue("");
+    cell4.setCellStyle(textStyle);
+}
+// Column F
+cell6 = row.createCell(5);
+if (record.getR21_cpdm_dt_der() != null) {
+    cell6.setCellValue(record.getR21_cpdm_dt_der().doubleValue());
+    cell6.setCellStyle(numberStyle);
+} else {
+    cell6.setCellValue("");
+    cell6.setCellStyle(textStyle);
+}
+// Column G
+cell7 = row.createCell(6);
+if (record.getR21_cpdm_dt_dto() != null) {
+    cell7.setCellValue(record.getR21_cpdm_dt_dto().doubleValue());
+    cell7.setCellStyle(numberStyle);
+} else {
+    cell7.setCellValue("");
+    cell7.setCellStyle(textStyle);
+}
+
+// ROW 22
+row = sheet.getRow(21);
+// Column B
+cell2 = row.createCell(1);
+if (record.getR22_open_position() != null) {
+    cell2.setCellValue(record.getR22_open_position().doubleValue());
+    cell2.setCellStyle(numberStyle);
+} else {
+    cell2.setCellValue("");
+    cell2.setCellStyle(textStyle);
+}
+// Column C
+cell3 = row.createCell(2);
+if (record.getR22_cpdm_dt_inc() != null) {
+    cell3.setCellValue(record.getR22_cpdm_dt_inc().doubleValue());
+    cell3.setCellStyle(numberStyle);
+} else {
+    cell3.setCellValue("");
+    cell3.setCellStyle(textStyle);
+}
+// Column D
+cell4 = row.createCell(3);
+if (record.getR22_cpdm_dt_dec() != null) {
+    cell4.setCellValue(record.getR22_cpdm_dt_dec().doubleValue());
+    cell4.setCellStyle(numberStyle);
+} else {
+    cell4.setCellValue("");
+    cell4.setCellStyle(textStyle);
+}
+// Column F
+cell6 = row.createCell(5);
+if (record.getR22_cpdm_dt_der() != null) {
+    cell6.setCellValue(record.getR22_cpdm_dt_der().doubleValue());
+    cell6.setCellStyle(numberStyle);
+} else {
+    cell6.setCellValue("");
+    cell6.setCellStyle(textStyle);
+}
+// Column G
+cell7 = row.createCell(6);
+if (record.getR22_cpdm_dt_dto() != null) {
+    cell7.setCellValue(record.getR22_cpdm_dt_dto().doubleValue());
+    cell7.setCellStyle(numberStyle);
+} else {
+    cell7.setCellValue("");
+    cell7.setCellStyle(textStyle);
+}
+
+// ROW 23
+row = sheet.getRow(22);
+// Column B
+cell2 = row.createCell(1);
+if (record.getR23_open_position() != null) {
+    cell2.setCellValue(record.getR23_open_position().doubleValue());
+    cell2.setCellStyle(numberStyle);
+} else {
+    cell2.setCellValue("");
+    cell2.setCellStyle(textStyle);
+}
+// Column C
+cell3 = row.createCell(2);
+if (record.getR23_cpdm_dt_inc() != null) {
+    cell3.setCellValue(record.getR23_cpdm_dt_inc().doubleValue());
+    cell3.setCellStyle(numberStyle);
+} else {
+    cell3.setCellValue("");
+    cell3.setCellStyle(textStyle);
+}
+// Column D
+cell4 = row.createCell(3);
+if (record.getR23_cpdm_dt_dec() != null) {
+    cell4.setCellValue(record.getR23_cpdm_dt_dec().doubleValue());
+    cell4.setCellStyle(numberStyle);
+} else {
+    cell4.setCellValue("");
+    cell4.setCellStyle(textStyle);
+}
+// Column F
+cell6 = row.createCell(5);
+if (record.getR23_cpdm_dt_der() != null) {
+    cell6.setCellValue(record.getR23_cpdm_dt_der().doubleValue());
+    cell6.setCellStyle(numberStyle);
+} else {
+    cell6.setCellValue("");
+    cell6.setCellStyle(textStyle);
+}
+// Column G
+cell7 = row.createCell(6);
+if (record.getR23_cpdm_dt_dto() != null) {
+    cell7.setCellValue(record.getR23_cpdm_dt_dto().doubleValue());
+    cell7.setCellStyle(numberStyle);
+} else {
+    cell7.setCellValue("");
+    cell7.setCellStyle(textStyle);
+}
+
+// ROW 24
+row = sheet.getRow(23);
+// Column B
+cell2 = row.createCell(1);
+if (record.getR24_open_position() != null) {
+    cell2.setCellValue(record.getR24_open_position().doubleValue());
+    cell2.setCellStyle(numberStyle);
+} else {
+    cell2.setCellValue("");
+    cell2.setCellStyle(textStyle);
+}
+// Column C
+cell3 = row.createCell(2);
+if (record.getR24_cpdm_dt_inc() != null) {
+    cell3.setCellValue(record.getR24_cpdm_dt_inc().doubleValue());
+    cell3.setCellStyle(numberStyle);
+} else {
+    cell3.setCellValue("");
+    cell3.setCellStyle(textStyle);
+}
+// Column D
+cell4 = row.createCell(3);
+if (record.getR24_cpdm_dt_dec() != null) {
+    cell4.setCellValue(record.getR24_cpdm_dt_dec().doubleValue());
+    cell4.setCellStyle(numberStyle);
+} else {
+    cell4.setCellValue("");
+    cell4.setCellStyle(textStyle);
+}
+// Column F
+cell6 = row.createCell(5);
+if (record.getR24_cpdm_dt_der() != null) {
+    cell6.setCellValue(record.getR24_cpdm_dt_der().doubleValue());
+    cell6.setCellStyle(numberStyle);
+} else {
+    cell6.setCellValue("");
+    cell6.setCellStyle(textStyle);
+}
+// Column G
+cell7 = row.createCell(6);
+if (record.getR24_cpdm_dt_dto() != null) {
+    cell7.setCellValue(record.getR24_cpdm_dt_dto().doubleValue());
+    cell7.setCellStyle(numberStyle);
+} else {
+    cell7.setCellValue("");
+    cell7.setCellStyle(textStyle);
+}
+
+// ROW 25
+row = sheet.getRow(24);
+// Column B
+cell2 = row.createCell(1);
+if (record.getR25_open_position() != null) {
+    cell2.setCellValue(record.getR25_open_position().doubleValue());
+    cell2.setCellStyle(numberStyle);
+} else {
+    cell2.setCellValue("");
+    cell2.setCellStyle(textStyle);
+}
+// Column C
+cell3 = row.createCell(2);
+if (record.getR25_cpdm_dt_inc() != null) {
+    cell3.setCellValue(record.getR25_cpdm_dt_inc().doubleValue());
+    cell3.setCellStyle(numberStyle);
+} else {
+    cell3.setCellValue("");
+    cell3.setCellStyle(textStyle);
+}
+// Column D
+cell4 = row.createCell(3);
+if (record.getR25_cpdm_dt_dec() != null) {
+    cell4.setCellValue(record.getR25_cpdm_dt_dec().doubleValue());
+    cell4.setCellStyle(numberStyle);
+} else {
+    cell4.setCellValue("");
+    cell4.setCellStyle(textStyle);
+}
+// Column F
+cell6 = row.createCell(5);
+if (record.getR25_cpdm_dt_der() != null) {
+    cell6.setCellValue(record.getR25_cpdm_dt_der().doubleValue());
+    cell6.setCellStyle(numberStyle);
+} else {
+    cell6.setCellValue("");
+    cell6.setCellStyle(textStyle);
+}
+// Column G
+cell7 = row.createCell(6);
+if (record.getR25_cpdm_dt_dto() != null) {
+    cell7.setCellValue(record.getR25_cpdm_dt_dto().doubleValue());
+    cell7.setCellStyle(numberStyle);
+} else {
+    cell7.setCellValue("");
+    cell7.setCellStyle(textStyle);
+}
+
+// ROW 26
+row = sheet.getRow(25);
+// Column B
+cell2 = row.createCell(1);
+if (record.getR26_open_position() != null) {
+    cell2.setCellValue(record.getR26_open_position().doubleValue());
+    cell2.setCellStyle(numberStyle);
+} else {
+    cell2.setCellValue("");
+    cell2.setCellStyle(textStyle);
+}
+// Column C
+cell3 = row.createCell(2);
+if (record.getR26_cpdm_dt_inc() != null) {
+    cell3.setCellValue(record.getR26_cpdm_dt_inc().doubleValue());
+    cell3.setCellStyle(numberStyle);
+} else {
+    cell3.setCellValue("");
+    cell3.setCellStyle(textStyle);
+}
+// Column D
+cell4 = row.createCell(3);
+if (record.getR26_cpdm_dt_dec() != null) {
+    cell4.setCellValue(record.getR26_cpdm_dt_dec().doubleValue());
+    cell4.setCellStyle(numberStyle);
+} else {
+    cell4.setCellValue("");
+    cell4.setCellStyle(textStyle);
+}
+// Column F
+cell6 = row.createCell(5);
+if (record.getR26_cpdm_dt_der() != null) {
+    cell6.setCellValue(record.getR26_cpdm_dt_der().doubleValue());
+    cell6.setCellStyle(numberStyle);
+} else {
+    cell6.setCellValue("");
+    cell6.setCellStyle(textStyle);
+}
+// Column G
+cell7 = row.createCell(6);
+if (record.getR26_cpdm_dt_dto() != null) {
+    cell7.setCellValue(record.getR26_cpdm_dt_dto().doubleValue());
+    cell7.setCellStyle(numberStyle);
+} else {
+    cell7.setCellValue("");
+    cell7.setCellStyle(textStyle);
+}
+
+// ROW 27
+row = sheet.getRow(26);
+// Column B
+cell2 = row.createCell(1);
+if (record.getR27_open_position() != null) {
+    cell2.setCellValue(record.getR27_open_position().doubleValue());
+    cell2.setCellStyle(numberStyle);
+} else {
+    cell2.setCellValue("");
+    cell2.setCellStyle(textStyle);
+}
+// Column C
+cell3 = row.createCell(2);
+if (record.getR27_cpdm_dt_inc() != null) {
+    cell3.setCellValue(record.getR27_cpdm_dt_inc().doubleValue());
+    cell3.setCellStyle(numberStyle);
+} else {
+    cell3.setCellValue("");
+    cell3.setCellStyle(textStyle);
+}
+// Column D
+cell4 = row.createCell(3);
+if (record.getR27_cpdm_dt_dec() != null) {
+    cell4.setCellValue(record.getR27_cpdm_dt_dec().doubleValue());
+    cell4.setCellStyle(numberStyle);
+} else {
+    cell4.setCellValue("");
+    cell4.setCellStyle(textStyle);
+}
+// Column F
+cell6 = row.createCell(5);
+if (record.getR27_cpdm_dt_der() != null) {
+    cell6.setCellValue(record.getR27_cpdm_dt_der().doubleValue());
+    cell6.setCellStyle(numberStyle);
+} else {
+    cell6.setCellValue("");
+    cell6.setCellStyle(textStyle);
+}
+// Column G
+cell7 = row.createCell(6);
+if (record.getR27_cpdm_dt_dto() != null) {
+    cell7.setCellValue(record.getR27_cpdm_dt_dto().doubleValue());
+    cell7.setCellStyle(numberStyle);
+} else {
+    cell7.setCellValue("");
+    cell7.setCellStyle(textStyle);
+}
+
+// ROW 28
+row = sheet.getRow(27);
+// Column B
+cell2 = row.createCell(1);
+if (record.getR28_open_position() != null) {
+    cell2.setCellValue(record.getR28_open_position().doubleValue());
+    cell2.setCellStyle(numberStyle);
+} else {
+    cell2.setCellValue("");
+    cell2.setCellStyle(textStyle);
+}
+// Column C
+cell3 = row.createCell(2);
+if (record.getR28_cpdm_dt_inc() != null) {
+    cell3.setCellValue(record.getR28_cpdm_dt_inc().doubleValue());
+    cell3.setCellStyle(numberStyle);
+} else {
+    cell3.setCellValue("");
+    cell3.setCellStyle(textStyle);
+}
+// Column D
+cell4 = row.createCell(3);
+if (record.getR28_cpdm_dt_dec() != null) {
+    cell4.setCellValue(record.getR28_cpdm_dt_dec().doubleValue());
+    cell4.setCellStyle(numberStyle);
+} else {
+    cell4.setCellValue("");
+    cell4.setCellStyle(textStyle);
+}
+// Column F
+cell6 = row.createCell(5);
+if (record.getR28_cpdm_dt_der() != null) {
+    cell6.setCellValue(record.getR28_cpdm_dt_der().doubleValue());
+    cell6.setCellStyle(numberStyle);
+} else {
+    cell6.setCellValue("");
+    cell6.setCellStyle(textStyle);
+}
+// Column G
+cell7 = row.createCell(6);
+if (record.getR28_cpdm_dt_dto() != null) {
+    cell7.setCellValue(record.getR28_cpdm_dt_dto().doubleValue());
+    cell7.setCellStyle(numberStyle);
+} else {
+    cell7.setCellValue("");
+    cell7.setCellStyle(textStyle);
+}
+
+// ROW 29
+row = sheet.getRow(28);
+// Column B
+cell2 = row.createCell(1);
+if (record.getR29_open_position() != null) {
+    cell2.setCellValue(record.getR29_open_position().doubleValue());
+    cell2.setCellStyle(numberStyle);
+} else {
+    cell2.setCellValue("");
+    cell2.setCellStyle(textStyle);
+}
+// Column C
+cell3 = row.createCell(2);
+if (record.getR29_cpdm_dt_inc() != null) {
+    cell3.setCellValue(record.getR29_cpdm_dt_inc().doubleValue());
+    cell3.setCellStyle(numberStyle);
+} else {
+    cell3.setCellValue("");
+    cell3.setCellStyle(textStyle);
+}
+// Column D
+cell4 = row.createCell(3);
+if (record.getR29_cpdm_dt_dec() != null) {
+    cell4.setCellValue(record.getR29_cpdm_dt_dec().doubleValue());
+    cell4.setCellStyle(numberStyle);
+} else {
+    cell4.setCellValue("");
+    cell4.setCellStyle(textStyle);
+}
+// Column F
+cell6 = row.createCell(5);
+if (record.getR29_cpdm_dt_der() != null) {
+    cell6.setCellValue(record.getR29_cpdm_dt_der().doubleValue());
+    cell6.setCellStyle(numberStyle);
+} else {
+    cell6.setCellValue("");
+    cell6.setCellStyle(textStyle);
+}
+// Column G
+cell7 = row.createCell(6);
+if (record.getR29_cpdm_dt_dto() != null) {
+    cell7.setCellValue(record.getR29_cpdm_dt_dto().doubleValue());
+    cell7.setCellStyle(numberStyle);
+} else {
+    cell7.setCellValue("");
+    cell7.setCellStyle(textStyle);
+}
+
+// ROW 30
+row = sheet.getRow(29);
+// Column B
+cell2 = row.createCell(1);
+if (record.getR30_open_position() != null) {
+    cell2.setCellValue(record.getR30_open_position().doubleValue());
+    cell2.setCellStyle(numberStyle);
+} else {
+    cell2.setCellValue("");
+    cell2.setCellStyle(textStyle);
+}
+// Column C
+cell3 = row.createCell(2);
+if (record.getR30_cpdm_dt_inc() != null) {
+    cell3.setCellValue(record.getR30_cpdm_dt_inc().doubleValue());
+    cell3.setCellStyle(numberStyle);
+} else {
+    cell3.setCellValue("");
+    cell3.setCellStyle(textStyle);
+}
+// Column D
+cell4 = row.createCell(3);
+if (record.getR30_cpdm_dt_dec() != null) {
+    cell4.setCellValue(record.getR30_cpdm_dt_dec().doubleValue());
+    cell4.setCellStyle(numberStyle);
+} else {
+    cell4.setCellValue("");
+    cell4.setCellStyle(textStyle);
+}
+// Column F
+cell6 = row.createCell(5);
+if (record.getR30_cpdm_dt_der() != null) {
+    cell6.setCellValue(record.getR30_cpdm_dt_der().doubleValue());
+    cell6.setCellStyle(numberStyle);
+} else {
+    cell6.setCellValue("");
+    cell6.setCellStyle(textStyle);
+}
+// Column G
+cell7 = row.createCell(6);
+if (record.getR30_cpdm_dt_dto() != null) {
+    cell7.setCellValue(record.getR30_cpdm_dt_dto().doubleValue());
+    cell7.setCellStyle(numberStyle);
+} else {
+    cell7.setCellValue("");
+    cell7.setCellStyle(textStyle);
+}
+
+// ROW 31
+row = sheet.getRow(30);
+// Column B
+cell2 = row.createCell(1);
+if (record.getR31_open_position() != null) {
+    cell2.setCellValue(record.getR31_open_position().doubleValue());
+    cell2.setCellStyle(numberStyle);
+} else {
+    cell2.setCellValue("");
+    cell2.setCellStyle(textStyle);
+}
+// Column C
+cell3 = row.createCell(2);
+if (record.getR31_cpdm_dt_inc() != null) {
+    cell3.setCellValue(record.getR31_cpdm_dt_inc().doubleValue());
+    cell3.setCellStyle(numberStyle);
+} else {
+    cell3.setCellValue("");
+    cell3.setCellStyle(textStyle);
+}
+// Column D
+cell4 = row.createCell(3);
+if (record.getR31_cpdm_dt_dec() != null) {
+    cell4.setCellValue(record.getR31_cpdm_dt_dec().doubleValue());
+    cell4.setCellStyle(numberStyle);
+} else {
+    cell4.setCellValue("");
+    cell4.setCellStyle(textStyle);
+}
+// Column F
+cell6 = row.createCell(5);
+if (record.getR31_cpdm_dt_der() != null) {
+    cell6.setCellValue(record.getR31_cpdm_dt_der().doubleValue());
+    cell6.setCellStyle(numberStyle);
+} else {
+    cell6.setCellValue("");
+    cell6.setCellStyle(textStyle);
+}
+// Column G
+cell7 = row.createCell(6);
+if (record.getR31_cpdm_dt_dto() != null) {
+    cell7.setCellValue(record.getR31_cpdm_dt_dto().doubleValue());
+    cell7.setCellStyle(numberStyle);
+} else {
+    cell7.setCellValue("");
+    cell7.setCellStyle(textStyle);
+}
+
+// ROW 32
+row = sheet.getRow(31);
+// Column B
+cell2 = row.createCell(1);
+if (record.getR32_open_position() != null) {
+    cell2.setCellValue(record.getR32_open_position().doubleValue());
+    cell2.setCellStyle(numberStyle);
+} else {
+    cell2.setCellValue("");
+    cell2.setCellStyle(textStyle);
+}
+// Column C
+cell3 = row.createCell(2);
+if (record.getR32_cpdm_dt_inc() != null) {
+    cell3.setCellValue(record.getR32_cpdm_dt_inc().doubleValue());
+    cell3.setCellStyle(numberStyle);
+} else {
+    cell3.setCellValue("");
+    cell3.setCellStyle(textStyle);
+}
+// Column D
+cell4 = row.createCell(3);
+if (record.getR32_cpdm_dt_dec() != null) {
+    cell4.setCellValue(record.getR32_cpdm_dt_dec().doubleValue());
+    cell4.setCellStyle(numberStyle);
+} else {
+    cell4.setCellValue("");
+    cell4.setCellStyle(textStyle);
+}
+// Column F
+cell6 = row.createCell(5);
+if (record.getR32_cpdm_dt_der() != null) {
+    cell6.setCellValue(record.getR32_cpdm_dt_der().doubleValue());
+    cell6.setCellStyle(numberStyle);
+} else {
+    cell6.setCellValue("");
+    cell6.setCellStyle(textStyle);
+}
+// Column G
+cell7 = row.createCell(6);
+if (record.getR32_cpdm_dt_dto() != null) {
+    cell7.setCellValue(record.getR32_cpdm_dt_dto().doubleValue());
+    cell7.setCellStyle(numberStyle);
+} else {
+    cell7.setCellValue("");
+    cell7.setCellStyle(textStyle);
+}
+
+// ROW 33
+row = sheet.getRow(32);
+// Column B
+cell2 = row.createCell(1);
+if (record.getR33_open_position() != null) {
+    cell2.setCellValue(record.getR33_open_position().doubleValue());
+    cell2.setCellStyle(numberStyle);
+} else {
+    cell2.setCellValue("");
+    cell2.setCellStyle(textStyle);
+}
+// Column C
+cell3 = row.createCell(2);
+if (record.getR33_cpdm_dt_inc() != null) {
+    cell3.setCellValue(record.getR33_cpdm_dt_inc().doubleValue());
+    cell3.setCellStyle(numberStyle);
+} else {
+    cell3.setCellValue("");
+    cell3.setCellStyle(textStyle);
+}
+// Column D
+cell4 = row.createCell(3);
+if (record.getR33_cpdm_dt_dec() != null) {
+    cell4.setCellValue(record.getR33_cpdm_dt_dec().doubleValue());
+    cell4.setCellStyle(numberStyle);
+} else {
+    cell4.setCellValue("");
+    cell4.setCellStyle(textStyle);
+}
+// Column F
+cell6 = row.createCell(5);
+if (record.getR33_cpdm_dt_der() != null) {
+    cell6.setCellValue(record.getR33_cpdm_dt_der().doubleValue());
+    cell6.setCellStyle(numberStyle);
+} else {
+    cell6.setCellValue("");
+    cell6.setCellStyle(textStyle);
+}
+// Column G
+cell7 = row.createCell(6);
+if (record.getR33_cpdm_dt_dto() != null) {
+    cell7.setCellValue(record.getR33_cpdm_dt_dto().doubleValue());
+    cell7.setCellStyle(numberStyle);
+} else {
+    cell7.setCellValue("");
+    cell7.setCellStyle(textStyle);
+}
+
+// ROW 34
+row = sheet.getRow(33);
+// Column B
+cell2 = row.createCell(1);
+if (record.getR34_open_position() != null) {
+    cell2.setCellValue(record.getR34_open_position().doubleValue());
+    cell2.setCellStyle(numberStyle);
+} else {
+    cell2.setCellValue("");
+    cell2.setCellStyle(textStyle);
+}
+// Column C
+cell3 = row.createCell(2);
+if (record.getR34_cpdm_dt_inc() != null) {
+    cell3.setCellValue(record.getR34_cpdm_dt_inc().doubleValue());
+    cell3.setCellStyle(numberStyle);
+} else {
+    cell3.setCellValue("");
+    cell3.setCellStyle(textStyle);
+}
+// Column D
+cell4 = row.createCell(3);
+if (record.getR34_cpdm_dt_dec() != null) {
+    cell4.setCellValue(record.getR34_cpdm_dt_dec().doubleValue());
+    cell4.setCellStyle(numberStyle);
+} else {
+    cell4.setCellValue("");
+    cell4.setCellStyle(textStyle);
+}
+// Column F
+cell6 = row.createCell(5);
+if (record.getR34_cpdm_dt_der() != null) {
+    cell6.setCellValue(record.getR34_cpdm_dt_der().doubleValue());
+    cell6.setCellStyle(numberStyle);
+} else {
+    cell6.setCellValue("");
+    cell6.setCellStyle(textStyle);
+}
+// Column G
+cell7 = row.createCell(6);
+if (record.getR34_cpdm_dt_dto() != null) {
+    cell7.setCellValue(record.getR34_cpdm_dt_dto().doubleValue());
+    cell7.setCellStyle(numberStyle);
+} else {
+    cell7.setCellValue("");
+    cell7.setCellStyle(textStyle);
+}
+
+// ROW 35
+row = sheet.getRow(34);
+// Column B
+cell2 = row.createCell(1);
+if (record.getR35_open_position() != null) {
+    cell2.setCellValue(record.getR35_open_position().doubleValue());
+    cell2.setCellStyle(numberStyle);
+} else {
+    cell2.setCellValue("");
+    cell2.setCellStyle(textStyle);
+}
+// Column C
+cell3 = row.createCell(2);
+if (record.getR35_cpdm_dt_inc() != null) {
+    cell3.setCellValue(record.getR35_cpdm_dt_inc().doubleValue());
+    cell3.setCellStyle(numberStyle);
+} else {
+    cell3.setCellValue("");
+    cell3.setCellStyle(textStyle);
+}
+// Column D
+cell4 = row.createCell(3);
+if (record.getR35_cpdm_dt_dec() != null) {
+    cell4.setCellValue(record.getR35_cpdm_dt_dec().doubleValue());
+    cell4.setCellStyle(numberStyle);
+} else {
+    cell4.setCellValue("");
+    cell4.setCellStyle(textStyle);
+}
+// Column F
+cell6 = row.createCell(5);
+if (record.getR35_cpdm_dt_der() != null) {
+    cell6.setCellValue(record.getR35_cpdm_dt_der().doubleValue());
+    cell6.setCellStyle(numberStyle);
+} else {
+    cell6.setCellValue("");
+    cell6.setCellStyle(textStyle);
+}
+// Column G
+cell7 = row.createCell(6);
+if (record.getR35_cpdm_dt_dto() != null) {
+    cell7.setCellValue(record.getR35_cpdm_dt_dto().doubleValue());
+    cell7.setCellStyle(numberStyle);
+} else {
+    cell7.setCellValue("");
+    cell7.setCellStyle(textStyle);
+}
+
+// ROW 36
+row = sheet.getRow(35);
+// Column B
+cell2 = row.createCell(1);
+if (record.getR36_open_position() != null) {
+    cell2.setCellValue(record.getR36_open_position().doubleValue());
+    cell2.setCellStyle(numberStyle);
+} else {
+    cell2.setCellValue("");
+    cell2.setCellStyle(textStyle);
+}
+// Column C
+cell3 = row.createCell(2);
+if (record.getR36_cpdm_dt_inc() != null) {
+    cell3.setCellValue(record.getR36_cpdm_dt_inc().doubleValue());
+    cell3.setCellStyle(numberStyle);
+} else {
+    cell3.setCellValue("");
+    cell3.setCellStyle(textStyle);
+}
+// Column D
+cell4 = row.createCell(3);
+if (record.getR36_cpdm_dt_dec() != null) {
+    cell4.setCellValue(record.getR36_cpdm_dt_dec().doubleValue());
+    cell4.setCellStyle(numberStyle);
+} else {
+    cell4.setCellValue("");
+    cell4.setCellStyle(textStyle);
+}
+// Column F
+cell6 = row.createCell(5);
+if (record.getR36_cpdm_dt_der() != null) {
+    cell6.setCellValue(record.getR36_cpdm_dt_der().doubleValue());
+    cell6.setCellStyle(numberStyle);
+} else {
+    cell6.setCellValue("");
+    cell6.setCellStyle(textStyle);
+}
+// Column G
+cell7 = row.createCell(6);
+if (record.getR36_cpdm_dt_dto() != null) {
+    cell7.setCellValue(record.getR36_cpdm_dt_dto().doubleValue());
+    cell7.setCellStyle(numberStyle);
+} else {
+    cell7.setCellValue("");
+    cell7.setCellStyle(textStyle);
+}
+					
+					
+					
+					}
+
+				workbook.setForceFormulaRecalculation(true);
+			} else {
+
+			}
+
+// Write the final workbook content to the in-memory stream.
+			workbook.write(out);
+
+			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
+
+			return out.toByteArray();
+		}
+
+	}
+	
+	public byte[] BRRS_M_BOPARCHIVALEmailExcel(String filename, String reportId, String fromdate, String todate,
+			String currency, String dtltype, String type, BigDecimal version) throws Exception {
+
+		logger.info("Service: Starting Excel generation process in memory.");
+
+		if (type.equals("ARCHIVAL") & version != null) {
+
+		}
+
+		List<M_BOP_Archival_Summary_Entity> dataList = M_BOP_Archival_Summary_Repo
+				.getdatabydateListarchival(dateformat.parse(todate), version);
+
+		if (dataList.isEmpty()) {
+			logger.warn("Service: No data found for M_BOP_email_ARCHIVAL report. Returning empty result.");
+			return new byte[0];
+		}
+
+		String templateDir = env.getProperty("output.exportpathtemp");
+		String templateFileName = filename;
+		System.out.println(filename);
+		Path templatePath = Paths.get(templateDir, templateFileName);
+		System.out.println(templatePath);
+
+		logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
+
+		if (!Files.exists(templatePath)) {
+// This specific exception will be caught by the controller.
+			throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
+		}
+		if (!Files.isReadable(templatePath)) {
+// A specific exception for permission errors.
+			throw new SecurityException(
+					"Template file exists but is not readable (check permissions): " + templatePath.toAbsolutePath());
+		}
+
+// This try-with-resources block is perfect. It guarantees all resources are
+// closed automatically.
+		try (InputStream templateInputStream = Files.newInputStream(templatePath);
+				Workbook workbook = WorkbookFactory.create(templateInputStream);
+				ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+
+			Sheet sheet = workbook.getSheetAt(0);
+
+// --- Style Definitions ---
+			CreationHelper createHelper = workbook.getCreationHelper();
+
+			CellStyle dateStyle = workbook.createCellStyle();
+			dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
+			dateStyle.setBorderBottom(BorderStyle.THIN);
+			dateStyle.setBorderTop(BorderStyle.THIN);
+			dateStyle.setBorderLeft(BorderStyle.THIN);
+			dateStyle.setBorderRight(BorderStyle.THIN);
+
+			CellStyle textStyle = workbook.createCellStyle();
+			textStyle.setBorderBottom(BorderStyle.THIN);
+			textStyle.setBorderTop(BorderStyle.THIN);
+			textStyle.setBorderLeft(BorderStyle.THIN);
+			textStyle.setBorderRight(BorderStyle.THIN);
+
+// Create the font
+			Font font = workbook.createFont();
+			font.setFontHeightInPoints((short) 8); // size 8
+			font.setFontName("Arial");
+
+			CellStyle numberStyle = workbook.createCellStyle();
+// numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
+			numberStyle.setBorderBottom(BorderStyle.THIN);
+			numberStyle.setBorderTop(BorderStyle.THIN);
+			numberStyle.setBorderLeft(BorderStyle.THIN);
+			numberStyle.setBorderRight(BorderStyle.THIN);
+			numberStyle.setFont(font);
+// --- End of Style Definitions ---
+
+			int startRow = 12;
+
+			if (!dataList.isEmpty()) {
+				for (int i = 0; i < dataList.size(); i++) {
+					M_BOP_Archival_Summary_Entity record = dataList.get(i);
+					System.out.println("rownumber=" + startRow + i);
+					Row row = sheet.getRow(startRow + i);
+					if (row == null) {
+						row = sheet.createRow(startRow + i);
+					}
+
+					//row13
+					// Column B
+					Cell cell2 = row.createCell(1);
+					if (record.getR13_open_position() != null) {
+						cell2.setCellValue(record.getR13_open_position().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+					//row13
+					// Column C
+					Cell cell3 = row.createCell(2);
+					if (record.getR13_cpdm_dt_inc() != null) {
+						cell3.setCellValue(record.getR13_cpdm_dt_inc().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+					//row13
+					// Column D
+					Cell cell4 = row.createCell(3);
+					if (record.getR13_cpdm_dt_dec() != null) {
+						cell4.setCellValue(record.getR13_cpdm_dt_dec().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+					
+					//row13
+					// Column F
+					Cell cell6 = row.createCell(5);
+					if (record.getR13_cpdm_dt_der() != null) {
+						cell6.setCellValue(record.getR13_cpdm_dt_der().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+                   // Column G
+					Cell cell7 = row.createCell(6);
+					if (record.getR13_cpdm_dt_dto() != null) {
+						cell7.setCellValue(record.getR13_cpdm_dt_dto().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					
+					//ROW 14
+					row = sheet.getRow(13);
+                     // Column B
+					cell2 = row.createCell(1);
+					if (record.getR14_open_position() != null) {
+						cell2.setCellValue(record.getR14_open_position().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					//row14
+					// Column C
+					cell3 = row.createCell(2);
+					if (record.getR14_cpdm_dt_inc() != null) {
+						cell3.setCellValue(record.getR14_cpdm_dt_inc().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+					//row14
+					// Column D
+					cell4 = row.createCell(3);
+					if (record.getR14_cpdm_dt_dec() != null) {
+						cell4.setCellValue(record.getR14_cpdm_dt_dec().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+					
+					//row14
+					// Column f
+					cell6 = row.createCell(5);
+					if (record.getR14_cpdm_dt_der() != null) {
+						cell6.setCellValue(record.getR14_cpdm_dt_der().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					//row14
+					//column g
+					
+					cell7 = row.createCell(6);
+					if (record.getR14_cpdm_dt_dto() != null) {
+						cell7.setCellValue(record.getR14_cpdm_dt_dto().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+	                
+
+					
+					
+
+					
+
+// ROW 15
+row = sheet.getRow(14);
+// Column B
+cell2 = row.createCell(1);
+if (record.getR15_open_position() != null) {
+    cell2.setCellValue(record.getR15_open_position().doubleValue());
+    cell2.setCellStyle(numberStyle);
+} else {
+    cell2.setCellValue("");
+    cell2.setCellStyle(textStyle);
+}
+// Column C
+cell3 = row.createCell(2);
+if (record.getR15_cpdm_dt_inc() != null) {
+    cell3.setCellValue(record.getR15_cpdm_dt_inc().doubleValue());
+    cell3.setCellStyle(numberStyle);
+} else {
+    cell3.setCellValue("");
+    cell3.setCellStyle(textStyle);
+}
+// Column D
+cell4 = row.createCell(3);
+if (record.getR15_cpdm_dt_dec() != null) {
+    cell4.setCellValue(record.getR15_cpdm_dt_dec().doubleValue());
+    cell4.setCellStyle(numberStyle);
+} else {
+    cell4.setCellValue("");
+    cell4.setCellStyle(textStyle);
+}
+// Column F
+cell6 = row.createCell(5);
+if (record.getR15_cpdm_dt_der() != null) {
+    cell6.setCellValue(record.getR15_cpdm_dt_der().doubleValue());
+    cell6.setCellStyle(numberStyle);
+} else {
+    cell6.setCellValue("");
+    cell6.setCellStyle(textStyle);
+}
+// Column G
+cell7 = row.createCell(6);
+if (record.getR15_cpdm_dt_dto() != null) {
+    cell7.setCellValue(record.getR15_cpdm_dt_dto().doubleValue());
+    cell7.setCellStyle(numberStyle);
+} else {
+    cell7.setCellValue("");
+    cell7.setCellStyle(textStyle);
+}
+
+// ROW 16
+row = sheet.getRow(15);
+// Column B
+cell2 = row.createCell(1);
+if (record.getR16_open_position() != null) {
+    cell2.setCellValue(record.getR16_open_position().doubleValue());
+    cell2.setCellStyle(numberStyle);
+} else {
+    cell2.setCellValue("");
+    cell2.setCellStyle(textStyle);
+}
+// Column C
+cell3 = row.createCell(2);
+if (record.getR16_cpdm_dt_inc() != null) {
+    cell3.setCellValue(record.getR16_cpdm_dt_inc().doubleValue());
+    cell3.setCellStyle(numberStyle);
+} else {
+    cell3.setCellValue("");
+    cell3.setCellStyle(textStyle);
+}
+// Column D
+cell4 = row.createCell(3);
+if (record.getR16_cpdm_dt_dec() != null) {
+    cell4.setCellValue(record.getR16_cpdm_dt_dec().doubleValue());
+    cell4.setCellStyle(numberStyle);
+} else {
+    cell4.setCellValue("");
+    cell4.setCellStyle(textStyle);
+}
+// Column F
+cell6 = row.createCell(5);
+if (record.getR16_cpdm_dt_der() != null) {
+    cell6.setCellValue(record.getR16_cpdm_dt_der().doubleValue());
+    cell6.setCellStyle(numberStyle);
+} else {
+    cell6.setCellValue("");
+    cell6.setCellStyle(textStyle);
+}
+// Column G
+cell7 = row.createCell(6);
+if (record.getR16_cpdm_dt_dto() != null) {
+    cell7.setCellValue(record.getR16_cpdm_dt_dto().doubleValue());
+    cell7.setCellStyle(numberStyle);
+} else {
+    cell7.setCellValue("");
+    cell7.setCellStyle(textStyle);
+}
+
+// ROW 17
+row = sheet.getRow(16);
+// Column B
+cell2 = row.createCell(1);
+if (record.getR17_open_position() != null) {
+    cell2.setCellValue(record.getR17_open_position().doubleValue());
+    cell2.setCellStyle(numberStyle);
+} else {
+    cell2.setCellValue("");
+    cell2.setCellStyle(textStyle);
+}
+// Column C
+cell3 = row.createCell(2);
+if (record.getR17_cpdm_dt_inc() != null) {
+    cell3.setCellValue(record.getR17_cpdm_dt_inc().doubleValue());
+    cell3.setCellStyle(numberStyle);
+} else {
+    cell3.setCellValue("");
+    cell3.setCellStyle(textStyle);
+}
+// Column D
+cell4 = row.createCell(3);
+if (record.getR17_cpdm_dt_dec() != null) {
+    cell4.setCellValue(record.getR17_cpdm_dt_dec().doubleValue());
+    cell4.setCellStyle(numberStyle);
+} else {
+    cell4.setCellValue("");
+    cell4.setCellStyle(textStyle);
+}
+// Column F
+cell6 = row.createCell(5);
+if (record.getR17_cpdm_dt_der() != null) {
+    cell6.setCellValue(record.getR17_cpdm_dt_der().doubleValue());
+    cell6.setCellStyle(numberStyle);
+} else {
+    cell6.setCellValue("");
+    cell6.setCellStyle(textStyle);
+}
+// Column G
+cell7 = row.createCell(6);
+if (record.getR17_cpdm_dt_dto() != null) {
+    cell7.setCellValue(record.getR17_cpdm_dt_dto().doubleValue());
+    cell7.setCellStyle(numberStyle);
+} else {
+    cell7.setCellValue("");
+    cell7.setCellStyle(textStyle);
+}
+
+// ROW 18
+row = sheet.getRow(17);
+// Column B
+cell2 = row.createCell(1);
+if (record.getR18_open_position() != null) {
+    cell2.setCellValue(record.getR18_open_position().doubleValue());
+    cell2.setCellStyle(numberStyle);
+} else {
+    cell2.setCellValue("");
+    cell2.setCellStyle(textStyle);
+}
+// Column C
+cell3 = row.createCell(2);
+if (record.getR18_cpdm_dt_inc() != null) {
+    cell3.setCellValue(record.getR18_cpdm_dt_inc().doubleValue());
+    cell3.setCellStyle(numberStyle);
+} else {
+    cell3.setCellValue("");
+    cell3.setCellStyle(textStyle);
+}
+// Column D
+cell4 = row.createCell(3);
+if (record.getR18_cpdm_dt_dec() != null) {
+    cell4.setCellValue(record.getR18_cpdm_dt_dec().doubleValue());
+    cell4.setCellStyle(numberStyle);
+} else {
+    cell4.setCellValue("");
+    cell4.setCellStyle(textStyle);
+}
+// Column F
+cell6 = row.createCell(5);
+if (record.getR18_cpdm_dt_der() != null) {
+    cell6.setCellValue(record.getR18_cpdm_dt_der().doubleValue());
+    cell6.setCellStyle(numberStyle);
+} else {
+    cell6.setCellValue("");
+    cell6.setCellStyle(textStyle);
+}
+// Column G
+cell7 = row.createCell(6);
+if (record.getR18_cpdm_dt_dto() != null) {
+    cell7.setCellValue(record.getR18_cpdm_dt_dto().doubleValue());
+    cell7.setCellStyle(numberStyle);
+} else {
+    cell7.setCellValue("");
+    cell7.setCellStyle(textStyle);
+}
+
+// ROW 19
+row = sheet.getRow(18);
+// Column B
+cell2 = row.createCell(1);
+if (record.getR19_open_position() != null) {
+    cell2.setCellValue(record.getR19_open_position().doubleValue());
+    cell2.setCellStyle(numberStyle);
+} else {
+    cell2.setCellValue("");
+    cell2.setCellStyle(textStyle);
+}
+// Column C
+cell3 = row.createCell(2);
+if (record.getR19_cpdm_dt_inc() != null) {
+    cell3.setCellValue(record.getR19_cpdm_dt_inc().doubleValue());
+    cell3.setCellStyle(numberStyle);
+} else {
+    cell3.setCellValue("");
+    cell3.setCellStyle(textStyle);
+}
+// Column D
+cell4 = row.createCell(3);
+if (record.getR19_cpdm_dt_dec() != null) {
+    cell4.setCellValue(record.getR19_cpdm_dt_dec().doubleValue());
+    cell4.setCellStyle(numberStyle);
+} else {
+    cell4.setCellValue("");
+    cell4.setCellStyle(textStyle);
+}
+// Column F
+cell6 = row.createCell(5);
+if (record.getR19_cpdm_dt_der() != null) {
+    cell6.setCellValue(record.getR19_cpdm_dt_der().doubleValue());
+    cell6.setCellStyle(numberStyle);
+} else {
+    cell6.setCellValue("");
+    cell6.setCellStyle(textStyle);
+}
+// Column G
+cell7 = row.createCell(6);
+if (record.getR19_cpdm_dt_dto() != null) {
+    cell7.setCellValue(record.getR19_cpdm_dt_dto().doubleValue());
+    cell7.setCellStyle(numberStyle);
+} else {
+    cell7.setCellValue("");
+    cell7.setCellStyle(textStyle);
+}
+
+// ROW 20
+row = sheet.getRow(19);
+// Column B
+cell2 = row.createCell(1);
+if (record.getR20_open_position() != null) {
+    cell2.setCellValue(record.getR20_open_position().doubleValue());
+    cell2.setCellStyle(numberStyle);
+} else {
+    cell2.setCellValue("");
+    cell2.setCellStyle(textStyle);
+}
+// Column C
+cell3 = row.createCell(2);
+if (record.getR20_cpdm_dt_inc() != null) {
+    cell3.setCellValue(record.getR20_cpdm_dt_inc().doubleValue());
+    cell3.setCellStyle(numberStyle);
+} else {
+    cell3.setCellValue("");
+    cell3.setCellStyle(textStyle);
+}
+// Column D
+cell4 = row.createCell(3);
+if (record.getR20_cpdm_dt_dec() != null) {
+    cell4.setCellValue(record.getR20_cpdm_dt_dec().doubleValue());
+    cell4.setCellStyle(numberStyle);
+} else {
+    cell4.setCellValue("");
+    cell4.setCellStyle(textStyle);
+}
+// Column F
+cell6 = row.createCell(5);
+if (record.getR20_cpdm_dt_der() != null) {
+    cell6.setCellValue(record.getR20_cpdm_dt_der().doubleValue());
+    cell6.setCellStyle(numberStyle);
+} else {
+    cell6.setCellValue("");
+    cell6.setCellStyle(textStyle);
+}
+// Column G
+cell7 = row.createCell(6);
+if (record.getR20_cpdm_dt_dto() != null) {
+    cell7.setCellValue(record.getR20_cpdm_dt_dto().doubleValue());
+    cell7.setCellStyle(numberStyle);
+} else {
+    cell7.setCellValue("");
+    cell7.setCellStyle(textStyle);
+}
+
+// ROW 21
+row = sheet.getRow(20);
+// Column B
+cell2 = row.createCell(1);
+if (record.getR21_open_position() != null) {
+    cell2.setCellValue(record.getR21_open_position().doubleValue());
+    cell2.setCellStyle(numberStyle);
+} else {
+    cell2.setCellValue("");
+    cell2.setCellStyle(textStyle);
+}
+// Column C
+cell3 = row.createCell(2);
+if (record.getR21_cpdm_dt_inc() != null) {
+    cell3.setCellValue(record.getR21_cpdm_dt_inc().doubleValue());
+    cell3.setCellStyle(numberStyle);
+} else {
+    cell3.setCellValue("");
+    cell3.setCellStyle(textStyle);
+}
+// Column D
+cell4 = row.createCell(3);
+if (record.getR21_cpdm_dt_dec() != null) {
+    cell4.setCellValue(record.getR21_cpdm_dt_dec().doubleValue());
+    cell4.setCellStyle(numberStyle);
+} else {
+    cell4.setCellValue("");
+    cell4.setCellStyle(textStyle);
+}
+// Column F
+cell6 = row.createCell(5);
+if (record.getR21_cpdm_dt_der() != null) {
+    cell6.setCellValue(record.getR21_cpdm_dt_der().doubleValue());
+    cell6.setCellStyle(numberStyle);
+} else {
+    cell6.setCellValue("");
+    cell6.setCellStyle(textStyle);
+}
+// Column G
+cell7 = row.createCell(6);
+if (record.getR21_cpdm_dt_dto() != null) {
+    cell7.setCellValue(record.getR21_cpdm_dt_dto().doubleValue());
+    cell7.setCellStyle(numberStyle);
+} else {
+    cell7.setCellValue("");
+    cell7.setCellStyle(textStyle);
+}
+
+// ROW 22
+row = sheet.getRow(21);
+// Column B
+cell2 = row.createCell(1);
+if (record.getR22_open_position() != null) {
+    cell2.setCellValue(record.getR22_open_position().doubleValue());
+    cell2.setCellStyle(numberStyle);
+} else {
+    cell2.setCellValue("");
+    cell2.setCellStyle(textStyle);
+}
+// Column C
+cell3 = row.createCell(2);
+if (record.getR22_cpdm_dt_inc() != null) {
+    cell3.setCellValue(record.getR22_cpdm_dt_inc().doubleValue());
+    cell3.setCellStyle(numberStyle);
+} else {
+    cell3.setCellValue("");
+    cell3.setCellStyle(textStyle);
+}
+// Column D
+cell4 = row.createCell(3);
+if (record.getR22_cpdm_dt_dec() != null) {
+    cell4.setCellValue(record.getR22_cpdm_dt_dec().doubleValue());
+    cell4.setCellStyle(numberStyle);
+} else {
+    cell4.setCellValue("");
+    cell4.setCellStyle(textStyle);
+}
+// Column F
+cell6 = row.createCell(5);
+if (record.getR22_cpdm_dt_der() != null) {
+    cell6.setCellValue(record.getR22_cpdm_dt_der().doubleValue());
+    cell6.setCellStyle(numberStyle);
+} else {
+    cell6.setCellValue("");
+    cell6.setCellStyle(textStyle);
+}
+// Column G
+cell7 = row.createCell(6);
+if (record.getR22_cpdm_dt_dto() != null) {
+    cell7.setCellValue(record.getR22_cpdm_dt_dto().doubleValue());
+    cell7.setCellStyle(numberStyle);
+} else {
+    cell7.setCellValue("");
+    cell7.setCellStyle(textStyle);
+}
+
+// ROW 23
+row = sheet.getRow(22);
+// Column B
+cell2 = row.createCell(1);
+if (record.getR23_open_position() != null) {
+    cell2.setCellValue(record.getR23_open_position().doubleValue());
+    cell2.setCellStyle(numberStyle);
+} else {
+    cell2.setCellValue("");
+    cell2.setCellStyle(textStyle);
+}
+// Column C
+cell3 = row.createCell(2);
+if (record.getR23_cpdm_dt_inc() != null) {
+    cell3.setCellValue(record.getR23_cpdm_dt_inc().doubleValue());
+    cell3.setCellStyle(numberStyle);
+} else {
+    cell3.setCellValue("");
+    cell3.setCellStyle(textStyle);
+}
+// Column D
+cell4 = row.createCell(3);
+if (record.getR23_cpdm_dt_dec() != null) {
+    cell4.setCellValue(record.getR23_cpdm_dt_dec().doubleValue());
+    cell4.setCellStyle(numberStyle);
+} else {
+    cell4.setCellValue("");
+    cell4.setCellStyle(textStyle);
+}
+// Column F
+cell6 = row.createCell(5);
+if (record.getR23_cpdm_dt_der() != null) {
+    cell6.setCellValue(record.getR23_cpdm_dt_der().doubleValue());
+    cell6.setCellStyle(numberStyle);
+} else {
+    cell6.setCellValue("");
+    cell6.setCellStyle(textStyle);
+}
+// Column G
+cell7 = row.createCell(6);
+if (record.getR23_cpdm_dt_dto() != null) {
+    cell7.setCellValue(record.getR23_cpdm_dt_dto().doubleValue());
+    cell7.setCellStyle(numberStyle);
+} else {
+    cell7.setCellValue("");
+    cell7.setCellStyle(textStyle);
+}
+
+// ROW 24
+row = sheet.getRow(23);
+// Column B
+cell2 = row.createCell(1);
+if (record.getR24_open_position() != null) {
+    cell2.setCellValue(record.getR24_open_position().doubleValue());
+    cell2.setCellStyle(numberStyle);
+} else {
+    cell2.setCellValue("");
+    cell2.setCellStyle(textStyle);
+}
+// Column C
+cell3 = row.createCell(2);
+if (record.getR24_cpdm_dt_inc() != null) {
+    cell3.setCellValue(record.getR24_cpdm_dt_inc().doubleValue());
+    cell3.setCellStyle(numberStyle);
+} else {
+    cell3.setCellValue("");
+    cell3.setCellStyle(textStyle);
+}
+// Column D
+cell4 = row.createCell(3);
+if (record.getR24_cpdm_dt_dec() != null) {
+    cell4.setCellValue(record.getR24_cpdm_dt_dec().doubleValue());
+    cell4.setCellStyle(numberStyle);
+} else {
+    cell4.setCellValue("");
+    cell4.setCellStyle(textStyle);
+}
+// Column F
+cell6 = row.createCell(5);
+if (record.getR24_cpdm_dt_der() != null) {
+    cell6.setCellValue(record.getR24_cpdm_dt_der().doubleValue());
+    cell6.setCellStyle(numberStyle);
+} else {
+    cell6.setCellValue("");
+    cell6.setCellStyle(textStyle);
+}
+// Column G
+cell7 = row.createCell(6);
+if (record.getR24_cpdm_dt_dto() != null) {
+    cell7.setCellValue(record.getR24_cpdm_dt_dto().doubleValue());
+    cell7.setCellStyle(numberStyle);
+} else {
+    cell7.setCellValue("");
+    cell7.setCellStyle(textStyle);
+}
+
+// ROW 25
+row = sheet.getRow(24);
+// Column B
+cell2 = row.createCell(1);
+if (record.getR25_open_position() != null) {
+    cell2.setCellValue(record.getR25_open_position().doubleValue());
+    cell2.setCellStyle(numberStyle);
+} else {
+    cell2.setCellValue("");
+    cell2.setCellStyle(textStyle);
+}
+// Column C
+cell3 = row.createCell(2);
+if (record.getR25_cpdm_dt_inc() != null) {
+    cell3.setCellValue(record.getR25_cpdm_dt_inc().doubleValue());
+    cell3.setCellStyle(numberStyle);
+} else {
+    cell3.setCellValue("");
+    cell3.setCellStyle(textStyle);
+}
+// Column D
+cell4 = row.createCell(3);
+if (record.getR25_cpdm_dt_dec() != null) {
+    cell4.setCellValue(record.getR25_cpdm_dt_dec().doubleValue());
+    cell4.setCellStyle(numberStyle);
+} else {
+    cell4.setCellValue("");
+    cell4.setCellStyle(textStyle);
+}
+// Column F
+cell6 = row.createCell(5);
+if (record.getR25_cpdm_dt_der() != null) {
+    cell6.setCellValue(record.getR25_cpdm_dt_der().doubleValue());
+    cell6.setCellStyle(numberStyle);
+} else {
+    cell6.setCellValue("");
+    cell6.setCellStyle(textStyle);
+}
+// Column G
+cell7 = row.createCell(6);
+if (record.getR25_cpdm_dt_dto() != null) {
+    cell7.setCellValue(record.getR25_cpdm_dt_dto().doubleValue());
+    cell7.setCellStyle(numberStyle);
+} else {
+    cell7.setCellValue("");
+    cell7.setCellStyle(textStyle);
+}
+
+// ROW 26
+row = sheet.getRow(25);
+// Column B
+cell2 = row.createCell(1);
+if (record.getR26_open_position() != null) {
+    cell2.setCellValue(record.getR26_open_position().doubleValue());
+    cell2.setCellStyle(numberStyle);
+} else {
+    cell2.setCellValue("");
+    cell2.setCellStyle(textStyle);
+}
+// Column C
+cell3 = row.createCell(2);
+if (record.getR26_cpdm_dt_inc() != null) {
+    cell3.setCellValue(record.getR26_cpdm_dt_inc().doubleValue());
+    cell3.setCellStyle(numberStyle);
+} else {
+    cell3.setCellValue("");
+    cell3.setCellStyle(textStyle);
+}
+// Column D
+cell4 = row.createCell(3);
+if (record.getR26_cpdm_dt_dec() != null) {
+    cell4.setCellValue(record.getR26_cpdm_dt_dec().doubleValue());
+    cell4.setCellStyle(numberStyle);
+} else {
+    cell4.setCellValue("");
+    cell4.setCellStyle(textStyle);
+}
+// Column F
+cell6 = row.createCell(5);
+if (record.getR26_cpdm_dt_der() != null) {
+    cell6.setCellValue(record.getR26_cpdm_dt_der().doubleValue());
+    cell6.setCellStyle(numberStyle);
+} else {
+    cell6.setCellValue("");
+    cell6.setCellStyle(textStyle);
+}
+// Column G
+cell7 = row.createCell(6);
+if (record.getR26_cpdm_dt_dto() != null) {
+    cell7.setCellValue(record.getR26_cpdm_dt_dto().doubleValue());
+    cell7.setCellStyle(numberStyle);
+} else {
+    cell7.setCellValue("");
+    cell7.setCellStyle(textStyle);
+}
+
+// ROW 27
+row = sheet.getRow(26);
+// Column B
+cell2 = row.createCell(1);
+if (record.getR27_open_position() != null) {
+    cell2.setCellValue(record.getR27_open_position().doubleValue());
+    cell2.setCellStyle(numberStyle);
+} else {
+    cell2.setCellValue("");
+    cell2.setCellStyle(textStyle);
+}
+// Column C
+cell3 = row.createCell(2);
+if (record.getR27_cpdm_dt_inc() != null) {
+    cell3.setCellValue(record.getR27_cpdm_dt_inc().doubleValue());
+    cell3.setCellStyle(numberStyle);
+} else {
+    cell3.setCellValue("");
+    cell3.setCellStyle(textStyle);
+}
+// Column D
+cell4 = row.createCell(3);
+if (record.getR27_cpdm_dt_dec() != null) {
+    cell4.setCellValue(record.getR27_cpdm_dt_dec().doubleValue());
+    cell4.setCellStyle(numberStyle);
+} else {
+    cell4.setCellValue("");
+    cell4.setCellStyle(textStyle);
+}
+// Column F
+cell6 = row.createCell(5);
+if (record.getR27_cpdm_dt_der() != null) {
+    cell6.setCellValue(record.getR27_cpdm_dt_der().doubleValue());
+    cell6.setCellStyle(numberStyle);
+} else {
+    cell6.setCellValue("");
+    cell6.setCellStyle(textStyle);
+}
+// Column G
+cell7 = row.createCell(6);
+if (record.getR27_cpdm_dt_dto() != null) {
+    cell7.setCellValue(record.getR27_cpdm_dt_dto().doubleValue());
+    cell7.setCellStyle(numberStyle);
+} else {
+    cell7.setCellValue("");
+    cell7.setCellStyle(textStyle);
+}
+
+// ROW 28
+row = sheet.getRow(27);
+// Column B
+cell2 = row.createCell(1);
+if (record.getR28_open_position() != null) {
+    cell2.setCellValue(record.getR28_open_position().doubleValue());
+    cell2.setCellStyle(numberStyle);
+} else {
+    cell2.setCellValue("");
+    cell2.setCellStyle(textStyle);
+}
+// Column C
+cell3 = row.createCell(2);
+if (record.getR28_cpdm_dt_inc() != null) {
+    cell3.setCellValue(record.getR28_cpdm_dt_inc().doubleValue());
+    cell3.setCellStyle(numberStyle);
+} else {
+    cell3.setCellValue("");
+    cell3.setCellStyle(textStyle);
+}
+// Column D
+cell4 = row.createCell(3);
+if (record.getR28_cpdm_dt_dec() != null) {
+    cell4.setCellValue(record.getR28_cpdm_dt_dec().doubleValue());
+    cell4.setCellStyle(numberStyle);
+} else {
+    cell4.setCellValue("");
+    cell4.setCellStyle(textStyle);
+}
+// Column F
+cell6 = row.createCell(5);
+if (record.getR28_cpdm_dt_der() != null) {
+    cell6.setCellValue(record.getR28_cpdm_dt_der().doubleValue());
+    cell6.setCellStyle(numberStyle);
+} else {
+    cell6.setCellValue("");
+    cell6.setCellStyle(textStyle);
+}
+// Column G
+cell7 = row.createCell(6);
+if (record.getR28_cpdm_dt_dto() != null) {
+    cell7.setCellValue(record.getR28_cpdm_dt_dto().doubleValue());
+    cell7.setCellStyle(numberStyle);
+} else {
+    cell7.setCellValue("");
+    cell7.setCellStyle(textStyle);
+}
+
+// ROW 29
+row = sheet.getRow(28);
+// Column B
+cell2 = row.createCell(1);
+if (record.getR29_open_position() != null) {
+    cell2.setCellValue(record.getR29_open_position().doubleValue());
+    cell2.setCellStyle(numberStyle);
+} else {
+    cell2.setCellValue("");
+    cell2.setCellStyle(textStyle);
+}
+// Column C
+cell3 = row.createCell(2);
+if (record.getR29_cpdm_dt_inc() != null) {
+    cell3.setCellValue(record.getR29_cpdm_dt_inc().doubleValue());
+    cell3.setCellStyle(numberStyle);
+} else {
+    cell3.setCellValue("");
+    cell3.setCellStyle(textStyle);
+}
+// Column D
+cell4 = row.createCell(3);
+if (record.getR29_cpdm_dt_dec() != null) {
+    cell4.setCellValue(record.getR29_cpdm_dt_dec().doubleValue());
+    cell4.setCellStyle(numberStyle);
+} else {
+    cell4.setCellValue("");
+    cell4.setCellStyle(textStyle);
+}
+// Column F
+cell6 = row.createCell(5);
+if (record.getR29_cpdm_dt_der() != null) {
+    cell6.setCellValue(record.getR29_cpdm_dt_der().doubleValue());
+    cell6.setCellStyle(numberStyle);
+} else {
+    cell6.setCellValue("");
+    cell6.setCellStyle(textStyle);
+}
+// Column G
+cell7 = row.createCell(6);
+if (record.getR29_cpdm_dt_dto() != null) {
+    cell7.setCellValue(record.getR29_cpdm_dt_dto().doubleValue());
+    cell7.setCellStyle(numberStyle);
+} else {
+    cell7.setCellValue("");
+    cell7.setCellStyle(textStyle);
+}
+
+// ROW 30
+row = sheet.getRow(29);
+// Column B
+cell2 = row.createCell(1);
+if (record.getR30_open_position() != null) {
+    cell2.setCellValue(record.getR30_open_position().doubleValue());
+    cell2.setCellStyle(numberStyle);
+} else {
+    cell2.setCellValue("");
+    cell2.setCellStyle(textStyle);
+}
+// Column C
+cell3 = row.createCell(2);
+if (record.getR30_cpdm_dt_inc() != null) {
+    cell3.setCellValue(record.getR30_cpdm_dt_inc().doubleValue());
+    cell3.setCellStyle(numberStyle);
+} else {
+    cell3.setCellValue("");
+    cell3.setCellStyle(textStyle);
+}
+// Column D
+cell4 = row.createCell(3);
+if (record.getR30_cpdm_dt_dec() != null) {
+    cell4.setCellValue(record.getR30_cpdm_dt_dec().doubleValue());
+    cell4.setCellStyle(numberStyle);
+} else {
+    cell4.setCellValue("");
+    cell4.setCellStyle(textStyle);
+}
+// Column F
+cell6 = row.createCell(5);
+if (record.getR30_cpdm_dt_der() != null) {
+    cell6.setCellValue(record.getR30_cpdm_dt_der().doubleValue());
+    cell6.setCellStyle(numberStyle);
+} else {
+    cell6.setCellValue("");
+    cell6.setCellStyle(textStyle);
+}
+// Column G
+cell7 = row.createCell(6);
+if (record.getR30_cpdm_dt_dto() != null) {
+    cell7.setCellValue(record.getR30_cpdm_dt_dto().doubleValue());
+    cell7.setCellStyle(numberStyle);
+} else {
+    cell7.setCellValue("");
+    cell7.setCellStyle(textStyle);
+}
+
+// ROW 31
+row = sheet.getRow(30);
+// Column B
+cell2 = row.createCell(1);
+if (record.getR31_open_position() != null) {
+    cell2.setCellValue(record.getR31_open_position().doubleValue());
+    cell2.setCellStyle(numberStyle);
+} else {
+    cell2.setCellValue("");
+    cell2.setCellStyle(textStyle);
+}
+// Column C
+cell3 = row.createCell(2);
+if (record.getR31_cpdm_dt_inc() != null) {
+    cell3.setCellValue(record.getR31_cpdm_dt_inc().doubleValue());
+    cell3.setCellStyle(numberStyle);
+} else {
+    cell3.setCellValue("");
+    cell3.setCellStyle(textStyle);
+}
+// Column D
+cell4 = row.createCell(3);
+if (record.getR31_cpdm_dt_dec() != null) {
+    cell4.setCellValue(record.getR31_cpdm_dt_dec().doubleValue());
+    cell4.setCellStyle(numberStyle);
+} else {
+    cell4.setCellValue("");
+    cell4.setCellStyle(textStyle);
+}
+// Column F
+cell6 = row.createCell(5);
+if (record.getR31_cpdm_dt_der() != null) {
+    cell6.setCellValue(record.getR31_cpdm_dt_der().doubleValue());
+    cell6.setCellStyle(numberStyle);
+} else {
+    cell6.setCellValue("");
+    cell6.setCellStyle(textStyle);
+}
+// Column G
+cell7 = row.createCell(6);
+if (record.getR31_cpdm_dt_dto() != null) {
+    cell7.setCellValue(record.getR31_cpdm_dt_dto().doubleValue());
+    cell7.setCellStyle(numberStyle);
+} else {
+    cell7.setCellValue("");
+    cell7.setCellStyle(textStyle);
+}
+
+// ROW 32
+row = sheet.getRow(31);
+// Column B
+cell2 = row.createCell(1);
+if (record.getR32_open_position() != null) {
+    cell2.setCellValue(record.getR32_open_position().doubleValue());
+    cell2.setCellStyle(numberStyle);
+} else {
+    cell2.setCellValue("");
+    cell2.setCellStyle(textStyle);
+}
+// Column C
+cell3 = row.createCell(2);
+if (record.getR32_cpdm_dt_inc() != null) {
+    cell3.setCellValue(record.getR32_cpdm_dt_inc().doubleValue());
+    cell3.setCellStyle(numberStyle);
+} else {
+    cell3.setCellValue("");
+    cell3.setCellStyle(textStyle);
+}
+// Column D
+cell4 = row.createCell(3);
+if (record.getR32_cpdm_dt_dec() != null) {
+    cell4.setCellValue(record.getR32_cpdm_dt_dec().doubleValue());
+    cell4.setCellStyle(numberStyle);
+} else {
+    cell4.setCellValue("");
+    cell4.setCellStyle(textStyle);
+}
+// Column F
+cell6 = row.createCell(5);
+if (record.getR32_cpdm_dt_der() != null) {
+    cell6.setCellValue(record.getR32_cpdm_dt_der().doubleValue());
+    cell6.setCellStyle(numberStyle);
+} else {
+    cell6.setCellValue("");
+    cell6.setCellStyle(textStyle);
+}
+// Column G
+cell7 = row.createCell(6);
+if (record.getR32_cpdm_dt_dto() != null) {
+    cell7.setCellValue(record.getR32_cpdm_dt_dto().doubleValue());
+    cell7.setCellStyle(numberStyle);
+} else {
+    cell7.setCellValue("");
+    cell7.setCellStyle(textStyle);
+}
+
+// ROW 33
+row = sheet.getRow(32);
+// Column B
+cell2 = row.createCell(1);
+if (record.getR33_open_position() != null) {
+    cell2.setCellValue(record.getR33_open_position().doubleValue());
+    cell2.setCellStyle(numberStyle);
+} else {
+    cell2.setCellValue("");
+    cell2.setCellStyle(textStyle);
+}
+// Column C
+cell3 = row.createCell(2);
+if (record.getR33_cpdm_dt_inc() != null) {
+    cell3.setCellValue(record.getR33_cpdm_dt_inc().doubleValue());
+    cell3.setCellStyle(numberStyle);
+} else {
+    cell3.setCellValue("");
+    cell3.setCellStyle(textStyle);
+}
+// Column D
+cell4 = row.createCell(3);
+if (record.getR33_cpdm_dt_dec() != null) {
+    cell4.setCellValue(record.getR33_cpdm_dt_dec().doubleValue());
+    cell4.setCellStyle(numberStyle);
+} else {
+    cell4.setCellValue("");
+    cell4.setCellStyle(textStyle);
+}
+// Column F
+cell6 = row.createCell(5);
+if (record.getR33_cpdm_dt_der() != null) {
+    cell6.setCellValue(record.getR33_cpdm_dt_der().doubleValue());
+    cell6.setCellStyle(numberStyle);
+} else {
+    cell6.setCellValue("");
+    cell6.setCellStyle(textStyle);
+}
+// Column G
+cell7 = row.createCell(6);
+if (record.getR33_cpdm_dt_dto() != null) {
+    cell7.setCellValue(record.getR33_cpdm_dt_dto().doubleValue());
+    cell7.setCellStyle(numberStyle);
+} else {
+    cell7.setCellValue("");
+    cell7.setCellStyle(textStyle);
+}
+
+// ROW 34
+row = sheet.getRow(33);
+// Column B
+cell2 = row.createCell(1);
+if (record.getR34_open_position() != null) {
+    cell2.setCellValue(record.getR34_open_position().doubleValue());
+    cell2.setCellStyle(numberStyle);
+} else {
+    cell2.setCellValue("");
+    cell2.setCellStyle(textStyle);
+}
+// Column C
+cell3 = row.createCell(2);
+if (record.getR34_cpdm_dt_inc() != null) {
+    cell3.setCellValue(record.getR34_cpdm_dt_inc().doubleValue());
+    cell3.setCellStyle(numberStyle);
+} else {
+    cell3.setCellValue("");
+    cell3.setCellStyle(textStyle);
+}
+// Column D
+cell4 = row.createCell(3);
+if (record.getR34_cpdm_dt_dec() != null) {
+    cell4.setCellValue(record.getR34_cpdm_dt_dec().doubleValue());
+    cell4.setCellStyle(numberStyle);
+} else {
+    cell4.setCellValue("");
+    cell4.setCellStyle(textStyle);
+}
+// Column F
+cell6 = row.createCell(5);
+if (record.getR34_cpdm_dt_der() != null) {
+    cell6.setCellValue(record.getR34_cpdm_dt_der().doubleValue());
+    cell6.setCellStyle(numberStyle);
+} else {
+    cell6.setCellValue("");
+    cell6.setCellStyle(textStyle);
+}
+// Column G
+cell7 = row.createCell(6);
+if (record.getR34_cpdm_dt_dto() != null) {
+    cell7.setCellValue(record.getR34_cpdm_dt_dto().doubleValue());
+    cell7.setCellStyle(numberStyle);
+} else {
+    cell7.setCellValue("");
+    cell7.setCellStyle(textStyle);
+}
+
+// ROW 35
+row = sheet.getRow(34);
+// Column B
+cell2 = row.createCell(1);
+if (record.getR35_open_position() != null) {
+    cell2.setCellValue(record.getR35_open_position().doubleValue());
+    cell2.setCellStyle(numberStyle);
+} else {
+    cell2.setCellValue("");
+    cell2.setCellStyle(textStyle);
+}
+// Column C
+cell3 = row.createCell(2);
+if (record.getR35_cpdm_dt_inc() != null) {
+    cell3.setCellValue(record.getR35_cpdm_dt_inc().doubleValue());
+    cell3.setCellStyle(numberStyle);
+} else {
+    cell3.setCellValue("");
+    cell3.setCellStyle(textStyle);
+}
+// Column D
+cell4 = row.createCell(3);
+if (record.getR35_cpdm_dt_dec() != null) {
+    cell4.setCellValue(record.getR35_cpdm_dt_dec().doubleValue());
+    cell4.setCellStyle(numberStyle);
+} else {
+    cell4.setCellValue("");
+    cell4.setCellStyle(textStyle);
+}
+// Column F
+cell6 = row.createCell(5);
+if (record.getR35_cpdm_dt_der() != null) {
+    cell6.setCellValue(record.getR35_cpdm_dt_der().doubleValue());
+    cell6.setCellStyle(numberStyle);
+} else {
+    cell6.setCellValue("");
+    cell6.setCellStyle(textStyle);
+}
+// Column G
+cell7 = row.createCell(6);
+if (record.getR35_cpdm_dt_dto() != null) {
+    cell7.setCellValue(record.getR35_cpdm_dt_dto().doubleValue());
+    cell7.setCellStyle(numberStyle);
+} else {
+    cell7.setCellValue("");
+    cell7.setCellStyle(textStyle);
+}
+
+// ROW 36
+row = sheet.getRow(35);
+// Column B
+cell2 = row.createCell(1);
+if (record.getR36_open_position() != null) {
+    cell2.setCellValue(record.getR36_open_position().doubleValue());
+    cell2.setCellStyle(numberStyle);
+} else {
+    cell2.setCellValue("");
+    cell2.setCellStyle(textStyle);
+}
+// Column C
+cell3 = row.createCell(2);
+if (record.getR36_cpdm_dt_inc() != null) {
+    cell3.setCellValue(record.getR36_cpdm_dt_inc().doubleValue());
+    cell3.setCellStyle(numberStyle);
+} else {
+    cell3.setCellValue("");
+    cell3.setCellStyle(textStyle);
+}
+// Column D
+cell4 = row.createCell(3);
+if (record.getR36_cpdm_dt_dec() != null) {
+    cell4.setCellValue(record.getR36_cpdm_dt_dec().doubleValue());
+    cell4.setCellStyle(numberStyle);
+} else {
+    cell4.setCellValue("");
+    cell4.setCellStyle(textStyle);
+}
+// Column F
+cell6 = row.createCell(5);
+if (record.getR36_cpdm_dt_der() != null) {
+    cell6.setCellValue(record.getR36_cpdm_dt_der().doubleValue());
+    cell6.setCellStyle(numberStyle);
+} else {
+    cell6.setCellValue("");
+    cell6.setCellStyle(textStyle);
+}
+// Column G
+cell7 = row.createCell(6);
+if (record.getR36_cpdm_dt_dto() != null) {
+    cell7.setCellValue(record.getR36_cpdm_dt_dto().doubleValue());
+    cell7.setCellStyle(numberStyle);
+} else {
+    cell7.setCellValue("");
+    cell7.setCellStyle(textStyle);
+}
+
+				
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+							}
+
+				workbook.setForceFormulaRecalculation(true);
+			} else {
+
+			}
+
+// Write the final workbook content to the in-memory stream.
+			workbook.write(out);
+
+			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
+
+			return out.toByteArray();
+		}
+
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	

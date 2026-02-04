@@ -1,3 +1,4 @@
+
 <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
 
 <!-- 
@@ -554,13 +555,23 @@ let isDetailsModal = false;
 
 		//to fetch summary from the database - called from the summary button
 		function showdetails() {
-    isDetailsModal = true; // mark that this modal is from Details
-    showResultModal('BRRS', 'Details page not available for Manual Report');
+			 $('#loader').modal('show');
+			    var Callurl = /*[[@{'/Reports/' + ${reportid}(
+			        dtltype='detail',
+			        fromdate=${fromdate},
+			        todate=${todate},
+			        type=${type},
+			        asondate=${asondate},
+			        version=${version}
+			    )}]]*/;
+			    location.href = Callurl;
+
 }
 
-		function showsummary() {
+
+function showsummary() {
 			$('#loader').modal('show');
-			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/;
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate}, version=${version})}]]*/;
 			location.href = Callurl;
 		}
 
@@ -597,64 +608,75 @@ window.onload = function() {
 
 
 function downloadfile(button) {
-			var reportid = button.getAttribute('data-reportid');
-			var asondate = button.getAttribute('data-asondate');
-			var fromdate = button.getAttribute('data-fromdate');
-			var todate = button.getAttribute('data-todate');
-			var currency = button.getAttribute('data-currency');
-			var subreportid = button.getAttribute('data-subreportid');
-			var secid = button.getAttribute('data-secid');
-			var dtltype = button.getAttribute('data-dtltype');
-			var filename = button.getAttribute('data-filename');
-			var type = button.getAttribute('data-type');
-			var version = button.getAttribute('data-version');
 
+    var reportid = button.getAttribute('data-reportid');
+    var asondate = button.getAttribute('data-asondate');
+    var fromdate = button.getAttribute('data-fromdate');
+    var todate = button.getAttribute('data-todate');
+    var currency = button.getAttribute('data-currency');
+    var subreportid = button.getAttribute('data-subreportid');
+    var secid = button.getAttribute('data-secid');
+    var dtltype = button.getAttribute('data-dtltype');
+    var filename = button.getAttribute('data-filename');
+    var type = button.getAttribute('data-type');
+    var version = button.getAttribute('data-version');
 
-			var loader = new bootstrap.Modal(document.getElementById('loader'), {backdrop: 'static',keyboard: false});
-			loader.show();
+    var loader = new bootstrap.Modal(
+        document.getElementById('loader'),
+        { backdrop: 'static', keyboard: false }
+    );
+    loader.show();
 
-			$.ajax({
-				url: './downloadExcel?reportid=' + reportid +
-					'&fromdate=' + fromdate +
-					'&asondate=' + asondate +
-					'&todate=' + todate +
-					'&currency=' + currency +
-					'&subreportid=' + subreportid +
-					'&secid=' + secid +
-					'&filename=' + filename +
-					'&type=' + type +
-					'&version=' + version,
-				type: 'GET',
-				xhrFields: {
-					responseType: 'blob'
-				},
-				success: function (data) {
-					$('#loader').modal('hide');
+    // ✅ Build URL safely
+    var url = './downloadExcel?reportid=' + reportid +
+        '&fromdate=' + fromdate +
+        '&asondate=' + asondate +
+        '&todate=' + todate +
+        '&currency=' + currency +
+        '&subreportid=' + subreportid +
+        '&secid=' + secid +
+        '&filename=' + filename +
+        '&type=' + type;
 
-					if (data && data.size > 100) {
-						const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
-						const url = window.URL.createObjectURL(blob);
-						const a = document.createElement('a');
-						a.style.display = 'none';
-						a.href = url;
-						a.download = filename;
-						document.body.appendChild(a);
-						a.click();
-						window.URL.revokeObjectURL(url);
-						document.body.removeChild(a);
+    // ✅ ONLY append version if valid
+    if (version && version.trim() !== '') {
+        url += '&version=' + version;
+    }
 
-						showResultModal('BRRS', filename + ' downloaded successfully.');
-					} else {
-						showResultModal('Information', 'No data was available to create a download.');
-					}
-				},
-				error: function (jqXHR, textStatus, errorThrown) {
-					$('#loader').modal('hide');
-					console.error("Download failed:", textStatus, errorThrown);
-					showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
-				}
-			});
-		}
+    $.ajax({
+        url: url,
+        type: 'GET',
+        xhrFields: { responseType: 'blob' },
+
+        success: function (data) {
+            $('#loader').modal('hide');
+
+            if (data && data.size > 100) {
+                const blob = new Blob([data], {
+                    type: 'application/vnd.ms-excel'
+                });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+
+                showResultModal('BRRS', filename + ' downloaded successfully.');
+            } else {
+                showResultModal('Information', 'No data was available to create a download.');
+            }
+        },
+
+        error: function () {
+            $('#loader').modal('hide');
+            showResultModal('Error', 'An error occurred while downloading the file.');
+        }
+    });
+}
 
 function editRecord(){
 	showResultModal('Alert', 'Development in progress');
@@ -1225,6 +1247,8 @@ window.fileuploads = function (btn) {
 
 
 
+
+
 </head>
 
 
@@ -1276,11 +1300,15 @@ window.fileuploads = function (btn) {
 							
 							
 								<!-- Modify button -->
-						<button type="button" class="custom-tab-btn"
-							onclick="showmodify(this);" title="Click to EDIT Records"
-							th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
-							th:if="${type != 'ARCHIVAL'}"
-							id="addRecord">Modify</button>
+						<button type="button"
+        class="custom-tab-btn"
+        onclick="showmodify(this);"
+        title="Click to EDIT Records"
+        th:classappend="${session.PERMISSIONS == 'W' and dtltype == 'report'} ? 'addedit'"
+        th:if="${type != 'ARCHIVAL' and dtltype ne 'detail'}"
+        id="addRecord">
+    Modify
+</button>
 
 						<!-- Cancel button (hidden initially) -->
 						<button type="button" class="custom-tab-btn"
@@ -1291,36 +1319,35 @@ window.fileuploads = function (btn) {
 							
 							
 							
-							
-						<button type="button" class="custom-tab-btn"
-							id="custom-tab-btnAdd" th:if="${displaymode == 'summary'}"
-							th:attr="data-reportid=${reportid}, 
-                    				 data-asondate=${asondate}, 
-                    				 data-fromdate=${fromdate}, 
-                     				 data-todate=${todate}, 
-                     				 data-currency=${currency},  
-                     				 data-dtltype=${dtltype}, 
-                     				 data-filename='M_BOP.xlsx',
-					 				 data-type=${type},
-					    			 data-version=${version}"
-							onclick="downloadfile(this);">
-							<i class="fa fa-download"></i>
+					<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
+							onclick="downloadfile(this)" th:if="${displaymode == 'summary' or displaymode == 'Details'}"
+							th:attr="data-reportid=${reportid},
+                   data-asondate=${asondate},
+                   data-fromdate=${fromdate},
+                   data-todate=${todate},
+                   data-currency=${currency}, 
+                   data-dtltype=${dtltype},
+                   data-filename='M_BOP.xlsx',
+                   data-type=${type},
+                   data-version=${version != null ? version : ''}" style="font-family: Arial;font-weight: bold;">
+							<i class="fa fa-download"></i> Excel
 						</button>
 						
-						<button type="button" class="custom-tab-btn"
-							id="custom-tab-btnAdd" th:if="${displaymode == 'Details'}"
-							th:attr="data-reportid=${reportid}, 
-             data-asondate=${asondate}, 
-             data-fromdate=${fromdate}, 
-             data-todate=${todate}, 
-             data-currency=${currency},  
-             data-dtltype=${dtltype}, 
-             data-filename='M_BOP_Detail',
-             data-type=${type},
-					data-version=${version} "
-							onclick="startReport(this)">
-							<!-- 🛠️ Fix: pass `this` -->
-							<i class="fa fa-download"></i>
+						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
+							 onclick="downloadfile(this)" 
+								th:if="${displaymode == 'summary' or displaymode == 'Details'}"
+							
+							th:attr="data-reportid=${reportid},
+            data-asondate=${asondate},
+            data-fromdate=${fromdate},
+            data-todate=${todate},
+            data-currency=${currency}, 
+            data-dtltype=${dtltype},
+            data-filename='EMAIL_M_BOP.xlsx',
+            data-type='email',
+            data-version=${version != null ? version : ''}" style="font-family: Arial;font-weight: bold;">
+								<i class="fa fa-download"></i> E-mail 
+							
 						</button>
 						
 					</div>
@@ -1328,7 +1355,19 @@ window.fileuploads = function (btn) {
 
 
 
-				<div th:if="${displaymode == 'summary'}">
+			<h1 th:if="${displaymode == 'summary' and type == 'ARCHIVAL' and displaymode != 'Details'}"
+  style="text-align: left; font-family: arial;   font-weight: bold; color: white;  font-size: 20px;  
+				background-color: rgb(107, 122, 143); margin-top:10px; margin-bottom:10px;padding-top: 10px; padding-bottom: 10px; " >Archival Summary View - M_BOP</h1>
+				
+				<h1 th:if="${displaymode == 'Details' and type == 'ARCHIVAL' and displaymode != 'summary'}"
+  style="text-align: left; font-family: arial;   font-weight: bold; color: white;  font-size: 20px;  
+				background-color: rgb(107, 122, 143); margin-top:10px; margin-bottom:10px;padding-top: 10px; padding-bottom: 10px; " >Archival Detail View - M_BOP</h1>
+
+				<h1 th:if="${displaymode == 'summary'and type != 'ARCHIVAL'}"  style="text-align: left; font-family: arial;   font-weight: bold; color: white;  font-size: 20px;  
+				background-color: rgb(107, 122, 143); margin-top:10px; margin-bottom:10px;padding-top: 10px; padding-bottom: 10px; " >Summary View - M_BOP </h1>
+			<h1 th:if="${displaymode == 'Details' and type != 'ARCHIVAL'}"  style="text-align: left;   font-family: arial; font-weight: bold;  color: white; font-size: 20px; 
+			 background-color: rgb(107, 122, 143); margin-top:10px; margin-bottom:10px; padding-top: 10px; padding-bottom: 10px;  ">Detail View - M_BOP</h1>
+				<div th:if="${displaymode == 'summary' or displaymode == 'Details'}">
 					<div class="row">
 						<div class="col-sm-12">
 						<form action="#" method="POST" id="fileupload">
@@ -2792,12 +2831,23 @@ window.fileuploads = function (btn) {
 </tr>
 
 <tr>
-    <td id='R35' style='font-weight: bold; padding-left: 20px;'>
-        <input class='display-input Show_input' type='text' value='h) Other (specify)*'
-               id='r35_product' name='r35_product'
-               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
-                      border-color: transparent; text-align: left;' readonly />
-    </td>
+   <td id="R35"
+    style="font-weight: bold; padding-left: 20px; cursor:pointer;"
+    onclick="addR35ChildRow(this)">
+
+    <input class="display-input Show_input"
+           type="text"
+           value="h) Other (specify)*"
+           id="r35_product"
+           name="r35_product"
+           style="background-color:#FFFFFF;
+                  width:-webkit-fill-available;
+                  height:28px;
+                  border-color:transparent;
+                  text-align:left;"
+           readonly />
+</td>
+
 
     <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
         <input class='display-input Show_input' type='text'
