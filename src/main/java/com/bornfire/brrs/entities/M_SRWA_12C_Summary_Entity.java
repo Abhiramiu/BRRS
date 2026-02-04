@@ -95,7 +95,7 @@ public class M_SRWA_12C_Summary_Entity{
 	
 		
 	private Date	report_date;
-	private String	report_version;
+	private BigDecimal	report_version;
 	private String	report_frequency;
 	private String	report_code;
 	private String	report_desc;
@@ -538,10 +538,10 @@ public class M_SRWA_12C_Summary_Entity{
 	public void setReport_date(Date report_date) {
 		this.report_date = report_date;
 	}
-	public String getReport_version() {
+	public BigDecimal getReport_version() {
 		return report_version;
 	}
-	public void setReport_version(String report_version) {
+	public void setReport_version(BigDecimal report_version) {
 		this.report_version = report_version;
 	}
 	public String getReport_frequency() {

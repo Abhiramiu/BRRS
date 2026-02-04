@@ -99,7 +99,7 @@ public class M_SRWA_12C_Archival_Summary_Entity{
 		
 	private Date	report_date;
 	@Id
-	private String	report_version;
+	private BigDecimal	report_version;
 	
 	@Column(name = "REPORT_RESUBDATE")
     @Temporal(TemporalType.TIMESTAMP)
@@ -546,10 +546,10 @@ public class M_SRWA_12C_Archival_Summary_Entity{
 	public void setReport_date(Date report_date) {
 		this.report_date = report_date;
 	}
-	public String getReport_version() {
+	public BigDecimal getReport_version() {
 		return report_version;
 	}
-	public void setReport_version(String report_version) {
+	public void setReport_version(BigDecimal report_version) {
 		this.report_version = report_version;
 	}
 	public Date getReportResubDate() {

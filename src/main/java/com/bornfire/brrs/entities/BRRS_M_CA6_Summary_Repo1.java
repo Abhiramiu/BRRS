@@ -1,6 +1,7 @@
 
 package com.bornfire.brrs.entities;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -24,7 +25,7 @@ public interface BRRS_M_CA6_Summary_Repo1 extends JpaRepository<M_CA6_Summary_En
     Optional<M_CA6_Summary_Entity1> findTopByReportDateOrderByReportVersionDesc(Date reportDate);
 
     // Check if a version exists for a report date
-    Optional<M_CA6_Summary_Entity1> findByReportDateAndReportVersion(Date reportDate, String reportVersion);
+    Optional<M_CA6_Summary_Entity1> findByReportDateAndReportVersion(Date reportDate, BigDecimal reportVersion);
 
     @Query(value = "SELECT *  FROM BRRS_M_CA6_SUMMARYTABLE1 WHERE REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION DESC FETCH FIRST 1 ROWS ONLY ", nativeQuery = true)
     List<M_CA6_Summary_Entity1> getdatabydateListWithVersion();

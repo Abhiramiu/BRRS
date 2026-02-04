@@ -195,7 +195,7 @@ public class M_CA6_Summary_Entity2 {
 	@Column(name = "REPORT_DATE")
 	private Date reportDate;
 	@Column(name = "REPORT_VERSION")
-	private String reportVersion;
+	private BigDecimal reportVersion;
     public String REPORT_FREQUENCY;
     public String REPORT_CODE;
     public String REPORT_DESC;
@@ -640,10 +640,10 @@ public class M_CA6_Summary_Entity2 {
 	public void setReportDate(Date reportDate) {
 		this.reportDate = reportDate;
 	}
-	public String getReportVersion() {
+	public BigDecimal getReportVersion() {
 		return reportVersion;
 	}
-	public void setReportVersion(String reportVersion) {
+	public void setReportVersion(BigDecimal reportVersion) {
 		this.reportVersion = reportVersion;
 	}
 	public String getREPORT_FREQUENCY() {

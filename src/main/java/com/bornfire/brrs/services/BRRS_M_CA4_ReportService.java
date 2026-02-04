@@ -5435,7 +5435,7 @@ public class BRRS_M_CA4_ReportService {
 	        if (latestArchivalOpt.isPresent()) {
 	        	M_CA4_Archival_Summary_Entity latestArchival = latestArchivalOpt.get();
 	            try {
-	                newVersion = latestArchival.getReport_version();
+	                newVersion = latestArchival.getReport_version().add(BigDecimal.ONE);
 	            } catch (NumberFormatException e) {
 	                System.err.println("Invalid version format. Defaulting to version 1");
 	                newVersion= BigDecimal.ONE ;

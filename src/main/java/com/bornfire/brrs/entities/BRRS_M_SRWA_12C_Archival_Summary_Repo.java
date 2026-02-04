@@ -1,5 +1,6 @@
 package com.bornfire.brrs.entities;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -40,7 +41,7 @@ public interface BRRS_M_SRWA_12C_Archival_Summary_Repo extends JpaRepository<M_S
 	    )
 	    List<M_SRWA_12C_Archival_Summary_Entity> getdatabydateListarchival(
 	        Date report_date,
-	        String report_version
+	        BigDecimal report_version
 	    );
 	
 
@@ -53,7 +54,7 @@ public interface BRRS_M_SRWA_12C_Archival_Summary_Repo extends JpaRepository<M_S
 
     		    @Query(value = "SELECT * FROM BRRS_M_SRWA_12C_ARCHIVALTABLE_SUMMARY WHERE REPORT_DATE = ?1 AND REPORT_VERSION = ?2",
     		            nativeQuery = true)
-    		     Optional<M_SRWA_12C_Archival_Summary_Entity> findByReport_dateAndReport_version(Date report_date, String report_version);
+    		     Optional<M_SRWA_12C_Archival_Summary_Entity> findByReport_dateAndReport_version(Date report_date, BigDecimal report_version);
     		    
     		    //Current Report Version Only Shown 
     		    @Query(value = "SELECT *  FROM BRRS_M_SRWA_12C_ARCHIVALTABLE_SUMMARY WHERE REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION ASC FETCH FIRST 1 ROWS ONLY ", nativeQuery = true)

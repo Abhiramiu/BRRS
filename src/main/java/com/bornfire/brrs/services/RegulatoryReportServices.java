@@ -471,6 +471,26 @@ public class RegulatoryReportServices {
 					pageable, type, version);
 			break;
 
+		case "M_CA6":
+			repsummary = BRRS_M_CA6_reportservice.getM_CA6View(reportId, fromdate, todate, currency, dtltype, pageable,
+					type, version);
+			break;
+
+		case "M_CA7":
+			repsummary = BRRS_M_CA7_reportservice.getM_CA7View(reportId, fromdate, todate, currency, dtltype, pageable,
+					type, version);
+			break;
+
+		case "M_SRWA_12C":
+			repsummary = BRRS_M_SRWA_12C_reportservice.getBRRS_M_SRWA_12CView(reportId, fromdate, todate, currency,
+					dtltype, pageable, type, version);
+			break;
+
+		case "M_GMIRT":
+			repsummary = brrs_m_gmirt_reportservice.getM_GMIRTView(reportId, fromdate, todate, currency, dtltype,
+					pageable, type, version);
+			break;
+
 		/*
 		 * 
 		 * 
@@ -2265,6 +2285,45 @@ public class RegulatoryReportServices {
 			try {
 				repfile = BRRS_M_CA4_reportservice.getBRRS_M_CA4Excel(filename, reportId, fromdate, todate, currency,
 						dtltype, type, version);
+			} catch (Exception e) { // TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+
+		case "M_CA6":
+			try {
+				repfile = BRRS_M_CA6_reportservice.getM_CA6Excel(filename, reportId, fromdate, todate, currency,
+						dtltype, type, version);
+			} catch (Exception e) { // TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+
+		case "M_CA7":
+			try {
+				repfile = BRRS_M_CA7_reportservice.getM_CA7Excel(filename, reportId, fromdate, todate, currency,
+						dtltype, type, version);
+			} catch (Exception e) { // TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+
+		case "M_SRWA_12C":
+			try {
+				repfile = BRRS_M_SRWA_12C_reportservice.getBRRS_M_SRWA_12CExcel(filename, reportId, fromdate, todate,
+						currency, dtltype, type, version);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+
+		case "M_GMIRT":
+			try {
+
+				repfile = brrs_m_gmirt_reportservice.getM_GMIRTExcel(filename, reportId, fromdate, todate, currency,
+						dtltype, type, version);
+
 			} catch (Exception e) { // TODO Auto-generated catch block
 				e.printStackTrace();
 			}

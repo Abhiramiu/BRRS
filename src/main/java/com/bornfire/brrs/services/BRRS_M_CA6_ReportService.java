@@ -8,6 +8,7 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -90,7 +91,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_CA6_ReportSe
 	
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 	public ModelAndView getM_CA6View(String reportId, String fromdate, String todate, String currency,
-			String dtltype, Pageable pageable, String type, String version) {
+			String dtltype, Pageable pageable, String type, BigDecimal version) {
 
 		ModelAndView mv = new ModelAndView();
 		Session hs = sessionFactory.getCurrentSession();
@@ -285,7 +286,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_CA6_ReportSe
 	
 
 public byte[] getM_CA6Excel(String filename,String reportId, String fromdate, String todate, String currency, String dtltype , String type ,
-		String version) throws Exception {
+		BigDecimal version) throws Exception {
 	logger.info("Service: Starting Excel generation process in memory.");
 
 logger.info("DownloadFile: reportId={}, filename={}", reportId, filename, type, version);
@@ -293,13 +294,13 @@ logger.info("DownloadFile: reportId={}, filename={}", reportId, filename, type, 
 // Convert string to Date
 Date reportDate = dateformat.parse(todate);
 
-	if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && !version.trim().isEmpty()) {
+	if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
 		logger.info("Service: Generating ARCHIVAL report for version {}", version);
 		return getExcelM_CA6ARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
 	}
 
 	// RESUB check
-	else if ("RESUB".equalsIgnoreCase(type) && version != null && !version.trim().isEmpty()) {
+	else if ("RESUB".equalsIgnoreCase(type) && version != null ) {
 	logger.info("Service: Generating RESUB report for version {}", version);
 
 
@@ -1132,7 +1133,7 @@ Date reportDate = dateformat.parse(todate);
 
 
 
-public byte[] getExcelM_CA6ARCHIVAL(String filename,String reportId, String fromdate, String todate, String currency, String dtltype,String type,String version) throws Exception {
+public byte[] getExcelM_CA6ARCHIVAL(String filename,String reportId, String fromdate, String todate, String currency, String dtltype,String type,BigDecimal version) throws Exception {
 	logger.info("Service: Starting Excel generation process in memory.");
 
 	if ("ARCHIVAL".equals(type) && version != null) {
@@ -2259,7 +2260,7 @@ public void updateReportReSub(
 	System.out.println("Report Date: " + updatedEntity1.getReportDate());
 
 	Date reportDate = updatedEntity1.getReportDate();
-	int newVersion = 1;
+	BigDecimal newVersion = BigDecimal.ONE;
 
 	try {
 		// 🔹 Fetch the latest archival version for this report date from Entity1
@@ -2269,10 +2270,10 @@ public void updateReportReSub(
 		if (latestArchivalOpt1.isPresent()) {
 			M_CA6_Archival_Summary_Entity1 latestArchival = latestArchivalOpt1.get();
 			try {
-				newVersion = Integer.parseInt(latestArchival.getReportVersion()) + 1;
+				newVersion = latestArchival.getReportVersion().add(BigDecimal.ONE);
 			} catch (NumberFormatException e) {
 				System.err.println("Invalid version format. Defaulting to version 1");
-				newVersion = 1;
+				newVersion = BigDecimal.ONE;
 			}
 		} else {
 			System.out.println("No previous archival found for date: " + reportDate);
@@ -2280,7 +2281,7 @@ public void updateReportReSub(
 
 		// 🔹 Prevent duplicate version number in Repo1
 		boolean exists = BRRS_M_CA6_Archival_Summary_Repo1
-				.findByReportDateAndReportVersion(reportDate, String.valueOf(newVersion))
+				.findByReportDateAndReportVersion(reportDate, newVersion)
 				.isPresent();
 
 		if (exists) {
@@ -2299,8 +2300,8 @@ public void updateReportReSub(
 		archivalEntity1.setReportDate(reportDate);
 		archivalEntity2.setReportDate(reportDate);
 
-		archivalEntity1.setReportVersion(String.valueOf(newVersion));
-		archivalEntity2.setReportVersion(String.valueOf(newVersion));
+		archivalEntity1.setReportVersion(newVersion);
+		archivalEntity2.setReportVersion(newVersion);
 
 		archivalEntity1.setReportResubDate(now);
 		archivalEntity2.setReportResubDate(now);
@@ -2321,7 +2322,7 @@ public void updateReportReSub(
 
 public byte[] BRRS_M_CA6ResubExcel(String filename, String reportId, String fromdate,
 		String todate, String currency, String dtltype,
-		String type, String version) throws Exception {
+		String type, BigDecimal version) throws Exception {
 
 	logger.info("Service: Starting Excel generation process in memory for RESUB Excel.");
 
