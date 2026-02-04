@@ -13,8 +13,8 @@ import javax.persistence.TemporalType;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
-@Table(name = "BRRS_M_GP_SUMMARYTABLE")
-public class M_GP_Summary_Entity {
+@Table(name = "BRRS_M_GP_DETAILTABLE")
+public class M_GP_Detail_Entity {
 	private String R11_PRODUCT;
 	private BigDecimal R11_STAGE1_PROVISIONS;
 	private BigDecimal R11_QUALIFY_STAGE2_PROVISIONS;
@@ -1644,7 +1644,7 @@ public class M_GP_Summary_Entity {
 	public void setDEL_FLG(String dEL_FLG) {
 		DEL_FLG = dEL_FLG;
 	}
-	public M_GP_Summary_Entity() {
+	public M_GP_Detail_Entity() {
 		super();
 		// TODO Auto-generated constructor stub
 	}

@@ -1156,6 +1156,14 @@ public class RegulatoryReportServices {
 
 			break;
 			
+         case "M_GP": 
+			 
+			 repsummary = BRRS_M_GP_ReportService.getM_GPView(reportId,
+				 fromdate, todate, currency, dtltype, pageable, type, version); 
+			 
+			 break;
+			
+			
 		case "M_LA2":
 
 			repsummary = BRRS_M_LA2_reportservice.getM_LA2View(reportId, fromdate, todate, currency, dtltype, pageable,
@@ -2151,6 +2159,16 @@ public class RegulatoryReportServices {
 			try {
 
 				repfile = brrs_m_epr_reportservice.getM_EPRExcel(filename, reportId, fromdate, todate, currency,
+						dtltype, type, version);
+			} catch (Exception e) { // TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+			
+		case "M_GP":
+			try {
+
+				repfile = BRRS_M_GP_ReportService.getM_GPExcel(filename, reportId, fromdate, todate, currency,
 						dtltype, type, version);
 			} catch (Exception e) { // TODO Auto-generated catch block
 				e.printStackTrace();
@@ -4515,6 +4533,15 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
+			
+		case "M_GP":
+			try {
+				archivalData = BRRS_M_GP_ReportService.getM_GPArchival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
 
 		// New Archival
 
@@ -4548,13 +4575,12 @@ public class RegulatoryReportServices {
 			archivalData.addAll(LAList);
 			System.out.println("Fetched M_LARADV archival data: " + LAList.size());
 			break;
-
-		case "M_GP":
-			List<Object[]> GPList = BRRS_M_GP_ReportService.getM_GPArchival();
-			archivalData.addAll(GPList);
-			System.out.println("Fetched M_SRWA_12H archival data: " + GPList.size());
-			break;
-
+		/*
+		 * case "M_GP": List<Object[]> GPList =
+		 * BRRS_M_GP_ReportService.getM_GPArchival(); archivalData.addAll(GPList);
+		 * System.out.println("Fetched M_SRWA_12H archival data: " + GPList.size());
+		 * break;
+		 */
 		case "M_IS":
 			List<Object[]> MISList = BRRS_M_IS_reportservice.getM_ISArchival();
 			archivalData.addAll(MISList);
