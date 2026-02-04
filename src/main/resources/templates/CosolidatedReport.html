@@ -497,7 +497,7 @@ var todate   = toDDMMYYYYMMM(rawDate);
 						const a = document.createElement('a');
 						a.style.display = 'none';
 						a.href = url;
-						a.download = filename;
+						a.download = filename+'.xlsx';
 						document.body.appendChild(a);
 						a.click();
 						window.URL.revokeObjectURL(url);
@@ -516,7 +516,9 @@ var todate   = toDDMMYYYYMMM(rawDate);
 		}
 function toDDMMYYYYMMM(dateStr) {
     if (!dateStr) return "";
-    let d = dateStr.split("-");
+    let d = dateStr.split("-");   
+    //let month = monthNames[parseInt(d[1],10)-1];
+    //return d[2] + "-" + d[1] + "-" + d[0];
     let monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
     let month = monthNames[parseInt(d[1],10)-1];
     return d[0] + "-" + month + "-" + d[2];  // 31-Oct-2025
@@ -584,10 +586,14 @@ function toDDMMYYYYMMM(dateStr) {
 								<!-- Report Date -->
 								<label class="col-sm-1">Report Date</label>
 								<div class="col-sm-3">
-									 <input  type="date" id="report_date" name="report_date" onchange="downloadfile()"
+									 <input  type="date" id="report_date" name="report_date" 
 											 class="form-control form-control-sm month-end-date-picker" />
 								</div>
-							         </div>
+								<div class="col-sm-2">
+									<button type="button" class="custom-tab-btn"
+										style="padding: 5px 20px;" onclick="downloadfile();">Submit</button>
+								</div>
+								</div>
 								</div>
 							</div>
 						</div>

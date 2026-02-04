@@ -1,6 +1,7 @@
 package com.bornfire.brrs.controllers;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.text.DateFormat;
@@ -4207,25 +4208,27 @@ public class BRRS_ReportsController {
 		}
 	}
 
-	/*@GetMapping("/downloadConsolidatedExcel")
+	@GetMapping("/downloadConsolidatedExcel")
 	public void downloadConsolidatedExcel(@RequestParam(required = false) String asondate,
 			@RequestParam(required = false) String fromdate,
 			@RequestParam(required = false) String todate,
 			@RequestParam(required = false) String currency,
 			@RequestParam(required = false) String type,
-			@RequestParam(required = false) String version,
+			@RequestParam(required = false) BigDecimal version,
 			@RequestParam(required = false) String filename,
 			@RequestParam(required = false) String dtltype,
 			HttpServletResponse response) throws IOException, ParseException {
 		System.out.println("SerdownloadConsolidatedExcelvice: Generating report ");
 		byte[] file = regreportServices.getConsolidatedDownloadFile(filename, asondate, fromdate, todate, currency,
 				type, version, dtltype);
+		System.out.println("filename..."+filename);
 
 		response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-		response.setHeader("Content-Disposition", "attachment; filename=" + filename + ".xlsx");
+		response.setHeader("Content-Disposition", "attachment; filename=\"" + filename + ".xlsx\"");
 		response.getOutputStream().write(file);
 		response.getOutputStream().flush();
-	}*/
+	}
+
 //	@Autowired
 //
 //	BRRS_M_SIR_ReportService BRRS_M_SIR_ReportService;

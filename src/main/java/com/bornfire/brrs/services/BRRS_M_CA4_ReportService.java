@@ -5,6 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -133,7 +134,7 @@ public class BRRS_M_CA4_ReportService {
 	
 	  public ModelAndView getBRRS_M_CA4View(String reportId, String fromdate, String
 			  todate, String currency, String dtltype, Pageable pageable, String type,
-			  String version) {
+			  BigDecimal version) {
 			  
 			  ModelAndView mv = new ModelAndView(); Session hs =
 			  sessionFactory.getCurrentSession();
@@ -237,18 +238,18 @@ public class BRRS_M_CA4_ReportService {
 	 */
 	
 	public byte[] getBRRS_M_CA4Excel(String filename, String reportId, String fromdate, String todate,
-			String currency, String dtltype, String type, String version) throws Exception {
+			String currency, String dtltype, String type, BigDecimal version) throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.");
 		
 		
 		// ARCHIVAL check
-		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && !version.trim().isEmpty()) {
+		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null ) {
 			logger.info("Service: Generating ARCHIVAL report for version {}", version);
 			return getExcelM_CA4ARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
 		}
 
 		
-		else if ("RESUB".equalsIgnoreCase(type) && version != null && !version.trim().isEmpty()) {
+		else if ("RESUB".equalsIgnoreCase(type) && version != null) {
 		    logger.info("Service: Generating RESUB report for version {}", version);
 
 		    try {
@@ -3023,7 +3024,7 @@ public class BRRS_M_CA4_ReportService {
 	 */
 	
 	public byte[] getExcelM_CA4ARCHIVAL(String filename, String reportId, String fromdate, String todate,
-			String currency, String dtltype, String type, String version) throws Exception {
+			String currency, String dtltype, String type, BigDecimal version) throws Exception {
 
 		logger.info("Service: Starting Excel generation process in memory.");
 
@@ -5423,7 +5424,7 @@ public class BRRS_M_CA4_ReportService {
 
 	    // Use entity field directly (same name as in entity)
 	    Date report_date = updatedEntity.getReport_date();
-	    int newVersion = 1;
+	    BigDecimal newVersion= BigDecimal.ONE ;
 
 	    try {
 	        // ✅ use the same variable name as in repo method
@@ -5434,10 +5435,10 @@ public class BRRS_M_CA4_ReportService {
 	        if (latestArchivalOpt.isPresent()) {
 	        	M_CA4_Archival_Summary_Entity latestArchival = latestArchivalOpt.get();
 	            try {
-	                newVersion = Integer.parseInt(latestArchival.getReport_version()) + 1;
+	                newVersion = latestArchival.getReport_version();
 	            } catch (NumberFormatException e) {
 	                System.err.println("Invalid version format. Defaulting to version 1");
-	                newVersion = 1;
+	                newVersion= BigDecimal.ONE ;
 	            }
 	        } else {
 	            System.out.println("No previous archival found for date: " + report_date);
@@ -5445,7 +5446,7 @@ public class BRRS_M_CA4_ReportService {
 
 	        // Prevent duplicate version
 	        boolean exists = m_ca4_Archival_Summary_Repo
-	                .findByReport_dateAndReport_version(report_date, String.valueOf(newVersion))
+	                .findByReport_dateAndReport_version(report_date, newVersion)
 	                .isPresent();
 
 	        if (exists) {
@@ -5457,7 +5458,7 @@ public class BRRS_M_CA4_ReportService {
 	        org.springframework.beans.BeanUtils.copyProperties(updatedEntity, archivalEntity);
 
 	        archivalEntity.setReport_date(report_date);
-	        archivalEntity.setReport_version(String.valueOf(newVersion));
+	        archivalEntity.setReport_version(newVersion);
 	        archivalEntity.setReportResubDate(new Date());
 
 	        System.out.println("Saving new archival version: " + newVersion);
@@ -5477,7 +5478,7 @@ public class BRRS_M_CA4_ReportService {
 	/// Downloaded for Archival & Resub
 			public byte[] BRRS_M_CA4ResubExcel(String filename, String reportId, String fromdate,
 		        String todate, String currency, String dtltype,
-		        String type, String version) throws Exception {
+		        String type, BigDecimal version) throws Exception {
 
 		    logger.info("Service: Starting Excel generation process in memory for RESUB Excel.");
 
