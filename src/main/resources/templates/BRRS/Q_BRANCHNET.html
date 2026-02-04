@@ -431,11 +431,12 @@ PURPOSE		: BWRBRREPORT
 
 		}
 
-        function showsummary() {
-            $('#loader').modal('show');
-            var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/
-                location.href = Callurl;
-        }
+      function showsummary() {
+			$('#loader').modal('show');
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate}, version=${version})}]]*/
+				location.href = Callurl;
+		}
+
 
 
     </script>

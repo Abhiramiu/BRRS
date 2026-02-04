@@ -1917,11 +1917,11 @@ public class RegulatoryReportServices {
 					pageable, Filter, type, version);
 			break;
 
-		case "M_SRWA_12F":
+		// case "M_SRWA_12F":
 
-			repdetail = BRRS_M_SRWA_12F_reportservice.getM_SRWA12FcurrentDtl(reportId, fromdate, todate, currency,
-					dtltype, pageable, Filter, type, version);
-			break;
+		// 	repdetail = BRRS_M_SRWA_12F_reportservice.getM_SRWA12FcurrentDtl(reportId, fromdate, todate, currency,
+		// 			dtltype, pageable, Filter, type, version);
+		// 	break;
 
 		case "M_OPTR":
 
@@ -3750,10 +3750,10 @@ public class RegulatoryReportServices {
 					version);
 		}
 
-		else if ("M_SRWA_12FDetail".equals(filename)) {
-			return BRRS_M_SRWA_12F_reportservice.getM_SRWA_12FDetailExcel(filename, fromdate, todate, currency, dtltype,
-					type, version);
-		}
+		// else if ("M_SRWA_12FDetail".equals(filename)) {
+		// 	return BRRS_M_SRWA_12F_reportservice.getM_SRWA_12FDetailExcel(filename, fromdate, todate, currency, dtltype,
+		// 			type, version);
+		// }
 
 		else if ("M_OPTRDetail".equals(filename)) {
 			return BRRS_M_OPTR_ReportService.getM_OPTRDetailExcel(filename, fromdate, todate, currency, dtltype, type,
@@ -5421,11 +5421,11 @@ public class RegulatoryReportServices {
 					type, version);
 		}
 
-		else if ("M_SRWA_12FDetail".equals(filename)) {
+		// else if ("M_SRWA_12FDetail".equals(filename)) {
 
-			fileData = BRRS_M_SRWA_12F_reportservice.getM_SRWA_12FDetailExcel(filename, fromdate, todate, currency,
-					dtltype, type, version);
-		}
+		// 	fileData = BRRS_M_SRWA_12F_reportservice.getM_SRWA_12FDetailExcel(filename, fromdate, todate, currency,
+		// 			dtltype, type, version);
+		// }
 
 		else if ("MDISB5Detail".equals(filename)) {
 
@@ -6130,16 +6130,16 @@ public class RegulatoryReportServices {
 			}
 			break;
 
-		case "M_SRWA_12F":
-			try {
-				List<Object[]> resubList = BRRS_M_SRWA_12F_reportservice.getM_SRWA_12FResub();
-				resubmissionData.addAll(resubList);
-				System.out.println("Resubmission data fetched for M_SRWA_12F: " + resubList.size());
-			} catch (Exception e) {
-				System.err.println("Error fetching resubmission data for M_SRWA_12F: " + e.getMessage());
-				e.printStackTrace();
-			}
-			break;
+		// case "M_SRWA_12F":
+		// 	try {
+		// 		List<Object[]> resubList = BRRS_M_SRWA_12F_reportservice.getM_SRWA_12FResub();
+		// 		resubmissionData.addAll(resubList);
+		// 		System.out.println("Resubmission data fetched for M_SRWA_12F: " + resubList.size());
+		// 	} catch (Exception e) {
+		// 		System.err.println("Error fetching resubmission data for M_SRWA_12F: " + e.getMessage());
+		// 		e.printStackTrace();
+		// 	}
+		// 	break;
 
 		case "M_SECL":
 			try {

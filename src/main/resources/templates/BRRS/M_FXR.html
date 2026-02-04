@@ -65,13 +65,13 @@ PURPOSE		: BRRSREPORT
 			border-color: #0c0c0c;
 		}
 
-		.btn-primary:not (:disabled):not (.disabled).active,
+		/* .btn-primary:not (:disabled):not (.disabled).active,
 		.btn-primary:not (:disabled):not (.disabled):active,
 		.show>.btn-primary.dropdown-toggle {
 			color: #fff;
 			background-color: #cc000000;
 			border-color: #161617;
-		}
+		} */
 
 		#finusertb {
 			width: 460px;
@@ -201,25 +201,6 @@ PURPOSE		: BRRSREPORT
 			transition: 0.3s ease;
 		}
 
-		/* When input or select is focused or has a value, move the label up */
-		.form-control:focus~.form-legend,
-		.form-control:not (:placeholder-shown)~.form-legend {
-			top: -8px;
-			font-size: 1rem;
-			color: #007bff;
-		}
-
-		/* Hover effect when the input/select is focused */
-		.form-control:focus:hover~.form-legend {
-			color: #0056b3;
-			/* Darker shade of blue on hover */
-		}
-
-		/* Ensure the label returns to the normal color after focus or hover is removed */
-		.form-control:not (:focus)~.form-legend {
-			color: #aaa;
-			/* Normal label color */
-		}
 	</style>
 	<style>
 		/* Red border for invalid inputs */
@@ -378,18 +359,22 @@ PURPOSE		: BRRSREPORT
 			window.history.back();
 		}
 
-		//to fetch summary from the database - called from the summary button
-		//function showdetails() {
-			// alert("Details page not available for Manual Report");
-		//}
 		function showdetails() {
-		    isDetailsModal = true; // mark that this modal is from Details
-			 showResultModal('BRRS',' Details page not available for Manual Report');
-		}
+			$('#loader').modal('show');
+			var Callurl = /*[[@{'/Reports/' + ${reportid}(
+			        dtltype='detail',
+			        fromdate=${fromdate},
+			        todate=${todate},
+			        type=${type},
+			        asondate=${asondate},
+			        version=${version}
+			    )}]]*/
+				location.href = Callurl;
 
+		}
 		function showsummary() {
 			$('#loader').modal('show');
-			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/;
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate}, version=${version})}]]*/
 			location.href = Callurl;
 		}
 
@@ -557,15 +542,6 @@ function cancelModify() {
         
         $(".Show_input").attr("readonly", true).attr("disabled", true);
 
-      /*  for (let i = 11; i <= 50; i++) {
-            $("#R" + i + "_TYPE_OF_ACC_TEXT").show();
-            $("#R" + i + "_PURPOSE_TEXT").show();
-            $("#R" + i + "_CURRENCY_TEXT").show();
-
-            $("#R" + i + "_TYPE_OF_ACC").hide();
-            $("#R" + i + "_PURPOSE").hide();
-            $("#R" + i + "_CURRENCY").hide();
-        }*/
 
         $("#submitButton, #btnBack_edit").hide();
         $("#btnBack").show();
@@ -1196,17 +1172,23 @@ function fileuploads(btn) {
 						<!-- Buttons -->
 						<input type="hidden" id="selectedTab" th:value="${displaymode}">
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showsummary();"
-							th:if="${displaymode == 'Details'}">Summary</button>
+							th:if="${displaymode == 'detail'}">Summary</button>
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails();"
 							th:if="${displaymode == 'summary'}">Details</button>
 						
-<!-- Modify button -->
+<!-- Modify button
 <button type="button" class="custom-tab-btn"
         onclick="showmodify(this);"
         title="Click to EDIT Records"th:if="${type != 'ARCHIVAL'}" 
         th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
-        id="addRecord">Modify</button>
-
+        id="addRecord">Modify</button> -->
+	<!-- Modify button -->
+						<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
+							title="Click to EDIT Records" th:if="${type != 'ARCHIVAL'} and ${dtltype != 'detail'}"
+							th:classappend="${session.PERMISSIONS == 'W'} and ${dtltype == 'report'} ? 'addedit'"
+							id="addRecord">
+							Modify
+						</button>
 <!-- Cancel button (hidden initially) -->
 <button type="button" class="custom-tab-btn"
         title="Cancel editing"
@@ -1214,34 +1196,32 @@ function fileuploads(btn) {
         onclick="cancelModify();"
         style="display: none;">Cancel</button>
 
-
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'summary'}" th:attr="data-reportid=${reportid},
-                   				 data-asondate=${asondate},
-                   				 data-fromdate=${fromdate},
-                    				 data-todate=${todate},
-                    				 data-currency=${currency}, 
-                    				 data-dtltype=${dtltype},
-                    				 data-filename='M_FXR.xlsx',
-					 				 data-type=${type},
-					    			 data-version=${version}" onclick="downloadfile(this);">
-							<i class="fa fa-download"></i>
+<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
+							onclick="downloadfile(this)" th:if="${displaymode == 'summary' or displaymode == 'detail'}"
+							th:attr="data-reportid=${reportid},
+                   data-asondate=${asondate},
+                   data-fromdate=${fromdate},
+                   data-todate=${todate},
+                   data-currency=${currency}, 
+                   data-dtltype=${dtltype},
+                   data-filename='M_FXR.xlsx',
+                   data-type=${type},
+                   data-version=${version != null ? version : ''}" style="font-family: Arial;font-weight: bold;">
+							<i class="fa fa-download"></i> Excel
 						</button>
-						
-						
-						
+						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
+							onclick="downloadfile(this)"
+							th:if="${displaymode == 'summary' or displaymode == 'detail'}" th:attr="data-reportid=${reportid},
+            data-asondate=${asondate},
+            data-fromdate=${fromdate},
+            data-todate=${todate},
+            data-currency=${currency}, 
+            data-dtltype=${dtltype},
+            data-filename='EMAIL_M_FXR.xlsx',
+            data-type='email',
+            data-version=${version != null ? version : ''}" style="font-family: Arial;font-weight: bold;">
+							<i class="fa fa-download"></i> E-Mail
 
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'Details'}" onclick="startReport(this);" th:attr="
-								    data-fromdate=${fromdate},
-								    data-todate=${todate},
-									data-currency=${currency},  
-												data-dtltype=${dtltype}, 
-								    data-filename='MSFinP2Detail',
-									data-type=${type},
-												data-version=${version}
-								  ">
-							<i class="fa fa-download"></i>
 						</button>
 
 
@@ -1249,7 +1229,30 @@ function fileuploads(btn) {
 					</div>
 					
 				</div>
-				<div th:if="${displaymode == 'summary'}">
+				<p th:if="${displaymode == 'summary'and type != 'ARCHIVAL'}" style="text-align: left; font-weight: bold; 
+						color: white;  font-size: 20px;  background-color: rgb(107, 122, 143); 
+						margin-top:10px; margin-bottom:10px;padding: 5px;">Summary View - M FXR</p>
+
+				<!-- Detail text -->
+				<p th:if="${displaymode == 'detail' and type != 'ARCHIVAL'}" style="text-align: left; font-weight: bold;
+					 color: white;  font-size: 20px;  background-color: rgb(107, 122, 143); 
+					 margin-top:10px; margin-bottom:10px;padding: 5px;">Detail View - M FXR</p>
+
+				<p th:if="${type == 'ARCHIVAL' and displaymode == 'summary'}" style="text-align: left; font-weight: bold; 
+          color: white; font-size: 20px;
+          background-color: rgb(107, 122, 143); 
+          margin-top:10px; margin-bottom:10px; padding: 5px;">
+					Archival Summary View - M FXR
+				</p>
+
+				<p th:if="${type == 'ARCHIVAL' and displaymode == 'detail'}" style="text-align: left; font-weight: bold;
+          color: white; font-size: 20px;
+          background-color: rgb(107, 122, 143); 
+          margin-top:10px; margin-bottom:10px; padding: 5px;">
+					Archival Detail View - M FXR
+				</p>
+
+				<div th:if="${displaymode == 'summary' or displaymode == 'detail'}">
 					<div class="row">
 						<div class="col-sm-12">
 						<form action="#" method="POST" id="fileupload">
