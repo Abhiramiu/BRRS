@@ -599,10 +599,7 @@ public class RegulatoryReportServices {
 		 * case "M_FXR": repsummary = BRRS_M_FXR_reportservice.getM_FXRView(reportId,
 		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
 		 * 
-		 * case "M_SRWA_12B":
-		 * 
-		 * repsummary = brrs_m_srwa_12b_reportservice.getM_SRWA_12BView(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
+		 
 		 * 
 		 * case "M_SECL": repsummary = brrs_m_secl_reportservice.getM_SECLView(reportId,
 		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
@@ -780,6 +777,16 @@ public class RegulatoryReportServices {
 			repsummary = BRRS_M_LA5_reportservice.getM_LA5View(reportId, fromdate, todate, currency, dtltype, pageable,
 					type, version);
 			break;
+			
+		case "Q_RLFA1":
+			
+			repsummary = brrs_q_rlfa1_reportservice.getQ_RLFA1View(reportId, fromdate,
+				todate, currency, dtltype, pageable, type, version); break;
+				 
+			  case "M_SRWA_12B":
+				  
+				  repsummary = brrs_m_srwa_12b_reportservice.getM_SRWA_12BView(reportId,
+				  fromdate, todate, currency, dtltype, pageable, type, version); break;
 
 		/*
 		 * 
@@ -1949,6 +1956,22 @@ public class RegulatoryReportServices {
 				// TODO Auto-generated catch block e.printStackTrace();
 			}
 			break;
+			
+		case "M_SRWA_12B": try { 
+			repfile =  brrs_m_srwa_12b_reportservice.getM_SRWA_12BExcel(filename, reportId, fromdate, todate, currency,
+					dtltype, type, version); } 
+		catch (Exception e) {
+			e.printStackTrace();
+		 }
+		break;
+		
+		case "Q_RLFA1": try {
+			repfile = brrs_q_rlfa1_reportservice.getQ_RLFA1Excel(filename, reportId,
+					fromdate, todate, currency, dtltype, type, version); 
+		} catch (Exception e){
+			e.printStackTrace();
+		} 
+		break; 
 
 		/*
 		 * case "M_SFINP2": try { repfile =

@@ -423,13 +423,15 @@ let isDetailsModal = false;
 		}
 
 		//to fetch summary from the database - called from the summary button
-		function showdetails() {
-    isDetailsModal = true; // mark that this modal is from Details
-    showResultModal('BRRS', 'Details page not available for Manual Report');
-}
+		function showdetail() {
+            $('#loader').modal('show');
+            var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${'detail'}, asondate=${asondate})}]]*/;
+            // showResultModal('BRRS', 'Details page not available for Manual Report');
+            location.href = Callurl;
+        }
 		function showsummary() {
 			$('#loader').modal('show');
-			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/;
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${'summary'}, asondate=${asondate})}]]*/;
 			location.href = Callurl;
 		}
 
@@ -1179,9 +1181,9 @@ window.fileuploads = function (btn) {
 						<input type="hidden" id="selectedTab" th:value="${displaymode}">
 						<button type="button" class="custom-tab-btn"
 							id="custom-tab-btnSummary" onclick="showsummary();"
-							th:if="${displaymode == 'Details'}">Summary</button>
+							th:if="${displaymode == 'detail'}">Summary</button>
 						<button type="button" class="custom-tab-btn"
-							id="custom-tab-btnDetails" onclick="showdetails();"
+							id="custom-tab-btnDetails" onclick="showdetail();"
 							th:if="${displaymode == 'summary'}">Details</button>
 							
 							
@@ -1190,7 +1192,7 @@ window.fileuploads = function (btn) {
 						<button type="button" class="custom-tab-btn"
 							onclick="showmodify(this);" title="Click to EDIT Records"
 							th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
-							th:if="${type != 'ARCHIVAL'}"
+							th:if="${type != 'ARCHIVAL' and displaymode == 'summary'}"
 							id="addRecord">Modify</button>
 
 						<!-- Cancel button (hidden initially) -->
@@ -1204,7 +1206,7 @@ window.fileuploads = function (btn) {
 							
 							
 						<button type="button" class="custom-tab-btn"
-							id="custom-tab-btnAdd" th:if="${displaymode == 'summary'}"
+							id="custom-tab-btnAdd"
 							th:attr="data-reportid=${reportid}, 
                     				 data-asondate=${asondate}, 
                     				 data-fromdate=${fromdate}, 
@@ -1217,9 +1219,24 @@ window.fileuploads = function (btn) {
 							onclick="downloadfile(this);">
 							<i class="fa fa-download"></i>
 						</button>
+
+                        <button type="button" class="custom-tab-btn"
+							id="custom-tab-btnAdd" 
+							th:attr="data-reportid=${reportid}, 
+                    				 data-asondate=${asondate}, 
+                    				 data-fromdate=${fromdate}, 
+                     				 data-todate=${todate}, 
+                     				 data-currency=${currency},  
+                     				 data-dtltype=${dtltype}, 
+                     				 data-filename='Q_RLFD1_EMAIL.xlsx',
+					 				 data-type=${'email_report'},
+					    			 data-version=${version}"
+							onclick="downloadfile(this);">
+							<i class="fa fa-download"></i> Email Download
+						</button>
 						
-						<button type="button" class="custom-tab-btn"
-							id="custom-tab-btnAdd" th:if="${displaymode == 'Details'}"
+						<!-- <button type="button" class="custom-tab-btn"
+							id="custom-tab-btnAdd"
 							th:attr="data-reportid=${reportid}, 
              data-asondate=${asondate}, 
              data-fromdate=${fromdate}, 
@@ -1230,16 +1247,17 @@ window.fileuploads = function (btn) {
              data-type=${type},
 					data-version=${version} "
 							onclick="startReport(this)">
-							<!-- 🛠️ Fix: pass `this` -->
 							<i class="fa fa-download"></i>
-						</button>
+						</button> -->
 						
 					</div>
 				</div>
 
 
 
-				<div th:if="${displaymode == 'summary'}">
+				<div>
+                    <h5 th:if="${displaymode == 'summary'}" style="text-align:center" >Summary Table</h5>
+	                <h5 th:if="${displaymode == 'detail'}" style="text-align:center" >Detail Table</h5>
 					<div class="row">
 						<div class="col-sm-12">
 						<form action="#" method="POST" id="fileupload">

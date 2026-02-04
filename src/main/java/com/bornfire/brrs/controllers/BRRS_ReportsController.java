@@ -287,7 +287,7 @@ public class BRRS_ReportsController {
 			@RequestParam("reportid") String reportid, @RequestParam("asondate") String asondate,
 			@RequestParam("fromdate") String fromdate, @RequestParam("todate") String todate,
 			@RequestParam("currency") String currency, @RequestParam(value = "type", required = false) String type,
-			@RequestParam(value = "version", required = false) BigDecimal version,
+			@RequestParam(value = "version", required = false) String versionBD,
 			@RequestParam(value = "subreportid", required = false) String subreportid,
 			@RequestParam(value = "secid", required = false) String secid,
 			@RequestParam(value = "dtltype", required = false) String dtltype,
@@ -298,6 +298,18 @@ public class BRRS_ReportsController {
 			throws SQLException, FileNotFoundException {
 
 		response.setContentType("application/octet-stream");
+		
+		BigDecimal version = null;
+
+		if (versionBD != null) {
+		    versionBD = versionBD.trim();
+		    if (!versionBD.isEmpty()
+		            && !"null".equalsIgnoreCase(versionBD)
+		            && !"undefined".equalsIgnoreCase(versionBD)) {
+		        version = new BigDecimal(versionBD);
+		    }
+		}
+		
 		try {
 			asondate = dateFormat.format(new SimpleDateFormat("dd/MM/yyyy").parse(asondate));
 			fromdate = dateFormat.format(new SimpleDateFormat("dd/MM/yyyy").parse(fromdate));
