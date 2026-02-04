@@ -2170,6 +2170,31 @@ public class BRRS_ReportsController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
 		}
 	}
+	
+	@Autowired
+	private BRRS_M_LA2_ReportService BRRS_M_LA2_reportservice;
+
+	@RequestMapping(value = "/M_LA2update", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<String> updateReport(
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+			@ModelAttribute M_LA2_Summary_Entity request) {
+
+		try {
+			System.out.println("came to single controller");
+
+			// ✅ set the asondate into entity
+			request.setREPORT_DATE(asondate);
+
+			// call services
+			BRRS_M_LA2_reportservice.updateReport(request);
+
+			return ResponseEntity.ok("Modified Successfully.");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
+		}
+	}
 
 	/*
 	 * @RequestMapping(value = "/UpdateM_EPR_ReSub", method = { RequestMethod.GET,
@@ -2600,26 +2625,26 @@ public class BRRS_ReportsController {
 
 	
 
-	//@RequestMapping(value = "/updateReportLA2", method = { RequestMethod.GET, RequestMethod.POST })
-	@PostMapping("/LA2updateAll")
-	@ResponseBody
-	public ResponseEntity<String> updateLA2AllReports(
-			@RequestParam @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@RequestParam Map<String, String> allParams) {
-		try {
-			System.out.println("Came to LA2 controller");
-
-			LA2reportService.updateDetailFromForm(asondate, allParams);
-
-			return ResponseEntity.ok("Detail Updated Successfully");
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity
-					.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body("Update Failed: " + e.getMessage());
-		}
-	}
-	
+	/*
+	 * //@RequestMapping(value = "/updateReportLA2", method = { RequestMethod.GET,
+	 * RequestMethod.POST })
+	 * 
+	 * @PostMapping("/LA2updateAll")
+	 * 
+	 * @ResponseBody public ResponseEntity<String> updateLA2AllReports(
+	 * 
+	 * @RequestParam @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+	 * 
+	 * @RequestParam Map<String, String> allParams) { try {
+	 * System.out.println("Came to LA2 controller");
+	 * 
+	 * LA2reportService.updateDetailFromForm(asondate, allParams);
+	 * 
+	 * return ResponseEntity.ok("Detail Updated Successfully"); } catch (Exception
+	 * e) { e.printStackTrace(); return ResponseEntity
+	 * .status(HttpStatus.INTERNAL_SERVER_ERROR) .body("Update Failed: " +
+	 * e.getMessage()); } }
+	 */
 	
 	@RequestMapping(value = "/updateReportMDISB2", method = { RequestMethod.GET, RequestMethod.POST })
 	/*

@@ -767,12 +767,7 @@ public class RegulatoryReportServices {
 					pageable, type, version);
 			break;
 
-		case "M_LA2":
-			repsummary = BRRS_M_LA2_reportservice.getM_LA2View(reportId, fromdate, todate, currency, dtltype, pageable,
-					type, version);
-			break;
-
-			
+		
 		case "M_LA5":
 			repsummary = BRRS_M_LA5_reportservice.getM_LA5View(reportId, fromdate, todate, currency, dtltype, pageable,
 					type, version);
@@ -1142,6 +1137,14 @@ public class RegulatoryReportServices {
 					type, version);
 
 			break;
+			
+		case "M_LA2":
+
+			repsummary = BRRS_M_LA2_reportservice.getM_LA2View(reportId, fromdate, todate, currency, dtltype, pageable,
+					type, version);
+
+			break;	
+		
 
 		case "M_SRWA_12A":
 
@@ -1556,10 +1559,7 @@ public class RegulatoryReportServices {
 					pageable, Filter, type, version);
 			break;
 
-		case "M_LA2":
-			repdetail = BRRS_M_LA2_reportservice.getM_LA2currentDtl(reportId, fromdate, todate, currency, dtltype,
-					pageable, Filter, type, version);
-			break;
+		
 
 		case "M_DEP1":
 			repdetail = BRRS_M_DEP1_reportservice.getM_DEP1currentDtl(reportId, fromdate, todate, currency, dtltype,
@@ -2133,6 +2133,16 @@ public class RegulatoryReportServices {
 			try {
 
 				repfile = brrs_m_epr_reportservice.getM_EPRExcel(filename, reportId, fromdate, todate, currency,
+						dtltype, type, version);
+			} catch (Exception e) { // TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+			
+		case "M_LA2":
+			try {
+
+				repfile = BRRS_M_LA2_reportservice.getM_LA2Excel(filename, reportId, fromdate, todate, currency,
 						dtltype, type, version);
 			} catch (Exception e) { // TODO Auto-generated catch block
 				e.printStackTrace();
@@ -2766,14 +2776,7 @@ public class RegulatoryReportServices {
 			}
 			break;
 
-		case "M_LA2":
-			try {
-				repfile = BRRS_M_LA2_reportservice.BRRS_M_LA2Excel(filename, reportId, fromdate, todate, currency,
-						dtltype, type, version);
-			} catch (Exception e) { // TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+		
 			
 		case "M_LA5":
 			try {
@@ -3521,9 +3524,6 @@ public class RegulatoryReportServices {
 		} else if ("M_LA1Detail".equals(filename)) {
 			return BRRS_M_LA1_reportservice_new.BRRS_M_LA1DetailExcel(filename, fromdate, todate, currency, dtltype,
 					type, version);
-		} else if ("M_LA2Detail".equals(filename)) {
-			return BRRS_M_LA2_reportservice.BRRS_M_LA2DetailExcel(filename, fromdate, todate, currency, dtltype, type,
-					version);
 		} else if ("M_DEP1Detail".equals(filename)) {
 			return BRRS_M_DEP1_reportservice.BRRS_M_DEP1DetailExcel(filename, fromdate, todate, currency, dtltype, type,
 					version);
@@ -3833,14 +3833,11 @@ public class RegulatoryReportServices {
 			}
 			break;
 
-		case "M_LA2":
-			try {
-				archivalData = BRRS_M_LA2_reportservice.getM_LA2Archival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+		/*
+		 * case "M_LA2": try { archivalData =
+		 * BRRS_M_LA2_reportservice.getM_LA2Archival(); } catch (Exception e) { // TODO
+		 * Auto-generated catch block e.printStackTrace(); } break;
+		 */
 
 		case "M_CALOC":
 			try {
@@ -4561,6 +4558,13 @@ public class RegulatoryReportServices {
 			System.out.println("Fetched M_EPR archival data: " + eprList.size());
 			break;
 
+		case "M_LA2":
+			List<Object[]> la2List = BRRS_M_LA2_reportservice.getM_LA2Archival();
+			archivalData.addAll(la2List);
+			System.out.println("Fetched M_LA2archival data: " + la2List.size());
+			break;
+
+			
 		case "M_SRWA_12G":
 			List<Object[]> srwagList = BRRS_M_SRWA_12G_reportservice.getM_SRWA_12GArchival();
 			archivalData.addAll(srwagList);
@@ -4964,10 +4968,7 @@ public class RegulatoryReportServices {
 		} else if (filename.equals("M_LA1Detail")) {
 			fileData = BRRS_M_LA1_reportservice_new.BRRS_M_LA1DetailExcel(filename, fromdate, todate, currency, dtltype,
 					type, version);
-		} else if (filename.equals("M_LA2Detail")) {
-			fileData = BRRS_M_LA2_reportservice.BRRS_M_LA2DetailExcel(filename, fromdate, todate, currency, dtltype,
-					type, version);
-		} else if (filename.equals("M_DEP1Detail")) {
+		}  else if (filename.equals("M_DEP1Detail")) {
 			fileData = BRRS_M_DEP1_reportservice.BRRS_M_DEP1DetailExcel(filename, fromdate, todate, currency, dtltype,
 					type, version);
 		} else if (filename.equals("M_LA3Detail")) {
@@ -5359,11 +5360,11 @@ public class RegulatoryReportServices {
 			reportData = BRRS_M_LA1_reportservice_new.getReportData(specificFilePath);
 			break;
 
-		case "M_LA2":
-			specificFilePath = baseExportPath + "M_LA2.xlsx";
-			System.out.println("Fetching M_LA2 data from: " + specificFilePath);
-			reportData = BRRS_M_LA2_reportservice.getReportData(specificFilePath);
-			break;
+		/*
+		 * case "M_LA2": specificFilePath = baseExportPath + "M_LA2.xlsx";
+		 * System.out.println("Fetching M_LA2 data from: " + specificFilePath);
+		 * reportData = BRRS_M_LA2_reportservice.getReportData(specificFilePath); break;
+		 */
 
 		case "M_SFINP2":
 			System.out.println(reportCode);
@@ -5403,10 +5404,7 @@ public class RegulatoryReportServices {
 						request.getParameter("formmode"));
 				break;
 
-			case "M_LA2":
-				modelAndView = BRRS_M_LA2_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
-						request.getParameter("formmode"));
-				break;
+			
 
 			case "M_LA3":
 				modelAndView = BRRS_M_LA3_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
@@ -6158,6 +6156,17 @@ public class RegulatoryReportServices {
 				System.out.println("Resubmission data fetched for M_EPR: " + resubList.size());
 			} catch (Exception e) {
 				System.err.println("Error fetching resubmission data for M_EPR: " + e.getMessage());
+				e.printStackTrace();
+			}
+			break;
+			
+		case "M_LA2":
+			try {
+				List<Object[]> resubList = BRRS_M_LA2_reportservice.getM_LA2Resub();
+				resubmissionData.addAll(resubList);
+				System.out.println("Resubmission data fetched for M_LA2: " + resubList.size());
+			} catch (Exception e) {
+				System.err.println("Error fetching resubmission data for M_LA2: " + e.getMessage());
 				e.printStackTrace();
 			}
 			break;

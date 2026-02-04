@@ -13,7 +13,14 @@ import javax.persistence.TemporalType;
 
 @Entity
 @Table(name = "BRRS_M_SIR_ARCHIVALTABLE_SUMMARY")
+<<<<<<< Updated upstream
 
+=======
+
+
+//@IdClass(M_SIR_Archival_Summary_PK.class)
+
+>>>>>>> Stashed changes
 public class M_SIR_Archival_Summary_Entity {
 
 	 // ================= r12 =================
