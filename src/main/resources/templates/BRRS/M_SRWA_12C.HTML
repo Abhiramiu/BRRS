@@ -435,11 +435,23 @@ $(window).on('beforeunload', function() {
 	}
 	
 	//to fetch summary from the database - called from the summary button
-	function showdetails() {
+/* 	function showdetails() {
     isDetailsModal = true; // mark that this modal is from Details
     showResultModal('BRRS', 'Details page not available for Manual Report');
+} */
+function showdetails() {
+	 $('#loader').modal('show');
+	    var Callurl = /*[[@{'/Reports/' + ${reportid}(
+	        dtltype='detail',
+	        fromdate=${fromdate},
+	        todate=${todate},
+	        type=${type},
+	        asondate=${asondate},
+	        version=${version}
+	    )}]]*/;
+	    location.href = Callurl;
+
 }
-	
 	function showsummary() {
 		$('#loader').modal('show');
 		var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/;								
@@ -1101,7 +1113,7 @@ $(document).ready(function() {
 						<button type="button" class="custom-tab-btn"
 							onclick="showmodify(this);" title="Click to EDIT Records"
 							th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
-							th:if="${type != 'ARCHIVAL'  }"
+							th:if="${type != 'ARCHIVAL'  and dtltype ne 'detail' }"
 							id="addRecord">Modify</button>
 
 						<!-- Cancel button (hidden initially) -->
@@ -1116,7 +1128,7 @@ $(document).ready(function() {
         
         
         
-        <button type="button" class="custom-tab-btn" id="custom-tab-btnAdd" th:if="${displaymode == 'summary'}"
+        <button type="button" class="custom-tab-btn" id="custom-tab-btnAdd" th:if="${displaymode == 'summary' or displaymode == 'Details'}"
             th:attr="data-reportid=${reportid}, 
                      data-asondate=${asondate}, 
                      data-fromdate=${fromdate}, 
@@ -1130,7 +1142,7 @@ $(document).ready(function() {
             onclick="downloadfile(this);">
             <i class="fa fa-download"></i>
         </button>
-        <button
+       <!--  <button
 		  type="button"
 		  class="custom-tab-btn"
 		  id="custom-tab-btnAdd"
@@ -1142,11 +1154,28 @@ $(document).ready(function() {
 		    data-filename='M_SRWA_12CDetail'
 		  ">
 		  <i class="fa fa-download"></i>
-		</button>
+		</button> -->
 					</div>
 				</div>
+				
+				<h1
+					th:if="${displaymode == 'summary' and type == 'ARCHIVAL' and displaymode != 'Details'}"
+					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">Archival
+					Summary View - M-SRWA_12C</h1>
+
+				<h1
+					th:if="${displaymode == 'Details' and type == 'ARCHIVAL' and displaymode != 'summary'}"
+					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">Archival
+					Detail View - M-SRWA_12C</h1>
+
+				<h1 th:if="${displaymode == 'summary'and type != 'ARCHIVAL'}"
+					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">Summary
+					View - M-SRWA_12C</h1>
+				<h1 th:if="${displaymode == 'Details' and type != 'ARCHIVAL'}"
+					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">Detail
+					View - M-SRWA_12C</h1>
 			
-			<div th:if="${displaymode == 'summary'}">
+			<div th:if="${displaymode == 'summary' or displaymode == 'Details'}">
 			<div class="row" >
 				<div class="col-sm-12">
 					<form action="#" method="POST" id="fileupload">
@@ -2275,7 +2304,7 @@ $(document).ready(function() {
 
 
 							</div>
-<div style="text-align: center; margin-top: 10px;">
+<div style="text-align: center; margin-top: 10px;margin-bottom: 200px; ">
 
 									<button id="submitButton" type="button"
 										class="custom-tab-btn Show_input" form="fileupload"
