@@ -225,7 +225,7 @@ td {
 
 /* When input or select is focused or has a value, move the label up */
 .form-control:focus ~ .form-legend, .form-control:not (:placeholder-shown
-	) ~ .form-legend {
+	 ) ~ .form-legend {
 	top: -8px;
 	font-size: 1rem;
 	color: #007bff;
@@ -292,15 +292,15 @@ label.error {
 .white-text span {
 	color: white !important;
 }
+
 .table-cell tbody td:hover {
-        background-color: #f0f0f0; /* Hover color for cell */
-        cursor: pointer;           /* Optional: pointer cursor */
-    }
-	
-	.table-bordered td, 
-	.table-bordered th {
-	     border: 1px solid #000 !important;
-	}
+	background-color: #f0f0f0; /* Hover color for cell */
+	cursor: pointer; /* Optional: pointer cursor */
+}
+
+.table-bordered td, .table-bordered th {
+	border: 1px solid #000 !important;
+}
 </style>
 
 
@@ -367,18 +367,25 @@ $(window).on('beforeunload', function() {
 	
 	//to fetch summary from the database - called from the summary button
 	function showdetails() {
-				 showResultModal('BRRS',' Details page not available for Manual Report');
-			}
-	
-	function showsummary() {
-		$('#loader').modal('show');
-		var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/;								
-		location.href = Callurl;
+			 $('#loader').modal('show');
+			    var Callurl = /*[[@{'/Reports/' + ${reportid}(
+			        dtltype='detail',
+			        fromdate=${fromdate},
+			        todate=${todate},
+			        type=${type},
+			        asondate=${asondate},
+			        version=${version}
+			    )}]]*/;
+			    location.href = Callurl;
 
-	}
+}
+		function showsummary() {
+			$('#loader').modal('show');
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate}, version=${version})}]]*/;
+			location.href = Callurl;
+		}
 	
-	
-    </script>
+	</script>
 
 <script>
 
@@ -519,7 +526,8 @@ function cancelModify() {
     }
 }
 
-</script><script>
+</script>
+<script>
 // ==============================
 // ✅ FORMAT & PARSE NUMBERS
 // ==============================
@@ -686,7 +694,7 @@ $(document).ready(function() {
 	        dataType: 'text',
 	        success: function () {
 	            $("#resultModalLabel").text("BRRS");
-	            $("#resultModalBody").text("Updated Successfully.");
+	            $("#resultModalBody").text("Modified Successfully.");
 	            $("#resultModal").modal("show");
 				//  Wait for user to close the modal manually
 			    $("#resultModal").off("hidden.bs.modal").on("hidden.bs.modal", function () {
@@ -861,107 +869,101 @@ function showdetailsbyRowAndColumn(a) {
 
 
 <style>
-	.left-arrow-circle {
-		background-color: white;
-		color: #007bff;
-		border-radius: 50%;
-		padding: 8px;
-		margin-right: 10px;
-		cursor: pointer;
-	}
-
-	/* 🚌 Bus display style box */
-	/* 🚌 Bus display style box */
-				.boards {
-					transform: translateY(6px);
-				  background-color: rgb(107, 122, 143);
-				  color: white;
-				  padding: 5px 80px;
-				  border-radius: 8px;
-				  overflow: hidden;
-				  white-space: nowrap;
-				  flex: 1; /* ✅ makes it take available space dynamically */
-				  min-width: 200px;
-				  box-shadow: 0 0 10px rgb(107, 122, 143);
-				  position: relative;
-				}
-
-	/* ✨ Scrolling animation */
-	.scrolling-text {
-		display: inline-block;
-		font-family: "Courier New", monospace;
-		font-weight: bold;
-		letter-spacing: 1px;
-		animation: scroll-left 10s linear infinite;
-	}
-
-	/* Animation keyframes */
-	@keyframes scroll-left {
-		0% {
-			transform: translateX(100%);
+		.left-arrow-circle {
+			background-color: white;
+			color: #007bff;
+			border-radius: 50%;
+			padding: 8px;
+			margin-right: 10px;
+			cursor: pointer;
 		}
 
-		100% {
-			transform: translateX(-100%);
+		/* 🚌 Bus display style box */
+		/* 🚌 Bus display style box */
+					.boards {
+						transform: translateY(6px);
+					  background-color: rgb(107, 122, 143);
+					  color: white;
+					  padding: 5px 80px;
+					  border-radius: 8px;
+					  overflow: hidden;
+					  white-space: nowrap;
+					  flex: 1; /* ✅ makes it take available space dynamically */
+					  min-width: 200px;
+					  box-shadow: 0 0 10px rgb(107, 122, 143);
+					  position: relative;
+					}
+
+		/* ✨ Scrolling animation */
+		.scrolling-text {
+			display: inline-block;
+			font-family: "Courier New", monospace;
+			font-weight: bold;
+			letter-spacing: 1px;
+			animation: scroll-left 10s linear infinite;
 		}
-	}
-</style>
+
+		/* Animation keyframes */
+		@keyframes scroll-left {
+			0% {
+				transform: translateX(100%);
+			}
+
+			100% {
+				transform: translateX(-100%);
+			}
+		}
+	</style>
+
 
 
 
 
 <style>
-	/* Keep the header fixed and aligned */
-	.dataTables_scrollHeadInner,
-	.dataTables_scrollBody table {
-		width: 100% !important;
-	}
+/* Keep the header fixed and aligned */
+.dataTables_scrollHeadInner, .dataTables_scrollBody table {
+	width: 100% !important;
+}
 
-	/* Prevent thead shrinking at zoom */
-	.dataTables_scrollHeadInner table {
-		width: 100% !important;
-		min-width: 100% !important;
-	}
+/* Prevent thead shrinking at zoom */
+.dataTables_scrollHeadInner table {
+	width: 100% !important;
+	min-width: 100% !important;
+}
 
-	#reportdetails {
-		width: 100% !important;
-		table-layout: fixed !important;
-	}
+#reportdetails {
+	width: 100% !important;
+	table-layout: fixed !important;
+}
 
-	#reportdetails th,
-	#reportdetails td {
-		white-space: nowrap;
-	}
+#reportdetails th, #reportdetails td {
+	white-space: nowrap;
+}
 
-	table.dataTable th.dt-type-numeric,
-	table.dataTable th.dt-type-date,
-	table.dataTable td.dt-type-numeric,
-	table.dataTable td.dt-type-date {
-		text-align: left !important;
-	}
+table.dataTable th.dt-type-numeric, table.dataTable th.dt-type-date,
+	table.dataTable td.dt-type-numeric, table.dataTable td.dt-type-date {
+	text-align: left !important;
+}
 
-	table.dataTable th.dt-type-numeric:nth-child(6) {
-		text-align: right !important;
-	}
+table.dataTable th.dt-type-numeric:nth-child(6) {
+	text-align: right !important;
+}
 
-	/* ✅ Right-align both header and data (6th column = ACCT BALANCE) */
-	#reportdetails th.dt-type-numeric:nth-child(6),
-	#reportdetails td:nth-child(6),
+/* ✅ Right-align both header and data (6th column = ACCT BALANCE) */
+#reportdetails th.dt-type-numeric:nth-child(6), #reportdetails td:nth-child(6),
 	.dataTables_scrollHeadInner table th:nth-child(6) {
-		text-align: right !important;
-		padding-right: 10px !important;
-	}
+	text-align: right !important;
+	padding-right: 10px !important;
+}
 </style>
 <style>
-	#reportdetails,
-	#reportdetails th,
-	#reportdetails td {
-		
-	}
+#reportdetails, #reportdetails th, #reportdetails td {
+	
+}
 
-	#reportdetails {
-		border-collapse: collapse;
-	}
+#reportdetails {
+	border-collapse: collapse;
+}
 </style>
 <script th:inline="javascript">
 			  $(document).ready(function () {
@@ -1029,21 +1031,25 @@ function showdetailsbyRowAndColumn(a) {
 
 						<!-- Title -->
 						<h5
-							style="font-family: arial; font-size: 20px; padding-top: 10px; font-weight: bold; color: white;margin: 0 10px;">
- 							(11) MONTHLY SCHEDULE: M-CA6:   CAPITAL INSTRUMENTS ELIGIBLE FOR GRADUAL PHASE-OUT TREATMENT </h5>
+							style="font-family: arial; font-size: 20px; padding-top: 10px; font-weight: bold; color: white; margin: 0 10px;">
+							(11) MONTHLY SCHEDULE: M-CA6: CAPITAL INSTRUMENTS ELIGIBLE FOR
+							GRADUAL PHASE-OUT TREATMENT</h5>
 					</div>
 					<!-- Moving bus-board text -->
-																<div class="boards">
-																	<p class="scrolling-text">BANK OF BOTSWANA - BANKING SUPERVISION DEPARTMENT </p>
-																</div>
+					<div class="boards">
+						<p class="scrolling-text">BANK OF BOTSWANA - BANKING
+							SUPERVISION DEPARTMENT</p>
+					</div>
 
-											
+
 					<div class="custom-tab-btn-group nav-buttons"
 						style="display: flex; color: white; align-items: center;">
 						<!-- 📅 Date -->
 						<!-- 📅 Date -->
-												<span class="white-text" style="color: white !important; font-size: 16px; margin-right: 20px; margin-left: 8px;">Report Date: <span th:text="${#strings.replace(asondate, '/', '-')}">2025-09-18</span>
-												</span>
+						<span class="white-text"
+							style="color: white !important; font-size: 16px; margin-right: 20px; margin-left: 8px;">Report
+							Date: <span th:text="${#strings.replace(asondate, '/', '-')}">2025-09-18</span>
+						</span>
 
 						<!-- Buttons -->
 						<input type="hidden" id="selectedTab" th:value="${displaymode}">
@@ -1054,22 +1060,19 @@ function showdetailsbyRowAndColumn(a) {
 							id="custom-tab-btnDetails" onclick="showdetails();"
 							th:if="${displaymode == 'summary'}">Details</button>
 						<button type="button" class="custom-tab-btn"
-						    onclick="showmodify(this);"
-						    title="Click to EDIT Records"
-							th:if="${type != 'ARCHIVAL'}"
+							onclick="showmodify(this);" title="Click to EDIT Records"
+							th:if="${type != 'ARCHIVAL' and dtltype ne 'detail'}"
 							th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
-						    id="addRecord">Modify</button>
+							id="addRecord">Modify</button>
 
 						<!-- Cancel button (hidden initially) -->
 						<button type="button" class="custom-tab-btn"
-						    title="Cancel editing"
-						    id="cancelRecord"
-						    onclick="cancelModify();"
-						    style="display: none;">Cancel</button>
-							
-						
-							
-							
+							title="Cancel editing" id="cancelRecord"
+							onclick="cancelModify();" style="display: none;">Cancel</button>
+
+
+
+
 						<button type="button" class="custom-tab-btn"
 							id="custom-tab-btnAdd" th:if="${displaymode == 'summary'}"
 							th:attr="data-reportid=${reportid}, 
@@ -1081,64 +1084,88 @@ function showdetailsbyRowAndColumn(a) {
                      				 data-filename='M_CA6.xlsx',
 					 				 data-type=${type},
 					    			 data-version=${version}"
-									 
 							onclick="downloadfile(this);">
 							<i class="fa fa-download"></i>
 						</button>
-						<button
-						  type="button"
-						  class="custom-tab-btn"
-						  id="custom-tab-btnAdd"
-						  th:if="${displaymode == 'Details'}"
-						  onclick="startReport(this);"
-						  th:attr="
+						<button type="button" class="custom-tab-btn"
+							id="custom-tab-btnAdd" th:if="${displaymode == 'Details'}"
+							onclick="startReport(this);"
+							th:attr="
 						    data-fromdate=${fromdate},
 						    data-todate=${todate},
 						    data-filename='M_CA6Detail',
 						  ">
-						  <i class="fa fa-download"></i>
-						</button>
-			 	<!---	<button type="button" class="custom-tab-btn"
-							id="custom-tab-btnAdd" th:if="${displaymode == 'Details'}"
-							th:attr="data-reportid=${reportid}, 
-                     data-asondate=${asondate}, 
-                     data-fromdate=${fromdate}, 
-                     data-todate=${todate}, 
-                     data-currency=${currency},  
-                     data-dtltype=${dtltype}, 
-                     data-filename='BRF2_18'",
-							onclick="editRecord();">
 							<i class="fa fa-download"></i>
-						</button> -->
-					</div>
+						</button>
+					<button type="button" class="custom-tab-btn "
+							id="custom-tab-btnAdd" onclick="downloadfile(this)"
+							th:if="${displaymode == 'summary' or displaymode == 'Details'}"
+							th:attr="data-reportid=${reportid},
+            data-asondate=${asondate},
+            data-fromdate=${fromdate},
+            data-todate=${todate},
+            data-currency=${currency}, 
+            data-dtltype=${dtltype},
+            data-filename='EMAIL_M_CA6.xlsx',
+            data-type='email',
+            data-version=${version != null ? version : ''}"
+							style="font-family: Arial; font-weight: bold;">
+							<i class="fa fa-download"></i> Email Format
+
+						</button>
+						</div>
 				</div>
 
 
-			
-			<div th:if="${displaymode == 'summary'}">
-			<div class="row" >
-				<div class="col-sm-12">
-					<form action="#" method="POST" id="fileupload">
-					<div class="table-wrapper table-responsive scrollable-table-container" style="border-right: 1px solid #dee2e6; ">
-    					<table class="sticky-header-table table table-bordered table-cell table-sm table-condensed" id="reports" >
-							<p style="font-weight: bold; color: black;">Summary of Amount of Additional Tier 1 Capital  Instruments outstanding as at January 2015 : P'000	</p>
-							<thead class="thead-light">
-								<tr>
-								    <th rowspan="3" style="text-align: left; width:33%;  background-color: #D8D8D8; font-weight: bold; color: black;padding-left: 20px;">
-								        Calendar year
-								    </th>
-								    <td style="text-align: center; background-color: #D8D8D8; color: black;padding-left: 20px;">
-								        Cap (%)
-								    </td>
-								    <th style="text-align: right; background-color: #D8D8D8; font-weight: bold; color: black;padding-left: 20px;">
-								        Cap on amount eligible for phase-out treatment P'000
-								    </th>
-									    <th style="text-align: right; background-color: #D8D8D8; font-weight: bold; color: black;padding-left: 20px;">
-								        Amount eligible for phase-out treatment P'000
-								    </th>
-								</tr>
+<h1
+					th:if="${displaymode == 'summary' and type == 'ARCHIVAL' and displaymode != 'Details'}"
+					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">Archival
+					Summary View - M-CA6</h1>
 
-								<!--	</tr>
+				<h1
+					th:if="${displaymode == 'Details' and type == 'ARCHIVAL' and displaymode != 'summary'}"
+					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">Archival
+					Detail View - M-CA6</h1>
+
+				<h1 th:if="${displaymode == 'summary'and type != 'ARCHIVAL'}"
+					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">Summary
+					View - M-CA6</h1>
+				<h1 th:if="${displaymode == 'Details' and type != 'ARCHIVAL'}"
+					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">Detail
+					View - M-CA6</h1>
+			
+
+
+				<div th:if="${displaymode == 'summary' or displaymode == 'Details'}">
+					<div class="row">
+						<div class="col-sm-12">
+							<form action="#" method="POST" id="fileupload">
+								<div
+									class="table-wrapper table-responsive scrollable-table-container"
+									style="border-right: 1px solid #dee2e6;">
+									<table
+										class="sticky-header-table table table-bordered table-cell table-sm table-condensed"
+										id="reports">
+										<p style="font-weight: bold; color: black;">Summary of
+											Amount of Additional Tier 1 Capital Instruments outstanding
+											as at January 2015 : P'000</p>
+										<thead class="thead-light">
+											<tr>
+												<th rowspan="3"
+													style="text-align: left; width: 33%; background-color: #D8D8D8; font-weight: bold; color: black; padding-left: 20px;">
+													Calendar year</th>
+												<td
+													style="text-align: center; background-color: #D8D8D8; color: black; padding-left: 20px;">
+													Cap (%)</td>
+												<th
+													style="text-align: right; background-color: #D8D8D8; font-weight: bold; color: black; padding-left: 20px;">
+													Cap on amount eligible for phase-out treatment P'000</th>
+												<th
+													style="text-align: right; background-color: #D8D8D8; font-weight: bold; color: black; padding-left: 20px;">
+													Amount eligible for phase-out treatment P'000</th>
+											</tr>
+
+											<!--	</tr>
 									<tr style="background-color: #b3b6b9">
 										<th style="text-align: center; background-color: #b3b6b9"></th>
 										<th style="text-align: center; background-color: #b3b6b9">C0010</th>
@@ -1146,173 +1173,162 @@ function showdetailsbyRowAndColumn(a) {
 										<th style="text-align: center; background-color: #b3b6b9">C0030</th>
 									</tr> -->
 
-								</thead>
+										</thead>
 
 
-								<tbody th:each="report: ${reportsummary}" style="font-family: Arial;">
-	
-										<tr>
+										<tbody th:each="report: ${reportsummary}"
+											style="font-family: Arial;">
 
-											<td style="padding-left: 20px; text-align: center;">2015</td>  
-											<td style="text-align: right; text-align: center; "
-												>80</td>
-											
-											<td id="ROW12" style="padding-left: 20px; font-weight: bold;">
-											    <input class="display-input show_input"
-											           type="text"
-											           th:value="${#numbers.formatDecimal(report.R12_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT, 1, 'COMMA', 0, 'POINT')}"
-											           id="R12_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
-											           name="R12_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
-											           style="background-color:#FFFFFF; width: 100%; height: 28px; 
-											                  border-color: transparent; text-align: right;"
-											           readonly />
-											</td>
-											
-											<td id="ROW12" style="padding-left: 20px; font-weight: bold;">
-											    <input class="display-input show_input"
-											           type="text"
-											           th:value="${#numbers.formatDecimal(report.R12_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT, 1, 'COMMA', 0, 'POINT')}"
-											           id="R12_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
-											           name="R12_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
-											           style="background-color:#FFFFFF; width: 100%; height: 28px; 
-											                  border-color: transparent; text-align: right;"
-											           readonly />
-											</td>
+											<tr>
 
-										</tr>
+												<td style="padding-left: 20px; text-align: center;">2015</td>
+												<td style="text-align: right; text-align: center;">80</td>
 
-										<tr>
+												<td id="ROW12"
+													style="padding-left: 20px; font-weight: bold;"><input
+													class="display-input show_input" type="text"
+													th:value="${#numbers.formatDecimal(report.R12_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT, 1, 'COMMA', 0, 'POINT')}"
+													id="R12_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
+													name="R12_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
 
-										<td style="padding-left: 20px; text-align: center;">2016</td>  
-										<td style="text-align: right;text-align: center; "
-											>60</td>
-										
-										<td id="ROW13" style="padding-left: 20px; font-weight: bold;">
-										    <input class="display-input show_input"
-										           type="text"
-										           th:value="${#numbers.formatDecimal(report.R13_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT, 1, 'COMMA', 0, 'POINT')}"
-										           id="R13_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
-										           name="R13_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
-										           style="background-color:#FFFFFF; width: 100%; height: 28px; 
-										                  border-color: transparent; text-align: right;"
-										           readonly />
-										</td>
-										<td id="ROW13" style="padding-left: 20px; font-weight: bold;">
-												    <input class="display-input show_input"
-												           type="text"
-												           th:value="${#numbers.formatDecimal(report.R13_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT, 1, 'COMMA', 0, 'POINT')}"
-												           id="R13_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
-												           name="R13_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
-												           style="background-color:#FFFFFF; width: 100%; height: 28px; 
-												                  border-color: transparent; text-align: right;"
-												           readonly />
-										</td>
-																						
-										
-										</tr>
+												<td id="ROW12"
+													style="padding-left: 20px; font-weight: bold;"><input
+													class="display-input show_input" type="text"
+													th:value="${#numbers.formatDecimal(report.R12_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT, 1, 'COMMA', 0, 'POINT')}"
+													id="R12_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
+													name="R12_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
 
-										<tr>
-										
-											<td style="padding-left: 20px; text-align: center;">2017</td>  
-											<td style="text-align: right; text-align: center; "
-												>40</td>
-																		
-											<td id="ROW14" style="padding-left: 20px; font-weight: bold;">
-												    <input class="display-input show_input"
-												           type="text"
-												           th:value="${#numbers.formatDecimal(report.R14_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT, 1, 'COMMA', 0, 'POINT')}"
-												           id="R14_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
-												           name="R14_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
-												           style="background-color:#FFFFFF; width: 100%; height: 28px; 
-												                  border-color: transparent; text-align: right;"
-												           readonly />
-												</td>
-												<td id="ROW14" style="padding-left: 20px; font-weight: bold;">
-														    <input class="display-input show_input"
-														           type="text"
-														           th:value="${#numbers.formatDecimal(report.R14_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT, 1, 'COMMA', 0, 'POINT')}"
-														           id="R14_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
-														           name="R14_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
-														           style="background-color:#FFFFFF; width: 100%; height: 28px; 
-														                  border-color: transparent; text-align: right;"
-														           readonly />
-												</td>
 											</tr>
 
-										<tr>
-											
-											<td style="padding-left: 20px; text-align: center;">2018</td>  
-											<td style="text-align: right; text-align: center;"
-												>20</td>
-											
-											<td id="ROW15" style="padding-left: 20px; font-weight: bold;">
-												 <input class="display-input show_input"
-													           type="text"
-													           th:value="${#numbers.formatDecimal(report.R15_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT, 1, 'COMMA', 0, 'POINT')}"
-													           id="R15_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
-													           name="R15_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
-													           style="background-color:#FFFFFF; width: 100%; height: 28px; 
-													                  border-color: transparent; text-align: right;"
-													           readonly />
-											</td>
-											<td id="ROW15" style="padding-left: 20px; font-weight: bold;">
-													    <input class="display-input show_input"
-													           type="text"
-													           th:value="${#numbers.formatDecimal(report.R15_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT, 1, 'COMMA', 0, 'POINT')}"
-													           id="R15_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
-													           name="R15_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
-													           style="background-color:#FFFFFF; width: 100%; height: 28px; 
-													                  border-color: transparent; text-align: right;"
-													           readonly />
-											</td>										
-										</tr>
-										
-																				
-										<tr>
-										
-										<!---	<td style="padding-left: 20px;" th:text="${#dates.format(report.R16_CALENDAR_YEAR,'yyyy')}"></td>   -->
-										    <td style="padding-left: 20px;" >2019 and thereafter</td>
-											<td style="text-align: right; text-align: center;"
-												th:text="${report.R16_CAP}"></td>
-											
+											<tr>
 
-												<td id="ROW16" style="padding-left: 20px; font-weight: bold;">
-													 <input class="display-input show_input"
-														           type="text"
-														           th:value="${#numbers.formatDecimal(report.R16_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT, 1, 'COMMA', 0, 'POINT')}"
-														           id="R16_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
-														           name="R16_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
-														           style="background-color:#FFFFFF; width: 100%; height: 28px; 
-														                  border-color: transparent; text-align: right;"
-														           readonly />
-												</td>
-												<td id="ROW16" style="padding-left: 20px; font-weight: bold;">
-														    <input class="display-input show_input"
-														           type="text"
-														           th:value="${#numbers.formatDecimal(report.R16_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT, 1, 'COMMA', 0, 'POINT')}"
-														           id="R16_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
-														           name="R16_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
-														           style="background-color:#FFFFFF; width: 100%; height: 28px; 
-														                  border-color: transparent; text-align: right;"
-														           readonly />
-												</td>																						
-										</tr>
-										
-										
-									</tbody>
-			              </table>
-						  <p style="padding: 20px;font-weight: bold; color: black;">Amount of  Tier 2  Capital Instruments outstanding as at January 2015 : P'000</p>
-						  <table class="sticky-header-table table table-bordered table-cell table-sm table-condensed" id="reports" >
-						  	<thead class="thead-light">
-						  			<tr style="background-color: #b3b6b9 ">
-						  				
-						  				<th rowspan="3" style="text-align: left; width:33%;background-color: #D8D8D8;  font-weight: bold;color: black;padding-left: 20px;">Calendar year</th>
-						  				<td style="text-align: center;background-color: #D8D8D8; color: black;padding-left: 20px;">Cap (%)</td>
-						  				<th style="text-align: right;background-color: #D8D8D8; font-weight: bold; color: black;padding-left: 20px;"> Cap on amount elligible for phase-out treatment P'000</th>
-						  				<th style="text-align: right;background-color: #D8D8D8;  font-weight: bold;color: black;padding-left: 20px;"> Amount eligible for phase-out treatment P'000</th>
+												<td style="padding-left: 20px; text-align: center;">2016</td>
+												<td style="text-align: right; text-align: center;">60</td>
 
-						  			</tr>
-						  		<!--	</tr>
+												<td id="ROW13"
+													style="padding-left: 20px; font-weight: bold;"><input
+													class="display-input show_input" type="text"
+													th:value="${#numbers.formatDecimal(report.R13_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT, 1, 'COMMA', 0, 'POINT')}"
+													id="R13_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
+													name="R13_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+												<td id="ROW13"
+													style="padding-left: 20px; font-weight: bold;"><input
+													class="display-input show_input" type="text"
+													th:value="${#numbers.formatDecimal(report.R13_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT, 1, 'COMMA', 0, 'POINT')}"
+													id="R13_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
+													name="R13_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+
+											</tr>
+
+											<tr>
+
+												<td style="padding-left: 20px; text-align: center;">2017</td>
+												<td style="text-align: right; text-align: center;">40</td>
+
+												<td id="ROW14"
+													style="padding-left: 20px; font-weight: bold;"><input
+													class="display-input show_input" type="text"
+													th:value="${#numbers.formatDecimal(report.R14_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT, 1, 'COMMA', 0, 'POINT')}"
+													id="R14_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
+													name="R14_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+												<td id="ROW14"
+													style="padding-left: 20px; font-weight: bold;"><input
+													class="display-input show_input" type="text"
+													th:value="${#numbers.formatDecimal(report.R14_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT, 1, 'COMMA', 0, 'POINT')}"
+													id="R14_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
+													name="R14_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+											</tr>
+
+											<tr>
+
+												<td style="padding-left: 20px; text-align: center;">2018</td>
+												<td style="text-align: right; text-align: center;">20</td>
+
+												<td id="ROW15"
+													style="padding-left: 20px; font-weight: bold;"><input
+													class="display-input show_input" type="text"
+													th:value="${#numbers.formatDecimal(report.R15_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT, 1, 'COMMA', 0, 'POINT')}"
+													id="R15_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
+													name="R15_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+												<td id="ROW15"
+													style="padding-left: 20px; font-weight: bold;"><input
+													class="display-input show_input" type="text"
+													th:value="${#numbers.formatDecimal(report.R15_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT, 1, 'COMMA', 0, 'POINT')}"
+													id="R15_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
+													name="R15_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+											</tr>
+
+
+											<tr>
+
+												<!---	<td style="padding-left: 20px;" th:text="${#dates.format(report.R16_CALENDAR_YEAR,'yyyy')}"></td>   -->
+												<td style="padding-left: 20px;">2019 and thereafter</td>
+												<td style="text-align: right; text-align: center;"
+													th:text="${report.R16_CAP}"></td>
+
+
+												<td id="ROW16"
+													style="padding-left: 20px; font-weight: bold;"><input
+													class="display-input show_input" type="text"
+													th:value="${#numbers.formatDecimal(report.R16_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT, 1, 'COMMA', 0, 'POINT')}"
+													id="R16_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
+													name="R16_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+												<td id="ROW16"
+													style="padding-left: 20px; font-weight: bold;"><input
+													class="display-input show_input" type="text"
+													th:value="${#numbers.formatDecimal(report.R16_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT, 1, 'COMMA', 0, 'POINT')}"
+													id="R16_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
+													name="R16_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+											</tr>
+
+
+										</tbody>
+									</table>
+									<p style="padding: 20px; font-weight: bold; color: black;">Amount
+										of Tier 2 Capital Instruments outstanding as at January 2015 :
+										P'000</p>
+									<table
+										class="sticky-header-table table table-bordered table-cell table-sm table-condensed"
+										id="reports">
+										<thead class="thead-light">
+											<tr style="background-color: #b3b6b9">
+
+												<th rowspan="3"
+													style="text-align: left; width: 33%; background-color: #D8D8D8; font-weight: bold; color: black; padding-left: 20px;">Calendar
+													year</th>
+												<td
+													style="text-align: center; background-color: #D8D8D8; color: black; padding-left: 20px;">Cap
+													(%)</td>
+												<th
+													style="text-align: right; background-color: #D8D8D8; font-weight: bold; color: black; padding-left: 20px;">
+													Cap on amount elligible for phase-out treatment P'000</th>
+												<th
+													style="text-align: right; background-color: #D8D8D8; font-weight: bold; color: black; padding-left: 20px;">
+													Amount eligible for phase-out treatment P'000</th>
+
+											</tr>
+											<!--	</tr>
 						  			<tr style="background-color: #b3b6b9">
 						  				<th style="text-align: center; background-color: #b3b6b9"></th>
 						  				<th style="text-align: center; background-color: #b3b6b9">C0010</th>
@@ -1320,178 +1336,174 @@ function showdetailsbyRowAndColumn(a) {
 						  				<th style="text-align: center; background-color: #b3b6b9">C0030</th>
 						  			</tr> -->
 
-						  		</thead>
+										</thead>
 
 
-						  		<tbody th:each="report: ${reportsummary}" style="font-family: Arial;">
+										<tbody th:each="report: ${reportsummary}"
+											style="font-family: Arial;">
 
-						  				<tr>
+											<tr>
 
-						  					<td style="padding-left: 20px; text-align: center;font-weight: bold; color: black;" >2015</td>  
-						  					<td style="text-align: right; text-align: center;"
-						  						>80</td>
-						  					
-												<td id="ROW20" style="padding-left: 20px; font-weight: bold;">
-													 <input class="display-input show_input"
-														           type="text"
-														           th:value="${#numbers.formatDecimal(report.R20_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT, 1, 'COMMA', 0, 'POINT')}"
-														           id="R20_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
-														           name="R20_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
-														           style="background-color:#FFFFFF; width: 100%; height: 28px; 
-														                  border-color: transparent; text-align: right; font-weight: bold; "
-														           readonly />
-												</td>
-												<td id="ROW20" style="padding-left: 20px; font-weight: bold;">
-														    <input class="display-input show_input"
-														           type="text"
-														           th:value="${#numbers.formatDecimal(report.R20_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT, 1, 'COMMA', 0, 'POINT')}"
-														           id="R20_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
-														           name="R20_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
-														           style="background-color:#FFFFFF; width: 100%; height: 28px; 
-														                  border-color: transparent; text-align: right; font-weight: bold; "
-														           readonly />
-												</td>							  				
+												<td
+													style="padding-left: 20px; text-align: center; font-weight: bold; color: black;">2015</td>
+												<td style="text-align: right; text-align: center;">80</td>
 
-						  				</tr>
-	
-										<tr>
+												<td id="ROW20"
+													style="padding-left: 20px; font-weight: bold;"><input
+													class="display-input show_input" type="text"
+													th:value="${#numbers.formatDecimal(report.R20_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT, 1, 'COMMA', 0, 'POINT')}"
+													id="R20_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
+													name="R20_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: right; font-weight: bold;"
+													readonly /></td>
+												<td id="ROW20"
+													style="padding-left: 20px; font-weight: bold;"><input
+													class="display-input show_input" type="text"
+													th:value="${#numbers.formatDecimal(report.R20_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT, 1, 'COMMA', 0, 'POINT')}"
+													id="R20_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
+													name="R20_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: right; font-weight: bold;"
+													readonly /></td>
 
-											<td style="padding-left: 20px; text-align: center;font-weight: bold; color: black;" >2016</td>  
-											<td style="text-align: right; text-align: center; "
-										>60</td>
-											
-												<td id="ROW21" style="padding-left: 20px; font-weight: bold;">
-													 <input class="display-input show_input"
-														           type="text"
-														           th:value="${#numbers.formatDecimal(report.R21_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT, 1, 'COMMA', 0, 'POINT')}"
-														           id="R21_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
-														           name="R21_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
-														           style="background-color:#FFFFFF; width: 100%; height: 28px; 
-														                  border-color: transparent; text-align: right; font-weight: bold; "
-														           readonly />
-												</td>
-												<td id="ROW21" style="padding-left: 20px; font-weight: bold;">
-														    <input class="display-input show_input"
-														           type="text"
-														           th:value="${#numbers.formatDecimal(report.R21_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT, 1, 'COMMA', 0, 'POINT')}"
-														           id="R21_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
-														           name="R21_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
-														           style="background-color:#FFFFFF; width: 100%; height: 28px; 
-														                  border-color: transparent; text-align: right; font-weight: bold; "
-														           readonly />
-												</td>	
+											</tr>
 
-										</tr>
-										<tr>
+											<tr>
 
-											<td style="padding-left: 20px; text-align: center;font-weight: bold; color: black;" >2017</td>  
-											<td style="text-align: right; text-align: center; "
-												>40</td>
-											
-												<td id="ROW22" style="padding-left: 20px; font-weight: bold;">
-													 <input class="display-input show_input"
-														           type="text"
-														           th:value="${#numbers.formatDecimal(report.R22_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT, 1, 'COMMA', 0, 'POINT')}"
-														           id="R22_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
-														           name="R22_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
-														           style="background-color:#FFFFFF; width: 100%; height: 28px; 
-														                  border-color: transparent; text-align: right; font-weight: bold; "
-														           readonly />
-												</td>
-												<td id="ROW22" style="padding-left: 20px; font-weight: bold;">
-														    <input class="display-input show_input"
-														           type="text"
-														           th:value="${#numbers.formatDecimal(report.R22_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT, 1, 'COMMA', 0, 'POINT')}"
-														           id="R22_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
-														           name="R22_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
-														           style="background-color:#FFFFFF; width: 100%; height: 28px; 
-														                  border-color: transparent; text-align: right; font-weight: bold; "
-														           readonly />
-												</td>	
+												<td
+													style="padding-left: 20px; text-align: center; font-weight: bold; color: black;">2016</td>
+												<td style="text-align: right; text-align: center;">60</td>
 
-										</tr>
-										
-										<tr>
+												<td id="ROW21"
+													style="padding-left: 20px; font-weight: bold;"><input
+													class="display-input show_input" type="text"
+													th:value="${#numbers.formatDecimal(report.R21_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT, 1, 'COMMA', 0, 'POINT')}"
+													id="R21_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
+													name="R21_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: right; font-weight: bold;"
+													readonly /></td>
+												<td id="ROW21"
+													style="padding-left: 20px; font-weight: bold;"><input
+													class="display-input show_input" type="text"
+													th:value="${#numbers.formatDecimal(report.R21_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT, 1, 'COMMA', 0, 'POINT')}"
+													id="R21_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
+													name="R21_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: right; font-weight: bold;"
+													readonly /></td>
 
-											<td style="padding-left: 20px; text-align: center;font-weight: bold; color: black;">2018</td>  
-											<td style="text-align: right; text-align: center;"
-												>20</td>
-											
-												<td id="ROW23" style="padding-left: 20px; font-weight: bold;">
-													 <input class="display-input show_input"
-														           type="text"
-														           th:value="${#numbers.formatDecimal(report.R23_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT, 1, 'COMMA', 0, 'POINT')}"
-														           id="R23_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
-														           name="R23_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
-														           style="background-color:#FFFFFF; width: 100%; height: 28px; 
-														                  border-color: transparent; text-align: right; font-weight: bold; "
-														           readonly />
-												</td>
-												<td id="ROW23" style="padding-left: 20px; font-weight: bold;">
-														    <input class="display-input show_input"
-														           type="text"
-														           th:value="${#numbers.formatDecimal(report.R23_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT, 1, 'COMMA', 0, 'POINT')}"
-														           id="R23_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
-														           name="R23_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
-														           style="background-color:#FFFFFF; width: 100%; height: 28px; 
-														                  border-color: transparent; text-align: right; font-weight: bold; "
-														           readonly />
-												</td>	
+											</tr>
+											<tr>
+
+												<td
+													style="padding-left: 20px; text-align: center; font-weight: bold; color: black;">2017</td>
+												<td style="text-align: right; text-align: center;">40</td>
+
+												<td id="ROW22"
+													style="padding-left: 20px; font-weight: bold;"><input
+													class="display-input show_input" type="text"
+													th:value="${#numbers.formatDecimal(report.R22_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT, 1, 'COMMA', 0, 'POINT')}"
+													id="R22_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
+													name="R22_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: right; font-weight: bold;"
+													readonly /></td>
+												<td id="ROW22"
+													style="padding-left: 20px; font-weight: bold;"><input
+													class="display-input show_input" type="text"
+													th:value="${#numbers.formatDecimal(report.R22_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT, 1, 'COMMA', 0, 'POINT')}"
+													id="R22_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
+													name="R22_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: right; font-weight: bold;"
+													readonly /></td>
+
+											</tr>
+
+											<tr>
+
+												<td
+													style="padding-left: 20px; text-align: center; font-weight: bold; color: black;">2018</td>
+												<td style="text-align: right; text-align: center;">20</td>
+
+												<td id="ROW23"
+													style="padding-left: 20px; font-weight: bold;"><input
+													class="display-input show_input" type="text"
+													th:value="${#numbers.formatDecimal(report.R23_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT, 1, 'COMMA', 0, 'POINT')}"
+													id="R23_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
+													name="R23_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: right; font-weight: bold;"
+													readonly /></td>
+												<td id="ROW23"
+													style="padding-left: 20px; font-weight: bold;"><input
+													class="display-input show_input" type="text"
+													th:value="${#numbers.formatDecimal(report.R23_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT, 1, 'COMMA', 0, 'POINT')}"
+													id="R23_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
+													name="R23_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: right; font-weight: bold;"
+													readonly /></td>
 
 
-										</tr>
+											</tr>
 
-										<tr>
+											<tr>
 
-										<!--	<td style="padding-left: 20px;" th:text="${#dates.format(report.R24_CALENDAR_YEAR,'yyyy')}"></td>  -->
-											<td style="padding-left: 20px;font-weight: bold; color: black;" >2019 and thereafter</td>
-											<td style="text-align: right; text-align: center; "
-												th:text="${report.R24_CAP}"></td>
-											
-												<td id="ROW24" style="padding-left: 20px; font-weight: bold;">
-													 <input class="display-input show_input"
-														           type="text"
-														           th:value="${#numbers.formatDecimal(report.R24_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT, 1, 'COMMA', 0, 'POINT')}"
-														           id="R24_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
-														           name="R24_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
-														           style="background-color:#FFFFFF; width: 100%; height: 28px; 
-														                  border-color: transparent; text-align: right; font-weight: bold; "
-														           readonly />
-												</td>
-												<td id="ROW24" style="padding-left: 20px; font-weight: bold;">
-														    <input class="display-input show_input"
-														           type="text"
-														           th:value="${#numbers.formatDecimal(report.R24_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT, 1, 'COMMA', 0, 'POINT')}"
-														           id="R24_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
-														           name="R24_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
-														           style="background-color:#FFFFFF; width: 100%; height: 28px; 
-														                  border-color: transparent; text-align: right; font-weight: bold; "
-														           readonly />
-												</td>	
+												<!--	<td style="padding-left: 20px;" th:text="${#dates.format(report.R24_CALENDAR_YEAR,'yyyy')}"></td>  -->
+												<td
+													style="padding-left: 20px; font-weight: bold; color: black;">2019
+													and thereafter</td>
+												<td style="text-align: right; text-align: center;"
+													th:text="${report.R24_CAP}"></td>
 
-										</tr>
-										
-																			
-										
+												<td id="ROW24"
+													style="padding-left: 20px; font-weight: bold;"><input
+													class="display-input show_input" type="text"
+													th:value="${#numbers.formatDecimal(report.R24_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT, 1, 'COMMA', 0, 'POINT')}"
+													id="R24_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
+													name="R24_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: right; font-weight: bold;"
+													readonly /></td>
+												<td id="ROW24"
+													style="padding-left: 20px; font-weight: bold;"><input
+													class="display-input show_input" type="text"
+													th:value="${#numbers.formatDecimal(report.R24_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT, 1, 'COMMA', 0, 'POINT')}"
+													id="R24_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
+													name="R24_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: right; font-weight: bold;"
+													readonly /></td>
 
-						  				
-						  				
-						  			</tbody>
+											</tr>
 
 
-						    </table>
-							<p style="padding: 20px;font-weight: bold; color: black;">2 Additional Tier 1 Capital Instruments	</p>
-							<table class="sticky-header-table table table-bordered table-cell table-sm table-condensed" id="reports" >
-								<thead class="thead-light">
-										<tr style="background-color: #b3b6b9 ">
-											
-											<th rowspan="3" style="text-align: left; width:33%;background-color: #D8D8D8; font-weight: bold;color: black;">Name of Instrument/ Programe</th>
-											<th style="text-align: left;background-color: #D8D8D8; font-weight: bold;color: black;">Isssuance Date</th>
-											<th style="text-align: left;background-color: #D8D8D8; font-weight: bold;color: black;"> Contractual Maturity Date</th>
-											<th style="text-align: left;background-color: #D8D8D8; font-weight: bold;color: black;"> Effective Maturity Date, if any</th>
-											<th style="text-align: right;background-color: #D8D8D8; font-weight: bold;color: black;padding-left: 20px;"> Amount (P'000)</th>
-										</tr>
-									<!--	</tr>
+
+
+
+
+										</tbody>
+
+
+									</table>
+									<p style="padding: 20px; font-weight: bold; color: black;">2
+										Additional Tier 1 Capital Instruments</p>
+									<table
+										class="sticky-header-table table table-bordered table-cell table-sm table-condensed"
+										id="reports">
+										<thead class="thead-light">
+											<tr style="background-color: #b3b6b9">
+
+												<th rowspan="3"
+													style="text-align: left; width: 33%; background-color: #D8D8D8; font-weight: bold; color: black;">Name
+													of Instrument/ Programe</th>
+												<th
+													style="text-align: left; background-color: #D8D8D8; font-weight: bold; color: black;">Isssuance
+													Date</th>
+												<th
+													style="text-align: left; background-color: #D8D8D8; font-weight: bold; color: black;">
+													Contractual Maturity Date</th>
+												<th
+													style="text-align: left; background-color: #D8D8D8; font-weight: bold; color: black;">
+													Effective Maturity Date, if any</th>
+												<th
+													style="text-align: right; background-color: #D8D8D8; font-weight: bold; color: black; padding-left: 20px;">
+													Amount (P'000)</th>
+											</tr>
+											<!--	</tr>
 										<tr style="background-color: #b3b6b9">
 											<th style="text-align: center; background-color: #b3b6b9"></th>
 											<th style="text-align: center; background-color: #b3b6b9">C0010</th>
@@ -1499,481 +1511,371 @@ function showdetailsbyRowAndColumn(a) {
 											<th style="text-align: center; background-color: #b3b6b9">C0030</th>
 										</tr> -->
 
-									</thead>
+										</thead>
 
 
-									<tbody th:each="report: ${reportsummary1}" style="font-family: Arial;">
+										<tbody th:each="report: ${reportsummary1}"
+											style="font-family: Arial;">
 
-										<tr>
-										       <!-- PRODUCT -->
-										       <td style="padding-right: 20px;">
-										           <input type="text"
-										                  class="display-input show_input"
-										                  th:value="${#numbers.formatDecimal(report.R28_PRODUCT, 1, 'COMMA', 0, 'POINT')}"
-										                  id="R28_PRODUCT"
-										                  name="R28_PRODUCT"
-										                  readonly
-														  style="background-color:#FFFFFF; width: 100%; height: 28px; 
-														  		 border-color: transparent; text-align: right;" />
-														  
-										       </td>
+											<tr>
+												<!-- PRODUCT -->
+												<td style="padding-right: 20px;"><input type="text"
+													class="display-input show_input"
+													th:value="${report.R28_PRODUCT}"
+													id="R28_PRODUCT" name="R28_PRODUCT" readonly
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: left;" />
 
-										       <!-- ISSUANCE DATE -->
-										       <td  style="padding-right: 20px;">
-										           <input type="date"
-										                  class="display-input show_input date-field"
-										                  th:value="${#dates.format(report.R28_ISSUANCE_DATE, 'yyyy-MM-dd')}"
-										                  id="R28_ISSUANCE_DATE"
-										                  name="R28_ISSUANCE_DATE"
-										                  readonly
-														  style="background-color:#FFFFFF; width: 100%; height: 28px; 
-														  border-color: transparent; text-align: left;" />
-										       </td>
+												</td>
 
-										       <!-- CONTRACTUAL MATURITY DATE -->
-										       <td  style="padding-right: 20px;">
-										           <input type="date"
-										                  class="display-input show_input date-field"
-										                  th:value="${#dates.format(report.R28_CONTRACTUAL_MATURITY_DATE, 'yyyy-MM-dd')}"
-										                  id="R28_CONTRACTUAL_MATURITY_DATE"
-										                  name="R28_CONTRACTUAL_MATURITY_DATE"
-										                  readonly
-														  style="background-color:#FFFFFF; width: 100%; height: 28px; 
-														  border-color: transparent; text-align: left;" />
-										       </td>
+												<!-- ISSUANCE DATE -->
+												<td style="padding-right: 20px;"><input type="date"
+													class="display-input show_input date-field"
+													th:value="${#dates.format(report.R28_ISSUANCE_DATE, 'yyyy-MM-dd')}"
+													id="R28_ISSUANCE_DATE" name="R28_ISSUANCE_DATE" readonly
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: left;" />
+												</td>
 
-										       <!-- EFFECTIVE MATURITY DATE -->
-										       <td  style="padding-right: 20px;">
-										           <input type="date"
-										                  class="display-input show_input date-field"
-										                  th:value="${#dates.format(report.R28_EFFECTIVE_MATURITY_DATE, 'yyyy-MM-dd')}"
-										                  id="R28_EFFECTIVE_MATURITY_DATE"
-										                  name="R28_EFFECTIVE_MATURITY_DATE"
-										                  readonly
-														  style="background-color:#FFFFFF; width: 100%; height: 28px; 
-														  border-color: transparent; text-align: left;" />
-										       </td>
+												<!-- CONTRACTUAL MATURITY DATE -->
+												<td style="padding-right: 20px;"><input type="date"
+													class="display-input show_input date-field"
+													th:value="${#dates.format(report.R28_CONTRACTUAL_MATURITY_DATE, 'yyyy-MM-dd')}"
+													id="R28_CONTRACTUAL_MATURITY_DATE"
+													name="R28_CONTRACTUAL_MATURITY_DATE" readonly
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: left;" />
+												</td>
 
-										       <!-- AMOUNT -->
-										       <td  style="padding-left: 20px;">
-										           <input type="text"
-										                  class="display-input show_input"
-										                  th:value="${#numbers.formatDecimal(report.R28_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
-										                  id="R28_AMOUNT"
-										                  name="R28_AMOUNT"
-										                  readonly
-														  style="background-color:#FFFFFF; width: 100%; height: 28px; 
-														  		 border-color: transparent; text-align: right;" />
-										       </td>
-										   </tr>
+												<!-- EFFECTIVE MATURITY DATE -->
+												<td style="padding-right: 20px;"><input type="date"
+													class="display-input show_input date-field"
+													th:value="${#dates.format(report.R28_EFFECTIVE_MATURITY_DATE, 'yyyy-MM-dd')}"
+													id="R28_EFFECTIVE_MATURITY_DATE"
+													name="R28_EFFECTIVE_MATURITY_DATE" readonly
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: left;" />
+												</td>
 
-										   <tr>
-										          <!-- PRODUCT -->
-										          <td  style="padding-right: 20px;">
-										              <input type="text"
-										                     class="display-input show_input"
-										                     th:value="${#numbers.formatDecimal(report.R29_PRODUCT, 1, 'COMMA', 0, 'POINT')}"
-										                     id="R29_PRODUCT"
-										                     name="R29_PRODUCT"
-										                     readonly
-															 style="background-color:#FFFFFF; width: 100%; height: 28px; 
-															 border-color: transparent; text-align: left;" />
-										          </td>
+												<!-- AMOUNT -->
+												<td style="padding-left: 20px;"><input type="text"
+													class="display-input show_input"
+													th:value="${#numbers.formatDecimal(report.R28_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
+													id="R28_AMOUNT" name="R28_AMOUNT" readonly
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: right;" />
+												</td>
+											</tr>
 
-										          <!-- ISSUANCE DATE -->
-										          <td  style="padding-right: 20px;">
-										              <input type="date"
-										                     class="display-input show_input date-field"
-										                     th:value="${#dates.format(report.R29_ISSUANCE_DATE, 'yyyy-MM-dd')}"
-										                     id="R29_ISSUANCE_DATE"
-										                     name="R29_ISSUANCE_DATE"
-										                     readonly
-															 style="background-color:#FFFFFF; width: 100%; height: 28px; 
-															 border-color: transparent; text-align: left;" />
-										          </td>
+											<tr>
+												<!-- PRODUCT -->
+												<td style="padding-right: 20px;"><input type="text"
+													class="display-input show_input"
+													th:value="${report.R29_PRODUCT}"
+													id="R29_PRODUCT" name="R29_PRODUCT" readonly
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: left;" />
+												</td>
 
-										          <!-- CONTRACTUAL MATURITY DATE -->
-										          <td  style="padding-right: 20px;">
-										              <input type="date"
-										                     class="display-input show_input date-field"
-										                     th:value="${#dates.format(report.R29_CONTRACTUAL_MATURITY_DATE, 'yyyy-MM-dd')}"
-										                     id="R29_CONTRACTUAL_MATURITY_DATE"
-										                     name="R29_CONTRACTUAL_MATURITY_DATE"
-										                     readonly
-															 style="background-color:#FFFFFF; width: 100%; height: 28px; 
-															 border-color: transparent; text-align: left;" />
-										          </td>
+												<!-- ISSUANCE DATE -->
+												<td style="padding-right: 20px;"><input type="date"
+													class="display-input show_input date-field"
+													th:value="${#dates.format(report.R29_ISSUANCE_DATE, 'yyyy-MM-dd')}"
+													id="R29_ISSUANCE_DATE" name="R29_ISSUANCE_DATE" readonly
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: left;" />
+												</td>
 
-										          <!-- EFFECTIVE MATURITY DATE -->
-										          <td  style="padding-right: 20px;">
-										              <input type="date"
-										                     class="display-input show_input date-field"
-										                     th:value="${#dates.format(report.R29_EFFECTIVE_MATURITY_DATE, 'yyyy-MM-dd')}"
-										                     id="R29_EFFECTIVE_MATURITY_DATE"
-										                     name="R29_EFFECTIVE_MATURITY_DATE"
-										                     readonly
-															 style="background-color:#FFFFFF; width: 100%; height: 28px; 
-															 border-color: transparent; text-align: left;" />
-										          </td>
+												<!-- CONTRACTUAL MATURITY DATE -->
+												<td style="padding-right: 20px;"><input type="date"
+													class="display-input show_input date-field"
+													th:value="${#dates.format(report.R29_CONTRACTUAL_MATURITY_DATE, 'yyyy-MM-dd')}"
+													id="R29_CONTRACTUAL_MATURITY_DATE"
+													name="R29_CONTRACTUAL_MATURITY_DATE" readonly
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: left;" />
+												</td>
 
-										          <!-- AMOUNT -->
-										          <td  style="padding-left: 20px;">
-										              <input type="text"
-										                     class="display-input show_input"
-										                     th:value="${#numbers.formatDecimal(report.R29_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
-										                     id="R29_AMOUNT"
-										                     name="R29_AMOUNT"
-										                     readonly
-															 style="background-color:#FFFFFF; width: 100%; height: 28px; 
-															 border-color: transparent; text-align: right;" />
-										          </td>
-										      </tr>
+												<!-- EFFECTIVE MATURITY DATE -->
+												<td style="padding-right: 20px;"><input type="date"
+													class="display-input show_input date-field"
+													th:value="${#dates.format(report.R29_EFFECTIVE_MATURITY_DATE, 'yyyy-MM-dd')}"
+													id="R29_EFFECTIVE_MATURITY_DATE"
+													name="R29_EFFECTIVE_MATURITY_DATE" readonly
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: left;" />
+												</td>
 
-											  <tr>
-											         <!-- PRODUCT -->
-											         <td  style="padding-right: 20px;">
-											             <input type="text"
-											                    class="display-input show_input"
-											                    th:value="${#numbers.formatDecimal(report.R30_PRODUCT, 1, 'COMMA', 0, 'POINT')}"
-											                    id="R30_PRODUCT"
-											                    name="R30_PRODUCT"
-											                    readonly
-																style="background-color:#FFFFFF; width: 100%; height: 28px; 
-																border-color: transparent; text-align: right;" />
-											         </td>
+												<!-- AMOUNT -->
+												<td style="padding-left: 20px;"><input type="text"
+													class="display-input show_input"
+													th:value="${#numbers.formatDecimal(report.R29_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
+													id="R29_AMOUNT" name="R29_AMOUNT" readonly
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: right;" />
+												</td>
+											</tr>
 
-											         <!-- ISSUANCE DATE -->
-											         <td  style="padding-right: 20px;">
-											             <input type="date"
-											                    class="display-input show_input date-field"
-											                    th:value="${#dates.format(report.R30_ISSUANCE_DATE, 'yyyy-MM-dd')}"
-											                    id="R30_ISSUANCE_DATE"
-											                    name="R30_ISSUANCE_DATE"
-											                    readonly
-																style="background-color:#FFFFFF; width: 100%; height: 28px; 
-																border-color: transparent; text-align: left;" />
-											         </td>
+											<tr>
+												<!-- PRODUCT -->
+												<td style="padding-right: 20px;"><input type="text"
+													class="display-input show_input"
+													th:value="${report.R30_PRODUCT}"
+													id="R30_PRODUCT" name="R30_PRODUCT" readonly
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: left;" />
+												</td>
 
-											         <!-- CONTRACTUAL MATURITY DATE -->
-											         <td  style="padding-right: 20px;">
-											             <input type="date"
-											                    class="display-input show_input date-field"
-											                    th:value="${#dates.format(report.R30_CONTRACTUAL_MATURITY_DATE, 'yyyy-MM-dd')}"
-											                    id="R30_CONTRACTUAL_MATURITY_DATE"
-											                    name="R30_CONTRACTUAL_MATURITY_DATE"
-											                    readonly
-																style="background-color:#FFFFFF; width: 100%; height: 28px; 
-																border-color: transparent; text-align: left;" />
-											         </td>
+												<!-- ISSUANCE DATE -->
+												<td style="padding-right: 20px;"><input type="date"
+													class="display-input show_input date-field"
+													th:value="${#dates.format(report.R30_ISSUANCE_DATE, 'yyyy-MM-dd')}"
+													id="R30_ISSUANCE_DATE" name="R30_ISSUANCE_DATE" readonly
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: left;" />
+												</td>
 
-											         <!-- EFFECTIVE MATURITY DATE -->
-											         <td  style="padding-right: 20px;">
-											             <input type="date"
-											                    class="display-input show_input date-field"
-											                    th:value="${#dates.format(report.R30_EFFECTIVE_MATURITY_DATE, 'yyyy-MM-dd')}"
-											                    id="R30_EFFECTIVE_MATURITY_DATE"
-											                    name="R30_EFFECTIVE_MATURITY_DATE"
-											                    readonly
-																style="background-color:#FFFFFF; width: 100%; height: 28px; 
-																border-color: transparent; text-align: left;" />
-											         </td>
+												<!-- CONTRACTUAL MATURITY DATE -->
+												<td style="padding-right: 20px;"><input type="date"
+													class="display-input show_input date-field"
+													th:value="${#dates.format(report.R30_CONTRACTUAL_MATURITY_DATE, 'yyyy-MM-dd')}"
+													id="R30_CONTRACTUAL_MATURITY_DATE"
+													name="R30_CONTRACTUAL_MATURITY_DATE" readonly
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: left;" />
+												</td>
 
-											         <!-- AMOUNT -->
-											         <td  style="padding-left: 20px;">
-											             <input type="text"
-											                    class="display-input show_input"
-											                    th:value="${#numbers.formatDecimal(report.R30_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
-											                    id="R30_AMOUNT"
-											                    name="R30_AMOUNT"
-											                    readonly
-																style="background-color:#FFFFFF; width: 100%; height: 28px; 
-																border-color: transparent; text-align: right;" />
-											         </td>
-											     </tr>	
+												<!-- EFFECTIVE MATURITY DATE -->
+												<td style="padding-right: 20px;"><input type="date"
+													class="display-input show_input date-field"
+													th:value="${#dates.format(report.R30_EFFECTIVE_MATURITY_DATE, 'yyyy-MM-dd')}"
+													id="R30_EFFECTIVE_MATURITY_DATE"
+													name="R30_EFFECTIVE_MATURITY_DATE" readonly
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: left;" />
+												</td>
 
-												 <tr>
-												        <!-- PRODUCT -->
-												        <td  style="padding-right: 20px;">
-												            <input type="text"
-												                   class="display-input show_input"
-												                   th:value="${#numbers.formatDecimal(report.R31_PRODUCT, 1, 'COMMA', 0, 'POINT')}"
-												                   id="R31_PRODUCT"
-												                   name="R31_PRODUCT"
-												                   readonly
-																   style="background-color:#FFFFFF; width: 100%; height: 28px; 
-																   border-color: transparent; text-align: right;" />
-												        </td>
+												<!-- AMOUNT -->
+												<td style="padding-left: 20px;"><input type="text"
+													class="display-input show_input"
+													th:value="${#numbers.formatDecimal(report.R30_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
+													id="R30_AMOUNT" name="R30_AMOUNT" readonly
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: right;" />
+												</td>
+											</tr>
 
-												        <!-- ISSUANCE DATE -->
-												        <td  style="padding-right: 20px;">
-												            <input type="date"
-												                   class="display-input show_input date-field"
-												                   th:value="${#dates.format(report.R31_ISSUANCE_DATE, 'yyyy-MM-dd')}"
-												                   id="R31_ISSUANCE_DATE"
-												                   name="R31_ISSUANCE_DATE"
-												                   readonly
-																   style="background-color:#FFFFFF; width: 100%; height: 28px; 
-																   border-color: transparent; text-align: left;" />
-												        </td>
+											<tr>
+												<!-- PRODUCT -->
+												<td style="padding-right: 20px;"><input type="text"
+													class="display-input show_input"
+													th:value="${report.R31_PRODUCT}"
+													id="R31_PRODUCT" name="R31_PRODUCT" readonly
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: left;" />
+												</td>
 
-												        <!-- CONTRACTUAL MATURITY DATE -->
-												        <td  style="padding-right: 20px;">
-												            <input type="date"
-												                   class="display-input show_input date-field"
-												                   th:value="${#dates.format(report.R31_CONTRACTUAL_MATURITY_DATE, 'yyyy-MM-dd')}"
-												                   id="R31_CONTRACTUAL_MATURITY_DATE"
-												                   name="R31_CONTRACTUAL_MATURITY_DATE"
-												                   readonly
-																   style="background-color:#FFFFFF; width: 100%; height: 28px; 
-																   border-color: transparent; text-align: left;" />
-												        </td>
+												<!-- ISSUANCE DATE -->
+												<td style="padding-right: 20px;"><input type="date"
+													class="display-input show_input date-field"
+													th:value="${#dates.format(report.R31_ISSUANCE_DATE, 'yyyy-MM-dd')}"
+													id="R31_ISSUANCE_DATE" name="R31_ISSUANCE_DATE" readonly
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: left;" />
+												</td>
 
-												        <!-- EFFECTIVE MATURITY DATE -->
-												        <td  style="padding-right: 20px;">
-												            <input type="date"
-												                   class="display-input show_input date-field"
-												                   th:value="${#dates.format(report.R31_EFFECTIVE_MATURITY_DATE, 'yyyy-MM-dd')}"
-												                   id="R31_EFFECTIVE_MATURITY_DATE"
-												                   name="R31_EFFECTIVE_MATURITY_DATE"
-												                   readonly
-																   style="background-color:#FFFFFF; width: 100%; height: 28px; 
-																   border-color: transparent; text-align: left;" />
-												        </td>
+												<!-- CONTRACTUAL MATURITY DATE -->
+												<td style="padding-right: 20px;"><input type="date"
+													class="display-input show_input date-field"
+													th:value="${#dates.format(report.R31_CONTRACTUAL_MATURITY_DATE, 'yyyy-MM-dd')}"
+													id="R31_CONTRACTUAL_MATURITY_DATE"
+													name="R31_CONTRACTUAL_MATURITY_DATE" readonly
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: left;" />
+												</td>
 
-												        <!-- AMOUNT -->
-												        <td  style="padding-left: 20px;">
-												            <input type="text"
-												                   class="display-input show_input"
-												                   th:value="${#numbers.formatDecimal(report.R31_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
-												                   id="R31_AMOUNT"
-												                   name="R31_AMOUNT"
-												                   readonly
-																   style="background-color:#FFFFFF; width: 100%; height: 28px; 
-																   border-color: transparent; text-align: right;" />
-												        </td>
-												    </tr>
+												<!-- EFFECTIVE MATURITY DATE -->
+												<td style="padding-right: 20px;"><input type="date"
+													class="display-input show_input date-field"
+													th:value="${#dates.format(report.R31_EFFECTIVE_MATURITY_DATE, 'yyyy-MM-dd')}"
+													id="R31_EFFECTIVE_MATURITY_DATE"
+													name="R31_EFFECTIVE_MATURITY_DATE" readonly
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: left;" />
+												</td>
 
-													<tr>
-													       <!-- PRODUCT -->
-													       <td  style="padding-right: 20px;">
-													           <input type="text"
-													                  class="display-input show_input"
-													                  th:value="${#numbers.formatDecimal(report.R32_PRODUCT, 1, 'COMMA', 0, 'POINT')}"
-													                  id="R32_PRODUCT"
-													                  name="R32_PRODUCT"
-													                  readonly
-																	  style="background-color:#FFFFFF; width: 100%; height: 28px; 
-																	  border-color: transparent; text-align: right;" />
-													       </td>
+												<!-- AMOUNT -->
+												<td style="padding-left: 20px;"><input type="text"
+													class="display-input show_input"
+													th:value="${#numbers.formatDecimal(report.R31_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
+													id="R31_AMOUNT" name="R31_AMOUNT" readonly
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: right;" />
+												</td>
+											</tr>
 
-													       <!-- ISSUANCE DATE -->
-													       <td  style="padding-right: 20px;">
-													           <input type="date"
-													                  class="display-input show_input date-field"
-													                  th:value="${#dates.format(report.R32_ISSUANCE_DATE, 'yyyy-MM-dd')}"
-													                  id="R32_ISSUANCE_DATE"
-													                  name="R32_ISSUANCE_DATE"
-													                  readonly
-																	  style="background-color:#FFFFFF; width: 100%; height: 28px; 
-																	  border-color: transparent; text-align: left;" />
-													       </td>
+											<tr>
+												<!-- PRODUCT -->
+												<td style="padding-right: 20px;"><input type="text"
+													class="display-input show_input"
+													th:value="${report.R32_PRODUCT}"
+													id="R32_PRODUCT" name="R32_PRODUCT" readonly
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: left;" />
+												</td>
 
-													       <!-- CONTRACTUAL MATURITY DATE -->
-													       <td  style="padding-right: 20px;">
-													           <input type="date"
-													                  class="display-input show_input date-field"
-													                  th:value="${#dates.format(report.R32_CONTRACTUAL_MATURITY_DATE, 'yyyy-MM-dd')}"
-													                  id="R32_CONTRACTUAL_MATURITY_DATE"
-													                  name="R32_CONTRACTUAL_MATURITY_DATE"
-													                  readonly
-																	  style="background-color:#FFFFFF; width: 100%; height: 28px; 
-																	  border-color: transparent; text-align: left;" />
-													       </td>
+												<!-- ISSUANCE DATE -->
+												<td style="padding-right: 20px;"><input type="date"
+													class="display-input show_input date-field"
+													th:value="${#dates.format(report.R32_ISSUANCE_DATE, 'yyyy-MM-dd')}"
+													id="R32_ISSUANCE_DATE" name="R32_ISSUANCE_DATE" readonly
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: left;" />
+												</td>
 
-													       <!-- EFFECTIVE MATURITY DATE -->
-													       <td  style="padding-right: 20px;">
-													           <input type="date"
-													                  class="display-input show_input date-field"
-													                  th:value="${#dates.format(report.R32_EFFECTIVE_MATURITY_DATE, 'yyyy-MM-dd')}"
-													                  id="R32_EFFECTIVE_MATURITY_DATE"
-													                  name="R32_EFFECTIVE_MATURITY_DATE"
-													                  readonly
-																	  style="background-color:#FFFFFF; width: 100%; height: 28px; 
-																	  border-color: transparent; text-align: left;" />
-													       </td>
+												<!-- CONTRACTUAL MATURITY DATE -->
+												<td style="padding-right: 20px;"><input type="date"
+													class="display-input show_input date-field"
+													th:value="${#dates.format(report.R32_CONTRACTUAL_MATURITY_DATE, 'yyyy-MM-dd')}"
+													id="R32_CONTRACTUAL_MATURITY_DATE"
+													name="R32_CONTRACTUAL_MATURITY_DATE" readonly
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: left;" />
+												</td>
 
-													       <!-- AMOUNT -->
-													       <td  style="padding-left: 20px;">
-													           <input type="text"
-													                  class="display-input show_input"
-													                  th:value="${#numbers.formatDecimal(report.R32_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
-													                  id="R32_AMOUNT"
-													                  name="R32_AMOUNT"
-													                  readonly
-																	  style="background-color:#FFFFFF; width: 100%; height: 28px; 
-																	  border-color: transparent; text-align: right;" />
-													       </td>
-													   </tr>
+												<!-- EFFECTIVE MATURITY DATE -->
+												<td style="padding-right: 20px;"><input type="date"
+													class="display-input show_input date-field"
+													th:value="${#dates.format(report.R32_EFFECTIVE_MATURITY_DATE, 'yyyy-MM-dd')}"
+													id="R32_EFFECTIVE_MATURITY_DATE"
+													name="R32_EFFECTIVE_MATURITY_DATE" readonly
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: left;" />
+												</td>
 
-													   <tr>
-													          <!-- PRODUCT -->
-													          <td  style="padding-right: 20px;">
-													              <input type="text"
-													                     class="display-input show_input"
-													                     th:value="${#numbers.formatDecimal(report.R33_PRODUCT, 1, 'COMMA', 0, 'POINT')}"
-													                     id="R33_PRODUCT"
-													                     name="R33_PRODUCT"
-													                     readonly
-																		 style="background-color:#FFFFFF; width: 100%; height: 28px; 
-																		 border-color: transparent; text-align: right;" />
-													          </td>
+												<!-- AMOUNT -->
+												<td style="padding-left: 20px;"><input type="text"
+													class="display-input show_input"
+													th:value="${#numbers.formatDecimal(report.R32_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
+													id="R32_AMOUNT" name="R32_AMOUNT" readonly
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: right;" />
+												</td>
+											</tr>
 
-													          <!-- ISSUANCE DATE -->
-													          <td  style="padding-right: 20px;">
-													              <input type="date"
-													                     class="display-input show_input date-field"
-													                     th:value="${#dates.format(report.R33_ISSUANCE_DATE, 'yyyy-MM-dd')}"
-													                     id="R33_ISSUANCE_DATE"
-													                     name="R33_ISSUANCE_DATE"
-													                     readonly
-																		 style="background-color:#FFFFFF; width: 100%; height: 28px; 
-																		 border-color: transparent; text-align: left;" />
-													          </td>
+											<tr>
+												<!-- PRODUCT -->
+												<td style="padding-right: 20px;"><input type="text"
+													class="display-input show_input"
+													th:value="${report.R33_PRODUCT}"
+													id="R33_PRODUCT" name="R33_PRODUCT" readonly
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: left;" />
+												</td>
 
-													          <!-- CONTRACTUAL MATURITY DATE -->
-													          <td  style="padding-right: 20px;">
-													              <input type="date"
-													                     class="display-input show_input date-field"
-													                     th:value="${#dates.format(report.R33_CONTRACTUAL_MATURITY_DATE, 'yyyy-MM-dd')}"
-													                     id="R33_CONTRACTUAL_MATURITY_DATE"
-													                     name="R33_CONTRACTUAL_MATURITY_DATE"
-													                     readonly
-																		 style="background-color:#FFFFFF; width: 100%; height: 28px; 
-																		 border-color: transparent; text-align: left;" />
-													          </td>
+												<!-- ISSUANCE DATE -->
+												<td style="padding-right: 20px;"><input type="date"
+													class="display-input show_input date-field"
+													th:value="${#dates.format(report.R33_ISSUANCE_DATE, 'yyyy-MM-dd')}"
+													id="R33_ISSUANCE_DATE" name="R33_ISSUANCE_DATE" readonly
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: left;" />
+												</td>
 
-													          <!-- EFFECTIVE MATURITY DATE -->
-													          <td  style="padding-right: 20px;">
-													              <input type="date"
-													                     class="display-input show_input date-field"
-													                     th:value="${#dates.format(report.R33_EFFECTIVE_MATURITY_DATE, 'yyyy-MM-dd')}"
-													                     id="R33_EFFECTIVE_MATURITY_DATE"
-													                     name="R33_EFFECTIVE_MATURITY_DATE"
-													                     readonly
-																		 style="background-color:#FFFFFF; width: 100%; height: 28px; 
-																		 border-color: transparent; text-align: left;" />
-													          </td>
+												<!-- CONTRACTUAL MATURITY DATE -->
+												<td style="padding-right: 20px;"><input type="date"
+													class="display-input show_input date-field"
+													th:value="${#dates.format(report.R33_CONTRACTUAL_MATURITY_DATE, 'yyyy-MM-dd')}"
+													id="R33_CONTRACTUAL_MATURITY_DATE"
+													name="R33_CONTRACTUAL_MATURITY_DATE" readonly
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: left;" />
+												</td>
 
-													          <!-- AMOUNT -->
-													          <td  style="padding-left: 20px;">
-													              <input type="text"
-													                     class="display-input show_input"
-													                     th:value="${#numbers.formatDecimal(report.R33_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
-													                     id="R33_AMOUNT"
-													                     name="R33_AMOUNT"
-													                     readonly
-																		 style="background-color:#FFFFFF; width: 100%; height: 28px; 
-																		 border-color: transparent; text-align: right;" />
-													          </td>
-													      </tr>
+												<!-- EFFECTIVE MATURITY DATE -->
+												<td style="padding-right: 20px;"><input type="date"
+													class="display-input show_input date-field"
+													th:value="${#dates.format(report.R33_EFFECTIVE_MATURITY_DATE, 'yyyy-MM-dd')}"
+													id="R33_EFFECTIVE_MATURITY_DATE"
+													name="R33_EFFECTIVE_MATURITY_DATE" readonly
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: left;" />
+												</td>
 
-														  <tr>
-														         <!-- PRODUCT -->
-														         <td  style="padding-right: 20px;">
-														             <input type="text"
-														                    class="display-input show_input"
-														                    th:value="${#numbers.formatDecimal(report.R34_PRODUCT, 1, 'COMMA', 0, 'POINT')}"
-														                    id="R34_PRODUCT"
-														                    name="R34_PRODUCT"
-														                    readonly
-																			style="background-color:#FFFFFF; width: 100%; height: 28px; 
-																			border-color: transparent; text-align: right;" />
-														         </td>
+												<!-- AMOUNT -->
+												<td style="padding-left: 20px;"><input type="text"
+													class="display-input show_input"
+													th:value="${#numbers.formatDecimal(report.R33_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
+													id="R33_AMOUNT" name="R33_AMOUNT" readonly
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: right;" />
+												</td>
+											</tr>
 
-														         <!-- ISSUANCE DATE -->
-														         <td  style="padding-right: 20px;">
-														             <input type="date"
-														                    class="display-input show_input date-field"
-														                    th:value="${#dates.format(report.R34_ISSUANCE_DATE, 'yyyy-MM-dd')}"
-														                    id="R34_ISSUANCE_DATE"
-														                    name="R34_ISSUANCE_DATE"
-														                    readonly
-																			style="background-color:#FFFFFF; width: 100%; height: 28px; 
-																			border-color: transparent; text-align: left;" />
-														         </td>
+											<tr>
+												<!-- PRODUCT -->
+												<td style="padding-right: 20px;"><input type="text"
+													class="display-input show_input"
+													th:value="${report.R34_PRODUCT}"
+													id="R34_PRODUCT" name="R34_PRODUCT" readonly
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: left;" />
+												</td>
 
-														         <!-- CONTRACTUAL MATURITY DATE -->
-														         <td  style="padding-right: 20px;">
-														             <input type="date"
-														                    class="display-input show_input date-field"
-														                    th:value="${#dates.format(report.R34_CONTRACTUAL_MATURITY_DATE, 'yyyy-MM-dd')}"
-														                    id="R34_CONTRACTUAL_MATURITY_DATE"
-														                    name="R34_CONTRACTUAL_MATURITY_DATE"
-														                    readonly
-																			style="background-color:#FFFFFF; width: 100%; height: 28px; 
-																			border-color: transparent; text-align: left;" />
-														         </td>
+												<!-- ISSUANCE DATE -->
+												<td style="padding-right: 20px;"><input type="date"
+													class="display-input show_input date-field"
+													th:value="${#dates.format(report.R34_ISSUANCE_DATE, 'yyyy-MM-dd')}"
+													id="R34_ISSUANCE_DATE" name="R34_ISSUANCE_DATE" readonly
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: left;" />
+												</td>
 
-														         <!-- EFFECTIVE MATURITY DATE -->
-														         <td  style="padding-right: 20px;">
-														             <input type="date"
-														                    class="display-input show_input date-field"
-														                    th:value="${#dates.format(report.R34_EFFECTIVE_MATURITY_DATE, 'yyyy-MM-dd')}"
-														                    id="R34_EFFECTIVE_MATURITY_DATE"
-														                    name="R34_EFFECTIVE_MATURITY_DATE"
-														                    readonly
-																			style="background-color:#FFFFFF; width: 100%; height: 28px; 
-																			border-color: transparent; text-align: left;" />
-														         </td>
+												<!-- CONTRACTUAL MATURITY DATE -->
+												<td style="padding-right: 20px;"><input type="date"
+													class="display-input show_input date-field"
+													th:value="${#dates.format(report.R34_CONTRACTUAL_MATURITY_DATE, 'yyyy-MM-dd')}"
+													id="R34_CONTRACTUAL_MATURITY_DATE"
+													name="R34_CONTRACTUAL_MATURITY_DATE" readonly
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: left;" />
+												</td>
 
-														         <!-- AMOUNT -->
-														         <td  style="padding-left: 20px;">
-														             <input type="text"
-														                    class="display-input show_input"
-														                    th:value="${#numbers.formatDecimal(report.R34_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
-														                    id="R34_AMOUNT"
-														                    name="R34_AMOUNT"
-														                    readonly
-																			style="background-color:#FFFFFF; width: 100%; height: 28px; 
-																			border-color: transparent; text-align: right;" />
-														         </td>
-														     </tr>
-										
-										<tr>
-										    <td colspan="4" style="padding-left: 20px;">
-										        Total Additional Tier 1 Capital instruments (including share premium) eligible for gradual phase-out treatment
-										    </td>
-											<td style="text-align: right; background-color:rgb(107, 122, 143);">
-																				        <input type="text" id="R35_AMOUNT" name="R35_AMOUNT" readonly
-																				               style="width: 100%; height: 28px; text-align: right;background-color:rgb(107, 122, 143); color: white; border: none;"
-																				               th:value="${#numbers.formatDecimal(report.R35_AMOUNT, 1, 'COMMA', 0, 'POINT')}" />
-																				    </td>
-										</tr>
-								
-											
-									
+												<!-- EFFECTIVE MATURITY DATE -->
+												<td style="padding-right: 20px;"><input type="date"
+													class="display-input show_input date-field"
+													th:value="${#dates.format(report.R34_EFFECTIVE_MATURITY_DATE, 'yyyy-MM-dd')}"
+													id="R34_EFFECTIVE_MATURITY_DATE"
+													name="R34_EFFECTIVE_MATURITY_DATE" readonly
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: left;" />
+												</td>
 
-											
-											
+												<!-- AMOUNT -->
+												<td style="padding-left: 20px;"><input type="text"
+													class="display-input show_input"
+													th:value="${#numbers.formatDecimal(report.R34_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
+													id="R34_AMOUNT" name="R34_AMOUNT" readonly
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: right;" />
+												</td>
+											</tr>
+
+											<tr>
+												<td colspan="4" style="padding-left: 20px;">Total
+													Additional Tier 1 Capital instruments (including share
+													premium) eligible for gradual phase-out treatment</td>
+												<td
+													style="text-align: right; background-color: rgb(107, 122, 143);">
+													<input type="text" id="R35_AMOUNT" name="R35_AMOUNT"
+													readonly
+													style="width: 100%; height: 28px; text-align: right; background-color: rgb(107, 122, 143); color: white; border: none;"
+													th:value="${#numbers.formatDecimal(report.R35_AMOUNT, 1, 'COMMA', 0, 'POINT')}" />
+												</td>
+											</tr>
+
+
+
+
+
+
 										</tbody>
 
 
-							  </table>
-							  
+									</table>
 
-							<p style="padding: 20px;font-weight: bold; color: black;">3 Tier 2 Capital Instruments</p>
 
-							  <table class="sticky-header-table table table-bordered table-cell table-sm table-condensed" id="reports" >
-							  	<thead class="thead-light">
-							  			<tr style="background-color: #b3b6b9 ">
-							  				
-							  				<th rowspan="3" style="text-align: left; width:33%;background-color: #D8D8D8; font-weight: bold;color: black;">Name of Instrument/ Programe</th>
-							  				<th style="text-align: left;background-color: #D8D8D8; font-weight: bold;color: black;">Isssuance Date</th>
-							  				<th style="text-align: left;background-color: #D8D8D8; font-weight: bold;color: black;"> Contractual Maturity Date</th>
-							  				<th style="text-align: left;background-color: #D8D8D8; font-weight: bold;color: black;"> Effective Maturity Date, if any</th>
-							  				<th style="text-align: right;background-color: #D8D8D8; font-weight: bold;color: black;padding-left: 20px;"> Amount (P'000)</th>
-							  			</tr>
-							  		<!--	</tr>
+									<p style="padding: 20px; font-weight: bold; color: black;">3
+										Tier 2 Capital Instruments</p>
+
+									<table
+										class="sticky-header-table table table-bordered table-cell table-sm table-condensed"
+										id="reports">
+										<thead class="thead-light">
+											<tr style="background-color: #b3b6b9">
+
+												<th rowspan="3"
+													style="text-align: left; width: 33%; background-color: #D8D8D8; font-weight: bold; color: black;">Name
+													of Instrument/ Programe</th>
+												<th
+													style="text-align: left; background-color: #D8D8D8; font-weight: bold; color: black;">Isssuance
+													Date</th>
+												<th
+													style="text-align: left; background-color: #D8D8D8; font-weight: bold; color: black;">
+													Contractual Maturity Date</th>
+												<th
+													style="text-align: left; background-color: #D8D8D8; font-weight: bold; color: black;">
+													Effective Maturity Date, if any</th>
+												<th
+													style="text-align: right; background-color: #D8D8D8; font-weight: bold; color: black; padding-left: 20px;">
+													Amount (P'000)</th>
+											</tr>
+											<!--	</tr>
 							  			<tr style="background-color: #b3b6b9">
 							  				<th style="text-align: center; background-color: #b3b6b9"></th>
 							  				<th style="text-align: center; background-color: #b3b6b9">C0010</th>
@@ -1981,591 +1883,389 @@ function showdetailsbyRowAndColumn(a) {
 							  				<th style="text-align: center; background-color: #b3b6b9">C0030</th>
 							  			</tr> -->
 
-							  		</thead>
+										</thead>
 
 
-							  		<tbody th:each="report: ${reportsummary1}" style="font-family: Arial;">
+										<tbody th:each="report: ${reportsummary1}"
+											style="font-family: Arial;">
 
-										<tr>
-										       <!-- PRODUCT -->
-										       <td  style="padding-right: 20px;">
-										           <input type="text"
-										                  class="display-input show_input"
-										                  th:value="${#numbers.formatDecimal(report.R40_PRODUCT, 1, 'COMMA', 0, 'POINT')}"
-										                  id="R40_PRODUCT"
-										                  name="R40_PRODUCT"
-										                  readonly
-														  style="background-color:#FFFFFF; width: 100%; height: 28px; 
-														  border-color: transparent; text-align: right;" />
-										       </td>
+											<tr>
+												<!-- PRODUCT -->
+												<td style="padding-right: 20px;"><input type="text"
+													class="display-input show_input"
+													th:value="${report.R40_PRODUCT}"
+													id="R40_PRODUCT" name="R40_PRODUCT" readonly
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: left;" />
+												</td>
 
-										       <!-- ISSUANCE DATE -->
-										       <td  style="padding-right: 20px;">
-										           <input type="date"
-										                  class="display-input show_input date-field"
-										                  th:value="${#dates.format(report.R40_ISSUANCE_DATE, 'yyyy-MM-dd')}"
-										                  id="R40_ISSUANCE_DATE"
-										                  name="R40_ISSUANCE_DATE"
-										                  readonly
-														  style="background-color:#FFFFFF; width: 100%; height: 28px; 
-														  border-color: transparent; text-align: left;" />
-										       </td>
+												<!-- ISSUANCE DATE -->
+												<td style="padding-right: 20px;"><input type="date"
+													class="display-input show_input date-field"
+													th:value="${#dates.format(report.R40_ISSUANCE_DATE, 'yyyy-MM-dd')}"
+													id="R40_ISSUANCE_DATE" name="R40_ISSUANCE_DATE" readonly
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: left;" />
+												</td>
 
-										       <!-- CONTRACTUAL MATURITY DATE -->
-										       <td  style="padding-right: 20px;">
-										           <input type="date"
-										                  class="display-input show_input date-field"
-										                  th:value="${#dates.format(report.R40_CONTRACTUAL_MATURITY_DATE, 'yyyy-MM-dd')}"
-										                  id="R40_CONTRACTUAL_MATURITY_DATE"
-										                  name="R40_CONTRACTUAL_MATURITY_DATE"
-										                  readonly
-														  style="background-color:#FFFFFF; width: 100%; height: 28px; 
-														  border-color: transparent; text-align: left;" />
-										       </td>
+												<!-- CONTRACTUAL MATURITY DATE -->
+												<td style="padding-right: 20px;"><input type="date"
+													class="display-input show_input date-field"
+													th:value="${#dates.format(report.R40_CONTRACTUAL_MATURITY_DATE, 'yyyy-MM-dd')}"
+													id="R40_CONTRACTUAL_MATURITY_DATE"
+													name="R40_CONTRACTUAL_MATURITY_DATE" readonly
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: left;" />
+												</td>
 
-										       <!-- EFFECTIVE MATURITY DATE -->
-										       <td  style="padding-right: 20px;">
-										           <input type="date"
-										                  class="display-input show_input date-field"
-										                  th:value="${#dates.format(report.R40_EFFECTIVE_MATURITY_DATE, 'yyyy-MM-dd')}"
-										                  id="R40_EFFECTIVE_MATURITY_DATE"
-										                  name="R40_EFFECTIVE_MATURITY_DATE"
-										                  readonly
-														  style="background-color:#FFFFFF; width: 100%; height: 28px; 
-														  border-color: transparent; text-align: left;" />
-										       </td>
+												<!-- EFFECTIVE MATURITY DATE -->
+												<td style="padding-right: 20px;"><input type="date"
+													class="display-input show_input date-field"
+													th:value="${#dates.format(report.R40_EFFECTIVE_MATURITY_DATE, 'yyyy-MM-dd')}"
+													id="R40_EFFECTIVE_MATURITY_DATE"
+													name="R40_EFFECTIVE_MATURITY_DATE" readonly
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: left;" />
+												</td>
 
-										       <!-- AMOUNT -->
-										       <td  style="padding-left: 20px;">
-										           <input type="text"
-										                  class="display-input show_input"
-										                  th:value="${#numbers.formatDecimal(report.R40_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
-										                  id="R40_AMOUNT"
-										                  name="R40_AMOUNT"
-										                  readonly
-														  style="background-color:#FFFFFF; width: 100%; height: 28px; 
-														  border-color: transparent; text-align: right;" />
-										       </td>
-										   </tr>
+												<!-- AMOUNT -->
+												<td style="padding-left: 20px;"><input type="text"
+													class="display-input show_input"
+													th:value="${#numbers.formatDecimal(report.R40_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
+													id="R40_AMOUNT" name="R40_AMOUNT" readonly
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: right;" />
+												</td>
+											</tr>
 
-										   <tr>
-										          <!-- PRODUCT -->
-										          <td  style="padding-right: 20px;">
-										              <input type="text"
-										                     class="display-input show_input"
-										                     th:value="${#numbers.formatDecimal(report.R41_PRODUCT, 1, 'COMMA', 0, 'POINT')}"
-										                     id="R41_PRODUCT"
-										                     name="R41_PRODUCT"
-										                     readonly
-															 style="background-color:#FFFFFF; width: 100%; height: 28px; 
-															 border-color: transparent; text-align: right;" />
-										          </td>
+											<tr>
+												<!-- PRODUCT -->
+												<td style="padding-right: 20px;"><input type="text"
+													class="display-input show_input"
+													th:value="${report.R41_PRODUCT}"
+													id="R41_PRODUCT" name="R41_PRODUCT" readonly
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: left;" />
+												</td>
 
-										          <!-- ISSUANCE DATE -->
-										          <td  style="padding-right: 20px;">
-										              <input type="date"
-										                     class="display-input show_input date-field"
-										                     th:value="${#dates.format(report.R41_ISSUANCE_DATE, 'yyyy-MM-dd')}"
-										                     id="R41_ISSUANCE_DATE"
-										                     name="R41_ISSUANCE_DATE"
-										                     readonly
-															 style="background-color:#FFFFFF; width: 100%; height: 28px; 
-															 border-color: transparent; text-align: left;" />
-										          </td>
+												<!-- ISSUANCE DATE -->
+												<td style="padding-right: 20px;"><input type="date"
+													class="display-input show_input date-field"
+													th:value="${#dates.format(report.R41_ISSUANCE_DATE, 'yyyy-MM-dd')}"
+													id="R41_ISSUANCE_DATE" name="R41_ISSUANCE_DATE" readonly
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: left;" />
+												</td>
 
-										          <!-- CONTRACTUAL MATURITY DATE -->
-										          <td  style="padding-right: 20px;">
-										              <input type="date"
-										                     class="display-input show_input date-field"
-										                     th:value="${#dates.format(report.R41_CONTRACTUAL_MATURITY_DATE, 'yyyy-MM-dd')}"
-										                     id="R41_CONTRACTUAL_MATURITY_DATE"
-										                     name="R41_CONTRACTUAL_MATURITY_DATE"
-										                     readonly
-															 style="background-color:#FFFFFF; width: 100%; height: 28px; 
-															 border-color: transparent; text-align: left;" />
-										          </td>
+												<!-- CONTRACTUAL MATURITY DATE -->
+												<td style="padding-right: 20px;"><input type="date"
+													class="display-input show_input date-field"
+													th:value="${#dates.format(report.R41_CONTRACTUAL_MATURITY_DATE, 'yyyy-MM-dd')}"
+													id="R41_CONTRACTUAL_MATURITY_DATE"
+													name="R41_CONTRACTUAL_MATURITY_DATE" readonly
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: left;" />
+												</td>
 
-										          <!-- EFFECTIVE MATURITY DATE -->
-										          <td  style="padding-right: 20px;">
-										              <input type="date"
-										                     class="display-input show_input date-field"
-										                     th:value="${#dates.format(report.R41_EFFECTIVE_MATURITY_DATE, 'yyyy-MM-dd')}"
-										                     id="R41_EFFECTIVE_MATURITY_DATE"
-										                     name="R41_EFFECTIVE_MATURITY_DATE"
-										                     readonly
-															 style="background-color:#FFFFFF; width: 100%; height: 28px; 
-															 border-color: transparent; text-align: left;" />
-										          </td>
+												<!-- EFFECTIVE MATURITY DATE -->
+												<td style="padding-right: 20px;"><input type="date"
+													class="display-input show_input date-field"
+													th:value="${#dates.format(report.R41_EFFECTIVE_MATURITY_DATE, 'yyyy-MM-dd')}"
+													id="R41_EFFECTIVE_MATURITY_DATE"
+													name="R41_EFFECTIVE_MATURITY_DATE" readonly
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: left;" />
+												</td>
 
-										          <!-- AMOUNT -->
-										          <td  style="padding-left: 20px;">
-										              <input type="text"
-										                     class="display-input show_input"
-										                     th:value="${#numbers.formatDecimal(report.R41_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
-										                     id="R41_AMOUNT"
-										                     name="R41_AMOUNT"
-										                     readonly
-															 style="background-color:#FFFFFF; width: 100%; height: 28px; 
-															 border-color: transparent; text-align: right;" />
-										          </td>
-										      </tr>
+												<!-- AMOUNT -->
+												<td style="padding-left: 20px;"><input type="text"
+													class="display-input show_input"
+													th:value="${#numbers.formatDecimal(report.R41_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
+													id="R41_AMOUNT" name="R41_AMOUNT" readonly
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: right;" />
+												</td>
+											</tr>
 
-											  <tr>
-											         <!-- PRODUCT -->
-											         <td  style="padding-right: 20px;">
-											             <input type="text"
-											                    class="display-input show_input"
-											                    th:value="${#numbers.formatDecimal(report.R42_PRODUCT, 1, 'COMMA', 0, 'POINT')}"
-											                    id="R42_PRODUCT"
-											                    name="R42_PRODUCT"
-											                    readonly
-																style="background-color:#FFFFFF; width: 100%; height: 28px; 
-																border-color: transparent; text-align: right;" />
-											         </td>
+											<tr>
+												<!-- PRODUCT -->
+												<td style="padding-right: 20px;"><input type="text"
+													class="display-input show_input"
+													th:value="${report.R42_PRODUCT}"
+													id="R42_PRODUCT" name="R42_PRODUCT" readonly
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: left;" />
+												</td>
 
-											         <!-- ISSUANCE DATE -->
-											         <td  style="padding-right: 20px;">
-											             <input type="date"
-											                    class="display-input show_input date-field"
-											                    th:value="${#dates.format(report.R42_ISSUANCE_DATE, 'yyyy-MM-dd')}"
-											                    id="R42_ISSUANCE_DATE"
-											                    name="R42_ISSUANCE_DATE"
-											                    readonly
-																style="background-color:#FFFFFF; width: 100%; height: 28px; 
-																border-color: transparent; text-align: left;" />
-											         </td>
+												<!-- ISSUANCE DATE -->
+												<td style="padding-right: 20px;"><input type="date"
+													class="display-input show_input date-field"
+													th:value="${#dates.format(report.R42_ISSUANCE_DATE, 'yyyy-MM-dd')}"
+													id="R42_ISSUANCE_DATE" name="R42_ISSUANCE_DATE" readonly
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: left;" />
+												</td>
 
-											         <!-- CONTRACTUAL MATURITY DATE -->
-											         <td  style="padding-right: 20px;">
-											             <input type="date"
-											                    class="display-input show_input date-field"
-											                    th:value="${#dates.format(report.R42_CONTRACTUAL_MATURITY_DATE, 'yyyy-MM-dd')}"
-											                    id="R42_CONTRACTUAL_MATURITY_DATE"
-											                    name="R42_CONTRACTUAL_MATURITY_DATE"
-											                    readonly
-																style="background-color:#FFFFFF; width: 100%; height: 28px; 
-																border-color: transparent; text-align: left;" />
-											         </td>
+												<!-- CONTRACTUAL MATURITY DATE -->
+												<td style="padding-right: 20px;"><input type="date"
+													class="display-input show_input date-field"
+													th:value="${#dates.format(report.R42_CONTRACTUAL_MATURITY_DATE, 'yyyy-MM-dd')}"
+													id="R42_CONTRACTUAL_MATURITY_DATE"
+													name="R42_CONTRACTUAL_MATURITY_DATE" readonly
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: left;" />
+												</td>
 
-											         <!-- EFFECTIVE MATURITY DATE -->
-											         <td  style="padding-right: 20px;">
-											             <input type="date"
-											                    class="display-input show_input date-field"
-											                    th:value="${#dates.format(report.R42_EFFECTIVE_MATURITY_DATE, 'yyyy-MM-dd')}"
-											                    id="R42_EFFECTIVE_MATURITY_DATE"
-											                    name="R42_EFFECTIVE_MATURITY_DATE"
-											                    readonly
-																style="background-color:#FFFFFF; width: 100%; height: 28px; 
-																border-color: transparent; text-align: left;" />
-											         </td>
+												<!-- EFFECTIVE MATURITY DATE -->
+												<td style="padding-right: 20px;"><input type="date"
+													class="display-input show_input date-field"
+													th:value="${#dates.format(report.R42_EFFECTIVE_MATURITY_DATE, 'yyyy-MM-dd')}"
+													id="R42_EFFECTIVE_MATURITY_DATE"
+													name="R42_EFFECTIVE_MATURITY_DATE" readonly
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: left;" />
+												</td>
 
-											         <!-- AMOUNT -->
-											         <td  style="padding-left: 20px;">
-											             <input type="text"
-											                    class="display-input show_input"
-											                    th:value="${#numbers.formatDecimal(report.R42_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
-											                    id="R42_AMOUNT"
-											                    name="R42_AMOUNT"
-											                    readonly
-																style="background-color:#FFFFFF; width: 100%; height: 28px; 
-																border-color: transparent; text-align: right;" />
-											         </td>
-											     </tr>
+												<!-- AMOUNT -->
+												<td style="padding-left: 20px;"><input type="text"
+													class="display-input show_input"
+													th:value="${#numbers.formatDecimal(report.R42_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
+													id="R42_AMOUNT" name="R42_AMOUNT" readonly
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: right;" />
+												</td>
+											</tr>
 
-												 <tr>
-												        <!-- PRODUCT -->
-												        <td  style="padding-right: 20px;">
-												            <input type="text"
-												                   class="display-input show_input"
-												                   th:value="${#numbers.formatDecimal(report.R43_PRODUCT, 1, 'COMMA', 0, 'POINT')}"
-												                   id="R43_PRODUCT"
-												                   name="R43_PRODUCT"
-												                   readonly
-																   style="background-color:#FFFFFF; width: 100%; height: 28px; 
-																   border-color: transparent; text-align: right;" />
-												        </td>
+											<tr>
+												<!-- PRODUCT -->
+												<td style="padding-right: 20px;"><input type="text"
+													class="display-input show_input"
+													th:value="${report.R43_PRODUCT}"
+													id="R43_PRODUCT" name="R43_PRODUCT" readonly
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: left;" />
+												</td>
 
-												        <!-- ISSUANCE DATE -->
-												        <td  style="padding-right: 20px;">
-												            <input type="date"
-												                   class="display-input show_input date-field"
-												                   th:value="${#dates.format(report.R43_ISSUANCE_DATE, 'yyyy-MM-dd')}"
-												                   id="R43_ISSUANCE_DATE"
-												                   name="R43_ISSUANCE_DATE"
-												                   readonly
-																   style="background-color:#FFFFFF; width: 100%; height: 28px; 
-																   border-color: transparent; text-align: left;" />
-												        </td>
+												<!-- ISSUANCE DATE -->
+												<td style="padding-right: 20px;"><input type="date"
+													class="display-input show_input date-field"
+													th:value="${#dates.format(report.R43_ISSUANCE_DATE, 'yyyy-MM-dd')}"
+													id="R43_ISSUANCE_DATE" name="R43_ISSUANCE_DATE" readonly
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: left;" />
+												</td>
 
-												        <!-- CONTRACTUAL MATURITY DATE -->
-												        <td  style="padding-right: 20px;">
-												            <input type="date"
-												                   class="display-input show_input date-field"
-												                   th:value="${#dates.format(report.R43_CONTRACTUAL_MATURITY_DATE, 'yyyy-MM-dd')}"
-												                   id="R43_CONTRACTUAL_MATURITY_DATE"
-												                   name="R43_CONTRACTUAL_MATURITY_DATE"
-												                   readonly
-																   style="background-color:#FFFFFF; width: 100%; height: 28px; 
-																   border-color: transparent; text-align: left;" />
-												        </td>
+												<!-- CONTRACTUAL MATURITY DATE -->
+												<td style="padding-right: 20px;"><input type="date"
+													class="display-input show_input date-field"
+													th:value="${#dates.format(report.R43_CONTRACTUAL_MATURITY_DATE, 'yyyy-MM-dd')}"
+													id="R43_CONTRACTUAL_MATURITY_DATE"
+													name="R43_CONTRACTUAL_MATURITY_DATE" readonly
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: left;" />
+												</td>
 
-												        <!-- EFFECTIVE MATURITY DATE -->
-												        <td  style="padding-right: 20px;">
-												            <input type="date"
-												                   class="display-input show_input date-field"
-												                   th:value="${#dates.format(report.R43_EFFECTIVE_MATURITY_DATE, 'yyyy-MM-dd')}"
-												                   id="R43_EFFECTIVE_MATURITY_DATE"
-												                   name="R43_EFFECTIVE_MATURITY_DATE"
-												                   readonly
-																   style="background-color:#FFFFFF; width: 100%; height: 28px; 
-																   border-color: transparent; text-align: left;" />
-												        </td>
+												<!-- EFFECTIVE MATURITY DATE -->
+												<td style="padding-right: 20px;"><input type="date"
+													class="display-input show_input date-field"
+													th:value="${#dates.format(report.R43_EFFECTIVE_MATURITY_DATE, 'yyyy-MM-dd')}"
+													id="R43_EFFECTIVE_MATURITY_DATE"
+													name="R43_EFFECTIVE_MATURITY_DATE" readonly
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: left;" />
+												</td>
 
-												        <!-- AMOUNT -->
-												        <td  style="padding-left: 20px;">
-												            <input type="text"
-												                   class="display-input show_input"
-												                   th:value="${#numbers.formatDecimal(report.R43_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
-												                   id="R43_AMOUNT"
-												                   name="R43_AMOUNT"
-												                   readonly
-																   style="background-color:#FFFFFF; width: 100%; height: 28px; 
-																   border-color: transparent; text-align: right;" />
-												        </td>
-												    </tr>
+												<!-- AMOUNT -->
+												<td style="padding-left: 20px;"><input type="text"
+													class="display-input show_input"
+													th:value="${#numbers.formatDecimal(report.R43_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
+													id="R43_AMOUNT" name="R43_AMOUNT" readonly
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: right;" />
+												</td>
+											</tr>
 
-													<tr>
-													       <!-- PRODUCT -->
-													       <td  style="padding-right: 20px;">
-													           <input type="text"
-													                  class="display-input show_input"
-													                  th:value="${#numbers.formatDecimal(report.R44_PRODUCT, 1, 'COMMA', 0, 'POINT')}"
-													                  id="R44_PRODUCT"
-													                  name="R44_PRODUCT"
-													                  readonly
-																	  style="background-color:#FFFFFF; width: 100%; height: 28px; 
-																	  border-color: transparent; text-align: right;" />
-													       </td>
+											<tr>
+												<!-- PRODUCT -->
+												<td style="padding-right: 20px;"><input type="text"
+													class="display-input show_input"
+													th:value="${report.R44_PRODUCT}"
+													id="R44_PRODUCT" name="R44_PRODUCT" readonly
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: left;" />
+												</td>
 
-													       <!-- ISSUANCE DATE -->
-													       <td  style="padding-right: 20px;">
-													           <input type="date"
-													                  class="display-input show_input date-field"
-													                  th:value="${#dates.format(report.R44_ISSUANCE_DATE, 'yyyy-MM-dd')}"
-													                  id="R44_ISSUANCE_DATE"
-													                  name="R44_ISSUANCE_DATE"
-													                  readonly
-																	  style="background-color:#FFFFFF; width: 100%; height: 28px; 
-																	   border-color: transparent; text-align: left;" />
-													       </td>
+												<!-- ISSUANCE DATE -->
+												<td style="padding-right: 20px;"><input type="date"
+													class="display-input show_input date-field"
+													th:value="${#dates.format(report.R44_ISSUANCE_DATE, 'yyyy-MM-dd')}"
+													id="R44_ISSUANCE_DATE" name="R44_ISSUANCE_DATE" readonly
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: left;" />
+												</td>
 
-													       <!-- CONTRACTUAL MATURITY DATE -->
-													       <td  style="padding-right: 20px;">
-													           <input type="date"
-													                  class="display-input show_input date-field"
-													                  th:value="${#dates.format(report.R44_CONTRACTUAL_MATURITY_DATE, 'yyyy-MM-dd')}"
-													                  id="R44_CONTRACTUAL_MATURITY_DATE"
-													                  name="R44_CONTRACTUAL_MATURITY_DATE"
-													                  readonly
-																	  style="background-color:#FFFFFF; width: 100%; height: 28px; 
-																	  border-color: transparent; text-align: left;" />
-													       </td>
+												<!-- CONTRACTUAL MATURITY DATE -->
+												<td style="padding-right: 20px;"><input type="date"
+													class="display-input show_input date-field"
+													th:value="${#dates.format(report.R44_CONTRACTUAL_MATURITY_DATE, 'yyyy-MM-dd')}"
+													id="R44_CONTRACTUAL_MATURITY_DATE"
+													name="R44_CONTRACTUAL_MATURITY_DATE" readonly
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: left;" />
+												</td>
 
-													       <!-- EFFECTIVE MATURITY DATE -->
-													       <td  style="padding-right: 20px;">
-													           <input type="date"
-													                  class="display-input show_input date-field"
-													                  th:value="${#dates.format(report.R44_EFFECTIVE_MATURITY_DATE, 'yyyy-MM-dd')}"
-													                  id="R44_EFFECTIVE_MATURITY_DATE"
-													                  name="R44_EFFECTIVE_MATURITY_DATE"
-													                  readonly
-																	  style="background-color:#FFFFFF; width: 100%; height: 28px; 
-																	  border-color: transparent; text-align: left;" />
-													       </td>
+												<!-- EFFECTIVE MATURITY DATE -->
+												<td style="padding-right: 20px;"><input type="date"
+													class="display-input show_input date-field"
+													th:value="${#dates.format(report.R44_EFFECTIVE_MATURITY_DATE, 'yyyy-MM-dd')}"
+													id="R44_EFFECTIVE_MATURITY_DATE"
+													name="R44_EFFECTIVE_MATURITY_DATE" readonly
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: left;" />
+												</td>
 
-													       <!-- AMOUNT -->
-													       <td  style="padding-left: 20px;">
-													           <input type="text"
-													                  class="display-input show_input"
-													                  th:value="${#numbers.formatDecimal(report.R44_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
-													                  id="R44_AMOUNT"
-													                  name="R44_AMOUNT"
-													                  readonly
-																	  style="background-color:#FFFFFF; width: 100%; height: 28px; 
-																	  border-color: transparent; text-align: right;" />
-													       </td>
-													   </tr>
+												<!-- AMOUNT -->
+												<td style="padding-left: 20px;"><input type="text"
+													class="display-input show_input"
+													th:value="${#numbers.formatDecimal(report.R44_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
+													id="R44_AMOUNT" name="R44_AMOUNT" readonly
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: right;" />
+												</td>
+											</tr>
 
-													   <tr>
-													          <!-- PRODUCT -->
-													          <td  style="padding-right: 20px;">
-													              <input type="text"
-													                     class="display-input show_input"
-													                     th:value="${#numbers.formatDecimal(report.R45_PRODUCT, 1, 'COMMA', 0, 'POINT')}"
-													                     id="R45_PRODUCT"
-													                     name="R45_PRODUCT"
-													                     readonly
-																		 style="background-color:#FFFFFF; width: 100%; height: 28px; 
-																		 border-color: transparent; text-align: right;" />
-													          </td>
+											<tr>
+												<!-- PRODUCT -->
+												<td style="padding-right: 20px;"><input type="text"
+													class="display-input show_input"
+													th:value="${report.R45_PRODUCT}"
+													id="R45_PRODUCT" name="R45_PRODUCT" readonly
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: left;" />
+												</td>
 
-													          <!-- ISSUANCE DATE -->
-													          <td  style="padding-right: 20px;">
-													              <input type="date"
-													                     class="display-input show_input date-field"
-													                     th:value="${#dates.format(report.R45_ISSUANCE_DATE, 'yyyy-MM-dd')}"
-													                     id="R45_ISSUANCE_DATE"
-													                     name="R45_ISSUANCE_DATE"
-													                     readonly
-																		 style="background-color:#FFFFFF; width: 100%; height: 28px; 
-																		 border-color: transparent; text-align: left;" />
-													          </td>
+												<!-- ISSUANCE DATE -->
+												<td style="padding-right: 20px;"><input type="date"
+													class="display-input show_input date-field"
+													th:value="${#dates.format(report.R45_ISSUANCE_DATE, 'yyyy-MM-dd')}"
+													id="R45_ISSUANCE_DATE" name="R45_ISSUANCE_DATE" readonly
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: left;" />
+												</td>
 
-													          <!-- CONTRACTUAL MATURITY DATE -->
-													          <td  style="padding-right: 20px;">
-													              <input type="date"
-													                     class="display-input show_input date-field"
-													                     th:value="${#dates.format(report.R45_CONTRACTUAL_MATURITY_DATE, 'yyyy-MM-dd')}"
-													                     id="R45_CONTRACTUAL_MATURITY_DATE"
-													                     name="R45_CONTRACTUAL_MATURITY_DATE"
-													                     readonly
-																		 style="background-color:#FFFFFF; width: 100%; height: 28px; 
-																		 border-color: transparent; text-align: left;" />
-													          </td>
+												<!-- CONTRACTUAL MATURITY DATE -->
+												<td style="padding-right: 20px;"><input type="date"
+													class="display-input show_input date-field"
+													th:value="${#dates.format(report.R45_CONTRACTUAL_MATURITY_DATE, 'yyyy-MM-dd')}"
+													id="R45_CONTRACTUAL_MATURITY_DATE"
+													name="R45_CONTRACTUAL_MATURITY_DATE" readonly
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: left;" />
+												</td>
 
-													          <!-- EFFECTIVE MATURITY DATE -->
-													          <td  style="padding-right: 20px;">
-													              <input type="date"
-													                     class="display-input show_input date-field"
-													                     th:value="${#dates.format(report.R45_EFFECTIVE_MATURITY_DATE, 'yyyy-MM-dd')}"
-													                     id="R45_EFFECTIVE_MATURITY_DATE"
-													                     name="R45_EFFECTIVE_MATURITY_DATE"
-													                     readonly
-																		 style="background-color:#FFFFFF; width: 100%; height: 28px; 
-																		 border-color: transparent; text-align: left;" />
-													          </td>
+												<!-- EFFECTIVE MATURITY DATE -->
+												<td style="padding-right: 20px;"><input type="date"
+													class="display-input show_input date-field"
+													th:value="${#dates.format(report.R45_EFFECTIVE_MATURITY_DATE, 'yyyy-MM-dd')}"
+													id="R45_EFFECTIVE_MATURITY_DATE"
+													name="R45_EFFECTIVE_MATURITY_DATE" readonly
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: left;" />
+												</td>
 
-													          <!-- AMOUNT -->
-													          <td  style="padding-left: 20px;">
-													              <input type="text"
-													                     class="display-input show_input"
-													                     th:value="${#numbers.formatDecimal(report.R45_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
-													                     id="R45_AMOUNT"
-													                     name="R45_AMOUNT"
-													                     readonly
-																		 style="background-color:#FFFFFF; width: 100%; height: 28px; 
-																		 border-color: transparent; text-align: right;" />
-													          </td>
-													      </tr>
+												<!-- AMOUNT -->
+												<td style="padding-left: 20px;"><input type="text"
+													class="display-input show_input"
+													th:value="${#numbers.formatDecimal(report.R45_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
+													id="R45_AMOUNT" name="R45_AMOUNT" readonly
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: right;" />
+												</td>
+											</tr>
 
-														  <tr>
-														         <!-- PRODUCT -->
-														         <td  style="padding-right: 20px;">
-														             <input type="text"
-														                    class="display-input show_input"
-														                    th:value="${#numbers.formatDecimal(report.R46_PRODUCT, 1, 'COMMA', 0, 'POINT')}"
-														                    id="R46_PRODUCT"
-														                    name="R46_PRODUCT"
-														                    readonly
-																			style="background-color:#FFFFFF; width: 100%; height: 28px; 
-																			border-color: transparent; text-align: right;" />
-														         </td>
+											<tr>
+												<!-- PRODUCT -->
+												<td style="padding-right: 20px;"><input type="text"
+													class="display-input show_input"
+													th:value="${report.R46_PRODUCT}"
+													id="R46_PRODUCT" name="R46_PRODUCT" readonly
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: left;" />
+												</td>
 
-														         <!-- ISSUANCE DATE -->
-														         <td  style="padding-right: 20px;">
-														             <input type="date"
-														                    class="display-input show_input date-field"
-														                    th:value="${#dates.format(report.R46_ISSUANCE_DATE, 'yyyy-MM-dd')}"
-														                    id="R46_ISSUANCE_DATE"
-														                    name="R46_ISSUANCE_DATE"
-														                    readonly
-																			style="background-color:#FFFFFF; width: 100%; height: 28px; 
-																			border-color: transparent; text-align: left;" />
-														         </td>
+												<!-- ISSUANCE DATE -->
+												<td style="padding-right: 20px;"><input type="date"
+													class="display-input show_input date-field"
+													th:value="${#dates.format(report.R46_ISSUANCE_DATE, 'yyyy-MM-dd')}"
+													id="R46_ISSUANCE_DATE" name="R46_ISSUANCE_DATE" readonly
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: left;" />
+												</td>
 
-														         <!-- CONTRACTUAL MATURITY DATE -->
-														         <td  style="padding-right: 20px;">
-														             <input type="date"
-														                    class="display-input show_input date-field"
-														                    th:value="${#dates.format(report.R46_CONTRACTUAL_MATURITY_DATE, 'yyyy-MM-dd')}"
-														                    id="R46_CONTRACTUAL_MATURITY_DATE"
-														                    name="R46_CONTRACTUAL_MATURITY_DATE"
-														                    readonly
-																			style="background-color:#FFFFFF; width: 100%; height: 28px; 
-																			border-color: transparent; text-align: left;" />
-														         </td>
+												<!-- CONTRACTUAL MATURITY DATE -->
+												<td style="padding-right: 20px;"><input type="date"
+													class="display-input show_input date-field"
+													th:value="${#dates.format(report.R46_CONTRACTUAL_MATURITY_DATE, 'yyyy-MM-dd')}"
+													id="R46_CONTRACTUAL_MATURITY_DATE"
+													name="R46_CONTRACTUAL_MATURITY_DATE" readonly
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: left;" />
+												</td>
 
-														         <!-- EFFECTIVE MATURITY DATE -->
-														         <td  style="padding-right: 20px;">
-														             <input type="date"
-														                    class="display-input show_input date-field"
-														                    th:value="${#dates.format(report.R46_EFFECTIVE_MATURITY_DATE, 'yyyy-MM-dd')}"
-														                    id="R46_EFFECTIVE_MATURITY_DATE"
-														                    name="R46_EFFECTIVE_MATURITY_DATE"
-														                    readonly
-																			style="background-color:#FFFFFF; width: 100%; height: 28px; 
-																			border-color: transparent; text-align: left;" />
-														         </td>
+												<!-- EFFECTIVE MATURITY DATE -->
+												<td style="padding-right: 20px;"><input type="date"
+													class="display-input show_input date-field"
+													th:value="${#dates.format(report.R46_EFFECTIVE_MATURITY_DATE, 'yyyy-MM-dd')}"
+													id="R46_EFFECTIVE_MATURITY_DATE"
+													name="R46_EFFECTIVE_MATURITY_DATE" readonly
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: left;" />
+												</td>
 
-														         <!-- AMOUNT -->
-														         <td  style="padding-left: 20px;">
-														             <input type="text"
-														                    class="display-input show_input"
-														                    th:value="${#numbers.formatDecimal(report.R46_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
-														                    id="R46_AMOUNT"
-														                    name="R46_AMOUNT"
-														                    readonly
-																			style="background-color:#FFFFFF; width: 100%; height: 28px; 
-																			border-color: transparent; text-align: right;" />
-														         </td>
-														     </tr>
-							  			<tr>
-							  			    <td colspan="4" style="padding-left: 20px;">
-												Tier 2 Capital instruments (including share premium) eligible for gradual phase-out treatment			
-							  			    </td>
-							  			    
-											<td style="text-align: right; background-color:rgb(107, 122, 143);">
-																				        <input type="text" id="R47_AMOUNT" name="R47_AMOUNT" readonly
-																				               style="width: 100%; height: 28px; text-align: right; background-color:rgb(107, 122, 143); color: white; border: none;"
-																				               th:value="${#numbers.formatDecimal(report.R47_AMOUNT, 1, 'COMMA', 0, 'POINT')}" />
-																				    </td>
-							  			</tr>
-							  	
-							  				
-							  												
-							  			
+												<!-- AMOUNT -->
+												<td style="padding-left: 20px;"><input type="text"
+													class="display-input show_input"
+													th:value="${#numbers.formatDecimal(report.R46_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
+													id="R46_AMOUNT" name="R46_AMOUNT" readonly
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: right;" />
+												</td>
+											</tr>
+											<tr>
+												<td colspan="4" style="padding-left: 20px;">Tier 2
+													Capital instruments (including share premium) eligible for
+													gradual phase-out treatment</td>
 
-							  				
-							  				
-									  </tbody>
-															</table>
-															</div>
-									<div style="text-align: center; margin-top: 10px;">
-																					
-									    <button id="submitButton" 
-									            type="button"
-									            class="custom-tab-btn Show_input" 
-									            form="fileupload"
-									            th:attr="data-todate=${asondate},data-type=${type}" 
-									            onclick="fileuploads(this);" 
-									            style="display: none;">
-									        Submit
-									    </button>
-																</div>
-										</form>
-								
+												<td
+													style="text-align: right; background-color: rgb(107, 122, 143);">
+													<input type="text" id="R47_AMOUNT" name="R47_AMOUNT"
+													readonly
+													style="width: 100%; height: 28px; text-align: right; background-color: rgb(107, 122, 143); color: white; border: none;"
+													th:value="${#numbers.formatDecimal(report.R47_AMOUNT, 1, 'COMMA', 0, 'POINT')}" />
+												</td>
+											</tr>
+
+
+
+
+
+
+
+										</tbody>
+									</table>
+								</div>
+								<div style="text-align: center; margin-top: 10px;">
+
+									<button id="submitButton" type="button"
+										class="custom-tab-btn Show_input" form="fileupload"
+										th:attr="data-todate=${asondate},data-type=${type}"
+										onclick="fileuploads(this);" style="display: none;">
+										Submit</button>
+								</div>
+							</form>
+
 
 
 						</div>
 					</div>
 				</div>
 
-				<div th:if="${displaymode == 'Details'}">
 					<div class="row">
 						<div class="col-sm-12">
 							<div class="table-responsive scrollable-table-container"
 								style="border-right: 1px solid #dee2e6;">
-								<table
-									class="sticky-header-table table table-bordered table-hover table-sm table-condensed"
-									id="reportss">
-																	<thead class="thead-light">
-										<tr>
-											<th></th>
-											<th>CUST ID</th>
-											<th>ACCT NO</th>
-											<th>ACCT NAME</th>
-											<th style="text-align: right;">ACCT BALANCE</th>
-											<th style="text-align: left";>ROWID</th>
-											<th>COLUMNID</th>
-											<th>REPORT_DATE</th>
-										</tr>
 
-									</thead>
-
-									<tbody 
-										style="font-family: Arial;">
-										<tr th:each="report: ${reportdetails}">
-											<td><a data-toggle="tooltip" class="editrec"
-												title="Click to Edit this Record"> <i
-													class="fas fa-edit" onclick="editRecord(this)"></i>
-											</a></td>
-											<td th:text="${report.custId}"></td>
-											<td th:text="${report.acctNumber}"></td>
-											<td th:text="${report.acctName}"></td>
-										<!---	<td th:text="${report.acctBalanceInpula} "></td> -->
-										<td th:text="${#numbers.formatDecimal(report.acctBalanceInpula, 1, 3)}" style="text-align: right;"></td>
-
-											<td style="text-align: left"; th:text="${report.rowId}"></td>
-											<td th:text="${report.columnId}"></td>
-											<td
-												th:text="${#dates.format(report.reportDate, 'dd-MM-yyyy')}"></td>
-
-										</tr>
-									</tbody>
-								</table>
-								<div style="margin-top:20px; text-align:center;" th:if="${pagination=='YES'}">
-																																	   
-																																	    
-																																	    
-																																	<a th:if="${currentPage > 0}"
-																																	 th:href="@{'/Reports/' + ${reportid} + '/Details'(
-																																	    asondate=${asondate},                             
-																																	    fromdate=${fromdate},
-																																	    todate=${todate},
-																																	    currency=${currency},
-																																	    dtltype=${dtltype},
-																																	    type=${type},
-																																	    version=${version},
-																																	    page=${currentPage - 100},
-																																	    size=100
-																																	)}">
-																																	    Previous
-																																	</a>
-																											
-																																	    
-																																	    <span>Page [[${currentPage / 100 + 1}]] of [[${totalPages}]]</span>
-																																	
-																																	    
-																																	    <a th:if="${currentPage < (totalPages - 1) * 100}"
-																																	    	
-																																	    th:href="@{'/Reports/' + ${reportid} + '/Details'(
-																																	    asondate=${asondate},
-																																	    fromdate=${fromdate},
-																																	    todate=${todate},
-																																	    currency=${currency},
-																																	    dtltype=${dtltype},
-																																	    type=${type},
-																																	    version=${version},
-																																	    page=${currentPage + 100},
-																																	    size=100
-																																	)}">	
-																																	    Next
-																																	    </a>
-																																	</div>
-								
 								<!-- Custom Cellresult Modal -->
-										<div class="modal fade" id="cellresultModal">
-										  <div class="modal-dialog modal-dialog-centered">
-										    <div class="modal-content">
-										      
-										      <!-- Custom header -->
-										      <div class="menu-title-header" style="background-color:#6c7a91; padding: 8px; border-radius:5px 5px 0 0;">
-										        <div class="modal-title" id="cellresultModalLabel" style="text-align: center; color: white;">
-										          Do you want to open the report?
-										        </div>
-										      </div>
+								<div class="modal fade" id="cellresultModal">
+									<div class="modal-dialog modal-dialog-centered">
+										<div class="modal-content">
 
-										      <div class="modal-body" style="text-align: center; font-size: 1.1rem;">
-										        <button type="button" class="custom-tab-btn cancel-btn" data-bs-dismiss="modal"  style="margin-right:10px; border:2px solid #6c7a91; background:white; color:black; border-radius:20px; padding:5px 15px;">
-										          Cancel
-										        </button>
-										        <button type="button" class="custom-tab-btn yes-btn" style="background:#6c7a91; color:white; border:none; border-radius:20px; padding:5px 20px;">
-										          Yes
-										        </button>
-										      </div>
-										    </div>
-										  </div>
+											<!-- Custom header -->
+											<div class="menu-title-header"
+												style="background-color: #6c7a91; padding: 8px; border-radius: 5px 5px 0 0;">
+												<div class="modal-title" id="cellresultModalLabel"
+													style="text-align: center; color: white;">Do you want
+													to open the report?</div>
+											</div>
+
+											<div class="modal-body"
+												style="text-align: center; font-size: 1.1rem;">
+												<button type="button" class="custom-tab-btn cancel-btn"
+													data-bs-dismiss="modal"
+													style="margin-right: 10px; border: 2px solid #6c7a91; background: white; color: black; border-radius: 20px; padding: 5px 15px;">
+													Cancel</button>
+												<button type="button" class="custom-tab-btn yes-btn"
+													style="background: #6c7a91; color: white; border: none; border-radius: 20px; padding: 5px 20px;">
+													Yes</button>
+											</div>
 										</div>
+									</div>
+								</div>
 							</div>
 
 
@@ -2624,39 +2324,42 @@ function showdetailsbyRowAndColumn(a) {
 			</div>
 		</div>
 	</div>
-	
+
 	<!-- Custom Cellresult Modal -->
-			<div class="modal fade" id="cellresultModal">
-			  <div class="modal-dialog modal-dialog-centered">
-			    <div class="modal-content">
-			      
-			      <!-- Custom header -->
-			      <div class="menu-title-header" style="background-color:#6c7a91; padding: 8px; border-radius:5px 5px 0 0;">
-			        <div class="modal-title" id="cellresultModalLabel" style="text-align: center; color: white;">
-			          Do you want to open the report?
-			        </div>
-			      </div>
+	<div class="modal fade" id="cellresultModal">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
 
-			      <div class="modal-body" style="text-align: center; font-size: 1.1rem;">
-			        <button type="button" class="custom-tab-btn cancel-btn" data-bs-dismiss="modal"  style="margin-right:10px; border:2px solid #6c7a91; background:white; color:black; border-radius:20px; padding:5px 15px;">
-			          Cancel
-			        </button>
-			        <button type="button" class="custom-tab-btn yes-btn" style="background:#6c7a91; color:white; border:none; border-radius:20px; padding:5px 20px;">
-			          Yes
-			        </button>
-			      </div>
-			    </div>
-			  </div>
+				<!-- Custom header -->
+				<div class="menu-title-header"
+					style="background-color: #6c7a91; padding: 8px; border-radius: 5px 5px 0 0;">
+					<div class="modal-title" id="cellresultModalLabel"
+						style="text-align: center; color: white;">Do you want to
+						open the report?</div>
+				</div>
+
+				<div class="modal-body"
+					style="text-align: center; font-size: 1.1rem;">
+					<button type="button" class="custom-tab-btn cancel-btn"
+						data-bs-dismiss="modal"
+						style="margin-right: 10px; border: 2px solid #6c7a91; background: white; color: black; border-radius: 20px; padding: 5px 15px;">
+						Cancel</button>
+					<button type="button" class="custom-tab-btn yes-btn"
+						style="background: #6c7a91; color: white; border: none; border-radius: 20px; padding: 5px 20px;">
+						Yes</button>
+				</div>
 			</div>
+		</div>
+	</div>
 
-	
+
 
 
 </body>
 
 
 
- 
+
 
 
 <style>
