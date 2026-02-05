@@ -1,5 +1,6 @@
 package com.bornfire.brrs.entities;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -167,4 +168,11 @@ GeneralMasterEntity getdataBybfbl(String account_no, Date reportDate);
     // ---------------- Edit/View/Delete by ID ----------------
     @Query(value = "SELECT * FROM GENERAL_MASTER_TABLE WHERE id = :id", nativeQuery = true)
     GeneralMasterEntity findByIdNative(@Param("id") String id);
+    
+    @Query(value = "SELECT TO_CHAR(REPORT_DATE,'DD-MM-YYYY') FROM GENERAL_MASTER_TABLE WHERE REPORT_CODE IN ('MCBL','DEPB','DEPG','LOANB') GROUP BY REPORT_DATE HAVING COUNT(DISTINCT REPORT_CODE)=4 ORDER BY REPORT_DATE DESC FETCH FIRST 1 ROW ONLY", nativeQuery = true)
+    String findLastUploadedReportDate();
+
+
+
+
 }

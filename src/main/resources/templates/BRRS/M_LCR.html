@@ -2252,7 +2252,6 @@ PURPOSE		: BRRS_M_LCRREPORT
 										<th>ACCT NAME</th>
 										<th style="text-align:right;">ACCOUNT BALANCE IN PULA</th>
 										<th style="text-align:right;">DEBIT EQUIVALENT</th>
-										<th style="text-align:right;">EMI</th>
 										<th style="text-align:right;">CREDIT EQUIVALENT</th>
 										<th style="text-align:left;"> REPORT LABEL</th>
 										<th>REPORT ADDL CRITERIA</th>
@@ -2285,9 +2284,6 @@ PURPOSE		: BRRS_M_LCRREPORT
 										</td>
 										<td style="text-align:right;"
 											th:text="${#numbers.formatDecimal(report.debitequivalent,1,'COMMA',0,'POINT')}">
-										</td>
-										<td style="text-align:right;"
-											th:text="${#numbers.formatDecimal(report.emi,1,'COMMA',0,'POINT')}">
 										</td>
 										<td style="text-align:right;"
 											th:text="${#numbers.formatDecimal(report.creditequivalent,1,'COMMA',0,'POINT')}">

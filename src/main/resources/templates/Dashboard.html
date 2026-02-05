@@ -486,22 +486,185 @@ button:hover .rotate-icon {
     <script src="/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js" th:src="@{/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js}"></script>
     <script src="/webjars/chartjs/2.8.0/Chart.min.js" th:src="@{/webjars/chartjs/2.8.0/Chart.min.js}"></script>
 
+<style>
+        .dashboard-row {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-top: 30px;
+        }
 
+        .cell {
+            padding: 15px 20px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+
+        .run-btn {
+            cursor: pointer;
+            font-size: 22px;
+            color: green;
+            border: none;
+            background: none;
+        }
+
+        .success-msg {
+            margin-top: 15px;
+            color: green;
+            font-weight: bold;
+        }
+    </style>
+<style>
+    .report-card {
+        background: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+        padding: 20px;
+        margin-top: 25px;
+    }
+
+    .report-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .report-table td {
+        padding: 12px 10px;
+        vertical-align: middle;
+    }
+
+    .report-label {
+        font-size: 15px;
+        color: #555;
+    }
+
+    .report-date {
+        font-size: 20px;
+        font-weight: bold;
+        color: #2c3e50;
+        margin-left: 8px;
+    }
+
+    .run-btn {
+        background: linear-gradient(135deg, #28a745, #218838);
+        color: #fff;
+        border: none;
+        border-radius: 50%;
+        width: 46px;
+        height: 46px;
+        font-size: 18px;
+        cursor: pointer;
+        box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .run-btn:hover {
+        transform: scale(1.08);
+        box-shadow: 0 6px 12px rgba(0,0,0,0.25);
+    }
+</style>
+    
 </head>
 
 <body>
-        <div th:insert="~{HeaderMenu :: header}"></div>
+
+<div th:insert="~{HeaderMenu :: header}"></div>
+
+<div class="dashboard-card">
+
+    <div class="card-header" style="border:none; text-align:left;">
+        <h4 class="mb-0">DASHBOARD</h4>
+    </div>
+
+
+
+<div class="report-card">
+    <table class="report-table">
+        <tr>
+            <!-- LEFT -->
+            <td>
+                <span class="report-label">Source File Uploaded Date</span>
+                <span class="report-date"
+                      th:text="${LastUploadedDate}"></span>
+            </td>
+
+            <!-- RIGHT -->
+            <td style="text-align:right;">
+                <button class="run-btn"
+        th:attr="title='Click to generate all reports for ' + ${LastUploadedDate},
+                 data-reportdate=${LastUploadedDate}"
+        onclick="runProcedure(this)">
+    ▶
+</button>
+
+            </td>
+        </tr>
+    </table>
+</div>
+
+
+
+<div class="modal fade" id="alert">
+		<div
+			class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+			<div class="modal-content">
+			<div class="menu-title-header">
+					<div class="modal-title" id="exampleModalLabel"
+						style="text-align: center; color: white;">BANK OF BARODA</div>
+				</div>
+				<div class="modal-body" style="text-align: center">
+					<p id="alertmsg"></p>
+					<button type="button" class="custom-tab-btn " onclick="reloadPage()"
+						data-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	
+</div>
+
+<script>
+function runProcedure(button) {
+
+    var reportDate = button.getAttribute('data-reportdate');
+
     
-                <div class="dashboard-card">
-                    <div class="card-header" style="border: none;text-align: left;">
-                        <h4 class="mb-0">DASHBOARD</h4>
-                    </div>
-                    <div >
+    var url = '/BRRS/TriggerProcedure?reportDate=' + reportDate;
+
+ // Show loader
+    $('#loader').modal("toggle");
+ 
+    $.ajax({
+        url: url,
+        type: 'POST',
+
+        success: function (response) {
+            $('#alertmsg').text(response);
+            $('#alert').modal('show');
+        },
+
+        error: function (jqXHR) {
+            let msg = '❌ Error while running procedure';
+
+            if (jqXHR.responseText) {
+                msg = jqXHR.responseText;
+            }
+
+            $('#alertmsg').text(msg);
+            $('#alert').modal('show');
+        }
+    });
+}
+
+function reloadPage() {
+    window.location.reload();
+}
 
 
-                    </div>
-                </div>
-
+</script>
 
 </body>
+
 </html>

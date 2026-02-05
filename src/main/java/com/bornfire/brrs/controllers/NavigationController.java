@@ -1,6 +1,7 @@
 package com.bornfire.brrs.controllers;
 
 import java.io.ByteArrayOutputStream;
+import java.sql.CallableStatement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -39,6 +40,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -103,6 +105,9 @@ public class NavigationController {
 	MCBL_Main_Rep MCBL_Main_Reps;
 	@Autowired
 	UserProfileRep UserProfileReps;
+	
+	@Autowired
+	private JdbcTemplate jdbcTemplate;
 
 	@Autowired
 	BrrsMcblAccountTrackRepo accountTrackRepo;
@@ -178,21 +183,43 @@ public class NavigationController {
 	@RequestMapping(value = "Dashboard", method = { RequestMethod.GET, RequestMethod.POST })
 	public String dashboard(Model md, HttpServletRequest req) {
 
-		String domainid = (String) req.getSession().getAttribute("DOMAINID");
-		String userid = (String) req.getSession().getAttribute("USERID");
+	    String userid = (String) req.getSession().getAttribute("USERID");
 
-		md.addAttribute("changepassword", loginServices.checkPasswordChangeReq(userid));
-		md.addAttribute("checkpassExpiry", loginServices.checkpassexpirty(userid));
-		md.addAttribute("checkAcctExpiry", loginServices.checkAcctexpirty(userid));
-		int completed = 0;
-		int uncompleted = 0;
+	    md.addAttribute("changepassword", loginServices.checkPasswordChangeReq(userid));
+	    md.addAttribute("checkpassExpiry", loginServices.checkpassexpirty(userid));
+	    md.addAttribute("checkAcctExpiry", loginServices.checkAcctexpirty(userid));
 
-		md.addAttribute("completed", completed);
-		md.addAttribute("uncompleted", uncompleted);
-		md.addAttribute("menu", "Dashboard");
-		return "Dashboard";
+	    // already formatted string
+	    md.addAttribute("LastUploadedDate",
+	            GeneralMasterRepos.findLastUploadedReportDate());
+
+	    md.addAttribute("completed", 0);
+	    md.addAttribute("uncompleted", 0);
+	    md.addAttribute("menu", "Dashboard");
+
+	    return "Dashboard";
 	}
 
+
+	@RequestMapping(value = "TriggerProcedure", method = RequestMethod.POST)
+	@ResponseBody
+	public String callSummaryProcedure(@RequestParam("reportDate") String reportDate) {
+
+	    System.out.println("came to Procedure calling : " + reportDate);
+
+	    String sql = "{ call BRRS_COMMON_PROCEDURE(?) }";
+
+	    jdbcTemplate.update(connection -> {
+	        CallableStatement cs = connection.prepareCall(sql);
+	        cs.setString(1, reportDate); // already DD-MM-YYYY
+	        return cs;
+	    });
+
+	    return "Reports Generated for " + reportDate + " Successfully.";
+
+	}
+
+	
 	@RequestMapping(value = "AccessandRoles", method = { RequestMethod.GET, RequestMethod.POST })
 	public String IPSAccessandRoles(@RequestParam(required = false) String formmode,
 			@RequestParam(required = false) String userid, @RequestParam(required = false) Optional<Integer> page,
@@ -1063,6 +1090,7 @@ public class NavigationController {
 		return "MCBL";
 	}
 
+	
 	// Getting Details by report date for view and download for MCBL IN FILE UPLOAD
 	@GetMapping("/fetchMCBLRecords")
 	public String fetchMCBLRecords(@RequestParam String reportDate, Model md) {
@@ -2139,39 +2167,6 @@ public class NavigationController {
 
 	}
 
-	// @RequestMapping(value = "Monthly1-Resubmission", method = {
-	// RequestMethod.GET,RequestMethod.POST })
-	// public String brrsResubmission(Model md, HttpServletRequest req)
-	// {
-	// System.out.println("Testting");
-	// md.addAttribute("menu", "BRRS - BRRS RESUBMISSION");
-	// System.out.println("count"+rrReportlist.getReportListmonthly1().size());
-	// md.addAttribute("reportlist", rrReportlist.getReportListmonthly1());
-	// return "BRRS/BRRSResubmission";
-	// }
-
-	// @RequestMapping(value = "Resubmission", method = { RequestMethod.GET,
-	// RequestMethod.POST })
-	// public String Resubmission(
-	// Model md,
-	// @RequestParam(value = "rptcode", required = false) String rptcode,
-	// @RequestParam(value = "date", required = false) String date,
-	// @RequestParam(value = "version", required = false) String version,
-	// HttpServletRequest req) {
-	// System.out.println("rptcode: " + rptcode);
-	// System.out.println("date: " + date);
-	// System.out.println("version: " + version);
-	// RRReport data = rrReportlist.getReportbyrptcode(rptcode);
-	// md.addAttribute("reportlist1", data);
-	// md.addAttribute("menu", data.getRptDescription());
-	// md.addAttribute("domain", data.getDomainId());
-	// md.addAttribute("rptcode", data.getRptCode());
-	// List<Object[]> resubmissionData = regulatoryreportservices.getResub(rptcode);
-	// md.addAttribute("Resubmitdata", resubmissionData);
-
-	// md.addAttribute("reportlist", rrReportlist.getReportListmonthly1());
-	// return "BRRS/BRRSResubmissionform";
-	// }
 
 	@GetMapping("/toDownloadExcel")
 	public String redirectToDownloadExcel(@RequestParam String asondate, @RequestParam String fromdate,
@@ -2202,6 +2197,20 @@ public class NavigationController {
 			}
 
 		return "CosolidatedReport";
+	}
+	
+	@RequestMapping(value = "trigger", method = { RequestMethod.GET, RequestMethod.POST })
+	public String trigger(@RequestParam(required = false) String formmode, 
+			 Model md, HttpServletRequest req) {
+		
+		String USERID = (String) req.getSession().getAttribute("USERID");
+		md.addAttribute("USERID", USERID);
+		logger.info("==> Entered MCBL controller || Formmode: {}", formmode);
+
+		
+		
+		logger.info("<== Exiting trigger controller");
+		return "Trigger";
 	}
 
 }
