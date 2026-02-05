@@ -1,35 +1,42 @@
 <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
-<!--
-CREATED BY	: PRAVEEN KUMAR M
-CREATED ON	: 18.09.2025
-PURPOSE		: BWRBRREPORT
+
+<!-- 
+CREATED BY	: ISHWARYA 
+CREATED ON	: 01.09.2025
+PURPOSE		: BRRS REPORT
 -->
+
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1">
+
 	<!-- CSS -->
-
-
 	<link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}">
 	<link rel="stylesheet" type="text/css" th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}">
 	<link rel="stylesheet" type="text/css" th:href="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.css}">
 	<link rel="stylesheet" type="text/css" th:href="@{/webjars/datatables/1.10.19/css/jquery.dataTables.min.css}">
 	<link rel="stylesheet" th:href="@{/css/CustomButton.css}" />
 	<link rel="icon" th:href="@{/favicon.ico}" type="image/x-icon" />
+
 	<!-- JavaScript -->
 	<!-- jQuery core (required first) -->
+
+
 	<!-- ✅ Your manually placed jQuery validation
 	<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
 	 <script th:src="/jquery/jquery.validate.min.js"></script>
 	 -->
+
 	<!-- jQuery (required first) -->
 	<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
 	<!-- <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script> -->
+
 	<!-- ✅ jQuery Validation -->
 	<script src="/webjars/jquery-validation/1.19.0/jquery.validate.min.js"
 		th:src="@{/webjars/jquery-validation/1.19.0/jquery.validate.min.js}"></script>
+
 	<!-- Bootstrap + Others -->
 	<script th:src="@{/webjars/popper.js/1.14.7/umd/popper.min.js}"></script>
 	<script th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
@@ -37,6 +44,9 @@ PURPOSE		: BWRBRREPORT
 	<script th:src="@{/webjars/jquery-form/4.2.2/jquery.form.min.js}"></script>
 	<script th:src="@{/webjars/datatables/1.10.19/js/jquery.dataTables.min.js}"></script>
 	<script th:src="@{/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js}"></script>
+
+
+
 	<style>
 		.btns {
 			float: right;
@@ -81,6 +91,10 @@ PURPOSE		: BWRBRREPORT
 			padding: 0px;
 		}
 	</style>
+
+
+
+
 	<style>
 		div span {
 			font-weight: bold;
@@ -143,7 +157,7 @@ PURPOSE		: BWRBRREPORT
 			border-radius: 4px;
 		}
 
-		#BRRSvalidation th,
+		#BRFvalidation th,
 		#usertable td {
 			vertical-align: middle;
 			text-align: left;
@@ -163,6 +177,8 @@ PURPOSE		: BWRBRREPORT
 			text-overflow: ellipsis;
 		}
 	</style>
+
+
 	<style>
 		.form-group {
 			position: relative;
@@ -220,7 +236,20 @@ PURPOSE		: BWRBRREPORT
 			color: #aaa;
 			/* Normal label color */
 		}
+
+		.table-cell tbody td:hover {
+			background-color: #f0f0f0;
+			/* Hover color for cell */
+			cursor: pointer;
+			/* Optional: pointer cursor */
+		}
+
+		.table-bordered td,
+		.table-bordered th {
+			border: 1px solid #000 !important;
+		}
 	</style>
+
 	<style>
 		/* Red border for invalid inputs */
 		input.error,
@@ -273,21 +302,17 @@ PURPOSE		: BWRBRREPORT
 			color: white !important;
 		}
 
-		.table-cell tbody td:hover {
-			background-color: #f0f0f0;
-			/* Hover color for cell */
-			cursor: pointer;
-			/* Optional: pointer cursor */
-		}
-
-		.table-bordered td,
-		.table-bordered th {
-			border: 1px solid #000 !important;
+		.green-cell {
+			background-color: rgb(107, 122, 143) !important;
+			color: white !important;
 		}
 	</style>
-	
-	
-	
+
+
+
+
+
+
 	<style>
 		.left-arrow-circle {
 			background-color: white;
@@ -300,19 +325,20 @@ PURPOSE		: BWRBRREPORT
 
 		/* 🚌 Bus display style box */
 		/* 🚌 Bus display style box */
-					.boards {
-						transform: translateY(6px);
-					  background-color: rgb(107, 122, 143);
-					  color: white;
-					  padding: 5px 80px;
-					  border-radius: 8px;
-					  overflow: hidden;
-					  white-space: nowrap;
-					  flex: 1; /* ✅ makes it take available space dynamically */
-					  min-width: 200px;
-					  box-shadow: 0 0 10px rgb(107, 122, 143);
-					  position: relative;
-					}
+		.boards {
+			transform: translateY(6px);
+			background-color: rgb(107, 122, 143);
+			color: white;
+			padding: 5px 80px;
+			border-radius: 8px;
+			overflow: hidden;
+			white-space: nowrap;
+			flex: 1;
+			/* ✅ makes it take available space dynamically */
+			min-width: 200px;
+			box-shadow: 0 0 10px rgb(107, 122, 143);
+			position: relative;
+		}
 
 		/* ✨ Scrolling animation */
 		.scrolling-text {
@@ -325,28 +351,30 @@ PURPOSE		: BWRBRREPORT
 
 		/* Animation keyframes */
 		@keyframes scroll-left {
-			0% {
-				transform: translateX(100%);
-			}
+		    0% {
+		        transform: translateX(100%);
+		    }
 
-			100% {
-				transform: translateX(-100%);
-			}
+		    100% {
+		        transform: translateX(-100%);
+		    }
 		}
+
 	</style>
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
+
+
+
 	<script th:inline="javascript">
-	let isDetailsModal = false;
-	
+
+
+		let isDetailsModal = false;
 		$(document).ready(function () {
 			// hide loader on normal load
 			$('#loader').modal('hide');
@@ -361,38 +389,34 @@ PURPOSE		: BWRBRREPORT
 		});
 
 
-		
-				
-		$(document).ready(function() {
-			Maker_Checker_Function(); 
+		$(document).ready(function () {
+			Maker_Checker_Function();
 		});
 
 		// if logged user is a Checker, checker cannot modify, if user is maker , then maker cant download
 		function Maker_Checker_Function() {
 			$.ajax({
-				url: "/BRRS/getUserRole",    
+				url: "/BRRS/getUserRole",
 				type: "GET",
-				success: function(roleId) {
+				success: function (roleId) {
 					// console.log("User Role ID:", roleId);
-				
-					if (roleId === "ADM-C" || roleId === "USR-C"  || roleId === "USER-AUDIT") {
+
+					if (roleId === "ADM-C" || roleId === "USR-C" || roleId === "USER-AUDIT") {
 						const modifyBtn = document.getElementById("addRecord");
 						if (modifyBtn) modifyBtn.style.display = "none";
 					}
 
 					if (roleId === "ADM-M" || roleId === "USR-M") {
-								const button = document.getElementById("custom-tab-btnAdd");
-								if (button) button.style.display = "none";
-							}
+						const button = document.getElementById("custom-tab-btnAdd");
+						if (button) button.style.display = "none";
+					}
 
 				},
-				error: function(err) {
+				error: function (err) {
 					console.error("Error fetching role:", err);
-		     }
-		    });
+				}
+			});
 		}
-
-
 		function home() {
 			$("#loader").modal("toggle");
 			location.href = 'Dashboard'
@@ -401,24 +425,185 @@ PURPOSE		: BWRBRREPORT
 			$("#loader").modal("toggle");
 			window.history.back();
 		}
+
 		//to fetch summary from the database - called from the summary button
 		function showdetails() {
-			 isDetailsModal = true; 
+			$('#loader').modal('show');
+			var Callurl = /*[[@{'/Reports/' + ${reportid}(
+			        dtltype='detail',
+			        fromdate=${fromdate},
+			        todate=${todate},
+			        type=${type},
+			        asondate=${asondate},
+			        version=${version}
+			    )}]]*/
+				location.href = Callurl;
 
-			showResultModal('BRRS', ' Details page not available for Manual Report');
 		}
 		function showsummary() {
 			$('#loader').modal('show');
-			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate}, version=${version})}]]*/
 				location.href = Callurl;
 		}
+
+
 	</script>
+
+
+
+
+
+
 	<script>
+			// Show Modify (enable inputs & dropdowns)
+			function showmodify(btn) {
+				var readonlyIds = ["R20_AMOUNT", "R28_AMOUNT", "R29_AMOUNT", "R41_AMOUNT", "R45_AMOUNT", "R46_AMOUNT", "R55_AMOUNT", "R59_AMOUNT", "R60_AMOUNT"];
+
+				$(".Show_input").each(function () {
+					if (!readonlyIds.includes(this.id)) {
+						$(this).removeAttr("readonly").removeAttr("disabled");
+					}
+				});
+
+				for (let i = 10; i <= 19; i++) {
+					let fields = [
+						"AMOUNT",
+
+
+					];
+
+					fields.forEach(field => {
+						let selector = `#R${i}_${field}`;
+						if ($(selector).length) {  // check if element exists
+							$(selector).css({"background-color": "#d3d3d3"});
+						}
+					});
+				}
+
+
+				for (let i = 24; i <= 27; i++) {
+					let fields = [
+						"AMOUNT",
+
+
+					];
+
+					fields.forEach(field => {
+						let selector = `#R${i}_${field}`;
+						if ($(selector).length) {  // check if element exists
+							$(selector).css({"background-color": "#d3d3d3"});
+						}
+					});
+				}
+
+				for (let i = 36; i <= 40; i++) {
+					let fields = [
+						"AMOUNT",
+
+
+					];
+
+					fields.forEach(field => {
+						let selector = `#R${i}_${field}`;
+						if ($(selector).length) {  // check if element exists
+							$(selector).css({"background-color": "#d3d3d3"});
+						}
+					});
+				}
+				$("#R44_AMOUNT").css({"background-color": "#d3d3d3"});
+
+
+				for (let i = 50; i <= 54; i++) {
+					let fields = [
+						"AMOUNT",
+
+
+					];
+
+					fields.forEach(field => {
+						let selector = `#R${i}_${field}`;
+						if ($(selector).length) {  // check if element exists
+							$(selector).css({"background-color": "#d3d3d3"});
+						}
+					});
+				}
+
+
+				$("#R58_AMOUNT").css({"background-color": "#d3d3d3"});
+
+
+
+				for (let i = 50; i <= 54; i++) {
+					let fields = [
+						"AMOUNT",
+
+
+					];
+
+					fields.forEach(field => {
+						let selector = `#R${i}_${field}`;
+						if ($(selector).length) {  // check if element exists
+							$(selector).css({"background-color": "#d3d3d3"});
+						}
+					});
+				}
+
+
+				$("#R58_AMOUNT").css({"background-color": "#d3d3d3"});
+
+
+
+				// Toggle buttons
+				$("#submitButton").show();
+
+
+
+
+
+				// Toggle buttons
+				$("#submitButton").show();
+
+
+
+				// Show Cancel button only when Modify is clicked
+				$("#cancelRecord").show();
+
+				// Optionally hide the clicked Modify button
+				$(btn).hide();
+			}
+			//Cancel / Reset function
+			function cancelModify() {
+				if (confirm("Are you sure you want to cancel changes? Page will reload.")) {
+					// ✅ Only when user clicks YES
+					location.reload();
+
+					$(".Show_input").attr("readonly", true).attr("disabled", true);
+
+					$("#submitButton, #btnBack_edit").hide();
+					$("#btnBack").show();
+					// Hide Cancel button again
+					$("#cancelRecord").hide();
+					// Show all Modify buttons
+					$("#addRecord").show();
+				}
+				// ❌ If user clicks CANCEL, nothing happens
+			}
+
+		</script>
+
+
+
+
+
+
+	<script>
+
 		function activateTab(tabName) {
 			// Remove 'active' from all buttons
 			document.querySelectorAll('.custom-tab-btn').forEach(btn => {
 				btn.classList.remove('active');
 			});
+
 			// Add 'active' to selected button
 			if (tabName === 'summary') {
 				document.getElementById('custom-tab-btnSummary').classList.add('active');
@@ -426,16 +611,21 @@ PURPOSE		: BWRBRREPORT
 				document.getElementById('custom-tab-btnDetails').classList.add('active');
 			}
 		}
+
 		window.onload = function () {
 			/* setTimeout(function() {
 				var selectedTab = document.getElementById("selectedTab").value;
 				alert(selectedTab);
 				activateTab(selectedTab);
 			}, 10000); */ // 10,000 milliseconds = 10 seconds
+
 			var selectedTab = document.getElementById("selectedTab").value;
 			activateTab(selectedTab);
 		};
+
+
 		function downloadfile(button) {
+
 			var reportid = button.getAttribute('data-reportid');
 			var asondate = button.getAttribute('data-asondate');
 			var fromdate = button.getAttribute('data-fromdate');
@@ -447,24 +637,170 @@ PURPOSE		: BWRBRREPORT
 			var filename = button.getAttribute('data-filename');
 			var type = button.getAttribute('data-type');
 			var version = button.getAttribute('data-version');
-			$('#loader').modal('show');
+
+			var loader = new bootstrap.Modal(
+				document.getElementById('loader'),
+				{backdrop: 'static', keyboard: false}
+			);
+			loader.show();
+
+			// ✅ Build URL safely
+			var url = './downloadExcel?reportid=' + reportid +
+				'&fromdate=' + fromdate +
+				'&asondate=' + asondate +
+				'&todate=' + todate +
+				'&currency=' + currency +
+				'&subreportid=' + subreportid +
+				'&secid=' + secid +
+				'&filename=' + filename +
+				'&type=' + type;
+
+			// ✅ ONLY append version if valid
+			if (version && version.trim() !== '') {
+				url += '&version=' + version;
+			}
+
 			$.ajax({
-				url: './downloadExcel?reportid=' + reportid +
-					'&fromdate=' + fromdate +
-					'&asondate=' + asondate +
-					'&todate=' + todate +
-					'&currency=' + currency +
-					'&subreportid=' + subreportid +
-					'&secid=' + secid +
-					'&filename=' + filename +
-					'&type=' + type +
-					'&version=' + version,
+				url: url,
+				type: 'GET',
+				xhrFields: {responseType: 'blob'},
+
+				success: function (data) {
+					$('#loader').modal('hide');
+
+					if (data && data.size > 100) {
+						const blob = new Blob([data], {
+							type: 'application/vnd.ms-excel'
+						});
+						const url = window.URL.createObjectURL(blob);
+						const a = document.createElement('a');
+						a.style.display = 'none';
+						a.href = url;
+						a.download = filename;
+						document.body.appendChild(a);
+						a.click();
+						window.URL.revokeObjectURL(url);
+						document.body.removeChild(a);
+
+						showResultModal('BRRS', filename + ' downloaded successfully.');
+					} else {
+						showResultModal('Information', 'No data was available to create a download.');
+					}
+				},
+
+				error: function () {
+					$('#loader').modal('hide');
+					showResultModal('Error', 'An error occurred while downloading the file.');
+				}
+			});
+		}
+		function editRecord() {
+			showResultModal('Alert', 'Development in progress');
+
+		}
+		function closemodel() {
+			$('#alert').modal('hide');
+			$('#resultModal').modal('hide');
+
+		}
+
+		function showResultModal(title, message) {
+			// Set the text for the modal elements
+			$('#resultModalLabel').text(title);
+			$('#resultModalBody').text(message);
+
+			// Show the modal
+			$('#resultModal').modal('show');
+		}
+
+	</script>
+
+	<script>
+
+		function startReport(button) {
+			const alertMsg = document.getElementById("alertMessage");
+			const filename = button.getAttribute('data-filename');
+			const fromdate = button.getAttribute('data-fromdate');
+			const todate = button.getAttribute('data-todate');
+			const currency = button.getAttribute('data-currency');
+			const dtltype = button.getAttribute('data-dtltype');
+			const type = button.getAttribute('data-type');
+			const version = button.getAttribute('data-version');
+			const sessionfilename = sessionStorage.getItem("filename");
+
+			if (sessionfilename == filename) {
+				alertMsg.innerHTML = 'Download request already Processing...';
+				showAlert();
+				return;
+			}
+
+			alertMsg.innerHTML = 'Download request Processing...';
+			showAlert();
+
+			const baseUrl = '/BCDRS/Reports/startreport';
+			const downloadUrl = baseUrl +
+				'?filename=' + encodeURIComponent(filename) +
+				'&fromdate=' + encodeURIComponent(fromdate) +
+				'&todate=' + encodeURIComponent(todate) +
+				'&currency=' + encodeURIComponent(currency) +
+				'&dtltype=' + encodeURIComponent(dtltype) +
+				'&type=' + encodeURIComponent(type) +
+				'&version=' + encodeURIComponent(version);
+			fetch(downloadUrl)  // ✅ no invalid characters now
+				.then(res => res.text())
+				.then(jobId => {
+
+					alertMsg.innerHTML = 'Download request received...' + jobId;
+					showAlert();
+					sessionStorage.setItem("jobId", jobId);
+					sessionStorage.setItem("filename", filename);
+					checkReport(jobId);
+				});
+		}
+
+		function checkReport(jobId) {
+			const alertMsg = document.getElementById("alertMessage");
+			fetch('/BCDRS/Reports/checkreport?jobId=' + encodeURIComponent(jobId))
+				.then(res => res.text())
+				.then(status => {
+					if (status === "READY") {
+						alertMsg.innerHTML = 'Report is ready! Downloading…';
+						showAlert();
+						const filename = sessionStorage.getItem("filename");
+						downloadDetailfile(jobId, filename)
+						sessionStorage.removeItem("jobId");
+						sessionStorage.removeItem("filename");
+
+					} else if (status === "PROCESSING") {
+						alertMsg.innerHTML = 'Download Is Processing…';
+						showAlert();
+						setTimeout(() => checkReport(jobId), 5000);
+					}
+					else if (status === "ERROR") {
+						alertMsg.innerHTML = 'No data was available to create a download.';
+						showAlert();
+						sessionStorage.removeItem("jobId");
+						sessionStorage.removeItem("filename");
+					}
+				});
+		}
+
+
+
+		function downloadDetailfile(jobId, filename) {
+
+			//$('#loader').modal('show');
+
+			$.ajax({
+				url: '/BCDRS/Reports/downloaddetailExcel?jobId=' + jobId +
+					'&filename=' + filename,
 				type: 'GET',
 				xhrFields: {
 					responseType: 'blob'
 				},
 				success: function (data) {
 					$('#loader').modal('hide');
+
 					if (data && data.size > 100) {
 						const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
 						const url = window.URL.createObjectURL(blob);
@@ -476,6 +812,7 @@ PURPOSE		: BWRBRREPORT
 						a.click();
 						window.URL.revokeObjectURL(url);
 						document.body.removeChild(a);
+
 						showResultModal('BRRS', filename + ' downloaded successfully.');
 					} else {
 						showResultModal('Information', 'No data was available to create a download.');
@@ -488,466 +825,378 @@ PURPOSE		: BWRBRREPORT
 				}
 			});
 		}
-		function editRecord() {
-			showResultModal('Alert', 'Development in progress');
-		}
-		function closemodel() {
-			$('#alert').modal('hide');
-			$('#resultModal').modal('hide');
-		}
-		function showResultModal(title, message) {
-			// Set the text for the modal elements
-			$('#resultModalLabel').text(title);
-			$('#resultModalBody').text(message);
-			// Show the modal
-			$('#resultModal').modal('show');
+
+
+	</script>
+
+	<script th:inline="javascript">
+		function showdetailsbyRowAndColumn(a) {
+			var rowId = a.getAttribute('RowId');
+			var columnId = a.getAttribute('ColumnId');
+			var cellValue = a.textContent || a.innerText;
+
+			if (cellValue !== '0') {
+				// Set dynamic message in modal (instead of confirm)
+				document.getElementById("cellresultModalLabel").innerText =
+					"Do you want to open details for Row: " + rowId + " and Column: " + columnId + "?";
+
+				// Show custom Bootstrap modal
+				$('#cellresultModal').modal('show');
+
+				// Handle Yes button
+				document.querySelector('.yes-btn').onclick = function () {
+					$('#cellresultModal').modal('hide');
+
+					// Show loader
+					const loader = bootstrap.Modal.getOrCreateInstance(document.getElementById('loader'), {
+						backdrop: 'static',
+						keyboard: false
+					});
+					$('#loader').modal('show');
+
+					// Build dynamic URL
+					var Callurl = /*[[@{'/Reports/' + ${reportid} + '/Details'(asondate=${asondate}, fromdate=${fromdate}, todate=${todate}, currency=${currency}, dtltype=${dtltype},type=${type},version=${version})}]]*/ "";
+					Callurl += "&filter=" + encodeURIComponent(rowId + "," + columnId);
+
+					location.href = Callurl;
+				};
+			} else {
+				// Use your custom alert modal instead of window.alert
+				showResultModal("Alert", "No Records available for this selected cell.");
+			}
 		}
 	</script>
 
 
 
-
-
-
-
-
 	<script>
-		// Show Modify (enable inputs & dropdowns)
-		function showmodify(btn) {
-			var readonlyIds = ["R20_AMOUNT", "R28_AMOUNT", "R29_AMOUNT", "R41_AMOUNT", "R45_AMOUNT", "R46_AMOUNT", "R55_AMOUNT", "R59_AMOUNT", "R60_AMOUNT"];
+			// Calculating Totals for 20 row
+			function calculateR20Totals() {
+				let totalAmount = 0;
 
-			$(".Show_input").each(function () {
-				if (!readonlyIds.includes(this.id)) {
-					$(this).removeAttr("readonly").removeAttr("disabled");
+				for (let i = 10; i <= 19; i++) {
+					let amt = parseFloat($("#R" + i + "_AMOUNT").val()?.replace(/,/g, "")) || 0;
+					totalAmount += amt;
+				}
+
+				// Format with comma separation
+				$("#R20_AMOUNT").val(totalAmount.toLocaleString("en-US"));
+				calculateR29Totals();
+			}
+
+			// Calculating Totals for 28 row
+			function calculateR28Totals() {
+				let totalAmount = 0;
+
+				for (let i = 24; i <= 27; i++) {
+					let amt = parseFloat($("#R" + i + "_AMOUNT").val()?.replace(/,/g, "")) || 0;
+					totalAmount += amt;
+				}
+
+				// Format with comma separation
+				$("#R28_AMOUNT").val(totalAmount.toLocaleString("en-US"));
+				calculateR29Totals();
+			}
+
+			// Calculating Totals for 29 row
+			function calculateR29Totals() {
+				let amt1 = parseFloat($("#R20_AMOUNT").val()?.replace(/,/g, "")) || 0;
+				let amt2 = parseFloat($("#R28_AMOUNT").val()?.replace(/,/g, "")) || 0;
+				let totalAmount = amt1 + amt2;
+
+				// Format with comma separation
+				$("#R29_AMOUNT").val(totalAmount.toLocaleString("en-US"));
+			}
+
+			// Call on page load for section 1
+			$(document).ready(function () {
+				calculateR20Totals();
+				calculateR28Totals();
+				calculateR29Totals();
+
+				for (let i = 10; i <= 19; i++) {
+					$("#R" + i + "_AMOUNT").on("input", calculateR20Totals);
+				}
+				for (let i = 24; i <= 27; i++) {
+					$("#R" + i + "_AMOUNT").on("input", calculateR28Totals);
 				}
 			});
 
-			for (let i = 10; i <= 19; i++) {
-				let fields = [
-					"AMOUNT",
+			// Calculating Totals for 41 row
+			function calculateR41Totals() {
+				let totalAmount = 0;
 
+				for (let i = 36; i <= 40; i++) {
+					let amt = parseFloat($("#R" + i + "_AMOUNT").val()?.replace(/,/g, "")) || 0;
+					totalAmount += amt;
+				}
 
-				];
-
-				fields.forEach(field => {
-					let selector = `#R${i}_${field}`;
-					if ($(selector).length) {  // check if element exists
-						$(selector).css({"background-color": "#d3d3d3"});
-					}
-				});
+				// Format with comma separation
+				$("#R41_AMOUNT").val(totalAmount.toLocaleString("en-US"));
+				calculateR46Totals();
 			}
 
+			/* // Calculating Totals for 46 row
+			function calculateR46Totals() {
+				let amt1 = parseFloat($("#R41_AMOUNT").val()?.replace(/,/g, "")) || 0;
+				let amt2 = parseFloat($("#R45_AMOUNT").val()?.replace(/,/g, "")) || 0;
+				let totalAmount = amt1 + amt2;
 
-			for (let i = 24; i <= 27; i++) {
-				let fields = [
-					"AMOUNT",
-
-
-				];
-
-				fields.forEach(field => {
-					let selector = `#R${i}_${field}`;
-					if ($(selector).length) {  // check if element exists
-						$(selector).css({"background-color": "#d3d3d3"});
-					}
-				});
+				$("#R46_AMOUNT").val(totalAmount.toLocaleString("en-IN"));
 			}
 
-			for (let i = 36; i <= 40; i++) {
-				let fields = [
-					"AMOUNT",
+			// Call on page load for section 2
+			$(document).ready(function () {
+				calculateR41Totals();
+				calculateR46Totals();
 
+				for (let i = 36; i <= 40; i++) {
+					$("#R" + i + "_AMOUNT").on("input", calculateR41Totals);
+				}
 
-				];
+				$("#R45_AMOUNT").on("input", calculateR46Totals);
+			});
+	 */
+	 
+	 
+	 
+	//Calculating Totals for 46 row
+	 function calculateR46Totals() {
+	 	let amt1 = parseFloat($("#R41_AMOUNT").val()?.replace(/,/g, "")) || 0;
+	 	let amt2 = parseFloat($("#R45_AMOUNT").val()?.replace(/,/g, "")) || 0;
+	 	let totalAmount = amt1 + amt2;
 
-				fields.forEach(field => {
-					let selector = `#R${i}_${field}`;
-					if ($(selector).length) {  // check if element exists
-						$(selector).css({"background-color": "#d3d3d3"});
-					}
-				});
+	 	$("#R46_AMOUNT").val(totalAmount.toLocaleString("en-US"));
+	 }
+
+	 // NEW: R45 = R44
+	 function copyR44ToR45() {
+	 	let r44 = parseFloat($("#R44_AMOUNT").val()?.replace(/,/g, "")) || 0;
+	 	$("#R45_AMOUNT").val(r44.toLocaleString("en-US"));
+	 	calculateR46Totals();
+	 }
+
+	 // Call on page load for section 2
+	 $(document).ready(function () {
+		 calculateR41Totals();
+	 	calculateR46Totals();
+
+	 	for (let i = 36; i <= 40; i++) {
+	 		$("#R" + i + "_AMOUNT").on("input", calculateR41Totals);
+	 	}
+
+	 	// When R44 changes → update R45 automatically
+	 	$("#R44_AMOUNT").on("input", copyR44ToR45);
+	 });
+
+	 
+	 
+	 
+	 
+			// Calculating Totals for 55 row
+			function calculateR55Totals() {
+				let totalAmount = 0;
+
+				for (let i = 50; i <= 54; i++) {
+					let amt = parseFloat($("#R" + i + "_AMOUNT").val()?.replace(/,/g, "")) || 0;
+					totalAmount += amt;
+				}
+
+				$("#R55_AMOUNT").val(totalAmount.toLocaleString("en-US"));
+				calculateR60Totals();
 			}
-			$("#R44_AMOUNT").css({"background-color": "#d3d3d3"});
+	/* 
+			// Calculating Totals for 60 row
+			function calculateR60Totals() {
+				let amt1 = parseFloat($("#R55_AMOUNT").val()?.replace(/,/g, "")) || 0;
+				let amt2 = parseFloat($("#R59_AMOUNT").val()?.replace(/,/g, "")) || 0;
+				let totalAmount = amt1 + amt2;
 
-
-			for (let i = 50; i <= 54; i++) {
-				let fields = [
-					"AMOUNT",
-
-
-				];
-
-				fields.forEach(field => {
-					let selector = `#R${i}_${field}`;
-					if ($(selector).length) {  // check if element exists
-						$(selector).css({"background-color": "#d3d3d3"});
-					}
-				});
+				$("#R60_AMOUNT").val(totalAmount.toLocaleString("en-IN"));
 			}
 
+			// Call on page load for section 3
+			$(document).ready(function () {
+				calculateR55Totals();
+				calculateR60Totals();
 
-			$("#R58_AMOUNT").css({"background-color": "#d3d3d3"});
+				for (let i = 50; i <= 54; i++) {
+					$("#R" + i + "_AMOUNT").on("input", calculateR55Totals);
+				}
 
+				$("#R59_AMOUNT").on("input", calculateR60Totals);
+			}); */
+			
+			// Calculating Totals for 60 row
+			function calculateR60Totals() {
+			    let amt1 = parseFloat($("#R55_AMOUNT").val()?.replace(/,/g, "")) || 0;
+			    let amt2 = parseFloat($("#R59_AMOUNT").val()?.replace(/,/g, "")) || 0;
+			    let totalAmount = amt1 + amt2;
 
-
-			for (let i = 50; i <= 54; i++) {
-				let fields = [
-					"AMOUNT",
-
-
-				];
-
-				fields.forEach(field => {
-					let selector = `#R${i}_${field}`;
-					if ($(selector).length) {  // check if element exists
-						$(selector).css({"background-color": "#d3d3d3"});
-					}
-				});
+			    $("#R60_AMOUNT").val(totalAmount.toLocaleString("en-US"));
 			}
 
-
-			$("#R58_AMOUNT").css({"background-color": "#d3d3d3"});
-
-
-
-			// Toggle buttons
-			$("#submitButton").show();
-
-
-
-
-
-			// Toggle buttons
-			$("#submitButton").show();
-
-
-
-			// Show Cancel button only when Modify is clicked
-			$("#cancelRecord").show();
-
-			// Optionally hide the clicked Modify button
-			$(btn).hide();
-		}
-		//Cancel / Reset function
-		function cancelModify() {
-			if (confirm("Are you sure you want to cancel changes? Page will reload.")) {
-				// ✅ Only when user clicks YES
-				location.reload();
-
-				$(".Show_input").attr("readonly", true).attr("disabled", true);
-
-				$("#submitButton, #btnBack_edit").hide();
-				$("#btnBack").show();
-				// Hide Cancel button again
-				$("#cancelRecord").hide();
-				// Show all Modify buttons
-				$("#addRecord").show();
+			// NEW: R59 = R58
+			function copyR58ToR59() {
+			    let r58 = parseFloat($("#R58_AMOUNT").val()?.replace(/,/g, "")) || 0;
+			    $("#R59_AMOUNT").val(r58.toLocaleString("en-US"));
+			    calculateR60Totals();
 			}
-			// ❌ If user clicks CANCEL, nothing happens
-		}
 
-	</script>
+			// Call on page load for section 3
+			$(document).ready(function () {
+				calculateR55Totals();
+			    calculateR60Totals();
+
+			    for (let i = 50; i <= 54; i++) {
+			        $("#R" + i + "_AMOUNT").on("input", calculateR55Totals);
+			    }
+
+			    // When R58 changes → update R59
+			    $("#R58_AMOUNT").on("input", copyR58ToR59);
+
+			    // Already existing
+			    $("#R59_AMOUNT").on("input", calculateR60Totals);
+			});
+
+		</script>
+
+
+
+
 
 	<script>
-		// Calculating Totals for 20 row
-		function calculateR20Totals() {
-			let totalAmount = 0;
 
-			for (let i = 10; i <= 19; i++) {
-				let amt = parseFloat($("#R" + i + "_AMOUNT").val()?.replace(/,/g, "")) || 0;
-				totalAmount += amt;
+
+		// This function is for closing the modal after an action is complete.
+		// It hides the result and loader modals and reloads the page.
+		function closemodel() {
+			$("#resultModal").modal("hide");
+			$('#loader').modal('hide');
+
+			// Only reload if not from Details modal
+			if (!isDetailsModal) {
+				setTimeout(function () {
+					location.reload();
+				}, 300);
+			} else {
+				// reset flag for next modal usage
+				isDetailsModal = false;
 			}
-
-			// Format with comma separation
-			$("#R20_AMOUNT").val(totalAmount.toLocaleString("en-US"));
-			calculateR29Totals();
 		}
 
-		// Calculating Totals for 28 row
-		function calculateR28Totals() {
-			let totalAmount = 0;
-
-			for (let i = 24; i <= 27; i++) {
-				let amt = parseFloat($("#R" + i + "_AMOUNT").val()?.replace(/,/g, "")) || 0;
-				totalAmount += amt;
-			}
-
-			// Format with comma separation
-			$("#R28_AMOUNT").val(totalAmount.toLocaleString("en-US"));
-			calculateR29Totals();
-		}
-
-		// Calculating Totals for 29 row
-		function calculateR29Totals() {
-			let amt1 = parseFloat($("#R20_AMOUNT").val()?.replace(/,/g, "")) || 0;
-			let amt2 = parseFloat($("#R28_AMOUNT").val()?.replace(/,/g, "")) || 0;
-			let totalAmount = amt1 + amt2;
-
-			// Format with comma separation
-			$("#R29_AMOUNT").val(totalAmount.toLocaleString("en-US"));
-		}
-
-		// Call on page load for section 1
-		$(document).ready(function () {
-			calculateR20Totals();
-			calculateR28Totals();
-			calculateR29Totals();
-
-			for (let i = 10; i <= 19; i++) {
-				$("#R" + i + "_AMOUNT").on("input", calculateR20Totals);
-			}
-			for (let i = 24; i <= 27; i++) {
-				$("#R" + i + "_AMOUNT").on("input", calculateR28Totals);
-			}
-		});
-
-		// Calculating Totals for 41 row
-		function calculateR41Totals() {
-			let totalAmount = 0;
-
-			for (let i = 36; i <= 40; i++) {
-				let amt = parseFloat($("#R" + i + "_AMOUNT").val()?.replace(/,/g, "")) || 0;
-				totalAmount += amt;
-			}
-
-			// Format with comma separation
-			$("#R41_AMOUNT").val(totalAmount.toLocaleString("en-US"));
-			calculateR46Totals();
-		}
-
-		/* // Calculating Totals for 46 row
-		function calculateR46Totals() {
-			let amt1 = parseFloat($("#R41_AMOUNT").val()?.replace(/,/g, "")) || 0;
-			let amt2 = parseFloat($("#R45_AMOUNT").val()?.replace(/,/g, "")) || 0;
-			let totalAmount = amt1 + amt2;
-
-			$("#R46_AMOUNT").val(totalAmount.toLocaleString("en-IN"));
-		}
-
-		// Call on page load for section 2
-		$(document).ready(function () {
-			calculateR41Totals();
-			calculateR46Totals();
-
-			for (let i = 36; i <= 40; i++) {
-				$("#R" + i + "_AMOUNT").on("input", calculateR41Totals);
-			}
-
-			$("#R45_AMOUNT").on("input", calculateR46Totals);
-		});
- */
- 
- 
- 
-//Calculating Totals for 46 row
- function calculateR46Totals() {
- 	let amt1 = parseFloat($("#R41_AMOUNT").val()?.replace(/,/g, "")) || 0;
- 	let amt2 = parseFloat($("#R45_AMOUNT").val()?.replace(/,/g, "")) || 0;
- 	let totalAmount = amt1 + amt2;
-
- 	$("#R46_AMOUNT").val(totalAmount.toLocaleString("en-US"));
- }
-
- // NEW: R45 = R44
- function copyR44ToR45() {
- 	let r44 = parseFloat($("#R44_AMOUNT").val()?.replace(/,/g, "")) || 0;
- 	$("#R45_AMOUNT").val(r44.toLocaleString("en-US"));
- 	calculateR46Totals();
- }
-
- // Call on page load for section 2
- $(document).ready(function () {
-	 calculateR41Totals();
- 	calculateR46Totals();
-
- 	for (let i = 36; i <= 40; i++) {
- 		$("#R" + i + "_AMOUNT").on("input", calculateR41Totals);
- 	}
-
- 	// When R44 changes → update R45 automatically
- 	$("#R44_AMOUNT").on("input", copyR44ToR45);
- });
-
- 
- 
- 
- 
-		// Calculating Totals for 55 row
-		function calculateR55Totals() {
-			let totalAmount = 0;
-
-			for (let i = 50; i <= 54; i++) {
-				let amt = parseFloat($("#R" + i + "_AMOUNT").val()?.replace(/,/g, "")) || 0;
-				totalAmount += amt;
-			}
-
-			$("#R55_AMOUNT").val(totalAmount.toLocaleString("en-US"));
-			calculateR60Totals();
-		}
-/* 
-		// Calculating Totals for 60 row
-		function calculateR60Totals() {
-			let amt1 = parseFloat($("#R55_AMOUNT").val()?.replace(/,/g, "")) || 0;
-			let amt2 = parseFloat($("#R59_AMOUNT").val()?.replace(/,/g, "")) || 0;
-			let totalAmount = amt1 + amt2;
-
-			$("#R60_AMOUNT").val(totalAmount.toLocaleString("en-IN"));
-		}
-
-		// Call on page load for section 3
-		$(document).ready(function () {
-			calculateR55Totals();
-			calculateR60Totals();
-
-			for (let i = 50; i <= 54; i++) {
-				$("#R" + i + "_AMOUNT").on("input", calculateR55Totals);
-			}
-
-			$("#R59_AMOUNT").on("input", calculateR60Totals);
-		}); */
+		// This is the main function that orchestrates the entire form submission process.
+		// It is triggered by the "Update" button click.
+		// Make the function global so onclick="fileuploads(this)" can see it
 		
-		// Calculating Totals for 60 row
-		function calculateR60Totals() {
-		    let amt1 = parseFloat($("#R55_AMOUNT").val()?.replace(/,/g, "")) || 0;
-		    let amt2 = parseFloat($("#R59_AMOUNT").val()?.replace(/,/g, "")) || 0;
-		    let totalAmount = amt1 + amt2;
+			window.fileuploads = function (btn) {
+				try {
+					const asondate = btn.getAttribute("data-todate");
+					const btnType = btn.getAttribute("data-type");
 
-		    $("#R60_AMOUNT").val(totalAmount.toLocaleString("en-US"));
-		}
+					$('#loader').modal('show');
 
-		// NEW: R59 = R58
-		function copyR58ToR59() {
-		    let r58 = parseFloat($("#R58_AMOUNT").val()?.replace(/,/g, "")) || 0;
-		    $("#R59_AMOUNT").val(r58.toLocaleString("en-US"));
-		    calculateR60Totals();
-		}
+					// ✅ Step 1: Calculate totals (if functions exist)
+					if (typeof calculateR20Totals === "function") calculateR20Totals();
+					if (typeof calculateR28Totals === "function") calculateR28Totals();
+					if (typeof calculateR29Totals === "function") calculateR29Totals();
+					if (typeof calculateR41Totals === "function") calculateR41Totals();
+					if (typeof calculateR46Totals === "function") calculateR46Totals();
+					if (typeof calculateR55Totals === "function") calculateR55Totals();
+					if (typeof calculateR60Totals === "function") calculateR60Totals();
 
-		// Call on page load for section 3
-		$(document).ready(function () {
-			calculateR55Totals();
-		    calculateR60Totals();
+					// ✅ Step 2: Remove commas from all text inputs
+					$("#fileupload input[type='text']").each(function () {
+						const val = $(this).val();
+						if (val && val.includes(",")) {
+							$(this).val(val.replace(/,/g, ''));
+						}
+					});
 
-		    for (let i = 50; i <= 54; i++) {
-		        $("#R" + i + "_AMOUNT").on("input", calculateR55Totals);
-		    }
+					// ✅ Step 3: Validate form
+					if (!$("#fileupload").valid()) {
+						$('#loader').modal('hide');
+						return;
+					}
 
-		    // When R58 changes → update R59
-		    $("#R58_AMOUNT").on("input", copyR58ToR59);
+					// ✅ Step 4: Get type from URL or button
+					const urlParams = new URLSearchParams(window.location.search);
+					const urlType = urlParams.get("type");
+					const type = urlType || btnType || "";
 
-		    // Already existing
-		    $("#R59_AMOUNT").on("input", calculateR60Totals);
-		});
+					// ✅ Step 5: Build FormData
+					const formData1 = new FormData();
+					formData1.append("asondate", asondate);
+					formData1.append("type", type);
 
-	</script>
+					// Append all inputs from the form
+					$('#fileupload').find(':input').each(function () {
+						const name = $(this).attr('name');
+						if (name) {
+							formData1.append(name, $(this).val());
+						}
+					});
 
-	<script>
+					// ✅ Step 6: Choose endpoint based on type
+					let apiUrl = './M_CA3update';
+					if (type && type.toUpperCase() === 'RESUB') {
+						apiUrl = './UpdateM_CA3_ReSub';
+					}
 
-	// Close modal after action completes
-	function closemodel() {
-	    $("#resultModal").modal("hide");
-	    $('#loader').modal('hide');
+					// ✅ Step 7: AJAX call
+					$.ajax({
+						url: apiUrl,
+						type: 'POST',
+						data: formData1,
+						processData: false,
+						contentType: false,
+						dataType: 'text',
+						success: function (response) {
+							$("#resultModalLabel").text("BRRS");
+							$("#resultModalBody").text(response);
+							$("#resultModal").modal("show");
+						},
+						error: function (jqXHR) {
+							$("#resultModalLabel").text("Error");
+							$("#resultModalBody").text("Update failed: " + jqXHR.responseText);
+							$("#resultModal").modal("show");
+						},
+						complete: function () {
+							$('#loader').modal('hide');
+						}
+					});
 
-	    // Only reload if not from Details modal
-	    if (!isDetailsModal) {
-	        setTimeout(function () {
-	            location.reload();
-	        }, 300);
-	    } else {
-	        isDetailsModal = false; // Reset flag
-	    }
-	}
+				} catch (error) {
+					$('#loader').modal('hide');
+					console.error("Error during file upload:", error);
+				}
+			};
+		</script>
 
 
-	// File Upload Function
-	function fileuploads(btn) {
-	    try {
 
-	        const asondate = btn.getAttribute("data-todate");
-	        const btnType = btn.getAttribute("data-type");
 
-	        $('#loader').modal('show');
 
-	        // Step 1: Calculate totals
-	        calculateR20Totals();
-	        calculateR28Totals();
-	        calculateR29Totals();
-	        calculateR41Totals();
-	        calculateR46Totals();
-	        calculateR55Totals();
-	        calculateR60Totals();
 
-	        // Step 2: Remove commas from inputs
-	        $("#fileupload input[type='text']").each(function () {
-	            $(this).val($(this).val().replace(/,/g, ''));
-	        });
 
-	        // Step 3: Validate form
-	        if (!$("#fileupload").valid()) {
-	            $('#loader').modal('hide');
-	            return;
-	        }
 
-	        // Step 4: Retrieve type from URL
-	        const urlParams = new URLSearchParams(window.location.search);
-	        const urlType = urlParams.get("type");
-	        const type = urlType || btnType || "";
 
-	        // Step 5: Build FormData
-	        const formData = new FormData();
-	        formData.append("asondate", asondate);
-	        formData.append("type", type);
 
-	        // Append all input fields
-	        $('#fileupload').find(':input').each(function () {
-	            const name = $(this).attr('name');
-	            if (name) {
-	                formData.append(name, $(this).val());
-	            }
-	        });
 
-	        // Step 6: Decide API URL
-	        let apiUrl = './CA3updateAll';
-	        if (urlType && urlType.toUpperCase() === 'RESUB') {
-	            apiUrl = './UpdateM_CA3_ReSub';
-	        }
 
-	        // Step 7: AJAX call
-	        $.ajax({
-	            url: apiUrl,
-	            type: 'POST',
-	            data: formData,
-	            processData: false,
-	            contentType: false,
-	            dataType: 'text',
-	            success: function (response) {
-	                $("#resultModalLabel").text("BRRS");
-	                $("#resultModalBody").text(response);
-	                $("#resultModal").modal("show");
-	            },
-	            error: function (jqXHR) {
-	                $("#resultModalLabel").text("Error");
-	                $("#resultModalBody").text("Update failed: " + jqXHR.responseText);
-	                $("#resultModal").modal("show");
-	            },
-	            complete: function () {
-	                $('#loader').modal('hide');
-	            }
-	        });
 
-	    } catch (error) {
-	        $('#loader').modal('hide');
-	        console.error("Error during file upload:", error);
-	    }
-	}
-
-	</script>
 </head>
+
+
+
 <title>BRRS</title>
 
 <body>
 	<div class="container-fluid" style="padding-left: 0px; padding-right: 0px;">
 		<div class="row">
+
 			<div th:insert="HeaderMenu :: header"></div>
+
 			<div class="card">
 				<div class="card-header"
 					style="background-color: rgb(107, 122, 143); display: flex; align-items: center; justify-content: space-between;">
@@ -956,79 +1205,121 @@ PURPOSE		: BWRBRREPORT
 						<div class="left-arrow-circle">
 							<i class="fa fa-arrow-left"></i>
 						</div>
+
 						<!-- Title -->
 						<h5
 							style="font-family: arial; font-size: 20px; font-weight: bold; color: white; margin: 0 10px;">
+							(26) MONTHLY SCHEDULE: M-LA2: LOANS AND ADVANCES OF <br> PUBLIC NON-FINANCIAL CORPORATIONS
+							BY
+							ECONOMIC SECTOR
+						</h5>
 
-						(8) MONTHLY SCHEDULE: M-CA3:REGULATORY ADJUSTMENTS  <br>
-						APPLIED IN THE CALCULATION OF CAPITAL	
-</h5>
-							
-							
-							
-							<!-- Moving bus-board text -->
+
+						<!-- Moving bus-board text -->
 						<div class="boards">
-							<p class="scrolling-text">BANK OF BOTSWANA - BANKING SUPERVISION DEPARTMENT </p>
+							<p class="scrolling-text">BANK OF BOTSWANA - BANKING
+								SUPERVISION DEPARTMENT</p>
 						</div>
-							
+
+
 					</div>
+
 					<div class="custom-tab-btn-group nav-buttons"
 						style="display: flex; color: white; align-items: center;">
 						<!-- 📅 Date -->
-						<span class="white-text"
-							style="color: white !important; font-size: 16px; margin-right: 20px;">Report
-							Date: <span th:text="${#strings.replace(asondate, '/', '-')}">2025-09-18</span>
-						</span>
-						<!-- Buttons -->
-						<input type="hidden" id="selectedTab" th:value="${displaymode}">
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showsummary();"
-							th:if="${displaymode == 'Details'}">Summary</button>
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails();"
-							th:if="${displaymode == 'summary'}">Details</button>
+						<span class="white-text" style="color: white !important; font-size: 16px; margin-right: 20px;">
+							Report Date: <span th:text="${#strings.replace(asondate, '/', '-')}">2025-07-04</span>
+						</span> <input type="hidden" id="selectedTab" th:value="${dtltype}">
+
+						<!-- DETAILS button (hide when dtltype = 'detail') -->
+						<button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails()"
+							th:if="${dtltype ne 'detail'}">Details</button>
+
+						<!-- SUMMARY button (show when dtltype = 'detail') -->
+						<button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showsummary()"
+							th:if="${dtltype eq 'detail'}">Summary</button>
+
+
+
+
+
+
+
+
 
 						<!-- Modify button -->
 						<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
-							title="Click to EDIT Records" th:if="${type != 'ARCHIVAL'}"
-							th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
-							id="addRecord">Modify</button>
+							title="Click to EDIT Records"
+							th:classappend="${session.PERMISSIONS == 'W' and dtltype == 'report'} ? 'addedit'"
+							th:if="${type != 'ARCHIVAL' and dtltype ne 'detail'}" id="addRecord">Modify</button>
+
+
 						<!-- Cancel button (hidden initially) -->
 						<button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord"
 							onclick="cancelModify();" style="display: none;">Cancel</button>
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'summary'}" th:attr="data-reportid=${reportid},
-                  				 data-asondate=${asondate},
-                  				 data-fromdate=${fromdate},
-                   				 data-todate=${todate},
-                   				 data-currency=${currency},
-                   				 data-dtltype=${dtltype},
-                   				 data-filename='M_CA3.xlsx',
-					 				 data-type=${type},
-					    			 data-version=${version}" onclick="downloadfile(this);">
-							<i class="fa fa-download"></i>
+
+
+
+						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
+							onclick="downloadfile(this)" th:if="${displaymode == 'summary' or displaymode == 'Details'}"
+							th:attr="data-reportid=${reportid},
+                   data-asondate=${asondate},
+                   data-fromdate=${fromdate},
+                   data-todate=${todate},
+                   data-currency=${currency}, 
+                   data-dtltype=${dtltype},
+                   data-filename='M_CA3.xlsx',
+                   data-type=${type},
+                   data-version=${version != null ? version : ''}" style="font-family: Arial; font-weight: bold;">
+							<i class="fa fa-download"></i> Download
+						</button>
+
+						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
+							onclick="downloadfile(this)" th:if="${displaymode == 'summary' or displaymode == 'Details'}"
+							th:attr="data-reportid=${reportid},
+            data-asondate=${asondate},
+            data-fromdate=${fromdate},
+            data-todate=${todate},
+            data-currency=${currency}, 
+            data-dtltype=${dtltype},
+            data-filename='EMAIL_M_CA3.xlsx',
+            data-type='email',
+            data-version=${version != null ? version : ''}" style="font-family: Arial; font-weight: bold;">
+							<i class="fa fa-download"></i> Email Format
+
 						</button>
 
 
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'Details'}" onclick="startReport(this);" th:attr="
-								    data-fromdate=${fromdate},
-								    data-todate=${todate},
-									data-currency=${currency}, 
-												data-dtltype=${dtltype},
-								    data-filename='M_CA3',
-									data-type=${type},
-												data-version=${version}
-								  ">
-							<i class="fa fa-download"></i>
-						</button>
+
+
 					</div>
-
 				</div>
-				<div th:if="${displaymode == 'summary'}">
+				<h1 th:if="${displaymode == 'summary' and type == 'ARCHIVAL' and displaymode != 'Details'}"
+					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">
+					Archival
+					Summary View - M_CA3</h1>
+
+				<h1 th:if="${displaymode == 'Details' and type == 'ARCHIVAL' and displaymode != 'summary'}"
+					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">
+					Archival
+					Detail View - M_CA3</h1>
+
+				<h1 th:if="${displaymode == 'summary'and type != 'ARCHIVAL'}"
+					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">
+					Summary
+					View - M_CA3</h1>
+				<h1 th:if="${displaymode == 'Details' and type != 'ARCHIVAL'}"
+					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">
+					Detail
+					View - M_CA3</h1>
+				<div th:if="${displaymode == 'summary' or displaymode == 'Details'}">
+
 					<div class="row">
 						<div class="col-sm-12">
 							<form action="#" method="POST" id="fileupload">
+
 								<div class="table-wrapper table-responsive scrollable-table-container"
-									style="border-right: 1px solid #dee2e6; ">
+									style="border-right: 1px solid #dee2e6;">
 									<table
 										class="sticky-header-table table table-bordered table-hover table-sm table-condensed"
 										id="reports">
@@ -1039,9 +1330,14 @@ PURPOSE		: BWRBRREPORT
 											</tr>
 											<!-- First header row -->
 											<tr style="background-color: #b3b6b9">
-												<th style="text-align: center; background-color: #D8D8D8; width: 80px; font-weight:  bold;">Line</th>
-												<th style="text-align: center; background-color: #D8D8D8; font-weight:  bold;">Item</th>
-												<th width="20%" style="text-align:right; background-color: #D8D8D8;font-weight:  bold;">
+												<th
+													style="text-align: center; background-color: #D8D8D8; width: 80px; font-weight:  bold;">
+													Line</th>
+												<th
+													style="text-align: center; background-color: #D8D8D8; font-weight:  bold;">
+													Item</th>
+												<th width="20%"
+													style="text-align:right; background-color: #D8D8D8;font-weight:  bold;">
 													Amount(P'000)</th>
 											</tr>
 										</thead>
@@ -1216,7 +1512,9 @@ PURPOSE		: BWRBRREPORT
 											style="font-family: Arial;">
 
 											<tr>
-												<td style="text-align: center; vertical-align:middle; font-weight: bold;">33</td>
+												<td
+													style="text-align: center; vertical-align:middle; font-weight: bold;">
+													33</td>
 												<td style="text-align: left; font-weight: normal; "> Significant
 													investments in the common shares of unconsolidated financial
 													institutions, where a bank <br>
@@ -1227,7 +1525,8 @@ PURPOSE		: BWRBRREPORT
 													threshold, the remaining balance below thresholds shall be treated
 													as other assets (para 3.16 <br>
 													- 3.18 Basel II Guidelines)</td>
-												<td id="ROW24" style="text-align: right; vertical-align:middle; font-weight: bold;">
+												<td id="ROW24"
+													style="text-align: right; vertical-align:middle; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R24_AMOUNT != null ? #numbers.formatDecimal(report.R24_AMOUNT, 0, 'COMMA', 0, 'POINT'): '0'}"
 														id="R24_AMOUNT" name="R24_AMOUNT"
@@ -1260,7 +1559,9 @@ PURPOSE		: BWRBRREPORT
 												</td>
 											</tr>
 											<tr>
-												<td style="text-align: center; vertical-align:middle; font-weight: bold;">36</td>
+												<td
+													style="text-align: center; vertical-align:middle; font-weight: bold;">
+													36</td>
 												<td style="text-align: left; font-weight: normal; "> Aggregate
 													non-siginificant investments by the bank or its subsidiary in the
 													equity of other banks and financial institutions, where <br>
@@ -1269,7 +1570,8 @@ PURPOSE		: BWRBRREPORT
 													- instead of full deduction, only deduct the excess above the 10%
 													threshold, the remaining amount below the 10% threshold shall be
 													treated as other assets.</td>
-												<td id="ROW27" style="text-align: right; vertical-align:middle; font-weight: bold;">
+												<td id="ROW27"
+													style="text-align: right; vertical-align:middle; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R27_AMOUNT != null ? #numbers.formatDecimal(report.R27_AMOUNT, 0, 'COMMA', 0, 'POINT'): '0'}"
 														id="R27_AMOUNT" name="R27_AMOUNT"
@@ -1301,12 +1603,12 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 											</tr>
-											
+
 											<!-- <tr>
-												<td></td>
-												<td></td>
-												<td></td>
-											</tr> -->
+																					<td></td>
+																					<td></td>
+																					<td></td>
+																				</tr> -->
 
 										</tbody>
 
@@ -1330,26 +1632,28 @@ PURPOSE		: BWRBRREPORT
 											<tr style="border:none !important;">
 												<td colspan="3" style="height: 25px; border: none !important;"></td>
 											</tr>
-											
+
 											<tr style="border:none !important;">
 
-												<th colspan="3" style="text-align: left; border:none !important; font-weight:  bold; background-color: #FFFFFF ">
+												<th colspan="3"
+													style="text-align: left; border:none !important; font-weight:  bold; background-color: #FFFFFF ">
 													2. Regulatory adjustments applied in the calculation of Additional
 													Tier1 Capital </th>
 											</tr>
 											<tr style="border:none !important;">
-												<th colspan="3" style="text-align: left; border:none !important; font-weight:  bold; background-color: #FFFFFF ">
+												<th colspan="3"
+													style="text-align: left; border:none !important; font-weight:  bold; background-color: #FFFFFF ">
 													A. Full decductions </th>
 											</tr>
 
 
 											<!-- First header row -->
 											<!-- <tr>
-												<td></td>
-												<td></td>
-												<td></td>
+																					<td></td>
+																					<td></td>
+																					<td></td>
 
-											</tr> -->
+																				</tr> -->
 										</tbody>
 
 										<tbody id="entity" th:each="report: ${reportsummary}"
@@ -1404,13 +1708,16 @@ PURPOSE		: BWRBRREPORT
 												</td>
 											</tr>
 											<tr>
-												<td style="text-align: center; vertical-align:middle; font-weight: bold;">43</td>
+												<td
+													style="text-align: center; vertical-align:middle; font-weight: bold;">
+													43</td>
 												<td style="text-align: left; font-weight: normal;"> Significant
 													investments in the common shares of unconsolidated financial
 													institutions, where a bank or its subsidiary owns <br>
 													more than 10% common shares of the issuing entity (banks, insurance
 													and other financial entities)</td>
-												<td id="ROW40" style="text-align: right; vertical-align:middle; font-weight: bold;">
+												<td id="ROW40"
+													style="text-align: right; vertical-align:middle; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R40_AMOUNT != null ? #numbers.formatDecimal(report.R40_AMOUNT, 0, 'COMMA', 0, 'POINT'): '0'}"
 														id="R40_AMOUNT" name="R40_AMOUNT"
@@ -1440,29 +1747,33 @@ PURPOSE		: BWRBRREPORT
 										<tbody class="thead-light">
 
 											<tr style="border:none !important;">
-												<th style="text-align: left; border:none !important; background-color: #FFFFFF">
+												<th
+													style="text-align: left; border:none !important; background-color: #FFFFFF">
 													B. Threshold decductions:</th>
-												<td style="text-align: left; border:none !important; background-color: #FFFFFF ">
+												<td
+													style="text-align: left; border:none !important; background-color: #FFFFFF ">
 													( Recognition capped at 10 percent of the bank’scommon equity (after
 													the application of all regulatory adjustments set out under
 													paragraph 4.10)</td>
 											</tr>
-											
-											
+
+
 											<!-- First header row -->
 											<!-- <tr>
-												<td></td>
-												<td></td>
-												<td></td>
+																					<td></td>
+																					<td></td>
+																					<td></td>
 
-											</tr> -->
+																				</tr> -->
 
 										</tbody>
 										<tbody id="entity" th:each="report: ${reportsummary}"
 											style="font-family: Arial;">
 
 											<tr>
-												<td style="text-align: center; vertical-align:middle; font-weight: bold;">45</td>
+												<td
+													style="text-align: center; vertical-align:middle; font-weight: bold;">
+													45</td>
 												<td
 													style="text-align: left; font-weight: normal; word-wrap: break-word; width:150px !important;">
 													Aggregate non-siginificant investments by the bank or its subsidiary
@@ -1476,7 +1787,8 @@ PURPOSE		: BWRBRREPORT
 													treated as other assets.
 												</td>
 
-												<td id="ROW44" style="text-align: right; vertical-align:middle; font-weight: bold;">
+												<td id="ROW44"
+													style="text-align: right; vertical-align:middle; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R44_AMOUNT != null ? #numbers.formatDecimal(report.R44_AMOUNT, 0, 'COMMA', 0, 'POINT'): '0'}"
 														id="R44_AMOUNT" name="R44_AMOUNT"
@@ -1517,12 +1829,15 @@ PURPOSE		: BWRBRREPORT
 
 										<thead class="thead-light">
 											<tr style="border:none !important;">
-												<th colspan="3" style="text-align: left; border:none !important; background-color: #FFFFFF "> 2.
+												<th colspan="3"
+													style="text-align: left; border:none !important; background-color: #FFFFFF ">
+													2.
 													Regulatory adjustments applied in the calculation of Tier2 Capital
 												</th>
 											</tr>
 											<tr style="border:none !important;">
-												<th style="text-align: left; border:none !important; background-color: #FFFFFF ">
+												<th
+													style="text-align: left; border:none !important; background-color: #FFFFFF ">
 													A. Full decductions</th>
 											</tr>
 
@@ -1582,13 +1897,16 @@ PURPOSE		: BWRBRREPORT
 
 
 											<tr>
-												<td style="text-align: center; vertical-align:middle; font-weight: bold;">52</td>
+												<td
+													style="text-align: center; vertical-align:middle; font-weight: bold;">
+													52</td>
 												<td style="text-align: left; font-weight: normal;"> Significant
 													investments in the common shares of unconsolidated financial
 													institutions, where a bank or its subsidiary owns more <br> than 10%
 													common shares of the issuing entity (banks, insurance and other
 													financial entities).</td>
-												<td id="ROW54" style="text-align: right; vertical-align:middle; font-weight: bold;">
+												<td id="ROW54"
+													style="text-align: right; vertical-align:middle; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R54_AMOUNT != null ? #numbers.formatDecimal(report.R54_AMOUNT, 0, 'COMMA', 0, 'POINT'): '0'}"
 														id="R54_AMOUNT" name="R54_AMOUNT"
@@ -1613,20 +1931,23 @@ PURPOSE		: BWRBRREPORT
 											</tr>
 										</tbody>
 
-										
+
 										<tbody id="entity" th:each="report: ${reportsummary}"
 											style="font-family: Arial;">
 
 											<tr>
 												<th style="border:none !important;">B. Threshold decductions:</th>
-												<td colspan="2" style="border:none !important;">( Recognition capped at 10 percent of the bank’scommon
+												<td colspan="2" style="border:none !important;">( Recognition capped at
+													10 percent of the bank’scommon
 													equity (after the application of all regulatory adjustments set out
 													under paragraph 4.15)</td>
 												</th>
 											</tr>
 
 											<tr>
-												<td style="text-align: center; vertical-align:middle; font-weight: bold;">54</td>
+												<td
+													style="text-align: center; vertical-align:middle; font-weight: bold;">
+													54</td>
 												<td style="text-align: left; font-weight: normal;"> Aggregate
 													non-siginificant investments by the bank or its subsidiary in the
 													equity of other banks and financial institutions, where <br>
@@ -1641,7 +1962,8 @@ PURPOSE		: BWRBRREPORT
 
 
 
-												<td id="ROW58" style="text-align: right; vertical-align:middle; font-weight: bold;">
+												<td id="ROW58"
+													style="text-align: right; vertical-align:middle; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R58_AMOUNT != null ? #numbers.formatDecimal(report.R58_AMOUNT, 0, 'COMMA', 0, 'POINT'): '0'}"
 														id="R58_AMOUNT" name="R58_AMOUNT"
@@ -1681,54 +2003,32 @@ PURPOSE		: BWRBRREPORT
 
 
 									</table>
-
-
-
 								</div>
 								<div style="text-align: center; margin-top: 10px;">
 
 									<button id="submitButton" type="button" class="custom-tab-btn Show_input"
-										form="fileupload" th:attr="data-todate=${asondate}, data-type=${type}"
-										onclick="fileuploads(this);" style="display: none;">
-										Submit
-									</button>
-
+										form="fileupload" th:attr="data-todate=${asondate}" onclick="fileuploads(this);"
+										style="display: none;">Submit</button>
 								</div>
+
 							</form>
+
 						</div>
 					</div>
 				</div>
 
+
+
 			</div>
+
+
+
 		</div>
+
+
+
 	</div>
 
-	<!-- Custom Cellresult Modal -->
-	<div class="modal fade" id="cellresultModal">
-		<div class="modal-dialog modal-dialog-centered">
-			<div class="modal-content">
-
-				<!-- Custom header -->
-				<div class="menu-title-header"
-					style="background-color:#6c7a91; padding: 8px; border-radius:5px 5px 0 0;">
-					<div class="modal-title" id="cellresultModalLabel" style="text-align: center; color: white;">
-						Do you want to open the report?
-					</div>
-				</div>
-
-				<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
-					<button type="button" class="custom-tab-btn cancel-btn" data-bs-dismiss="modal"
-						style="margin-right:10px; border:2px solid #6c7a91; background:white; color:black; border-radius:20px; padding:5px 15px;">
-						Cancel
-					</button>
-					<button type="button" class="custom-tab-btn yes-btn"
-						style="background:#6c7a91; color:white; border:none; border-radius:20px; padding:5px 20px;">
-						Yes
-					</button>
-				</div>
-			</div>
-		</div>
-	</div>
 
 
 	<div class="modal fade" id="loader" data-backdrop="static" data-keyboard="false">
@@ -1744,6 +2044,9 @@ PURPOSE		: BWRBRREPORT
 			</div>
 		</div>
 	</div>
+
+
+
 	<!-- Custom Alert/Result Modal (Matches your existing style) -->
 	<div class="modal fade" id="resultModal">
 		<div class="modal-dialog modal-dialog-centered">
@@ -1757,45 +2060,51 @@ PURPOSE		: BWRBRREPORT
 				<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
 					<p id="resultModalBody"></p>
 					<!-- Your custom styled button -->
-					<button type="button" class="custom-tab-btn" onclick="closemodel()"
-						data-bs-dismiss="modal">OK</button>
+					<button type="button" class="custom-tab-btn" onclick="closemodel()" data-dismiss="modal">OK</button>
 				</div>
 			</div>
 		</div>
 	</div>
 
+	<!-- Custom Cellresult Modal -->
+	<div class="modal fade" id="cellresultModal">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+
+				<!-- Custom header -->
+				<div class="menu-title-header"
+					style="background-color: #6c7a91; padding: 8px; border-radius: 5px 5px 0 0;">
+					<div class="modal-title" id="cellresultModalLabel" style="text-align: center; color: white;">Do you
+						want to
+						open the report?</div>
+				</div>
+
+				<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+					<button type="button" class="custom-tab-btn cancel-btn" data-bs-dismiss="modal"
+						style="margin-right: 10px; border: 2px solid #6c7a91; background: white; color: black; border-radius: 20px; padding: 5px 15px;">
+						Cancel</button>
+					<button type="button" class="custom-tab-btn yes-btn"
+						style="background: #6c7a91; color: white; border: none; border-radius: 20px; padding: 5px 20px;">
+						Yes</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+
 </body>
 
-<!-- <script>
-																									  $(document).ready(function () {
-																									    $('#BRRSvalidation').DataTable({
-																									      "paging": true,
-																									      "info": false,       // turn off "Showing x of y"
-																									      "searching": false,  // turn off search
-																									      "ordering": false,   // turn off ordering
-																									      "lengthChange": false // hide "Show x entries"
-																									    });
-																									  });
-											
-																								</script> -->
 
-<style>
-	#BRFdet td {
-		border: 1px solid #ccc;
-		padding: 8px;
-	}
 
-	#BRFdet {
-		border-collapse: collapse;
-		width: 100%;
-	}
-</style>
+
+
 
 <style>
 	/* Your existing CSS - this is the correct approach */
 	.scrollable-table-container {
 		/* This is the key: it creates the scroll context */
-		max-height: 590px;
+		max-height: 820px;
 		/* Or a suitable height like 80vh for responsive design */
 		overflow-y: auto;
 		border: 1px solid #ccc;
@@ -1809,12 +2118,13 @@ PURPOSE		: BWRBRREPORT
 		z-index: 5;
 	}
 
-	/* .scrollable-table-container thead tr:nth-child(2) {
+	.scrollable-table-container thead tr:nth-child(2) {
 		position: sticky;
 		top: 36px;
+		/* adjust based on row height */
 		background-color: #b3b6b9;
 		z-index: 4;
-	} */
+	}
 
 	.scrollable-table-container thead tr:nth-child(3) {
 		position: sticky;
@@ -1840,6 +2150,8 @@ PURPOSE		: BWRBRREPORT
 		z-index: 1;
 	}
 </style>
+
+
 <style>
 	.inner {
 		max-height: 600px;
@@ -1892,12 +2204,5 @@ PURPOSE		: BWRBRREPORT
 		width: auto;
 	}
 </style>
-
-<style>
-    .dataTables_scrollHead {
-        position: static !important;
-    }
-</style>
-
 
 </html>

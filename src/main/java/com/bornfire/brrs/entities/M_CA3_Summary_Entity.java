@@ -161,7 +161,7 @@ class M_CA3_Summary_Entity {
     @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date REPORT_DATE;
 
-    private String REPORT_VERSION;
+    private BigDecimal REPORT_VERSION;
     private String REPORT_FREQUENCY;
     private String REPORT_CODE;
     private String REPORT_DESC;
@@ -595,10 +595,10 @@ class M_CA3_Summary_Entity {
 	public void setREPORT_DATE(Date rEPORT_DATE) {
 		REPORT_DATE = rEPORT_DATE;
 	}
-	public String getREPORT_VERSION() {
+	public BigDecimal getREPORT_VERSION() {
 		return REPORT_VERSION;
 	}
-	public void setREPORT_VERSION(String rEPORT_VERSION) {
+	public void setREPORT_VERSION(BigDecimal rEPORT_VERSION) {
 		REPORT_VERSION = rEPORT_VERSION;
 	}
 	public String getREPORT_FREQUENCY() {
