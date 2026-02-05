@@ -6,6 +6,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -18,8 +19,15 @@ import java.util.List;
 import java.util.Optional;
 
 // import javax.servlet.http.HttpServletRequest; // SHOW WARNING HERE
-
-import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.BorderStyle;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.CreationHelper;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 // import org.apache.poi.xssf.usermodel.XSSFWorkbook; // SHOW WARNING HERE
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -48,32 +56,6 @@ import com.bornfire.brrs.entities.BRRS_M_SEC_Summary_Repo1;
 import com.bornfire.brrs.entities.BRRS_M_SEC_Summary_Repo2;
 import com.bornfire.brrs.entities.BRRS_M_SEC_Summary_Repo3;
 import com.bornfire.brrs.entities.BRRS_M_SEC_Summary_Repo4;
-import com.bornfire.brrs.entities.M_CA5_Archival_Summary_Entity1;
-import com.bornfire.brrs.entities.M_CA5_Archival_Summary_Entity2;
-import com.bornfire.brrs.entities.M_CA5_Summary_Entity1;
-import com.bornfire.brrs.entities.M_CA5_Summary_Entity2;
-import com.bornfire.brrs.entities.M_FXR_Archival_Summary_Entity1;
-import com.bornfire.brrs.entities.M_FXR_Archival_Summary_Entity2;
-import com.bornfire.brrs.entities.M_FXR_Archival_Summary_Entity3;
-import com.bornfire.brrs.entities.M_FXR_Summary_Entity1;
-import com.bornfire.brrs.entities.M_FXR_Summary_Entity2;
-import com.bornfire.brrs.entities.M_FXR_Summary_Entity3;
-import com.bornfire.brrs.entities.M_LARADV_Archival_Summary_Entity1;
-import com.bornfire.brrs.entities.M_LARADV_Archival_Summary_Entity2;
-import com.bornfire.brrs.entities.M_LARADV_Archival_Summary_Entity3;
-import com.bornfire.brrs.entities.M_LARADV_Archival_Summary_Entity4;
-import com.bornfire.brrs.entities.M_LARADV_Archival_Summary_Entity5;
-import com.bornfire.brrs.entities.M_LARADV_Summary_Entity1;
-import com.bornfire.brrs.entities.M_LARADV_Summary_Entity2;
-import com.bornfire.brrs.entities.M_LARADV_Summary_Entity3;
-import com.bornfire.brrs.entities.M_LARADV_Summary_Entity4;
-import com.bornfire.brrs.entities.M_LARADV_Summary_Entity5;
-import com.bornfire.brrs.entities.M_SECL_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.M_SECL_Summary_Entity;
-import com.bornfire.brrs.entities.M_SRWA_12F_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.M_SRWA_12F_Summary_Entity;
-import com.bornfire.brrs.entities.M_SRWA_12H_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.M_SRWA_12H_Summary_Entity;
 
 
 
@@ -116,7 +98,7 @@ public class BRRS_M_SEC_ReportService {
 	 public ModelAndView getM_SECView(
 	            String reportId, String fromdate, String todate,
 	            String currency, String dtltype, Pageable pageable,
-	            String type, String version) {
+	            String type, BigDecimal version) {
 
 	        ModelAndView mv = new ModelAndView();
 	        Session hs = sessionFactory.getCurrentSession();
@@ -629,19 +611,19 @@ public class BRRS_M_SEC_ReportService {
 	public byte[] getM_SECExcel(String filename, String reportId,
 			String fromdate, String todate,
 			String currency, String dtltype,
-			String type, String version) throws Exception {
+			String type, BigDecimal version) throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.");
 
 		// Convert string to Date
 		Date reportDate = dateformat.parse(todate);
 
     // ARCHIVAL check
-    if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && !version.trim().isEmpty()) {
+		 if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
         logger.info("Service: Generating ARCHIVAL report for version {}", version);
         return getExcelM_SECARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
     }
     // RESUB check
-    else if ("RESUB".equalsIgnoreCase(type) && version != null && !version.trim().isEmpty()) {
+    else if ("RESUB".equalsIgnoreCase(type) && version != null ) {
         logger.info("Service: Generating RESUB report for version {}", version);
 
        
@@ -1627,7 +1609,7 @@ if (!dataList1.isEmpty()) {
 
 	public byte[] getExcelM_SECARCHIVAL(String filename, String reportId, String fromdate,
             String todate, String currency, String dtltype,
-            String type, String version) throws Exception {
+            String type, BigDecimal version) throws Exception {
 
 logger.info("Service: Starting Excel generation process in memory.");
 
@@ -2643,103 +2625,103 @@ numberStyle.setFont(font);
 	    return archivalList;
 	}
 
-	public void updateReportReSub(
-	       BRRS_M_SEC_Summary_Entity1 updatedEntity1,
-	       BRRS_M_SEC_Summary_Entity2 updatedEntity2,
-	       BRRS_M_SEC_Summary_Entity3 updatedEntity3,
-	       BRRS_M_SEC_Summary_Entity4 updatedEntity4) {
-
-	    System.out.println("Came t M_SEC Resub Service");
-	    System.out.println("Report Date: " + updatedEntity1.getReportDate());
-
-	    Date reportDate = updatedEntity1.getReportDate();
-	    int newVersion = 1;
-
-	    try {
-	        // 🔹 Fetch the latest archival version for this report date from Entity1
-	        Optional<BRRS_M_SEC_Archival_Summary_Entity1> latestArchivalOpt1 =archivalSummaryRepo1
-	                .getLatestArchivalVersionByDate(reportDate);
-
-	        if (latestArchivalOpt1.isPresent()) {
-	        	BRRS_M_SEC_Archival_Summary_Entity1 latestArchival = latestArchivalOpt1.get();
-	            try {
-	                newVersion = Integer.parseInt(latestArchival.getReportVersion()) + 1;
-	            } catch (NumberFormatException e) {
-	                System.err.println("Invalid version format. Defaulting to version 1");
-	                newVersion = 1;
-	            }
-	        } else {
-	            System.out.println("No previous archival found for date: " + reportDate);
-	        }
-
-	        // 🔹 Prevent duplicate version number in Repo1
-	        boolean exists =archivalSummaryRepo1
-	                .findByReportDateAndReportVersion(reportDate, String.valueOf(newVersion))
-	                .isPresent();
-
-	        if (exists) {
-	            throw new RuntimeException("⚠ Version " + newVersion + " already exists for report date " + reportDate);
-	        }
-
-	        // Copy data from summary to archival entities for all 3 entities
-	        BRRS_M_SEC_Archival_Summary_Entity1 archivalEntity1 = new BRRS_M_SEC_Archival_Summary_Entity1();
-	        BRRS_M_SEC_Archival_Summary_Entity2 archivalEntity2 = new BRRS_M_SEC_Archival_Summary_Entity2();
-	        BRRS_M_SEC_Archival_Summary_Entity3 archivalEntity3 = new BRRS_M_SEC_Archival_Summary_Entity3();
-	        BRRS_M_SEC_Archival_Summary_Entity4 archivalEntity4 = new BRRS_M_SEC_Archival_Summary_Entity4();
-	       
-	        org.springframework.beans.BeanUtils.copyProperties(updatedEntity1, archivalEntity1);
-	        org.springframework.beans.BeanUtils.copyProperties(updatedEntity2, archivalEntity2);
-	        org.springframework.beans.BeanUtils.copyProperties(updatedEntity3, archivalEntity3);
-	        org.springframework.beans.BeanUtils.copyProperties(updatedEntity4, archivalEntity4);
-	        
-
-	        // Set common fields
-	        Date now = new Date();
-	        archivalEntity1.setReportDate(reportDate);
-	        archivalEntity2.setReportDate(reportDate);
-	        archivalEntity3.setReportDate(reportDate);
-	        archivalEntity4.setReportDate(reportDate);
-	        
-
-	        archivalEntity1.setReportVersion(String.valueOf(newVersion));
-	        archivalEntity2.setReportVersion(String.valueOf(newVersion));
-	        archivalEntity3.setReportVersion(String.valueOf(newVersion));
-	        archivalEntity4.setReportVersion(String.valueOf(newVersion));
-	        
-
-	        archivalEntity1.setReportResubDate(now);
-	        archivalEntity2.setReportResubDate(now);
-	        archivalEntity3.setReportResubDate(now);
-	        archivalEntity4.setReportResubDate(now);
-	        
-
-	        System.out.println("Saving new archival version: " + newVersion);
-
-	        // Save to all three archival repositories
-	        archivalSummaryRepo1.save(archivalEntity1);
-	        archivalSummaryRepo2.save(archivalEntity2);
-	        archivalSummaryRepo3.save(archivalEntity3);
-	        archivalSummaryRepo4.save(archivalEntity4);
-	       
-	        System.out.println("Saved archival version successfully: " + newVersion);
-
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        throw new RuntimeException("Error while creating M_SEC archival resubmission record", e);
-	    }
-	}
+//	public void updateReportReSub(
+//	       BRRS_M_SEC_Summary_Entity1 updatedEntity1,
+//	       BRRS_M_SEC_Summary_Entity2 updatedEntity2,
+//	       BRRS_M_SEC_Summary_Entity3 updatedEntity3,
+//	       BRRS_M_SEC_Summary_Entity4 updatedEntity4) {
+//
+//	    System.out.println("Came t M_SEC Resub Service");
+//	    System.out.println("Report Date: " + updatedEntity1.getReportDate());
+//
+//	    Date reportDate = updatedEntity1.getReportDate();
+//	    int newVersion = 1;
+//
+//	    try {
+//	        // 🔹 Fetch the latest archival version for this report date from Entity1
+//	        Optional<BRRS_M_SEC_Archival_Summary_Entity1> latestArchivalOpt1 =archivalSummaryRepo1
+//	                .getLatestArchivalVersionByDate(reportDate);
+//
+//	        if (latestArchivalOpt1.isPresent()) {
+//	        	BRRS_M_SEC_Archival_Summary_Entity1 latestArchival = latestArchivalOpt1.get();
+//	            try {
+//	                newVersion = Integer.parseInt(latestArchival.getReportVersion()) + 1;
+//	            } catch (NumberFormatException e) {
+//	                System.err.println("Invalid version format. Defaulting to version 1");
+//	                newVersion = 1;
+//	            }
+//	        } else {
+//	            System.out.println("No previous archival found for date: " + reportDate);
+//	        }
+//
+//	        // 🔹 Prevent duplicate version number in Repo1
+//	        boolean exists =archivalSummaryRepo1
+//	                .findByReportDateAndReportVersion(reportDate, BigDecimal.valueOf(newVersion))
+//	                .isPresent();
+//
+//	        if (exists) {
+//	            throw new RuntimeException("⚠ Version " + newVersion + " already exists for report date " + reportDate);
+//	        }
+//
+//	        // Copy data from summary to archival entities for all 3 entities
+//	        BRRS_M_SEC_Archival_Summary_Entity1 archivalEntity1 = new BRRS_M_SEC_Archival_Summary_Entity1();
+//	        BRRS_M_SEC_Archival_Summary_Entity2 archivalEntity2 = new BRRS_M_SEC_Archival_Summary_Entity2();
+//	        BRRS_M_SEC_Archival_Summary_Entity3 archivalEntity3 = new BRRS_M_SEC_Archival_Summary_Entity3();
+//	        BRRS_M_SEC_Archival_Summary_Entity4 archivalEntity4 = new BRRS_M_SEC_Archival_Summary_Entity4();
+//	       
+//	        org.springframework.beans.BeanUtils.copyProperties(updatedEntity1, archivalEntity1);
+//	        org.springframework.beans.BeanUtils.copyProperties(updatedEntity2, archivalEntity2);
+//	        org.springframework.beans.BeanUtils.copyProperties(updatedEntity3, archivalEntity3);
+//	        org.springframework.beans.BeanUtils.copyProperties(updatedEntity4, archivalEntity4);
+//	        
+//
+//	        // Set common fields
+//	        Date now = new Date();
+//	        archivalEntity1.setReportDate(reportDate);
+//	        archivalEntity2.setReportDate(reportDate);
+//	        archivalEntity3.setReportDate(reportDate);
+//	        archivalEntity4.setReportDate(reportDate);
+//	        
+//
+//	        archivalEntity1.setReportVersion(BigDecimal.valueOf(newVersion));
+//	        archivalEntity2.setReportVersion(BigDecimal.valueOf(newVersion));
+//	        archivalEntity3.setReportVersion(BigDecimal.valueOf(newVersion));
+//	        archivalEntity4.setReportVersion(BigDecimal.valueOf(newVersion));
+//	        
+//
+//	        archivalEntity1.setReportResubDate(now);
+//	        archivalEntity2.setReportResubDate(now);
+//	        archivalEntity3.setReportResubDate(now);
+//	        archivalEntity4.setReportResubDate(now);
+//	        
+//
+//	        System.out.println("Saving new archival version: " + newVersion);
+//
+//	        // Save to all three archival repositories
+//	        archivalSummaryRepo1.save(archivalEntity1);
+//	        archivalSummaryRepo2.save(archivalEntity2);
+//	        archivalSummaryRepo3.save(archivalEntity3);
+//	        archivalSummaryRepo4.save(archivalEntity4);
+//	       
+//	        System.out.println("Saved archival version successfully: " + newVersion);
+//
+//	    } catch (Exception e) {
+//	        e.printStackTrace();
+//	        throw new RuntimeException("Error while creating M_SEC archival resubmission record", e);
+//	    }
+//	}
 
 /// Downloaded for Archival & Resub
 public byte[] BRRS_M_SECResubExcel(String filename, String reportId, String fromdate,
 String todate, String currency, String dtltype,
-String type, String version) throws Exception {
+String type, BigDecimal version) throws Exception {
 
 	 logger.info("Service: Starting Excel generation process in memory for M_SEC RESUB Excel.");
 
 	    Date reportDate = dateformat.parse(todate);
 
 	    // 🔹 If RESUB is called but version missing → throw error
-	    if ("RESUB".equalsIgnoreCase(type) && (version == null || version.trim().isEmpty())) {
+	    if ("RESUB".equalsIgnoreCase(type) && version == null) {
 	        throw new RuntimeException("RESUB Excel requested but version is missing.");
 	    }
 

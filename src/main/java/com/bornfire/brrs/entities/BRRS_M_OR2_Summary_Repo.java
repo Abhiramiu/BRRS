@@ -1,12 +1,12 @@
 package com.bornfire.brrs.entities;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
 public interface BRRS_M_OR2_Summary_Repo
         extends JpaRepository<M_OR2_Summary_Entity, Date> {
@@ -26,7 +26,7 @@ public interface BRRS_M_OR2_Summary_Repo
 //             @Param("reportVersion") String reportVersion);
 
     // Check if a version exists for a report date
-    Optional<M_OR2_Summary_Entity> findByReportDateAndReportVersion(Date reportDate, String reportVersion);
+    Optional<M_OR2_Summary_Entity> findByReportDateAndReportVersion(Date reportDate, BigDecimal reportVersion);
 
     @Query(value = "SELECT *  FROM BRRS_M_OR2_SUMMARYTABLE WHERE REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION DESC FETCH FIRST 1 ROWS ONLY ", nativeQuery = true)
     List<M_OR2_Summary_Entity> getdatabydateListWithVersion();

@@ -340,13 +340,23 @@ PURPOSE		: BWRBRREPORT
 
 		//to fetch summary from the database - called from the summary button
 		function showdetails() {
-		    isDetailsModal = true; // mark that this modal is from Details
-			 showResultModal('BRRS',' Details page not available for Manual Report');
-		}
+			 $('#loader').modal('show');
+			    var Callurl = /*[[@{'/Reports/' + ${reportid}(
+			        dtltype='detail',
+			        fromdate=${fromdate},
+			        todate=${todate},
+			        type=${type},
+			        asondate=${asondate},
+			        version=${version}
+			    )}]]*/;
+			    location.href = Callurl;
 
-		function showsummary() {
+}
+
+
+function showsummary() {
 			$('#loader').modal('show');
-			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate}, version=${version})}]]*/;
 			location.href = Callurl;
 		}
 
@@ -1767,49 +1777,67 @@ function fileuploads(btn) {
 							th:if="${displaymode == 'summary'}">Details</button>
 				
 						<!-- Modify button -->
-						<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
-							title="Click to EDIT Records"
-							th:if="${type == 'RESUB' or type=='BRRS' and type != 'ARCHIVAL'}"
-							th:classappend="${session.PERMISSIONS == 'W'} and ${dtltype == 'report'} ? 'addedit' "
-							id="addRecord">
-							Modify
-						</button>
+						<button type="button"
+        class="custom-tab-btn"
+        onclick="showmodify(this);"
+        title="Click to EDIT Records"
+        th:classappend="${session.PERMISSIONS == 'W' and dtltype == 'report'} ? 'addedit'"
+        th:if="${type != 'ARCHIVAL' and dtltype ne 'detail'}"
+        id="addRecord">
+    Modify
+</button>
 
 
 						<!-- Cancel button (hidden initially) -->
 						<button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord"
 							onclick="cancelModify();" style="display: none;">Cancel</button>
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'summary'}" th:attr="data-reportid=${reportid},
-                   				 data-asondate=${asondate},
-                   				 data-fromdate=${fromdate},
-                    				 data-todate=${todate},
-                    				 data-currency=${currency}, 
-                    				 data-dtltype=${dtltype},
-                    				 data-filename='M_OR2.xlsx',
-					 				 data-type=${type},
-					    			 data-version=${version}"
-									  onclick="downloadfile(this);">
-							<i class="fa fa-download"></i>
+						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
+							onclick="downloadfile(this)" th:if="${displaymode == 'summary' or displaymode == 'Details'}"
+							th:attr="data-reportid=${reportid},
+                   data-asondate=${asondate},
+                   data-fromdate=${fromdate},
+                   data-todate=${todate},
+                   data-currency=${currency}, 
+                   data-dtltype=${dtltype},
+                   data-filename='M_OR2.xlsx',
+                   data-type=${type},
+                   data-version=${version != null ? version : ''}" style="font-family: Arial;font-weight: bold;">
+							<i class="fa fa-download"></i> Download
 						</button>
-
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'Details'}" onclick="startReport(this);" th:attr="
-								    data-fromdate=${fromdate},
-								    data-todate=${todate},
-									data-currency=${currency},  
-												data-dtltype=${dtltype}, 
-								    data-filename='M_OR2Detail',
-									data-type=${type},
-												data-version=${version}
-								  ">
-							<i class="fa fa-download"></i>
+						
+						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
+							 onclick="downloadfile(this)" 
+								th:if="${displaymode == 'summary' or displaymode == 'Details'}"
+							
+							th:attr="data-reportid=${reportid},
+            data-asondate=${asondate},
+            data-fromdate=${fromdate},
+            data-todate=${todate},
+            data-currency=${currency}, 
+            data-dtltype=${dtltype},
+            data-filename='EMAIL_M_OR2.xlsx',
+            data-type='email',
+            data-version=${version != null ? version : ''}" style="font-family: Arial;font-weight: bold;">
+								<i class="fa fa-download"></i> Email Format
+							
 						</button>
 
 					</div>
 					
 				</div>
-				<div th:if="${displaymode == 'summary'}">
+				<h1 th:if="${displaymode == 'summary' and type == 'ARCHIVAL' and displaymode != 'Details'}"
+  style="text-align: left; font-family: arial;   font-weight: bold; color: white;  font-size: 20px;  
+				background-color: rgb(107, 122, 143); margin-top:10px; margin-bottom:10px;padding-top: 10px; padding-bottom: 10px; " >Archival Summary View - M_OR2</h1>
+				
+				<h1 th:if="${displaymode == 'Details' and type == 'ARCHIVAL' and displaymode != 'summary'}"
+  style="text-align: left; font-family: arial;   font-weight: bold; color: white;  font-size: 20px;  
+				background-color: rgb(107, 122, 143); margin-top:10px; margin-bottom:10px;padding-top: 10px; padding-bottom: 10px; " >Archival Detail View - M_OR2</h1>
+
+				<h1 th:if="${displaymode == 'summary'and type != 'ARCHIVAL'}"  style="text-align: left; font-family: arial;   font-weight: bold; color: white;  font-size: 20px;  
+				background-color: rgb(107, 122, 143); margin-top:10px; margin-bottom:10px;padding-top: 10px; padding-bottom: 10px; " >Summary View - M_OR2 </h1>
+			<h1 th:if="${displaymode == 'Details' and type != 'ARCHIVAL'}"  style="text-align: left;   font-family: arial; font-weight: bold;  color: white; font-size: 20px; 
+			 background-color: rgb(107, 122, 143); margin-top:10px; margin-bottom:10px; padding-top: 10px; padding-bottom: 10px;  ">Detail View - M_OR2</h1>
+				<div th:if="${displaymode == 'summary' or displaymode == 'Details'}">
 					<div class="row">
 						<div class="col-sm-12">
 						<form action="#" method="POST" id="fileupload">

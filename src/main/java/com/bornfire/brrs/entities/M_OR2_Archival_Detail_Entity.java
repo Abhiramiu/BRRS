@@ -3,7 +3,6 @@ package com.bornfire.brrs.entities;
 
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -16,10 +15,8 @@ import javax.persistence.TemporalType;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
-@Table(name = "BRRS_M_OR2_ARCHIVALTABLE_SUMMARY")
-@IdClass(M_OR2_Archival_Summary_PK.class)
-
-public class M_OR2_Archival_Summary_Entity{	
+@Table(name = "BRRS_M_OR2_ARCHIVALTABLE_DETAIL")  
+public class M_OR2_Archival_Detail_Entity {
 	
 	private String	r12_product; 
 	private String	r12_business_line_month; 
@@ -446,19 +443,18 @@ public class M_OR2_Archival_Summary_Entity{
 	private String	r65_product;
 	private BigDecimal	r65_risk_weight_factor;
 	
-	@Id
 	@Temporal(TemporalType.DATE)
 	@DateTimeFormat(pattern = "dd/MM/yyyy")
+	@Id
 	@Column(name = "REPORT_DATE")
 	private Date reportDate;
 	
-	@Id
 	@Column(name = "REPORT_VERSION")
 	private BigDecimal reportVersion;
 	
-    @Column(name = "REPORT_RESUBDATE")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date reportResubDate;	
+	//@Column(name = "REPORT_RESUBDATE")
+	//@Temporal(TemporalType.TIMESTAMP)
+	//private Date reportResubDate;
 	
 	public String report_frequency;
 	public String report_code;
@@ -3022,12 +3018,6 @@ public class M_OR2_Archival_Summary_Entity{
 	public void setReportVersion(BigDecimal reportVersion) {
 		this.reportVersion = reportVersion;
 	}
-	public Date getReportResubDate() {
-		return reportResubDate;
-	}
-	public void setReportResubDate(Date reportResubDate) {
-		this.reportResubDate = reportResubDate;
-	}
 	public String getReport_frequency() {
 		return report_frequency;
 	}
@@ -3064,13 +3054,13 @@ public class M_OR2_Archival_Summary_Entity{
 	public void setDel_flg(String del_flg) {
 		this.del_flg = del_flg;
 	}
-	public M_OR2_Archival_Summary_Entity() {
+	public M_OR2_Archival_Detail_Entity() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 	
 	
 	
-
+	
 
 }

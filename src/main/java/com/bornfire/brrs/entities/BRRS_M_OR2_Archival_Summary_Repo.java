@@ -1,5 +1,6 @@
 package com.bornfire.brrs.entities;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -17,7 +18,10 @@ public interface BRRS_M_OR2_Archival_Summary_Repo
                    "WHERE REPORT_DATE = ?1 AND REPORT_VERSION = ?2",
            nativeQuery = true)
     List<M_OR2_Archival_Summary_Entity> getdatabydateListarchival(
-            Date reportDate, String reportVersion);
+            Date reportDate, BigDecimal reportVersion);
+    
+    @Query(value = "select REPORT_DATE, REPORT_VERSION from BRRS_M_OR2_ARCHIVALTABLE_SUMMARY order by REPORT_VERSION", nativeQuery = true)
+    List<Object> getM_OR2_archival();
 
     // Get latest version for a given date
     @Query(value = "SELECT * FROM BRRS_M_OR2_ARCHIVALTABLE_SUMMARY " +
@@ -29,7 +33,7 @@ public interface BRRS_M_OR2_Archival_Summary_Repo
 
     // Fetch by primary key
     Optional<M_OR2_Archival_Summary_Entity> findByReportDateAndReportVersion(
-            Date reportDate, String reportVersion);
+            Date reportDate, BigDecimal reportVersion);
 
     // Get only the newest version (but sorted ASC if needed)
     @Query(value = "SELECT * FROM BRRS_M_OR2_ARCHIVALTABLE_SUMMARY " +

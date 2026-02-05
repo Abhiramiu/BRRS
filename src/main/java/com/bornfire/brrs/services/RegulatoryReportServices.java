@@ -1179,6 +1179,18 @@ public class RegulatoryReportServices {
 
 			break;
 			
+		case "M_SEC":
+			 repsummary = brrs_m_sec_reportservice.getM_SECView(reportId,
+					 fromdate, todate, currency, dtltype, pageable, type, version); 
+					 break;
+			
+			
+		case "M_OR2":
+			 repsummary = brrs_m_or2_reportservice.getBRRS_M_OR2view(reportId,
+					 fromdate, todate, currency, dtltype, pageable, type, version); 
+					 break;
+			
+			
          case "M_GP": 
 			 
 			 repsummary = BRRS_M_GP_ReportService.getM_GPView(reportId,
@@ -2201,6 +2213,28 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
+			
+			
+		case "M_SEC":
+			try {
+
+				repfile = brrs_m_sec_reportservice.getM_SECExcel(filename, reportId, fromdate, todate, currency,
+						dtltype, type, version);
+			} catch (Exception e) { // TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+			
+			 
+		 case "M_OR2":
+				try {
+
+					repfile = brrs_m_or2_reportservice.getM_OR2Excel(filename, reportId, fromdate, todate, currency,
+							dtltype, type, version);
+				} catch (Exception e) { // TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 			
 		case "M_GP":
 			try {
@@ -4641,6 +4675,16 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
+			
+			
+		case "M_OR2":
+			try {
+				archivalData = brrs_m_or2_reportservice.getM_OR2Archival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
 
 		// New Archival
 
@@ -4741,11 +4785,11 @@ public class RegulatoryReportServices {
 			System.out.println("Fetched M_SECL archival data: " + seclList.size());
 			break;
 
-		case "M_OR2":
-			List<Object[]> or2List = brrs_m_or2_reportservice.getM_OR2Archival();
-			archivalData.addAll(or2List);
-			System.out.println("Fetched M_OR2 archival data: " + or2List.size());
-			break;
+//		case "M_OR2":
+//			List<Object[]> or2List = brrs_m_or2_reportservice.getM_OR2Archival();
+//			archivalData.addAll(or2List);
+//			System.out.println("Fetched M_OR2 archival data: " + or2List.size());
+//			break;
 
 		case "M_SEC":
 			List<Object[]> secList = brrs_m_sec_reportservice.getM_SECArchival();
