@@ -15,101 +15,267 @@ import javax.persistence.TemporalType;
 
 public class M_FXR_Summary_Entity {
 
-//	private String r11_currency;
-	private BigDecimal r11_net_spot_position;
-	private BigDecimal r11_net_forward_position;
-	private BigDecimal r11_guarantees;
-	private BigDecimal r11_net_future_inc_or_exp;
-	private BigDecimal r11_net_delta_wei_fx_opt_posi;
-	private BigDecimal r11_other_items;
-	private BigDecimal r11_net_long_position;
-	private BigDecimal r11_or;
-	private BigDecimal r11_net_short_position;
-//	private String r12_currency;
-	private BigDecimal r12_net_spot_position;
-	private BigDecimal r12_net_forward_position;
-	private BigDecimal r12_guarantees;
-	private BigDecimal r12_net_future_inc_or_exp;
-	private BigDecimal r12_net_delta_wei_fx_opt_posi;
-	private BigDecimal r12_other_items;
-	private BigDecimal r12_net_long_position;
-	private BigDecimal r12_or;
-	private BigDecimal r12_net_short_position;
-//	private String r13_currency;
-	private BigDecimal r13_net_spot_position;
-	private BigDecimal r13_net_forward_position;
-	private BigDecimal r13_guarantees;
-	private BigDecimal r13_net_future_inc_or_exp;
-	private BigDecimal r13_net_delta_wei_fx_opt_posi;
-	private BigDecimal r13_other_items;
-	private BigDecimal r13_net_long_position;
-	private BigDecimal r13_or;
-	private BigDecimal r13_net_short_position;
-//	private String r14_currency;
-	private BigDecimal r14_net_spot_position;
-	private BigDecimal r14_net_forward_position;
-	private BigDecimal r14_guarantees;
-	private BigDecimal r14_net_future_inc_or_exp;
-	private BigDecimal r14_net_delta_wei_fx_opt_posi;
-	private BigDecimal r14_other_items;
-	private BigDecimal r14_net_long_position;
-	private BigDecimal r14_or;
-	private BigDecimal r14_net_short_position;
-//	private String r15_currency;
-	private BigDecimal r15_net_spot_position;
-	private BigDecimal r15_net_forward_position;
-	private BigDecimal r15_guarantees;
-	private BigDecimal r15_net_future_inc_or_exp;
-	private BigDecimal r15_net_delta_wei_fx_opt_posi;
-	private BigDecimal r15_other_items;
-	private BigDecimal r15_net_long_position;
-	private BigDecimal r15_or;
-	private BigDecimal r15_net_short_position;
-//	private String r16_currency;
-	private BigDecimal r16_net_spot_position;
-	private BigDecimal r16_net_forward_position;
-	private BigDecimal r16_guarantees;
-	private BigDecimal r16_net_future_inc_or_exp;
-	private BigDecimal r16_net_delta_wei_fx_opt_posi;
-	private BigDecimal r16_other_items;
-	private BigDecimal r16_net_long_position;
-	private BigDecimal r16_or;
-	private BigDecimal r16_net_short_position;
+   // ===== PRIMARY KEY =====
 
-	private BigDecimal r17_net_long_position;
-	private BigDecimal r17_or;
-	private BigDecimal r17_net_short_position;
+    @Id
+    @Column(name = "REPORT_DATE")
+    @Temporal(TemporalType.DATE)
+    private Date reportDate;
 
-	private BigDecimal r21_long;
-	private BigDecimal r21_short;
-	private BigDecimal r21_total_gross_long_short;
-	private BigDecimal r21_net_position;
-	private BigDecimal r22_long;
-	private BigDecimal r22_short;
-	private BigDecimal r22_total_gross_long_short;
-	private BigDecimal r22_net_position;
+    // ===== R11 =====
 
-	private BigDecimal r23_net_position;
+    @Column(name = "R11_NET_SPOT_POSITION")
+    private BigDecimal r11_net_spot_position;
 
-	private BigDecimal r29_greater_net_long_or_short;
-	private BigDecimal r29_abs_value_net_gold_posi;
-	// private BigDecimal r29_capital_require;
-	private BigDecimal r29_capital_charge;
-	private BigDecimal r30_capital_require;
+    @Column(name = "R11_NET_FORWARD_POSITION")
+    private BigDecimal r11_net_forward_position;
 
-	@Temporal(TemporalType.DATE)
-	@Id
-	@Column(name = "REPORT_DATE")
-	private Date reportDate;
-	@Column(name = "REPORT_VERSION")
-	private String reportVersion;
+    @Column(name = "R11_GUARANTEES")
+    private BigDecimal r11_guarantees;
 
-	private String report_frequency;
-	private String report_code;
-	private String report_desc;
-	private String entity_flg;
-	private String modify_flg;
-	private String del_flg;
+    @Column(name = "R11_NET_FUTURE_INC_OR_EXP")
+    private BigDecimal r11_net_future_inc_or_exp;
+
+    @Column(name = "R11_NET_DELTA_WEI_FX_OPT_POSI")
+    private BigDecimal r11_net_delta_wei_fx_opt_posi;
+
+    @Column(name = "R11_OTHER_ITEMS")
+    private BigDecimal r11_other_items;
+
+    @Column(name = "R11_NET_LONG_POSITION")
+    private BigDecimal r11_net_long_position;
+
+    @Column(name = "R11_OR")
+    private BigDecimal r11_or;
+
+    @Column(name = "R11_NET_SHORT_POSITION")
+    private BigDecimal r11_net_short_position;
+
+    // ===== R12 =====
+
+    @Column(name = "R12_NET_SPOT_POSITION")
+    private BigDecimal r12_net_spot_position;
+
+    @Column(name = "R12_NET_FORWARD_POSITION")
+    private BigDecimal r12_net_forward_position;
+
+    @Column(name = "R12_GUARANTEES")
+    private BigDecimal r12_guarantees;
+
+    @Column(name = "R12_NET_FUTURE_INC_OR_EXP")
+    private BigDecimal r12_net_future_inc_or_exp;
+
+    @Column(name = "R12_NET_DELTA_WEI_FX_OPT_POSI")
+    private BigDecimal r12_net_delta_wei_fx_opt_posi;
+
+    @Column(name = "R12_OTHER_ITEMS")
+    private BigDecimal r12_other_items;
+
+    @Column(name = "R12_NET_LONG_POSITION")
+    private BigDecimal r12_net_long_position;
+
+    @Column(name = "R12_OR")
+    private BigDecimal r12_or;
+
+    @Column(name = "R12_NET_SHORT_POSITION")
+    private BigDecimal r12_net_short_position;
+
+    // ===== R13 =====
+
+    @Column(name = "R13_NET_SPOT_POSITION")
+    private BigDecimal r13_net_spot_position;
+
+    @Column(name = "R13_NET_FORWARD_POSITION")
+    private BigDecimal r13_net_forward_position;
+
+    @Column(name = "R13_GUARANTEES")
+    private BigDecimal r13_guarantees;
+
+    @Column(name = "R13_NET_FUTURE_INC_OR_EXP")
+    private BigDecimal r13_net_future_inc_or_exp;
+
+    @Column(name = "R13_NET_DELTA_WEI_FX_OPT_POSI")
+    private BigDecimal r13_net_delta_wei_fx_opt_posi;
+
+    @Column(name = "R13_OTHER_ITEMS")
+    private BigDecimal r13_other_items;
+
+    @Column(name = "R13_NET_LONG_POSITION")
+    private BigDecimal r13_net_long_position;
+
+    @Column(name = "R13_OR")
+    private BigDecimal r13_or;
+
+    @Column(name = "R13_NET_SHORT_POSITION")
+    private BigDecimal r13_net_short_position;
+
+    // ===== R14 =====
+
+    @Column(name = "R14_NET_SPOT_POSITION")
+    private BigDecimal r14_net_spot_position;
+
+    @Column(name = "R14_NET_FORWARD_POSITION")
+    private BigDecimal r14_net_forward_position;
+
+    @Column(name = "R14_GUARANTEES")
+    private BigDecimal r14_guarantees;
+
+    @Column(name = "R14_NET_FUTURE_INC_OR_EXP")
+    private BigDecimal r14_net_future_inc_or_exp;
+
+    @Column(name = "R14_NET_DELTA_WEI_FX_OPT_POSI")
+    private BigDecimal r14_net_delta_wei_fx_opt_posi;
+
+    @Column(name = "R14_OTHER_ITEMS")
+    private BigDecimal r14_other_items;
+
+    @Column(name = "R14_NET_LONG_POSITION")
+    private BigDecimal r14_net_long_position;
+
+    @Column(name = "R14_OR")
+    private BigDecimal r14_or;
+
+    @Column(name = "R14_NET_SHORT_POSITION")
+    private BigDecimal r14_net_short_position;
+
+    // ===== R15 =====
+
+    @Column(name = "R15_NET_SPOT_POSITION")
+    private BigDecimal r15_net_spot_position;
+
+    @Column(name = "R15_NET_FORWARD_POSITION")
+    private BigDecimal r15_net_forward_position;
+
+    @Column(name = "R15_GUARANTEES")
+    private BigDecimal r15_guarantees;
+
+    @Column(name = "R15_NET_FUTURE_INC_OR_EXP")
+    private BigDecimal r15_net_future_inc_or_exp;
+
+    @Column(name = "R15_NET_DELTA_WEI_FX_OPT_POSI")
+    private BigDecimal r15_net_delta_wei_fx_opt_posi;
+
+    @Column(name = "R15_OTHER_ITEMS")
+    private BigDecimal r15_other_items;
+
+    @Column(name = "R15_NET_LONG_POSITION")
+    private BigDecimal r15_net_long_position;
+
+    @Column(name = "R15_OR")
+    private BigDecimal r15_or;
+
+    @Column(name = "R15_NET_SHORT_POSITION")
+    private BigDecimal r15_net_short_position;
+
+    // ===== R16 =====
+
+    @Column(name = "R16_NET_SPOT_POSITION")
+    private BigDecimal r16_net_spot_position;
+
+    @Column(name = "R16_NET_FORWARD_POSITION")
+    private BigDecimal r16_net_forward_position;
+
+    @Column(name = "R16_GUARANTEES")
+    private BigDecimal r16_guarantees;
+
+    @Column(name = "R16_NET_FUTURE_INC_OR_EXP")
+    private BigDecimal r16_net_future_inc_or_exp;
+
+    @Column(name = "R16_NET_DELTA_WEI_FX_OPT_POSI")
+    private BigDecimal r16_net_delta_wei_fx_opt_posi;
+
+    @Column(name = "R16_OTHER_ITEMS")
+    private BigDecimal r16_other_items;
+
+    @Column(name = "R16_NET_LONG_POSITION")
+    private BigDecimal r16_net_long_position;
+
+    @Column(name = "R16_OR")
+    private BigDecimal r16_or;
+
+    @Column(name = "R16_NET_SHORT_POSITION")
+    private BigDecimal r16_net_short_position;
+
+    // ===== R17 =====
+
+    @Column(name = "R17_NET_LONG_POSITION")
+    private BigDecimal r17_net_long_position;
+
+    @Column(name = "R17_OR")
+    private BigDecimal r17_or;
+
+    @Column(name = "R17_NET_SHORT_POSITION")
+    private BigDecimal r17_net_short_position;
+
+    // ===== R21 =====
+
+    @Column(name = "R21_LONG")
+    private BigDecimal r21_long;
+
+    @Column(name = "R21_SHORT")
+    private BigDecimal r21_short;
+
+    @Column(name = "R21_TOTAL_GROSS_LONG_SHORT")
+    private BigDecimal r21_total_gross_long_short;
+
+    @Column(name = "R21_NET_POSITION")
+    private BigDecimal r21_net_position;
+
+    // ===== R22 =====
+
+    @Column(name = "R22_LONG")
+    private BigDecimal r22_long;
+
+    @Column(name = "R22_SHORT")
+    private BigDecimal r22_short;
+
+    @Column(name = "R22_TOTAL_GROSS_LONG_SHORT")
+    private BigDecimal r22_total_gross_long_short;
+
+    @Column(name = "R22_NET_POSITION")
+    private BigDecimal r22_net_position;
+
+    // ===== R23 =====
+
+    @Column(name = "R23_NET_POSITION")
+    private BigDecimal r23_net_position;
+
+    // ===== R29 & R30 =====
+
+    @Column(name = "R29_GREATER_NET_LONG_OR_SHORT")
+    private BigDecimal r29_greater_net_long_or_short;
+
+    @Column(name = "R29_ABS_VALUE_NET_GOLD_POSI")
+    private BigDecimal r29_abs_value_net_gold_posi;
+
+    @Column(name = "R29_CAPITAL_CHARGE")
+    private BigDecimal r29_capital_charge;
+
+    @Column(name = "R30_CAPITAL_REQUIRE")
+    private BigDecimal r30_capital_require;
+
+    // ===== COMMON FIELDS =====
+
+    @Column(name = "REPORT_VERSION")
+    private BigDecimal report_version;
+
+    @Column(name = "REPORT_FREQUENCY")
+    private String report_frequency;
+
+    @Column(name = "REPORT_CODE")
+    private String report_code;
+
+    @Column(name = "REPORT_DESC")
+    private String report_desc;
+
+    @Column(name = "ENTITY_FLG")
+    private String entity_flg;
+
+    @Column(name = "MODIFY_FLG")
+    private String modify_flg;
+
+    @Column(name = "DEL_FLG")
+    private String del_flg;
 
 	public BigDecimal getR11_net_spot_position() {
 		return r11_net_spot_position;
@@ -679,12 +845,14 @@ public class M_FXR_Summary_Entity {
 		this.reportDate = reportDate;
 	}
 
-	public String getReportVersion() {
-		return reportVersion;
+
+
+	public BigDecimal getReport_version() {
+		return report_version;
 	}
 
-	public void setReportVersion(String reportVersion) {
-		this.reportVersion = reportVersion;
+	public void setReport_version(BigDecimal report_version) {
+		this.report_version = report_version;
 	}
 
 	public String getReport_frequency() {

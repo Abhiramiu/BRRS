@@ -403,58 +403,75 @@ PURPOSE		: BRRSREPORT
 			var selectedTab = document.getElementById("selectedTab").value;
 			activateTab(selectedTab);
 		};
-		function downloadfile(button) {
-			var reportid = button.getAttribute('data-reportid');
-			var asondate = button.getAttribute('data-asondate');
-			var fromdate = button.getAttribute('data-fromdate');
-			var todate = button.getAttribute('data-todate');
-			var currency = button.getAttribute('data-currency');
-			var subreportid = button.getAttribute('data-subreportid');
-			var secid = button.getAttribute('data-secid');
-			var dtltype = button.getAttribute('data-dtltype');
-			var filename = button.getAttribute('data-filename');
-			var type = button.getAttribute('data-type');
-			var version = button.getAttribute('data-version');
-			$('#loader').modal('show');
-			$.ajax({
-				url: './downloadExcel?reportid=' + reportid +
-					'&fromdate=' + fromdate +
-					'&asondate=' + asondate +
-					'&todate=' + todate +
-					'&currency=' + currency +
-					'&subreportid=' + subreportid +
-					'&secid=' + secid +
-					'&filename=' + filename +
-					'&type=' + type +
-					'&version=' + version,
-				type: 'GET',
-				xhrFields: {
-					responseType: 'blob'
-				},
-				success: function (data) {
-					$('#loader').modal('hide');
-					if (data && data.size > 100) {
-						const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
-						const url = window.URL.createObjectURL(blob);
-						const a = document.createElement('a');
-						a.style.display = 'none';
-						a.href = url;
-						a.download = filename;
-						document.body.appendChild(a);
-						a.click();
-						window.URL.revokeObjectURL(url);
-						document.body.removeChild(a);
-						showResultModal('BRRS', 'M_FXR.xlsx downloaded successfully.');
-					} else {
-						showResultModal('Information', 'No data was available to create a download.');
-					}
-				},
-				error: function (jqXHR, textStatus, errorThrown) {
-					$('#loader').modal('hide');
-					console.error("Download failed:", textStatus, errorThrown);
-					showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
-				}
-			});
+				function downloadfile(button) {
+
+		    var reportid = button.getAttribute('data-reportid');
+		    var asondate = button.getAttribute('data-asondate');
+		    var fromdate = button.getAttribute('data-fromdate');
+		    var todate = button.getAttribute('data-todate');
+		    var currency = button.getAttribute('data-currency');
+		    var subreportid = button.getAttribute('data-subreportid');
+		    var secid = button.getAttribute('data-secid');
+		    var dtltype = button.getAttribute('data-dtltype');
+		    var filename = button.getAttribute('data-filename');
+		    var type = button.getAttribute('data-type');
+		    var version = button.getAttribute('data-version');
+
+		    var loader = new bootstrap.Modal(
+		        document.getElementById('loader'),
+		        { backdrop: 'static', keyboard: false }
+		    );
+		    loader.show();
+
+		    // ✅ Build URL safely
+		    var url = './downloadExcel?reportid=' + reportid +
+		        '&fromdate=' + fromdate +
+		        '&asondate=' + asondate +
+		        '&todate=' + todate +
+		        '&currency=' + currency +
+		        '&subreportid=' + subreportid +
+		        '&secid=' + secid +
+		        '&filename=' + filename +
+		        '&type=' + type;
+
+		    // ✅ ONLY append version if valid
+		    if (version && version.trim() !== '') {
+		        url += '&version=' + version;
+		    }
+
+		    $.ajax({
+		        url: url,
+		        type: 'GET',
+		        xhrFields: { responseType: 'blob' },
+
+		        success: function (data) {
+		            $('#loader').modal('hide');
+
+		            if (data && data.size > 100) {
+		                const blob = new Blob([data], {
+		                    type: 'application/vnd.ms-excel'
+		                });
+		                const url = window.URL.createObjectURL(blob);
+		                const a = document.createElement('a');
+		                a.style.display = 'none';
+		                a.href = url;
+		                a.download = filename;
+		                document.body.appendChild(a);
+		                a.click();
+		                window.URL.revokeObjectURL(url);
+		                document.body.removeChild(a);
+
+		                showResultModal('BRRS', filename + ' downloaded successfully.');
+		            } else {
+		                showResultModal('Information', 'No data was available to create a download.');
+		            }
+		        },
+
+		        error: function () {
+		            $('#loader').modal('hide');
+		            showResultModal('Error', 'An error occurred while downloading the file.');
+		        }
+		    });
 		}
 		function editRecord() {
 			showResultModal('Alert', 'Development in progress');
@@ -1296,7 +1313,7 @@ function fileuploads(btn) {
 
 										
 									</thead>
-		<tbody id="entity1" th:each="report: ${reportsummary1}" style="font-family: Arial;">
+		<tbody id="entity1" th:each="report: ${reportsummary}" style="font-family: Arial;">
 <tr>
 	<td id="ROW11"></td>
 	<!-- <td id="ROW11" >
@@ -1952,7 +1969,7 @@ function fileuploads(btn) {
             
           </tr>
         </thead>
-        <tbody id="entity2" th:each="report: ${reportsummary2}" style="font-family: Arial;">
+        <tbody id="entity2" th:each="report: ${reportsummary}" style="font-family: Arial;">
           <tr>
             <td id="ROW21" style="padding-left: 20px; font-weight: bold;">
               <input class="display-input Show_input"
@@ -2076,7 +2093,7 @@ function fileuploads(btn) {
             <th style="text-align:right; color:black;">Q=(M+N)xP</th>
           </tr>
         </thead>
-        <tbody id="entity3" th:each="report: ${reportsummary3}" style="font-family: Arial;">
+        <tbody id="entity3" th:each="report: ${reportsummary}" style="font-family: Arial;">
             <tr>
           	<td id="ROW29" style="font-weight:bold; text-align:left; border: none !important;" >General risk</td>
             <td style="padding-left: 20px; text-align:right;background-color: rgb(107, 122, 143); color: white;">
