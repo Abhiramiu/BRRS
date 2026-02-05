@@ -170,7 +170,7 @@ public class BRRS_M_GMIRT_ReportService {
 
 	}
 	 
-	
+	/*
 	
 	public ModelAndView getM_GMIRTcurrentDtl(String reportId, String fromdate, String todate, String currency,
 			String dtltype, Pageable pageable, String filter, String type, String version) {
@@ -255,7 +255,7 @@ public class BRRS_M_GMIRT_ReportService {
 		return mv;
 	}
 	
-	
+	*/
 	
 	
 
@@ -1159,7 +1159,7 @@ public class BRRS_M_GMIRT_ReportService {
 	}
 	
 	
-	
+	/*
 	public byte[] getM_GMIRTDetailExcel(String filename, String fromdate, String todate, String currency, String dtltype,
 			String type, String version) {
 		try {
@@ -1412,7 +1412,7 @@ public class BRRS_M_GMIRT_ReportService {
 			return new byte[0];
 		}
 	}
-	
+	*/
 	
 	
 	public void updateReport(M_GMIRT_Summary_Entity updatedEntity) {

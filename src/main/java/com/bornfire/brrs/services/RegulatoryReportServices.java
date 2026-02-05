@@ -1698,13 +1698,13 @@ public class RegulatoryReportServices {
 			repdetail = brrs_M_SRWA_12A_New_reportservice.getM_SRWA_12A_NewcurrentDtl(reportId, fromdate, todate,
 					currency, dtltype, pageable, Filter, type, version);
 			break;
-
+/*
 		case "M_GMIRT":
 
 			repdetail = brrs_m_gmirt_reportservice.getM_GMIRTcurrentDtl(reportId, fromdate, todate, currency, dtltype,
 					pageable, Filter, type, version);
 			break;
-
+*/
 		case "M_GALOR":
 
 			repdetail = BRRS_m_galor_ReportService.getM_GALORcurrentDtl(reportId, fromdate, todate, currency, dtltype,
@@ -5189,13 +5189,13 @@ public class RegulatoryReportServices {
 			fileData = brrs_M_SRWA_12A_New_reportservice.getM_SRWA_12A_NewDetailExcel(filename, fromdate, todate,
 					currency, dtltype, type, version);
 		}
-
+/*
 		else if ("M_GMIRT_Detail".equals(filename)) {
 
 			fileData = brrs_m_gmirt_reportservice.getM_GMIRTDetailExcel(filename, fromdate, todate, currency, dtltype,
 					type, version);
 		}
-
+*/
 		else if ("M_GALOR_Detail".equals(filename)) {
 
 			fileData = BRRS_m_galor_ReportService.getM_GALORDetailExcel(filename, fromdate, todate, currency, dtltype,

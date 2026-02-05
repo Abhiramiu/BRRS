@@ -7,207 +7,749 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
-
-
 @Entity
 @Table(name = "BRRS_M_SRWA_12C_ARCHIVALTABLE_DETAIL")
+@IdClass(M_SRWA_12C_Archival_Detail_PK.class)
 
 public class M_SRWA_12C_Archival_Detail_Entity {
+	private String R11_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE;
+	private String R12_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE;
+	private BigDecimal R12_NUMBER_OF_FAILED_TRADES;
+	private BigDecimal R12_POSITIVE_CURRENT_EXPOSURE;
+	private BigDecimal R12_RISK_MULTIPLIER;
+	private BigDecimal R12_RWA;
+	private String R13_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE;
+	private BigDecimal R13_NUMBER_OF_FAILED_TRADES;
+	private BigDecimal R13_POSITIVE_CURRENT_EXPOSURE;
+	private BigDecimal R13_RISK_MULTIPLIER;
+	private BigDecimal R13_RWA;
+	private String R14_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE;
+	private BigDecimal R14_NUMBER_OF_FAILED_TRADES;
+	private BigDecimal R14_POSITIVE_CURRENT_EXPOSURE;
+	private BigDecimal R14_RISK_MULTIPLIER;
+	private BigDecimal R14_RWA;
+	private String R15_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE;
+	private BigDecimal R15_NUMBER_OF_FAILED_TRADES;
+	private BigDecimal R15_POSITIVE_CURRENT_EXPOSURE;
+	private BigDecimal R15_RISK_MULTIPLIER;
+	private BigDecimal R15_RWA;
+	private String R16_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE;
+	private BigDecimal R16_NUMBER_OF_FAILED_TRADES;
+	private BigDecimal R16_POSITIVE_CURRENT_EXPOSURE;
+	private BigDecimal R16_RWA;
+	private String R19_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE;
+	private String R20_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE;
+	private BigDecimal R20_NUMBER_OF_FAILED_TRADES;
+	private BigDecimal R20_POSITIVE_CURRENT_EXPOSURE;
+	private BigDecimal R20_RISK_MULTIPLIER;
+	private BigDecimal R20_RWA;
+	private String R21_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE;
+	private BigDecimal R21_NUMBER_OF_FAILED_TRADES;
+	private BigDecimal R21_POSITIVE_CURRENT_EXPOSURE;
+	private BigDecimal R21_RISK_MULTIPLIER;
+	private BigDecimal R21_RWA;
+	private String R22_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE;
+	private BigDecimal R22_NUMBER_OF_FAILED_TRADES;
+	private BigDecimal R22_POSITIVE_CURRENT_EXPOSURE;
+	private BigDecimal R22_RISK_MULTIPLIER;
+	private BigDecimal R22_RWA;
+	private String R23_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE;
+	private BigDecimal R23_NUMBER_OF_FAILED_TRADES;
+	private BigDecimal R23_POSITIVE_CURRENT_EXPOSURE;
+	private BigDecimal R23_RISK_MULTIPLIER;
+	private BigDecimal R23_RWA;
+	private String R24_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE;
+	private BigDecimal R24_NUMBER_OF_FAILED_TRADES;
+	private BigDecimal R24_POSITIVE_CURRENT_EXPOSURE;
+	private BigDecimal R24_RISK_MULTIPLIER;
+	private BigDecimal R24_RWA;
+	private String R25_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE;
+	private BigDecimal R25_NUMBER_OF_FAILED_TRADES;
+	private BigDecimal R25_POSITIVE_CURRENT_EXPOSURE;
+	private BigDecimal R25_RISK_MULTIPLIER;
+	private BigDecimal R25_RWA;
+	private String R26_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE;
+	private BigDecimal R26_NUMBER_OF_FAILED_TRADES;
+	private BigDecimal R26_POSITIVE_CURRENT_EXPOSURE;
+	private BigDecimal R26_RISK_MULTIPLIER;
+	private BigDecimal R26_RWA;
+	private String R27_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE;
+	private BigDecimal R27_NUMBER_OF_FAILED_TRADES;
+	private BigDecimal R27_POSITIVE_CURRENT_EXPOSURE;
+	private BigDecimal R27_RWA;
+	private String R28_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE;
+	private BigDecimal R28_NUMBER_OF_FAILED_TRADES;
+	private BigDecimal R28_POSITIVE_CURRENT_EXPOSURE;
+	private BigDecimal R28_RWA;
+
+	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern = "dd/MM/yyyy")
 	@Id
-	   @Column(name = "CUST_ID")
-	   private String custId;
-	   @Column(name = "ACCT_NUMBER")
-	   private String acctNumber;
-	   @Column(name = "ACCT_NAME")
-	   private String acctName;
-	   @Column(name = "DATA_TYPE")
-	   private String dataType;
-	   @Column(name = "COLUMN_ID")
-	   private String columnId;
-	  
-	   @Column(name = "ROW_ID")
-	   private String rowId;
-	   @Column(name = "REPORT_REMARKS")
-	   private String reportRemarks;
-	   @Column(name = "MODIFICATION_REMARKS")
-	   private String modificationRemarks;
-	   @Column(name = "DATA_ENTRY_VERSION")
-	   private String dataEntryVersion;
-	   @Column(name = "ACCT_BALANCE_IN_PULA", precision = 24, scale = 3)
-	   private BigDecimal acctBalanceInpula;
-	   @Column(name = "REPORT_DATE")
-	   @DateTimeFormat(pattern = "dd-MM-yyyy")
-	   private Date reportDate;
-	   @Column(name = "REPORT_NAME")
-	   private String reportName;
-	   @Column(name = "CREATE_USER")
-	   private String createUser;
-	   @Column(name = "CREATE_TIME")
-	   @DateTimeFormat(pattern = "dd-MM-yyyy")
-	   private Date createTime;
-	   @Column(name = "MODIFY_USER")
-	   private String modifyUser;
-	   @Column(name = "MODIFY_TIME")
-	   @DateTimeFormat(pattern = "dd-MM-yyyy")
-	   private Date modifyTime;
-	   @Column(name = "VERIFY_USER")
-	   private String verifyUser;
-	   @Column(name = "VERIFY_TIME")
-	   @DateTimeFormat(pattern = "dd-MM-yyyy")
-	   private Date verifyTime;
-	   @Column(name = "ENTITY_FLG")
-	   private char entityFlg;
-	   @Column(name = "MODIFY_FLG")
-	   private char modifyFlg;
-	   @Column(name = "DEL_FLG")
-	   private char delFlg;
-		public String getCustId() {
-			return custId;
-		}
-		public void setCustId(String custId) {
-			this.custId = custId;
-		}
-		public String getAcctNumber() {
-			return acctNumber;
-		}
-		public void setAcctNumber(String acctNumber) {
-			this.acctNumber = acctNumber;
-		}
-		public String getAcctName() {
-			return acctName;
-		}
-		public void setAcctName(String acctName) {
-			this.acctName = acctName;
-		}
-		public String getDataType() {
-			return dataType;
-		}
-		public void setDataType(String dataType) {
-			this.dataType = dataType;
-		}
-		public String getColumnId() {
-			return columnId;
-		}
-		public void setColumnId(String columnId) {
-			this.columnId = columnId;
-		}
-		public String getRowId() {
-			return rowId;
-		}
-		public void setRowId(String rowId) {
-			this.rowId = rowId;
-		}
-		public String getReportRemarks() {
-			return reportRemarks;
-		}
-		public void setReportRemarks(String reportRemarks) {
-			this.reportRemarks = reportRemarks;
-		}
-		public String getModificationRemarks() {
-			return modificationRemarks;
-		}
-		public void setModificationRemarks(String modificationRemarks) {
-			this.modificationRemarks = modificationRemarks;
-		}
-		public String getDataEntryVersion() {
-			return dataEntryVersion;
-		}
-		public void setDataEntryVersion(String dataEntryVersion) {
-			this.dataEntryVersion = dataEntryVersion;
-		}
-		public BigDecimal getAcctBalanceInpula() {
-			return acctBalanceInpula;
-		}
-		public void setAcctBalanceInpula(BigDecimal acctBalanceInpula) {
-			this.acctBalanceInpula = acctBalanceInpula;
-		}
-		public Date getReportDate() {
-			return reportDate;
-		}
-		public void setReportDate(Date reportDate) {
-			this.reportDate = reportDate;
-		}
-		public String getReportName() {
-			return reportName;
-		}
-		public void setReportName(String reportName) {
-			this.reportName = reportName;
-		}
-		public String getCreateUser() {
-			return createUser;
-		}
-		public void setCreateUser(String createUser) {
-			this.createUser = createUser;
-		}
-		public Date getCreateTime() {
-			return createTime;
-		}
-		public void setCreateTime(Date createTime) {
-			this.createTime = createTime;
-		}
-		public String getModifyUser() {
-			return modifyUser;
-		}
-		public void setModifyUser(String modifyUser) {
-			this.modifyUser = modifyUser;
-		}
-		public Date getModifyTime() {
-			return modifyTime;
-		}
-		public void setModifyTime(Date modifyTime) {
-			this.modifyTime = modifyTime;
-		}
-		public String getVerifyUser() {
-			return verifyUser;
-		}
-		public void setVerifyUser(String verifyUser) {
-			this.verifyUser = verifyUser;
-		}
-		public Date getVerifyTime() {
-			return verifyTime;
-		}
-		public void setVerifyTime(Date verifyTime) {
-			this.verifyTime = verifyTime;
-		}
-		public char getEntityFlg() {
-			return entityFlg;
-		}
-		public void setEntityFlg(char entityFlg) {
-			this.entityFlg = entityFlg;
-		}
-		public char getModifyFlg() {
-			return modifyFlg;
-		}
-		public void setModifyFlg(char modifyFlg) {
-			this.modifyFlg = modifyFlg;
-		}
-		public char getDelFlg() {
-			return delFlg;
-		}
-		public void setDelFlg(char delFlg) {
-			this.delFlg = delFlg;
-		}
-		
-		   
-	  
-	  
+
+	private Date report_date;
+	@Id
+	private BigDecimal report_version;
+
+	@Column(name = "REPORT_RESUBDATE")
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date reportResubDate;
+	private String report_frequency;
+	private String report_code;
+	private String report_desc;
+	private String entity_flg;
+	private String modify_flg;
+	private String del_flg;
+
+	public String getR11_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE() {
+		return R11_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE;
+	}
+
+	public void setR11_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE(
+			String r11_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE) {
+		R11_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE = r11_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE;
+	}
+
+	public String getR12_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE() {
+		return R12_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE;
+	}
+
+	public void setR12_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE(
+			String r12_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE) {
+		R12_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE = r12_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE;
+	}
+
+	public BigDecimal getR12_NUMBER_OF_FAILED_TRADES() {
+		return R12_NUMBER_OF_FAILED_TRADES;
+	}
+
+	public void setR12_NUMBER_OF_FAILED_TRADES(BigDecimal r12_NUMBER_OF_FAILED_TRADES) {
+		R12_NUMBER_OF_FAILED_TRADES = r12_NUMBER_OF_FAILED_TRADES;
+	}
+
+	public BigDecimal getR12_POSITIVE_CURRENT_EXPOSURE() {
+		return R12_POSITIVE_CURRENT_EXPOSURE;
+	}
+
+	public void setR12_POSITIVE_CURRENT_EXPOSURE(BigDecimal r12_POSITIVE_CURRENT_EXPOSURE) {
+		R12_POSITIVE_CURRENT_EXPOSURE = r12_POSITIVE_CURRENT_EXPOSURE;
+	}
+
+	public BigDecimal getR12_RISK_MULTIPLIER() {
+		return R12_RISK_MULTIPLIER;
+	}
+
+	public void setR12_RISK_MULTIPLIER(BigDecimal r12_RISK_MULTIPLIER) {
+		R12_RISK_MULTIPLIER = r12_RISK_MULTIPLIER;
+	}
+
+	public BigDecimal getR12_RWA() {
+		return R12_RWA;
+	}
+
+	public void setR12_RWA(BigDecimal r12_RWA) {
+		R12_RWA = r12_RWA;
+	}
+
+	public String getR13_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE() {
+		return R13_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE;
+	}
+
+	public void setR13_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE(
+			String r13_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE) {
+		R13_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE = r13_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE;
+	}
+
+	public BigDecimal getR13_NUMBER_OF_FAILED_TRADES() {
+		return R13_NUMBER_OF_FAILED_TRADES;
+	}
+
+	public void setR13_NUMBER_OF_FAILED_TRADES(BigDecimal r13_NUMBER_OF_FAILED_TRADES) {
+		R13_NUMBER_OF_FAILED_TRADES = r13_NUMBER_OF_FAILED_TRADES;
+	}
+
+	public BigDecimal getR13_POSITIVE_CURRENT_EXPOSURE() {
+		return R13_POSITIVE_CURRENT_EXPOSURE;
+	}
+
+	public void setR13_POSITIVE_CURRENT_EXPOSURE(BigDecimal r13_POSITIVE_CURRENT_EXPOSURE) {
+		R13_POSITIVE_CURRENT_EXPOSURE = r13_POSITIVE_CURRENT_EXPOSURE;
+	}
+
+	public BigDecimal getR13_RISK_MULTIPLIER() {
+		return R13_RISK_MULTIPLIER;
+	}
+
+	public void setR13_RISK_MULTIPLIER(BigDecimal r13_RISK_MULTIPLIER) {
+		R13_RISK_MULTIPLIER = r13_RISK_MULTIPLIER;
+	}
+
+	public BigDecimal getR13_RWA() {
+		return R13_RWA;
+	}
+
+	public void setR13_RWA(BigDecimal r13_RWA) {
+		R13_RWA = r13_RWA;
+	}
+
+	public String getR14_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE() {
+		return R14_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE;
+	}
+
+	public void setR14_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE(
+			String r14_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE) {
+		R14_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE = r14_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE;
+	}
+
+	public BigDecimal getR14_NUMBER_OF_FAILED_TRADES() {
+		return R14_NUMBER_OF_FAILED_TRADES;
+	}
+
+	public void setR14_NUMBER_OF_FAILED_TRADES(BigDecimal r14_NUMBER_OF_FAILED_TRADES) {
+		R14_NUMBER_OF_FAILED_TRADES = r14_NUMBER_OF_FAILED_TRADES;
+	}
+
+	public BigDecimal getR14_POSITIVE_CURRENT_EXPOSURE() {
+		return R14_POSITIVE_CURRENT_EXPOSURE;
+	}
+
+	public void setR14_POSITIVE_CURRENT_EXPOSURE(BigDecimal r14_POSITIVE_CURRENT_EXPOSURE) {
+		R14_POSITIVE_CURRENT_EXPOSURE = r14_POSITIVE_CURRENT_EXPOSURE;
+	}
+
+	public BigDecimal getR14_RISK_MULTIPLIER() {
+		return R14_RISK_MULTIPLIER;
+	}
+
+	public void setR14_RISK_MULTIPLIER(BigDecimal r14_RISK_MULTIPLIER) {
+		R14_RISK_MULTIPLIER = r14_RISK_MULTIPLIER;
+	}
+
+	public BigDecimal getR14_RWA() {
+		return R14_RWA;
+	}
+
+	public void setR14_RWA(BigDecimal r14_RWA) {
+		R14_RWA = r14_RWA;
+	}
+
+	public String getR15_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE() {
+		return R15_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE;
+	}
+
+	public void setR15_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE(
+			String r15_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE) {
+		R15_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE = r15_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE;
+	}
+
+	public BigDecimal getR15_NUMBER_OF_FAILED_TRADES() {
+		return R15_NUMBER_OF_FAILED_TRADES;
+	}
+
+	public void setR15_NUMBER_OF_FAILED_TRADES(BigDecimal r15_NUMBER_OF_FAILED_TRADES) {
+		R15_NUMBER_OF_FAILED_TRADES = r15_NUMBER_OF_FAILED_TRADES;
+	}
+
+	public BigDecimal getR15_POSITIVE_CURRENT_EXPOSURE() {
+		return R15_POSITIVE_CURRENT_EXPOSURE;
+	}
+
+	public void setR15_POSITIVE_CURRENT_EXPOSURE(BigDecimal r15_POSITIVE_CURRENT_EXPOSURE) {
+		R15_POSITIVE_CURRENT_EXPOSURE = r15_POSITIVE_CURRENT_EXPOSURE;
+	}
+
+	public BigDecimal getR15_RISK_MULTIPLIER() {
+		return R15_RISK_MULTIPLIER;
+	}
+
+	public void setR15_RISK_MULTIPLIER(BigDecimal r15_RISK_MULTIPLIER) {
+		R15_RISK_MULTIPLIER = r15_RISK_MULTIPLIER;
+	}
+
+	public BigDecimal getR15_RWA() {
+		return R15_RWA;
+	}
+
+	public void setR15_RWA(BigDecimal r15_RWA) {
+		R15_RWA = r15_RWA;
+	}
+
+	public String getR16_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE() {
+		return R16_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE;
+	}
+
+	public void setR16_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE(
+			String r16_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE) {
+		R16_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE = r16_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE;
+	}
+
+	public BigDecimal getR16_NUMBER_OF_FAILED_TRADES() {
+		return R16_NUMBER_OF_FAILED_TRADES;
+	}
+
+	public void setR16_NUMBER_OF_FAILED_TRADES(BigDecimal r16_NUMBER_OF_FAILED_TRADES) {
+		R16_NUMBER_OF_FAILED_TRADES = r16_NUMBER_OF_FAILED_TRADES;
+	}
+
+	public BigDecimal getR16_POSITIVE_CURRENT_EXPOSURE() {
+		return R16_POSITIVE_CURRENT_EXPOSURE;
+	}
+
+	public void setR16_POSITIVE_CURRENT_EXPOSURE(BigDecimal r16_POSITIVE_CURRENT_EXPOSURE) {
+		R16_POSITIVE_CURRENT_EXPOSURE = r16_POSITIVE_CURRENT_EXPOSURE;
+	}
+
+	public BigDecimal getR16_RWA() {
+		return R16_RWA;
+	}
+
+	public void setR16_RWA(BigDecimal r16_RWA) {
+		R16_RWA = r16_RWA;
+	}
+
+	public String getR19_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE() {
+		return R19_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE;
+	}
+
+	public void setR19_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE(
+			String r19_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE) {
+		R19_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE = r19_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE;
+	}
+
+	public String getR20_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE() {
+		return R20_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE;
+	}
+
+	public void setR20_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE(
+			String r20_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE) {
+		R20_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE = r20_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE;
+	}
+
+	public BigDecimal getR20_NUMBER_OF_FAILED_TRADES() {
+		return R20_NUMBER_OF_FAILED_TRADES;
+	}
+
+	public void setR20_NUMBER_OF_FAILED_TRADES(BigDecimal r20_NUMBER_OF_FAILED_TRADES) {
+		R20_NUMBER_OF_FAILED_TRADES = r20_NUMBER_OF_FAILED_TRADES;
+	}
+
+	public BigDecimal getR20_POSITIVE_CURRENT_EXPOSURE() {
+		return R20_POSITIVE_CURRENT_EXPOSURE;
+	}
+
+	public void setR20_POSITIVE_CURRENT_EXPOSURE(BigDecimal r20_POSITIVE_CURRENT_EXPOSURE) {
+		R20_POSITIVE_CURRENT_EXPOSURE = r20_POSITIVE_CURRENT_EXPOSURE;
+	}
+
+	public BigDecimal getR20_RISK_MULTIPLIER() {
+		return R20_RISK_MULTIPLIER;
+	}
+
+	public void setR20_RISK_MULTIPLIER(BigDecimal r20_RISK_MULTIPLIER) {
+		R20_RISK_MULTIPLIER = r20_RISK_MULTIPLIER;
+	}
+
+	public BigDecimal getR20_RWA() {
+		return R20_RWA;
+	}
+
+	public void setR20_RWA(BigDecimal r20_RWA) {
+		R20_RWA = r20_RWA;
+	}
+
+	public String getR21_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE() {
+		return R21_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE;
+	}
+
+	public void setR21_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE(
+			String r21_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE) {
+		R21_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE = r21_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE;
+	}
+
+	public BigDecimal getR21_NUMBER_OF_FAILED_TRADES() {
+		return R21_NUMBER_OF_FAILED_TRADES;
+	}
+
+	public void setR21_NUMBER_OF_FAILED_TRADES(BigDecimal r21_NUMBER_OF_FAILED_TRADES) {
+		R21_NUMBER_OF_FAILED_TRADES = r21_NUMBER_OF_FAILED_TRADES;
+	}
+
+	public BigDecimal getR21_POSITIVE_CURRENT_EXPOSURE() {
+		return R21_POSITIVE_CURRENT_EXPOSURE;
+	}
+
+	public void setR21_POSITIVE_CURRENT_EXPOSURE(BigDecimal r21_POSITIVE_CURRENT_EXPOSURE) {
+		R21_POSITIVE_CURRENT_EXPOSURE = r21_POSITIVE_CURRENT_EXPOSURE;
+	}
+
+	public BigDecimal getR21_RISK_MULTIPLIER() {
+		return R21_RISK_MULTIPLIER;
+	}
+
+	public void setR21_RISK_MULTIPLIER(BigDecimal r21_RISK_MULTIPLIER) {
+		R21_RISK_MULTIPLIER = r21_RISK_MULTIPLIER;
+	}
+
+	public BigDecimal getR21_RWA() {
+		return R21_RWA;
+	}
+
+	public void setR21_RWA(BigDecimal r21_RWA) {
+		R21_RWA = r21_RWA;
+	}
+
+	public String getR22_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE() {
+		return R22_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE;
+	}
+
+	public void setR22_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE(
+			String r22_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE) {
+		R22_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE = r22_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE;
+	}
+
+	public BigDecimal getR22_NUMBER_OF_FAILED_TRADES() {
+		return R22_NUMBER_OF_FAILED_TRADES;
+	}
+
+	public void setR22_NUMBER_OF_FAILED_TRADES(BigDecimal r22_NUMBER_OF_FAILED_TRADES) {
+		R22_NUMBER_OF_FAILED_TRADES = r22_NUMBER_OF_FAILED_TRADES;
+	}
+
+	public BigDecimal getR22_POSITIVE_CURRENT_EXPOSURE() {
+		return R22_POSITIVE_CURRENT_EXPOSURE;
+	}
+
+	public void setR22_POSITIVE_CURRENT_EXPOSURE(BigDecimal r22_POSITIVE_CURRENT_EXPOSURE) {
+		R22_POSITIVE_CURRENT_EXPOSURE = r22_POSITIVE_CURRENT_EXPOSURE;
+	}
+
+	public BigDecimal getR22_RISK_MULTIPLIER() {
+		return R22_RISK_MULTIPLIER;
+	}
+
+	public void setR22_RISK_MULTIPLIER(BigDecimal r22_RISK_MULTIPLIER) {
+		R22_RISK_MULTIPLIER = r22_RISK_MULTIPLIER;
+	}
+
+	public BigDecimal getR22_RWA() {
+		return R22_RWA;
+	}
+
+	public void setR22_RWA(BigDecimal r22_RWA) {
+		R22_RWA = r22_RWA;
+	}
+
+	public String getR23_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE() {
+		return R23_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE;
+	}
+
+	public void setR23_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE(
+			String r23_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE) {
+		R23_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE = r23_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE;
+	}
+
+	public BigDecimal getR23_NUMBER_OF_FAILED_TRADES() {
+		return R23_NUMBER_OF_FAILED_TRADES;
+	}
+
+	public void setR23_NUMBER_OF_FAILED_TRADES(BigDecimal r23_NUMBER_OF_FAILED_TRADES) {
+		R23_NUMBER_OF_FAILED_TRADES = r23_NUMBER_OF_FAILED_TRADES;
+	}
+
+	public BigDecimal getR23_POSITIVE_CURRENT_EXPOSURE() {
+		return R23_POSITIVE_CURRENT_EXPOSURE;
+	}
+
+	public void setR23_POSITIVE_CURRENT_EXPOSURE(BigDecimal r23_POSITIVE_CURRENT_EXPOSURE) {
+		R23_POSITIVE_CURRENT_EXPOSURE = r23_POSITIVE_CURRENT_EXPOSURE;
+	}
+
+	public BigDecimal getR23_RISK_MULTIPLIER() {
+		return R23_RISK_MULTIPLIER;
+	}
+
+	public void setR23_RISK_MULTIPLIER(BigDecimal r23_RISK_MULTIPLIER) {
+		R23_RISK_MULTIPLIER = r23_RISK_MULTIPLIER;
+	}
+
+	public BigDecimal getR23_RWA() {
+		return R23_RWA;
+	}
+
+	public void setR23_RWA(BigDecimal r23_RWA) {
+		R23_RWA = r23_RWA;
+	}
+
+	public String getR24_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE() {
+		return R24_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE;
+	}
+
+	public void setR24_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE(
+			String r24_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE) {
+		R24_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE = r24_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE;
+	}
+
+	public BigDecimal getR24_NUMBER_OF_FAILED_TRADES() {
+		return R24_NUMBER_OF_FAILED_TRADES;
+	}
+
+	public void setR24_NUMBER_OF_FAILED_TRADES(BigDecimal r24_NUMBER_OF_FAILED_TRADES) {
+		R24_NUMBER_OF_FAILED_TRADES = r24_NUMBER_OF_FAILED_TRADES;
+	}
+
+	public BigDecimal getR24_POSITIVE_CURRENT_EXPOSURE() {
+		return R24_POSITIVE_CURRENT_EXPOSURE;
+	}
+
+	public void setR24_POSITIVE_CURRENT_EXPOSURE(BigDecimal r24_POSITIVE_CURRENT_EXPOSURE) {
+		R24_POSITIVE_CURRENT_EXPOSURE = r24_POSITIVE_CURRENT_EXPOSURE;
+	}
+
+	public BigDecimal getR24_RISK_MULTIPLIER() {
+		return R24_RISK_MULTIPLIER;
+	}
+
+	public void setR24_RISK_MULTIPLIER(BigDecimal r24_RISK_MULTIPLIER) {
+		R24_RISK_MULTIPLIER = r24_RISK_MULTIPLIER;
+	}
+
+	public BigDecimal getR24_RWA() {
+		return R24_RWA;
+	}
+
+	public void setR24_RWA(BigDecimal r24_RWA) {
+		R24_RWA = r24_RWA;
+	}
+
+	public String getR25_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE() {
+		return R25_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE;
+	}
+
+	public void setR25_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE(
+			String r25_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE) {
+		R25_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE = r25_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE;
+	}
+
+	public BigDecimal getR25_NUMBER_OF_FAILED_TRADES() {
+		return R25_NUMBER_OF_FAILED_TRADES;
+	}
+
+	public void setR25_NUMBER_OF_FAILED_TRADES(BigDecimal r25_NUMBER_OF_FAILED_TRADES) {
+		R25_NUMBER_OF_FAILED_TRADES = r25_NUMBER_OF_FAILED_TRADES;
+	}
+
+	public BigDecimal getR25_POSITIVE_CURRENT_EXPOSURE() {
+		return R25_POSITIVE_CURRENT_EXPOSURE;
+	}
+
+	public void setR25_POSITIVE_CURRENT_EXPOSURE(BigDecimal r25_POSITIVE_CURRENT_EXPOSURE) {
+		R25_POSITIVE_CURRENT_EXPOSURE = r25_POSITIVE_CURRENT_EXPOSURE;
+	}
+
+	public BigDecimal getR25_RISK_MULTIPLIER() {
+		return R25_RISK_MULTIPLIER;
+	}
+
+	public void setR25_RISK_MULTIPLIER(BigDecimal r25_RISK_MULTIPLIER) {
+		R25_RISK_MULTIPLIER = r25_RISK_MULTIPLIER;
+	}
+
+	public BigDecimal getR25_RWA() {
+		return R25_RWA;
+	}
+
+	public void setR25_RWA(BigDecimal r25_RWA) {
+		R25_RWA = r25_RWA;
+	}
+
+	public String getR26_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE() {
+		return R26_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE;
+	}
+
+	public void setR26_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE(
+			String r26_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE) {
+		R26_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE = r26_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE;
+	}
+
+	public BigDecimal getR26_NUMBER_OF_FAILED_TRADES() {
+		return R26_NUMBER_OF_FAILED_TRADES;
+	}
+
+	public void setR26_NUMBER_OF_FAILED_TRADES(BigDecimal r26_NUMBER_OF_FAILED_TRADES) {
+		R26_NUMBER_OF_FAILED_TRADES = r26_NUMBER_OF_FAILED_TRADES;
+	}
+
+	public BigDecimal getR26_POSITIVE_CURRENT_EXPOSURE() {
+		return R26_POSITIVE_CURRENT_EXPOSURE;
+	}
+
+	public void setR26_POSITIVE_CURRENT_EXPOSURE(BigDecimal r26_POSITIVE_CURRENT_EXPOSURE) {
+		R26_POSITIVE_CURRENT_EXPOSURE = r26_POSITIVE_CURRENT_EXPOSURE;
+	}
+
+	public BigDecimal getR26_RISK_MULTIPLIER() {
+		return R26_RISK_MULTIPLIER;
+	}
+
+	public void setR26_RISK_MULTIPLIER(BigDecimal r26_RISK_MULTIPLIER) {
+		R26_RISK_MULTIPLIER = r26_RISK_MULTIPLIER;
+	}
+
+	public BigDecimal getR26_RWA() {
+		return R26_RWA;
+	}
+
+	public void setR26_RWA(BigDecimal r26_RWA) {
+		R26_RWA = r26_RWA;
+	}
+
+	public String getR27_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE() {
+		return R27_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE;
+	}
+
+	public void setR27_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE(
+			String r27_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE) {
+		R27_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE = r27_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE;
+	}
+
+	public BigDecimal getR27_NUMBER_OF_FAILED_TRADES() {
+		return R27_NUMBER_OF_FAILED_TRADES;
+	}
+
+	public void setR27_NUMBER_OF_FAILED_TRADES(BigDecimal r27_NUMBER_OF_FAILED_TRADES) {
+		R27_NUMBER_OF_FAILED_TRADES = r27_NUMBER_OF_FAILED_TRADES;
+	}
+
+	public BigDecimal getR27_POSITIVE_CURRENT_EXPOSURE() {
+		return R27_POSITIVE_CURRENT_EXPOSURE;
+	}
+
+	public void setR27_POSITIVE_CURRENT_EXPOSURE(BigDecimal r27_POSITIVE_CURRENT_EXPOSURE) {
+		R27_POSITIVE_CURRENT_EXPOSURE = r27_POSITIVE_CURRENT_EXPOSURE;
+	}
+
+	public BigDecimal getR27_RWA() {
+		return R27_RWA;
+	}
+
+	public void setR27_RWA(BigDecimal r27_RWA) {
+		R27_RWA = r27_RWA;
+	}
+
+	public String getR28_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE() {
+		return R28_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE;
+	}
+
+	public void setR28_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE(
+			String r28_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE) {
+		R28_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE = r28_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE;
+	}
+
+	public BigDecimal getR28_NUMBER_OF_FAILED_TRADES() {
+		return R28_NUMBER_OF_FAILED_TRADES;
+	}
+
+	public void setR28_NUMBER_OF_FAILED_TRADES(BigDecimal r28_NUMBER_OF_FAILED_TRADES) {
+		R28_NUMBER_OF_FAILED_TRADES = r28_NUMBER_OF_FAILED_TRADES;
+	}
+
+	public BigDecimal getR28_POSITIVE_CURRENT_EXPOSURE() {
+		return R28_POSITIVE_CURRENT_EXPOSURE;
+	}
+
+	public void setR28_POSITIVE_CURRENT_EXPOSURE(BigDecimal r28_POSITIVE_CURRENT_EXPOSURE) {
+		R28_POSITIVE_CURRENT_EXPOSURE = r28_POSITIVE_CURRENT_EXPOSURE;
+	}
+
+	public BigDecimal getR28_RWA() {
+		return R28_RWA;
+	}
+
+	public void setR28_RWA(BigDecimal r28_RWA) {
+		R28_RWA = r28_RWA;
+	}
+
+	public Date getReport_date() {
+		return report_date;
+	}
+
+	public void setReport_date(Date report_date) {
+		this.report_date = report_date;
+	}
+
+	public BigDecimal getReport_version() {
+		return report_version;
+	}
+
+	public void setReport_version(BigDecimal report_version) {
+		this.report_version = report_version;
+	}
+
+	public Date getReportResubDate() {
+		return reportResubDate;
+	}
+
+	public void setReportResubDate(Date reportResubDate) {
+		this.reportResubDate = reportResubDate;
+	}
+
+	public String getReport_frequency() {
+		return report_frequency;
+	}
+
+	public void setReport_frequency(String report_frequency) {
+		this.report_frequency = report_frequency;
+	}
+
+	public String getReport_code() {
+		return report_code;
+	}
+
+	public void setReport_code(String report_code) {
+		this.report_code = report_code;
+	}
+
+	public String getReport_desc() {
+		return report_desc;
+	}
+
+	public void setReport_desc(String report_desc) {
+		this.report_desc = report_desc;
+	}
+
+	public String getEntity_flg() {
+		return entity_flg;
+	}
+
+	public void setEntity_flg(String entity_flg) {
+		this.entity_flg = entity_flg;
+	}
+
+	public String getModify_flg() {
+		return modify_flg;
+	}
+
+	public void setModify_flg(String modify_flg) {
+		this.modify_flg = modify_flg;
+	}
+
+	public String getDel_flg() {
+		return del_flg;
+	}
+
+	public void setDel_flg(String del_flg) {
+		this.del_flg = del_flg;
+	}
+
 	public M_SRWA_12C_Archival_Detail_Entity() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
-	
-
-	
-
-	
-	    
-    
-
-    
- 
 }
