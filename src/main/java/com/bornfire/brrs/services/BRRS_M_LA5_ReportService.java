@@ -4626,7 +4626,7 @@ public class BRRS_M_LA5_ReportService {
 			balanceStyle.setBorderLeft(border);
 			balanceStyle.setBorderRight(border);
 // Header row
-			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE IN PULA", "ROWID", "COLUMNID",
+			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE IN PULA", "REPORT LABEL", "REPORT ADDL CRITERIA 1",
 					"REPORT_DATE" };
 			XSSFRow headerRow = sheet.createRow(0);
 			for (int i = 0; i < headers.length; i++) {
@@ -4860,7 +4860,7 @@ public class BRRS_M_LA5_ReportService {
 			balanceStyle.setBorderLeft(border);
 			balanceStyle.setBorderRight(border);
 // Header row
-			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE IN PULA", "ROWID", "COLUMNID",
+			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE IN PULA", "REPORT LABEL", "REPORT ADDL CRITERIA 1",
 					"REPORT_DATE" };
 			XSSFRow headerRow = sheet.createRow(0);
 			for (int i = 0; i < headers.length; i++) {
