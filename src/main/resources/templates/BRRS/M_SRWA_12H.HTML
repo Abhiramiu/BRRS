@@ -531,7 +531,13 @@ PURPOSE		: BWRBRREPORT
 				"R81_ISSUES_RATING",
 				"R81_1YR_VAL_OF_CRM",
 				"R81_1YR_5YR_VAL_OF_CRM",
-				"R81_5YR_VAL_OF_CRM"
+				"R81_5YR_VAL_OF_CRM",
+				"R52_PRODUCT",
+								"R52_ISSUER",
+								"R52_ISSUES_RATING",
+								"R52_1YR_VAL_OF_CRM",
+								"R52_1YR_5YR_VAL_OF_CRM",
+								"R52_5YR_VAL_OF_CRM"
 			];
 
 			// Make all .Show_input editable except readonlyIds
@@ -543,23 +549,32 @@ PURPOSE		: BWRBRREPORT
 
 			// Change background color for R12–R80 range fields
 			for (let i = 12; i <= 80; i++) {
-				let fields = [
-					"ISSUER", "ISSUES_RATING",
-					"1YR_VAL_OF_CRM",
-					"1YR_5YR_VAL_OF_CRM",
-					"5YR_VAL_OF_CRM",
-					"OTHER", "STD_SUPERVISORY_HAIRCUT", "APPLICABLE_RISK_WEIGHT"
-				];
 
-				fields.forEach(field => {
-					let selector = `#R${i}_${field}`; // ✅ use backticks for template literals
-					if ($(selector).length) {
-						$(selector).css({
-							"background-color": "#d3d3d3"
-						});
-					}
-				});
+			    // 🔹 Skip R52 completely
+			    if (i === 52) {
+			        continue;
+			    }
+
+			    let fields = [
+			        "ISSUER", "ISSUES_RATING",
+			        "1YR_VAL_OF_CRM",
+			        "1YR_5YR_VAL_OF_CRM",
+			        "5YR_VAL_OF_CRM",
+			        "OTHER",
+			        "STD_SUPERVISORY_HAIRCUT",
+			        "APPLICABLE_RISK_WEIGHT"
+			    ];
+
+			    fields.forEach(field => {
+			        let selector = `#R${i}_${field}`;
+			        if ($(selector).length) {
+			            $(selector).css({
+			                "background-color": "#d3d3d3"
+			            });
+			        }
+			    });
 			}
+
 
 			// Toggle button visibility
 			$("#submitButton").show();
@@ -815,7 +830,7 @@ PURPOSE		: BWRBRREPORT
 						<h5
 							style="font-family: arial; font-size: 20px; font-weight: bold; color: white; margin: 0 10px;">
 
-							Monthly Schedule M-SRWA 12h <br> Schedule of Credit Risk Mitigants </h5>
+							MONTHLY SCHEDULE M-SRWA 12h <br> SCHEDULE OF CREDIT RISK MITIGANTS </h5>
 
 						<!-- Moving bus-board text -->
 						<div class="boards">
@@ -852,7 +867,9 @@ PURPOSE		: BWRBRREPORT
 							id="addRecord">
 							Modify
 						</button>
-
+						<!-- Cancel button (hidden initially) -->
+												<button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord"
+													onclick="cancelModify();" style="display: none;">Cancel</button>
 						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
 							onclick="downloadfile(this)" th:if="${displaymode == 'summary' or displaymode == 'detail'}"
 							th:attr="data-reportid=${reportid},
@@ -921,7 +938,7 @@ PURPOSE		: BWRBRREPORT
 										<thead class="thead-light">
 											<tr>
 												<th rowspan="2"
-													style="text-align: left; width:33%; padding-left: 20px;background-color: #D8D8D8">
+													style="text-align: left; width:33%; background-color: #D8D8D8">
 													Credit Risk Mitigant</th>
 												<th rowspan="2" style="text-align: right;background-color: #D8D8D8">
 													Issuer</th>
@@ -3306,47 +3323,39 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 												<td style="text-align: right; ">
-													<input class="display-input Show_input" type="text" th:value="${report.R52_ISSUER != null ? #numbers.formatDecimal(report.R52_ISSUER, 1, 'COMMA', 0, 'POINT') 
-: '0'}" id="R52_ISSUER" name="R52_ISSUER" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+													<input class="display-input Show_input" type="text" th:value="${report.R52_ISSUER}" id="R52_ISSUER" name="R52_ISSUER" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
 												<td style="text-align: right;   ">
-													<input class="display-input Show_input" type="text" th:value="${report.R52_ISSUES_RATING != null ? #numbers.formatDecimal(report.R52_ISSUES_RATING, 1, 'COMMA', 0, 'POINT') 
-: '0'}" id="R52_ISSUES_RATING" name="R52_ISSUES_RATING" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+													<input class="display-input Show_input" type="text" th:value="${report.R52_ISSUES_RATING }" id="R52_ISSUES_RATING" name="R52_ISSUES_RATING" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
 												<td style="text-align: right;  ">
-													<input class="display-input Show_input" type="text" th:value="${report.R52_1YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R52_1YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
-: '0'}" id="R52_1YR_VAL_OF_CRM" name="R52_1YR_VAL_OF_CRM"
+													<input class="display-input Show_input" type="text" th:value="${report.R52_1YR_VAL_OF_CRM}" id="R52_1YR_VAL_OF_CRM" name="R52_1YR_VAL_OF_CRM"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
 												<td style="text-align: right;  ">
-													<input class="display-input Show_input" type="text" th:value="${report.R52_1YR_5YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R52_1YR_5YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
-: '0'}" id="R52_1YR_5YR_VAL_OF_CRM" name="R52_1YR_5YR_VAL_OF_CRM"
+													<input class="display-input Show_input" type="text" th:value="${report.R52_1YR_5YR_VAL_OF_CRM}" id="R52_1YR_5YR_VAL_OF_CRM" name="R52_1YR_5YR_VAL_OF_CRM"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
 												<td style="text-align: right;  ">
-													<input class="display-input Show_input" type="text" th:value="${report.R52_5YR_VAL_OF_CRM != null ? #numbers.formatDecimal(report.R52_5YR_VAL_OF_CRM, 1, 'COMMA', 0, 'POINT') 
-: '0'}" id="R52_5YR_VAL_OF_CRM" name="R52_5YR_VAL_OF_CRM"
+													<input class="display-input Show_input" type="text" th:value="${report.R52_5YR_VAL_OF_CRM}" id="R52_5YR_VAL_OF_CRM" name="R52_5YR_VAL_OF_CRM"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
 												<td style="text-align: right;  ">
-													<input class="display-input Show_input" type="text" th:value="${report.R52_OTHER != null ? #numbers.formatDecimal(report.R52_OTHER, 1, 'COMMA', 0, 'POINT') 
-: '0'}" id="R52_OTHER" name="R52_OTHER" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+													<input class="display-input Show_input" type="text" th:value="${report.R52_OTHER}" id="R52_OTHER" name="R52_OTHER" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
 												<td style="text-align: right;  ">
-													<input class="display-input Show_input" type="text" th:value="${report.R52_STD_SUPERVISORY_HAIRCUT != null ? #numbers.formatDecimal(report.R52_STD_SUPERVISORY_HAIRCUT, 1, 'COMMA', 0, 'POINT') 
-: '0'}" id="R52_STD_SUPERVISORY_HAIRCUT" name="R52_STD_SUPERVISORY_HAIRCUT"
+													<input class="display-input Show_input" type="text" th:value="${report.R52_STD_SUPERVISORY_HAIRCUT}" id="R52_STD_SUPERVISORY_HAIRCUT" name="R52_STD_SUPERVISORY_HAIRCUT"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
 												<td style="text-align: right;  ">
-													<input class="display-input Show_input" type="text" th:value="${report.R52_APPLICABLE_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R52_APPLICABLE_RISK_WEIGHT, 1, 'COMMA', 0, 'POINT') 
-: '0'}" id="R52_APPLICABLE_RISK_WEIGHT" name="R52_APPLICABLE_RISK_WEIGHT"
+													<input class="display-input Show_input" type="text" th:value="${report.R52_APPLICABLE_RISK_WEIGHT}" id="R52_APPLICABLE_RISK_WEIGHT" name="R52_APPLICABLE_RISK_WEIGHT"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>

@@ -11,8 +11,8 @@ import javax.persistence.TemporalType;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
-@Table(name = "BRRS_M_UNCONS_INVEST_SUMMARYTABLE")
-public class M_UNCONS_INVEST_Summary_Entity {
+@Table(name = "BRRS_M_UNCONS_INVEST_DETAILTABLE")
+public class M_UNCONS_INVEST_Detail_Entity {
 
 	// ---------------- R11 ----------------
 	@Column(name = "R11_PRODUCT")
@@ -1032,7 +1032,7 @@ public class M_UNCONS_INVEST_Summary_Entity {
 		this.del_flg = del_flg;
 	}
 
-	public M_UNCONS_INVEST_Summary_Entity() {
+	public M_UNCONS_INVEST_Detail_Entity() {
 		super();
 		// TODO Auto-generated constructor stub
 	}

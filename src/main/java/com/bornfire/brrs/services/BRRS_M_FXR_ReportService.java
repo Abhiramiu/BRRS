@@ -2199,7 +2199,7 @@ public class BRRS_M_FXR_ReportService {
 					System.out.println("rownumber=" + (startRow + i));
 
 					Row row;
-					Cell  cell8;
+					Cell cell8;
 					CellStyle originalStyle;
 
 					// ===== R30 / Col I =====
@@ -3110,7 +3110,7 @@ public class BRRS_M_FXR_ReportService {
 					else
 						cell7.setCellValue("");
 					cell7.setCellStyle(originalStyle);
-					
+
 					cell8 = row.getCell(8);
 					if (cell8 == null)
 						cell8 = row.createCell(8);
@@ -3121,7 +3121,6 @@ public class BRRS_M_FXR_ReportService {
 						cell8.setCellValue("");
 					cell8.setCellStyle(originalStyle);
 
-					
 					cell9 = row.getCell(9);
 					if (cell9 == null)
 						cell9 = row.createCell(9);
@@ -3154,7 +3153,7 @@ public class BRRS_M_FXR_ReportService {
 					else
 						cell7.setCellValue("");
 					cell7.setCellStyle(originalStyle);
-					
+
 					cell8 = row.getCell(8);
 					if (cell8 == null)
 						cell8 = row.createCell(8);
@@ -3165,7 +3164,6 @@ public class BRRS_M_FXR_ReportService {
 						cell8.setCellValue("");
 					cell8.setCellStyle(originalStyle);
 
-					
 					cell9 = row.getCell(9);
 					if (cell9 == null)
 						cell9 = row.createCell(9);
@@ -3181,49 +3179,66 @@ public class BRRS_M_FXR_ReportService {
 				for (int i = 0; i < dataList.size(); i++) {
 
 					M_FXR_Summary_Entity record = dataList.get(i);
-				    System.out.println("rownumber=" + (startRow + i));
+					System.out.println("rownumber=" + (startRow + i));
+					Row row = sheet.getRow(22);
 
-				  
-				    Row row = sheet.getRow(28);
-                    Cell R28cell1 = row.createCell(7);
-                    if (record.getR29_abs_value_net_gold_posi() != null) {
-                    	R28cell1.setCellValue(record.getR29_abs_value_net_gold_posi().doubleValue());
-                    	R28cell1.setCellStyle(numberStyle);
-                    } else {
-                    	R28cell1.setCellValue("");
-                    	R28cell1.setCellStyle(textStyle);
-                    }
-                    
-              
-                    Cell R28cell3 = row.createCell(8);
-                    if (record.getR29_capital_charge() != null) {
-                    	R28cell3.setCellValue(record.getR29_capital_charge().doubleValue());
-                    	R28cell3.setCellStyle(numberStyle);
-                    } else {
-                    	R28cell3.setCellValue("");
-                    	R28cell3.setCellStyle(textStyle);
-                    }
-				    
-				    // ===== R30 / Col I =====
-				    row = sheet.getRow(29);
+					Cell R28cell22 = row.createCell(9);
+					if (record.getR23_net_position() != null) {
+						R28cell22.setCellValue(record.getR23_net_position().doubleValue());
+						R28cell22.setCellStyle(numberStyle);
+					} else {
+						R28cell22.setCellValue("");
+						R28cell22.setCellStyle(textStyle);
+					}
 
-				    // ✅ CRITICAL FIX
-				    if (row == null) {
-				        row = sheet.createRow(29);
-				    }
+					row = sheet.getRow(28);
 
-				    Cell cell8 = row.getCell(8);
-				    if (cell8 == null) {
-				        cell8 = row.createCell(8);
-				    }
+					Cell R28cell = row.createCell(6);
+					if (record.getR29_greater_net_long_or_short() != null) {
+						R28cell.setCellValue(record.getR29_greater_net_long_or_short().doubleValue());
+						R28cell.setCellStyle(numberStyle);
+					} else {
+						R28cell.setCellValue("");
+						R28cell.setCellStyle(textStyle);
+					}
+					Cell R28cell1 = row.createCell(7);
+					if (record.getR29_abs_value_net_gold_posi() != null) {
+						R28cell1.setCellValue(record.getR29_abs_value_net_gold_posi().doubleValue());
+						R28cell1.setCellStyle(numberStyle);
+					} else {
+						R28cell1.setCellValue("");
+						R28cell1.setCellStyle(textStyle);
+					}
 
-				    if (record.getR30_capital_require() != null) {
-				        cell8.setCellValue(record.getR30_capital_require().doubleValue());
-				        cell8.setCellStyle(numberStyle);
-				    } else {
-				        cell8.setCellValue("");
-				        cell8.setCellStyle(textStyle);
-				    }
+					Cell R28cell3 = row.createCell(9);
+					if (record.getR29_capital_charge() != null) {
+						R28cell3.setCellValue(record.getR29_capital_charge().doubleValue());
+						R28cell3.setCellStyle(numberStyle);
+					} else {
+						R28cell3.setCellValue("");
+						R28cell3.setCellStyle(textStyle);
+					}
+
+					// ===== R30 / Col I =====
+					row = sheet.getRow(29);
+
+					// ✅ CRITICAL FIX
+					if (row == null) {
+						row = sheet.createRow(29);
+					}
+
+					Cell cell8 = row.getCell(8);
+					if (cell8 == null) {
+						cell8 = row.createCell(8);
+					}
+
+					if (record.getR30_capital_require() != null) {
+						cell8.setCellValue(record.getR30_capital_require().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
 				}
 
 				workbook.setForceFormulaRecalculation(true);
@@ -3322,14 +3337,14 @@ public class BRRS_M_FXR_ReportService {
 
 					// ===== Row 11 / Col B =====
 					row = sheet.getRow(10);
-//  					cell1 = row.getCell(1);
-//  					if (cell1 == null) cell1 = row.createCell(1);
-//  					originalStyle = cell1.getCellStyle();
-//  			// ✅ Handle String value 
-//  					if (record.getR11_currency() != null)
-//  					cell1.setCellValue(record.getR11_currency()); // String directly 
-//  					else cell1.setCellValue(""); 
-//  					cell1.setCellStyle(originalStyle);
+//    					cell1 = row.getCell(1);
+//    					if (cell1 == null) cell1 = row.createCell(1);
+//    					originalStyle = cell1.getCellStyle();
+//    			// ✅ Handle String value 
+//    					if (record.getR11_currency() != null)
+//    					cell1.setCellValue(record.getR11_currency()); // String directly 
+//    					else cell1.setCellValue(""); 
+//    					cell1.setCellStyle(originalStyle);
 
 					// ===== R11 / Col C =====
 
@@ -3441,14 +3456,14 @@ public class BRRS_M_FXR_ReportService {
 
 					// ===== R12 / Col B =====
 					row = sheet.getRow(11);
-//  					cell1 = row.getCell(1);
-//  					if (cell1 == null) cell1 = row.createCell(1);
-//  					originalStyle = cell1.getCellStyle();
-//  			// ✅ Handle String value 
-//  					if (record.getR12_currency() != null)
-//  					cell1.setCellValue(record.getR12_currency()); // String directly 
-//  					else cell1.setCellValue(""); 
-//  					cell1.setCellStyle(originalStyle);
+//    					cell1 = row.getCell(1);
+//    					if (cell1 == null) cell1 = row.createCell(1);
+//    					originalStyle = cell1.getCellStyle();
+//    			// ✅ Handle String value 
+//    					if (record.getR12_currency() != null)
+//    					cell1.setCellValue(record.getR12_currency()); // String directly 
+//    					else cell1.setCellValue(""); 
+//    					cell1.setCellStyle(originalStyle);
 
 					// ===== R12 / Col C =====
 
@@ -3560,14 +3575,14 @@ public class BRRS_M_FXR_ReportService {
 
 					// ===== R13 / Col B =====
 					row = sheet.getRow(12);
-//  					cell1 = row.getCell(1);
-//  					if (cell1 == null) cell1 = row.createCell(1);
-//  					originalStyle = cell1.getCellStyle();
-//  			// ✅ Handle String value 
-//  					if (record.getR13_currency() != null)
-//  					cell1.setCellValue(record.getR13_currency()); // String directly 
-//  					else cell1.setCellValue(""); 
-//  					cell1.setCellStyle(originalStyle);
+//    					cell1 = row.getCell(1);
+//    					if (cell1 == null) cell1 = row.createCell(1);
+//    					originalStyle = cell1.getCellStyle();
+//    			// ✅ Handle String value 
+//    					if (record.getR13_currency() != null)
+//    					cell1.setCellValue(record.getR13_currency()); // String directly 
+//    					else cell1.setCellValue(""); 
+//    					cell1.setCellStyle(originalStyle);
 
 					// ===== R13 / Col C =====
 
@@ -3679,14 +3694,14 @@ public class BRRS_M_FXR_ReportService {
 
 					// ===== R14 / Col B =====
 					row = sheet.getRow(13);
-//  					cell1 = row.getCell(1);
-//  					if (cell1 == null) cell1 = row.createCell(1);
-//  					originalStyle = cell1.getCellStyle();
-//  			// ✅ Handle String value 
-//  					if (record.getR14_currency() != null)
-//  					cell1.setCellValue(record.getR14_currency()); // String directly 
-//  					else cell1.setCellValue(""); 
-//  					cell1.setCellStyle(originalStyle);
+//    					cell1 = row.getCell(1);
+//    					if (cell1 == null) cell1 = row.createCell(1);
+//    					originalStyle = cell1.getCellStyle();
+//    			// ✅ Handle String value 
+//    					if (record.getR14_currency() != null)
+//    					cell1.setCellValue(record.getR14_currency()); // String directly 
+//    					else cell1.setCellValue(""); 
+//    					cell1.setCellStyle(originalStyle);
 
 					// ===== R14 / Col C =====
 
@@ -3798,14 +3813,14 @@ public class BRRS_M_FXR_ReportService {
 
 					// ===== R15 / Col B =====
 					row = sheet.getRow(14);
-//  					cell1 = row.getCell(1);
-//  					if (cell1 == null) cell1 = row.createCell(1);
-//  					originalStyle = cell1.getCellStyle();
-//  			// ✅ Handle String value 
-//  					if (record.getR15_currency() != null)
-//  					cell1.setCellValue(record.getR15_currency()); // String directly 
-//  					else cell1.setCellValue(""); 
-//  					cell1.setCellStyle(originalStyle);
+//    					cell1 = row.getCell(1);
+//    					if (cell1 == null) cell1 = row.createCell(1);
+//    					originalStyle = cell1.getCellStyle();
+//    			// ✅ Handle String value 
+//    					if (record.getR15_currency() != null)
+//    					cell1.setCellValue(record.getR15_currency()); // String directly 
+//    					else cell1.setCellValue(""); 
+//    					cell1.setCellStyle(originalStyle);
 
 					// ===== R15 / Col C =====
 
@@ -3917,14 +3932,14 @@ public class BRRS_M_FXR_ReportService {
 
 					// ===== R16 / Col B =====
 					row = sheet.getRow(15);
-//  					cell1 = row.getCell(1);
-//  					if (cell1 == null) cell1 = row.createCell(1);
-//  					originalStyle = cell1.getCellStyle();
-//  			// ✅ Handle String value 
-//  					if (record.getR16_currency() != null)
-//  					cell1.setCellValue(record.getR16_currency()); // String directly 
-//  					else cell1.setCellValue(""); 
-//  					cell1.setCellStyle(originalStyle);
+//    					cell1 = row.getCell(1);
+//    					if (cell1 == null) cell1 = row.createCell(1);
+//    					originalStyle = cell1.getCellStyle();
+//    			// ✅ Handle String value 
+//    					if (record.getR16_currency() != null)
+//    					cell1.setCellValue(record.getR16_currency()); // String directly 
+//    					else cell1.setCellValue(""); 
+//    					cell1.setCellStyle(originalStyle);
 
 					// ===== R16 / Col C =====
 
@@ -4068,6 +4083,25 @@ public class BRRS_M_FXR_ReportService {
 						cell7.setCellValue("");
 					cell7.setCellStyle(originalStyle);
 
+					cell8 = row.getCell(8);
+					if (cell8 == null)
+						cell8 = row.createCell(8);
+					originalStyle = cell8.getCellStyle();
+					if (record.getR21_total_gross_long_short() != null)
+						cell8.setCellValue(record.getR21_total_gross_long_short().doubleValue());
+					else
+						cell8.setCellValue("");
+					cell8.setCellStyle(originalStyle);
+
+					cell9 = row.getCell(9);
+					if (cell9 == null)
+						cell9 = row.createCell(9);
+					originalStyle = cell9.getCellStyle();
+					if (record.getR21_net_position() != null)
+						cell9.setCellValue(record.getR21_net_position().doubleValue());
+					else
+						cell9.setCellValue("");
+					cell9.setCellStyle(originalStyle);
 					// ===== R22 / Col G =====
 					row = sheet.getRow(21);
 					cell6 = row.getCell(6);
@@ -4092,33 +4126,91 @@ public class BRRS_M_FXR_ReportService {
 						cell7.setCellValue("");
 					cell7.setCellStyle(originalStyle);
 
+					cell8 = row.getCell(8);
+					if (cell8 == null)
+						cell8 = row.createCell(8);
+					originalStyle = cell8.getCellStyle();
+					if (record.getR22_total_gross_long_short() != null)
+						cell8.setCellValue(record.getR22_total_gross_long_short().doubleValue());
+					else
+						cell8.setCellValue("");
+					cell8.setCellStyle(originalStyle);
+
+					cell9 = row.getCell(9);
+					if (cell9 == null)
+						cell9 = row.createCell(9);
+					originalStyle = cell9.getCellStyle();
+					if (record.getR22_net_position() != null)
+						cell9.setCellValue(record.getR22_net_position().doubleValue());
+					else
+						cell9.setCellValue("");
+					cell9.setCellStyle(originalStyle);
+
 				}
 
 				for (int i = 0; i < dataList.size(); i++) {
 
-				    M_FXR_Archival_Summary_Entity record = dataList.get(i);
-				    System.out.println("rownumber=" + (startRow + i));
+					M_FXR_Archival_Summary_Entity record = dataList.get(i);
+					System.out.println("rownumber=" + (startRow + i));
+					Row row = sheet.getRow(22);
 
-				    // ===== R30 / Col I =====
-				    Row row = sheet.getRow(29);
+					Cell R28cell22 = row.createCell(9);
+					if (record.getR23_net_position() != null) {
+						R28cell22.setCellValue(record.getR23_net_position().doubleValue());
+						R28cell22.setCellStyle(numberStyle);
+					} else {
+						R28cell22.setCellValue("");
+						R28cell22.setCellStyle(textStyle);
+					}
 
-				    // ✅ CRITICAL FIX
-				    if (row == null) {
-				        row = sheet.createRow(29);
-				    }
+					row = sheet.getRow(28);
 
-				    Cell cell8 = row.getCell(8);
-				    if (cell8 == null) {
-				        cell8 = row.createCell(8);
-				    }
+					Cell R28cell = row.createCell(6);
+					if (record.getR29_greater_net_long_or_short() != null) {
+						R28cell.setCellValue(record.getR29_greater_net_long_or_short().doubleValue());
+						R28cell.setCellStyle(numberStyle);
+					} else {
+						R28cell.setCellValue("");
+						R28cell.setCellStyle(textStyle);
+					}
+					Cell R28cell1 = row.createCell(7);
+					if (record.getR29_abs_value_net_gold_posi() != null) {
+						R28cell1.setCellValue(record.getR29_abs_value_net_gold_posi().doubleValue());
+						R28cell1.setCellStyle(numberStyle);
+					} else {
+						R28cell1.setCellValue("");
+						R28cell1.setCellStyle(textStyle);
+					}
 
-				    if (record.getR30_capital_require() != null) {
-				        cell8.setCellValue(record.getR30_capital_require().doubleValue());
-				        cell8.setCellStyle(numberStyle);
-				    } else {
-				        cell8.setCellValue("");
-				        cell8.setCellStyle(textStyle);
-				    }
+					Cell R28cell3 = row.createCell(9);
+					if (record.getR29_capital_charge() != null) {
+						R28cell3.setCellValue(record.getR29_capital_charge().doubleValue());
+						R28cell3.setCellStyle(numberStyle);
+					} else {
+						R28cell3.setCellValue("");
+						R28cell3.setCellStyle(textStyle);
+					}
+
+					// ===== R30 / Col I =====
+					row = sheet.getRow(29);
+
+					// ✅ CRITICAL FIX
+					if (row == null) {
+						row = sheet.createRow(29);
+					}
+
+					Cell cell8 = row.getCell(8);
+					if (cell8 == null) {
+						cell8 = row.createCell(8);
+					}
+
+					if (record.getR30_capital_require() != null) {
+						cell8.setCellValue(record.getR30_capital_require().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
 				}
 
 				workbook.setForceFormulaRecalculation(true);

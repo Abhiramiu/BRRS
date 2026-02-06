@@ -456,6 +456,11 @@ public class RegulatoryReportServices {
 			repsummary = BRRS_Q_BRANCHNET_reportservice.getQ_BRANCHNETView(reportId, fromdate, todate, currency,
 					dtltype, pageable, type, version);
 			break;
+			
+		case "M_UNCONS_INVEST":
+			repsummary = BRRS_M_UNCONS_INVEST_reportservice.getM_UNCONS_INVESTView(reportId, fromdate, todate, currency,
+					dtltype, pageable, type, version);
+			break;
 
 		case "M_TOP_100_BORROWER":
 			repsummary = BRRS_M_TOP_100_BORROWER_reportservice.getM_TOP_100_BORROWERView(reportId, fromdate, todate,
@@ -3629,6 +3634,15 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
+			
+		case "M_UNCONS_INVEST":
+			try {
+				repfile = BRRS_M_UNCONS_INVEST_reportservice.BRRS_M_UNCONS_INVESTExcel(filename, reportId, fromdate, todate,
+						currency, dtltype, type, version);
+			} catch (Exception e) { // TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
 
 		case "Q_STAFF_NEW":
 			try {
@@ -4040,14 +4054,14 @@ public class RegulatoryReportServices {
 			System.out.println("Fetched M_SRWA_12H archival data: " + fxrList.size());
 			break;
 
-		case "M_UNCONS_INVEST":
-			try {
-				archivalData = BRRS_M_UNCONS_INVEST_reportservice.getM_UNCONS_INVESTArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+//		case "M_UNCONS_INVEST":
+//			try {
+//				archivalData = BRRS_M_UNCONS_INVEST_reportservice.getM_UNCONS_INVESTArchival();
+//			} catch (Exception e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//			break;
 
 		case "M_LA3":
 			try {
@@ -4735,7 +4749,11 @@ public class RegulatoryReportServices {
 			archivalData.addAll(QBList);
 			System.out.println("Fetched M_SRWA_12H archival data: " + QBList.size());
 			break;
-
+		case "M_UNCONS_INVEST":
+			List<Object[]> UIList = BRRS_M_UNCONS_INVEST_reportservice.getM_UNCONS_INVESTArchival();
+			archivalData.addAll(UIList);
+			System.out.println("Fetched M_SRWA_12H archival data: " + UIList.size());
+			break;
 		case "M_CA4":
 			List<Object[]> ca4List = BRRS_M_CA4_reportservice.getM_CA4Archival();
 			archivalData.addAll(ca4List);

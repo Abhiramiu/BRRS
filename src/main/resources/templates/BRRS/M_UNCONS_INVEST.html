@@ -10,8 +10,8 @@ PURPOSE		: BWRBRREPORT
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<!-- CSS -->
-	
-	
+
+
 	<link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}">
 	<link rel="stylesheet" type="text/css" th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}">
 	<link rel="stylesheet" type="text/css" th:href="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.css}">
@@ -221,78 +221,81 @@ PURPOSE		: BWRBRREPORT
 			/* Normal label color */
 		}
 	</style>
-	
+
 	<style>
-				.header-bar {
-				  display: flex;
-				  align-items: center;
-				  flex-wrap: wrap; /* ✅ allows wrapping on smaller screens */
-				  gap: 10px; /* spacing between elements */
-				  cursor: pointer;
-				}
+		.header-bar {
+			display: flex;
+			align-items: center;
+			flex-wrap: wrap;
+			/* ✅ allows wrapping on smaller screens */
+			gap: 10px;
+			/* spacing between elements */
+			cursor: pointer;
+		}
 
-				/* 🔘 Circular arrow */
-				.left-arrow-circle {
-				  width: 35px;
-				  height: 35px;
-				  border-radius: 50%;
-				  background-color: white;
-				  color: #1f3a93;
-				  display: flex;
-				  align-items: center;
-				  justify-content: center;
-				  margin-right: 10px;
-				}
+		/* 🔘 Circular arrow */
+		.left-arrow-circle {
+			width: 35px;
+			height: 35px;
+			border-radius: 50%;
+			background-color: white;
+			color: #1f3a93;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			margin-right: 10px;
+		}
 
-				.left-arrow-circle i {
-				  font-size: 18px;
-				}
+		.left-arrow-circle i {
+			font-size: 18px;
+		}
 
-				/* 🏷️ Title */
-				.header-title {
-				  font-family: Arial, sans-serif;
-				  font-size: 20px;
-				  font-weight: bold;
-				  color: white;
-				  margin: 0;
-				  flex-shrink: 0;
-				}
+		/* 🏷️ Title */
+		.header-title {
+			font-family: Arial, sans-serif;
+			font-size: 20px;
+			font-weight: bold;
+			color: white;
+			margin: 0;
+			flex-shrink: 0;
+		}
 
-				/* 🚌 Bus display style box */
-				.boards {
-					transform: translateY(6px);
-				  background-color: rgb(107, 122, 143);
-				  color: white;
-				  padding: 5px 45px;
-				  border-radius: 8px;
-				  overflow: hidden;
-				  white-space: nowrap;
-				  flex: 1; /* ✅ makes it take available space dynamically */
-				  min-width: 200px;
-				  box-shadow: 0 0 10px rgb(107, 122, 143);
-				  position: relative;
-				}
+		/* 🚌 Bus display style box */
+		.boards {
+			transform: translateY(6px);
+			background-color: rgb(107, 122, 143);
+			color: white;
+			padding: 5px 45px;
+			border-radius: 8px;
+			overflow: hidden;
+			white-space: nowrap;
+			flex: 1;
+			/* ✅ makes it take available space dynamically */
+			min-width: 200px;
+			box-shadow: 0 0 10px rgb(107, 122, 143);
+			position: relative;
+		}
 
-				/* ✨ Scrolling animation */
-				.scrolling-text {
-				  display: inline-block;
-				  font-family: "Courier New", monospace;
-				  font-weight: bold;
-				  letter-spacing: 1px;
-				  animation: scroll-left 10s linear infinite;
-				}
+		/* ✨ Scrolling animation */
+		.scrolling-text {
+			display: inline-block;
+			font-family: "Courier New", monospace;
+			font-weight: bold;
+			letter-spacing: 1px;
+			animation: scroll-left 10s linear infinite;
+		}
 
-				@keyframes scroll-left {
-				  0% {
-				    transform: translateX(100%);
-				  }
-				  100% {
-				    transform: translateX(-100%);
-				  }
-				}
+		@keyframes scroll-left {
+			0% {
+				transform: translateX(100%);
+			}
 
-				</style>
-	
+			100% {
+				transform: translateX(-100%);
+			}
+		}
+	</style>
+
 	<style>
 		/* Red border for invalid inputs */
 		input.error,
@@ -358,8 +361,8 @@ PURPOSE		: BWRBRREPORT
 		}
 	</style>
 	<script th:inline="javascript">
-	let isDetailsModal = false;
-	
+		let isDetailsModal = false;
+
 		$(document).ready(function () {
 			// hide loader on normal load
 			$('#loader').modal('hide');
@@ -373,34 +376,34 @@ PURPOSE		: BWRBRREPORT
 			$('#loader').modal('hide');
 		});
 
-				
-		$(document).ready(function() {
-			Maker_Checker_Function(); 
+
+		$(document).ready(function () {
+			Maker_Checker_Function();
 		});
 
 		// if logged user is a Checker, checker cannot modify, if user is maker , then maker cant download
 		function Maker_Checker_Function() {
 			$.ajax({
-				url: "/BRRS/getUserRole",    
+				url: "/BRRS/getUserRole",
 				type: "GET",
-				success: function(roleId) {
+				success: function (roleId) {
 					// console.log("User Role ID:", roleId);
-				
-					if (roleId === "ADM-C" || roleId === "USR-C"  || roleId === "USER-AUDIT") {
+
+					if (roleId === "ADM-C" || roleId === "USR-C" || roleId === "USER-AUDIT") {
 						const modifyBtn = document.getElementById("addRecord");
 						if (modifyBtn) modifyBtn.style.display = "none";
 					}
 
 					if (roleId === "ADM-M" || roleId === "USR-M") {
-								const button = document.getElementById("custom-tab-btnAdd");
-								if (button) button.style.display = "none";
-							}
+						const button = document.getElementById("custom-tab-btnAdd");
+						if (button) button.style.display = "none";
+					}
 
 				},
-				error: function(err) {
+				error: function (err) {
 					console.error("Error fetching role:", err);
-		     }
-		    });
+				}
+			});
 		}
 
 
@@ -415,15 +418,22 @@ PURPOSE		: BWRBRREPORT
 
 		//to fetch summary from the database - called from the summary button
 		function showdetails() {
-			isDetailsModal = true; 
-		
-			 showResultModal('BRRS',' Details page not available for Manual Report');
-		}
+			$('#loader').modal('show');
+			var Callurl = /*[[@{'/Reports/' + ${reportid}(
+				        dtltype='detail',
+				        fromdate=${fromdate},
+				        todate=${todate},
+				        type=${type},
+				        asondate=${asondate},
+				        version=${version}
+				    )}]]*/
+				location.href = Callurl;
 
+		}
 		function showsummary() {
 			$('#loader').modal('show');
-			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/
-			location.href = Callurl;
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate}, version=${version})}]]*/
+				location.href = Callurl;
 		}
 
 
@@ -451,7 +461,9 @@ PURPOSE		: BWRBRREPORT
 			var selectedTab = document.getElementById("selectedTab").value;
 			activateTab(selectedTab);
 		};
+
 		function downloadfile(button) {
+
 			var reportid = button.getAttribute('data-reportid');
 			var asondate = button.getAttribute('data-asondate');
 			var fromdate = button.getAttribute('data-fromdate');
@@ -463,26 +475,41 @@ PURPOSE		: BWRBRREPORT
 			var filename = button.getAttribute('data-filename');
 			var type = button.getAttribute('data-type');
 			var version = button.getAttribute('data-version');
-			$('#loader').modal('show');
+
+			var loader = new bootstrap.Modal(
+				document.getElementById('loader'),
+				{backdrop: 'static', keyboard: false}
+			);
+			loader.show();
+
+			// ✅ Build URL safely
+			var url = './downloadExcel?reportid=' + reportid +
+				'&fromdate=' + fromdate +
+				'&asondate=' + asondate +
+				'&todate=' + todate +
+				'&currency=' + currency +
+				'&subreportid=' + subreportid +
+				'&secid=' + secid +
+				'&filename=' + filename +
+				'&type=' + type;
+
+			// ✅ ONLY append version if valid
+			if (version && version.trim() !== '') {
+				url += '&version=' + version;
+			}
+
 			$.ajax({
-				url: './downloadExcel?reportid=' + reportid +
-					'&fromdate=' + fromdate +
-					'&asondate=' + asondate +
-					'&todate=' + todate +
-					'&currency=' + currency +
-					'&subreportid=' + subreportid +
-					'&secid=' + secid +
-					'&filename=' + filename +
-					'&type=' + type +
-					'&version=' + version,
+				url: url,
 				type: 'GET',
-				xhrFields: {
-					responseType: 'blob'
-				},
+				xhrFields: {responseType: 'blob'},
+
 				success: function (data) {
 					$('#loader').modal('hide');
+
 					if (data && data.size > 100) {
-						const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
+						const blob = new Blob([data], {
+							type: 'application/vnd.ms-excel'
+						});
 						const url = window.URL.createObjectURL(blob);
 						const a = document.createElement('a');
 						a.style.display = 'none';
@@ -492,18 +519,21 @@ PURPOSE		: BWRBRREPORT
 						a.click();
 						window.URL.revokeObjectURL(url);
 						document.body.removeChild(a);
+
 						showResultModal('BRRS', filename + ' downloaded successfully.');
 					} else {
 						showResultModal('Information', 'No data was available to create a download.');
 					}
 				},
-				error: function (jqXHR, textStatus, errorThrown) {
+
+				error: function () {
 					$('#loader').modal('hide');
-					console.error("Download failed:", textStatus, errorThrown);
-					showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
+					showResultModal('Error', 'An error occurred while downloading the file.');
 				}
 			});
 		}
+
+
 		function editRecord() {
 			showResultModal('Alert', 'Development in progress');
 
@@ -521,264 +551,258 @@ PURPOSE		: BWRBRREPORT
 			$('#resultModal').modal('show');
 		}
 	</script>
-	
-	
-		
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
+
 	<script>
-	// Show Modify (enable inputs & dropdowns)
-	
-		
-function showmodify(btn) {
-	var readonlyIds = ["R15_AMOUNT", "R15_PERCENT_OF_CET1_HOLDING", "R15_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING" ,"R15_PERCENT_OF_TIER_2_HOLDING"];
-	
-	$(".Show_input").each(function () {
-		        if (!readonlyIds.includes(this.id)) {
-		            $(this).removeAttr("readonly").removeAttr("disabled");
-		        }
-		    });
+		// Show Modify (enable inputs & dropdowns)
 
-			
 
-			for (let i = 11; i <= 14; i++) {  
-						    let fields = [
-						        "AMOUNT",
-						        "PERCENT_OF_CET1_HOLDING",
-						        "PERCENT_OF_ADDITIONAL_TIER_1_HOLDING",
-						        "PERCENT_OF_TIER_2_HOLDING",
-						        
-						    ];
+		function showmodify(btn) {
+			var readonlyIds = ["r15_amount"];
 
-						    fields.forEach(field => {
-						        let selector = `#R${i}_${field}`;
-						        if ($(selector).length) {  // check if element exists
-						            $(selector).css({"background-color": "#d3d3d3"});
-						        }
-						    });
-						}
-			
-			for (let i = 22; i <= 24; i++) {  
-			    let fields = [
-				"ACCUULATED_EQUITY_INTEREST_5",
-				"ASSETS",
-				"LIABILITIES",
-				"REVENUE",
-				"PROFIT_OR_LOSS",
-				"UNREG_SHARE_OF_LOSS",
-				"CUMULATIVE_UNREG_SHARE_OF_LOSS"
-			    ];
+			$(".Show_input").each(function () {
+				if (!readonlyIds.includes(this.id)) {
+					$(this).removeAttr("readonly").removeAttr("disabled");
+				}
+			});
 
-			    fields.forEach(field => {
-			        let selector = `#R${i}_${field}`;
-			        if ($(selector).length) {  // check if element exists
-			            $(selector).css({"background-color": "#d3d3d3"});
-			        }
-			    });
+
+
+			for (let i = 11; i <= 15; i++) {
+				let fields = [
+					"amount",
+					"percent_of_cet1_holding",
+					"percent_of_additional_tier_1_holding",
+					"percent_of_tier_2_holding",
+				];
+
+				fields.forEach(field => {
+
+					// 🔹 Skip only r15_amount
+					if (i === 15 && field === "amount") {
+						return;
+					}
+
+					let selector = `#r${i}_${field}`;
+					if ($(selector).length) {
+						$(selector).css({"background-color": "#d3d3d3"});
+					}
+				});
 			}
-			
-			$("#R29_FAIR_VALUE").css({"background-color": "#d3d3d3"});
-			
-			for (let i = 35; i <= 38; i++) {  
-						    let fields = [
-							"COMPANY",
-							"JURISDICTION_OF_INCORP_1",
-							"JURISDICTION_OF_INCORP_2",
-							"LINE_OF_BUSINESS",
-							"CURRENCY",
-							"SHARE_CAPITAL",
-							"ACCUMULATED_EQUITY_INTEREST"
-						    ];
-
-						    fields.forEach(field => {
-						        let selector = `#R${i}_${field}`;
-						        if ($(selector).length) {  // check if element exists
-									$(selector).css({
-									    "background-color": "#d3d3d3"
-									});
-
-						        }
-						    });
-						}
-						
-						
-			
-  
-    
-    // Toggle buttons
-    $("#submitButton").show();
-    
-    // Show Cancel button only when Modify is clicked
-    $("#cancelRecord").show();
-    
-    // Optionally hide the clicked Modify button
-    $(btn).hide();
-}
-
-//Cancel / Reset function
-function cancelModify() {
-    if (confirm("Are you sure you want to cancel changes? Page will reload.")) {
-        // ✅ Only when user clicks YES
-        location.reload();
-        
-        $(".Show_input").attr("readonly", true).attr("disabled", true);
-
-       
-
-        $("#submitButton, #btnBack_edit").hide();
-        $("#btnBack").show();
-
-        // Hide Cancel button again
-        $("#cancelRecord").hide();
-
-        // Show all Modify buttons
-        $("#addRecord").show();
-    }
-    // ❌ If user clicks CANCEL, nothing happens
-}
 
 
-	
+			for (let i = 22; i <= 24; i++) {
+				let fields = [
+					"accuulated_equity_interest_5",
+					"assets",
+					"liabilities",
+					"revenue",
+					"profit_or_loss",
+					"unreg_share_of_loss",
+					"cumulative_unreg_share_of_loss"
+				];
 
-	</script>
-	
-	<SCRIPT>
-	
-		// Calculating Totals for 15 row
-		function calculateR15Totals() {
-		    let totalAmount = 0;
-		    let totalCet1 = 0;
-		    let totalAt1 = 0;
-		    let totalT2 = 0;
+				fields.forEach(field => {
+					let selector = `#r${i}_${field}`;
+					if ($(selector).length) {  // check if element exists
+						$(selector).css({"background-color": "#d3d3d3"});
+					}
+				});
+			}
 
-		    for (let i = 11; i <= 14; i++) {
-		        // Get numeric values safely (remove commas, default 0)
-		        let amt   = parseFloat($("#R" + i + "_AMOUNT").val()?.replace(/,/g, "")) || 0;
-		        let cet1  = parseFloat($("#R" + i + "_PERCENT_OF_CET1_HOLDING").val()?.replace(/,/g, "")) || 0;
-		        let at1   = parseFloat($("#R" + i + "_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING").val()?.replace(/,/g, "")) || 0;
-		        let t2    = parseFloat($("#R" + i + "_PERCENT_OF_TIER_2_HOLDING").val()?.replace(/,/g, "")) || 0;
+			$("#r29_fair_value").css({"background-color": "#d3d3d3"});
 
-		        totalAmount += amt;
-		        totalCet1   += cet1;
-		        totalAt1    += at1;
-		        totalT2     += t2;
-		    }
+			for (let i = 35; i <= 38; i++) {
+				let fields = [
+					"COMPANY",
+					"jurisdiction_of_incorp_1",
+					"jurisdiction_of_incorp_2",
+					"line_of_business",
+					"currency",
+					"share_capital",
+					"accumulated_equity_interest", "company", "liabilities"
+				];
 
-			$("#R15_AMOUNT").val(Number(totalAmount).toLocaleString('en-US'));
-			$("#R15_PERCENT_OF_CET1_HOLDING").val(Number(totalCet1).toLocaleString('en-US'));
-			$("#R15_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING").val(Number(totalAt1).toLocaleString('en-US'));
-			$("#R15_PERCENT_OF_TIER_2_HOLDING").val(Number(totalT2).toLocaleString('en-US'));
+				fields.forEach(field => {
+					let selector = `#r${i}_${field}`;
+					if ($(selector).length) {  // check if element exists
+						$(selector).css({
+							"background-color": "#d3d3d3"
+						});
+
+					}
+				});
+			}
+
+
+
+
+
+			// Toggle buttons
+			$("#submitButton").show();
+
+			// Show Cancel button only when Modify is clicked
+			$("#cancelRecord").show();
+
+			// Optionally hide the clicked Modify button
+			$(btn).hide();
+		}
+
+		//Cancel / Reset function
+		function cancelModify() {
+			if (confirm("Are you sure you want to cancel changes? Page will reload.")) {
+				// ✅ Only when user clicks YES
+				location.reload();
+
+				$(".Show_input").attr("readonly", true).attr("disabled", true);
+
+
+
+				$("#submitButton, #btnBack_edit").hide();
+				$("#btnBack").show();
+
+				// Hide Cancel button again
+				$("#cancelRecord").hide();
+
+				// Show all Modify buttons
+				$("#addRecord").show();
+			}
+			// ❌ If user clicks CANCEL, nothing happens
 		}
 
 
-	// Call on page load
-	$(document).ready(function() {
-	    calculateR15Totals();
 
-	    // Attach listener only to R11-R50 amount fields
-	    for (let i = 11; i <= 14; i++) {
-	        $("#R" + i + "_AMOUNT, #R" + i + "_PERCENT_OF_CET1_HOLDING,#R" + i + "_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING,#R" + i + "_PERCENT_OF_TIER_2_HOLDING").on("input", function() {
-	            calculateR15Totals();
-	        });
-	    }
-	});
-	
-	
+
+	</script>
+
+	<SCRIPT>
+
+		// Calculating Totals for 15 row
+		function calculateR15Totals() {
+			let totalamount = 0;
+			let totalCet1 = 0;
+			let totalAt1 = 0;
+			let totalT2 = 0;
+
+			for (let i = 11; i <= 14; i++) {
+				// Get numeric values safely (remove commas, default 0)
+				let amt = parseFloat($("#r" + i + "_amount").val()?.replace(/,/g, "")) || 0;
+
+				totalamount += amt;
+			}
+
+			$("#r15_amount").val(Number(totalamount).toLocaleString('en-US'));
+		}
+
+
+		// Call on page load
+		$(document).ready(function () {
+			calculateR15Totals();
+
+			// Attach listener only to R11-R50 amount fields
+			for (let i = 11; i <= 14; i++) {
+				$("#r" + i + "_amount, #r").on("input", function () {
+					calculateR15Totals();
+				});
+			}
+		});
+
+		function closemodels() {
+			$("#resultModal").modal("hide");
+			$('#loader').modal('hide');
+
+			// Reload the page after a short delay to ensure the modal animation completes smoothly.
+			setTimeout(function () {
+				location.reload();
+			}, 300);
+		}
+
 	</SCRIPT>
 
 
 	<script>
-	
+		function fileuploads(btn) {
+			const asondate = btn.getAttribute("data-todate");
+			const type = btn.getAttribute("data-type"); // MAIN / RESUB / ARCHIVAL
 
-	// This function is for closing the modal after an action is complete.
-	// It hides the result and loader modals and reloads the page.
-	function closemodel() {
-	    /* $("#resultModal").modal("hide");
-	    $('#loader').modal('hide');
+			$('#loader').modal('show');
 
-	    // Reload the page after a short delay to ensure the modal animation completes smoothly.
-	    setTimeout(function () {
-	        location.reload();
-	    }, 300); */
-	    
-	    $("#resultModal").modal("hide");
-        $('#loader').modal('hide');
+			// Step 1: Calculate totals
+			calculateR15Totals();
 
-        // Only reload if not from Details modal
-        if (!isDetailsModal) {
-            setTimeout(function () {
-                location.reload();
-            }, 300);
-        } else {
-            // reset flag for next modal usage
-            isDetailsModal = false;
-        }
-	}
+			// Step 2: Remove commas
+			$("#fileupload input[type='text']").each(function () {
+				$(this).val($(this).val().replace(/,/g, ''));
+			});
 
-	
-	function fileuploads(btn) {
-		const asondate = btn.getAttribute("data-todate");
-		const type = btn.getAttribute("data-type");
-		
-		$('#loader').modal('show');
+			// Step 3: Validate form
+			if (!$("#fileupload").valid()) {
+				$('#loader').modal('hide');
+				return;
+			}
 
+			// Step 4: Build FormData
+			const formData = new FormData();
+			formData.append("asondate", asondate);
+			formData.append("type", type);
 
-		// ✅ Step 1: Calculate totals
-	    calculateR15Totals();
-	    
+			$('#fileupload').find(':input').each(function () {
+				const name = $(this).attr('name');
+				if (name) formData.append(name, $(this).val());
+			});
 
-		// ✅ Step 2: Remove commas from inputs
-			    $("#fileupload input[type='text']").each(function () {
-			        $(this).val($(this).val().replace(/,/g, ''));
-			    });
+			// Step 5: Select API endpoint dynamically
+			let apiUrl = './UNCupdateAll'; // normal update
+			if (type && type.toUpperCase() === 'RESUB') {
+				apiUrl = './UNCupdateAll'; // Resubmission endpoint
+			}
 
-			    // ✅ Step 3: Validate form
-			    if (!$("#fileupload").valid()) {
-			        $('#loader').modal('hide');
-			        return;
-			    }
-				
-				// ✅ Step 4: Build one FormData object for all entities
-					    const formData = new FormData();
-					    formData.append("asondate", asondate);
-						formData.append("type", type);
+			// Step 6: AJAX call
+			$.ajax({
+				url: apiUrl,
+				type: 'POST',
+				data: formData,
+				processData: false,
+				contentType: false,
+				dataType: 'text',
+				success: function (response) {
+					$("#resultModalLabel").text("BRRS");
+					$("#resultModalBody").text(response);
+					$("#resultModal").modal("show");
 
-
-					    // Append all inputs
-					    $('#fileupload').find(':input').each(function () {
-					        const name = $(this).attr('name');
-					        if (name) {
-					            formData.append(name, $(this).val());
-					        }
-					    });
-
-						// ✅ Step 5: Send single Ajax request
-							    $.ajax({
-							        url: './UNCupdateAll',
-							        type: 'POST',
-							        data: formData,
-							        processData: false,
-							        contentType: false,
-							        dataType: 'text',
-							        success: function () {
-							            $("#resultModalLabel").text("BRRS");
-							            $("#resultModalBody").text("Updated Successfully.");
-							            $("#resultModal").modal("show");
-							        },
-							        error: function (jqXHR) {
-							            console.error("Error response:", jqXHR.responseText);
-							            $("#resultModalLabel").text("Error");
-							            $("#resultModalBody").text("Update failed. Check console for details.");
-							            $("#resultModal").modal("show");
-							        },
-							        complete: function () {
-							            $('#loader').modal('hide');
-							        }
-							    });
+					// ✅ Redirect after short delay (so user sees the success message)
+					if (response.includes("Resubmission Updated Successfully")) {
+						setTimeout(function () {
+							// Go back to the previous page user came from
+							if (document.referrer && document.referrer !== '') {
+								// Redirect to the page that opened this one
+								window.location.href = document.referrer;
+							} else {
+								// If no referrer, just go one step back in history
+								window.history.back();
 							}
+						}, 2000); // wait 2 seconds before redirect
+					}
+				},
+				error: function (jqXHR) {
+					$("#resultModalLabel").text("Error");
+					$("#resultModalBody").text("Update failed: " + jqXHR.responseText);
+					$("#resultModal").modal("show");
+				},
+				complete: function () {
+					$('#loader').modal('hide');
+				}
+			});
+
+		}
+
+
 
 
 
@@ -801,11 +825,14 @@ function cancelModify() {
 						<!-- Title -->
 						<h5
 							style="font-family: arial; font-size: 20px; margin-right: 10px; padding-top: 10px; font-weight: bold; color: white;">
-							(50) MONTHLY SCHEDULE: M-UNCONS INVEST: INVESTMENT IN  <br> UNCONSILIDATED INVESTMENTS AND ASSOCIATED COMPANIES</h5>
-							
+							(50) MONTHLY SCHEDULE: M-UNCONS INVEST : <br>INVESTMENT IN UNCONSILIDATED INVESTMENTS
+							<br>AND
+							ASSOCIATED COMPANIES
+						</h5>
+
 						<div class="boards">
-								    <p class="scrolling-text">BANK OF BOTSWANA - BANKING SUPERVISION DEPARTMENT</p>
-								  </div>
+							<p class="scrolling-text">BANK OF BOTSWANA - BANKING SUPERVISION DEPARTMENT</p>
+						</div>
 					</div>
 					<div class="custom-tab-btn-group nav-buttons"
 						style="display: flex; color: white; align-items: center;">
@@ -820,1001 +847,1033 @@ function cancelModify() {
 							th:if="${displaymode == 'Details'}">Summary</button>
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails();"
 							th:if="${displaymode == 'summary'}">Details</button>
-						
-<!-- Modify button -->
-<button type="button" class="custom-tab-btn"
+
+						<!-- Modify button -->
+						<!--<button type="button" class="custom-tab-btn"
         onclick="showmodify(this);"
         title="Click to EDIT Records"
 		th:if="${type != 'ARCHIVAL'}"
         th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
-        id="addRecord">Modify</button>
-
-<!-- Cancel button (hidden initially) -->
-<button type="button" class="custom-tab-btn"
-        title="Cancel editing"
-        id="cancelRecord"
-        onclick="cancelModify();"
-        style="display: none;">Cancel</button>
-
-
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'summary'}" th:attr="data-reportid=${reportid},
-                   				 data-asondate=${asondate},
-                   				 data-fromdate=${fromdate},
-                    				 data-todate=${todate},
-                    				 data-currency=${currency}, 
-                    				 data-dtltype=${dtltype},
-                    				 data-filename='M_UNCONS_INVEST.xlsx',
-					 				 data-type=${type},
-					    			 data-version=${version}" onclick="downloadfile(this);">
-							<i class="fa fa-download"></i>
+        id="addRecord">Modify</button>-->
+						<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
+							title="Click to EDIT Records" th:if="${type != 'ARCHIVAL'} and ${dtltype != 'detail'}"
+							th:classappend="${session.PERMISSIONS == 'W'} and ${dtltype == 'report'} ? 'addedit'"
+							id="addRecord">
+							Modify
 						</button>
-						
-						
 
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'Details'}" onclick="startReport(this);" th:attr="
-								    data-fromdate=${fromdate},
-								    data-todate=${todate},
-									data-currency=${currency},  
-												data-dtltype=${dtltype}, 
-								    data-filename='MSFinP2Detail',
-									data-type=${type},
-												data-version=${version}
-								  ">
-							<i class="fa fa-download"></i>
+						<!-- Cancel button (hidden initially) -->
+						<button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord"
+							onclick="cancelModify();" style="display: none;">Cancel</button>
+
+
+						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
+							onclick="downloadfile(this)" th:if="${displaymode == 'summary' or displaymode == 'detail'}"
+							th:attr="data-reportid=${reportid},
+		                   data-asondate=${asondate},
+		                   data-fromdate=${fromdate},
+		                   data-todate=${todate},
+		                   data-currency=${currency}, 
+		                   data-dtltype=${dtltype},
+		                   data-filename='M_UNCONS_INVEST.xlsx',
+		                   data-type=${type},
+		                   data-version=${version != null ? version : ''}" style="font-family: Arial;font-weight: bold;">
+							<i class="fa fa-download"></i> Excel
 						</button>
+						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
+							onclick="downloadfile(this)" th:if="${displaymode == 'summary' or displaymode == 'detail'}"
+							th:attr="data-reportid=${reportid},
+		            data-asondate=${asondate},
+		            data-fromdate=${fromdate},
+		            data-todate=${todate},
+		            data-currency=${currency}, 
+		            data-dtltype=${dtltype},
+		            data-filename='EMAIL_M_UNCONS_INVEST.xlsx',
+		            data-type='email',
+		            data-version=${version != null ? version : ''}" style="font-family: Arial;font-weight: bold;">
+							<i class="fa fa-download"></i> E-Mail
+
+						</button>
+
 
 
 					</div>
-					
+
 				</div>
-				<div th:if="${displaymode == 'summary'}">
+				<p th:if="${displaymode == 'summary'and type != 'ARCHIVAL'}" style="text-align: left; font-weight: bold; 
+										color: white;  font-size: 20px;  background-color: rgb(107, 122, 143); 
+										margin-top:10px; margin-bottom:10px;padding: 5px;">Summary View - M UNCONS INVEST</p>
+
+				<!-- Detail text -->
+				<p th:if="${displaymode == 'detail' and type != 'ARCHIVAL'}" style="text-align: left; font-weight: bold;
+									 color: white;  font-size: 20px;  background-color: rgb(107, 122, 143); 
+									 margin-top:10px; margin-bottom:10px;padding: 5px;">Detail View - M UNCONS INVEST</p>
+
+				<p th:if="${type == 'ARCHIVAL' and displaymode == 'summary'}" style="text-align: left; font-weight: bold; 
+				          color: white; font-size: 20px;
+				          background-color: rgb(107, 122, 143); 
+				          margin-top:10px; margin-bottom:10px; padding: 5px;">
+					Archival Summary View - M UNCONS INVEST
+				</p>
+
+				<p th:if="${type == 'ARCHIVAL' and displaymode == 'detail'}" style="text-align: left; font-weight: bold;
+				          color: white; font-size: 20px;
+				          background-color: rgb(107, 122, 143); 
+				          margin-top:10px; margin-bottom:10px; padding: 5px;">
+					Archival Detail View - M UNCONS INVEST
+				</p>
+
+				<div th:if="${displaymode == 'summary' or displaymode == 'detail'}">
 					<div class="row">
 						<div class="col-sm-12">
-						<form action="#" method="POST" id="fileupload">
-							<div class="table-wrapper table-responsive scrollable-table-container"
-								style="border-right: 1px solid #dee2e6; ">
-								<table
-									class="sticky-header-table table table-bordered table-hover table-sm table-condensed"
-									id="reports">
-									<thead class="thead-light">
-									<tr>
-									<th colspan="2" style="text-align: left; padding-left: 20px; width: 900px;">
-										       (12A) INVESTMENT IN UNCONSOLIDATED SUBSIDIARIES    </th>
-								    <th colspan="6" style="border:none !important; border-color:transparent !important;"></th>
-									</tr>
-					
-										<tr style="background-color: #b3b6b9;">
-										    <th style="background-color: #D8D8D8; text-align: left;vertical-align:middle; padding-left: 20px; width: 900px;">
-										        Subsidiary
-										    </th>
-										    <th style="background-color: #D8D8D8;text-align: right; vertical-align:middle; width: 200px;">Amount </th>
-										    <th style="background-color: #D8D8D8;text-align: right; vertical-align:middle;width: 150px;">Percentage of CET1 holding</th>
-										    <th style="background-color: #D8D8D8;text-align: right; vertical-align:middle; width: 150px;">Percentage of Additional Tier 1 holding</th>
-										    <th style="background-color: #D8D8D8;text-align: right;vertical-align:middle; width: 150px;">Percentage of Tier 2 holding</th>
-										    
-										 
-										</tr>
+							<form action="#" method="POST" id="fileupload">
+								<div class="table-wrapper table-responsive scrollable-table-container"
+									style="border-right: 1px solid #dee2e6; ">
+									<table
+										class="sticky-header-table table table-bordered table-hover table-sm table-condensed"
+										id="reports">
+										<thead class="thead-light">
+											<tr>
+												<th colspan="2"
+													style="text-align: left; padding-left: 20px; width: 900px;">
+													(12A) INVESTMENT IN UNCONSOLIDATED SUBSIDIARIES </th>
+												<th colspan="6"
+													style="border:none !important; border-color:transparent !important;">
+												</th>
+											</tr>
 
-										
-									</thead>
-		<tbody id="entity1" th:each="report: ${reportsummary}" style="font-family: Arial;">
-
-
-
-<tr>
-	
-	<td style="font-weight: normal;padding-left: 30px;">(a)</td>
-	<td id="ROW11" style="padding-left: 20px; font-weight: bold;">
-	        <input class="display-input Show_input"
-	               type="text"
-				  
-	               th:value="${report.R11_AMOUNT != null ? #numbers.formatDecimal(report.R11_AMOUNT, 1,'COMMA', 0, 'POINT') : '0'}"
-	               id="R11_AMOUNT"
-	               name="R11_AMOUNT"
-	               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-	           readonly />
-	    </td>
-		
-		<td id="ROW11" style="padding-left: 20px; font-weight: bold;">
-		        <input class="display-input Show_input"
-		               type="text"
-		               th:value="${report.R11_PERCENT_OF_CET1_HOLDING != null ? #numbers.formatDecimal(report.R11_PERCENT_OF_CET1_HOLDING, 1,'COMMA', 0, 'POINT') : '0'}"
-		               id="R11_PERCENT_OF_CET1_HOLDING"
-		               name="R11_PERCENT_OF_CET1_HOLDING"
-		               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-		           readonly />
-		    </td>
-		
-			<td id="ROW11" style="padding-left: 20px; font-weight: bold;">
-			        <input class="display-input Show_input"
-			               type="text"
-			               th:value="${report.R11_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING != null ? #numbers.formatDecimal(report.R11_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING, 1,'COMMA', 0, 'POINT') : '0'}"
-			               id="R11_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"
-			               name="R11_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"
-			               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-			           readonly />
-			    </td>
-
-				<td id="ROW11" style="padding-left: 20px; font-weight: bold;">
-				        <input class="display-input Show_input"
-				               type="text"
-				               th:value="${report.R11_PERCENT_OF_TIER_2_HOLDING != null ? #numbers.formatDecimal(report.R11_PERCENT_OF_TIER_2_HOLDING, 1,'COMMA', 0, 'POINT') : '0'}"
-				               id="R11_PERCENT_OF_TIER_2_HOLDING"
-				               name="R11_PERCENT_OF_TIER_2_HOLDING"
-				               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-				           readonly />
-				    </td>
-				    
-				
-		
-
-</tr>
-
-<tr>
-	
-	<td style="font-weight: normal;padding-left: 30px;">(b)</td>
-	<td id="ROW12" style="padding-left: 20px; font-weight: bold;">
-	        <input class="display-input Show_input"
-	               type="text"
-	               th:value="${report.r12_AMOUNT != null ? #numbers.formatDecimal(report.R12_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
-	               id="R12_AMOUNT"
-	               name="r12_AMOUNT"
-	               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-	           readonly />
-	    </td>
-		
-		<td id="ROW12" style="padding-left: 20px; font-weight: bold;">
-		        <input class="display-input Show_input"
-		               type="text"
-		               th:value="${report.R12_PERCENT_OF_CET1_HOLDING != null ? #numbers.formatDecimal(report.R12_PERCENT_OF_CET1_HOLDING, 1,'COMMA', 0, 'POINT') : '0'}"
-		               id="R12_PERCENT_OF_CET1_HOLDING"
-		               name="R12_PERCENT_OF_CET1_HOLDING"
-		               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-		           readonly />
-		    </td>
-		
-			<td id="ROW12" style="padding-left: 20px; font-weight: bold;">
-			        <input class="display-input Show_input"
-			               type="text"
-			               th:value="${report.R12_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING != null ? #numbers.formatDecimal(report.R12_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING, 1,'COMMA', 0, 'POINT') : '0'}"
-			               id="R12_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"
-			               name="R12_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"
-			               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-			           readonly />
-			    </td>
-
-				<td id="ROW12" style="padding-left: 20px; font-weight: bold;">
-				        <input class="display-input Show_input"
-				               type="text"
-				               th:value="${report.R12_PERCENT_OF_TIER_2_HOLDING != null ? #numbers.formatDecimal(report.R12_PERCENT_OF_TIER_2_HOLDING, 1,'COMMA', 0, 'POINT') : '0'}"
-				               id="R12_PERCENT_OF_TIER_2_HOLDING"
-				               name="R12_PERCENT_OF_TIER_2_HOLDING"
-				               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-				           readonly />
-				    </td>
-
-    
-				
-		
-
-</tr>
-
-<tr>
-	
-	<td style="font-weight: normal;padding-left: 30px;">(c)</td>
-	<td id="ROW13" style="padding-left: 20px; font-weight: bold;">
-	        <input class="display-input Show_input"
-	               type="text"
-	               th:value="${report.R13_AMOUNT != null ? #numbers.formatDecimal(report.R13_AMOUNT, 1,'COMMA',  0, 'POINT') : '0'}"
-	               id="R13_AMOUNT"
-	               name="R13_AMOUNT"
-	               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-	           readonly />
-	    </td>
-		
-		<td id="ROW13" style="padding-left: 20px; font-weight: bold;">
-		        <input class="display-input Show_input"
-		               type="text"
-		               th:value="${report.R13_PERCENT_OF_CET1_HOLDING != null ? #numbers.formatDecimal(report.R13_PERCENT_OF_CET1_HOLDING, 1,'COMMA', 0, 'POINT') : '0'}"
-		               id="R13_PERCENT_OF_CET1_HOLDING"
-		               name="R13_PERCENT_OF_CET1_HOLDING"
-		               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-		           readonly />
-		    </td>
-		
-			<td id="ROW13" style="padding-left: 20px; font-weight: bold;">
-			        <input class="display-input Show_input"
-			               type="text"
-			               th:value="${report.R13_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING != null ? #numbers.formatDecimal(report.R13_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING, 1,'COMMA', 0, 'POINT') : '0'}"
-			               id="R13_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"
-			               name="R13_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"
-			               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-			           readonly />
-			    </td>
-
-				<td id="ROW13" style="padding-left: 20px; font-weight: bold;">
-				        <input class="display-input Show_input"
-				               type="text"
-				               th:value="${report.R13_PERCENT_OF_TIER_2_HOLDING != null ? #numbers.formatDecimal(report.R13_PERCENT_OF_TIER_2_HOLDING, 1,'COMMA',  0, 'POINT') : '0'}"
-				               id="R13_PERCENT_OF_TIER_2_HOLDING"
-				               name="R13_PERCENT_OF_TIER_2_HOLDING"
-				               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-				           readonly />
-				    </td>
-
-    
-				
-		
-
-</tr>
-
-<tr>
-	
-	<td style="font-weight: normal;padding-left: 30px;">(d)</td>
-	<td id="ROW14" style="padding-left: 20px; font-weight: bold;">
-	        <input class="display-input Show_input"
-	               type="text"
-	               th:value="${report.R14_AMOUNT != null ? #numbers.formatDecimal(report.R14_AMOUNT, 1,'COMMA',  0, 'POINT') : '0'}"
-	               id="R14_AMOUNT"
-	               name="R14_AMOUNT"
-	               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-	           readonly />
-	    </td>
-		
-		<td id="ROW14" style="padding-left: 20px; font-weight: bold;">
-		        <input class="display-input Show_input"
-		               type="text"
-		               th:value="${report.R14_PERCENT_OF_CET1_HOLDING != null ? #numbers.formatDecimal(report.R14_PERCENT_OF_CET1_HOLDING, 1,'COMMA',  0, 'POINT') : '0'}"
-		               id="R14_PERCENT_OF_CET1_HOLDING"
-		               name="R14_PERCENT_OF_CET1_HOLDING"
-		               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-		           readonly />
-		    </td>
-		
-			<td id="ROW14" style="padding-left: 20px; font-weight: bold;">
-			        <input class="display-input Show_input"
-			               type="text"
-			               th:value="${report.R14_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING != null ? #numbers.formatDecimal(report.R14_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING, 1,'COMMA', 0, 'POINT') : '0'}"
-			               id="R14_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"
-			               name="R14_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"
-			               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-			           readonly />
-			    </td>
-
-				<td id="ROW14" style="padding-left: 20px; font-weight: bold;">
-				        <input class="display-input Show_input"
-				               type="text"
-				               th:value="${report.R14_PERCENT_OF_TIER_2_HOLDING != null ? #numbers.formatDecimal(report.R14_PERCENT_OF_TIER_2_HOLDING, 1,'COMMA', 0, 'POINT') : '0'}"
-				               id="R14_PERCENT_OF_TIER_2_HOLDING"
-				               name="R14_PERCENT_OF_TIER_2_HOLDING"
-				               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-				           readonly />
-				    </td>
-
-</tr>
-
-<tr>
-	
-	<td style="font-weight: bold;padding-left: 30px;">Total</td>
-	<td id="ROW15" style="background-color: rgb(107, 122, 143);padding-left: 20px; font-weight: bold;">
-	    <input class="display-input Show_input"
-	           type="text"
-	           id="R15_AMOUNT"
-	           name="R15_AMOUNT"
-	           style="background-color: rgb(107, 122, 143);color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-	           readonly />
-	</td>
-	
-	<td id="ROW15" style="background-color: rgb(107, 122, 143);padding-left: 20px; font-weight: bold;">
-	    <input class="display-input Show_input"
-	           type="text"
-	           id="R15_PERCENT_OF_CET1_HOLDING"
-	           name="R15_PERCENT_OF_CET1_HOLDING"
-	           style="background-color: rgb(107, 122, 143);color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-	           readonly />
-	</td>
-		
-	<td id="ROW15" style="background-color: rgb(107, 122, 143); padding-left: 20px; font-weight: bold;">
-	    <input class="display-input Show_input"
-	           type="text"
-	           id="R15_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"
-	           name="R15_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"
-	           style="background-color: rgb(107, 122, 143);color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-	           readonly />
-	</td>
-	<td id="ROW15" style="background-color: rgb(107, 122, 143);padding-left: 20px; font-weight: bold;">
-	    <input class="display-input Show_input"
-	           type="text"
-	           id="R15_PERCENT_OF_TIER_2_HOLDING"
-	           name="R15_PERCENT_OF_TIER_2_HOLDING"
-	           style="background-color: rgb(107, 122, 143);color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-	           readonly />
-	</td>
-
-				
-		
-
-</tr>
+											<tr style="background-color: #b3b6b9;">
+												<th
+													style="background-color: #D8D8D8; text-align: left;vertical-align:middle; padding-left: 20px; width: 900px;">
+													Subsidiary
+												</th>
+												<th
+													style="background-color: #D8D8D8;text-align: right; vertical-align:middle; width: 200px;">
+													amount </th>
+												<th
+													style="background-color: #D8D8D8;text-align: right; vertical-align:middle;width: 150px;">
+													Percentage of CET1 holding</th>
+												<th
+													style="background-color: #D8D8D8;text-align: right; vertical-align:middle; width: 150px;">
+													Percentage of Additional Tier 1 holding</th>
+												<th
+													style="background-color: #D8D8D8;text-align: right;vertical-align:middle; width: 150px;">
+													Percentage of Tier 2 holding</th>
+											</tr>
 
 
-<tr style="border: none !important;">
-	<td colspan="3" style="height: 30px; border: none !important;"></td>
-</tr>
+										</thead>
+										<tbody id="entity1" th:each="report: ${reportsummary}"
+											style="font-family: Arial;">
+
+
+
+											<tr>
+												<!--<td id="ROW12" style="font-weight: bold;"><input
+														class="display-input Show_input " type="text"
+														th:value="'4.   Supervisory'" id="R12_STAFF_COMPLEMENT"
+														name="R12_STAFF_COMPLEMENT"
+														style="background-color: #FFFFFF; width: 790px; height: 28px; border-color: transparent; text-align: left;"
+														readonly /></td>-->
+												<td style="padding-left: 30px;">
+													<input class="display-input" type="text" id="r11_product"
+														name="r11_product" value="(a)" readonly
+														style="border:none;background:transparent;width:40px;" />
+												</td>
+
+												<td id="ROW11" style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r11_amount != null ? #numbers.formatDecimal(report.r11_amount, 1,'COMMA', 0, 'POINT') : '0'}"
+														id="r11_amount" name="r11_amount"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+
+												<td id="ROW11" style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r11_percent_of_cet1_holding != null ? #numbers.formatDecimal(report.r11_percent_of_cet1_holding, 1,'COMMA', 0, 'POINT') : '0'}"
+														id="r11_percent_of_cet1_holding"
+														name="r11_percent_of_cet1_holding"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+
+												<td id="ROW11" style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r11_percent_of_additional_tier_1_holding != null ? #numbers.formatDecimal(report.r11_percent_of_additional_tier_1_holding, 1,'COMMA', 0, 'POINT') : '0'}"
+														id="r11_percent_of_additional_tier_1_holding"
+														name="r11_percent_of_additional_tier_1_holding"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+
+												<td id="ROW11" style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r11_percent_of_tier_2_holding != null ? #numbers.formatDecimal(report.r11_percent_of_tier_2_holding, 1,'COMMA', 0, 'POINT') : '0'}"
+														id="r11_percent_of_tier_2_holding"
+														name="r11_percent_of_tier_2_holding"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+
+
+
+
+											</tr>
+
+											<tr>
+
+												<td style="padding-left: 30px;">
+													<input class="display-input" type="text" id="r12_product"
+														name="r12_product" value="(b)" readonly
+														style="border:none;background:transparent;width:40px;" />
+												</td>
+												<td id="ROW12" style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r12_amount != null ? #numbers.formatDecimal(report.r12_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r12_amount" name="r12_amount"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+
+												<td id="ROW12" style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r12_percent_of_cet1_holding != null ? #numbers.formatDecimal(report.r12_percent_of_cet1_holding, 1,'COMMA', 0, 'POINT') : '0'}"
+														id="r12_percent_of_cet1_holding"
+														name="r12_percent_of_cet1_holding"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+
+												<td id="ROW12" style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r12_percent_of_additional_tier_1_holding != null ? #numbers.formatDecimal(report.r12_percent_of_additional_tier_1_holding, 1,'COMMA', 0, 'POINT') : '0'}"
+														id="r12_percent_of_additional_tier_1_holding"
+														name="r12_percent_of_additional_tier_1_holding"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+
+												<td id="ROW12" style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r12_percent_of_tier_2_holding != null ? #numbers.formatDecimal(report.r12_percent_of_tier_2_holding, 1,'COMMA', 0, 'POINT') : '0'}"
+														id="r12_percent_of_tier_2_holding"
+														name="r12_percent_of_tier_2_holding"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+
+
+
+
+
+											</tr>
+
+											<tr>
+
+												<td style="padding-left: 30px;">
+													<input class="display-input" type="text" id="r13_product"
+														name="r13_product" value="(c)" readonly
+														style="border:none;background:transparent;width:40px;" />
+												</td>
+												<td id="ROW13" style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r13_amount != null ? #numbers.formatDecimal(report.r13_amount, 1,'COMMA',  0, 'POINT') : '0'}"
+														id="r13_amount" name="r13_amount"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+
+												<td id="ROW13" style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r13_percent_of_cet1_holding != null ? #numbers.formatDecimal(report.r13_percent_of_cet1_holding, 1,'COMMA', 0, 'POINT') : '0'}"
+														id="r13_percent_of_cet1_holding"
+														name="r13_percent_of_cet1_holding"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+
+												<td id="ROW13" style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r13_percent_of_additional_tier_1_holding != null ? #numbers.formatDecimal(report.r13_percent_of_additional_tier_1_holding, 1,'COMMA', 0, 'POINT') : '0'}"
+														id="r13_percent_of_additional_tier_1_holding"
+														name="r13_percent_of_additional_tier_1_holding"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+
+												<td id="ROW13" style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r13_percent_of_tier_2_holding != null ? #numbers.formatDecimal(report.r13_percent_of_tier_2_holding, 1,'COMMA',  0, 'POINT') : '0'}"
+														id="r13_percent_of_tier_2_holding"
+														name="r13_percent_of_tier_2_holding"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+
+
+
+
+
+											</tr>
+
+											<tr>
+
+												<td style="padding-left: 30px;">
+													<input class="display-input" type="text" id="r14_product"
+														name="r14_product" value="(d)" readonly
+														style="border:none;background:transparent;width:40px;" />
+												</td>
+												<td id="ROW14" style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r14_amount != null ? #numbers.formatDecimal(report.r14_amount, 1,'COMMA',  0, 'POINT') : '0'}"
+														id="r14_amount" name="r14_amount"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+
+												<td id="ROW14" style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r14_percent_of_cet1_holding != null ? #numbers.formatDecimal(report.r14_percent_of_cet1_holding, 1,'COMMA',  0, 'POINT') : '0'}"
+														id="r14_percent_of_cet1_holding"
+														name="r14_percent_of_cet1_holding"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+
+												<td id="ROW14" style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r14_percent_of_additional_tier_1_holding != null ? #numbers.formatDecimal(report.r14_percent_of_additional_tier_1_holding, 1,'COMMA', 0, 'POINT') : '0'}"
+														id="r14_percent_of_additional_tier_1_holding"
+														name="r14_percent_of_additional_tier_1_holding"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+
+												<td id="ROW14" style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r14_percent_of_tier_2_holding != null ? #numbers.formatDecimal(report.r14_percent_of_tier_2_holding, 1,'COMMA', 0, 'POINT') : '0'}"
+														id="r14_percent_of_tier_2_holding"
+														name="r14_percent_of_tier_2_holding"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+
+											</tr>
+
+											<tr>
+
+												<td style="padding-left: 30px;">
+													<input class="display-input" type="text" id="r15_product"
+														name="r15_product" value="Total" readonly
+														style="border:none;background:transparent;width:40px;" />
+												</td>
+												<td id="ROW15"
+													style="background-color: rgb(107, 122, 143);padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text" id="r15_amount"
+														name="r15_amount"
+														style="background-color: rgb(107, 122, 143);color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+
+												<td id="ROW15" style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														id="r15_percent_of_cet1_holding"
+														name="r15_percent_of_cet1_holding"
+														th:value="${report.r15_percent_of_cet1_holding != null ? #numbers.formatDecimal(report.r15_percent_of_cet1_holding, 1,'COMMA', 0, 'POINT') : '0'}"
+														style="width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+
+												<td id="ROW15" style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														id="r15_percent_of_additional_tier_1_holding"
+														name="r15_percent_of_additional_tier_1_holding"
+														th:value="${report.r15_percent_of_additional_tier_1_holding != null ? #numbers.formatDecimal(report.r15_percent_of_additional_tier_1_holding, 1,'COMMA', 0, 'POINT') : '0'}"
+														style=" width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td id="ROW15" style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														id="r15_percent_of_tier_2_holding"
+														name="r15_percent_of_tier_2_holding"
+														th:value="${report.r15_percent_of_tier_2_holding != null ? #numbers.formatDecimal(report.r15_percent_of_tier_2_holding, 1,'COMMA', 0, 'POINT') : '0'}"
+														style="width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+
+
+
+
+											</tr>
+
+
+											<tr style="border: none !important;">
+												<td colspan="3" style="height: 30px; border: none !important;"></td>
+											</tr>
 
 										</tbody>
-	
-	<thead class="thead-light">
-									<tr>
-									<th colspan="8" style="text-align: left; padding-left: 20px; width: 900px;">
-										       (12B) INVESTMENT IN UNCONSOLIDATED SUBSIDIARIES, ASSOCIATED AND JOINT VENTURES  COMPANIES **</th>
-									</tr>
-					
-										<tr style="background-color: #b3b6b9;">
-										    <th style="text-align: left;background-color: #D8D8D8; padding-left: 20px; ">
-										        
-										    </th>
-										    <th style="background-color: #D8D8D8; text-align: right; vertical-align:middle; ">Accumulated equity interest (5%) </th>
-										    <th style="background-color: #D8D8D8;text-align: right; vertical-align:middle;">Assets</th>
-										    <th style="background-color: #D8D8D8;text-align: right; vertical-align:middle; ">Liabilities</th>
-										    <th style="background-color: #D8D8D8;text-align: right;vertical-align:middle; ">Revenue</th>
-										    <th style="background-color: #D8D8D8;text-align: right; vertical-align:middle;">Profit or loss</th>
-										    <th style="background-color: #D8D8D8;text-align: right; vertical-align:middle;">Unrecognised share of loss* </th>
-											<th style="background-color: #D8D8D8;text-align: right; vertical-align:middle; ">Cumulative unrecognised  share of loss* </th>
-										    
-										</tr>
+									</table>
+									<table
+										class="sticky-header-table table table-bordered table-hover table-sm table-condensed"
+										id="reports">
+										<thead class="thead-light">
+											<tr>
+												<th colspan="8"
+													style="text-align: left; padding-left: 20px; width: 900px;">
+													(12B) INVESTMENT IN UNCONSOLIDATED SUBSIDIARIES, ASSOCIATED AND
+													JOINT VENTURES COMPANIES **</th>
+											</tr>
 
-										
-									</thead>
-	
-	<tbody id="entity2" th:each="report: ${reportsummary2}" style="font-family: Arial;">
-										
-		<tr>
-			
-			<td style="font-weight: bold;padding-left: 30px;">Subsidiaries</td>
-			<td id="ROW22" style="padding-left: 20px; font-weight: bold;">
-			        <input class="display-input Show_input"
-			               type="text"
-			               th:value="${report.R22_ACCUULATED_EQUITY_INTEREST_5 != null ? #numbers.formatDecimal(report.R22_ACCUULATED_EQUITY_INTEREST_5, 1,'COMMA', 0, 'POINT') : '0'}"
-			               id="R22_ACCUULATED_EQUITY_INTEREST_5"
-			               name="R22_ACCUULATED_EQUITY_INTEREST_5"
-			               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-			           readonly />
-			    </td>
-				
-				<td id="ROW22" style="padding-left: 20px; font-weight: bold;">
-				        <input class="display-input Show_input"
-				               type="text"
-				               th:value="${report.R22_ASSETS != null ? #numbers.formatDecimal(report.R22_ASSETS, 1,'COMMA', 0, 'POINT') : '0'}"
-				               id="R22_ASSETS"
-				               name="R22_ASSETS"
-				               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-				           readonly />
-				    </td>
-				
-					<td id="ROW22" style="padding-left: 20px; font-weight: bold;">
-					        <input class="display-input Show_input"
-					               type="text"
-					               th:value="${report.R22_LIABILITIES != null ? #numbers.formatDecimal(report.R22_LIABILITIES, 1,'COMMA', 0, 'POINT') : '0'}"
-					               id="R22_LIABILITIES"
-					               name="R22_LIABILITIES"
-					               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-					           readonly />
-					    </td>
-						
-						<td id="ROW22" style="padding-left: 20px; font-weight: bold;">
-						        <input class="display-input Show_input"
-						               type="text"
-						               th:value="${report.R22_REVENUE != null ? #numbers.formatDecimal(report.R22_REVENUE, 1,'COMMA', 0, 'POINT') : '0'}"
-						               id="R22_REVENUE"
-						               name="R22_REVENUE"
-						               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-						           readonly />
-						    </td>
+											<tr style="background-color: #b3b6b9;">
+												<th
+													style="text-align: left;background-color: #D8D8D8; padding-left: 20px; ">
+
+												</th>
+												<th
+													style="background-color: #D8D8D8; text-align: right; vertical-align:middle; ">
+													Accumulated equity interest (5%) </th>
+												<th
+													style="background-color: #D8D8D8;text-align: right; vertical-align:middle;">
+													assets</th>
+												<th
+													style="background-color: #D8D8D8;text-align: right; vertical-align:middle; ">
+													liabilities</th>
+												<th
+													style="background-color: #D8D8D8;text-align: right;vertical-align:middle; ">
+													Revenue</th>
+												<th
+													style="background-color: #D8D8D8;text-align: right; vertical-align:middle;">
+													Profit or loss</th>
+												<th
+													style="background-color: #D8D8D8;text-align: right; vertical-align:middle;">
+													Unrecognised share of loss* </th>
+												<th
+													style="background-color: #D8D8D8;text-align: right; vertical-align:middle; ">
+													Cumulative unrecognised share of loss* </th>
+
+											</tr>
 
 
-						<td id="ROW22" style="padding-left: 20px; font-weight: bold;">
-						        <input class="display-input Show_input"
-						               type="text"
-						               th:value="${report.R22_PROFIT_OR_LOSS != null ? #numbers.formatDecimal(report.R22_PROFIT_OR_LOSS, 1,'COMMA', 0, 'POINT') : '0'}"
-						               id="R22_PROFIT_OR_LOSS"
-						               name="R22_PROFIT_OR_LOSS"
-						               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-						           readonly />
-						    </td>
-							<td id="ROW22" style="padding-left: 20px; font-weight: bold;">
-							        <input class="display-input Show_input"
-							               type="text"
-							               th:value="${report.R22_UNREG_SHARE_OF_LOSS != null ? #numbers.formatDecimal(report.R22_UNREG_SHARE_OF_LOSS, 1,'COMMA', 0, 'POINT') : '0'}"
-							               id="R22_UNREG_SHARE_OF_LOSS"
-							               name="R22_UNREG_SHARE_OF_LOSS"
-							               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-							           readonly />
-							    </td>
-								
-								<td id="ROW22" style="padding-left: 20px; font-weight: bold;">
-								        <input class="display-input Show_input"
-								               type="text"
-								               th:value="${report.R22_CUMULATIVE_UNREG_SHARE_OF_LOSS != null ? #numbers.formatDecimal(report.R22_CUMULATIVE_UNREG_SHARE_OF_LOSS, 1,'COMMA', 0, 'POINT') : '0'}"
-								               id="R22_CUMULATIVE_UNREG_SHARE_OF_LOSS"
-								               name="R22_CUMULATIVE_UNREG_SHARE_OF_LOSS"
-								               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-								           readonly />
-								    </td>
+										</thead>
+
+										<tbody id="entity2" th:each="report: ${reportsummary}"
+											style="font-family: Arial;">
+
+											<tr>
+
+												<td style="padding-left: 30px;">
+													<input class="display-input" type="text" id="r22_product"
+														name="r22_product" value="Subsidiaries" readonly
+														style="border:none;background:transparent;width:100px;" />
+												</td>
+												<td id="ROW22" style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r22_accuulated_equity_interest_5 != null ? #numbers.formatDecimal(report.r22_accuulated_equity_interest_5, 1,'COMMA', 0, 'POINT') : '0'}"
+														id="r22_accuulated_equity_interest_5"
+														name="r22_accuulated_equity_interest_5"
+														style="background-color: #FFFFFF; width: 236px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+
+												<td id="ROW22" style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r22_assets != null ? #numbers.formatDecimal(report.r22_assets, 1,'COMMA', 0, 'POINT') : '0'}"
+														id="r22_assets" name="r22_assets"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+
+												<td id="ROW22" style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r22_liabilities != null ? #numbers.formatDecimal(report.r22_liabilities, 1,'COMMA', 0, 'POINT') : '0'}"
+														id="r22_liabilities" name="r22_liabilities"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+
+												<td id="ROW22" style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r22_revenue != null ? #numbers.formatDecimal(report.r22_revenue, 1,'COMMA', 0, 'POINT') : '0'}"
+														id="r22_revenue" name="r22_revenue"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
 
 
+												<td id="ROW22" style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r22_profit_or_loss != null ? #numbers.formatDecimal(report.r22_profit_or_loss, 1,'COMMA', 0, 'POINT') : '0'}"
+														id="r22_profit_or_loss" name="r22_profit_or_loss"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td id="ROW22" style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r22_unreg_share_of_loss != null ? #numbers.formatDecimal(report.r22_unreg_share_of_loss, 1,'COMMA', 0, 'POINT') : '0'}"
+														id="r22_unreg_share_of_loss" name="r22_unreg_share_of_loss"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
 
-
-		</tr>	
-		
-		<tr>
-			
-			<td style="font-weight: bold;padding-left: 30px;">Associates</td>
-			<td id="ROW23" style="padding-left: 20px; font-weight: bold;">
-			        <input class="display-input Show_input"
-			               type="text"
-			               th:value="${report.R23_ACCUULATED_EQUITY_INTEREST_5 != null ? #numbers.formatDecimal(report.R23_ACCUULATED_EQUITY_INTEREST_5, 1,'COMMA', 0, 'POINT') : '0'}"
-			               id="R23_ACCUULATED_EQUITY_INTEREST_5"
-			               name="R23_ACCUULATED_EQUITY_INTEREST_5"
-			               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-			           readonly />
-			    </td>
-				
-				<td id="ROW23" style="padding-left: 20px; font-weight: bold;">
-				        <input class="display-input Show_input"
-				               type="text"
-				               th:value="${report.R23_ASSETS != null ? #numbers.formatDecimal(report.R23_ASSETS, 1,'COMMA', 0, 'POINT') : '0'}"
-				               id="R23_ASSETS"
-				               name="R23_ASSETS"
-				               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-				           readonly />
-				    </td>
-				
-					<td id="ROW23" style="padding-left: 20px; font-weight: bold;">
-					        <input class="display-input Show_input"
-					               type="text"
-					               th:value="${report.R23_LIABILITIES != null ? #numbers.formatDecimal(report.R23_LIABILITIES, 1,'COMMA', 0, 'POINT') : '0'}"
-					               id="R23_LIABILITIES"
-					               name="R23_LIABILITIES"
-					               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-					           readonly />
-					    </td>
-						
-						<td id="ROW23" style="padding-left: 20px; font-weight: bold;">
-						        <input class="display-input Show_input"
-						               type="text"
-						               th:value="${report.R23_REVENUE != null ? #numbers.formatDecimal(report.R23_REVENUE, 1,'COMMA', 0, 'POINT') : '0'}"
-						               id="R23_REVENUE"
-						               name="R23_REVENUE"
-						               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-						           readonly />
-						    </td>
-
-
-						<td id="ROW23" style="padding-left: 20px; font-weight: bold;">
-						        <input class="display-input Show_input"
-						               type="text"
-						               th:value="${report.R23_PROFIT_OR_LOSS != null ? #numbers.formatDecimal(report.R23_PROFIT_OR_LOSS, 1,'COMMA', 0, 'POINT') : '0'}"
-						               id="R23_PROFIT_OR_LOSS"
-						               name="R23_PROFIT_OR_LOSS"
-						               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-						           readonly />
-						    </td>
-							<td id="ROW23" style="padding-left: 20px; font-weight: bold;">
-							        <input class="display-input Show_input"
-							               type="text"
-							               th:value="${report.R23_UNREG_SHARE_OF_LOSS != null ? #numbers.formatDecimal(report.R23_UNREG_SHARE_OF_LOSS, 1,'COMMA', 0, 'POINT') : '0'}"
-							               id="R23_UNREG_SHARE_OF_LOSS"
-							               name="R23_UNREG_SHARE_OF_LOSS"
-							               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-							           readonly />
-							    </td>
-								
-								<td id="ROW23" style="padding-left: 20px; font-weight: bold;">
-								        <input class="display-input Show_input"
-								               type="text"
-								               th:value="${report.R23_CUMULATIVE_UNREG_SHARE_OF_LOSS != null ? #numbers.formatDecimal(report.R23_CUMULATIVE_UNREG_SHARE_OF_LOSS, 1,'COMMA', 0, 'POINT') : '0'}"
-								               id="R23_CUMULATIVE_UNREG_SHARE_OF_LOSS"
-								               name="R23_CUMULATIVE_UNREG_SHARE_OF_LOSS"
-								               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-								           readonly />
-								    </td>
+												<td id="ROW22" style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r22_cumulative_unreg_share_of_loss != null ? #numbers.formatDecimal(report.r22_cumulative_unreg_share_of_loss, 1,'COMMA', 0, 'POINT') : '0'}"
+														id="r22_cumulative_unreg_share_of_loss"
+														name="r22_cumulative_unreg_share_of_loss"
+														style="background-color: #FFFFFF; width: 290px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
 
 
 
-		</tr>
-		
-		<tr>
-			
-			<td style="font-weight: bold;padding-left: 30px;">Joint Venture</td>
-			<td id="ROW24" style="padding-left: 20px; font-weight: bold;">
-			        <input class="display-input Show_input"
-			               type="text"
-			               th:value="${report.R24_ACCUULATED_EQUITY_INTEREST_5 != null ? #numbers.formatDecimal(report.R24_ACCUULATED_EQUITY_INTEREST_5, 1,'COMMA', 0, 'POINT') : '0'}"
-			               id="R24_ACCUULATED_EQUITY_INTEREST_5"
-			               name="R24_ACCUULATED_EQUITY_INTEREST_5"
-			               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-			           readonly />
-			    </td>
-				
-				<td id="ROW24" style="padding-left: 20px; font-weight: bold;">
-				        <input class="display-input Show_input"
-				               type="text"
-				               th:value="${report.R24_ASSETS != null ? #numbers.formatDecimal(report.R24_ASSETS, 1,'COMMA', 0, 'POINT') : '0'}"
-				               id="R24_ASSETS"
-				               name="R24_ASSETS"
-				               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-				           readonly />
-				    </td>
-				
-					<td id="ROW24" style="padding-left: 20px; font-weight: bold;">
-					        <input class="display-input Show_input"
-					               type="text"
-					               th:value="${report.R24_LIABILITIES != null ? #numbers.formatDecimal(report.R24_LIABILITIES, 1,'COMMA', 0, 'POINT') : '0'}"
-					               id="R24_LIABILITIES"
-					               name="R24_LIABILITIES"
-					               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-					           readonly />
-					    </td>
-						
-						<td id="ROW24" style="padding-left: 20px; font-weight: bold;">
-						        <input class="display-input Show_input"
-						               type="text"
-						               th:value="${report.R24_REVENUE != null ? #numbers.formatDecimal(report.R24_REVENUE, 1,'COMMA', 0, 'POINT') : '0'}"
-						               id="R24_REVENUE"
-						               name="R24_REVENUE"
-						               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-						           readonly />
-						    </td>
+
+											</tr>
+
+											<tr>
+
+												<td style="padding-left: 30px;">
+													<input class="display-input" type="text" id="r23_product"
+														name="r23_product" value="(a)" readonly
+														style="border:none;background:transparent;width:40px;" />
+												</td>
+												<td id="ROW23" style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r23_accuulated_equity_interest_5 != null ? #numbers.formatDecimal(report.r23_accuulated_equity_interest_5, 1,'COMMA', 0, 'POINT') : '0'}"
+														id="r23_accuulated_equity_interest_5"
+														name="r23_accuulated_equity_interest_5"
+														style="background-color: #FFFFFF; width: 236px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+
+												<td id="ROW23" style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r23_assets != null ? #numbers.formatDecimal(report.r23_assets, 1,'COMMA', 0, 'POINT') : '0'}"
+														id="r23_assets" name="r23_assets"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+
+												<td id="ROW23" style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r23_liabilities != null ? #numbers.formatDecimal(report.r23_liabilities, 1,'COMMA', 0, 'POINT') : '0'}"
+														id="r23_liabilities" name="r23_liabilities"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+
+												<td id="ROW23" style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r23_revenue != null ? #numbers.formatDecimal(report.r23_revenue, 1,'COMMA', 0, 'POINT') : '0'}"
+														id="r23_revenue" name="r23_revenue"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
 
 
-						<td id="ROW24" style="padding-left: 20px; font-weight: bold;">
-						        <input class="display-input Show_input"
-						               type="text"
-						               th:value="${report.R24_PROFIT_OR_LOSS != null ? #numbers.formatDecimal(report.R24_PROFIT_OR_LOSS, 1,'COMMA', 0, 'POINT') : '0'}"
-						               id="R24_PROFIT_OR_LOSS"
-						               name="R24_PROFIT_OR_LOSS"
-						               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-						           readonly />
-						    </td>
-							<td id="ROW24" style="padding-left: 20px; font-weight: bold;">
-							        <input class="display-input Show_input"
-							               type="text"
-							               th:value="${report.R24_UNREG_SHARE_OF_LOSS != null ? #numbers.formatDecimal(report.R24_UNREG_SHARE_OF_LOSS, 1,'COMMA', 0, 'POINT') : '0'}"
-							               id="R24_UNREG_SHARE_OF_LOSS"
-							               name="R24_UNREG_SHARE_OF_LOSS"
-							               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-							           readonly />
-							    </td>
-								
-								<td id="ROW24" style="padding-left: 20px; font-weight: bold;">
-								        <input class="display-input Show_input"
-								               type="text"
-								               th:value="${report.R24_CUMULATIVE_UNREG_SHARE_OF_LOSS != null ? #numbers.formatDecimal(report.R24_CUMULATIVE_UNREG_SHARE_OF_LOSS, 1,'COMMA', 0, 'POINT') : '0'}"
-								               id="R24_CUMULATIVE_UNREG_SHARE_OF_LOSS"
-								               name="R24_CUMULATIVE_UNREG_SHARE_OF_LOSS"
-								               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-								           readonly />
-								    </td>
+												<td id="ROW23" style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r23_profit_or_loss != null ? #numbers.formatDecimal(report.r23_profit_or_loss, 1,'COMMA', 0, 'POINT') : '0'}"
+														id="r23_profit_or_loss" name="r23_profit_or_loss"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td id="ROW23" style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r23_unreg_share_of_loss != null ? #numbers.formatDecimal(report.r23_unreg_share_of_loss, 1,'COMMA', 0, 'POINT') : '0'}"
+														id="r23_unreg_share_of_loss" name="r23_unreg_share_of_loss"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
 
-		</tr>
-		<tr style="border: none !important;">
-	        <td colspan="3" style="height: 30px; border: none !important;"></td>
-        </tr>	
-		<tr style="border: none !important;">
-			<td colspan="7" style="border: none !important;"> *If an investor has discontinued recognition of own share of loss</td>
-			
-		</tr>
-		<tr style="border: none !important;">
-	        <td colspan="3" style="height: 30px; border: none !important;"></td>
-        </tr>									
-	</tbody>	
-	<thead class="thead-light">
-	    <tr style="background-color: #b3b6b9;">
-	        <th style="background-color: #D8D8D8;text-align: center; width: 200px;">Manual entry</th>
-	        <th style="background-color: #D8D8D8;text-align: right; vertical-align:middle; width: 150px;">Fair value</th>
-	        <th colspan="6"></th>
-	    </tr>
-	</thead>
-	
-	<tbody id="entity3" th:each="report: ${reportsummary3}" style="font-family: Arial;">
-											
-			<tr>
-				
-				<td style="font-weight: normal;">Fair value of investments in associates for which there are published price quotations</td>
-				<td id="ROW29" style="padding-left: 20px; font-weight: bold;">
-				        <input class="display-input Show_input"
-				               type="text"
-				               th:value="${report.R29_FAIR_VALUE != null ? #numbers.formatDecimal(report.R29_FAIR_VALUE, 1,'COMMA', 0, 'POINT') : '0'}"
-				               id="R29_FAIR_VALUE"
-				               name="R29_FAIR_VALUE"
-				               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-				           readonly />
-				    </td>
-				   <td colspan="6" ></td>
-	        
-	    </tr>
-		<tr style="border: none !important;">
-	        <td colspan="3" style="height: 30px; border: none !important;"></td>
-        </tr>
-        
-	</tbody>
-	
-	<thead class="thead-light">
-									<tr>
-									<th colspan="8" style="text-align: left; padding-left: 20px; width: 900px;">
-										      (12C) INVESTMENT IN SIGNIFICANT (UNCONSOLIDATED) SUBSIDIARIES **</th>
-									</tr>
-					
-										<tr style="background-color: #b3b6b9;">
-										    <th style="background-color: #D8D8D8;text-align: left; padding-left: 20px; ">
-										       
-										    </th>
-										    <th style="background-color: #D8D8D8;text-align: right; vertical-align:middle; ">Company </th>
-											<th colspan="2" style="background-color: #D8D8D8;text-align: center; vertical-align: middle; ">Jurisdiction of Incorporation</th>
-										    <th style="background-color: #D8D8D8;text-align: right; vertical-align:middle; ">Line of Business</th>
-										    <th style="background-color: #D8D8D8;text-align: right;vertical-align:middle; ">Currency</th>
-										    <th style="background-color: #D8D8D8;text-align: right; vertical-align:middle; ">Share Capital </th>
-										    <th style="background-color: #D8D8D8;text-align: right; vertical-align:middle; ">Accumulated equity interest (%) </th>
-											
-										   
-										</tr>
-										
-									</thead>
-
-	<tbody id="entity4" th:each="report: ${reportsummary4}" style="font-family: Arial;">
-										
-		<tr>
-			
-			<td style="font-weight: bold;padding-left: 30px;">Begining of Period</td>
-			<td id="ROW35" style="padding-left: 20px; font-weight: bold;">
-			        <input class="display-input Show_input"
-			               type="text"
-			               th:value="${report.R35_COMPANY != null ? #numbers.formatDecimal(report.R35_COMPANY, 1,'COMMA', 0, 'POINT') : '0'}"
-			               id="R35_COMPANY"
-			               name="R35_COMPANY"
-			               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-			           readonly />
-			    </td>
-				
-				<td id="ROW35" style="padding-left: 20px; font-weight: bold;">
-				        <input class="display-input Show_input"
-				               type="text"
-				               th:value="${report.r35_JURISDICTION_OF_INCORP_1 != null ? #numbers.formatDecimal(report.R35_JURISDICTION_OF_INCORP_1, 1,'COMMA',0, 'POINT') : '0'}"
-				               id="R35_JURISDICTION_OF_INCORP_1"
-				               name="R35_JURISDICTION_OF_INCORP_1"
-				               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-				           readonly />
-				    </td>
-				
-					<td id="ROW35" style="padding-left: 20px; font-weight: bold;">
-					        <input class="display-input Show_input"
-					               type="text"
-					               th:value="${report.R35_JURISDICTION_OF_INCORP_2 != null ? #numbers.formatDecimal(report.R35_JURISDICTION_OF_INCORP_2, 1,'COMMA', 0, 'POINT') : '0'}"
-					               id="R35_JURISDICTION_OF_INCORP_2"
-					               name="R35_JURISDICTION_OF_INCORP_2"
-					               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-					           readonly />
-					    </td>
-						
-						<td id="ROW35" style="padding-left: 20px; font-weight: bold;">
-						        <input class="display-input Show_input"
-						               type="text"
-						               th:value="${report.R35_LINE_OF_BUSINESS != null ? #numbers.formatDecimal(report.R35_LINE_OF_BUSINESS, 1,'COMMA', 0, 'POINT') : '0'}"
-						               id="R35_LINE_OF_BUSINESS"
-						               name="R35_LINE_OF_BUSINESS"
-						               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-						           readonly />
-						    </td>
-						<td id="ROW35" style="padding-left: 20px; font-weight: bold;">
-						        <input class="display-input Show_input"
-						               type="text"
-						               th:value="${report.R35_CURRENCY != null ? #numbers.formatDecimal(report.R35_CURRENCY, 1,'COMMA', 0, 'POINT') : '0'}"
-						               id="R35_CURRENCY"
-						               name="R35_CURRENCY"
-						               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-						           readonly />
-						    </td>
-							<td id="ROW35" style="padding-left: 20px; font-weight: bold;">
-							        <input class="display-input Show_input"
-							               type="text"
-							               th:value="${report.R35_SHARE_CAPITAL != null ? #numbers.formatDecimal(report.R35_SHARE_CAPITAL, 1,'COMMA', 0, 'POINT') : '0'}"
-							               id="R35_SHARE_CAPITAL"
-							               name="R35_SHARE_CAPITAL"
-							               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-							           readonly />
-							    </td>
-								
-								<td id="ROW35" style="padding-left: 20px; font-weight: bold;">
-								        <input class="display-input Show_input"
-								               type="text"
-								               th:value="${report.R35_ACCUMULATED_EQUITY_INTEREST != null ? #numbers.formatDecimal(report.R35_ACCUMULATED_EQUITY_INTEREST, 1,'COMMA', 0, 'POINT') : '0'}"
-								               id="R35_ACCUMULATED_EQUITY_INTEREST"
-								               name="R35_ACCUMULATED_EQUITY_INTEREST"
-								               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-								           readonly />
-								    </td>
-		</tr>	
-		
-		<tr>
-			
-			<td style="font-weight: bold;padding-left: 30px;">Additions</td>
-			<td id="ROW36" style="padding-left: 20px; font-weight: bold;">
-			        <input class="display-input Show_input"
-			               type="text"
-			               th:value="${report.R36_COMPANY != null ? #numbers.formatDecimal(report.R36_COMPANY, 1,'COMMA', 0, 'POINT') : '0'}"
-			               id="R36_COMPANY"
-			               name="R36_COMPANY"
-			               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-			           readonly />
-			    </td>
-				
-				<td id="ROW36" style="padding-left: 20px; font-weight: bold;">
-				        <input class="display-input Show_input"
-				               type="text"
-				               th:value="${report.R36_JURISDICTION_OF_INCORP_1 != null ? #numbers.formatDecimal(report.R36_JURISDICTION_OF_INCORP_1, 1,'COMMA', 0, 'POINT') : '0'}"
-				               id="R36_JURISDICTION_OF_INCORP_1"
-				               name="R36_JURISDICTION_OF_INCORP_1"
-				               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-				           readonly />
-				    </td>
-				
-					<td id="ROW36" style="padding-left: 20px; font-weight: bold;">
-					        <input class="display-input Show_input"
-					               type="text"
-					               th:value="${report.R36_JURISDICTION_OF_INCORP_2 != null ? #numbers.formatDecimal(report.R36_JURISDICTION_OF_INCORP_2, 1,'COMMA', 0, 'POINT') : '0'}"
-					               id="R36_JURISDICTION_OF_INCORP_2"
-					               name="R36_JURISDICTION_OF_INCORP_2"
-					               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-					           readonly />
-					    </td>
-						
-						<td id="ROW36" style="padding-left: 20px; font-weight: bold;">
-						        <input class="display-input Show_input"
-						               type="text"
-						               th:value="${report.R36_LINE_OF_BUSINESS != null ? #numbers.formatDecimal(report.R36_LINE_OF_BUSINESS, 1,'COMMA', 0, 'POINT') : '0'}"
-						               id="R36_LINE_OF_BUSINESS"
-						               name="R36_LINE_OF_BUSINESS"
-						               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-						           readonly />
-						    </td>
-						<td id="ROW36" style="padding-left: 20px; font-weight: bold;">
-						        <input class="display-input Show_input"
-						               type="text"
-						               th:value="${report.R36_CURRENCY != null ? #numbers.formatDecimal(report.R36_CURRENCY, 1,'COMMA', 0, 'POINT') : '0'}"
-						               id="R36_CURRENCY"
-						               name="R36_CURRENCY"
-						               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-						           readonly />
-						    </td>
-							<td id="ROW36" style="padding-left: 20px; font-weight: bold;">
-							        <input class="display-input Show_input"
-							               type="text"
-							               th:value="${report.R36_SHARE_CAPITAL != null ? #numbers.formatDecimal(report.R36_SHARE_CAPITAL, 1,'COMMA', 0, 'POINT') : '0'}"
-							               id="R36_SHARE_CAPITAL"
-							               name="R36_SHARE_CAPITAL"
-							               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-							           readonly />
-							    </td>
-								
-								<td id="ROW36" style="padding-left: 20px; font-weight: bold;">
-								        <input class="display-input Show_input"
-								               type="text"
-								               th:value="${report.R36_ACCUMULATED_EQUITY_INTEREST != null ? #numbers.formatDecimal(report.R36_ACCUMULATED_EQUITY_INTEREST, 1,'COMMA', 0, 'POINT') : '0'}"
-								               id="R36_ACCUMULATED_EQUITY_INTEREST"
-								               name="R36_ACCUMULATED_EQUITY_INTEREST"
-								               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-								           readonly />
-								    </td>
-		</tr>
-		
-		<tr>
-			
-			<td style="font-weight: bold;padding-left: 30px;">Deconsolidations</td>
-			<td id="ROW37" style="padding-left: 20px; font-weight: bold;">
-			        <input class="display-input Show_input"
-			               type="text"
-			               th:value="${report.R37_COMPANY != null ? #numbers.formatDecimal(report.R37_COMPANY, 1,'COMMA', 0, 'POINT') : '0'}"
-			               id="R37_COMPANY"
-			               name="R37_COMPANY"
-			               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-			           readonly />
-			    </td>
-				
-				<td id="ROW37" style="padding-left: 20px; font-weight: bold;">
-				        <input class="display-input Show_input"
-				               type="text"
-				               th:value="${report.R37_JURISDICTION_OF_INCORP_1 != null ? #numbers.formatDecimal(report.R37_JURISDICTION_OF_INCORP_1, 1,'COMMA', 0, 'POINT') : '0'}"
-				               id="R37_JURISDICTION_OF_INCORP_1"
-				               name="R37_JURISDICTION_OF_INCORP_1"
-				               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-				           readonly />
-				    </td>
-				
-					<td id="ROW37" style="padding-left: 20px; font-weight: bold;">
-					        <input class="display-input Show_input"
-					               type="text"
-					               th:value="${report.R37_JURISDICTION_OF_INCORP_2 != null ? #numbers.formatDecimal(report.R37_JURISDICTION_OF_INCORP_2, 1,'COMMA', 0, 'POINT') : '0'}"
-					               id="R37_JURISDICTION_OF_INCORP_2"
-					               name="R37_JURISDICTION_OF_INCORP_2"
-					               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-					           readonly />
-					    </td>
-						
-						<td id="ROW37" style="padding-left: 20px; font-weight: bold;">
-						        <input class="display-input Show_input"
-						               type="text"
-						               th:value="${report.R37_LINE_OF_BUSINESS != null ? #numbers.formatDecimal(report.R37_LINE_OF_BUSINESS, 1,'COMMA', 0, 'POINT') : '0'}"
-						               id="R37_LINE_OF_BUSINESS"
-						               name="R37_LINE_OF_BUSINESS"
-						               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-						           readonly />
-						    </td>
-						<td id="ROW37" style="padding-left: 20px; font-weight: bold;">
-						        <input class="display-input Show_input"
-						               type="text"
-						               th:value="${report.R37_CURRENCY != null ? #numbers.formatDecimal(report.R37_CURRENCY, 1,'COMMA', 0, 'POINT') : '0'}"
-						               id="R37_CURRENCY"
-						               name="R37_CURRENCY"
-						               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-						           readonly />
-						    </td>
-							<td id="ROW37" style="padding-left: 20px; font-weight: bold;">
-							        <input class="display-input Show_input"
-							               type="text"
-							               th:value="${report.R37_SHARE_CAPITAL != null ? #numbers.formatDecimal(report.R37_SHARE_CAPITAL, 1,'COMMA', 0, 'POINT') : '0'}"
-							               id="R37_SHARE_CAPITAL"
-							               name="R37_SHARE_CAPITAL"
-							               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-							           readonly />
-							    </td>
-								
-								<td id="ROW37" style="padding-left: 20px; font-weight: bold;">
-								        <input class="display-input Show_input"
-								               type="text"
-								               th:value="${report.R37_ACCUMULATED_EQUITY_INTEREST != null ? #numbers.formatDecimal(report.R37_ACCUMULATED_EQUITY_INTEREST, 1,'COMMA', 0, 'POINT') : '0'}"
-								               id="R37_ACCUMULATED_EQUITY_INTEREST"
-								               name="R37_ACCUMULATED_EQUITY_INTEREST"
-								               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-								           readonly />
-								    </td>
-		</tr>
-		
-		<tr>
-			
-			<td style="font-weight: bold;padding-left: 30px;">End of Period</td>
-			<td id="ROW38" style="padding-left: 20px; font-weight: bold;">
-			        <input class="display-input Show_input"
-			               type="text"
-			               th:value="${report.r38_COMPANY != null ? #numbers.formatDecimal(report.R38_COMPANY, 1,'COMMA', 0, 'POINT') : '0'}"
-			               id="R38_COMPANY"
-			               name="R38_COMPANY"
-			               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-			           readonly />
-			    </td>
-				
-				<td id="ROW38" style="padding-left: 20px; font-weight: bold;">
-				        <input class="display-input Show_input"
-				               type="text"
-				               th:value="${report.R38_JURISDICTION_OF_INCORP_1 != null ? #numbers.formatDecimal(report.R38_JURISDICTION_OF_INCORP_1, 1,'COMMA', 0, 'POINT') : '0'}"
-				               id="R38_JURISDICTION_OF_INCORP_1"
-				               name="R38_JURISDICTION_OF_INCORP_1"
-				               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-				           readonly />
-				    </td>
-				
-					<td id="ROW38" style="padding-left: 20px; font-weight: bold;">
-					        <input class="display-input Show_input"
-					               type="text"
-					               th:value="${report.R38_JURISDICTION_OF_INCORP_2 != null ? #numbers.formatDecimal(report.R38_JURISDICTION_OF_INCORP_2, 1,'COMMA', 0, 'POINT') : '0'}"
-					               id="R38_JURISDICTION_OF_INCORP_2"
-					               name="R38_JURISDICTION_OF_INCORP_2"
-					               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-					           readonly />
-					    </td>
-						
-						<td id="ROW38" style="padding-left: 20px; font-weight: bold;">
-						        <input class="display-input Show_input"
-						               type="text"
-						               th:value="${report.R38_LINE_OF_BUSINESS != null ? #numbers.formatDecimal(report.R38_LINE_OF_BUSINESS, 1,'COMMA',  0, 'POINT') : '0'}"
-						               id="R38_LINE_OF_BUSINESS"
-						               name="R38_LINE_OF_BUSINESS"
-						               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-						           readonly />
-						    </td>
-						<td id="ROW38" style="padding-left: 20px; font-weight: bold;">
-						        <input class="display-input Show_input"
-						               type="text"
-						               th:value="${report.R38_CURRENCY != null ? #numbers.formatDecimal(report.R38_CURRENCY, 1,'COMMA', 0, 'POINT') : '0'}"
-						               id="R38_CURRENCY"
-						               name="R38_CURRENCY"
-						               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-						           readonly />
-						    </td>
-							<td id="ROW38" style="padding-left: 20px; font-weight: bold;">
-							        <input class="display-input Show_input"
-							               type="text"
-							               th:value="${report.R38_SHARE_CAPITAL != null ? #numbers.formatDecimal(report.R38_SHARE_CAPITAL, 1,'COMMA', 0, 'POINT') : '0'}"
-							               id="R38_SHARE_CAPITAL"
-							               name="R38_SHARE_CAPITAL"
-							               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-							           readonly />
-							    </td>
-								
-								<td id="ROW38" style="padding-left: 20px; font-weight: bold;">
-								        <input class="display-input Show_input"
-								               type="text"
-								               th:value="${report.R38_ACCUMULATED_EQUITY_INTEREST != null ? #numbers.formatDecimal(report.R38_ACCUMULATED_EQUITY_INTEREST, 1,'COMMA', 0, 'POINT') : '0'}"
-								               id="R38_ACCUMULATED_EQUITY_INTEREST"
-								               name="R38_ACCUMULATED_EQUITY_INTEREST"
-								               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-								           readonly />
-								    </td>
-		</tr>	
-	
-		<tr style="border: none !important;">
-	        <td colspan="3" style="height: 30px; border: none !important;"></td>
-        </tr>									
-	</tbody>	
+												<td id="ROW23" style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r23_cumulative_unreg_share_of_loss != null ? #numbers.formatDecimal(report.r23_cumulative_unreg_share_of_loss, 1,'COMMA', 0, 'POINT') : '0'}"
+														id="r23_cumulative_unreg_share_of_loss"
+														name="r23_cumulative_unreg_share_of_loss"
+														style="background-color: #FFFFFF; width: 290px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
 
 
-	
+
+											</tr>
+
+											<tr>
+
+												<td style="padding-left: 30px;">
+													<input class="display-input" type="text" id="r24_product"
+														name="r24_product" value="Joint Venture" readonly
+														style="border:none;background:transparent;width:100px;" />
+												</td>
+												<td id="ROW24" style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r24_accuulated_equity_interest_5 != null ? #numbers.formatDecimal(report.r24_accuulated_equity_interest_5, 1,'COMMA', 0, 'POINT') : '0'}"
+														id="r24_accuulated_equity_interest_5"
+														name="r24_accuulated_equity_interest_5"
+														style="background-color: #FFFFFF; width: 236px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+
+												<td id="ROW24" style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r24_assets != null ? #numbers.formatDecimal(report.r24_assets, 1,'COMMA', 0, 'POINT') : '0'}"
+														id="r24_assets" name="r24_assets"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+
+												<td id="ROW24" style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r24_liabilities != null ? #numbers.formatDecimal(report.r24_liabilities, 1,'COMMA', 0, 'POINT') : '0'}"
+														id="r24_liabilities" name="r24_liabilities"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+
+												<td id="ROW24" style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r24_revenue != null ? #numbers.formatDecimal(report.r24_revenue, 1,'COMMA', 0, 'POINT') : '0'}"
+														id="r24_revenue" name="r24_revenue"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
 
 
-	
-											
-								</table>
-								
+												<td id="ROW24" style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r24_profit_or_loss != null ? #numbers.formatDecimal(report.r24_profit_or_loss, 1,'COMMA', 0, 'POINT') : '0'}"
+														id="r24_profit_or_loss" name="r24_profit_or_loss"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td id="ROW24" style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r24_unreg_share_of_loss != null ? #numbers.formatDecimal(report.r24_unreg_share_of_loss, 1,'COMMA', 0, 'POINT') : '0'}"
+														id="r24_unreg_share_of_loss" name="r24_unreg_share_of_loss"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+
+												<td id="ROW24" style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r24_cumulative_unreg_share_of_loss != null ? #numbers.formatDecimal(report.r24_cumulative_unreg_share_of_loss, 1,'COMMA', 0, 'POINT') : '0'}"
+														id="r24_cumulative_unreg_share_of_loss"
+														name="r24_cumulative_unreg_share_of_loss"
+														style="background-color: #FFFFFF; width: 290px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+
+											</tr>
+											<tr style="border: none !important;">
+												<td colspan="3" style="height: 30px; border: none !important;"></td>
+											</tr>
+											<tr style="border: none !important;">
+												<td colspan="7" style="border: none !important;"> *If an investor has
+													discontinued recognition of own share of loss</td>
+
+											</tr>
+											<tr style="border: none !important;">
+												<td colspan="3" style="height: 30px; border: none !important;"></td>
+											</tr>
+										</tbody>
+									</table>
+									<table
+										class="sticky-header-table table table-bordered table-hover table-sm table-condensed"
+										id="reports">
+										<thead class="thead-light">
+											<tr style="background-color: #b3b6b9;">
+												<th style="background-color: #D8D8D8;text-align: center; width: 860px;">
+													0</th>
+												<th
+													style="background-color: #D8D8D8;text-align: right; vertical-align:middle; width: 200px;padding-right: 20px;">
+													Fair value</th>
+											</tr>
+										</thead>
+
+										<tbody id="entity3" th:each="report: ${reportsummary}"
+											style="font-family: Arial;">
+
+											<tr>
+
+												<td style="padding-left: 30px;">
+													<input class="display-input" type="text" id="r29_product"
+														name="r29_product"
+														value="Fair value of investments in associates for which there are published price quotations"
+														readonly
+														style="border:none;background:transparent;width:620px;" />
+												</td>
+												<td id="ROW29" style=" font-weight: bold;width: 900px; ">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r29_fair_value != null ? #numbers.formatDecimal(report.r29_fair_value, 1,'COMMA', 0, 'POINT') : '0'}"
+														id="r29_fair_value" name="r29_fair_value"
+														style="background-color: #FFFFFF; width: 500px; height: 28px; border-color: transparent; text-align: right;margin-left: 500px;"
+														readonly />
+												</td>
+
+											</tr>
+											<tr style="border: none !important;">
+												<td colspan="3" style="height: 30px; border: none !important;"></td>
+											</tr>
+
+										</tbody>
+									</table>
+									<table
+										class="sticky-header-table table table-bordered table-hover table-sm table-condensed"
+										id="reports">
+										<thead class="thead-light">
+											<tr>
+												<th colspan="8"
+													style="text-align: left; padding-left: 20px; width: 900px;">
+													(12C) INVESTMENT IN SIGNIFICANT (UNCONSOLIDATED) SUBSIDIARIES **
+												</th>
+											</tr>
+
+											<tr style="background-color: #b3b6b9;">
+												<th
+													style="background-color: #D8D8D8;text-align: left; padding-left: 20px; ">
+
+												</th>
+												<th
+													style="background-color: #D8D8D8;text-align: right; vertical-align:middle; ">
+													Company </th>
+												<th colspan="2"
+													style="background-color: #D8D8D8;text-align: center; vertical-align: middle; ">
+													Jurisdiction of Incorporation</th>
+												<th
+													style="background-color: #D8D8D8;text-align: right; vertical-align:middle; ">
+													Line of Business</th>
+												<th
+													style="background-color: #D8D8D8;text-align: right;vertical-align:middle; ">
+													currency</th>
+												<th
+													style="background-color: #D8D8D8;text-align: right; vertical-align:middle; ">
+													Share Capital </th>
+												<th
+													style="background-color: #D8D8D8;text-align: right; vertical-align:middle; ">
+													Accumulated equity interest (%) </th>
 
 
-							</div>
-							<div style="text-align: center; margin-top: 10px;">
-								
-    <button id="submitButton" 
-            type="button"
-            class="custom-tab-btn Show_input" 
-            form="fileupload"
-            th:attr="data-todate=${asondate},data-type=${type}" 
-            onclick="fileuploads(this);" 
-            style="display: none;">
-        Submit
-    </button>
-</div>
+											</tr>
+
+										</thead>
+
+										<tbody id="entity4" th:each="report: ${reportsummary}"
+											style="font-family: Arial;">
+
+											<tr>
+												<td style="padding-left: 30px;">
+													<input class="display-input" type="text" id="r35_product"
+														name="r35_product" value="Begining of Period" readonly
+														style="border:none;background:transparent;width:150px;" />
+												</td>
+												<td id="ROW35" style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r35_company != null ? #numbers.formatDecimal(report.r35_company, 1,'COMMA', 0, 'POINT') : '0'}"
+														id="r35_company" name="r35_company"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+
+												<td id="ROW35" style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r35_jurisdiction_of_incorp_1 != null ? #numbers.formatDecimal(report.r35_jurisdiction_of_incorp_1, 1,'COMMA',0, 'POINT') : '0'}"
+														id="r35_jurisdiction_of_incorp_1"
+														name="r35_jurisdiction_of_incorp_1"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+
+												<td id="ROW35" style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r35_jurisdiction_of_incorp_2 != null ? #numbers.formatDecimal(report.r35_jurisdiction_of_incorp_2, 1,'COMMA', 0, 'POINT') : '0'}"
+														id="r35_jurisdiction_of_incorp_2"
+														name="r35_jurisdiction_of_incorp_2"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+
+												<td id="ROW35" style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r35_line_of_business != null ? #numbers.formatDecimal(report.r35_line_of_business, 1,'COMMA', 0, 'POINT') : '0'}"
+														id="r35_line_of_business" name="r35_line_of_business"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td id="ROW35" style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r35_currency != null ? #numbers.formatDecimal(report.r35_currency, 1,'COMMA', 0, 'POINT') : '0'}"
+														id="r35_currency" name="r35_currency"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td id="ROW35" style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r35_share_capital != null ? #numbers.formatDecimal(report.r35_share_capital, 1,'COMMA', 0, 'POINT') : '0'}"
+														id="r35_share_capital" name="r35_share_capital"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+
+												<td id="ROW35" style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r35_accumulated_equity_interest != null ? #numbers.formatDecimal(report.r35_accumulated_equity_interest, 1,'COMMA', 0, 'POINT') : '0'}"
+														id="r35_accumulated_equity_interest"
+														name="r35_accumulated_equity_interest"
+														style="background-color: #FFFFFF; width: 230px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+											</tr>
+
+											<tr>
+												<td style="padding-left: 30px;">
+													<input class="display-input" type="text" id="r36_product"
+														name="r36_product" value="Additions" readonly
+														style="border:none;background:transparent;width:150px;" />
+												</td>
+
+												<td id="ROW36" style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r36_company != null ? #numbers.formatDecimal(report.r36_company, 1,'COMMA', 0, 'POINT') : '0'}"
+														id="r36_company" name="r36_company"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+
+												<td id="ROW36" style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r36_jurisdiction_of_incorp_1 != null ? #numbers.formatDecimal(report.r36_jurisdiction_of_incorp_1, 1,'COMMA', 0, 'POINT') : '0'}"
+														id="r36_jurisdiction_of_incorp_1"
+														name="r36_jurisdiction_of_incorp_1"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+
+												<td id="ROW36" style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r36_jurisdiction_of_incorp_2 != null ? #numbers.formatDecimal(report.r36_jurisdiction_of_incorp_2, 1,'COMMA', 0, 'POINT') : '0'}"
+														id="r36_jurisdiction_of_incorp_2"
+														name="r36_jurisdiction_of_incorp_2"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+
+												<td id="ROW36" style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r36_line_of_business != null ? #numbers.formatDecimal(report.r36_line_of_business, 1,'COMMA', 0, 'POINT') : '0'}"
+														id="r36_line_of_business" name="r36_line_of_business"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td id="ROW36" style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r36_currency != null ? #numbers.formatDecimal(report.r36_currency, 1,'COMMA', 0, 'POINT') : '0'}"
+														id="r36_currency" name="r36_currency"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td id="ROW36" style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r36_share_capital != null ? #numbers.formatDecimal(report.r36_share_capital, 1,'COMMA', 0, 'POINT') : '0'}"
+														id="r36_share_capital" name="r36_share_capital"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+
+												<td id="ROW36" style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r36_accumulated_equity_interest != null ? #numbers.formatDecimal(report.r36_accumulated_equity_interest, 1,'COMMA', 0, 'POINT') : '0'}"
+														id="r36_accumulated_equity_interest"
+														name="r36_accumulated_equity_interest"
+														style="background-color: #FFFFFF; width: 230px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+											</tr>
+
+											<tr>
+
+												<td style="padding-left: 30px;">
+													<input class="display-input" type="text" id="r37_product"
+														name="r37_product" value="Deconsolidations" readonly
+														style="border:none;background:transparent;width:150px;" />
+												</td>
+												<td id="ROW37" style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r37_company != null ? #numbers.formatDecimal(report.r37_company, 1,'COMMA', 0, 'POINT') : '0'}"
+														id="r37_company" name="r37_company"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+
+												<td id="ROW37" style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r37_jurisdiction_of_incorp_1 != null ? #numbers.formatDecimal(report.r37_jurisdiction_of_incorp_1, 1,'COMMA', 0, 'POINT') : '0'}"
+														id="r37_jurisdiction_of_incorp_1"
+														name="r37_jurisdiction_of_incorp_1"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+
+												<td id="ROW37" style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r37_jurisdiction_of_incorp_2 != null ? #numbers.formatDecimal(report.r37_jurisdiction_of_incorp_2, 1,'COMMA', 0, 'POINT') : '0'}"
+														id="r37_jurisdiction_of_incorp_2"
+														name="r37_jurisdiction_of_incorp_2"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+
+												<td id="ROW37" style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r37_line_of_business != null ? #numbers.formatDecimal(report.r37_line_of_business, 1,'COMMA', 0, 'POINT') : '0'}"
+														id="r37_line_of_business" name="r37_line_of_business"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td id="ROW37" style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r37_currency != null ? #numbers.formatDecimal(report.r37_currency, 1,'COMMA', 0, 'POINT') : '0'}"
+														id="r37_currency" name="r37_currency"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td id="ROW37" style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r37_share_capital != null ? #numbers.formatDecimal(report.r37_share_capital, 1,'COMMA', 0, 'POINT') : '0'}"
+														id="r37_share_capital" name="r37_share_capital"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+
+												<td id="ROW37" style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r37_accumulated_equity_interest != null ? #numbers.formatDecimal(report.r37_accumulated_equity_interest, 1,'COMMA', 0, 'POINT') : '0'}"
+														id="r37_accumulated_equity_interest"
+														name="r37_accumulated_equity_interest"
+														style="background-color: #FFFFFF; width: 230px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+											</tr>
+
+											<tr>
+
+												<td style="padding-left: 30px;">
+													<input class="display-input" type="text" id="r38_product"
+														name="r38_product" value="End of Period" readonly
+														style="border:none;background:transparent;width:150px;" />
+												</td>
+												<td id="ROW38" style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r38_company != null ? #numbers.formatDecimal(report.r38_company, 1,'COMMA', 0, 'POINT') : '0'}"
+														id="r38_company" name="r38_company"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+
+												<td id="ROW38" style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r38_jurisdiction_of_incorp_1 != null ? #numbers.formatDecimal(report.r38_jurisdiction_of_incorp_1, 1,'COMMA', 0, 'POINT') : '0'}"
+														id="r38_jurisdiction_of_incorp_1"
+														name="r38_jurisdiction_of_incorp_1"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+
+												<td id="ROW38" style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r38_jurisdiction_of_incorp_2 != null ? #numbers.formatDecimal(report.r38_jurisdiction_of_incorp_2, 1,'COMMA', 0, 'POINT') : '0'}"
+														id="r38_jurisdiction_of_incorp_2"
+														name="r38_jurisdiction_of_incorp_2"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+
+												<td id="ROW38" style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r38_line_of_business != null ? #numbers.formatDecimal(report.r38_line_of_business, 1,'COMMA',  0, 'POINT') : '0'}"
+														id="r38_line_of_business" name="r38_line_of_business"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td id="ROW38" style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r38_currency != null ? #numbers.formatDecimal(report.r38_currency, 1,'COMMA', 0, 'POINT') : '0'}"
+														id="r38_currency" name="r38_currency"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td id="ROW38" style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r38_share_capital != null ? #numbers.formatDecimal(report.r38_share_capital, 1,'COMMA', 0, 'POINT') : '0'}"
+														id="r38_share_capital" name="r38_share_capital"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+
+												<td id="ROW38" style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r38_accumulated_equity_interest != null ? #numbers.formatDecimal(report.r38_accumulated_equity_interest, 1,'COMMA', 0, 'POINT') : '0'}"
+														id="r38_accumulated_equity_interest"
+														name="r38_accumulated_equity_interest"
+														style="background-color: #FFFFFF; width: 230px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+											</tr>
+
+											<tr style="border: none !important;">
+												<td colspan="3" style="height: 30px; border: none !important;"></td>
+											</tr>
+										</tbody>
+									</table>
+
+
+
+								</div>
+								<div style="text-align: center; margin-top: 10px;">
+
+									<button id="submitButton" type="button" class="custom-tab-btn Show_input"
+										form="fileupload" th:attr="data-todate=${asondate},data-type=${type}"
+										onclick="fileuploads(this);" style="display: none;">
+										Submit
+									</button>
+								</div>
 							</form>
 						</div>
 					</div>
 				</div>
-				
+
 			</div>
 		</div>
 	</div>
-	
+
 	<!-- Custom Cellresult Modal -->
-		<div class="modal fade" id="cellresultModal">
-		  <div class="modal-dialog modal-dialog-centered">
-		    <div class="modal-content">
-		      
-		      <!-- Custom header -->
-		      <div class="menu-title-header" style="background-color:#6c7a91; padding: 8px; border-radius:5px 5px 0 0;">
-		        <div class="modal-title" id="cellresultModalLabel" style="text-align: center; color: white;">
-		          Do you want to open the report?
-		        </div>
-		      </div>
+	<div class="modal fade" id="cellresultModal">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
 
-		      <div class="modal-body" style="text-align: center; font-size: 1.1rem;">
-		        <button type="button" class="custom-tab-btn cancel-btn" data-bs-dismiss="modal"  style="margin-right:10px; border:2px solid #6c7a91; background:white; color:black; border-radius:20px; padding:5px 15px;">
-		          Cancel
-		        </button>
-		        <button type="button" class="custom-tab-btn yes-btn" style="background:#6c7a91; color:white; border:none; border-radius:20px; padding:5px 20px;">
-		          Yes
-		        </button>
-		      </div>
-		    </div>
-		  </div>
+				<!-- Custom header -->
+				<div class="menu-title-header"
+					style="background-color:#6c7a91; padding: 8px; border-radius:5px 5px 0 0;">
+					<div class="modal-title" id="cellresultModalLabel" style="text-align: center; color: white;">
+						Do you want to open the report?
+					</div>
+				</div>
+
+				<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+					<button type="button" class="custom-tab-btn cancel-btn" data-bs-dismiss="modal"
+						style="margin-right:10px; border:2px solid #6c7a91; background:white; color:black; border-radius:20px; padding:5px 15px;">
+						Cancel
+					</button>
+					<button type="button" class="custom-tab-btn yes-btn"
+						style="background:#6c7a91; color:white; border:none; border-radius:20px; padding:5px 20px;">
+						Yes
+					</button>
+				</div>
+			</div>
 		</div>
+	</div>
 
-	
+
 	<div class="modal fade" id="loader" data-backdrop="static" data-keyboard="false">
 		<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
 			<div class="modal-content" style="background: transparent;">
@@ -1828,7 +1887,7 @@ function cancelModify() {
 			</div>
 		</div>
 	</div>
-	<!-- Custom Alert/Result Modal (Matches your existing style) -->
+	<!-- Custom Alert/Result Modal (Matches your existing style) For Modify in Summary -->
 	<div class="modal fade" id="resultModal">
 		<div class="modal-dialog modal-dialog-centered">
 			<div class="modal-content">
@@ -1841,11 +1900,29 @@ function cancelModify() {
 				<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
 					<p id="resultModalBody"></p>
 					<!-- Your custom styled button -->
-					<button type="button" class="custom-tab-btn" onclick="closemodel()" data-bs-dismiss="modal">OK</button>
+					<button type="button" class="custom-tab-btn" onclick="closemodels()"
+						data-dismiss="modal">Ok</button>
 				</div>
 			</div>
 		</div>
 	</div>
+	<!-- For Edit in Detail page -->
+	<div class="modal fade" id="resultModal1" tabindex="-1">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="menu-title-header">
+					<div class="modal-title " id="resultModalLabel1" style="text-align: center; color: white;">
+					</div>
+				</div>
+				<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+					<p id="resultModalBody1"></p>
+					<button type="button" class="custom-tab-btn" onclick="redirectBack()">OK</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
 
 </body>
 
@@ -1861,19 +1938,19 @@ function cancelModify() {
 															  });
 	
 														</script> -->
-														
-														<style>
-														  #BRFdet td {
-														    border: 1px solid #ccc;
-														    padding: 8px;
-														  }
 
-														  #BRFdet {
-														    border-collapse: collapse;
-														    width: 100%;
-														  }
-														</style>
-														
+<style>
+	#BRFdet td {
+		border: 1px solid #ccc;
+		padding: 8px;
+	}
+
+	#BRFdet {
+		border-collapse: collapse;
+		width: 100%;
+	}
+</style>
+
 <style>
 	/* Your existing CSS - this is the correct approach */
 	.scrollable-table-container {
