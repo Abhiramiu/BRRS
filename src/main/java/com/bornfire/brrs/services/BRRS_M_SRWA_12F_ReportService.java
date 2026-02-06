@@ -103,15 +103,8 @@ public class BRRS_M_SRWA_12F_ReportService {
 
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
-	public ModelAndView getM_SRWA12FView(
-			String reportId,
-			String fromdate,
-			String todate,
-			String currency,
-			String dtltype,
-			Pageable pageable,
-			String type,
-			BigDecimal version) {
+	public ModelAndView getM_SRWA12FView(String reportId, String fromdate, String todate, String currency,
+			String dtltype, Pageable pageable, String type, BigDecimal version) {
 
 		ModelAndView mv = new ModelAndView();
 		Session hs = sessionFactory.getCurrentSession();
@@ -207,8 +200,7 @@ public class BRRS_M_SRWA_12F_ReportService {
 
 				String prefix = "R" + i + "_";
 				String[] fields = { "NAME_OF_CORPORATE", "CREDIT_RATING", "RATING_AGENCY", "EXPOSURE_AMT",
-						"RISK_WEIGHT",
-						"RISK_WEIGHTED_AMT" };
+						"RISK_WEIGHT", "RISK_WEIGHTED_AMT" };
 
 				for (String field : fields) {
 
@@ -222,14 +214,14 @@ public class BRRS_M_SRWA_12F_ReportService {
 						Object newValue = getter.invoke(updatedEntity);
 
 						// SUMMARY setter
-						Method summarySetter = M_SRWA_12F_Summary_Entity.class.getMethod(
-								setterName, getter.getReturnType());
+						Method summarySetter = M_SRWA_12F_Summary_Entity.class.getMethod(setterName,
+								getter.getReturnType());
 
 						summarySetter.invoke(existingSummary, newValue);
 
 						// DETAIL setter
-						Method detailSetter = M_SRWA_12F_Detail_Entity.class.getMethod(
-								setterName, getter.getReturnType());
+						Method detailSetter = M_SRWA_12F_Detail_Entity.class.getMethod(setterName,
+								getter.getReturnType());
 
 						detailSetter.invoke(detailEntity, newValue);
 
@@ -284,8 +276,8 @@ public class BRRS_M_SRWA_12F_ReportService {
 			return BRRS_M_SRWA_12FEmailExcel(filename, reportId, fromdate, todate, currency, dtltype, type, version);
 		} else if ("email".equalsIgnoreCase(type) && version != null) {
 			logger.info("Service: Generating Email report for version {}", version);
-			return BRRS_M_SRWA_12FEmailArchivalExcel(filename, reportId, fromdate, todate,
-					currency, dtltype, type, version);
+			return BRRS_M_SRWA_12FEmailArchivalExcel(filename, reportId, fromdate, todate, currency, dtltype, type,
+					version);
 
 		}
 		// Default (LIVE) case
@@ -1285,6 +1277,14 @@ public class BRRS_M_SRWA_12F_ReportService {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
+					cell5 = row.createCell(5);
+					if (record.getR35_RISK_WEIGHT() != null) {
+						cell5.setCellValue(record.getR35_RISK_WEIGHT().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
 
 					// row35
 					// Column F
@@ -1301,14 +1301,7 @@ public class BRRS_M_SRWA_12F_ReportService {
 					cell3 = row.createCell(3);
 					cell3.setCellValue(record.getR36_RATING_AGENCY() != null ? record.getR36_RATING_AGENCY() : "");
 					cell3.setCellStyle(textStyle);
-					if (record.getR35_RISK_WEIGHT() != null) {
-						cell5.setCellValue(record.getR35_RISK_WEIGHT().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
+				
 					// Column E
 					cell4 = row.createCell(4);
 					if (record.getR36_EXPOSURE_AMT() != null) {
@@ -1345,8 +1338,7 @@ public class BRRS_M_SRWA_12F_ReportService {
 		}
 	}
 
-	public byte[] getExcelM_SRWA_12FARCHIVAL(String filename, String reportId, String fromdate,
-			String todate,
+	public byte[] getExcelM_SRWA_12FARCHIVAL(String filename, String reportId, String fromdate, String todate,
 			String currency, String dtltype, String type, BigDecimal version) throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.");
 		if ("ARCHIVAL".equals(type) && version != null) {
@@ -2356,6 +2348,16 @@ public class BRRS_M_SRWA_12F_ReportService {
 
 					// row35
 					// Column F
+					cell5 = row.createCell(5);
+					if (record1.getR35_RISK_WEIGHT() != null) {
+						cell5.setCellValue(record1.getR35_RISK_WEIGHT().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+					// row35
+					// Column F
 					row = sheet.getRow(35);
 					cell1 = row.createCell(1);
 					cell1.setCellValue(
@@ -2369,14 +2371,7 @@ public class BRRS_M_SRWA_12F_ReportService {
 					cell3 = row.createCell(3);
 					cell3.setCellValue(record1.getR36_RATING_AGENCY() != null ? record1.getR36_RATING_AGENCY() : "");
 					cell3.setCellStyle(textStyle);
-					if (record1.getR35_RISK_WEIGHT() != null) {
-						cell5.setCellValue(record1.getR35_RISK_WEIGHT().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
+				
 					// Column E
 					cell4 = row.createCell(4);
 					if (record1.getR36_EXPOSURE_AMT() != null) {
@@ -2428,8 +2423,7 @@ public class BRRS_M_SRWA_12F_ReportService {
 
 	// Email Download
 	public byte[] BRRS_M_SRWA_12FEmailExcel(String filename, String reportId, String fromdate, String todate,
-			String currency,
-			String dtltype, String type, BigDecimal version) throws Exception {
+			String currency, String dtltype, String type, BigDecimal version) throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.");
 		Date reportDate = dateformat.parse(todate);
 		if (type.equals("email") & version != null) {
@@ -3983,8 +3977,7 @@ public class BRRS_M_SRWA_12F_ReportService {
 	}
 
 	// Archival download for email
-	public byte[] BRRS_M_SRWA_12FEmailArchivalExcel(String filename, String reportId, String fromdate,
-			String todate,
+	public byte[] BRRS_M_SRWA_12FEmailArchivalExcel(String filename, String reportId, String fromdate, String todate,
 			String currency, String dtltype, String type, BigDecimal version) throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.");
 		if ("ARCHIVAL".equals(type) && version != null) {
@@ -4050,7 +4043,6 @@ public class BRRS_M_SRWA_12F_ReportService {
 			numberStyle.setFont(font);
 			// --- End of Style Definitions ---
 
-		
 			int startRow = 10;
 
 			if (!dataList1.isEmpty()) {

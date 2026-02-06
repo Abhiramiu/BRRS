@@ -753,132 +753,96 @@ function cancelModify() {
 		}
 
 	
-	function calculateAll_RISK_WEIGHTED_AMT() {
-	    function getVal(id) {
-	        let el = $("#" + id);
-	        if (el.length === 0) return 0;
-	        let val = el.val() || el.text();
-	        // Remove commas, spaces, and any non-numeric symbols
-	        val = val.replace(/[^0-9.\-]/g, "");
-	        return parseFloat(val) || 0;
-	    }
+		$(document).ready(function () {
 
-	    for (let i = 11; i <= 36; i++) {
-	        let expId = "R" + i + "_EXPOSURE_AMT";
-	        let riskId = "R" + i + "_RISK_WEIGHT";
-	        let resId = "R" + i + "_RISK_WEIGHTED_AMT";
+		    function getNumeric(id) {
+		        let el = $("#" + id);
+		        if (el.length === 0) return 0;
 
-	        let exposure = getVal(expId);
-	        let riskWeight = getVal(riskId);
+		        let val = el.val() || el.text() || "0";
+		        return parseFloat(val.replace(/[^0-9.\-]/g, "")) || 0;
+		    }
 
-	        // Formula (no divide by 100)
-	        let weightedAmt = Math.round(exposure * riskWeight);
+		    function format(id, value) {
+		        $("#" + id).val(
+		            value.toLocaleString("en-US", { maximumFractionDigits: 0 })
+		        );
+		    }
 
-	        // Format and set the result with commas
-	        $("#" + resId).val(
-	            weightedAmt.toLocaleString("en-US", { maximumFractionDigits: 0 })
-	        );
+		    // ===============================
+		    // 1. Calculate R11–R36 Weighted
+		    // ===============================
+		    function calculateAll_RISK_WEIGHTED_AMT() {
 
-	        // Also reformat exposure & risk weight inputs to show commas
-	        if (exposure > 0)
-	            $("#" + expId).val(
-	                exposure.toLocaleString("en-US", { maximumFractionDigits: 0 })
-	            );
+		        for (let i = 11; i <= 36; i++) {
 
-	        if (riskWeight > 0)
-	            $("#" + riskId).val(
-	                riskWeight.toLocaleString("en-US", { maximumFractionDigits: 0 })
-	            );
-	    }
-	}
+		            let exposure = getNumeric("R" + i + "_EXPOSURE_AMT");
+		            let riskWeight = getNumeric("R" + i + "_RISK_WEIGHT");
 
-	$(document).ready(function () {
-	    calculateAll_RISK_WEIGHTED_AMT();
+		            let weightedAmt = Math.round(exposure * riskWeight);
 
-	    for (let i = 11; i <= 36; i++) {
-	        $("#R" + i + "_EXPOSURE_AMT, #R" + i + "_RISK_WEIGHT").on("input", function () {
-	            // Remove commas while typing for proper numeric parsing
-	            let cleanVal = $(this).val().replace(/[^0-9.\-]/g, "");
-	            $(this).val(cleanVal);
-	            calculateAll_RISK_WEIGHTED_AMT();
-	        });
+		            format("R" + i + "_RISK_WEIGHTED_AMT", weightedAmt);
+		        }
 
-	        // On blur, reformat the value with commas
-	        $("#R" + i + "_EXPOSURE_AMT, #R" + i + "_RISK_WEIGHT").on("blur", function () {
-	            let num = parseFloat($(this).val().replace(/,/g, ""));
-	            if (!isNaN(num))
-	                $(this).val(num.toLocaleString("en-US", { maximumFractionDigits: 0 }));
-	        });
-	    }
-	});
+		        // After row level → update totals
+		        calculateR37_EXPOSURE_AMT();
+		        calculateR37_RISK_WEIGHTED_AMT();
+		    }
 
-	
+		    // ===============================
+		    // 2. Total Exposure → R37
+		    // ===============================
+		    function calculateR37_EXPOSURE_AMT() {
 
-	function calculateR37_EXPOSURE_AMT() {
-	    function getVal(id) {
-	        let el = $("#" + id);
-	        if (el.length === 0) {
-	            console.warn("Missing element:", id);
-	            return 0;
-	        }
-	        let val = el.val() || el.text();
-	        return parseFloat(val.replace(/,/g, "")) || 0;
-	    }
+		        let TOTAL = 0;
 
-	    let TOTAL = 0;
-	    for (let i = 11; i <= 36; i++) {
-	        TOTAL += getVal("R" + i + "_EXPOSURE_AMT");
-	    }
+		        for (let i = 11; i <= 36; i++) {
+		            TOTAL += getNumeric("R" + i + "_EXPOSURE_AMT");
+		        }
 
-	    $("#R37_EXPOSURE_AMT").val(
-	        TOTAL.toLocaleString("en-US", { maximumFractionDigits: 0 })
-	    );
-	}
+		        format("R37_EXPOSURE_AMT", TOTAL);
+		    }
 
-	$(document).ready(function () {
-	    calculateR37_EXPOSURE_AMT();
+		    // ===============================
+		    // 3. Total Weighted → R37
+		    // ===============================
+		    function calculateR37_RISK_WEIGHTED_AMT() {
 
-	    // Trigger recalculation whenever any input changes
-	    for (let i = 11; i <= 36; i++) {
-	        $("#R" + i + "_EXPOSURE_AMT").on("input", calculateR37_EXPOSURE_AMT);
-	    }
-	});
+		        let TOTAL = 0;
 
+		        for (let i = 11; i <= 36; i++) {
+		            TOTAL += getNumeric("R" + i + "_RISK_WEIGHTED_AMT");
+		        }
 
-	
-	function calculateR37_RISK_WEIGHTED_AMT() {
-	    function getVal(id) {
-	        const el = $("#" + id);
-	        if (el.length === 0) {
-	            console.warn("Missing element:", id);
-	            return 0;
-	        }
-	        const val = el.val() || "0";
-	        return parseFloat(val.replace(/,/g, "")) || 0;
-	    }
+		        format("R37_RISK_WEIGHTED_AMT", TOTAL);
+		    }
 
-	    // Sum of R11_RISK_WEIGHTED_AMT to R36_RISK_WEIGHTED_AMT
-	    let total = 0;
-	    for (let i = 11; i <= 36; i++) {
-	        total += getVal("R" + i + "_RISK_WEIGHTED_AMT");
-	    }
+		    // ===============================
+		    // 🔥 REAL TIME EVENTS
+		    // ===============================
 
-	    // Display total in R37_RISK_WEIGHTED_AMT
-	    $("#R37_RISK_WEIGHTED_AMT").val(
-	        total.toLocaleString("en-US", { maximumFractionDigits: 0 })
-	    );
-	}
+		    for (let i = 11; i <= 36; i++) {
 
-	$(document).ready(function () {
-	    // Run on load
-	    calculateR37_RISK_WEIGHTED_AMT();
+		        $("#R" + i + "_EXPOSURE_AMT, #R" + i + "_RISK_WEIGHT")
+		        .on("input keyup change", function () {
 
-	    // Auto update whenever any source input changes
-	    for (let i = 11; i <= 36; i++) {
-	        $("#R" + i + "_RISK_WEIGHTED_AMT").on("input change keyup", calculateR37_RISK_WEIGHTED_AMT);
-	    }
-	});
-	
+		            // remove commas while typing
+		            let clean = $(this).val().replace(/[^0-9.\-]/g, "");
+		            $(this).val(clean);
+
+		            calculateAll_RISK_WEIGHTED_AMT();
+		        })
+		        .on("blur", function () {
+
+		            let num = getNumeric($(this).attr("id"));
+		            format($(this).attr("id"), num);
+		        });
+		    }
+
+		    // Initial load
+		    calculateAll_RISK_WEIGHTED_AMT();
+
+		});
 
 
 	
