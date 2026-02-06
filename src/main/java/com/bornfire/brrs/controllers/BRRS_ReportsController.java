@@ -3737,25 +3737,21 @@ public class BRRS_ReportsController {
 	@RequestMapping(value = "/M_GMIRTupdate", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public ResponseEntity<String> updateReport(
-			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@ModelAttribute M_GMIRT_Summary_Entity request) {
+	        @RequestParam(required = false)
+	        @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+	        @ModelAttribute M_GMIRT_Summary_Entity summary,
+	        @ModelAttribute M_GMIRT_Detail_Entity detail) {
 
-		try {
-			System.out.println("came to single controller");
+	    summary.setReport_date(asondate);
+	    detail.setReport_date(asondate);
 
-			// ✅ set the asondate into entity
-			request.setReport_date(asondate);
+	    System.out.println("came to GMIRT MODIFY CONTROLLER");
+	    brrs_m_gmirt_reportservice.updateReport(summary);
+	    brrs_m_gmirt_reportservice.updateDetail(detail);
 
-			// call services
-			brrs_m_gmirt_reportservice.updateReport(request);
-
-			return ResponseEntity.ok(" Updated Successfully");
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body("Update Failed: " + e.getMessage());
-		}
+	    return ResponseEntity.ok("Updated Successfully");
 	}
+
 
 	@RequestMapping(value = "/UpdateM_TBS_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody

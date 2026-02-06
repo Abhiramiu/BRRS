@@ -20,17 +20,11 @@ import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CreationHelper;
-import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.Font;
-import org.apache.poi.ss.usermodel.HorizontalAlignment;
-import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
@@ -42,6 +36,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.bornfire.brrs.entities.BRRS_M_CA6_Archival_Detail_Repo1;
+import com.bornfire.brrs.entities.BRRS_M_CA6_Archival_Detail_Repo2;
 import com.bornfire.brrs.entities.BRRS_M_CA6_Archival_Summary_Repo1;
 import com.bornfire.brrs.entities.BRRS_M_CA6_Archival_Summary_Repo2;
 import com.bornfire.brrs.entities.BRRS_M_CA6_Detail_Repo;
@@ -49,9 +45,10 @@ import com.bornfire.brrs.entities.BRRS_M_CA6_Detail_Repo1;
 import com.bornfire.brrs.entities.BRRS_M_CA6_Detail_Repo2;
 import com.bornfire.brrs.entities.BRRS_M_CA6_Summary_Repo1;
 import com.bornfire.brrs.entities.BRRS_M_CA6_Summary_Repo2;
+import com.bornfire.brrs.entities.M_CA6_Archival_Detail_Entity1;
+import com.bornfire.brrs.entities.M_CA6_Archival_Detail_Entity2;
 import com.bornfire.brrs.entities.M_CA6_Archival_Summary_Entity1;
 import com.bornfire.brrs.entities.M_CA6_Archival_Summary_Entity2;
-import com.bornfire.brrs.entities.M_CA6_Detail_Entity;
 import com.bornfire.brrs.entities.M_CA6_Detail_Entity1;
 import com.bornfire.brrs.entities.M_CA6_Detail_Entity2;
 import com.bornfire.brrs.entities.M_CA6_Summary_Entity1;
@@ -77,6 +74,12 @@ public class BRRS_M_CA6_ReportService {
 
 	@Autowired
 	BRRS_M_CA6_Detail_Repo2 M_CA6_DETAIL_Repo2;
+	
+	@Autowired
+	BRRS_M_CA6_Archival_Detail_Repo1 M_CA6_DETAILArchival_Repo1;
+
+	@Autowired
+	BRRS_M_CA6_Archival_Detail_Repo2 M_CA6_DETAILArchival_Repo2;
 
 	@Autowired
 	BRRS_M_CA6_Summary_Repo1 M_CA6_Summary_Repo1;
@@ -200,10 +203,10 @@ public class BRRS_M_CA6_ReportService {
 				// DETAIL + ARCHIVAL
 				if (version != null) {
 
-					List<M_CA6_Detail_Entity1> T1Master = M_CA6_DETAIL_Repo1
-							.getdatabydateList(dateformat.parse(todate));
-					List<M_CA6_Detail_Entity2> T2Master = M_CA6_DETAIL_Repo2
-							.getdatabydateList(dateformat.parse(todate));
+					List<M_CA6_Archival_Detail_Entity1> T1Master = M_CA6_DETAILArchival_Repo1
+							.getdatabydateListarchival(dateformat.parse(todate),version);
+					List<M_CA6_Archival_Detail_Entity2> T2Master = M_CA6_DETAILArchival_Repo2
+							.getdatabydateListarchival(dateformat.parse(todate),version);
 
 					mv.addObject("displaymode", "Details");
 					mv.addObject("reportsummary", T1Master);

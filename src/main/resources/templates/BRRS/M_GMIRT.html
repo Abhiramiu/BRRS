@@ -385,42 +385,25 @@ $(window).on('beforeunload', function() {
 	
 	//to fetch summary from the database - called from the summary button
 		//to fetch summary from the database - called from the summary button
-	function showdetails() {
-    
-    var Callurl;
-    	$('#loader').modal('show');
-        Callurl = /*[[@{'/Reports/'+${reportid}+'/Details'(asondate=${asondate},fromdate=${fromdate},todate=${todate},currency=${currency},dtltype=${dtltype},type=${type},version=${version})}]]*/
-        location.href = Callurl;
-        	console.log(Callurl);
-   /*  $.ajax({
-        type: 'get',
-        url: Callurl,
-        beforeSend: function () {
-            $('#loader').modal('show'); // 🔄 Show loader
-        },
-        success: function (data) {
-            $('.content').html(data);
-            //$("#detailsbtn").addClass("active");
-            //tablepagination();
-        },
-        complete: function () {
-            $('#loader').modal('hide'); 
-        },
-        error: function () {
-        	  $('#loader').modal('hide');
-            alert("Something went wrongss. Please try again.");
-          
-        }
-    }); */
+		function showdetails() {
+			 $('#loader').modal('show');
+			    var Callurl = /*[[@{'/Reports/' + ${reportid}(
+			        dtltype='detail',
+			        fromdate=${fromdate},
+			        todate=${todate},
+			        type=${type},
+			        asondate=${asondate},
+			        version=${version}
+			    )}]]*/;
+			    location.href = Callurl;
+
 }
 		
-				function showsummary() {
-							var loader = new bootstrap.Modal(document.getElementById('loader'), {backdrop: 'static',keyboard: false});
-							loader.show();
-							var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type},version=${version}, asondate=${asondate})}]]*/
-								location.href = Callurl;
-
-						}
+		function showsummary() {
+			$('#loader').modal('show');
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate}, version=${version})}]]*/;
+			location.href = Callurl;
+		}
     </script>
 
 <script>
@@ -749,10 +732,7 @@ for (let i = 9; i <= 11; i++) {
 
     columns.forEach(col => {
 
-        // 🚫 Skip only R9_tot_cap_req
-        if (i === 9 && col === "tot_cap_req") {
-            return; // skip this cell only
-        }
+       
 
         let selector = `#r${i}_${col}`;
         if ($(selector).length) {
@@ -943,11 +923,7 @@ window.fileuploads = function(btn) {
         ["currency", "pula", "usd", "zar", "gbp", "euro", "jpy", "rupee", "renminbi", "other", "tot_cap_req"]
         .forEach(field => {
 
-            // ❌ Skip ONLY r9_tot_cap_req
-            if (i === 9 && field === "tot_cap_req") {
-                return; // skip this one
-            }
-
+            
             const input = $("#r" + i + "_" + field);
             if (input.length) {
                 formData1.append(input.attr("name"), input.val());
@@ -966,7 +942,7 @@ window.fileuploads = function(btn) {
     })
     .done(function() {
         $("#resultModalLabel").text("BRRS");
-        $("#resultModalBody").text("Updated successfully.");
+        $("#resultModalBody").text("Modified successfully.");
         $("#resultModal").modal("show");
     })
     .fail(function(jqXHR) {
@@ -1066,7 +1042,7 @@ window.fileuploads = function(btn) {
 						<button type="button" class="custom-tab-btn"
 							onclick="showmodify(this);" title="Click to EDIT Records"
 							th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
-							th:if="${type != 'ARCHIVAL'}" id="addRecord">Modify</button>
+							th:if="${type != 'ARCHIVAL' and dtltype ne 'detail'}" id="addRecord">Modify</button>
 
 						<!-- Cancel button (hidden initially) -->
 						<button type="button" class="custom-tab-btn"
@@ -1078,7 +1054,7 @@ window.fileuploads = function(btn) {
 							
 							
 						<button type="button" class="custom-tab-btn"
-							id="custom-tab-btnAdd" th:if="${displaymode == 'summary'}"
+							id="custom-tab-btnAdd" th:if="${displaymode == 'summary' or displaymode == 'Details'}"
 							th:attr="data-reportid=${reportid}, 
                     				 data-asondate=${asondate}, 
                     				 data-fromdate=${fromdate}, 
@@ -1091,24 +1067,46 @@ window.fileuploads = function(btn) {
 							onclick="downloadfile(this);">
 							<i class="fa fa-download"></i>
 						</button>
-						<button type="button" class="custom-tab-btn"
-							id="custom-tab-btnAdd" th:if="${displaymode == 'Details'}"
-							onclick="startReport(this);"
-							th:attr="
-						    data-fromdate=${fromdate},
-						    data-todate=${todate},
-						    data-filename='M_GMIRT_Detail',
-						 data-type=${type},
-					data-version=${version}  ">
-							<i class="fa fa-download"></i>
+						<button type="button" class="custom-tab-btn "
+							id="custom-tab-btnAdd" onclick="downloadfile(this)"
+							th:if="${displaymode == 'summary' or displaymode == 'Details'}"
+							th:attr="data-reportid=${reportid},
+            data-asondate=${asondate},
+            data-fromdate=${fromdate},
+            data-todate=${todate},
+            data-currency=${currency}, 
+            data-dtltype=${dtltype},
+            data-filename='EMAIL_M_GMIRT.xlsx',
+            data-type='email',
+            data-version=${version != null ? version : ''}"
+							style="font-family: Arial; font-weight: bold;">
+							<i class="fa fa-download"></i> Email Format
+
 						</button>
+					
 						
 					</div>
 				</div>
 
 
 
-				<div th:if="${displaymode == 'summary'}">
+				<h1
+					th:if="${displaymode == 'summary' and type == 'ARCHIVAL' and displaymode != 'Details'}"
+					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">Archival
+					Summary View - M-GMIRT</h1>
+
+				<h1
+					th:if="${displaymode == 'Details' and type == 'ARCHIVAL' and displaymode != 'summary'}"
+					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">Archival
+					Detail View - M-GMIRT</h1>
+
+				<h1 th:if="${displaymode == 'summary'and type != 'ARCHIVAL'}"
+					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">Summary
+					View - M-GMIRT</h1>
+				<h1 th:if="${displaymode == 'Details' and type != 'ARCHIVAL'}"
+					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">Detail
+					View - M-GMIRT</h1>
+				<div th:if="${displaymode == 'summary' or displaymode == 'Details'}">
 					<div class="row">
 						<div class="col-sm-12">
 						
@@ -1254,11 +1252,13 @@ window.fileuploads = function(btn) {
            readonly />
 </td> -->
 
-<td th:each="report : ${reportsummary1}"
-    id="r9_tot_cap_req"
-    style=" padding-right:10px;  text-align: right;"
-    th:text="${report.r9_tot_cap_req}">
-</td>
+ <td id="ROW9" style="font-weight: bold; text-align: right; padding-left:20px;" >
+        <input class="display-input Show_input " type="text"
+               th:value="${report.r9_tot_cap_req != null ? #numbers.formatDecimal(report.r9_tot_cap_req,0,'COMMA',0,'POINT') : '0'}"
+               id="r9_tot_cap_req" name="r9_tot_cap_req"
+               style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
 
 	</tr>
 
@@ -1533,102 +1533,7 @@ window.fileuploads = function(btn) {
 					</div>
 				</div>
 
-				<div th:if="${displaymode == 'Details'}">
-					<div class="row">
-						<div class="col-sm-12">
-							<div class="table-responsive scrollable-table-container"
-								style="border-right: 1px solid #dee2e6;">
-								<table
-									class="sticky-header-table table table-bordered table-hover table-sm table-condensed"
-									id="reports">
-									<thead class="thead-light">
-										<tr>
-											<th></th>
-											<th>CUST_ID</th>
-											<th>ACCT_NUMBER</th>
-											<th>ACCT_NAME</th>
-											
-											
-											
-											<th style="text-align:right;">ACCT_BALANCE_IN_PULA</th>
-											<th>REPORT LABLE</th>
-											<th>REPORT ADDL CRITERIA1</th>
-											<th>REPORT_DATE</th>
-										</tr>
-
-									</thead>
-
-									<tbody th:each="report: ${reportdetails}"
-										style="font-family: Arial;">
-										<tr>
-											<td><a data-toggle="tooltip" class="editrec"
-												title="Click to Edit this Record"> <i
-													class="fas fa-edit" onclick="editRecord(this)"></i>
-											</a></td>
-											<td th:text="${report.custId}"></td>
-											<td th:text="${report.acctNumber}"></td>
-											<td th:text="${report.acctName}"></td>
-											
-											<td style="text-align:right;"
-											th:text="${#numbers.formatDecimal(report.acctBalanceInpula, 1, 3, 'POINT')}"></td>
-											
-											<td th:text="${report.reportLable}"></td>
-											<td th:text="${report.reportAddlCriteria_1}"></td>
-											<td
-												th:text="${#dates.format(report.reportDate, 'dd-MM-yyyy')}"></td>
-										</tr>
-									</tbody>
-
-
-								</table>
-								
-								
-								
-								<div style="margin-top: 20px; text-align: center;"
-									th:if="${pagination=='YES'}">
-
-
-
-									<a th:if="${currentPage > 0}"
-										th:href="@{'/Reports/' + ${reportid} + '/Details'(
-																	    asondate=${asondate},                             
-																	    fromdate=${fromdate},
-																	    todate=${todate},
-																	    currency=${currency},
-																	    dtltype=${dtltype},
-																	    type=${type},
-																	    version=${version},
-																	    page=${currentPage - 100},
-																	    size=100
-																	)}">
-										Previous </a> <span>Page [[${currentPage / 100 + 1}]] of
-										[[${totalPages}]]</span> <a
-										th:if="${currentPage < (totalPages - 1) * 100}"
-										th:href="@{'/Reports/' + ${reportid} + '/Details'(
-																	    asondate=${asondate},
-																	    fromdate=${fromdate},
-																	    todate=${todate},
-																	    currency=${currency},
-																	    dtltype=${dtltype},
-																	    type=${type},
-																	    version=${version},
-																	    page=${currentPage + 100},
-																	    size=100
-																	)}">
-										Next </a>
-								</div>
-
-
-						
-
-
-							</div>
-
-
-						</div>
-					</div>
-				</div>
-
+				
 			</div>
 
 

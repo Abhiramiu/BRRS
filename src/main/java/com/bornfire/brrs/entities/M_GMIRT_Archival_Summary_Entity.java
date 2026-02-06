@@ -32,6 +32,7 @@ public class M_GMIRT_Archival_Summary_Entity {
 	private BigDecimal	r9_rupee;
 	private BigDecimal	r9_renminbi;
 	private BigDecimal	r9_other;
+	private BigDecimal	r9_tot_cap_req;
 	
 	
 	private String	r10_currency;
@@ -145,6 +146,12 @@ public class M_GMIRT_Archival_Summary_Entity {
 		this.r9_other = r9_other;
 	}
 	
+	public BigDecimal getR9_tot_cap_req() {
+		return r9_tot_cap_req;
+	}
+	public void setR9_tot_cap_req(BigDecimal r9_tot_cap_req) {
+		this.r9_tot_cap_req = r9_tot_cap_req;
+	}
 	public String getR10_currency() {
 		return r10_currency;
 	}
