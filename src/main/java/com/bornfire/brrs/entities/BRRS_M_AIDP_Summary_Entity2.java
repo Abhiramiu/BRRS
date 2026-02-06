@@ -8,13 +8,13 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "BRRS_M_AIDP_SUMMARYTABLE2")
+@Table(name = "BRRS_M_AIDP_DETAILTABLE2")
 public class BRRS_M_AIDP_Summary_Entity2 {
 
 	@Id
     private Date REPORT_DATE;
 
-    private String REPORT_VERSION;
+    private BigDecimal REPORT_VERSION;
     private String REPORT_FREQUENCY;
     private String REPORT_CODE;
     private String REPORT_DESC;
@@ -310,10 +310,10 @@ public class BRRS_M_AIDP_Summary_Entity2 {
 	public void setREPORT_DATE(Date rEPORT_DATE) {
 		REPORT_DATE = rEPORT_DATE;
 	}
-	public String getREPORT_VERSION() {
+	public BigDecimal getREPORT_VERSION() {
 		return REPORT_VERSION;
 	}
-	public void setREPORT_VERSION(String rEPORT_VERSION) {
+	public void setREPORT_VERSION(BigDecimal rEPORT_VERSION) {
 		REPORT_VERSION = rEPORT_VERSION;
 	}
 	public String getREPORT_FREQUENCY() {

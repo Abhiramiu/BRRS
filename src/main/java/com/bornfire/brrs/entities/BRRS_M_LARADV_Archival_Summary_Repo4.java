@@ -1,6 +1,7 @@
 
 package com.bornfire.brrs.entities;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -15,7 +16,7 @@ public interface BRRS_M_LARADV_Archival_Summary_Repo4
 
     // Fetch specific archival data by report date & version
     @Query(value = "SELECT * FROM BRRS_M_LARADV_ARCHIVALTABLE_SUMMARY4 WHERE REPORT_DATE = ?1 AND REPORT_VERSION = ?2", nativeQuery = true)
-    List<M_LARADV_Archival_Summary_Entity4> getdatabydateListarchival(Date reportDate, String reportVersion);
+    List<M_LARADV_Archival_Summary_Entity4> getdatabydateListarchival(Date reportDate, BigDecimal reportVersion);
 
     // Fetch latest archival version for given date (no version input)
     @Query(value = "SELECT * FROM BRRS_M_LARADV_ARCHIVALTABLE_SUMMARY4 "

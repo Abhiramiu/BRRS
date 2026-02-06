@@ -127,7 +127,7 @@ PURPOSE		: BWRBRREPORT
 			top: 0;
 			background-color: #e9ecf0;
 			z-index: 1;
-			
+
 		}
 
 		.table td {
@@ -286,86 +286,90 @@ PURPOSE		: BWRBRREPORT
 		.table-bordered th {
 			border: 1px solid #000 !important;
 		}
-	
+
 		table {
 			border-collapse: separate !important;
-			  border-spacing: 0; /* or any spacing value you like */
+			border-spacing: 0;
+			/* or any spacing value you like */
 		}
 	</style>
-	
+
 	<style>
-				.header-bar {
-				  display: flex;
-				  align-items: center;
-				  flex-wrap: wrap; /* ✅ allows wrapping on smaller screens */
-				  gap: 10px; /* spacing between elements */
-				  cursor: pointer;
-				}
+		.header-bar {
+			display: flex;
+			align-items: center;
+			flex-wrap: wrap;
+			/* ✅ allows wrapping on smaller screens */
+			gap: 10px;
+			/* spacing between elements */
+			cursor: pointer;
+		}
 
-				/* 🔘 Circular arrow */
-				.left-arrow-circle {
-				  width: 35px;
-				  height: 35px;
-				  border-radius: 50%;
-				  background-color: white;
-				  color: #1f3a93;
-				  display: flex;
-				  align-items: center;
-				  justify-content: center;
-				  margin-right: 10px;
-				}
+		/* 🔘 Circular arrow */
+		.left-arrow-circle {
+			width: 35px;
+			height: 35px;
+			border-radius: 50%;
+			background-color: white;
+			color: #1f3a93;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			margin-right: 10px;
+		}
 
-				.left-arrow-circle i {
-				  font-size: 18px;
-				}
+		.left-arrow-circle i {
+			font-size: 18px;
+		}
 
-				/* 🏷️ Title */
-				.header-title {
-				  font-family: Arial, sans-serif;
-				  font-size: 20px;
-				  font-weight: bold;
-				  color: white;
-				  margin: 0;
-				  flex-shrink: 0;
-				}
+		/* 🏷️ Title */
+		.header-title {
+			font-family: Arial, sans-serif;
+			font-size: 20px;
+			font-weight: bold;
+			color: white;
+			margin: 0;
+			flex-shrink: 0;
+		}
 
-				/* 🚌 Bus display style box */
-				.boards {
-					transform: translateY(6px);
-				  background-color: rgb(107, 122, 143);
-				  color: white;
-				  padding: 5px 45px;
-				  border-radius: 8px;
-				  overflow: hidden;
-				  white-space: nowrap;
-				  flex: 1; /* ✅ makes it take available space dynamically */
-				  min-width: 200px;
-				  box-shadow: 0 0 10px rgb(107, 122, 143);
-				  position: relative;
-				}
+		/* 🚌 Bus display style box */
+		.boards {
+			transform: translateY(6px);
+			background-color: rgb(107, 122, 143);
+			color: white;
+			padding: 5px 45px;
+			border-radius: 8px;
+			overflow: hidden;
+			white-space: nowrap;
+			flex: 1;
+			/* ✅ makes it take available space dynamically */
+			min-width: 200px;
+			box-shadow: 0 0 10px rgb(107, 122, 143);
+			position: relative;
+		}
 
-				/* ✨ Scrolling animation */
-				.scrolling-text {
-				  display: inline-block;
-				  font-family: "Courier New", monospace;
-				  font-weight: bold;
-				  letter-spacing: 1px;
-				  animation: scroll-left 10s linear infinite;
-				}
+		/* ✨ Scrolling animation */
+		.scrolling-text {
+			display: inline-block;
+			font-family: "Courier New", monospace;
+			font-weight: bold;
+			letter-spacing: 1px;
+			animation: scroll-left 10s linear infinite;
+		}
 
-				@keyframes scroll-left {
-				  0% {
-				    transform: translateX(100%);
-				  }
-				  100% {
-				    transform: translateX(-100%);
-				  }
-				}
+		@keyframes scroll-left {
+			0% {
+				transform: translateX(100%);
+			}
 
-				</style>
-				
+			100% {
+				transform: translateX(-100%);
+			}
+		}
+	</style>
+
 	<script th:inline="javascript">
-	let isDetailsModal = false;
+		let isDetailsModal = false;
 		$(document).ready(function () {
 			// hide loader on normal load
 			$('#loader').modal('hide');
@@ -379,35 +383,35 @@ PURPOSE		: BWRBRREPORT
 			$('#loader').modal('hide');
 		});
 
-		
-				
-		$(document).ready(function() {
-			Maker_Checker_Function(); 
+
+
+		$(document).ready(function () {
+			Maker_Checker_Function();
 		});
 
 		// if logged user is a Checker, checker cannot modify, if user is maker , then maker cant download
 		function Maker_Checker_Function() {
 			$.ajax({
-				url: "/BRRS/getUserRole",    
+				url: "/BRRS/getUserRole",
 				type: "GET",
-				success: function(roleId) {
+				success: function (roleId) {
 					// console.log("User Role ID:", roleId);
-				
+
 					if (roleId === "ADM-C" || roleId === "USR-C" || roleId === "USER-AUDIT") {
 						const modifyBtn = document.getElementById("addRecord");
 						if (modifyBtn) modifyBtn.style.display = "none";
 					}
 
 					if (roleId === "ADM-M" || roleId === "USR-M") {
-								const button = document.getElementById("custom-tab-btnAdd");
-								if (button) button.style.display = "none";
-							}
+						const button = document.getElementById("custom-tab-btnAdd");
+						if (button) button.style.display = "none";
+					}
 
 				},
-				error: function(err) {
+				error: function (err) {
 					console.error("Error fetching role:", err);
-		     }
-		    });
+				}
+			});
 		}
 
 
@@ -422,8 +426,11 @@ PURPOSE		: BWRBRREPORT
 
 		//to fetch summary from the database - called from the summary button
 		function showdetails() {
-			isDetailsModal = true;
-			showResultModal('BRRS', ' Details page not available for Manual Report');
+			var Callurl;
+			$('#loader').modal('show');
+			Callurl = Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='detail', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/
+				location.href = Callurl;
+			console.log(Callurl);
 		}
 
 		function showsummary() {
@@ -457,6 +464,7 @@ PURPOSE		: BWRBRREPORT
 			activateTab(selectedTab);
 		};
 		function downloadfile(button) {
+
 			var reportid = button.getAttribute('data-reportid');
 			var asondate = button.getAttribute('data-asondate');
 			var fromdate = button.getAttribute('data-fromdate');
@@ -464,44 +472,60 @@ PURPOSE		: BWRBRREPORT
 			var currency = button.getAttribute('data-currency');
 			var subreportid = button.getAttribute('data-subreportid');
 			var secid = button.getAttribute('data-secid');
-			var dtltype = button.getAttribute('data-dtltype');
+			var dtltype = button.getAttribute('data-dtltype'); // ✅ already read
 			var filename = button.getAttribute('data-filename');
 			var type = button.getAttribute('data-type');
-			var version = button.getAttribute('data-version');
+			var version = "1";
+
+			console.log("dtltype sent to backend =", dtltype); // ✅ DEBUG
+
 			$('#loader').modal('show');
+
 			$.ajax({
-				url: './downloadExcel?reportid=' + reportid +
-					'&fromdate=' + fromdate +
-					'&asondate=' + asondate +
-					'&todate=' + todate +
-					'&currency=' + currency +
-					'&subreportid=' + subreportid +
-					'&secid=' + secid +
-					'&filename=' + filename +
-					'&type=' + type +
-					'&version=' + version,
+				url: './downloadExcel'
+					+ '?reportid=' + encodeURIComponent(reportid)
+					+ '&fromdate=' + encodeURIComponent(fromdate)
+					+ '&asondate=' + encodeURIComponent(asondate)
+					+ '&todate=' + encodeURIComponent(todate)
+					+ '&currency=' + encodeURIComponent(currency)
+					+ '&subreportid=' + encodeURIComponent(subreportid)
+					+ '&secid=' + encodeURIComponent(secid)
+					+ '&dtltype=' + encodeURIComponent(dtltype)   // ✅ FIX
+					+ '&filename=' + encodeURIComponent(filename)
+					+ '&type=' + encodeURIComponent(type)
+					+ '&version=' + encodeURIComponent(version),
+
 				type: 'GET',
 				xhrFields: {
 					responseType: 'blob'
 				},
+
 				success: function (data) {
 					$('#loader').modal('hide');
+
 					if (data && data.size > 100) {
-						const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
+						const blob = new Blob([data], {
+							type: 'application/vnd.ms-excel'
+						});
 						const url = window.URL.createObjectURL(blob);
+
 						const a = document.createElement('a');
 						a.style.display = 'none';
 						a.href = url;
 						a.download = filename;
+
 						document.body.appendChild(a);
 						a.click();
+
 						window.URL.revokeObjectURL(url);
 						document.body.removeChild(a);
+
 						showResultModal('BRRS', filename + ' downloaded successfully.');
 					} else {
 						showResultModal('Information', 'No data was available to create a download.');
 					}
 				},
+
 				error: function (jqXHR, textStatus, errorThrown) {
 					$('#loader').modal('hide');
 					console.error("Download failed:", textStatus, errorThrown);
@@ -509,6 +533,78 @@ PURPOSE		: BWRBRREPORT
 				}
 			});
 		}
+
+		function downloadfile1(button) {
+
+			var reportid = button.getAttribute('data-reportid');
+			var asondate = button.getAttribute('data-asondate');
+			var fromdate = button.getAttribute('data-fromdate');
+			var todate = button.getAttribute('data-todate');
+			var currency = button.getAttribute('data-currency');
+			var subreportid = button.getAttribute('data-subreportid');
+			var secid = button.getAttribute('data-secid');
+			var dtltype = "email";
+			var filename = button.getAttribute('data-filename');
+			var type = button.getAttribute('data-type');
+			var version = "1";
+
+			console.log("dtltype sent to backend =", dtltype); // ✅ DEBUG
+
+			$('#loader').modal('show');
+
+			$.ajax({
+				url: './downloadExcel'
+					+ '?reportid=' + encodeURIComponent(reportid)
+					+ '&fromdate=' + encodeURIComponent(fromdate)
+					+ '&asondate=' + encodeURIComponent(asondate)
+					+ '&todate=' + encodeURIComponent(todate)
+					+ '&currency=' + encodeURIComponent(currency)
+					+ '&subreportid=' + encodeURIComponent(subreportid)
+					+ '&secid=' + encodeURIComponent(secid)
+					+ '&dtltype=' + encodeURIComponent(dtltype)   // ✅ FIX
+					+ '&filename=' + encodeURIComponent(filename)
+					+ '&type=' + encodeURIComponent(type)
+					+ '&version=' + encodeURIComponent(version),
+
+				type: 'GET',
+				xhrFields: {
+					responseType: 'blob'
+				},
+
+				success: function (data) {
+					$('#loader').modal('hide');
+
+					if (data && data.size > 100) {
+						const blob = new Blob([data], {
+							type: 'application/vnd.ms-excel'
+						});
+						const url = window.URL.createObjectURL(blob);
+
+						const a = document.createElement('a');
+						a.style.display = 'none';
+						a.href = url;
+						a.download = filename;
+
+						document.body.appendChild(a);
+						a.click();
+
+						window.URL.revokeObjectURL(url);
+						document.body.removeChild(a);
+
+						showResultModal('BRRS', filename + ' downloaded successfully.');
+					} else {
+						showResultModal('Information', 'No data was available to create a download.');
+					}
+				},
+
+				error: function (jqXHR, textStatus, errorThrown) {
+					$('#loader').modal('hide');
+					console.error("Download failed:", textStatus, errorThrown);
+					showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
+				}
+			});
+		}
+
 		function editRecord() {
 			showResultModal('Alert', 'Development in progress');
 
@@ -877,19 +973,19 @@ PURPOSE		: BWRBRREPORT
 			setTimeout(function () {
 				location.reload();
 			}, 300); */
-			
-			$("#resultModal").modal("hide");
-	        $('#loader').modal('hide');
 
-	        // Only reload if not from Details modal
-	        if (!isDetailsModal) {
-	            setTimeout(function () {
-	                location.reload();
-	            }, 300);
-	        } else {
-	            // reset flag for next modal usage
-	            isDetailsModal = false;
-	        }
+			$("#resultModal").modal("hide");
+			$('#loader').modal('hide');
+
+			// Only reload if not from Details modal
+			if (!isDetailsModal) {
+				setTimeout(function () {
+					location.reload();
+				}, 300);
+			} else {
+				// reset flag for next modal usage
+				isDetailsModal = false;
+			}
 		}
 
 		function fileuploads(btn) {
@@ -953,64 +1049,64 @@ PURPOSE		: BWRBRREPORT
 
 
 		function downloadfilepdf(button) {
-	    var reportid = button.getAttribute('data-reportid');
-	    var asondate = button.getAttribute('data-asondate');
-	    var fromdate = button.getAttribute('data-fromdate');
-	    var todate = button.getAttribute('data-todate');
-	    var currency = button.getAttribute('data-currency');
-	    var subreportid = button.getAttribute('data-subreportid');
-	    var secid = button.getAttribute('data-secid');
-	    var dtltype = button.getAttribute('data-dtltype');
-	    var filename = button.getAttribute('data-filename');
-	    var type = button.getAttribute('data-type');
-	    var version = button.getAttribute('data-version');
+			var reportid = button.getAttribute('data-reportid');
+			var asondate = button.getAttribute('data-asondate');
+			var fromdate = button.getAttribute('data-fromdate');
+			var todate = button.getAttribute('data-todate');
+			var currency = button.getAttribute('data-currency');
+			var subreportid = button.getAttribute('data-subreportid');
+			var secid = button.getAttribute('data-secid');
+			var dtltype = button.getAttribute('data-dtltype');
+			var filename = button.getAttribute('data-filename');
+			var type = button.getAttribute('data-type');
+			var version = button.getAttribute('data-version');
 
-	    $('#loader').modal('show');
+			$('#loader').modal('show');
 
-	    $.ajax({
-	        url: './downloaddetailpdf?reportid=' + reportid +
-	            '&fromdate=' + fromdate +
-	            '&asondate=' + asondate +
-	            '&todate=' + todate +
-	            '&currency=' + currency +
-	            '&subreportid=' + subreportid +
-	            '&secid=' + secid +
-	            '&dtltype=' + dtltype +
-	            '&filename=' + filename +
-	            '&type=' + type +
-	            '&version=' + version,
-	        type: 'GET',
-	        xhrFields: { responseType: 'blob' },
+			$.ajax({
+				url: './downloaddetailpdf?reportid=' + reportid +
+					'&fromdate=' + fromdate +
+					'&asondate=' + asondate +
+					'&todate=' + todate +
+					'&currency=' + currency +
+					'&subreportid=' + subreportid +
+					'&secid=' + secid +
+					'&dtltype=' + dtltype +
+					'&filename=' + filename +
+					'&type=' + type +
+					'&version=' + version,
+				type: 'GET',
+				xhrFields: {responseType: 'blob'},
 
-	        success: function (data) {
-	            $('#loader').modal('hide');
+				success: function (data) {
+					$('#loader').modal('hide');
 
-	            if (data && data.size > 100) {
-	                const blob = new Blob([data], { type: 'application/pdf' });
-	                const url = window.URL.createObjectURL(blob);
-	                const a = document.createElement('a');
-	                a.style.display = 'none';
-	                a.href = url;
+					if (data && data.size > 100) {
+						const blob = new Blob([data], {type: 'application/pdf'});
+						const url = window.URL.createObjectURL(blob);
+						const a = document.createElement('a');
+						a.style.display = 'none';
+						a.href = url;
 
-	                a.download = filename.replace(".xlsx", "") + ".pdf";
+						a.download = filename.replace(".xlsx", "") + ".pdf";
 
-	                document.body.appendChild(a);
-	                a.click();
-	                window.URL.revokeObjectURL(url);
-	                document.body.removeChild(a);
+						document.body.appendChild(a);
+						a.click();
+						window.URL.revokeObjectURL(url);
+						document.body.removeChild(a);
 
-	                showResultModal('BRRS', 'The file has been downloaded successfully.');
-	            } else {
-	                showResultModal('Information', 'No data was available to create a download.');
-	            }
-	        },
-	        error: function (jqXHR, textStatus, errorThrown) {
-	            $('#loader').modal('hide');
-	            console.error("Download failed:", textStatus, errorThrown);
-	            showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
-	        }
-	    });
-	}
+						showResultModal('BRRS', 'The file has been downloaded successfully.');
+					} else {
+						showResultModal('Information', 'No data was available to create a download.');
+					}
+				},
+				error: function (jqXHR, textStatus, errorThrown) {
+					$('#loader').modal('hide');
+					console.error("Download failed:", textStatus, errorThrown);
+					showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
+				}
+			});
+		}
 
 
 
@@ -1036,38 +1132,44 @@ PURPOSE		: BWRBRREPORT
 						<h5
 							style="font-family: arial; font-size: 20px; padding-top: 10px; font-weight: bold; margin-right: 5px; color: white;">
 							(36) MONTHLY SCHEDULE: M-AIDP: ANALYSIS OF INTERBANK <br> DOMESTIC POSITIONS </h5>
-							
-							<div class="boards">
-								    <p class="scrolling-text">BANK OF BOTSWANA - BANKING SUPERVISION DEPARTMENT</p>
-								  </div>
+
+						<div class="boards">
+							<p class="scrolling-text">BANK OF BOTSWANA - BANKING SUPERVISION DEPARTMENT</p>
+						</div>
 					</div>
 					<div class="custom-tab-btn-group nav-buttons"
 						style="display: flex; color: white; align-items: center;">
 						<!-- 📅 Date -->
-						<span class="white-text"
-							style="color: white !important; font-size: 16px; margin-right: 20px; margin-left: 8px;">Report
-							Date: <span th:text="${#strings.replace(asondate, '/', '-')}">2025-09-18</span>
+						<span class="white-text" style="color: white !important;
+						             font-size: 16px;
+						             margin-right: 20px;
+						             margin-left: 8px;
+						             white-space: nowrap;">
+							Report Date:
+							<span th:text="${#strings.replace(asondate, '/', '-')}">2025-09-18</span>
 						</span>
 						<!-- Buttons -->
 						<input type="hidden" id="selectedTab" th:value="${displaymode}">
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showsummary();"
-							th:if="${displaymode == 'Details'}">Summary</button>
+							th:if="${displaymode == 'detail'}">Summary</button>
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails();"
 							th:if="${displaymode == 'summary'}">Details</button>
 
 						<!-- Modify button -->
-						<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
-							title="Click to EDIT Records" th:if="${type != 'ARCHIVAL'}"
-							th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
-							id="addRecord">Modify</button>
+						<button type="button" class="custom-tab-btn addedit" onclick="showmodify(this);"
+							title="Click to EDIT Records" id="addRecord" th:if="${displaymode == 'summary' 
+						                and type != 'ARCHIVAL' 
+						                and session.PERMISSIONS == 'W'}">
+							Modify
+						</button>
 
 						<!-- Cancel button (hidden initially) -->
 						<button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord"
 							onclick="cancelModify();" style="display: none;">Cancel</button>
 
 
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'summary'}" th:attr="data-reportid=${reportid},
+						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd" style="white-space: nowrap;"
+							th:if="${displaymode == 'summary' or displaymode == 'detail'}" th:attr="data-reportid=${reportid},
                    				 data-asondate=${asondate},
                    				 data-fromdate=${fromdate},
                     				 data-todate=${todate},
@@ -1075,13 +1177,26 @@ PURPOSE		: BWRBRREPORT
                     				 data-dtltype=${dtltype},
                     				 data-filename='M_AIDP.xlsx',
 					 				 data-type=${type},
-					    			 data-version=${version}" onclick="downloadfile(this);">
+					    			 data-version=${version}" onclick="downloadfile(this);">Excel
+							<i class="fa fa-download"></i>
+						</button>
+
+						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd" style="white-space: nowrap;"
+							th:if="${displaymode == 'summary' or displaymode == 'detail'}" th:attr="data-reportid=${reportid},
+						                   				 data-asondate=${asondate},
+						                   				 data-fromdate=${fromdate},
+						                    				 data-todate=${todate},
+						                    				 data-currency=${currency}, 
+						                    				 data-dtltype='email',
+						                    				 data-filename='M-AIDP-NEW.xlsx',
+											 				 data-type=${type},
+											    			 data-version=${version}" onclick="downloadfile1(this);">E-Mail
 							<i class="fa fa-download"></i>
 						</button>
 
 
-						  <button type="button" class="custom-tab-btn" id="custom-tab-btnAdd" th:if="${displaymode == 'summary'}"
-            th:attr="data-reportid=${reportid}, 
+						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd" style="white-space: nowrap;"
+							th:if="${displaymode == 'summary'}" th:attr="data-reportid=${reportid}, 
                      data-asondate=${asondate}, 
                      data-fromdate=${fromdate}, 
                      data-todate=${todate}, 
@@ -1089,11 +1204,10 @@ PURPOSE		: BWRBRREPORT
                      data-dtltype=${dtltype}, 
                      data-filename='M_AIDP.xlsx',
                      data-type=${type},
-                     data-version=${version}"
-            onclick="downloadfilepdf(this);">PDF
-            <i class="fa fa-download"></i>
-        </button>
-		
+                     data-version=${version}" onclick="downloadfilepdf(this);">PDF
+							<i class="fa fa-download"></i>
+						</button>
+
 
 
 
@@ -1114,7 +1228,7 @@ PURPOSE		: BWRBRREPORT
 					</div>
 
 				</div>
-				<div th:if="${displaymode == 'summary'}">
+				<div th:if="${displaymode == 'summary' or displaymode == 'detail'}">
 					<div class="row">
 						<div class="col-sm-12">
 							<form action="#" method="POST" id="fileupload">
@@ -1124,7 +1238,7 @@ PURPOSE		: BWRBRREPORT
 										class="sticky-header-table table table-bordered table-hover table-sm table-condensed"
 										id="reports">
 										<thead class="thead-light">
-									
+
 											<tr>
 												<th colspan="7"
 													style="text-align: left; padding-left: 20px; width: 900px;">
@@ -1132,27 +1246,22 @@ PURPOSE		: BWRBRREPORT
 											</tr>
 
 											<tr style="background-color: #b3b6b9;">
-												<th
-													style="background-color: #D8D8D8;text-align: left;  width: 900px;">
+												<th style="background-color: #D8D8D8;text-align: left;  width: 900px;">
 													Name of Bank
 												</th>
 												<th
 													style="background-color: #D8D8D8;text-align: center;  width: 200px;">
 													Type of account</th>
-												<th
-													style="background-color: #D8D8D8;text-align: center; width: 150px;">
+												<th style="background-color: #D8D8D8;text-align: center; width: 150px;">
 													Purpose</th>
 												<th
 													style="background-color: #D8D8D8;text-align: center;  width: 150px;">
 													Currency</th>
-												<th
-													style="background-color: #D8D8D8;text-align: center; width: 150px;">
+												<th style="background-color: #D8D8D8;text-align: center; width: 150px;">
 													Bank Rating, e.g, AAA, AA or A1</th>
-												<th
-													style="background-color: #D8D8D8;text-align: right; width: 150px;">
+												<th style="background-color: #D8D8D8;text-align: right; width: 150px;">
 													Amount (on demand or less than 184 days)</th>
-												<th
-													style="background-color: #D8D8D8;text-align: right; width: 150px;">
+												<th style="background-color: #D8D8D8;text-align: right; width: 150px;">
 													Amount (more than 184 days)</th>
 
 											</tr>
@@ -5699,7 +5808,9 @@ PURPOSE		: BWRBRREPORT
 												</td>
 
 											</tr>
-<tr><td colspan="7" style="height: 50px;"></td></tr>
+											<tr>
+												<td colspan="7" style="height: 50px;"></td>
+											</tr>
 										</tbody>
 
 										<thead class="thead-light">
@@ -5710,31 +5821,26 @@ PURPOSE		: BWRBRREPORT
 											</tr>
 
 											<tr style="background-color: #b3b6b9;">
-												<th
-													style="background-color: #D8D8D8;text-align: left;  width: 900px;">
+												<th style="background-color: #D8D8D8;text-align: left;  width: 900px;">
 													Name of Bank
 												</th>
 												<th
 													style="background-color: #D8D8D8;text-align: center;  width: 200px;">
 													Type of account</th>
-												<th
-													style="background-color: #D8D8D8;text-align: center; width: 150px;">
+												<th style="background-color: #D8D8D8;text-align: center; width: 150px;">
 													Purpose</th>
 												<th
 													style="background-color: #D8D8D8;text-align: center;  width: 150px;">
 													Currency</th>
-												<th
-													style="background-color: #D8D8D8;text-align: center; width: 150px;">
+												<th style="background-color: #D8D8D8;text-align: center; width: 150px;">
 													Bank Rating, e.g, AAA, AA or A1</th>
-												<th
-													style="background-color: #D8D8D8;text-align: right; width: 150px;">
+												<th style="background-color: #D8D8D8;text-align: right; width: 150px;">
 													Amount (on demand or less than 184 days)</th>
-												<th
-													style="background-color: #D8D8D8;text-align: right; width: 150px;">
+												<th style="background-color: #D8D8D8;text-align: right; width: 150px;">
 													Amount (more than 184 days)</th>
 
 											</tr>
-											
+
 
 
 										</thead>
@@ -10275,7 +10381,9 @@ PURPOSE		: BWRBRREPORT
 												</td>
 
 											</tr>
-<tr><td colspan="7" style="height: 50px;"></td></tr>
+											<tr>
+												<td colspan="7" style="height: 50px;"></td>
+											</tr>
 										</tbody>
 
 
@@ -10290,27 +10398,22 @@ PURPOSE		: BWRBRREPORT
 											</tr>
 
 											<tr style="background-color: #b3b6b9;">
-												<th
-													style="background-color: #D8D8D8;text-align: left; width: 900px;">
+												<th style="background-color: #D8D8D8;text-align: left; width: 900px;">
 													Name of Bank
 												</th>
 												<th
 													style="background-color: #D8D8D8;text-align: center;  width: 200px;">
 													Type of account</th>
-												<th
-													style="background-color: #D8D8D8;text-align: center; width: 150px;">
+												<th style="background-color: #D8D8D8;text-align: center; width: 150px;">
 													Purpose</th>
 												<th
 													style="background-color: #D8D8D8;text-align: center;  width: 150px;">
 													Currency</th>
-												<th
-													style="background-color: #D8D8D8;text-align: center; width: 150px;">
+												<th style="background-color: #D8D8D8;text-align: center; width: 150px;">
 													Bank Rating, e.g, AAA, AA or A1</th>
-												<th
-													style="background-color: #D8D8D8;text-align: right; width: 150px;">
+												<th style="background-color: #D8D8D8;text-align: right; width: 150px;">
 													Amount (on demand or less than 184 days)</th>
-												<th
-													style="background-color: #D8D8D8;text-align: right; width: 150px;">
+												<th style="background-color: #D8D8D8;text-align: right; width: 150px;">
 													Amount (more than 184 days)</th>
 
 											</tr>
@@ -15010,10 +15113,13 @@ PURPOSE		: BWRBRREPORT
 
 
 										</tbody>
-<tr><td colspan="7" class="noborder" style="height: 50px; border-right:none important;"></td></tr>
+										<tr>
+											<td colspan="7" class="noborder"
+												style="height: 50px; border-right:none important;"></td>
+										</tr>
 
 										<thead class="thead-light">
-										
+
 											<tr>
 												<th colspan="8"
 													style="text-align: left; padding-left: 20px; width: 900px;">
@@ -15021,8 +15127,7 @@ PURPOSE		: BWRBRREPORT
 											</tr>
 
 											<tr style="background-color: #b3b6b9;">
-												<th
-													style="background-color: #D8D8D8;text-align: left; width: 900px;">
+												<th style="background-color: #D8D8D8;text-align: left; width: 900px;">
 													Name of Bank
 												</th>
 												<th
@@ -15031,20 +15136,16 @@ PURPOSE		: BWRBRREPORT
 												<th
 													style="background-color: #D8D8D8;text-align: center;  width: 150px;">
 													Country</th>
-												<th
-													style="background-color: #D8D8D8;text-align: center; width: 150px;">
+												<th style="background-color: #D8D8D8;text-align: center; width: 150px;">
 													Purpose</th>
 												<th
 													style="background-color: #D8D8D8;text-align: center;  width: 150px;">
 													Currency</th>
-												<th
-													style="background-color: #D8D8D8;text-align: center; width: 150px;">
+												<th style="background-color: #D8D8D8;text-align: center; width: 150px;">
 													Bank Rating, e.g, AAA, AA or A1</th>
-												<th
-													style="background-color: #D8D8D8;text-align: right; width: 150px;">
+												<th style="background-color: #D8D8D8;text-align: right; width: 150px;">
 													Amount (on demand or less than 184 days)</th>
-												<th
-													style="background-color: #D8D8D8;text-align: right; width: 150px;">
+												<th style="background-color: #D8D8D8;text-align: right; width: 150px;">
 													Amount (more than 184 days)</th>
 
 											</tr>
@@ -20904,145 +21005,154 @@ PURPOSE		: BWRBRREPORT
 	
 														</script> -->
 <script>
-$(document).ready(function () {
+	$(document).ready(function () {
 
-    $("tr").each(function () {
+		$("tr").each(function () {
 
-        // get all tds in this row
-        let tds = $(this).find("td");
+			// get all tds in this row
+			let tds = $(this).find("td");
 
-        // total count
-        let count = tds.length;
+			// total count
+			let count = tds.length;
 
-        // loop through each TD
-        tds.each(function (index) {
+			// loop through each TD
+			tds.each(function (index) {
 
-            // skip last two TDs
-            if (index >= count - 2) {
-                return; // do nothing
-            }
+				// skip last two TDs
+				if (index >= count - 2) {
+					return; // do nothing
+				}
 
-            // change padding-left → padding-right
-            $(this).css({
-                "padding-right": "20px",
-                "padding-left": "0"
-            });
-        });
-    });
+				// change padding-left → padding-right
+				$(this).css({
+					"padding-right": "20px",
+					"padding-left": "0"
+				});
+			});
+		});
 
-});
+	});
 </script>
 
 <style>
-/* Your existing CSS - this is the correct approach */
-.scrollable-table-container {
-	/* This is the key: it creates the scroll context */
-	max-height: 620px;
-	/* Or a suitable height like 80vh for responsive design */
-	overflow-y: auto;
-	border: 1px solid #ccc;
-}
+	/* Your existing CSS - this is the correct approach */
+	.scrollable-table-container {
+		/* This is the key: it creates the scroll context */
+		max-height: 620px;
+		/* Or a suitable height like 80vh for responsive design */
+		overflow-y: auto;
+		border: 1px solid #ccc;
+	}
 
-/* Your existing sticky header CSS, targeting the tr elements within the thead */
-.scrollable-table-container thead tr:nth-child(1) {
-	position: sticky;
-	top: 0;
-	background-color: #b3b6b9;
-	z-index: 5;
-}
+	/* Your existing sticky header CSS, targeting the tr elements within the thead */
+	.scrollable-table-container thead tr:nth-child(1) {
+		position: sticky;
+		top: 0;
+		background-color: #b3b6b9;
+		z-index: 5;
+	}
 
-.scrollable-table-container thead tr:nth-child(2) {
-	position: sticky;
-	top: 36px; /* adjust based on row height */
-	background-color: #b3b6b9;
-	z-index: 4;
-}
+	.scrollable-table-container thead tr:nth-child(2) {
+		position: sticky;
+		top: 36px;
+		/* adjust based on row height */
+		background-color: #b3b6b9;
+		z-index: 4;
+	}
 
-.scrollable-table-container thead tr:nth-child(3) {
-	position: sticky;
-	top: 72px; /* Adjust based on row height */
-	background-color: #b3b6b9;
-	z-index: 3;
-}
+	.scrollable-table-container thead tr:nth-child(3) {
+		position: sticky;
+		top: 72px;
+		/* Adjust based on row height */
+		background-color: #b3b6b9;
+		z-index: 3;
+	}
 
-.scrollable-table-container thead tr:nth-child(4) {
-	position: sticky;
-	top: 100px; /* Adjust based on row height */
-	background-color: #b3b6b9;
-	z-index: 2;
-}
+	.scrollable-table-container thead tr:nth-child(4) {
+		position: sticky;
+		top: 100px;
+		/* Adjust based on row height */
+		background-color: #b3b6b9;
+		z-index: 2;
+	}
 
-.scrollable-table-container thead tr:nth-child(5) {
-	position: sticky;
-	top: 135px; /* Adjust based on row height */
-	background-color: #b3b6b9;
-	z-index: 1;
-}
+	.scrollable-table-container thead tr:nth-child(5) {
+		position: sticky;
+		top: 135px;
+		/* Adjust based on row height */
+		background-color: #b3b6b9;
+		z-index: 1;
+	}
 </style>
 
 
 <style>
-.inner {
-	max-height: 600px; /* Adjust height as needed */
-	overflow: auto;
-	border: 1px solid #dee2e6;
-}
+	.inner {
+		max-height: 600px;
+		/* Adjust height as needed */
+		overflow: auto;
+		border: 1px solid #dee2e6;
+	}
 
-/* Sticky thead */
-#reports thead th {
-	position: sticky;
-	top: 0;
-	background-color: #D8D8D8; /* Match Bootstrap thead-light */
-	z-index: 2;
-}
+	/* Sticky thead */
+	#reports thead th {
+		position: sticky;
+		top: 0;
+		background-color: #D8D8D8;
+		/* Match Bootstrap thead-light */
+		z-index: 2;
+	}
 
-div.dataTables_wrapper div.dataTables_paginate {
-	text-align: right !important;
-	float: right !important;
-	width: auto;
-	margin-top: 10px;
-}
+	div.dataTables_wrapper div.dataTables_paginate {
+		text-align: right !important;
+		float: right !important;
+		width: auto;
+		margin-top: 10px;
+	}
 
-/* Ensure info text (e.g., "Showing 1 to X") stays on the left */
-div.dataTables_wrapper div.dataTables_info {
-	float: left !important;
-	margin-top: 10px;
-}
+	/* Ensure info text (e.g., "Showing 1 to X") stays on the left */
+	div.dataTables_wrapper div.dataTables_info {
+		float: left !important;
+		margin-top: 10px;
+	}
 
-.pagination {
-	margin: 0;
-}
+	.pagination {
+		margin: 0;
+	}
 
-.page-item.active .page-link {
-	background-color: #386276;
-	border-color: #386276;
-}
+	.page-item.active .page-link {
+		background-color: #386276;
+		border-color: #386276;
+	}
 
-.page-link {
-	color: #386276;
-}
+	.page-link {
+		color: #386276;
+	}
 
-.page-link:hover {
-	color: #2a4a5c;
-}
+	.page-link:hover {
+		color: #2a4a5c;
+	}
 
-.form-select {
-	display: inline-block;
-	width: auto;
-}
+	.form-select {
+		display: inline-block;
+		width: auto;
+	}
 
-.scrollable-table-container thead tr:nth-child(1),
-.scrollable-table-container thead tr:nth-child(2),
-.scrollable-table-container thead tr:nth-child(3),
-.scrollable-table-container thead tr:nth-child(4),
-.scrollable-table-container thead tr:nth-child(5) {
-    background-color: #D8D8D8; /* set header color */
-}
+	.scrollable-table-container thead tr:nth-child(1),
+	.scrollable-table-container thead tr:nth-child(2),
+	.scrollable-table-container thead tr:nth-child(3),
+	.scrollable-table-container thead tr:nth-child(4),
+	.scrollable-table-container thead tr:nth-child(5) {
+		background-color: #D8D8D8;
+		/* set header color */
+	}
 
-  .noborder td, tr, thead {
-    border: none !important;
-    background-color:white;
-  }
+	.noborder td,
+	tr,
+	thead {
+		border: none !important;
+		background-color: white;
+	}
 </style>
 
 </html>

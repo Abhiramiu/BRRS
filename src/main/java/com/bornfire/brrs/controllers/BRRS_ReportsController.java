@@ -4050,7 +4050,7 @@ public class BRRS_ReportsController {
 			@RequestParam(value = "instancecode", required = false) String instancecode,
 			@RequestParam(value = "filter", required = false) String filter,
 			@RequestParam(value = "type", required = false) String type,
-			@RequestParam(value = "version", required = false) String version)
+			@RequestParam(value = "version", required = false) BigDecimal version)
 			throws SQLException, FileNotFoundException {
 		System.out.println("Control");
 

@@ -127,7 +127,7 @@ public class BRRS_M_SFINP1_ReportService {
 			Date reportDate = dateformat.parse(todate);
 
 // ======= CASE 1: ARCHIVAL =======
-			if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && !version.trim().isEmpty()) {
+			if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
 				System.out.println("📦 Fetching ARCHIVAL data for version: " + version);
 
 				List<M_SFINP1_Archival_Summary_Entity> mainList = BRRS_M_SFINP1_Archival_Summary_Repo.getdatabydateListarchival(reportDate,version);
@@ -307,7 +307,7 @@ public class BRRS_M_SFINP1_ReportService {
 
 
 		// ARCHIVAL check
-		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && !version.trim().isEmpty()) {
+		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
 			logger.info("Service: Generating ARCHIVAL report for version {}", version);
 			return getExcelM_SFINP1ARCHIVAL(filename, reportId, fromdate, formattedDate, currency, dtltype, type,
 					version);
