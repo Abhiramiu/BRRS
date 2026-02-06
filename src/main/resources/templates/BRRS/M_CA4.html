@@ -406,9 +406,22 @@ let isDetailsModal = false;
 		}
 
 		//to fetch summary from the database - called from the summary button
-		function showdetails() {
+		/* function showdetails() {
     isDetailsModal = true; // mark that this modal is from Details
     showResultModal('BRRS', 'Details page not available for Manual Report');
+} */
+function showdetails() {
+	 $('#loader').modal('show');
+	    var Callurl = /*[[@{'/Reports/' + ${reportid}(
+	        dtltype='detail',
+	        fromdate=${fromdate},
+	        todate=${todate},
+	        type=${type},
+	        asondate=${asondate},
+	        version=${version}
+	    )}]]*/;
+	    location.href = Callurl;
+
 }
 
 		function showsummary() {
@@ -1316,7 +1329,7 @@ window.fileuploads = function (btn) {
 						<button type="button" class="custom-tab-btn"
 							onclick="showmodify(this);" title="Click to EDIT Records"
 							th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
-							th:if="${type != 'ARCHIVAL'}" id="addRecord">Modify</button>
+							th:if="${type != 'ARCHIVAL' and dtltype ne 'detail'}" id="addRecord">Modify</button>
 
 						<!-- Cancel button (hidden initially) -->
 						<button type="button" class="custom-tab-btn"
@@ -1330,7 +1343,7 @@ window.fileuploads = function (btn) {
 
 
 						<button type="button" class="custom-tab-btn"
-							id="custom-tab-btnAdd" th:if="${displaymode == 'summary'}"
+							id="custom-tab-btnAdd" th:if="${displaymode == 'summary' or displaymode == 'Details'}"
 							th:attr="data-reportid=${reportid}, 
                      data-asondate=${asondate}, 
                      data-fromdate=${fromdate}, 
@@ -1339,11 +1352,12 @@ window.fileuploads = function (btn) {
                      data-dtltype=${dtltype}, 
                      data-filename='M_CA4.xlsx',
                      data-type=${type},
-					data-version=${version} "
-							onclick="downloadfile(this);">
-							<i class="fa fa-download"></i>
+					data-version=${version != null ? version : ''} "
+							onclick="downloadfile(this);"
+							style="font-family: Arial; font-weight: bold;">
+							<i class="fa fa-download"></i>Download
 						</button>
-
+<!-- 
 						<button type="button" class="custom-tab-btn"
 							id="custom-tab-btnAdd" th:if="${displaymode == 'Details'}"
 							th:attr="data-reportid=${reportid}, 
@@ -1356,17 +1370,49 @@ window.fileuploads = function (btn) {
              data-type=${type},
 					data-version=${version} "
 							onclick="startReport(this)">
-							<!-- 🛠️ Fix: pass `this` -->
+							🛠️ Fix: pass `this`
 							<i class="fa fa-download"></i>
 						</button>
+ -->
+ 	<button type="button" class="custom-tab-btn "
+							id="custom-tab-btnAdd" onclick="downloadfile(this)"
+							th:if="${displaymode == 'summary' or displaymode == 'Details'}"
+							th:attr="data-reportid=${reportid},
+            data-asondate=${asondate},
+            data-fromdate=${fromdate},
+            data-todate=${todate},
+            data-currency=${currency}, 
+            data-dtltype=${dtltype},
+            data-filename='EMAIL_M_CA4.xlsx',
+            data-type='email',
+            data-version=${version != null ? version : ''}"
+							style="font-family: Arial; font-weight: bold;">
+							<i class="fa fa-download"></i> Email Format
 
+						</button> 
 
 
 
 					</div>
 				</div>
+				<h1
+					th:if="${displaymode == 'summary' and type == 'ARCHIVAL' and displaymode != 'Details'}"
+					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">Archival
+					Summary View - M-CA4</h1>
 
-				<div th:if="${displaymode == 'summary'}">
+				<h1
+					th:if="${displaymode == 'Details' and type == 'ARCHIVAL' and displaymode != 'summary'}"
+					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">Archival
+					Detail View - M-CA4</h1>
+
+				<h1 th:if="${displaymode == 'summary'and type != 'ARCHIVAL'}"
+					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">Summary
+					View - M-CA4</h1>
+				<h1 th:if="${displaymode == 'Details' and type != 'ARCHIVAL'}"
+					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">Detail
+					View - M-CA4</h1>
+
+				<div th:if="${displaymode == 'summary' or displaymode == 'Details'}">
 					<div class="row">
 						<div class="col-sm-12">
 

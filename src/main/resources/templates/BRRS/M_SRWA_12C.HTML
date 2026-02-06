@@ -1135,7 +1135,7 @@ $(document).ready(function() {
                      data-todate=${todate}, 
                      data-currency=${currency},  
                      data-dtltype=${dtltype}, 
-                     data-filename='M-SRWA_12c.xlsx',
+                     data-filename='M_SRWA12c.xlsx',
                      data-type=${type},
                      data-version=${version}"
                      
@@ -1155,6 +1155,25 @@ $(document).ready(function() {
 		  ">
 		  <i class="fa fa-download"></i>
 		</button> -->
+		
+		
+						<button type="button" class="custom-tab-btn "
+							id="custom-tab-btnAdd" onclick="downloadfile(this)"
+							th:if="${displaymode == 'summary' or displaymode == 'Details'}"
+							th:attr="data-reportid=${reportid},
+            data-asondate=${asondate},
+            data-fromdate=${fromdate},
+            data-todate=${todate},
+            data-currency=${currency}, 
+            data-dtltype=${dtltype},
+            data-filename='EMAIL_M_SRWA12c.xlsx',
+            data-type='email',
+            data-version=${version != null ? version : ''}"
+							style="font-family: Arial; font-weight: bold;">
+							<i class="fa fa-download"></i> Email Format
+
+						</button>
+		
 					</div>
 				</div>
 				
@@ -2303,14 +2322,15 @@ $(document).ready(function() {
 			              </table>
 
 
-							</div>
-<div style="text-align: center; margin-top: 10px;margin-bottom: 200px; ">
+<div style="text-align: center; margin-top: 10px;margin-bottom: 50px; ">
 
 									<button id="submitButton" type="button"
 										class="custom-tab-btn Show_input" form="fileupload"
 										th:attr="data-todate=${asondate}" onclick="fileuploads(this);"
 										style="display: none;">Submit</button>
 								</div>
+								
+							</div>
 								</form>
 
 						</div>

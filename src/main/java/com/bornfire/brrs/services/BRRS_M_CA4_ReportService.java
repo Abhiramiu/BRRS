@@ -46,8 +46,14 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.bornfire.brrs.entities.BRRS_M_CA4_Archival_Summary_Repo;
 import com.bornfire.brrs.entities.M_CA4_Summary_Entity;
+import com.bornfire.brrs.entities.M_CA4_Detail_Entity;
+import com.bornfire.brrs.entities.M_CA4_Detail_Entity;
 import com.bornfire.brrs.entities.BRRS_M_CA4_Summary_Repo;
+import com.bornfire.brrs.entities.M_CA4_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.M_CA4_Archival_Summary_Entity;
+import com.bornfire.brrs.entities.M_CA4_Detail_Entity;
+import com.bornfire.brrs.entities.BRRS_M_CA4_Archival_Detail_Repo;
+import com.bornfire.brrs.entities.BRRS_M_CA4_Detail_Repo;
 
 @Component
 @Service
@@ -64,14 +70,20 @@ public class BRRS_M_CA4_ReportService {
 
 	@Autowired
 	BRRS_M_CA4_Summary_Repo brrs_m_ca4_summary_repo;
-	
+
+	@Autowired
+	BRRS_M_CA4_Detail_Repo brrs_m_ca4_detail_repo;
 
 
 	@Autowired
 	BRRS_M_CA4_Archival_Summary_Repo m_ca4_Archival_Summary_Repo;
 
+
+	@Autowired
+	BRRS_M_CA4_Detail_Repo BRRS_M_CA4_Detail_Repo ;
 	
-	
+	@Autowired
+	BRRS_M_CA4_Archival_Detail_Repo BRRS_M_CA4_Archival_Detail_Repo;
 	
 
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
@@ -132,45 +144,77 @@ public class BRRS_M_CA4_ReportService {
 	
 	
 	
-	  public ModelAndView getBRRS_M_CA4View(String reportId, String fromdate, String
-			  todate, String currency, String dtltype, Pageable pageable, String type,
-			  BigDecimal version) {
-			  
-			  ModelAndView mv = new ModelAndView(); Session hs =
-			  sessionFactory.getCurrentSession();
-			  
-			  int pageSize = pageable.getPageSize(); int currentPage =
-			  pageable.getPageNumber(); int startItem = currentPage * pageSize;
-			  
-			  try { Date d1 = dateformat.parse(todate);
-			  
-			  // ---------- CASE 1: ARCHIVAL ---------- 
-			  if
-			  ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
-			  List<M_CA4_Archival_Summary_Entity> T1Master =
-					  m_ca4_Archival_Summary_Repo.getdatabydateListarchival(d1, version);
-			  
-			  mv.addObject("reportsummary", T1Master); }
-			  
-			  // ---------- CASE 2: RESUB ---------- 
-			  else if
-			  ("RESUB".equalsIgnoreCase(type) && version != null) {
-			  List<M_CA4_Archival_Summary_Entity> T1Master =
-					  m_ca4_Archival_Summary_Repo.getdatabydateListarchival(d1, version);
-			  
-			  mv.addObject("reportsummary", T1Master); }
-			  
-			  // ---------- CASE 3: NORMAL ---------- 
-			  else { List<M_CA4_Summary_Entity>
-			  T1Master =
-					  brrs_m_ca4_summary_repo.getdatabydateListWithVersion(todate);
-			  System.out.println("T1Master Size "+T1Master.size());
-			  mv.addObject("reportsummary", T1Master); }
-			  
-			  } catch (ParseException e) { e.printStackTrace(); }
-			  
-			  mv.setViewName("BRRS/M_CA4"); mv.addObject("displaymode", "summary");
-			  System.out.println("View set to: " + mv.getViewName()); return mv; }
+	public ModelAndView getBRRS_M_CA4View(String reportId, String fromdate, String todate, String currency,
+			String dtltype, Pageable pageable, String type, BigDecimal version) {
+
+		ModelAndView mv = new ModelAndView();
+		Session hs = sessionFactory.getCurrentSession();
+
+		int pageSize = pageable.getPageSize();
+		int currentPage = pageable.getPageNumber();
+		int startItem = currentPage * pageSize;
+		System.out.println("dtltype...."+dtltype);
+		System.out.println("type...."+type);
+
+		try {
+			Date d1 = dateformat.parse(todate);
+
+			// ---------- CASE 1: ARCHIVAL ----------
+			if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
+				List<M_CA4_Archival_Summary_Entity> T1Master = m_ca4_Archival_Summary_Repo.getdatabydateListarchival(d1,
+						version);
+				mv.addObject("displaymode", "summary");
+
+				mv.addObject("reportsummary", T1Master);
+			}
+
+			// ---------- CASE 2: RESUB ----------
+			else if ("RESUB".equalsIgnoreCase(type) && version != null) {
+				List<M_CA4_Archival_Summary_Entity> T1Master = m_ca4_Archival_Summary_Repo.getdatabydateListarchival(d1,
+						version);
+
+				mv.addObject("displaymode", "summary");
+				mv.addObject("reportsummary", T1Master);
+			}
+
+			// ---------- CASE 3: NORMAL ----------
+			else {
+				List<M_CA4_Summary_Entity> T1Master = brrs_m_ca4_summary_repo.getdatabydateListWithVersion(todate);
+				System.out.println("T1Master Size " + T1Master.size());
+				mv.addObject("displaymode", "summary");
+				mv.addObject("reportsummary", T1Master);
+			}
+			
+			// ---------- CASE 4: DETAIL (NEW, ONLY ADDITION) ----------
+			if ("detail".equalsIgnoreCase(dtltype)) {
+
+				// DETAIL + ARCHIVAL
+				if (version != null) {
+
+					List<M_CA4_Archival_Detail_Entity> T1Master = BRRS_M_CA4_Archival_Detail_Repo
+							.getdatabydateListarchival(d1, version);
+					mv.addObject("displaymode", "Details");
+					mv.addObject("reportsummary", T1Master);
+				}
+				// DETAIL + NORMAL
+				else {
+
+					List<M_CA4_Detail_Entity> T1Master = BRRS_M_CA4_Detail_Repo
+							.getdatabydateList(dateformat.parse(todate));
+					System.out.println("Details......T1Master Size " + T1Master.size());
+					mv.addObject("displaymode", "Details");
+					mv.addObject("reportsummary", T1Master);
+				}
+			}
+
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+
+		mv.setViewName("BRRS/M_CA4");
+		System.out.println("View set to: " + mv.getViewName());
+		return mv;
+	}
 
 	/*
 	 * public ModelAndView getBRRS_M_CA4currentDtl(String reportId, String fromdate,
@@ -247,6 +291,16 @@ public class BRRS_M_CA4_ReportService {
 			logger.info("Service: Generating ARCHIVAL report for version {}", version);
 			return getExcelM_CA4ARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
 		}
+		
+		  if ("email".equalsIgnoreCase(type)  && version == null) {
+	            logger.info("Service: Generating Email report for version {}", version);
+	            return BRRS_M_CA4EmailExcel(filename, reportId, fromdate, todate, currency, dtltype, type, version);
+	        }/* else if ("email".equalsIgnoreCase(type) && version != null) {
+	            logger.info("Service: Generating Email report for version {}", version);
+	            return BRRS_M_CA4ARCHIVALEmailExcel(filename, reportId, fromdate, todate,
+	                    currency, dtltype, type, version);
+
+	        }*/
 
 		
 		else if ("RESUB".equalsIgnoreCase(type) && version != null) {
@@ -5349,6 +5403,14 @@ public class BRRS_M_CA4_ReportService {
 	            .orElseThrow(() -> new RuntimeException(
 	                    "Record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
 
+	    M_CA4_Detail_Entity existingDetail =
+	    		brrs_m_ca4_detail_repo.findById(updatedEntity.getReport_date())
+	                    .orElseGet(() -> {
+	                        M_CA4_Detail_Entity d = new M_CA4_Detail_Entity();
+	                        d.setReport_date(updatedEntity.getReport_date());
+	                        return d;
+	                    });
+	    
 	    try {
 	        // 1️⃣ Loop from R10 to R58 and copy fields
 	    	
@@ -5365,9 +5427,14 @@ public class BRRS_M_CA4_ReportService {
 	                try {
 	                    Method getter = M_CA4_Summary_Entity.class.getMethod(getterName);
 	                    Method setter = M_CA4_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+	                    
+	                    Method detailSetter =
+	                            M_CA4_Detail_Entity.class.getMethod(
+	                                    setterName, getter.getReturnType());
 
 	                    Object newValue = getter.invoke(updatedEntity);
 	                    setter.invoke(existing, newValue);
+	                    detailSetter.invoke(existingDetail, newValue);
 
 	                } catch (NoSuchMethodException e) {
 	                    // Skip missing fields
@@ -7803,10 +7870,2461 @@ public class BRRS_M_CA4_ReportService {
 
 			}
 		
-	
-	
-	
-	
+
+			public byte[] BRRS_M_CA4EmailExcel(String filename, String reportId, String fromdate, String todate,
+					String currency, String dtltype, String type, BigDecimal version) throws Exception {
+
+				logger.info("Service: Starting Email Excel generation process in memory.");
+				
+
+				List<M_CA4_Summary_Entity> dataList = brrs_m_ca4_summary_repo
+						.getdatabydateList(dateformat.parse(todate));
+
+				if (dataList.isEmpty()) {
+					logger.warn("Service: No data found for BRRS_M_CA4 report. Returning empty result.");
+					return new byte[0];
+				}
+
+				String templateDir = env.getProperty("output.exportpathtemp");
+				String templateFileName = filename;
+				System.out.println(filename);
+				Path templatePath = Paths.get(templateDir, templateFileName);
+				System.out.println(templatePath);
+
+				logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
+
+				if (!Files.exists(templatePath)) {
+					// This specific exception will be caught by the controller.
+					throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
+				}
+				if (!Files.isReadable(templatePath)) {
+					// A specific exception for permission errors.
+					throw new SecurityException(
+							"Template file exists but is not readable (check permissions): " + templatePath.toAbsolutePath());
+				}
+
+				// This try-with-resources block is perfect. It guarantees all resources are
+				// closed automatically.
+				try (InputStream templateInputStream = Files.newInputStream(templatePath);
+						Workbook workbook = WorkbookFactory.create(templateInputStream);
+						ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+
+					Sheet sheet = workbook.getSheetAt(0);
+
+					// --- Style Definitions ---
+					CreationHelper createHelper = workbook.getCreationHelper();
+
+					CellStyle dateStyle = workbook.createCellStyle();
+					dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
+					dateStyle.setBorderBottom(BorderStyle.THIN);
+					dateStyle.setBorderTop(BorderStyle.THIN);
+					dateStyle.setBorderLeft(BorderStyle.THIN);
+					dateStyle.setBorderRight(BorderStyle.THIN);
+
+					CellStyle textStyle = workbook.createCellStyle();
+					textStyle.setBorderBottom(BorderStyle.THIN);
+					textStyle.setBorderTop(BorderStyle.THIN);
+					textStyle.setBorderLeft(BorderStyle.THIN);
+					textStyle.setBorderRight(BorderStyle.THIN);
+
+					// Create the font
+					Font font = workbook.createFont();
+					font.setFontHeightInPoints((short) 8); // size 8
+					font.setFontName("Arial");
+
+					CellStyle numberStyle = workbook.createCellStyle();
+					// numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
+					numberStyle.setBorderBottom(BorderStyle.THIN);
+					numberStyle.setBorderTop(BorderStyle.THIN);
+					numberStyle.setBorderLeft(BorderStyle.THIN);
+					numberStyle.setBorderRight(BorderStyle.THIN);
+					numberStyle.setFont(font);
+					// --- End of Style Definitions ---
+
+					int startRow = 9;
+
+					if (!dataList.isEmpty()) {
+						for (int i = 0; i < dataList.size(); i++) {
+							M_CA4_Summary_Entity record = dataList.get(i);
+							System.out.println("rownumber=" + startRow + i);
+							Row row = sheet.getRow(startRow + i);
+							if (row == null) {
+								row = sheet.createRow(startRow + i);
+							}
+
+							
+		// row10
+							
+							
+							
+							// Column 2 - name of sub1
+							Cell cellC = row.createCell(2);
+							if (record.getR10_amt_name_of_sub1() != null) {
+							    cellC.setCellValue(record.getR10_amt_name_of_sub1().doubleValue());
+							    cellC.setCellStyle(numberStyle);
+							} else {
+							    cellC.setCellValue("");
+							    cellC.setCellStyle(textStyle);
+							}
+							
+							// Column 4 - name of sub2
+							Cell cellD = row.createCell(4);
+							if (record.getR10_amt_name_of_sub2() != null) {
+							    cellD.setCellValue(record.getR10_amt_name_of_sub2().doubleValue());
+							    cellD.setCellStyle(numberStyle);
+							} else {
+							    cellD.setCellValue("");
+							    cellD.setCellStyle(textStyle);
+							}
+							
+							// Column 6 - name of sub3
+							Cell cellE = row.createCell(6);
+							if (record.getR10_amt_name_of_sub3() != null) {
+							    cellE.setCellValue(record.getR10_amt_name_of_sub3().doubleValue());
+							    cellE.setCellStyle(numberStyle);
+							} else {
+							    cellE.setCellValue("");
+							    cellE.setCellStyle(textStyle);
+							}
+							
+							// Column 8 - name of sub4
+							Cell cellF = row.createCell(8);
+							if (record.getR10_amt_name_of_sub4() != null) {
+							    cellF.setCellValue(record.getR10_amt_name_of_sub4().doubleValue());
+							    cellF.setCellStyle(numberStyle);
+							} else {
+							    cellF.setCellValue("");
+							    cellF.setCellStyle(textStyle);
+							}
+							
+							// Column 10 - name of sub4
+							Cell cellG = row.createCell(10);
+							if (record.getR10_amt_name_of_sub5() != null) {
+							    cellG.setCellValue(record.getR10_amt_name_of_sub5().doubleValue());
+							    cellG.setCellStyle(numberStyle);
+							} else {
+							    cellG.setCellValue("");
+							    cellG.setCellStyle(textStyle);
+							}
+							
+							
+							
+							// Column 12 total
+							cellG = row.createCell(12);
+							if (record.getR10_tot_amt() != null) {
+							    cellG.setCellValue(record.getR10_tot_amt().doubleValue());
+							    cellG.setCellStyle(numberStyle);
+							} else {
+							    cellG.setCellValue("");
+							    cellG.setCellStyle(textStyle);
+							}
+							
+							
+							
+							// row11
+							row = sheet.getRow(10);
+
+							
+
+							// Column 2 - name of sub1
+							cellC = row.createCell(2);
+							if (record.getR11_amt_name_of_sub1() != null) {
+							    cellC.setCellValue(record.getR11_amt_name_of_sub1().doubleValue());
+							    cellC.setCellStyle(numberStyle);
+							} else {
+							    cellC.setCellValue("");
+							    cellC.setCellStyle(textStyle);
+							}
+
+							// Column 3 - name of sub2
+							cellD = row.createCell(4);
+							if (record.getR11_amt_name_of_sub2() != null) {
+							    cellD.setCellValue(record.getR11_amt_name_of_sub2().doubleValue());
+							    cellD.setCellStyle(numberStyle);
+							} else {
+							    cellD.setCellValue("");
+							    cellD.setCellStyle(textStyle);
+							}
+
+							// Column 4 - name of sub3
+							cellE = row.createCell(6);
+							if (record.getR11_amt_name_of_sub3() != null) {
+							    cellE.setCellValue(record.getR11_amt_name_of_sub3().doubleValue());
+							    cellE.setCellStyle(numberStyle);
+							} else {
+							    cellE.setCellValue("");
+							    cellE.setCellStyle(textStyle);
+							}
+
+							// Column 5 - name of sub4
+							cellF = row.createCell(8);
+							if (record.getR11_amt_name_of_sub4() != null) {
+							    cellF.setCellValue(record.getR11_amt_name_of_sub4().doubleValue());
+							    cellF.setCellStyle(numberStyle);
+							} else {
+							    cellF.setCellValue("");
+							    cellF.setCellStyle(textStyle);
+							}
+
+							// Column 6 - name of sub5
+							cellG = row.createCell(10);
+							if (record.getR11_amt_name_of_sub5() != null) {
+							    cellG.setCellValue(record.getR11_amt_name_of_sub5().doubleValue());
+							    cellG.setCellStyle(numberStyle);
+							} else {
+							    cellG.setCellValue("");
+							    cellG.setCellStyle(textStyle);
+							}
+							
+							// Column 7 total
+							cellG = row.createCell(12);
+							if (record.getR11_tot_amt() != null) {
+							    cellG.setCellValue(record.getR11_tot_amt().doubleValue());
+							    cellG.setCellStyle(numberStyle);
+							} else {
+							    cellG.setCellValue("");
+							    cellG.setCellStyle(textStyle);
+							}
+							
+							
+							// row13
+							row = sheet.getRow(12);
+							
+
+							// Column 2 - name of sub1
+							cellC = row.createCell(2);
+							if (record.getR13_amt_name_of_sub1() != null) {
+							    cellC.setCellValue(record.getR13_amt_name_of_sub1().doubleValue());
+							    cellC.setCellStyle(numberStyle);
+							} else {
+							    cellC.setCellValue("");
+							    cellC.setCellStyle(textStyle);
+							}
+
+							// Column 3 - name of sub2
+							cellD = row.createCell(4);
+							if (record.getR13_amt_name_of_sub2() != null) {
+							    cellD.setCellValue(record.getR13_amt_name_of_sub2().doubleValue());
+							    cellD.setCellStyle(numberStyle);
+							} else {
+							    cellD.setCellValue("");
+							    cellD.setCellStyle(textStyle);
+							}
+
+							// Column 4 - name of sub3
+							cellE = row.createCell(6);
+							if (record.getR13_amt_name_of_sub3() != null) {
+							    cellE.setCellValue(record.getR13_amt_name_of_sub3().doubleValue());
+							    cellE.setCellStyle(numberStyle);
+							} else {
+							    cellE.setCellValue("");
+							    cellE.setCellStyle(textStyle);
+							}
+
+							// Column 5 - name of sub4
+							cellF = row.createCell(8);
+							if (record.getR13_amt_name_of_sub4() != null) {
+							    cellF.setCellValue(record.getR13_amt_name_of_sub4().doubleValue());
+							    cellF.setCellStyle(numberStyle);
+							} else {
+							    cellF.setCellValue("");
+							    cellF.setCellStyle(textStyle);
+							}
+
+							// Column 6 - name of sub5
+							cellG = row.createCell(10);
+							if (record.getR13_amt_name_of_sub5() != null) {
+							    cellG.setCellValue(record.getR13_amt_name_of_sub5().doubleValue());
+							    cellG.setCellStyle(numberStyle);
+							} else {
+							    cellG.setCellValue("");
+							    cellG.setCellStyle(textStyle);
+							}
+
+							
+							// Column 7 total
+							cellG = row.createCell(12);
+							if (record.getR13_tot_amt() != null) {
+							    cellG.setCellValue(record.getR13_tot_amt().doubleValue());
+							    cellG.setCellStyle(numberStyle);
+							} else {
+							    cellG.setCellValue("");
+							    cellG.setCellStyle(textStyle);
+							}
+							
+							
+							
+							// row14
+							row = sheet.getRow(13);
+							
+
+							// Column 2 - name of sub1
+							cellC = row.createCell(2);
+							if (record.getR14_amt_name_of_sub1() != null) {
+							    cellC.setCellValue(record.getR14_amt_name_of_sub1().doubleValue());
+							    cellC.setCellStyle(numberStyle);
+							} else {
+							    cellC.setCellValue("");
+							    cellC.setCellStyle(textStyle);
+							}
+
+							// Column 3 - name of sub2
+							cellD = row.createCell(4);
+							if (record.getR14_amt_name_of_sub2() != null) {
+							    cellD.setCellValue(record.getR14_amt_name_of_sub2().doubleValue());
+							    cellD.setCellStyle(numberStyle);
+							} else {
+							    cellD.setCellValue("");
+							    cellD.setCellStyle(textStyle);
+							}
+
+							// Column 4 - name of sub3
+							cellE = row.createCell(6);
+							if (record.getR14_amt_name_of_sub3() != null) {
+							    cellE.setCellValue(record.getR14_amt_name_of_sub3().doubleValue());
+							    cellE.setCellStyle(numberStyle);
+							} else {
+							    cellE.setCellValue("");
+							    cellE.setCellStyle(textStyle);
+							}
+
+							// Column 5 - name of sub4
+							cellF = row.createCell(8);
+							if (record.getR14_amt_name_of_sub4() != null) {
+							    cellF.setCellValue(record.getR14_amt_name_of_sub4().doubleValue());
+							    cellF.setCellStyle(numberStyle);
+							} else {
+							    cellF.setCellValue("");
+							    cellF.setCellStyle(textStyle);
+							}
+
+							// Column 6 - name of sub5
+							cellG = row.createCell(10);
+							if (record.getR14_amt_name_of_sub5() != null) {
+							    cellG.setCellValue(record.getR14_amt_name_of_sub5().doubleValue());
+							    cellG.setCellStyle(numberStyle);
+							} else {
+							    cellG.setCellValue("");
+							    cellG.setCellStyle(textStyle);
+							}
+
+							// Column 7 total
+							cellG = row.createCell(12);
+							if (record.getR14_tot_amt() != null) {
+							    cellG.setCellValue(record.getR14_tot_amt().doubleValue());
+							    cellG.setCellStyle(numberStyle);
+							} else {
+							    cellG.setCellValue("");
+							    cellG.setCellStyle(textStyle);
+							}
+							
+							
+							
+							// row17
+							row = sheet.getRow(16);
+							
+							// Column 3 - name of sub1
+							cellC = row.getCell(2);
+							if (cellC == null) cellC = row.createCell(2);
+							if (record.getR17_amt_name_of_sub1() != null) {
+							    cellC.setCellValue(record.getR17_amt_name_of_sub1().doubleValue());
+							} else {
+							    cellC.setCellValue(0);
+							}
+
+							// Column 4 - name of sub2
+							cellD = row.getCell(4);
+							if (cellD == null) cellD = row.createCell(4);
+							if (record.getR17_amt_name_of_sub2() != null) {
+							    cellD.setCellValue(record.getR17_amt_name_of_sub2().doubleValue());
+							} else {
+							    cellD.setCellValue(0);
+							}
+
+							// Column 5 - name of sub3
+							cellE = row.getCell(6);
+							if (cellE == null) cellE = row.createCell(6);
+							if (record.getR17_amt_name_of_sub3() != null) {
+							    cellE.setCellValue(record.getR17_amt_name_of_sub3().doubleValue());
+							} else {
+							    cellE.setCellValue(0);
+							}
+
+							// Column 6 - name of sub4
+							cellF = row.getCell(8);
+							if (cellF == null) cellF = row.createCell(8);
+							if (record.getR17_amt_name_of_sub4() != null) {
+							    cellF.setCellValue(record.getR17_amt_name_of_sub4().doubleValue());
+							} else {
+							    cellF.setCellValue(0);
+							}
+
+							// Column 7 - name of sub5
+							cellG = row.getCell(10);
+							if (cellG == null) cellG = row.createCell(10);
+							if (record.getR17_amt_name_of_sub5() != null) {
+							    cellG.setCellValue(record.getR17_amt_name_of_sub5().doubleValue());
+							} else {
+							    cellG.setCellValue(0);
+							}
+							
+							//COLUMN TOTAL
+							cellG = row.getCell(12);
+							if (cellG == null) {
+							    cellG = row.createCell(12);
+							}
+
+							if (record.getR17_tot_amt() != null) {
+							    cellG.setCellValue(record.getR17_tot_amt().doubleValue());
+							} else {
+							    cellG.setCellValue("");
+							}
+							
+							
+							
+							// row18
+							row = sheet.getRow(17);
+
+							
+
+							// Column 2 - name of sub1
+							cellC = row.createCell(2);
+							if (record.getR18_amt_name_of_sub1() != null) {
+							    cellC.setCellValue(record.getR18_amt_name_of_sub1().doubleValue());
+							    cellC.setCellStyle(numberStyle);
+							} else {
+							    cellC.setCellValue("");
+							    cellC.setCellStyle(textStyle);
+							}
+
+							// Column 3 - name of sub2
+							cellD = row.createCell(4);
+							if (record.getR18_amt_name_of_sub2() != null) {
+							    cellD.setCellValue(record.getR18_amt_name_of_sub2().doubleValue());
+							    cellD.setCellStyle(numberStyle);
+							} else {
+							    cellD.setCellValue("");
+							    cellD.setCellStyle(textStyle);
+							}
+
+							// Column 4 - name of sub3
+							cellE = row.createCell(6);
+							if (record.getR18_amt_name_of_sub3() != null) {
+							    cellE.setCellValue(record.getR18_amt_name_of_sub3().doubleValue());
+							    cellE.setCellStyle(numberStyle);
+							} else {
+							    cellE.setCellValue("");
+							    cellE.setCellStyle(textStyle);
+							}
+
+							// Column 5 - name of sub4
+							cellF = row.createCell(8);
+							if (record.getR18_amt_name_of_sub4() != null) {
+							    cellF.setCellValue(record.getR18_amt_name_of_sub4().doubleValue());
+							    cellF.setCellStyle(numberStyle);
+							} else {
+							    cellF.setCellValue("");
+							    cellF.setCellStyle(textStyle);
+							}
+
+							// Column 6 - name of sub5
+							cellG = row.createCell(10);
+							if (record.getR18_amt_name_of_sub5() != null) {
+							    cellG.setCellValue(record.getR18_amt_name_of_sub5().doubleValue());
+							    cellG.setCellStyle(numberStyle);
+							} else {
+							    cellG.setCellValue("");
+							    cellG.setCellStyle(textStyle);
+							}
+
+							// Column 7 total
+							cellG = row.createCell(12);
+							if (record.getR18_tot_amt() != null) {
+							    cellG.setCellValue(record.getR18_tot_amt().doubleValue());
+							    cellG.setCellStyle(numberStyle);
+							} else {
+							    cellG.setCellValue("");
+							    cellG.setCellStyle(textStyle);
+							}
+							
+							
+
+
+							// row19
+							row = sheet.getRow(18);
+
+							
+
+							// Column 2 - name of sub1
+							cellC = row.createCell(2);
+							if (record.getR19_amt_name_of_sub1() != null) {
+							    cellC.setCellValue(record.getR19_amt_name_of_sub1().doubleValue());
+							    cellC.setCellStyle(numberStyle);
+							} else {
+							    cellC.setCellValue("");
+							    cellC.setCellStyle(textStyle);
+							}
+
+							// Column 3 - name of sub2
+							cellD = row.createCell(4);
+							if (record.getR19_amt_name_of_sub2() != null) {
+							    cellD.setCellValue(record.getR19_amt_name_of_sub2().doubleValue());
+							    cellD.setCellStyle(numberStyle);
+							} else {
+							    cellD.setCellValue("");
+							    cellD.setCellStyle(textStyle);
+							}
+
+							// Column 4 - name of sub3
+							cellE = row.createCell(6);
+							if (record.getR19_amt_name_of_sub3() != null) {
+							    cellE.setCellValue(record.getR19_amt_name_of_sub3().doubleValue());
+							    cellE.setCellStyle(numberStyle);
+							} else {
+							    cellE.setCellValue("");
+							    cellE.setCellStyle(textStyle);
+							}
+
+							// Column 5 - name of sub4
+							cellF = row.createCell(8);
+							if (record.getR19_amt_name_of_sub4() != null) {
+							    cellF.setCellValue(record.getR19_amt_name_of_sub4().doubleValue());
+							    cellF.setCellStyle(numberStyle);
+							} else {
+							    cellF.setCellValue("");
+							    cellF.setCellStyle(textStyle);
+							}
+
+							// Column 6 - name of sub5
+							cellG = row.createCell(10);
+							if (record.getR19_amt_name_of_sub5() != null) {
+							    cellG.setCellValue(record.getR19_amt_name_of_sub5().doubleValue());
+							    cellG.setCellStyle(numberStyle);
+							} else {
+							    cellG.setCellValue("");
+							    cellG.setCellStyle(textStyle);
+							}
+							
+							// Column 7 total
+							cellG = row.createCell(12);
+							if (record.getR19_tot_amt() != null) {
+							    cellG.setCellValue(record.getR19_tot_amt().doubleValue());
+							    cellG.setCellStyle(numberStyle);
+							} else {
+							    cellG.setCellValue("");
+							    cellG.setCellStyle(textStyle);
+							}
+							
+							
+/*
+							
+							// row22
+							row = sheet.getRow(21);
+							
+							
+							// Column 3 - name of sub1
+							cellC = row.getCell(2);
+							if (cellC == null) cellC = row.createCell(2);
+							if (record.getR22_amt_name_of_sub1() != null) {
+							    cellC.setCellValue(record.getR22_amt_name_of_sub1().doubleValue());
+							} else {
+							    cellC.setCellValue(0);
+							}
+
+							// Column 4 - name of sub2
+							cellD = row.getCell(4);
+							if (cellD == null) cellD = row.createCell(4);
+							if (record.getR22_amt_name_of_sub2() != null) {
+							    cellD.setCellValue(record.getR22_amt_name_of_sub2().doubleValue());
+							} else {
+							    cellD.setCellValue(0);
+							}
+
+							// Column 5 - name of sub3
+							cellE = row.getCell(6);
+							if (cellE == null) cellE = row.createCell(6);
+							if (record.getR22_amt_name_of_sub3() != null) {
+							    cellE.setCellValue(record.getR22_amt_name_of_sub3().doubleValue());
+							} else {
+							    cellE.setCellValue(0);
+							}
+
+							// Column 6 - name of sub4
+							cellF = row.getCell(8);
+							if (cellF == null) cellF = row.createCell(8);
+							if (record.getR22_amt_name_of_sub4() != null) {
+							    cellF.setCellValue(record.getR22_amt_name_of_sub4().doubleValue());
+							} else {
+							    cellF.setCellValue(0);
+							}
+
+							// Column 7 - name of sub5
+							cellG = row.getCell(10);
+							if (cellG == null) cellG = row.createCell(10);
+							if (record.getR22_amt_name_of_sub5() != null) {
+							    cellG.setCellValue(record.getR22_amt_name_of_sub5().doubleValue());
+							} else {
+							    cellG.setCellValue(0);
+							}
+							
+							
+							//COLUMN TOTAL
+							cellG = row.getCell(12);
+							if (cellG == null) {
+							    cellG = row.createCell(12);
+							}
+
+							if (record.getR22_tot_amt() != null) {
+							    cellG.setCellValue(record.getR22_tot_amt().doubleValue());
+							} else {
+							    cellG.setCellValue("");
+							}
+							
+*/
+							
+
+
+							// row23
+							row = sheet.getRow(22);
+
+							
+
+							// Column 2 - name of sub1
+							cellC = row.createCell(2);
+							if (record.getR23_amt_name_of_sub1() != null) {
+							    cellC.setCellValue(record.getR23_amt_name_of_sub1().doubleValue());
+							    cellC.setCellStyle(numberStyle);
+							} else {
+							    cellC.setCellValue("");
+							    cellC.setCellStyle(textStyle);
+							}
+
+							// Column 3 - name of sub2
+							cellD = row.createCell(4);
+							if (record.getR23_amt_name_of_sub2() != null) {
+							    cellD.setCellValue(record.getR23_amt_name_of_sub2().doubleValue());
+							    cellD.setCellStyle(numberStyle);
+							} else {
+							    cellD.setCellValue("");
+							    cellD.setCellStyle(textStyle);
+							}
+
+							// Column 4 - name of sub3
+							cellE = row.createCell(6);
+							if (record.getR23_amt_name_of_sub3() != null) {
+							    cellE.setCellValue(record.getR23_amt_name_of_sub3().doubleValue());
+							    cellE.setCellStyle(numberStyle);
+							} else {
+							    cellE.setCellValue("");
+							    cellE.setCellStyle(textStyle);
+							}
+
+							// Column 5 - name of sub4
+							cellF = row.createCell(8);
+							if (record.getR23_amt_name_of_sub4() != null) {
+							    cellF.setCellValue(record.getR23_amt_name_of_sub4().doubleValue());
+							    cellF.setCellStyle(numberStyle);
+							} else {
+							    cellF.setCellValue("");
+							    cellF.setCellStyle(textStyle);
+							}
+
+							// Column 6 - name of sub5
+							cellG = row.createCell(10);
+							if (record.getR23_amt_name_of_sub5() != null) {
+							    cellG.setCellValue(record.getR23_amt_name_of_sub5().doubleValue());
+							    cellG.setCellStyle(numberStyle);
+							} else {
+							    cellG.setCellValue("");
+							    cellG.setCellStyle(textStyle);
+							}
+
+							
+							// Column 7 total
+							cellG = row.createCell(12);
+							if (record.getR23_tot_amt() != null) {
+							    cellG.setCellValue(record.getR23_tot_amt().doubleValue());
+							    cellG.setCellStyle(numberStyle);
+							} else {
+							    cellG.setCellValue("");
+							    cellG.setCellStyle(textStyle);
+							}
+							
+							
+						
+
+							// row24
+							row = sheet.getRow(23);
+
+							
+
+							// Column 2 - name of sub1
+							cellC = row.createCell(2);
+							if (record.getR24_amt_name_of_sub1() != null) {
+							    cellC.setCellValue(record.getR24_amt_name_of_sub1().doubleValue());
+							    cellC.setCellStyle(numberStyle);
+							} else {
+							    cellC.setCellValue("");
+							    cellC.setCellStyle(textStyle);
+							}
+
+							// Column 3 - name of sub2
+							cellD = row.createCell(4);
+							if (record.getR24_amt_name_of_sub2() != null) {
+							    cellD.setCellValue(record.getR24_amt_name_of_sub2().doubleValue());
+							    cellD.setCellStyle(numberStyle);
+							} else {
+							    cellD.setCellValue("");
+							    cellD.setCellStyle(textStyle);
+							}
+
+							// Column 4 - name of sub3
+							cellE = row.createCell(6);
+							if (record.getR24_amt_name_of_sub3() != null) {
+							    cellE.setCellValue(record.getR24_amt_name_of_sub3().doubleValue());
+							    cellE.setCellStyle(numberStyle);
+							} else {
+							    cellE.setCellValue("");
+							    cellE.setCellStyle(textStyle);
+							}
+
+							// Column 5 - name of sub4
+							cellF = row.createCell(8);
+							if (record.getR24_amt_name_of_sub4() != null) {
+							    cellF.setCellValue(record.getR24_amt_name_of_sub4().doubleValue());
+							    cellF.setCellStyle(numberStyle);
+							} else {
+							    cellF.setCellValue("");
+							    cellF.setCellStyle(textStyle);
+							}
+
+							// Column 6 - name of sub5
+							cellG = row.createCell(10);
+							if (record.getR24_amt_name_of_sub5() != null) {
+							    cellG.setCellValue(record.getR24_amt_name_of_sub5().doubleValue());
+							    cellG.setCellStyle(numberStyle);
+							} else {
+							    cellG.setCellValue("");
+							    cellG.setCellStyle(textStyle);
+							}
+							
+							// Column 7 total
+							cellG = row.createCell(12);
+							if (record.getR24_tot_amt() != null) {
+							    cellG.setCellValue(record.getR24_tot_amt().doubleValue());
+							    cellG.setCellStyle(numberStyle);
+							} else {
+							    cellG.setCellValue("");
+							    cellG.setCellStyle(textStyle);
+							}
+							
+							
+
+							
+							// row27
+							row = sheet.getRow(21);
+						
+							// Column 3 - name of sub1
+							cellC = row.getCell(2);
+							if (cellC == null) cellC = row.createCell(2);
+							if (record.getR27_amt_name_of_sub1() != null) {
+							    cellC.setCellValue(record.getR27_amt_name_of_sub1().doubleValue());
+							} else {
+							    cellC.setCellValue(0);
+							}
+
+							// Column 4 - name of sub2
+							cellD = row.getCell(4);
+							if (cellD == null) cellD = row.createCell(4);
+							if (record.getR27_amt_name_of_sub2() != null) {
+							    cellD.setCellValue(record.getR27_amt_name_of_sub2().doubleValue());
+							} else {
+							    cellD.setCellValue(0);
+							}
+
+							// Column 5 - name of sub3
+							cellE = row.getCell(6);
+							if (cellE == null) cellE = row.createCell(6);
+							if (record.getR27_amt_name_of_sub3() != null) {
+							    cellE.setCellValue(record.getR27_amt_name_of_sub3().doubleValue());
+							} else {
+							    cellE.setCellValue(0);
+							}
+
+							// Column 6 - name of sub4
+							cellF = row.getCell(8);
+							if (cellF == null) cellF = row.createCell(8);
+							if (record.getR27_amt_name_of_sub4() != null) {
+							    cellF.setCellValue(record.getR27_amt_name_of_sub4().doubleValue());
+							} else {
+							    cellF.setCellValue(0);
+							}
+
+							// Column 7 - name of sub5
+							cellG = row.getCell(10);
+							if (cellG == null) cellG = row.createCell(10);
+							if (record.getR27_amt_name_of_sub5() != null) {
+							    cellG.setCellValue(record.getR27_amt_name_of_sub5().doubleValue());
+							} else {
+							    cellG.setCellValue(0);
+							}
+							//COLUMN TOTAL
+							cellG = row.getCell(12);
+							if (cellG == null) {
+							    cellG = row.createCell(12);
+							}
+
+							if (record.getR27_tot_amt() != null) {
+							    cellG.setCellValue(record.getR27_tot_amt().doubleValue());
+							} else {
+							    cellG.setCellValue("");
+							}
+							
+							
+							// row28
+							row = sheet.getRow(22);
+							
+
+							// Column 2 - name of sub1
+							cellC = row.createCell(2);
+							if (record.getR28_amt_name_of_sub1() != null) {
+							    cellC.setCellValue(record.getR28_amt_name_of_sub1().doubleValue());
+							    cellC.setCellStyle(numberStyle);
+							} else {
+							    cellC.setCellValue("");
+							    cellC.setCellStyle(textStyle);
+							}
+
+							// Column 3 - name of sub2
+							cellD = row.createCell(4);
+							if (record.getR28_amt_name_of_sub2() != null) {
+							    cellD.setCellValue(record.getR28_amt_name_of_sub2().doubleValue());
+							    cellD.setCellStyle(numberStyle);
+							} else {
+							    cellD.setCellValue("");
+							    cellD.setCellStyle(textStyle);
+							}
+
+							// Column 4 - name of sub3
+							cellE = row.createCell(6);
+							if (record.getR28_amt_name_of_sub3() != null) {
+							    cellE.setCellValue(record.getR28_amt_name_of_sub3().doubleValue());
+							    cellE.setCellStyle(numberStyle);
+							} else {
+							    cellE.setCellValue("");
+							    cellE.setCellStyle(textStyle);
+							}
+
+							// Column 5 - name of sub4
+							cellF = row.createCell(8);
+							if (record.getR28_amt_name_of_sub4() != null) {
+							    cellF.setCellValue(record.getR28_amt_name_of_sub4().doubleValue());
+							    cellF.setCellStyle(numberStyle);
+							} else {
+							    cellF.setCellValue("");
+							    cellF.setCellStyle(textStyle);
+							}
+
+							// Column 6 - name of sub5
+							cellG = row.createCell(10);
+							if (record.getR28_amt_name_of_sub5() != null) {
+							    cellG.setCellValue(record.getR28_amt_name_of_sub5().doubleValue());
+							    cellG.setCellStyle(numberStyle);
+							} else {
+							    cellG.setCellValue("");
+							    cellG.setCellStyle(textStyle);
+							}
+
+							// Column 7 total
+							cellG = row.createCell(12);
+							if (record.getR28_tot_amt() != null) {
+							    cellG.setCellValue(record.getR28_tot_amt().doubleValue());
+							    cellG.setCellStyle(numberStyle);
+							} else {
+							    cellG.setCellValue("");
+							    cellG.setCellStyle(textStyle);
+							}
+							
+							
+							
+							// row24
+							row = sheet.getRow(23);
+							// Column 1 - item
+							
+
+							// Column 2 - name of sub1
+							cellC = row.createCell(2);
+							if (record.getR29_amt_name_of_sub1() != null) {
+							    cellC.setCellValue(record.getR29_amt_name_of_sub1().doubleValue());
+							    cellC.setCellStyle(numberStyle);
+							} else {
+							    cellC.setCellValue("");
+							    cellC.setCellStyle(textStyle);
+							}
+
+							// Column 3 - name of sub2
+							cellD = row.createCell(4);
+							if (record.getR29_amt_name_of_sub2() != null) {
+							    cellD.setCellValue(record.getR29_amt_name_of_sub2().doubleValue());
+							    cellD.setCellStyle(numberStyle);
+							} else {
+							    cellD.setCellValue("");
+							    cellD.setCellStyle(textStyle);
+							}
+
+							// Column 4 - name of sub3
+							cellE = row.createCell(6);
+							if (record.getR29_amt_name_of_sub3() != null) {
+							    cellE.setCellValue(record.getR29_amt_name_of_sub3().doubleValue());
+							    cellE.setCellStyle(numberStyle);
+							} else {
+							    cellE.setCellValue("");
+							    cellE.setCellStyle(textStyle);
+							}
+
+							// Column 5 - name of sub4
+							cellF = row.createCell(8);
+							if (record.getR29_amt_name_of_sub4() != null) {
+							    cellF.setCellValue(record.getR29_amt_name_of_sub4().doubleValue());
+							    cellF.setCellStyle(numberStyle);
+							} else {
+							    cellF.setCellValue("");
+							    cellF.setCellStyle(textStyle);
+							}
+
+							// Column 6 - name of sub5
+							cellG = row.createCell(10);
+							if (record.getR29_amt_name_of_sub5() != null) {
+							    cellG.setCellValue(record.getR29_amt_name_of_sub5().doubleValue());
+							    cellG.setCellStyle(numberStyle);
+							} else {
+							    cellG.setCellValue("");
+							    cellG.setCellStyle(textStyle);
+							}
+
+							// Column 7 total
+							cellG = row.createCell(12);
+							if (record.getR29_tot_amt() != null) {
+							    cellG.setCellValue(record.getR29_tot_amt().doubleValue());
+							    cellG.setCellStyle(numberStyle);
+							} else {
+							    cellG.setCellValue("");
+							    cellG.setCellStyle(textStyle);
+							}
+							
+							
+
+							// row27
+							row = sheet.getRow(26);
+							
+
+							// Column 3 - name of sub1
+							cellC = row.getCell(2);
+							if (cellC == null) cellC = row.createCell(2);
+							if (record.getR32_amt_name_of_sub1() != null) {
+							    cellC.setCellValue(record.getR32_amt_name_of_sub1().doubleValue());
+							} else {
+							    cellC.setCellValue(0);
+							}
+
+							// Column 4 - name of sub2
+							cellD = row.getCell(4);
+							if (cellD == null) cellD = row.createCell(4);
+							if (record.getR32_amt_name_of_sub2() != null) {
+							    cellD.setCellValue(record.getR32_amt_name_of_sub2().doubleValue());
+							} else {
+							    cellD.setCellValue(0);
+							}
+
+							// Column 5 - name of sub3
+							cellE = row.getCell(6);
+							if (cellE == null) cellE = row.createCell(6);
+							if (record.getR32_amt_name_of_sub3() != null) {
+							    cellE.setCellValue(record.getR32_amt_name_of_sub3().doubleValue());
+							} else {
+							    cellE.setCellValue(0);
+							}
+
+							// Column 6 - name of sub4
+							cellF = row.getCell(8);
+							if (cellF == null) cellF = row.createCell(8);
+							if (record.getR32_amt_name_of_sub4() != null) {
+							    cellF.setCellValue(record.getR32_amt_name_of_sub4().doubleValue());
+							} else {
+							    cellF.setCellValue(0);
+							}
+
+							// Column 7 - name of sub5
+							cellG = row.getCell(10);
+							if (cellG == null) cellG = row.createCell(10);
+							if (record.getR32_amt_name_of_sub5() != null) {
+							    cellG.setCellValue(record.getR32_amt_name_of_sub5().doubleValue());
+							} else {
+							    cellG.setCellValue(0);
+							}
+							//COLUMN TOTAL
+							cellG = row.getCell(12);
+							if (cellG == null) {
+							    cellG = row.createCell(12);
+							}
+
+							if (record.getR32_tot_amt() != null) {
+							    cellG.setCellValue(record.getR32_tot_amt().doubleValue());
+							} else {
+							    cellG.setCellValue("");
+							}
+							
+							
+							
+							// row33
+							row = sheet.getRow(27);
+							
+
+							// Column 2 - name of sub1
+							cellC = row.createCell(2);
+							if (record.getR33_amt_name_of_sub1() != null) {
+							    cellC.setCellValue(record.getR33_amt_name_of_sub1().doubleValue());
+							    cellC.setCellStyle(numberStyle);
+							} else {
+							    cellC.setCellValue("");
+							    cellC.setCellStyle(textStyle);
+							}
+
+							// Column 3 - name of sub2
+							cellD = row.createCell(4);
+							if (record.getR33_amt_name_of_sub2() != null) {
+							    cellD.setCellValue(record.getR33_amt_name_of_sub2().doubleValue());
+							    cellD.setCellStyle(numberStyle);
+							} else {
+							    cellD.setCellValue("");
+							    cellD.setCellStyle(textStyle);
+							}
+
+							// Column 4 - name of sub3
+							cellE = row.createCell(6);
+							if (record.getR33_amt_name_of_sub3() != null) {
+							    cellE.setCellValue(record.getR33_amt_name_of_sub3().doubleValue());
+							    cellE.setCellStyle(numberStyle);
+							} else {
+							    cellE.setCellValue("");
+							    cellE.setCellStyle(textStyle);
+							}
+
+							// Column 5 - name of sub4
+							cellF = row.createCell(8);
+							if (record.getR33_amt_name_of_sub4() != null) {
+							    cellF.setCellValue(record.getR33_amt_name_of_sub4().doubleValue());
+							    cellF.setCellStyle(numberStyle);
+							} else {
+							    cellF.setCellValue("");
+							    cellF.setCellStyle(textStyle);
+							}
+
+							// Column 6 - name of sub5
+							cellG = row.createCell(10);
+							if (record.getR33_amt_name_of_sub5() != null) {
+							    cellG.setCellValue(record.getR33_amt_name_of_sub5().doubleValue());
+							    cellG.setCellStyle(numberStyle);
+							} else {
+							    cellG.setCellValue("");
+							    cellG.setCellStyle(textStyle);
+							}
+							
+							
+							// Column 7 total
+							cellG = row.createCell(12);
+							if (record.getR33_tot_amt() != null) {
+							    cellG.setCellValue(record.getR33_tot_amt().doubleValue());
+							    cellG.setCellStyle(numberStyle);
+							} else {
+							    cellG.setCellValue("");
+							    cellG.setCellStyle(textStyle);
+							}
+							
+							
+
+							
+							// row34
+							row = sheet.getRow(28);
+							
+
+							// Column 2 - name of sub1
+							cellC = row.createCell(2);
+							if (record.getR34_amt_name_of_sub1() != null) {
+							    cellC.setCellValue(record.getR34_amt_name_of_sub1().doubleValue());
+							    cellC.setCellStyle(numberStyle);
+							} else {
+							    cellC.setCellValue("");
+							    cellC.setCellStyle(textStyle);
+							}
+
+							// Column 3 - name of sub2
+							cellD = row.createCell(4);
+							if (record.getR34_amt_name_of_sub2() != null) {
+							    cellD.setCellValue(record.getR34_amt_name_of_sub2().doubleValue());
+							    cellD.setCellStyle(numberStyle);
+							} else {
+							    cellD.setCellValue("");
+							    cellD.setCellStyle(textStyle);
+							}
+
+							// Column 4 - name of sub3
+							cellE = row.createCell(6);
+							if (record.getR34_amt_name_of_sub3() != null) {
+							    cellE.setCellValue(record.getR34_amt_name_of_sub3().doubleValue());
+							    cellE.setCellStyle(numberStyle);
+							} else {
+							    cellE.setCellValue("");
+							    cellE.setCellStyle(textStyle);
+							}
+
+							// Column 5 - name of sub4
+							cellF = row.createCell(8);
+							if (record.getR34_amt_name_of_sub4() != null) {
+							    cellF.setCellValue(record.getR34_amt_name_of_sub4().doubleValue());
+							    cellF.setCellStyle(numberStyle);
+							} else {
+							    cellF.setCellValue("");
+							    cellF.setCellStyle(textStyle);
+							}
+
+							// Column 6 - name of sub5
+							cellG = row.createCell(10);
+							if (record.getR34_amt_name_of_sub5() != null) {
+							    cellG.setCellValue(record.getR34_amt_name_of_sub5().doubleValue());
+							    cellG.setCellStyle(numberStyle);
+							} else {
+							    cellG.setCellValue("");
+							    cellG.setCellStyle(textStyle);
+							}
+
+							// Column 7 total
+							cellG = row.createCell(12);
+							if (record.getR34_tot_amt() != null) {
+							    cellG.setCellValue(record.getR34_tot_amt().doubleValue());
+							    cellG.setCellStyle(numberStyle);
+							} else {
+							    cellG.setCellValue("");
+							    cellG.setCellStyle(textStyle);
+							}
+							
+							
+
+							// ====================== R36 ======================
+							// row36
+							row = sheet.getRow(30);
+						
+
+							// Column 3 - name of sub1
+							cellC = row.getCell(2);
+							if (cellC == null) cellC = row.createCell(2);
+							if (record.getR36_amt_name_of_sub1() != null) {
+							    cellC.setCellValue(record.getR36_amt_name_of_sub1().doubleValue());
+							} else {
+							    cellC.setCellValue(0);
+							}
+
+							// Column 4 - name of sub2
+							cellD = row.getCell(4);
+							if (cellD == null) cellD = row.createCell(4);
+							if (record.getR36_amt_name_of_sub2() != null) {
+							    cellD.setCellValue(record.getR36_amt_name_of_sub2().doubleValue());
+							} else {
+							    cellD.setCellValue(0);
+							}
+
+							// Column 5 - name of sub3
+							cellE = row.getCell(6);
+							if (cellE == null) cellE = row.createCell(6);
+							if (record.getR36_amt_name_of_sub3() != null) {
+							    cellE.setCellValue(record.getR36_amt_name_of_sub3().doubleValue());
+							} else {
+							    cellE.setCellValue(0);
+							}
+
+							// Column 6 - name of sub4
+							cellF = row.getCell(8);
+							if (cellF == null) cellF = row.createCell(8);
+							if (record.getR36_amt_name_of_sub4() != null) {
+							    cellF.setCellValue(record.getR36_amt_name_of_sub4().doubleValue());
+							} else {
+							    cellF.setCellValue(0);
+							}
+
+							// Column 7 - name of sub5
+							cellG = row.getCell(10);
+							if (cellG == null) cellG = row.createCell(10);
+							if (record.getR36_amt_name_of_sub5() != null) {
+							    cellG.setCellValue(record.getR36_amt_name_of_sub5().doubleValue());
+							} else {
+							    cellG.setCellValue(0);
+							}
+
+						
+
+							// ====================== R37 ======================
+							row = sheet.getRow(31);
+							
+
+							// Column 2 - name of sub1
+							cellC = row.createCell(2);
+							if (record.getR37_amt_name_of_sub1() != null) {
+							    cellC.setCellValue(record.getR37_amt_name_of_sub1().doubleValue());
+							    cellC.setCellStyle(numberStyle);
+							} else {
+							    cellC.setCellValue("");
+							    cellC.setCellStyle(textStyle);
+							}
+
+							// Column 3 - name of sub2
+							cellD = row.createCell(4);
+							if (record.getR37_amt_name_of_sub2() != null) {
+							    cellD.setCellValue(record.getR37_amt_name_of_sub2().doubleValue());
+							    cellD.setCellStyle(numberStyle);
+							} else {
+							    cellD.setCellValue("");
+							    cellD.setCellStyle(textStyle);
+							}
+
+							// Column 4 - name of sub3
+							cellE = row.createCell(6);
+							if (record.getR37_amt_name_of_sub3() != null) {
+							    cellE.setCellValue(record.getR37_amt_name_of_sub3().doubleValue());
+							    cellE.setCellStyle(numberStyle);
+							} else {
+							    cellE.setCellValue("");
+							    cellE.setCellStyle(textStyle);
+							}
+
+							// Column 5 - name of sub4
+							cellF = row.createCell(8);
+							if (record.getR37_amt_name_of_sub4() != null) {
+							    cellF.setCellValue(record.getR37_amt_name_of_sub4().doubleValue());
+							    cellF.setCellStyle(numberStyle);
+							} else {
+							    cellF.setCellValue("");
+							    cellF.setCellStyle(textStyle);
+							}
+
+							// Column 6 - name of sub5
+							cellG = row.createCell(10);
+							if (record.getR37_amt_name_of_sub5() != null) {
+							    cellG.setCellValue(record.getR37_amt_name_of_sub5().doubleValue());
+							    cellG.setCellStyle(numberStyle);
+							} else {
+							    cellG.setCellValue("");
+							    cellG.setCellStyle(textStyle);
+							}
+
+							// Column 7 total
+							cellG = row.createCell(12);
+							if (record.getR37_tot_amt() != null) {
+							    cellG.setCellValue(record.getR37_tot_amt().doubleValue());
+							    cellG.setCellStyle(numberStyle);
+							} else {
+							    cellG.setCellValue("");
+							    cellG.setCellStyle(textStyle);
+							}
+							
+							
+							
+							// ====================== R38 ======================
+							row = sheet.getRow(32);
+							
+
+							// Column 2 - name of sub1
+							cellC = row.createCell(2);
+							if (record.getR38_amt_name_of_sub1() != null) {
+							    cellC.setCellValue(record.getR38_amt_name_of_sub1().doubleValue());
+							    cellC.setCellStyle(numberStyle);
+							} else {
+							    cellC.setCellValue("");
+							    cellC.setCellStyle(textStyle);
+							}
+
+							// Column 3 - name of sub2
+							cellD = row.createCell(4);
+							if (record.getR38_amt_name_of_sub2() != null) {
+							    cellD.setCellValue(record.getR38_amt_name_of_sub2().doubleValue());
+							    cellD.setCellStyle(numberStyle);
+							} else {
+							    cellD.setCellValue("");
+							    cellD.setCellStyle(textStyle);
+							}
+
+							// Column 4 - name of sub3
+							cellE = row.createCell(6);
+							if (record.getR38_amt_name_of_sub3() != null) {
+							    cellE.setCellValue(record.getR38_amt_name_of_sub3().doubleValue());
+							    cellE.setCellStyle(numberStyle);
+							} else {
+							    cellE.setCellValue("");
+							    cellE.setCellStyle(textStyle);
+							}
+
+							// Column 5 - name of sub4
+							cellF = row.createCell(8);
+							if (record.getR38_amt_name_of_sub4() != null) {
+							    cellF.setCellValue(record.getR38_amt_name_of_sub4().doubleValue());
+							    cellF.setCellStyle(numberStyle);
+							} else {
+							    cellF.setCellValue("");
+							    cellF.setCellStyle(textStyle);
+							}
+
+							// Column 6 - name of sub5
+							cellG = row.createCell(10);
+							if (record.getR38_amt_name_of_sub5() != null) {
+							    cellG.setCellValue(record.getR38_amt_name_of_sub5().doubleValue());
+							    cellG.setCellStyle(numberStyle);
+							} else {
+							    cellG.setCellValue("");
+							    cellG.setCellStyle(textStyle);
+							}
+							// Column 7 total
+							cellG = row.createCell(12);
+							if (record.getR38_tot_amt() != null) {
+							    cellG.setCellValue(record.getR38_tot_amt().doubleValue());
+							    cellG.setCellStyle(numberStyle);
+							} else {
+							    cellG.setCellValue("");
+							    cellG.setCellStyle(textStyle);
+							}
+							
+							
+							
+							// ====================== R39 ======================
+							// row39
+							row = sheet.getRow(33);
+							
+
+							// Column 3 - name of sub1
+							cellC = row.getCell(2);
+							if (cellC == null) cellC = row.createCell(2);
+							if (record.getR39_amt_name_of_sub1() != null) {
+							    cellC.setCellValue(record.getR39_amt_name_of_sub1().doubleValue());
+							} else {
+							    cellC.setCellValue(0);
+							}
+
+							// Column 4 - name of sub2
+							cellD = row.getCell(4);
+							if (cellD == null) cellD = row.createCell(4);
+							if (record.getR39_amt_name_of_sub2() != null) {
+							    cellD.setCellValue(record.getR39_amt_name_of_sub2().doubleValue());
+							} else {
+							    cellD.setCellValue(0);
+							}
+
+							// Column 5 - name of sub3
+							cellE = row.getCell(6);
+							if (cellE == null) cellE = row.createCell(6);
+							if (record.getR39_amt_name_of_sub3() != null) {
+							    cellE.setCellValue(record.getR39_amt_name_of_sub3().doubleValue());
+							} else {
+							    cellE.setCellValue(0);
+							}
+
+							// Column 6 - name of sub4
+							cellF = row.getCell(8);
+							if (cellF == null) cellF = row.createCell(8);
+							if (record.getR39_amt_name_of_sub4() != null) {
+							    cellF.setCellValue(record.getR39_amt_name_of_sub4().doubleValue());
+							} else {
+							    cellF.setCellValue(0);
+							}
+
+							// Column 7 - name of sub5
+							cellG = row.getCell(10);
+							if (cellG == null) cellG = row.createCell(10);
+							if (record.getR39_amt_name_of_sub5() != null) {
+							    cellG.setCellValue(record.getR39_amt_name_of_sub5().doubleValue());
+							} else {
+							    cellG.setCellValue(0);
+							}
+
+							
+
+							// ====================== R40 ======================
+							row = sheet.getRow(34);
+							
+
+							// Column 2 - name of sub1
+							cellC = row.createCell(2);
+							if (record.getR40_amt_name_of_sub1() != null) {
+							    cellC.setCellValue(record.getR40_amt_name_of_sub1().doubleValue());
+							    cellC.setCellStyle(numberStyle);
+							} else {
+							    cellC.setCellValue("");
+							    cellC.setCellStyle(textStyle);
+							}
+
+							// Column 3 - name of sub2
+							cellD = row.createCell(4);
+							if (record.getR40_amt_name_of_sub2() != null) {
+							    cellD.setCellValue(record.getR40_amt_name_of_sub2().doubleValue());
+							    cellD.setCellStyle(numberStyle);
+							} else {
+							    cellD.setCellValue("");
+							    cellD.setCellStyle(textStyle);
+							}
+
+							// Column 4 - name of sub3
+							cellE = row.createCell(6);
+							if (record.getR40_amt_name_of_sub3() != null) {
+							    cellE.setCellValue(record.getR40_amt_name_of_sub3().doubleValue());
+							    cellE.setCellStyle(numberStyle);
+							} else {
+							    cellE.setCellValue("");
+							    cellE.setCellStyle(textStyle);
+							}
+
+							// Column 5 - name of sub4
+							cellF = row.createCell(8);
+							if (record.getR40_amt_name_of_sub4() != null) {
+							    cellF.setCellValue(record.getR40_amt_name_of_sub4().doubleValue());
+							    cellF.setCellStyle(numberStyle);
+							} else {
+							    cellF.setCellValue("");
+							    cellF.setCellStyle(textStyle);
+							}
+
+							// Column 6 - name of sub5
+							cellG = row.createCell(10);
+							if (record.getR40_amt_name_of_sub5() != null) {
+							    cellG.setCellValue(record.getR40_amt_name_of_sub5().doubleValue());
+							    cellG.setCellStyle(numberStyle);
+							} else {
+							    cellG.setCellValue("");
+							    cellG.setCellStyle(textStyle);
+							}
+							// Column 7 total
+							cellG = row.createCell(12);
+							if (record.getR40_tot_amt() != null) {
+							    cellG.setCellValue(record.getR40_tot_amt().doubleValue());
+							    cellG.setCellStyle(numberStyle);
+							} else {
+							    cellG.setCellValue("");
+							    cellG.setCellStyle(textStyle);
+							}
+							
+							
+							
+							
+							// =========================
+							// Row for R41
+							// =========================
+							row = sheet.getRow(35);
+							
+
+							// Column 2 - name of sub1
+							cellC = row.createCell(2);
+							if (record.getR41_amt_name_of_sub1() != null) {
+							    cellC.setCellValue(record.getR41_amt_name_of_sub1().doubleValue());
+							    cellC.setCellStyle(numberStyle);
+							} else {
+							    cellC.setCellValue("");
+							    cellC.setCellStyle(textStyle);
+							}
+
+							// Column 3 - name of sub2
+							cellD = row.createCell(4);
+							if (record.getR41_amt_name_of_sub2() != null) {
+							    cellD.setCellValue(record.getR41_amt_name_of_sub2().doubleValue());
+							    cellD.setCellStyle(numberStyle);
+							} else {
+							    cellD.setCellValue("");
+							    cellD.setCellStyle(textStyle);
+							}
+
+							// Column 4 - name of sub3
+							cellE = row.createCell(6);
+							if (record.getR41_amt_name_of_sub3() != null) {
+							    cellE.setCellValue(record.getR41_amt_name_of_sub3().doubleValue());
+							    cellE.setCellStyle(numberStyle);
+							} else {
+							    cellE.setCellValue("");
+							    cellE.setCellStyle(textStyle);
+							}
+
+							// Column 5 - name of sub4
+							cellF = row.createCell(8);
+							if (record.getR41_amt_name_of_sub4() != null) {
+							    cellF.setCellValue(record.getR41_amt_name_of_sub4().doubleValue());
+							    cellF.setCellStyle(numberStyle);
+							} else {
+							    cellF.setCellValue("");
+							    cellF.setCellStyle(textStyle);
+							}
+
+							// Column 6 - name of sub5
+							cellG = row.createCell(10);
+							if (record.getR41_amt_name_of_sub5() != null) {
+							    cellG.setCellValue(record.getR41_amt_name_of_sub5().doubleValue());
+							    cellG.setCellStyle(numberStyle);
+							} else {
+							    cellG.setCellValue("");
+							    cellG.setCellStyle(textStyle);
+							}
+
+							// Column 7 total
+							cellG = row.createCell(12);
+							if (record.getR41_tot_amt() != null) {
+							    cellG.setCellValue(record.getR41_tot_amt().doubleValue());
+							    cellG.setCellStyle(numberStyle);
+							} else {
+							    cellG.setCellValue("");
+							    cellG.setCellStyle(textStyle);
+							}
+							
+							
+
+							// =========================
+							// Row for R42
+							// =========================
+							row = sheet.getRow(36);
+							
+
+							// Column 2 - name of sub1
+							cellC = row.createCell(2);
+							if (record.getR42_amt_name_of_sub1() != null) {
+							    cellC.setCellValue(record.getR42_amt_name_of_sub1().doubleValue());
+							    cellC.setCellStyle(numberStyle);
+							} else {
+							    cellC.setCellValue("");
+							    cellC.setCellStyle(textStyle);
+							}
+
+							// Column 3 - name of sub2
+							cellD = row.createCell(4);
+							if (record.getR42_amt_name_of_sub2() != null) {
+							    cellD.setCellValue(record.getR42_amt_name_of_sub2().doubleValue());
+							    cellD.setCellStyle(numberStyle);
+							} else {
+							    cellD.setCellValue("");
+							    cellD.setCellStyle(textStyle);
+							}
+
+							// Column 4 - name of sub3
+							cellE = row.createCell(6);
+							if (record.getR42_amt_name_of_sub3() != null) {
+							    cellE.setCellValue(record.getR42_amt_name_of_sub3().doubleValue());
+							    cellE.setCellStyle(numberStyle);
+							} else {
+							    cellE.setCellValue("");
+							    cellE.setCellStyle(textStyle);
+							}
+
+							// Column 5 - name of sub4
+							cellF = row.createCell(8);
+							if (record.getR42_amt_name_of_sub4() != null) {
+							    cellF.setCellValue(record.getR42_amt_name_of_sub4().doubleValue());
+							    cellF.setCellStyle(numberStyle);
+							} else {
+							    cellF.setCellValue("");
+							    cellF.setCellStyle(textStyle);
+							}
+
+							// Column 6 - name of sub5
+							cellG = row.createCell(10);
+							if (record.getR42_amt_name_of_sub5() != null) {
+							    cellG.setCellValue(record.getR42_amt_name_of_sub5().doubleValue());
+							    cellG.setCellStyle(numberStyle);
+							} else {
+							    cellG.setCellValue("");
+							    cellG.setCellStyle(textStyle);
+							}
+							// Column 7 total
+							cellG = row.createCell(12);
+							if (record.getR42_tot_amt() != null) {
+							    cellG.setCellValue(record.getR42_tot_amt().doubleValue());
+							    cellG.setCellStyle(numberStyle);
+							} else {
+							    cellG.setCellValue("");
+							    cellG.setCellStyle(textStyle);
+							}
+							
+							
+							
+
+							// =========================
+							// Row for R43
+							// =========================
+							row = sheet.getRow(37);
+							
+							
+							// Column 3 - name of sub1
+							cellC = row.getCell(2);
+							if (cellC == null) cellC = row.createCell(2);
+							if (record.getR43_amt_name_of_sub1() != null) {
+							    cellC.setCellValue(record.getR43_amt_name_of_sub1().doubleValue());
+							} else {
+							    cellC.setCellValue(0);
+							}
+							
+							// Column 4 - name of sub2
+							cellD = row.getCell(4);
+							if (cellD == null) cellD = row.createCell(4);
+							if (record.getR43_amt_name_of_sub2() != null) {
+							    cellD.setCellValue(record.getR43_amt_name_of_sub2().doubleValue());
+							} else {
+							    cellD.setCellValue(0);
+							}
+
+							// Column 5 - name of sub3
+							cellE = row.getCell(6);
+							if (cellE == null) cellE = row.createCell(6);
+							if (record.getR43_amt_name_of_sub3() != null) {
+							    cellE.setCellValue(record.getR43_amt_name_of_sub3().doubleValue());
+							} else {
+							    cellE.setCellValue(0);
+							}
+
+							// Column 6 - name of sub4
+							cellF = row.getCell(8);
+							if (cellF == null) cellF = row.createCell(8);
+							if (record.getR43_amt_name_of_sub4() != null) {
+							    cellF.setCellValue(record.getR43_amt_name_of_sub4().doubleValue());
+							} else {
+							    cellF.setCellValue(0);
+							}
+
+							// Column 7 - name of sub5
+							cellG = row.getCell(10);
+							if (cellG == null) cellG = row.createCell(10);
+							if (record.getR43_amt_name_of_sub5() != null) {
+							    cellG.setCellValue(record.getR43_amt_name_of_sub5().doubleValue());
+							} else {
+							    cellG.setCellValue(0);
+							}
+							
+						
+
+							// row44
+							// row44
+							row = sheet.getRow(38);
+							if (row == null) row = sheet.createRow(43);
+
+							// Column 3 - name of sub1
+							cellC = row.getCell(2);
+							if (cellC == null) cellC = row.createCell(2);
+							if (record.getR44_amt_name_of_sub1() != null) {
+							    cellC.setCellValue(record.getR44_amt_name_of_sub1().doubleValue());
+							} else {
+							    cellC.setCellValue(0);
+							}
+
+							// Column 4 - name of sub2
+							cellD = row.getCell(4);
+							if (cellD == null) cellD = row.createCell(4);
+							if (record.getR44_amt_name_of_sub2() != null) {
+							    cellD.setCellValue(record.getR44_amt_name_of_sub2().doubleValue());
+							} else {
+							    cellD.setCellValue(0);
+							}
+
+							// Column 5 - name of sub3
+							cellE = row.getCell(6);
+							if (cellE == null) cellE = row.createCell(6);
+							if (record.getR44_amt_name_of_sub3() != null) {
+							    cellE.setCellValue(record.getR44_amt_name_of_sub3().doubleValue());
+							} else {
+							    cellE.setCellValue(0);
+							}
+
+							// Column 6 - name of sub4
+							cellF = row.getCell(8);
+							if (cellF == null) cellF = row.createCell(8);
+							if (record.getR44_amt_name_of_sub4() != null) {
+							    cellF.setCellValue(record.getR44_amt_name_of_sub4().doubleValue());
+							} else {
+							    cellF.setCellValue(0);
+							}
+
+							// Column 7 - name of sub5
+							cellG = row.getCell(10);
+							if (cellG == null) cellG = row.createCell(10);
+							if (record.getR44_amt_name_of_sub5() != null) {
+							    cellG.setCellValue(record.getR44_amt_name_of_sub5().doubleValue());
+							} else {
+							    cellG.setCellValue(0);
+							}
+							/*
+							 * // Column 7 - TOTAL cellH = row.createCell(12); if (record.getR44_tot_amt() !=
+							 * null) { cellH.setCellValue(record.getR44_tot_amt().doubleValue());
+							 * cellH.setCellStyle(numberStyle); } else { cellH.setCellValue("");
+							 * cellH.setCellStyle(textStyle); }
+							 */
+
+
+							// row45
+							row = sheet.getRow(39);
+							
+
+							// Column 2 - name of sub1
+							cellC = row.createCell(2);
+							if (record.getR45_amt_name_of_sub1() != null) {
+							    cellC.setCellValue(record.getR45_amt_name_of_sub1().doubleValue());
+							    cellC.setCellStyle(numberStyle);
+							} else {
+							    cellC.setCellValue("");
+							    cellC.setCellStyle(textStyle);
+							}
+
+							// Column 3 - name of sub2
+							cellD = row.createCell(4);
+							if (record.getR45_amt_name_of_sub2() != null) {
+							    cellD.setCellValue(record.getR45_amt_name_of_sub2().doubleValue());
+							    cellD.setCellStyle(numberStyle);
+							} else {
+							    cellD.setCellValue("");
+							    cellD.setCellStyle(textStyle);
+							}
+
+							// Column 4 - name of sub3
+							cellE = row.createCell(6);
+							if (record.getR45_amt_name_of_sub3() != null) {
+							    cellE.setCellValue(record.getR45_amt_name_of_sub3().doubleValue());
+							    cellE.setCellStyle(numberStyle);
+							} else {
+							    cellE.setCellValue("");
+							    cellE.setCellStyle(textStyle);
+							}
+
+							// Column 5 - name of sub4
+							cellF = row.createCell(8);
+							if (record.getR45_amt_name_of_sub4() != null) {
+							    cellF.setCellValue(record.getR45_amt_name_of_sub4().doubleValue());
+							    cellF.setCellStyle(numberStyle);
+							} else {
+							    cellF.setCellValue("");
+							    cellF.setCellStyle(textStyle);
+							}
+
+							// Column 6 - name of sub5
+							cellG = row.createCell(10);
+							if (record.getR45_amt_name_of_sub5() != null) {
+							    cellG.setCellValue(record.getR45_amt_name_of_sub5().doubleValue());
+							    cellG.setCellStyle(numberStyle);
+							} else {
+							    cellG.setCellValue("");
+							    cellG.setCellStyle(textStyle);
+							}
+
+							
+							// Column 7 total
+							cellG = row.createCell(12);
+							if (record.getR45_tot_amt() != null) {
+							    cellG.setCellValue(record.getR45_tot_amt().doubleValue());
+							    cellG.setCellStyle(numberStyle);
+							} else {
+							    cellG.setCellValue("");
+							    cellG.setCellStyle(textStyle);
+							}
+							
+												 
+
+
+							// ================= R46 =================
+							// row46
+							row = sheet.getRow(40);
+							
+
+							// Column 3 - name of sub1
+							cellC = row.getCell(2);
+							if (cellC == null) cellC = row.createCell(2);
+							if (record.getR46_amt_name_of_sub1() != null) {
+							    cellC.setCellValue(record.getR46_amt_name_of_sub1().doubleValue());
+							} else {
+							    cellC.setCellValue(0);
+							}
+
+							// Column 4 - name of sub2
+							cellD = row.getCell(4);
+							if (cellD == null) cellD = row.createCell(4);
+							if (record.getR46_amt_name_of_sub2() != null) {
+							    cellD.setCellValue(record.getR46_amt_name_of_sub2().doubleValue());
+							} else {
+							    cellD.setCellValue(0);
+							}
+
+							// Column 5 - name of sub3
+							cellE = row.getCell(6);
+							if (cellE == null) cellE = row.createCell(6);
+							if (record.getR46_amt_name_of_sub3() != null) {
+							    cellE.setCellValue(record.getR46_amt_name_of_sub3().doubleValue());
+							} else {
+							    cellE.setCellValue(0);
+							}
+
+							// Column 6 - name of sub4
+							cellF = row.getCell(8);
+							if (cellF == null) cellF = row.createCell(8);
+							if (record.getR46_amt_name_of_sub4() != null) {
+							    cellF.setCellValue(record.getR46_amt_name_of_sub4().doubleValue());
+							} else {
+							    cellF.setCellValue(0);
+							}
+
+							// Column 7 - name of sub5
+							cellG = row.getCell(10);
+							if (cellG == null) cellG = row.createCell(10);
+							if (record.getR46_amt_name_of_sub5() != null) {
+							    cellG.setCellValue(record.getR46_amt_name_of_sub5().doubleValue());
+							} else {
+							    cellG.setCellValue(0);
+							}
+
+							
+
+							// ================= R47 =================
+							// row47
+							row = sheet.getRow(41);
+							
+							// Column 3 - name of sub1
+							cellC = row.getCell(2);
+							if (cellC == null) cellC = row.createCell(2);
+							if (record.getR47_amt_name_of_sub1() != null) {
+							    cellC.setCellValue(record.getR47_amt_name_of_sub1().doubleValue());
+							} else {
+							    cellC.setCellValue(0);
+							}
+
+							// Column 4 - name of sub2
+							cellD = row.getCell(4);
+							if (cellD == null) cellD = row.createCell(4);
+							if (record.getR47_amt_name_of_sub2() != null) {
+							    cellD.setCellValue(record.getR47_amt_name_of_sub2().doubleValue());
+							} else {
+							    cellD.setCellValue(0);
+							}
+
+							// Column 5 - name of sub3
+							cellE = row.getCell(6);
+							if (cellE == null) cellE = row.createCell(6);
+							if (record.getR47_amt_name_of_sub3() != null) {
+							    cellE.setCellValue(record.getR47_amt_name_of_sub3().doubleValue());
+							} else {
+							    cellE.setCellValue(0);
+							}
+
+							// Column 6 - name of sub4
+							cellF = row.getCell(8);
+							if (cellF == null) cellF = row.createCell(8);
+							if (record.getR47_amt_name_of_sub4() != null) {
+							    cellF.setCellValue(record.getR47_amt_name_of_sub4().doubleValue());
+							} else {
+							    cellF.setCellValue(0);
+							}
+
+							// Column 7 - name of sub5
+							cellG = row.getCell(10);
+							if (cellG == null) cellG = row.createCell(10);
+							if (record.getR47_amt_name_of_sub5() != null) {
+							    cellG.setCellValue(record.getR47_amt_name_of_sub5().doubleValue());
+							} else {
+							    cellG.setCellValue(0);
+							}
+							
+							// ================= R48 =================
+							row = sheet.getRow(42);
+							/*
+							// Column 2 - name of sub1
+							cellC = row.createCell(2);
+							if (record.getR48_amt_name_of_sub1() != null) {
+							    cellC.setCellValue(record.getR48_amt_name_of_sub1().doubleValue());
+							    cellC.setCellStyle(numberStyle);
+							} else {
+							    cellC.setCellValue("");
+							    cellC.setCellStyle(textStyle);
+							}
+							// Column 3 - name of sub2
+							cellD = row.createCell(4);
+							if (record.getR48_amt_name_of_sub2() != null) {
+							    cellD.setCellValue(record.getR48_amt_name_of_sub2().doubleValue());
+							    cellD.setCellStyle(numberStyle);
+							} else {
+							    cellD.setCellValue("");
+							    cellD.setCellStyle(textStyle);
+							}
+							// Column 4 - name of sub3
+							cellE = row.createCell(6);
+							if (record.getR48_amt_name_of_sub3() != null) {
+							    cellE.setCellValue(record.getR48_amt_name_of_sub3().doubleValue());
+							    cellE.setCellStyle(numberStyle);
+							} else {
+							    cellE.setCellValue("");
+							    cellE.setCellStyle(textStyle);
+							}
+							// Column 5 - name of sub4
+							cellF = row.createCell(8);
+							if (record.getR48_amt_name_of_sub4() != null) {
+							    cellF.setCellValue(record.getR48_amt_name_of_sub4().doubleValue());
+							    cellF.setCellStyle(numberStyle);
+							} else {
+							    cellF.setCellValue("");
+							    cellF.setCellStyle(textStyle);
+							}
+							// Column 6 - name of sub5
+							cellG = row.createCell(10);
+							if (record.getR48_amt_name_of_sub5() != null) {
+							    cellG.setCellValue(record.getR48_amt_name_of_sub5().doubleValue());
+							    cellG.setCellStyle(numberStyle);
+							} else {
+							    cellG.setCellValue("");
+							    cellG.setCellStyle(textStyle);
+							}
+							// Column 7 total
+							cellG = row.createCell(12);
+							if (record.getR48_tot_amt() != null) {
+							    cellG.setCellValue(record.getR48_tot_amt().doubleValue());
+							    cellG.setCellStyle(numberStyle);
+							} else {
+							    cellG.setCellValue("");
+							    cellG.setCellStyle(textStyle);
+							}
+							
+							
+
+							// ================= R49 =================
+							// row49
+							row = sheet.getRow(43);
+							
+
+							// Column 3 - name of sub1
+							cellC = row.getCell(2);
+							if (cellC == null) cellC = row.createCell(2);
+							if (record.getR49_amt_name_of_sub1() != null) {
+							    cellC.setCellValue(record.getR49_amt_name_of_sub1().doubleValue());
+							} else {
+							    cellC.setCellValue(0);
+							}
+
+							// Column 4 - name of sub2
+							cellD = row.getCell(4);
+							if (cellD == null) cellD = row.createCell(4);
+							if (record.getR49_amt_name_of_sub2() != null) {
+							    cellD.setCellValue(record.getR49_amt_name_of_sub2().doubleValue());
+							} else {
+							    cellD.setCellValue(0);
+							}
+
+							// Column 5 - name of sub3
+							cellE = row.getCell(6);
+							if (cellE == null) cellE = row.createCell(6);
+							if (record.getR49_amt_name_of_sub3() != null) {
+							    cellE.setCellValue(record.getR49_amt_name_of_sub3().doubleValue());
+							} else {
+							    cellE.setCellValue(0);
+							}
+
+							// Column 6 - name of sub4
+							cellF = row.getCell(8);
+							if (cellF == null) cellF = row.createCell(8);
+							if (record.getR49_amt_name_of_sub4() != null) {
+							    cellF.setCellValue(record.getR49_amt_name_of_sub4().doubleValue());
+							} else {
+							    cellF.setCellValue(0);
+							}
+
+							// Column 7 - name of sub5
+							cellG = row.getCell(10);
+							if (cellG == null) cellG = row.createCell(10);
+							if (record.getR49_amt_name_of_sub5() != null) {
+							    cellG.setCellValue(record.getR49_amt_name_of_sub5().doubleValue());
+							} else {
+							    cellG.setCellValue(0);
+							}
+							
+
+							// ================= R50 =================
+							// row50
+							row = sheet.getRow(44);
+							
+							// Column 3 - name of sub1
+							cellC = row.getCell(2);
+							if (cellC == null) cellC = row.createCell(2);
+							if (record.getR50_amt_name_of_sub1() != null) {
+							    cellC.setCellValue(record.getR50_amt_name_of_sub1().doubleValue());
+							} else {
+							    cellC.setCellValue(0);
+							}
+
+							// Column 4 - name of sub2
+							cellD = row.getCell(4);
+							if (cellD == null) cellD = row.createCell(4);
+							if (record.getR50_amt_name_of_sub2() != null) {
+							    cellD.setCellValue(record.getR50_amt_name_of_sub2().doubleValue());
+							} else {
+							    cellD.setCellValue(0);
+							}
+
+							// Column 5 - name of sub3
+							cellE = row.getCell(6);
+							if (cellE == null) cellE = row.createCell(6);
+							if (record.getR50_amt_name_of_sub3() != null) {
+							    cellE.setCellValue(record.getR50_amt_name_of_sub3().doubleValue());
+							} else {
+							    cellE.setCellValue(0);
+							}
+
+							// Column 6 - name of sub4
+							cellF = row.getCell(8);
+							if (cellF == null) cellF = row.createCell(8);
+							if (record.getR50_amt_name_of_sub4() != null) {
+							    cellF.setCellValue(record.getR50_amt_name_of_sub4().doubleValue());
+							} else {
+							    cellF.setCellValue(0);
+							}
+
+							// Column 7 - name of sub5
+							cellG = row.getCell(10);
+							if (cellG == null) cellG = row.createCell(10);
+							if (record.getR50_amt_name_of_sub5() != null) {
+							    cellG.setCellValue(record.getR50_amt_name_of_sub5().doubleValue());
+							} else {
+							    cellG.setCellValue(0);
+							}
+							
+
+							// ====================== R51 ======================
+							row = sheet.getRow(45);
+							
+
+							// Column 2 - name of sub1
+							cellC = row.createCell(2);
+							if (record.getR51_amt_name_of_sub1() != null) {
+							    cellC.setCellValue(record.getR51_amt_name_of_sub1().doubleValue());
+							    cellC.setCellStyle(numberStyle);
+							} else {
+							    cellC.setCellValue("");
+							    cellC.setCellStyle(textStyle);
+							}
+
+							// Column 3 - name of sub2
+							cellD = row.createCell(4);
+							if (record.getR51_amt_name_of_sub2() != null) {
+							    cellD.setCellValue(record.getR51_amt_name_of_sub2().doubleValue());
+							    cellD.setCellStyle(numberStyle);
+							} else {
+							    cellD.setCellValue("");
+							    cellD.setCellStyle(textStyle);
+							}
+
+							// Column 4 - name of sub3
+							cellE = row.createCell(6);
+							if (record.getR51_amt_name_of_sub3() != null) {
+							    cellE.setCellValue(record.getR51_amt_name_of_sub3().doubleValue());
+							    cellE.setCellStyle(numberStyle);
+							} else {
+							    cellE.setCellValue("");
+							    cellE.setCellStyle(textStyle);
+							}
+
+							// Column 5 - name of sub4
+							cellF = row.createCell(8);
+							if (record.getR51_amt_name_of_sub4() != null) {
+							    cellF.setCellValue(record.getR51_amt_name_of_sub4().doubleValue());
+							    cellF.setCellStyle(numberStyle);
+							} else {
+							    cellF.setCellValue("");
+							    cellF.setCellStyle(textStyle);
+							}
+
+							// Column 6 - name of sub5
+							cellG = row.createCell(10);
+							if (record.getR51_amt_name_of_sub5() != null) {
+							    cellG.setCellValue(record.getR51_amt_name_of_sub5().doubleValue());
+							    cellG.setCellStyle(numberStyle);
+							} else {
+							    cellG.setCellValue("");
+							    cellG.setCellStyle(textStyle);
+							}
+
+							// Column 7 total
+							cellG = row.createCell(12);
+							if (record.getR51_tot_amt() != null) {
+							    cellG.setCellValue(record.getR51_tot_amt().doubleValue());
+							    cellG.setCellStyle(numberStyle);
+							} else {
+							    cellG.setCellValue("");
+							    cellG.setCellStyle(textStyle);
+							}
+							
+							
+
+							// ====================== R52 ======================
+							// row52
+							row = sheet.getRow(46);
+						
+							// Column 3 - name of sub1
+							cellC = row.getCell(2);
+							if (cellC == null) cellC = row.createCell(2);
+							if (record.getR52_amt_name_of_sub1() != null) {
+							    cellC.setCellValue(record.getR52_amt_name_of_sub1().doubleValue());
+							} else {
+							    cellC.setCellValue(0);
+							}
+
+							// Column 4 - name of sub2
+							cellD = row.getCell(4);
+							if (cellD == null) cellD = row.createCell(4);
+							if (record.getR52_amt_name_of_sub2() != null) {
+							    cellD.setCellValue(record.getR52_amt_name_of_sub2().doubleValue());
+							} else {
+							    cellD.setCellValue(0);
+							}
+
+							// Column 5 - name of sub3
+							cellE = row.getCell(6);
+							if (cellE == null) cellE = row.createCell(6);
+							if (record.getR52_amt_name_of_sub3() != null) {
+							    cellE.setCellValue(record.getR52_amt_name_of_sub3().doubleValue());
+							} else {
+							    cellE.setCellValue(0);
+							}
+
+							// Column 6 - name of sub4
+							cellF = row.getCell(8);
+							if (cellF == null) cellF = row.createCell(8);
+							if (record.getR52_amt_name_of_sub4() != null) {
+							    cellF.setCellValue(record.getR52_amt_name_of_sub4().doubleValue());
+							} else {
+							    cellF.setCellValue(0);
+							}
+
+							// Column 7 - name of sub5
+							cellG = row.getCell(10);
+							if (cellG == null) cellG = row.createCell(10);
+							if (record.getR52_amt_name_of_sub5() != null) {
+							    cellG.setCellValue(record.getR52_amt_name_of_sub5().doubleValue());
+							} else {
+							    cellG.setCellValue(0);
+							}
+
+							*/
+
+
+							// ====================== R53 ======================
+				
+							// row53
+							row = sheet.getRow(44);
+						
+
+							// Column 3 - name of sub1
+							cellC = row.getCell(2);
+							if (cellC == null) cellC = row.createCell(2);
+							if (record.getR53_amt_name_of_sub1() != null) {
+							    cellC.setCellValue(record.getR53_amt_name_of_sub1().doubleValue());
+							} else {
+							    cellC.setCellValue(0);
+							}
+
+							// Column 4 - name of sub2
+							cellD = row.getCell(4);
+							if (cellD == null) cellD = row.createCell(4);
+							if (record.getR53_amt_name_of_sub2() != null) {
+							    cellD.setCellValue(record.getR53_amt_name_of_sub2().doubleValue());
+							} else {
+							    cellD.setCellValue(0);
+							}
+
+							// Column 5 - name of sub3
+							cellE = row.getCell(6);
+							if (cellE == null) cellE = row.createCell(6);
+							if (record.getR53_amt_name_of_sub3() != null) {
+							    cellE.setCellValue(record.getR53_amt_name_of_sub3().doubleValue());
+							} else {
+							    cellE.setCellValue(0);
+							}
+
+							// Column 6 - name of sub4
+							cellF = row.getCell(8);
+							if (cellF == null) cellF = row.createCell(8);
+							if (record.getR53_amt_name_of_sub4() != null) {
+							    cellF.setCellValue(record.getR53_amt_name_of_sub4().doubleValue());
+							} else {
+							    cellF.setCellValue(0);
+							}
+
+							// Column 7 - name of sub5
+							cellG = row.getCell(10);
+							if (cellG == null) cellG = row.createCell(10);
+							if (record.getR53_amt_name_of_sub5() != null) {
+							    cellG.setCellValue(record.getR53_amt_name_of_sub5().doubleValue());
+							} else {
+							    cellG.setCellValue(0);
+							}
+
+							
+							
+							// row54
+							row = sheet.getRow(45);
+					
+							// Column 3 - name of sub1
+							cellC = row.getCell(2);
+							if (cellC == null) cellC = row.createCell(2);
+							if (record.getR54_amt_name_of_sub1() != null) {
+							    cellC.setCellValue(record.getR54_amt_name_of_sub1().doubleValue());
+							} else {
+							    cellC.setCellValue(0);
+							}
+
+							// Column 4 - name of sub2
+							cellD = row.getCell(4);
+							if (cellD == null) cellD = row.createCell(4);
+							if (record.getR54_amt_name_of_sub2() != null) {
+							    cellD.setCellValue(record.getR54_amt_name_of_sub2().doubleValue());
+							} else {
+							    cellD.setCellValue(0);
+							}
+
+							// Column 5 - name of sub3
+							cellE = row.getCell(6);
+							if (cellE == null) cellE = row.createCell(6);
+							if (record.getR54_amt_name_of_sub3() != null) {
+							    cellE.setCellValue(record.getR54_amt_name_of_sub3().doubleValue());
+							} else {
+							    cellE.setCellValue(0);
+							}
+
+							// Column 6 - name of sub4
+							cellF = row.getCell(8);
+							if (cellF == null) cellF = row.createCell(8);
+							if (record.getR54_amt_name_of_sub4() != null) {
+							    cellF.setCellValue(record.getR54_amt_name_of_sub4().doubleValue());
+							} else {
+							    cellF.setCellValue(0);
+							}
+
+							// Column 7 - name of sub5
+							cellG = row.getCell(10);
+							if (cellG == null) cellG = row.createCell(10);
+							if (record.getR54_amt_name_of_sub5() != null) {
+							    cellG.setCellValue(record.getR54_amt_name_of_sub5().doubleValue());
+							} else {
+							    cellG.setCellValue(0);
+							}
+/*
+
+
+							// row55
+							row = sheet.getRow(49);
+					
+
+							// Column 3 - name of sub1
+							cellC = row.getCell(2);
+							if (cellC == null) cellC = row.createCell(2);
+							if (record.getR55_amt_name_of_sub1() != null) {
+							    cellC.setCellValue(record.getR55_amt_name_of_sub1().doubleValue());
+							} else {
+							    cellC.setCellValue(0);
+							}
+
+							// Column 4 - name of sub2
+							cellD = row.getCell(4);
+							if (cellD == null) cellD = row.createCell(4);
+							if (record.getR55_amt_name_of_sub2() != null) {
+							    cellD.setCellValue(record.getR55_amt_name_of_sub2().doubleValue());
+							} else {
+							    cellD.setCellValue(0);
+							}
+
+							// Column 5 - name of sub3
+							cellE = row.getCell(6);
+							if (cellE == null) cellE = row.createCell(6);
+							if (record.getR55_amt_name_of_sub3() != null) {
+							    cellE.setCellValue(record.getR55_amt_name_of_sub3().doubleValue());
+							} else {
+							    cellE.setCellValue(0);
+							}
+
+							// Column 6 - name of sub4
+							cellF = row.getCell(8);
+							if (cellF == null) cellF = row.createCell(8);
+							if (record.getR55_amt_name_of_sub4() != null) {
+							    cellF.setCellValue(record.getR55_amt_name_of_sub4().doubleValue());
+							} else {
+							    cellF.setCellValue(0);
+							}
+
+							// Column 7 - name of sub5
+							cellG = row.getCell(10);
+							if (cellG == null) cellG = row.createCell(10);
+							if (record.getR55_amt_name_of_sub5() != null) {
+							    cellG.setCellValue(record.getR55_amt_name_of_sub5().doubleValue());
+							} else {
+							    cellG.setCellValue(0);
+							}
+
+
+
+							// row56
+							row = sheet.getRow(50);
+							
+
+							// Column 3 - name of sub1
+							cellC = row.getCell(2);
+							if (cellC == null) cellC = row.createCell(2);
+							if (record.getR56_amt_name_of_sub1() != null) {
+							    cellC.setCellValue(record.getR56_amt_name_of_sub1().doubleValue());
+							} else {
+							    cellC.setCellValue(0);
+							}
+
+							// Column 4 - name of sub2
+							cellD = row.getCell(4);
+							if (cellD == null) cellD = row.createCell(4);
+							if (record.getR56_amt_name_of_sub2() != null) {
+							    cellD.setCellValue(record.getR56_amt_name_of_sub2().doubleValue());
+							} else {
+							    cellD.setCellValue(0);
+							}
+
+							// Column 5 - name of sub3
+							cellE = row.getCell(6);
+							if (cellE == null) cellE = row.createCell(6);
+							if (record.getR56_amt_name_of_sub3() != null) {
+							    cellE.setCellValue(record.getR56_amt_name_of_sub3().doubleValue());
+							} else {
+							    cellE.setCellValue(0);
+							}
+
+							// Column 6 - name of sub4
+							cellF = row.getCell(8);
+							if (cellF == null) cellF = row.createCell(8);
+							if (record.getR56_amt_name_of_sub4() != null) {
+							    cellF.setCellValue(record.getR56_amt_name_of_sub4().doubleValue());
+							} else {
+							    cellF.setCellValue(0);
+							}
+
+							// Column 7 - name of sub5
+							cellG = row.getCell(10);
+							if (cellG == null) cellG = row.createCell(10);
+							if (record.getR56_amt_name_of_sub5() != null) {
+							    cellG.setCellValue(record.getR56_amt_name_of_sub5().doubleValue());
+							} else {
+							    cellG.setCellValue(0);
+							}
+
+
+							// row57
+							row = sheet.getRow(51);
+							
+
+							// Column 3 - name of sub1
+							cellC = row.getCell(2);
+							if (cellC == null) cellC = row.createCell(2);
+							if (record.getR57_amt_name_of_sub1() != null) {
+							    cellC.setCellValue(record.getR57_amt_name_of_sub1().doubleValue());
+							} else {
+							    cellC.setCellValue(0);
+							}
+
+							// Column 4 - name of sub2
+							cellD = row.getCell(4);
+							if (cellD == null) cellD = row.createCell(4);
+							if (record.getR57_amt_name_of_sub2() != null) {
+							    cellD.setCellValue(record.getR57_amt_name_of_sub2().doubleValue());
+							} else {
+							    cellD.setCellValue(0);
+							}
+
+							// Column 5 - name of sub3
+							cellE = row.getCell(6);
+							if (cellE == null) cellE = row.createCell(6);
+							if (record.getR57_amt_name_of_sub3() != null) {
+							    cellE.setCellValue(record.getR57_amt_name_of_sub3().doubleValue());
+							} else {
+							    cellE.setCellValue(0);
+							}
+
+							// Column 6 - name of sub4
+							cellF = row.getCell(8);
+							if (cellF == null) cellF = row.createCell(8);
+							if (record.getR57_amt_name_of_sub4() != null) {
+							    cellF.setCellValue(record.getR57_amt_name_of_sub4().doubleValue());
+							} else {
+							    cellF.setCellValue(0);
+							}
+
+							// Column 7 - name of sub5
+							cellG = row.getCell(10);
+							if (cellG == null) cellG = row.createCell(10);
+							if (record.getR57_amt_name_of_sub5() != null) {
+							    cellG.setCellValue(record.getR57_amt_name_of_sub5().doubleValue());
+							} else {
+							    cellG.setCellValue(0);
+							}
+
+
+		  
+							// row58
+							row = sheet.getRow(52);
+					
+
+							// Column 3 - name of sub1
+							cellC = row.getCell(2);
+							if (cellC == null) cellC = row.createCell(2);
+							if (record.getR58_amt_name_of_sub1() != null) {
+							    cellC.setCellValue(record.getR58_amt_name_of_sub1().doubleValue());
+							} else {
+							    cellC.setCellValue(0);
+							}
+
+							// Column 4 - name of sub2
+							cellD = row.getCell(4);
+							if (cellD == null) cellD = row.createCell(4);
+							if (record.getR58_amt_name_of_sub2() != null) {
+							    cellD.setCellValue(record.getR58_amt_name_of_sub2().doubleValue());
+							} else {
+							    cellD.setCellValue(0);
+							}
+
+							// Column 5 - name of sub3
+							cellE = row.getCell(6);
+							if (cellE == null) cellE = row.createCell(6);
+							if (record.getR58_amt_name_of_sub3() != null) {
+							    cellE.setCellValue(record.getR58_amt_name_of_sub3().doubleValue());
+							} else {
+							    cellE.setCellValue(0);
+							}
+
+							// Column 6 - name of sub4
+							cellF = row.getCell(8);
+							if (cellF == null) cellF = row.createCell(8);
+							if (record.getR58_amt_name_of_sub4() != null) {
+							    cellF.setCellValue(record.getR58_amt_name_of_sub4().doubleValue());
+							} else {
+							    cellF.setCellValue(0);
+							}
+
+							// Column 7 - name of sub5
+							cellG = row.getCell(10);
+							if (cellG == null) cellG = row.createCell(10);
+							if (record.getR58_amt_name_of_sub5() != null) {
+							    cellG.setCellValue(record.getR58_amt_name_of_sub5().doubleValue());
+							} else {
+							    cellG.setCellValue(0);
+							}
+							*/
+							
+
+
+						}
+						workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
+					} else {
+
+					}
+
+					// Write the final workbook content to the in-memory stream.
+					workbook.write(out);
+
+					logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
+
+					return out.toByteArray();
+				}	}
 	
 	
 	
