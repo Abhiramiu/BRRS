@@ -1955,7 +1955,7 @@ public class BRRS_M_CA3_ReportService {
 					}
 
 					//row36
-					row = sheet.getRow(35);			
+					row = sheet.getRow(33);			
 					// Column b
 				
 
@@ -1969,7 +1969,7 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 					//row37
-					row = sheet.getRow(36);			
+					row = sheet.getRow(34);			
 					// Column b
 				
 					// Column c
@@ -1983,7 +1983,7 @@ public class BRRS_M_CA3_ReportService {
 					}
 
 					//row38
-					row = sheet.getRow(37);			
+					row = sheet.getRow(35);			
 					// Column b
 					
 					// Column c
@@ -1997,7 +1997,7 @@ public class BRRS_M_CA3_ReportService {
 					}
 
 					//row39
-					row = sheet.getRow(38);			
+					row = sheet.getRow(36);			
 					// Column b
 				
 
@@ -2012,7 +2012,7 @@ public class BRRS_M_CA3_ReportService {
 					}
 
 					//row40
-					row = sheet.getRow(39);			
+					row = sheet.getRow(40);			
 					// Column b
 				
 
@@ -2027,7 +2027,7 @@ public class BRRS_M_CA3_ReportService {
 					}
 
 					//row41
-					row = sheet.getRow(40);			
+					row = sheet.getRow(38);			
 					// Column b
 				
 
@@ -2042,7 +2042,7 @@ public class BRRS_M_CA3_ReportService {
 					}
 
 					//row44
-					row = sheet.getRow(43);			
+					row = sheet.getRow(41);			
 					// Column b
 					
 					// Column c
@@ -2085,7 +2085,7 @@ public class BRRS_M_CA3_ReportService {
 					}
 
 					//row50
-					row = sheet.getRow(49);			
+					row = sheet.getRow(46);			
 					// Column b
 				
 					// Column c
@@ -2099,7 +2099,7 @@ public class BRRS_M_CA3_ReportService {
 					}
 
 					//row51
-					row = sheet.getRow(50);			
+					row = sheet.getRow(47);			
 					// Column b
 				
 
@@ -2114,7 +2114,7 @@ public class BRRS_M_CA3_ReportService {
 					}
 
 					//row52
-					row = sheet.getRow(51);			
+					row = sheet.getRow(48);			
 					// Column b
 				
 
@@ -2129,7 +2129,7 @@ public class BRRS_M_CA3_ReportService {
 					}
 
 					//row53
-					row = sheet.getRow(52);			
+					row = sheet.getRow(49);			
 					// Column b
 				
 
@@ -2158,7 +2158,7 @@ public class BRRS_M_CA3_ReportService {
 					}
 
 					//row55
-					row = sheet.getRow(54);			
+					row = sheet.getRow(50);			
 					// Column b
 				
 
@@ -2175,7 +2175,7 @@ public class BRRS_M_CA3_ReportService {
 				
 
 					//row58
-					row = sheet.getRow(57);			
+					row = sheet.getRow(54);			
 					// Column b
 				
 					// Column c
@@ -2188,23 +2188,20 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row59
-					row = sheet.getRow(58);			
-					// Column b
-				
-
-					// Column c
-					 cell2 = row.getCell(2);
-					if (record.getR59_AMOUNT() != null) {
-						cell2.setCellValue(record.getR59_AMOUNT().doubleValue());
-
-					} else {
-						cell2.setCellValue("");
-
-					}
+					/*
+					 * //row59 row = sheet.getRow(58); // Column b
+					 * 
+					 * 
+					 * // Column c cell2 = row.getCell(2); if (record.getR59_AMOUNT() != null) {
+					 * cell2.setCellValue(record.getR59_AMOUNT().doubleValue());
+					 * 
+					 * } else { cell2.setCellValue("");
+					 * 
+					 * }
+					 */
 
 					//row60
-					row = sheet.getRow(14);			
+					row = sheet.getRow(54);			
 					// Column b
 				
 					// Column c
@@ -2568,7 +2565,7 @@ public class BRRS_M_CA3_ReportService {
 					}
 
 					//row36
-					row = sheet.getRow(35);			
+					row = sheet.getRow(33);			
 					// Column b
 				
 
@@ -2582,7 +2579,7 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 					//row37
-					row = sheet.getRow(36);			
+					row = sheet.getRow(34);			
 					// Column b
 				
 					// Column c
@@ -2596,7 +2593,7 @@ public class BRRS_M_CA3_ReportService {
 					}
 
 					//row38
-					row = sheet.getRow(37);			
+					row = sheet.getRow(35);			
 					// Column b
 					
 					// Column c
@@ -2610,7 +2607,7 @@ public class BRRS_M_CA3_ReportService {
 					}
 
 					//row39
-					row = sheet.getRow(38);			
+					row = sheet.getRow(36);			
 					// Column b
 				
 
@@ -2625,7 +2622,7 @@ public class BRRS_M_CA3_ReportService {
 					}
 
 					//row40
-					row = sheet.getRow(39);			
+					row = sheet.getRow(40);			
 					// Column b
 				
 
@@ -2640,7 +2637,7 @@ public class BRRS_M_CA3_ReportService {
 					}
 
 					//row41
-					row = sheet.getRow(40);			
+					row = sheet.getRow(38);			
 					// Column b
 				
 
@@ -2655,7 +2652,7 @@ public class BRRS_M_CA3_ReportService {
 					}
 
 					//row44
-					row = sheet.getRow(43);			
+					row = sheet.getRow(41);			
 					// Column b
 					
 					// Column c
@@ -2698,7 +2695,7 @@ public class BRRS_M_CA3_ReportService {
 					}
 
 					//row50
-					row = sheet.getRow(49);			
+					row = sheet.getRow(46);			
 					// Column b
 				
 					// Column c
@@ -2712,7 +2709,7 @@ public class BRRS_M_CA3_ReportService {
 					}
 
 					//row51
-					row = sheet.getRow(50);			
+					row = sheet.getRow(47);			
 					// Column b
 				
 
@@ -2727,7 +2724,7 @@ public class BRRS_M_CA3_ReportService {
 					}
 
 					//row52
-					row = sheet.getRow(51);			
+					row = sheet.getRow(48);			
 					// Column b
 				
 
@@ -2742,7 +2739,7 @@ public class BRRS_M_CA3_ReportService {
 					}
 
 					//row53
-					row = sheet.getRow(52);			
+					row = sheet.getRow(49);			
 					// Column b
 				
 
@@ -2771,7 +2768,7 @@ public class BRRS_M_CA3_ReportService {
 					}
 
 					//row55
-					row = sheet.getRow(54);			
+					row = sheet.getRow(50);			
 					// Column b
 				
 
@@ -2788,7 +2785,7 @@ public class BRRS_M_CA3_ReportService {
 				
 
 					//row58
-					row = sheet.getRow(57);			
+					row = sheet.getRow(54);			
 					// Column b
 				
 					// Column c
@@ -2801,23 +2798,20 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row59
-					row = sheet.getRow(58);			
-					// Column b
-				
-
-					// Column c
-					 cell2 = row.getCell(2);
-					if (record.getR59_AMOUNT() != null) {
-						cell2.setCellValue(record.getR59_AMOUNT().doubleValue());
-
-					} else {
-						cell2.setCellValue("");
-
-					}
+					/*
+					 * //row59 row = sheet.getRow(58); // Column b
+					 * 
+					 * 
+					 * // Column c cell2 = row.getCell(2); if (record.getR59_AMOUNT() != null) {
+					 * cell2.setCellValue(record.getR59_AMOUNT().doubleValue());
+					 * 
+					 * } else { cell2.setCellValue("");
+					 * 
+					 * }
+					 */
 
 					//row60
-					row = sheet.getRow(14);			
+					row = sheet.getRow(54);			
 					// Column b
 				
 					// Column c
