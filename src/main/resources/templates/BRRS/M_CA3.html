@@ -351,15 +351,14 @@ PURPOSE		: BRRS REPORT
 
 		/* Animation keyframes */
 		@keyframes scroll-left {
-		    0% {
-		        transform: translateX(100%);
-		    }
+			0% {
+				transform: translateX(100%);
+			}
 
-		    100% {
-		        transform: translateX(-100%);
-		    }
+			100% {
+				transform: translateX(-100%);
+			}
 		}
-
 	</style>
 
 
@@ -455,141 +454,141 @@ PURPOSE		: BRRS REPORT
 
 
 	<script>
-			// Show Modify (enable inputs & dropdowns)
-			function showmodify(btn) {
-				var readonlyIds = ["R20_AMOUNT", "R28_AMOUNT", "R29_AMOUNT", "R41_AMOUNT", "R45_AMOUNT", "R46_AMOUNT", "R55_AMOUNT", "R59_AMOUNT", "R60_AMOUNT"];
+		// Show Modify (enable inputs & dropdowns)
+		function showmodify(btn) {
+			var readonlyIds = ["R20_AMOUNT", "R28_AMOUNT", "R29_AMOUNT", "R41_AMOUNT", "R45_AMOUNT", "R46_AMOUNT", "R55_AMOUNT", "R59_AMOUNT", "R60_AMOUNT"];
 
-				$(".Show_input").each(function () {
-					if (!readonlyIds.includes(this.id)) {
-						$(this).removeAttr("readonly").removeAttr("disabled");
+			$(".Show_input").each(function () {
+				if (!readonlyIds.includes(this.id)) {
+					$(this).removeAttr("readonly").removeAttr("disabled");
+				}
+			});
+
+			for (let i = 10; i <= 19; i++) {
+				let fields = [
+					"AMOUNT",
+
+
+				];
+
+				fields.forEach(field => {
+					let selector = `#R${i}_${field}`;
+					if ($(selector).length) {  // check if element exists
+						$(selector).css({"background-color": "#d3d3d3"});
 					}
 				});
-
-				for (let i = 10; i <= 19; i++) {
-					let fields = [
-						"AMOUNT",
-
-
-					];
-
-					fields.forEach(field => {
-						let selector = `#R${i}_${field}`;
-						if ($(selector).length) {  // check if element exists
-							$(selector).css({"background-color": "#d3d3d3"});
-						}
-					});
-				}
-
-
-				for (let i = 24; i <= 27; i++) {
-					let fields = [
-						"AMOUNT",
-
-
-					];
-
-					fields.forEach(field => {
-						let selector = `#R${i}_${field}`;
-						if ($(selector).length) {  // check if element exists
-							$(selector).css({"background-color": "#d3d3d3"});
-						}
-					});
-				}
-
-				for (let i = 36; i <= 40; i++) {
-					let fields = [
-						"AMOUNT",
-
-
-					];
-
-					fields.forEach(field => {
-						let selector = `#R${i}_${field}`;
-						if ($(selector).length) {  // check if element exists
-							$(selector).css({"background-color": "#d3d3d3"});
-						}
-					});
-				}
-				$("#R44_AMOUNT").css({"background-color": "#d3d3d3"});
-
-
-				for (let i = 50; i <= 54; i++) {
-					let fields = [
-						"AMOUNT",
-
-
-					];
-
-					fields.forEach(field => {
-						let selector = `#R${i}_${field}`;
-						if ($(selector).length) {  // check if element exists
-							$(selector).css({"background-color": "#d3d3d3"});
-						}
-					});
-				}
-
-
-				$("#R58_AMOUNT").css({"background-color": "#d3d3d3"});
-
-
-
-				for (let i = 50; i <= 54; i++) {
-					let fields = [
-						"AMOUNT",
-
-
-					];
-
-					fields.forEach(field => {
-						let selector = `#R${i}_${field}`;
-						if ($(selector).length) {  // check if element exists
-							$(selector).css({"background-color": "#d3d3d3"});
-						}
-					});
-				}
-
-
-				$("#R58_AMOUNT").css({"background-color": "#d3d3d3"});
-
-
-
-				// Toggle buttons
-				$("#submitButton").show();
-
-
-
-
-
-				// Toggle buttons
-				$("#submitButton").show();
-
-
-
-				// Show Cancel button only when Modify is clicked
-				$("#cancelRecord").show();
-
-				// Optionally hide the clicked Modify button
-				$(btn).hide();
-			}
-			//Cancel / Reset function
-			function cancelModify() {
-				if (confirm("Are you sure you want to cancel changes? Page will reload.")) {
-					// ✅ Only when user clicks YES
-					location.reload();
-
-					$(".Show_input").attr("readonly", true).attr("disabled", true);
-
-					$("#submitButton, #btnBack_edit").hide();
-					$("#btnBack").show();
-					// Hide Cancel button again
-					$("#cancelRecord").hide();
-					// Show all Modify buttons
-					$("#addRecord").show();
-				}
-				// ❌ If user clicks CANCEL, nothing happens
 			}
 
-		</script>
+
+			for (let i = 24; i <= 27; i++) {
+				let fields = [
+					"AMOUNT",
+
+
+				];
+
+				fields.forEach(field => {
+					let selector = `#R${i}_${field}`;
+					if ($(selector).length) {  // check if element exists
+						$(selector).css({"background-color": "#d3d3d3"});
+					}
+				});
+			}
+
+			for (let i = 36; i <= 40; i++) {
+				let fields = [
+					"AMOUNT",
+
+
+				];
+
+				fields.forEach(field => {
+					let selector = `#R${i}_${field}`;
+					if ($(selector).length) {  // check if element exists
+						$(selector).css({"background-color": "#d3d3d3"});
+					}
+				});
+			}
+			$("#R44_AMOUNT").css({"background-color": "#d3d3d3"});
+
+
+			for (let i = 50; i <= 54; i++) {
+				let fields = [
+					"AMOUNT",
+
+
+				];
+
+				fields.forEach(field => {
+					let selector = `#R${i}_${field}`;
+					if ($(selector).length) {  // check if element exists
+						$(selector).css({"background-color": "#d3d3d3"});
+					}
+				});
+			}
+
+
+			$("#R58_AMOUNT").css({"background-color": "#d3d3d3"});
+
+
+
+			for (let i = 50; i <= 54; i++) {
+				let fields = [
+					"AMOUNT",
+
+
+				];
+
+				fields.forEach(field => {
+					let selector = `#R${i}_${field}`;
+					if ($(selector).length) {  // check if element exists
+						$(selector).css({"background-color": "#d3d3d3"});
+					}
+				});
+			}
+
+
+			$("#R58_AMOUNT").css({"background-color": "#d3d3d3"});
+
+
+
+			// Toggle buttons
+			$("#submitButton").show();
+
+
+
+
+
+			// Toggle buttons
+			$("#submitButton").show();
+
+
+
+			// Show Cancel button only when Modify is clicked
+			$("#cancelRecord").show();
+
+			// Optionally hide the clicked Modify button
+			$(btn).hide();
+		}
+		//Cancel / Reset function
+		function cancelModify() {
+			if (confirm("Are you sure you want to cancel changes? Page will reload.")) {
+				// ✅ Only when user clicks YES
+				location.reload();
+
+				$(".Show_input").attr("readonly", true).attr("disabled", true);
+
+				$("#submitButton, #btnBack_edit").hide();
+				$("#btnBack").show();
+				// Hide Cancel button again
+				$("#cancelRecord").hide();
+				// Show all Modify buttons
+				$("#addRecord").show();
+			}
+			// ❌ If user clicks CANCEL, nothing happens
+		}
+
+	</script>
 
 
 
@@ -870,196 +869,196 @@ PURPOSE		: BRRS REPORT
 
 
 	<script>
-			// Calculating Totals for 20 row
-			function calculateR20Totals() {
-				let totalAmount = 0;
+		// Calculating Totals for 20 row
+		function calculateR20Totals() {
+			let totalAmount = 0;
 
-				for (let i = 10; i <= 19; i++) {
-					let amt = parseFloat($("#R" + i + "_AMOUNT").val()?.replace(/,/g, "")) || 0;
-					totalAmount += amt;
+			for (let i = 10; i <= 19; i++) {
+				let amt = parseFloat($("#R" + i + "_AMOUNT").val()?.replace(/,/g, "")) || 0;
+				totalAmount += amt;
+			}
+
+			// Format with comma separation
+			$("#R20_AMOUNT").val(totalAmount.toLocaleString("en-US"));
+			calculateR29Totals();
+		}
+
+		// Calculating Totals for 28 row
+		function calculateR28Totals() {
+			let totalAmount = 0;
+
+			for (let i = 24; i <= 27; i++) {
+				let amt = parseFloat($("#R" + i + "_AMOUNT").val()?.replace(/,/g, "")) || 0;
+				totalAmount += amt;
+			}
+
+			// Format with comma separation
+			$("#R28_AMOUNT").val(totalAmount.toLocaleString("en-US"));
+			calculateR29Totals();
+		}
+
+		// Calculating Totals for 29 row
+		function calculateR29Totals() {
+			let amt1 = parseFloat($("#R20_AMOUNT").val()?.replace(/,/g, "")) || 0;
+			let amt2 = parseFloat($("#R28_AMOUNT").val()?.replace(/,/g, "")) || 0;
+			let totalAmount = amt1 + amt2;
+
+			// Format with comma separation
+			$("#R29_AMOUNT").val(totalAmount.toLocaleString("en-US"));
+		}
+
+		// Call on page load for section 1
+		$(document).ready(function () {
+			calculateR20Totals();
+			calculateR28Totals();
+			calculateR29Totals();
+
+			for (let i = 10; i <= 19; i++) {
+				$("#R" + i + "_AMOUNT").on("input", calculateR20Totals);
+			}
+			for (let i = 24; i <= 27; i++) {
+				$("#R" + i + "_AMOUNT").on("input", calculateR28Totals);
+			}
+		});
+
+		// Calculating Totals for 41 row
+		function calculateR41Totals() {
+			let totalAmount = 0;
+
+			for (let i = 36; i <= 40; i++) {
+				let amt = parseFloat($("#R" + i + "_AMOUNT").val()?.replace(/,/g, "")) || 0;
+				totalAmount += amt;
+			}
+
+			// Format with comma separation
+			$("#R41_AMOUNT").val(totalAmount.toLocaleString("en-US"));
+			calculateR46Totals();
+		}
+
+		/* // Calculating Totals for 46 row
+		function calculateR46Totals() {
+			let amt1 = parseFloat($("#R41_AMOUNT").val()?.replace(/,/g, "")) || 0;
+			let amt2 = parseFloat($("#R45_AMOUNT").val()?.replace(/,/g, "")) || 0;
+			let totalAmount = amt1 + amt2;
+
+			$("#R46_AMOUNT").val(totalAmount.toLocaleString("en-IN"));
+		}
+
+		// Call on page load for section 2
+		$(document).ready(function () {
+			calculateR41Totals();
+			calculateR46Totals();
+
+			for (let i = 36; i <= 40; i++) {
+				$("#R" + i + "_AMOUNT").on("input", calculateR41Totals);
+			}
+
+			$("#R45_AMOUNT").on("input", calculateR46Totals);
+		});
+ */
+
+
+
+		//Calculating Totals for 46 row
+		function calculateR46Totals() {
+			let amt1 = parseFloat($("#R41_AMOUNT").val()?.replace(/,/g, "")) || 0;
+			let amt2 = parseFloat($("#R45_AMOUNT").val()?.replace(/,/g, "")) || 0;
+			let totalAmount = amt1 + amt2;
+
+			$("#R46_AMOUNT").val(totalAmount.toLocaleString("en-US"));
+		}
+
+		// NEW: R45 = R44
+		function copyR44ToR45() {
+			let r44 = parseFloat($("#R44_AMOUNT").val()?.replace(/,/g, "")) || 0;
+			$("#R45_AMOUNT").val(r44.toLocaleString("en-US"));
+			calculateR46Totals();
+		}
+
+		// Call on page load for section 2
+		$(document).ready(function () {
+			calculateR41Totals();
+			calculateR46Totals();
+
+			for (let i = 36; i <= 40; i++) {
+				$("#R" + i + "_AMOUNT").on("input", calculateR41Totals);
+			}
+
+			// When R44 changes → update R45 automatically
+			$("#R44_AMOUNT").on("input", copyR44ToR45);
+		});
+
+
+
+
+
+		// Calculating Totals for 55 row
+		function calculateR55Totals() {
+			let totalAmount = 0;
+
+			for (let i = 50; i <= 54; i++) {
+				let amt = parseFloat($("#R" + i + "_AMOUNT").val()?.replace(/,/g, "")) || 0;
+				totalAmount += amt;
+			}
+
+			$("#R55_AMOUNT").val(totalAmount.toLocaleString("en-US"));
+			calculateR60Totals();
+		}
+		/* 
+				// Calculating Totals for 60 row
+				function calculateR60Totals() {
+					let amt1 = parseFloat($("#R55_AMOUNT").val()?.replace(/,/g, "")) || 0;
+					let amt2 = parseFloat($("#R59_AMOUNT").val()?.replace(/,/g, "")) || 0;
+					let totalAmount = amt1 + amt2;
+	
+					$("#R60_AMOUNT").val(totalAmount.toLocaleString("en-IN"));
 				}
+	
+				// Call on page load for section 3
+				$(document).ready(function () {
+					calculateR55Totals();
+					calculateR60Totals();
+	
+					for (let i = 50; i <= 54; i++) {
+						$("#R" + i + "_AMOUNT").on("input", calculateR55Totals);
+					}
+	
+					$("#R59_AMOUNT").on("input", calculateR60Totals);
+				}); */
 
-				// Format with comma separation
-				$("#R20_AMOUNT").val(totalAmount.toLocaleString("en-US"));
-				calculateR29Totals();
+		// Calculating Totals for 60 row
+		function calculateR60Totals() {
+			let amt1 = parseFloat($("#R55_AMOUNT").val()?.replace(/,/g, "")) || 0;
+			let amt2 = parseFloat($("#R59_AMOUNT").val()?.replace(/,/g, "")) || 0;
+			let totalAmount = amt1 + amt2;
+
+			$("#R60_AMOUNT").val(totalAmount.toLocaleString("en-US"));
+		}
+
+		// NEW: R59 = R58
+		function copyR58ToR59() {
+			let r58 = parseFloat($("#R58_AMOUNT").val()?.replace(/,/g, "")) || 0;
+			$("#R59_AMOUNT").val(r58.toLocaleString("en-US"));
+			calculateR60Totals();
+		}
+
+		// Call on page load for section 3
+		$(document).ready(function () {
+			calculateR55Totals();
+			calculateR60Totals();
+
+			for (let i = 50; i <= 54; i++) {
+				$("#R" + i + "_AMOUNT").on("input", calculateR55Totals);
 			}
 
-			// Calculating Totals for 28 row
-			function calculateR28Totals() {
-				let totalAmount = 0;
+			// When R58 changes → update R59
+			$("#R58_AMOUNT").on("input", copyR58ToR59);
 
-				for (let i = 24; i <= 27; i++) {
-					let amt = parseFloat($("#R" + i + "_AMOUNT").val()?.replace(/,/g, "")) || 0;
-					totalAmount += amt;
-				}
+			// Already existing
+			$("#R59_AMOUNT").on("input", calculateR60Totals);
+		});
 
-				// Format with comma separation
-				$("#R28_AMOUNT").val(totalAmount.toLocaleString("en-US"));
-				calculateR29Totals();
-			}
-
-			// Calculating Totals for 29 row
-			function calculateR29Totals() {
-				let amt1 = parseFloat($("#R20_AMOUNT").val()?.replace(/,/g, "")) || 0;
-				let amt2 = parseFloat($("#R28_AMOUNT").val()?.replace(/,/g, "")) || 0;
-				let totalAmount = amt1 + amt2;
-
-				// Format with comma separation
-				$("#R29_AMOUNT").val(totalAmount.toLocaleString("en-US"));
-			}
-
-			// Call on page load for section 1
-			$(document).ready(function () {
-				calculateR20Totals();
-				calculateR28Totals();
-				calculateR29Totals();
-
-				for (let i = 10; i <= 19; i++) {
-					$("#R" + i + "_AMOUNT").on("input", calculateR20Totals);
-				}
-				for (let i = 24; i <= 27; i++) {
-					$("#R" + i + "_AMOUNT").on("input", calculateR28Totals);
-				}
-			});
-
-			// Calculating Totals for 41 row
-			function calculateR41Totals() {
-				let totalAmount = 0;
-
-				for (let i = 36; i <= 40; i++) {
-					let amt = parseFloat($("#R" + i + "_AMOUNT").val()?.replace(/,/g, "")) || 0;
-					totalAmount += amt;
-				}
-
-				// Format with comma separation
-				$("#R41_AMOUNT").val(totalAmount.toLocaleString("en-US"));
-				calculateR46Totals();
-			}
-
-			/* // Calculating Totals for 46 row
-			function calculateR46Totals() {
-				let amt1 = parseFloat($("#R41_AMOUNT").val()?.replace(/,/g, "")) || 0;
-				let amt2 = parseFloat($("#R45_AMOUNT").val()?.replace(/,/g, "")) || 0;
-				let totalAmount = amt1 + amt2;
-
-				$("#R46_AMOUNT").val(totalAmount.toLocaleString("en-IN"));
-			}
-
-			// Call on page load for section 2
-			$(document).ready(function () {
-				calculateR41Totals();
-				calculateR46Totals();
-
-				for (let i = 36; i <= 40; i++) {
-					$("#R" + i + "_AMOUNT").on("input", calculateR41Totals);
-				}
-
-				$("#R45_AMOUNT").on("input", calculateR46Totals);
-			});
-	 */
-	 
-	 
-	 
-	//Calculating Totals for 46 row
-	 function calculateR46Totals() {
-	 	let amt1 = parseFloat($("#R41_AMOUNT").val()?.replace(/,/g, "")) || 0;
-	 	let amt2 = parseFloat($("#R45_AMOUNT").val()?.replace(/,/g, "")) || 0;
-	 	let totalAmount = amt1 + amt2;
-
-	 	$("#R46_AMOUNT").val(totalAmount.toLocaleString("en-US"));
-	 }
-
-	 // NEW: R45 = R44
-	 function copyR44ToR45() {
-	 	let r44 = parseFloat($("#R44_AMOUNT").val()?.replace(/,/g, "")) || 0;
-	 	$("#R45_AMOUNT").val(r44.toLocaleString("en-US"));
-	 	calculateR46Totals();
-	 }
-
-	 // Call on page load for section 2
-	 $(document).ready(function () {
-		 calculateR41Totals();
-	 	calculateR46Totals();
-
-	 	for (let i = 36; i <= 40; i++) {
-	 		$("#R" + i + "_AMOUNT").on("input", calculateR41Totals);
-	 	}
-
-	 	// When R44 changes → update R45 automatically
-	 	$("#R44_AMOUNT").on("input", copyR44ToR45);
-	 });
-
-	 
-	 
-	 
-	 
-			// Calculating Totals for 55 row
-			function calculateR55Totals() {
-				let totalAmount = 0;
-
-				for (let i = 50; i <= 54; i++) {
-					let amt = parseFloat($("#R" + i + "_AMOUNT").val()?.replace(/,/g, "")) || 0;
-					totalAmount += amt;
-				}
-
-				$("#R55_AMOUNT").val(totalAmount.toLocaleString("en-US"));
-				calculateR60Totals();
-			}
-	/* 
-			// Calculating Totals for 60 row
-			function calculateR60Totals() {
-				let amt1 = parseFloat($("#R55_AMOUNT").val()?.replace(/,/g, "")) || 0;
-				let amt2 = parseFloat($("#R59_AMOUNT").val()?.replace(/,/g, "")) || 0;
-				let totalAmount = amt1 + amt2;
-
-				$("#R60_AMOUNT").val(totalAmount.toLocaleString("en-IN"));
-			}
-
-			// Call on page load for section 3
-			$(document).ready(function () {
-				calculateR55Totals();
-				calculateR60Totals();
-
-				for (let i = 50; i <= 54; i++) {
-					$("#R" + i + "_AMOUNT").on("input", calculateR55Totals);
-				}
-
-				$("#R59_AMOUNT").on("input", calculateR60Totals);
-			}); */
-			
-			// Calculating Totals for 60 row
-			function calculateR60Totals() {
-			    let amt1 = parseFloat($("#R55_AMOUNT").val()?.replace(/,/g, "")) || 0;
-			    let amt2 = parseFloat($("#R59_AMOUNT").val()?.replace(/,/g, "")) || 0;
-			    let totalAmount = amt1 + amt2;
-
-			    $("#R60_AMOUNT").val(totalAmount.toLocaleString("en-US"));
-			}
-
-			// NEW: R59 = R58
-			function copyR58ToR59() {
-			    let r58 = parseFloat($("#R58_AMOUNT").val()?.replace(/,/g, "")) || 0;
-			    $("#R59_AMOUNT").val(r58.toLocaleString("en-US"));
-			    calculateR60Totals();
-			}
-
-			// Call on page load for section 3
-			$(document).ready(function () {
-				calculateR55Totals();
-			    calculateR60Totals();
-
-			    for (let i = 50; i <= 54; i++) {
-			        $("#R" + i + "_AMOUNT").on("input", calculateR55Totals);
-			    }
-
-			    // When R58 changes → update R59
-			    $("#R58_AMOUNT").on("input", copyR58ToR59);
-
-			    // Already existing
-			    $("#R59_AMOUNT").on("input", calculateR60Totals);
-			});
-
-		</script>
+	</script>
 
 
 
@@ -1088,90 +1087,90 @@ PURPOSE		: BRRS REPORT
 		// This is the main function that orchestrates the entire form submission process.
 		// It is triggered by the "Update" button click.
 		// Make the function global so onclick="fileuploads(this)" can see it
-		
-			window.fileuploads = function (btn) {
-				try {
-					const asondate = btn.getAttribute("data-todate");
-					const btnType = btn.getAttribute("data-type");
 
-					$('#loader').modal('show');
+		window.fileuploads = function (btn) {
+			try {
+				const asondate = btn.getAttribute("data-todate");
+				const btnType = btn.getAttribute("data-type");
 
-					// ✅ Step 1: Calculate totals (if functions exist)
-					if (typeof calculateR20Totals === "function") calculateR20Totals();
-					if (typeof calculateR28Totals === "function") calculateR28Totals();
-					if (typeof calculateR29Totals === "function") calculateR29Totals();
-					if (typeof calculateR41Totals === "function") calculateR41Totals();
-					if (typeof calculateR46Totals === "function") calculateR46Totals();
-					if (typeof calculateR55Totals === "function") calculateR55Totals();
-					if (typeof calculateR60Totals === "function") calculateR60Totals();
+				$('#loader').modal('show');
 
-					// ✅ Step 2: Remove commas from all text inputs
-					$("#fileupload input[type='text']").each(function () {
-						const val = $(this).val();
-						if (val && val.includes(",")) {
-							$(this).val(val.replace(/,/g, ''));
-						}
-					});
+				// ✅ Step 1: Calculate totals (if functions exist)
+				if (typeof calculateR20Totals === "function") calculateR20Totals();
+				if (typeof calculateR28Totals === "function") calculateR28Totals();
+				if (typeof calculateR29Totals === "function") calculateR29Totals();
+				if (typeof calculateR41Totals === "function") calculateR41Totals();
+				if (typeof calculateR46Totals === "function") calculateR46Totals();
+				if (typeof calculateR55Totals === "function") calculateR55Totals();
+				if (typeof calculateR60Totals === "function") calculateR60Totals();
 
-					// ✅ Step 3: Validate form
-					if (!$("#fileupload").valid()) {
-						$('#loader').modal('hide');
-						return;
+				// ✅ Step 2: Remove commas from all text inputs
+				$("#fileupload input[type='text']").each(function () {
+					const val = $(this).val();
+					if (val && val.includes(",")) {
+						$(this).val(val.replace(/,/g, ''));
 					}
+				});
 
-					// ✅ Step 4: Get type from URL or button
-					const urlParams = new URLSearchParams(window.location.search);
-					const urlType = urlParams.get("type");
-					const type = urlType || btnType || "";
-
-					// ✅ Step 5: Build FormData
-					const formData1 = new FormData();
-					formData1.append("asondate", asondate);
-					formData1.append("type", type);
-
-					// Append all inputs from the form
-					$('#fileupload').find(':input').each(function () {
-						const name = $(this).attr('name');
-						if (name) {
-							formData1.append(name, $(this).val());
-						}
-					});
-
-					// ✅ Step 6: Choose endpoint based on type
-					let apiUrl = './M_CA3update';
-					if (type && type.toUpperCase() === 'RESUB') {
-						apiUrl = './UpdateM_CA3_ReSub';
-					}
-
-					// ✅ Step 7: AJAX call
-					$.ajax({
-						url: apiUrl,
-						type: 'POST',
-						data: formData1,
-						processData: false,
-						contentType: false,
-						dataType: 'text',
-						success: function (response) {
-							$("#resultModalLabel").text("BRRS");
-							$("#resultModalBody").text(response);
-							$("#resultModal").modal("show");
-						},
-						error: function (jqXHR) {
-							$("#resultModalLabel").text("Error");
-							$("#resultModalBody").text("Update failed: " + jqXHR.responseText);
-							$("#resultModal").modal("show");
-						},
-						complete: function () {
-							$('#loader').modal('hide');
-						}
-					});
-
-				} catch (error) {
+				// ✅ Step 3: Validate form
+				if (!$("#fileupload").valid()) {
 					$('#loader').modal('hide');
-					console.error("Error during file upload:", error);
+					return;
 				}
-			};
-		</script>
+
+				// ✅ Step 4: Get type from URL or button
+				const urlParams = new URLSearchParams(window.location.search);
+				const urlType = urlParams.get("type");
+				const type = urlType || btnType || "";
+
+				// ✅ Step 5: Build FormData
+				const formData1 = new FormData();
+				formData1.append("asondate", asondate);
+				formData1.append("type", type);
+
+				// Append all inputs from the form
+				$('#fileupload').find(':input').each(function () {
+					const name = $(this).attr('name');
+					if (name) {
+						formData1.append(name, $(this).val());
+					}
+				});
+
+				// ✅ Step 6: Choose endpoint based on type
+				let apiUrl = './M_CA3update';
+				if (type && type.toUpperCase() === 'RESUB') {
+					apiUrl = './UpdateM_CA3_ReSub';
+				}
+
+				// ✅ Step 7: AJAX call
+				$.ajax({
+					url: apiUrl,
+					type: 'POST',
+					data: formData1,
+					processData: false,
+					contentType: false,
+					dataType: 'text',
+					success: function (response) {
+						$("#resultModalLabel").text("BRRS");
+						$("#resultModalBody").text(response);
+						$("#resultModal").modal("show");
+					},
+					error: function (jqXHR) {
+						$("#resultModalLabel").text("Error");
+						$("#resultModalBody").text("Update failed: " + jqXHR.responseText);
+						$("#resultModal").modal("show");
+					},
+					complete: function () {
+						$('#loader').modal('hide');
+					}
+				});
+
+			} catch (error) {
+				$('#loader').modal('hide');
+				console.error("Error during file upload:", error);
+			}
+		};
+	</script>
 
 
 

@@ -13,8 +13,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
@@ -355,10 +353,10 @@ public class BRRS_M_CA3_ReportService {
 						row = sheet.createRow(startRow + i);
 					}
 
-					//row10
+					// row10
 					// Column b
-					
-					//column c
+
+					// column c
 					Cell cell2 = row.createCell(2);
 					if (record.getR10_AMOUNT() != null) {
 						cell2.setCellValue(record.getR10_AMOUNT().doubleValue());
@@ -367,17 +365,13 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
-					
-									
-					
-					//row11
-					row = sheet.getRow(10);			
+
+					// row11
+					row = sheet.getRow(10);
 					// Column b
-				
 
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR11_AMOUNT() != null) {
 						cell2.setCellValue(record.getR11_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -385,13 +379,13 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
-					//row12
-					row = sheet.getRow(11);			
+
+					// row12
+					row = sheet.getRow(11);
 					// Column b
-					
+
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR12_AMOUNT() != null) {
 						cell2.setCellValue(record.getR12_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -399,13 +393,13 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
-					//row13
-					row = sheet.getRow(12);			
+
+					// row13
+					row = sheet.getRow(12);
 					// Column b
-				
+
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR13_AMOUNT() != null) {
 						cell2.setCellValue(record.getR13_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -413,14 +407,13 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
 
-					//row14
-					row = sheet.getRow(13);			
+					// row14
+					row = sheet.getRow(13);
 					// Column b
-					
+
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR14_AMOUNT() != null) {
 						cell2.setCellValue(record.getR14_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -428,15 +421,13 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
 
-					//row15
-					row = sheet.getRow(14);			
+					// row15
+					row = sheet.getRow(14);
 					// Column b
-					
 
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR15_AMOUNT() != null) {
 						cell2.setCellValue(record.getR15_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -445,13 +436,12 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row16
-					row = sheet.getRow(15);			
+					// row16
+					row = sheet.getRow(15);
 					// Column b
-					
 
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR16_AMOUNT() != null) {
 						cell2.setCellValue(record.getR16_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -460,13 +450,12 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row17
-					row = sheet.getRow(16);			
+					// row17
+					row = sheet.getRow(16);
 					// Column b
-				
 
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR17_AMOUNT() != null) {
 						cell2.setCellValue(record.getR17_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -475,13 +464,12 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row18
-					row = sheet.getRow(17);			
+					// row18
+					row = sheet.getRow(17);
 					// Column b
-					
 
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR18_AMOUNT() != null) {
 						cell2.setCellValue(record.getR18_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -490,13 +478,12 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row19
-					row = sheet.getRow(18);			
+					// row19
+					row = sheet.getRow(18);
 					// Column b
-				
 
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR19_AMOUNT() != null) {
 						cell2.setCellValue(record.getR19_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -505,27 +492,25 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row20
-					row = sheet.getRow(19);			
+					// row20
+					row = sheet.getRow(19);
 					// Column b
-				
 
 					// Column c
-					 cell2 = row.getCell(2);
+					cell2 = row.getCell(2);
 					if (record.getR20_AMOUNT() != null) {
 						cell2.setCellValue(record.getR20_AMOUNT().doubleValue());
-						
+
 					} else {
 						cell2.setCellValue("");
-											}
+					}
 
-					//row24
-					row = sheet.getRow(23);			
+					// row24
+					row = sheet.getRow(23);
 					// Column b
-					
 
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR24_AMOUNT() != null) {
 						cell2.setCellValue(record.getR24_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -534,13 +519,12 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row25
-					row = sheet.getRow(24);			
+					// row25
+					row = sheet.getRow(24);
 					// Column b
-				
 
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR25_AMOUNT() != null) {
 						cell2.setCellValue(record.getR25_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -549,13 +533,12 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row26
-					row = sheet.getRow(25);			
+					// row26
+					row = sheet.getRow(25);
 					// Column b
-				
 
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR26_AMOUNT() != null) {
 						cell2.setCellValue(record.getR26_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -564,12 +547,12 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row27
-					row = sheet.getRow(26);			
+					// row27
+					row = sheet.getRow(26);
 					// Column b
-				
+
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR27_AMOUNT() != null) {
 						cell2.setCellValue(record.getR27_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -578,25 +561,25 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row28
-					row = sheet.getRow(27);			
+					// row28
+					row = sheet.getRow(27);
 					// Column b
-				
+
 					// Column c
-					 cell2 = row.getCell(2);
+					cell2 = row.getCell(2);
 					if (record.getR28_AMOUNT() != null) {
 						cell2.setCellValue(record.getR28_AMOUNT().doubleValue());
-						
+
 					} else {
 						cell2.setCellValue("");
-											}
+					}
 
-					//row29
-					row = sheet.getRow(28);			
+					// row29
+					row = sheet.getRow(28);
 					// Column b
-					
+
 					// Column c
-					 cell2 = row.getCell(2);
+					cell2 = row.getCell(2);
 					if (record.getR29_AMOUNT() != null) {
 						cell2.setCellValue(record.getR29_AMOUNT().doubleValue());
 
@@ -605,13 +588,12 @@ public class BRRS_M_CA3_ReportService {
 
 					}
 
-					//row36
-					row = sheet.getRow(35);			
+					// row36
+					row = sheet.getRow(35);
 					// Column b
-				
 
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR36_AMOUNT() != null) {
 						cell2.setCellValue(record.getR36_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -619,12 +601,12 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					//row37
-					row = sheet.getRow(36);			
+					// row37
+					row = sheet.getRow(36);
 					// Column b
-				
+
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR37_AMOUNT() != null) {
 						cell2.setCellValue(record.getR37_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -633,12 +615,12 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row38
-					row = sheet.getRow(37);			
+					// row38
+					row = sheet.getRow(37);
 					// Column b
-					
+
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR38_AMOUNT() != null) {
 						cell2.setCellValue(record.getR38_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -647,13 +629,12 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row39
-					row = sheet.getRow(38);			
+					// row39
+					row = sheet.getRow(38);
 					// Column b
-				
 
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR39_AMOUNT() != null) {
 						cell2.setCellValue(record.getR39_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -662,13 +643,12 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row40
-					row = sheet.getRow(39);			
+					// row40
+					row = sheet.getRow(39);
 					// Column b
-				
 
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR40_AMOUNT() != null) {
 						cell2.setCellValue(record.getR40_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -677,13 +657,12 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row41
-					row = sheet.getRow(40);			
+					// row41
+					row = sheet.getRow(40);
 					// Column b
-				
 
 					// Column c
-					 cell2 = row.getCell(2);
+					cell2 = row.getCell(2);
 					if (record.getR41_AMOUNT() != null) {
 						cell2.setCellValue(record.getR41_AMOUNT().doubleValue());
 
@@ -692,12 +671,12 @@ public class BRRS_M_CA3_ReportService {
 
 					}
 
-					//row44
-					row = sheet.getRow(43);			
+					// row44
+					row = sheet.getRow(43);
 					// Column b
-					
+
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR44_AMOUNT() != null) {
 						cell2.setCellValue(record.getR44_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -706,13 +685,12 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row45
-					row = sheet.getRow(44);			
+					// row45
+					row = sheet.getRow(44);
 					// Column b
-				
 
 					// Column c
-					 cell2 = row.getCell(2);
+					cell2 = row.getCell(2);
 					if (record.getR45_AMOUNT() != null) {
 						cell2.setCellValue(record.getR45_AMOUNT().doubleValue());
 
@@ -721,26 +699,26 @@ public class BRRS_M_CA3_ReportService {
 
 					}
 
-					//row46
-					row = sheet.getRow(45);			
+					// row46
+					row = sheet.getRow(45);
 					// Column b
-				
+
 					// Column c
-					 cell2 = row.getCell(2);
+					cell2 = row.getCell(2);
 					if (record.getR46_AMOUNT() != null) {
 						cell2.setCellValue(record.getR46_AMOUNT().doubleValue());
-			
+
 					} else {
 						cell2.setCellValue("");
 
 					}
 
-					//row50
-					row = sheet.getRow(49);			
+					// row50
+					row = sheet.getRow(49);
 					// Column b
-				
+
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR50_AMOUNT() != null) {
 						cell2.setCellValue(record.getR50_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -749,13 +727,12 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row51
-					row = sheet.getRow(50);			
+					// row51
+					row = sheet.getRow(50);
 					// Column b
-				
 
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR51_AMOUNT() != null) {
 						cell2.setCellValue(record.getR51_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -764,13 +741,12 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row52
-					row = sheet.getRow(51);			
+					// row52
+					row = sheet.getRow(51);
 					// Column b
-				
 
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR52_AMOUNT() != null) {
 						cell2.setCellValue(record.getR52_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -779,13 +755,12 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row53
-					row = sheet.getRow(52);			
+					// row53
+					row = sheet.getRow(52);
 					// Column b
-				
 
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR53_AMOUNT() != null) {
 						cell2.setCellValue(record.getR53_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -794,12 +769,12 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row54
-					row = sheet.getRow(53);			
+					// row54
+					row = sheet.getRow(53);
 					// Column b
-				
+
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR54_AMOUNT() != null) {
 						cell2.setCellValue(record.getR54_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -808,13 +783,12 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row55
-					row = sheet.getRow(54);			
+					// row55
+					row = sheet.getRow(54);
 					// Column b
-				
 
 					// Column c
-					 cell2 = row.getCell(2);
+					cell2 = row.getCell(2);
 					if (record.getR55_AMOUNT() != null) {
 						cell2.setCellValue(record.getR55_AMOUNT().doubleValue());
 
@@ -823,14 +797,12 @@ public class BRRS_M_CA3_ReportService {
 
 					}
 
-				
-
-					//row58
-					row = sheet.getRow(57);			
+					// row58
+					row = sheet.getRow(57);
 					// Column b
-				
+
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR58_AMOUNT() != null) {
 						cell2.setCellValue(record.getR58_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -839,13 +811,12 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row59
-					row = sheet.getRow(58);			
+					// row59
+					row = sheet.getRow(58);
 					// Column b
-				
 
 					// Column c
-					 cell2 = row.getCell(2);
+					cell2 = row.getCell(2);
 					if (record.getR59_AMOUNT() != null) {
 						cell2.setCellValue(record.getR59_AMOUNT().doubleValue());
 
@@ -854,12 +825,12 @@ public class BRRS_M_CA3_ReportService {
 
 					}
 
-					//row60
-					row = sheet.getRow(14);			
+					// row60
+					row = sheet.getRow(14);
 					// Column b
-				
+
 					// Column c
-					 cell2 = row.getCell(2);
+					cell2 = row.getCell(2);
 					if (record.getR15_AMOUNT() != null) {
 						cell2.setCellValue(record.getR15_AMOUNT().doubleValue());
 
@@ -1096,10 +1067,10 @@ public class BRRS_M_CA3_ReportService {
 						row = sheet.createRow(startRow + i);
 					}
 
-					//row10
+					// row10
 					// Column b
-					
-					//column c
+
+					// column c
 					Cell cell2 = row.createCell(2);
 					if (record.getR10_AMOUNT() != null) {
 						cell2.setCellValue(record.getR10_AMOUNT().doubleValue());
@@ -1108,17 +1079,13 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
-					
-									
-					
-					//row11
-					row = sheet.getRow(10);			
+
+					// row11
+					row = sheet.getRow(10);
 					// Column b
-				
 
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR11_AMOUNT() != null) {
 						cell2.setCellValue(record.getR11_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -1126,13 +1093,13 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
-					//row12
-					row = sheet.getRow(11);			
+
+					// row12
+					row = sheet.getRow(11);
 					// Column b
-					
+
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR12_AMOUNT() != null) {
 						cell2.setCellValue(record.getR12_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -1140,13 +1107,13 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
-					//row13
-					row = sheet.getRow(12);			
+
+					// row13
+					row = sheet.getRow(12);
 					// Column b
-				
+
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR13_AMOUNT() != null) {
 						cell2.setCellValue(record.getR13_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -1154,14 +1121,13 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
 
-					//row14
-					row = sheet.getRow(13);			
+					// row14
+					row = sheet.getRow(13);
 					// Column b
-					
+
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR14_AMOUNT() != null) {
 						cell2.setCellValue(record.getR14_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -1169,15 +1135,13 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
 
-					//row15
-					row = sheet.getRow(14);			
+					// row15
+					row = sheet.getRow(14);
 					// Column b
-					
 
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR15_AMOUNT() != null) {
 						cell2.setCellValue(record.getR15_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -1186,13 +1150,12 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row16
-					row = sheet.getRow(15);			
+					// row16
+					row = sheet.getRow(15);
 					// Column b
-					
 
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR16_AMOUNT() != null) {
 						cell2.setCellValue(record.getR16_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -1201,13 +1164,12 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row17
-					row = sheet.getRow(16);			
+					// row17
+					row = sheet.getRow(16);
 					// Column b
-				
 
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR17_AMOUNT() != null) {
 						cell2.setCellValue(record.getR17_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -1216,13 +1178,12 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row18
-					row = sheet.getRow(17);			
+					// row18
+					row = sheet.getRow(17);
 					// Column b
-					
 
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR18_AMOUNT() != null) {
 						cell2.setCellValue(record.getR18_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -1231,13 +1192,12 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row19
-					row = sheet.getRow(18);			
+					// row19
+					row = sheet.getRow(18);
 					// Column b
-				
 
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR19_AMOUNT() != null) {
 						cell2.setCellValue(record.getR19_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -1246,27 +1206,25 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row20
-					row = sheet.getRow(19);			
+					// row20
+					row = sheet.getRow(19);
 					// Column b
-				
 
 					// Column c
-					 cell2 = row.getCell(2);
+					cell2 = row.getCell(2);
 					if (record.getR20_AMOUNT() != null) {
 						cell2.setCellValue(record.getR20_AMOUNT().doubleValue());
-						
+
 					} else {
 						cell2.setCellValue("");
-											}
+					}
 
-					//row24
-					row = sheet.getRow(23);			
+					// row24
+					row = sheet.getRow(23);
 					// Column b
-					
 
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR24_AMOUNT() != null) {
 						cell2.setCellValue(record.getR24_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -1275,13 +1233,12 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row25
-					row = sheet.getRow(24);			
+					// row25
+					row = sheet.getRow(24);
 					// Column b
-				
 
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR25_AMOUNT() != null) {
 						cell2.setCellValue(record.getR25_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -1290,13 +1247,12 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row26
-					row = sheet.getRow(25);			
+					// row26
+					row = sheet.getRow(25);
 					// Column b
-				
 
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR26_AMOUNT() != null) {
 						cell2.setCellValue(record.getR26_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -1305,12 +1261,12 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row27
-					row = sheet.getRow(26);			
+					// row27
+					row = sheet.getRow(26);
 					// Column b
-				
+
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR27_AMOUNT() != null) {
 						cell2.setCellValue(record.getR27_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -1319,25 +1275,25 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row28
-					row = sheet.getRow(27);			
+					// row28
+					row = sheet.getRow(27);
 					// Column b
-				
+
 					// Column c
-					 cell2 = row.getCell(2);
+					cell2 = row.getCell(2);
 					if (record.getR28_AMOUNT() != null) {
 						cell2.setCellValue(record.getR28_AMOUNT().doubleValue());
-						
+
 					} else {
 						cell2.setCellValue("");
-											}
+					}
 
-					//row29
-					row = sheet.getRow(28);			
+					// row29
+					row = sheet.getRow(28);
 					// Column b
-					
+
 					// Column c
-					 cell2 = row.getCell(2);
+					cell2 = row.getCell(2);
 					if (record.getR29_AMOUNT() != null) {
 						cell2.setCellValue(record.getR29_AMOUNT().doubleValue());
 
@@ -1346,13 +1302,12 @@ public class BRRS_M_CA3_ReportService {
 
 					}
 
-					//row36
-					row = sheet.getRow(35);			
+					// row36
+					row = sheet.getRow(35);
 					// Column b
-				
 
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR36_AMOUNT() != null) {
 						cell2.setCellValue(record.getR36_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -1360,12 +1315,12 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					//row37
-					row = sheet.getRow(36);			
+					// row37
+					row = sheet.getRow(36);
 					// Column b
-				
+
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR37_AMOUNT() != null) {
 						cell2.setCellValue(record.getR37_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -1374,12 +1329,12 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row38
-					row = sheet.getRow(37);			
+					// row38
+					row = sheet.getRow(37);
 					// Column b
-					
+
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR38_AMOUNT() != null) {
 						cell2.setCellValue(record.getR38_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -1388,13 +1343,12 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row39
-					row = sheet.getRow(38);			
+					// row39
+					row = sheet.getRow(38);
 					// Column b
-				
 
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR39_AMOUNT() != null) {
 						cell2.setCellValue(record.getR39_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -1403,13 +1357,12 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row40
-					row = sheet.getRow(39);			
+					// row40
+					row = sheet.getRow(39);
 					// Column b
-				
 
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR40_AMOUNT() != null) {
 						cell2.setCellValue(record.getR40_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -1418,13 +1371,12 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row41
-					row = sheet.getRow(40);			
+					// row41
+					row = sheet.getRow(40);
 					// Column b
-				
 
 					// Column c
-					 cell2 = row.getCell(2);
+					cell2 = row.getCell(2);
 					if (record.getR41_AMOUNT() != null) {
 						cell2.setCellValue(record.getR41_AMOUNT().doubleValue());
 
@@ -1433,12 +1385,12 @@ public class BRRS_M_CA3_ReportService {
 
 					}
 
-					//row44
-					row = sheet.getRow(43);			
+					// row44
+					row = sheet.getRow(43);
 					// Column b
-					
+
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR44_AMOUNT() != null) {
 						cell2.setCellValue(record.getR44_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -1447,13 +1399,12 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row45
-					row = sheet.getRow(44);			
+					// row45
+					row = sheet.getRow(44);
 					// Column b
-				
 
 					// Column c
-					 cell2 = row.getCell(2);
+					cell2 = row.getCell(2);
 					if (record.getR45_AMOUNT() != null) {
 						cell2.setCellValue(record.getR45_AMOUNT().doubleValue());
 
@@ -1462,26 +1413,26 @@ public class BRRS_M_CA3_ReportService {
 
 					}
 
-					//row46
-					row = sheet.getRow(45);			
+					// row46
+					row = sheet.getRow(45);
 					// Column b
-				
+
 					// Column c
-					 cell2 = row.getCell(2);
+					cell2 = row.getCell(2);
 					if (record.getR46_AMOUNT() != null) {
 						cell2.setCellValue(record.getR46_AMOUNT().doubleValue());
-			
+
 					} else {
 						cell2.setCellValue("");
 
 					}
 
-					//row50
-					row = sheet.getRow(49);			
+					// row50
+					row = sheet.getRow(49);
 					// Column b
-				
+
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR50_AMOUNT() != null) {
 						cell2.setCellValue(record.getR50_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -1490,13 +1441,12 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row51
-					row = sheet.getRow(50);			
+					// row51
+					row = sheet.getRow(50);
 					// Column b
-				
 
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR51_AMOUNT() != null) {
 						cell2.setCellValue(record.getR51_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -1505,13 +1455,12 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row52
-					row = sheet.getRow(51);			
+					// row52
+					row = sheet.getRow(51);
 					// Column b
-				
 
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR52_AMOUNT() != null) {
 						cell2.setCellValue(record.getR52_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -1520,13 +1469,12 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row53
-					row = sheet.getRow(52);			
+					// row53
+					row = sheet.getRow(52);
 					// Column b
-				
 
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR53_AMOUNT() != null) {
 						cell2.setCellValue(record.getR53_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -1535,12 +1483,12 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row54
-					row = sheet.getRow(53);			
+					// row54
+					row = sheet.getRow(53);
 					// Column b
-				
+
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR54_AMOUNT() != null) {
 						cell2.setCellValue(record.getR54_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -1549,13 +1497,12 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row55
-					row = sheet.getRow(54);			
+					// row55
+					row = sheet.getRow(54);
 					// Column b
-				
 
 					// Column c
-					 cell2 = row.getCell(2);
+					cell2 = row.getCell(2);
 					if (record.getR55_AMOUNT() != null) {
 						cell2.setCellValue(record.getR55_AMOUNT().doubleValue());
 
@@ -1564,14 +1511,12 @@ public class BRRS_M_CA3_ReportService {
 
 					}
 
-				
-
-					//row58
-					row = sheet.getRow(57);			
+					// row58
+					row = sheet.getRow(57);
 					// Column b
-				
+
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR58_AMOUNT() != null) {
 						cell2.setCellValue(record.getR58_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -1580,13 +1525,12 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row59
-					row = sheet.getRow(58);			
+					// row59
+					row = sheet.getRow(58);
 					// Column b
-				
 
 					// Column c
-					 cell2 = row.getCell(2);
+					cell2 = row.getCell(2);
 					if (record.getR59_AMOUNT() != null) {
 						cell2.setCellValue(record.getR59_AMOUNT().doubleValue());
 
@@ -1595,12 +1539,12 @@ public class BRRS_M_CA3_ReportService {
 
 					}
 
-					//row60
-					row = sheet.getRow(14);			
+					// row60
+					row = sheet.getRow(14);
 					// Column b
-				
+
 					// Column c
-					 cell2 = row.getCell(2);
+					cell2 = row.getCell(2);
 					if (record.getR15_AMOUNT() != null) {
 						cell2.setCellValue(record.getR15_AMOUNT().doubleValue());
 
@@ -1704,10 +1648,10 @@ public class BRRS_M_CA3_ReportService {
 						row = sheet.createRow(startRow + i);
 					}
 
-					//row10
+					// row10
 					// Column b
-					
-					//column c
+
+					// column c
 					Cell cell2 = row.createCell(2);
 					if (record.getR10_AMOUNT() != null) {
 						cell2.setCellValue(record.getR10_AMOUNT().doubleValue());
@@ -1716,17 +1660,13 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
-					
-									
-					
-					//row11
-					row = sheet.getRow(10);			
+
+					// row11
+					row = sheet.getRow(10);
 					// Column b
-				
 
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR11_AMOUNT() != null) {
 						cell2.setCellValue(record.getR11_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -1734,13 +1674,13 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
-					//row12
-					row = sheet.getRow(11);			
+
+					// row12
+					row = sheet.getRow(11);
 					// Column b
-					
+
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR12_AMOUNT() != null) {
 						cell2.setCellValue(record.getR12_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -1748,13 +1688,13 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
-					//row13
-					row = sheet.getRow(12);			
+
+					// row13
+					row = sheet.getRow(12);
 					// Column b
-				
+
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR13_AMOUNT() != null) {
 						cell2.setCellValue(record.getR13_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -1762,14 +1702,13 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
 
-					//row14
-					row = sheet.getRow(13);			
+					// row14
+					row = sheet.getRow(13);
 					// Column b
-					
+
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR14_AMOUNT() != null) {
 						cell2.setCellValue(record.getR14_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -1777,15 +1716,13 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
 
-					//row15
-					row = sheet.getRow(14);			
+					// row15
+					row = sheet.getRow(14);
 					// Column b
-					
 
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR15_AMOUNT() != null) {
 						cell2.setCellValue(record.getR15_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -1794,13 +1731,12 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row16
-					row = sheet.getRow(15);			
+					// row16
+					row = sheet.getRow(15);
 					// Column b
-					
 
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR16_AMOUNT() != null) {
 						cell2.setCellValue(record.getR16_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -1809,13 +1745,12 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row17
-					row = sheet.getRow(16);			
+					// row17
+					row = sheet.getRow(16);
 					// Column b
-				
 
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR17_AMOUNT() != null) {
 						cell2.setCellValue(record.getR17_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -1824,13 +1759,12 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row18
-					row = sheet.getRow(17);			
+					// row18
+					row = sheet.getRow(17);
 					// Column b
-					
 
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR18_AMOUNT() != null) {
 						cell2.setCellValue(record.getR18_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -1839,13 +1773,12 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row19
-					row = sheet.getRow(18);			
+					// row19
+					row = sheet.getRow(18);
 					// Column b
-				
 
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR19_AMOUNT() != null) {
 						cell2.setCellValue(record.getR19_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -1854,27 +1787,25 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row20
-					row = sheet.getRow(19);			
+					// row20
+					row = sheet.getRow(19);
 					// Column b
-				
 
 					// Column c
-					 cell2 = row.getCell(2);
+					cell2 = row.getCell(2);
 					if (record.getR20_AMOUNT() != null) {
 						cell2.setCellValue(record.getR20_AMOUNT().doubleValue());
-						
+
 					} else {
 						cell2.setCellValue("");
-											}
+					}
 
-					//row24
-					row = sheet.getRow(23);			
+					// row24
+					row = sheet.getRow(23);
 					// Column b
-					
 
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR24_AMOUNT() != null) {
 						cell2.setCellValue(record.getR24_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -1883,13 +1814,12 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row25
-					row = sheet.getRow(24);			
+					// row25
+					row = sheet.getRow(24);
 					// Column b
-				
 
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR25_AMOUNT() != null) {
 						cell2.setCellValue(record.getR25_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -1898,13 +1828,12 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row26
-					row = sheet.getRow(25);			
+					// row26
+					row = sheet.getRow(25);
 					// Column b
-				
 
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR26_AMOUNT() != null) {
 						cell2.setCellValue(record.getR26_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -1913,12 +1842,12 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row27
-					row = sheet.getRow(26);			
+					// row27
+					row = sheet.getRow(26);
 					// Column b
-				
+
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR27_AMOUNT() != null) {
 						cell2.setCellValue(record.getR27_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -1927,25 +1856,25 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row28
-					row = sheet.getRow(27);			
+					// row28
+					row = sheet.getRow(27);
 					// Column b
-				
+
 					// Column c
-					 cell2 = row.getCell(2);
+					cell2 = row.getCell(2);
 					if (record.getR28_AMOUNT() != null) {
 						cell2.setCellValue(record.getR28_AMOUNT().doubleValue());
-						
+
 					} else {
 						cell2.setCellValue("");
-											}
+					}
 
-					//row29
-					row = sheet.getRow(28);			
+					// row29
+					row = sheet.getRow(28);
 					// Column b
-					
+
 					// Column c
-					 cell2 = row.getCell(2);
+					cell2 = row.getCell(2);
 					if (record.getR29_AMOUNT() != null) {
 						cell2.setCellValue(record.getR29_AMOUNT().doubleValue());
 
@@ -1954,13 +1883,14 @@ public class BRRS_M_CA3_ReportService {
 
 					}
 
-					//row36
-					row = sheet.getRow(33);			
+
+
+					// row36
+					row = sheet.getRow(35);
 					// Column b
-				
 
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR36_AMOUNT() != null) {
 						cell2.setCellValue(record.getR36_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -1970,10 +1900,11 @@ public class BRRS_M_CA3_ReportService {
 					}
 					//row37
 					row = sheet.getRow(34);			
+
 					// Column b
-				
+
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR37_AMOUNT() != null) {
 						cell2.setCellValue(record.getR37_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -1984,10 +1915,11 @@ public class BRRS_M_CA3_ReportService {
 
 					//row38
 					row = sheet.getRow(35);			
+
 					// Column b
-					
+
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR38_AMOUNT() != null) {
 						cell2.setCellValue(record.getR38_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -1996,13 +1928,14 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
+
 					//row39
 					row = sheet.getRow(36);			
+
 					// Column b
-				
 
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR39_AMOUNT() != null) {
 						cell2.setCellValue(record.getR39_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -2011,13 +1944,14 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row40
-					row = sheet.getRow(40);			
+
+					// row40
+					row = sheet.getRow(39);
+
 					// Column b
-				
 
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR40_AMOUNT() != null) {
 						cell2.setCellValue(record.getR40_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -2026,13 +1960,14 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
+
 					//row41
 					row = sheet.getRow(38);			
+
 					// Column b
-				
 
 					// Column c
-					 cell2 = row.getCell(2);
+					cell2 = row.getCell(2);
 					if (record.getR41_AMOUNT() != null) {
 						cell2.setCellValue(record.getR41_AMOUNT().doubleValue());
 
@@ -2041,12 +1976,14 @@ public class BRRS_M_CA3_ReportService {
 
 					}
 
+
 					//row44
 					row = sheet.getRow(41);			
+
 					// Column b
-					
+
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR44_AMOUNT() != null) {
 						cell2.setCellValue(record.getR44_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -2055,13 +1992,12 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row45
-					row = sheet.getRow(44);			
+					// row45
+					row = sheet.getRow(44);
 					// Column b
-				
 
 					// Column c
-					 cell2 = row.getCell(2);
+					cell2 = row.getCell(2);
 					if (record.getR45_AMOUNT() != null) {
 						cell2.setCellValue(record.getR45_AMOUNT().doubleValue());
 
@@ -2070,26 +2006,28 @@ public class BRRS_M_CA3_ReportService {
 
 					}
 
-					//row46
-					row = sheet.getRow(45);			
+					// row46
+					row = sheet.getRow(45);
 					// Column b
-				
+
 					// Column c
-					 cell2 = row.getCell(2);
+					cell2 = row.getCell(2);
 					if (record.getR46_AMOUNT() != null) {
 						cell2.setCellValue(record.getR46_AMOUNT().doubleValue());
-			
+
 					} else {
 						cell2.setCellValue("");
 
 					}
 
+
 					//row50
 					row = sheet.getRow(46);			
+
 					// Column b
-				
+
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR50_AMOUNT() != null) {
 						cell2.setCellValue(record.getR50_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -2098,13 +2036,13 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
+
 					//row51
 					row = sheet.getRow(47);			
-					// Column b
-				
+
 
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR51_AMOUNT() != null) {
 						cell2.setCellValue(record.getR51_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -2113,13 +2051,13 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
+
 					//row52
 					row = sheet.getRow(48);			
-					// Column b
-				
+
 
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR52_AMOUNT() != null) {
 						cell2.setCellValue(record.getR52_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -2128,13 +2066,14 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
+
 					//row53
 					row = sheet.getRow(49);			
+
 					// Column b
-				
 
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR53_AMOUNT() != null) {
 						cell2.setCellValue(record.getR53_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -2143,12 +2082,12 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row54
-					row = sheet.getRow(53);			
+					// row54
+					row = sheet.getRow(53);
 					// Column b
-				
+
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR54_AMOUNT() != null) {
 						cell2.setCellValue(record.getR54_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -2157,13 +2096,13 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
+
 					//row55
 					row = sheet.getRow(50);			
-					// Column b
-				
+
 
 					// Column c
-					 cell2 = row.getCell(2);
+					cell2 = row.getCell(2);
 					if (record.getR55_AMOUNT() != null) {
 						cell2.setCellValue(record.getR55_AMOUNT().doubleValue());
 
@@ -2176,10 +2115,11 @@ public class BRRS_M_CA3_ReportService {
 
 					//row58
 					row = sheet.getRow(54);			
+=
 					// Column b
-				
+
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR58_AMOUNT() != null) {
 						cell2.setCellValue(record.getR58_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -2188,6 +2128,7 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
+<
 					/*
 					 * //row59 row = sheet.getRow(58); // Column b
 					 * 
@@ -2202,17 +2143,20 @@ public class BRRS_M_CA3_ReportService {
 
 					//row60
 					row = sheet.getRow(54);			
-					// Column b
-				
+=
+
 					// Column c
-					 cell2 = row.getCell(2);
-					if (record.getR15_AMOUNT() != null) {
-						cell2.setCellValue(record.getR15_AMOUNT().doubleValue());
+					cell2 = row.getCell(2);
+					if (record.getR59_AMOUNT() != null) {
+						cell2.setCellValue(record.getR59_AMOUNT().doubleValue());
 
 					} else {
 						cell2.setCellValue("");
 
 					}
+
+					
+					
 				}
 
 				workbook.setForceFormulaRecalculation(true);
@@ -2314,10 +2258,10 @@ public class BRRS_M_CA3_ReportService {
 						row = sheet.createRow(startRow + i);
 					}
 
-					//row10
+					// row10
 					// Column b
-					
-					//column c
+
+					// column c
 					Cell cell2 = row.createCell(2);
 					if (record.getR10_AMOUNT() != null) {
 						cell2.setCellValue(record.getR10_AMOUNT().doubleValue());
@@ -2326,17 +2270,13 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
-					
-									
-					
-					//row11
-					row = sheet.getRow(10);			
+
+					// row11
+					row = sheet.getRow(10);
 					// Column b
-				
 
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR11_AMOUNT() != null) {
 						cell2.setCellValue(record.getR11_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -2344,13 +2284,13 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
-					//row12
-					row = sheet.getRow(11);			
+
+					// row12
+					row = sheet.getRow(11);
 					// Column b
-					
+
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR12_AMOUNT() != null) {
 						cell2.setCellValue(record.getR12_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -2358,13 +2298,13 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
-					//row13
-					row = sheet.getRow(12);			
+
+					// row13
+					row = sheet.getRow(12);
 					// Column b
-				
+
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR13_AMOUNT() != null) {
 						cell2.setCellValue(record.getR13_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -2372,14 +2312,13 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
 
-					//row14
-					row = sheet.getRow(13);			
+					// row14
+					row = sheet.getRow(13);
 					// Column b
-					
+
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR14_AMOUNT() != null) {
 						cell2.setCellValue(record.getR14_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -2387,15 +2326,13 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
 
-					//row15
-					row = sheet.getRow(14);			
+					// row15
+					row = sheet.getRow(14);
 					// Column b
-					
 
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR15_AMOUNT() != null) {
 						cell2.setCellValue(record.getR15_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -2404,13 +2341,12 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row16
-					row = sheet.getRow(15);			
+					// row16
+					row = sheet.getRow(15);
 					// Column b
-					
 
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR16_AMOUNT() != null) {
 						cell2.setCellValue(record.getR16_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -2419,13 +2355,12 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row17
-					row = sheet.getRow(16);			
+					// row17
+					row = sheet.getRow(16);
 					// Column b
-				
 
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR17_AMOUNT() != null) {
 						cell2.setCellValue(record.getR17_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -2434,13 +2369,12 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row18
-					row = sheet.getRow(17);			
+					// row18
+					row = sheet.getRow(17);
 					// Column b
-					
 
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR18_AMOUNT() != null) {
 						cell2.setCellValue(record.getR18_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -2449,13 +2383,12 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row19
-					row = sheet.getRow(18);			
+					// row19
+					row = sheet.getRow(18);
 					// Column b
-				
 
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR19_AMOUNT() != null) {
 						cell2.setCellValue(record.getR19_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -2464,27 +2397,25 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row20
-					row = sheet.getRow(19);			
+					// row20
+					row = sheet.getRow(19);
 					// Column b
-				
 
 					// Column c
-					 cell2 = row.getCell(2);
+					cell2 = row.getCell(2);
 					if (record.getR20_AMOUNT() != null) {
 						cell2.setCellValue(record.getR20_AMOUNT().doubleValue());
-						
+
 					} else {
 						cell2.setCellValue("");
-											}
+					}
 
-					//row24
-					row = sheet.getRow(23);			
+					// row24
+					row = sheet.getRow(23);
 					// Column b
-					
 
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR24_AMOUNT() != null) {
 						cell2.setCellValue(record.getR24_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -2493,13 +2424,12 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row25
-					row = sheet.getRow(24);			
+					// row25
+					row = sheet.getRow(24);
 					// Column b
-				
 
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR25_AMOUNT() != null) {
 						cell2.setCellValue(record.getR25_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -2508,13 +2438,12 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row26
-					row = sheet.getRow(25);			
+					// row26
+					row = sheet.getRow(25);
 					// Column b
-				
 
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR26_AMOUNT() != null) {
 						cell2.setCellValue(record.getR26_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -2523,12 +2452,12 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row27
-					row = sheet.getRow(26);			
+					// row27
+					row = sheet.getRow(26);
 					// Column b
-				
+
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR27_AMOUNT() != null) {
 						cell2.setCellValue(record.getR27_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -2537,25 +2466,25 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row28
-					row = sheet.getRow(27);			
+					// row28
+					row = sheet.getRow(27);
 					// Column b
-				
+
 					// Column c
-					 cell2 = row.getCell(2);
+					cell2 = row.getCell(2);
 					if (record.getR28_AMOUNT() != null) {
 						cell2.setCellValue(record.getR28_AMOUNT().doubleValue());
-						
+
 					} else {
 						cell2.setCellValue("");
-											}
+					}
 
-					//row29
-					row = sheet.getRow(28);			
+					// row29
+					row = sheet.getRow(28);
 					// Column b
-					
+
 					// Column c
-					 cell2 = row.getCell(2);
+					cell2 = row.getCell(2);
 					if (record.getR29_AMOUNT() != null) {
 						cell2.setCellValue(record.getR29_AMOUNT().doubleValue());
 
@@ -2564,13 +2493,14 @@ public class BRRS_M_CA3_ReportService {
 
 					}
 
-					//row36
-					row = sheet.getRow(33);			
+
+
+					// row36
+					row = sheet.getRow(35);
 					// Column b
-				
 
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR36_AMOUNT() != null) {
 						cell2.setCellValue(record.getR36_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -2580,10 +2510,11 @@ public class BRRS_M_CA3_ReportService {
 					}
 					//row37
 					row = sheet.getRow(34);			
+
 					// Column b
-				
+
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR37_AMOUNT() != null) {
 						cell2.setCellValue(record.getR37_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -2594,10 +2525,11 @@ public class BRRS_M_CA3_ReportService {
 
 					//row38
 					row = sheet.getRow(35);			
+
 					// Column b
-					
+
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR38_AMOUNT() != null) {
 						cell2.setCellValue(record.getR38_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -2606,13 +2538,14 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
+
 					//row39
 					row = sheet.getRow(36);			
+
 					// Column b
-				
 
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR39_AMOUNT() != null) {
 						cell2.setCellValue(record.getR39_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -2621,13 +2554,14 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row40
-					row = sheet.getRow(40);			
+
+					// row40
+					row = sheet.getRow(39);
+
 					// Column b
-				
 
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR40_AMOUNT() != null) {
 						cell2.setCellValue(record.getR40_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -2636,13 +2570,14 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
+
 					//row41
 					row = sheet.getRow(38);			
+
 					// Column b
-				
 
 					// Column c
-					 cell2 = row.getCell(2);
+					cell2 = row.getCell(2);
 					if (record.getR41_AMOUNT() != null) {
 						cell2.setCellValue(record.getR41_AMOUNT().doubleValue());
 
@@ -2651,12 +2586,14 @@ public class BRRS_M_CA3_ReportService {
 
 					}
 
+
 					//row44
 					row = sheet.getRow(41);			
+
 					// Column b
-					
+
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR44_AMOUNT() != null) {
 						cell2.setCellValue(record.getR44_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -2665,13 +2602,12 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row45
-					row = sheet.getRow(44);			
+					// row45
+					row = sheet.getRow(44);
 					// Column b
-				
 
 					// Column c
-					 cell2 = row.getCell(2);
+					cell2 = row.getCell(2);
 					if (record.getR45_AMOUNT() != null) {
 						cell2.setCellValue(record.getR45_AMOUNT().doubleValue());
 
@@ -2680,26 +2616,28 @@ public class BRRS_M_CA3_ReportService {
 
 					}
 
-					//row46
-					row = sheet.getRow(45);			
+					// row46
+					row = sheet.getRow(45);
 					// Column b
-				
+
 					// Column c
-					 cell2 = row.getCell(2);
+					cell2 = row.getCell(2);
 					if (record.getR46_AMOUNT() != null) {
 						cell2.setCellValue(record.getR46_AMOUNT().doubleValue());
-			
+
 					} else {
 						cell2.setCellValue("");
 
 					}
 
+
 					//row50
 					row = sheet.getRow(46);			
+
 					// Column b
-				
+
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR50_AMOUNT() != null) {
 						cell2.setCellValue(record.getR50_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -2708,13 +2646,13 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
+
 					//row51
 					row = sheet.getRow(47);			
-					// Column b
-				
+
 
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR51_AMOUNT() != null) {
 						cell2.setCellValue(record.getR51_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -2723,13 +2661,13 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
+
 					//row52
 					row = sheet.getRow(48);			
-					// Column b
-				
+
 
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR52_AMOUNT() != null) {
 						cell2.setCellValue(record.getR52_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -2738,13 +2676,14 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
+
 					//row53
 					row = sheet.getRow(49);			
+
 					// Column b
-				
 
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR53_AMOUNT() != null) {
 						cell2.setCellValue(record.getR53_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -2753,12 +2692,12 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row54
-					row = sheet.getRow(53);			
+					// row54
+					row = sheet.getRow(53);
 					// Column b
-				
+
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR54_AMOUNT() != null) {
 						cell2.setCellValue(record.getR54_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -2767,13 +2706,13 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
+
 					//row55
 					row = sheet.getRow(50);			
-					// Column b
-				
+
 
 					// Column c
-					 cell2 = row.getCell(2);
+					cell2 = row.getCell(2);
 					if (record.getR55_AMOUNT() != null) {
 						cell2.setCellValue(record.getR55_AMOUNT().doubleValue());
 
@@ -2786,10 +2725,11 @@ public class BRRS_M_CA3_ReportService {
 
 					//row58
 					row = sheet.getRow(54);			
+=
 					// Column b
-				
+
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR58_AMOUNT() != null) {
 						cell2.setCellValue(record.getR58_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -2798,6 +2738,7 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
+<
 					/*
 					 * //row59 row = sheet.getRow(58); // Column b
 					 * 
@@ -2812,18 +2753,21 @@ public class BRRS_M_CA3_ReportService {
 
 					//row60
 					row = sheet.getRow(54);			
-					// Column b
-				
+=
+
 					// Column c
-					 cell2 = row.getCell(2);
-					if (record.getR15_AMOUNT() != null) {
-						cell2.setCellValue(record.getR15_AMOUNT().doubleValue());
+					cell2 = row.getCell(2);
+					if (record.getR59_AMOUNT() != null) {
+						cell2.setCellValue(record.getR59_AMOUNT().doubleValue());
 
 					} else {
 						cell2.setCellValue("");
 
 					}
-				}
+
+					
+					}
+				
 
 				workbook.setForceFormulaRecalculation(true);
 			} else {
@@ -2931,6 +2875,50 @@ public class BRRS_M_CA3_ReportService {
 
 	@Transactional
 	public void updateReport(M_CA3_Summary_Entity updatedEntity) {
+		M_CA3_Summary_Entity existingSummary = brrs_M_CA3_summary_repo.findById(updatedEntity.getREPORT_DATE())
+				.orElseThrow(() -> new RuntimeException("Record not found"));
+
+		M_CA3_Detail_Entity existingDetail = brrs_M_CA3_detail_repo.findById(updatedEntity.getREPORT_DATE())
+				.orElse(new M_CA3_Detail_Entity());
+
+		try {
+			// Use "AMOUNT" because that is what is in your Entity class
+			String[] fields = { "AMOUNT" };
+
+			// Update the loop to cover all your rows (10 to 60)
+			for (int i = 10; i <= 60; i++) {
+				String prefix = "R" + i + "_";
+				for (String field : fields) {
+					String getterName = "get" + prefix + field;
+					String setterName = "set" + prefix + field;
+
+					try {
+						Method getter = M_CA3_Summary_Entity.class.getMethod(getterName);
+						Object newValue = getter.invoke(updatedEntity);
+
+						if (newValue != null) {
+							Method sumSetter = M_CA3_Summary_Entity.class.getMethod(setterName, BigDecimal.class);
+							sumSetter.invoke(existingSummary, newValue);
+
+							Method detSetter = M_CA3_Detail_Entity.class.getMethod(setterName, BigDecimal.class);
+							detSetter.invoke(existingDetail, newValue);
+						}
+					} catch (NoSuchMethodException e) {
+						continue; // Skip if R-number doesn't exist (e.g., R21, R22)
+					}
+				}
+			}
+
+			brrs_M_CA3_summary_repo.save(existingSummary);
+			brrs_M_CA3_detail_repo.save(existingDetail);
+
+		} catch (Exception e) {
+			throw new RuntimeException("Update failed", e);
+		}
+	}
+
+	@Transactional
+	public void updateReport2(M_CA3_Summary_Entity updatedEntity) {
 
 		System.out.println("Came to services");
 		System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
@@ -2950,12 +2938,11 @@ public class BRRS_M_CA3_ReportService {
 
 		try {
 
-			// 🔁 Loop R11 → R23
-			for (int i = 11; i <= 25; i++) {
+			// 🔁 Loop R24 → R27 (AMOUNT)
+			for (int i = 24; i <= 27; i++) {
 
 				String prefix = "R" + i + "_";
-
-				String[] fields = { "TOTAL" };
+				String[] fields = { "AMOUNT" };
 
 				for (String field : fields) {
 
@@ -2966,7 +2953,190 @@ public class BRRS_M_CA3_ReportService {
 						Method getter = M_CA3_Summary_Entity.class.getMethod(getterName);
 
 						Method summarySetter = M_CA3_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+						Method detailSetter = M_CA3_Detail_Entity.class.getMethod(setterName, getter.getReturnType());
 
+						Object newValue = getter.invoke(updatedEntity);
+
+						// ✅ set into SUMMARY
+						summarySetter.invoke(existingSummary, newValue);
+
+						// ✅ set into DETAIL
+						detailSetter.invoke(existingDetail, newValue);
+
+					} catch (NoSuchMethodException e) {
+						// skip missing fields safely
+						continue;
+					}
+				}
+			}
+
+			// 🔁 Handle R28 and R29 (AMOUNT)
+			int[] totals = { 28, 29 };
+			for (int i : totals) {
+
+				String prefix = "R" + i + "_";
+				String[] fields = { "AMOUNT" };
+
+				for (String field : fields) {
+
+					String getterName = "get" + prefix + field;
+					String setterName = "set" + prefix + field;
+
+					try {
+						Method getter = M_CA3_Summary_Entity.class.getMethod(getterName);
+
+						Method summarySetter = M_CA3_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+						Method detailSetter = M_CA3_Detail_Entity.class.getMethod(setterName, getter.getReturnType());
+
+						Object newValue = getter.invoke(updatedEntity);
+
+						// ✅ set into SUMMARY
+						summarySetter.invoke(existingSummary, newValue);
+
+						// ✅ set into DETAIL
+						detailSetter.invoke(existingDetail, newValue);
+
+					} catch (NoSuchMethodException e) {
+						continue;
+					}
+				}
+			}
+
+		} catch (Exception e) {
+			throw new RuntimeException("Error while updating report fields", e);
+		}
+
+		// 3️⃣ Save BOTH (same transaction)
+		brrs_M_CA3_summary_repo.save(existingSummary);
+		brrs_M_CA3_detail_repo.save(existingDetail);
+	}
+
+	@Transactional
+	public void updateReport3(M_CA3_Summary_Entity updatedEntity) {
+
+		System.out.println("Came to services");
+		System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
+
+		// 1️⃣ Fetch existing SUMMARY
+		M_CA3_Summary_Entity existingSummary = brrs_M_CA3_summary_repo.findById(updatedEntity.getREPORT_DATE())
+				.orElseThrow(() -> new RuntimeException(
+						"Summary record not found for REPORT_DATE: " + updatedEntity.getREPORT_DATE()));
+
+		// 2️⃣ Fetch or create DETAIL
+		M_CA3_Detail_Entity existingDetail = brrs_M_CA3_detail_repo.findById(updatedEntity.getREPORT_DATE())
+				.orElseGet(() -> {
+					M_CA3_Detail_Entity d = new M_CA3_Detail_Entity();
+					d.setREPORT_DATE(updatedEntity.getREPORT_DATE());
+					return d;
+				});
+
+		try {
+
+			// 🔁 Loop R36 → R40 (AMOUNT)
+			for (int i = 36; i <= 40; i++) {
+
+				String prefix = "R" + i + "_";
+				String[] fields = { "AMOUNT" };
+
+				for (String field : fields) {
+
+					String getterName = "get" + prefix + field;
+					String setterName = "set" + prefix + field;
+
+					try {
+						Method getter = M_CA3_Summary_Entity.class.getMethod(getterName);
+
+						Method summarySetter = M_CA3_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+						Method detailSetter = M_CA3_Detail_Entity.class.getMethod(setterName, getter.getReturnType());
+
+						Object newValue = getter.invoke(updatedEntity);
+
+						// ✅ set into SUMMARY
+						summarySetter.invoke(existingSummary, newValue);
+
+						// ✅ set into DETAIL
+						detailSetter.invoke(existingDetail, newValue);
+
+					} catch (NoSuchMethodException e) {
+						// skip missing fields safely
+						continue;
+					}
+				}
+			}
+
+			// 🔁 Handle R41 (AMOUNT)
+			String[] totalFields = { "AMOUNT" };
+			for (String field : totalFields) {
+
+				String getterName = "getR41_" + field;
+				String setterName = "setR41_" + field;
+
+				try {
+					Method getter = M_CA3_Summary_Entity.class.getMethod(getterName);
+
+					Method summarySetter = M_CA3_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+					Method detailSetter = M_CA3_Detail_Entity.class.getMethod(setterName, getter.getReturnType());
+
+					Object newValue = getter.invoke(updatedEntity);
+
+					// ✅ set into SUMMARY
+					summarySetter.invoke(existingSummary, newValue);
+
+					// ✅ set into DETAIL
+					detailSetter.invoke(existingDetail, newValue);
+
+				} catch (NoSuchMethodException e) {
+					continue;
+				}
+			}
+
+		} catch (Exception e) {
+			throw new RuntimeException("Error while updating report fields", e);
+		}
+
+		// 3️⃣ Save BOTH (same transaction)
+		brrs_M_CA3_summary_repo.save(existingSummary);
+		brrs_M_CA3_detail_repo.save(existingDetail);
+	}
+
+	@Transactional
+	public void updateReport4(M_CA3_Summary_Entity updatedEntity) {
+
+		System.out.println("Came to services");
+		System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
+
+		// 1️⃣ Fetch existing SUMMARY
+		M_CA3_Summary_Entity existingSummary = brrs_M_CA3_summary_repo.findById(updatedEntity.getREPORT_DATE())
+				.orElseThrow(() -> new RuntimeException(
+						"Summary record not found for REPORT_DATE: " + updatedEntity.getREPORT_DATE()));
+
+		// 2️⃣ Fetch or create DETAIL
+		M_CA3_Detail_Entity existingDetail = brrs_M_CA3_detail_repo.findById(updatedEntity.getREPORT_DATE())
+				.orElseGet(() -> {
+					M_CA3_Detail_Entity d = new M_CA3_Detail_Entity();
+					d.setREPORT_DATE(updatedEntity.getREPORT_DATE());
+					return d;
+				});
+
+		try {
+
+			// 🔁 Copy R44, R45, R46 (AMOUNT)
+			int[] rows = { 44, 45, 46 };
+
+			for (int i : rows) {
+
+				String prefix = "R" + i + "_";
+				String[] fields = { "AMOUNT" };
+
+				for (String field : fields) {
+
+					String getterName = "get" + prefix + field;
+					String setterName = "set" + prefix + field;
+
+					try {
+						Method getter = M_CA3_Summary_Entity.class.getMethod(getterName);
+
+						Method summarySetter = M_CA3_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
 						Method detailSetter = M_CA3_Detail_Entity.class.getMethod(setterName, getter.getReturnType());
 
 						Object newValue = getter.invoke(updatedEntity);
@@ -2993,380 +3163,129 @@ public class BRRS_M_CA3_ReportService {
 		brrs_M_CA3_detail_repo.save(existingDetail);
 	}
 
-	
-	@Transactional
-	public void updateReport2(M_CA3_Summary_Entity updatedEntity) {
-
-	    System.out.println("Came to services");
-	    System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
-
-	    // 1️⃣ Fetch existing SUMMARY
-	    M_CA3_Summary_Entity existingSummary = brrs_M_CA3_summary_repo.findById(updatedEntity.getREPORT_DATE())
-	            .orElseThrow(() -> new RuntimeException(
-	                    "Summary record not found for REPORT_DATE: " + updatedEntity.getREPORT_DATE()));
-
-	    // 2️⃣ Fetch or create DETAIL
-	    M_CA3_Detail_Entity existingDetail = brrs_M_CA3_detail_repo.findById(updatedEntity.getREPORT_DATE())
-	            .orElseGet(() -> {
-	                M_CA3_Detail_Entity d = new M_CA3_Detail_Entity();
-	                d.setREPORT_DATE(updatedEntity.getREPORT_DATE());
-	                return d;
-	            });
-
-	    try {
-
-	        // 🔁 Loop R24 → R27 (AMOUNT)
-	        for (int i = 24; i <= 27; i++) {
-
-	            String prefix = "R" + i + "_";
-	            String[] fields = { "AMOUNT" };
-
-	            for (String field : fields) {
-
-	                String getterName = "get" + prefix + field;
-	                String setterName = "set" + prefix + field;
-
-	                try {
-	                    Method getter = M_CA3_Summary_Entity.class.getMethod(getterName);
-
-	                    Method summarySetter = M_CA3_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-	                    Method detailSetter = M_CA3_Detail_Entity.class.getMethod(setterName, getter.getReturnType());
-
-	                    Object newValue = getter.invoke(updatedEntity);
-
-	                    // ✅ set into SUMMARY
-	                    summarySetter.invoke(existingSummary, newValue);
-
-	                    // ✅ set into DETAIL
-	                    detailSetter.invoke(existingDetail, newValue);
-
-	                } catch (NoSuchMethodException e) {
-	                    // skip missing fields safely
-	                    continue;
-	                }
-	            }
-	        }
-
-	        // 🔁 Handle R28 and R29 (AMOUNT)
-	        int[] totals = {28, 29};
-	        for (int i : totals) {
-
-	            String prefix = "R" + i + "_";
-	            String[] fields = { "AMOUNT" };
-
-	            for (String field : fields) {
-
-	                String getterName = "get" + prefix + field;
-	                String setterName = "set" + prefix + field;
-
-	                try {
-	                    Method getter = M_CA3_Summary_Entity.class.getMethod(getterName);
-
-	                    Method summarySetter = M_CA3_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-	                    Method detailSetter = M_CA3_Detail_Entity.class.getMethod(setterName, getter.getReturnType());
-
-	                    Object newValue = getter.invoke(updatedEntity);
-
-	                    // ✅ set into SUMMARY
-	                    summarySetter.invoke(existingSummary, newValue);
-
-	                    // ✅ set into DETAIL
-	                    detailSetter.invoke(existingDetail, newValue);
-
-	                } catch (NoSuchMethodException e) {
-	                    continue;
-	                }
-	            }
-	        }
-
-	    } catch (Exception e) {
-	        throw new RuntimeException("Error while updating report fields", e);
-	    }
-
-	    // 3️⃣ Save BOTH (same transaction)
-	    brrs_M_CA3_summary_repo.save(existingSummary);
-	    brrs_M_CA3_detail_repo.save(existingDetail);
-	}
-
-	
-	@Transactional
-	public void updateReport3(M_CA3_Summary_Entity updatedEntity) {
-
-	    System.out.println("Came to services");
-	    System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
-
-	    // 1️⃣ Fetch existing SUMMARY
-	    M_CA3_Summary_Entity existingSummary = brrs_M_CA3_summary_repo.findById(updatedEntity.getREPORT_DATE())
-	            .orElseThrow(() -> new RuntimeException(
-	                    "Summary record not found for REPORT_DATE: " + updatedEntity.getREPORT_DATE()));
-
-	    // 2️⃣ Fetch or create DETAIL
-	    M_CA3_Detail_Entity existingDetail = brrs_M_CA3_detail_repo.findById(updatedEntity.getREPORT_DATE())
-	            .orElseGet(() -> {
-	                M_CA3_Detail_Entity d = new M_CA3_Detail_Entity();
-	                d.setREPORT_DATE(updatedEntity.getREPORT_DATE());
-	                return d;
-	            });
-
-	    try {
-
-	        // 🔁 Loop R36 → R40 (AMOUNT)
-	        for (int i = 36; i <= 40; i++) {
-
-	            String prefix = "R" + i + "_";
-	            String[] fields = { "AMOUNT" };
-
-	            for (String field : fields) {
-
-	                String getterName = "get" + prefix + field;
-	                String setterName = "set" + prefix + field;
-
-	                try {
-	                    Method getter = M_CA3_Summary_Entity.class.getMethod(getterName);
-
-	                    Method summarySetter = M_CA3_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-	                    Method detailSetter = M_CA3_Detail_Entity.class.getMethod(setterName, getter.getReturnType());
-
-	                    Object newValue = getter.invoke(updatedEntity);
-
-	                    // ✅ set into SUMMARY
-	                    summarySetter.invoke(existingSummary, newValue);
-
-	                    // ✅ set into DETAIL
-	                    detailSetter.invoke(existingDetail, newValue);
-
-	                } catch (NoSuchMethodException e) {
-	                    // skip missing fields safely
-	                    continue;
-	                }
-	            }
-	        }
-
-	        // 🔁 Handle R41 (AMOUNT)
-	        String[] totalFields = { "AMOUNT" };
-	        for (String field : totalFields) {
-
-	            String getterName = "getR41_" + field;
-	            String setterName = "setR41_" + field;
-
-	            try {
-	                Method getter = M_CA3_Summary_Entity.class.getMethod(getterName);
-
-	                Method summarySetter = M_CA3_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-	                Method detailSetter = M_CA3_Detail_Entity.class.getMethod(setterName, getter.getReturnType());
-
-	                Object newValue = getter.invoke(updatedEntity);
-
-	                // ✅ set into SUMMARY
-	                summarySetter.invoke(existingSummary, newValue);
-
-	                // ✅ set into DETAIL
-	                detailSetter.invoke(existingDetail, newValue);
-
-	            } catch (NoSuchMethodException e) {
-	                continue;
-	            }
-	        }
-
-	    } catch (Exception e) {
-	        throw new RuntimeException("Error while updating report fields", e);
-	    }
-
-	    // 3️⃣ Save BOTH (same transaction)
-	    brrs_M_CA3_summary_repo.save(existingSummary);
-	    brrs_M_CA3_detail_repo.save(existingDetail);
-	}
-
-	
-	@Transactional
-	public void updateReport4(M_CA3_Summary_Entity updatedEntity) {
-
-	    System.out.println("Came to services");
-	    System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
-
-	    // 1️⃣ Fetch existing SUMMARY
-	    M_CA3_Summary_Entity existingSummary = brrs_M_CA3_summary_repo.findById(updatedEntity.getREPORT_DATE())
-	            .orElseThrow(() -> new RuntimeException(
-	                    "Summary record not found for REPORT_DATE: " + updatedEntity.getREPORT_DATE()));
-
-	    // 2️⃣ Fetch or create DETAIL
-	    M_CA3_Detail_Entity existingDetail = brrs_M_CA3_detail_repo.findById(updatedEntity.getREPORT_DATE())
-	            .orElseGet(() -> {
-	                M_CA3_Detail_Entity d = new M_CA3_Detail_Entity();
-	                d.setREPORT_DATE(updatedEntity.getREPORT_DATE());
-	                return d;
-	            });
-
-	    try {
-
-	        // 🔁 Copy R44, R45, R46 (AMOUNT)
-	        int[] rows = {44, 45, 46};
-
-	        for (int i : rows) {
-
-	            String prefix = "R" + i + "_";
-	            String[] fields = { "AMOUNT" };
-
-	            for (String field : fields) {
-
-	                String getterName = "get" + prefix + field;
-	                String setterName = "set" + prefix + field;
-
-	                try {
-	                    Method getter = M_CA3_Summary_Entity.class.getMethod(getterName);
-
-	                    Method summarySetter = M_CA3_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-	                    Method detailSetter = M_CA3_Detail_Entity.class.getMethod(setterName, getter.getReturnType());
-
-	                    Object newValue = getter.invoke(updatedEntity);
-
-	                    // ✅ set into SUMMARY
-	                    summarySetter.invoke(existingSummary, newValue);
-
-	                    // ✅ set into DETAIL
-	                    detailSetter.invoke(existingDetail, newValue);
-
-	                } catch (NoSuchMethodException e) {
-	                    // skip missing fields safely
-	                    continue;
-	                }
-	            }
-	        }
-
-	    } catch (Exception e) {
-	        throw new RuntimeException("Error while updating report fields", e);
-	    }
-
-	    // 3️⃣ Save BOTH (same transaction)
-	    brrs_M_CA3_summary_repo.save(existingSummary);
-	    brrs_M_CA3_detail_repo.save(existingDetail);
-	}
-	
 	@Transactional
 	public void updateReport5(M_CA3_Summary_Entity updatedEntity) {
 
-	    System.out.println("Came to services");
-	    System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
+		System.out.println("Came to services");
+		System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
 
-	    // 1️⃣ Fetch existing SUMMARY
-	    M_CA3_Summary_Entity existingSummary = brrs_M_CA3_summary_repo.findById(updatedEntity.getREPORT_DATE())
-	            .orElseThrow(() -> new RuntimeException(
-	                    "Summary record not found for REPORT_DATE: " + updatedEntity.getREPORT_DATE()));
+		// 1️⃣ Fetch existing SUMMARY
+		M_CA3_Summary_Entity existingSummary = brrs_M_CA3_summary_repo.findById(updatedEntity.getREPORT_DATE())
+				.orElseThrow(() -> new RuntimeException(
+						"Summary record not found for REPORT_DATE: " + updatedEntity.getREPORT_DATE()));
 
-	    // 2️⃣ Fetch or create DETAIL
-	    M_CA3_Detail_Entity existingDetail = brrs_M_CA3_detail_repo.findById(updatedEntity.getREPORT_DATE())
-	            .orElseGet(() -> {
-	                M_CA3_Detail_Entity d = new M_CA3_Detail_Entity();
-	                d.setREPORT_DATE(updatedEntity.getREPORT_DATE());
-	                return d;
-	            });
+		// 2️⃣ Fetch or create DETAIL
+		M_CA3_Detail_Entity existingDetail = brrs_M_CA3_detail_repo.findById(updatedEntity.getREPORT_DATE())
+				.orElseGet(() -> {
+					M_CA3_Detail_Entity d = new M_CA3_Detail_Entity();
+					d.setREPORT_DATE(updatedEntity.getREPORT_DATE());
+					return d;
+				});
 
-	    try {
+		try {
 
-	        // 🔁 Loop R50 → R55 (AMOUNT)
-	        for (int i = 50; i <= 55; i++) {
+			// 🔁 Loop R50 → R55 (AMOUNT)
+			for (int i = 50; i <= 55; i++) {
 
-	            String prefix = "R" + i + "_";
-	            String[] fields = { "AMOUNT" };
+				String prefix = "R" + i + "_";
+				String[] fields = { "AMOUNT" };
 
-	            for (String field : fields) {
+				for (String field : fields) {
 
-	                String getterName = "get" + prefix + field;
-	                String setterName = "set" + prefix + field;
+					String getterName = "get" + prefix + field;
+					String setterName = "set" + prefix + field;
 
-	                try {
-	                    Method getter = M_CA3_Summary_Entity.class.getMethod(getterName);
+					try {
+						Method getter = M_CA3_Summary_Entity.class.getMethod(getterName);
 
-	                    Method summarySetter = M_CA3_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-	                    Method detailSetter = M_CA3_Detail_Entity.class.getMethod(setterName, getter.getReturnType());
+						Method summarySetter = M_CA3_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+						Method detailSetter = M_CA3_Detail_Entity.class.getMethod(setterName, getter.getReturnType());
 
-	                    Object newValue = getter.invoke(updatedEntity);
+						Object newValue = getter.invoke(updatedEntity);
 
-	                    // ✅ set into SUMMARY
-	                    summarySetter.invoke(existingSummary, newValue);
+						// ✅ set into SUMMARY
+						summarySetter.invoke(existingSummary, newValue);
 
-	                    // ✅ set into DETAIL
-	                    detailSetter.invoke(existingDetail, newValue);
+						// ✅ set into DETAIL
+						detailSetter.invoke(existingDetail, newValue);
 
-	                } catch (NoSuchMethodException e) {
-	                    // skip missing fields safely
-	                    continue;
-	                }
-	            }
-	        }
+					} catch (NoSuchMethodException e) {
+						// skip missing fields safely
+						continue;
+					}
+				}
+			}
 
-	    } catch (Exception e) {
-	        throw new RuntimeException("Error while updating report fields", e);
-	    }
+		} catch (Exception e) {
+			throw new RuntimeException("Error while updating report fields", e);
+		}
 
-	    // 3️⃣ Save BOTH (same transaction)
-	    brrs_M_CA3_summary_repo.save(existingSummary);
-	    brrs_M_CA3_detail_repo.save(existingDetail);
+		// 3️⃣ Save BOTH (same transaction)
+		brrs_M_CA3_summary_repo.save(existingSummary);
+		brrs_M_CA3_detail_repo.save(existingDetail);
 	}
 
 	@Transactional
 	public void updateReport6(M_CA3_Summary_Entity updatedEntity) {
 
-	    System.out.println("Came to services");
-	    System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
+		System.out.println("Came to services");
+		System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
 
-	    // 1️⃣ Fetch existing SUMMARY
-	    M_CA3_Summary_Entity existingSummary = brrs_M_CA3_summary_repo.findById(updatedEntity.getREPORT_DATE())
-	            .orElseThrow(() -> new RuntimeException(
-	                    "Summary record not found for REPORT_DATE: " + updatedEntity.getREPORT_DATE()));
+		// 1️⃣ Fetch existing SUMMARY
+		M_CA3_Summary_Entity existingSummary = brrs_M_CA3_summary_repo.findById(updatedEntity.getREPORT_DATE())
+				.orElseThrow(() -> new RuntimeException(
+						"Summary record not found for REPORT_DATE: " + updatedEntity.getREPORT_DATE()));
 
-	    // 2️⃣ Fetch or create DETAIL
-	    M_CA3_Detail_Entity existingDetail = brrs_M_CA3_detail_repo.findById(updatedEntity.getREPORT_DATE())
-	            .orElseGet(() -> {
-	                M_CA3_Detail_Entity d = new M_CA3_Detail_Entity();
-	                d.setREPORT_DATE(updatedEntity.getREPORT_DATE());
-	                return d;
-	            });
+		// 2️⃣ Fetch or create DETAIL
+		M_CA3_Detail_Entity existingDetail = brrs_M_CA3_detail_repo.findById(updatedEntity.getREPORT_DATE())
+				.orElseGet(() -> {
+					M_CA3_Detail_Entity d = new M_CA3_Detail_Entity();
+					d.setREPORT_DATE(updatedEntity.getREPORT_DATE());
+					return d;
+				});
 
-	    try {
+		try {
 
-	        // 🔁 Loop R58 → R60 (AMOUNT)
-	        for (int i = 58; i <= 60; i++) {
+			// 🔁 Loop R58 → R60 (AMOUNT)
+			for (int i = 58; i <= 60; i++) {
 
-	            String prefix = "R" + i + "_";
-	            String[] fields = { "AMOUNT" };
+				String prefix = "R" + i + "_";
+				String[] fields = { "AMOUNT" };
 
-	            for (String field : fields) {
+				for (String field : fields) {
 
-	                String getterName = "get" + prefix + field;
-	                String setterName = "set" + prefix + field;
+					String getterName = "get" + prefix + field;
+					String setterName = "set" + prefix + field;
 
-	                try {
-	                    Method getter = M_CA3_Summary_Entity.class.getMethod(getterName);
+					try {
+						Method getter = M_CA3_Summary_Entity.class.getMethod(getterName);
 
-	                    Method summarySetter = M_CA3_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-	                    Method detailSetter = M_CA3_Detail_Entity.class.getMethod(setterName, getter.getReturnType());
+						Method summarySetter = M_CA3_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+						Method detailSetter = M_CA3_Detail_Entity.class.getMethod(setterName, getter.getReturnType());
 
-	                    Object newValue = getter.invoke(updatedEntity);
+						Object newValue = getter.invoke(updatedEntity);
 
-	                    // ✅ set into SUMMARY
-	                    summarySetter.invoke(existingSummary, newValue);
+						// ✅ set into SUMMARY
+						summarySetter.invoke(existingSummary, newValue);
 
-	                    // ✅ set into DETAIL
-	                    detailSetter.invoke(existingDetail, newValue);
+						// ✅ set into DETAIL
+						detailSetter.invoke(existingDetail, newValue);
 
-	                } catch (NoSuchMethodException e) {
-	                    // skip missing fields safely
-	                    continue;
-	                }
-	            }
-	        }
+					} catch (NoSuchMethodException e) {
+						// skip missing fields safely
+						continue;
+					}
+				}
+			}
 
-	    } catch (Exception e) {
-	        throw new RuntimeException("Error while updating report fields", e);
-	    }
+		} catch (Exception e) {
+			throw new RuntimeException("Error while updating report fields", e);
+		}
 
-	    // 3️⃣ Save BOTH (same transaction)
-	    brrs_M_CA3_summary_repo.save(existingSummary);
-	    brrs_M_CA3_detail_repo.save(existingDetail);
+		// 3️⃣ Save BOTH (same transaction)
+		brrs_M_CA3_summary_repo.save(existingSummary);
+		brrs_M_CA3_detail_repo.save(existingDetail);
 	}
-
-	
 
 	public List<Object[]> getM_CA3Resub() {
 		List<Object[]> resubList = new ArrayList<>();
@@ -3522,10 +3441,10 @@ public class BRRS_M_CA3_ReportService {
 						row = sheet.createRow(startRow + i);
 					}
 
-					//row10
+					// row10
 					// Column b
-					
-					//column c
+
+					// column c
 					Cell cell2 = row.createCell(2);
 					if (record.getR10_AMOUNT() != null) {
 						cell2.setCellValue(record.getR10_AMOUNT().doubleValue());
@@ -3534,17 +3453,13 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
-					
-									
-					
-					//row11
-					row = sheet.getRow(10);			
+
+					// row11
+					row = sheet.getRow(10);
 					// Column b
-				
 
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR11_AMOUNT() != null) {
 						cell2.setCellValue(record.getR11_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -3552,13 +3467,13 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
-					//row12
-					row = sheet.getRow(11);			
+
+					// row12
+					row = sheet.getRow(11);
 					// Column b
-					
+
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR12_AMOUNT() != null) {
 						cell2.setCellValue(record.getR12_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -3566,13 +3481,13 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
-					//row13
-					row = sheet.getRow(12);			
+
+					// row13
+					row = sheet.getRow(12);
 					// Column b
-				
+
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR13_AMOUNT() != null) {
 						cell2.setCellValue(record.getR13_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -3580,14 +3495,13 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
 
-					//row14
-					row = sheet.getRow(13);			
+					// row14
+					row = sheet.getRow(13);
 					// Column b
-					
+
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR14_AMOUNT() != null) {
 						cell2.setCellValue(record.getR14_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -3595,15 +3509,13 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
 
-					//row15
-					row = sheet.getRow(14);			
+					// row15
+					row = sheet.getRow(14);
 					// Column b
-					
 
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR15_AMOUNT() != null) {
 						cell2.setCellValue(record.getR15_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -3612,13 +3524,12 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row16
-					row = sheet.getRow(15);			
+					// row16
+					row = sheet.getRow(15);
 					// Column b
-					
 
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR16_AMOUNT() != null) {
 						cell2.setCellValue(record.getR16_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -3627,13 +3538,12 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row17
-					row = sheet.getRow(16);			
+					// row17
+					row = sheet.getRow(16);
 					// Column b
-				
 
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR17_AMOUNT() != null) {
 						cell2.setCellValue(record.getR17_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -3642,13 +3552,12 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row18
-					row = sheet.getRow(17);			
+					// row18
+					row = sheet.getRow(17);
 					// Column b
-					
 
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR18_AMOUNT() != null) {
 						cell2.setCellValue(record.getR18_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -3657,13 +3566,12 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row19
-					row = sheet.getRow(18);			
+					// row19
+					row = sheet.getRow(18);
 					// Column b
-				
 
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR19_AMOUNT() != null) {
 						cell2.setCellValue(record.getR19_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -3672,27 +3580,25 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row20
-					row = sheet.getRow(19);			
+					// row20
+					row = sheet.getRow(19);
 					// Column b
-				
 
 					// Column c
-					 cell2 = row.getCell(2);
+					cell2 = row.getCell(2);
 					if (record.getR20_AMOUNT() != null) {
 						cell2.setCellValue(record.getR20_AMOUNT().doubleValue());
-						
+
 					} else {
 						cell2.setCellValue("");
-											}
+					}
 
-					//row24
-					row = sheet.getRow(23);			
+					// row24
+					row = sheet.getRow(23);
 					// Column b
-					
 
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR24_AMOUNT() != null) {
 						cell2.setCellValue(record.getR24_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -3701,13 +3607,12 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row25
-					row = sheet.getRow(24);			
+					// row25
+					row = sheet.getRow(24);
 					// Column b
-				
 
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR25_AMOUNT() != null) {
 						cell2.setCellValue(record.getR25_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -3716,13 +3621,12 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row26
-					row = sheet.getRow(25);			
+					// row26
+					row = sheet.getRow(25);
 					// Column b
-				
 
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR26_AMOUNT() != null) {
 						cell2.setCellValue(record.getR26_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -3731,12 +3635,12 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row27
-					row = sheet.getRow(26);			
+					// row27
+					row = sheet.getRow(26);
 					// Column b
-				
+
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR27_AMOUNT() != null) {
 						cell2.setCellValue(record.getR27_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -3745,25 +3649,25 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row28
-					row = sheet.getRow(27);			
+					// row28
+					row = sheet.getRow(27);
 					// Column b
-				
+
 					// Column c
-					 cell2 = row.getCell(2);
+					cell2 = row.getCell(2);
 					if (record.getR28_AMOUNT() != null) {
 						cell2.setCellValue(record.getR28_AMOUNT().doubleValue());
-						
+
 					} else {
 						cell2.setCellValue("");
-											}
+					}
 
-					//row29
-					row = sheet.getRow(28);			
+					// row29
+					row = sheet.getRow(28);
 					// Column b
-					
+
 					// Column c
-					 cell2 = row.getCell(2);
+					cell2 = row.getCell(2);
 					if (record.getR29_AMOUNT() != null) {
 						cell2.setCellValue(record.getR29_AMOUNT().doubleValue());
 
@@ -3772,13 +3676,12 @@ public class BRRS_M_CA3_ReportService {
 
 					}
 
-					//row36
-					row = sheet.getRow(35);			
+					// row36
+					row = sheet.getRow(35);
 					// Column b
-				
 
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR36_AMOUNT() != null) {
 						cell2.setCellValue(record.getR36_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -3786,12 +3689,12 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					//row37
-					row = sheet.getRow(36);			
+					// row37
+					row = sheet.getRow(36);
 					// Column b
-				
+
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR37_AMOUNT() != null) {
 						cell2.setCellValue(record.getR37_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -3800,12 +3703,12 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row38
-					row = sheet.getRow(37);			
+					// row38
+					row = sheet.getRow(37);
 					// Column b
-					
+
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR38_AMOUNT() != null) {
 						cell2.setCellValue(record.getR38_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -3814,13 +3717,12 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row39
-					row = sheet.getRow(38);			
+					// row39
+					row = sheet.getRow(38);
 					// Column b
-				
 
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR39_AMOUNT() != null) {
 						cell2.setCellValue(record.getR39_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -3829,13 +3731,12 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row40
-					row = sheet.getRow(39);			
+					// row40
+					row = sheet.getRow(39);
 					// Column b
-				
 
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR40_AMOUNT() != null) {
 						cell2.setCellValue(record.getR40_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -3844,13 +3745,12 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row41
-					row = sheet.getRow(40);			
+					// row41
+					row = sheet.getRow(40);
 					// Column b
-				
 
 					// Column c
-					 cell2 = row.getCell(2);
+					cell2 = row.getCell(2);
 					if (record.getR41_AMOUNT() != null) {
 						cell2.setCellValue(record.getR41_AMOUNT().doubleValue());
 
@@ -3859,12 +3759,12 @@ public class BRRS_M_CA3_ReportService {
 
 					}
 
-					//row44
-					row = sheet.getRow(43);			
+					// row44
+					row = sheet.getRow(43);
 					// Column b
-					
+
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR44_AMOUNT() != null) {
 						cell2.setCellValue(record.getR44_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -3873,13 +3773,12 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row45
-					row = sheet.getRow(44);			
+					// row45
+					row = sheet.getRow(44);
 					// Column b
-				
 
 					// Column c
-					 cell2 = row.getCell(2);
+					cell2 = row.getCell(2);
 					if (record.getR45_AMOUNT() != null) {
 						cell2.setCellValue(record.getR45_AMOUNT().doubleValue());
 
@@ -3888,26 +3787,26 @@ public class BRRS_M_CA3_ReportService {
 
 					}
 
-					//row46
-					row = sheet.getRow(45);			
+					// row46
+					row = sheet.getRow(45);
 					// Column b
-				
+
 					// Column c
-					 cell2 = row.getCell(2);
+					cell2 = row.getCell(2);
 					if (record.getR46_AMOUNT() != null) {
 						cell2.setCellValue(record.getR46_AMOUNT().doubleValue());
-			
+
 					} else {
 						cell2.setCellValue("");
 
 					}
 
-					//row50
-					row = sheet.getRow(49);			
+					// row50
+					row = sheet.getRow(49);
 					// Column b
-				
+
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR50_AMOUNT() != null) {
 						cell2.setCellValue(record.getR50_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -3916,13 +3815,12 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row51
-					row = sheet.getRow(50);			
+					// row51
+					row = sheet.getRow(50);
 					// Column b
-				
 
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR51_AMOUNT() != null) {
 						cell2.setCellValue(record.getR51_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -3931,13 +3829,12 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row52
-					row = sheet.getRow(51);			
+					// row52
+					row = sheet.getRow(51);
 					// Column b
-				
 
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR52_AMOUNT() != null) {
 						cell2.setCellValue(record.getR52_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -3946,13 +3843,12 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row53
-					row = sheet.getRow(52);			
+					// row53
+					row = sheet.getRow(52);
 					// Column b
-				
 
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR53_AMOUNT() != null) {
 						cell2.setCellValue(record.getR53_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -3961,12 +3857,12 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row54
-					row = sheet.getRow(53);			
+					// row54
+					row = sheet.getRow(53);
 					// Column b
-				
+
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR54_AMOUNT() != null) {
 						cell2.setCellValue(record.getR54_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -3975,13 +3871,12 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row55
-					row = sheet.getRow(54);			
+					// row55
+					row = sheet.getRow(54);
 					// Column b
-				
 
 					// Column c
-					 cell2 = row.getCell(2);
+					cell2 = row.getCell(2);
 					if (record.getR55_AMOUNT() != null) {
 						cell2.setCellValue(record.getR55_AMOUNT().doubleValue());
 
@@ -3990,14 +3885,12 @@ public class BRRS_M_CA3_ReportService {
 
 					}
 
-				
-
-					//row58
-					row = sheet.getRow(57);			
+					// row58
+					row = sheet.getRow(57);
 					// Column b
-				
+
 					// Column c
-					 cell2 = row.createCell(2);
+					cell2 = row.createCell(2);
 					if (record.getR58_AMOUNT() != null) {
 						cell2.setCellValue(record.getR58_AMOUNT().doubleValue());
 						cell2.setCellStyle(numberStyle);
@@ -4006,13 +3899,12 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-					//row59
-					row = sheet.getRow(58);			
+					// row59
+					row = sheet.getRow(58);
 					// Column b
-				
 
 					// Column c
-					 cell2 = row.getCell(2);
+					cell2 = row.getCell(2);
 					if (record.getR59_AMOUNT() != null) {
 						cell2.setCellValue(record.getR59_AMOUNT().doubleValue());
 
@@ -4021,12 +3913,12 @@ public class BRRS_M_CA3_ReportService {
 
 					}
 
-					//row60
-					row = sheet.getRow(14);			
+					// row60
+					row = sheet.getRow(14);
 					// Column b
-				
+
 					// Column c
-					 cell2 = row.getCell(2);
+					cell2 = row.getCell(2);
 					if (record.getR15_AMOUNT() != null) {
 						cell2.setCellValue(record.getR15_AMOUNT().doubleValue());
 
