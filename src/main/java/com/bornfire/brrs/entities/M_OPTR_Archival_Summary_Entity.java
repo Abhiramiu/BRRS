@@ -30,7 +30,7 @@ public class M_OPTR_Archival_Summary_Entity {
 	
 	@Id
 	@Column(name = "REPORT_VERSION")
-	private String reportVersion;
+	private BigDecimal reportVersion;
 	
     @Column(name = "REPORT_RESUBDATE")
     @Temporal(TemporalType.TIMESTAMP)
@@ -98,7 +98,7 @@ public void setReportDate(Date reportDate) {
 
 
 
-public String getReportVersion() {
+public BigDecimal getReportVersion() {
 	return reportVersion;
 }
 
@@ -107,7 +107,7 @@ public String getReportVersion() {
 
 
 
-public void setReportVersion(String reportVersion) {
+public void setReportVersion(BigDecimal reportVersion) {
 	this.reportVersion = reportVersion;
 }
 

@@ -58,6 +58,10 @@ import com.bornfire.brrs.entities.M_OPTR_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.M_OPTR_Detail_Entity;
 import com.bornfire.brrs.entities.M_OPTR_Summary_Entity;
 import com.bornfire.brrs.entities.BRRS_M_OPTR_Summary_Repo;
+import com.bornfire.brrs.entities.M_OPTR_Detail_Entity;
+import com.bornfire.brrs.entities.M_OPTR_Summary_Entity;
+import com.bornfire.brrs.entities.M_EPR_Archival_Detail_Entity;
+import com.bornfire.brrs.entities.M_EPR_Detail_Entity;
 import com.bornfire.brrs.entities.M_OPTR_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.BDISB1_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.BDISB1_Detail_Entity;
@@ -103,7 +107,7 @@ public class BRRS_M_OPTR_ReportService {
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
 	public ModelAndView getMOPTRView(String reportId, String fromdate, String todate, String currency, String dtltype,
-			Pageable pageable, String type, String version) {
+			Pageable pageable, String type, BigDecimal version) {
 		ModelAndView mv = new ModelAndView();
 		Session hs = sessionFactory.getCurrentSession();
 
@@ -119,6 +123,7 @@ public class BRRS_M_OPTR_ReportService {
 				List<M_OPTR_Archival_Summary_Entity> T1Master = BRRS_M_OPTR_Archival_Summary_Repo
 						.getdatabydateListarchival(d1, version);
 
+				mv.addObject("displaymode", "summary");
 				mv.addObject("reportsummary", T1Master);
 			}
 
@@ -127,6 +132,7 @@ public class BRRS_M_OPTR_ReportService {
 				List<M_OPTR_Archival_Summary_Entity> T1Master = BRRS_M_OPTR_Archival_Summary_Repo
 						.getdatabydateListarchival(d1, version);
 
+				mv.addObject("displaymode", "summary");
 				mv.addObject("reportsummary", T1Master);
 			}
 
@@ -136,18 +142,102 @@ public class BRRS_M_OPTR_ReportService {
 						.getdatabydateList(dateformat.parse(todate));
 				System.out.println("T1Master Size " + T1Master.size());
 				mv.addObject("reportsummary", T1Master);
+
+				mv.addObject("displaymode", "summary");
 			}
+			
+	        if ("detail".equalsIgnoreCase(dtltype)) {
+
+	            // DETAIL + ARCHIVAL
+	            if (version != null) {
+
+					/* List<M_OPTR_Archival_Detail_Entity> T1Master =
+	            	M_OPTR_Archival_Detail_Repo.getdatabydateListarchival(d1, version);
+	                mv.addObject("displaymode", "Details");
+	                mv.addObject("reportsummary", T1Master);*/
+	            }
+	            // DETAIL + NORMAL
+	            else {
+
+	                List<M_OPTR_Detail_Entity> T1Master =
+	                		OPTR_Detail_Repo
+	                                .getdatabydateList(dateformat.parse(todate));
+	                mv.addObject("displaymode", "Details");
+	                mv.addObject("reportsummary", T1Master);
+	            }
+	        }
 
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
 
 		mv.setViewName("BRRS/M_OPTR");
-		mv.addObject("displaymode", "summary");
 		System.out.println("View set to: " + mv.getViewName());
 		return mv;
 	}
 	
+	
+	public void updateReport(M_OPTR_Summary_Entity updatedEntity) {
+	    System.out.println("Came to services");
+	    System.out.println("Report Date: " + updatedEntity.getReportDate());
+
+	    M_OPTR_Summary_Entity existing = BRRS_M_OPTR_Summary_Repo.findById(updatedEntity.getReportDate())
+	            .orElseThrow(() -> new RuntimeException(
+	                    "Record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
+
+	    M_OPTR_Detail_Entity existingDetail =
+	    		OPTR_Detail_Repo.findById(updatedEntity.getReportDate())
+	                    .orElseGet(() -> {
+	                        M_OPTR_Detail_Entity d = new M_OPTR_Detail_Entity();
+	                        d.setReportDate(updatedEntity.getReportDate());
+	                        return d;
+	                    });
+	    
+	    try {
+	        // 1️⃣ Loop from R10 to R58 and copy fields
+	    	
+	        for (int i = 10; i <= 14; i++) {
+				
+	        	 String prefix = "R" + i + "_";
+
+	            String[] fields = {"INTEREST_RATES", "EQUITIES", "FOREIGN_EXC_GOLD", "COMMODITIES","TOTAL" };
+
+	            for (String field : fields) {
+	            	   String getterName = "get" + prefix + field; // e.g., getR10_item
+	                   String setterName = "set" + prefix + field; // e.g., setR10_item
+
+	                try {
+	                    Method getter = M_OPTR_Summary_Entity.class.getMethod(getterName);
+	                    Method setter = M_OPTR_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+	                    
+	                    Method detailSetter =
+	                            M_OPTR_Detail_Entity.class.getMethod(
+	                                    setterName, getter.getReturnType());
+
+	                    Object newValue = getter.invoke(updatedEntity);
+	                    setter.invoke(existing, newValue);
+	                    detailSetter.invoke(existingDetail, newValue);
+
+	                } catch (NoSuchMethodException e) {
+	                    // Skip missing fields
+	                    continue;
+	                }
+	            }
+	        }
+
+	       
+
+	    } catch (Exception e) {
+	        throw new RuntimeException("Error while updating report fields", e);
+	    }
+
+	    // 3️⃣ Save updated entity
+	    OPTR_Detail_Repo.save(existingDetail);
+	    BRRS_M_OPTR_Summary_Repo.save(existing);
+	    
+	}
+	
+	/*
 	public ModelAndView getM_OPTRcurrentDtl(String reportId, String fromdate, String todate, String currency,
 			String dtltype, Pageable pageable, String Filter, String type, String version) {
 
@@ -226,8 +316,8 @@ public class BRRS_M_OPTR_ReportService {
 		mv.addObject("menu", reportId);
 
 		return mv;
-	}
-	
+	}*/
+	/*
 	public void updateDetailFromForm(Date reportDate, Map<String, String> params) {
 
 	    System.out.println("came to service for update ");
@@ -279,7 +369,7 @@ public class BRRS_M_OPTR_ReportService {
 	    // ✅ CALL ORACLE PROCEDURE AFTER ALL UPDATES
 	    callSummaryProcedure(reportDate);
 	}
-	
+	*/
 	private void callSummaryProcedure(Date reportDate) {
 
 	    String sql = "{ call BRRS_M_OPTR_SUMMARY_PROCEDURE(?) }";
@@ -303,106 +393,100 @@ public class BRRS_M_OPTR_ReportService {
 
 
 
+	public void updateReport1(M_OPTR_Summary_Entity updatedEntity) {
+		System.out.println("Came to services1");
+		System.out.println("Report Date: " + updatedEntity.getReportDate());
 
+		M_OPTR_Summary_Entity existing = BRRS_M_OPTR_Summary_Repo.findById(updatedEntity.getReportDate()).orElseThrow(
+				() -> new RuntimeException("Record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
 
+		try {
+			// 1. Loop from R15 to R50 and copy fields
+			for (int i = 10; i <= 14; i++) {
+				if (i == 12) {
+					continue;
+				}
+				String prefix = "R" + i + "_";
 
-	//public void updateReport1(M_OPTR_Summary_Entity updatedEntity) {
-	//    System.out.println("Came to services1");
-	//    System.out.println("Report Date: " + updatedEntity.getReportDate());
+				String[] fields = { "INTEREST_RATES", "EQUITIES", "FOREIGN_EXC_GOLD", "COMMODITIES" };
 
-	 //   M_OPTR_Summary_Entity existing = BRRS_M_OPTR_Summary_Repo.findById(updatedEntity.getReportDate())
-	 //           .orElseThrow(() -> new RuntimeException(
-	  //                  "Record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
+				for (String field : fields) {
+					String getterName = "get" + prefix + field;
+					String setterName = "set" + prefix + field;
 
-	//    try {
-	        // 1. Loop from R15 to R50 and copy fields
-//	        for (int i = 10; i <= 14; i++) {
-//		if (i == 12) {
- //       continue;
- //   }
-//	            String prefix = "R" + i + "_";
+					try {
+						Method getter = M_OPTR_Summary_Entity.class.getMethod(getterName);
+						Method setter = M_OPTR_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
 
-//	            String[] fields = {"INTEREST_RATES", "EQUITIES", "FOREIGN_EXC_GOLD", "COMMODITIES"};
+						Object newValue = getter.invoke(updatedEntity);
+						setter.invoke(existing, newValue);
 
-//	            for (String field : fields) {
-//	                String getterName = "get" + prefix + field;
-//	                String setterName = "set" + prefix + field;
+					} catch (NoSuchMethodException e) {
+						// Skip missing fields
+						continue;
+					}
+				}
+			}
 
-//	                try {
-//	                    Method getter = M_OPTR_Summary_Entity.class.getMethod(getterName);
-//	                    Method setter = M_OPTR_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+			// Loop through rows for formula fields
+			int[] targetRows = { 12 };
 
-//	                    Object newValue = getter.invoke(updatedEntity);
-//	                    setter.invoke(existing, newValue);
+			for (int i : targetRows) {
+				String prefix = "R" + i + "_";
 
-//	                } catch (NoSuchMethodException e) {
-	                    // Skip missing fields
-	//                    continue;
-	//                }
-	 //           }
-	//       }
-	        
-// Loop through rows for formula fields 
-//int[] targetRows = {12};
+				String[] fields = { "INTEREST_RATES", "EQUITIES", "FOREIGN_EXC_GOLD", "COMMODITIES" };
 
-//for (int i : targetRows) {
-  //  String prefix = "R" + i + "_";
+				for (String field : fields) {
+					String getterName = "get" + prefix + field;
+					String setterName = "set" + prefix + field;
 
-  //  String[] fields = {"INTEREST_RATES", "EQUITIES", "FOREIGN_EXC_GOLD", "COMMODITIES"};
+					try {
+						Method getter = M_OPTR_Summary_Entity.class.getMethod(getterName);
+						Method setter = M_OPTR_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
 
-  //  for (String field : fields) {
-   //     String getterName = "get" + prefix + field;
-   //     String setterName = "set" + prefix + field;
-
-   //     try {
-   //         Method getter = M_OPTR_Summary_Entity.class.getMethod(getterName);
-  //         Method setter = M_OPTR_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-
-   //         Object newValue = getter.invoke(updatedEntity);
-   //         setter.invoke(existing, newValue);
-
-   //     } catch (NoSuchMethodException e) {
-            // Skip missing fields
-  //          continue;
-  //      }
-  //  }
-//}
+						Object newValue = getter.invoke(updatedEntity);
+						setter.invoke(existing, newValue);
+					} catch (NoSuchMethodException e) {
+						// Skip missing fields
+						continue;
+					}
+				}
+			}
 //Loop through rows for formula fields 
-//int[] target = {10,11,12,13,14};
+			int[] target = { 10, 11, 12, 13, 14 };
 
-//for (int i : target) {
- //String prefix = "R" + i + "_";
+			for (int i : target) {
+				String prefix = "R" + i + "_";
 
- //String[] fields = {"TOTAL"};
+				String[] fields = { "TOTAL" };
 
- //for (String field : fields) {
-//     String getterName = "get" + prefix + field;
- //    String setterName = "set" + prefix + field;
+				for (String field : fields) {
+					String getterName = "get" + prefix + field;
+					String setterName = "set" + prefix + field;
 
- //    try {
-  //       Method getter = M_OPTR_Summary_Entity.class.getMethod(getterName);
-  //       Method setter = M_OPTR_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+					try {
+						Method getter = M_OPTR_Summary_Entity.class.getMethod(getterName);
+						Method setter = M_OPTR_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
 
-  //       Object newValue = getter.invoke(updatedEntity);
- //        setter.invoke(existing, newValue);
+						Object newValue = getter.invoke(updatedEntity);
+						setter.invoke(existing, newValue);
 
- //    } catch (NoSuchMethodException e) {
-         // Skip missing fields
-//         continue;
- //    }
-// }
-//}
+					} catch (NoSuchMethodException e) {
+						// Skip missing fields
+						continue;
+					}
+				}
+			}
 
-//}			
+		}
 
-//	catch (Exception e) {
-	//        throw new RuntimeException("Error while updating report fields", e);
-//	    }
+		catch (Exception e) {
+			throw new RuntimeException("Error while updating report fields", e);
+		}
 
-	    // 3️⃣ Save updated entity
-	//    BRRS_M_OPTR_Summary_Repo.save(existing);
-	//}
-//
+		// 3️⃣ Save updated entity
+		BRRS_M_OPTR_Summary_Repo.save(existing);
+	}
 	
 	
 //	public ModelAndView getM_OPTRcurrentDtl(String reportId, String fromdate, String todate, String currency,
@@ -485,18 +569,18 @@ public class BRRS_M_OPTR_ReportService {
 
 
 	public byte[] getM_OPTRExcel(String filename, String reportId, String fromdate, String todate, String currency,
-			 String dtltype, String type, String version) throws Exception {
+			 String dtltype, String type, BigDecimal version) throws Exception {
 logger.info("Service: Starting Excel generation process in memory.");
 // Convert string to Date
 Date reportDate = dateformat.parse(todate);
 
 // ARCHIVAL check
-if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && !version.trim().isEmpty()) {
+if ("ARCHIVAL".equalsIgnoreCase(type) && version != null ) {
 logger.info("Service: Generating ARCHIVAL report for version {}", version);
 return getExcelM_OPTRARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
 }
 // RESUB check
-else if ("RESUB".equalsIgnoreCase(type) && version != null && !version.trim().isEmpty()) {
+else if ("RESUB".equalsIgnoreCase(type) && version != null) {
 logger.info("Service: Generating RESUB report for version {}", version);
 
 
@@ -507,7 +591,15 @@ List<M_OPTR_Archival_Summary_Entity> T1Master =
 return BRRS_M_OPTRResubExcel(filename, reportId, fromdate, todate, currency, dtltype, type, version);
 }
 
+if ("email".equalsIgnoreCase(type)  && version == null) {
+    logger.info("Service: Generating Email report for version {}", version);
+    return BRRS_M_OPTREmailExcel(filename, reportId, fromdate, todate, currency, dtltype, type, version);
+} /*else if ("email".equalsIgnoreCase(type) && version != null) {
+    logger.info("Service: Generating Email report for version {}", version);
+    return BRRS_M_OPTRARCHIVALEmailExcel(filename, reportId, fromdate, todate,
+            currency, dtltype, type, version);
 
+}*/
 
 
 // Default (LIVE) case
@@ -880,7 +972,7 @@ return out.toByteArray();
 	
 
 	public byte[] getExcelM_OPTRARCHIVAL(String filename, String reportId, String fromdate, String todate,
-										   String currency, String dtltype, String type, String version) throws Exception {
+										   String currency, String dtltype, String type, BigDecimal version) throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.");
 		if (type.equals("ARCHIVAL") & version != null) {
 
@@ -1210,21 +1302,17 @@ Optional<M_OPTR_Archival_Summary_Entity> latestArchivalOpt =
 BRRS_M_OPTR_Archival_Summary_Repo
 .getLatestArchivalVersionByDate(reportDate);
 
-int newVersion = 1;
+BigDecimal newVersion = BigDecimal.ONE;
 if (latestArchivalOpt.isPresent()) {
 try {
 newVersion =
-Integer.parseInt(latestArchivalOpt.get().getReportVersion()) + 1;
+latestArchivalOpt.get().getReportVersion() .add(BigDecimal.ONE);
 } catch (NumberFormatException e) {
-newVersion = 1;
+newVersion = BigDecimal.ONE;
 }
 }
 
-boolean exists =
-BRRS_M_OPTR_Archival_Summary_Repo
-.findByReportDateAndReportVersion(
-reportDate, String.valueOf(newVersion))
-.isPresent();
+boolean exists = BRRS_M_OPTR_Archival_Summary_Repo.findByReportDateAndReportVersion(reportDate, newVersion).isPresent();
 
 if (exists) {
 throw new RuntimeException(
@@ -1355,7 +1443,7 @@ if ("R10_INTEREST_RATES".equals(normalizedKey)) {
 * 5️⃣ SET RESUB METADATA
 * ========================================================= */
 archivalEntity.setReportDate(reportDate);
-archivalEntity.setReportVersion(String.valueOf(newVersion));
+archivalEntity.setReportVersion(newVersion);
 archivalEntity.setReportResubDate(new Date());
 
 /* =========================================================
@@ -1380,7 +1468,7 @@ return (value == null || value.trim().isEmpty())
 /// Downloaded for Archival & Resub
 public byte[] BRRS_M_OPTRResubExcel(String filename, String reportId, String fromdate,
 String todate, String currency, String dtltype,
-String type, String version) throws Exception {
+String type, BigDecimal version) throws Exception {
 
 logger.info("Service: Starting Excel generation process in memory for RESUB Excel.");
 
@@ -1635,7 +1723,7 @@ return out.toByteArray();
 }
 }
 
-
+/*
 public byte[] getM_OPTRDetailExcel(String filename, String fromdate, String todate,
         String currency, String dtltype, String type, String version) {
 
@@ -1777,7 +1865,7 @@ public byte[] getM_OPTRDetailExcel(String filename, String fromdate, String toda
         return new byte[0];
     }
 }
-
+*/
 public byte[] getDetailExcelARCHIVAL(String filename, String fromdate, String todate,
         String currency, String dtltype, String type, String version) {
 
@@ -1917,12 +2005,250 @@ public byte[] getDetailExcelARCHIVAL(String filename, String fromdate, String to
 }
 
 	
+public byte[] BRRS_M_OPTREmailExcel(String filename, String reportId, String fromdate, String todate,
+		String currency, String dtltype, String type, BigDecimal version) throws Exception {
+
+	Date reportDate = dateformat.parse(todate);
+	// Default (LIVE) case
+	List<M_OPTR_Summary_Entity> dataList = BRRS_M_OPTR_Summary_Repo.getdatabydateList(reportDate);
+
+	String templateDir = env.getProperty("output.exportpathtemp");
+	String templateFileName = filename;
+	System.out.println(filename);
+	Path templatePath = Paths.get(templateDir, templateFileName);
+	System.out.println(templatePath);
+
+	logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
+
+	if (!Files.exists(templatePath)) {
+		// This specific exception will be caught by the controller.
+		throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
+	}
+	if (!Files.isReadable(templatePath)) {
+		// A specific exception for permission errors.
+		throw new SecurityException(
+				"Template file exists but is not readable (check permissions): " + templatePath.toAbsolutePath());
+	}
+
+	// This try-with-resources block is perfect. It guarantees all resources are
+	// closed automatically.
+	try (InputStream templateInputStream = Files.newInputStream(templatePath);
+			Workbook workbook = WorkbookFactory.create(templateInputStream);
+			ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+
+		Sheet sheet = workbook.getSheetAt(0);
+
+	// --- Style Definitions ---
+	CreationHelper createHelper = workbook.getCreationHelper();
+
+	CellStyle dateStyle = workbook.createCellStyle();
+	dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
+	dateStyle.setBorderBottom(BorderStyle.THIN);
+	dateStyle.setBorderTop(BorderStyle.THIN);
+	dateStyle.setBorderLeft(BorderStyle.THIN);
+	dateStyle.setBorderRight(BorderStyle.THIN);
+	CellStyle textStyle = workbook.createCellStyle();
+	textStyle.setBorderBottom(BorderStyle.THIN);
+	textStyle.setBorderTop(BorderStyle.THIN);
+	textStyle.setBorderLeft(BorderStyle.THIN);
+	textStyle.setBorderRight(BorderStyle.THIN);
+
+	// Create the font
+	Font font = workbook.createFont();
+	font.setFontHeightInPoints((short) 8); // size 8
+	font.setFontName("Arial");
+	CellStyle numberStyle = workbook.createCellStyle();
+	// numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
+	numberStyle.setBorderBottom(BorderStyle.THIN);
+	numberStyle.setBorderTop(BorderStyle.THIN);
+	numberStyle.setBorderLeft(BorderStyle.THIN);
+	numberStyle.setBorderRight(BorderStyle.THIN);
+	numberStyle.setFont(font);
+	// --- End of Style Definitions ---
+	int startRow = 9;
+
+	if (!dataList.isEmpty()) {
+	for (int i = 0; i < dataList.size(); i++) {
+	M_OPTR_Summary_Entity record = dataList.get(i);
+	System.out.println("rownumber=" + startRow + i);
+	Row row = sheet.getRow(startRow + i);	
+
+	if (row == null) {
+	row = sheet.createRow(startRow + i);
+	}
+
+
+/*
+	Cell cell2 = row.createCell(4);
+	if (record.getR10_INTEREST_RATES() != null) {
+	cell2.setCellValue(record.getR10_INTEREST_RATES().doubleValue());
+	cell2.setCellStyle(numberStyle);
+	} else {
+	cell2.setCellValue("");
+	cell2.setCellStyle(textStyle);
+	}
+
+	Cell cell3 = row.createCell(5);
+	if (record.getR10_EQUITIES() != null) {
+	cell3.setCellValue(record.getR10_EQUITIES().doubleValue());
+	cell3.setCellStyle(numberStyle);
+	} else {
+	cell3.setCellValue("");
+	cell3.setCellStyle(textStyle);
+	}
+
+	Cell cell4 = row.createCell(6);
+	if (record.getR10_FOREIGN_EXC_GOLD() != null) {
+	cell4.setCellValue(record.getR10_FOREIGN_EXC_GOLD().doubleValue());
+	cell4.setCellStyle(numberStyle);
+	} else {
+	cell4.setCellValue("");
+	cell4.setCellStyle(textStyle);
+	}
+
+	Cell cell5 = row.createCell(7);
+	if (record.getR10_COMMODITIES() != null) {
+	cell5.setCellValue(record.getR10_COMMODITIES().doubleValue());
+	cell5.setCellStyle(numberStyle);
+	} else {
+	cell5.setCellValue("");
+	cell5.setCellStyle(textStyle);
+	}
+*/
+	row = sheet.getRow(10);
+
+	Cell  cell2 = row.createCell(4);
+	if (record.getR11_INTEREST_RATES() != null) {
+	cell2.setCellValue(record.getR11_INTEREST_RATES().doubleValue());
+	cell2.setCellStyle(numberStyle);
+	} else {
+	cell2.setCellValue("");
+	cell2.setCellStyle(textStyle);
+	}
+
+	Cell  cell3 = row.createCell(5);
+	if (record.getR11_EQUITIES() != null) {
+	cell3.setCellValue(record.getR11_EQUITIES().doubleValue());
+	cell3.setCellStyle(numberStyle);
+	} else {
+	cell3.setCellValue("");
+	cell3.setCellStyle(textStyle);
+	}
+
+	Cell  cell4 = row.createCell(6);
+	if (record.getR11_FOREIGN_EXC_GOLD() != null) {
+	cell4.setCellValue(record.getR11_FOREIGN_EXC_GOLD().doubleValue());
+	cell4.setCellStyle(numberStyle);
+	} else {
+	cell4.setCellValue("");
+	cell4.setCellStyle(textStyle);
+	}
+
+	Cell  cell5 = row.createCell(7);
+	if (record.getR11_COMMODITIES() != null) {
+	cell5.setCellValue(record.getR11_COMMODITIES().doubleValue());
+	cell5.setCellStyle(numberStyle);
+	} else {
+	cell5.setCellValue("");
+	cell5.setCellStyle(textStyle);
+	}
+					
+	row = sheet.getRow(12);
+	 cell2 = row.createCell(4);
+	if (record.getR13_INTEREST_RATES() != null) {
+	cell2.setCellValue(record.getR13_INTEREST_RATES().doubleValue());
+	cell2.setCellStyle(numberStyle);
+	} else {
+	cell2.setCellValue("");
+	cell2.setCellStyle(textStyle);
+	}
+
+	 cell3 = row.createCell(5);
+	if (record.getR13_EQUITIES() != null) {
+	cell3.setCellValue(record.getR13_EQUITIES().doubleValue());
+	cell3.setCellStyle(numberStyle);
+	} else {
+	cell3.setCellValue("");
+	cell3.setCellStyle(textStyle);
+	}
+
+	 cell4 = row.createCell(6);
+	if (record.getR13_FOREIGN_EXC_GOLD() != null) {
+	cell4.setCellValue(record.getR13_FOREIGN_EXC_GOLD().doubleValue());
+	cell4.setCellStyle(numberStyle);
+	} else {
+	cell4.setCellValue("");
+	cell4.setCellStyle(textStyle);
+	}
+
+	cell5 = row.createCell(7);
+	if (record.getR13_COMMODITIES() != null) {
+	cell5.setCellValue(record.getR13_COMMODITIES().doubleValue());
+	cell5.setCellStyle(numberStyle);
+	} else {
+	cell5.setCellValue("");
+	cell5.setCellStyle(textStyle);
+	}
+
+
+	row = sheet.getRow(13);
+					cell2 = row.createCell(4);
+	if (record.getR14_INTEREST_RATES() != null) {
+	cell2.setCellValue(record.getR14_INTEREST_RATES().doubleValue());
+	cell2.setCellStyle(numberStyle);
+	} else {
+	cell2.setCellValue("");
+	cell2.setCellStyle(textStyle);
+	}
+
+	 cell3 = row.createCell(5);
+	if (record.getR14_EQUITIES() != null) {
+	cell3.setCellValue(record.getR14_EQUITIES().doubleValue());
+	cell3.setCellStyle(numberStyle);
+	} else {
+	cell3.setCellValue("");
+	cell3.setCellStyle(textStyle);
+	}
+
+	cell4 = row.createCell(6);
+	if (record.getR14_FOREIGN_EXC_GOLD() != null) {
+	cell4.setCellValue(record.getR14_FOREIGN_EXC_GOLD().doubleValue());
+	cell4.setCellStyle(numberStyle);
+	} else {
+	cell4.setCellValue("");
+	cell4.setCellStyle(textStyle);
+	}
+
+	 cell5 = row.createCell(7);
+	if (record.getR14_COMMODITIES() != null) {
+	cell5.setCellValue(record.getR14_COMMODITIES().doubleValue());
+	cell5.setCellStyle(numberStyle);
+	} else {
+	cell5.setCellValue("");
+	cell5.setCellStyle(textStyle);
+	}
+
+
+
+
+
+
+	}
+	workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
+	} else {
+
+	}
+	// Write the final workbook content to the in-memory stream.
+	workbook.write(out);
+	logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
+
+
+	return out.toByteArray();
+}
 	
 	
 	
-	
-	
-	
+}
 	
 	
 	

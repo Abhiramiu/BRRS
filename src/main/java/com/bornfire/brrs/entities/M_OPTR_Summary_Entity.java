@@ -27,7 +27,7 @@ public class M_OPTR_Summary_Entity {
 	private Date reportDate;
 	
 	@Column(name = "REPORT_VERSION")
-	private String reportVersion;
+	private BigDecimal reportVersion;
 	
 		public  String REPORT_FREQUENCY;
 		public String REPORT_CODE;
@@ -88,14 +88,14 @@ public void setReportDate(Date reportDate) {
 
 
 
-public String getReportVersion() {
+public BigDecimal getReportVersion() {
 	return reportVersion;
 }
 
 
 
 
-public void setReportVersion(String reportVersion) {
+public void setReportVersion(BigDecimal reportVersion) {
 	this.reportVersion = reportVersion;
 }
 

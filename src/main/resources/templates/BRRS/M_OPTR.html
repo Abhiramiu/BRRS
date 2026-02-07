@@ -371,13 +371,25 @@ label.error {
 			isDetailsModal = true; // mark that this modal is from Details
 			showResultModal('BRRS', 'Details page not available for Manual Report');
 		} */
-		function showdetails() {
+		/*function showdetails() {
 			var Callurl;
 			$('#loader').modal('show');
 			Callurl = /*[[@{'/Reports/'+${reportid}+'/Details'(asondate=${asondate},fromdate=${fromdate},todate=${todate},currency=${currency},dtltype=${dtltype},type=${type},version=${version})}]]*/
-				location.href = Callurl;
+			/*	location.href = Callurl;
 			console.log(Callurl);
 
+		}*/
+		function showdetails() {
+			 $('#loader').modal('show');
+			    var Callurl = /*[[@{'/Reports/' + ${reportid}(
+			        dtltype='detail',
+			        fromdate=${fromdate},
+			        todate=${todate},
+			        type=${type},
+			        asondate=${asondate},
+			        version=${version}
+			    )}]]*/;
+			    location.href = Callurl;
 		}
 
 		function showsummary() {
@@ -967,7 +979,7 @@ function closemodel() {
         }
 }
 
-
+/*
 function fileuploads(btn) {
     var asondate = btn.getAttribute("data-todate");
     const type = btn.getAttribute("data-type"); // MAIN / RESUB / ARCHIVAL
@@ -1064,7 +1076,86 @@ function fileuploads(btn) {
 	    });
 
     console.log("✅ AJAX executed successfully");
-}    
+}    */
+
+
+
+function fileuploads(btn) {
+    try {
+        const asondate = btn.getAttribute("data-todate");
+
+        // Show loader
+        $('#loader').modal('show');
+
+        // ✅ Step 1: Calculate totals
+        if (typeof calculateRwaForRows === "function") {
+            calculateRwaForRows();
+        }
+
+        // ✅ Step 2: Remove commas from all text inputs
+        $("#fileupload input[type='text']").each(function () {
+            $(this).val($(this).val().replace(/,/g, ''));
+        });
+
+        // ✅ Step 3: Validate form
+        if (!$("#fileupload").valid()) {
+            $('#loader').modal('hide');
+            return;
+        }
+
+        // ✅ Retrieve type from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlType = urlParams.get("type");
+        const type = urlType || "";
+
+        // ✅ Build FormData
+        const formData = new FormData();
+        formData.append("asondate", asondate);
+        formData.append("type", type);
+
+        // ✅ Append all input fields to FormData
+        $('#fileupload').find(':input').each(function () {
+            const name = $(this).attr('name');
+            if (name) {
+                formData.append(name, $(this).val());
+            }
+        });
+
+        // ✅ Choose endpoint based on type
+        let apiUrl = './MOPTRupdateAll'; // normal update
+		if (type && type.toUpperCase() === 'RESUB') {
+			apiUrl = './UpdateM_OPTR_ReSub'; // Resubmission endpoint
+		}
+
+        // ✅ Send AJAX request
+        $.ajax({
+            url: apiUrl,
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            dataType: 'text',
+            success: function (response) {
+                $("#resultModalLabel").text("BRRS");
+                $("#resultModalBody").text(response);
+                $("#resultModal").modal("show");
+            },
+            error: function (jqXHR) {
+                $("#resultModalLabel").text("Error");
+                $("#resultModalBody").text("Update failed: " + jqXHR.responseText);
+                $("#resultModal").modal("show");
+            },
+            complete: function () {
+                $('#loader').modal('hide');
+            }
+        });
+
+    } catch (error) {
+        $('#loader').modal('hide');
+        console.error("Error during file upload:", error);
+    }
+}
+
 </script>
 
 <script th:inline="javascript">
@@ -1146,7 +1237,7 @@ setTimeout(function () {
        style="display: none;">Cancel</button>
 
 
-      <button type="button" class="custom-tab-btn" id="custom-tab-btnAdd" th:if="${displaymode == 'summary'}"
+      <button type="button" class="custom-tab-btn" id="custom-tab-btnAdd" th:if="${displaymode == 'summary' or displaymode == 'Details'}"
        th:attr="data-reportid=${reportid},
                    				 data-asondate=${asondate},
                    				 data-fromdate=${fromdate},
@@ -1162,7 +1253,23 @@ setTimeout(function () {
 
 
 
+						<button type="button" class="custom-tab-btn "
+							id="custom-tab-btnAdd" onclick="downloadfile(this)"
+							th:if="${displaymode == 'summary' or displaymode == 'Details'}"
+							th:attr="data-reportid=${reportid},
+            data-asondate=${asondate},
+            data-fromdate=${fromdate},
+            data-todate=${todate},
+            data-currency=${currency}, 
+            data-dtltype=${dtltype},
+            data-filename='EMAIL_M_OPTR.xlsx',
+            data-type='email',
+            data-version=${version != null ? version : ''}"
+							style="font-family: Arial; font-weight: bold;">
+							<i class="fa fa-download"></i> Email Format
 
+						</button>
+<!-- 
       <button type="button" class="custom-tab-btn" id="custom-tab-btnAdd" th:if="${displaymode == 'Details'}"
        onclick="startReport(this);"
        th:attr="
@@ -1176,13 +1283,29 @@ setTimeout(function () {
 								  ">
        <i class="fa fa-download"></i>
       </button>
-						
+						 -->
 
 
 					</div>
 					
 				</div>
-				<div th:if="${displaymode == 'summary'}">
+				<h1
+					th:if="${displaymode == 'summary' and type == 'ARCHIVAL' and displaymode != 'Details'}"
+					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">Archival
+					Summary View - M-OPTR</h1>
+
+				<h1
+					th:if="${displaymode == 'Details' and type == 'ARCHIVAL' and displaymode != 'summary'}"
+					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">Archival
+					Detail View - M-OPTR</h1>
+
+				<h1 th:if="${displaymode == 'summary'and type != 'ARCHIVAL'}"
+					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">Summary
+					View - M-OPTR</h1>
+				<h1 th:if="${displaymode == 'Details' and type != 'ARCHIVAL'}"
+					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">Detail
+					View - M-OPTR</h1>
+				<div th:if="${displaymode == 'summary' or displaymode == 'Details'}">
 					<div class="row">
 						<div class="col-sm-12">
 						<form action="#" method="POST" id="fileupload">
@@ -1234,28 +1357,28 @@ setTimeout(function () {
 		<input class="display-input Show_input "
 		type="text"
 		th:value="${report.R10_INTEREST_RATES != null ? #numbers.formatDecimal(report.R10_INTEREST_RATES, 1, 'COMMA', 0, 'POINT') : '0'}"
-		id="R10_INTEREST_RATES" name="R10_C4_INTEREST_RATES"
+		id="R10_INTEREST_RATES" name="R10_INTEREST_RATES"
 		style="background-color: #FFFFFF; width: 180px; padding-left: 20px; height: 28px; border-color: transparent; text-align: right;"
 		readonly /></td>
 		<td id="R10" style="text-align:right;">
 		<input class="display-input Show_input "
 		type="text"
 		th:value="${report.R10_EQUITIES != null ? #numbers.formatDecimal(report.R10_EQUITIES, 1, 'COMMA', 0, 'POINT') : '0'}"
-		id="R10_EQUITIES" name="R10_C5_EQUITIES"
+		id="R10_EQUITIES" name="R10_EQUITIES"
 		style="background-color: #FFFFFF; width: 180px; padding-left: 20px; height: 28px; border-color: transparent; text-align: right;"
 		readonly /></td>
 		<td id="R10" style="text-align:right;">
 		<input class="display-input Show_input "
 		type="text"
 		th:value="${report.R10_FOREIGN_EXC_GOLD != null ? #numbers.formatDecimal(report.R10_FOREIGN_EXC_GOLD, 1, 'COMMA', 0, 'POINT') : '0'}"
-		id="R10_FOREIGN_EXC_GOLD" name="R10_C6_FOREIGN_EXC_GOLD"
+		id="R10_FOREIGN_EXC_GOLD" name="R10_FOREIGN_EXC_GOLD"
 		style="background-color: #FFFFFF; width: 180px; padding-left: 20px; height: 28px; border-color: transparent; text-align: right;"
 		readonly /></td>
 		<td id="R10" style="text-align:right;">
 		<input class="display-input Show_input "
 		type="text"
 		th:value="${report.R10_COMMODITIES != null ? #numbers.formatDecimal(report.R10_COMMODITIES, 1, 'COMMA', 0, 'POINT') : '0'}"
-		id="R10_COMMODITIES" name="R10_C7_COMMODITIES"
+		id="R10_COMMODITIES" name="R10_COMMODITIES"
 		style="background-color: #FFFFFF; width: 180px; padding-left: 20px; height: 28px; border-color: transparent; text-align: right;"
 		readonly /></td>		
         
@@ -1267,7 +1390,7 @@ style="text-align: right; width:248px; background-color: rgb(107, 122, 143); col
 	<input class="display-input Show_inputnonEditable"
 	type="text"
 	th:value="${report.R10_TOTAL != null ? #numbers.formatDecimal(report.R10_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
-	id="R10_TOTAL" name="R10_C8_TOTAL"
+	id="R10_TOTAL" name="R10_TOTAL"
 	style="background-color: rgb(107, 122, 143); color: white; width: 180px; padding-left: 20px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
                       		
@@ -1280,28 +1403,28 @@ style="text-align: right; width:248px; background-color: rgb(107, 122, 143); col
 		<input class="display-input Show_input "
 		type="text"
 		th:value="${report.R11_INTEREST_RATES != null ? #numbers.formatDecimal(report.R11_INTEREST_RATES, 1, 'COMMA', 0, 'POINT') : '0'}"
-		id="R11_INTEREST_RATES" name="R11_C4_INTEREST_RATES"
+		id="R11_INTEREST_RATES" name="R11_INTEREST_RATES"
 		style="background-color: #FFFFFF; width: 180px; padding-left: 20px; height: 28px; border-color: transparent; text-align: right;"
 		readonly /></td>
 		<td id="R11" style="text-align:right;">
 		<input class="display-input Show_input "
 		type="text"
 		th:value="${report.R11_EQUITIES != null ? #numbers.formatDecimal(report.R11_EQUITIES, 1, 'COMMA', 0, 'POINT') : '0'}"
-		id="R11_EQUITIES" name="R11_C5_EQUITIES"
+		id="R11_EQUITIES" name="R11_EQUITIES"
 		style="background-color: #FFFFFF; width: 180px; padding-left: 20px; height: 28px; border-color: transparent; text-align: right;"
 		readonly /></td>
 		<td id="R11" style="text-align:right;">
 		<input class="display-input Show_input "
 		type="text"
 		th:value="${report.R11_FOREIGN_EXC_GOLD != null ? #numbers.formatDecimal(report.R11_FOREIGN_EXC_GOLD, 1, 'COMMA', 0, 'POINT') : '0'}"
-		id="R11_FOREIGN_EXC_GOLD" name="R11_C6_FOREIGN_EXC_GOLD"
+		id="R11_FOREIGN_EXC_GOLD" name="R11_FOREIGN_EXC_GOLD"
 		style="background-color: #FFFFFF; width: 180px; padding-left: 20px; height: 28px; border-color: transparent; text-align: right;"
 		readonly /></td>
 		<td id="R11" style="text-align:right;">
 		<input class="display-input Show_input "
 		type="text"
 		th:value="${report.R11_COMMODITIES != null ? #numbers.formatDecimal(report.R11_COMMODITIES, 1, 'COMMA', 0, 'POINT') : '0'}"
-		id="R11_COMMODITIES" name="R11_C7_COMMODITIES"
+		id="R11_COMMODITIES" name="R11_COMMODITIES"
 		style="background-color: #FFFFFF; width: 180px; padding-left: 20px; height: 28px; border-color: transparent; text-align: right;"
 		readonly /></td>		
         
@@ -1312,7 +1435,7 @@ style="text-align: right; width:248px; background-color: rgb(107, 122, 143); col
 	<input class="display-input Show_inputnonEditable"
 	type="text"
 	th:value="${report.R11_TOTAL != null ? #numbers.formatDecimal(report.R11_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
-	id="R11_TOTAL" name="R11_C8_TOTAL"
+	id="R11_TOTAL" name="R11_TOTAL"
 	style="background-color: rgb(107, 122, 143); color: white; width: 180px; padding-left: 20px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
                       		
@@ -1330,7 +1453,7 @@ style="text-align: right; width:248px; background-color: rgb(107, 122, 143); col
 	<input class="display-input Show_inputnonEditable"
 	type="text"
 	th:value="${report.R12_INTEREST_RATES != null ? #numbers.formatDecimal(report.R12_INTEREST_RATES, 1, 'COMMA', 0, 'POINT') : '0'}"
-	id="R12_INTEREST_RATES" name="R12_C4_INTEREST_RATES"
+	id="R12_INTEREST_RATES" name="R12_INTEREST_RATES"
 	style="background-color: rgb(107, 122, 143); color: white; width: 180px; padding-left: 20px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
@@ -1342,7 +1465,7 @@ style="text-align: right; width:248px; background-color: rgb(107, 122, 143); col
 	<input class="display-input Show_inputnonEditable"
 	type="text"
 	th:value="${report.R12_EQUITIES != null ? #numbers.formatDecimal(report.R12_EQUITIES, 1, 'COMMA', 0, 'POINT') : '0'}"
-	id="R12_EQUITIES" name="R12_C5_EQUITIES"
+	id="R12_EQUITIES" name="R12_EQUITIES"
 	style="background-color: rgb(107, 122, 143); color: white; width: 180px; padding-left: 20px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
                     
@@ -1353,7 +1476,7 @@ style="text-align: right; width:248px; background-color: rgb(107, 122, 143); col
 	<input class="display-input Show_inputnonEditable"
 	type="text"
 	th:value="${report.R12_FOREIGN_EXC_GOLD != null ? #numbers.formatDecimal(report.R12_FOREIGN_EXC_GOLD, 1, 'COMMA', 0, 'POINT') : '0'}"
-	id="R12_FOREIGN_EXC_GOLD" name="R12_C6_FOREIGN_EXC_GOLD"
+	id="R12_FOREIGN_EXC_GOLD" name="R12_FOREIGN_EXC_GOLD"
 	style="background-color: rgb(107, 122, 143); color: white; width: 180px; padding-left: 20px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 		
@@ -1364,7 +1487,7 @@ style="text-align: right; width:248px; background-color: rgb(107, 122, 143); col
 	<input class="display-input Show_inputnonEditable"
 	type="text"
 	th:value="${report.R12_COMMODITIES != null ? #numbers.formatDecimal(report.R12_COMMODITIES, 1, 'COMMA', 0, 'POINT') : '0'}"
-	id="R12_COMMODITIES" name="R12_C7_COMMODITIES"
+	id="R12_COMMODITIES" name="R12_COMMODITIES"
 	style="background-color: rgb(107, 122, 143); color: white; width: 180px; padding-left: 20px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 	
@@ -1377,7 +1500,7 @@ style="text-align: right; width:248px; background-color: rgb(107, 122, 143); col
 	<input class="display-input Show_inputnonEditable"
 	type="text"
 	th:value="${report.R12_TOTAL != null ? #numbers.formatDecimal(report.R12_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
-	id="R12_TOTAL" name="R12_C8_TOTAL"
+	id="R12_TOTAL" name="R12_TOTAL"
 	style="background-color: rgb(107, 122, 143); color: white; width: 180px; padding-left: 20px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>  
                       		
@@ -1392,28 +1515,28 @@ style="text-align: right; width:248px; background-color: rgb(107, 122, 143); col
 		<input class="display-input Show_input "
 		type="text"
 		th:value="${report.R13_INTEREST_RATES != null ? #numbers.formatDecimal(report.R13_INTEREST_RATES, 1, 'COMMA', 0, 'POINT') : '0'}"
-		id="R13_INTEREST_RATES" name="R13_C4_INTEREST_RATES"
+		id="R13_INTEREST_RATES" name="R13_INTEREST_RATES"
 		style="background-color: #FFFFFF; width: 180px; padding-left: 20px; height: 28px; border-color: transparent; text-align: right;"
 		readonly /></td>
 		<td id="R13" style="text-align:right;">
 		<input class="display-input Show_input "
 		type="text"
 		th:value="${report.R13_EQUITIES != null ? #numbers.formatDecimal(report.R13_EQUITIES, 1, 'COMMA', 0, 'POINT') : '0'}"
-		id="R13_EQUITIES" name="R13_C5_EQUITIES"
+		id="R13_EQUITIES" name="R13_EQUITIES"
 		style="background-color: #FFFFFF; width: 180px; padding-left: 20px; height: 28px; border-color: transparent; text-align: right;"
 		readonly /></td>
 		<td id="R13" style="text-align:right;">
 		<input class="display-input Show_input "
 		type="text"
 		th:value="${report.R13_FOREIGN_EXC_GOLD != null ? #numbers.formatDecimal(report.R13_FOREIGN_EXC_GOLD, 1, 'COMMA', 0, 'POINT') : '0'}"
-		id="R13_FOREIGN_EXC_GOLD" name="R13_C6_FOREIGN_EXC_GOLD"
+		id="R13_FOREIGN_EXC_GOLD" name="R13_FOREIGN_EXC_GOLD"
 		style="background-color: #FFFFFF; width: 180px; padding-left: 20px; height: 28px; border-color: transparent; text-align: right;"
 		readonly /></td>
 		<td id="R13" style="text-align:right;">
 		<input class="display-input Show_input "
 		type="text"
 		th:value="${report.R13_COMMODITIES != null ? #numbers.formatDecimal(report.R13_COMMODITIES, 1, 'COMMA', 0, 'POINT') : '0'}"
-		id="R13_COMMODITIES" name="R13_C7_COMMODITIES"
+		id="R13_COMMODITIES" name="R13_COMMODITIES"
 		style="background-color: #FFFFFF; width: 180px; padding-left: 20px; height: 28px; border-color: transparent; text-align: right;"
 		readonly /></td>		
         
@@ -1424,7 +1547,7 @@ style="text-align: right; width:248px; background-color: rgb(107, 122, 143); col
 	<input class="display-input Show_inputnonEditable"
 	type="text"
 	th:value="${report.R13_TOTAL != null ? #numbers.formatDecimal(report.R13_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
-	id="R13_TOTAL" name="R13_C8_TOTAL"
+	id="R13_TOTAL" name="R13_TOTAL"
 	style="background-color: rgb(107, 122, 143); color: white; width: 180px; padding-left: 20px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
                       		
@@ -1439,28 +1562,28 @@ style="text-align: right; width:248px; background-color: rgb(107, 122, 143); col
 		<input class="display-input Show_input "
 		type="text"
 		th:value="${report.R14_INTEREST_RATES != null ? #numbers.formatDecimal(report.R14_INTEREST_RATES, 1, 'COMMA', 0, 'POINT') : '0'}"
-		id="R14_INTEREST_RATES" name="R14_C4_INTEREST_RATES"
+		id="R14_INTEREST_RATES" name="R14_INTEREST_RATES"
 		style="background-color: #FFFFFF; width: 180px; padding-left: 20px; height: 28px; border-color: transparent; text-align: right;"
 		readonly /></td>
 		<td id="R14" style="text-align:right;">
 		<input class="display-input Show_input "
 		type="text"
 		th:value="${report.R14_EQUITIES != null ? #numbers.formatDecimal(report.R14_EQUITIES, 1, 'COMMA', 0, 'POINT') : '0'}"
-		id="R14_EQUITIES" name="R14_C5_EQUITIES"
+		id="R14_EQUITIES" name="R14_EQUITIES"
 		style="background-color: #FFFFFF; width: 180px; padding-left: 20px; height: 28px; border-color: transparent; text-align: right;"
 		readonly /></td>
 		<td id="R14" style="text-align:right;">
 		<input class="display-input Show_input "
 		type="text"
 		th:value="${report.R14_FOREIGN_EXC_GOLD != null ? #numbers.formatDecimal(report.R14_FOREIGN_EXC_GOLD, 1, 'COMMA', 0, 'POINT') : '0'}"
-		id="R14_FOREIGN_EXC_GOLD" name="R14_C6_FOREIGN_EXC_GOLD"
+		id="R14_FOREIGN_EXC_GOLD" name="R14_FOREIGN_EXC_GOLD"
 		style="background-color: #FFFFFF; width: 180px; padding-left: 20px; height: 28px; border-color: transparent; text-align: right;"
 		readonly /></td>
 		<td id="R14" style="text-align:right;">
 		<input class="display-input Show_input "
 		type="text"
 		th:value="${report.R14_COMMODITIES != null ? #numbers.formatDecimal(report.R14_COMMODITIES, 1, 'COMMA', 0, 'POINT') : '0'}"
-		id="R14_COMMODITIES" name="R14_C7_COMMODITIES"
+		id="R14_COMMODITIES" name="R14_COMMODITIES"
 		style="background-color: #FFFFFF; width: 180px; padding-left: 20px; height: 28px; border-color: transparent; text-align: right;"
 		readonly /></td>		
         
@@ -1471,7 +1594,7 @@ style="text-align: right; width:248px; background-color: rgb(107, 122, 143); col
 	<input class="display-input Show_inputnonEditable"
 	type="text"
 	th:value="${report.R14_TOTAL != null ? #numbers.formatDecimal(report.R14_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
-	id="R14_TOTAL" name="R14_C8_TOTAL"
+	id="R14_TOTAL" name="R14_TOTAL"
 	style="background-color: rgb(107, 122, 143); color: white; width: 180px; padding-left: 20px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
                       		
@@ -1503,7 +1626,7 @@ style="text-align: right; width:248px; background-color: rgb(107, 122, 143); col
         <div style="text-align: center; margin-top: 10px;">
 
          <button id="submitButton" type="button" class="custom-tab-btn Show_input" form="fileupload"
-          th:attr="data-todate=${asondate}, data-type=${type}" onclick="fileuploads(this);" style="display: none;">
+          th:attr="data-todate=${asondate}" onclick="fileuploads(this);" style="display: none;">
           Submit</button>
         </div>
        </form>
@@ -1511,7 +1634,7 @@ style="text-align: right; width:248px; background-color: rgb(107, 122, 143); col
      </div>
     </div>
 <!--  DETAIL -->
-            <div th:if="${displaymode == 'Details'}">
+<!--             <div th:if="${displaymode == 'Details'}">
              <div class="row">
               <div class="col-sm-12" style="max-height:90vh; overflow-y: auto; ">
                <div class="table-container" 
@@ -1521,7 +1644,7 @@ style="text-align: right; width:248px; background-color: rgb(107, 122, 143); col
                  <thead class="thead-light">
 
          <tr>
-               <!-- <th></th> -->
+               <th></th>
 		<th style="width:60px; text-align:center; white-space: nowrap;">
     S No
 </th>
@@ -1542,7 +1665,7 @@ style="text-align: right; width:248px; background-color: rgb(107, 122, 143); col
 
         <tbody style="font-family: Arial;">
             <tr th:each="report, srlno: ${reportdetails}">
-                <!-- <td>
+                <td>
                     <a data-toggle="tooltip" class="editrec" title="Click to Edit this Record">
                         <i class="fas fa-edit" style="color: black; cursor:pointer;"
                             th:attr="data-acctNo=${report.acctNumber},
@@ -1550,7 +1673,7 @@ style="text-align: right; width:248px; background-color: rgb(107, 122, 143); col
                             data-type=${type}"
                             onclick="openDetail(this, 'edit')"></i>
                     </a>
-                </td> -->
+                </td>
 	
 				<td style="text-align:center;" th:text="${srlno.index + 1}"></td>
 	              
@@ -1583,7 +1706,7 @@ style="text-align: right; width:248px; background-color: rgb(107, 122, 143); col
       
      </div>
     </div>
-   </div>
+   </div> -->
     
    </div>
   </div>

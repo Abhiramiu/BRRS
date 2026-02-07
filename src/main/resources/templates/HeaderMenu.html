@@ -1962,6 +1962,12 @@ th:if="${session.DOMAINID != null and #strings.containsIgnoreCase(session.DOMAIN
 <script>
 	// This runs on every page load
 	document.addEventListener("DOMContentLoaded", function () {
+		
+		const currentPath = window.location.pathname;
+        const homeId = "Dashboard"; 
+        if (currentPath.includes("Dashboard")) {
+            localStorage.setItem("activeMenuId", homeId);
+        }
 		const activeId = localStorage.getItem("activeMenuId");
 
 		// Remove all existing active classes

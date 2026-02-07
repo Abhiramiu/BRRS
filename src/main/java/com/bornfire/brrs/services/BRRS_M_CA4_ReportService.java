@@ -5450,6 +5450,7 @@ public class BRRS_M_CA4_ReportService {
 	    }
 
 	    // 3️⃣ Save updated entity
+	    brrs_m_ca4_detail_repo.save(existingDetail);
 	    brrs_m_ca4_summary_repo.save(existing);
 	}
 

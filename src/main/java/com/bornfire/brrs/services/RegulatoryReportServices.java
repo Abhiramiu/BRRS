@@ -514,6 +514,9 @@ public class RegulatoryReportServices {
 			repsummary = brrs_m_laradv_reportservice.getM_LARADVView(reportId, fromdate, todate, currency, dtltype,
 					pageable, type, version);
 			break;
+			
+		case "M_OPTR": repsummary = BRRS_M_OPTR_ReportService.getMOPTRView(reportId,
+				  fromdate, todate, currency, dtltype, pageable, type, version); break;
 		/*
 		 * 
 		 * 
@@ -1964,13 +1967,13 @@ public class RegulatoryReportServices {
 		// fromdate, todate, currency,
 		// dtltype, pageable, Filter, type, version);
 		// break;
-
+/*
 		case "M_OPTR":
 
 			repdetail = BRRS_M_OPTR_ReportService.getM_OPTRcurrentDtl(reportId, fromdate, todate, currency, dtltype,
 					pageable, Filter, type, version);
 			break;
-
+*/
 		case "M_OPTR_NEW":
 
 			repdetail = BRRS_M_OPTR_NEW_ReportService.getM_OPTRNEWcurrentDtl(reportId, fromdate, todate, currency,
@@ -2454,6 +2457,17 @@ public class RegulatoryReportServices {
 			} catch (Exception e) {
 			}
 			break;
+			
+		case "M_OPTR":
+			try {
+				repfile = BRRS_M_OPTR_ReportService.getM_OPTRExcel(filename, reportId, fromdate, todate, currency,
+						dtltype, type, version);
+			} catch (Exception e) { // TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+				  
+				 
 
 		/*
 		 * case "M_CA4": try { repfile =
@@ -3884,12 +3898,12 @@ public class RegulatoryReportServices {
 		// fromdate, todate, currency, dtltype,
 		// type, version);
 		// }
-
+/*
 		else if ("M_OPTRDetail".equals(filename)) {
 			return BRRS_M_OPTR_ReportService.getM_OPTRDetailExcel(filename, fromdate, todate, currency, dtltype, type,
 					version);
 		}
-
+*/
 		else if ("M_OPTR_NEWDetail".equals(filename)) {
 			return BRRS_M_OPTR_NEW_ReportService.getM_OPTR_NEWDetailExcel(filename, fromdate, todate, currency, dtltype,
 					type, version);
@@ -5504,13 +5518,13 @@ public class RegulatoryReportServices {
 			fileData = BRRS_BDISB2_ReportService.getBDISB2DetailExcel(filename, fromdate, todate, currency, dtltype,
 					type, version);
 		}
-
+/*
 		else if ("M_OPTRDetail".equals(filename)) {
 
 			fileData = BRRS_M_OPTR_ReportService.getM_OPTRDetailExcel(filename, fromdate, todate, currency, dtltype,
 					type, version);
 		}
-
+*/
 		else if ("M_OPTR_NEWDetail".equals(filename)) {
 
 			fileData = BRRS_M_OPTR_NEW_ReportService.getM_OPTR_NEWDetailExcel(filename, fromdate, todate, currency,
