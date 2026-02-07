@@ -4,6 +4,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import com.bornfire.brrs.entities.BrrsMNosvosP1;
+
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -16,7 +18,7 @@ public interface BrrsMNosvosP4ArchivalRepository extends JpaRepository<BrrsMNosv
     List<Object> getM_NOSVOSarchival();
 
     @Query(value = "select * from BRRS_M_NOSVOS_P4_ARCHIVAL where REPORT_DATE = ?1 and REPORT_VERSION = ?2", nativeQuery = true)
-    List<BrrsMNosvosP4Archival> getdatabydateListarchival(Date report_date, String report_version);
+    List<BrrsMNosvosP4Archival> getdatabydateListarchival(Date report_date, BigDecimal report_version);
 
 
 }

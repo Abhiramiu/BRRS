@@ -199,7 +199,7 @@ public class BRRS_ReportsController {
 			@RequestParam(value = "page", required = false) Optional<Integer> page,
 			@RequestParam(value = "size", required = false) Optional<Integer> size,
 			@RequestParam(value = "reportingTime", required = false) String reportingTime, Model md,
-			HttpServletRequest req, BigDecimal srl_no) {
+			HttpServletRequest req, BigDecimal srl_no) throws ParseException {
 
 		String userid = (String) req.getSession().getAttribute("USERID");
 		String roleid = (String) req.getSession().getAttribute("ROLEID");

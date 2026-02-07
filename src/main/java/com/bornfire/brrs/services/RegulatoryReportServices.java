@@ -413,7 +413,7 @@ public class RegulatoryReportServices {
 
 	public ModelAndView getReportView(String reportId, String reportDate, String fromdate, String todate,
 			String currency, String dtltype, String subreportid, String secid, String reportingTime, Pageable pageable,
-			BigDecimal srl_no, String req, String type, BigDecimal version) {
+			BigDecimal srl_no, String req, String type, BigDecimal version) throws ParseException{
 
 		ModelAndView repsummary = new ModelAndView();
 
@@ -844,6 +844,10 @@ public class RegulatoryReportServices {
 			repsummary = brrs_m_srwa_12b_reportservice.getM_SRWA_12BView(reportId, fromdate, todate, currency, dtltype,
 					pageable, type, version);
 			break;
+			  
+		case "M_NOSVOS": repsummary =
+			 BRRS_M_NOSVOS_reportservice.getM_NOSVOSView(reportId, fromdate, todate,
+			currency, dtltype, pageable, type, version); break;
 
 		/*
 		 * 
@@ -2058,6 +2062,13 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
+			
+		case "M_NOSVOS": try { 
+			repfile =  BRRS_M_NOSVOS_reportservice.getM_NOSVOSExcel(filename, reportId, fromdate,
+					todate, currency, dtltype, type, version); 
+			} catch (Exception e) {
+				 e.printStackTrace(); 
+			 } break;
 
 		/*
 		 * case "M_SFINP2": try { repfile =

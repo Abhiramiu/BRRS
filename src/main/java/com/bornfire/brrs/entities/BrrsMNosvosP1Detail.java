@@ -6,8 +6,8 @@ import javax.persistence.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
-@Table(name = "BRRS_M_NOSVOS_P1")
-public class BrrsMNosvosP1 {
+@Table(name = "BRRS_M_NOSVOS_DETAIL_P1")
+public class BrrsMNosvosP1Detail {
 	@Id
 	@Column(name = "REPORT_DATE")
 	private Date REPORT_DATE;

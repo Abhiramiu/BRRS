@@ -9,6 +9,7 @@ import java.util.List;
 
 public interface BrrsMNosvosP2Repository extends JpaRepository<BrrsMNosvosP2, Date> {
 	
+	
 	@Query(value = "SELECT * FROM BRRS_M_NOSVOS_P2 WHERE TRUNC(REPORT_DATE) = TRUNC(?1)", nativeQuery = true)
 	List<BrrsMNosvosP2> getDataByDate(Date report_date);
 	

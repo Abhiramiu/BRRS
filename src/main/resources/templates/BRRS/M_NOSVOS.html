@@ -335,12 +335,14 @@ td:has(input[id^="R"][id$="_RISK_WEIGHTED_AMOUNT_NOSTRO1"]) {
 
 		//to fetch summary from the database - called from the summary button
 		function showdetails() {
-			showResultModal('BRRS', ' Details page not available for Manual Report');
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${'detail'}, asondate=${asondate})}]]*/
+				location.href = Callurl;
+			// showResultModal('BRRS', ' Details page not available for Manual Report');
 		}
 
 		function showsummary() {
 			$('#loader').modal('show');
-			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${'summary'}, asondate=${asondate})}]]*/
 				location.href = Callurl;
 		}
 
@@ -822,14 +824,14 @@ function calculateR101Totals() {
 						</span>
 						<!-- Buttons -->
 						<input type="hidden" id="selectedTab" th:value="${displaymode}">
-						<!--<button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showsummary();"
-							th:if="${displaymode == 'Details'}">Summary</button>
+						<button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showsummary();"
+							th:if="${displaymode == 'detail'}">Summary</button>
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails();"
-							th:if="${displaymode == 'summary'}">Details</button>-->
+							th:if="${displaymode == 'summary'}">Details</button>
 
 						<!-- Modify button -->
-						<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
-							title="Click to EDIT Records" th:if="${type != 'ARCHIVAL'}"
+						<button type="button" class="custom-tab-btn" onclick="showmodify(this);" 
+							title="Click to EDIT Records" th:if="${displaymode == 'summary'}"
 							th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
 							id="addRecord">Modify</button>
 
@@ -839,16 +841,29 @@ function calculateR101Totals() {
 
 
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'summary'}" th:attr="data-reportid=${reportid},
+							 th:attr="data-reportid=${reportid},
                    				 data-asondate=${asondate},
                    				 data-fromdate=${fromdate},
                     				 data-todate=${todate},
                     				 data-currency=${currency}, 
-                    				 data-dtltype=${dtltype},
+                    				 data-dtltype=${'summary'},
                     				 data-filename='M_NOSVOS.xls',
 					 				 data-type=${type},
 					    			 data-version=${version}" onclick="downloadfile(this);">
 							<i class="fa fa-download"></i>
+						</button>
+
+						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
+							th:attr="data-reportid=${reportid},
+                   				 data-asondate=${asondate},
+                   				 data-fromdate=${fromdate},
+                    				 data-todate=${todate},
+                    				 data-currency=${currency}, 
+                    				 data-dtltype=${'detail'},
+                    				 data-filename='M_NOSVOS_EMAIL.xlsx',
+					 				 data-type=${'email_report'},
+					    			 data-version=${version}" onclick="downloadfile(this);">
+							<i class="fa fa-download"></i>Email Download
 						</button>
 
 
@@ -870,7 +885,9 @@ function calculateR101Totals() {
 					</div>
 
 				</div>
-				<div th:if="${displaymode == 'summary'}">
+				<div>
+					<h5 th:if="${displaymode == 'summary'}" style="text-align:center" >Summary Table</h5>
+					<h5 th:if="${displaymode == 'detail'}" style="text-align:center" >Detail Table</h5>
 					<div class="row">
 						<div class="col-lg-12">
 							<form action="#" method="POST" id="fileupload">
