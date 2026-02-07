@@ -2438,7 +2438,7 @@ public class RegulatoryReportServices {
 			}
 			break;
 
-		case "M_SRWA12D":
+		case "M_SRWA_12D":
 			try {
 				repfile = brrs_m_srwa_12d_reportservice.getM_SRWA_12DExcel(filename, reportId, fromdate, todate,
 						currency, dtltype, type, version);

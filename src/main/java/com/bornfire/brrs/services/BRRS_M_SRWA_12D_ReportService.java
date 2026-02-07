@@ -312,42 +312,46 @@ public class BRRS_M_SRWA_12D_ReportService {
 
 	public byte[] getM_SRWA_12DExcel(String filename, String reportId, String fromdate, String todate, String currency,
 			String dtltype, String type, BigDecimal version) throws Exception {
+
 		logger.info("Service: Starting Excel generation process in memory.");
 
-		List<M_SRWA_12D_Summary_Entity> dataList = M_SRWA_12D_Summary_Repo.getdatabydateList(dateformat.parse(todate));
+		Date parsed = dateformat.parse(todate);
+
+		boolean isEmail = "email".equalsIgnoreCase(dtltype);
+
+		List<M_SRWA_12D_Summary_Entity> dataList = M_SRWA_12D_Summary_Repo.getdatabydateList(parsed);
+
+		if (!isEmail && dataList.isEmpty()) {
+			logger.warn("Service: No data found for download request. Returning null.");
+			return null; // Controller sends 204
+		}
 
 		if (dataList.isEmpty()) {
-			logger.warn("Service: No data found for BRRS report. Returning empty result.");
-			return new byte[0];
+			logger.warn("Service: No data found, exporting template only.");
 		}
+
 		String templateDir = env.getProperty("output.exportpathtemp");
 		String templateFileName = filename;
-		System.out.println(templateDir);
-		System.out.println(filename);
+
 		Path templatePath = Paths.get(templateDir, templateFileName);
-		System.out.println(templatePath);
 
 		logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
 
 		if (!Files.exists(templatePath)) {
-			// This specific exception will be caught by the controller.
 			throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
 		}
+
 		if (!Files.isReadable(templatePath)) {
-			// A specific exception for permission errors.
 			throw new SecurityException(
 					"Template file exists but is not readable (check permissions): " + templatePath.toAbsolutePath());
 		}
 
-		// This try-with-resources block is perfect. It guarantees all resources are
-		// closed automatically.
 		try (InputStream templateInputStream = Files.newInputStream(templatePath);
 				Workbook workbook = WorkbookFactory.create(templateInputStream);
 				ByteArrayOutputStream out = new ByteArrayOutputStream()) {
 
 			Sheet sheet = workbook.getSheetAt(0);
 
-			// --- Style Definitions ---
 			CreationHelper createHelper = workbook.getCreationHelper();
 
 			CellStyle dateStyle = workbook.createCellStyle();
@@ -363,25 +367,23 @@ public class BRRS_M_SRWA_12D_ReportService {
 			textStyle.setBorderLeft(BorderStyle.THIN);
 			textStyle.setBorderRight(BorderStyle.THIN);
 
-			// Create the font
 			Font font = workbook.createFont();
-			font.setFontHeightInPoints((short) 8); // size 8
+			font.setFontHeightInPoints((short) 8);
 			font.setFontName("Arial");
 
 			CellStyle numberStyle = workbook.createCellStyle();
-			// numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
 			numberStyle.setBorderBottom(BorderStyle.THIN);
 			numberStyle.setBorderTop(BorderStyle.THIN);
 			numberStyle.setBorderLeft(BorderStyle.THIN);
 			numberStyle.setBorderRight(BorderStyle.THIN);
 			numberStyle.setFont(font);
-			// --- End of Style Definitions ---
 
 			int startRow = 11;
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
 					M_SRWA_12D_Summary_Entity record = dataList.get(i);
+
 					System.out.println("rownumber=" + startRow + i);
 					Row row = sheet.getRow(startRow + i);
 					if (row == null) {
@@ -1402,11 +1404,8 @@ public class BRRS_M_SRWA_12D_ReportService {
 
 				}
 				workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
-			} else {
-
 			}
 
-			// Write the final workbook content to the in-memory stream.
 			workbook.write(out);
 
 			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
@@ -1414,4 +1413,5 @@ public class BRRS_M_SRWA_12D_ReportService {
 			return out.toByteArray();
 		}
 	}
+
 }

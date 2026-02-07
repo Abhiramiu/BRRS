@@ -92,7 +92,7 @@ public class BRRS_M_LARADV_ReportService {
 
 	@Autowired
 	BRRS_M_LARADV_Summary_Repo5 M_LARADV_Summary_Repo5;
-	
+
 	@Autowired
 	BRRS_M_LARADV_Detail_Repo1 M_LARADV_Detail_Repo1;
 
@@ -888,145 +888,120 @@ public class BRRS_M_LARADV_ReportService {
 
 	public byte[] getM_LARADVExcel(String filename, String reportId, String fromdate, String todate, String currency,
 			String dtltype, String type, BigDecimal version) throws Exception {
-		logger.info("Service: Starting Excel generation process in memory.");
 
-		// ARCHIVAL check
-		if ("ARCHIVAL".equals(type) && version != null) {
-			byte[] ARCHIVALreport = getExcelM_LARADVARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype,
-					type, version);
-			return ARCHIVALreport;
+		logger.info("Service: Starting Excel generation process in memory.");
+		System.out.println("DETAIL TYPE:" + dtltype);
+
+// ================= ARCHIVAL =================
+		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
+			return getExcelM_LARADVARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
 		}
 
-		// RESUB check
-		else if ("RESUB".equalsIgnoreCase(type) && version != null) {
+// ================= RESUB =================
+		if ("RESUB".equalsIgnoreCase(type) && version != null) {
 			logger.info("Service: Generating RESUB report for version {}", version);
-
-			List<M_LARADV_Archival_Summary_Entity1> dataList = M_LARADV_Archival_Summary_Repo1
-					.getdatabydateListarchival(dateformat.parse(todate), version);
-			List<M_LARADV_Archival_Summary_Entity2> dataList1 = M_LARADV_Archival_Summary_Repo2
-					.getdatabydateListarchival(dateformat.parse(todate), version);
-			List<M_LARADV_Archival_Summary_Entity3> dataList2 = M_LARADV_Archival_Summary_Repo3
-					.getdatabydateListarchival(dateformat.parse(todate), version);
-			List<M_LARADV_Archival_Summary_Entity4> dataList3 = M_LARADV_Archival_Summary_Repo4
-					.getdatabydateListarchival(dateformat.parse(todate), version);
-			List<M_LARADV_Archival_Summary_Entity5> dataList4 = M_LARADV_Archival_Summary_Repo5
-					.getdatabydateListarchival(dateformat.parse(todate), version);
-			// Generate Excel for RESUB
 			return getExcelM_LARADV_RESUB(filename, reportId, fromdate, todate, currency, dtltype, type, version);
 		}
 
-		List<M_LARADV_Summary_Entity1> dataList1 = M_LARADV_Summary_Repo1.getdatabydateList(dateformat.parse(todate));
-		List<M_LARADV_Summary_Entity2> dataList2 = M_LARADV_Summary_Repo2.getdatabydateList(dateformat.parse(todate));
-		List<M_LARADV_Summary_Entity3> dataList3 = M_LARADV_Summary_Repo3.getdatabydateList(dateformat.parse(todate));
-		List<M_LARADV_Summary_Entity4> dataList4 = M_LARADV_Summary_Repo4.getdatabydateList(dateformat.parse(todate));
-		List<M_LARADV_Summary_Entity5> dataList5 = M_LARADV_Summary_Repo5.getdatabydateList(dateformat.parse(todate));
+		Date reportDate = dateformat.parse(todate);
 
-		if (dataList1.isEmpty()) {
-			logger.warn("Service: No data found for BRRS_M_CA5 report. Returning empty result.");
-			return new byte[0];
-		}
-		if (dataList2.isEmpty()) {
-			logger.warn("Service: No data found for BRRS_M_CA5 report. Returning empty result.");
-			return new byte[0];
-		}
+		List<M_LARADV_Summary_Entity1> dataList1 = M_LARADV_Summary_Repo1.getdatabydateList(reportDate);
+		List<M_LARADV_Summary_Entity2> dataList2 = M_LARADV_Summary_Repo2.getdatabydateList(reportDate);
+		List<M_LARADV_Summary_Entity3> dataList3 = M_LARADV_Summary_Repo3.getdatabydateList(reportDate);
+		List<M_LARADV_Summary_Entity4> dataList4 = M_LARADV_Summary_Repo4.getdatabydateList(reportDate);
+		List<M_LARADV_Summary_Entity5> dataList5 = M_LARADV_Summary_Repo5.getdatabydateList(reportDate);
 
-		if (dataList3.isEmpty()) {
-			logger.warn("Service: No data found for BRRS_M_CA5 report. Returning empty result.");
-			return new byte[0];
-		}
+// ================= DATA VALIDATION =================
+		if ("email".equalsIgnoreCase(dtltype)) {
 
-		if (dataList4.isEmpty()) {
-			logger.warn("Service: No data found for BRRS_M_CA5 report. Returning empty result.");
-			return new byte[0];
-		}
+// EMAIL uses ONLY Entity6 (which depends only on dataList1)
+			if (dataList1 == null || dataList1.isEmpty()) {
+				logger.warn("EMAIL mode: No data found in dataList1");
+				return new byte[0];
+			}
 
-		if (dataList5.isEmpty()) {
-			logger.warn("Service: No data found for BRRS_M_CA5 report. Returning empty result.");
-			return new byte[0];
+		} else {
+
+// NORMAL download needs all entities
+			if (dataList1 == null || dataList1.isEmpty() || dataList2 == null || dataList2.isEmpty()
+					|| dataList3 == null || dataList3.isEmpty() || dataList4 == null || dataList4.isEmpty()
+					|| dataList5 == null || dataList5.isEmpty()) {
+
+				logger.warn("Service: No data found for M_LARADV report.");
+				return new byte[0];
+			}
 		}
 
 		String templateDir = env.getProperty("output.exportpathtemp");
-		String templateFileName = filename;
-		System.out.println(filename);
-		Path templatePath = Paths.get(templateDir, templateFileName);
-		System.out.println(templatePath);
-
-		logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
+		Path templatePath = Paths.get(templateDir, filename);
 
 		if (!Files.exists(templatePath)) {
-			// This specific exception will be caught by the controller.
 			throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
 		}
+
 		if (!Files.isReadable(templatePath)) {
-			// A specific exception for permission errors.
-			throw new SecurityException(
-					"Template file exists but is not readable (check permissions): " + templatePath.toAbsolutePath());
+			throw new SecurityException("Template file not readable: " + templatePath.toAbsolutePath());
 		}
 
-		// This try-with-resources block is perfect. It guarantees all resources are
-		// closed automatically.
 		try (InputStream templateInputStream = Files.newInputStream(templatePath);
 				Workbook workbook = WorkbookFactory.create(templateInputStream);
 				ByteArrayOutputStream out = new ByteArrayOutputStream()) {
 
 			Sheet sheet = workbook.getSheetAt(0);
+			CreationHelper helper = workbook.getCreationHelper();
 
-			// --- Style Definitions ---
-			CreationHelper createHelper = workbook.getCreationHelper();
-
-			CellStyle dateStyle = workbook.createCellStyle();
-			dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
-			dateStyle.setBorderBottom(BorderStyle.THIN);
-			dateStyle.setBorderTop(BorderStyle.THIN);
-			dateStyle.setBorderLeft(BorderStyle.THIN);
-			dateStyle.setBorderRight(BorderStyle.THIN);
+// ================= STYLES =================
+			Font font = workbook.createFont();
+			font.setFontHeightInPoints((short) 8);
+			font.setFontName("Arial");
 
 			CellStyle textStyle = workbook.createCellStyle();
+			textStyle.setFont(font);
 			textStyle.setBorderBottom(BorderStyle.THIN);
 			textStyle.setBorderTop(BorderStyle.THIN);
 			textStyle.setBorderLeft(BorderStyle.THIN);
 			textStyle.setBorderRight(BorderStyle.THIN);
 
-			// Create the font
-			Font font = workbook.createFont();
-			font.setFontHeightInPoints((short) 8); // size 8
-			font.setFontName("Arial");
-
 			CellStyle numberStyle = workbook.createCellStyle();
-			// numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
+			numberStyle.setFont(font);
 			numberStyle.setBorderBottom(BorderStyle.THIN);
 			numberStyle.setBorderTop(BorderStyle.THIN);
 			numberStyle.setBorderLeft(BorderStyle.THIN);
 			numberStyle.setBorderRight(BorderStyle.THIN);
-			numberStyle.setFont(font);
-//			 --- End of Style Definitions ---
 
-			if (!dataList1.isEmpty()) {
-				populateEntity1Data(sheet, dataList1.get(0), textStyle, numberStyle, numberStyle); // only 2 styles
+			CellStyle dateStyle = workbook.createCellStyle();
+			dateStyle.setFont(font);
+			dateStyle.setDataFormat(helper.createDataFormat().getFormat("dd-MM-yyyy"));
+			dateStyle.setBorderBottom(BorderStyle.THIN);
+			dateStyle.setBorderTop(BorderStyle.THIN);
+			dateStyle.setBorderLeft(BorderStyle.THIN);
+			dateStyle.setBorderRight(BorderStyle.THIN);
+// ================= END STYLES =================
+
+// ================= POPULATE DATA =================
+			if ("email".equalsIgnoreCase(dtltype)) {
+
+				logger.info("EMAIL mode enabled – populating R10 to R16 rows");
+				populateEntity6Data(sheet, dataList1.get(0), textStyle, numberStyle, dateStyle);
+
+			} else {
+
+				populateEntity1Data(sheet, dataList1.get(0), textStyle, numberStyle, numberStyle);
+				populateEntity2Data(sheet, dataList2.get(0), textStyle, numberStyle, numberStyle);
+				populateEntity3Data(sheet, dataList3.get(0), textStyle, numberStyle, numberStyle);
+				populateEntity4Data(sheet, dataList4.get(0), textStyle, numberStyle, numberStyle);
+				populateEntity5Data(sheet, dataList5.get(0), textStyle, numberStyle, numberStyle);
 			}
 
-			if (!dataList2.isEmpty()) {
-				populateEntity2Data(sheet, dataList2.get(0), textStyle, numberStyle, numberStyle); // only 2 styles
-			}
-
-			if (!dataList3.isEmpty()) {
-				populateEntity3Data(sheet, dataList3.get(0), textStyle, numberStyle, numberStyle); // only 2 styles
-			}
-
-			if (!dataList4.isEmpty()) {
-				populateEntity4Data(sheet, dataList4.get(0), textStyle, numberStyle, numberStyle); // only 2 styles
-			}
-
-			if (!dataList5.isEmpty()) {
-				populateEntity5Data(sheet, dataList5.get(0), textStyle, numberStyle, numberStyle); // only 2 styles
-			}
-
+// ================= FINAL WRITE =================
 			workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
 			workbook.write(out);
-			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
+
+			logger.info("Excel generated successfully, size={}", out.size());
 			return out.toByteArray();
 		}
 	}
+
 	// cell code should be for only select query written cells not for text and also
 	// not for formula cells
 	// here first Cell cell1 is declaring variable
@@ -101344,6 +101319,106 @@ public class BRRS_M_LARADV_ReportService {
 		} else {
 			cell11.setCellValue("");
 			cell11.setCellStyle(textStyle);
+		}
+	}
+
+	private void populateEntity6Data(Sheet sheet, M_LARADV_Summary_Entity1 record, CellStyle textStyle,
+			CellStyle numberStyle, CellStyle dateStyle) {
+
+		// R10 → row 7, R11 → row 8, … R16 → row 13
+		int baseRow = 7;
+
+		writeRow(sheet, baseRow + 0, record.getR10_NO_OF_GROUP(), record.getR10_NO_OF_CUSTOMER(),
+				record.getR10_SECTOR_TYPE(), record.getR10_FACILITY_TYPE(), record.getR10_ORIGINAL_AMOUNT(),
+				record.getR10_UTILISATION_OUTSTANDING_BAL(), record.getR10_EFFECTIVE_DATE(),
+				record.getR10_REPAYMENT_PERIOD(), record.getR10_PERFORMANCE_STATUS(), record.getR10_SECURITY(),
+				record.getR10_BOARD_APPROVAL(), record.getR10_INTEREST_RATE(), textStyle, numberStyle, dateStyle);
+
+		writeRow(sheet, baseRow + 1, record.getR11_NO_OF_GROUP(), record.getR11_NO_OF_CUSTOMER(),
+				record.getR11_SECTOR_TYPE(), record.getR11_FACILITY_TYPE(), record.getR11_ORIGINAL_AMOUNT(),
+				record.getR11_UTILISATION_OUTSTANDING_BAL(), record.getR11_EFFECTIVE_DATE(),
+				record.getR11_REPAYMENT_PERIOD(), record.getR11_PERFORMANCE_STATUS(), record.getR11_SECURITY(),
+				record.getR11_BOARD_APPROVAL(), record.getR11_INTEREST_RATE(), textStyle, numberStyle, dateStyle);
+
+		writeRow(sheet, baseRow + 2, record.getR12_NO_OF_GROUP(), record.getR12_NO_OF_CUSTOMER(),
+				record.getR12_SECTOR_TYPE(), record.getR12_FACILITY_TYPE(), record.getR12_ORIGINAL_AMOUNT(),
+				record.getR12_UTILISATION_OUTSTANDING_BAL(), record.getR12_EFFECTIVE_DATE(),
+				record.getR12_REPAYMENT_PERIOD(), record.getR12_PERFORMANCE_STATUS(), record.getR12_SECURITY(),
+				record.getR12_BOARD_APPROVAL(), record.getR12_INTEREST_RATE(), textStyle, numberStyle, dateStyle);
+
+		writeRow(sheet, baseRow + 3, record.getR13_NO_OF_GROUP(), record.getR13_NO_OF_CUSTOMER(),
+				record.getR13_SECTOR_TYPE(), record.getR13_FACILITY_TYPE(), record.getR13_ORIGINAL_AMOUNT(),
+				record.getR13_UTILISATION_OUTSTANDING_BAL(), record.getR13_EFFECTIVE_DATE(),
+				record.getR13_REPAYMENT_PERIOD(), record.getR13_PERFORMANCE_STATUS(), record.getR13_SECURITY(),
+				record.getR13_BOARD_APPROVAL(), record.getR13_INTEREST_RATE(), textStyle, numberStyle, dateStyle);
+
+		writeRow(sheet, baseRow + 4, record.getR14_NO_OF_GROUP(), record.getR14_NO_OF_CUSTOMER(),
+				record.getR14_SECTOR_TYPE(), record.getR14_FACILITY_TYPE(), record.getR14_ORIGINAL_AMOUNT(),
+				record.getR14_UTILISATION_OUTSTANDING_BAL(), record.getR14_EFFECTIVE_DATE(),
+				record.getR14_REPAYMENT_PERIOD(), record.getR14_PERFORMANCE_STATUS(), record.getR14_SECURITY(),
+				record.getR14_BOARD_APPROVAL(), record.getR14_INTEREST_RATE(), textStyle, numberStyle, dateStyle);
+
+		writeRow(sheet, baseRow + 5, record.getR15_NO_OF_GROUP(), record.getR15_NO_OF_CUSTOMER(),
+				record.getR15_SECTOR_TYPE(), record.getR15_FACILITY_TYPE(), record.getR15_ORIGINAL_AMOUNT(),
+				record.getR15_UTILISATION_OUTSTANDING_BAL(), record.getR15_EFFECTIVE_DATE(),
+				record.getR15_REPAYMENT_PERIOD(), record.getR15_PERFORMANCE_STATUS(), record.getR15_SECURITY(),
+				record.getR15_BOARD_APPROVAL(), record.getR15_INTEREST_RATE(), textStyle, numberStyle, dateStyle);
+
+		writeRow(sheet, baseRow + 6, record.getR16_NO_OF_GROUP(), record.getR16_NO_OF_CUSTOMER(),
+				record.getR16_SECTOR_TYPE(), record.getR16_FACILITY_TYPE(), record.getR16_ORIGINAL_AMOUNT(),
+				record.getR16_UTILISATION_OUTSTANDING_BAL(), record.getR16_EFFECTIVE_DATE(),
+				record.getR16_REPAYMENT_PERIOD(), record.getR16_PERFORMANCE_STATUS(), record.getR16_SECURITY(),
+				record.getR16_BOARD_APPROVAL(), record.getR16_INTEREST_RATE(), textStyle, numberStyle, dateStyle);
+	}
+
+	private void writeRow(Sheet sheet, int rowIndex, String noOfGroup, String noOfCustomer, String sectorType,
+			String facilityType, BigDecimal originalAmount, BigDecimal outstandingBal, Date effectiveDate,
+			String repaymentPeriod, String performanceStatus, String security, String boardApproval,
+			BigDecimal interestRate, CellStyle textStyle, CellStyle numberStyle, CellStyle dateStyle) {
+
+		Row row = sheet.getRow(rowIndex);
+		if (row == null)
+			row = sheet.createRow(rowIndex);
+
+		setText(row, 1, noOfGroup, textStyle);
+		setText(row, 2, noOfCustomer, textStyle);
+		setText(row, 3, sectorType, textStyle);
+		setText(row, 4, facilityType, textStyle);
+		setNumber(row, 5, originalAmount, numberStyle, textStyle);
+		setNumber(row, 6, outstandingBal, numberStyle, textStyle);
+		setDate(row, 7, effectiveDate, dateStyle, textStyle);
+		setText(row, 8, repaymentPeriod, textStyle);
+		setText(row, 9, performanceStatus, textStyle);
+		setText(row, 10, security, textStyle);
+		setText(row, 11, boardApproval, textStyle);
+		setNumber(row, 12, interestRate, numberStyle, textStyle);
+	}
+
+	private void setText(Row row, int col, String val, CellStyle style) {
+		Cell c = row.createCell(col);
+		c.setCellValue(val != null ? val : "");
+		c.setCellStyle(style);
+	}
+
+	private void setNumber(Row row, int col, BigDecimal val, CellStyle numStyle, CellStyle txtStyle) {
+		Cell c = row.createCell(col);
+		if (val != null) {
+			c.setCellValue(val.doubleValue());
+			c.setCellStyle(numStyle);
+		} else {
+			c.setCellValue("");
+			c.setCellStyle(txtStyle);
+		}
+	}
+
+	private void setDate(Row row, int col, Date val, CellStyle dateStyle, CellStyle txtStyle) {
+		Cell c = row.createCell(col);
+		if (val != null) {
+			c.setCellValue(val);
+			c.setCellStyle(dateStyle);
+		} else {
+			c.setCellValue("");
+			c.setCellStyle(txtStyle);
 		}
 	}
 

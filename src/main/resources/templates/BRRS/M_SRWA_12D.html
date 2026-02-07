@@ -357,7 +357,7 @@ PURPOSE		: BWRBRREPORT
 			var dtltype = button.getAttribute('data-dtltype');
 			var filename = button.getAttribute('data-filename');
 			var type = button.getAttribute('data-type');
-			var version = button.getAttribute('data-version');
+			var version = "1";
 			$('#loader').modal('show');
 			$.ajax({
 				url: './downloadExcel?reportid=' + reportid +
@@ -1961,8 +1961,8 @@ PURPOSE		: BWRBRREPORT
 						                   				 data-fromdate=${fromdate},
 						                    				 data-todate=${todate},
 						                    				 data-currency=${currency}, 
-						                    				 data-dtltype=${dtltype},
-						                    				 data-filename='M_SRWA12D.xlsx',
+						                    				 data-dtltype='email',
+						                    				 data-filename='M_SRWA_12D-NEW.xlsx',
 											 				 data-type=${type},
 											    			 data-version=${version}" onclick="downloadfile(this);">Email
 							<i class="fa fa-download"></i>
