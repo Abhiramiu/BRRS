@@ -15,9 +15,9 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 
 @Entity
-@Table(name = "BRRS_M_SEC_SUMMARYTABLE4") 
+@Table(name = "BRRS_M_SEC_ARCHIVALTABLE_DETAIL4") 
 
-public class BRRS_M_SEC_Summary_Entity4 {
+public class M_SEC_Archival_Detail4_Entity {
 	// === R36 ===
 	private String R36_PRODUCT;
 	private BigDecimal R36_0_1Y_FT;

@@ -2003,9 +2003,9 @@ public class BRRS_ReportsController {
 
 			// call services
 			SECreportService.updateReport(request1);
-			SECreportService.updateReport2(request2);
-			SECreportService.updateReport3(request3);
-			SECreportService.updateReport4(request4);
+			SECreportService.updateReport1(request2);
+			SECreportService.updateReport2(request3);
+			SECreportService.updateReport3(request4);
 
 			return ResponseEntity.ok("Modifeid Successfully.");
 		} catch (Exception e) {

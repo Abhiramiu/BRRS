@@ -3189,8 +3189,8 @@ public class BRRS_M_EPR_ReportService {
 					// row11
 					// Column H
 					Cell cellH = row.createCell(7);
-					if (record.getR11_gpfsr_chrg2() != null) { 
-						cellH.setCellValue(record.getR11_gpfsr_chrg2().doubleValue());
+					if (record.getR11_gpfsr_chrg1() != null) { 
+						cellH.setCellValue(record.getR11_gpfsr_chrg1().doubleValue());
 						cellH.setCellStyle(numberStyle);
 					} else {
 						cellH.setCellValue("");
@@ -3350,8 +3350,8 @@ public class BRRS_M_EPR_ReportService {
 						// row12
 					// Column H
 				 cellH = row.createCell(7);
-					if (record.getR12_gpfsr_chrg2() != null) { 
-						cellH.setCellValue(record.getR12_gpfsr_chrg2().doubleValue());
+					if (record.getR12_gpfsr_chrg1() != null) { 
+						cellH.setCellValue(record.getR12_gpfsr_chrg1().doubleValue());
 						cellH.setCellStyle(numberStyle);
 					} else {
 						cellH.setCellValue("");
@@ -3512,8 +3512,8 @@ public class BRRS_M_EPR_ReportService {
 					// row13
 					// Column H
 					 cellH = row.createCell(7);
-					if (record.getR13_gpfsr_chrg2() != null) { 
-						cellH.setCellValue(record.getR13_gpfsr_chrg2().doubleValue());
+					if (record.getR13_gpfsr_chrg1() != null) { 
+						cellH.setCellValue(record.getR13_gpfsr_chrg1().doubleValue());
 						cellH.setCellStyle(numberStyle);
 					} else {
 						cellH.setCellValue("");
@@ -3672,8 +3672,8 @@ public class BRRS_M_EPR_ReportService {
 					// row14
 					// Column H
 					 cellH = row.createCell(7);
-					if (record.getR14_gpfsr_chrg2() != null) { 
-						cellH.setCellValue(record.getR14_gpfsr_chrg2().doubleValue());
+					if (record.getR14_gpfsr_chrg1() != null) { 
+						cellH.setCellValue(record.getR14_gpfsr_chrg1().doubleValue());
 						cellH.setCellStyle(numberStyle);
 					} else {
 						cellH.setCellValue("");
@@ -4023,8 +4023,8 @@ public class BRRS_M_EPR_ReportService {
 					// row17
 					// Column H
 					 cellH = row.createCell(7);
-					if (record.getR17_gpfsr_chrg2() != null) { 
-						cellH.setCellValue(record.getR17_gpfsr_chrg2().doubleValue());
+					if (record.getR17_gpfsr_chrg1() != null) { 
+						cellH.setCellValue(record.getR17_gpfsr_chrg1().doubleValue());
 						cellH.setCellStyle(numberStyle);
 					} else {
 						cellH.setCellValue("");
@@ -4183,8 +4183,8 @@ public class BRRS_M_EPR_ReportService {
 					// row18
 					// Column H
 					 cellH = row.createCell(7);
-					if (record.getR18_gpfsr_chrg2() != null) { 
-						cellH.setCellValue(record.getR18_gpfsr_chrg2().doubleValue());
+					if (record.getR18_gpfsr_chrg1() != null) { 
+						cellH.setCellValue(record.getR18_gpfsr_chrg1().doubleValue());
 						cellH.setCellStyle(numberStyle);
 					} else {
 						cellH.setCellValue("");
@@ -4342,8 +4342,8 @@ public class BRRS_M_EPR_ReportService {
 					// row19
 					// Column H
 					 cellH = row.createCell(7);
-					if (record.getR19_gpfsr_chrg2() != null) { 
-						cellH.setCellValue(record.getR19_gpfsr_chrg2().doubleValue());
+					if (record.getR19_gpfsr_chrg1() != null) { 
+						cellH.setCellValue(record.getR19_gpfsr_chrg1().doubleValue());
 						cellH.setCellStyle(numberStyle);
 					} else {
 						cellH.setCellValue("");
@@ -4502,8 +4502,8 @@ public class BRRS_M_EPR_ReportService {
 					// row20
 					// Column H
 					 cellH = row.createCell(7);
-					if (record.getR20_gpfsr_chrg2() != null) { 
-						cellH.setCellValue(record.getR20_gpfsr_chrg2().doubleValue());
+					if (record.getR20_gpfsr_chrg1() != null) { 
+						cellH.setCellValue(record.getR20_gpfsr_chrg1().doubleValue());
 						cellH.setCellStyle(numberStyle);
 					} else {
 						cellH.setCellValue("");
@@ -4663,8 +4663,8 @@ public class BRRS_M_EPR_ReportService {
 					// row21
 					// Column H
 					 cellH = row.createCell(7);
-					if (record.getR21_gpfsr_chrg2() != null) { 
-						cellH.setCellValue(record.getR21_gpfsr_chrg2().doubleValue());
+					if (record.getR21_gpfsr_chrg1() != null) { 
+						cellH.setCellValue(record.getR21_gpfsr_chrg1().doubleValue());
 						cellH.setCellStyle(numberStyle);
 					} else {
 						cellH.setCellValue("");
@@ -4829,8 +4829,8 @@ public class BRRS_M_EPR_ReportService {
 					// row22
 					// Column H
 					 cellH = row.createCell(7);
-					if (record.getR22_gpfsr_chrg2() != null) { 
-						cellH.setCellValue(record.getR22_gpfsr_chrg2().doubleValue());
+					if (record.getR22_gpfsr_chrg1() != null) { 
+						cellH.setCellValue(record.getR22_gpfsr_chrg1().doubleValue());
 						cellH.setCellStyle(numberStyle);
 					} else {
 						cellH.setCellValue("");
@@ -5268,8 +5268,8 @@ public class BRRS_M_EPR_ReportService {
 					// row11
 					// Column H
 					Cell cellH = row.createCell(7);
-					if (record.getR11_gpfsr_chrg2() != null) { 
-						cellH.setCellValue(record.getR11_gpfsr_chrg2().doubleValue());
+					if (record.getR11_gpfsr_chrg1() != null) { 
+						cellH.setCellValue(record.getR11_gpfsr_chrg1().doubleValue());
 						cellH.setCellStyle(numberStyle);
 					} else {
 						cellH.setCellValue("");
@@ -5429,8 +5429,8 @@ public class BRRS_M_EPR_ReportService {
 						// row12
 					// Column H
 				 cellH = row.createCell(7);
-					if (record.getR12_gpfsr_chrg2() != null) { 
-						cellH.setCellValue(record.getR12_gpfsr_chrg2().doubleValue());
+					if (record.getR12_gpfsr_chrg1() != null) { 
+						cellH.setCellValue(record.getR12_gpfsr_chrg1().doubleValue());
 						cellH.setCellStyle(numberStyle);
 					} else {
 						cellH.setCellValue("");
@@ -5591,8 +5591,8 @@ public class BRRS_M_EPR_ReportService {
 					// row13
 					// Column H
 					 cellH = row.createCell(7);
-					if (record.getR13_gpfsr_chrg2() != null) { 
-						cellH.setCellValue(record.getR13_gpfsr_chrg2().doubleValue());
+					if (record.getR13_gpfsr_chrg1() != null) { 
+						cellH.setCellValue(record.getR13_gpfsr_chrg1().doubleValue());
 						cellH.setCellStyle(numberStyle);
 					} else {
 						cellH.setCellValue("");
@@ -5751,8 +5751,8 @@ public class BRRS_M_EPR_ReportService {
 					// row14
 					// Column H
 					 cellH = row.createCell(7);
-					if (record.getR14_gpfsr_chrg2() != null) { 
-						cellH.setCellValue(record.getR14_gpfsr_chrg2().doubleValue());
+					if (record.getR14_gpfsr_chrg1() != null) { 
+						cellH.setCellValue(record.getR14_gpfsr_chrg1().doubleValue());
 						cellH.setCellStyle(numberStyle);
 					} else {
 						cellH.setCellValue("");
@@ -6102,8 +6102,8 @@ public class BRRS_M_EPR_ReportService {
 					// row17
 					// Column H
 					 cellH = row.createCell(7);
-					if (record.getR17_gpfsr_chrg2() != null) { 
-						cellH.setCellValue(record.getR17_gpfsr_chrg2().doubleValue());
+					if (record.getR17_gpfsr_chrg1() != null) { 
+						cellH.setCellValue(record.getR17_gpfsr_chrg1().doubleValue());
 						cellH.setCellStyle(numberStyle);
 					} else {
 						cellH.setCellValue("");
@@ -6262,8 +6262,8 @@ public class BRRS_M_EPR_ReportService {
 					// row18
 					// Column H
 					 cellH = row.createCell(7);
-					if (record.getR18_gpfsr_chrg2() != null) { 
-						cellH.setCellValue(record.getR18_gpfsr_chrg2().doubleValue());
+					if (record.getR18_gpfsr_chrg1() != null) { 
+						cellH.setCellValue(record.getR18_gpfsr_chrg1().doubleValue());
 						cellH.setCellStyle(numberStyle);
 					} else {
 						cellH.setCellValue("");
@@ -6421,8 +6421,8 @@ public class BRRS_M_EPR_ReportService {
 					// row19
 					// Column H
 					 cellH = row.createCell(7);
-					if (record.getR19_gpfsr_chrg2() != null) { 
-						cellH.setCellValue(record.getR19_gpfsr_chrg2().doubleValue());
+					if (record.getR19_gpfsr_chrg1() != null) { 
+						cellH.setCellValue(record.getR19_gpfsr_chrg1().doubleValue());
 						cellH.setCellStyle(numberStyle);
 					} else {
 						cellH.setCellValue("");
@@ -6581,8 +6581,8 @@ public class BRRS_M_EPR_ReportService {
 					// row20
 					// Column H
 					 cellH = row.createCell(7);
-					if (record.getR20_gpfsr_chrg2() != null) { 
-						cellH.setCellValue(record.getR20_gpfsr_chrg2().doubleValue());
+					if (record.getR20_gpfsr_chrg1() != null) { 
+						cellH.setCellValue(record.getR20_gpfsr_chrg1().doubleValue());
 						cellH.setCellStyle(numberStyle);
 					} else {
 						cellH.setCellValue("");
@@ -6742,8 +6742,8 @@ public class BRRS_M_EPR_ReportService {
 					// row21
 					// Column H
 					 cellH = row.createCell(7);
-					if (record.getR21_gpfsr_chrg2() != null) { 
-						cellH.setCellValue(record.getR21_gpfsr_chrg2().doubleValue());
+					if (record.getR21_gpfsr_chrg1() != null) { 
+						cellH.setCellValue(record.getR21_gpfsr_chrg1().doubleValue());
 						cellH.setCellStyle(numberStyle);
 					} else {
 						cellH.setCellValue("");
@@ -6908,8 +6908,8 @@ public class BRRS_M_EPR_ReportService {
 					// row22
 					// Column H
 					 cellH = row.createCell(7);
-					if (record.getR22_gpfsr_chrg2() != null) { 
-						cellH.setCellValue(record.getR22_gpfsr_chrg2().doubleValue());
+					if (record.getR22_gpfsr_chrg1() != null) { 
+						cellH.setCellValue(record.getR22_gpfsr_chrg1().doubleValue());
 						cellH.setCellStyle(numberStyle);
 					} else {
 						cellH.setCellValue("");

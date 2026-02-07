@@ -15,9 +15,9 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 
 @Entity
-@Table(name = "BRRS_M_SEC_SUMMARYTABLE2") 
+@Table(name = "BRRS_M_SEC_DETAILTABLE2") 
 
-public class BRRS_M_SEC_Summary_Entity2 {
+public class M_SEC_Detail2_Entity {
 	private String R11_PRODUCT;
 	private BigDecimal R11_TCA2;
 	private String R12_PRODUCT;
@@ -166,7 +166,7 @@ public class BRRS_M_SEC_Summary_Entity2 {
 	public void setDel_flg(String del_flg) {
 		this.del_flg = del_flg;
 	}
-	public BRRS_M_SEC_Summary_Entity2() {
+	public M_SEC_Detail2_Entity() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
