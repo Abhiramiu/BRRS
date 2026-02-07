@@ -75,7 +75,6 @@ import com.bornfire.brrs.entities.M_SEC_Detail3_Entity;
 import com.bornfire.brrs.entities.M_SEC_Detail4_Entity;
 
 
-
 @Component
 @Service
 public class BRRS_M_SEC_ReportService {
