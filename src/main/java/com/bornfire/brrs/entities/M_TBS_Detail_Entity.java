@@ -1,3 +1,4 @@
+
 package com.bornfire.brrs.entities;
 
 import java.math.BigDecimal;
@@ -12,8 +13,8 @@ import javax.persistence.TemporalType;
 
 import org.springframework.format.annotation.DateTimeFormat;
 @Entity
-@Table(name = "BRRS_M_TBS_SUMMARYTABLE")
-public class M_TBS_Summary_Entity {
+@Table(name = "BRRS_M_TBS_DETAILTABLE")
+public class M_TBS_Detail_Entity {
 	// ---------- R11 ----------
 			private String R11_PRODUCT;
 			private BigDecimal R11_NV_LONG;
@@ -2057,7 +2058,7 @@ public class M_TBS_Summary_Entity {
 			public void setDEL_FLG(String dEL_FLG) {
 				DEL_FLG = dEL_FLG;
 			}
-			public M_TBS_Summary_Entity() {
+			public M_TBS_Detail_Entity() {
 				super();
 				// TODO Auto-generated constructor stub
 			}

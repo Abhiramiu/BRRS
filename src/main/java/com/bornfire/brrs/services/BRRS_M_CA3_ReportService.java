@@ -2115,7 +2115,7 @@ public class BRRS_M_CA3_ReportService {
 
 					//row58
 					row = sheet.getRow(54);			
-=
+
 					// Column b
 
 					// Column c
@@ -2128,7 +2128,7 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-<
+
 					/*
 					 * //row59 row = sheet.getRow(58); // Column b
 					 * 
@@ -2143,7 +2143,7 @@ public class BRRS_M_CA3_ReportService {
 
 					//row60
 					row = sheet.getRow(54);			
-=
+
 
 					// Column c
 					cell2 = row.getCell(2);
@@ -2725,7 +2725,7 @@ public class BRRS_M_CA3_ReportService {
 
 					//row58
 					row = sheet.getRow(54);			
-=
+
 					// Column b
 
 					// Column c
@@ -2738,7 +2738,7 @@ public class BRRS_M_CA3_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
-<
+
 					/*
 					 * //row59 row = sheet.getRow(58); // Column b
 					 * 
@@ -2753,7 +2753,7 @@ public class BRRS_M_CA3_ReportService {
 
 					//row60
 					row = sheet.getRow(54);			
-=
+
 
 					// Column c
 					cell2 = row.getCell(2);

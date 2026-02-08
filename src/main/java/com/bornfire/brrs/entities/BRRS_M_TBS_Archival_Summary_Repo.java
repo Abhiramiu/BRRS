@@ -1,5 +1,6 @@
 package com.bornfire.brrs.entities;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -7,11 +8,11 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-public interface BRRS_M_TBS_Archival_Summary_Repo extends JpaRepository<M_TBS_Archival_Summary_Entity,  M_TBS_Archival_Summary_PK> {
+public interface BRRS_M_TBS_Archival_Summary_Repo extends JpaRepository <M_TBS_Archival_Summary_Entity, Date> {
 	
 	    
 	    @Query(value = "select * from BRRS_M_TBS_ARCHIVALTABLE_SUMMARY where REPORT_DATE = ?1 and REPORT_VERSION = ?2", nativeQuery = true)
-	    List<M_TBS_Archival_Summary_Entity> getdatabydateListarchival(Date report_date, String report_version);
+	    List<M_TBS_Archival_Summary_Entity> getdatabydateListarchival(Date report_date, BigDecimal version);
 
 
 	    //  Fetch latest archival version for given date (no version input)
