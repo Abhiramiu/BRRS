@@ -1226,6 +1226,13 @@ public class RegulatoryReportServices {
 					type, version);
 
 			break;
+			
+		case "M_SRWA_12G":
+
+			repsummary = BRRS_M_SRWA_12G_reportservice.getM_SRWA_12GView(reportId, fromdate, todate, currency, dtltype, pageable,
+					type, version);
+
+			break;
 
 		case "M_CR":
 
@@ -2273,6 +2280,16 @@ public class RegulatoryReportServices {
 			try {
 
 				repfile = BRRS_M_LA2_reportservice.getM_LA2Excel(filename, reportId, fromdate, todate, currency,
+						dtltype, type, version);
+			} catch (Exception e) { // TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+			
+		case "M_SRWA_12G":
+			try {
+
+				repfile = BRRS_M_SRWA_12G_reportservice.getM_SRWA_12GExcel(filename, reportId, fromdate, todate, currency,
 						dtltype, type, version);
 			} catch (Exception e) { // TODO Auto-generated catch block
 				e.printStackTrace();
@@ -4820,6 +4837,12 @@ public class RegulatoryReportServices {
 			archivalData.addAll(la2List);
 			System.out.println("Fetched M_LA2archival data: " + la2List.size());
 			break;
+			
+		case "M_SRWA_12G":
+			List<Object[]> srwagList = BRRS_M_SRWA_12G_reportservice.getM_SRWA_12GArchival();
+			archivalData.addAll(srwagList);
+			System.out.println("Fetched M_SRWA_12G archival data: " + srwagList.size());
+			break;
 
 		case "M_CR":
 			List<Object[]> crList = BRRS_M_CR_reportservice.getM_CRArchival();
@@ -4833,11 +4856,7 @@ public class RegulatoryReportServices {
 			System.out.println("Fetched M_CRarchival data: " + ca3List.size());
 			break;
 
-		case "M_SRWA_12G":
-			List<Object[]> srwagList = BRRS_M_SRWA_12G_reportservice.getM_SRWA_12GArchival();
-			archivalData.addAll(srwagList);
-			System.out.println("Fetched M_SRWA_12G archival data: " + srwagList.size());
-			break;
+		
 
 		case "M_SECL":
 			List<Object[]> seclList = brrs_m_secl_reportservice.getM_SECLArchival();
@@ -6433,6 +6452,8 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
+			
+		
 
 		case "M_CR":
 			try {

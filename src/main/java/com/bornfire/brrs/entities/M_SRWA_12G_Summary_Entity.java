@@ -29,7 +29,7 @@ public class M_SRWA_12G_Summary_Entity{
 	private Date reportDate;
 	
 	@Column(name = "REPORT_VERSION")
-	private String reportVersion;
+	private BigDecimal reportVersion;
 	
 	//@Column(name = "REPORT_RESUBDATE")
 	//@Temporal(TemporalType.TIMESTAMP)
@@ -376,14 +376,14 @@ public class M_SRWA_12G_Summary_Entity{
 
 
 
-	public String getReport_version() {
+	public BigDecimal getReport_version() {
 		return reportVersion;
 	}
 
 
 
 
-	public void setReport_version(String reportVersion) {
+	public void setReport_version(BigDecimal reportVersion) {
 		this.reportVersion = reportVersion;
 	}
 

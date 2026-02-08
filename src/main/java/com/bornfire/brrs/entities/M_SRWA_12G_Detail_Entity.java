@@ -3,7 +3,6 @@ package com.bornfire.brrs.entities;
 
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -15,29 +14,26 @@ import javax.persistence.TemporalType;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
-
-
 @Entity
-@Table(name = "BRRS_M_SRWA_12G_ARCHIVALTABLE_SUMMARY")
+@Table(name = "BRRS_M_SRWA_12G_DETAILTABLE")
+
+public class M_SRWA_12G_Detail_Entity{	
 
 
-public class M_SRWA_12G_Archival_Summary_Entity{	
 
 
-
-	@Id
 	@Temporal(TemporalType.DATE)
 	@DateTimeFormat(pattern = "dd/MM/yyyy")
+	@Id
 	@Column(name = "REPORT_DATE")
 	private Date reportDate;
 	
-
 	@Column(name = "REPORT_VERSION")
 	private BigDecimal reportVersion;
 	
-    @Column(name = "REPORT_RESUBDATE")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date reportResubDate;	
+	//@Column(name = "REPORT_RESUBDATE")
+	//@Temporal(TemporalType.TIMESTAMP)
+	//private Date reportResubDate;
 	
 	public String report_frequency;
 	public String report_code;
@@ -350,13 +346,25 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 	private BigDecimal r61_risk_weighted_amount;
 
 	
+	
+//	
+//	public Date getReportResubDate() {
+//		return reportResubDate;
+//	}
+//
+//
+//
+//
+//	public void setReportResubDate(Date reportResubDate) {
+//		this.reportResubDate = reportResubDate;
+//	}
+
 
 
 
 	public Date getReport_date() {
 		return reportDate;
 	}
-
 
 
 
@@ -368,11 +376,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getReport_version() {
 		return reportVersion;
 	}
-
 
 
 
@@ -384,27 +390,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
-	public Date getReportResubDate() {
-		return reportResubDate;
-	}
-
-
-
-
-
-	public void setReportResubDate(Date reportResubDate) {
-		this.reportResubDate = reportResubDate;
-	}
-
-
-
-
-
 	public String getReport_frequency() {
 		return report_frequency;
 	}
-
 
 
 
@@ -416,11 +404,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getReport_code() {
 		return report_code;
 	}
-
 
 
 
@@ -432,11 +418,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getReport_desc() {
 		return report_desc;
 	}
-
 
 
 
@@ -448,11 +432,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getEntity_flg() {
 		return entity_flg;
 	}
-
 
 
 
@@ -464,11 +446,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getModify_flg() {
 		return modify_flg;
 	}
-
 
 
 
@@ -480,11 +460,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getDel_flg() {
 		return del_flg;
 	}
-
 
 
 
@@ -496,11 +474,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR11_security_firm() {
 		return r11_security_firm;
 	}
-
 
 
 
@@ -512,11 +488,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR11_credit_rating() {
 		return r11_credit_rating;
 	}
-
 
 
 
@@ -528,11 +502,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR11_rating_agency() {
 		return r11_rating_agency;
 	}
-
 
 
 
@@ -544,11 +516,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR11_exposure_amount() {
 		return r11_exposure_amount;
 	}
-
 
 
 
@@ -560,11 +530,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR11_risk_weight() {
 		return r11_risk_weight;
 	}
-
 
 
 
@@ -576,11 +544,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR11_risk_weighted_amount() {
 		return r11_risk_weighted_amount;
 	}
-
 
 
 
@@ -592,11 +558,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR12_security_firm() {
 		return r12_security_firm;
 	}
-
 
 
 
@@ -608,11 +572,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR12_credit_rating() {
 		return r12_credit_rating;
 	}
-
 
 
 
@@ -624,11 +586,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR12_rating_agency() {
 		return r12_rating_agency;
 	}
-
 
 
 
@@ -640,11 +600,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR12_exposure_amount() {
 		return r12_exposure_amount;
 	}
-
 
 
 
@@ -656,11 +614,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR12_risk_weight() {
 		return r12_risk_weight;
 	}
-
 
 
 
@@ -672,11 +628,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR12_risk_weighted_amount() {
 		return r12_risk_weighted_amount;
 	}
-
 
 
 
@@ -688,11 +642,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR13_security_firm() {
 		return r13_security_firm;
 	}
-
 
 
 
@@ -704,11 +656,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR13_credit_rating() {
 		return r13_credit_rating;
 	}
-
 
 
 
@@ -720,11 +670,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR13_rating_agency() {
 		return r13_rating_agency;
 	}
-
 
 
 
@@ -736,11 +684,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR13_exposure_amount() {
 		return r13_exposure_amount;
 	}
-
 
 
 
@@ -752,11 +698,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR13_risk_weight() {
 		return r13_risk_weight;
 	}
-
 
 
 
@@ -768,11 +712,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR13_risk_weighted_amount() {
 		return r13_risk_weighted_amount;
 	}
-
 
 
 
@@ -784,11 +726,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR14_security_firm() {
 		return r14_security_firm;
 	}
-
 
 
 
@@ -800,11 +740,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR14_credit_rating() {
 		return r14_credit_rating;
 	}
-
 
 
 
@@ -816,11 +754,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR14_rating_agency() {
 		return r14_rating_agency;
 	}
-
 
 
 
@@ -832,11 +768,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR14_exposure_amount() {
 		return r14_exposure_amount;
 	}
-
 
 
 
@@ -848,11 +782,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR14_risk_weight() {
 		return r14_risk_weight;
 	}
-
 
 
 
@@ -864,11 +796,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR14_risk_weighted_amount() {
 		return r14_risk_weighted_amount;
 	}
-
 
 
 
@@ -880,11 +810,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR15_security_firm() {
 		return r15_security_firm;
 	}
-
 
 
 
@@ -896,11 +824,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR15_credit_rating() {
 		return r15_credit_rating;
 	}
-
 
 
 
@@ -912,11 +838,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR15_rating_agency() {
 		return r15_rating_agency;
 	}
-
 
 
 
@@ -928,11 +852,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR15_exposure_amount() {
 		return r15_exposure_amount;
 	}
-
 
 
 
@@ -944,11 +866,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR15_risk_weight() {
 		return r15_risk_weight;
 	}
-
 
 
 
@@ -960,11 +880,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR15_risk_weighted_amount() {
 		return r15_risk_weighted_amount;
 	}
-
 
 
 
@@ -976,11 +894,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR16_security_firm() {
 		return r16_security_firm;
 	}
-
 
 
 
@@ -992,11 +908,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR16_credit_rating() {
 		return r16_credit_rating;
 	}
-
 
 
 
@@ -1008,11 +922,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR16_rating_agency() {
 		return r16_rating_agency;
 	}
-
 
 
 
@@ -1024,11 +936,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR16_exposure_amount() {
 		return r16_exposure_amount;
 	}
-
 
 
 
@@ -1040,11 +950,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR16_risk_weight() {
 		return r16_risk_weight;
 	}
-
 
 
 
@@ -1056,11 +964,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR16_risk_weighted_amount() {
 		return r16_risk_weighted_amount;
 	}
-
 
 
 
@@ -1072,11 +978,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR17_security_firm() {
 		return r17_security_firm;
 	}
-
 
 
 
@@ -1088,11 +992,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR17_credit_rating() {
 		return r17_credit_rating;
 	}
-
 
 
 
@@ -1104,11 +1006,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR17_rating_agency() {
 		return r17_rating_agency;
 	}
-
 
 
 
@@ -1120,11 +1020,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR17_exposure_amount() {
 		return r17_exposure_amount;
 	}
-
 
 
 
@@ -1136,11 +1034,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR17_risk_weight() {
 		return r17_risk_weight;
 	}
-
 
 
 
@@ -1152,11 +1048,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR17_risk_weighted_amount() {
 		return r17_risk_weighted_amount;
 	}
-
 
 
 
@@ -1168,11 +1062,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR18_security_firm() {
 		return r18_security_firm;
 	}
-
 
 
 
@@ -1184,11 +1076,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR18_credit_rating() {
 		return r18_credit_rating;
 	}
-
 
 
 
@@ -1200,11 +1090,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR18_rating_agency() {
 		return r18_rating_agency;
 	}
-
 
 
 
@@ -1216,11 +1104,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR18_exposure_amount() {
 		return r18_exposure_amount;
 	}
-
 
 
 
@@ -1232,11 +1118,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR18_risk_weight() {
 		return r18_risk_weight;
 	}
-
 
 
 
@@ -1248,11 +1132,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR18_risk_weighted_amount() {
 		return r18_risk_weighted_amount;
 	}
-
 
 
 
@@ -1264,11 +1146,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR19_security_firm() {
 		return r19_security_firm;
 	}
-
 
 
 
@@ -1280,11 +1160,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR19_credit_rating() {
 		return r19_credit_rating;
 	}
-
 
 
 
@@ -1296,11 +1174,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR19_rating_agency() {
 		return r19_rating_agency;
 	}
-
 
 
 
@@ -1312,11 +1188,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR19_exposure_amount() {
 		return r19_exposure_amount;
 	}
-
 
 
 
@@ -1328,11 +1202,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR19_risk_weight() {
 		return r19_risk_weight;
 	}
-
 
 
 
@@ -1344,11 +1216,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR19_risk_weighted_amount() {
 		return r19_risk_weighted_amount;
 	}
-
 
 
 
@@ -1360,11 +1230,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR20_security_firm() {
 		return r20_security_firm;
 	}
-
 
 
 
@@ -1376,11 +1244,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR20_credit_rating() {
 		return r20_credit_rating;
 	}
-
 
 
 
@@ -1392,11 +1258,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR20_rating_agency() {
 		return r20_rating_agency;
 	}
-
 
 
 
@@ -1408,11 +1272,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR20_exposure_amount() {
 		return r20_exposure_amount;
 	}
-
 
 
 
@@ -1424,11 +1286,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR20_risk_weight() {
 		return r20_risk_weight;
 	}
-
 
 
 
@@ -1440,11 +1300,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR20_risk_weighted_amount() {
 		return r20_risk_weighted_amount;
 	}
-
 
 
 
@@ -1456,11 +1314,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR21_security_firm() {
 		return r21_security_firm;
 	}
-
 
 
 
@@ -1472,11 +1328,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR21_credit_rating() {
 		return r21_credit_rating;
 	}
-
 
 
 
@@ -1488,11 +1342,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR21_rating_agency() {
 		return r21_rating_agency;
 	}
-
 
 
 
@@ -1504,11 +1356,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR21_exposure_amount() {
 		return r21_exposure_amount;
 	}
-
 
 
 
@@ -1520,11 +1370,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR21_risk_weight() {
 		return r21_risk_weight;
 	}
-
 
 
 
@@ -1536,11 +1384,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR21_risk_weighted_amount() {
 		return r21_risk_weighted_amount;
 	}
-
 
 
 
@@ -1552,11 +1398,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR22_security_firm() {
 		return r22_security_firm;
 	}
-
 
 
 
@@ -1568,11 +1412,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR22_credit_rating() {
 		return r22_credit_rating;
 	}
-
 
 
 
@@ -1584,11 +1426,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR22_rating_agency() {
 		return r22_rating_agency;
 	}
-
 
 
 
@@ -1600,11 +1440,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR22_exposure_amount() {
 		return r22_exposure_amount;
 	}
-
 
 
 
@@ -1616,11 +1454,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR22_risk_weight() {
 		return r22_risk_weight;
 	}
-
 
 
 
@@ -1632,11 +1468,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR22_risk_weighted_amount() {
 		return r22_risk_weighted_amount;
 	}
-
 
 
 
@@ -1648,11 +1482,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR23_security_firm() {
 		return r23_security_firm;
 	}
-
 
 
 
@@ -1664,11 +1496,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR23_credit_rating() {
 		return r23_credit_rating;
 	}
-
 
 
 
@@ -1680,11 +1510,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR23_rating_agency() {
 		return r23_rating_agency;
 	}
-
 
 
 
@@ -1696,11 +1524,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR23_exposure_amount() {
 		return r23_exposure_amount;
 	}
-
 
 
 
@@ -1712,11 +1538,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR23_risk_weight() {
 		return r23_risk_weight;
 	}
-
 
 
 
@@ -1728,11 +1552,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR23_risk_weighted_amount() {
 		return r23_risk_weighted_amount;
 	}
-
 
 
 
@@ -1744,11 +1566,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR24_security_firm() {
 		return r24_security_firm;
 	}
-
 
 
 
@@ -1760,11 +1580,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR24_credit_rating() {
 		return r24_credit_rating;
 	}
-
 
 
 
@@ -1776,11 +1594,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR24_rating_agency() {
 		return r24_rating_agency;
 	}
-
 
 
 
@@ -1792,11 +1608,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR24_exposure_amount() {
 		return r24_exposure_amount;
 	}
-
 
 
 
@@ -1808,11 +1622,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR24_risk_weight() {
 		return r24_risk_weight;
 	}
-
 
 
 
@@ -1824,11 +1636,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR24_risk_weighted_amount() {
 		return r24_risk_weighted_amount;
 	}
-
 
 
 
@@ -1840,11 +1650,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR25_security_firm() {
 		return r25_security_firm;
 	}
-
 
 
 
@@ -1856,11 +1664,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR25_credit_rating() {
 		return r25_credit_rating;
 	}
-
 
 
 
@@ -1872,11 +1678,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR25_rating_agency() {
 		return r25_rating_agency;
 	}
-
 
 
 
@@ -1888,11 +1692,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR25_exposure_amount() {
 		return r25_exposure_amount;
 	}
-
 
 
 
@@ -1904,11 +1706,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR25_risk_weight() {
 		return r25_risk_weight;
 	}
-
 
 
 
@@ -1920,11 +1720,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR25_risk_weighted_amount() {
 		return r25_risk_weighted_amount;
 	}
-
 
 
 
@@ -1936,11 +1734,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR26_security_firm() {
 		return r26_security_firm;
 	}
-
 
 
 
@@ -1952,11 +1748,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR26_credit_rating() {
 		return r26_credit_rating;
 	}
-
 
 
 
@@ -1968,11 +1762,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR26_rating_agency() {
 		return r26_rating_agency;
 	}
-
 
 
 
@@ -1984,11 +1776,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR26_exposure_amount() {
 		return r26_exposure_amount;
 	}
-
 
 
 
@@ -2000,11 +1790,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR26_risk_weight() {
 		return r26_risk_weight;
 	}
-
 
 
 
@@ -2016,11 +1804,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR26_risk_weighted_amount() {
 		return r26_risk_weighted_amount;
 	}
-
 
 
 
@@ -2032,11 +1818,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR27_security_firm() {
 		return r27_security_firm;
 	}
-
 
 
 
@@ -2048,11 +1832,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR27_credit_rating() {
 		return r27_credit_rating;
 	}
-
 
 
 
@@ -2064,11 +1846,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR27_rating_agency() {
 		return r27_rating_agency;
 	}
-
 
 
 
@@ -2080,11 +1860,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR27_exposure_amount() {
 		return r27_exposure_amount;
 	}
-
 
 
 
@@ -2096,11 +1874,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR27_risk_weight() {
 		return r27_risk_weight;
 	}
-
 
 
 
@@ -2112,11 +1888,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR27_risk_weighted_amount() {
 		return r27_risk_weighted_amount;
 	}
-
 
 
 
@@ -2128,11 +1902,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR28_security_firm() {
 		return r28_security_firm;
 	}
-
 
 
 
@@ -2144,11 +1916,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR28_credit_rating() {
 		return r28_credit_rating;
 	}
-
 
 
 
@@ -2160,11 +1930,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR28_rating_agency() {
 		return r28_rating_agency;
 	}
-
 
 
 
@@ -2176,11 +1944,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR28_exposure_amount() {
 		return r28_exposure_amount;
 	}
-
 
 
 
@@ -2192,11 +1958,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR28_risk_weight() {
 		return r28_risk_weight;
 	}
-
 
 
 
@@ -2208,11 +1972,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR28_risk_weighted_amount() {
 		return r28_risk_weighted_amount;
 	}
-
 
 
 
@@ -2224,11 +1986,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR29_security_firm() {
 		return r29_security_firm;
 	}
-
 
 
 
@@ -2240,11 +2000,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR29_credit_rating() {
 		return r29_credit_rating;
 	}
-
 
 
 
@@ -2256,11 +2014,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR29_rating_agency() {
 		return r29_rating_agency;
 	}
-
 
 
 
@@ -2272,11 +2028,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR29_exposure_amount() {
 		return r29_exposure_amount;
 	}
-
 
 
 
@@ -2288,11 +2042,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR29_risk_weight() {
 		return r29_risk_weight;
 	}
-
 
 
 
@@ -2304,11 +2056,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR29_risk_weighted_amount() {
 		return r29_risk_weighted_amount;
 	}
-
 
 
 
@@ -2320,11 +2070,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR30_security_firm() {
 		return r30_security_firm;
 	}
-
 
 
 
@@ -2336,11 +2084,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR30_credit_rating() {
 		return r30_credit_rating;
 	}
-
 
 
 
@@ -2352,11 +2098,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR30_rating_agency() {
 		return r30_rating_agency;
 	}
-
 
 
 
@@ -2368,11 +2112,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR30_exposure_amount() {
 		return r30_exposure_amount;
 	}
-
 
 
 
@@ -2384,11 +2126,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR30_risk_weight() {
 		return r30_risk_weight;
 	}
-
 
 
 
@@ -2400,11 +2140,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR30_risk_weighted_amount() {
 		return r30_risk_weighted_amount;
 	}
-
 
 
 
@@ -2416,11 +2154,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR31_security_firm() {
 		return r31_security_firm;
 	}
-
 
 
 
@@ -2432,11 +2168,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR31_credit_rating() {
 		return r31_credit_rating;
 	}
-
 
 
 
@@ -2448,11 +2182,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR31_rating_agency() {
 		return r31_rating_agency;
 	}
-
 
 
 
@@ -2464,11 +2196,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR31_exposure_amount() {
 		return r31_exposure_amount;
 	}
-
 
 
 
@@ -2480,11 +2210,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR31_risk_weight() {
 		return r31_risk_weight;
 	}
-
 
 
 
@@ -2496,11 +2224,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR31_risk_weighted_amount() {
 		return r31_risk_weighted_amount;
 	}
-
 
 
 
@@ -2512,11 +2238,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR32_security_firm() {
 		return r32_security_firm;
 	}
-
 
 
 
@@ -2528,11 +2252,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR32_credit_rating() {
 		return r32_credit_rating;
 	}
-
 
 
 
@@ -2544,11 +2266,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR32_rating_agency() {
 		return r32_rating_agency;
 	}
-
 
 
 
@@ -2560,11 +2280,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR32_exposure_amount() {
 		return r32_exposure_amount;
 	}
-
 
 
 
@@ -2576,11 +2294,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR32_risk_weight() {
 		return r32_risk_weight;
 	}
-
 
 
 
@@ -2592,11 +2308,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR32_risk_weighted_amount() {
 		return r32_risk_weighted_amount;
 	}
-
 
 
 
@@ -2608,11 +2322,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR33_security_firm() {
 		return r33_security_firm;
 	}
-
 
 
 
@@ -2624,11 +2336,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR33_credit_rating() {
 		return r33_credit_rating;
 	}
-
 
 
 
@@ -2640,11 +2350,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR33_rating_agency() {
 		return r33_rating_agency;
 	}
-
 
 
 
@@ -2656,11 +2364,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR33_exposure_amount() {
 		return r33_exposure_amount;
 	}
-
 
 
 
@@ -2672,11 +2378,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR33_risk_weight() {
 		return r33_risk_weight;
 	}
-
 
 
 
@@ -2688,11 +2392,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR33_risk_weighted_amount() {
 		return r33_risk_weighted_amount;
 	}
-
 
 
 
@@ -2704,11 +2406,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR34_security_firm() {
 		return r34_security_firm;
 	}
-
 
 
 
@@ -2720,11 +2420,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR34_credit_rating() {
 		return r34_credit_rating;
 	}
-
 
 
 
@@ -2736,11 +2434,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR34_rating_agency() {
 		return r34_rating_agency;
 	}
-
 
 
 
@@ -2752,11 +2448,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR34_exposure_amount() {
 		return r34_exposure_amount;
 	}
-
 
 
 
@@ -2768,11 +2462,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR34_risk_weight() {
 		return r34_risk_weight;
 	}
-
 
 
 
@@ -2784,11 +2476,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR34_risk_weighted_amount() {
 		return r34_risk_weighted_amount;
 	}
-
 
 
 
@@ -2800,11 +2490,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR35_security_firm() {
 		return r35_security_firm;
 	}
-
 
 
 
@@ -2816,11 +2504,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR35_credit_rating() {
 		return r35_credit_rating;
 	}
-
 
 
 
@@ -2832,11 +2518,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR35_rating_agency() {
 		return r35_rating_agency;
 	}
-
 
 
 
@@ -2848,11 +2532,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR35_exposure_amount() {
 		return r35_exposure_amount;
 	}
-
 
 
 
@@ -2864,11 +2546,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR35_risk_weight() {
 		return r35_risk_weight;
 	}
-
 
 
 
@@ -2880,11 +2560,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR35_risk_weighted_amount() {
 		return r35_risk_weighted_amount;
 	}
-
 
 
 
@@ -2896,11 +2574,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR36_security_firm() {
 		return r36_security_firm;
 	}
-
 
 
 
@@ -2912,11 +2588,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR36_credit_rating() {
 		return r36_credit_rating;
 	}
-
 
 
 
@@ -2928,11 +2602,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR36_rating_agency() {
 		return r36_rating_agency;
 	}
-
 
 
 
@@ -2944,11 +2616,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR36_exposure_amount() {
 		return r36_exposure_amount;
 	}
-
 
 
 
@@ -2960,11 +2630,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR36_risk_weight() {
 		return r36_risk_weight;
 	}
-
 
 
 
@@ -2976,11 +2644,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR36_risk_weighted_amount() {
 		return r36_risk_weighted_amount;
 	}
-
 
 
 
@@ -2992,11 +2658,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR37_security_firm() {
 		return r37_security_firm;
 	}
-
 
 
 
@@ -3008,11 +2672,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR37_credit_rating() {
 		return r37_credit_rating;
 	}
-
 
 
 
@@ -3024,11 +2686,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR37_rating_agency() {
 		return r37_rating_agency;
 	}
-
 
 
 
@@ -3040,11 +2700,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR37_exposure_amount() {
 		return r37_exposure_amount;
 	}
-
 
 
 
@@ -3056,11 +2714,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR37_risk_weight() {
 		return r37_risk_weight;
 	}
-
 
 
 
@@ -3072,11 +2728,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR37_risk_weighted_amount() {
 		return r37_risk_weighted_amount;
 	}
-
 
 
 
@@ -3088,11 +2742,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR38_security_firm() {
 		return r38_security_firm;
 	}
-
 
 
 
@@ -3104,11 +2756,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR38_credit_rating() {
 		return r38_credit_rating;
 	}
-
 
 
 
@@ -3120,11 +2770,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR38_rating_agency() {
 		return r38_rating_agency;
 	}
-
 
 
 
@@ -3136,11 +2784,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR38_exposure_amount() {
 		return r38_exposure_amount;
 	}
-
 
 
 
@@ -3152,11 +2798,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR38_risk_weight() {
 		return r38_risk_weight;
 	}
-
 
 
 
@@ -3168,11 +2812,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR38_risk_weighted_amount() {
 		return r38_risk_weighted_amount;
 	}
-
 
 
 
@@ -3184,11 +2826,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR39_security_firm() {
 		return r39_security_firm;
 	}
-
 
 
 
@@ -3200,11 +2840,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR39_credit_rating() {
 		return r39_credit_rating;
 	}
-
 
 
 
@@ -3216,11 +2854,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR39_rating_agency() {
 		return r39_rating_agency;
 	}
-
 
 
 
@@ -3232,11 +2868,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR39_exposure_amount() {
 		return r39_exposure_amount;
 	}
-
 
 
 
@@ -3248,11 +2882,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR39_risk_weight() {
 		return r39_risk_weight;
 	}
-
 
 
 
@@ -3264,11 +2896,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR39_risk_weighted_amount() {
 		return r39_risk_weighted_amount;
 	}
-
 
 
 
@@ -3280,11 +2910,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR40_security_firm() {
 		return r40_security_firm;
 	}
-
 
 
 
@@ -3296,11 +2924,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR40_credit_rating() {
 		return r40_credit_rating;
 	}
-
 
 
 
@@ -3312,11 +2938,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR40_rating_agency() {
 		return r40_rating_agency;
 	}
-
 
 
 
@@ -3328,11 +2952,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR40_exposure_amount() {
 		return r40_exposure_amount;
 	}
-
 
 
 
@@ -3344,11 +2966,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR40_risk_weight() {
 		return r40_risk_weight;
 	}
-
 
 
 
@@ -3360,11 +2980,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR40_risk_weighted_amount() {
 		return r40_risk_weighted_amount;
 	}
-
 
 
 
@@ -3376,11 +2994,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR41_security_firm() {
 		return r41_security_firm;
 	}
-
 
 
 
@@ -3392,11 +3008,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR41_credit_rating() {
 		return r41_credit_rating;
 	}
-
 
 
 
@@ -3408,11 +3022,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR41_rating_agency() {
 		return r41_rating_agency;
 	}
-
 
 
 
@@ -3424,11 +3036,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR41_exposure_amount() {
 		return r41_exposure_amount;
 	}
-
 
 
 
@@ -3440,11 +3050,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR41_risk_weight() {
 		return r41_risk_weight;
 	}
-
 
 
 
@@ -3456,11 +3064,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR41_risk_weighted_amount() {
 		return r41_risk_weighted_amount;
 	}
-
 
 
 
@@ -3472,11 +3078,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR42_security_firm() {
 		return r42_security_firm;
 	}
-
 
 
 
@@ -3488,11 +3092,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR42_credit_rating() {
 		return r42_credit_rating;
 	}
-
 
 
 
@@ -3504,11 +3106,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR42_rating_agency() {
 		return r42_rating_agency;
 	}
-
 
 
 
@@ -3520,11 +3120,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR42_exposure_amount() {
 		return r42_exposure_amount;
 	}
-
 
 
 
@@ -3536,11 +3134,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR42_risk_weight() {
 		return r42_risk_weight;
 	}
-
 
 
 
@@ -3552,11 +3148,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR42_risk_weighted_amount() {
 		return r42_risk_weighted_amount;
 	}
-
 
 
 
@@ -3568,11 +3162,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR43_security_firm() {
 		return r43_security_firm;
 	}
-
 
 
 
@@ -3584,11 +3176,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR43_credit_rating() {
 		return r43_credit_rating;
 	}
-
 
 
 
@@ -3600,11 +3190,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR43_rating_agency() {
 		return r43_rating_agency;
 	}
-
 
 
 
@@ -3616,11 +3204,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR43_exposure_amount() {
 		return r43_exposure_amount;
 	}
-
 
 
 
@@ -3632,11 +3218,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR43_risk_weight() {
 		return r43_risk_weight;
 	}
-
 
 
 
@@ -3648,11 +3232,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR43_risk_weighted_amount() {
 		return r43_risk_weighted_amount;
 	}
-
 
 
 
@@ -3664,11 +3246,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR44_security_firm() {
 		return r44_security_firm;
 	}
-
 
 
 
@@ -3680,11 +3260,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR44_credit_rating() {
 		return r44_credit_rating;
 	}
-
 
 
 
@@ -3696,11 +3274,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR44_rating_agency() {
 		return r44_rating_agency;
 	}
-
 
 
 
@@ -3712,11 +3288,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR44_exposure_amount() {
 		return r44_exposure_amount;
 	}
-
 
 
 
@@ -3728,11 +3302,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR44_risk_weight() {
 		return r44_risk_weight;
 	}
-
 
 
 
@@ -3744,11 +3316,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR44_risk_weighted_amount() {
 		return r44_risk_weighted_amount;
 	}
-
 
 
 
@@ -3760,11 +3330,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR45_security_firm() {
 		return r45_security_firm;
 	}
-
 
 
 
@@ -3776,11 +3344,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR45_credit_rating() {
 		return r45_credit_rating;
 	}
-
 
 
 
@@ -3792,11 +3358,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR45_rating_agency() {
 		return r45_rating_agency;
 	}
-
 
 
 
@@ -3808,11 +3372,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR45_exposure_amount() {
 		return r45_exposure_amount;
 	}
-
 
 
 
@@ -3824,11 +3386,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR45_risk_weight() {
 		return r45_risk_weight;
 	}
-
 
 
 
@@ -3840,11 +3400,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR45_risk_weighted_amount() {
 		return r45_risk_weighted_amount;
 	}
-
 
 
 
@@ -3856,11 +3414,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR46_security_firm() {
 		return r46_security_firm;
 	}
-
 
 
 
@@ -3872,11 +3428,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR46_credit_rating() {
 		return r46_credit_rating;
 	}
-
 
 
 
@@ -3888,11 +3442,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR46_rating_agency() {
 		return r46_rating_agency;
 	}
-
 
 
 
@@ -3904,11 +3456,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR46_exposure_amount() {
 		return r46_exposure_amount;
 	}
-
 
 
 
@@ -3920,11 +3470,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR46_risk_weight() {
 		return r46_risk_weight;
 	}
-
 
 
 
@@ -3936,11 +3484,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR46_risk_weighted_amount() {
 		return r46_risk_weighted_amount;
 	}
-
 
 
 
@@ -3952,11 +3498,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR47_security_firm() {
 		return r47_security_firm;
 	}
-
 
 
 
@@ -3968,11 +3512,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR47_credit_rating() {
 		return r47_credit_rating;
 	}
-
 
 
 
@@ -3984,11 +3526,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR47_rating_agency() {
 		return r47_rating_agency;
 	}
-
 
 
 
@@ -4000,11 +3540,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR47_exposure_amount() {
 		return r47_exposure_amount;
 	}
-
 
 
 
@@ -4016,11 +3554,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR47_risk_weight() {
 		return r47_risk_weight;
 	}
-
 
 
 
@@ -4032,11 +3568,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR47_risk_weighted_amount() {
 		return r47_risk_weighted_amount;
 	}
-
 
 
 
@@ -4048,11 +3582,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR48_security_firm() {
 		return r48_security_firm;
 	}
-
 
 
 
@@ -4064,11 +3596,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR48_credit_rating() {
 		return r48_credit_rating;
 	}
-
 
 
 
@@ -4080,11 +3610,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR48_rating_agency() {
 		return r48_rating_agency;
 	}
-
 
 
 
@@ -4096,11 +3624,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR48_exposure_amount() {
 		return r48_exposure_amount;
 	}
-
 
 
 
@@ -4112,11 +3638,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR48_risk_weight() {
 		return r48_risk_weight;
 	}
-
 
 
 
@@ -4128,11 +3652,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR48_risk_weighted_amount() {
 		return r48_risk_weighted_amount;
 	}
-
 
 
 
@@ -4144,11 +3666,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR49_security_firm() {
 		return r49_security_firm;
 	}
-
 
 
 
@@ -4160,11 +3680,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR49_credit_rating() {
 		return r49_credit_rating;
 	}
-
 
 
 
@@ -4176,11 +3694,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR49_rating_agency() {
 		return r49_rating_agency;
 	}
-
 
 
 
@@ -4192,11 +3708,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR49_exposure_amount() {
 		return r49_exposure_amount;
 	}
-
 
 
 
@@ -4208,11 +3722,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR49_risk_weight() {
 		return r49_risk_weight;
 	}
-
 
 
 
@@ -4224,11 +3736,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR49_risk_weighted_amount() {
 		return r49_risk_weighted_amount;
 	}
-
 
 
 
@@ -4240,11 +3750,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR50_security_firm() {
 		return r50_security_firm;
 	}
-
 
 
 
@@ -4256,11 +3764,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR50_credit_rating() {
 		return r50_credit_rating;
 	}
-
 
 
 
@@ -4272,11 +3778,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR50_rating_agency() {
 		return r50_rating_agency;
 	}
-
 
 
 
@@ -4288,11 +3792,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR50_exposure_amount() {
 		return r50_exposure_amount;
 	}
-
 
 
 
@@ -4304,11 +3806,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR50_risk_weight() {
 		return r50_risk_weight;
 	}
-
 
 
 
@@ -4320,11 +3820,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR50_risk_weighted_amount() {
 		return r50_risk_weighted_amount;
 	}
-
 
 
 
@@ -4336,11 +3834,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR51_security_firm() {
 		return r51_security_firm;
 	}
-
 
 
 
@@ -4352,11 +3848,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR51_credit_rating() {
 		return r51_credit_rating;
 	}
-
 
 
 
@@ -4368,11 +3862,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR51_rating_agency() {
 		return r51_rating_agency;
 	}
-
 
 
 
@@ -4384,11 +3876,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR51_exposure_amount() {
 		return r51_exposure_amount;
 	}
-
 
 
 
@@ -4400,11 +3890,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR51_risk_weight() {
 		return r51_risk_weight;
 	}
-
 
 
 
@@ -4416,11 +3904,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR51_risk_weighted_amount() {
 		return r51_risk_weighted_amount;
 	}
-
 
 
 
@@ -4432,11 +3918,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR52_security_firm() {
 		return r52_security_firm;
 	}
-
 
 
 
@@ -4448,11 +3932,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR52_credit_rating() {
 		return r52_credit_rating;
 	}
-
 
 
 
@@ -4464,11 +3946,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR52_rating_agency() {
 		return r52_rating_agency;
 	}
-
 
 
 
@@ -4480,11 +3960,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR52_exposure_amount() {
 		return r52_exposure_amount;
 	}
-
 
 
 
@@ -4496,11 +3974,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR52_risk_weight() {
 		return r52_risk_weight;
 	}
-
 
 
 
@@ -4512,11 +3988,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR52_risk_weighted_amount() {
 		return r52_risk_weighted_amount;
 	}
-
 
 
 
@@ -4528,11 +4002,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR53_security_firm() {
 		return r53_security_firm;
 	}
-
 
 
 
@@ -4544,11 +4016,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR53_credit_rating() {
 		return r53_credit_rating;
 	}
-
 
 
 
@@ -4560,11 +4030,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR53_rating_agency() {
 		return r53_rating_agency;
 	}
-
 
 
 
@@ -4576,11 +4044,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR53_exposure_amount() {
 		return r53_exposure_amount;
 	}
-
 
 
 
@@ -4592,11 +4058,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR53_risk_weight() {
 		return r53_risk_weight;
 	}
-
 
 
 
@@ -4608,11 +4072,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR53_risk_weighted_amount() {
 		return r53_risk_weighted_amount;
 	}
-
 
 
 
@@ -4624,11 +4086,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR54_security_firm() {
 		return r54_security_firm;
 	}
-
 
 
 
@@ -4640,11 +4100,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR54_credit_rating() {
 		return r54_credit_rating;
 	}
-
 
 
 
@@ -4656,11 +4114,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR54_rating_agency() {
 		return r54_rating_agency;
 	}
-
 
 
 
@@ -4672,11 +4128,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR54_exposure_amount() {
 		return r54_exposure_amount;
 	}
-
 
 
 
@@ -4688,11 +4142,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR54_risk_weight() {
 		return r54_risk_weight;
 	}
-
 
 
 
@@ -4704,11 +4156,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR54_risk_weighted_amount() {
 		return r54_risk_weighted_amount;
 	}
-
 
 
 
@@ -4720,11 +4170,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR55_security_firm() {
 		return r55_security_firm;
 	}
-
 
 
 
@@ -4736,11 +4184,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR55_credit_rating() {
 		return r55_credit_rating;
 	}
-
 
 
 
@@ -4752,11 +4198,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR55_rating_agency() {
 		return r55_rating_agency;
 	}
-
 
 
 
@@ -4768,11 +4212,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR55_exposure_amount() {
 		return r55_exposure_amount;
 	}
-
 
 
 
@@ -4784,11 +4226,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR55_risk_weight() {
 		return r55_risk_weight;
 	}
-
 
 
 
@@ -4800,11 +4240,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR55_risk_weighted_amount() {
 		return r55_risk_weighted_amount;
 	}
-
 
 
 
@@ -4816,11 +4254,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR56_security_firm() {
 		return r56_security_firm;
 	}
-
 
 
 
@@ -4832,11 +4268,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR56_credit_rating() {
 		return r56_credit_rating;
 	}
-
 
 
 
@@ -4848,11 +4282,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR56_rating_agency() {
 		return r56_rating_agency;
 	}
-
 
 
 
@@ -4864,11 +4296,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR56_exposure_amount() {
 		return r56_exposure_amount;
 	}
-
 
 
 
@@ -4880,11 +4310,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR56_risk_weight() {
 		return r56_risk_weight;
 	}
-
 
 
 
@@ -4896,11 +4324,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR56_risk_weighted_amount() {
 		return r56_risk_weighted_amount;
 	}
-
 
 
 
@@ -4912,11 +4338,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR57_security_firm() {
 		return r57_security_firm;
 	}
-
 
 
 
@@ -4928,11 +4352,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR57_credit_rating() {
 		return r57_credit_rating;
 	}
-
 
 
 
@@ -4944,11 +4366,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR57_rating_agency() {
 		return r57_rating_agency;
 	}
-
 
 
 
@@ -4960,11 +4380,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR57_exposure_amount() {
 		return r57_exposure_amount;
 	}
-
 
 
 
@@ -4976,11 +4394,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR57_risk_weight() {
 		return r57_risk_weight;
 	}
-
 
 
 
@@ -4992,11 +4408,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR57_risk_weighted_amount() {
 		return r57_risk_weighted_amount;
 	}
-
 
 
 
@@ -5008,11 +4422,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR58_security_firm() {
 		return r58_security_firm;
 	}
-
 
 
 
@@ -5024,11 +4436,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR58_credit_rating() {
 		return r58_credit_rating;
 	}
-
 
 
 
@@ -5040,11 +4450,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR58_rating_agency() {
 		return r58_rating_agency;
 	}
-
 
 
 
@@ -5056,11 +4464,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR58_exposure_amount() {
 		return r58_exposure_amount;
 	}
-
 
 
 
@@ -5072,11 +4478,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR58_risk_weight() {
 		return r58_risk_weight;
 	}
-
 
 
 
@@ -5088,11 +4492,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR58_risk_weighted_amount() {
 		return r58_risk_weighted_amount;
 	}
-
 
 
 
@@ -5104,11 +4506,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR59_security_firm() {
 		return r59_security_firm;
 	}
-
 
 
 
@@ -5120,11 +4520,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR59_credit_rating() {
 		return r59_credit_rating;
 	}
-
 
 
 
@@ -5136,11 +4534,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR59_rating_agency() {
 		return r59_rating_agency;
 	}
-
 
 
 
@@ -5152,11 +4548,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR59_exposure_amount() {
 		return r59_exposure_amount;
 	}
-
 
 
 
@@ -5168,11 +4562,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR59_risk_weight() {
 		return r59_risk_weight;
 	}
-
 
 
 
@@ -5184,11 +4576,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR59_risk_weighted_amount() {
 		return r59_risk_weighted_amount;
 	}
-
 
 
 
@@ -5200,11 +4590,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR60_security_firm() {
 		return r60_security_firm;
 	}
-
 
 
 
@@ -5216,11 +4604,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR60_credit_rating() {
 		return r60_credit_rating;
 	}
-
 
 
 
@@ -5232,11 +4618,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public String getR60_rating_agency() {
 		return r60_rating_agency;
 	}
-
 
 
 
@@ -5248,11 +4632,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR60_exposure_amount() {
 		return r60_exposure_amount;
 	}
-
 
 
 
@@ -5264,11 +4646,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR60_risk_weight() {
 		return r60_risk_weight;
 	}
-
 
 
 
@@ -5280,11 +4660,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR60_risk_weighted_amount() {
 		return r60_risk_weighted_amount;
 	}
-
 
 
 
@@ -5296,11 +4674,9 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
 	public BigDecimal getR61_exposure_amount() {
 		return r61_exposure_amount;
 	}
-
 
 
 
@@ -5313,10 +4689,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
+
 	public BigDecimal getR61_risk_weighted_amount() {
 		return r61_risk_weighted_amount;
 	}
-
 
 
 
@@ -5328,8 +4705,7 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-
-	public M_SRWA_12G_Archival_Summary_Entity() {
+	public M_SRWA_12G_Detail_Entity() {
 	super();
 	// TODO Auto-generated constructor stub
 }

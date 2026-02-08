@@ -18,10 +18,10 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 
 @Entity
-@Table(name = "BRRS_M_SRWA_12G_ARCHIVALTABLE_SUMMARY")
+@Table(name = "BRRS_M_SRWA_12G_ARCHIVALTABLE_DETAIL")
 
 
-public class M_SRWA_12G_Archival_Summary_Entity{	
+public class M_SRWA_12G_Archival_Detail_Entity{	
 
 
 
@@ -5329,7 +5329,7 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
-	public M_SRWA_12G_Archival_Summary_Entity() {
+	public M_SRWA_12G_Archival_Detail_Entity() {
 	super();
 	// TODO Auto-generated constructor stub
 }
