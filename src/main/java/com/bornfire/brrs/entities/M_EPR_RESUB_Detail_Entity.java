@@ -1,5 +1,6 @@
 package com.bornfire.brrs.entities;
 
+
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -13,12 +14,14 @@ import javax.persistence.TemporalType;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
+
 @Entity
-@Table(name = "BRRS_M_EPR_ARCHIVALTABLE_DETAIL")
+@Table(name = "BRRS_M_EPR_RESUB_DETAILTABLE")
 @IdClass(M_EPR_PK.class)
 
-public class M_EPR_Archival_Detail_Entity {
 
+public class M_EPR_RESUB_Detail_Entity {
+	
 	private BigDecimal	r11_market;
 	private BigDecimal	r11_gpfsr_nom_amt;
 	private BigDecimal	r11_gpfsr_pos_att8_per_spe_ris;
@@ -248,8 +251,9 @@ public class M_EPR_Archival_Detail_Entity {
 	private Date	report_date;
 	@Id
 	private BigDecimal	report_version;
+	
 	@Column(name = "REPORT_RESUBDATE")
-
+   
     private Date reportResubDate;
 	private String	report_frequency;
 	private String	report_code;
@@ -1559,13 +1563,39 @@ public class M_EPR_Archival_Detail_Entity {
 	public void setDel_flg(String del_flg) {
 		this.del_flg = del_flg;
 	}
-	public M_EPR_Archival_Detail_Entity() {
+	public M_EPR_RESUB_Detail_Entity() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
+
 	
 	
 	
-	    
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+	
+	
+	
+	
+	
+	
+	
+    
+
+
+	
+
+	
 
 }

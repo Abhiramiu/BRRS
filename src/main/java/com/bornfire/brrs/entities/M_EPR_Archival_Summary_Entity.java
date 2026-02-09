@@ -17,7 +17,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
 @Table(name = "BRRS_M_EPR_ARCHIVALTABLE_SUMMARY")
-@IdClass(M_EPR_Archival_Summary_PK.class)
+@IdClass(M_EPR_PK.class)
 
 
 public class M_EPR_Archival_Summary_Entity {
@@ -253,7 +253,7 @@ public class M_EPR_Archival_Summary_Entity {
 	private BigDecimal	report_version;
 	
 	@Column(name = "REPORT_RESUBDATE")
-    @Temporal(TemporalType.TIMESTAMP)
+
     private Date reportResubDate;
 	private String	report_frequency;
 	private String	report_code;

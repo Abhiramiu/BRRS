@@ -957,20 +957,21 @@ $(document).ready(function() {
 
 	// This function is for closing the modal after an action is complete.
 	// It hides the result and loader modals and reloads the page.
-	function closemodel() {
-    $("#resultModal").modal("hide");
-    $('#loader').modal('hide');
+function closemodel() {
+			$("#resultModal").modal("hide");
+			$('#loader').modal('hide');
 
-    // Only reload if not from Details modal
-    if (!isDetailsModal) {
-        setTimeout(function () {
-            location.reload();
-        }, 300);
-    } else {
-        // reset flag for next modal usage
-        isDetailsModal = false;
-    }
-}
+			// Check if the success message is showing
+			const message = $("#resultModalBody").text();
+
+			if (message.includes("Resubmission Updated Successfully")) {
+				// ✅ Go back to the previous page
+				window.history.back();
+			} else {
+				// For other messages, just reload the same page
+				setTimeout(() => location.reload(), 300);
+			}
+		}
 
 	// This is the main function that orchestrates the entire form submission process.
 	// It is triggered by the "Update" button click.

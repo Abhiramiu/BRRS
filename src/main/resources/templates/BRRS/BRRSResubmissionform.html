@@ -409,10 +409,10 @@ function getVali(a) {
 								    <!-- Report Date clickable -->
 								    <td class="underline"
 								        th:attr="data-rptcode=${rptcode},
-								                 data-todate=${#dates.format(ReData[0],'dd-MM-yyyy')},
+								                 data-todate=${#dates.format(ReData[0],'dd/MM/yyyy')},
 								                 data-version=${ReData[1]}"
 								        style="color: #08a6f1;"
-								        th:text="${#dates.format(ReData[0],'dd-MM-yyyy')}"
+								        th:text="${#dates.format(ReData[0],'dd/MM/yyyy')}"
 								        onclick="getReport(this);">
 								    </td>
 
