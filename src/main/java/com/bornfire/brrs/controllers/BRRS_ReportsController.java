@@ -1779,35 +1779,34 @@ public class BRRS_ReportsController {
 		}
 	}
 
-	@RequestMapping(value = "/UpdateM_SECL_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
-	@ResponseBody
-	public ResponseEntity<String> updateReportReSub(
-			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@ModelAttribute M_SECL_Summary_Entity request,
-			HttpServletRequest req) {
-
-		try {
-			System.out.println("Came to Resub Controller");
-
-			if (asondate != null) {
-				// Set the asondate into the entity
-				request.setReportDate(asondate);
-				System.out.println("Set Report Date: " + asondate);
-			} else {
-				System.out.println("Asondate parameter is null; using entity value: " + request.getReportDate());
-			}
-
-			// Call service to create a new versioned row
-			SECLreportService.updateReportReSub(request);
-
-			return ResponseEntity.ok("Resubmission Updated Successfully");
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body("Resubmission Update Failed: " + e.getMessage());
-		}
-	}
+	
+	  @RequestMapping(value = "/UpdateM_SECL_ReSub", method = { RequestMethod.GET,
+	  RequestMethod.POST })
+	  
+	  @ResponseBody public ResponseEntity<String> updateReportReSub(
+	  
+	  @RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date
+	  asondate,
+	  
+	  @ModelAttribute M_SECL_Summary_Entity request, HttpServletRequest req) {
+	  
+	  try { System.out.println("Came to Resub Controller");
+	  
+	  if (asondate != null) { // Set the asondate into the entity
+	  request.setReportDate(asondate); System.out.println("Set Report Date: " +
+	  asondate); } else {
+	  System.out.println("Asondate parameter is null; using entity value: " +
+	  request.getReportDate()); }
+	  
+	  // Call service to create a new versioned row
+	  SECLreportService.updateReportReSub(request);
+	  
+	  return ResponseEntity.ok("Resubmission Updated Successfully");
+	  
+	  } catch (Exception e) { e.printStackTrace(); return
+	  ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	  .body("Resubmission Update Failed: " + e.getMessage()); } }
+	 
 
 	@Autowired
 	private BRRS_M_OR2_ReportService OR2reportService;
@@ -2294,6 +2293,32 @@ public class BRRS_ReportsController {
 
 			// call services
 			BRRS_M_LA2_reportservice.updateReport(request);
+			
+
+			return ResponseEntity.ok("Modified Successfully.");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
+		}
+	}
+	
+	@Autowired
+	private BRRS_M_OB_ReportService BRRS_M_OB_reportservice;
+
+	@RequestMapping(value = "/M_OBupdate", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<String> updateReport(
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+			@ModelAttribute M_OB_Summary_Entity request) {
+
+		try {
+			System.out.println("came to single controller");
+
+			// ✅ set the asondate into entity
+			request.setReportDate(asondate);
+
+			// call services
+			BRRS_M_OB_reportservice.updateReport(request);
 			
 
 			return ResponseEntity.ok("Modified Successfully.");
@@ -3397,60 +3422,36 @@ public class BRRS_ReportsController {
 	 * .body("Resubmission Update Failed: " + e.getMessage()); } }
 	 */
 
-	@Autowired
-	BRRS_M_OB_ReportService BRRS_M_OB_reportservice;
+	
 
-	@RequestMapping(value = "/MOBupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
-	@ResponseBody
-	public ResponseEntity<String> updateReport(
-			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@ModelAttribute M_OB_Summary_Entity request) {
-
-		try {
-			System.out.println("came to single controller");
-
-			// ✅ set the asondate into entity
-			request.setReportDate(asondate);
-
-			// call services
-			BRRS_M_OB_reportservice.updateReport1(request);
-
-			return ResponseEntity.ok("Updated Successfully.");
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
-		}
-	}
-
-	@RequestMapping(value = "/UpdateM_OB_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
-	@ResponseBody
-	public ResponseEntity<String> updateReportReSub(
-			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@ModelAttribute M_OB_Summary_Entity request,
-			HttpServletRequest req) {
-
-		try {
-			System.out.println("Came to Resub Controller");
-
-			if (asondate != null) {
-				// Set the asondate into the entity
-				request.setReportDate(asondate);
-				System.out.println("Set Report Date: " + asondate);
-			} else {
-				System.out.println("Asondate parameter is null; using entity value: " + request.getReportDate());
-			}
-
-			// Call service to create a new versioned row
-			BRRS_M_OB_reportservice.updateReportReSub(request);
-
-			return ResponseEntity.ok("Resubmission Updated Successfully");
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body("Resubmission Update Failed: " + e.getMessage());
-		}
-	}
+	/*
+	 * @RequestMapping(value = "/UpdateM_OB_ReSub", method = { RequestMethod.GET,
+	 * RequestMethod.POST })
+	 * 
+	 * @ResponseBody public ResponseEntity<String> updateReportReSub(
+	 * 
+	 * @RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date
+	 * asondate,
+	 * 
+	 * @ModelAttribute M_OB_Summary_Entity request, HttpServletRequest req) {
+	 * 
+	 * try { System.out.println("Came to Resub Controller");
+	 * 
+	 * if (asondate != null) { // Set the asondate into the entity
+	 * request.setReportDate(asondate); System.out.println("Set Report Date: " +
+	 * asondate); } else {
+	 * System.out.println("Asondate parameter is null; using entity value: " +
+	 * request.getReportDate()); }
+	 * 
+	 * // Call service to create a new versioned row
+	 * BRRS_M_OB_reportservice.updateReportReSub(request);
+	 * 
+	 * return ResponseEntity.ok("Resubmission Updated Successfully");
+	 * 
+	 * } catch (Exception e) { e.printStackTrace(); return
+	 * ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	 * .body("Resubmission Update Failed: " + e.getMessage()); } }
+	 */
 
 	@Autowired
 	BRRS_M_TBS_ReportService BRRS_M_TBS_ReportService;

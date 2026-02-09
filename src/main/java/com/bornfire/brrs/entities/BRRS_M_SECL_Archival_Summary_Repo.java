@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface BRRS_M_SECL_Archival_Summary_Repo 
-        extends JpaRepository<M_SECL_Archival_Summary_Entity, M_SECL_Archival_Summary_PK> {
+        extends JpaRepository<M_SECL_Archival_Summary_Entity, Date> {
 
     // Fetch specific archival data by report date & version
     @Query(value = "SELECT * FROM BRRS_M_SECL_ARCHIVALTABLE_SUMMARY " +

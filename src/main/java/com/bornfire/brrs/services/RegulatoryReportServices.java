@@ -1240,6 +1240,13 @@ public class RegulatoryReportServices {
 					type, version);
 
 			break;
+			
+		case "M_OB":
+
+			repsummary = BRRS_M_OB_ReportService.getM_OBView(reportId, fromdate, todate, currency, dtltype, pageable,
+					type, version);
+
+			break;
 
 		case "M_CR":
 
@@ -2307,6 +2314,16 @@ public class RegulatoryReportServices {
 			try {
 
 				repfile = BRRS_M_TBS_ReportService.getM_TBSExcel(filename, reportId, fromdate, todate, currency,
+						dtltype, type, version);
+			} catch (Exception e) { // TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+			
+		case "M_OB":
+			try {
+
+				repfile = BRRS_M_OB_ReportService.getM_OBExcel(filename, reportId, fromdate, todate, currency,
 						dtltype, type, version);
 			} catch (Exception e) { // TODO Auto-generated catch block
 				e.printStackTrace();
@@ -4552,11 +4569,7 @@ public class RegulatoryReportServices {
 		// }
 		// break;
 
-		case "M_OB":
-			List<Object[]> obList = BRRS_M_OB_ReportService.getM_OBArchival();
-			archivalData.addAll(obList);
-			System.out.println("Fetched M_OB archival data: " + obList.size());
-			break;
+		
 
 		/*
 		 * case "Q_RLFA1": try { archivalData =
@@ -4872,6 +4885,13 @@ public class RegulatoryReportServices {
 			List<Object[]> tbsList = BRRS_M_TBS_ReportService.getM_TBSArchival();
 			archivalData.addAll(tbsList);
 			System.out.println("Fetched M_TBSarchival data: " + tbsList.size());
+			break;
+			
+			
+		case "M_OB":
+			List<Object[]> obList = BRRS_M_OB_ReportService.getM_OBArchival();
+			archivalData.addAll(obList);
+			System.out.println("Fetched M_OBarchival data: " + obList.size());
 			break;
 
 		case "M_CR":
@@ -6446,6 +6466,18 @@ public class RegulatoryReportServices {
 			}
 
 			break;
+			
+		case "M_OB":
+			try {
+				List<Object[]> resubList = BRRS_M_OB_ReportService.getM_OBResub();
+				resubmissionData.addAll(resubList);
+				System.out.println("Resubmission data fetched for M_OB: " + resubList.size());
+			} catch (Exception e) {
+				System.err.println("Error fetching resubmission data for M_OB: " + e.getMessage());
+				e.printStackTrace();
+			}
+
+			break;
 
 		case "M_CA4":
 			try {
@@ -6515,16 +6547,7 @@ public class RegulatoryReportServices {
 			}
 			break;
 
-		case "M_OB":
-			try {
-				List<Object[]> resubList = BRRS_M_OB_ReportService.getM_OBResub();
-				resubmissionData.addAll(resubList);
-				System.out.println("Resubmission data fetched for M_OB: " + resubList.size());
-			} catch (Exception e) {
-				System.err.println("Error fetching resubmission data for M_OB: " + e.getMessage());
-				e.printStackTrace();
-			}
-			break;
+	
 
 		case "M_OPTR":
 			try {

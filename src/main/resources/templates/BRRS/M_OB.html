@@ -99,8 +99,8 @@ PURPOSE		: BWRBRREPORT
 	border-color: #0c0c0c;
 }
 
-.btn-primary:not (:disabled ):not (.disabled ).active, .btn-primary:not
-	 (:disabled ):not (.disabled ):active, .show>.btn-primary.dropdown-toggle
+.btn-primary:not(:disabled ):not(.disabled ).active, 
+.btn-primary:not(:disabled ):not(.disabled ):active, .show>.btn-primary.dropdown-toggle
 	{
 	color: #fff;
 	background-color: #cc000000;
@@ -327,6 +327,8 @@ input.nonEditable {
 .table-bordered th {
      border: 1px solid #000 !important;
 }
+
+
 		/* 🚌 Bus display style box */
 					.boards {
 						transform: translateY(6px);
@@ -433,6 +435,8 @@ input.nonEditable {
       		window.history.back();
       	}
 
+		
+		
       	//to fetch summary from the database - called from the summary button
       	//function showdetails() {
 
@@ -463,18 +467,141 @@ input.nonEditable {
       				 }); */
       			//}
 
-      	function showdetails() {
-		    isDetailsModal = true; // mark that this modal is from Details
-			 showResultModal('BRRS',' Details page not available for Manual Report');
-		}
+				function showdetails() {
+							$('#loader').modal('show');
+							var Callurl = /*[[@{'/Reports/' + ${reportid}(
+							        dtltype='detail',
+							        fromdate=${fromdate},
+							        todate=${todate},
+							        type=${type},
+							        asondate=${asondate},
+							        version=${version}
+							    )}]]*/
+								location.href = Callurl;
+
+						}
+
       	function showsummary() {
       		$('#loader').modal('show');
-      		var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/;
+      		var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/
       		location.href = Callurl;
 
       	}
     </script>
 
+	<script>
+
+			function startReport(button) {
+				const alertMsg = document.getElementById("alertMessage");
+				const filename = button.getAttribute('data-filename');
+				const fromdate = button.getAttribute('data-fromdate');
+				const todate = button.getAttribute('data-todate');
+				const currency = button.getAttribute('data-currency');
+				const dtltype = button.getAttribute('data-dtltype');
+				const type = button.getAttribute('data-type');
+				const version = button.getAttribute('data-version');
+				const sessionfilename = sessionStorage.getItem("filename");
+
+				if (sessionfilename == filename) {
+					alertMsg.innerHTML = 'Download request already Processing...';
+					showAlert();
+					return;
+				}
+
+				alertMsg.innerHTML = 'Download request Processing...';
+				showAlert();
+
+				const baseUrl = '/BCDRS/Reports/startreport';
+				const downloadUrl = baseUrl +
+					'?filename=' + encodeURIComponent(filename) +
+					'&fromdate=' + encodeURIComponent(fromdate) +
+					'&todate=' + encodeURIComponent(todate) +
+					'&currency=' + encodeURIComponent(currency) +
+					'&dtltype=' + encodeURIComponent(dtltype) +
+					'&type=' + encodeURIComponent(type) +
+					'&version=' + encodeURIComponent(version);
+				fetch(downloadUrl)  // ✅ no invalid characters now
+					.then(res => res.text())
+					.then(jobId => {
+
+						alertMsg.innerHTML = 'Download request received...' + jobId;
+						showAlert();
+						sessionStorage.setItem("jobId", jobId);
+						sessionStorage.setItem("filename", filename);
+						checkReport(jobId);
+					});
+			}
+
+			function checkReport(jobId) {
+				const alertMsg = document.getElementById("alertMessage");
+				fetch('/BCDRS/Reports/checkreport?jobId=' + encodeURIComponent(jobId))
+					.then(res => res.text())
+					.then(status => {
+						if (status === "READY") {
+							alertMsg.innerHTML = 'Report is ready! Downloading…';
+							showAlert();
+							const filename = sessionStorage.getItem("filename");
+							downloadDetailfile(jobId, filename)
+							sessionStorage.removeItem("jobId");
+							sessionStorage.removeItem("filename");
+
+						} else if (status === "PROCESSING") {
+							alertMsg.innerHTML = 'Download Is Processing…';
+							showAlert();
+							setTimeout(() => checkReport(jobId), 5000);
+						}
+						else if (status === "ERROR") {
+							alertMsg.innerHTML = 'No data was available to create a download.';
+							showAlert();
+							sessionStorage.removeItem("jobId");
+							sessionStorage.removeItem("filename");
+						}
+					});
+			}
+
+
+
+			function downloadDetailfile(jobId, filename) {
+
+				//$('#loader').modal('show');
+
+				$.ajax({
+					url: '/BCDRS/Reports/downloaddetailExcel?jobId=' + jobId +
+						'&filename=' + filename,
+					type: 'GET',
+					xhrFields: {
+						responseType: 'blob'
+					},
+					success: function (data) {
+						$('#loader').modal('hide');
+
+						if (data && data.size > 100) {
+							const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
+							const url = window.URL.createObjectURL(blob);
+							const a = document.createElement('a');
+							a.style.display = 'none';
+							a.href = url;
+							a.download = filename;
+							document.body.appendChild(a);
+							a.click();
+							window.URL.revokeObjectURL(url);
+							document.body.removeChild(a);
+
+							showResultModal('BRRS', filename + ' downloaded successfully.');
+						} else {
+							showResultModal('Information', 'No data was available to create a download.');
+						}
+					},
+					error: function (jqXHR, textStatus, errorThrown) {
+						$('#loader').modal('hide');
+						console.error("Download failed:", textStatus, errorThrown);
+						showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
+					}
+				});
+			}
+
+
+		</script>
 <script>
 		function activateTab(tabName) {
 			// Remove 'active' from all buttons
@@ -499,58 +626,75 @@ input.nonEditable {
 			activateTab(selectedTab);
 		};
 		function downloadfile(button) {
-			var reportid = button.getAttribute('data-reportid');
-			var asondate = button.getAttribute('data-asondate');
-			var fromdate = button.getAttribute('data-fromdate');
-			var todate = button.getAttribute('data-todate');
-			var currency = button.getAttribute('data-currency');
-			var subreportid = button.getAttribute('data-subreportid');
-			var secid = button.getAttribute('data-secid');
-			var dtltype = button.getAttribute('data-dtltype');
-			var filename = button.getAttribute('data-filename');
-			var type = button.getAttribute('data-type');
-			var version = button.getAttribute('data-version');
-			$('#loader').modal('show');
-			$.ajax({
-				url: './downloadExcel?reportid=' + reportid +
-					'&fromdate=' + fromdate +
-					'&asondate=' + asondate +
-					'&todate=' + todate +
-					'&currency=' + currency +
-					'&subreportid=' + subreportid +
-					'&secid=' + secid +
-					'&filename=' + filename +
-					'&type=' + type +
-					'&version=' + version,
-				type: 'GET',
-				xhrFields: {
-					responseType: 'blob'
-				},
-				success: function (data) {
-					$('#loader').modal('hide');
-					if (data && data.size > 100) {
-						const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
-						const url = window.URL.createObjectURL(blob);
-						const a = document.createElement('a');
-						a.style.display = 'none';
-						a.href = url;
-						a.download = filename;
-						document.body.appendChild(a);
-						a.click();
-						window.URL.revokeObjectURL(url);
-						document.body.removeChild(a);
-						showResultModal('BRRS', 'M_OB.xlsx downloaded successfully.');
-					} else {
-						showResultModal('Information', 'No data was available to create a download.');
+
+					var reportid = button.getAttribute('data-reportid');
+					var asondate = button.getAttribute('data-asondate');
+					var fromdate = button.getAttribute('data-fromdate');
+					var todate = button.getAttribute('data-todate');
+					var currency = button.getAttribute('data-currency');
+					var subreportid = button.getAttribute('data-subreportid');
+					var secid = button.getAttribute('data-secid');
+					var dtltype = button.getAttribute('data-dtltype');
+					var filename = button.getAttribute('data-filename');
+					var type = button.getAttribute('data-type');
+					var version = button.getAttribute('data-version');
+
+					var loader = new bootstrap.Modal(
+						document.getElementById('loader'),
+						{backdrop: 'static', keyboard: false}
+					);
+					loader.show();
+
+					// ✅ Build URL safely
+					var url = './downloadExcel?reportid=' + reportid +
+						'&fromdate=' + fromdate +
+						'&asondate=' + asondate +
+						'&todate=' + todate +
+						'&currency=' + currency +
+						'&subreportid=' + subreportid +
+						'&secid=' + secid +
+						'&filename=' + filename +
+						'&type=' + type;
+
+					// ✅ ONLY append version if valid
+					if (version && version.trim() !== '') {
+						url += '&version=' + version;
 					}
-				},
-				error: function (jqXHR, textStatus, errorThrown) {
-					$('#loader').modal('hide');
-					console.error("Download failed:", textStatus, errorThrown);
-					showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
+
+					$.ajax({
+						url: url,
+						type: 'GET',
+						xhrFields: {responseType: 'blob'},
+
+						success: function (data) {
+							$('#loader').modal('hide');
+
+							if (data && data.size > 100) {
+								const blob = new Blob([data], {
+									type: 'application/vnd.ms-excel'
+								});
+								const url = window.URL.createObjectURL(blob);
+								const a = document.createElement('a');
+								a.style.display = 'none';
+								a.href = url;
+								a.download = filename;
+								document.body.appendChild(a);
+								a.click();
+								window.URL.revokeObjectURL(url);
+								document.body.removeChild(a);
+
+								showResultModal('BRRS', filename + ' downloaded successfully.');
+							} else {
+								showResultModal('Information', 'No data was available to create a download.');
+							}
+						},
+
+						error: function () {
+							$('#loader').modal('hide');
+							showResultModal('Error', 'An error occurred while downloading the file.');
+						}
+					});
 				}
-			});
-		}
 		function editRecord() {
 			showResultModal('Alert', 'Development in progress');
 
@@ -1103,7 +1247,7 @@ function fileuploads(btn) {
     console.log("✅ Entity executed successfully");
     
 	//Select API endpoint dynamically
-	let apiUrl = './MOBupdateAll'; // normal update
+	let apiUrl = './M_OBupdate'; // normal update
 	if (type && type.toUpperCase() === 'RESUB') {
 		apiUrl = './UpdateM_OB_ReSub'; // Resubmission endpoint
 	}
@@ -1281,7 +1425,7 @@ function fileuploads(btn) {
     </script> -->  
   </head>
 
-  <title>BRRS</title>
+  <title>M_OB</title>
   <body>
 	<div class="container-fluid" style="padding-left: 0px; padding-right: 0px;">
 		<div class="row">
@@ -1303,71 +1447,96 @@ function fileuploads(btn) {
 						<div class="boards">
 							<p class="scrolling-text"> BANK OF BOTSWANA - BANKING SUPERVISION DEPARTMENT</p>
 						</div>
-					<div class="custom-tab-btn-group nav-buttons"
-						style="display: flex; color: white; align-items: center;">
-						<!-- 📅 Date -->
-						<span class="white-text"
-							style="color: white !important; font-size: 16px; margin-right: 20px;margin-left: 10px;">Report Date: <span th:text="${#strings.replace(asondate, '/', '-')}">30-06-2025</span>
-						</span>
-						<!-- Buttons -->
-						<input type="hidden" id="selectedTab" th:value="${displaymode}">
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showsummary();"
-							th:if="${displaymode == 'Details'}">Summary</button>
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails();"
-							th:if="${displaymode == 'summary'}">Details</button>
-						
-						<!-- Modify button -->
-						<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
-							title="Click to EDIT Records"
-							th:if="${type == 'RESUB' or type=='BRRS' and type != 'ARCHIVAL'}"
-							th:classappend="${session.PERMISSIONS == 'W'} and ${dtltype == 'report'} ? 'addedit' "
-							id="addRecord">
-							Modify
-						</button>
+						<div class="custom-tab-btn-group nav-buttons"
+												style="display: flex; color: white; align-items: center;">
+												<!-- 📅 Date -->
+												<span class="white-text" style="color: white !important; font-size: 16px; margin-right: 20px;">
+													Report Date: <span th:text="${#strings.replace(asondate, '/', '-')}">2025-07-04</span>
+												</span> <input type="hidden" id="selectedTab" th:value="${dtltype}">
 
-<!-- Cancel button (hidden initially) -->
-<button type="button" class="custom-tab-btn"
-        title="Cancel editing"
-        id="cancelRecord"
-        onclick="cancelModify();"
-        style="display: none;">Cancel</button>
+												<!-- DETAILS button (hide when dtltype = 'detail') -->
+												<button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails()"
+													th:if="${dtltype ne 'detail'}">Details</button>
 
-
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'summary'}" th:attr="data-reportid=${reportid},
-                   				 data-asondate=${asondate},
-                   				 data-fromdate=${fromdate},
-                    				 data-todate=${todate},
-                    				 data-currency=${currency}, 
-                    				 data-dtltype=${dtltype},
-                    				 data-filename='M_OB.xlsx',
-					 				 data-type=${type},
-					    			 data-version=${version}" onclick="downloadfile(this);">
-							<i class="fa fa-download"></i>
-						</button>
-						
-						
-						
-
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'Details'}" onclick="startReport(this);" th:attr="
-								    data-fromdate=${fromdate},
-								    data-todate=${todate},
-									data-currency=${currency},  
-												data-dtltype=${dtltype}, 
-								    data-filename='M_OBDetail',
-									data-type=${type},
-												data-version=${version}
-								  ">
-							<i class="fa fa-download"></i>
-						</button>
+												<!-- SUMMARY button (show when dtltype = 'detail') -->
+												<button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showsummary()"
+													th:if="${dtltype eq 'detail'}">Summary</button>
 
 
 
-					</div>
-					
-				</div>
-          <div th:if="${displaymode == 'summary'}">
+
+
+
+
+
+
+												<!-- Modify button -->
+												<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
+													title="Click to EDIT Records"
+													th:classappend="${session.PERMISSIONS == 'W' and dtltype == 'report'} ? 'addedit'"
+													th:if="${type != 'ARCHIVAL' and dtltype ne 'detail'}" id="addRecord">Modify</button>
+
+
+												<!-- Cancel button (hidden initially) -->
+												<button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord"
+													onclick="cancelModify();" style="display: none;">Cancel</button>
+
+
+
+												<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
+													onclick="downloadfile(this)" th:if="${displaymode == 'summary' or displaymode == 'Details'}"
+													th:attr="data-reportid=${reportid},
+						                   data-asondate=${asondate},
+						                   data-fromdate=${fromdate},
+						                   data-todate=${todate},
+						                   data-currency=${currency}, 
+						                   data-dtltype=${dtltype},
+						                   data-filename='M_OB.xlsx',
+						                   data-type=${type},
+						                   data-version=${version != null ? version : ''}" style="font-family: Arial; font-weight: bold;">
+													<i class="fa fa-download"></i> Download
+												</button>
+
+												<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
+													onclick="downloadfile(this)" th:if="${displaymode == 'summary' or displaymode == 'Details'}"
+													th:attr="data-reportid=${reportid},
+						            data-asondate=${asondate},
+						            data-fromdate=${fromdate},
+						            data-todate=${todate},
+						            data-currency=${currency}, 
+						            data-dtltype=${dtltype},
+						            data-filename='EMAIL_M_OB.xlsx',
+						            data-type='email',
+						            data-version=${version != null ? version : ''}" style="font-family: Arial; font-weight: bold;">
+													<i class="fa fa-download"></i> Email Format
+
+												</button>
+
+
+
+
+											</div>
+										</div>
+										<h1 th:if="${displaymode == 'summary' and type == 'ARCHIVAL' and displaymode != 'Details'}"
+											style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">
+											Archival
+											Summary View - M_OB</h1>
+
+										<h1 th:if="${displaymode == 'Details' and type == 'ARCHIVAL' and displaymode != 'summary'}"
+											style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">
+											Archival
+											Detail View - M_OB</h1>
+
+										<h1 th:if="${displaymode == 'summary'and type != 'ARCHIVAL'}"
+											style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">
+											Summary
+											View - M_OB</h1>
+										<h1 th:if="${displaymode == 'Details' and type != 'ARCHIVAL'}"
+											style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">
+											Detail
+											View - M_OB</h1>
+										<div th:if="${displaymode == 'summary' or displaymode == 'Details'}">
+
             <div class="row">
               <div class="col-sm-12">
               <form action="#" method="POST" id="fileupload">
@@ -2030,355 +2199,210 @@ style="text-align: right; width:250px; background-color: rgb(107, 122, 143); col
 
 
 
+</tbody>
 
-                    </tbody>
-                  </table>
-                  </div>
-							<div style="text-align: center; margin-top: 10px;">
-								
-   <button id="submitButton" 
-            type="button"
-            class="custom-tab-btn Show_input" 
-            form="fileupload"
-            th:attr="data-todate=${asondate}, data-type=${type}"
-            onclick="fileuploads(this);" 
-            style="display: none;">
-        Submit
-    </button>
-</div>
+
+									</table>
+								</div>
+								<div style="text-align: center; margin-top: 10px;">
+
+									<button id="submitButton" type="button" class="custom-tab-btn Show_input"
+										form="fileupload" th:attr="data-todate=${asondate}" onclick="fileuploads(this);"
+										style="display: none;">Submit</button>
+								</div>
+
 							</form>
-                </div>
-              </div>
-            </div>
-          </div>
 
-          <div th:if="${displaymode == 'Details'}">
-            <div class="row">
-              <div class="col-sm-12">
-                <div
-                  class="table-responsive scrollable-table-container"
-                  style="border-right: 1px solid #dee2e6"
-                >
-                  <table
-                    class="sticky-header-table table table-bordered table-hover table-sm table-condensed"
-                    id="reportss"
-                  >
-                    <thead class="thead-light">
-                      <tr>
-                        <th></th>
-                        <th>CUST ID</th>
-                        <th>ACCT NO</th>
-                        <th>ACCT NAME</th>
-                        <th style="text-align: right">ACCT BALANCE</th>
-                        <th style="text-align: left">ROWID</th>
-                        <th>COLUMNID</th>
-                        <th>REPORT_DATE</th>
-                      </tr>
-                    </thead>
+						</div>
+					</div>
+				</div>
 
-                    <tbody style="font-family: Arial">
-                      <tr th:each="report: ${reportdetails}">
-                        <td>
-                          <a
-                            data-toggle="tooltip"
-                            class="editrec"
-                            title="Click to Edit this Record"
-                          >
-                            <i
-                              class="fas fa-edit"
-                              onclick="editRecord(this)"
-                            ></i>
-                          </a>
-                        </td>
-                        <td th:text="${report.CUST_ID}"></td>
-                        <td th:text="${report.ACCT_NUMBER}"></td>
-                        <td th:text="${report.ACCT_NAME}"></td>
-                        <!---	<td th:text="${report.acctBalanceInpula} "></td> -->
-                        <td
-                          th:text="${#numbers.formatDecimal(report.ACCT_BALANCE_IN_PULA, 1, 3)}"
-                          style="text-align: right"
-                        ></td>
 
-                        <td
-                          style="text-align: left"
-                          th:text="${report.ROW_ID}"
-                        ></td>
-                        <td th:text="${report.COLUMN_ID}"></td>
-                        <td
-                          th:text="${#dates.format(report.REPORT_DATE, 'dd-MM-yyyy')}"
-                        ></td>
-                      </tr>
-                    </tbody>
-                  </table>
 
-                  <div
-                    style="margin-top: 20px; text-align: center"
-                    th:if="${pagination=='YES'}"
-                  >
-                    <a
-                      th:if="${currentPage > 0}"
-                      th:href="@{'/Reports/' + ${reportid} + '/Details'(
-																	    asondate=${asondate},                             
-																	    fromdate=${fromdate},
-																	    todate=${todate},
-																	    currency=${currency},
-																	    dtltype=${dtltype},
-																	    type=${type},
-																	    version=${version},
-																	    page=${currentPage - 100},
-																	    size=100
-																	)}"
-                    >
-                      Previous
-                    </a>
+			</div>
 
-                    <span
-                      >Page [[${currentPage / 100 + 1}]] of
-                      [[${totalPages}]]</span
-                    >
 
-                    <a
-                      th:if="${currentPage < (totalPages - 1) * 100}"
-                      th:href="@{'/Reports/' + ${reportid} + '/Details'(
-																	    asondate=${asondate},
-																	    fromdate=${fromdate},
-																	    todate=${todate},
-																	    currency=${currency},
-																	    dtltype=${dtltype},
-																	    type=${type},
-																	    version=${version},
-																	    page=${currentPage + 100},
-																	    size=100
-																	)}"
-                    >
-                      Next
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
 
-    <div
-      class="modal fade"
-      id="loader"
-      data-backdrop="static"
-      data-keyboard="false"
-    >
-      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-        <div class="modal-content" style="background: transparent">
-          <div class="modal-body" style="text-align: center">
-            <div>
-              <img th:src=@{/images/loader.gif} id="bfirelogo" style="width:
-              153px; height: auto; margin-left: 18px; background-color:
-              transparent; border-color: transparent;" alt="Bornfire">
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+		</div>
 
-    <!-- Custom Alert/Result Modal (Matches your existing style) -->
-    <div class="modal fade" id="resultModal">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <!-- Your custom styled header -->
-          <div class="menu-title-header">
-            <div
-              class="modal-title"
-              id="resultModalLabel"
-              style="text-align: center; color: white"
-            >
-              <!-- Title will be set by JavaScript -->
-            </div>
-          </div>
-          <div class="modal-body" style="text-align: center; font-size: 1.1rem">
-            <p id="resultModalBody"></p>
-            <!-- Your custom styled button -->
-            <button
-              type="button"
-              class="custom-tab-btn"
-              onclick="closemodel()"
-              data-dismiss="modal"
-            >
-              OK
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
 
-    <!-- Custom Cellresult Modal -->
-    <div class="modal fade" id="cellresultModal">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <!-- Custom header -->
-          <div
-            class="menu-title-header"
-            style="
-              background-color: #6c7a91;
-              padding: 8px;
-              border-radius: 5px 5px 0 0;
-            "
-          >
-            <div
-              class="modal-title"
-              id="cellresultModalLabel"
-              style="text-align: center; color: white"
-            >
-              Do you want to open the report?
-            </div>
-          </div>
 
-          <div class="modal-body" style="text-align: center; font-size: 1.1rem">
-            <button
-              type="button"
-              class="custom-tab-btn cancel-btn"
-              data-bs-dismiss="modal"
-              style="
-                margin-right: 10px;
-                border: 2px solid #6c7a91;
-                background: white;
-                color: black;
-                border-radius: 20px;
-                padding: 5px 15px;
-              "
-            >
-              Cancel
-            </button>
-            <button
-              type="button"
-              class="custom-tab-btn yes-btn"
-              style="
-                background: #6c7a91;
-                color: white;
-                border: none;
-                border-radius: 20px;
-                padding: 5px 20px;
-              "
-            >
-              Yes
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </body>
+	</div>
+
+
+
+	<div class="modal fade" id="loader" data-backdrop="static" data-keyboard="false">
+		<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+			<div class="modal-content" style="background: transparent;">
+				<div class="modal-body" style="text-align: center">
+					<div>
+						<img th:src=@{/images/loader.gif} id="bfirelogo"
+							style="width: 153px; height: auto; margin-left: 18px; background-color: transparent; border-color: transparent;"
+							alt="Bornfire">
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+
+	<!-- Custom Alert/Result Modal (Matches your existing style) -->
+	<div class="modal fade" id="resultModal">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<!-- Your custom styled header -->
+				<div class="menu-title-header">
+					<div class="modal-title" id="resultModalLabel" style="text-align: center; color: white;">
+						<!-- Title will be set by JavaScript -->
+					</div>
+				</div>
+				<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+					<p id="resultModalBody"></p>
+					<!-- Your custom styled button -->
+					<button type="button" class="custom-tab-btn" onclick="closemodel()" data-dismiss="modal">OK</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Custom Cellresult Modal -->
+	<div class="modal fade" id="cellresultModal">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+
+				<!-- Custom header -->
+				<div class="menu-title-header"
+					style="background-color: #6c7a91; padding: 8px; border-radius: 5px 5px 0 0;">
+					<div class="modal-title" id="cellresultModalLabel" style="text-align: center; color: white;">Do you
+						want to
+						open the report?</div>
+				</div>
+
+				<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+					<button type="button" class="custom-tab-btn cancel-btn" data-bs-dismiss="modal"
+						style="margin-right: 10px; border: 2px solid #6c7a91; background: white; color: black; border-radius: 20px; padding: 5px 15px;">
+						Cancel</button>
+					<button type="button" class="custom-tab-btn yes-btn"
+						style="background: #6c7a91; color: white; border: none; border-radius: 20px; padding: 5px 20px;">
+						Yes</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+
+</body>
+
+
+
+
+
 
 <style>
-/* Your existing CSS - this is the correct approach */
-.scrollable-table-container {
-	/* This is the key: it creates the scroll context */
-	max-height: 620px;
-	/* Or a suitable height like 80vh for responsive design */
-	overflow-y: auto;
-	border: 1px solid #ccc;
-}
+	/* Your existing CSS - this is the correct approach */
+	.scrollable-table-container {
+		/* This is the key: it creates the scroll context */
+		max-height: 820px;
+		/* Or a suitable height like 80vh for responsive design */
+		overflow-y: auto;
+		border: 1px solid #ccc;
+	}
 
-/* Your existing sticky header CSS, targeting the tr elements within the thead */
-.scrollable-table-container thead tr:nth-child(1) {
-	position: sticky;
-	top: 0;
-	background-color: #b3b6b9;
-	z-index: 5;
-	
-}
+	/* Your existing sticky header CSS, targeting the tr elements within the thead */
+	.scrollable-table-container thead tr:nth-child(1) {
+		position: sticky;
+		top: 0;
+		background-color: #b3b6b9;
+		z-index: 5;
+	}
 
-.scrollable-table-container thead tr:nth-child(2) {
-	position: sticky;
-	top: 36px; /* adjust based on row height */
-	background-color: #b3b6b9;
-	z-index: 4;
-	
+	.scrollable-table-container thead tr:nth-child(2) {
+		position: sticky;
+		top: 36px;
+		/* adjust based on row height */
+		background-color: #b3b6b9;
+		z-index: 4;
+	}
 
-}
+	.scrollable-table-container thead tr:nth-child(3) {
+		position: sticky;
+		top: 72px;
+		/* Adjust based on row height */
+		background-color: #b3b6b9;
+		z-index: 3;
+	}
 
-.scrollable-table-container thead tr:nth-child(3) {
-	position: sticky;
-	top: 72px; /* Adjust based on row height */
-	background-color: #b3b6b9;
-	z-index: 3;
-	
-}
+	.scrollable-table-container thead tr:nth-child(4) {
+		position: sticky;
+		top: 100px;
+		/* Adjust based on row height */
+		background-color: #b3b6b9;
+		z-index: 2;
+	}
 
-.scrollable-table-container thead tr:nth-child(4) {
-	position: sticky;
-	top: 100px; /* Adjust based on row height */
-	background-color: #b3b6b9;
-	z-index: 2;
-}
-
-.scrollable-table-container thead tr:nth-child(5) {
-	position: sticky;
-	top: 135px; /* Adjust based on row height */
-	background-color: #b3b6b9;
-	z-index: 1;
-}
+	.scrollable-table-container thead tr:nth-child(5) {
+		position: sticky;
+		top: 135px;
+		/* Adjust based on row height */
+		background-color: #b3b6b9;
+		z-index: 1;
+	}
 </style>
 
 
 <style>
-.inner {
-	max-height: 600px; /* Adjust height as needed */
-	overflow: auto;
-	border: 1px solid #dee2e6;
-}
+	.inner {
+		max-height: 600px;
+		/* Adjust height as needed */
+		overflow: auto;
+		border: 1px solid #dee2e6;
+	}
 
-/* Sticky thead */
+	/* Sticky thead */
 	#reports thead th {
 		position: sticky;
 		top: 0;
-		background-color: #D8D8D8; /* light gray header */
+		background-color: #f8f9fa;
 		/* Match Bootstrap thead-light */
 		z-index: 2;
 	}
 
+	div.dataTables_wrapper div.dataTables_paginate {
+		text-align: right !important;
+		float: right !important;
+		width: auto;
+		margin-top: 10px;
+	}
 
-div.dataTables_wrapper div.dataTables_paginate {
-	text-align: right !important;
-	float: right !important;
-	width: auto;
-	margin-top: 10px;
-}
+	/* Ensure info text (e.g., "Showing 1 to X") stays on the left */
+	div.dataTables_wrapper div.dataTables_info {
+		float: left !important;
+		margin-top: 10px;
+	}
 
-/* Ensure info text (e.g., "Showing 1 to X") stays on the left */
-div.dataTables_wrapper div.dataTables_info {
-	float: left !important;
-	margin-top: 10px;
-}
+	.pagination {
+		margin: 0;
+	}
 
-.pagination {
-	margin: 0;
-}
+	.page-item.active .page-link {
+		background-color: #386276;
+		border-color: #386276;
+	}
 
-.page-item.active .page-link {
-	background-color: #386276;
-	border-color: #386276;
-}
+	.page-link {
+		color: #386276;
+	}
 
-.page-link {
-	color: #386276;
-}
+	.page-link:hover {
+		color: #2a4a5c;
+	}
 
-.page-link:hover {
-	color: #2a4a5c;
-}
-
-.form-select {
-	display: inline-block;
-	width: auto;
-}
-	.scrollable-table-container thead tr:nth-child(1),
-.scrollable-table-container thead tr:nth-child(2),
-.scrollable-table-container thead tr:nth-child(3),
-.scrollable-table-container thead tr:nth-child(4),
-.scrollable-table-container thead tr:nth-child(5) {
-    background-color: #D8D8D8; /* set header color */
-}
-	
+	.form-select {
+		display: inline-block;
+		width: auto;
+	}
 </style>
 
 </html>

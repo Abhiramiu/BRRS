@@ -16,7 +16,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
 @Table(name = "BRRS_M_SECL_ARCHIVALTABLE_SUMMARY")
-@IdClass(M_SECL_Archival_Summary_PK.class)
 
 public class M_SECL_Archival_Summary_Entity{	
 
@@ -27,7 +26,7 @@ public class M_SECL_Archival_Summary_Entity{
 	@Column(name = "REPORT_DATE")
 	private Date reportDate;
 	
-	@Id
+
 	@Column(name = "REPORT_VERSION")
 	private BigDecimal reportVersion;
 	
@@ -3689,5 +3688,5 @@ public class M_SECL_Archival_Summary_Entity{
 		// TODO Auto-generated constructor stub
 	}
 	
-
+	
 }
