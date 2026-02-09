@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-
+import org.apache.poi.ss.usermodel.DataFormat;
 import javax.transaction.Transactional;
 
 import org.apache.poi.ss.usermodel.BorderStyle;
@@ -33,6 +33,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.xssf.usermodel.DefaultIndexedColorMap;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.apache.poi.xssf.usermodel.XSSFFont;
@@ -128,10 +129,10 @@ public class BRRS_M_AIDP_ReportService {
 
 	@Autowired
 	BRRS_M_AIDP_Archival_Summary_Repo4 M_AIDP_Archival_Summary_Repo4;
-	
+
 	@Autowired
 	BRRS_M_AIDP_Archival_Detail_Repo1 M_AIDP_Archival_Detail_Repo1;
-	
+
 	@Autowired
 	BRRS_M_AIDP_Archival_Detail_Repo2 M_AIDP_Archival_Detail_Repo2;
 
@@ -167,57 +168,62 @@ public class BRRS_M_AIDP_ReportService {
 	public ModelAndView getM_AIDPView(String reportId, String fromdate, String todate, String currency, String dtltype,
 			Pageable pageable, String type, BigDecimal version) {
 
-		ModelAndView mv = new ModelAndView();
+		System.out.println("===== getM_AIDPView INPUT VALUES =====");
+		System.out.println("type     : " + type);
+		System.out.println("dtltype  : " + dtltype);
+		System.out.println("version  : " + version);
+		System.out.println("===== END INPUT VALUES =====");
+
+		ModelAndView mv = new ModelAndView("BRRS/M_AIDP");
 
 		try {
 			Date d1 = dateformat.parse(todate);
-			String Type = type;
 
-			/* ======================= ARCHIVAL SUMMARY ======================= */
+			/* ===================== ARCHIVAL ===================== */
 			if ("ARCHIVAL".equalsIgnoreCase(type)) {
 
-				mv.addObject("reportsummary", M_AIDP_Archival_Summary_Repo1.getdatabydateListarchival(d1, version));
-				mv.addObject("reportsummary2", M_AIDP_Archival_Summary_Repo2.getdatabydateListarchival(d1, version));
-				mv.addObject("reportsummary3", M_AIDP_Archival_Summary_Repo3.getdatabydateListarchival(d1, version));
-				mv.addObject("reportsummary4", M_AIDP_Archival_Summary_Repo4.getdatabydateListarchival(d1, version));
+				// 🔹 ARCHIVAL → DETAIL
+				if ("detail".equalsIgnoreCase(dtltype)) {
 
-				mv.addObject("displaymode", "summary");
-			} else if ("ARCHIVAL".equalsIgnoreCase(type) && "detail".equalsIgnoreCase(dtltype)) {
-				
-				// DETAIL + ARCHIVAL
-				if (version != null) {
 					mv.addObject("reportsummary", M_AIDP_Archival_Detail_Repo1.getdatabydateListarchival(d1, version));
 					mv.addObject("reportsummary2", M_AIDP_Archival_Detail_Repo2.getdatabydateListarchival(d1, version));
 					mv.addObject("reportsummary3", M_AIDP_Archival_Detail_Repo3.getdatabydateListarchival(d1, version));
 					mv.addObject("reportsummary4", M_AIDP_Archival_Detail_Repo4.getdatabydateListarchival(d1, version));
 
 					mv.addObject("displaymode", "detail");
+				} else if ("report".equalsIgnoreCase(dtltype)){
+
+					mv.addObject("reportsummary", M_AIDP_Archival_Summary_Repo1.getdatabydateListarchival(d1, version));
+					mv.addObject("reportsummary2",
+							M_AIDP_Archival_Summary_Repo2.getdatabydateListarchival(d1, version));
+					mv.addObject("reportsummary3",
+							M_AIDP_Archival_Summary_Repo3.getdatabydateListarchival(d1, version));
+					mv.addObject("reportsummary4",
+							M_AIDP_Archival_Summary_Repo4.getdatabydateListarchival(d1, version));
+
+					mv.addObject("displaymode", "summary");
 				}
-				// DETAIL + NORMAL
+				// 🔹 ARCHIVAL → SUMMARY
 				else {
 
 					mv.addObject("reportsummary", M_AIDP_Archival_Summary_Repo1.getdatabydateListarchival(d1, version));
-					mv.addObject("reportsummary2", M_AIDP_Archival_Summary_Repo2.getdatabydateListarchival(d1, version));
-					mv.addObject("reportsummary3", M_AIDP_Archival_Summary_Repo3.getdatabydateListarchival(d1, version));
-					mv.addObject("reportsummary4", M_AIDP_Archival_Summary_Repo4.getdatabydateListarchival(d1, version));
+					mv.addObject("reportsummary2",
+							M_AIDP_Archival_Summary_Repo2.getdatabydateListarchival(d1, version));
+					mv.addObject("reportsummary3",
+							M_AIDP_Archival_Summary_Repo3.getdatabydateListarchival(d1, version));
+					mv.addObject("reportsummary4",
+							M_AIDP_Archival_Summary_Repo4.getdatabydateListarchival(d1, version));
 
-					mv.addObject("displaymode", "detail");
+					mv.addObject("displaymode", "summary");
 				}
-				
-			} else {
-				mv.addObject("reportsummary", BRRS_M_aidpRepo1.getdatabydateList(d1));
-				mv.addObject("reportsummary2", BRRS_M_aidpRepo2.getdatabydateList(d1));
-				mv.addObject("reportsummary3", BRRS_M_aidpRepo3.getdatabydateList(d1));
-				mv.addObject("reportsummary4", BRRS_M_aidpRepo4.getdatabydateList(d1));
-
-				mv.addObject("displaymode", "summary");
 			}
 
-			// ---------- CASE 4: DETAIL (NEW, ONLY ADDITION) ----------
-			if ("detail".equalsIgnoreCase(dtltype)) {
+			/* ===================== NORMAL ===================== */
+			else {
 
-				// DETAIL + ARCHIVAL
-				if (version != null) {
+				// 🔹 NORMAL → DETAIL
+				if ("detail".equalsIgnoreCase(dtltype)) {
+
 					mv.addObject("reportsummary", bRRS_M_AIDP_Detail_Repo1.getdatabydateList(d1));
 					mv.addObject("reportsummary2", bRRS_M_AIDP_Detail_Repo2.getdatabydateList(d1));
 					mv.addObject("reportsummary3", bRRS_M_AIDP_Detail_Repo3.getdatabydateList(d1));
@@ -225,7 +231,7 @@ public class BRRS_M_AIDP_ReportService {
 
 					mv.addObject("displaymode", "detail");
 				}
-				// DETAIL + NORMAL
+				// 🔹 NORMAL → SUMMARY
 				else {
 
 					mv.addObject("reportsummary", BRRS_M_aidpRepo1.getdatabydateList(d1));
@@ -233,7 +239,7 @@ public class BRRS_M_AIDP_ReportService {
 					mv.addObject("reportsummary3", BRRS_M_aidpRepo3.getdatabydateList(d1));
 					mv.addObject("reportsummary4", BRRS_M_aidpRepo4.getdatabydateList(d1));
 
-					mv.addObject("displaymode", "detail");
+					mv.addObject("displaymode", "summary");
 				}
 			}
 
@@ -241,7 +247,6 @@ public class BRRS_M_AIDP_ReportService {
 			e.printStackTrace();
 		}
 
-		mv.setViewName("BRRS/M_AIDP");
 		return mv;
 	}
 
@@ -577,7 +582,7 @@ public class BRRS_M_AIDP_ReportService {
 			String dtltype, String type, BigDecimal version) throws Exception {
 
 		/* ================= ARCHIVAL ================= */
-		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
+		if ("ARCHIVAL".equalsIgnoreCase(type)) {
 
 			byte[] archivalBytes = getExcelM_AIDPARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type,
 					version);
@@ -619,6 +624,17 @@ public class BRRS_M_AIDP_ReportService {
 			CellStyle textStyle = workbook.createCellStyle();
 			CellStyle numberStyle = workbook.createCellStyle();
 			numberStyle.cloneStyleFrom(textStyle);
+
+			CellStyle blackBorderStyle = workbook.createCellStyle();
+			blackBorderStyle.setBorderTop(BorderStyle.THIN);
+			blackBorderStyle.setBorderBottom(BorderStyle.THIN);
+			blackBorderStyle.setBorderLeft(BorderStyle.THIN);
+			blackBorderStyle.setBorderRight(BorderStyle.THIN);
+
+			blackBorderStyle.setTopBorderColor(IndexedColors.BLACK.getIndex());
+			blackBorderStyle.setBottomBorderColor(IndexedColors.BLACK.getIndex());
+			blackBorderStyle.setLeftBorderColor(IndexedColors.BLACK.getIndex());
+			blackBorderStyle.setRightBorderColor(IndexedColors.BLACK.getIndex());
 
 			String[] rowCodesPart1 = { "R11", "R12", "R13", "R14", "R15", "R16", "R17", "R18", "R19", "R20", "R21",
 					"R22", "R23", "R24", "R25", "R26", "R27", "R28", "R29", "R30", "R31", "R32", "R33", "R34", "R35",
@@ -669,6 +685,8 @@ public class BRRS_M_AIDP_ReportService {
 			/* ================= WRITE ================= */
 			if (isDetail) {
 
+				int totalColumns = 6;
+
 				if (dataList5 != null && !dataList5.isEmpty())
 					writeRowData5(sheet, dataList5, rowCodesPart5, fieldSuffixes5, 10, numberStyle, textStyle);
 
@@ -681,12 +699,25 @@ public class BRRS_M_AIDP_ReportService {
 				if (dataList8 != null && !dataList8.isEmpty())
 					writeRowData8(sheet, dataList8, rowCodesPart8, 48, numberStyle);
 
+				// ✅ APPLY BORDER LAST
+				applyBlackBorder(sheet, blackBorderStyle, 10, rowCodesPart5.length, totalColumns);
+				applyBlackBorder(sheet, blackBorderStyle, 25, rowCodesPart6.length, totalColumns);
+				applyBlackBorder(sheet, blackBorderStyle, 36, rowCodesPart7.length, totalColumns);
+				applyBlackBorder(sheet, blackBorderStyle, 48, rowCodesPart8.length, totalColumns);
+
 			} else {
+				int totalColumns = 8;
 
 				writeRowData1(sheet, dataList1, rowCodesPart1, fieldSuffixes, 10, numberStyle, textStyle);
 				writeRowData2(sheet, dataList2, rowCodesPart2, fieldSuffixes, 55, numberStyle, textStyle);
 				writeRowData3(sheet, dataList3, rowCodesPart3, fieldSuffixes2, 100, numberStyle, textStyle);
 				writeRowData4(sheet, dataList4, rowCodesPart4, fieldSuffixes3, 146, numberStyle, textStyle);
+
+				// ✅ APPLY BORDER LAST
+				applyBlackBorder(sheet, blackBorderStyle, 10, rowCodesPart1.length, totalColumns);
+				applyBlackBorder(sheet, blackBorderStyle, 55, rowCodesPart2.length, totalColumns);
+				applyBlackBorder(sheet, blackBorderStyle, 100, rowCodesPart3.length, totalColumns);
+				applyBlackBorder(sheet, blackBorderStyle, 146, rowCodesPart4.length, totalColumns);
 			}
 
 			/* ❌ DO NOT EVALUATE FORMULAS */
@@ -706,98 +737,163 @@ public class BRRS_M_AIDP_ReportService {
 
 	private void writeRowData1(Sheet sheet, List<BRRS_M_AIDP_Summary_Entity1> dataList, String[] rowCodes,
 			String[] fieldSuffixes, int baseRow, CellStyle numberStyle, CellStyle textStyle) {
+
 		System.out.println("came to write row data 1 method");
+
+		BigDecimal totalLess = BigDecimal.ZERO;
+		BigDecimal totalMore = BigDecimal.ZERO;
 
 		for (BRRS_M_AIDP_Summary_Entity1 record : dataList) {
 
 			for (int rowIndex = 0; rowIndex < rowCodes.length; rowIndex++) {
+
 				String rowCode = rowCodes[rowIndex];
 				Row row = sheet.getRow(baseRow + rowIndex);
-
-				if (row == null)
+				if (row == null) {
 					row = sheet.createRow(baseRow + rowIndex);
+				}
 
 				for (int colIndex = 0; colIndex < fieldSuffixes.length; colIndex++) {
-					String fieldName = rowCode + "_" + fieldSuffixes[colIndex];
 
-					// 👉 Skip column B (index 1)
+					String suffix = fieldSuffixes[colIndex];
+					String fieldName = rowCode + "_" + suffix;
+
+					// 👉 Skip column B
 					int excelColIndex = (colIndex >= 1) ? colIndex + 1 : colIndex;
-
 					Cell cell = row.createCell(excelColIndex);
+
 					try {
 						Field field = BRRS_M_AIDP_Summary_Entity1.class.getDeclaredField(fieldName);
 						field.setAccessible(true);
 						Object value = field.get(record);
 
 						if (value == null || "N/A".equals(value.toString().trim())) {
-							// ✅ keep cell with style but no value
 							cell.setCellValue("");
 							cell.setCellStyle(textStyle);
 							continue;
 						}
 
 						if (value instanceof BigDecimal) {
-							cell.setCellValue(((BigDecimal) value).doubleValue());
+
+							BigDecimal bd = (BigDecimal) value;
+							cell.setCellValue(bd.doubleValue());
 							cell.setCellStyle(numberStyle);
-						} else if (value instanceof String) {
-							cell.setCellValue((String) value);
-							cell.setCellStyle(textStyle);
+
+							if ("AMT_LESS_184_DAYS".equals(suffix)) {
+								totalLess = totalLess.add(bd);
+							}
+							if ("AMT_MORE_184_DAYS".equals(suffix)) {
+								totalMore = totalMore.add(bd);
+							}
+
 						} else {
-							cell.setCellValue("");
+							cell.setCellValue(value.toString());
 							cell.setCellStyle(textStyle);
 						}
-					} catch (NoSuchFieldException | IllegalAccessException e) {
+
+					} catch (Exception e) {
 						cell.setCellValue("");
 						cell.setCellStyle(textStyle);
-						LoggerFactory.getLogger(getClass()).warn("Field not found or inaccessible: {}", fieldName);
 					}
 				}
 			}
 		}
+
+		// ✅ UPDATE TOTAL ROW VALUES (REMOVE SEPARATOR, KEEP COLOR)
+		int totalRowIndex = baseRow + rowCodes.length;
+		Row totalRow = sheet.getRow(totalRowIndex);
+		if (totalRow == null) {
+			totalRow = sheet.createRow(totalRowIndex);
+		}
+
+		DataFormat dataFormat = sheet.getWorkbook().createDataFormat();
+
+		// ----- AMT_LESS_184_DAYS (column 6) -----
+		Cell lessCell = totalRow.getCell(6);
+		if (lessCell == null) {
+			lessCell = totalRow.createCell(6);
+		}
+
+		CellStyle lessStyle = sheet.getWorkbook().createCellStyle();
+		if (lessCell.getCellStyle() != null) {
+			lessStyle.cloneStyleFrom(lessCell.getCellStyle());
+		}
+		lessStyle.setDataFormat(dataFormat.getFormat("0")); // ❌ no comma
+		lessCell.setCellStyle(lessStyle);
+		lessCell.setCellValue(totalLess.doubleValue());
+
+		// ----- AMT_MORE_184_DAYS (column 7) -----
+		Cell moreCell = totalRow.getCell(7);
+		if (moreCell == null) {
+			moreCell = totalRow.createCell(7);
+		}
+
+		CellStyle moreStyle = sheet.getWorkbook().createCellStyle();
+		if (moreCell.getCellStyle() != null) {
+			moreStyle.cloneStyleFrom(moreCell.getCellStyle());
+		}
+		moreStyle.setDataFormat(dataFormat.getFormat("0")); // ❌ no comma
+		moreCell.setCellStyle(moreStyle);
+		moreCell.setCellValue(totalMore.doubleValue());
 	}
 
 	private void writeRowData2(Sheet sheet, List<BRRS_M_AIDP_Summary_Entity2> dataList, String[] rowCodes,
 			String[] fieldSuffixes, int baseRow, CellStyle numberStyle, CellStyle textStyle) {
-		System.out.println("came to write row data 1 method");
+
+		System.out.println("came to write row data 2 method");
+
+		BigDecimal totalLess = BigDecimal.ZERO;
+		BigDecimal totalMore = BigDecimal.ZERO;
 
 		for (BRRS_M_AIDP_Summary_Entity2 record : dataList) {
 
 			for (int rowIndex = 0; rowIndex < rowCodes.length; rowIndex++) {
+
 				String rowCode = rowCodes[rowIndex];
 				Row row = sheet.getRow(baseRow + rowIndex);
-
-				if (row == null)
+				if (row == null) {
 					row = sheet.createRow(baseRow + rowIndex);
+				}
 
 				for (int colIndex = 0; colIndex < fieldSuffixes.length; colIndex++) {
-					String fieldName = rowCode + "_" + fieldSuffixes[colIndex];
 
-					// 👉 Skip column B (index 1)
+					String suffix = fieldSuffixes[colIndex];
+					String fieldName = rowCode + "_" + suffix;
+
+					// 👉 Skip column B
 					int excelColIndex = (colIndex >= 1) ? colIndex + 1 : colIndex;
-
 					Cell cell = row.createCell(excelColIndex);
+
 					try {
 						Field field = BRRS_M_AIDP_Summary_Entity2.class.getDeclaredField(fieldName);
 						field.setAccessible(true);
 						Object value = field.get(record);
 
 						if (value == null || "N/A".equals(value.toString().trim())) {
-							// ✅ keep cell with style but no value
 							cell.setCellValue("");
 							cell.setCellStyle(textStyle);
 							continue;
 						}
 
 						if (value instanceof BigDecimal) {
-							cell.setCellValue(((BigDecimal) value).doubleValue());
+
+							BigDecimal bd = (BigDecimal) value;
+							cell.setCellValue(bd.doubleValue());
 							cell.setCellStyle(numberStyle);
-						} else if (value instanceof String) {
-							cell.setCellValue((String) value);
-							cell.setCellStyle(textStyle);
+
+							// ✅ ACCUMULATE TOTALS
+							if ("AMT_LESS_184_DAYS".equals(suffix)) {
+								totalLess = totalLess.add(bd);
+							}
+							if ("AMT_MORE_184_DAYS".equals(suffix)) {
+								totalMore = totalMore.add(bd);
+							}
+
 						} else {
-							cell.setCellValue("");
+							cell.setCellValue(value.toString());
 							cell.setCellStyle(textStyle);
 						}
+
 					} catch (NoSuchFieldException | IllegalAccessException e) {
 						cell.setCellValue("");
 						cell.setCellStyle(textStyle);
@@ -806,50 +902,102 @@ public class BRRS_M_AIDP_ReportService {
 				}
 			}
 		}
+
+		// ✅ UPDATE TOTAL ROW (REMOVE SEPARATOR, KEEP EXISTING STYLE)
+		int totalRowIndex = baseRow + rowCodes.length;
+		Row totalRow = sheet.getRow(totalRowIndex);
+		if (totalRow == null) {
+			totalRow = sheet.createRow(totalRowIndex);
+		}
+
+		DataFormat dataFormat = sheet.getWorkbook().createDataFormat();
+
+		// ----- AMT_LESS_184_DAYS → column 6 -----
+		Cell lessCell = totalRow.getCell(6);
+		if (lessCell == null) {
+			lessCell = totalRow.createCell(6);
+		}
+
+		CellStyle lessStyle = sheet.getWorkbook().createCellStyle();
+		if (lessCell.getCellStyle() != null) {
+			lessStyle.cloneStyleFrom(lessCell.getCellStyle());
+		}
+		lessStyle.setDataFormat(dataFormat.getFormat("0")); // ❌ no comma
+		lessCell.setCellStyle(lessStyle);
+		lessCell.setCellValue(totalLess.doubleValue());
+
+		// ----- AMT_MORE_184_DAYS → column 7 -----
+		Cell moreCell = totalRow.getCell(7);
+		if (moreCell == null) {
+			moreCell = totalRow.createCell(7);
+		}
+
+		CellStyle moreStyle = sheet.getWorkbook().createCellStyle();
+		if (moreCell.getCellStyle() != null) {
+			moreStyle.cloneStyleFrom(moreCell.getCellStyle());
+		}
+		moreStyle.setDataFormat(dataFormat.getFormat("0")); // ❌ no comma
+		moreCell.setCellStyle(moreStyle);
+		moreCell.setCellValue(totalMore.doubleValue());
 	}
 
 	private void writeRowData3(Sheet sheet, List<BRRS_M_AIDP_Summary_Entity3> dataList, String[] rowCodes,
 			String[] fieldSuffixes, int baseRow, CellStyle numberStyle, CellStyle textStyle) {
-		System.out.println("came to write row data 1 method");
+
+		System.out.println("came to write row data 3 method");
+
+		BigDecimal totalDemand = BigDecimal.ZERO;
+		BigDecimal totalTime = BigDecimal.ZERO;
 
 		for (BRRS_M_AIDP_Summary_Entity3 record : dataList) {
 
 			for (int rowIndex = 0; rowIndex < rowCodes.length; rowIndex++) {
+
 				String rowCode = rowCodes[rowIndex];
 				Row row = sheet.getRow(baseRow + rowIndex);
-
-				if (row == null)
+				if (row == null) {
 					row = sheet.createRow(baseRow + rowIndex);
+				}
 
 				for (int colIndex = 0; colIndex < fieldSuffixes.length; colIndex++) {
-					String fieldName = rowCode + "_" + fieldSuffixes[colIndex];
 
-					// 👉 Skip column B (index 1)
+					String suffix = fieldSuffixes[colIndex];
+					String fieldName = rowCode + "_" + suffix;
+
+					// 👉 Skip column B
 					int excelColIndex = (colIndex >= 1) ? colIndex + 1 : colIndex;
-
 					Cell cell = row.createCell(excelColIndex);
+
 					try {
 						Field field = BRRS_M_AIDP_Summary_Entity3.class.getDeclaredField(fieldName);
 						field.setAccessible(true);
 						Object value = field.get(record);
 
 						if (value == null || "N/A".equals(value.toString().trim())) {
-							// ✅ keep cell with style but no value
 							cell.setCellValue("");
 							cell.setCellStyle(textStyle);
 							continue;
 						}
 
 						if (value instanceof BigDecimal) {
-							cell.setCellValue(((BigDecimal) value).doubleValue());
+
+							BigDecimal bd = (BigDecimal) value;
+							cell.setCellValue(bd.doubleValue());
 							cell.setCellStyle(numberStyle);
-						} else if (value instanceof String) {
-							cell.setCellValue((String) value);
-							cell.setCellStyle(textStyle);
+
+							// ✅ ACCUMULATE TOTALS
+							if ("AMT_DEMAND".equals(suffix)) {
+								totalDemand = totalDemand.add(bd);
+							}
+							if ("AMT_TIME".equals(suffix)) {
+								totalTime = totalTime.add(bd);
+							}
+
 						} else {
-							cell.setCellValue("");
+							cell.setCellValue(value.toString());
 							cell.setCellStyle(textStyle);
 						}
+
 					} catch (NoSuchFieldException | IllegalAccessException e) {
 						cell.setCellValue("");
 						cell.setCellStyle(textStyle);
@@ -858,49 +1006,101 @@ public class BRRS_M_AIDP_ReportService {
 				}
 			}
 		}
+
+		// ✅ UPDATE TOTAL ROW (REMOVE SEPARATOR, KEEP EXISTING STYLE)
+		int totalRowIndex = baseRow + rowCodes.length;
+		Row totalRow = sheet.getRow(totalRowIndex);
+		if (totalRow == null) {
+			totalRow = sheet.createRow(totalRowIndex);
+		}
+
+		DataFormat dataFormat = sheet.getWorkbook().createDataFormat();
+
+		// ----- AMT_DEMAND → column 6 -----
+		Cell demandCell = totalRow.getCell(6);
+		if (demandCell == null) {
+			demandCell = totalRow.createCell(6);
+		}
+
+		CellStyle demandStyle = sheet.getWorkbook().createCellStyle();
+		if (demandCell.getCellStyle() != null) {
+			demandStyle.cloneStyleFrom(demandCell.getCellStyle());
+		}
+		demandStyle.setDataFormat(dataFormat.getFormat("0")); // ❌ no comma
+		demandCell.setCellStyle(demandStyle);
+		demandCell.setCellValue(totalDemand.doubleValue());
+
+		// ----- AMT_TIME → column 7 -----
+		Cell timeCell = totalRow.getCell(7);
+		if (timeCell == null) {
+			timeCell = totalRow.createCell(7);
+		}
+
+		CellStyle timeStyle = sheet.getWorkbook().createCellStyle();
+		if (timeCell.getCellStyle() != null) {
+			timeStyle.cloneStyleFrom(timeCell.getCellStyle());
+		}
+		timeStyle.setDataFormat(dataFormat.getFormat("0")); // ❌ no comma
+		timeCell.setCellStyle(timeStyle);
+		timeCell.setCellValue(totalTime.doubleValue());
 	}
 
 	private void writeRowData4(Sheet sheet, List<BRRS_M_AIDP_Summary_Entity4> dataList, String[] rowCodes,
 			String[] fieldSuffixes, int baseRow, CellStyle numberStyle, CellStyle textStyle) {
+
 		System.out.println("came to write row data 4 method");
+
+		BigDecimal totalDemand = BigDecimal.ZERO;
+		BigDecimal totalTime = BigDecimal.ZERO;
 
 		for (BRRS_M_AIDP_Summary_Entity4 record : dataList) {
 
 			for (int rowIndex = 0; rowIndex < rowCodes.length; rowIndex++) {
+
 				String rowCode = rowCodes[rowIndex];
 				Row row = sheet.getRow(baseRow + rowIndex);
-
-				if (row == null)
+				if (row == null) {
 					row = sheet.createRow(baseRow + rowIndex);
+				}
 
 				for (int colIndex = 0; colIndex < fieldSuffixes.length; colIndex++) {
-					String fieldName = rowCode + "_" + fieldSuffixes[colIndex];
 
-					// 👉 Direct mapping, don’t skip B
+					String suffix = fieldSuffixes[colIndex];
+					String fieldName = rowCode + "_" + suffix;
+
 					int excelColIndex = colIndex;
-
 					Cell cell = row.createCell(excelColIndex);
+
 					try {
 						Field field = BRRS_M_AIDP_Summary_Entity4.class.getDeclaredField(fieldName);
 						field.setAccessible(true);
 						Object value = field.get(record);
 
 						if (value == null || "N/A".equals(value.toString().trim())) {
-							cell.setCellValue(""); // keep style, blank value
+							cell.setCellValue("");
 							cell.setCellStyle(textStyle);
 							continue;
 						}
 
 						if (value instanceof BigDecimal) {
-							cell.setCellValue(((BigDecimal) value).doubleValue());
+
+							BigDecimal bd = (BigDecimal) value;
+							cell.setCellValue(bd.doubleValue());
 							cell.setCellStyle(numberStyle);
-						} else if (value instanceof String) {
-							cell.setCellValue((String) value);
-							cell.setCellStyle(textStyle);
+
+							// ✅ ACCUMULATE TOTALS
+							if ("AMT_DEMAND".equals(suffix)) {
+								totalDemand = totalDemand.add(bd);
+							}
+							if ("AMT_TIME".equals(suffix)) {
+								totalTime = totalTime.add(bd);
+							}
+
 						} else {
 							cell.setCellValue(value.toString());
 							cell.setCellStyle(textStyle);
 						}
+
 					} catch (NoSuchFieldException | IllegalAccessException e) {
 						cell.setCellValue("");
 						cell.setCellStyle(textStyle);
@@ -909,6 +1109,54 @@ public class BRRS_M_AIDP_ReportService {
 				}
 			}
 		}
+
+		// ✅ UPDATE TOTAL ROW (REMOVE SEPARATOR, KEEP EXISTING STYLE)
+		int totalRowIndex = baseRow + rowCodes.length;
+		Row totalRow = sheet.getRow(totalRowIndex);
+		if (totalRow == null) {
+			totalRow = sheet.createRow(totalRowIndex);
+		}
+
+		DataFormat dataFormat = sheet.getWorkbook().createDataFormat();
+
+		// ----- AMT_DEMAND -----
+		int demandColIndex = indexOf(fieldSuffixes, "AMT_DEMAND");
+		Cell demandCell = totalRow.getCell(demandColIndex);
+		if (demandCell == null) {
+			demandCell = totalRow.createCell(demandColIndex);
+		}
+
+		CellStyle demandStyle = sheet.getWorkbook().createCellStyle();
+		if (demandCell.getCellStyle() != null) {
+			demandStyle.cloneStyleFrom(demandCell.getCellStyle());
+		}
+		demandStyle.setDataFormat(dataFormat.getFormat("0")); // ❌ no comma
+		demandCell.setCellStyle(demandStyle);
+		demandCell.setCellValue(totalDemand.doubleValue());
+
+		// ----- AMT_TIME -----
+		int timeColIndex = indexOf(fieldSuffixes, "AMT_TIME");
+		Cell timeCell = totalRow.getCell(timeColIndex);
+		if (timeCell == null) {
+			timeCell = totalRow.createCell(timeColIndex);
+		}
+
+		CellStyle timeStyle = sheet.getWorkbook().createCellStyle();
+		if (timeCell.getCellStyle() != null) {
+			timeStyle.cloneStyleFrom(timeCell.getCellStyle());
+		}
+		timeStyle.setDataFormat(dataFormat.getFormat("0")); // ❌ no comma
+		timeCell.setCellStyle(timeStyle);
+		timeCell.setCellValue(totalTime.doubleValue());
+	}
+
+	private int indexOf(String[] arr, String value) {
+		for (int i = 0; i < arr.length; i++) {
+			if (value.equals(arr[i])) {
+				return i;
+			}
+		}
+		return -1;
 	}
 
 	private void writeRowData5(Sheet sheet, List<BRRS_M_AIDP_Detail_Entity1> dataList5, String[] rowCodesPart5,
@@ -1030,310 +1278,310 @@ public class BRRS_M_AIDP_ReportService {
 		}
 	}
 
-	private void writeRowData6(
-	        Sheet sheet,
-	        List<BRRS_M_AIDP_Detail_Entity1> dataList6,
-	        String[] rowCodesPart6,
-	        String[] fieldSuffixes5,
-	        int baseRow,
-	        CellStyle numberStyle,
-	        CellStyle textStyle) {
+	private void writeRowData6(Sheet sheet, List<BRRS_M_AIDP_Detail_Entity1> dataList6, String[] rowCodesPart6,
+			String[] fieldSuffixes5, int baseRow, CellStyle numberStyle, CellStyle textStyle) {
 
-	    BRRS_M_AIDP_Detail_Entity1 record =
-	            (dataList6 != null && !dataList6.isEmpty()) ? dataList6.get(0) : null;
+		BRRS_M_AIDP_Detail_Entity1 record = (dataList6 != null && !dataList6.isEmpty()) ? dataList6.get(0) : null;
 
-	    if (record == null) return;
+		if (record == null)
+			return;
 
-	    /* ===== TOTAL STYLE ===== */
-	    Workbook wb = sheet.getWorkbook();
-	    CellStyle totalStyle = wb.createCellStyle();
+		/* ===== TOTAL STYLE ===== */
+		Workbook wb = sheet.getWorkbook();
+		CellStyle totalStyle = wb.createCellStyle();
 
-	    totalStyle.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
-	    totalStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+		totalStyle.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
+		totalStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 
-	    totalStyle.setBorderTop(BorderStyle.THIN);
-	    totalStyle.setBorderBottom(BorderStyle.THIN);
-	    totalStyle.setBorderLeft(BorderStyle.THIN);
-	    totalStyle.setBorderRight(BorderStyle.THIN);
+		totalStyle.setBorderTop(BorderStyle.THIN);
+		totalStyle.setBorderBottom(BorderStyle.THIN);
+		totalStyle.setBorderLeft(BorderStyle.THIN);
+		totalStyle.setBorderRight(BorderStyle.THIN);
 
-	    BigDecimal grandTotal = BigDecimal.ZERO;
-	    int amountColIndex = -1;
+		BigDecimal grandTotal = BigDecimal.ZERO;
+		int amountColIndex = -1;
 
-	    for (int i = 0; i < fieldSuffixes5.length; i++) {
-	        if ("Amount".equalsIgnoreCase(fieldSuffixes5[i])) {
-	            amountColIndex = i;
-	            break;
-	        }
-	    }
+		for (int i = 0; i < fieldSuffixes5.length; i++) {
+			if ("Amount".equalsIgnoreCase(fieldSuffixes5[i])) {
+				amountColIndex = i;
+				break;
+			}
+		}
 
-	    for (int rowIndex = 0; rowIndex < rowCodesPart6.length; rowIndex++) {
+		for (int rowIndex = 0; rowIndex < rowCodesPart6.length; rowIndex++) {
 
-	        String rowCode = rowCodesPart6[rowIndex];
-	        Row row = sheet.getRow(baseRow + rowIndex);
-	        if (row == null) row = sheet.createRow(baseRow + rowIndex);
+			String rowCode = rowCodesPart6[rowIndex];
+			Row row = sheet.getRow(baseRow + rowIndex);
+			if (row == null)
+				row = sheet.createRow(baseRow + rowIndex);
 
-	        for (int colIndex = 0; colIndex < fieldSuffixes5.length; colIndex++) {
+			for (int colIndex = 0; colIndex < fieldSuffixes5.length; colIndex++) {
 
-	            String suffix = fieldSuffixes5[colIndex];
-	            Cell cell = row.createCell(colIndex);
+				String suffix = fieldSuffixes5[colIndex];
+				Cell cell = row.createCell(colIndex);
 
-	            try {
+				try {
 
-	                /* ===== AMOUNT ===== */
-	                if ("Amount".equalsIgnoreCase(suffix)) {
+					/* ===== AMOUNT ===== */
+					if ("Amount".equalsIgnoreCase(suffix)) {
 
-	                    BigDecimal less = BigDecimal.ZERO;
-	                    BigDecimal more = BigDecimal.ZERO;
+						BigDecimal less = BigDecimal.ZERO;
+						BigDecimal more = BigDecimal.ZERO;
 
-	                    try {
-	                        Field f1 = BRRS_M_AIDP_Detail_Entity1.class
-	                                .getDeclaredField(rowCode + "_AMT_LESS_184_DAYS");
-	                        f1.setAccessible(true);
-	                        Object v1 = f1.get(record);
-	                        if (v1 instanceof BigDecimal) less = (BigDecimal) v1;
-	                    } catch (NoSuchFieldException ignored) {}
+						try {
+							Field f1 = BRRS_M_AIDP_Detail_Entity1.class
+									.getDeclaredField(rowCode + "_AMT_LESS_184_DAYS");
+							f1.setAccessible(true);
+							Object v1 = f1.get(record);
+							if (v1 instanceof BigDecimal)
+								less = (BigDecimal) v1;
+						} catch (NoSuchFieldException ignored) {
+						}
 
-	                    try {
-	                        Field f2 = BRRS_M_AIDP_Detail_Entity1.class
-	                                .getDeclaredField(rowCode + "_AMT_MORE_184_DAYS");
-	                        f2.setAccessible(true);
-	                        Object v2 = f2.get(record);
-	                        if (v2 instanceof BigDecimal) more = (BigDecimal) v2;
-	                    } catch (NoSuchFieldException ignored) {}
+						try {
+							Field f2 = BRRS_M_AIDP_Detail_Entity1.class
+									.getDeclaredField(rowCode + "_AMT_MORE_184_DAYS");
+							f2.setAccessible(true);
+							Object v2 = f2.get(record);
+							if (v2 instanceof BigDecimal)
+								more = (BigDecimal) v2;
+						} catch (NoSuchFieldException ignored) {
+						}
 
-	                    BigDecimal rowAmount = less.add(more);
-	                    grandTotal = grandTotal.add(rowAmount);
+						BigDecimal rowAmount = less.add(more);
+						grandTotal = grandTotal.add(rowAmount);
 
-	                    cell.setCellValue(rowAmount.doubleValue());
-	                    cell.setCellStyle(numberStyle);
-	                    continue;
-	                }
+						cell.setCellValue(rowAmount.doubleValue());
+						cell.setCellStyle(numberStyle);
+						continue;
+					}
 
-	                /* ===== NORMAL FIELDS ===== */
-	                Field field = BRRS_M_AIDP_Detail_Entity1.class
-	                        .getDeclaredField(rowCode + "_" + suffix);
-	                field.setAccessible(true);
-	                Object value = field.get(record);
+					/* ===== NORMAL FIELDS ===== */
+					Field field = BRRS_M_AIDP_Detail_Entity1.class.getDeclaredField(rowCode + "_" + suffix);
+					field.setAccessible(true);
+					Object value = field.get(record);
 
-	                if (value == null || "N/A".equalsIgnoreCase(value.toString().trim())) {
-	                    cell.setCellValue("");
-	                    cell.setCellStyle(textStyle);
-	                } else if (value instanceof BigDecimal) {
-	                    cell.setCellValue(((BigDecimal) value).doubleValue());
-	                    cell.setCellStyle(numberStyle);
-	                } else {
-	                    cell.setCellValue(value.toString());
-	                    cell.setCellStyle(textStyle);
-	                }
+					if (value == null || "N/A".equalsIgnoreCase(value.toString().trim())) {
+						cell.setCellValue("");
+						cell.setCellStyle(textStyle);
+					} else if (value instanceof BigDecimal) {
+						cell.setCellValue(((BigDecimal) value).doubleValue());
+						cell.setCellStyle(numberStyle);
+					} else {
+						cell.setCellValue(value.toString());
+						cell.setCellStyle(textStyle);
+					}
 
-	            } catch (Exception e) {
-	                cell.setCellValue("");
-	                cell.setCellStyle(textStyle);
-	            }
-	        }
-	    }
+				} catch (Exception e) {
+					cell.setCellValue("");
+					cell.setCellStyle(textStyle);
+				}
+			}
+		}
 
-	    /* ================= TOTAL ================= */
+		/* ================= TOTAL ================= */
 
-	    int totalRowExcelIndex = baseRow + rowCodesPart6.length;
-	    Row totalRow = sheet.getRow(totalRowExcelIndex);
-	    if (totalRow == null) totalRow = sheet.createRow(totalRowExcelIndex);
+		int totalRowExcelIndex = baseRow + rowCodesPart6.length;
+		Row totalRow = sheet.getRow(totalRowExcelIndex);
+		if (totalRow == null)
+			totalRow = sheet.createRow(totalRowExcelIndex);
 
-	    if (amountColIndex != -1) {
-	        Cell totalCell = totalRow.getCell(amountColIndex);
-	        if (totalCell == null) totalCell = totalRow.createCell(amountColIndex);
+		if (amountColIndex != -1) {
+			Cell totalCell = totalRow.getCell(amountColIndex);
+			if (totalCell == null)
+				totalCell = totalRow.createCell(amountColIndex);
 
-	        totalCell.setCellValue(grandTotal.doubleValue());
-	        totalCell.setCellStyle(totalStyle); // 🟨 yellow + border
-	    }
+			totalCell.setCellValue(grandTotal.doubleValue());
+			totalCell.setCellStyle(totalStyle); // 🟨 yellow + border
+		}
 	}
 
-	private void writeRowData7(
-	        Sheet sheet,
-	        List<BRRS_M_AIDP_Detail_Entity1> dataList7,
-	        String[] rowCodesPart7,
-	        String[] fieldSuffixes6,
-	        int baseRow,
-	        CellStyle numberStyle,
-	        CellStyle textStyle) {
+	private void writeRowData7(Sheet sheet, List<BRRS_M_AIDP_Detail_Entity1> dataList7, String[] rowCodesPart7,
+			String[] fieldSuffixes6, int baseRow, CellStyle numberStyle, CellStyle textStyle) {
 
-	    BRRS_M_AIDP_Detail_Entity1 record =
-	            (dataList7 != null && !dataList7.isEmpty()) ? dataList7.get(0) : null;
+		BRRS_M_AIDP_Detail_Entity1 record = (dataList7 != null && !dataList7.isEmpty()) ? dataList7.get(0) : null;
 
-	    if (record == null) return;
+		if (record == null)
+			return;
 
-	    /* ===== TOTAL STYLE ===== */
-	    Workbook wb = sheet.getWorkbook();
-	    CellStyle totalStyle = wb.createCellStyle();
+		/* ===== TOTAL STYLE ===== */
+		Workbook wb = sheet.getWorkbook();
+		CellStyle totalStyle = wb.createCellStyle();
 
-	    totalStyle.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
-	    totalStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+		totalStyle.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
+		totalStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 
-	    totalStyle.setBorderTop(BorderStyle.THIN);
-	    totalStyle.setBorderBottom(BorderStyle.THIN);
-	    totalStyle.setBorderLeft(BorderStyle.THIN);
-	    totalStyle.setBorderRight(BorderStyle.THIN);
+		totalStyle.setBorderTop(BorderStyle.THIN);
+		totalStyle.setBorderBottom(BorderStyle.THIN);
+		totalStyle.setBorderLeft(BorderStyle.THIN);
+		totalStyle.setBorderRight(BorderStyle.THIN);
 
-	    BigDecimal grandTotal = BigDecimal.ZERO;
-	    int amountColIndex = -1;
+		BigDecimal grandTotal = BigDecimal.ZERO;
+		int amountColIndex = -1;
 
-	    // Find Amount column index
-	    for (int i = 0; i < fieldSuffixes6.length; i++) {
-	        if ("Amount".equalsIgnoreCase(fieldSuffixes6[i])) {
-	            amountColIndex = i;
-	            break;
-	        }
-	    }
+		// Find Amount column index
+		for (int i = 0; i < fieldSuffixes6.length; i++) {
+			if ("Amount".equalsIgnoreCase(fieldSuffixes6[i])) {
+				amountColIndex = i;
+				break;
+			}
+		}
 
-	    for (int rowIndex = 0; rowIndex < rowCodesPart7.length; rowIndex++) {
+		for (int rowIndex = 0; rowIndex < rowCodesPart7.length; rowIndex++) {
 
-	        String rowCode = rowCodesPart7[rowIndex];
-	        Row row = sheet.getRow(baseRow + rowIndex);
-	        if (row == null) row = sheet.createRow(baseRow + rowIndex);
+			String rowCode = rowCodesPart7[rowIndex];
+			Row row = sheet.getRow(baseRow + rowIndex);
+			if (row == null)
+				row = sheet.createRow(baseRow + rowIndex);
 
-	        for (int colIndex = 0; colIndex < fieldSuffixes6.length; colIndex++) {
+			for (int colIndex = 0; colIndex < fieldSuffixes6.length; colIndex++) {
 
-	            String suffix = fieldSuffixes6[colIndex];
-	            Cell cell = row.createCell(colIndex);
+				String suffix = fieldSuffixes6[colIndex];
+				Cell cell = row.createCell(colIndex);
 
-	            try {
+				try {
 
-	                /* ===== AMOUNT ===== */
-	                if ("Amount".equalsIgnoreCase(suffix)) {
+					/* ===== AMOUNT ===== */
+					if ("Amount".equalsIgnoreCase(suffix)) {
 
-	                    BigDecimal less = BigDecimal.ZERO;
-	                    BigDecimal more = BigDecimal.ZERO;
+						BigDecimal less = BigDecimal.ZERO;
+						BigDecimal more = BigDecimal.ZERO;
 
-	                    try {
-	                        Field f1 = BRRS_M_AIDP_Detail_Entity1.class
-	                                .getDeclaredField(rowCode + "_AMT_LESS_184_DAYS");
-	                        f1.setAccessible(true);
-	                        Object v1 = f1.get(record);
-	                        if (v1 instanceof BigDecimal) less = (BigDecimal) v1;
-	                    } catch (NoSuchFieldException ignored) {}
+						try {
+							Field f1 = BRRS_M_AIDP_Detail_Entity1.class
+									.getDeclaredField(rowCode + "_AMT_LESS_184_DAYS");
+							f1.setAccessible(true);
+							Object v1 = f1.get(record);
+							if (v1 instanceof BigDecimal)
+								less = (BigDecimal) v1;
+						} catch (NoSuchFieldException ignored) {
+						}
 
-	                    try {
-	                        Field f2 = BRRS_M_AIDP_Detail_Entity1.class
-	                                .getDeclaredField(rowCode + "_AMT_MORE_184_DAYS");
-	                        f2.setAccessible(true);
-	                        Object v2 = f2.get(record);
-	                        if (v2 instanceof BigDecimal) more = (BigDecimal) v2;
-	                    } catch (NoSuchFieldException ignored) {}
+						try {
+							Field f2 = BRRS_M_AIDP_Detail_Entity1.class
+									.getDeclaredField(rowCode + "_AMT_MORE_184_DAYS");
+							f2.setAccessible(true);
+							Object v2 = f2.get(record);
+							if (v2 instanceof BigDecimal)
+								more = (BigDecimal) v2;
+						} catch (NoSuchFieldException ignored) {
+						}
 
-	                    BigDecimal rowAmount = less.add(more);
-	                    grandTotal = grandTotal.add(rowAmount);
+						BigDecimal rowAmount = less.add(more);
+						grandTotal = grandTotal.add(rowAmount);
 
-	                    cell.setCellValue(rowAmount.doubleValue());
-	                    cell.setCellStyle(numberStyle);
-	                    continue;
-	                }
+						cell.setCellValue(rowAmount.doubleValue());
+						cell.setCellStyle(numberStyle);
+						continue;
+					}
 
-	                /* ===== NORMAL FIELDS ===== */
-	                Field field = BRRS_M_AIDP_Detail_Entity1.class
-	                        .getDeclaredField(rowCode + "_" + suffix);
-	                field.setAccessible(true);
-	                Object value = field.get(record);
+					/* ===== NORMAL FIELDS ===== */
+					Field field = BRRS_M_AIDP_Detail_Entity1.class.getDeclaredField(rowCode + "_" + suffix);
+					field.setAccessible(true);
+					Object value = field.get(record);
 
-	                if (value == null || "N/A".equalsIgnoreCase(value.toString().trim())) {
-	                    cell.setCellValue("");
-	                    cell.setCellStyle(textStyle);
-	                } else if (value instanceof BigDecimal) {
-	                    cell.setCellValue(((BigDecimal) value).doubleValue());
-	                    cell.setCellStyle(numberStyle);
-	                } else {
-	                    cell.setCellValue(value.toString());
-	                    cell.setCellStyle(textStyle);
-	                }
+					if (value == null || "N/A".equalsIgnoreCase(value.toString().trim())) {
+						cell.setCellValue("");
+						cell.setCellStyle(textStyle);
+					} else if (value instanceof BigDecimal) {
+						cell.setCellValue(((BigDecimal) value).doubleValue());
+						cell.setCellStyle(numberStyle);
+					} else {
+						cell.setCellValue(value.toString());
+						cell.setCellStyle(textStyle);
+					}
 
-	            } catch (Exception e) {
-	                cell.setCellValue("");
-	                cell.setCellStyle(textStyle);
-	            }
-	        }
-	    }
+				} catch (Exception e) {
+					cell.setCellValue("");
+					cell.setCellStyle(textStyle);
+				}
+			}
+		}
 
-	    /* ================= TOTAL ================= */
+		/* ================= TOTAL ================= */
 
-	    int totalRowExcelIndex = baseRow + rowCodesPart7.length;
-	    Row totalRow = sheet.getRow(totalRowExcelIndex);
-	    if (totalRow == null) totalRow = sheet.createRow(totalRowExcelIndex);
+		int totalRowExcelIndex = baseRow + rowCodesPart7.length;
+		Row totalRow = sheet.getRow(totalRowExcelIndex);
+		if (totalRow == null)
+			totalRow = sheet.createRow(totalRowExcelIndex);
 
-	    if (amountColIndex != -1) {
-	        Cell totalCell = totalRow.getCell(amountColIndex);
-	        if (totalCell == null) totalCell = totalRow.createCell(amountColIndex);
+		if (amountColIndex != -1) {
+			Cell totalCell = totalRow.getCell(amountColIndex);
+			if (totalCell == null)
+				totalCell = totalRow.createCell(amountColIndex);
 
-	        totalCell.setCellValue(grandTotal.doubleValue());
-	        totalCell.setCellStyle(totalStyle); // 🟨 yellow + border
-	    }
+			totalCell.setCellValue(grandTotal.doubleValue());
+			totalCell.setCellStyle(totalStyle); // 🟨 yellow + border
+		}
 	}
 
-	private void writeRowData8(
-	        Sheet sheet,
-	        List<BRRS_M_AIDP_Detail_Entity2> dataList8,
-	        String[] rowCodesPart8,
-	        int headerExcelRow,
-	        CellStyle numberStyle) {
+	private void writeRowData8(Sheet sheet, List<BRRS_M_AIDP_Detail_Entity2> dataList8, String[] rowCodesPart8,
+			int headerExcelRow, CellStyle numberStyle) {
 
-	    BRRS_M_AIDP_Detail_Entity2 record =
-	            (dataList8 != null && !dataList8.isEmpty()) ? dataList8.get(0) : null;
+		BRRS_M_AIDP_Detail_Entity2 record = (dataList8 != null && !dataList8.isEmpty()) ? dataList8.get(0) : null;
 
-	    if (record == null) return;
+		if (record == null)
+			return;
 
-	    /* ===== TOTAL STYLE ===== */
-	    Workbook wb = sheet.getWorkbook();
-	    CellStyle totalStyle = wb.createCellStyle();
+		/* ===== TOTAL STYLE ===== */
+		Workbook wb = sheet.getWorkbook();
+		CellStyle totalStyle = wb.createCellStyle();
 
-	    totalStyle.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
-	    totalStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+		totalStyle.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
+		totalStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 
-	    totalStyle.setBorderTop(BorderStyle.THIN);
-	    totalStyle.setBorderBottom(BorderStyle.THIN);
-	    totalStyle.setBorderLeft(BorderStyle.THIN);
-	    totalStyle.setBorderRight(BorderStyle.THIN);
+		totalStyle.setBorderTop(BorderStyle.THIN);
+		totalStyle.setBorderBottom(BorderStyle.THIN);
+		totalStyle.setBorderLeft(BorderStyle.THIN);
+		totalStyle.setBorderRight(BorderStyle.THIN);
 
-	    int firstDataExcelRow = headerExcelRow + 1; // start row
-	    int entityStart = 56; // R56
-	    int amountColumnIndex = 5; // Column F (Amount)
+		int firstDataExcelRow = headerExcelRow + 1; // start row
+		int entityStart = 56; // R56
+		int amountColumnIndex = 5; // Column F (Amount)
 
-	    BigDecimal grandTotal = BigDecimal.ZERO;
+		BigDecimal grandTotal = BigDecimal.ZERO;
 
-	    for (int i = 0; i < rowCodesPart8.length; i++) {
+		for (int i = 0; i < rowCodesPart8.length; i++) {
 
-	        int excelRowNo = firstDataExcelRow + i;
-	        String entityRowCode = "R" + (entityStart + i);
+			int excelRowNo = firstDataExcelRow + i;
+			String entityRowCode = "R" + (entityStart + i);
 
-	        Row row = sheet.getRow(excelRowNo - 1);
-	        if (row == null) row = sheet.createRow(excelRowNo - 1);
+			Row row = sheet.getRow(excelRowNo - 1);
+			if (row == null)
+				row = sheet.createRow(excelRowNo - 1);
 
-	        Cell cell = row.getCell(amountColumnIndex);
-	        if (cell == null) cell = row.createCell(amountColumnIndex);
+			Cell cell = row.getCell(amountColumnIndex);
+			if (cell == null)
+				cell = row.createCell(amountColumnIndex);
 
-	        try {
-	            BigDecimal less = getDecimal(record, entityRowCode + "_AMT_LESS_184_DAYS");
-	            BigDecimal more = getDecimal(record, entityRowCode + "_AMT_MORE_184_DAYS");
+			try {
+				BigDecimal less = getDecimal(record, entityRowCode + "_AMT_LESS_184_DAYS");
+				BigDecimal more = getDecimal(record, entityRowCode + "_AMT_MORE_184_DAYS");
 
-	            BigDecimal rowAmount = less.add(more);
-	            grandTotal = grandTotal.add(rowAmount);
+				BigDecimal rowAmount = less.add(more);
+				grandTotal = grandTotal.add(rowAmount);
 
-	            cell.setCellValue(rowAmount.doubleValue());
-	            cell.setCellStyle(numberStyle);
+				cell.setCellValue(rowAmount.doubleValue());
+				cell.setCellStyle(numberStyle);
 
-	        } catch (Exception e) {
-	            cell.setCellValue("");
-	        }
-	    }
+			} catch (Exception e) {
+				cell.setCellValue("");
+			}
+		}
 
-	    /* ================= TOTAL ================= */
+		/* ================= TOTAL ================= */
 
-	    int totalRowExcelIndex = firstDataExcelRow + rowCodesPart8.length - 1;
-	    Row totalRow = sheet.getRow(totalRowExcelIndex);
-	    if (totalRow == null) totalRow = sheet.createRow(totalRowExcelIndex);
+		int totalRowExcelIndex = firstDataExcelRow + rowCodesPart8.length - 1;
+		Row totalRow = sheet.getRow(totalRowExcelIndex);
+		if (totalRow == null)
+			totalRow = sheet.createRow(totalRowExcelIndex);
 
-	    Cell totalCell = totalRow.getCell(amountColumnIndex);
-	    if (totalCell == null) totalCell = totalRow.createCell(amountColumnIndex);
+		Cell totalCell = totalRow.getCell(amountColumnIndex);
+		if (totalCell == null)
+			totalCell = totalRow.createCell(amountColumnIndex);
 
-	    totalCell.setCellValue(grandTotal.doubleValue());
-	    totalCell.setCellStyle(totalStyle); // 🟨 yellow + border
+		totalCell.setCellValue(grandTotal.doubleValue());
+		totalCell.setCellStyle(totalStyle); // 🟨 yellow + border
 	}
 
 	private BigDecimal getDecimal(Object record, String fieldName) {
@@ -1990,5 +2238,24 @@ public class BRRS_M_AIDP_ReportService {
 			// throw new RuntimeException("Failed to fetch data", e);
 		}
 		return M_AIDPArchivallist;
+	}
+
+	private void applyBlackBorder(Sheet sheet, CellStyle borderStyle, int startRow, int rowCount, int totalColumns) {
+
+		for (int i = 0; i < rowCount; i++) {
+
+			Row row = sheet.getRow(startRow + i);
+			if (row == null)
+				continue;
+
+			for (int col = 0; col < totalColumns; col++) {
+
+				Cell cell = row.getCell(col);
+				if (cell == null)
+					continue;
+
+				cell.setCellStyle(borderStyle);
+			}
+		}
 	}
 }

@@ -14,5 +14,5 @@ public interface BRRS_M_AIDP_Archival_Detail_Repo4 extends JpaRepository<M_AIDP_
 	List<Object> getM_AIDParchival();
 
 	@Query(value = "select * from BRRS_M_AIDP_ARCHIVALTABLE_DETAIL4 where REPORT_DATE = ?1 and REPORT_VERSION = ?2", nativeQuery = true)
-	List<M_AIDP_Archival_Summary_Entity4> getdatabydateListarchival(Date report_date, BigDecimal report_version);
+	List<M_AIDP_Archival_Detail_Entity4> getdatabydateListarchival(Date report_date, BigDecimal report_version);
 }

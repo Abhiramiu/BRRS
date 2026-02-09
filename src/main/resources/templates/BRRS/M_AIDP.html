@@ -428,14 +428,15 @@ PURPOSE		: BWRBRREPORT
 		function showdetails() {
 			var Callurl;
 			$('#loader').modal('show');
-			Callurl = Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='detail', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/
+			Callurl = Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='detail', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate},
+			version=${version})}]]*/
 				location.href = Callurl;
 			console.log(Callurl);
 		}
 
 		function showsummary() {
 			$('#loader').modal('show');
-			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate},version=${version})}]]*/
 				location.href = Callurl;
 		}
 
@@ -1251,13 +1252,11 @@ PURPOSE		: BWRBRREPORT
 												<th style="background-color: #D8D8D8;text-align: left;  width: 900px;">
 													Name of Bank
 												</th>
-												<th
-													style="background-color: #D8D8D8;text-align:left;  width: 200px;">
+												<th style="background-color: #D8D8D8;text-align:left;  width: 200px;">
 													Type of account</th>
 												<th style="background-color: #D8D8D8;text-align:left; width: 150px;">
 													Purpose</th>
-												<th
-													style="background-color: #D8D8D8;text-align: left;  width: 150px;">
+												<th style="background-color: #D8D8D8;text-align: left;  width: 150px;">
 													Currency</th>
 												<th style="background-color: #D8D8D8;text-align: left; width: 150px;">
 													Bank Rating, e.g, AAA, AA or A1</th>
@@ -5826,13 +5825,11 @@ PURPOSE		: BWRBRREPORT
 												<th style="background-color: #D8D8D8;text-align: left;  width: 900px;">
 													Name of Bank
 												</th>
-												<th
-													style="background-color: #D8D8D8;text-align: left;  width: 200px;">
+												<th style="background-color: #D8D8D8;text-align: left;  width: 200px;">
 													Type of account</th>
 												<th style="background-color: #D8D8D8;text-align: left; width: 150px;">
 													Purpose</th>
-												<th
-													style="background-color: #D8D8D8;text-align: left;  width: 150px;">
+												<th style="background-color: #D8D8D8;text-align: left;  width: 150px;">
 													Currency</th>
 												<th style="background-color: #D8D8D8;text-align: left; width: 150px;">
 													Bank Rating, e.g, AAA, AA or A1</th>
@@ -10403,13 +10400,11 @@ PURPOSE		: BWRBRREPORT
 												<th style="background-color: #D8D8D8;text-align: left; width: 900px;">
 													Name of Bank
 												</th>
-												<th
-													style="background-color: #D8D8D8;text-align: left;  width: 200px;">
+												<th style="background-color: #D8D8D8;text-align: left;  width: 200px;">
 													Type of account</th>
 												<th style="background-color: #D8D8D8;text-align: left; width: 150px;">
 													Purpose</th>
-												<th
-													style="background-color: #D8D8D8;text-align: left;  width: 150px;">
+												<th style="background-color: #D8D8D8;text-align: left;  width: 150px;">
 													Currency</th>
 												<th style="background-color: #D8D8D8;text-align: left; width: 150px;">
 													Bank Rating, e.g, AAA, AA or A1</th>
@@ -15132,18 +15127,15 @@ PURPOSE		: BWRBRREPORT
 												<th style="background-color: #D8D8D8;text-align: left; width: 900px;">
 													Name of Bank
 												</th>
-												<th
-													style="background-color: #D8D8D8;text-align: left;  width: 200px;">
+												<th style="background-color: #D8D8D8;text-align: left;  width: 200px;">
 													Type of account</th>
-												<th
-													style="background-color: #D8D8D8;text-align: left;  width: 150px;">
+												<th style="background-color: #D8D8D8;text-align: left;  width: 150px;">
 													Country</th>
 												<th style="background-color: #D8D8D8;text-align: left; width: 150px;">
 													Purpose</th>
-												<th
-													style="background-color: #D8D8D8;text-align: left;  width: 150px;">
+												<th style="background-color: #D8D8D8;text-align: left;  width: 150px;">
 													Currency</th>
-												<th style="background-color: #D8D8D8;text-align: center; width: 150px;">
+												<th style="background-color: #D8D8D8;text-align: left; width: 150px;">
 													Bank Rating, e.g, AAA, AA or A1</th>
 												<th style="background-color: #D8D8D8;text-align: right; width: 150px;">
 													Amount (on demand or less than 184 days)</th>
