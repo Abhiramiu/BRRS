@@ -4292,6 +4292,13 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
+			
+		case "M_AIDP":
+			try {
+				archivalData = BRRS_M_AIDP_ReportService.getM_AIDPArchival();
+			} catch (Exception e) {
+			}
+			break;
 
 		/*
 		 * case "M_INT_RATES_FCA_NEW":

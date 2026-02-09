@@ -673,10 +673,12 @@ PURPOSE		: BWRBRREPORT
 
 			for (let i = 147; i <= 193; i++) {
 				$("#R" + i + "_TYPE_OF_ACC_TEXT").hide();
+				$("#R" + i + "_COUNTRY_TEXT").hide();
 				$("#R" + i + "_PURPOSE_TEXT").hide();
 				$("#R" + i + "_CURRENCY_TEXT").hide();
 
 				$("#R" + i + "_TYPE_OF_ACC").show();
+				$("#R" + i + "_COUNTRY").show();
 				$("#R" + i + "_PURPOSE").show();
 				$("#R" + i + "_CURRENCY").show();
 			}
@@ -1114,7 +1116,7 @@ PURPOSE		: BWRBRREPORT
 
 	</script>
 </head>
-<title>BRRS</title>
+<title>M_AIDP</title>
 
 <body>
 	<div class="container-fluid" style="padding-left: 0px; padding-right: 0px;">
@@ -1188,7 +1190,7 @@ PURPOSE		: BWRBRREPORT
 						                    				 data-todate=${todate},
 						                    				 data-currency=${currency}, 
 						                    				 data-dtltype='email',
-						                    				 data-filename='M-AIDP-NEW.xlsx',
+						                    				 data-filename='EMAIL_M_AIDP.xlsx',
 											 				 data-type=${type},
 											    			 data-version=${version}" onclick="downloadfile1(this);">E-Mail
 							<i class="fa fa-download"></i>
@@ -1250,14 +1252,14 @@ PURPOSE		: BWRBRREPORT
 													Name of Bank
 												</th>
 												<th
-													style="background-color: #D8D8D8;text-align: center;  width: 200px;">
+													style="background-color: #D8D8D8;text-align:left;  width: 200px;">
 													Type of account</th>
-												<th style="background-color: #D8D8D8;text-align: center; width: 150px;">
+												<th style="background-color: #D8D8D8;text-align:left; width: 150px;">
 													Purpose</th>
 												<th
-													style="background-color: #D8D8D8;text-align: center;  width: 150px;">
+													style="background-color: #D8D8D8;text-align: left;  width: 150px;">
 													Currency</th>
-												<th style="background-color: #D8D8D8;text-align: center; width: 150px;">
+												<th style="background-color: #D8D8D8;text-align: left; width: 150px;">
 													Bank Rating, e.g, AAA, AA or A1</th>
 												<th style="background-color: #D8D8D8;text-align: right; width: 150px;">
 													Amount (on demand or less than 184 days)</th>
@@ -5825,14 +5827,14 @@ PURPOSE		: BWRBRREPORT
 													Name of Bank
 												</th>
 												<th
-													style="background-color: #D8D8D8;text-align: center;  width: 200px;">
+													style="background-color: #D8D8D8;text-align: left;  width: 200px;">
 													Type of account</th>
-												<th style="background-color: #D8D8D8;text-align: center; width: 150px;">
+												<th style="background-color: #D8D8D8;text-align: left; width: 150px;">
 													Purpose</th>
 												<th
-													style="background-color: #D8D8D8;text-align: center;  width: 150px;">
+													style="background-color: #D8D8D8;text-align: left;  width: 150px;">
 													Currency</th>
-												<th style="background-color: #D8D8D8;text-align: center; width: 150px;">
+												<th style="background-color: #D8D8D8;text-align: left; width: 150px;">
 													Bank Rating, e.g, AAA, AA or A1</th>
 												<th style="background-color: #D8D8D8;text-align: right; width: 150px;">
 													Amount (on demand or less than 184 days)</th>
@@ -10402,14 +10404,14 @@ PURPOSE		: BWRBRREPORT
 													Name of Bank
 												</th>
 												<th
-													style="background-color: #D8D8D8;text-align: center;  width: 200px;">
+													style="background-color: #D8D8D8;text-align: left;  width: 200px;">
 													Type of account</th>
-												<th style="background-color: #D8D8D8;text-align: center; width: 150px;">
+												<th style="background-color: #D8D8D8;text-align: left; width: 150px;">
 													Purpose</th>
 												<th
-													style="background-color: #D8D8D8;text-align: center;  width: 150px;">
+													style="background-color: #D8D8D8;text-align: left;  width: 150px;">
 													Currency</th>
-												<th style="background-color: #D8D8D8;text-align: center; width: 150px;">
+												<th style="background-color: #D8D8D8;text-align: left; width: 150px;">
 													Bank Rating, e.g, AAA, AA or A1</th>
 												<th style="background-color: #D8D8D8;text-align: right; width: 150px;">
 													Amount (on demand or less than 184 days)</th>
@@ -15131,15 +15133,15 @@ PURPOSE		: BWRBRREPORT
 													Name of Bank
 												</th>
 												<th
-													style="background-color: #D8D8D8;text-align: center;  width: 200px;">
+													style="background-color: #D8D8D8;text-align: left;  width: 200px;">
 													Type of account</th>
 												<th
-													style="background-color: #D8D8D8;text-align: center;  width: 150px;">
+													style="background-color: #D8D8D8;text-align: left;  width: 150px;">
 													Country</th>
-												<th style="background-color: #D8D8D8;text-align: center; width: 150px;">
+												<th style="background-color: #D8D8D8;text-align: left; width: 150px;">
 													Purpose</th>
 												<th
-													style="background-color: #D8D8D8;text-align: center;  width: 150px;">
+													style="background-color: #D8D8D8;text-align: left;  width: 150px;">
 													Currency</th>
 												<th style="background-color: #D8D8D8;text-align: center; width: 150px;">
 													Bank Rating, e.g, AAA, AA or A1</th>
@@ -15157,21 +15159,11 @@ PURPOSE		: BWRBRREPORT
 											style="font-family: Arial;">
 
 
-
-
 											<tr>
 												<td id="ROW147" style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${#strings.defaultString(report.R147_NAME_OF_BANK, 'N/A')}"
 														id="R147_NAME_OF_BANK" name="R147_NAME_OF_BANK"
-														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
-														readonly />
-												</td>
-
-												<td id="ROW147" style="padding-left: 20px; font-weight: bold;">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R147_COUNTRY, 'N/A')}"
-														id="R147_COUNTRY" name="R147_COUNTRY"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
 														readonly />
 												</td>
@@ -15197,6 +15189,37 @@ PURPOSE		: BWRBRREPORT
 													</select>
 												</td>
 
+												<td style="padding-left: 20px; font-weight: bold;">
+
+													<!-- View mode -->
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R147_COUNTRY != null ? report.R147_COUNTRY : 'N/A'}"
+														id="R147_COUNTRY_TEXT" style="background-color:#FFFFFF; width:200px; height:28px;
+												                  border-color:transparent; text-align:left;" readonly />
+
+													<!-- Edit mode -->
+													<select class="display-input Show_input" id="R147_COUNTRY"
+														name="R147_COUNTRY" style="background-color:#FFFFFF; width:200px; height:28px;
+												                   border-color:transparent; text-align:left; display:none;">
+
+														<option value="" th:selected="${report.R147_COUNTRY == null}">
+															N/A</option>
+														<option value="INDIA"
+															th:selected="${report.R147_COUNTRY == 'INDIA'}">INDIA
+														</option>
+														<option value="CHINA"
+															th:selected="${report.R147_COUNTRY == 'CHINA'}">CHINA
+														</option>
+														<option value="AMERICA"
+															th:selected="${report.R147_COUNTRY == 'AMERICA'}">AMERICA
+														</option>
+														<option value="BOTSWANA"
+															th:selected="${report.R147_COUNTRY == 'BOTSWANA'}">BOTSWANA
+														</option>
+
+													</select>
+
+												</td>
 
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
@@ -15289,14 +15312,6 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 
-												<td id="ROW148" style="padding-left: 20px; font-weight: bold;">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R148_COUNTRY, 'N/A')}"
-														id="R148_COUNTRY" name="R148_COUNTRY"
-														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
-														readonly />
-												</td>
-
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R148_TYPE_OF_ACC != null ? report.R148_TYPE_OF_ACC : 'N/A'}"
@@ -15318,6 +15333,37 @@ PURPOSE		: BWRBRREPORT
 													</select>
 												</td>
 
+												<td style="padding-left: 20px; font-weight: bold;">
+
+													<!-- View mode -->
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R148_COUNTRY != null ? report.R148_COUNTRY : 'N/A'}"
+														id="R148_COUNTRY_TEXT" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                  border-color:transparent; text-align:left;" readonly />
+
+													<!-- Edit mode -->
+													<select class="display-input Show_input" id="R148_COUNTRY"
+														name="R148_COUNTRY" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                   border-color:transparent; text-align:left; display:none;">
+
+														<option value="" th:selected="${report.R148_COUNTRY == null}">
+															N/A</option>
+														<option value="INDIA"
+															th:selected="${report.R148_COUNTRY == 'INDIA'}">INDIA
+														</option>
+														<option value="CHINA"
+															th:selected="${report.R148_COUNTRY == 'CHINA'}">CHINA
+														</option>
+														<option value="AMERICA"
+															th:selected="${report.R148_COUNTRY == 'AMERICA'}">AMERICA
+														</option>
+														<option value="BOTSWANA"
+															th:selected="${report.R148_COUNTRY == 'BOTSWANA'}">BOTSWANA
+														</option>
+
+													</select>
+
+												</td>
 
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
@@ -15410,14 +15456,6 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 
-												<td id="ROW149" style="padding-left: 20px; font-weight: bold;">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R149_COUNTRY, 'N/A')}"
-														id="R149_COUNTRY" name="R149_COUNTRY"
-														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
-														readonly />
-												</td>
-
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R149_TYPE_OF_ACC != null ? report.R149_TYPE_OF_ACC : 'N/A'}"
@@ -15437,6 +15475,38 @@ PURPOSE		: BWRBRREPORT
 															th:selected="${report.R149_TYPE_OF_ACC == 'TERM LOAN'}">TERM
 															LOAN</option>
 													</select>
+												</td>
+
+												<td style="padding-left: 20px; font-weight: bold;">
+
+													<!-- View mode -->
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R149_COUNTRY != null ? report.R149_COUNTRY : 'N/A'}"
+														id="R149_COUNTRY_TEXT" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                  border-color:transparent; text-align:left;" readonly />
+
+													<!-- Edit mode -->
+													<select class="display-input Show_input" id="R149_COUNTRY"
+														name="R149_COUNTRY" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                   border-color:transparent; text-align:left; display:none;">
+
+														<option value="" th:selected="${report.R149_COUNTRY == null}">
+															N/A</option>
+														<option value="INDIA"
+															th:selected="${report.R149_COUNTRY == 'INDIA'}">INDIA
+														</option>
+														<option value="CHINA"
+															th:selected="${report.R149_COUNTRY == 'CHINA'}">CHINA
+														</option>
+														<option value="AMERICA"
+															th:selected="${report.R149_COUNTRY == 'AMERICA'}">AMERICA
+														</option>
+														<option value="BOTSWANA"
+															th:selected="${report.R149_COUNTRY == 'BOTSWANA'}">BOTSWANA
+														</option>
+
+													</select>
+
 												</td>
 
 
@@ -15531,14 +15601,6 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 
-												<td id="ROW150" style="padding-left: 20px; font-weight: bold;">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R150_COUNTRY, 'N/A')}"
-														id="R150_COUNTRY" name="R150_COUNTRY"
-														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
-														readonly />
-												</td>
-
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R150_TYPE_OF_ACC != null ? report.R150_TYPE_OF_ACC : 'N/A'}"
@@ -15560,6 +15622,37 @@ PURPOSE		: BWRBRREPORT
 													</select>
 												</td>
 
+												<td style="padding-left: 20px; font-weight: bold;">
+
+													<!-- View mode -->
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R150_COUNTRY != null ? report.R150_COUNTRY : 'N/A'}"
+														id="R150_COUNTRY_TEXT" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                  border-color:transparent; text-align:left;" readonly />
+
+													<!-- Edit mode -->
+													<select class="display-input Show_input" id="R150_COUNTRY"
+														name="R150_COUNTRY" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                   border-color:transparent; text-align:left; display:none;">
+
+														<option value="" th:selected="${report.R150_COUNTRY == null}">
+															N/A</option>
+														<option value="INDIA"
+															th:selected="${report.R150_COUNTRY == 'INDIA'}">INDIA
+														</option>
+														<option value="CHINA"
+															th:selected="${report.R150_COUNTRY == 'CHINA'}">CHINA
+														</option>
+														<option value="AMERICA"
+															th:selected="${report.R150_COUNTRY == 'AMERICA'}">AMERICA
+														</option>
+														<option value="BOTSWANA"
+															th:selected="${report.R150_COUNTRY == 'BOTSWANA'}">BOTSWANA
+														</option>
+
+													</select>
+
+												</td>
 
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
@@ -15652,14 +15745,6 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 
-												<td id="ROW151" style="padding-left: 20px; font-weight: bold;">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R151_COUNTRY, 'N/A')}"
-														id="R151_COUNTRY" name="R151_COUNTRY"
-														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
-														readonly />
-												</td>
-
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R151_TYPE_OF_ACC != null ? report.R151_TYPE_OF_ACC : 'N/A'}"
@@ -15681,6 +15766,37 @@ PURPOSE		: BWRBRREPORT
 													</select>
 												</td>
 
+												<td style="padding-left: 20px; font-weight: bold;">
+
+													<!-- View mode -->
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R151_COUNTRY != null ? report.R151_COUNTRY : 'N/A'}"
+														id="R151_COUNTRY_TEXT" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                  border-color:transparent; text-align:left;" readonly />
+
+													<!-- Edit mode -->
+													<select class="display-input Show_input" id="R151_COUNTRY"
+														name="R151_COUNTRY" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                   border-color:transparent; text-align:left; display:none;">
+
+														<option value="" th:selected="${report.R151_COUNTRY == null}">
+															N/A</option>
+														<option value="INDIA"
+															th:selected="${report.R151_COUNTRY == 'INDIA'}">INDIA
+														</option>
+														<option value="CHINA"
+															th:selected="${report.R151_COUNTRY == 'CHINA'}">CHINA
+														</option>
+														<option value="AMERICA"
+															th:selected="${report.R151_COUNTRY == 'AMERICA'}">AMERICA
+														</option>
+														<option value="BOTSWANA"
+															th:selected="${report.R151_COUNTRY == 'BOTSWANA'}">BOTSWANA
+														</option>
+
+													</select>
+
+												</td>
 
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
@@ -15773,14 +15889,6 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 
-												<td id="ROW152" style="padding-left: 20px; font-weight: bold;">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R152_COUNTRY, 'N/A')}"
-														id="R152_COUNTRY" name="R152_COUNTRY"
-														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
-														readonly />
-												</td>
-
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R152_TYPE_OF_ACC != null ? report.R152_TYPE_OF_ACC : 'N/A'}"
@@ -15802,6 +15910,37 @@ PURPOSE		: BWRBRREPORT
 													</select>
 												</td>
 
+												<td style="padding-left: 20px; font-weight: bold;">
+
+													<!-- View mode -->
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R152_COUNTRY != null ? report.R152_COUNTRY : 'N/A'}"
+														id="R152_COUNTRY_TEXT" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                  border-color:transparent; text-align:left;" readonly />
+
+													<!-- Edit mode -->
+													<select class="display-input Show_input" id="R152_COUNTRY"
+														name="R152_COUNTRY" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                   border-color:transparent; text-align:left; display:none;">
+
+														<option value="" th:selected="${report.R152_COUNTRY == null}">
+															N/A</option>
+														<option value="INDIA"
+															th:selected="${report.R152_COUNTRY == 'INDIA'}">INDIA
+														</option>
+														<option value="CHINA"
+															th:selected="${report.R152_COUNTRY == 'CHINA'}">CHINA
+														</option>
+														<option value="AMERICA"
+															th:selected="${report.R152_COUNTRY == 'AMERICA'}">AMERICA
+														</option>
+														<option value="BOTSWANA"
+															th:selected="${report.R152_COUNTRY == 'BOTSWANA'}">BOTSWANA
+														</option>
+
+													</select>
+
+												</td>
 
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
@@ -15894,14 +16033,6 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 
-												<td id="ROW153" style="padding-left: 20px; font-weight: bold;">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R153_COUNTRY, 'N/A')}"
-														id="R153_COUNTRY" name="R153_COUNTRY"
-														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
-														readonly />
-												</td>
-
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R153_TYPE_OF_ACC != null ? report.R153_TYPE_OF_ACC : 'N/A'}"
@@ -15923,6 +16054,37 @@ PURPOSE		: BWRBRREPORT
 													</select>
 												</td>
 
+												<td style="padding-left: 20px; font-weight: bold;">
+
+													<!-- View mode -->
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R153_COUNTRY != null ? report.R153_COUNTRY : 'N/A'}"
+														id="R153_COUNTRY_TEXT" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                  border-color:transparent; text-align:left;" readonly />
+
+													<!-- Edit mode -->
+													<select class="display-input Show_input" id="R153_COUNTRY"
+														name="R153_COUNTRY" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                   border-color:transparent; text-align:left; display:none;">
+
+														<option value="" th:selected="${report.R153_COUNTRY == null}">
+															N/A</option>
+														<option value="INDIA"
+															th:selected="${report.R153_COUNTRY == 'INDIA'}">INDIA
+														</option>
+														<option value="CHINA"
+															th:selected="${report.R153_COUNTRY == 'CHINA'}">CHINA
+														</option>
+														<option value="AMERICA"
+															th:selected="${report.R153_COUNTRY == 'AMERICA'}">AMERICA
+														</option>
+														<option value="BOTSWANA"
+															th:selected="${report.R153_COUNTRY == 'BOTSWANA'}">BOTSWANA
+														</option>
+
+													</select>
+
+												</td>
 
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
@@ -16015,14 +16177,6 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 
-												<td id="ROW154" style="padding-left: 20px; font-weight: bold;">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R154_COUNTRY, 'N/A')}"
-														id="R154_COUNTRY" name="R154_COUNTRY"
-														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
-														readonly />
-												</td>
-
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R154_TYPE_OF_ACC != null ? report.R154_TYPE_OF_ACC : 'N/A'}"
@@ -16044,6 +16198,37 @@ PURPOSE		: BWRBRREPORT
 													</select>
 												</td>
 
+												<td style="padding-left: 20px; font-weight: bold;">
+
+													<!-- View mode -->
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R154_COUNTRY != null ? report.R154_COUNTRY : 'N/A'}"
+														id="R154_COUNTRY_TEXT" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                  border-color:transparent; text-align:left;" readonly />
+
+													<!-- Edit mode -->
+													<select class="display-input Show_input" id="R154_COUNTRY"
+														name="R154_COUNTRY" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                   border-color:transparent; text-align:left; display:none;">
+
+														<option value="" th:selected="${report.R154_COUNTRY == null}">
+															N/A</option>
+														<option value="INDIA"
+															th:selected="${report.R154_COUNTRY == 'INDIA'}">INDIA
+														</option>
+														<option value="CHINA"
+															th:selected="${report.R154_COUNTRY == 'CHINA'}">CHINA
+														</option>
+														<option value="AMERICA"
+															th:selected="${report.R154_COUNTRY == 'AMERICA'}">AMERICA
+														</option>
+														<option value="BOTSWANA"
+															th:selected="${report.R154_COUNTRY == 'BOTSWANA'}">BOTSWANA
+														</option>
+
+													</select>
+
+												</td>
 
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
@@ -16136,14 +16321,6 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 
-												<td id="ROW155" style="padding-left: 20px; font-weight: bold;">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R155_COUNTRY, 'N/A')}"
-														id="R155_COUNTRY" name="R155_COUNTRY"
-														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
-														readonly />
-												</td>
-
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R155_TYPE_OF_ACC != null ? report.R155_TYPE_OF_ACC : 'N/A'}"
@@ -16165,6 +16342,37 @@ PURPOSE		: BWRBRREPORT
 													</select>
 												</td>
 
+												<td style="padding-left: 20px; font-weight: bold;">
+
+													<!-- View mode -->
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R155_COUNTRY != null ? report.R155_COUNTRY : 'N/A'}"
+														id="R155_COUNTRY_TEXT" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                  border-color:transparent; text-align:left;" readonly />
+
+													<!-- Edit mode -->
+													<select class="display-input Show_input" id="R155_COUNTRY"
+														name="R155_COUNTRY" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                   border-color:transparent; text-align:left; display:none;">
+
+														<option value="" th:selected="${report.R155_COUNTRY == null}">
+															N/A</option>
+														<option value="INDIA"
+															th:selected="${report.R155_COUNTRY == 'INDIA'}">INDIA
+														</option>
+														<option value="CHINA"
+															th:selected="${report.R155_COUNTRY == 'CHINA'}">CHINA
+														</option>
+														<option value="AMERICA"
+															th:selected="${report.R155_COUNTRY == 'AMERICA'}">AMERICA
+														</option>
+														<option value="BOTSWANA"
+															th:selected="${report.R155_COUNTRY == 'BOTSWANA'}">BOTSWANA
+														</option>
+
+													</select>
+
+												</td>
 
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
@@ -16257,14 +16465,6 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 
-												<td id="ROW156" style="padding-left: 20px; font-weight: bold;">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R156_COUNTRY, 'N/A')}"
-														id="R156_COUNTRY" name="R156_COUNTRY"
-														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
-														readonly />
-												</td>
-
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R156_TYPE_OF_ACC != null ? report.R156_TYPE_OF_ACC : 'N/A'}"
@@ -16286,6 +16486,37 @@ PURPOSE		: BWRBRREPORT
 													</select>
 												</td>
 
+												<td style="padding-left: 20px; font-weight: bold;">
+
+													<!-- View mode -->
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R156_COUNTRY != null ? report.R156_COUNTRY : 'N/A'}"
+														id="R156_COUNTRY_TEXT" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                  border-color:transparent; text-align:left;" readonly />
+
+													<!-- Edit mode -->
+													<select class="display-input Show_input" id="R156_COUNTRY"
+														name="R156_COUNTRY" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                   border-color:transparent; text-align:left; display:none;">
+
+														<option value="" th:selected="${report.R156_COUNTRY == null}">
+															N/A</option>
+														<option value="INDIA"
+															th:selected="${report.R156_COUNTRY == 'INDIA'}">INDIA
+														</option>
+														<option value="CHINA"
+															th:selected="${report.R156_COUNTRY == 'CHINA'}">CHINA
+														</option>
+														<option value="AMERICA"
+															th:selected="${report.R156_COUNTRY == 'AMERICA'}">AMERICA
+														</option>
+														<option value="BOTSWANA"
+															th:selected="${report.R156_COUNTRY == 'BOTSWANA'}">BOTSWANA
+														</option>
+
+													</select>
+
+												</td>
 
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
@@ -16378,14 +16609,6 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 
-												<td id="ROW157" style="padding-left: 20px; font-weight: bold;">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R157_COUNTRY, 'N/A')}"
-														id="R157_COUNTRY" name="R157_COUNTRY"
-														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
-														readonly />
-												</td>
-
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R157_TYPE_OF_ACC != null ? report.R157_TYPE_OF_ACC : 'N/A'}"
@@ -16407,6 +16630,37 @@ PURPOSE		: BWRBRREPORT
 													</select>
 												</td>
 
+												<td style="padding-left: 20px; font-weight: bold;">
+
+													<!-- View mode -->
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R157_COUNTRY != null ? report.R157_COUNTRY : 'N/A'}"
+														id="R157_COUNTRY_TEXT" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                  border-color:transparent; text-align:left;" readonly />
+
+													<!-- Edit mode -->
+													<select class="display-input Show_input" id="R157_COUNTRY"
+														name="R157_COUNTRY" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                   border-color:transparent; text-align:left; display:none;">
+
+														<option value="" th:selected="${report.R157_COUNTRY == null}">
+															N/A</option>
+														<option value="INDIA"
+															th:selected="${report.R157_COUNTRY == 'INDIA'}">INDIA
+														</option>
+														<option value="CHINA"
+															th:selected="${report.R157_COUNTRY == 'CHINA'}">CHINA
+														</option>
+														<option value="AMERICA"
+															th:selected="${report.R157_COUNTRY == 'AMERICA'}">AMERICA
+														</option>
+														<option value="BOTSWANA"
+															th:selected="${report.R157_COUNTRY == 'BOTSWANA'}">BOTSWANA
+														</option>
+
+													</select>
+
+												</td>
 
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
@@ -16499,14 +16753,6 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 
-												<td id="ROW158" style="padding-left: 20px; font-weight: bold;">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R158_COUNTRY, 'N/A')}"
-														id="R158_COUNTRY" name="R158_COUNTRY"
-														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
-														readonly />
-												</td>
-
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R158_TYPE_OF_ACC != null ? report.R158_TYPE_OF_ACC : 'N/A'}"
@@ -16528,6 +16774,37 @@ PURPOSE		: BWRBRREPORT
 													</select>
 												</td>
 
+												<td style="padding-left: 20px; font-weight: bold;">
+
+													<!-- View mode -->
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R158_COUNTRY != null ? report.R158_COUNTRY : 'N/A'}"
+														id="R158_COUNTRY_TEXT" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                  border-color:transparent; text-align:left;" readonly />
+
+													<!-- Edit mode -->
+													<select class="display-input Show_input" id="R158_COUNTRY"
+														name="R158_COUNTRY" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                   border-color:transparent; text-align:left; display:none;">
+
+														<option value="" th:selected="${report.R158_COUNTRY == null}">
+															N/A</option>
+														<option value="INDIA"
+															th:selected="${report.R158_COUNTRY == 'INDIA'}">INDIA
+														</option>
+														<option value="CHINA"
+															th:selected="${report.R158_COUNTRY == 'CHINA'}">CHINA
+														</option>
+														<option value="AMERICA"
+															th:selected="${report.R158_COUNTRY == 'AMERICA'}">AMERICA
+														</option>
+														<option value="BOTSWANA"
+															th:selected="${report.R158_COUNTRY == 'BOTSWANA'}">BOTSWANA
+														</option>
+
+													</select>
+
+												</td>
 
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
@@ -16620,14 +16897,6 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 
-												<td id="ROW159" style="padding-left: 20px; font-weight: bold;">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R159_COUNTRY, 'N/A')}"
-														id="R159_COUNTRY" name="R159_COUNTRY"
-														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
-														readonly />
-												</td>
-
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R159_TYPE_OF_ACC != null ? report.R159_TYPE_OF_ACC : 'N/A'}"
@@ -16649,6 +16918,37 @@ PURPOSE		: BWRBRREPORT
 													</select>
 												</td>
 
+												<td style="padding-left: 20px; font-weight: bold;">
+
+													<!-- View mode -->
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R159_COUNTRY != null ? report.R159_COUNTRY : 'N/A'}"
+														id="R159_COUNTRY_TEXT" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                  border-color:transparent; text-align:left;" readonly />
+
+													<!-- Edit mode -->
+													<select class="display-input Show_input" id="R159_COUNTRY"
+														name="R159_COUNTRY" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                   border-color:transparent; text-align:left; display:none;">
+
+														<option value="" th:selected="${report.R159_COUNTRY == null}">
+															N/A</option>
+														<option value="INDIA"
+															th:selected="${report.R159_COUNTRY == 'INDIA'}">INDIA
+														</option>
+														<option value="CHINA"
+															th:selected="${report.R159_COUNTRY == 'CHINA'}">CHINA
+														</option>
+														<option value="AMERICA"
+															th:selected="${report.R159_COUNTRY == 'AMERICA'}">AMERICA
+														</option>
+														<option value="BOTSWANA"
+															th:selected="${report.R159_COUNTRY == 'BOTSWANA'}">BOTSWANA
+														</option>
+
+													</select>
+
+												</td>
 
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
@@ -16741,14 +17041,6 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 
-												<td id="ROW160" style="padding-left: 20px; font-weight: bold;">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R160_COUNTRY, 'N/A')}"
-														id="R160_COUNTRY" name="R160_COUNTRY"
-														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
-														readonly />
-												</td>
-
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R160_TYPE_OF_ACC != null ? report.R160_TYPE_OF_ACC : 'N/A'}"
@@ -16770,6 +17062,37 @@ PURPOSE		: BWRBRREPORT
 													</select>
 												</td>
 
+												<td style="padding-left: 20px; font-weight: bold;">
+
+													<!-- View mode -->
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R160_COUNTRY != null ? report.R160_COUNTRY : 'N/A'}"
+														id="R160_COUNTRY_TEXT" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                  border-color:transparent; text-align:left;" readonly />
+
+													<!-- Edit mode -->
+													<select class="display-input Show_input" id="R160_COUNTRY"
+														name="R160_COUNTRY" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                   border-color:transparent; text-align:left; display:none;">
+
+														<option value="" th:selected="${report.R160_COUNTRY == null}">
+															N/A</option>
+														<option value="INDIA"
+															th:selected="${report.R160_COUNTRY == 'INDIA'}">INDIA
+														</option>
+														<option value="CHINA"
+															th:selected="${report.R160_COUNTRY == 'CHINA'}">CHINA
+														</option>
+														<option value="AMERICA"
+															th:selected="${report.R160_COUNTRY == 'AMERICA'}">AMERICA
+														</option>
+														<option value="BOTSWANA"
+															th:selected="${report.R160_COUNTRY == 'BOTSWANA'}">BOTSWANA
+														</option>
+
+													</select>
+
+												</td>
 
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
@@ -16862,14 +17185,6 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 
-												<td id="ROW161" style="padding-left: 20px; font-weight: bold;">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R161_COUNTRY, 'N/A')}"
-														id="R161_COUNTRY" name="R161_COUNTRY"
-														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
-														readonly />
-												</td>
-
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R161_TYPE_OF_ACC != null ? report.R161_TYPE_OF_ACC : 'N/A'}"
@@ -16891,6 +17206,37 @@ PURPOSE		: BWRBRREPORT
 													</select>
 												</td>
 
+												<td style="padding-left: 20px; font-weight: bold;">
+
+													<!-- View mode -->
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R161_COUNTRY != null ? report.R161_COUNTRY : 'N/A'}"
+														id="R161_COUNTRY_TEXT" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                  border-color:transparent; text-align:left;" readonly />
+
+													<!-- Edit mode -->
+													<select class="display-input Show_input" id="R161_COUNTRY"
+														name="R161_COUNTRY" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                   border-color:transparent; text-align:left; display:none;">
+
+														<option value="" th:selected="${report.R161_COUNTRY == null}">
+															N/A</option>
+														<option value="INDIA"
+															th:selected="${report.R161_COUNTRY == 'INDIA'}">INDIA
+														</option>
+														<option value="CHINA"
+															th:selected="${report.R161_COUNTRY == 'CHINA'}">CHINA
+														</option>
+														<option value="AMERICA"
+															th:selected="${report.R161_COUNTRY == 'AMERICA'}">AMERICA
+														</option>
+														<option value="BOTSWANA"
+															th:selected="${report.R161_COUNTRY == 'BOTSWANA'}">BOTSWANA
+														</option>
+
+													</select>
+
+												</td>
 
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
@@ -16983,14 +17329,6 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 
-												<td id="ROW162" style="padding-left: 20px; font-weight: bold;">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R162_COUNTRY, 'N/A')}"
-														id="R162_COUNTRY" name="R162_COUNTRY"
-														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
-														readonly />
-												</td>
-
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R162_TYPE_OF_ACC != null ? report.R162_TYPE_OF_ACC : 'N/A'}"
@@ -17012,6 +17350,37 @@ PURPOSE		: BWRBRREPORT
 													</select>
 												</td>
 
+												<td style="padding-left: 20px; font-weight: bold;">
+
+													<!-- View mode -->
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R162_COUNTRY != null ? report.R162_COUNTRY : 'N/A'}"
+														id="R162_COUNTRY_TEXT" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                  border-color:transparent; text-align:left;" readonly />
+
+													<!-- Edit mode -->
+													<select class="display-input Show_input" id="R162_COUNTRY"
+														name="R162_COUNTRY" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                   border-color:transparent; text-align:left; display:none;">
+
+														<option value="" th:selected="${report.R162_COUNTRY == null}">
+															N/A</option>
+														<option value="INDIA"
+															th:selected="${report.R162_COUNTRY == 'INDIA'}">INDIA
+														</option>
+														<option value="CHINA"
+															th:selected="${report.R162_COUNTRY == 'CHINA'}">CHINA
+														</option>
+														<option value="AMERICA"
+															th:selected="${report.R162_COUNTRY == 'AMERICA'}">AMERICA
+														</option>
+														<option value="BOTSWANA"
+															th:selected="${report.R162_COUNTRY == 'BOTSWANA'}">BOTSWANA
+														</option>
+
+													</select>
+
+												</td>
 
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
@@ -17104,14 +17473,6 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 
-												<td id="ROW163" style="padding-left: 20px; font-weight: bold;">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R163_COUNTRY, 'N/A')}"
-														id="R163_COUNTRY" name="R163_COUNTRY"
-														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
-														readonly />
-												</td>
-
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R163_TYPE_OF_ACC != null ? report.R163_TYPE_OF_ACC : 'N/A'}"
@@ -17133,6 +17494,37 @@ PURPOSE		: BWRBRREPORT
 													</select>
 												</td>
 
+												<td style="padding-left: 20px; font-weight: bold;">
+
+													<!-- View mode -->
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R163_COUNTRY != null ? report.R163_COUNTRY : 'N/A'}"
+														id="R163_COUNTRY_TEXT" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                  border-color:transparent; text-align:left;" readonly />
+
+													<!-- Edit mode -->
+													<select class="display-input Show_input" id="R163_COUNTRY"
+														name="R163_COUNTRY" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                   border-color:transparent; text-align:left; display:none;">
+
+														<option value="" th:selected="${report.R163_COUNTRY == null}">
+															N/A</option>
+														<option value="INDIA"
+															th:selected="${report.R163_COUNTRY == 'INDIA'}">INDIA
+														</option>
+														<option value="CHINA"
+															th:selected="${report.R163_COUNTRY == 'CHINA'}">CHINA
+														</option>
+														<option value="AMERICA"
+															th:selected="${report.R163_COUNTRY == 'AMERICA'}">AMERICA
+														</option>
+														<option value="BOTSWANA"
+															th:selected="${report.R163_COUNTRY == 'BOTSWANA'}">BOTSWANA
+														</option>
+
+													</select>
+
+												</td>
 
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
@@ -17225,14 +17617,6 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 
-												<td id="ROW164" style="padding-left: 20px; font-weight: bold;">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R164_COUNTRY, 'N/A')}"
-														id="R164_COUNTRY" name="R164_COUNTRY"
-														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
-														readonly />
-												</td>
-
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R164_TYPE_OF_ACC != null ? report.R164_TYPE_OF_ACC : 'N/A'}"
@@ -17254,6 +17638,37 @@ PURPOSE		: BWRBRREPORT
 													</select>
 												</td>
 
+												<td style="padding-left: 20px; font-weight: bold;">
+
+													<!-- View mode -->
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R164_COUNTRY != null ? report.R164_COUNTRY : 'N/A'}"
+														id="R164_COUNTRY_TEXT" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                  border-color:transparent; text-align:left;" readonly />
+
+													<!-- Edit mode -->
+													<select class="display-input Show_input" id="R164_COUNTRY"
+														name="R164_COUNTRY" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                   border-color:transparent; text-align:left; display:none;">
+
+														<option value="" th:selected="${report.R164_COUNTRY == null}">
+															N/A</option>
+														<option value="INDIA"
+															th:selected="${report.R164_COUNTRY == 'INDIA'}">INDIA
+														</option>
+														<option value="CHINA"
+															th:selected="${report.R164_COUNTRY == 'CHINA'}">CHINA
+														</option>
+														<option value="AMERICA"
+															th:selected="${report.R164_COUNTRY == 'AMERICA'}">AMERICA
+														</option>
+														<option value="BOTSWANA"
+															th:selected="${report.R164_COUNTRY == 'BOTSWANA'}">BOTSWANA
+														</option>
+
+													</select>
+
+												</td>
 
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
@@ -17346,14 +17761,6 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 
-												<td id="ROW165" style="padding-left: 20px; font-weight: bold;">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R165_COUNTRY, 'N/A')}"
-														id="R165_COUNTRY" name="R165_COUNTRY"
-														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
-														readonly />
-												</td>
-
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R165_TYPE_OF_ACC != null ? report.R165_TYPE_OF_ACC : 'N/A'}"
@@ -17375,6 +17782,37 @@ PURPOSE		: BWRBRREPORT
 													</select>
 												</td>
 
+												<td style="padding-left: 20px; font-weight: bold;">
+
+													<!-- View mode -->
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R165_COUNTRY != null ? report.R165_COUNTRY : 'N/A'}"
+														id="R165_COUNTRY_TEXT" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                  border-color:transparent; text-align:left;" readonly />
+
+													<!-- Edit mode -->
+													<select class="display-input Show_input" id="R165_COUNTRY"
+														name="R165_COUNTRY" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                   border-color:transparent; text-align:left; display:none;">
+
+														<option value="" th:selected="${report.R165_COUNTRY == null}">
+															N/A</option>
+														<option value="INDIA"
+															th:selected="${report.R165_COUNTRY == 'INDIA'}">INDIA
+														</option>
+														<option value="CHINA"
+															th:selected="${report.R165_COUNTRY == 'CHINA'}">CHINA
+														</option>
+														<option value="AMERICA"
+															th:selected="${report.R165_COUNTRY == 'AMERICA'}">AMERICA
+														</option>
+														<option value="BOTSWANA"
+															th:selected="${report.R165_COUNTRY == 'BOTSWANA'}">BOTSWANA
+														</option>
+
+													</select>
+
+												</td>
 
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
@@ -17467,14 +17905,6 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 
-												<td id="ROW166" style="padding-left: 20px; font-weight: bold;">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R166_COUNTRY, 'N/A')}"
-														id="R166_COUNTRY" name="R166_COUNTRY"
-														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
-														readonly />
-												</td>
-
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R166_TYPE_OF_ACC != null ? report.R166_TYPE_OF_ACC : 'N/A'}"
@@ -17496,6 +17926,37 @@ PURPOSE		: BWRBRREPORT
 													</select>
 												</td>
 
+												<td style="padding-left: 20px; font-weight: bold;">
+
+													<!-- View mode -->
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R166_COUNTRY != null ? report.R166_COUNTRY : 'N/A'}"
+														id="R166_COUNTRY_TEXT" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                  border-color:transparent; text-align:left;" readonly />
+
+													<!-- Edit mode -->
+													<select class="display-input Show_input" id="R166_COUNTRY"
+														name="R166_COUNTRY" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                   border-color:transparent; text-align:left; display:none;">
+
+														<option value="" th:selected="${report.R166_COUNTRY == null}">
+															N/A</option>
+														<option value="INDIA"
+															th:selected="${report.R166_COUNTRY == 'INDIA'}">INDIA
+														</option>
+														<option value="CHINA"
+															th:selected="${report.R166_COUNTRY == 'CHINA'}">CHINA
+														</option>
+														<option value="AMERICA"
+															th:selected="${report.R166_COUNTRY == 'AMERICA'}">AMERICA
+														</option>
+														<option value="BOTSWANA"
+															th:selected="${report.R166_COUNTRY == 'BOTSWANA'}">BOTSWANA
+														</option>
+
+													</select>
+
+												</td>
 
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
@@ -17588,14 +18049,6 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 
-												<td id="ROW167" style="padding-left: 20px; font-weight: bold;">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R167_COUNTRY, 'N/A')}"
-														id="R167_COUNTRY" name="R167_COUNTRY"
-														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
-														readonly />
-												</td>
-
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R167_TYPE_OF_ACC != null ? report.R167_TYPE_OF_ACC : 'N/A'}"
@@ -17617,6 +18070,37 @@ PURPOSE		: BWRBRREPORT
 													</select>
 												</td>
 
+												<td style="padding-left: 20px; font-weight: bold;">
+
+													<!-- View mode -->
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R167_COUNTRY != null ? report.R167_COUNTRY : 'N/A'}"
+														id="R167_COUNTRY_TEXT" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                  border-color:transparent; text-align:left;" readonly />
+
+													<!-- Edit mode -->
+													<select class="display-input Show_input" id="R167_COUNTRY"
+														name="R167_COUNTRY" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                   border-color:transparent; text-align:left; display:none;">
+
+														<option value="" th:selected="${report.R167_COUNTRY == null}">
+															N/A</option>
+														<option value="INDIA"
+															th:selected="${report.R167_COUNTRY == 'INDIA'}">INDIA
+														</option>
+														<option value="CHINA"
+															th:selected="${report.R167_COUNTRY == 'CHINA'}">CHINA
+														</option>
+														<option value="AMERICA"
+															th:selected="${report.R167_COUNTRY == 'AMERICA'}">AMERICA
+														</option>
+														<option value="BOTSWANA"
+															th:selected="${report.R167_COUNTRY == 'BOTSWANA'}">BOTSWANA
+														</option>
+
+													</select>
+
+												</td>
 
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
@@ -17709,14 +18193,6 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 
-												<td id="ROW168" style="padding-left: 20px; font-weight: bold;">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R168_COUNTRY, 'N/A')}"
-														id="R168_COUNTRY" name="R168_COUNTRY"
-														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
-														readonly />
-												</td>
-
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R168_TYPE_OF_ACC != null ? report.R168_TYPE_OF_ACC : 'N/A'}"
@@ -17738,6 +18214,37 @@ PURPOSE		: BWRBRREPORT
 													</select>
 												</td>
 
+												<td style="padding-left: 20px; font-weight: bold;">
+
+													<!-- View mode -->
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R168_COUNTRY != null ? report.R168_COUNTRY : 'N/A'}"
+														id="R168_COUNTRY_TEXT" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                  border-color:transparent; text-align:left;" readonly />
+
+													<!-- Edit mode -->
+													<select class="display-input Show_input" id="R168_COUNTRY"
+														name="R168_COUNTRY" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                   border-color:transparent; text-align:left; display:none;">
+
+														<option value="" th:selected="${report.R168_COUNTRY == null}">
+															N/A</option>
+														<option value="INDIA"
+															th:selected="${report.R168_COUNTRY == 'INDIA'}">INDIA
+														</option>
+														<option value="CHINA"
+															th:selected="${report.R168_COUNTRY == 'CHINA'}">CHINA
+														</option>
+														<option value="AMERICA"
+															th:selected="${report.R168_COUNTRY == 'AMERICA'}">AMERICA
+														</option>
+														<option value="BOTSWANA"
+															th:selected="${report.R168_COUNTRY == 'BOTSWANA'}">BOTSWANA
+														</option>
+
+													</select>
+
+												</td>
 
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
@@ -17830,14 +18337,6 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 
-												<td id="ROW169" style="padding-left: 20px; font-weight: bold;">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R169_COUNTRY, 'N/A')}"
-														id="R169_COUNTRY" name="R169_COUNTRY"
-														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
-														readonly />
-												</td>
-
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R169_TYPE_OF_ACC != null ? report.R169_TYPE_OF_ACC : 'N/A'}"
@@ -17859,6 +18358,37 @@ PURPOSE		: BWRBRREPORT
 													</select>
 												</td>
 
+												<td style="padding-left: 20px; font-weight: bold;">
+
+													<!-- View mode -->
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R169_COUNTRY != null ? report.R169_COUNTRY : 'N/A'}"
+														id="R169_COUNTRY_TEXT" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                  border-color:transparent; text-align:left;" readonly />
+
+													<!-- Edit mode -->
+													<select class="display-input Show_input" id="R169_COUNTRY"
+														name="R169_COUNTRY" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                   border-color:transparent; text-align:left; display:none;">
+
+														<option value="" th:selected="${report.R169_COUNTRY == null}">
+															N/A</option>
+														<option value="INDIA"
+															th:selected="${report.R169_COUNTRY == 'INDIA'}">INDIA
+														</option>
+														<option value="CHINA"
+															th:selected="${report.R169_COUNTRY == 'CHINA'}">CHINA
+														</option>
+														<option value="AMERICA"
+															th:selected="${report.R169_COUNTRY == 'AMERICA'}">AMERICA
+														</option>
+														<option value="BOTSWANA"
+															th:selected="${report.R169_COUNTRY == 'BOTSWANA'}">BOTSWANA
+														</option>
+
+													</select>
+
+												</td>
 
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
@@ -17951,14 +18481,6 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 
-												<td id="ROW170" style="padding-left: 20px; font-weight: bold;">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R170_COUNTRY, 'N/A')}"
-														id="R170_COUNTRY" name="R170_COUNTRY"
-														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
-														readonly />
-												</td>
-
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R170_TYPE_OF_ACC != null ? report.R170_TYPE_OF_ACC : 'N/A'}"
@@ -17980,6 +18502,37 @@ PURPOSE		: BWRBRREPORT
 													</select>
 												</td>
 
+												<td style="padding-left: 20px; font-weight: bold;">
+
+													<!-- View mode -->
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R170_COUNTRY != null ? report.R170_COUNTRY : 'N/A'}"
+														id="R170_COUNTRY_TEXT" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                  border-color:transparent; text-align:left;" readonly />
+
+													<!-- Edit mode -->
+													<select class="display-input Show_input" id="R170_COUNTRY"
+														name="R170_COUNTRY" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                   border-color:transparent; text-align:left; display:none;">
+
+														<option value="" th:selected="${report.R170_COUNTRY == null}">
+															N/A</option>
+														<option value="INDIA"
+															th:selected="${report.R170_COUNTRY == 'INDIA'}">INDIA
+														</option>
+														<option value="CHINA"
+															th:selected="${report.R170_COUNTRY == 'CHINA'}">CHINA
+														</option>
+														<option value="AMERICA"
+															th:selected="${report.R170_COUNTRY == 'AMERICA'}">AMERICA
+														</option>
+														<option value="BOTSWANA"
+															th:selected="${report.R170_COUNTRY == 'BOTSWANA'}">BOTSWANA
+														</option>
+
+													</select>
+
+												</td>
 
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
@@ -18072,14 +18625,6 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 
-												<td id="ROW171" style="padding-left: 20px; font-weight: bold;">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R171_COUNTRY, 'N/A')}"
-														id="R171_COUNTRY" name="R171_COUNTRY"
-														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
-														readonly />
-												</td>
-
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R171_TYPE_OF_ACC != null ? report.R171_TYPE_OF_ACC : 'N/A'}"
@@ -18101,6 +18646,37 @@ PURPOSE		: BWRBRREPORT
 													</select>
 												</td>
 
+												<td style="padding-left: 20px; font-weight: bold;">
+
+													<!-- View mode -->
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R171_COUNTRY != null ? report.R171_COUNTRY : 'N/A'}"
+														id="R171_COUNTRY_TEXT" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                  border-color:transparent; text-align:left;" readonly />
+
+													<!-- Edit mode -->
+													<select class="display-input Show_input" id="R171_COUNTRY"
+														name="R171_COUNTRY" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                   border-color:transparent; text-align:left; display:none;">
+
+														<option value="" th:selected="${report.R171_COUNTRY == null}">
+															N/A</option>
+														<option value="INDIA"
+															th:selected="${report.R171_COUNTRY == 'INDIA'}">INDIA
+														</option>
+														<option value="CHINA"
+															th:selected="${report.R171_COUNTRY == 'CHINA'}">CHINA
+														</option>
+														<option value="AMERICA"
+															th:selected="${report.R171_COUNTRY == 'AMERICA'}">AMERICA
+														</option>
+														<option value="BOTSWANA"
+															th:selected="${report.R171_COUNTRY == 'BOTSWANA'}">BOTSWANA
+														</option>
+
+													</select>
+
+												</td>
 
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
@@ -18193,14 +18769,6 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 
-												<td id="ROW172" style="padding-left: 20px; font-weight: bold;">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R172_COUNTRY, 'N/A')}"
-														id="R172_COUNTRY" name="R172_COUNTRY"
-														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
-														readonly />
-												</td>
-
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R172_TYPE_OF_ACC != null ? report.R172_TYPE_OF_ACC : 'N/A'}"
@@ -18222,6 +18790,37 @@ PURPOSE		: BWRBRREPORT
 													</select>
 												</td>
 
+												<td style="padding-left: 20px; font-weight: bold;">
+
+													<!-- View mode -->
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R172_COUNTRY != null ? report.R172_COUNTRY : 'N/A'}"
+														id="R172_COUNTRY_TEXT" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                  border-color:transparent; text-align:left;" readonly />
+
+													<!-- Edit mode -->
+													<select class="display-input Show_input" id="R172_COUNTRY"
+														name="R172_COUNTRY" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                   border-color:transparent; text-align:left; display:none;">
+
+														<option value="" th:selected="${report.R172_COUNTRY == null}">
+															N/A</option>
+														<option value="INDIA"
+															th:selected="${report.R172_COUNTRY == 'INDIA'}">INDIA
+														</option>
+														<option value="CHINA"
+															th:selected="${report.R172_COUNTRY == 'CHINA'}">CHINA
+														</option>
+														<option value="AMERICA"
+															th:selected="${report.R172_COUNTRY == 'AMERICA'}">AMERICA
+														</option>
+														<option value="BOTSWANA"
+															th:selected="${report.R172_COUNTRY == 'BOTSWANA'}">BOTSWANA
+														</option>
+
+													</select>
+
+												</td>
 
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
@@ -18314,14 +18913,6 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 
-												<td id="ROW173" style="padding-left: 20px; font-weight: bold;">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R173_COUNTRY, 'N/A')}"
-														id="R173_COUNTRY" name="R173_COUNTRY"
-														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
-														readonly />
-												</td>
-
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R173_TYPE_OF_ACC != null ? report.R173_TYPE_OF_ACC : 'N/A'}"
@@ -18343,6 +18934,37 @@ PURPOSE		: BWRBRREPORT
 													</select>
 												</td>
 
+												<td style="padding-left: 20px; font-weight: bold;">
+
+													<!-- View mode -->
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R173_COUNTRY != null ? report.R173_COUNTRY : 'N/A'}"
+														id="R173_COUNTRY_TEXT" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                  border-color:transparent; text-align:left;" readonly />
+
+													<!-- Edit mode -->
+													<select class="display-input Show_input" id="R173_COUNTRY"
+														name="R173_COUNTRY" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                   border-color:transparent; text-align:left; display:none;">
+
+														<option value="" th:selected="${report.R173_COUNTRY == null}">
+															N/A</option>
+														<option value="INDIA"
+															th:selected="${report.R173_COUNTRY == 'INDIA'}">INDIA
+														</option>
+														<option value="CHINA"
+															th:selected="${report.R173_COUNTRY == 'CHINA'}">CHINA
+														</option>
+														<option value="AMERICA"
+															th:selected="${report.R173_COUNTRY == 'AMERICA'}">AMERICA
+														</option>
+														<option value="BOTSWANA"
+															th:selected="${report.R173_COUNTRY == 'BOTSWANA'}">BOTSWANA
+														</option>
+
+													</select>
+
+												</td>
 
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
@@ -18435,14 +19057,6 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 
-												<td id="ROW174" style="padding-left: 20px; font-weight: bold;">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R174_COUNTRY, 'N/A')}"
-														id="R174_COUNTRY" name="R174_COUNTRY"
-														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
-														readonly />
-												</td>
-
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R174_TYPE_OF_ACC != null ? report.R174_TYPE_OF_ACC : 'N/A'}"
@@ -18464,6 +19078,37 @@ PURPOSE		: BWRBRREPORT
 													</select>
 												</td>
 
+												<td style="padding-left: 20px; font-weight: bold;">
+
+													<!-- View mode -->
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R174_COUNTRY != null ? report.R174_COUNTRY : 'N/A'}"
+														id="R174_COUNTRY_TEXT" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                  border-color:transparent; text-align:left;" readonly />
+
+													<!-- Edit mode -->
+													<select class="display-input Show_input" id="R174_COUNTRY"
+														name="R174_COUNTRY" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                   border-color:transparent; text-align:left; display:none;">
+
+														<option value="" th:selected="${report.R174_COUNTRY == null}">
+															N/A</option>
+														<option value="INDIA"
+															th:selected="${report.R174_COUNTRY == 'INDIA'}">INDIA
+														</option>
+														<option value="CHINA"
+															th:selected="${report.R174_COUNTRY == 'CHINA'}">CHINA
+														</option>
+														<option value="AMERICA"
+															th:selected="${report.R174_COUNTRY == 'AMERICA'}">AMERICA
+														</option>
+														<option value="BOTSWANA"
+															th:selected="${report.R174_COUNTRY == 'BOTSWANA'}">BOTSWANA
+														</option>
+
+													</select>
+
+												</td>
 
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
@@ -18556,14 +19201,6 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 
-												<td id="ROW175" style="padding-left: 20px; font-weight: bold;">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R175_COUNTRY, 'N/A')}"
-														id="R175_COUNTRY" name="R175_COUNTRY"
-														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
-														readonly />
-												</td>
-
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R175_TYPE_OF_ACC != null ? report.R175_TYPE_OF_ACC : 'N/A'}"
@@ -18585,6 +19222,37 @@ PURPOSE		: BWRBRREPORT
 													</select>
 												</td>
 
+												<td style="padding-left: 20px; font-weight: bold;">
+
+													<!-- View mode -->
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R175_COUNTRY != null ? report.R175_COUNTRY : 'N/A'}"
+														id="R175_COUNTRY_TEXT" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                  border-color:transparent; text-align:left;" readonly />
+
+													<!-- Edit mode -->
+													<select class="display-input Show_input" id="R175_COUNTRY"
+														name="R175_COUNTRY" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                   border-color:transparent; text-align:left; display:none;">
+
+														<option value="" th:selected="${report.R175_COUNTRY == null}">
+															N/A</option>
+														<option value="INDIA"
+															th:selected="${report.R175_COUNTRY == 'INDIA'}">INDIA
+														</option>
+														<option value="CHINA"
+															th:selected="${report.R175_COUNTRY == 'CHINA'}">CHINA
+														</option>
+														<option value="AMERICA"
+															th:selected="${report.R175_COUNTRY == 'AMERICA'}">AMERICA
+														</option>
+														<option value="BOTSWANA"
+															th:selected="${report.R175_COUNTRY == 'BOTSWANA'}">BOTSWANA
+														</option>
+
+													</select>
+
+												</td>
 
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
@@ -18677,14 +19345,6 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 
-												<td id="ROW176" style="padding-left: 20px; font-weight: bold;">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R176_COUNTRY, 'N/A')}"
-														id="R176_COUNTRY" name="R176_COUNTRY"
-														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
-														readonly />
-												</td>
-
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R176_TYPE_OF_ACC != null ? report.R176_TYPE_OF_ACC : 'N/A'}"
@@ -18706,6 +19366,37 @@ PURPOSE		: BWRBRREPORT
 													</select>
 												</td>
 
+												<td style="padding-left: 20px; font-weight: bold;">
+
+													<!-- View mode -->
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R176_COUNTRY != null ? report.R176_COUNTRY : 'N/A'}"
+														id="R176_COUNTRY_TEXT" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                  border-color:transparent; text-align:left;" readonly />
+
+													<!-- Edit mode -->
+													<select class="display-input Show_input" id="R176_COUNTRY"
+														name="R176_COUNTRY" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                   border-color:transparent; text-align:left; display:none;">
+
+														<option value="" th:selected="${report.R176_COUNTRY == null}">
+															N/A</option>
+														<option value="INDIA"
+															th:selected="${report.R176_COUNTRY == 'INDIA'}">INDIA
+														</option>
+														<option value="CHINA"
+															th:selected="${report.R176_COUNTRY == 'CHINA'}">CHINA
+														</option>
+														<option value="AMERICA"
+															th:selected="${report.R176_COUNTRY == 'AMERICA'}">AMERICA
+														</option>
+														<option value="BOTSWANA"
+															th:selected="${report.R176_COUNTRY == 'BOTSWANA'}">BOTSWANA
+														</option>
+
+													</select>
+
+												</td>
 
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
@@ -18798,14 +19489,6 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 
-												<td id="ROW177" style="padding-left: 20px; font-weight: bold;">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R177_COUNTRY, 'N/A')}"
-														id="R177_COUNTRY" name="R177_COUNTRY"
-														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
-														readonly />
-												</td>
-
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R177_TYPE_OF_ACC != null ? report.R177_TYPE_OF_ACC : 'N/A'}"
@@ -18827,6 +19510,37 @@ PURPOSE		: BWRBRREPORT
 													</select>
 												</td>
 
+												<td style="padding-left: 20px; font-weight: bold;">
+
+													<!-- View mode -->
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R177_COUNTRY != null ? report.R177_COUNTRY : 'N/A'}"
+														id="R177_COUNTRY_TEXT" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                  border-color:transparent; text-align:left;" readonly />
+
+													<!-- Edit mode -->
+													<select class="display-input Show_input" id="R177_COUNTRY"
+														name="R177_COUNTRY" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                   border-color:transparent; text-align:left; display:none;">
+
+														<option value="" th:selected="${report.R177_COUNTRY == null}">
+															N/A</option>
+														<option value="INDIA"
+															th:selected="${report.R177_COUNTRY == 'INDIA'}">INDIA
+														</option>
+														<option value="CHINA"
+															th:selected="${report.R177_COUNTRY == 'CHINA'}">CHINA
+														</option>
+														<option value="AMERICA"
+															th:selected="${report.R177_COUNTRY == 'AMERICA'}">AMERICA
+														</option>
+														<option value="BOTSWANA"
+															th:selected="${report.R177_COUNTRY == 'BOTSWANA'}">BOTSWANA
+														</option>
+
+													</select>
+
+												</td>
 
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
@@ -18919,14 +19633,6 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 
-												<td id="ROW178" style="padding-left: 20px; font-weight: bold;">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R178_COUNTRY, 'N/A')}"
-														id="R178_COUNTRY" name="R178_COUNTRY"
-														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
-														readonly />
-												</td>
-
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R178_TYPE_OF_ACC != null ? report.R178_TYPE_OF_ACC : 'N/A'}"
@@ -18948,6 +19654,37 @@ PURPOSE		: BWRBRREPORT
 													</select>
 												</td>
 
+												<td style="padding-left: 20px; font-weight: bold;">
+
+													<!-- View mode -->
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R178_COUNTRY != null ? report.R178_COUNTRY : 'N/A'}"
+														id="R178_COUNTRY_TEXT" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                  border-color:transparent; text-align:left;" readonly />
+
+													<!-- Edit mode -->
+													<select class="display-input Show_input" id="R178_COUNTRY"
+														name="R178_COUNTRY" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                   border-color:transparent; text-align:left; display:none;">
+
+														<option value="" th:selected="${report.R178_COUNTRY == null}">
+															N/A</option>
+														<option value="INDIA"
+															th:selected="${report.R178_COUNTRY == 'INDIA'}">INDIA
+														</option>
+														<option value="CHINA"
+															th:selected="${report.R178_COUNTRY == 'CHINA'}">CHINA
+														</option>
+														<option value="AMERICA"
+															th:selected="${report.R178_COUNTRY == 'AMERICA'}">AMERICA
+														</option>
+														<option value="BOTSWANA"
+															th:selected="${report.R178_COUNTRY == 'BOTSWANA'}">BOTSWANA
+														</option>
+
+													</select>
+
+												</td>
 
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
@@ -19040,14 +19777,6 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 
-												<td id="ROW179" style="padding-left: 20px; font-weight: bold;">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R179_COUNTRY, 'N/A')}"
-														id="R179_COUNTRY" name="R179_COUNTRY"
-														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
-														readonly />
-												</td>
-
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R179_TYPE_OF_ACC != null ? report.R179_TYPE_OF_ACC : 'N/A'}"
@@ -19069,6 +19798,37 @@ PURPOSE		: BWRBRREPORT
 													</select>
 												</td>
 
+												<td style="padding-left: 20px; font-weight: bold;">
+
+													<!-- View mode -->
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R179_COUNTRY != null ? report.R179_COUNTRY : 'N/A'}"
+														id="R179_COUNTRY_TEXT" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                  border-color:transparent; text-align:left;" readonly />
+
+													<!-- Edit mode -->
+													<select class="display-input Show_input" id="R179_COUNTRY"
+														name="R179_COUNTRY" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                   border-color:transparent; text-align:left; display:none;">
+
+														<option value="" th:selected="${report.R179_COUNTRY == null}">
+															N/A</option>
+														<option value="INDIA"
+															th:selected="${report.R179_COUNTRY == 'INDIA'}">INDIA
+														</option>
+														<option value="CHINA"
+															th:selected="${report.R179_COUNTRY == 'CHINA'}">CHINA
+														</option>
+														<option value="AMERICA"
+															th:selected="${report.R179_COUNTRY == 'AMERICA'}">AMERICA
+														</option>
+														<option value="BOTSWANA"
+															th:selected="${report.R179_COUNTRY == 'BOTSWANA'}">BOTSWANA
+														</option>
+
+													</select>
+
+												</td>
 
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
@@ -19161,14 +19921,6 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 
-												<td id="ROW180" style="padding-left: 20px; font-weight: bold;">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R180_COUNTRY, 'N/A')}"
-														id="R180_COUNTRY" name="R180_COUNTRY"
-														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
-														readonly />
-												</td>
-
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R180_TYPE_OF_ACC != null ? report.R180_TYPE_OF_ACC : 'N/A'}"
@@ -19214,6 +19966,37 @@ PURPOSE		: BWRBRREPORT
 													</select>
 												</td>
 
+												<td style="padding-left: 20px; font-weight: bold;">
+
+													<!-- View mode -->
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R180_COUNTRY != null ? report.R180_COUNTRY : 'N/A'}"
+														id="R180_COUNTRY_TEXT" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                  border-color:transparent; text-align:left;" readonly />
+
+													<!-- Edit mode -->
+													<select class="display-input Show_input" id="R180_COUNTRY"
+														name="R180_COUNTRY" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                   border-color:transparent; text-align:left; display:none;">
+
+														<option value="" th:selected="${report.R180_COUNTRY == null}">
+															N/A</option>
+														<option value="INDIA"
+															th:selected="${report.R180_COUNTRY == 'INDIA'}">INDIA
+														</option>
+														<option value="CHINA"
+															th:selected="${report.R180_COUNTRY == 'CHINA'}">CHINA
+														</option>
+														<option value="AMERICA"
+															th:selected="${report.R180_COUNTRY == 'AMERICA'}">AMERICA
+														</option>
+														<option value="BOTSWANA"
+															th:selected="${report.R180_COUNTRY == 'BOTSWANA'}">BOTSWANA
+														</option>
+
+													</select>
+
+												</td>
 
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
@@ -19282,14 +20065,6 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 
-												<td id="ROW181" style="padding-left: 20px; font-weight: bold;">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R181_COUNTRY, 'N/A')}"
-														id="R181_COUNTRY" name="R181_COUNTRY"
-														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
-														readonly />
-												</td>
-
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R181_TYPE_OF_ACC != null ? report.R181_TYPE_OF_ACC : 'N/A'}"
@@ -19311,6 +20086,37 @@ PURPOSE		: BWRBRREPORT
 													</select>
 												</td>
 
+												<td style="padding-left: 20px; font-weight: bold;">
+
+													<!-- View mode -->
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R181_COUNTRY != null ? report.R181_COUNTRY : 'N/A'}"
+														id="R181_COUNTRY_TEXT" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                  border-color:transparent; text-align:left;" readonly />
+
+													<!-- Edit mode -->
+													<select class="display-input Show_input" id="R181_COUNTRY"
+														name="R181_COUNTRY" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                   border-color:transparent; text-align:left; display:none;">
+
+														<option value="" th:selected="${report.R181_COUNTRY == null}">
+															N/A</option>
+														<option value="INDIA"
+															th:selected="${report.R181_COUNTRY == 'INDIA'}">INDIA
+														</option>
+														<option value="CHINA"
+															th:selected="${report.R181_COUNTRY == 'CHINA'}">CHINA
+														</option>
+														<option value="AMERICA"
+															th:selected="${report.R181_COUNTRY == 'AMERICA'}">AMERICA
+														</option>
+														<option value="BOTSWANA"
+															th:selected="${report.R181_COUNTRY == 'BOTSWANA'}">BOTSWANA
+														</option>
+
+													</select>
+
+												</td>
 
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
@@ -19403,14 +20209,6 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 
-												<td id="ROW182" style="padding-left: 20px; font-weight: bold;">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R182_COUNTRY, 'N/A')}"
-														id="R182_COUNTRY" name="R182_COUNTRY"
-														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
-														readonly />
-												</td>
-
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R182_TYPE_OF_ACC != null ? report.R182_TYPE_OF_ACC : 'N/A'}"
@@ -19432,6 +20230,37 @@ PURPOSE		: BWRBRREPORT
 													</select>
 												</td>
 
+												<td style="padding-left: 20px; font-weight: bold;">
+
+													<!-- View mode -->
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R182_COUNTRY != null ? report.R182_COUNTRY : 'N/A'}"
+														id="R182_COUNTRY_TEXT" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                  border-color:transparent; text-align:left;" readonly />
+
+													<!-- Edit mode -->
+													<select class="display-input Show_input" id="R182_COUNTRY"
+														name="R182_COUNTRY" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                   border-color:transparent; text-align:left; display:none;">
+
+														<option value="" th:selected="${report.R182_COUNTRY == null}">
+															N/A</option>
+														<option value="INDIA"
+															th:selected="${report.R182_COUNTRY == 'INDIA'}">INDIA
+														</option>
+														<option value="CHINA"
+															th:selected="${report.R182_COUNTRY == 'CHINA'}">CHINA
+														</option>
+														<option value="AMERICA"
+															th:selected="${report.R182_COUNTRY == 'AMERICA'}">AMERICA
+														</option>
+														<option value="BOTSWANA"
+															th:selected="${report.R182_COUNTRY == 'BOTSWANA'}">BOTSWANA
+														</option>
+
+													</select>
+
+												</td>
 
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
@@ -19524,14 +20353,6 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 
-												<td id="ROW183" style="padding-left: 20px; font-weight: bold;">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R183_COUNTRY, 'N/A')}"
-														id="R183_COUNTRY" name="R183_COUNTRY"
-														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
-														readonly />
-												</td>
-
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R183_TYPE_OF_ACC != null ? report.R183_TYPE_OF_ACC : 'N/A'}"
@@ -19553,6 +20374,37 @@ PURPOSE		: BWRBRREPORT
 													</select>
 												</td>
 
+												<td style="padding-left: 20px; font-weight: bold;">
+
+													<!-- View mode -->
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R183_COUNTRY != null ? report.R183_COUNTRY : 'N/A'}"
+														id="R183_COUNTRY_TEXT" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                  border-color:transparent; text-align:left;" readonly />
+
+													<!-- Edit mode -->
+													<select class="display-input Show_input" id="R183_COUNTRY"
+														name="R183_COUNTRY" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                   border-color:transparent; text-align:left; display:none;">
+
+														<option value="" th:selected="${report.R183_COUNTRY == null}">
+															N/A</option>
+														<option value="INDIA"
+															th:selected="${report.R183_COUNTRY == 'INDIA'}">INDIA
+														</option>
+														<option value="CHINA"
+															th:selected="${report.R183_COUNTRY == 'CHINA'}">CHINA
+														</option>
+														<option value="AMERICA"
+															th:selected="${report.R183_COUNTRY == 'AMERICA'}">AMERICA
+														</option>
+														<option value="BOTSWANA"
+															th:selected="${report.R183_COUNTRY == 'BOTSWANA'}">BOTSWANA
+														</option>
+
+													</select>
+
+												</td>
 
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
@@ -19645,14 +20497,6 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 
-												<td id="ROW184" style="padding-left: 20px; font-weight: bold;">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R184_COUNTRY, 'N/A')}"
-														id="R184_COUNTRY" name="R184_COUNTRY"
-														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
-														readonly />
-												</td>
-
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R184_TYPE_OF_ACC != null ? report.R184_TYPE_OF_ACC : 'N/A'}"
@@ -19674,6 +20518,37 @@ PURPOSE		: BWRBRREPORT
 													</select>
 												</td>
 
+												<td style="padding-left: 20px; font-weight: bold;">
+
+													<!-- View mode -->
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R184_COUNTRY != null ? report.R184_COUNTRY : 'N/A'}"
+														id="R184_COUNTRY_TEXT" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                  border-color:transparent; text-align:left;" readonly />
+
+													<!-- Edit mode -->
+													<select class="display-input Show_input" id="R184_COUNTRY"
+														name="R184_COUNTRY" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                   border-color:transparent; text-align:left; display:none;">
+
+														<option value="" th:selected="${report.R184_COUNTRY == null}">
+															N/A</option>
+														<option value="INDIA"
+															th:selected="${report.R184_COUNTRY == 'INDIA'}">INDIA
+														</option>
+														<option value="CHINA"
+															th:selected="${report.R184_COUNTRY == 'CHINA'}">CHINA
+														</option>
+														<option value="AMERICA"
+															th:selected="${report.R184_COUNTRY == 'AMERICA'}">AMERICA
+														</option>
+														<option value="BOTSWANA"
+															th:selected="${report.R184_COUNTRY == 'BOTSWANA'}">BOTSWANA
+														</option>
+
+													</select>
+
+												</td>
 
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
@@ -19766,14 +20641,6 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 
-												<td id="ROW185" style="padding-left: 20px; font-weight: bold;">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R185_COUNTRY, 'N/A')}"
-														id="R185_COUNTRY" name="R185_COUNTRY"
-														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
-														readonly />
-												</td>
-
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R185_TYPE_OF_ACC != null ? report.R185_TYPE_OF_ACC : 'N/A'}"
@@ -19819,7 +20686,37 @@ PURPOSE		: BWRBRREPORT
 													</select>
 												</td>
 
+												<td style="padding-left: 20px; font-weight: bold;">
 
+													<!-- View mode -->
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R185_COUNTRY != null ? report.R185_COUNTRY : 'N/A'}"
+														id="R185_COUNTRY_TEXT" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                  border-color:transparent; text-align:left;" readonly />
+
+													<!-- Edit mode -->
+													<select class="display-input Show_input" id="R185_COUNTRY"
+														name="R185_COUNTRY" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                   border-color:transparent; text-align:left; display:none;">
+
+														<option value="" th:selected="${report.R185_COUNTRY == null}">
+															N/A</option>
+														<option value="INDIA"
+															th:selected="${report.R185_COUNTRY == 'INDIA'}">INDIA
+														</option>
+														<option value="CHINA"
+															th:selected="${report.R185_COUNTRY == 'CHINA'}">CHINA
+														</option>
+														<option value="AMERICA"
+															th:selected="${report.R185_COUNTRY == 'AMERICA'}">AMERICA
+														</option>
+														<option value="BOTSWANA"
+															th:selected="${report.R185_COUNTRY == 'BOTSWANA'}">BOTSWANA
+														</option>
+
+													</select>
+
+												</td>
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R185_CURRENCY != null ? report.R185_CURRENCY : 'N/A'}"
@@ -19887,14 +20784,6 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 
-												<td id="ROW186" style="padding-left: 20px; font-weight: bold;">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R186_COUNTRY, 'N/A')}"
-														id="R186_COUNTRY" name="R186_COUNTRY"
-														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
-														readonly />
-												</td>
-
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R186_TYPE_OF_ACC != null ? report.R186_TYPE_OF_ACC : 'N/A'}"
@@ -19916,6 +20805,37 @@ PURPOSE		: BWRBRREPORT
 													</select>
 												</td>
 
+												<td style="padding-left: 20px; font-weight: bold;">
+
+													<!-- View mode -->
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R186_COUNTRY != null ? report.R186_COUNTRY : 'N/A'}"
+														id="R186_COUNTRY_TEXT" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                  border-color:transparent; text-align:left;" readonly />
+
+													<!-- Edit mode -->
+													<select class="display-input Show_input" id="R186_COUNTRY"
+														name="R186_COUNTRY" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                   border-color:transparent; text-align:left; display:none;">
+
+														<option value="" th:selected="${report.R186_COUNTRY == null}">
+															N/A</option>
+														<option value="INDIA"
+															th:selected="${report.R186_COUNTRY == 'INDIA'}">INDIA
+														</option>
+														<option value="CHINA"
+															th:selected="${report.R186_COUNTRY == 'CHINA'}">CHINA
+														</option>
+														<option value="AMERICA"
+															th:selected="${report.R186_COUNTRY == 'AMERICA'}">AMERICA
+														</option>
+														<option value="BOTSWANA"
+															th:selected="${report.R186_COUNTRY == 'BOTSWANA'}">BOTSWANA
+														</option>
+
+													</select>
+
+												</td>
 
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
@@ -20008,14 +20928,6 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 
-												<td id="ROW187" style="padding-left: 20px; font-weight: bold;">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R187_COUNTRY, 'N/A')}"
-														id="R187_COUNTRY" name="R187_COUNTRY"
-														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
-														readonly />
-												</td>
-
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R187_TYPE_OF_ACC != null ? report.R187_TYPE_OF_ACC : 'N/A'}"
@@ -20037,6 +20949,37 @@ PURPOSE		: BWRBRREPORT
 													</select>
 												</td>
 
+												<td style="padding-left: 20px; font-weight: bold;">
+
+													<!-- View mode -->
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R187_COUNTRY != null ? report.R187_COUNTRY : 'N/A'}"
+														id="R187_COUNTRY_TEXT" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                  border-color:transparent; text-align:left;" readonly />
+
+													<!-- Edit mode -->
+													<select class="display-input Show_input" id="R187_COUNTRY"
+														name="R187_COUNTRY" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                   border-color:transparent; text-align:left; display:none;">
+
+														<option value="" th:selected="${report.R187_COUNTRY == null}">
+															N/A</option>
+														<option value="INDIA"
+															th:selected="${report.R187_COUNTRY == 'INDIA'}">INDIA
+														</option>
+														<option value="CHINA"
+															th:selected="${report.R187_COUNTRY == 'CHINA'}">CHINA
+														</option>
+														<option value="AMERICA"
+															th:selected="${report.R187_COUNTRY == 'AMERICA'}">AMERICA
+														</option>
+														<option value="BOTSWANA"
+															th:selected="${report.R187_COUNTRY == 'BOTSWANA'}">BOTSWANA
+														</option>
+
+													</select>
+
+												</td>
 
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
@@ -20129,14 +21072,6 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 
-												<td id="ROW188" style="padding-left: 20px; font-weight: bold;">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R188_COUNTRY, 'N/A')}"
-														id="R188_COUNTRY" name="R188_COUNTRY"
-														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
-														readonly />
-												</td>
-
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R188_TYPE_OF_ACC != null ? report.R188_TYPE_OF_ACC : 'N/A'}"
@@ -20158,6 +21093,37 @@ PURPOSE		: BWRBRREPORT
 													</select>
 												</td>
 
+												<td style="padding-left: 20px; font-weight: bold;">
+
+													<!-- View mode -->
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R188_COUNTRY != null ? report.R188_COUNTRY : 'N/A'}"
+														id="R188_COUNTRY_TEXT" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                  border-color:transparent; text-align:left;" readonly />
+
+													<!-- Edit mode -->
+													<select class="display-input Show_input" id="R188_COUNTRY"
+														name="R188_COUNTRY" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                   border-color:transparent; text-align:left; display:none;">
+
+														<option value="" th:selected="${report.R188_COUNTRY == null}">
+															N/A</option>
+														<option value="INDIA"
+															th:selected="${report.R188_COUNTRY == 'INDIA'}">INDIA
+														</option>
+														<option value="CHINA"
+															th:selected="${report.R188_COUNTRY == 'CHINA'}">CHINA
+														</option>
+														<option value="AMERICA"
+															th:selected="${report.R188_COUNTRY == 'AMERICA'}">AMERICA
+														</option>
+														<option value="BOTSWANA"
+															th:selected="${report.R188_COUNTRY == 'BOTSWANA'}">BOTSWANA
+														</option>
+
+													</select>
+
+												</td>
 
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
@@ -20250,13 +21216,6 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 
-												<td id="ROW189" style="padding-left: 20px; font-weight: bold;">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R189_COUNTRY, 'N/A')}"
-														id="R189_COUNTRY" name="R189_COUNTRY"
-														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
-														readonly />
-												</td>
 
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
@@ -20279,6 +21238,37 @@ PURPOSE		: BWRBRREPORT
 													</select>
 												</td>
 
+												<td style="padding-left: 20px; font-weight: bold;">
+
+													<!-- View mode -->
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R189_COUNTRY != null ? report.R189_COUNTRY : 'N/A'}"
+														id="R189_COUNTRY_TEXT" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                  border-color:transparent; text-align:left;" readonly />
+
+													<!-- Edit mode -->
+													<select class="display-input Show_input" id="R189_COUNTRY"
+														name="R189_COUNTRY" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                   border-color:transparent; text-align:left; display:none;">
+
+														<option value="" th:selected="${report.R189_COUNTRY == null}">
+															N/A</option>
+														<option value="INDIA"
+															th:selected="${report.R189_COUNTRY == 'INDIA'}">INDIA
+														</option>
+														<option value="CHINA"
+															th:selected="${report.R189_COUNTRY == 'CHINA'}">CHINA
+														</option>
+														<option value="AMERICA"
+															th:selected="${report.R189_COUNTRY == 'AMERICA'}">AMERICA
+														</option>
+														<option value="BOTSWANA"
+															th:selected="${report.R189_COUNTRY == 'BOTSWANA'}">BOTSWANA
+														</option>
+
+													</select>
+
+												</td>
 
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
@@ -20371,14 +21361,6 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 
-												<td id="ROW190" style="padding-left: 20px; font-weight: bold;">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R190_COUNTRY, 'N/A')}"
-														id="R190_COUNTRY" name="R190_COUNTRY"
-														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
-														readonly />
-												</td>
-
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R190_TYPE_OF_ACC != null ? report.R190_TYPE_OF_ACC : 'N/A'}"
@@ -20400,6 +21382,37 @@ PURPOSE		: BWRBRREPORT
 													</select>
 												</td>
 
+												<td style="padding-left: 20px; font-weight: bold;">
+
+													<!-- View mode -->
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R190_COUNTRY != null ? report.R190_COUNTRY : 'N/A'}"
+														id="R190_COUNTRY_TEXT" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                  border-color:transparent; text-align:left;" readonly />
+
+													<!-- Edit mode -->
+													<select class="display-input Show_input" id="R190_COUNTRY"
+														name="R190_COUNTRY" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                   border-color:transparent; text-align:left; display:none;">
+
+														<option value="" th:selected="${report.R190_COUNTRY == null}">
+															N/A</option>
+														<option value="INDIA"
+															th:selected="${report.R190_COUNTRY == 'INDIA'}">INDIA
+														</option>
+														<option value="CHINA"
+															th:selected="${report.R190_COUNTRY == 'CHINA'}">CHINA
+														</option>
+														<option value="AMERICA"
+															th:selected="${report.R190_COUNTRY == 'AMERICA'}">AMERICA
+														</option>
+														<option value="BOTSWANA"
+															th:selected="${report.R190_COUNTRY == 'BOTSWANA'}">BOTSWANA
+														</option>
+
+													</select>
+
+												</td>
 
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
@@ -20492,14 +21505,6 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 
-												<td id="ROW191" style="padding-left: 20px; font-weight: bold;">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R191_COUNTRY, 'N/A')}"
-														id="R191_COUNTRY" name="R191_COUNTRY"
-														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
-														readonly />
-												</td>
-
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R191_TYPE_OF_ACC != null ? report.R191_TYPE_OF_ACC : 'N/A'}"
@@ -20521,6 +21526,37 @@ PURPOSE		: BWRBRREPORT
 													</select>
 												</td>
 
+												<td style="padding-left: 20px; font-weight: bold;">
+
+													<!-- View mode -->
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R191_COUNTRY != null ? report.R191_COUNTRY : 'N/A'}"
+														id="R191_COUNTRY_TEXT" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                  border-color:transparent; text-align:left;" readonly />
+
+													<!-- Edit mode -->
+													<select class="display-input Show_input" id="R191_COUNTRY"
+														name="R191_COUNTRY" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                   border-color:transparent; text-align:left; display:none;">
+
+														<option value="" th:selected="${report.R191_COUNTRY == null}">
+															N/A</option>
+														<option value="INDIA"
+															th:selected="${report.R191_COUNTRY == 'INDIA'}">INDIA
+														</option>
+														<option value="CHINA"
+															th:selected="${report.R191_COUNTRY == 'CHINA'}">CHINA
+														</option>
+														<option value="AMERICA"
+															th:selected="${report.R191_COUNTRY == 'AMERICA'}">AMERICA
+														</option>
+														<option value="BOTSWANA"
+															th:selected="${report.R191_COUNTRY == 'BOTSWANA'}">BOTSWANA
+														</option>
+
+													</select>
+
+												</td>
 
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
@@ -20613,14 +21649,6 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 
-												<td id="ROW192" style="padding-left: 20px; font-weight: bold;">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R192_COUNTRY, 'N/A')}"
-														id="R192_COUNTRY" name="R192_COUNTRY"
-														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
-														readonly />
-												</td>
-
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R192_TYPE_OF_ACC != null ? report.R192_TYPE_OF_ACC : 'N/A'}"
@@ -20642,6 +21670,37 @@ PURPOSE		: BWRBRREPORT
 													</select>
 												</td>
 
+												<td style="padding-left: 20px; font-weight: bold;">
+
+													<!-- View mode -->
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R192_COUNTRY != null ? report.R192_COUNTRY : 'N/A'}"
+														id="R192_COUNTRY_TEXT" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                  border-color:transparent; text-align:left;" readonly />
+
+													<!-- Edit mode -->
+													<select class="display-input Show_input" id="R192_COUNTRY"
+														name="R192_COUNTRY" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                   border-color:transparent; text-align:left; display:none;">
+
+														<option value="" th:selected="${report.R192_COUNTRY == null}">
+															N/A</option>
+														<option value="INDIA"
+															th:selected="${report.R192_COUNTRY == 'INDIA'}">INDIA
+														</option>
+														<option value="CHINA"
+															th:selected="${report.R192_COUNTRY == 'CHINA'}">CHINA
+														</option>
+														<option value="AMERICA"
+															th:selected="${report.R192_COUNTRY == 'AMERICA'}">AMERICA
+														</option>
+														<option value="BOTSWANA"
+															th:selected="${report.R192_COUNTRY == 'BOTSWANA'}">BOTSWANA
+														</option>
+
+													</select>
+
+												</td>
 
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
@@ -20734,14 +21793,6 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 
-												<td id="ROW193" style="padding-left: 20px; font-weight: bold;">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R193_COUNTRY, 'N/A')}"
-														id="R193_COUNTRY" name="R193_COUNTRY"
-														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
-														readonly />
-												</td>
-
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R193_TYPE_OF_ACC != null ? report.R193_TYPE_OF_ACC : 'N/A'}"
@@ -20763,6 +21814,37 @@ PURPOSE		: BWRBRREPORT
 													</select>
 												</td>
 
+												<td style="padding-left: 20px; font-weight: bold;">
+
+													<!-- View mode -->
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R193_COUNTRY != null ? report.R193_COUNTRY : 'N/A'}"
+														id="R193_COUNTRY_TEXT" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                  border-color:transparent; text-align:left;" readonly />
+
+													<!-- Edit mode -->
+													<select class="display-input Show_input" id="R193_COUNTRY"
+														name="R193_COUNTRY" style="background-color:#FFFFFF; width:200px; height:28px;
+																								                   border-color:transparent; text-align:left; display:none;">
+
+														<option value="" th:selected="${report.R193_COUNTRY == null}">
+															N/A</option>
+														<option value="INDIA"
+															th:selected="${report.R193_COUNTRY == 'INDIA'}">INDIA
+														</option>
+														<option value="CHINA"
+															th:selected="${report.R193_COUNTRY == 'CHINA'}">CHINA
+														</option>
+														<option value="AMERICA"
+															th:selected="${report.R193_COUNTRY == 'AMERICA'}">AMERICA
+														</option>
+														<option value="BOTSWANA"
+															th:selected="${report.R193_COUNTRY == 'BOTSWANA'}">BOTSWANA
+														</option>
+
+													</select>
+
+												</td>
 
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"

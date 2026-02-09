@@ -8,8 +8,8 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "BRRS_M_AIDP_SUMMARYTABLE2")
-public class BRRS_M_AIDP_Summary_Entity2 {
+@Table(name = "BRRS_M_AIDP_ARCHIVALTABLE_DETAIL2")
+public class M_AIDP_Archival_Detail_Entity2 {
 
 	@Id
     private Date REPORT_DATE;
@@ -2044,11 +2044,8 @@ public class BRRS_M_AIDP_Summary_Entity2 {
 	public void setR96_TOT_AMT_MORE_184_DAYS(BigDecimal r96_TOT_AMT_MORE_184_DAYS) {
 		R96_TOT_AMT_MORE_184_DAYS = r96_TOT_AMT_MORE_184_DAYS;
 	}
-	public BRRS_M_AIDP_Summary_Entity2() {
+	public M_AIDP_Archival_Detail_Entity2() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	
-	
-
 }

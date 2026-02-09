@@ -3,6 +3,8 @@ package com.bornfire.brrs.services;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -13,23 +15,15 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CreationHelper;
-import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.Font;
-import org.apache.poi.ss.usermodel.HorizontalAlignment;
-import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
@@ -39,18 +33,12 @@ import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.bornfire.brrs.entities.BRRS_M_SECL_Archival_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_M_SECL_Summary_Repo;
 import com.bornfire.brrs.entities.M_SECL_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.M_SECL_Summary_Entity;
-import com.bornfire.brrs.entities.M_SRWA_12F_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.M_SRWA_12F_Summary_Entity;
-
-import java.lang.reflect.Method;
 
 
 @Component
@@ -83,7 +71,7 @@ public class BRRS_M_SECL_ReportService {
 SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 	
 public ModelAndView getM_SECLView(String reportId, String fromdate, String todate, 
-		String currency, String dtltype, Pageable pageable, String type, String version) 
+		String currency, String dtltype, Pageable pageable, String type, BigDecimal version) 
 {
 	ModelAndView mv = new ModelAndView();
 	Session hs = sessionFactory.getCurrentSession();
@@ -439,7 +427,7 @@ public ModelAndView getM_SECLView(String reportId, String fromdate, String todat
 
 
 	public byte[] getM_SECLExcel(String filename, String reportId, String fromdate, String todate, String currency,
-			 String dtltype, String type, String version) throws Exception {
+			 String dtltype, String type, BigDecimal version) throws Exception {
 logger.info("Service: Starting Excel generation process in memory.");
 logger.info("DownloadFile: reportId={}, filename={}", reportId, filename, type, version);
 
@@ -447,12 +435,12 @@ logger.info("DownloadFile: reportId={}, filename={}", reportId, filename, type, 
 Date reportDate = dateformat.parse(todate);
 
 // ARCHIVAL check
-if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && !version.trim().isEmpty()) {
+if ("ARCHIVAL".equalsIgnoreCase(type) && version != null ) {
 logger.info("Service: Generating ARCHIVAL report for version {}", version);
 return getExcelM_SECLARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
 }
 // RESUB check
-else if ("RESUB".equalsIgnoreCase(type) && version != null && !version.trim().isEmpty()) {
+else if ("RESUB".equalsIgnoreCase(type) && version != null) {
 logger.info("Service: Generating RESUB report for version {}", version);
 
 
@@ -3821,7 +3809,7 @@ if (!dataList1.isEmpty()) {
 
 	public byte[] getExcelM_SECLARCHIVAL(String filename, String reportId, String fromdate,
 			String todate,
-			String currency, String dtltype, String type, String version) throws Exception {
+			String currency, String dtltype, String type, BigDecimal version) throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.");
 		if ("ARCHIVAL".equals(type) && version != null) {
 		}
@@ -7233,7 +7221,8 @@ System.out.println("Came to Resub Service");
 System.out.println("Report Date: " + updatedEntity.getReportDate());
 
 Date reportDate = updatedEntity.getReportDate();
-int newVersion = 1;
+BigDecimal newVersion = BigDecimal.ONE;
+
 
 try {
 //Fetch the latest archival version for this report date
@@ -7244,10 +7233,16 @@ Optional<M_SECL_Archival_Summary_Entity> latestArchivalOpt = M_SECL_Archival_Sum
 if (latestArchivalOpt.isPresent()) {
 M_SECL_Archival_Summary_Entity latestArchival = latestArchivalOpt.get();
 try {
-newVersion = Integer.parseInt(latestArchival.getReportVersion()) + 1;
+
+	newVersion = (latestArchival != null && latestArchival.getReportVersion() != null)
+	        ? latestArchival.getReportVersion().add(BigDecimal.ONE)
+	        : BigDecimal.ONE;
+
+
 } catch (NumberFormatException e) {
 System.err.println("Invalid version format. Defaulting to version 1");
-newVersion = 1;
+newVersion = BigDecimal.ONE;
+
 }
 } else {
 System.out.println("No previous archival found for date: " + reportDate);
@@ -7267,7 +7262,7 @@ M_SECL_Archival_Summary_Entity archivalEntity = new M_SECL_Archival_Summary_Enti
 org.springframework.beans.BeanUtils.copyProperties(updatedEntity, archivalEntity);
 
 archivalEntity.setReportDate(reportDate);
-archivalEntity.setReportVersion(String.valueOf(newVersion));
+archivalEntity.setReportVersion(newVersion);
 archivalEntity.setReportResubDate(new Date());
 
 System.out.println("Saving new archival version: " + newVersion);
@@ -7286,7 +7281,7 @@ throw new RuntimeException("Error while creating archival resubmission record", 
 /// Downloaded for Archival & Resub
 public byte[] BRRS_M_SECLResubExcel(String filename, String reportId, String fromdate,
 String todate, String currency, String dtltype,
-String type, String version) throws Exception {
+String type, BigDecimal version) throws Exception {
 
 logger.info("Service: Starting Excel generation process in memory for RESUB Excel.");
 

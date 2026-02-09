@@ -47,6 +47,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.bornfire.brrs.entities.BRRS_M_AIDP_Archival_Detail_Repo1;
+import com.bornfire.brrs.entities.BRRS_M_AIDP_Archival_Detail_Repo2;
+import com.bornfire.brrs.entities.BRRS_M_AIDP_Archival_Detail_Repo3;
+import com.bornfire.brrs.entities.BRRS_M_AIDP_Archival_Detail_Repo4;
 import com.bornfire.brrs.entities.BRRS_M_AIDP_Archival_Summary_Repo1;
 import com.bornfire.brrs.entities.BRRS_M_AIDP_Archival_Summary_Repo2;
 import com.bornfire.brrs.entities.BRRS_M_AIDP_Archival_Summary_Repo3;
@@ -124,6 +128,18 @@ public class BRRS_M_AIDP_ReportService {
 
 	@Autowired
 	BRRS_M_AIDP_Archival_Summary_Repo4 M_AIDP_Archival_Summary_Repo4;
+	
+	@Autowired
+	BRRS_M_AIDP_Archival_Detail_Repo1 M_AIDP_Archival_Detail_Repo1;
+	
+	@Autowired
+	BRRS_M_AIDP_Archival_Detail_Repo2 M_AIDP_Archival_Detail_Repo2;
+
+	@Autowired
+	BRRS_M_AIDP_Archival_Detail_Repo3 M_AIDP_Archival_Detail_Repo3;
+
+	@Autowired
+	BRRS_M_AIDP_Archival_Detail_Repo4 M_AIDP_Archival_Detail_Repo4;
 
 	@Autowired
 	BRRS_M_SFINP2_Summary_Repo M_SFINP2_Summary_Repo;
@@ -158,7 +174,7 @@ public class BRRS_M_AIDP_ReportService {
 			String Type = type;
 
 			/* ======================= ARCHIVAL SUMMARY ======================= */
-			if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && dtltype == null) {
+			if ("ARCHIVAL".equalsIgnoreCase(type)) {
 
 				mv.addObject("reportsummary", M_AIDP_Archival_Summary_Repo1.getdatabydateListarchival(d1, version));
 				mv.addObject("reportsummary2", M_AIDP_Archival_Summary_Repo2.getdatabydateListarchival(d1, version));
@@ -166,6 +182,28 @@ public class BRRS_M_AIDP_ReportService {
 				mv.addObject("reportsummary4", M_AIDP_Archival_Summary_Repo4.getdatabydateListarchival(d1, version));
 
 				mv.addObject("displaymode", "summary");
+			} else if ("ARCHIVAL".equalsIgnoreCase(type) && "detail".equalsIgnoreCase(dtltype)) {
+				
+				// DETAIL + ARCHIVAL
+				if (version != null) {
+					mv.addObject("reportsummary", M_AIDP_Archival_Detail_Repo1.getdatabydateListarchival(d1, version));
+					mv.addObject("reportsummary2", M_AIDP_Archival_Detail_Repo2.getdatabydateListarchival(d1, version));
+					mv.addObject("reportsummary3", M_AIDP_Archival_Detail_Repo3.getdatabydateListarchival(d1, version));
+					mv.addObject("reportsummary4", M_AIDP_Archival_Detail_Repo4.getdatabydateListarchival(d1, version));
+
+					mv.addObject("displaymode", "detail");
+				}
+				// DETAIL + NORMAL
+				else {
+
+					mv.addObject("reportsummary", M_AIDP_Archival_Summary_Repo1.getdatabydateListarchival(d1, version));
+					mv.addObject("reportsummary2", M_AIDP_Archival_Summary_Repo2.getdatabydateListarchival(d1, version));
+					mv.addObject("reportsummary3", M_AIDP_Archival_Summary_Repo3.getdatabydateListarchival(d1, version));
+					mv.addObject("reportsummary4", M_AIDP_Archival_Summary_Repo4.getdatabydateListarchival(d1, version));
+
+					mv.addObject("displaymode", "detail");
+				}
+				
 			} else {
 				mv.addObject("reportsummary", BRRS_M_aidpRepo1.getdatabydateList(d1));
 				mv.addObject("reportsummary2", BRRS_M_aidpRepo2.getdatabydateList(d1));
@@ -1935,4 +1973,22 @@ public class BRRS_M_AIDP_ReportService {
 		}
 	}
 
+	public List<Object> getM_AIDPArchival() {
+		List<Object> M_AIDPArchivallist = new ArrayList<>();
+		try {
+			M_AIDPArchivallist = M_AIDP_Archival_Summary_Repo1.getM_AIDParchival();
+			M_AIDPArchivallist = M_AIDP_Archival_Summary_Repo2.getM_AIDParchival();
+			M_AIDPArchivallist = M_AIDP_Archival_Summary_Repo3.getM_AIDParchival();
+			M_AIDPArchivallist = M_AIDP_Archival_Summary_Repo4.getM_AIDParchival();
+			System.out.println("countser" + M_AIDPArchivallist.size());
+		} catch (Exception e) {
+			// Log the exception
+			System.err.println("Error fetching M_LA1 Archival data: " + e.getMessage());
+			e.printStackTrace();
+
+			// Optionally, you can rethrow it or return empty list
+			// throw new RuntimeException("Failed to fetch data", e);
+		}
+		return M_AIDPArchivallist;
+	}
 }
