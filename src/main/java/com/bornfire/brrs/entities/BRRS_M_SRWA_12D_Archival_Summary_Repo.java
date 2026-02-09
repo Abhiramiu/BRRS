@@ -37,5 +37,5 @@ public interface BRRS_M_SRWA_12D_Archival_Summary_Repo extends JpaRepository<M_S
 		    List<M_SRWA_12D_Archival_Summary_Entity> getdatabydateListWithVersionAll();
 
 
-			Optional<M_SRWA_12D_Summary_Entity> findByReportDateAndReportVersion(Date reportDate, BigDecimal valueOf);
+//			Optional<M_SRWA_12D_Summary_Entity> findByReportDateAndReportVersion(Date reportDate, BigDecimal valueOf);
 }
