@@ -449,7 +449,7 @@ PURPOSE		: BWRBRREPORT
 
 			var loader = new bootstrap.Modal(
 				document.getElementById('loader'),
-				{ backdrop: 'static', keyboard: false }
+				{backdrop: 'static', keyboard: false}
 			);
 			loader.show();
 
@@ -472,7 +472,7 @@ PURPOSE		: BWRBRREPORT
 			$.ajax({
 				url: url,
 				type: 'GET',
-				xhrFields: { responseType: 'blob' },
+				xhrFields: {responseType: 'blob'},
 
 				success: function (data) {
 					$('#loader').modal('hide');
@@ -533,11 +533,11 @@ PURPOSE		: BWRBRREPORT
 				"R81_1YR_5YR_VAL_OF_CRM",
 				"R81_5YR_VAL_OF_CRM",
 				"R52_PRODUCT",
-								"R52_ISSUER",
-								"R52_ISSUES_RATING",
-								"R52_1YR_VAL_OF_CRM",
-								"R52_1YR_5YR_VAL_OF_CRM",
-								"R52_5YR_VAL_OF_CRM"
+				"R52_ISSUER",
+				"R52_ISSUES_RATING",
+				"R52_1YR_VAL_OF_CRM",
+				"R52_1YR_5YR_VAL_OF_CRM",
+				"R52_5YR_VAL_OF_CRM"
 			];
 
 			// Make all .Show_input editable except readonlyIds
@@ -550,29 +550,29 @@ PURPOSE		: BWRBRREPORT
 			// Change background color for R12–R80 range fields
 			for (let i = 12; i <= 80; i++) {
 
-			    // 🔹 Skip R52 completely
-			    if (i === 52) {
-			        continue;
-			    }
+				// 🔹 Skip R52 completely
+				if (i === 52) {
+					continue;
+				}
 
-			    let fields = [
-			        "ISSUER", "ISSUES_RATING",
-			        "1YR_VAL_OF_CRM",
-			        "1YR_5YR_VAL_OF_CRM",
-			        "5YR_VAL_OF_CRM",
-			        "OTHER",
-			        "STD_SUPERVISORY_HAIRCUT",
-			        "APPLICABLE_RISK_WEIGHT"
-			    ];
+				let fields = [
+					"ISSUER", "ISSUES_RATING",
+					"1YR_VAL_OF_CRM",
+					"1YR_5YR_VAL_OF_CRM",
+					"5YR_VAL_OF_CRM",
+					"OTHER",
+					"STD_SUPERVISORY_HAIRCUT",
+					"APPLICABLE_RISK_WEIGHT"
+				];
 
-			    fields.forEach(field => {
-			        let selector = `#R${i}_${field}`;
-			        if ($(selector).length) {
-			            $(selector).css({
-			                "background-color": "#d3d3d3"
-			            });
-			        }
-			    });
+				fields.forEach(field => {
+					let selector = `#R${i}_${field}`;
+					if ($(selector).length) {
+						$(selector).css({
+							"background-color": "#d3d3d3"
+						});
+					}
+				});
 			}
 
 
@@ -689,31 +689,7 @@ PURPOSE		: BWRBRREPORT
 		}
 	</script>
 	<script>
-		// Capture referrer ONCE when page loads
-		var previousUrl = document.referrer;
-
-
-		let isResubmissionUpdate = false;
-
-		function closemodel() {
-			$("#resultModal").modal("hide");
-			$('#loader').modal('hide');
-
-			if (isResubmissionUpdate) {
-				return;
-			}
-
-			// Only reload if not from Details modal
-			if (!isDetailsModal) {
-				setTimeout(function () {
-					location.reload();
-				}, 300);
-			} else {
-				// reset flag for next modal usage
-				isDetailsModal = false;
-			}
-		}
-
+		
 
 
 		function fileuploads(btn) {
@@ -847,9 +823,9 @@ PURPOSE		: BWRBRREPORT
 						<!-- Buttons -->
 						<input type="hidden" id="selectedTab" th:value="${displaymode}">
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showsummary();"
-							th:if="${displaymode == 'detail'}">Summary</button>
+							th:if="${displaymode == 'detail' or displaymode == 'resubDetail'}">Summary</button>
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails();"
-							th:if="${displaymode == 'summary'}">Details</button>
+							th:if="${displaymode == 'summary'or displaymode == 'resubSummary'}">Details</button>
 						<!-- Modify button -->
 
 
@@ -868,10 +844,11 @@ PURPOSE		: BWRBRREPORT
 							Modify
 						</button>
 						<!-- Cancel button (hidden initially) -->
-												<button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord"
-													onclick="cancelModify();" style="display: none;">Cancel</button>
+						<button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord"
+							onclick="cancelModify();" style="display: none;">Cancel</button>
 						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
-							onclick="downloadfile(this)" th:if="${displaymode == 'summary' or displaymode == 'detail'}"
+							onclick="downloadfile(this)"
+							th:if="${displaymode == 'summary' or displaymode == 'detail' or displaymode == 'resubSummary'or displaymode == 'resubDetail'}"
 							th:attr="data-reportid=${reportid},
                    data-asondate=${asondate},
                    data-fromdate=${fromdate},
@@ -884,7 +861,8 @@ PURPOSE		: BWRBRREPORT
 							<i class="fa fa-download"></i> Format
 						</button>
 						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
-							onclick="downloadfile(this)" th:if="${displaymode == 'summary' or displaymode == 'detail'}"
+							onclick="downloadfile(this)"
+							th:if="${displaymode == 'summary' or displaymode == 'detail'or displaymode == 'resubSummary'or displaymode == 'resubDetail'}"
 							th:attr="data-reportid=${reportid},
             data-asondate=${asondate},
             data-fromdate=${fromdate},
@@ -909,23 +887,37 @@ PURPOSE		: BWRBRREPORT
 				<!-- Detail text -->
 				<p th:if="${displaymode == 'detail' and type != 'ARCHIVAL'}" style="text-align: left; font-weight: bold;
 					 color: white;  font-size: 20px;  background-color: rgb(107, 122, 143); 
-					 margin-top:10px; margin-bottom:10px;padding: 5px;">Detail View -  M SRWA 12H</p>
+					 margin-top:10px; margin-bottom:10px;padding: 5px;">Detail View - M SRWA 12H</p>
 
 				<p th:if="${type == 'ARCHIVAL' and displaymode == 'summary'}" style="text-align: left; font-weight: bold; 
           color: white; font-size: 20px;
           background-color: rgb(107, 122, 143); 
           margin-top:10px; margin-bottom:10px; padding: 5px;">
-					Archival Summary View -  M SRWA 12H
+					Archival Summary View - M SRWA 12H
 				</p>
 
 				<p th:if="${type == 'ARCHIVAL' and displaymode == 'detail'}" style="text-align: left; font-weight: bold;
           color: white; font-size: 20px;
           background-color: rgb(107, 122, 143); 
           margin-top:10px; margin-bottom:10px; padding: 5px;">
-					Archival Detail View -  M SRWA 12H
+					Archival Detail View - M SRWA 12H
 				</p>
 
-				<div th:if="${displaymode == 'summary' or displaymode == 'detail'}">
+				<p th:if="${type == 'RESUB' and displaymode == 'resubSummary'}" style="text-align: left; font-weight: bold; 
+				          color: white; font-size: 20px;
+				          background-color: rgb(107, 122, 143); 
+				          margin-top:10px; margin-bottom:10px; padding: 5px;">
+					Resubmission Summary View - M SRWA 12H
+				</p>
+
+				<p th:if="${type == 'RESUB' and displaymode == 'resubDetail'}" style="text-align: left; font-weight: bold;
+				          color: white; font-size: 20px;
+				          background-color: rgb(107, 122, 143); 
+				          margin-top:10px; margin-bottom:10px; padding: 5px;">
+					Resubmission Detail View - M SRWA 12H
+				</p>
+
+				<div th:if="${displaymode == 'summary' or displaymode == 'detail'or displaymode == 'resubSummary'or displaymode == 'resubDetail'}">
 					<div class="row">
 						<div class="col-sm-12">
 							<form action="#" method="POST" id="fileupload">
@@ -3323,39 +3315,59 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 												<td style="text-align: right; ">
-													<input class="display-input Show_input" type="text" th:value="${report.R52_ISSUER}" id="R52_ISSUER" name="R52_ISSUER" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R52_ISSUER}" id="R52_ISSUER"
+														name="R52_ISSUER"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
 												<td style="text-align: right;   ">
-													<input class="display-input Show_input" type="text" th:value="${report.R52_ISSUES_RATING }" id="R52_ISSUES_RATING" name="R52_ISSUES_RATING" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-														readonly />
-												</td>
-												<td style="text-align: right;  ">
-													<input class="display-input Show_input" type="text" th:value="${report.R52_1YR_VAL_OF_CRM}" id="R52_1YR_VAL_OF_CRM" name="R52_1YR_VAL_OF_CRM"
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R52_ISSUES_RATING }" id="R52_ISSUES_RATING"
+														name="R52_ISSUES_RATING"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
 												<td style="text-align: right;  ">
-													<input class="display-input Show_input" type="text" th:value="${report.R52_1YR_5YR_VAL_OF_CRM}" id="R52_1YR_5YR_VAL_OF_CRM" name="R52_1YR_5YR_VAL_OF_CRM"
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R52_1YR_VAL_OF_CRM}" id="R52_1YR_VAL_OF_CRM"
+														name="R52_1YR_VAL_OF_CRM"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
 												<td style="text-align: right;  ">
-													<input class="display-input Show_input" type="text" th:value="${report.R52_5YR_VAL_OF_CRM}" id="R52_5YR_VAL_OF_CRM" name="R52_5YR_VAL_OF_CRM"
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R52_1YR_5YR_VAL_OF_CRM}"
+														id="R52_1YR_5YR_VAL_OF_CRM" name="R52_1YR_5YR_VAL_OF_CRM"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
 												<td style="text-align: right;  ">
-													<input class="display-input Show_input" type="text" th:value="${report.R52_OTHER}" id="R52_OTHER" name="R52_OTHER" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-														readonly />
-												</td>
-												<td style="text-align: right;  ">
-													<input class="display-input Show_input" type="text" th:value="${report.R52_STD_SUPERVISORY_HAIRCUT}" id="R52_STD_SUPERVISORY_HAIRCUT" name="R52_STD_SUPERVISORY_HAIRCUT"
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R52_5YR_VAL_OF_CRM}" id="R52_5YR_VAL_OF_CRM"
+														name="R52_5YR_VAL_OF_CRM"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
 												<td style="text-align: right;  ">
-													<input class="display-input Show_input" type="text" th:value="${report.R52_APPLICABLE_RISK_WEIGHT}" id="R52_APPLICABLE_RISK_WEIGHT" name="R52_APPLICABLE_RISK_WEIGHT"
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R52_OTHER}" id="R52_OTHER" name="R52_OTHER"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R52_STD_SUPERVISORY_HAIRCUT}"
+														id="R52_STD_SUPERVISORY_HAIRCUT"
+														name="R52_STD_SUPERVISORY_HAIRCUT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="text-align: right;  ">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R52_APPLICABLE_RISK_WEIGHT}"
+														id="R52_APPLICABLE_RISK_WEIGHT"
+														name="R52_APPLICABLE_RISK_WEIGHT"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>

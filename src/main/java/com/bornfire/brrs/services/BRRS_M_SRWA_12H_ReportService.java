@@ -127,7 +127,7 @@ public class BRRS_M_SRWA_12H_ReportService {
 
 				System.out.println("Resub Summary Size : " + T1Master.size());
 
-				mv.addObject("displaymode", "summary");
+				mv.addObject("displaymode", "resubSummary");
 				mv.addObject("reportsummary", T1Master);
 			}
 
@@ -168,7 +168,7 @@ public class BRRS_M_SRWA_12H_ReportService {
 
 					System.out.println("Resub Detail Size : " + T1Master.size());
 
-					mv.addObject("displaymode", "detail");
+					mv.addObject("displaymode", "resubDetail");
 					mv.addObject("reportsummary", T1Master);
 				}
 
