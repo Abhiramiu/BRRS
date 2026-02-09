@@ -180,7 +180,6 @@ td {
 	overflow: hidden;
 	white-space: nowrap;
 	text-overflow: ellipsis;
-	
 }
 </style>
 
@@ -225,7 +224,7 @@ td {
 
 /* When input or select is focused or has a value, move the label up */
 .form-control:focus ~ .form-legend, .form-control:not (:placeholder-shown
-	) ~ .form-legend {
+	 ) ~ .form-legend {
 	top: -8px;
 	font-size: 1rem;
 	color: #007bff;
@@ -293,17 +292,14 @@ label.error {
 	color: white !important;
 }
 
-
 .table-cell tbody td:hover {
-        background-color: #f0f0f0; /* Hover color for cell */
-        cursor: pointer;           /* Optional: pointer cursor */
-    }
-	
-	.table-bordered td, 
-	.table-bordered th {
-	     border: 1px solid #000 !important;
-	}
-	
+	background-color: #f0f0f0; /* Hover color for cell */
+	cursor: pointer; /* Optional: pointer cursor */
+}
+
+.table-bordered td, .table-bordered th {
+	border: 1px solid #000 !important;
+}
 </style>
 
 </style>
@@ -399,14 +395,23 @@ $(window).on('beforeunload', function() {
 	}
 	
 
-		function showdetails() {
-					 showResultModal('BRRS',' Details page not available for Manual Report');
-				}
+	function showdetails() {
+		 $('#loader').modal('show');
+		    var Callurl = /*[[@{'/Reports/' + ${reportid}(
+		        dtltype='detail',
+		        fromdate=${fromdate},
+		        todate=${todate},
+		        type=${type},
+		        asondate=${asondate},
+		        version=${version}
+		    )}]]*/;
+		    location.href = Callurl;
+
+}
 	function showsummary() {
-		var loader = new bootstrap.Modal(document.getElementById('loader'), {backdrop: 'static',keyboard: false});
-							loader.show();
-							var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type},version=${version}, asondate=${asondate})}]]*/
-								location.href = Callurl;
+		$('#loader').modal('show');
+		var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate}, version=${version})}]]*/;
+		location.href = Callurl;
 	}
     </script>
 
@@ -679,7 +684,8 @@ function showdetailsbyRowAndColumn(a) {
         showResultModal("Alert", "No Records available for this selected cell.");
     }
 }
-</script><script>
+</script>
+<script>
 // ✅ Make inputs editable except readonlyIds
 function showmodify(btn) {
     var readonlyIds = [
@@ -832,109 +838,108 @@ $(document).ready(function() {
 </script>
 
 <style>
-		.left-arrow-circle {
-			background-color: white;
-			color: #007bff;
-			border-radius: 50%;
-			padding: 8px;
-			margin-right: 10px;
-			cursor: pointer;
-		}
+.left-arrow-circle {
+	background-color: white;
+	color: #007bff;
+	border-radius: 50%;
+	padding: 8px;
+	margin-right: 10px;
+	cursor: pointer;
+}
 
-		/* 🚌 Bus display style box */
-		/* 🚌 Bus display style box */
-					.boards {
-						transform: translateY(6px);
-					  background-color: rgb(107, 122, 143);
-					  color: white;
-					  padding: 5px 80px;
-					  border-radius: 8px;
-					  overflow: hidden;
-					  white-space: nowrap;
-					  flex: 1; /* ✅ makes it take available space dynamically */
-					  min-width: 200px;
-					  box-shadow: 0 0 10px rgb(107, 122, 143);
-					  position: relative;
-					}
+/* 🚌 Bus display style box */
+/* 🚌 Bus display style box */
+.boards {
+	transform: translateY(6px);
+	background-color: rgb(107, 122, 143);
+	color: white;
+	padding: 5px 80px;
+	border-radius: 8px;
+	overflow: hidden;
+	white-space: nowrap;
+	flex: 1; /* ✅ makes it take available space dynamically */
+	min-width: 200px;
+	box-shadow: 0 0 10px rgb(107, 122, 143);
+	position: relative;
+}
 
-		/* ✨ Scrolling animation */
-		.scrolling-text {
-			display: inline-block;
-			font-family: "Courier New", monospace;
-			font-weight: bold;
-			letter-spacing: 1px;
-			animation: scroll-left 10s linear infinite;
-		}
+/* ✨ Scrolling animation */
+.scrolling-text {
+	display: inline-block;
+	font-family: "Courier New", monospace;
+	font-weight: bold;
+	letter-spacing: 1px;
+	animation: scroll-left 10s linear infinite;
+}
 
-		/* Animation keyframes */
-		@keyframes scroll-left {
-			0% {
-				transform: translateX(100%);
-			}
+/* Animation keyframes */
+@
+keyframes scroll-left { 0% {
+	transform: translateX(100%);
+}
+100%
+{
+transform
+:
+ 
+translateX
+(-100%);
 
-			100% {
-				transform: translateX(-100%);
-			}
-		}
-	</style>
-
-
-
-
-	<style>
-		/* Keep the header fixed and aligned */
-		.dataTables_scrollHeadInner,
-		.dataTables_scrollBody table {
-			width: 100% !important;
-		}
-
-		/* Prevent thead shrinking at zoom */
-		.dataTables_scrollHeadInner table {
-			width: 100% !important;
-			min-width: 100% !important;
-		}
-
-		#reportdetails {
-			width: 100% !important;
-			table-layout: fixed !important;
-		}
-
-		#reportdetails th,
-		#reportdetails td {
-			white-space: nowrap;
-		}
-
-		table.dataTable th.dt-type-numeric,
-		table.dataTable th.dt-type-date,
-		table.dataTable td.dt-type-numeric,
-		table.dataTable td.dt-type-date {
-			text-align: left !important;
-		}
-
-		table.dataTable th.dt-type-numeric:nth-child(6) {
-			text-align: right !important;
-		}
-
-		/* ✅ Right-align both header and data (6th column = ACCT BALANCE) */
-		#reportdetails th.dt-type-numeric:nth-child(6),
-		#reportdetails td:nth-child(6),
-		.dataTables_scrollHeadInner table th:nth-child(6) {
-			text-align: right !important;
-			padding-right: 10px !important;
-		}
-	</style>
-	<style>
-		#reportdetails,
-		#reportdetails th,
-		#reportdetails td {
 			
-		}
+}
+}
+</style>
 
-		#reportdetails {
-			border-collapse: collapse;
-		}
-	</style>
-	<script th:inline="javascript">
+
+
+
+<style>
+/* Keep the header fixed and aligned */
+.dataTables_scrollHeadInner, .dataTables_scrollBody table {
+	width: 100% !important;
+}
+
+/* Prevent thead shrinking at zoom */
+.dataTables_scrollHeadInner table {
+	width: 100% !important;
+	min-width: 100% !important;
+}
+
+#reportdetails {
+	width: 100% !important;
+	table-layout: fixed !important;
+}
+
+#reportdetails th, #reportdetails td {
+	white-space: nowrap;
+}
+
+table.dataTable th.dt-type-numeric, table.dataTable th.dt-type-date,
+	table.dataTable td.dt-type-numeric, table.dataTable td.dt-type-date {
+	text-align: left !important;
+}
+
+table.dataTable th.dt-type-numeric:nth-child(6) {
+	text-align: right !important;
+}
+
+/* ✅ Right-align both header and data (6th column = ACCT BALANCE) */
+#reportdetails th.dt-type-numeric:nth-child(6), #reportdetails td:nth-child(6),
+	.dataTables_scrollHeadInner table th:nth-child(6) {
+	text-align: right !important;
+	padding-right: 10px !important;
+}
+</style>
+<style>
+#reportdetails, #reportdetails th, #reportdetails td {
+	
+}
+
+#reportdetails {
+	border-collapse: collapse;
+}
+</style>
+<script th:inline="javascript">
 				  $(document).ready(function () {
 				    var table = $('#reportdetails').DataTable({
 				      scrollY: "550px",
@@ -969,19 +974,20 @@ $(document).ready(function() {
 				  });
 				</script>
 
-	<script th:inline="javascript">
+<script th:inline="javascript">
 		/*<![CDATA[*/
 		const reportId = /*[[${reportid}]]*/ null;
 		/*]]>*/
 	</script>
-	
-	
-	
+
+
+
 </head>
 <title>BRRS</title>
 
 <body>
-	<div class="container-fluid" style="padding-left: 0px; padding-right: 0px;">
+	<div class="container-fluid"
+		style="padding-left: 0px; padding-right: 0px;">
 		<div class="row">
 			<div th:insert="HeaderMenu :: header"></div>
 			<div class="card">
@@ -995,47 +1001,52 @@ $(document).ready(function() {
 						<!-- Title -->
 						<h5
 							style="font-family: arial; font-size: 20px; font-weight: bold; color: white; margin-right: 10px; margin: 0 10px;">
-							(11) MONTHLY SCHEDULE:M-CA7:TRANSITIONAL ADJUSTMENT AMOUNT (NEW PROVISIONS)</h5>
+							(11) MONTHLY SCHEDULE:M-CA7:TRANSITIONAL ADJUSTMENT AMOUNT (NEW
+							PROVISIONS)</h5>
 					</div>
 					<!-- Moving bus-board text -->
-						<div class="boards">
-							<p class="scrolling-text">BANK OF BOTSWANA - BANKING SUPERVISION DEPARTMENT </p>
-						</div>
-						<!-- Title -->
-						
+					<div class="boards">
+						<p class="scrolling-text">BANK OF BOTSWANA - BANKING
+							SUPERVISION DEPARTMENT</p>
+					</div>
+					<!-- Title -->
 
-						
-					
+
+
+
 
 					<div class="custom-tab-btn-group nav-buttons"
 						style="display: flex; color: white; align-items: center;">
 						<!-- 📅 Date -->
-						<span class="white-text" style="color: white !important; font-size: 16px; margin-right: 20px; margin-left: 8px;">Report Date: <span th:text="${#strings.replace(asondate, '/', '-')}">2025-09-18</span>
+						<span class="white-text"
+							style="color: white !important; font-size: 16px; margin-right: 20px; margin-left: 8px;">Report
+							Date: <span th:text="${#strings.replace(asondate, '/', '-')}">2025-09-18</span>
 						</span>
 
 						<!-- Buttons -->
-        <input type="hidden" id="selectedTab" th:value="${displaymode}">
-        <button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showsummary();" th:if="${displaymode == 'Details'}">Summary</button>
-        <button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails();" th:if="${displaymode == 'summary'}">Details</button>
-		<!-- Modify button -->
-		<!-- Modify button -->
-								<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
-									title="Click to EDIT Records"
-									th:if="${type == 'RESUB' or type=='BRRS' and type != 'ARCHIVAL'}"
-									th:classappend="${session.PERMISSIONS == 'W'} and ${dtltype == 'report'} ? 'addedit' "
-									id="addRecord">
-									Modify
-								</button>
+						<input type="hidden" id="selectedTab" th:value="${displaymode}">
+						<button type="button" class="custom-tab-btn"
+							id="custom-tab-btnSummary" onclick="showsummary();"
+							th:if="${displaymode == 'Details'}">Summary</button>
+						<button type="button" class="custom-tab-btn"
+							id="custom-tab-btnDetails" onclick="showdetails();"
+							th:if="${displaymode == 'summary'}">Details</button>
+						<!-- Modify button -->
+						<!-- Modify button -->
+						<button type="button" class="custom-tab-btn"
+							onclick="showmodify(this);" title="Click to EDIT Records"
+							th:if="${type != 'ARCHIVAL' and dtltype ne 'detail'}"
+							th:classappend="${session.PERMISSIONS == 'W'} and ${dtltype == 'report'} ? 'addedit' "
+							id="addRecord">Modify</button>
 
 						<!-- Cancel button (hidden initially) -->
 						<button type="button" class="custom-tab-btn"
-						        title="Cancel editing"
-						        id="cancelRecord"
-						        onclick="cancelModify();"
-						        style="display: none;">Cancel</button>
-		
-		  <button type="button" class="custom-tab-btn" id="custom-tab-btnAdd" th:if="${displaymode == 'summary'}"
-            th:attr="data-reportid=${reportid}, 
+							title="Cancel editing" id="cancelRecord"
+							onclick="cancelModify();" style="display: none;">Cancel</button>
+
+						<button type="button" class="custom-tab-btn"
+							id="custom-tab-btnAdd" th:if="${displaymode == 'summary' or displaymode == 'Details'}"
+							th:attr="data-reportid=${reportid}, 
                      data-asondate=${asondate}, 
                      data-fromdate=${fromdate}, 
                      data-todate=${todate}, 
@@ -1044,377 +1055,288 @@ $(document).ready(function() {
                      data-filename='M_CA7.xlsx',
                      data-type=${type},
                      data-version=${version}"
-                     
-            onclick="downloadfile(this);">
-            <i class="fa fa-download"></i>
-        </button>
-        <button
-		  type="button"
-		  class="custom-tab-btn"
-		  id="custom-tab-btnAdd"
-		  th:if="${displaymode == 'Details'}"
-		  onclick="startReport(this);"
-		  th:attr="
-		    data-fromdate=${fromdate},
-		    data-todate=${todate},
-		    data-filename='M_CA_7Details'
-		  ">
-		  <i class="fa fa-download"></i>
-		</button>
+							onclick="downloadfile(this);">
+							<i class="fa fa-download"></i>
+						</button>
+							<button type="button" class="custom-tab-btn "
+							id="custom-tab-btnAdd" onclick="downloadfile(this)"
+							th:if="${displaymode == 'summary' or displaymode == 'Details'}"
+							th:attr="data-reportid=${reportid},
+            data-asondate=${asondate},
+            data-fromdate=${fromdate},
+            data-todate=${todate},
+            data-currency=${currency}, 
+            data-dtltype=${dtltype},
+            data-filename='EMAIL_M_CA7.xlsx',
+            data-type='email',
+            data-version=${version != null ? version : ''}"
+							style="font-family: Arial; font-weight: bold;">
+							<i class="fa fa-download"></i> Email Format
+
+						</button>
 					</div>
 				</div>
+
+				<h1
+					th:if="${displaymode == 'summary' and type == 'ARCHIVAL' and displaymode != 'Details'}"
+					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">Archival
+					Summary View - M-CA7</h1>
+
+				<h1
+					th:if="${displaymode == 'Details' and type == 'ARCHIVAL' and displaymode != 'summary'}"
+					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">Archival
+					Detail View - M-CA7</h1>
+
+				<h1 th:if="${displaymode == 'summary'and type != 'ARCHIVAL'}"
+					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">Summary
+					View - M-CA7</h1>
+				<h1 th:if="${displaymode == 'Details' and type != 'ARCHIVAL'}"
+					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">Detail
+					View - M-CA7</h1>
 			
-			<div th:if="${displaymode == 'summary'}">
-			<div class="row" >
-				<div class="col-sm-12">
-				<form action="#" method="POST" id="fileupload">
-					<div class="table-wrapper table-responsive scrollable-table-container" style="border-right: 1px solid #dee2e6; ">
-						<table class="sticky-header-table table table-bordered table-cell table-sm table-condensed" id="reports">
-						    <thead>
-						        <!-- Section 1 Heading -->
-						   
-														
-														
-
-																					<!-- Section 2 Heading -->
-																					<tr>
-																					    <td style="height:30px; border:15px solid transparent !important; text-align: center;">1</td>
-																					    <td colspan="3"style="height:30px; border:25px solid transparent !important; text-align: left;font-weight:bold;">
-																					        TRANSITIONAL ADJUSTMENT AMOUNTS
-																					    </td>
-																					</tr>
-
-																					<tr>
-																						<td style="height:5px; border:1px solid transparent !important;"></td>
-													   							     </tr>
-
-														
-												        <!-- Section 2 Table Header -->
-												        <tr style="border:none !important;">
-												            <td style="border:none !important;height:30px;"></td>
-
-												            <th style="text-align: right;background-color: #D8D8D8;">PRE-IFRS PROVISIONS (CLOSING BALANCE OF IAS39 PROVISIONS) (1)</th>
-												            <th style="text-align: right;background-color: #D8D8D8;font-weight: bold;">POST-IFRS 9 PROVISION (DAY 1 OF IFRS 9 PROVISIONS) (2)</th>
-												            <th style="text-align: right;background-color: #D8D8D8;">TRANSITIONAL ADJUSTMENT AMOUNT (NEW PROVISIONS) P'000 (3) = (2) - (1)</th>
-												        </tr>
-
-								
-						    </thead>
-
-						    <tbody th:each="report : ${reportsummary}" style="font-family: Arial;">
-
-						        <!-- Section 1 Values -->
-						        <tr style="border:none !important;">
-						            <td style="border:none !important;height:30px;"></td>
-
-						            <td id="ROW12" style="padding-left: 20px; font-weight: bold;">
-						                <input class="display-input show_input"
-						                       type="text"
-						                       th:value="${#numbers.formatDecimal(report.r12_pre_ifrs_pro, 1, 'COMMA', 0, 'POINT')}"
-						                       id="r12_pre_ifrs_pro"
-						                       name="r12_pre_ifrs_pro"
-						                       style="background-color:#FFFFFF; width: 100%; height: 28px;
-						                              border-color: transparent; text-align: right;"
-						                       readonly />
-						            </td>
-
-						            <td id="ROW12" style="padding-left: 20px; font-weight: bold;">
-						                <input class="display-input show_input"
-						                       type="text"
-						                       th:value="${#numbers.formatDecimal(report.r12_post_ifrs9_pro, 1, 'COMMA', 0, 'POINT')}"
-						                       id="r12_post_ifrs9_pro"
-						                       name="r12_post_ifrs9_pro"
-						                       style="background-color:#FFFFFF; width: 100%; height: 28px;
-						                              border-color: transparent; text-align: right;"
-						                       readonly />
-						            </td>
-
-						            <td id="ROW12"
-						                style="padding-left: 20px; font-weight: bold; background-color:rgb(107, 122, 143)">
-						                <input class="display-input show_input"
-						                       type="text"
-						                       th:value="${#numbers.formatDecimal(report.r12_trans_amt, 1, 'COMMA', 0, 'POINT')}"
-						                       id="r12_trans_amt"
-						                       name="r12_trans_amt"
-						                       style="background-color:rgb(107, 122, 143); color: white; width: 100%;
-						                              height: 28px; border-color: transparent; text-align: right;"
-						                       readonly />
-						            </td>
-						        </tr>
 
 
-								<!-- Clean blank spacer row -->
-								<tr style="border:none !important;">
-								    <td style="height:30px; border:none !important;"></td>
-								    <td colspan="3" style="height:30px; border:none !important;"></td>
-								</tr>
+				<div th:if="${displaymode == 'summary' or displaymode == 'Details'}">
+					<div class="row">
+						<div class="col-sm-12">
+							<form action="#" method="POST" id="fileupload">
+								<div
+									class="table-wrapper table-responsive scrollable-table-container"
+									style="border-right: 1px solid #dee2e6;">
+									<table
+										class="sticky-header-table table table-bordered table-cell table-sm table-condensed"
+										id="reports">
+										<thead>
+											<!-- Section 1 Heading -->
 
-								<!-- Section 2 Heading -->
-								<tr>
-								    <td style="height:30px; border:1px solid transparent !important; text-align: center;">2</td>
-								    <td colspan="3"style=" height:30px; border:1px solid transparent !important; text-align: left;font-weight:bold;">
-								       Transitional Amount Added Back to Common Equity Tier 1 Capital During the Transition Period
-								    </td>
-								</tr>
 
-						        <tr>
-						            <td style="height:30px; border:1px solid transparent !important;"></td>
-						            <td colspan="3" style="border:none !important; height:30px;">&nbsp;</td>
-						        </tr>
 
-						        <!-- Section 2 Table Header -->
-						        <tr style="border:none !important;">
-						            <td style="border:none !important;height:30px;"></td>
 
-						            <th style="text-align: left;background-color: #D8D8D8;">Financial Year*</th>
-						            <th style="text-align: center;background-color: #D8D8D8;font-weight: normal;">Cap (%)</th>
-						            <th style="text-align: right;background-color: #D8D8D8;">Amount added back to CET1 P'000</th>
-						        </tr>
+											<!-- Section 2 Heading -->
+											<tr>
+												<td
+													style="height: 30px; border: 15px solid transparent !important; text-align: center;">1</td>
+												<td colspan="3"
+													style="height: 30px; border: 25px solid transparent !important; text-align: left; font-weight: bold;">
+													TRANSITIONAL ADJUSTMENT AMOUNTS</td>
+											</tr>
 
-						        <!-- ROW19 -->
-						        <tr style="border:none !important;">
-						            <td style="border:none !important;height:30px;"></td>
+											<tr>
+												<td
+													style="height: 5px; border: 1px solid transparent !important;"></td>
+											</tr>
 
-						            <td id="ROW19" style="font-weight: bold;">
-						                <input class="display-input show_input"
-						                       type="text"
-						                       th:value="${#strings.defaultString(report.r19_product, 'N/A')}"
-						                       id="r19_product"
-						                       name="r19_product"
-						                       style="background-color:#FFFFFF; width: 500px; height: 28px;
-						                              border-color: transparent; text-align:left; padding-left: 20px;font-weight: bold;"
-						                       readonly />
-						            </td>
 
-						            <!--<td id="ROW19" style="text-align: center;">
+											<!-- Section 2 Table Header -->
+											<tr style="border: none !important;">
+												<td style="border: none !important; height: 30px;"></td>
+
+												<th style="text-align: right; background-color: #D8D8D8;">PRE-IFRS
+													PROVISIONS (CLOSING BALANCE OF IAS39 PROVISIONS) (1)</th>
+												<th
+													style="text-align: right; background-color: #D8D8D8; font-weight: bold;">POST-IFRS
+													9 PROVISION (DAY 1 OF IFRS 9 PROVISIONS) (2)</th>
+												<th style="text-align: right; background-color: #D8D8D8;">TRANSITIONAL
+													ADJUSTMENT AMOUNT (NEW PROVISIONS) P'000 (3) = (2) - (1)</th>
+											</tr>
+
+
+										</thead>
+
+										<tbody th:each="report : ${reportsummary}"
+											style="font-family: Arial;">
+
+											<!-- Section 1 Values -->
+											<tr style="border: none !important;">
+												<td style="border: none !important; height: 30px;"></td>
+
+												<td id="ROW12"
+													style="padding-left: 20px; font-weight: bold;"><input
+													class="display-input show_input" type="text"
+													th:value="${#numbers.formatDecimal(report.r12_pre_ifrs_pro, 1, 'COMMA', 0, 'POINT')}"
+													id="r12_pre_ifrs_pro" name="r12_pre_ifrs_pro"
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW12"
+													style="padding-left: 20px; font-weight: bold;"><input
+													class="display-input show_input" type="text"
+													th:value="${#numbers.formatDecimal(report.r12_post_ifrs9_pro, 1, 'COMMA', 0, 'POINT')}"
+													id="r12_post_ifrs9_pro" name="r12_post_ifrs9_pro"
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW12"
+													style="padding-left: 20px; font-weight: bold; background-color: rgb(107, 122, 143)">
+													<input class="display-input show_input" type="text"
+													th:value="${#numbers.formatDecimal(report.r12_trans_amt, 1, 'COMMA', 0, 'POINT')}"
+													id="r12_trans_amt" name="r12_trans_amt"
+													style="background-color: rgb(107, 122, 143); color: white; width: 100%; height: 28px; border-color: transparent; text-align: right;"
+													readonly />
+												</td>
+											</tr>
+
+
+											<!-- Clean blank spacer row -->
+											<tr style="border: none !important;">
+												<td style="height: 30px; border: none !important;"></td>
+												<td colspan="3"
+													style="height: 30px; border: none !important;"></td>
+											</tr>
+
+											<!-- Section 2 Heading -->
+											<tr>
+												<td
+													style="height: 30px; border: 1px solid transparent !important; text-align: center;">2</td>
+												<td colspan="3"
+													style="height: 30px; border: 1px solid transparent !important; text-align: left; font-weight: bold;">
+													Transitional Amount Added Back to Common Equity Tier 1
+													Capital During the Transition Period</td>
+											</tr>
+
+											<tr>
+												<td
+													style="height: 30px; border: 1px solid transparent !important;"></td>
+												<td colspan="3"
+													style="border: none !important; height: 30px;">&nbsp;</td>
+											</tr>
+
+											<!-- Section 2 Table Header -->
+											<tr style="border: none !important;">
+												<td style="border: none !important; height: 30px;"></td>
+
+												<th style="text-align: left; background-color: #D8D8D8;">Financial
+													Year*</th>
+												<th
+													style="text-align: center; background-color: #D8D8D8; font-weight: normal;">Cap
+													(%)</th>
+												<th style="text-align: right; background-color: #D8D8D8;">Amount
+													added back to CET1 P'000</th>
+											</tr>
+
+											<!-- ROW19 -->
+											<tr style="border: none !important;">
+												<td style="border: none !important; height: 30px;"></td>
+
+												<td id="ROW19" style="font-weight: bold;"><input
+													class="display-input show_input" type="text"
+													th:value="${#strings.defaultString(report.r19_product, 'N/A')}"
+													id="r19_product" name="r19_product"
+													style="background-color: #FFFFFF; width: 500px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px; font-weight: bold;"
+													readonly /></td>
+
+												<!--<td id="ROW19" style="text-align: center;">
 						                <span th:text="${report.r19_cap_year1} + '%'"></span>
 						            </td>-->
-									<td id="ROW21" style="text-align: center;">
-							                <span th:text="75 + '%'"></span>
-							            </td>
-						            <td id="ROW19"
-						                style="padding-left: 20px; font-weight: bold;background-color: rgb(107, 122, 143); color:white;">
-						                <input class="display-input show_input"
-						                       type="text"
-						                       th:value="${#numbers.formatDecimal(report.r19_amt_add_year1, 1, 'COMMA', 0, 'POINT')}"
-						                       id="r19_amt_add_year1"
-						                       name="r19_amt_add_year1"
-						                       style="background-color:rgb(107, 122, 143); color: white; width: 100%; height: 28px;
-						                              border-color: transparent; text-align: right;"
-						                       readonly />
-						            </td>
-						        </tr>
+												<td id="ROW21" style="text-align: center;"><span
+													th:text="75 + '%'"></span></td>
+												<td id="ROW19"
+													style="padding-left: 20px; font-weight: bold; background-color: rgb(107, 122, 143); color: white;">
+													<input class="display-input show_input" type="text"
+													th:value="${#numbers.formatDecimal(report.r19_amt_add_year1, 1, 'COMMA', 0, 'POINT')}"
+													id="r19_amt_add_year1" name="r19_amt_add_year1"
+													style="background-color: rgb(107, 122, 143); color: white; width: 100%; height: 28px; border-color: transparent; text-align: right;"
+													readonly />
+												</td>
+											</tr>
 
-						        <!-- ROW20 -->
-						        <tr style="border:none !important;">
-						            <td style="border:none !important;height:30px;"></td>
+											<!-- ROW20 -->
+											<tr style="border: none !important;">
+												<td style="border: none !important; height: 30px;"></td>
 
-						            <td id="ROW20" style="font-weight: bold;">
-						                <input class="display-input show_input"
-						                       type="text"
-						                       th:value="${#strings.defaultString(report.r20_product, 'N/A')}"
-						                       id="r20_product"
-						                       name="r20_product"
-						                       style="background-color:#FFFFFF; width: 500px; height: 28px;
-						                              border-color: transparent; text-align:left; padding-left: 20px;font-weight: bold;"
-						                       readonly />
-						            </td>
+												<td id="ROW20" style="font-weight: bold;"><input
+													class="display-input show_input" type="text"
+													th:value="${#strings.defaultString(report.r20_product, 'N/A')}"
+													id="r20_product" name="r20_product"
+													style="background-color: #FFFFFF; width: 500px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px; font-weight: bold;"
+													readonly /></td>
 
-						           <!-- <td id="ROW20" style="text-align: center;">
+												<!-- <td id="ROW20" style="text-align: center;">
 						                <span th:text="${report.r20_cap_year2} + '%'"></span>
 						            </td>-->
-									<td id="ROW21" style="text-align: center;">
-							                <span th:text="50 + '%'"></span>
-							            </td>
-						            <td id="ROW20"
-						                style="padding-left: 20px; font-weight: bold;background-color: rgb(107, 122, 143); color:white;">
-						                <input class="display-input show_input"
-						                       type="text"
-						                       th:value="${#numbers.formatDecimal(report.r20_amt_add_year2, 1, 'COMMA', 0, 'POINT')}"
-						                       id="r20_amt_add_year2"
-						                       name="r20_amt_add_year2"
-						                       style="background-color:rgb(107, 122, 143); color: white; width: 100%; height: 28px;
-						                              border-color: transparent; text-align: right;"
-						                       readonly />
-						            </td>
-						        </tr>
+												<td id="ROW21" style="text-align: center;"><span
+													th:text="50 + '%'"></span></td>
+												<td id="ROW20"
+													style="padding-left: 20px; font-weight: bold; background-color: rgb(107, 122, 143); color: white;">
+													<input class="display-input show_input" type="text"
+													th:value="${#numbers.formatDecimal(report.r20_amt_add_year2, 1, 'COMMA', 0, 'POINT')}"
+													id="r20_amt_add_year2" name="r20_amt_add_year2"
+													style="background-color: rgb(107, 122, 143); color: white; width: 100%; height: 28px; border-color: transparent; text-align: right;"
+													readonly />
+												</td>
+											</tr>
 
-						        <!-- ROW21 -->
-						        <tr style="border:none !important;">
-						            <td style="border:none !important;height:30px;"></td>
+											<!-- ROW21 -->
+											<tr style="border: none !important;">
+												<td style="border: none !important; height: 30px;"></td>
 
-						            <td id="ROW21" style="font-weight: bold;">
-						                <input class="display-input show_input"
-						                       type="text"
-						                       th:value="${#strings.defaultString(report.r21_product, 'N/A')}"
-						                       id="r21_product"
-						                       name="r21_product"
-						                       style="background-color:#FFFFFF; width: 500px; height: 28px;
-						                              border-color: transparent; text-align:left; padding-left: 20px;font-weight: bold;"
-						                       readonly />
-						            </td>
+												<td id="ROW21" style="font-weight: bold;"><input
+													class="display-input show_input" type="text"
+													th:value="${#strings.defaultString(report.r21_product, 'N/A')}"
+													id="r21_product" name="r21_product"
+													style="background-color: #FFFFFF; width: 500px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px; font-weight: bold;"
+													readonly /></td>
 
-						          <!--  <td id="ROW21" style="text-align: center;">
+												<!--  <td id="ROW21" style="text-align: center;">
 						                <span th:text="${report.r21_cap_year3} + '%'"></span>
 						            </td>-->
-									<td id="ROW21" style="text-align: center;">
-														                <span th:text="25 + '%'"></span>
-														            </td>
+												<td id="ROW21" style="text-align: center;"><span
+													th:text="25 + '%'"></span></td>
 
-						            <td id="ROW21"
-						                style="padding-left: 20px; font-weight: bold;background-color: rgb(107, 122, 143); color:white;">
-						                <input class="display-input show_input"
-						                       type="text"
-						                       th:value="${#numbers.formatDecimal(report.r21_amt_add_year3, 1, 'COMMA', 0, 'POINT')}"
-						                       id="r21_amt_add_year3"
-						                       name="r21_amt_add_year3"
-						                       style="background-color:rgb(107, 122, 143); color: white; width: 100%; height: 28px;
-						                              border-color: transparent; text-align: right;"
-						                       readonly />
-						            </td>
-						        </tr>
+												<td id="ROW21"
+													style="padding-left: 20px; font-weight: bold; background-color: rgb(107, 122, 143); color: white;">
+													<input class="display-input show_input" type="text"
+													th:value="${#numbers.formatDecimal(report.r21_amt_add_year3, 1, 'COMMA', 0, 'POINT')}"
+													id="r21_amt_add_year3" name="r21_amt_add_year3"
+													style="background-color: rgb(107, 122, 143); color: white; width: 100%; height: 28px; border-color: transparent; text-align: right;"
+													readonly />
+												</td>
+											</tr>
 
-						        <!-- ROW22 -->
-						        <tr style="border:none !important;">
-						            <td style="border:none !important;height:30px;"></td>
+											<!-- ROW22 -->
+											<tr style="border: none !important;">
+												<td style="border: none !important; height: 30px;"></td>
 
-						            <td id="ROW22" style="font-weight: bold;">
-						                <input class="display-input show_input"
-						                       type="text"
-						                       th:value="${#strings.defaultString(report.r22_product, 'N/A')}"
-						                       id="r22_product"
-						                       name="r22_product"
-						                       style="background-color:#FFFFFF; width: 500px; height: 28px;
-						                              border-color: transparent; text-align:left; padding-left: 1%;font-weight: bold;"
-						                       readonly />
-						            </td>
+												<td id="ROW22" style="font-weight: bold;"><input
+													class="display-input show_input" type="text"
+													th:value="${#strings.defaultString(report.r22_product, 'N/A')}"
+													id="r22_product" name="r22_product"
+													style="background-color: #FFFFFF; width: 500px; height: 28px; border-color: transparent; text-align: left; padding-left: 1%; font-weight: bold;"
+													readonly /></td>
 
-						            <td id="ROW22" style="text-align: center;">
-						                <span th:text="${report.r22_cap_year4}"></span>
-						            </td>
+												<td id="ROW22" style="text-align: center;"><span
+													th:text="${report.r22_cap_year4}"></span></td>
 
-						            <td id="ROW22"
-						                style="padding-left: 20px; font-weight: bold;background-color: rgb(107, 122, 143); color:white;">
-						                <input class="display-input show_input"
-						                       type="text"
-						                       th:value="${#numbers.formatDecimal(report.r22_amt_add_year4, 1, 'COMMA', 0, 'POINT')}"
-						                       id="r22_amt_add_year4"
-						                       name="r22_amt_add_year4"
-						                       style="background-color:rgb(107, 122, 143); color: white; width: 100%; height: 28px;
-						                              border-color: transparent; text-align: right;padding-right: 0%;"
-						                       readonly />
-						            </td>
-						        </tr>
+												<td id="ROW22"
+													style="padding-left: 20px; font-weight: bold; background-color: rgb(107, 122, 143); color: white;">
+													<input class="display-input show_input" type="text"
+													th:value="${#numbers.formatDecimal(report.r22_amt_add_year4, 1, 'COMMA', 0, 'POINT')}"
+													id="r22_amt_add_year4" name="r22_amt_add_year4"
+													style="background-color: rgb(107, 122, 143); color: white; width: 100%; height: 28px; border-color: transparent; text-align: right; padding-right: 0%;"
+													readonly />
+												</td>
+											</tr>
 
-						    </tbody>
-						</table>
+										</tbody>
+									</table>
 
-						</div>
-<div style="text-align: center; margin-top: 10px;">
-												
-    <button id="submitButton" 
-            type="button"
-            class="custom-tab-btn Show_input" 
-            form="fileupload"
-            th:attr="data-todate=${asondate},data-type=${type}" 
-            onclick="fileuploads(this);" 
-            style="display: none;">
-        Submit
-    </button>
-							</div>
-	</form>
+								</div>
+								<div style="text-align: center; margin-top: 10px;">
+
+									<button id="submitButton" type="button"
+										class="custom-tab-btn Show_input" form="fileupload"
+										th:attr="data-todate=${asondate},data-type=${type}"
+										onclick="fileuploads(this);" style="display: none;">
+										Submit</button>
+								</div>
+							</form>
 
 
 						</div>
 					</div>
 				</div>
 
-				<div th:if="${displaymode == 'Details'}">
-									<div class="row">
-										<div class="col-sm-12">
-											<div class="table-responsive scrollable-table-container"
-												style="border-right: 1px solid #dee2e6;">
-												<table
-													class="sticky-header-table table table-bordered table-hover table-sm table-condensed"
-													id="reportSs">
-													<thead class="thead-light">
-														<tr>
-															<th></th>
-															<th>CUST ID</th>
-															<th>ACCT NO</th>
-															<th>ACCT NAME</th>
-															<th>ACCT BALANCE</th>
-															<th>ROWID</th>
-															<th>COLUMNID</th>
-															<th>REPORT_DATE</th>
-														</tr>
-
-													</thead>
-
-													<tbody 
-														style="font-family: Arial;">
-														<tr th:each="report: ${reportdetails}">
-															<td><a data-toggle="tooltip" class="editrec"
-																title="Click to Edit this Record"> <i
-																	class="fas fa-edit" onclick="editRecord(this)"></i>
-															</a></td>
-															<td th:text="${report.cust_id}"></td>
-															<td th:text="${report.acct_number}"></td>
-															<td th:text="${report.acct_name}"></td>
-															<td th:text="${#numbers.formatDecimal(report.acct_balance_in_pula, 1, 2)}" style="text-align: right;"></td>
-															<td th:text="${report.row_id}"></td>
-															<td th:text="${report.column_id}"></td>
-															<td th:text="${#dates.format(report.report_date, 'dd-MM-yyyy')}"></td>
-
-														</tr>
-													</tbody>
-												</table>
-												
-												<div style="margin-top:20px; text-align:center;" th:if="${pagination=='YES'}">
-																																					   
-																																					    
-																																					    
-																<a th:if="${currentPage > 0}"
-																 th:href="@{'/Reports/' + ${reportid} + '/Details'(
-																    asondate=${asondate},                             
-																    fromdate=${fromdate},
-																    todate=${todate},
-																    currency=${currency},
-																    dtltype=${dtltype},
-																    type=${type},
-																    version=${version},
-																    page=${currentPage - 100},
-																    size=100
-																)}">
-																    Previous
-																</a>
-										
-																    
-																    <span>Page [[${currentPage / 100 + 1}]] of [[${totalPages}]]</span>
-																
-																    
-																	<a th:if="${currentPage < (totalPages - 1) * 100}"
-																																																    	
-																																																    th:href="@{'/Reports/' + ${reportid} + '/Details'(
-																																																    asondate=${asondate},
-																																																    fromdate=${fromdate},
-																																																    todate=${todate},
-																																																    currency=${currency},
-																																																    dtltype=${dtltype},
-																																																    type=${type},
-																																																    version=${version},
-																																																    page=${currentPage + 100},
-																																																    size=100
-																																																)}">	
-																																																    Next
-																																																    </a>
-																																																</div>
-											</div>
-
-
-										</div>
-									</div>
-								</div>
+				
 
 			</div>
 
@@ -1468,32 +1390,35 @@ $(document).ready(function() {
 		</div>
 	</div>
 	<!-- Custom Cellresult Modal -->
-			<div class="modal fade" id="cellresultModal">
-			  <div class="modal-dialog modal-dialog-centered">
-			    <div class="modal-content">
-			      
-			      <!-- Custom header -->
-			      <div class="menu-title-header" style="background-color:#6c7a91; padding: 8px; border-radius:5px 5px 0 0;">
-			        <div class="modal-title" id="cellresultModalLabel" style="text-align: center; color: white;">
-			          Do you want to open the report?
-			        </div>
-			      </div>
+	<div class="modal fade" id="cellresultModal">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
 
-			      <div class="modal-body" style="text-align: center; font-size: 1.1rem;">
-			        <button type="button" class="custom-tab-btn cancel-btn" data-bs-dismiss="modal"  style="margin-right:10px; border:2px solid #6c7a91; background:white; color:black; border-radius:20px; padding:5px 15px;">
-			          Cancel
-			        </button>
-			        <button type="button" class="custom-tab-btn yes-btn" style="background:#6c7a91; color:white; border:none; border-radius:20px; padding:5px 20px;">
-			          Yes
-			        </button>
-			      </div>
-			    </div>
-			  </div>
+				<!-- Custom header -->
+				<div class="menu-title-header"
+					style="background-color: #6c7a91; padding: 8px; border-radius: 5px 5px 0 0;">
+					<div class="modal-title" id="cellresultModalLabel"
+						style="text-align: center; color: white;">Do you want to
+						open the report?</div>
+				</div>
+
+				<div class="modal-body"
+					style="text-align: center; font-size: 1.1rem;">
+					<button type="button" class="custom-tab-btn cancel-btn"
+						data-bs-dismiss="modal"
+						style="margin-right: 10px; border: 2px solid #6c7a91; background: white; color: black; border-radius: 20px; padding: 5px 15px;">
+						Cancel</button>
+					<button type="button" class="custom-tab-btn yes-btn"
+						style="background: #6c7a91; color: white; border: none; border-radius: 20px; padding: 5px 20px;">
+						Yes</button>
+				</div>
 			</div>
+		</div>
+	</div>
 
 
 </body>
-																			
+
 <!-- <script>
 															  $(document).ready(function () {
 															    $('#BRFvalidation').DataTable({

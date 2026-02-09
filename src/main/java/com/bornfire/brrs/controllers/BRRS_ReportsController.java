@@ -1956,29 +1956,44 @@ public class BRRS_ReportsController {
 	@Autowired
 	BRRS_M_CA7_ReportService M_CA7_ReportService;
 
-	@RequestMapping(value = "/MCA7updateAll", method = { RequestMethod.GET, RequestMethod.POST })
+	@RequestMapping(value = "/MCA7updateAll", method = RequestMethod.POST)
 	@ResponseBody
 	public ResponseEntity<String> updateAllReports(
-			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@RequestParam(required = false) String type, @ModelAttribute M_CA7_Summary_Entity request1) {
-		try {
-			System.out.println("Came to single controller");
-			System.out.println(type);
-			// set date into all 4 entities
-			request1.setReportDate(asondate);
+	        @RequestParam @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+	        @RequestParam String type,
+	        @ModelAttribute M_CA7_Summary_Entity summary,
+	        @ModelAttribute M_CA7_Detail_Entity detail) {
 
-			if (type.equals("ARCHIVAL")) {
-				M_CA7_Archival_Summary_Entity Archivalrequest1 = new M_CA7_Archival_Summary_Entity();
-				BeanUtils.copyProperties(request1, Archivalrequest1);
-			} else {
-				M_CA7_ReportService.updateReport(request1);
-			}
-			return ResponseEntity.ok("Updated Successfully.");
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
-		}
+	    try {
+	        System.out.println("Came to single controller");
+	        System.out.println("Type = " + type);
+
+	        // ✅ set report date in both entities
+	        summary.setReportDate(asondate);
+	        detail.setReportDate(asondate);
+
+	        if ("ARCHIVAL".equalsIgnoreCase(type)) {
+
+	            M_CA7_Archival_Summary_Entity archival = new M_CA7_Archival_Summary_Entity();
+	            BeanUtils.copyProperties(summary, archival);
+	            // call archival service if needed
+
+	        } else {
+	            // ✅ UPDATE BOTH TABLES
+	            M_CA7_ReportService.updateReport(summary);
+	            M_CA7_ReportService.updateDetail(detail);
+	        }
+
+	        return ResponseEntity.ok("Updated Successfully.");
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return ResponseEntity
+	                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                .body("Update Failed: " + e.getMessage());
+	    }
 	}
+
 
 	@Autowired
 	BRRS_M_SFINP1_ReportService M_SFINP1_ReportService;
