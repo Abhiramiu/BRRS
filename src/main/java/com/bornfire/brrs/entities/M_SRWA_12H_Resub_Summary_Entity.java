@@ -12,9 +12,9 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-@Table(name = "BRRS_M_SRWA_12H_ARCHIVALTABLE_SUMMARY")
+@Table(name = "BRRS_M_SRWA_12H_RESUB_SUMMARYTABLE")
 @IdClass(M_SRWA_12H_PK.class)
-public class M_SRWA_12H_Archival_Summary_Entity {
+public class M_SRWA_12H_Resub_Summary_Entity {
 
 	private String R11_PRODUCT;
 	private BigDecimal R11_ISSUER;
@@ -731,12 +731,12 @@ public class M_SRWA_12H_Archival_Summary_Entity {
 	@Column(name = "REPORT_DATE")
 	private Date reportDate;
 
+	
 	@Id
 	@Column(name = "REPORT_VERSION")
 	private BigDecimal reportVersion;
 
 	@Column(name = "REPORT_RESUBDATE")
-	@Temporal(TemporalType.TIMESTAMP)
 	private Date reportResubDate;
 
 	@Column(name = "REPORT_FREQUENCY")

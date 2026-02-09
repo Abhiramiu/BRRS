@@ -404,16 +404,28 @@ function getVali(a) {
 									</tr>
 							</thead>
 							<tbody style="font-family: Arial;">
-							<tr th:each="ReData : ${Resubmitdata }">
-								<td class="underline" th:attr="data-rptcode=${rptcode},
-								 data-todate=${#dates.format(ReData[0],'dd/MM/yyyy')},
-								 data-version=${ReData[1]}"
-								style="color: #08a6f1;" th:text="${#dates.format(ReData[0],'dd/MM/yyyy')}" onclick="getReport(this);"></td>
-								<td th:text="${ReData[1]}"></td>
-               <td th:text="${#dates.format(reportResubDate, 'dd/MM/yyyy')}"></td>
-								<td th:text="${domain}"></td>
-								
-							</tr >
+								<tr th:each="ReData : ${Resubmitdata}">
+
+								    <!-- Report Date clickable -->
+								    <td class="underline"
+								        th:attr="data-rptcode=${rptcode},
+								                 data-todate=${#dates.format(ReData[0],'dd-MM-yyyy')},
+								                 data-version=${ReData[1]}"
+								        style="color: #08a6f1;"
+								        th:text="${#dates.format(ReData[0],'dd-MM-yyyy')}"
+								        onclick="getReport(this);">
+								    </td>
+
+								    <!-- Version -->
+								    <td th:text="${ReData[1]}"></td>
+
+								    <!-- ✅ Resub Date -->
+								    <td th:text="${#dates.format(ReData[2], 'dd-MM-yyyy')}"style="color: #08a6f1;"></td>
+
+								    <!-- Domain -->
+								    <td th:text="${domain}"></td>
+
+								</tr>
 
 <!-- <tr th:each="ReData : ${Resubmitdata}">
 <td class="underline"

@@ -15,8 +15,8 @@ import javax.persistence.TemporalType;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
-@Table(name = "BRRS_M_SRWA_12H_DETAILTABLE")
-
+@Table(name = "BRRS_M_SRWA_12H_ARCHIVALTABLE_DETAIL")
+@IdClass(M_SRWA_12H_PK.class)
 public class M_SRWA_12H_Archival_Detail_Entity {
 
 	private String R11_PRODUCT;
@@ -732,6 +732,7 @@ public class M_SRWA_12H_Archival_Detail_Entity {
 	@Id
 	@Column(name = "REPORT_DATE")
 	private Date reportDate;
+	@Id
 	@Column(name = "REPORT_VERSION")
 	private BigDecimal reportVersion;
 	@Column(name = "REPORT_RESUBDATE")
