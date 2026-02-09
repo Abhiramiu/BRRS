@@ -1,7 +1,9 @@
 package com.bornfire.brrs.entities;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -12,22 +14,27 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 @Entity
-@Table(name="BRRS_Q_RLFA1_DETAIL_TABLE_NEW")
-public class Q_RLFA1_Detail_Entity_New {
-	
+@Table(name="BRRS_Q_RLFA1_RESUB_SUMMARY")
+@IdClass(Q_RLFA1_Resub_Summary_PK.class)
+public class Q_RLFA1_Resub_Summary_Entity {
 	
 	@Temporal(TemporalType.DATE)
 	@DateTimeFormat(pattern = "dd/MM/yyyy")
-    @Id
-    private Date report_date;
-
-    private String	report_version;
-    private String	report_frequency;
-    private String	report_code;
-    private String	report_desc;
-    private String	entity_flg;
-    private String	modify_flg;
-    private String	del_flg;
+	@Id
+	
+	private Date	report_date;
+	@Id
+	private BigDecimal	report_version;
+	
+	@Column(name = "REPORT_RESUBDATE")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date reportResubDate;
+	private String	report_frequency;
+	private String	report_code;
+	private String	report_desc;
+	private String	entity_flg;
+	private String	modify_flg;
+	private String	 del_flg;
 
     private String	r10_rene_loans;
     private BigDecimal	r10_collateral_amount;
@@ -336,17 +343,24 @@ public class Q_RLFA1_Detail_Entity_New {
 		this.r48_new_column_no_of_accts = r48_new_column_no_of_accts;
 	}
 	
+    
 	public Date getReport_date() {
 		return report_date;
 	}
 	public void setReport_date(Date report_date) {
 		this.report_date = report_date;
 	}
-	public String getReport_version() {
+	public BigDecimal getReport_version() {
 		return report_version;
 	}
-	public void setReport_version(String report_version) {
+	public void setReport_version(BigDecimal report_version) {
 		this.report_version = report_version;
+	}
+	public Date getReportResubDate() {
+		return reportResubDate;
+	}
+	public void setReportResubDate(Date reportResubDate) {
+		this.reportResubDate = reportResubDate;
 	}
 	public String getReport_frequency() {
 		return report_frequency;
@@ -1680,11 +1694,14 @@ public class Q_RLFA1_Detail_Entity_New {
 	public void setR63_no_of_accts(BigDecimal r63_no_of_accts) {
 		this.r63_no_of_accts = r63_no_of_accts;
 	}
-	public Q_RLFA1_Detail_Entity_New() {
+	public Q_RLFA1_Resub_Summary_Entity() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-
+    
+    
+    
+	
     
     
     

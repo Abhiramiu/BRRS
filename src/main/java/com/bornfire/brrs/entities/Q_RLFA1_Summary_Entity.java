@@ -246,7 +246,96 @@ public class Q_RLFA1_Summary_Entity {
     private BigDecimal	r63_carrying_amount;
     private BigDecimal	r63_no_of_accts;
     
+    private String r27_new_column_rene_loans;
+    private BigDecimal r27_new_column_collateral_amount;
+    private BigDecimal r27_new_column_carrying_amount;
+    private BigDecimal r27_new_column_no_of_accts;
     
+    private String r42_new_column_rene_loans;
+    private BigDecimal r42_new_column_collateral_amount;
+    private BigDecimal r42_new_column_carrying_amount;
+    private BigDecimal r42_new_column_no_of_accts;
+    
+    private String r48_new_column_rene_loans;
+    private BigDecimal r48_new_column_collateral_amount;
+    private BigDecimal r48_new_column_carrying_amount;
+    private BigDecimal r48_new_column_no_of_accts;
+    
+    
+    
+	public String getR27_new_column_rene_loans() {
+		return r27_new_column_rene_loans;
+	}
+	public BigDecimal getR27_new_column_collateral_amount() {
+		return r27_new_column_collateral_amount;
+	}
+	public BigDecimal getR27_new_column_carrying_amount() {
+		return r27_new_column_carrying_amount;
+	}
+	public BigDecimal getR27_new_column_no_of_accts() {
+		return r27_new_column_no_of_accts;
+	}
+	public String getR42_new_column_rene_loans() {
+		return r42_new_column_rene_loans;
+	}
+	public BigDecimal getR42_new_column_collateral_amount() {
+		return r42_new_column_collateral_amount;
+	}
+	public BigDecimal getR42_new_column_carrying_amount() {
+		return r42_new_column_carrying_amount;
+	}
+	public BigDecimal getR42_new_column_no_of_accts() {
+		return r42_new_column_no_of_accts;
+	}
+	public String getR48_new_column_rene_loans() {
+		return r48_new_column_rene_loans;
+	}
+	public BigDecimal getR48_new_column_collateral_amount() {
+		return r48_new_column_collateral_amount;
+	}
+	public BigDecimal getR48_new_column_carrying_amount() {
+		return r48_new_column_carrying_amount;
+	}
+	public BigDecimal getR48_new_column_no_of_accts() {
+		return r48_new_column_no_of_accts;
+	}
+	public void setR27_new_column_rene_loans(String r27_new_column_rene_loans) {
+		this.r27_new_column_rene_loans = r27_new_column_rene_loans;
+	}
+	public void setR27_new_column_collateral_amount(BigDecimal r27_new_column_collateral_amount) {
+		this.r27_new_column_collateral_amount = r27_new_column_collateral_amount;
+	}
+	public void setR27_new_column_carrying_amount(BigDecimal r27_new_column_carrying_amount) {
+		this.r27_new_column_carrying_amount = r27_new_column_carrying_amount;
+	}
+	public void setR27_new_column_no_of_accts(BigDecimal r27_new_column_no_of_accts) {
+		this.r27_new_column_no_of_accts = r27_new_column_no_of_accts;
+	}
+	public void setR42_new_column_rene_loans(String r42_new_column_rene_loans) {
+		this.r42_new_column_rene_loans = r42_new_column_rene_loans;
+	}
+	public void setR42_new_column_collateral_amount(BigDecimal r42_new_column_collateral_amount) {
+		this.r42_new_column_collateral_amount = r42_new_column_collateral_amount;
+	}
+	public void setR42_new_column_carrying_amount(BigDecimal r42_new_column_carrying_amount) {
+		this.r42_new_column_carrying_amount = r42_new_column_carrying_amount;
+	}
+	public void setR42_new_column_no_of_accts(BigDecimal r42_new_column_no_of_accts) {
+		this.r42_new_column_no_of_accts = r42_new_column_no_of_accts;
+	}
+	public void setR48_new_column_rene_loans(String r48_new_column_rene_loans) {
+		this.r48_new_column_rene_loans = r48_new_column_rene_loans;
+	}
+	public void setR48_new_column_collateral_amount(BigDecimal r48_new_column_collateral_amount) {
+		this.r48_new_column_collateral_amount = r48_new_column_collateral_amount;
+	}
+	public void setR48_new_column_carrying_amount(BigDecimal r48_new_column_carrying_amount) {
+		this.r48_new_column_carrying_amount = r48_new_column_carrying_amount;
+	}
+	public void setR48_new_column_no_of_accts(BigDecimal r48_new_column_no_of_accts) {
+		this.r48_new_column_no_of_accts = r48_new_column_no_of_accts;
+	}
+	
     
 	public Date getReport_date() {
 		return report_date;

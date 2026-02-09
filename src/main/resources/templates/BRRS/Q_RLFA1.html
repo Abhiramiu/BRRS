@@ -425,13 +425,38 @@ let isDetailsModal = false;
 		//to fetch summary from the database - called from the summary button
 		function showdetail() {
             $('#loader').modal('show');
-            var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${'detail'}, asondate=${asondate})}]]*/;
+            var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='detail', fromdate=${fromdate}, todate=${todate}, type=${'detail'}, asondate=${asondate})}]]*/;
             // showResultModal('BRRS', 'Details page not available for Manual Report');
             location.href = Callurl;
         }
 		function showsummary() {
 			$('#loader').modal('show');
-			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${'summary'}, asondate=${asondate})}]]*/;
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='summary', fromdate=${fromdate}, todate=${todate}, type=${'summary'}, asondate=${asondate})}]]*/;
+			location.href = Callurl;
+		}
+
+        function showArchivalsummary() {
+			$('#loader').modal('show');
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='summary', fromdate=${fromdate}, todate=${todate}, type=${'ARCHIVAL'}, asondate=${asondate}, version=${version ?: ''})}]]*/;
+			location.href = Callurl;
+		}
+
+
+        function showArchivaldetail() {
+			$('#loader').modal('show');
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='detail', fromdate=${fromdate}, todate=${todate}, type=${'ARCHIVAL'}, asondate=${asondate}, version=${version ?: ''})}]]*/;
+			location.href = Callurl;
+		}
+
+         function showResubsummary() {
+			$('#loader').modal('show');
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='summary', fromdate=${fromdate}, todate=${todate}, type=${'RESUB'}, asondate=${asondate}, version=${version ?: ''})}]]*/;
+			location.href = Callurl;
+		}
+
+         function showResubdetail() {
+			$('#loader').modal('show');
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='detail', fromdate=${fromdate}, todate=${todate}, type=${'RESUB'}, asondate=${asondate}, version=${version ?: ''})}]]*/;
 			location.href = Callurl;
 		}
 
@@ -621,6 +646,7 @@ function downloadfile(button) {
 					'&todate=' + todate +
 					'&currency=' + currency +
 					'&subreportid=' + subreportid +
+                    '&dtltype=' + dtltype +
 					'&secid=' + secid +
 					'&filename=' + filename +
 					'&type=' + type +
@@ -1098,6 +1124,7 @@ window.fileuploads = function (btn) {
                 $("#resultModalLabel").text("BRRS");
                 $("#resultModalBody").text(response);
                 $("#resultModal").modal("show");
+                back();
             },
             error: function (jqXHR) {
                 $("#resultModalLabel").text("Error");
@@ -1179,12 +1206,30 @@ window.fileuploads = function (btn) {
 
 						<!-- Buttons -->
 						<input type="hidden" id="selectedTab" th:value="${displaymode}">
-						<button type="button" class="custom-tab-btn"
+						
+                        <button type="button" class="custom-tab-btn"
 							id="custom-tab-btnSummary" onclick="showsummary();"
-							th:if="${displaymode == 'detail'}">Summary</button>
-						<button type="button" class="custom-tab-btn"
+							th:if="${type != 'ARCHIVAL' and type != 'RESUB' and displaymode == 'detail'}" >Summary</button>
+
+						<button type="button" class="custom-tab-btn" 
 							id="custom-tab-btnDetails" onclick="showdetail();"
-							th:if="${displaymode == 'summary'}">Details</button>
+							th:if="${type != 'ARCHIVAL' and type != 'RESUB' and displaymode == 'summary'}" >Details</button>
+
+                        <button type="button" class="custom-tab-btn"
+							id="custom-tab-btnSummary" onclick="showArchivalsummary();"
+							th:if="${type == 'ARCHIVAL' and displaymode == 'detail'}" >Summary</button>
+
+						<button type="button" class="custom-tab-btn" 
+							id="custom-tab-btnDetails" onclick="showArchivaldetail();"
+							th:if="${type == 'ARCHIVAL' and displaymode == 'summary'}" >Details</button>
+
+                        <button type="button" class="custom-tab-btn"
+							id="custom-tab-btnSummary" onclick="showResubsummary();"
+							th:if="${type == 'RESUB' and displaymode == 'detail'}" >Summary</button>
+
+						<button type="button" class="custom-tab-btn" 
+							id="custom-tab-btnDetails" onclick="showResubdetail();"
+							th:if="${type == 'RESUB' and displaymode == 'summary'}" >Details</button>
 							
 							
 							
@@ -1227,9 +1272,9 @@ window.fileuploads = function (btn) {
                     				 data-fromdate=${fromdate}, 
                      				 data-todate=${todate}, 
                      				 data-currency=${currency},  
-                     				 data-dtltype=${dtltype}, 
-                     				 data-filename='Q_RLFD1_EMAIL.xlsx',
-					 				 data-type=${'email_report'},
+                     				 data-dtltype=${'email_report'}, 
+                     				 data-filename='Q_RLFA1_EMAIL.xlsx',
+					 				 data-type=${type},
 					    			 data-version=${version}"
 							onclick="downloadfile(this);">
 							<i class="fa fa-download"></i> Email Download
@@ -1256,8 +1301,14 @@ window.fileuploads = function (btn) {
 
 
 				<div>
-                    <h5 th:if="${displaymode == 'summary'}" style="text-align:center" >Summary Table</h5>
-	                <h5 th:if="${displaymode == 'detail'}" style="text-align:center" >Detail Table</h5>
+
+                    <p style="text-align: left; font-weight: bold; 
+						color: white;  font-size: 20px;  background-color: rgb(107, 122, 143); 
+						margin-top:10px; margin-bottom:10px;padding: 5px;" th:if="${displaymode == 'summary'}">Summary View - Q RLFA1</p>
+
+                        <p style="text-align: left; font-weight: bold; 
+						color: white;  font-size: 20px;  background-color: rgb(107, 122, 143); 
+						margin-top:10px; margin-bottom:10px;padding: 5px;" th:if="${displaymode == 'detail'}">Detail View - Q RLFA1</p>
 					<div class="row">
 						<div class="col-sm-12">
 						<form action="#" method="POST" id="fileupload">
@@ -1824,6 +1875,32 @@ window.fileuploads = function (btn) {
 </tr>
 
 <tr>
+    <td id='R70' style='font-weight: bold;'>
+        <input class='display-input Show_input' type='text' value='        Other property ' 
+               id='r27_new_column_rene_loans' name='r27_new_column_rene_loans'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; ' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r27_new_column_collateral_amount != null ? #numbers.formatDecimal(report.r27_new_column_collateral_amount, 1, "COMMA",0, "POINT") : "0"}'
+               id='r27_new_column_collateral_amount' name='r27_new_column_collateral_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r27_new_column_carrying_amount != null ? #numbers.formatDecimal(report.r27_new_column_carrying_amount, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r27_new_column_carrying_amount' name='r27_new_column_carrying_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r27_new_column_no_of_accts != null ? #numbers.formatDecimal(report.r27_new_column_no_of_accts, 1, "COMMA",0, "POINT") : "0"}'
+               id='r27_new_column_no_of_accts' name='r27_new_column_no_of_accts'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+</tr>
+
+<tr>
     <td id='R31' style='font-weight: bold;'>
         <input class='display-input Show_input' type='text' value='        c) Personal loans' 
                id='r31_rene_loans' name='r31_rene_loans'
@@ -2214,6 +2291,32 @@ window.fileuploads = function (btn) {
 </tr>
 
 <tr>
+    <td id='R71' style='font-weight: bold;'>
+        <input class='display-input Show_input' type='text' value='        SACCOs' 
+               id='r42_new_column_rene_loans' name='r42_new_column_rene_loans'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; ' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r42_new_column_collateral_amount != null ? #numbers.formatDecimal(report.r42_new_column_collateral_amount, 1, "COMMA",0, "POINT") : "0"}'
+               id='r42_new_column_collateral_amount' name='r42_new_column_collateral_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r42_new_column_carrying_amount != null ? #numbers.formatDecimal(report.r42_new_column_carrying_amount, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r42_new_column_carrying_amount' name='r42_new_column_carrying_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r42_new_column_no_of_accts != null ? #numbers.formatDecimal(report.r42_new_column_no_of_accts, 1, "COMMA",0, "POINT") : "0"}'
+               id='r42_new_column_no_of_accts' name='r42_new_column_no_of_accts'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+</tr>
+
+<tr>
     <td id='R46' style='font-weight: bold;'>
         <input class='display-input Show_input' type='text' value='        c) Domestic Money Market Unit Trust' 
                id='r46_rene_loans' name='r46_rene_loans'
@@ -2391,6 +2494,32 @@ window.fileuploads = function (btn) {
         <input class='display-input Show_input green-cell' type='text'
                th:value='${report.r52_no_of_accts != null ? #numbers.formatDecimal(report.r52_no_of_accts, 1, "COMMA",0, "POINT") : "0"}'
                id='r52_no_of_accts' name='r52_no_of_accts'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id='R72' style='font-weight: bold;'>
+        <input class='display-input Show_input' type='text' value='             1 .Assets managers' 
+               id='r48_new_column_rene_loans' name='r48_new_column_rene_loans'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; ' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r48_new_column_collateral_amount != null ? #numbers.formatDecimal(report.r48_new_column_collateral_amount, 1, "COMMA",0, "POINT") : "0"}'
+               id='r48_new_column_collateral_amount' name='r48_new_column_collateral_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r48_new_column_carrying_amount != null ? #numbers.formatDecimal(report.r48_new_column_carrying_amount, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r48_new_column_carrying_amount' name='r48_new_column_carrying_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r48_new_column_no_of_accts != null ? #numbers.formatDecimal(report.r48_new_column_no_of_accts, 1, "COMMA",0, "POINT") : "0"}'
+               id='r48_new_column_no_of_accts' name='r48_new_column_no_of_accts'
                style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
     </td>
 </tr>

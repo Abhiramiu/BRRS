@@ -21,9 +21,6 @@ public interface BRRS_Q_RLFA1_Archival_Summary_Repo extends JpaRepository<Q_RLFA
     List<Q_RLFA1_Archival_Summary_Entity> getdatabydateListarchival(Date report_date, BigDecimal report_version);
     
     
-  
-    
-    
 	//  Fetch latest archival version for given date (no version input)
     @Query(value = "SELECT * FROM BRRS_Q_RLFA1_ARCHIVALTABLE_SUMMARY " +"WHERE REPORT_DATE = ?1 AND REPORT_VERSION IS NOT NULL " + "ORDER BY TO_NUMBER(REPORT_VERSION) DESC " + "FETCH FIRST 1 ROWS ONLY",nativeQuery = true)
     Optional<Q_RLFA1_Archival_Summary_Entity> getLatestArchivalVersionByDate(Date report_date);
