@@ -3075,69 +3075,7 @@ public class BRRS_M_OB_ReportService {
 	 * return new byte[0]; } }
 	 */
 
-	@Transactional
-	public void updateReport(M_OB_Summary_Entity updatedEntity) {
-
-		System.out.println("Came to services");
-		System.out.println("Report Date: " + updatedEntity.getReportDate());
-
-		// 1️⃣ Fetch existing SUMMARY
-		M_OB_Summary_Entity existingSummary = brrs_M_OB_summary_repo.findById(updatedEntity.getReportDate())
-				.orElseThrow(() -> new RuntimeException(
-						"Summary record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
-
-		// 2️⃣ Fetch or create DETAIL
-		M_OB_Detail_Entity existingDetail = brrs_M_OB_detail_repo.findById(updatedEntity.getReportDate())
-				.orElseGet(() -> {
-					M_OB_Detail_Entity d = new M_OB_Detail_Entity();
-					d.setReportDate(updatedEntity.getReportDate());
-					return d;
-				});
-
-		try {
-
-			// 🔁 Loop R11 → R23
-			for (int i = 11; i <= 25; i++) {
-
-				String prefix = "R" + i + "_";
-
-				String[] fields = { "TOTAL" };
-
-				for (String field : fields) {
-
-					String getterName = "get" + prefix + field;
-					String setterName = "set" + prefix + field;
-
-					try {
-						Method getter = M_OB_Summary_Entity.class.getMethod(getterName);
-
-						Method summarySetter = M_OB_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-
-						Method detailSetter = M_OB_Detail_Entity.class.getMethod(setterName, getter.getReturnType());
-
-						Object newValue = getter.invoke(updatedEntity);
-
-						// ✅ set into SUMMARY
-						summarySetter.invoke(existingSummary, newValue);
-
-						// ✅ set into DETAIL
-						detailSetter.invoke(existingDetail, newValue);
-
-					} catch (NoSuchMethodException e) {
-						// skip missing fields safely
-						continue;
-					}
-				}
-			}
-
-		} catch (Exception e) {
-			throw new RuntimeException("Error while updating report fields", e);
-		}
-
-		// 3️⃣ Save BOTH (same transaction)
-		brrs_M_OB_summary_repo.save(existingSummary);
-		brrs_M_OB_detail_repo.save(existingDetail);
-	}
+	
 
 	public List<Object[]> getM_OBResub() {
 		List<Object[]> resubList = new ArrayList<>();
@@ -3846,29 +3784,26 @@ public class BRRS_M_OB_ReportService {
 		}
 
 	}
+	
 	@Transactional
-	public void updateOBReport(M_OB_Summary_Entity updatedEntity) {
+	public void updateReport(M_OB_Summary_Entity updatedEntity) {
 
-	    System.out.println("Came to OB services");
-	    System.out.println("Report Date: " + updatedEntity.getReportDate());
+		System.out.println("Came to services");
+		System.out.println("Report Date: " + updatedEntity.getReportDate());
 
-	    // 1️⃣ Fetch existing SUMMARY
-	    M_OB_Summary_Entity existingSummary = brrs_M_OB_summary_repo
-	            .findById(updatedEntity.getReportDate())
-	            .orElseThrow(() -> new RuntimeException(
-	                    "Summary record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
+		// 1️⃣ Fetch existing SUMMARY
+		M_OB_Summary_Entity existingSummary = brrs_M_OB_summary_repo.findById(updatedEntity.getReportDate())
+				.orElseThrow(() -> new RuntimeException(
+						"Summary record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
 
-	    // 2️⃣ Fetch or create DETAIL
-	    M_OB_Detail_Entity existingDetail = brrs_M_OB_detail_repo
-	            .findById(updatedEntity.getReportDate())
-	            .orElseGet(() -> {
-	                M_OB_Detail_Entity d = new M_OB_Detail_Entity();
-	                d.setReportDate(updatedEntity.getReportDate());
-	                return d;
-	            });
-
+		// 2️⃣ Fetch or create DETAIL
+		M_OB_Detail_Entity existingDetail = brrs_M_OB_detail_repo.findById(updatedEntity.getReportDate())
+				.orElseGet(() -> {
+					M_OB_Detail_Entity d = new M_OB_Detail_Entity();
+					d.setReportDate(updatedEntity.getReportDate());
+					return d;
+				});
 	    try {
-
 	        // ❌ Rows to skip in main loop (formula rows)
 	        int[] skipRows = {15, 29, 38, 41, 44, 49, 52, 58, 64};
 
@@ -3885,7 +3820,7 @@ public class BRRS_M_OB_ReportService {
 	            if (skip) continue;
 
 	            String prefix = "R" + i + "_";
-	            String[] fields = { "OTHER_BORROW" };
+	            String[] fields = {"OTHER_BORROW"};
 
 	            for (String field : fields) {
 
@@ -3903,26 +3838,27 @@ public class BRRS_M_OB_ReportService {
 
 	                    Object newValue = getter.invoke(updatedEntity);
 
-	                    // ✅ set into SUMMARY
+	                    System.out.println("Updating " + prefix + field + " = " + newValue);
+
+	                    // ✅ set into SUMMARY (managed entity)
 	                    summarySetter.invoke(existingSummary, newValue);
 
-	                    // ✅ set into DETAIL
+	                    // ✅ set into DETAIL (managed entity)
 	                    detailSetter.invoke(existingDetail, newValue);
 
 	                } catch (NoSuchMethodException e) {
 	                    // skip missing fields safely
-	                    continue;
 	                }
 	            }
 	        }
 
-	        // 🔁 Formula rows (if you still want to copy them explicitly)
+	        // 🔁 Formula rows
 	        int[] targetRows = {11, 15, 29, 38, 41, 44, 49, 52, 58, 64};
 
 	        for (int i : targetRows) {
 
 	            String prefix = "R" + i + "_";
-	            String[] fields = { "OTHER_BORROW" };
+	            String[] fields = {"OTHER_BORROW"};
 
 	            for (String field : fields) {
 
@@ -3940,25 +3876,27 @@ public class BRRS_M_OB_ReportService {
 
 	                    Object newValue = getter.invoke(updatedEntity);
 
-	                    // ✅ set into SUMMARY
-	                    summarySetter.invoke(existingSummary, newValue);
+	                    System.out.println("Updating formula " + prefix + field + " = " + newValue);
 
-	                    // ✅ set into DETAIL
+	                    summarySetter.invoke(existingSummary, newValue);
 	                    detailSetter.invoke(existingDetail, newValue);
 
 	                } catch (NoSuchMethodException e) {
-	                    continue;
+	                    // skip missing fields
 	                }
 	            }
 	        }
 
 	    } catch (Exception e) {
+	        e.printStackTrace();
 	        throw new RuntimeException("Error while updating OB report fields", e);
 	    }
 
-	    // 3️⃣ Save BOTH (same transaction)
-	    brrs_M_OB_summary_repo.save(existingSummary);
-	    brrs_M_OB_detail_repo.save(existingDetail);
+	    // 3️⃣ Save & FLUSH BOTH (force DB write)
+	    brrs_M_OB_summary_repo.saveAndFlush(existingSummary);
+	    brrs_M_OB_detail_repo.saveAndFlush(existingDetail);
+
+	    System.out.println("✅ OB Summary and Detail updated successfully for date: ");
 	}
 
 
