@@ -1275,7 +1275,8 @@ public byte[] getBRRS_M_SRWA_12CExcel(String filename,String reportId, String fr
 	            for (M_SRWA_12C_Archival_Summary_Entity entity : latestArchivalList) {
 	                Object[] row = new Object[] {
 	                    entity.getReport_date(),
-	                    entity.getReport_version()
+	                    entity.getReport_version(),
+	                    entity.getReportResubDate()
 	                };
 	                resubList.add(row);
 	            }
