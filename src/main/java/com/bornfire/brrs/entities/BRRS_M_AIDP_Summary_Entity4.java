@@ -400,6 +400,7 @@ public class BRRS_M_AIDP_Summary_Entity4 {
 	    private BigDecimal R193_AMT_TIME;
 	    private BigDecimal R194_TOT_AMT_DEMAND;
 	    private BigDecimal R194_TOT_AMT_TIME;
+
 		public Date getREPORT_DATE() {
 			return REPORT_DATE;
 		}

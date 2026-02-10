@@ -1,23 +1,35 @@
 package com.bornfire.brrs.entities;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
-@Table(name = "BRRS_M_AIDP_ARCHIVALTABLE_SUMMARY1")
+@Table(name = "BRRS_M_AIDP_RESUBTABLE_SUMMARY1")
 @IdClass(M_AIDP_PK.class)
-public class M_AIDP_Archival_Summary_Entity1 implements Serializable {
-	private static final long serialVersionUID = 1L;
-	@Id
-	private Date report_date;
+public class M_AIDP_Resub_Summary_Entity1 {
 
+	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern = "dd/MM/yyyy")
+	@Id
+
+	private Date report_date;
+	@Id
 	private BigDecimal report_version;
+
+	@Column(name = "REPORT_RESUBDATE")
+
+	private Date reportResubDate;
+	
 	private String REPORT_FREQUENCY;
 	private String REPORT_CODE;
 	private String REPORT_DESC;
@@ -308,26 +320,6 @@ public class M_AIDP_Archival_Summary_Entity1 implements Serializable {
 
 	private BigDecimal R51_TOT_AMT_LESS_184_DAYS;
 	private BigDecimal R51_TOT_AMT_MORE_184_DAYS;
-
-	public Date getReport_date() {
-		return report_date;
-	}
-
-	public void setReport_date(Date report_date) {
-		this.report_date = report_date;
-	}
-
-	public BigDecimal getReport_version() {
-		return report_version;
-	}
-
-	public void setReport_version(BigDecimal report_version) {
-		this.report_version = report_version;
-	}
-
-	public static long getSerialversionuid() {
-		return serialVersionUID;
-	}
 
 	public String getREPORT_FREQUENCY() {
 		return REPORT_FREQUENCY;
@@ -2633,14 +2625,44 @@ public class M_AIDP_Archival_Summary_Entity1 implements Serializable {
 		R51_TOT_AMT_MORE_184_DAYS = r51_TOT_AMT_MORE_184_DAYS;
 	}
 
-	public M_AIDP_Archival_Summary_Entity1() {
+	public Date getReport_date() {
+		return report_date;
+	}
+
+	public void setReport_date(Date report_date) {
+		this.report_date = report_date;
+	}
+
+	public BigDecimal getReport_version() {
+		return report_version;
+	}
+
+	public void setReport_version(BigDecimal report_version) {
+		this.report_version = report_version;
+	}
+
+	public Date getReportResubDate() {
+		return reportResubDate;
+	}
+
+	public void setReportResubDate(Date reportResubDate) {
+		this.reportResubDate = reportResubDate;
+	}
+
+	public M_AIDP_Resub_Summary_Entity1() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
-	public void setId(M_AIDP_PK pk) {
+	public Object getSrlNo() {
 		// TODO Auto-generated method stub
-
+		return null;
 	}
 
+	public void setId(M_AIDP_PK pk) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	
 }

@@ -10,9 +10,9 @@ import javax.persistence.IdClass;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "BRRS_M_AIDP_ARCHIVALTABLE_SUMMARY1")
+@Table(name = "BRRS_M_AIDP_RESUBTABLE_DETAIL1")
 @IdClass(M_AIDP_PK.class)
-public class M_AIDP_Archival_Summary_Entity1 implements Serializable {
+public class M_AIDP_Resub_Detail_Entity1 implements Serializable {
 	private static final long serialVersionUID = 1L;
 	@Id
 	private Date report_date;
@@ -2633,7 +2633,7 @@ public class M_AIDP_Archival_Summary_Entity1 implements Serializable {
 		R51_TOT_AMT_MORE_184_DAYS = r51_TOT_AMT_MORE_184_DAYS;
 	}
 
-	public M_AIDP_Archival_Summary_Entity1() {
+	public M_AIDP_Resub_Detail_Entity1() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
@@ -2642,5 +2642,4 @@ public class M_AIDP_Archival_Summary_Entity1 implements Serializable {
 		// TODO Auto-generated method stub
 
 	}
-
 }

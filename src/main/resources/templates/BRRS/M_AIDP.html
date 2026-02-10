@@ -992,61 +992,71 @@ PURPOSE		: BWRBRREPORT
 		}
 
 		function fileuploads(btn) {
-			const asondate = btn.getAttribute("data-todate");
-			$('#loader').modal('show');
 
-			// ✅ Step 1: Calculate totals
-			calculateR51Totals();
-			calculateR96Totals();
-			calculateR142Totals();
-			calculateR194Totals();
+		    const asondate = btn.getAttribute("data-todate");
+		    const reportId = btn.getAttribute("data-reporttype"); // RESUB / NORMAL
 
-			// ✅ Step 2: Remove commas from inputs
-			$("#fileupload input[type='text']").each(function () {
-				$(this).val($(this).val().replace(/,/g, ''));
-			});
+		    $('#loader').modal('show');
 
-			// ✅ Step 3: Validate form
-			if (!$("#fileupload").valid()) {
-				$('#loader').modal('hide');
-				return;
-			}
+		    // Step 1: Calculate totals
+		    calculateR51Totals();
+		    calculateR96Totals();
+		    calculateR142Totals();
+		    calculateR194Totals();
 
-			// ✅ Step 4: Build one FormData object for all entities
-			const formData = new FormData();
-			formData.append("asondate", asondate);
+		    // Step 2: Remove commas
+		    $("#fileupload input[type='text']").each(function () {
+		        $(this).val($(this).val().replace(/,/g, ''));
+		    });
 
-			// Append all inputs
-			$('#fileupload').find(':input').each(function () {
-				const name = $(this).attr('name');
-				if (name) {
-					formData.append(name, $(this).val());
-				}
-			});
+		    // Step 3: Validate form
+		    if (!$("#fileupload").valid()) {
+		        $('#loader').modal('hide');
+		        return;
+		    }
 
-			// ✅ Step 5: Send single Ajax request
-			$.ajax({
-				url: './AIDPupdateAll',
-				type: 'POST',
-				data: formData,
-				processData: false,
-				contentType: false,
-				dataType: 'text',
-				success: function () {
-					$("#resultModalLabel").text("BRRS");
-					$("#resultModalBody").text("Updated Successfully");
-					$("#resultModal").modal("show");
-				},
-				error: function (jqXHR) {
-					console.error("Error response:", jqXHR.responseText);
-					$("#resultModalLabel").text("Error");
-					$("#resultModalBody").text("Update failed. Check console for details.");
-					$("#resultModal").modal("show");
-				},
-				complete: function () {
-					$('#loader').modal('hide');
-				}
-			});
+		    // Step 4: Build FormData
+		    const formData = new FormData();
+		    formData.append("asondate", asondate);
+		    formData.append("reportType", reportId);
+
+		    $('#fileupload').find(':input').each(function () {
+		        const name = $(this).attr('name');
+		        if (name) {
+		            formData.append(name, $(this).val());
+		        }
+		    });
+
+		    // ✅ Step 5: Decide URL based on reportType
+		    let urlToCall = './AIDPupdateAll';
+
+		    if (reportId === 'RESUB') {
+		        urlToCall = './AIDPupdateAll1';
+		    }
+
+		    // Step 6: Ajax call
+		    $.ajax({
+		        url: urlToCall,
+		        type: 'POST',
+		        data: formData,
+		        processData: false,
+		        contentType: false,
+		        dataType: 'text',
+		        success: function () {
+		            $("#resultModalLabel").text("BRRS");
+		            $("#resultModalBody").text("Updated Successfully");
+		            $("#resultModal").modal("show");
+		        },
+		        error: function (jqXHR) {
+		            console.error("Error response:", jqXHR.responseText);
+		            $("#resultModalLabel").text("Error");
+		            $("#resultModalBody").text("Update failed. Check console.");
+		            $("#resultModal").modal("show");
+		        },
+		        complete: function () {
+		            $('#loader').modal('hide');
+		        }
+		    });
 		}
 
 
@@ -1198,7 +1208,7 @@ PURPOSE		: BWRBRREPORT
 						</button>
 
 
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd" style="white-space: nowrap;"
+						<!--<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd" style="white-space: nowrap;"
 							th:if="${displaymode == 'summary'}" th:attr="data-reportid=${reportid}, 
                      data-asondate=${asondate}, 
                      data-fromdate=${fromdate}, 
@@ -1209,7 +1219,7 @@ PURPOSE		: BWRBRREPORT
                      data-type=${type},
                      data-version=${version}" onclick="downloadfilepdf(this);">PDF
 							<i class="fa fa-download"></i>
-						</button>
+						</button>-->
 
 
 
@@ -21989,10 +21999,11 @@ PURPOSE		: BWRBRREPORT
 								<div style="text-align: center; margin-top: 10px;">
 
 									<button id="submitButton" type="button" class="custom-tab-btn Show_input"
-										form="fileupload" th:attr="data-todate=${asondate}" onclick="fileuploads(this);"
-										style="display: none;">
+										form="fileupload" th:attr="data-todate=${asondate}, data-reporttype=${type}"
+										onclick="fileuploads(this);" style="display: none;">
 										Submit
 									</button>
+
 								</div>
 							</form>
 						</div>

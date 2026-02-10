@@ -14,16 +14,21 @@ import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
-import org.apache.poi.ss.usermodel.DataFormat;
+import java.util.Map;
+
 import javax.transaction.Transactional;
 
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CreationHelper;
+import org.apache.poi.ss.usermodel.DataFormat;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.Font;
@@ -33,7 +38,6 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.apache.poi.xssf.usermodel.DefaultIndexedColorMap;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.apache.poi.xssf.usermodel.XSSFFont;
@@ -48,6 +52,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.bornfire.brrs.entities.AIDPResubWrapper;
 import com.bornfire.brrs.entities.BRRS_M_AIDP_Archival_Detail_Repo1;
 import com.bornfire.brrs.entities.BRRS_M_AIDP_Archival_Detail_Repo2;
 import com.bornfire.brrs.entities.BRRS_M_AIDP_Archival_Detail_Repo3;
@@ -64,6 +69,14 @@ import com.bornfire.brrs.entities.BRRS_M_AIDP_Detail_Repo1;
 import com.bornfire.brrs.entities.BRRS_M_AIDP_Detail_Repo2;
 import com.bornfire.brrs.entities.BRRS_M_AIDP_Detail_Repo3;
 import com.bornfire.brrs.entities.BRRS_M_AIDP_Detail_Repo4;
+import com.bornfire.brrs.entities.BRRS_M_AIDP_Resub_Detail_Repo1;
+import com.bornfire.brrs.entities.BRRS_M_AIDP_Resub_Detail_Repo2;
+import com.bornfire.brrs.entities.BRRS_M_AIDP_Resub_Detail_Repo3;
+import com.bornfire.brrs.entities.BRRS_M_AIDP_Resub_Detail_Repo4;
+import com.bornfire.brrs.entities.BRRS_M_AIDP_Resub_Summary_Repo1;
+import com.bornfire.brrs.entities.BRRS_M_AIDP_Resub_Summary_Repo2;
+import com.bornfire.brrs.entities.BRRS_M_AIDP_Resub_Summary_Repo3;
+import com.bornfire.brrs.entities.BRRS_M_AIDP_Resub_Summary_Repo4;
 import com.bornfire.brrs.entities.BRRS_M_AIDP_Summary_Entity1;
 import com.bornfire.brrs.entities.BRRS_M_AIDP_Summary_Entity2;
 import com.bornfire.brrs.entities.BRRS_M_AIDP_Summary_Entity3;
@@ -76,10 +89,23 @@ import com.bornfire.brrs.entities.BRRS_M_SFINP2_Archival_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_M_SFINP2_Archival_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_M_SFINP2_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_M_SFINP2_Summary_Repo;
+import com.bornfire.brrs.entities.M_AIDP_Archival_Detail_Entity1;
+import com.bornfire.brrs.entities.M_AIDP_Archival_Detail_Entity2;
+import com.bornfire.brrs.entities.M_AIDP_Archival_Detail_Entity3;
+import com.bornfire.brrs.entities.M_AIDP_Archival_Detail_Entity4;
 import com.bornfire.brrs.entities.M_AIDP_Archival_Summary_Entity1;
 import com.bornfire.brrs.entities.M_AIDP_Archival_Summary_Entity2;
 import com.bornfire.brrs.entities.M_AIDP_Archival_Summary_Entity3;
 import com.bornfire.brrs.entities.M_AIDP_Archival_Summary_Entity4;
+import com.bornfire.brrs.entities.M_AIDP_PK;
+import com.bornfire.brrs.entities.M_AIDP_Resub_Detail_Entity1;
+import com.bornfire.brrs.entities.M_AIDP_Resub_Detail_Entity2;
+import com.bornfire.brrs.entities.M_AIDP_Resub_Detail_Entity3;
+import com.bornfire.brrs.entities.M_AIDP_Resub_Detail_Entity4;
+import com.bornfire.brrs.entities.M_AIDP_Resub_Summary_Entity1;
+import com.bornfire.brrs.entities.M_AIDP_Resub_Summary_Entity2;
+import com.bornfire.brrs.entities.M_AIDP_Resub_Summary_Entity3;
+import com.bornfire.brrs.entities.M_AIDP_Resub_Summary_Entity4;
 //=== iText PDF ===
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Document;
@@ -121,6 +147,7 @@ public class BRRS_M_AIDP_ReportService {
 
 	@Autowired
 	BRRS_M_AIDP_Archival_Summary_Repo1 M_AIDP_Archival_Summary_Repo1;
+
 	@Autowired
 	BRRS_M_AIDP_Archival_Summary_Repo2 M_AIDP_Archival_Summary_Repo2;
 
@@ -163,16 +190,34 @@ public class BRRS_M_AIDP_ReportService {
 	@Autowired
 	BRRS_M_AIDP_Detail_Repo4 bRRS_M_AIDP_Detail_Repo4;
 
+	@Autowired
+	BRRS_M_AIDP_Resub_Summary_Repo1 BRRS_M_AIDP_Resub_Summary_Repo1;
+
+	@Autowired
+	BRRS_M_AIDP_Resub_Summary_Repo2 BRRS_M_AIDP_Resub_Summary_Repo2;
+
+	@Autowired
+	BRRS_M_AIDP_Resub_Summary_Repo3 BRRS_M_AIDP_Resub_Summary_Repo3;
+
+	@Autowired
+	BRRS_M_AIDP_Resub_Summary_Repo4 BRRS_M_AIDP_Resub_Summary_Repo4;
+
+	@Autowired
+	BRRS_M_AIDP_Resub_Detail_Repo1 BRRS_M_AIDP_Resub_Detail_Repo1;
+
+	@Autowired
+	BRRS_M_AIDP_Resub_Detail_Repo2 BRRS_M_AIDP_Resub_Detail_Repo2;
+
+	@Autowired
+	BRRS_M_AIDP_Resub_Detail_Repo3 BRRS_M_AIDP_Resub_Detail_Repo3;
+
+	@Autowired
+	BRRS_M_AIDP_Resub_Detail_Repo4 BRRS_M_AIDP_Resub_Detail_Repo4;
+
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
 	public ModelAndView getM_AIDPView(String reportId, String fromdate, String todate, String currency, String dtltype,
 			Pageable pageable, String type, BigDecimal version) {
-
-		System.out.println("===== getM_AIDPView INPUT VALUES =====");
-		System.out.println("type     : " + type);
-		System.out.println("dtltype  : " + dtltype);
-		System.out.println("version  : " + version);
-		System.out.println("===== END INPUT VALUES =====");
 
 		ModelAndView mv = new ModelAndView("BRRS/M_AIDP");
 
@@ -191,7 +236,7 @@ public class BRRS_M_AIDP_ReportService {
 					mv.addObject("reportsummary4", M_AIDP_Archival_Detail_Repo4.getdatabydateListarchival(d1, version));
 
 					mv.addObject("displaymode", "detail");
-				} else if ("report".equalsIgnoreCase(dtltype)){
+				} else if ("report".equalsIgnoreCase(dtltype)) {
 
 					mv.addObject("reportsummary", M_AIDP_Archival_Summary_Repo1.getdatabydateListarchival(d1, version));
 					mv.addObject("reportsummary2",
@@ -213,6 +258,50 @@ public class BRRS_M_AIDP_ReportService {
 							M_AIDP_Archival_Summary_Repo3.getdatabydateListarchival(d1, version));
 					mv.addObject("reportsummary4",
 							M_AIDP_Archival_Summary_Repo4.getdatabydateListarchival(d1, version));
+
+					mv.addObject("displaymode", "summary");
+				}
+			}
+
+			else if ("RESUB".equalsIgnoreCase(type)) {
+
+				// 🔹 ARCHIVAL → DETAIL
+				if ("detail".equalsIgnoreCase(dtltype)) {
+
+					mv.addObject("reportsummary",
+							BRRS_M_AIDP_Resub_Detail_Repo1.getdatabydateListarchival(d1, version));
+					mv.addObject("reportsummary2",
+							BRRS_M_AIDP_Resub_Detail_Repo2.getdatabydateListarchival(d1, version));
+					mv.addObject("reportsummary3",
+							BRRS_M_AIDP_Resub_Detail_Repo3.getdatabydateListarchival(d1, version));
+					mv.addObject("reportsummary4",
+							BRRS_M_AIDP_Resub_Detail_Repo4.getdatabydateListarchival(d1, version));
+
+					mv.addObject("displaymode", "detail");
+				} else if ("report".equalsIgnoreCase(dtltype)) {
+
+					mv.addObject("reportsummary",
+							BRRS_M_AIDP_Resub_Summary_Repo1.getdatabydateListarchival(d1, version));
+					mv.addObject("reportsummary2",
+							BRRS_M_AIDP_Resub_Summary_Repo2.getdatabydateListarchival(d1, version));
+					mv.addObject("reportsummary3",
+							BRRS_M_AIDP_Resub_Summary_Repo3.getdatabydateListarchival(d1, version));
+					mv.addObject("reportsummary4",
+							BRRS_M_AIDP_Resub_Summary_Repo4.getdatabydateListarchival(d1, version));
+
+					mv.addObject("displaymode", "summary");
+				}
+				// 🔹 ARCHIVAL → SUMMARY
+				else {
+
+					mv.addObject("reportsummary",
+							BRRS_M_AIDP_Resub_Summary_Repo1.getdatabydateListarchival(d1, version));
+					mv.addObject("reportsummary2",
+							BRRS_M_AIDP_Resub_Summary_Repo2.getdatabydateListarchival(d1, version));
+					mv.addObject("reportsummary3",
+							BRRS_M_AIDP_Resub_Summary_Repo3.getdatabydateListarchival(d1, version));
+					mv.addObject("reportsummary4",
+							BRRS_M_AIDP_Resub_Summary_Repo4.getdatabydateListarchival(d1, version));
 
 					mv.addObject("displaymode", "summary");
 				}
@@ -581,18 +670,6 @@ public class BRRS_M_AIDP_ReportService {
 	public byte[] getM_AIDPExcel(String filename, String reportId, String fromdate, String todate, String currency,
 			String dtltype, String type, BigDecimal version) throws Exception {
 
-		/* ================= ARCHIVAL ================= */
-		if ("ARCHIVAL".equalsIgnoreCase(type)) {
-
-			byte[] archivalBytes = getExcelM_AIDPARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type,
-					version);
-
-			if (archivalBytes == null || archivalBytes.length == 0) {
-				throw new IllegalStateException("ARCHIVAL Excel returned NULL / EMPTY");
-			}
-			return archivalBytes;
-		}
-
 		/* ================= DATE ================= */
 		Date parsedDate = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH).parse(todate);
 
@@ -608,6 +685,9 @@ public class BRRS_M_AIDP_ReportService {
 		List<BRRS_M_AIDP_Detail_Entity2> dataList8 = bRRS_M_AIDP_Detail_Repo2.getdatabydateList(parsedDate);
 
 		boolean isDetail = "detail".equalsIgnoreCase(dtltype) || "email".equalsIgnoreCase(dtltype);
+
+		logger.info("dtltype received        : {}", dtltype);
+		logger.info("isDetail evaluated value: {}", isDetail);
 
 		/* ================= TEMPLATE ================= */
 		Path templatePath = Paths.get(env.getProperty("output.exportpathtemp"), filename);
@@ -685,6 +765,8 @@ public class BRRS_M_AIDP_ReportService {
 			/* ================= WRITE ================= */
 			if (isDetail) {
 
+				logger.info("isDetail evaluated value: {}", isDetail);
+
 				int totalColumns = 6;
 
 				if (dataList5 != null && !dataList5.isEmpty())
@@ -706,6 +788,8 @@ public class BRRS_M_AIDP_ReportService {
 				applyBlackBorder(sheet, blackBorderStyle, 48, rowCodesPart8.length, totalColumns);
 
 			} else {
+				logger.info("else summary evaluated value: {}", isDetail);
+
 				int totalColumns = 8;
 
 				writeRowData1(sheet, dataList1, rowCodesPart1, fieldSuffixes, 10, numberStyle, textStyle);
@@ -2258,4 +2342,470 @@ public class BRRS_M_AIDP_ReportService {
 			}
 		}
 	}
+
+	public List<Object[]> getM_AIDPResub() {
+
+		List<Object[]> mergedList = new ArrayList<>();
+
+		try {
+			/* ================= SUMMARY 1 (Object[]) ================= */
+			List<Object[]> list5 = BRRS_M_AIDP_Resub_Summary_Repo1.getResubData();
+
+			for (Object[] e : list5) {
+				Date reportDate = e[0] != null ? (Date) e[0] : null;
+				BigDecimal reportVersion = e[1] != null ? (BigDecimal) e[1] : null;
+				Date reportResubDate = e[2] != null ? (Date) e[2] : null;
+
+				mergedList.add(new Object[] { reportDate, reportVersion, reportResubDate });
+			}
+
+			/* ================= SUMMARY 2 (Entity) ================= */
+			List<Object[]> list6 = BRRS_M_AIDP_Resub_Summary_Repo2.getResubData();
+
+			for (Object[] e : list6) {
+				Date reportDate = e[0] != null ? (Date) e[0] : null;
+				BigDecimal reportVersion = e[1] != null ? (BigDecimal) e[1] : null;
+				Date reportResubDate = e[2] != null ? (Date) e[2] : null;
+
+				mergedList.add(new Object[] { reportDate, reportVersion, reportResubDate });
+			}
+
+			/* ================= SUMMARY 3 (Entity) ================= */
+			List<Object[]> list7 = BRRS_M_AIDP_Resub_Summary_Repo3.getResubData();
+
+			for (Object[] e : list7) {
+				Date reportDate = e[0] != null ? (Date) e[0] : null;
+				BigDecimal reportVersion = e[1] != null ? (BigDecimal) e[1] : null;
+				Date reportResubDate = e[2] != null ? (Date) e[2] : null;
+
+				mergedList.add(new Object[] { reportDate, reportVersion, reportResubDate });
+			}
+
+			/* ================= SUMMARY 4 (Entity) ================= */
+			List<Object[]> list8 = BRRS_M_AIDP_Resub_Summary_Repo4.getResubData();
+
+			for (Object[] e : list8) {
+				Date reportDate = e[0] != null ? (Date) e[0] : null;
+				BigDecimal reportVersion = e[1] != null ? (BigDecimal) e[1] : null;
+				Date reportResubDate = e[2] != null ? (Date) e[2] : null;
+
+				mergedList.add(new Object[] { reportDate, reportVersion, reportResubDate });
+			}
+
+			System.out.println("Fetched rows (before dedupe) = " + mergedList.size());
+
+			/* ================= DEDUPE BY REPORT_DATE + REPORT_VERSION ================= */
+			Map<String, Object[]> uniqueMap = new LinkedHashMap<>();
+
+			for (Object[] row : mergedList) {
+				Date reportDate = (Date) row[0];
+				Object reportVersion = row[1];
+
+				String key = reportDate + "_" + reportVersion;
+				uniqueMap.putIfAbsent(key, row); // keep first occurrence only
+			}
+
+			List<Object[]> result = new ArrayList<>(uniqueMap.values());
+
+			System.out.println("Rows after dedupe = " + result.size());
+
+			return result;
+
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			return Collections.emptyList();
+		}
+	}
+
+	@Transactional
+	public void updateReport5(M_AIDP_Resub_Summary_Entity1 request5) {
+
+		System.out.println("THE GETTING REPORT DATE IS " + request5.getReport_date());
+
+		// ===== VERSION =====
+		BigDecimal maxVersion = BRRS_M_AIDP_Resub_Summary_Repo1.findGlobalMaxReportVersion();
+		BigDecimal nextVersion = (maxVersion == null) ? BigDecimal.ONE : maxVersion.add(BigDecimal.ONE);
+
+		// ===== SUMMARY (RESUB) =====
+		M_AIDP_Resub_Summary_Entity1 summaryVal = new M_AIDP_Resub_Summary_Entity1();
+		summaryVal.setReport_date(request5.getReport_date());
+		summaryVal.setReport_version(nextVersion);
+		summaryVal.setReportResubDate(new Date());
+
+		// ===== DETAIL (RESUB) =====
+		M_AIDP_Resub_Detail_Entity1 detailVal = new M_AIDP_Resub_Detail_Entity1();
+		detailVal.setReport_date(request5.getReport_date());
+		detailVal.setReport_version(nextVersion);
+
+		// ===== SUMMARY (ARCHIVAL) =====
+		M_AIDP_Archival_Summary_Entity1 summaryValArc = new M_AIDP_Archival_Summary_Entity1();
+		summaryValArc.setReport_date(request5.getReport_date());
+		summaryValArc.setReport_version(nextVersion);
+
+		// ===== DETAIL (ARCHIVAL) =====
+		M_AIDP_Archival_Detail_Entity1 detailValArc = new M_AIDP_Archival_Detail_Entity1();
+		detailValArc.setReport_date(request5.getReport_date());
+		detailValArc.setReport_version(nextVersion);
+
+		try {
+
+			String[] fields = { "NAME_OF_BANK", "TYPE_OF_ACC", "PURPOSE", "CURRENCY", "BANK_RATE", "AMT_LESS_184_DAYS",
+					"AMT_MORE_184_DAYS" };
+
+			for (int i = 11; i <= 50; i++) {
+
+				String prefix = "R" + i + "_";
+
+				for (String field : fields) {
+
+					String getterName = "get" + prefix + field;
+					String setterName = "set" + prefix + field;
+
+					try {
+						Method getter = M_AIDP_Resub_Summary_Entity1.class.getMethod(getterName);
+						Object value = getter.invoke(request5);
+						Class<?> type = getter.getReturnType();
+
+						M_AIDP_Resub_Summary_Entity1.class.getMethod(setterName, type).invoke(summaryVal, value);
+
+						M_AIDP_Resub_Detail_Entity1.class.getMethod(setterName, type).invoke(detailVal, value);
+
+						M_AIDP_Archival_Summary_Entity1.class.getMethod(setterName, type).invoke(summaryValArc, value);
+
+						M_AIDP_Archival_Detail_Entity1.class.getMethod(setterName, type).invoke(detailValArc, value);
+
+					} catch (NoSuchMethodException ignored) {
+					}
+				}
+			}
+
+			// ===== TOTAL ROW =====
+			String[] totalFields = { "TOT_AMT_LESS_184_DAYS", "TOT_AMT_MORE_184_DAYS" };
+
+			for (String field : totalFields) {
+
+				String getterName = "getR51_" + field;
+				String setterName = "setR51_" + field;
+
+				try {
+					Method getter = M_AIDP_Resub_Summary_Entity1.class.getMethod(getterName);
+					Object value = getter.invoke(request5);
+					Class<?> type = getter.getReturnType();
+
+					M_AIDP_Resub_Summary_Entity1.class.getMethod(setterName, type).invoke(summaryVal, value);
+
+					M_AIDP_Resub_Detail_Entity1.class.getMethod(setterName, type).invoke(detailVal, value);
+
+					M_AIDP_Archival_Summary_Entity1.class.getMethod(setterName, type).invoke(summaryValArc, value);
+
+					M_AIDP_Archival_Detail_Entity1.class.getMethod(setterName, type).invoke(detailValArc, value);
+
+				} catch (NoSuchMethodException ignored) {
+				}
+			}
+
+		} catch (Exception e) {
+			throw new RuntimeException("Error while updating report fields", e);
+		}
+
+		// ===== SAVE – ONE INSERT PER TABLE =====
+		M_AIDP_Archival_Summary_Repo1.saveAndFlush(summaryValArc);
+		M_AIDP_Archival_Detail_Repo1.saveAndFlush(detailValArc);
+		BRRS_M_AIDP_Resub_Summary_Repo1.saveAndFlush(summaryVal);
+		BRRS_M_AIDP_Resub_Detail_Repo1.saveAndFlush(detailVal);
+	}
+
+	@Transactional
+	public void updateReport6(M_AIDP_Resub_Summary_Entity2 request6) {
+
+		System.out.println("THE GETTING REPORT DATE IS " + request6.getReport_date());
+
+		// ===== VERSION =====
+		BigDecimal maxVersion = BRRS_M_AIDP_Resub_Summary_Repo2.findGlobalMaxReportVersion();
+		BigDecimal nextVersion = (maxVersion == null) ? BigDecimal.ONE : maxVersion.add(BigDecimal.ONE);
+
+		// ===== SUMMARY (RESUB) =====
+		M_AIDP_Resub_Summary_Entity2 summaryVal = new M_AIDP_Resub_Summary_Entity2();
+		summaryVal.setReport_date(request6.getReport_date());
+		summaryVal.setReport_version(nextVersion);
+		summaryVal.setReportResubDate(new Date());
+
+		// ===== DETAIL (RESUB) =====
+		M_AIDP_Resub_Detail_Entity2 detailVal = new M_AIDP_Resub_Detail_Entity2();
+		detailVal.setReport_date(request6.getReport_date());
+		detailVal.setReport_version(nextVersion);
+
+		// ===== SUMMARY (ARCHIVAL) =====
+		M_AIDP_Archival_Summary_Entity2 summaryValArc = new M_AIDP_Archival_Summary_Entity2();
+		summaryValArc.setReport_date(request6.getReport_date());
+		summaryValArc.setReport_version(nextVersion);
+
+		// ===== DETAIL (ARCHIVAL) =====
+		M_AIDP_Archival_Detail_Entity2 detailValArc = new M_AIDP_Archival_Detail_Entity2();
+		detailValArc.setReport_date(request6.getReport_date());
+		detailValArc.setReport_version(nextVersion);
+
+		try {
+
+			String[] fields = { "NAME_OF_BANK", "TYPE_OF_ACC", "PURPOSE", "CURRENCY", "BANK_RATE", "AMT_LESS_184_DAYS",
+					"AMT_MORE_184_DAYS" };
+
+			for (int i = 56; i <= 95; i++) {
+
+				String prefix = "R" + i + "_";
+
+				for (String field : fields) {
+
+					String getterName = "get" + prefix + field;
+					String setterName = "set" + prefix + field;
+
+					try {
+						Method getter = M_AIDP_Resub_Summary_Entity2.class.getMethod(getterName);
+						Object value = getter.invoke(request6);
+						Class<?> type = getter.getReturnType();
+
+						M_AIDP_Resub_Summary_Entity2.class.getMethod(setterName, type).invoke(summaryVal, value);
+
+						M_AIDP_Resub_Detail_Entity2.class.getMethod(setterName, type).invoke(detailVal, value);
+
+						M_AIDP_Archival_Summary_Entity2.class.getMethod(setterName, type).invoke(summaryValArc, value);
+
+						M_AIDP_Archival_Detail_Entity2.class.getMethod(setterName, type).invoke(detailValArc, value);
+
+					} catch (NoSuchMethodException ignored) {
+					}
+				}
+			}
+
+			// ===== TOTAL ROW =====
+			String[] totalFields = { "TOT_AMT_LESS_184_DAYS", "TOT_AMT_MORE_184_DAYS" };
+
+			for (String field : totalFields) {
+
+				String getterName = "getR96_" + field;
+				String setterName = "setR96_" + field;
+
+				try {
+					Method getter = M_AIDP_Resub_Summary_Entity2.class.getMethod(getterName);
+					Object value = getter.invoke(request6);
+					Class<?> type = getter.getReturnType();
+
+					M_AIDP_Resub_Summary_Entity2.class.getMethod(setterName, type).invoke(summaryVal, value);
+
+					M_AIDP_Resub_Detail_Entity2.class.getMethod(setterName, type).invoke(detailVal, value);
+
+					M_AIDP_Archival_Summary_Entity2.class.getMethod(setterName, type).invoke(summaryValArc, value);
+
+					M_AIDP_Archival_Detail_Entity2.class.getMethod(setterName, type).invoke(detailValArc, value);
+
+				} catch (NoSuchMethodException ignored) {
+				}
+			}
+
+		} catch (Exception e) {
+			throw new RuntimeException("Error while updating report fields", e);
+		}
+
+		// ===== SAVE – ONE INSERT PER TABLE =====
+		M_AIDP_Archival_Summary_Repo2.saveAndFlush(summaryValArc);
+		M_AIDP_Archival_Detail_Repo2.saveAndFlush(detailValArc);
+		BRRS_M_AIDP_Resub_Summary_Repo2.saveAndFlush(summaryVal);
+		BRRS_M_AIDP_Resub_Detail_Repo2.saveAndFlush(detailVal);
+	}
+
+	@Transactional
+	public void updateReport7(M_AIDP_Resub_Summary_Entity3 request7) {
+
+		System.out.println("THE GETTING REPORT DATE IS " + request7.getReport_date());
+
+		// ===== VERSION =====
+		BigDecimal maxVersion = BRRS_M_AIDP_Resub_Summary_Repo3.findGlobalMaxReportVersion();
+		BigDecimal nextVersion = (maxVersion == null) ? BigDecimal.ONE : maxVersion.add(BigDecimal.ONE);
+
+		// ===== SUMMARY (RESUB) =====
+		M_AIDP_Resub_Summary_Entity3 summaryVal = new M_AIDP_Resub_Summary_Entity3();
+		summaryVal.setReport_date(request7.getReport_date());
+		summaryVal.setReport_version(nextVersion);
+		summaryVal.setReportResubDate(new Date());
+
+		// ===== DETAIL (RESUB) =====
+		M_AIDP_Resub_Detail_Entity3 detailVal = new M_AIDP_Resub_Detail_Entity3();
+		detailVal.setReport_date(request7.getReport_date());
+		detailVal.setReport_version(nextVersion);
+
+		// ===== SUMMARY (ARCHIVAL) =====
+		M_AIDP_Archival_Summary_Entity3 summaryValArc = new M_AIDP_Archival_Summary_Entity3();
+		summaryValArc.setReport_date(request7.getReport_date());
+		summaryValArc.setReport_version(nextVersion);
+
+		// ===== DETAIL (ARCHIVAL) =====
+		M_AIDP_Archival_Detail_Entity3 detailValArc = new M_AIDP_Archival_Detail_Entity3();
+		detailValArc.setReport_date(request7.getReport_date());
+		detailValArc.setReport_version(nextVersion);
+
+		try {
+
+			String[] fields = { "NAME_OF_BANK", "TYPE_OF_ACC", "PURPOSE", "CURRENCY", "BANK_RATE", "AMT_DEMAND",
+					"AMT_TIME" };
+
+			for (int i = 101; i <= 141; i++) {
+
+				String prefix = "R" + i + "_";
+
+				for (String field : fields) {
+
+					String getterName = "get" + prefix + field;
+					String setterName = "set" + prefix + field;
+
+					try {
+						Method getter = M_AIDP_Resub_Summary_Entity3.class.getMethod(getterName);
+						Object value = getter.invoke(request7);
+						Class<?> type = getter.getReturnType();
+
+						M_AIDP_Resub_Summary_Entity3.class.getMethod(setterName, type).invoke(summaryVal, value);
+
+						M_AIDP_Resub_Detail_Entity3.class.getMethod(setterName, type).invoke(detailVal, value);
+
+						M_AIDP_Archival_Summary_Entity3.class.getMethod(setterName, type).invoke(summaryValArc, value);
+
+						M_AIDP_Archival_Detail_Entity3.class.getMethod(setterName, type).invoke(detailValArc, value);
+
+					} catch (NoSuchMethodException ignored) {
+					}
+				}
+			}
+
+			// ===== TOTAL ROW =====
+			String[] totalFields = { "TOT_AMT_DEMAND", "TOT_AMT_TIME" };
+
+			for (String field : totalFields) {
+
+				String getterName = "getR142_" + field;
+				String setterName = "setR142_" + field;
+
+				try {
+					Method getter = M_AIDP_Resub_Summary_Entity3.class.getMethod(getterName);
+					Object value = getter.invoke(request7);
+					Class<?> type = getter.getReturnType();
+
+					M_AIDP_Resub_Summary_Entity3.class.getMethod(setterName, type).invoke(summaryVal, value);
+
+					M_AIDP_Resub_Detail_Entity3.class.getMethod(setterName, type).invoke(detailVal, value);
+
+					M_AIDP_Archival_Summary_Entity3.class.getMethod(setterName, type).invoke(summaryValArc, value);
+
+					M_AIDP_Archival_Detail_Entity3.class.getMethod(setterName, type).invoke(detailValArc, value);
+
+				} catch (NoSuchMethodException ignored) {
+				}
+			}
+
+		} catch (Exception e) {
+			throw new RuntimeException("Error while updating report fields", e);
+		}
+
+		// ===== SAVE – ONE INSERT PER TABLE =====
+		M_AIDP_Archival_Summary_Repo3.saveAndFlush(summaryValArc);
+		M_AIDP_Archival_Detail_Repo3.saveAndFlush(detailValArc);
+		BRRS_M_AIDP_Resub_Summary_Repo3.saveAndFlush(summaryVal);
+		BRRS_M_AIDP_Resub_Detail_Repo3.saveAndFlush(detailVal);
+	}
+
+	@Transactional
+	public void updateReport8(M_AIDP_Resub_Summary_Entity4 request8) {
+
+		System.out.println("THE GETTING REPORT DATE IS " + request8.getReport_date());
+
+		// ===== VERSION =====
+		BigDecimal maxVersion = BRRS_M_AIDP_Resub_Summary_Repo3.findGlobalMaxReportVersion();
+		BigDecimal nextVersion = (maxVersion == null) ? BigDecimal.ONE : maxVersion.add(BigDecimal.ONE);
+
+		// ===== SUMMARY (RESUB) =====
+		M_AIDP_Resub_Summary_Entity4 summaryVal = new M_AIDP_Resub_Summary_Entity4();
+		summaryVal.setReport_date(request8.getReport_date());
+		summaryVal.setReport_version(nextVersion);
+		summaryVal.setReportResubDate(new Date());
+
+		// ===== DETAIL (RESUB) =====
+		M_AIDP_Resub_Detail_Entity4 detailVal = new M_AIDP_Resub_Detail_Entity4();
+		detailVal.setReport_date(request8.getReport_date());
+		detailVal.setReport_version(nextVersion);
+
+		// ===== SUMMARY (ARCHIVAL) =====
+		M_AIDP_Archival_Summary_Entity4 summaryValArc = new M_AIDP_Archival_Summary_Entity4();
+		summaryValArc.setReport_date(request8.getReport_date());
+		summaryValArc.setReport_version(nextVersion);
+
+		// ===== DETAIL (ARCHIVAL) =====
+		M_AIDP_Archival_Detail_Entity4 detailValArc = new M_AIDP_Archival_Detail_Entity4();
+		detailValArc.setReport_date(request8.getReport_date());
+		detailValArc.setReport_version(nextVersion);
+
+		try {
+
+			for (int i = 147; i <= 193; i++) {
+
+				String[] fields = { "NAME_OF_BANK", "TYPE_OF_ACC", "PURPOSE", "CURRENCY", "BANK_RATE", "AMT_DEMAND",
+						"AMT_TIME" };
+
+				String prefix = "R" + i + "_";
+
+				for (String field : fields) {
+
+					String getterName = "get" + prefix + field;
+					String setterName = "set" + prefix + field;
+
+					try {
+						Method getter = M_AIDP_Resub_Summary_Entity3.class.getMethod(getterName);
+						Object value = getter.invoke(request8);
+						Class<?> type = getter.getReturnType();
+
+						M_AIDP_Resub_Summary_Entity3.class.getMethod(setterName, type).invoke(summaryVal, value);
+
+						M_AIDP_Resub_Detail_Entity3.class.getMethod(setterName, type).invoke(detailVal, value);
+
+						M_AIDP_Archival_Summary_Entity3.class.getMethod(setterName, type).invoke(summaryValArc, value);
+
+						M_AIDP_Archival_Detail_Entity3.class.getMethod(setterName, type).invoke(detailValArc, value);
+
+					} catch (NoSuchMethodException ignored) {
+					}
+				}
+			}
+
+			// 2️⃣ Handle R194 totals
+			String[] totalFields = { "TOT_AMT_DEMAND", "TOT_AMT_TIME" };
+
+			for (String field : totalFields) {
+				String getterName = "getR194_" + field;
+				String setterName = "setR194_" + field;
+
+				try {
+					Method getter = M_AIDP_Resub_Summary_Entity3.class.getMethod(getterName);
+					Object value = getter.invoke(request8);
+					Class<?> type = getter.getReturnType();
+
+					M_AIDP_Resub_Summary_Entity3.class.getMethod(setterName, type).invoke(summaryVal, value);
+
+					M_AIDP_Resub_Detail_Entity3.class.getMethod(setterName, type).invoke(detailVal, value);
+
+					M_AIDP_Archival_Summary_Entity3.class.getMethod(setterName, type).invoke(summaryValArc, value);
+
+					M_AIDP_Archival_Detail_Entity3.class.getMethod(setterName, type).invoke(detailValArc, value);
+
+				} catch (NoSuchMethodException ignored) {
+				}
+			}
+
+		} catch (Exception e) {
+			throw new RuntimeException("Error while updating report fields", e);
+		}
+
+		// ===== SAVE – ONE INSERT PER TABLE =====
+		M_AIDP_Archival_Summary_Repo4.saveAndFlush(summaryValArc);
+		M_AIDP_Archival_Detail_Repo4.saveAndFlush(detailValArc);
+		BRRS_M_AIDP_Resub_Summary_Repo4.saveAndFlush(summaryVal);
+		BRRS_M_AIDP_Resub_Detail_Repo4.saveAndFlush(detailVal);
+	}
+
 }
