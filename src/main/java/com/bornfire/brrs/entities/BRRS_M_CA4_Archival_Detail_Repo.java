@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface BRRS_M_CA4_Archival_Detail_Repo
-		extends JpaRepository<M_CA4_Archival_Detail_Entity, M_CA4_Archival_Detail_PK> {
+		extends JpaRepository<M_CA4_Archival_Detail_Entity, M_CA4_PK> {
 
 	/*
 	 * @Query(value =

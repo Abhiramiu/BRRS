@@ -21,7 +21,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
 @Table(name = "BRRS_M_CA4_ARCHIVALTABLE_SUMMARY")
-@IdClass(M_CA4_Archival_Summary_PK.class)
+@IdClass(M_CA4_PK.class)
 
 
 public class M_CA4_Archival_Summary_Entity {
@@ -354,7 +354,6 @@ public class M_CA4_Archival_Summary_Entity {
 	private BigDecimal	report_version;
 	
 	@Column(name = "REPORT_RESUBDATE")
-    @Temporal(TemporalType.TIMESTAMP)
     private Date reportResubDate;
 	private String	report_frequency;
 	private String	report_code;

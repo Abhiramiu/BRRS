@@ -1,0 +1,496 @@
+package com.bornfire.brrs.entities;
+
+import java.math.BigDecimal;
+import java.util.Date;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import org.springframework.format.annotation.DateTimeFormat;
+
+@Entity
+@Table(name = "BRRS_M_CA6_RESUB_DETAILTABLE1")
+
+@IdClass(M_CA6_Archival_Detail1_PK.class)
+public class M_CA6_RESUB_Detail_Entity1 {
+
+	private Date R12_CALENDAR_YEAR;
+	private BigDecimal R12_CAP;
+	private BigDecimal R12_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
+	private BigDecimal R12_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
+
+	private Date R13_CALENDAR_YEAR;
+	private BigDecimal R13_CAP;
+	private BigDecimal R13_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
+	private BigDecimal R13_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
+
+	private Date R14_CALENDAR_YEAR;
+	private BigDecimal R14_CAP;
+	private BigDecimal R14_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
+	private BigDecimal R14_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
+
+	private Date R15_CALENDAR_YEAR;
+	private BigDecimal R15_CAP;
+	private BigDecimal R15_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
+	private BigDecimal R15_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
+
+	private Date R16_CALENDAR_YEAR;
+	private BigDecimal R16_CAP;
+	private BigDecimal R16_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
+	private BigDecimal R16_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
+
+	private Date R20_CALENDAR_YEAR;
+	private BigDecimal R20_CAP;
+	private BigDecimal R20_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
+	private BigDecimal R20_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
+
+	private Date R21_CALENDAR_YEAR;
+	private BigDecimal R21_CAP;
+	private BigDecimal R21_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
+	private BigDecimal R21_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
+
+	private Date R22_CALENDAR_YEAR;
+	private BigDecimal R22_CAP;
+	private BigDecimal R22_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
+	private BigDecimal R22_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
+
+	private Date R23_CALENDAR_YEAR;
+	private BigDecimal R23_CAP;
+	private BigDecimal R23_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
+	private BigDecimal R23_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
+
+	private Date R24_CALENDAR_YEAR;
+	private BigDecimal R24_CAP;
+	private BigDecimal R24_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
+	private BigDecimal R24_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
+
+	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern = "dd/MM/yyyy")
+	@Id
+	@Column(name = "REPORT_DATE")
+	private Date reportDate;
+	@Column(name = "REPORT_VERSION")
+	private BigDecimal reportVersion;
+	@Column(name = "REPORT_RESUBDATE")
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date reportResubDate;
+	public String REPORT_FREQUENCY;
+	public String REPORT_CODE;
+	public String REPORT_DESC;
+	public String ENTITY_FLG;
+	public String MODIFY_FLG;
+	public String DEL_FLG;
+
+	public Date getR12_CALENDAR_YEAR() {
+		return R12_CALENDAR_YEAR;
+	}
+
+	public void setR12_CALENDAR_YEAR(Date r12_CALENDAR_YEAR) {
+		R12_CALENDAR_YEAR = r12_CALENDAR_YEAR;
+	}
+
+	public BigDecimal getR12_CAP() {
+		return R12_CAP;
+	}
+
+	public void setR12_CAP(BigDecimal r12_CAP) {
+		R12_CAP = r12_CAP;
+	}
+
+	public BigDecimal getR12_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT() {
+		return R12_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
+	}
+
+	public void setR12_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT(
+			BigDecimal r12_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT) {
+		R12_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT = r12_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
+	}
+
+	public BigDecimal getR12_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT() {
+		return R12_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
+	}
+
+	public void setR12_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT(BigDecimal r12_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT) {
+		R12_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT = r12_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
+	}
+
+	public Date getR13_CALENDAR_YEAR() {
+		return R13_CALENDAR_YEAR;
+	}
+
+	public void setR13_CALENDAR_YEAR(Date r13_CALENDAR_YEAR) {
+		R13_CALENDAR_YEAR = r13_CALENDAR_YEAR;
+	}
+
+	public BigDecimal getR13_CAP() {
+		return R13_CAP;
+	}
+
+	public void setR13_CAP(BigDecimal r13_CAP) {
+		R13_CAP = r13_CAP;
+	}
+
+	public BigDecimal getR13_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT() {
+		return R13_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
+	}
+
+	public void setR13_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT(
+			BigDecimal r13_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT) {
+		R13_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT = r13_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
+	}
+
+	public BigDecimal getR13_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT() {
+		return R13_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
+	}
+
+	public void setR13_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT(BigDecimal r13_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT) {
+		R13_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT = r13_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
+	}
+
+	public Date getR14_CALENDAR_YEAR() {
+		return R14_CALENDAR_YEAR;
+	}
+
+	public void setR14_CALENDAR_YEAR(Date r14_CALENDAR_YEAR) {
+		R14_CALENDAR_YEAR = r14_CALENDAR_YEAR;
+	}
+
+	public BigDecimal getR14_CAP() {
+		return R14_CAP;
+	}
+
+	public void setR14_CAP(BigDecimal r14_CAP) {
+		R14_CAP = r14_CAP;
+	}
+
+	public BigDecimal getR14_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT() {
+		return R14_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
+	}
+
+	public void setR14_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT(
+			BigDecimal r14_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT) {
+		R14_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT = r14_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
+	}
+
+	public BigDecimal getR14_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT() {
+		return R14_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
+	}
+
+	public void setR14_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT(BigDecimal r14_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT) {
+		R14_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT = r14_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
+	}
+
+	public Date getR15_CALENDAR_YEAR() {
+		return R15_CALENDAR_YEAR;
+	}
+
+	public void setR15_CALENDAR_YEAR(Date r15_CALENDAR_YEAR) {
+		R15_CALENDAR_YEAR = r15_CALENDAR_YEAR;
+	}
+
+	public BigDecimal getR15_CAP() {
+		return R15_CAP;
+	}
+
+	public void setR15_CAP(BigDecimal r15_CAP) {
+		R15_CAP = r15_CAP;
+	}
+
+	public BigDecimal getR15_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT() {
+		return R15_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
+	}
+
+	public void setR15_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT(
+			BigDecimal r15_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT) {
+		R15_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT = r15_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
+	}
+
+	public BigDecimal getR15_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT() {
+		return R15_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
+	}
+
+	public void setR15_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT(BigDecimal r15_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT) {
+		R15_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT = r15_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
+	}
+
+	public Date getR16_CALENDAR_YEAR() {
+		return R16_CALENDAR_YEAR;
+	}
+
+	public void setR16_CALENDAR_YEAR(Date r16_CALENDAR_YEAR) {
+		R16_CALENDAR_YEAR = r16_CALENDAR_YEAR;
+	}
+
+	public BigDecimal getR16_CAP() {
+		return R16_CAP;
+	}
+
+	public void setR16_CAP(BigDecimal r16_CAP) {
+		R16_CAP = r16_CAP;
+	}
+
+	public BigDecimal getR16_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT() {
+		return R16_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
+	}
+
+	public void setR16_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT(
+			BigDecimal r16_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT) {
+		R16_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT = r16_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
+	}
+
+	public BigDecimal getR16_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT() {
+		return R16_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
+	}
+
+	public void setR16_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT(BigDecimal r16_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT) {
+		R16_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT = r16_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
+	}
+
+	public Date getR20_CALENDAR_YEAR() {
+		return R20_CALENDAR_YEAR;
+	}
+
+	public void setR20_CALENDAR_YEAR(Date r20_CALENDAR_YEAR) {
+		R20_CALENDAR_YEAR = r20_CALENDAR_YEAR;
+	}
+
+	public BigDecimal getR20_CAP() {
+		return R20_CAP;
+	}
+
+	public void setR20_CAP(BigDecimal r20_CAP) {
+		R20_CAP = r20_CAP;
+	}
+
+	public BigDecimal getR20_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT() {
+		return R20_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
+	}
+
+	public void setR20_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT(
+			BigDecimal r20_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT) {
+		R20_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT = r20_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
+	}
+
+	public BigDecimal getR20_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT() {
+		return R20_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
+	}
+
+	public void setR20_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT(BigDecimal r20_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT) {
+		R20_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT = r20_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
+	}
+
+	public Date getR21_CALENDAR_YEAR() {
+		return R21_CALENDAR_YEAR;
+	}
+
+	public void setR21_CALENDAR_YEAR(Date r21_CALENDAR_YEAR) {
+		R21_CALENDAR_YEAR = r21_CALENDAR_YEAR;
+	}
+
+	public BigDecimal getR21_CAP() {
+		return R21_CAP;
+	}
+
+	public void setR21_CAP(BigDecimal r21_CAP) {
+		R21_CAP = r21_CAP;
+	}
+
+	public BigDecimal getR21_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT() {
+		return R21_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
+	}
+
+	public void setR21_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT(
+			BigDecimal r21_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT) {
+		R21_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT = r21_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
+	}
+
+	public BigDecimal getR21_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT() {
+		return R21_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
+	}
+
+	public void setR21_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT(BigDecimal r21_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT) {
+		R21_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT = r21_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
+	}
+
+	public Date getR22_CALENDAR_YEAR() {
+		return R22_CALENDAR_YEAR;
+	}
+
+	public void setR22_CALENDAR_YEAR(Date r22_CALENDAR_YEAR) {
+		R22_CALENDAR_YEAR = r22_CALENDAR_YEAR;
+	}
+
+	public BigDecimal getR22_CAP() {
+		return R22_CAP;
+	}
+
+	public void setR22_CAP(BigDecimal r22_CAP) {
+		R22_CAP = r22_CAP;
+	}
+
+	public BigDecimal getR22_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT() {
+		return R22_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
+	}
+
+	public void setR22_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT(
+			BigDecimal r22_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT) {
+		R22_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT = r22_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
+	}
+
+	public BigDecimal getR22_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT() {
+		return R22_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
+	}
+
+	public void setR22_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT(BigDecimal r22_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT) {
+		R22_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT = r22_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
+	}
+
+	public Date getR23_CALENDAR_YEAR() {
+		return R23_CALENDAR_YEAR;
+	}
+
+	public void setR23_CALENDAR_YEAR(Date r23_CALENDAR_YEAR) {
+		R23_CALENDAR_YEAR = r23_CALENDAR_YEAR;
+	}
+
+	public BigDecimal getR23_CAP() {
+		return R23_CAP;
+	}
+
+	public void setR23_CAP(BigDecimal r23_CAP) {
+		R23_CAP = r23_CAP;
+	}
+
+	public BigDecimal getR23_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT() {
+		return R23_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
+	}
+
+	public void setR23_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT(
+			BigDecimal r23_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT) {
+		R23_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT = r23_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
+	}
+
+	public BigDecimal getR23_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT() {
+		return R23_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
+	}
+
+	public void setR23_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT(BigDecimal r23_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT) {
+		R23_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT = r23_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
+	}
+
+	public Date getR24_CALENDAR_YEAR() {
+		return R24_CALENDAR_YEAR;
+	}
+
+	public void setR24_CALENDAR_YEAR(Date r24_CALENDAR_YEAR) {
+		R24_CALENDAR_YEAR = r24_CALENDAR_YEAR;
+	}
+
+	public BigDecimal getR24_CAP() {
+		return R24_CAP;
+	}
+
+	public void setR24_CAP(BigDecimal r24_CAP) {
+		R24_CAP = r24_CAP;
+	}
+
+	public BigDecimal getR24_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT() {
+		return R24_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
+	}
+
+	public void setR24_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT(
+			BigDecimal r24_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT) {
+		R24_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT = r24_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
+	}
+
+	public BigDecimal getR24_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT() {
+		return R24_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
+	}
+
+	public void setR24_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT(BigDecimal r24_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT) {
+		R24_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT = r24_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
+	}
+
+	public Date getReportDate() {
+		return reportDate;
+	}
+
+	public void setReportDate(Date reportDate) {
+		this.reportDate = reportDate;
+	}
+
+	public BigDecimal getReportVersion() {
+		return reportVersion;
+	}
+
+	public void setReportVersion(BigDecimal reportVersion) {
+		this.reportVersion = reportVersion;
+	}
+
+	public Date getReportResubDate() {
+		return reportResubDate;
+	}
+
+	public void setReportResubDate(Date reportResubDate) {
+		this.reportResubDate = reportResubDate;
+	}
+
+	public String getREPORT_FREQUENCY() {
+		return REPORT_FREQUENCY;
+	}
+
+	public void setREPORT_FREQUENCY(String rEPORT_FREQUENCY) {
+		REPORT_FREQUENCY = rEPORT_FREQUENCY;
+	}
+
+	public String getREPORT_CODE() {
+		return REPORT_CODE;
+	}
+
+	public void setREPORT_CODE(String rEPORT_CODE) {
+		REPORT_CODE = rEPORT_CODE;
+	}
+
+	public String getREPORT_DESC() {
+		return REPORT_DESC;
+	}
+
+	public void setREPORT_DESC(String rEPORT_DESC) {
+		REPORT_DESC = rEPORT_DESC;
+	}
+
+	public String getENTITY_FLG() {
+		return ENTITY_FLG;
+	}
+
+	public void setENTITY_FLG(String eNTITY_FLG) {
+		ENTITY_FLG = eNTITY_FLG;
+	}
+
+	public String getMODIFY_FLG() {
+		return MODIFY_FLG;
+	}
+
+	public void setMODIFY_FLG(String mODIFY_FLG) {
+		MODIFY_FLG = mODIFY_FLG;
+	}
+
+	public String getDEL_FLG() {
+		return DEL_FLG;
+	}
+
+	public void setDEL_FLG(String dEL_FLG) {
+		DEL_FLG = dEL_FLG;
+	}
+
+	public M_CA6_RESUB_Detail_Entity1() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+}

@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
 
 
 @Repository
-public interface BRRS_M_CA4_Archival_Summary_Repo extends JpaRepository<M_CA4_Archival_Summary_Entity, M_CA4_Archival_Summary_PK> {
+public interface BRRS_M_CA4_Archival_Summary_Repo extends JpaRepository<M_CA4_Archival_Summary_Entity, M_CA4_PK> {
 
 	/*
 	 * @Query(value =

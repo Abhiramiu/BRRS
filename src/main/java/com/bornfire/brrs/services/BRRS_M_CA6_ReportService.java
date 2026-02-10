@@ -3980,7 +3980,10 @@ public class BRRS_M_CA6_ReportService {
 
 			if (latestArchivalList != null && !latestArchivalList.isEmpty()) {
 				for (M_CA6_Archival_Summary_Entity1 entity : latestArchivalList) {
-					resubList.add(new Object[] { entity.getReportDate(), entity.getReportVersion() });
+					resubList.add(new Object[] { entity.getReportDate(),
+							entity.getReportVersion(),
+							entity.getReportResubDate()
+							});
 				}
 				System.out.println("Fetched " + resubList.size() + " record(s)");
 			} else {

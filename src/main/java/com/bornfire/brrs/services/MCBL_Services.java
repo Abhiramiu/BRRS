@@ -78,7 +78,7 @@ public class MCBL_Services {
 			String username,
 			String reportDate) {
 
-		logger.info("Initializing job. jobId={}, userId={}, reportDate={}", jobId, userid, reportDate);
+		//logger.info("Initializing job. jobId={}, userId={}, reportDate={}", jobId, userid, reportDate);
 
 		jobStatusStorage.put(jobId, "PROCESSING");
 
@@ -88,18 +88,18 @@ public class MCBL_Services {
 	public String startMCBLUploadAsync(String jobId, MultipartFile file, String userid, String username,
 			String reportDate) {
 
-		logger.info("MCBL upload started. jobId={}", jobId);
+		//logger.info("MCBL upload started. jobId={}", jobId);
 
 		try {
 			String resultMsg = addMCBL(file, userid, username, reportDate);
 
 			jobStatusStorage.put(jobId, "COMPLETED:" + resultMsg);
-			logger.info("MCBL upload completed. jobId={}, result={}", jobId, resultMsg);
+			//logger.info("MCBL upload completed. jobId={}, result={}", jobId, resultMsg);
 
 			return resultMsg;
 
 		} catch (Exception e) {
-			logger.error("MCBL upload failed. jobId={}", jobId, e);
+			//logger.error("MCBL upload failed. jobId={}", jobId, e);
 			jobStatusStorage.put(jobId, "ERROR:" + e.getMessage());
 			return "ERROR:" + e.getMessage();
 		}
@@ -121,34 +121,34 @@ public String addMCBL(MultipartFile file, String userid, String username, String
 	        return "Error: Uploaded file is empty!";
 	    }
 	    
-	    logger.info("Came to main method for Upload for MCBL(MCBL)");
+	    //logger.info("Came to main method for Upload for MCBL(MCBL)");
 	    
 	    
 	    try (InputStream is = file.getInputStream(); Connection conn = dataSource.getConnection()) {
 	        Workbook workbook;
 	        String fileName = file.getOriginalFilename();
 	        
-	        logger.info("Processing file: {}", fileName);
+	        //logger.info("Processing file: {}", fileName);
 	        
 	        if (fileName != null && fileName.toLowerCase().endsWith(".xlsx")) {
-	        	logger.info("Detected XLSX format");
+	        	//logger.info("Detected XLSX format");
 	            workbook = new XSSFWorkbook(is);
 	        } else if (fileName != null && fileName.toLowerCase().endsWith(".xls")) {
-	        	logger.info("Detected XLS format");
+	        	//logger.info("Detected XLS format");
 	            workbook = new HSSFWorkbook(is);
 	        } else {
-	        	logger.error("Invalid file format: {}", fileName);
+	        	//logger.error("Invalid file format: {}", fileName);
 	            return "Error: Invalid file format! Please upload .xls or .xlsx file.";
 	        }
 	        
 	        conn.setAutoCommit(false);
-	        logger.info("Database transaction started");
+	        //logger.info("Database transaction started");
 	        
 	        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 	        java.util.Date parsedDate = sdf.parse(reportDate);
 	        java.sql.Date sqlReportDate = new java.sql.Date(parsedDate.getTime());
 	        
-	        logger.info("Parsed reportDate={} -> sqlReportDate={}", reportDate, sqlReportDate);
+	        //logger.info("Parsed reportDate={} -> sqlReportDate={}", reportDate, sqlReportDate);
 	        
 	        // ============= MARK PREVIOUS VERSIONS AS DELETED (Before Processing New Upload) =============
 	        String markDeletedMCBL = "UPDATE MCBL SET DEL_FLG = 'Y', MODIFY_TIME = SYSTIMESTAMP, MODIFY_USER = ? " +
@@ -166,10 +166,10 @@ public String addMCBL(MultipartFile file, String userid, String username, String
 	        // ============= COLLECT ACCOUNT NOS FROM EXCEL FIRST =============
 	        Sheet sheet = workbook.getSheet("MCBL");
 	        if (sheet == null) {
-	        	logger.error("Sheet 'MCBL' not found in Excel");
+	        	//logger.error("Sheet 'MCBL' not found in Excel");
 	            return "Error: Sheet 'MCBL' not found!";
 	        }
-	        logger.info("MCBL sheet found. Total rows={}", sheet.getLastRowNum());
+	        //logger.info("MCBL sheet found. Total rows={}", sheet.getLastRowNum());
 
 	        
 	        DataFormatter formatter = new DataFormatter();
@@ -304,9 +304,10 @@ public String addMCBL(MultipartFile file, String userid, String username, String
 	            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 	        PreparedStatement insertGeneralSrcStmt = conn.prepareStatement(insertGeneralSrc);
 	        
-	        String insertTrack = "INSERT INTO BRRS_MCBL_ACCOUNT_TRACK " +
-	            "(ID, REPORT_DATE, ACCOUNT_NO, CHANGE_TYPE, ENTRY_USER, ENTRY_TIME, REMARKS) " +
-	            "VALUES (?, ?, ?, ?, ?, SYSTIMESTAMP, ?)";
+	        String insertTrack =
+	        		  "INSERT INTO BRRS_MCBL_ACCOUNT_TRACK " +
+	        		  "(REPORT_DATE, ACCOUNT_NO, CHANGE_TYPE, ENTRY_USER, ENTRY_TIME, REMARKS) " +
+	        		  "VALUES (?, ?, ?, ?, SYSTIMESTAMP, ?)";
 	        PreparedStatement insertTrackStmt = conn.prepareStatement(insertTrack);
 	        
 	        // ============= ACTUAL EXCEL PROCESSING =============
@@ -456,22 +457,20 @@ public String addMCBL(MultipartFile file, String userid, String username, String
 	        missingAccounts.removeAll(currentAccounts);
 	        
 	        for (String acc : newAccounts) {
-	            insertTrackStmt.setString(1, sequence.generateRequestUUId());
-	            insertTrackStmt.setDate(2, sqlReportDate);
-	            insertTrackStmt.setString(3, acc);
-	            insertTrackStmt.setString(4, "ADDED");
-	            insertTrackStmt.setString(5, userid);
-	            insertTrackStmt.setString(6, "New Account Detected");
+	        	insertTrackStmt.setDate(1, sqlReportDate);
+	        	insertTrackStmt.setString(2, acc);
+	        	insertTrackStmt.setString(3, "ADDED");
+	        	insertTrackStmt.setString(4, userid);
+	        	insertTrackStmt.setString(5, "New Account Detected");
 	            insertTrackStmt.addBatch();
 	        }
 	        
 	        for (String acc : missingAccounts) {
-	            insertTrackStmt.setString(1, sequence.generateRequestUUId());
-	            insertTrackStmt.setDate(2, sqlReportDate);
-	            insertTrackStmt.setString(3, acc);
-	            insertTrackStmt.setString(4, "MISSED");
-	            insertTrackStmt.setString(5, userid);
-	            insertTrackStmt.setString(6, "Missing Account Detected");
+	        	insertTrackStmt.setDate(1, sqlReportDate);
+	        	insertTrackStmt.setString(2, acc);
+	        	insertTrackStmt.setString(3, "MISSED");
+	        	insertTrackStmt.setString(4, userid);
+	        	insertTrackStmt.setString(5, "New Account Detected");
 	            insertTrackStmt.addBatch();
 	        }
 	        
@@ -482,7 +481,7 @@ public String addMCBL(MultipartFile file, String userid, String username, String
 	        return "✅  Inserted: " + count + " Records";
 	            
 	    } catch (Exception e) {
-	        logger.error("Error while processing MCBL Excel: {}", e.getMessage(), e);
+	        //logger.error("Error while processing MCBL Excel: {}", e.getMessage(), e);
 	        return "Error occurred while reading Excel: " + e.getMessage();
 	    }
 	}

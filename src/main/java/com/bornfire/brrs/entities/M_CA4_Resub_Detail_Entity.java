@@ -16,10 +16,10 @@ import org.springframework.format.annotation.DateTimeFormat;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
-@Table(name = "BRRS_M_CA4_ARCHIVALTABLE_DETAIL")
+@Table(name = "BRRS_M_CA4_RESUB_DETAILTABLE")
 @IdClass(M_CA4_PK.class)
 
-public class M_CA4_Archival_Detail_Entity {
+public class M_CA4_Resub_Detail_Entity {
 
 	private String r10_item;
 	private BigDecimal r10_amt_name_of_sub1;
@@ -2666,7 +2666,7 @@ public class M_CA4_Archival_Detail_Entity {
 		this.del_flg = del_flg;
 	}
 
-	public M_CA4_Archival_Detail_Entity() {
+	public M_CA4_Resub_Detail_Entity() {
 		super();
 		// TODO Auto-generated constructor stub
 	}

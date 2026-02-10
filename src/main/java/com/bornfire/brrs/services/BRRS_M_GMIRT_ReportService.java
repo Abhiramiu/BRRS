@@ -13,27 +13,19 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
 
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CreationHelper;
-import org.apache.poi.ss.usermodel.FillPatternType;
 /*import org.apache.poi.ss.usermodel.FillPatternType;*/
 import org.apache.poi.ss.usermodel.Font;
-import org.apache.poi.ss.usermodel.HorizontalAlignment;
-import org.apache.poi.ss.usermodel.IndexedColors;
 /*import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.IndexedColors;*/
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 /*import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;*/
@@ -49,33 +41,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.bornfire.brrs.entities.BRRS_M_GMIRT_Archival_Detail_Repo;
-import com.bornfire.brrs.entities.BRRS_M_GMIRT_Archival_SummaryM_Repo;
 import com.bornfire.brrs.entities.BRRS_M_GMIRT_Archival_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_M_GMIRT_Detail_Repo;
-import com.bornfire.brrs.entities.BRRS_M_GMIRT_SummaryM_Repo;
 import com.bornfire.brrs.entities.BRRS_M_GMIRT_Summary_Repo;
-import com.bornfire.brrs.entities.M_CA6_Archival_Summary_Entity1;
-import com.bornfire.brrs.entities.M_CA6_Archival_Summary_Entity2;
-import com.bornfire.brrs.entities.M_CA6_Detail_Entity1;
-import com.bornfire.brrs.entities.M_CA6_Detail_Entity2;
-import com.bornfire.brrs.entities.M_CA6_Summary_Entity1;
-import com.bornfire.brrs.entities.M_CA6_Summary_Entity2;
-import com.bornfire.brrs.entities.M_EPR_Archival_Detail_Entity;
-import com.bornfire.brrs.entities.M_EPR_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.M_EPR_Detail_Entity;
-import com.bornfire.brrs.entities.M_EPR_Summary_Entity;
 import com.bornfire.brrs.entities.M_GMIRT_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.M_GMIRT_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.M_GMIRT_Detail_Entity;
-import com.bornfire.brrs.entities.M_GMIRT_M_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.M_GMIRT_M_Summary_Entity;
 import com.bornfire.brrs.entities.M_GMIRT_Summary_Entity;
-import com.bornfire.brrs.entities.M_LIQ_Archival_Detail_Entity;
-import com.bornfire.brrs.entities.M_LIQ_Archival_Manual_Summary_Entity;
-import com.bornfire.brrs.entities.M_LIQ_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.M_LIQ_Detail_Entity;
-import com.bornfire.brrs.entities.M_LIQ_Manual_Summary_Entity;
-import com.bornfire.brrs.entities.M_LIQ_Summary_Entity;
 
 @Component
 @Service
@@ -94,8 +66,7 @@ public class BRRS_M_GMIRT_ReportService {
 	
 	  @Autowired BRRS_M_GMIRT_Detail_Repo brrs_m_gmirt_detail_repo;
 	 
-	@Autowired
-	BRRS_M_GMIRT_SummaryM_Repo brrs_m_gmirtM_summary_repo;
+	
 	
 	@Autowired
 	BRRS_M_GMIRT_Summary_Repo brrs_m_gmirt_summary_repo;
@@ -110,8 +81,6 @@ public class BRRS_M_GMIRT_ReportService {
 	BRRS_M_GMIRT_Archival_Detail_Repo m_gmirt_Archival_Detail_Repo;
 	 
 
-	@Autowired
-	BRRS_M_GMIRT_Archival_SummaryM_Repo m_gmirtM_Archival_Summary_Repo;
 	
 	@Autowired
 	BRRS_M_GMIRT_Archival_Summary_Repo brrs_m_gmirt_Archival_summary_repo;
@@ -123,64 +92,6 @@ public class BRRS_M_GMIRT_ReportService {
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
 	
-	/*public ModelAndView getM_GMIRTView(String reportId, String fromdate, String todate, String currency, String dtltype,
-			Pageable pageable, String type, BigDecimal version) {
-
-		ModelAndView mv = new ModelAndView();
-		
-
-		System.out.println("testing");
-		System.out.println(version);
-
-		if (type.equals("ARCHIVAL") & version != null) {
-			System.out.println(type);
-			List<M_GMIRT_Archival_Summary_Entity> T1Master = new ArrayList<M_GMIRT_Archival_Summary_Entity>();
-			List<M_GMIRT_M_Archival_Summary_Entity> T2Master = new ArrayList<M_GMIRT_M_Archival_Summary_Entity>();
-			System.out.println(version);
-			try {
-				
-
-				T1Master = brrs_m_gmirt_Archival_summary_repo.getdatabydateListarchival(dateformat.parse(todate), version);
-				T2Master = m_gmirtM_Archival_Summary_Repo.getdatabydateListarchival(dateformat.parse(todate),
-						version);
-
-			} catch (ParseException e) {
-				e.printStackTrace();
-			}
-
-			mv.addObject("reportsummary", T1Master);
-			mv.addObject("reportsummary1", T2Master);
-		} else {
-
-			List<M_GMIRT_Summary_Entity> T1Master = new ArrayList<M_GMIRT_Summary_Entity>();
-			List<M_GMIRT_M_Summary_Entity> T2Master = new ArrayList<M_GMIRT_M_Summary_Entity>();
-			try {
-				Date d1 = dateformat.parse(todate);
-				
-				T1Master = brrs_m_gmirt_summary_repo.getdatabydateList(dateformat.parse(todate));
-				T2Master = brrs_m_gmirtM_summary_repo.getdatabydateList(dateformat.parse(todate));
-				System.out.println("T2Master size " + T2Master.size());
-				mv.addObject("report_date", dateformat.format(d1));
-
-			} catch (ParseException e) {
-				e.printStackTrace();
-			}
-			mv.addObject("reportsummary", T1Master);
-			mv.addObject("reportsummary1", T2Master);
-		}
-
-	
-
-		mv.setViewName("BRRS/M_GMIRT");
-
-		mv.addObject("displaymode", "summary");
-
-		System.out.println("scv" + mv.getViewName());
-
-		return mv;
-
-	}
-	*/
 	
 	public ModelAndView getM_GMIRTView(String reportId, String fromdate, String todate, String currency, String dtltype,
 			Pageable pageable, String type, BigDecimal version) {
@@ -294,8 +205,6 @@ public class BRRS_M_GMIRT_ReportService {
 		// Fetch data
 
 		List<M_GMIRT_Summary_Entity> dataList = brrs_m_gmirt_summary_repo.getdatabydateList(dateformat.parse(todate));
-		List<M_GMIRT_M_Summary_Entity> dataList1 = brrs_m_gmirtM_summary_repo
-				.getdatabydateList(dateformat.parse(todate));
 
 		if (dataList.isEmpty()) {
 			logger.warn("Service: No data found for M_GMIRT report. Returning empty result.");
@@ -733,8 +642,6 @@ public class BRRS_M_GMIRT_ReportService {
 		}
 		List<M_GMIRT_Archival_Summary_Entity> dataList = brrs_m_gmirt_Archival_summary_repo
 				.getdatabydateListarchival(dateformat.parse(todate), version);
-		List<M_GMIRT_M_Archival_Summary_Entity> dataList1 = m_gmirtM_Archival_Summary_Repo
-				.getdatabydateListarchival(dateformat.parse(todate), version);
 		if (dataList.isEmpty()) {
 			logger.warn("Service: No data found for M_GMIRT report. Returning empty result.");
 			return new byte[0];
@@ -801,7 +708,6 @@ public class BRRS_M_GMIRT_ReportService {
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
 					M_GMIRT_Archival_Summary_Entity record = dataList.get(i);
-					M_GMIRT_M_Archival_Summary_Entity record1 = dataList1.get(i);
 					System.out.println("rownumber=" + startRow + i);
 					Row row = sheet.getRow(startRow + i);
 					if (row == null) {
@@ -911,8 +817,8 @@ public class BRRS_M_GMIRT_ReportService {
 					// row9
 					// Column N
 					Cell cellN = row.createCell(13);
-					if (record1.getR9_tot_cap_req() != null) {
-						cellN.setCellValue(record1.getR9_tot_cap_req().doubleValue());
+					if (record.getR9_tot_cap_req() != null) {
+						cellN.setCellValue(record.getR9_tot_cap_req().doubleValue());
 						cellN.setCellStyle(numberStyle);
 					} else {
 						cellN.setCellValue("");
@@ -2031,7 +1937,6 @@ public class BRRS_M_GMIRT_ReportService {
 		List<Object> M_GMIRTArchivallist = new ArrayList<>();
 		try {
 			M_GMIRTArchivallist = brrs_m_gmirt_Archival_summary_repo.getM_GMIRTarchival();
-			M_GMIRTArchivallist = m_gmirtM_Archival_Summary_Repo.getM_GMIRTarchival();
 			System.out.println("countser" + M_GMIRTArchivallist.size());
 			System.out.println("countser" + M_GMIRTArchivallist.size());
 		} catch (Exception e) {

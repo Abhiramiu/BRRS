@@ -1,7 +1,6 @@
 package com.bornfire.brrs.services;
 
 import java.io.ByteArrayOutputStream;
-
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
@@ -21,17 +20,11 @@ import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CreationHelper;
-import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.Font;
-import org.apache.poi.ss.usermodel.HorizontalAlignment;
-import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
@@ -43,17 +36,19 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.ModelAndView;
 
-
+import com.bornfire.brrs.entities.BRRS_M_CA4_Archival_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_M_CA4_Archival_Summary_Repo;
-import com.bornfire.brrs.entities.M_CA4_Summary_Entity;
-import com.bornfire.brrs.entities.M_CA4_Detail_Entity;
-import com.bornfire.brrs.entities.M_CA4_Detail_Entity;
+import com.bornfire.brrs.entities.BRRS_M_CA4_Detail_Repo;
+import com.bornfire.brrs.entities.BRRS_M_CA4_RESUB_Detail_Repo;
+import com.bornfire.brrs.entities.BRRS_M_CA4_RESUB_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_M_CA4_Summary_Repo;
 import com.bornfire.brrs.entities.M_CA4_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.M_CA4_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.M_CA4_Detail_Entity;
-import com.bornfire.brrs.entities.BRRS_M_CA4_Archival_Detail_Repo;
-import com.bornfire.brrs.entities.BRRS_M_CA4_Detail_Repo;
+import com.bornfire.brrs.entities.M_CA4_Resub_Detail_Entity;
+import com.bornfire.brrs.entities.M_CA4_Resub_Summary_Entity;
+import com.bornfire.brrs.entities.M_CA4_Summary_Entity;
+import com.bornfire.brrs.entities.M_EPR_Archival_Summary_Entity;
 
 @Component
 @Service
@@ -86,63 +81,16 @@ public class BRRS_M_CA4_ReportService {
 	BRRS_M_CA4_Archival_Detail_Repo BRRS_M_CA4_Archival_Detail_Repo;
 	
 
+	@Autowired
+	BRRS_M_CA4_RESUB_Summary_Repo brrs_m_ca4_resub_summary_repo;
+	
+    @Autowired
+	BRRS_M_CA4_RESUB_Detail_Repo brrs_m_ca4_resub_detail_repo;
+	
+
+    
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
-	/*
-	 * public ModelAndView getBRRS_M_CA4View(String reportId, String fromdate,
-	 * String todate, String currency, String dtltype, Pageable pageable, String
-	 * type, String version) {
-	 * 
-	 * ModelAndView mv = new ModelAndView(); Session hs =
-	 * sessionFactory.getCurrentSession();
-	 * 
-	 * int pageSize = pageable.getPageSize(); int currentPage =
-	 * pageable.getPageNumber(); int startItem = currentPage * pageSize;
-	 * 
-	 * System.out.println("testing"); System.out.println(version);
-	 * 
-	 * 
-	 * if (type.equals("ARCHIVAL") & version != null) { System.out.println(type);
-	 * List<M_CA4_Archival_Summary_Entity> T1Master = new
-	 * ArrayList<M_CA4_Archival_Summary_Entity>(); System.out.println(version); try
-	 * { Date d1 = dateformat.parse(todate);
-	 * 
-	 * 
-	 * 
-	 * T1Master =
-	 * m_ca4_Archival_Summary_Repo.getdatabydateListarchival(dateformat.parse(todate
-	 * ), version);
-	 * 
-	 * } catch (ParseException e) { e.printStackTrace(); }
-	 * 
-	 * mv.addObject("reportsummary", T1Master); } else {
-	 * 
-	 * List<M_CA4_Summary_Entity> T1Master = new ArrayList<M_CA4_Summary_Entity>();
-	 * try { Date d1 = dateformat.parse(todate);
-	 * 
-	 * T1Master =
-	 * brrs_m_ca4_summary_repo.getdatabydateList(dateformat.parse(todate));
-	 * mv.addObject("report_date", dateformat.format(d1));
-	 * 
-	 * } catch (ParseException e) { e.printStackTrace(); }
-	 * mv.addObject("reportsummary", T1Master); }
-	 * 
-	 * 
-	 * 
-	 * mv.setViewName("BRRS/M_CA4");
-	 * 
-	 * 
-	 * 
-	 * mv.addObject("displaymode", "summary");
-	 * 
-	 * System.out.println("scv" + mv.getViewName());
-	 * 
-	 * return mv;
-	 * 
-	 * }
-	 */
-	
-	
 	
 	public ModelAndView getBRRS_M_CA4View(String reportId, String fromdate, String todate, String currency,
 			String dtltype, Pageable pageable, String type, BigDecimal version) {
@@ -157,7 +105,20 @@ public class BRRS_M_CA4_ReportService {
 		System.out.println("type...."+type);
 
 		try {
-			Date d1 = dateformat.parse(todate);
+
+	        // Parse only once
+	        Date d1 = dateformat.parse(todate);
+
+	        System.out.println("======= VIEW DEBUG =======");
+	        System.out.println("TYPE      : " + type);
+	        System.out.println("DTLTYPE   : " + dtltype);
+	        System.out.println("DATE      : " + d1);
+	        System.out.println("VERSION   : " + version);
+	        System.out.println("==========================");
+
+	        // ===========================================================
+	        //SUMMARY SECTION
+	        // ===========================================================
 
 			// ---------- CASE 1: ARCHIVAL ----------
 			if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
@@ -170,10 +131,10 @@ public class BRRS_M_CA4_ReportService {
 
 			// ---------- CASE 2: RESUB ----------
 			else if ("RESUB".equalsIgnoreCase(type) && version != null) {
-				List<M_CA4_Archival_Summary_Entity> T1Master = m_ca4_Archival_Summary_Repo.getdatabydateListarchival(d1,
-						version);
+				List<M_CA4_Resub_Summary_Entity> T1Master =
+						brrs_m_ca4_resub_summary_repo.getdatabydateListarchival(d1,version);
 
-				mv.addObject("displaymode", "summary");
+				mv.addObject("displaymode", "resub");
 				mv.addObject("reportsummary", T1Master);
 			}
 
@@ -196,6 +157,17 @@ public class BRRS_M_CA4_ReportService {
 					mv.addObject("displaymode", "Details");
 					mv.addObject("reportsummary", T1Master);
 				}
+				 // ---------- RESUB DETAIL ----------
+	            else if ("RESUB".equalsIgnoreCase(type) && version != null) {
+
+	                List<M_CA4_Resub_Detail_Entity> T1Master = brrs_m_ca4_resub_detail_repo
+	                                .getdatabydateListarchival(d1, version);
+
+	                System.out.println("Resub Detail Size : " + T1Master.size());
+
+	                mv.addObject("displaymode", "resub");
+	                mv.addObject("reportsummary", T1Master);
+	            }
 				// DETAIL + NORMAL
 				else {
 
@@ -5467,7 +5439,8 @@ public class BRRS_M_CA4_ReportService {
 	            for (M_CA4_Archival_Summary_Entity entity : latestArchivalList) {
 	                Object[] row = new Object[] {
 	                    entity.getReport_date(),
-	                    entity.getReport_version()
+	                    entity.getReport_version(),
+	                    entity.getReportResubDate()
 	                };
 	                resubList.add(row);
 	            }
@@ -10329,7 +10302,8 @@ public class BRRS_M_CA4_ReportService {
 	
 	
 	
-	
+			
+			
 	
 	
 	

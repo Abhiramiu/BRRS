@@ -1203,7 +1203,10 @@ public class BRRS_M_CA7_ReportService {
 
 			if (latestArchivalList != null && !latestArchivalList.isEmpty()) {
 				for (M_CA7_Archival_Summary_Entity entity : latestArchivalList) {
-					Object[] row = new Object[] { entity.getReportDate(), entity.getReportVersion() };
+					Object[] row = new Object[] { entity.getReportDate(), 
+							entity.getReportVersion(),
+							entity.getReportResubDate()
+							};
 					resubList.add(row);
 				}
 				System.out.println("Fetched " + resubList.size() + " record(s)");
