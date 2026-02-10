@@ -691,11 +691,11 @@ function editRecord(){
 	showResultModal('Alert', 'Development in progress');
 	
 }
-function closemodel(){
+/* function closemodel(){
 	$('#alert').modal('hide');
 	$('#resultModal').modal('hide');
 	
-}
+} */
 
 function showResultModal(title, message) {
 	// Set the text for the modal elements
@@ -945,19 +945,8 @@ $(document).ready(function() {
 
 
 
-
-
-
-
-
-
-
 <script>
-	
-
-	// This function is for closing the modal after an action is complete.
-	// It hides the result and loader modals and reloads the page.
-function closemodel() {
+		function closemodel() {
 			$("#resultModal").modal("hide");
 			$('#loader').modal('hide');
 
@@ -972,6 +961,33 @@ function closemodel() {
 				setTimeout(() => location.reload(), 300);
 			}
 		}
+	</script>
+
+
+
+
+
+
+<script>
+	
+
+	// This function is for closing the modal after an action is complete.
+	// It hides the result and loader modals and reloads the page.
+/* function closemodel() {
+			$("#resultModal").modal("hide");
+			$('#loader').modal('hide');
+
+			// Check if the success message is showing
+			const message = $("#resultModalBody").text();
+
+			if (message.includes("Resubmission Updated Successfully")) {
+				// ✅ Go back to the previous page
+				window.history.back();
+			} else {
+				// For other messages, just reload the same page
+				setTimeout(() => location.reload(), 300);
+			}
+		} */
 
 	// This is the main function that orchestrates the entire form submission process.
 	// It is triggered by the "Update" button click.
@@ -1146,7 +1162,7 @@ function closemodel() {
 
 						<button type="button" class="custom-tab-btn "
 							id="custom-tab-btnAdd" onclick="downloadfile(this)"
-							th:if="${displaymode == 'summary' or displaymode == 'Details'}"
+							th:if="${displaymode == 'summary' or displaymode == 'detail' or displaymode == 'resub'}"
 							th:attr="data-reportid=${reportid},
                    data-asondate=${asondate},
                    data-fromdate=${fromdate},
@@ -1157,12 +1173,12 @@ function closemodel() {
                    data-type=${type},
                    data-version=${version != null ? version : ''}"
 							style="font-family: Arial; font-weight: bold;">
-							<i class="fa fa-download"></i> Download
+							<i class="fa fa-download"></i> Format
 						</button>
 
 						<button type="button" class="custom-tab-btn "
 							id="custom-tab-btnAdd" onclick="downloadfile(this)"
-							th:if="${displaymode == 'summary' or displaymode == 'Details'}"
+							th:if="${displaymode == 'summary' or displaymode == 'detail'or displaymode == 'resub'}"
 							th:attr="data-reportid=${reportid},
             data-asondate=${asondate},
             data-fromdate=${fromdate},
@@ -1173,7 +1189,7 @@ function closemodel() {
             data-type='email',
             data-version=${version != null ? version : ''}"
 							style="font-family: Arial; font-weight: bold;">
-							<i class="fa fa-download"></i> Email Format
+							<i class="fa fa-download"></i> Email 
 
 						</button>
 
@@ -1183,22 +1199,34 @@ function closemodel() {
 					</div>
 				</div>
 				<h1
-					th:if="${displaymode == 'summary' and type == 'ARCHIVAL' and displaymode != 'Details'}"
+					th:if="${displaymode == 'summary' and type == 'ARCHIVAL' and displaymode != 'detail' }"
 					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">Archival
 					Summary View - M-EPR</h1>
 
 				<h1
-					th:if="${displaymode == 'Details' and type == 'ARCHIVAL' and displaymode != 'summary'}"
+					th:if="${displaymode == 'detail' and type == 'ARCHIVAL' and displaymode != 'summary'}"
 					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">Archival
 					Detail View - M-EPR</h1>
 
 				<h1 th:if="${displaymode == 'summary'and type != 'ARCHIVAL'}"
 					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">Summary
 					View - M-EPR</h1>
-				<h1 th:if="${displaymode == 'Details' and type != 'ARCHIVAL'}"
+				<h1 th:if="${displaymode == 'detail' and type != 'ARCHIVAL'}"
 					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">Detail
 					View - M-EPR</h1>
-				<div th:if="${displaymode == 'summary' or displaymode == 'Details'}">
+					
+					
+					<h1
+					th:if="${displaymode == 'resub' and type == 'RESUB' and dtltype ne 'detail' }"
+					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">
+					Resubmission Summary View - M-EPR</h1>
+
+				<h1
+					th:if="${displaymode == 'resub' and type == 'RESUB' and dtltype ne 'report' }"
+					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">
+					Resubmission Detail View - M-EPR</h1>
+					
+				<div th:if="${displaymode == 'summary' or displaymode == 'detail' or displaymode == 'resub'}">
 
 					<div class="row">
 						<div class="col-sm-12">
