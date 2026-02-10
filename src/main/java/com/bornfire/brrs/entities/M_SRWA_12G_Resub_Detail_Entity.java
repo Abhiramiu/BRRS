@@ -1,9 +1,7 @@
-
 package com.bornfire.brrs.entities;
 
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,15 +11,13 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import org.springframework.format.annotation.DateTimeFormat;
-
 
 
 @Entity
-@Table(name = "BRRS_M_SRWA_12G_ARCHIVALTABLE_DETAIL")
+@Table(name = "BRRS_M_SRWA_12G_RESUB_DETAILTABLE")
 
 @IdClass(M_SRWA_12G_PK.class)
-public class M_SRWA_12G_Archival_Detail_Entity{	
+public class M_SRWA_12G_Resub_Detail_Entity{	
 
 
 	@Id
@@ -33,8 +29,7 @@ public class M_SRWA_12G_Archival_Detail_Entity{
 	@Column(name = "REPORT_VERSION")
 	private BigDecimal reportVersion;
 
-	@Column(name = "REPORT_RESUBDATE")
-	private Date reportResubDate;
+	private Date REPORT_RESUBDATE;
 	
 	public String report_frequency;
 	public String report_code;
@@ -357,11 +352,11 @@ public class M_SRWA_12G_Archival_Detail_Entity{
 	public void setReportVersion(BigDecimal reportVersion) {
 		this.reportVersion = reportVersion;
 	}
-	public Date getReportResubDate() {
-		return reportResubDate;
+	public Date getREPORT_RESUBDATE() {
+		return REPORT_RESUBDATE;
 	}
-	public void setReportResubDate(Date reportResubDate) {
-		this.reportResubDate = reportResubDate;
+	public void setREPORT_RESUBDATE(Date rEPORT_RESUBDATE) {
+		REPORT_RESUBDATE = rEPORT_RESUBDATE;
 	}
 	public String getReport_frequency() {
 		return report_frequency;
@@ -2211,8 +2206,9 @@ public class M_SRWA_12G_Archival_Detail_Entity{
 	public void setR61_risk_weighted_amount(BigDecimal r61_risk_weighted_amount) {
 		this.r61_risk_weighted_amount = r61_risk_weighted_amount;
 	}
-	public M_SRWA_12G_Archival_Detail_Entity() {
+	public M_SRWA_12G_Resub_Detail_Entity() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
+	
 }
