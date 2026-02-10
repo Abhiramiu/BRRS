@@ -98,13 +98,13 @@ public class BFDB_Services {
 	                                   String userid,
 	                                   String username) {
 
-	    logger.info("Starting BFDB upload job: {}", jobId);
+	   // logger.info("Starting BFDB upload job: {}", jobId);
 
 	    try {
 	        String resultMsg = processBFDBFile(file, userid, username);
 
 	        jobStatusStorage.put(jobId, "COMPLETED:" + resultMsg);
-	        logger.info("Job {} completed successfully.", jobId);
+	        //logger.info("Job {} completed successfully.", jobId);
 
 	        return resultMsg;
 
@@ -113,7 +113,7 @@ public class BFDB_Services {
 	        String errorMessage = "ERROR:" + e.getMessage();
 	        jobStatusStorage.put(jobId, errorMessage);
 
-	        logger.error("Job {} failed.", jobId, e);
+	        //logger.error("Job {} failed.", jobId, e);
 	        return errorMessage;
 	    }
 	}
@@ -456,12 +456,12 @@ public class BFDB_Services {
 
 	                if (totalProcessed % commitInterval == 0) {
 	                    conn.commit();
-	                    logger.info("Progress: {} rows processed (Inserted: {})", totalProcessed, insertedCount);
+	                    //logger.info("Progress: {} rows processed (Inserted: {})", totalProcessed, insertedCount);
 	                }
 
 	            } catch (Exception ex) {
 	                skippedCount++;
-	                logger.error("Skipping row {} due to error: {}", i, ex.getMessage(), ex);
+	               // logger.error("Skipping row {} due to error: {}", i, ex.getMessage(), ex);
 	            }
 	        }
 
@@ -481,7 +481,8 @@ public class BFDB_Services {
 
 	    } catch (Exception e) {
 	        if (conn != null) conn.rollback();
-	        logger.error("❌ Error while processing BFDB Excel: {}", e.getMessage(), e);
+	       // logger.error("❌ Error while processing BFDB Excel: {}", 
+	        e.getMessage();
 	        throw e;
 	    } finally {
 	        if (stmtBFDB != null) stmtBFDB.close();
@@ -523,7 +524,8 @@ public class BFDB_Services {
 	                        return "";
 	                }
 	            } catch (Exception ex) {
-	                logger.warn("Could not get cached formula value for cell: {}", ex.getMessage());
+	              //  logger.warn("Could not get cached formula value for cell: {}",
+	            	ex.getMessage();
 	                return "";
 	            }
 	        }
@@ -570,7 +572,7 @@ public class BFDB_Services {
 	        return new java.sql.Date(sdf.parse(text).getTime());
 	        
 	    } catch (Exception e) {
-	        logger.warn("Could not parse date at column {}: {}", colIndex, e.getMessage());
+	      //  logger.warn("Could not parse date at column {}: {}", colIndex, e.getMessage());
 	        return null;
 	    }
 	}
@@ -604,7 +606,7 @@ public class BFDB_Services {
 	        return new BigDecimal(text);
 	        
 	    } catch (Exception e) {
-	        logger.warn("Could not parse decimal at column {}: {}", index, e.getMessage());
+	      //  logger.warn("Could not parse decimal at column {}: {}", index, e.getMessage());
 	        return null;
 	    }
 	}
@@ -692,7 +694,7 @@ public class BFDB_Services {
 			}
 
 		} catch (Exception e) {
-			logger.debug("date parse/eval error for cell '{}': {}", cell, e.getMessage());
+			//logger.debug("date parse/eval error for cell '{}': {}", cell, e.getMessage());
 		}
 
 		// Return null if all parsing fails

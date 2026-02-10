@@ -287,6 +287,7 @@ public class BRRS_ReportsController {
 			@RequestParam("reportid") String reportid, @RequestParam("asondate") String asondate,
 			@RequestParam("fromdate") String fromdate, @RequestParam("todate") String todate,
 			@RequestParam("currency") String currency, @RequestParam(value = "type", required = false) String type,
+			@RequestParam(value = "format", required = false) String format,
 			@RequestParam(value = "version", required = false) String versionBD,
 			@RequestParam(value = "subreportid", required = false) String subreportid,
 			@RequestParam(value = "secid", required = false) String secid,
@@ -320,7 +321,7 @@ public class BRRS_ReportsController {
 		try {
 			System.out.println("came to controller");
 			byte[] excelData = regreportServices.getDownloadFile(reportid, filename, asondate, fromdate, todate,
-					currency, subreportid, secid, dtltype, reportingTime, instancecode, filter, type, version);
+					currency, subreportid, secid, dtltype, reportingTime, instancecode, filter, type, format, version);
 
 			if (excelData == null || excelData.length == 0) {
 				logger.warn("Controller: Service returned no data. Responding with 204 No Content.");
@@ -987,7 +988,7 @@ public class BRRS_ReportsController {
 			// call services
 			brrs_m_ca4_reportservice.updateReport(request);
 
-			return ResponseEntity.ok("Updated Successfully.");
+			return ResponseEntity.ok("Modified Successfully.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -998,7 +999,7 @@ public class BRRS_ReportsController {
 	@ResponseBody
 	public ResponseEntity<String> updateReportReSub(
 			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@ModelAttribute M_CA4_Summary_Entity request,
+			@ModelAttribute M_CA4_Resub_Summary_Entity request,
 			HttpServletRequest req) {
 
 		try {
@@ -1013,7 +1014,7 @@ public class BRRS_ReportsController {
 			}
 
 			// Call service to create a new versioned row
-			brrs_m_ca4_reportservice.updateReportResub(request);
+			brrs_m_ca4_reportservice.updateResubReport(request);
 
 			return ResponseEntity.ok("Resubmission Updated Successfully");
 

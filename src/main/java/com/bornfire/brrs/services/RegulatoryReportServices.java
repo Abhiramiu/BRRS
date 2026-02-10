@@ -2053,7 +2053,7 @@ public class RegulatoryReportServices {
 
 	public byte[] getDownloadFile(String reportId, String filename, String asondate, String fromdate, String todate,
 			String currency, String subreportid, String secid, String dtltype, String reportingTime,
-			String instancecode, String filter, String type, BigDecimal version) {
+			String instancecode, String filter, String type,String format, BigDecimal version) {
 
 		byte[] repfile = null;
 
@@ -2429,7 +2429,7 @@ public class RegulatoryReportServices {
 		case "M_CA4":
 			try {
 				repfile = BRRS_M_CA4_reportservice.getBRRS_M_CA4Excel(filename, reportId, fromdate, todate, currency,
-						dtltype, type, version);
+						dtltype, type, format, version);
 			} catch (Exception e) { // TODO Auto-generated catch block
 				e.printStackTrace();
 			}
