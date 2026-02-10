@@ -92,8 +92,7 @@ public class RegulatoryReportServices {
 	@Autowired
 	BRRS_M_SRWA_12H_ReportService BRRS_M_SRWA_12H_reportservice;
 
-	@Autowired
-	BRRS_M_SRWA_12H_New_ReportService BRRS_M_SRWA_12H_new_reportservice;
+
 
 	@Autowired
 	BRRS_M_MRC_ReportService BRRS_M_MRC_reportservice;
@@ -406,8 +405,6 @@ public class RegulatoryReportServices {
 	@Autowired
 	BRRS_Q_STAFF_Report_Service BRRS_Q_STAFF_report_service;
 
-	@Autowired
-	BRRS_Q_STAFF_New_Report_Service BRRS_Q_STAFF_New_report_service;
 
 	private static final Logger logger = LoggerFactory.getLogger(RegulatoryReportServices.class);
 
@@ -1352,10 +1349,7 @@ public class RegulatoryReportServices {
 					pageable, type, version);
 			break;
 
-		case "Q_STAFF_NEW":
-			repsummary = BRRS_Q_STAFF_New_report_service.getQ_STAFF_NewView(reportId, fromdate, todate, currency,
-					dtltype, pageable, type, version);
-			break;
+
 
 		case "PL_SCHS":
 			repsummary = BRRS_PL_SCHS_Reportservice.getPL_SCHSView(reportId, fromdate, todate, currency, dtltype,
@@ -1554,10 +1548,7 @@ public class RegulatoryReportServices {
 			repsummary = BRRS_M_SRWA_12H_reportservice.getM_SRWA_12HView(reportId, fromdate, todate, currency, dtltype,
 					pageable, type, version);
 			break;
-		case "M_SRWA_12H_NEW":
-			repsummary = BRRS_M_SRWA_12H_new_reportservice.getM_SRWA_12H_NewView(reportId, fromdate, todate, currency,
-					dtltype, pageable, type, version);
-			break;
+
 
 		}
 
@@ -3093,23 +3084,15 @@ public class RegulatoryReportServices {
 
 		case "M_SRWA_12H":
 			try {
-				repfile = BRRS_M_SRWA_12H_reportservice.BRRS_M_SRWA_12HExcel(filename, reportId, fromdate, todate,
-						currency, dtltype, type, version);
+				repfile = BRRS_M_SRWA_12H_reportservice.BRRS_M_SRWA_12HExcel(filename, reportId, fromdate, todate, currency,
+						dtltype, type, format, version);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			break;
 
-		case "M_SRWA_12H_NEW":
-			try {
-				repfile = BRRS_M_SRWA_12H_new_reportservice.BRRS_M_SRWA_12H_NewExcel(filename, reportId, fromdate,
-						todate, currency, dtltype, type, version);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+
 
 		case "PL_SCHS":
 			try {
@@ -3743,14 +3726,7 @@ public class RegulatoryReportServices {
 			}
 			break;
 
-		case "Q_STAFF_NEW":
-			try {
-				repfile = BRRS_Q_STAFF_New_report_service.BRRS_Q_STAFF_NewExcel(filename, reportId, fromdate, todate,
-						currency, dtltype, type, version);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			break;
+
 
 		case "M_SRWA_12A_New":
 			try {
@@ -4797,27 +4773,24 @@ public class RegulatoryReportServices {
 			}
 			break;
 
-		// New Archival
-
-		case "M_SRWA_12F":
-			try {
-				archivalData = BRRS_M_SRWA_12F_reportservice.getM_SRWA_12FArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+//		// New Archival
+//
+//		case "M_SRWA_12F":
+//			try {
+//				archivalData = BRRS_M_SRWA_12F_reportservice.getM_SRWA_12FArchival();
+//			} catch (Exception e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//			break;
+			
 		case "M_SRWA_12H":
 			List<Object[]> srwaList1 = BRRS_M_SRWA_12H_reportservice.getM_SRWA_12HArchival();
 			archivalData.addAll(srwaList1);
 			System.out.println("Fetched M_SRWA_12H archival data: " + srwaList1.size());
 			break;
 
-		case "M_SRWA_12H_NEW":
-			List<Object[]> srwaListnew = BRRS_M_SRWA_12H_new_reportservice.getM_SRWA_12H_NewArchival();
-			archivalData.addAll(srwaListnew);
-			System.out.println("Fetched M_SRWA_12H archival data: " + srwaListnew.size());
-			break;
+
 
 		case "M_SRWA_12E":
 			List<Object[]> srweList1 = BRRS_M_SRWA_12E_ReportService.getM_SRWA_12EArchival();
@@ -5236,11 +5209,6 @@ public class RegulatoryReportServices {
 			System.out.println("Fetched Q_STAFF archival data: " + QSList.size());
 			break;
 
-		case "Q_STAFF_NEW":
-			List<Object[]> QSNList = BRRS_Q_STAFF_New_report_service.getQ_STAFF_NewArchival();
-			archivalData.addAll(QSNList);
-			System.out.println("Fetched Q_STAFF archival data: " + QSNList.size());
-			break;
 
 		default:
 			System.out.println("No archival logic defined for report: " + rptcode);
@@ -6339,6 +6307,28 @@ public class RegulatoryReportServices {
 				System.out.println("Resubmission data fetched for M_SRWA_12H: " + resubList.size());
 			} catch (Exception e) {
 				System.err.println("Error fetching resubmission data for M_SRWA_12H: " + e.getMessage());
+				e.printStackTrace();
+			}
+			break;
+			
+		case "Q_STAFF":
+			try {
+				List<Object[]> resubList = BRRS_Q_STAFF_report_service.getQ_STAFFResub();
+				resubmissionData.addAll(resubList);
+				System.out.println("Resubmission data fetched for Q_STAFF: " + resubList.size());
+			} catch (Exception e) {
+				System.err.println("Error fetching resubmission data for Q_STAFF: " + e.getMessage());
+				e.printStackTrace();
+			}
+			break;
+			
+		case "M_SRWA_12F":
+			try {
+				List<Object[]> resubList = BRRS_M_SRWA_12F_reportservice.getM_SRWA_12FResub();
+				resubmissionData.addAll(resubList);
+				System.out.println("Resubmission data fetched for M_SRWA_12F: " + resubList.size());
+			} catch (Exception e) {
+				System.err.println("Error fetching resubmission data for M_SRWA_12F: " + e.getMessage());
 				e.printStackTrace();
 			}
 			break;

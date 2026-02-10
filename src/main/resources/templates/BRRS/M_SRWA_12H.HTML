@@ -434,75 +434,65 @@ PURPOSE		: BWRBRREPORT
 			activateTab(selectedTab);
 		};
 		function downloadfile(button) {
+				    var reportid = button.getAttribute('data-reportid');
+				    var asondate = button.getAttribute('data-asondate');
+				    var fromdate = button.getAttribute('data-fromdate');
+				    var todate = button.getAttribute('data-todate');
+				    var currency = button.getAttribute('data-currency');
+				    var subreportid = button.getAttribute('data-subreportid');
+				    var secid = button.getAttribute('data-secid');
+				    var dtltype = button.getAttribute('data-dtltype');
+				    var filename = button.getAttribute('data-filename');
+				    var type = button.getAttribute('data-type');
+				    var version = button.getAttribute('data-version');
+				    var format = button.getAttribute('data-format');
 
-			var reportid = button.getAttribute('data-reportid');
-			var asondate = button.getAttribute('data-asondate');
-			var fromdate = button.getAttribute('data-fromdate');
-			var todate = button.getAttribute('data-todate');
-			var currency = button.getAttribute('data-currency');
-			var subreportid = button.getAttribute('data-subreportid');
-			var secid = button.getAttribute('data-secid');
-			var dtltype = button.getAttribute('data-dtltype');
-			var filename = button.getAttribute('data-filename');
-			var type = button.getAttribute('data-type');
-			var version = button.getAttribute('data-version');
+				    if (format === null) {
+				        format = '';   // treat as null
+				    }
 
-			var loader = new bootstrap.Modal(
-				document.getElementById('loader'),
-				{backdrop: 'static', keyboard: false}
-			);
-			loader.show();
+				    $('#loader').modal('show');
 
-			// ✅ Build URL safely
-			var url = './downloadExcel?reportid=' + reportid +
-				'&fromdate=' + fromdate +
-				'&asondate=' + asondate +
-				'&todate=' + todate +
-				'&currency=' + currency +
-				'&subreportid=' + subreportid +
-				'&secid=' + secid +
-				'&filename=' + filename +
-				'&type=' + type;
-
-			// ✅ ONLY append version if valid
-			if (version && version.trim() !== '') {
-				url += '&version=' + version;
-			}
-
-			$.ajax({
-				url: url,
-				type: 'GET',
-				xhrFields: {responseType: 'blob'},
-
-				success: function (data) {
-					$('#loader').modal('hide');
-
-					if (data && data.size > 100) {
-						const blob = new Blob([data], {
-							type: 'application/vnd.ms-excel'
-						});
-						const url = window.URL.createObjectURL(blob);
-						const a = document.createElement('a');
-						a.style.display = 'none';
-						a.href = url;
-						a.download = filename;
-						document.body.appendChild(a);
-						a.click();
-						window.URL.revokeObjectURL(url);
-						document.body.removeChild(a);
-
-						showResultModal('BRRS', filename + ' downloaded successfully.');
-					} else {
-						showResultModal('Information', 'No data was available to create a download.');
-					}
-				},
-
-				error: function () {
-					$('#loader').modal('hide');
-					showResultModal('Error', 'An error occurred while downloading the file.');
+				    $.ajax({
+				        url: './downloadExcel?reportid=' + reportid +
+				             '&fromdate=' + fromdate +
+				             '&asondate=' + asondate +
+				             '&todate=' + todate +
+				             '&currency=' + currency +
+				             '&subreportid=' + subreportid +
+				             '&secid=' + secid +
+				             '&filename=' + filename +
+				             '&type=' + type +
+				             '&version=' + version +
+				             '&format=' + format,
+				        type: 'GET',
+				        xhrFields: {
+				            responseType: 'blob'
+				        },
+				        success: function (data) {
+				            $('#loader').modal('hide');
+				            if (data && data.size > 100) {
+				                const blob = new Blob([data], { type: 'application/vnd.ms-excel' });
+				                const url = window.URL.createObjectURL(blob);
+				                const a = document.createElement('a');
+				                a.style.display = 'none';
+				                a.href = url;
+				                a.download = filename;
+				                document.body.appendChild(a);
+				                a.click();
+				                window.URL.revokeObjectURL(url);
+				                document.body.removeChild(a);
+				                showResultModal('BRRS', filename + ' downloaded successfully.');
+				            } else {
+				                showResultModal('Information', 'No data was available to create a download.');
+				            }
+				        },
+				        error: function () {
+				            $('#loader').modal('hide');
+				            showResultModal('Error', 'An error occurred while downloading the file.');
+				        }
+				    });
 				}
-			});
-		}
 
 		function editRecord() {
 			showResultModal('Alert', 'Development in progress');
@@ -860,21 +850,25 @@ PURPOSE		: BWRBRREPORT
                    data-version=${version != null ? version : ''}" style="font-family: Arial;font-weight: bold;">
 							<i class="fa fa-download"></i> Format
 						</button>
-						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
-							onclick="downloadfile(this)"
-							th:if="${displaymode == 'summary' or displaymode == 'detail'or displaymode == 'resubSummary'or displaymode == 'resubDetail'}"
-							th:attr="data-reportid=${reportid},
-            data-asondate=${asondate},
-            data-fromdate=${fromdate},
-            data-todate=${todate},
-            data-currency=${currency}, 
-            data-dtltype=${dtltype},
-            data-filename='EMAIL_M_SRWA_12H.xlsx',
-            data-type='email',
-            data-version=${version != null ? version : ''}" style="font-family: Arial;font-weight: bold;">
-							<i class="fa fa-download"></i> E-Mail
+						<button type="button"
+						    class="custom-tab-btn"
+						    onclick="downloadfile(this)"
+						    th:if="${displaymode == 'summary' or displaymode == 'detail'
+						          or displaymode == 'resubSummary' or displaymode == 'resubDetail'}"
 
+						    th:attr="data-reportid=${reportid},
+						             data-asondate=${asondate},
+						             data-fromdate=${fromdate},
+						             data-todate=${todate},
+						             data-currency=${currency},
+						             data-dtltype='email',
+						             data-filename='EMAIL_M_SRWA_12H.xlsx',
+						             data-type=${type},
+									 data-format='email',
+						             data-version=${version != null ? version : ''}">
+						    <i class="fa fa-download"></i> Email
 						</button>
+
 
 
 					</div>

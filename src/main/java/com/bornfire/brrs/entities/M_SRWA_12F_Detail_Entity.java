@@ -7,7 +7,6 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.IdClass;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -24,10 +23,6 @@ public class M_SRWA_12F_Detail_Entity {
 	
 	@Column(name = "REPORT_VERSION")
 	private BigDecimal reportVersion;
-	
-	//@Column(name = "REPORT_RESUBDATE")
-	//@Temporal(TemporalType.TIMESTAMP)
-	//private Date reportResubDate;
 	
 	public String report_frequency;
 	public String report_code;

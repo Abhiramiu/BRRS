@@ -60,10 +60,6 @@ import com.bornfire.brrs.entities.M_FAS_Detail_Entity;
 import com.bornfire.brrs.entities.M_FAS_Manual_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.M_FAS_Manual_Summary_Entity;
 import com.bornfire.brrs.entities.M_FAS_Summary_Entity;
-import com.bornfire.brrs.entities.M_GALOR_Archival_Detail_Entity;
-import com.bornfire.brrs.entities.M_GALOR_Detail_Entity;
-import com.bornfire.brrs.entities.Q_STAFF_Summary_Entity1;
-import com.bornfire.brrs.entities.Q_STAFF_Summary_Entity2;
 import com.bornfire.brrs.entities.BRRS_M_FAS_Manual_Archival_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_M_FAS_Summary_Repo;
 

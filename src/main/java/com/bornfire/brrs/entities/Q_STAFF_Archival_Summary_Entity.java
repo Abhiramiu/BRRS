@@ -6,12 +6,15 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.IdClass;
+import javax.persistence.IdClass;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
 @Table(name = "BRRS_Q_STAFF_ARCHIVALTABLE_SUMMARY")
+@IdClass(Q_STAFF_PK.class)
 public class Q_STAFF_Archival_Summary_Entity {
 
     private String R9_STAFF_COMPLEMENT;
@@ -104,12 +107,18 @@ public class Q_STAFF_Archival_Summary_Entity {
     private BigDecimal R38_BALANCE_OUTSTANDING;
     private BigDecimal R38_NO_OF_ACS;
     private BigDecimal R38_INTEREST_RATE;
-    @Id
-    @Temporal(TemporalType.DATE)
-    @Column(name = "REPORT_DATE")
-    private Date reportDate;
-    @Column(name = "REPORT_VERSION")
-    private BigDecimal reportVersion;
+	@Id
+	@Temporal(TemporalType.DATE)
+	@Column(name = "REPORT_DATE")
+	private Date reportDate;
+
+	@Id
+	@Column(name = "REPORT_VERSION")
+	private BigDecimal reportVersion;
+
+	@Column(name = "REPORT_RESUBDATE")
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date reportResubDate;
     private String REPORT_FREQUENCY;
     private String REPORT_CODE;
     private String REPORT_DESC;
@@ -117,7 +126,16 @@ public class Q_STAFF_Archival_Summary_Entity {
     private String MODIFY_FLG;
     private String DEL_FLG;
 
-    public Q_STAFF_Archival_Summary_Entity() {
+    
+    public Date getReportResubDate() {
+		return reportResubDate;
+	}
+
+	public void setReportResubDate(Date reportResubDate) {
+		this.reportResubDate = reportResubDate;
+	}
+
+	public Q_STAFF_Archival_Summary_Entity() {
         super();
     }
 

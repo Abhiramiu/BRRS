@@ -7,14 +7,15 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
+import javax.persistence.IdClass;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-@Table(name = "BRRS_Q_STAFF_ARCHIVALTABLE_DETAIL")
+@Table(name = "BRRS_Q_STAFF_RESUB_DETAILTABLE")
 @IdClass(Q_STAFF_PK.class)
-public class Q_STAFF_Archival_Detail_Entity {
+public class Q_STAFF_Resub_Detail_Entity {
 
     private String R9_STAFF_COMPLEMENT;
     private BigDecimal R9_LOCAL;
@@ -126,7 +127,6 @@ public class Q_STAFF_Archival_Detail_Entity {
     private String DEL_FLG;
 
     
-    
     public Date getReportResubDate() {
 		return reportResubDate;
 	}
@@ -135,7 +135,7 @@ public class Q_STAFF_Archival_Detail_Entity {
 		this.reportResubDate = reportResubDate;
 	}
 
-	public Q_STAFF_Archival_Detail_Entity() {
+	public Q_STAFF_Resub_Detail_Entity() {
         super();
     }
 

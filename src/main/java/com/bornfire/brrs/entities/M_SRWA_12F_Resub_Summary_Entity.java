@@ -13,9 +13,9 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-@Table(name = "BRRS_M_SRWA_12F_ARCHIVALTABLE_SUMMARY")
+@Table(name = "BRRS_M_SRWA_12F_RESUB_SUMMARYTABLE")
 @IdClass(M_SRWA_12F_PK.class)
-public class M_SRWA_12F_Archival_Summary_Entity {
+public class M_SRWA_12F_Resub_Summary_Entity {
 
 	@Id
 	@Temporal(TemporalType.DATE)
@@ -1621,7 +1621,7 @@ public class M_SRWA_12F_Archival_Summary_Entity {
 		this.reportResubDate = reportResubDate;
 	}
 
-	public M_SRWA_12F_Archival_Summary_Entity() {
+	public M_SRWA_12F_Resub_Summary_Entity() {
 		super();
 		// TODO Auto-generated constructor stub
 	}

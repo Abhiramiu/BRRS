@@ -7,20 +7,28 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
 @Table(name = "BRRS_M_SRWA_12F_ARCHIVALTABLE_DETAIL")
+@IdClass(M_SRWA_12F_PK.class)
 public class M_SRWA_12F_Archival_Detail_Entity {
 
 	@Id
 	@Temporal(TemporalType.DATE)
 	@Column(name = "REPORT_DATE")
 	private Date reportDate;
+
+	@Id
 	@Column(name = "REPORT_VERSION")
 	private BigDecimal reportVersion;
+
+	@Column(name = "REPORT_RESUBDATE")
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date reportResubDate;
 
 	public String report_frequency;
 	public String report_code;
@@ -1603,6 +1611,14 @@ public class M_SRWA_12F_Archival_Detail_Entity {
 
 	public void setR37_RISK_WEIGHTED_AMT(BigDecimal r37_RISK_WEIGHTED_AMT) {
 		R37_RISK_WEIGHTED_AMT = r37_RISK_WEIGHTED_AMT;
+	}
+
+	public Date getReportResubDate() {
+		return reportResubDate;
+	}
+
+	public void setReportResubDate(Date reportResubDate) {
+		this.reportResubDate = reportResubDate;
 	}
 
 	public M_SRWA_12F_Archival_Detail_Entity() {

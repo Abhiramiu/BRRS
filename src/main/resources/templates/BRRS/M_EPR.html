@@ -619,74 +619,125 @@ window.onload = function() {
 
 function downloadfile(button) {
 
-    var reportid = button.getAttribute('data-reportid');
-    var asondate = button.getAttribute('data-asondate');
-    var fromdate = button.getAttribute('data-fromdate');
-    var todate = button.getAttribute('data-todate');
-    var currency = button.getAttribute('data-currency');
-    var subreportid = button.getAttribute('data-subreportid');
-    var secid = button.getAttribute('data-secid');
-    var dtltype = button.getAttribute('data-dtltype');
-    var filename = button.getAttribute('data-filename');
-    var type = button.getAttribute('data-type');
-    var version = button.getAttribute('data-version');
+		    var reportid   = button.getAttribute('data-reportid');
+		    var asondate   = button.getAttribute('data-asondate');
+		    var fromdate   = button.getAttribute('data-fromdate');
+		    var todate     = button.getAttribute('data-todate');
+		    var currency   = button.getAttribute('data-currency');
+		    var subreportid = button.getAttribute('data-subreportid');
+		    var secid      = button.getAttribute('data-secid');
+		    var dtltype    = button.getAttribute('data-dtltype');
+		    var filename   = button.getAttribute('data-filename');
+		    var type       = button.getAttribute('data-type');
+		    var version    = button.getAttribute('data-version');
 
-    var loader = new bootstrap.Modal(
-        document.getElementById('loader'),
-        { backdrop: 'static', keyboard: false }
-    );
-    loader.show();
+		    console.log("==== DOWNLOAD PARAMS ====");
+		    console.log("type     :", type);
+		    console.log("version  :", version);
+		    console.log("dtltype  :", dtltype);
+		    console.log("=========================");
 
-    // ✅ Build URL safely
-    var url = './downloadExcel?reportid=' + reportid +
-        '&fromdate=' + fromdate +
-        '&asondate=' + asondate +
-        '&todate=' + todate +
-        '&currency=' + currency +
-        '&subreportid=' + subreportid +
-        '&secid=' + secid +
-        '&filename=' + filename +
-        '&type=' + type;
+		    // SHOW LOADER
+		    var loader = new bootstrap.Modal(
+		        document.getElementById('loader'),
+		        { backdrop: 'static', keyboard: false }
+		    );
+		    loader.show();
 
-    // ✅ ONLY append version if valid
-    if (version && version.trim() !== '') {
-        url += '&version=' + version;
-    }
+		    // ======================================================
+		    // BUILD URL
+		    // ======================================================
+		    var url =
+		        './downloadExcel?' +
+		        'reportid='   + encodeURIComponent(reportid) +
+		        '&asondate='  + encodeURIComponent(asondate) +
+		        '&fromdate='  + encodeURIComponent(fromdate) +
+		        '&todate='    + encodeURIComponent(todate) +
+		        '&currency='  + encodeURIComponent(currency) +
+		        '&filename='  + encodeURIComponent(filename) +
+		        '&type='      + encodeURIComponent(type);
 
-    $.ajax({
-        url: url,
-        type: 'GET',
-        xhrFields: { responseType: 'blob' },
+		    // optional fields
+		    if (subreportid) {
+		        url += '&subreportid=' + encodeURIComponent(subreportid);
+		    }
 
-        success: function (data) {
-            $('#loader').modal('hide');
+		    if (secid) {
+		        url += '&secid=' + encodeURIComponent(secid);
+		    }
 
-            if (data && data.size > 100) {
-                const blob = new Blob([data], {
-                    type: 'application/vnd.ms-excel'
-                });
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.style.display = 'none';
-                a.href = url;
-                a.download = filename;
-                document.body.appendChild(a);
-                a.click();
-                window.URL.revokeObjectURL(url);
-                document.body.removeChild(a);
+		    if (dtltype) {
+		        url += '&dtltype=' + encodeURIComponent(dtltype);
+		    }
 
-                showResultModal('BRRS', filename + ' downloaded successfully.');
-            } else {
-                showResultModal('Information', 'No data was available to create a download.');
-            }
-        },
+		    // ONLY append version if valid
+		    if (version && version.trim() !== '') {
+		        url += '&version=' + encodeURIComponent(version);
+		    }
 
-        error: function () {
-            $('#loader').modal('hide');
-            showResultModal('Error', 'An error occurred while downloading the file.');
-        }
-    });
-}
+		    // ======================================================
+		    // AJAX CALL
+		    // ======================================================
+		    $.ajax({
+
+		        url: url,
+		        type: 'GET',
+		        xhrFields: {
+		            responseType: 'blob'
+		        },
+
+		        success: function (data) {
+
+		            $('#loader').modal('hide');
+
+		            // check valid file
+		            if (data && data.size > 100) {
+
+		                const blob = new Blob([data], {
+		                    type: 'application/vnd.ms-excel'
+		                });
+
+		                const downloadUrl = window.URL.createObjectURL(blob);
+
+		                const a = document.createElement('a');
+		                a.style.display = 'none';
+		                a.href = downloadUrl;
+		                a.download = filename;
+
+		                document.body.appendChild(a);
+		                a.click();
+
+		                window.URL.revokeObjectURL(downloadUrl);
+		                document.body.removeChild(a);
+
+		                showResultModal(
+		                    'BRRS',
+		                    filename + ' downloaded successfully.'
+		                );
+
+		            } else {
+		                showResultModal(
+		                    'Information',
+		                    'No data was available to create a download.'
+		                );
+		            }
+		        },
+
+		        error: function (xhr) {
+
+		            $('#loader').modal('hide');
+
+		            console.log("Download Error:", xhr);
+
+		            showResultModal(
+		                'Error',
+		                'An error occurred while downloading the file.'
+		            );
+		        }
+		    });
+		}
+
+		
 function editRecord(){
 	showResultModal('Alert', 'Development in progress');
 	
@@ -1201,30 +1252,30 @@ $(document).ready(function() {
 				<h1
 					th:if="${displaymode == 'summary' and type == 'ARCHIVAL' and displaymode != 'detail' }"
 					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">Archival
-					Summary View - M-EPR</h1>
+					Summary View - M EPR</h1>
 
 				<h1
 					th:if="${displaymode == 'detail' and type == 'ARCHIVAL' and displaymode != 'summary'}"
 					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">Archival
-					Detail View - M-EPR</h1>
+					Detail View - M EPR</h1>
 
 				<h1 th:if="${displaymode == 'summary'and type != 'ARCHIVAL'}"
 					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">Summary
-					View - M-EPR</h1>
+					View - M EPR</h1>
 				<h1 th:if="${displaymode == 'detail' and type != 'ARCHIVAL'}"
 					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">Detail
-					View - M-EPR</h1>
+					View - M EPR</h1>
 					
 					
 					<h1
 					th:if="${displaymode == 'resub' and type == 'RESUB' and dtltype ne 'detail' }"
 					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">
-					Resubmission Summary View - M-EPR</h1>
+					Resubmission Summary View - M EPR</h1>
 
 				<h1
 					th:if="${displaymode == 'resub' and type == 'RESUB' and dtltype ne 'report' }"
 					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">
-					Resubmission Detail View - M-EPR</h1>
+					Resubmission Detail View - M EPR</h1>
 					
 				<div th:if="${displaymode == 'summary' or displaymode == 'detail' or displaymode == 'resub'}">
 
@@ -3242,25 +3293,23 @@ $(document).ready(function() {
 
 	<!-- Custom Alert/Result Modal (Matches your existing style) -->
 	<div class="modal fade" id="resultModal">
-		<div class="modal-dialog modal-dialog-centered">
-			<div class="modal-content">
-				<!-- Your custom styled header -->
-				<div class="menu-title-header">
-					<div class="modal-title" id="resultModalLabel"
-						style="text-align: center; color: white;">
-						<!-- Title will be set by JavaScript -->
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content">
+					<!-- Your custom styled header -->
+					<div class="menu-title-header">
+						<div class="modal-title" id="resultModalLabel" style="text-align: center; color: white;">
+							<!-- Title will be set by JavaScript -->
+						</div>
 					</div>
-				</div>
-				<div class="modal-body"
-					style="text-align: center; font-size: 1.1rem;">
-					<p id="resultModalBody"></p>
-					<!-- Your custom styled button -->
-					<button type="button" class="custom-tab-btn" onclick="closemodel()"
-						data-dismiss="modal">OK</button>
+					<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+						<p id="resultModalBody"></p>
+						<!-- Your custom styled button -->
+						<button type="button" class="custom-tab-btn" onclick="closemodel()"
+							data-bs-dismiss="modal">OK</button>
+					</div>
 				</div>
 			</div>
 		</div>
-	</div>
 
 	<!-- Custom Cellresult Modal -->
 	<div class="modal fade" id="cellresultModal">

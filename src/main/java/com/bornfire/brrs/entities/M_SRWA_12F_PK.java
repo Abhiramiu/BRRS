@@ -1,20 +1,19 @@
 package com.bornfire.brrs.entities;
-
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Objects;
 
-public class M_SRWA_12F_Archival_Summary_PK implements Serializable {
+public class M_SRWA_12F_PK implements Serializable {
 
     private Date reportDate;
     private BigDecimal reportVersion;
 
     // default constructor
-    public M_SRWA_12F_Archival_Summary_PK() {}
+    public M_SRWA_12F_PK() {}
 
     // parameterized constructor
-    public M_SRWA_12F_Archival_Summary_PK(Date reportDate, BigDecimal reportVersion) {
+    public M_SRWA_12F_PK(Date reportDate, BigDecimal reportVersion) {
         this.reportDate = reportDate;
         this.reportVersion = reportVersion;
     }
@@ -23,8 +22,8 @@ public class M_SRWA_12F_Archival_Summary_PK implements Serializable {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof M_SRWA_12F_Archival_Summary_PK)) return false;
-        M_SRWA_12F_Archival_Summary_PK that = (M_SRWA_12F_Archival_Summary_PK) o;
+        if (!(o instanceof M_SRWA_12F_PK)) return false;
+        M_SRWA_12F_PK that = (M_SRWA_12F_PK) o;
         return Objects.equals(reportDate, that.reportDate) &&
                Objects.equals(reportVersion, that.reportVersion);
     }
