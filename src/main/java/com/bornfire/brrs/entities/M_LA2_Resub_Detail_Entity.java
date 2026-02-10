@@ -1,8 +1,8 @@
+
 package com.bornfire.brrs.entities;
 
 import java.math.BigDecimal;
 import java.util.Date;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -11,59 +11,57 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-@Entity
-@Table(name = "BRRS_M_LA2_ARCHIVALTABLE_DETAIL")
-@IdClass(M_LA2_PK.class)
-public class M_LA2_Archival_Detail_Entity {
 
-	private String	R12_INDUSTRY;
-	private BigDecimal	R12_TOTAL;
-	private String	R13_INDUSTRY;
-	private BigDecimal	R13_TOTAL;
-	private String	R14_INDUSTRY;
-	private BigDecimal	R14_TOTAL;
-	private String	R15_INDUSTRY;
-	private BigDecimal	R15_TOTAL;
-	private String	R16_INDUSTRY;
-	private BigDecimal	R16_TOTAL;
-	private String	R17_INDUSTRY;
-	private BigDecimal	R17_TOTAL;
-	private String	R18_INDUSTRY;
-	private BigDecimal	R18_TOTAL;
-	private String	R19_INDUSTRY;
-	private BigDecimal	R19_TOTAL;
-	private String	R20_INDUSTRY;
-	private BigDecimal	R20_TOTAL;
-	private String	R21_INDUSTRY;
-	private BigDecimal	R21_TOTAL;
-	private String	R22_INDUSTRY;
-	private BigDecimal	R22_TOTAL;
-	private String	R23_INDUSTRY;
-	private BigDecimal	R23_TOTAL;
-	private String	R24_INDUSTRY;
-	private BigDecimal	R24_TOTAL;
-	private String	R25_INDUSTRY;
-	private BigDecimal	R25_TOTAL;
-	private String	R26_INDUSTRY;
-	private BigDecimal	R26_TOTAL;
+@Entity
+@Table(name = "BRRS_M_LA2_RESUB_DETAILTABLE")
+@IdClass(M_LA2_PK.class)
+public class M_LA2_Resub_Detail_Entity {
+	private String R12_INDUSTRY;
+	private BigDecimal R12_TOTAL;
+	private String R13_INDUSTRY;
+	private BigDecimal R13_TOTAL;
+	private String R14_INDUSTRY;
+	private BigDecimal R14_TOTAL;
+	private String R15_INDUSTRY;
+	private BigDecimal R15_TOTAL;
+	private String R16_INDUSTRY;
+	private BigDecimal R16_TOTAL;
+	private String R17_INDUSTRY;
+	private BigDecimal R17_TOTAL;
+	private String R18_INDUSTRY;
+	private BigDecimal R18_TOTAL;
+	private String R19_INDUSTRY;
+	private BigDecimal R19_TOTAL;
+	private String R20_INDUSTRY;
+	private BigDecimal R20_TOTAL;
+	private String R21_INDUSTRY;
+	private BigDecimal R21_TOTAL;
+	private String R22_INDUSTRY;
+	private BigDecimal R22_TOTAL;
+	private String R23_INDUSTRY;
+	private BigDecimal R23_TOTAL;
+	private String R24_INDUSTRY;
+	private BigDecimal R24_TOTAL;
+	private String R25_INDUSTRY;
+	private BigDecimal R25_TOTAL;
+	private String R26_INDUSTRY;
+	private BigDecimal R26_TOTAL;
 	@Id
 	@Temporal(TemporalType.DATE)
 	@Column(name = "REPORT_DATE")
 	private Date reportDate;
 
+	
 	@Id
 	@Column(name = "REPORT_VERSION")
 	private BigDecimal reportVersion;
-
-	@Column(name = "REPORT_RESUBDATE")
-	
-	private Date reportResubDate;
-	private String	REPORT_FREQUENCY;
-	private String	REPORT_CODE;
-	private String	REPORT_DESC;
-	private String	ENTITY_FLG;
-	private String	MODIFY_FLG;
-	private String	DEL_FLG;
+	private String REPORT_FREQUENCY;
+	private String REPORT_CODE;
+	private String REPORT_DESC;
+	private String ENTITY_FLG;
+	private String MODIFY_FLG;
+	private String DEL_FLG;
+	private Date REPORT_RESUBDATE;
 	public String getR12_INDUSTRY() {
 		return R12_INDUSTRY;
 	}
@@ -256,12 +254,6 @@ public class M_LA2_Archival_Detail_Entity {
 	public void setReportVersion(BigDecimal reportVersion) {
 		this.reportVersion = reportVersion;
 	}
-	public Date getReportResubDate() {
-		return reportResubDate;
-	}
-	public void setReportResubDate(Date reportResubDate) {
-		this.reportResubDate = reportResubDate;
-	}
 	public String getREPORT_FREQUENCY() {
 		return REPORT_FREQUENCY;
 	}
@@ -298,11 +290,19 @@ public class M_LA2_Archival_Detail_Entity {
 	public void setDEL_FLG(String dEL_FLG) {
 		DEL_FLG = dEL_FLG;
 	}
-	public M_LA2_Archival_Detail_Entity() {
+	public Date getREPORT_RESUBDATE() {
+		return REPORT_RESUBDATE;
+	}
+	public void setREPORT_RESUBDATE(Date rEPORT_RESUBDATE) {
+		REPORT_RESUBDATE = rEPORT_RESUBDATE;
+	}
+	public M_LA2_Resub_Detail_Entity() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 	
-    
-    
+	
 }
+	
+	
+	
