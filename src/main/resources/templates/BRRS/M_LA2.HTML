@@ -794,9 +794,9 @@ PURPOSE		: BRRS MANUAL REPORT
 
 						<!-- Title -->
 						<h5
-							style="font-family: arial; font-size: 15px; font-weight: bold; color: white; margin: 0 10px;">
+							style="font-family: arial; font-size: 16px; font-weight: bold; color: white; margin: 0 10px;">
 
-							(26) MONTHLY SCHEDULE: M-LA2: LOANS AND ADVANCES OF PUBLIC NON-FINANCIAL CORPORATIONS BY ECONOMIC SECTOR
+							(26) MONTHLY SCHEDULE: M-LA2: LOANS AND ADVANCES OF <BR> PUBLIC NON-FINANCIAL CORPORATIONS BY ECONOMIC SECTOR
 
 
 						</h5>
@@ -821,7 +821,7 @@ PURPOSE		: BRRS MANUAL REPORT
 
 
 
-						<span class="white-text" style="color: white !important; font-size: 14px; margin-right: 20px;">
+						<span class="white-text" style="color: white !important; font-size: 13px; margin-right: 20px;">
 							Report Date: <span th:text="${#strings.replace(asondate, '/', '-')}">2025-07-04</span>
 						</span>
 
@@ -860,7 +860,7 @@ PURPOSE		: BRRS MANUAL REPORT
                      data-filename='M_LA2.xlsx',
                      data-type=${type},
 					 data-version=${version != null ? version : ''} " onclick="downloadfile(this);"
-							style="font-family: Arial; font-weight: bold;">
+							style="font-family: Arial; font-weight: bold;font-size: 14px;">
 							<i class="fa fa-download"></i> Format
 						</button>
 
@@ -876,7 +876,7 @@ PURPOSE		: BRRS MANUAL REPORT
             data-filename='EMAIL_M_LA2.xlsx',
             data-type=${type},
             data-format='email',
-            data-version=${version != null ? version : ''}" style="font-family: Arial; font-weight: bold;">
+            data-version=${version != null ? version : ''}" style="font-family: Arial; font-weight: bold;font-size: 14px;">
 							<i class="fa fa-download"></i> Email
 
 						</button>
