@@ -3898,35 +3898,7 @@ public class BRRS_ReportsController {
 					.body("M_CA6 Resubmission Update Failed: " + e.getMessage());
 		}
 	}
-
-	@RequestMapping(value = "/UpdateM_SIR_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
-	@ResponseBody
-	public ResponseEntity<String> updateReportReSub(
-			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@ModelAttribute M_SIR_Summary_Entity request, HttpServletRequest req) {
-
-		try {
-			System.out.println("Came to Resub Controller");
-
-			if (asondate != null) {
-				// Set the asondate into the entity
-				request.setReportDate(asondate);
-				System.out.println("Set Report Date: " + asondate);
-			} else {
-				System.out.println("Asondate parameter is null; using entity value: " + request.getReportDate());
-			}
-
-			// Call service to create a new versioned row
-//			BRRS_M_SIR_ReportService.updateReportReSub(request);
-
-			return ResponseEntity.ok("Resubmission Updated Successfully");
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body("Resubmission Update Failed: " + e.getMessage());
-		}
-	}
+	
 	
 		@RequestMapping(value = "/UpdateM_SIR_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
