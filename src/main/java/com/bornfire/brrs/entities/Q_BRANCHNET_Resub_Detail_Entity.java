@@ -13,9 +13,9 @@ import javax.persistence.TemporalType;
 
 
 @Entity
-@Table(name = "BRRS_Q_STAFF_ARCHIVALTABLE_DETAIL")
+@Table(name = "BRRS_Q_BRANCHNET_RESUB_DETAILTABLE")
 @IdClass(Q_BRANCHNET_PK.class)
-public class Q_BRANCHNET_Archival_Detail_Entity {
+public class Q_BRANCHNET_Resub_Detail_Entity {
     private String r10_bran_sub_bran_district;
     private BigDecimal r10_no1_of_branches;
     private BigDecimal r10_no1_of_sub_branches;
@@ -277,7 +277,6 @@ public class Q_BRANCHNET_Archival_Detail_Entity {
     private String del_flg;
 
     
-    
     public Date getReportResubDate() {
 		return reportResubDate;
 	}
@@ -285,7 +284,7 @@ public class Q_BRANCHNET_Archival_Detail_Entity {
 	public void setReportResubDate(Date reportResubDate) {
 		this.reportResubDate = reportResubDate;
 	}
-    public Q_BRANCHNET_Archival_Detail_Entity() {
+    public Q_BRANCHNET_Resub_Detail_Entity() {
         super();
     }
 

@@ -11,7 +11,8 @@ public interface BRRS_Q_BRANCHNET_Summary_Repo
         extends JpaRepository<Q_BRANCHNET_Summary_Entity, Date> {
 
     // Fetch all rows for a specific report date
-	@Query(value = "SELECT * FROM BRRS_Q_BRANCHNET_SUMMARYTABLE WHERE REPORT_DATE = ?1", nativeQuery = true)
-	List<Q_BRANCHNET_Summary_Entity> getdatabydateList(Date rpt_date);
+    @Query(value = "SELECT * FROM BRRS_Q_BRANCHNET_SUMMARYTABLE WHERE REPORT_DATE = ?1", nativeQuery = true)
+    List<Q_BRANCHNET_Summary_Entity> getdatabydateList(Date rpt_date);
+
 
 }

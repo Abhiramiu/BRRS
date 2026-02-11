@@ -6,10 +6,11 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface BRRS_Q_BRANCHNET_Archival_Detail_Repo extends JpaRepository<Q_BRANCHNET_Archival_Detail_Entity, Date> {
+public interface BRRS_Q_BRANCHNET_Archival_Detail_Repo extends JpaRepository<Q_BRANCHNET_Archival_Detail_Entity, Q_BRANCHNET_PK> {
 
 	@Query(value = "select REPORT_DATE, REPORT_VERSION from BRRS_Q_BRANCHNET_ARCHIVALTABLE_DETAIL order by REPORT_VERSION", nativeQuery = true)
 	List<Object> getQ_BRANCHNETarchival();
@@ -19,6 +20,9 @@ public interface BRRS_Q_BRANCHNET_Archival_Detail_Repo extends JpaRepository<Q_B
 
     @Query(value = "SELECT * FROM BRRS_Q_BRANCHNET_ARCHIVALTABLE_DETAIL WHERE REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION ASC", nativeQuery = true)
     List<Q_BRANCHNET_Archival_Detail_Entity> getDetailDatabydateListWithVersion();
+    
+    @Query("SELECT MAX(e.reportVersion) FROM Q_BRANCHNET_Archival_Detail_Entity e WHERE e.reportDate = :date")
+    BigDecimal findMaxVersion(@Param("date") Date date);
 
 	
 

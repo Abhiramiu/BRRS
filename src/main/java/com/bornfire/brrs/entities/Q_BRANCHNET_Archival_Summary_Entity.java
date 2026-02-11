@@ -6,6 +6,7 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -13,6 +14,7 @@ import javax.persistence.TemporalType;
 
 @Entity
 @Table(name = "BRRS_Q_BRANCHNET_ARCHIVALTABLE_SUMMARY")
+@IdClass(Q_BRANCHNET_PK.class)
 public class Q_BRANCHNET_Archival_Summary_Entity {
     private String r10_bran_sub_bran_district;
     private BigDecimal r10_no1_of_branches;
@@ -255,12 +257,17 @@ public class Q_BRANCHNET_Archival_Summary_Entity {
     private BigDecimal r65_no_cards_of_closed;
     private BigDecimal r65_closing_bal_of_active_cards;
 
-    @Temporal(TemporalType.DATE)
-    @Id
-    @Column(name = "REPORT_DATE")
-    private Date reportDate;
-    @Column(name = "REPORT_VERSION")
-    private BigDecimal reportVersion;
+	@Id
+	@Temporal(TemporalType.DATE)
+	@Column(name = "REPORT_DATE")
+	private Date reportDate;
+
+	@Id
+	@Column(name = "REPORT_VERSION")
+	private BigDecimal reportVersion;
+
+	@Column(name = "REPORT_RESUBDATE")
+	private Date reportResubDate;
 
     private String report_frequency;
     private String report_code;
@@ -269,6 +276,15 @@ public class Q_BRANCHNET_Archival_Summary_Entity {
     private String modify_flg;
     private String del_flg;
 
+    
+    
+    public Date getReportResubDate() {
+		return reportResubDate;
+	}
+
+	public void setReportResubDate(Date reportResubDate) {
+		this.reportResubDate = reportResubDate;
+	}
     public Q_BRANCHNET_Archival_Summary_Entity() {
         super();
     }
