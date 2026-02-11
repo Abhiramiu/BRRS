@@ -1219,15 +1219,15 @@ public class RegulatoryReportServices {
 
 		case "M_LA2":
 
-			repsummary = BRRS_M_LA2_reportservice.getM_LA2View(reportId, fromdate, todate, currency, dtltype, pageable,
-					type, version);
+			repsummary = BRRS_M_LA2_reportservice.getBRRS_M_LA2View(reportId, fromdate, todate, currency, dtltype,
+					pageable, type, version);
 
 			break;
 			
 		case "M_SRWA_12G":
 
-			repsummary = BRRS_M_SRWA_12G_reportservice.getM_SRWA_12GView(reportId, fromdate, todate, currency, dtltype, pageable,
-					type, version);
+			repsummary = BRRS_M_SRWA_12G_reportservice.getBRRS_M_SRWA_12GView(reportId, fromdate, todate, currency, dtltype,
+					pageable, type, version);
 
 			break;
 			
@@ -2284,8 +2284,8 @@ public class RegulatoryReportServices {
 		case "M_LA2":
 			try {
 
-				repfile = BRRS_M_LA2_reportservice.getM_LA2Excel(filename, reportId, fromdate, todate, currency,
-						dtltype, type, version);
+				repfile = BRRS_M_LA2_reportservice.getBRRS_M_LA2Excel(filename, reportId, fromdate, todate,
+						currency, dtltype, type, format, version);
 			} catch (Exception e) { // TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -2294,8 +2294,8 @@ public class RegulatoryReportServices {
 		case "M_SRWA_12G":
 			try {
 
-				repfile = BRRS_M_SRWA_12G_reportservice.getM_SRWA_12GExcel(filename, reportId, fromdate, todate, currency,
-						dtltype, type, version);
+				repfile = BRRS_M_SRWA_12G_reportservice.getBRRS_M_SRWA_12GExcel(filename, reportId, fromdate, todate,
+						currency, dtltype, type, format, version);
 			} catch (Exception e) { // TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -4260,24 +4260,31 @@ public class RegulatoryReportServices {
 		// }
 		// break;
 
+//		case "M_INT_RATES_FCA":
+//			try {
+//				archivalData = BRRS_M_INT_RATES_FCA_ReportService.getM_INT_RATES_FCAArchival();
+//			} catch (Exception e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//			break;
+//
+//		case "M_INT_RATES":
+//			try {
+//				archivalData = brrs_m_int_rates_reportservice.getM_INT_RATESArchival();
+//			} catch (Exception e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//			break;
+
+			
 		case "M_INT_RATES_FCA":
-			try {
-				archivalData = BRRS_M_INT_RATES_FCA_ReportService.getM_INT_RATES_FCAArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			List<Object[]> intratesfcaList = BRRS_M_INT_RATES_FCA_ReportService.getM_INT_RATES_FCAArchival();
+			archivalData.addAll(intratesfcaList);
+			System.out.println("Fetched M_INT_RATES_FCA archival data: " + intratesfcaList.size());
 			break;
-
-		case "M_INT_RATES":
-			try {
-				archivalData = brrs_m_int_rates_reportservice.getM_INT_RATESArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
-
+			
 		case "M_INT_RATES_FCA_NEW":
 			try {
 				archivalData = BRRS_M_INT_RATES_FCA_NEW_ReportService.getM_INT_RATES_FCA_NEWArchival();
