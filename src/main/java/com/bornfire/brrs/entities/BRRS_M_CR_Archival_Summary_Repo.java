@@ -12,30 +12,34 @@ import org.springframework.stereotype.Repository;
 
 
 @Repository
-public interface BRRS_M_CR_Archival_Summary_Repo extends JpaRepository<M_CR_Archival_Summary_Entity, Date> {
+public interface BRRS_M_CR_Archival_Summary_Repo extends JpaRepository<M_CR_Archival_Summary_Entity, M_CR_PK> {
 
-	 @Query(value =
-			  "select * from BRRS_M_CR_ARCHIVALTABLE_SUMMARY where REPORT_DATE = ?1 and REPORT_VERSION = ?2"
-			  , nativeQuery = true) List<M_CR_Archival_Summary_Entity>
-			  getdatabydateListarchival(Date report_date, BigDecimal report_version);
-			 
-			  
-			  @Query(value = "select REPORT_DATE, REPORT_VERSION from BRRS_M_CR_ARCHIVALTABLE_SUMMARY order by REPORT_VERSION", nativeQuery = true)
-			    List<Object> getM_CRarchival();
-		    
-		//  Fetch latest archival version for given date (no version input)
-		    @Query(value = "SELECT * FROM BRRS_M_CR_ARCHIVALTABLE_SUMMARY " +"WHERE REPORT_DATE = ?1 AND REPORT_VERSION IS NOT NULL " + "ORDER BY TO_NUMBER(REPORT_VERSION) DESC " + "FETCH FIRST 1 ROWS ONLY",nativeQuery = true)
-		    Optional<M_CR_Archival_Summary_Entity> getLatestArchivalVersionByDate(Date report_date);
+	/*
+	 * @Query(value =
+	 * "select REPORT_DATE, REPORT_VERSION from BRRS_M_CR_ARCHIVALTABLE_SUMMARY order by REPORT_VERSION"
+	 * , nativeQuery = true) List<Object> getM_CRarchival();
+	 */
+    @Query(value = "select * from BRRS_M_CR_ARCHIVALTABLE_SUMMARY where REPORT_DATE = ?1 and REPORT_VERSION = ?2", nativeQuery = true)
+    List<M_CR_Archival_Summary_Entity> getdatabydateListarchival(Date report_date, BigDecimal report_version);
+    
+    
+    
+    
+   
+    	    
+    	//  Fetch latest archival version for given date (no version input)
+    	    @Query(value = "SELECT * FROM BRRS_M_CR_ARCHIVALTABLE_SUMMARY " +"WHERE REPORT_DATE = ?1 AND REPORT_VERSION IS NOT NULL " + "ORDER BY TO_NUMBER(REPORT_VERSION) DESC " + "FETCH FIRST 1 ROWS ONLY",nativeQuery = true)
+    	    Optional<M_CR_Archival_Summary_Entity> getLatestArchivalVersionByDate(Date report_date);
 
-		    @Query(value = "SELECT * FROM BRRS_M_CR_ARCHIVALTABLE_SUMMARY WHERE REPORT_DATE = ?1 AND REPORT_VERSION = ?2",
-		            nativeQuery = true)
-		     Optional<M_CR_Summary_Entity> findByReport_dateAndReport_version(Date report_date, BigDecimal report_version);
-		    
-		    //Current Report Version Only Shown 
-		    @Query(value = "SELECT *  FROM BRRS_M_CR_ARCHIVALTABLE_SUMMARY WHERE REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION ASC FETCH FIRST 1 ROWS ONLY ", nativeQuery = true)
-		    List<M_CR_Archival_Summary_Entity> getdatabydateListWithVersion();
+    	    @Query(value = "SELECT * FROM BRRS_M_CR_ARCHIVALTABLE_SUMMARY WHERE REPORT_DATE = ?1 AND REPORT_VERSION = ?2",
+    	            nativeQuery = true)
+    	     Optional<M_CR_Archival_Summary_Entity> findByReport_dateAndReport_version(Date report_date, BigDecimal report_version);
+    	    
+    	    //Current Report Version Only Shown 
+    	    @Query(value = "SELECT *  FROM BRRS_M_CR_ARCHIVALTABLE_SUMMARY WHERE REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION ASC FETCH FIRST 1 ROWS ONLY ", nativeQuery = true)
+    	    List<M_CR_Archival_Summary_Entity> getdatabydateListWithVersion();
 
-		    @Query(value = "SELECT *  FROM BRRS_M_CR_ARCHIVALTABLE_SUMMARY WHERE REPORT_VERSION IS NOT NULL ", nativeQuery = true)
-		    List<M_CR_Archival_Summary_Entity> getdatabydateListWithVersionAll();
-		    
+    	    @Query(value = "SELECT *  FROM BRRS_M_CR_ARCHIVALTABLE_SUMMARY WHERE REPORT_VERSION IS NOT NULL ", nativeQuery = true)
+    	    List<M_CR_Archival_Summary_Entity> getdatabydateListWithVersionAll();
+    	    
 }

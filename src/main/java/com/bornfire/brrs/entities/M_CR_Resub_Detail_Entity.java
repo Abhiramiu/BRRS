@@ -1,3 +1,4 @@
+
 package com.bornfire.brrs.entities;
 
 import java.math.BigDecimal;
@@ -12,9 +13,9 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-@Table(name = "BRRS_M_CR_ARCHIVALTABLE_SUMMARY")
+@Table(name = "BRRS_M_CR_RESUB_DETAILTABLE")
 @IdClass(M_CR_PK.class)
-public class M_CR_Archival_Summary_Entity {
+public class M_CR_Resub_Detail_Entity {
 
 	private String R10_PRODUCT;
 	private BigDecimal R10_TOTAL_LONG_POS;
@@ -642,7 +643,7 @@ public class M_CR_Archival_Summary_Entity {
 	public void setDEL_FLG(String dEL_FLG) {
 		DEL_FLG = dEL_FLG;
 	}
-	public M_CR_Archival_Summary_Entity() {
+	public M_CR_Resub_Detail_Entity() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
