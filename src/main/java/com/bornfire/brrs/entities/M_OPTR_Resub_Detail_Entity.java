@@ -1,4 +1,3 @@
-
 package com.bornfire.brrs.entities;
 
 import java.math.BigDecimal;
@@ -16,10 +15,10 @@ import javax.persistence.TemporalType;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
-@Table(name = "BRRS_M_OPTR_ARCHIVALTABLE_SUMMARY")
+@Table(name = "BRRS_M_OPTR_RESUB_DETAILTABLE")
 @IdClass(M_OPTR_PK.class)
 
-public class M_OPTR_Archival_Summary_Entity {
+public class M_OPTR_Resub_Detail_Entity {
 
 	
 	@Id
@@ -691,7 +690,7 @@ public void setR14_TOTAL(BigDecimal r14_TOTAL) {
 
 
 
-	public M_OPTR_Archival_Summary_Entity() {
+	public M_OPTR_Resub_Detail_Entity() {
         super();
     }
 

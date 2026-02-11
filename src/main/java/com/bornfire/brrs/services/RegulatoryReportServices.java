@@ -509,7 +509,7 @@ public class RegulatoryReportServices {
 			break;
 
 		case "M_OPTR":
-			repsummary = BRRS_M_OPTR_ReportService.getMOPTRView(reportId, fromdate, todate, currency, dtltype, pageable,
+			repsummary = BRRS_M_OPTR_ReportService.getBRRS_M_OPTRView(reportId, fromdate, todate, currency, dtltype, pageable,
 					type, version);
 			break;
 		/*
@@ -2491,8 +2491,8 @@ public class RegulatoryReportServices {
 
 		case "M_OPTR":
 			try {
-				repfile = BRRS_M_OPTR_ReportService.getM_OPTRExcel(filename, reportId, fromdate, todate, currency,
-						dtltype, type, version);
+				repfile = BRRS_M_OPTR_ReportService.getBRRS_M_OPTRExcel(filename, reportId, fromdate, todate, currency,
+						dtltype, type, format, version);
 			} catch (Exception e) { // TODO Auto-generated catch block
 				e.printStackTrace();
 			}

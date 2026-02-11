@@ -1518,9 +1518,12 @@ public class BRRS_ReportsController {
 	 * e.getMessage()); } }
 	 */
 
-	@RequestMapping(value = "/MOPTRupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
+	@Autowired
+	private BRRS_M_OPTR_ReportService BRRS_M_OPTR_reportservice;
+
+	@RequestMapping(value = "/M_OPTRupdate", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
-	public ResponseEntity<String> updateMOPTRAllReports(
+	public ResponseEntity<String> updateReport(
 			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
 			@ModelAttribute M_OPTR_Summary_Entity request) {
 
@@ -1531,20 +1534,25 @@ public class BRRS_ReportsController {
 			request.setReportDate(asondate);
 
 			// call services
-			M_OPTRreportService.updateReport(request);
 
-			return ResponseEntity.ok(" Updated Successfully.");
+			BRRS_M_OPTR_reportservice.updateReport(request);
+
+
+
+			return ResponseEntity.ok("Modified Successfully.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
 		}
 	}
 
+
 	@RequestMapping(value = "/UpdateM_OPTR_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public ResponseEntity<String> updateReportReSub(
 			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@ModelAttribute M_OPTR_Summary_Entity request, HttpServletRequest req) {
+			@ModelAttribute M_OPTR_Resub_Summary_Entity request,
+			HttpServletRequest req) {
 
 		try {
 			System.out.println("Came to Resub Controller");
@@ -1554,11 +1562,11 @@ public class BRRS_ReportsController {
 				request.setReportDate(asondate);
 				System.out.println("Set Report Date: " + asondate);
 			} else {
-				System.out.println("Asondate parameter is null; using entity value: " + request.getReportDate());
-			}
+				System.out.println("Asondate parameter is null; using entity value: " + request.getReportDate()	);
+				}
 
 			// Call service to create a new versioned row
-			M_OPTRreportService.updateReportReSub(request);
+			BRRS_M_OPTR_reportservice.updateResubReport(request);
 
 			return ResponseEntity.ok("Resubmission Updated Successfully");
 
@@ -1568,6 +1576,7 @@ public class BRRS_ReportsController {
 					.body("Resubmission Update Failed: " + e.getMessage());
 		}
 	}
+	
 
 	@Autowired
 	BRRS_M_OPTR_NEW_ReportService M_OPTRNEWreportService;

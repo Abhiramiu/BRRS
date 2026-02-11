@@ -3,39 +3,26 @@ package com.bornfire.brrs.services;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.sql.CallableStatement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CreationHelper;
-import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.Font;
-import org.apache.poi.ss.usermodel.HorizontalAlignment;
-import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
@@ -44,41 +31,26 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
-
-
-import com.bornfire.brrs.entities.M_OPTR_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.M_OPTR_Detail_Entity;
-import com.bornfire.brrs.entities.M_OPTR_Summary_Entity;
-import com.bornfire.brrs.entities.BRRS_M_OPTR_Summary_Repo;
-import com.bornfire.brrs.entities.M_OPTR_Detail_Entity;
-import com.bornfire.brrs.entities.M_OPTR_Summary_Entity;
-import com.bornfire.brrs.entities.M_EPR_Archival_Detail_Entity;
-import com.bornfire.brrs.entities.M_EPR_Detail_Entity;
-import com.bornfire.brrs.entities.M_OPTR_Archival_Detail_Entity;
-import com.bornfire.brrs.entities.BDISB1_Archival_Detail_Entity;
-import com.bornfire.brrs.entities.BDISB1_Detail_Entity;
-import com.bornfire.brrs.entities.BDISB2_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.BDISB2_Summary_Entity;
-import com.bornfire.brrs.entities.BDISB3_Archival_Detail_Entity;
-import com.bornfire.brrs.entities.BDISB3_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.BDISB3_Detail_Entity;
-import com.bornfire.brrs.entities.BDISB3_Summary_Entity;
 import com.bornfire.brrs.entities.BRRS_M_OPTR_Archival_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_M_OPTR_Archival_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_M_OPTR_Detail_Repo;
-
-import java.math.BigDecimal;
+import com.bornfire.brrs.entities.BRRS_M_OPTR_Resub_Detail_Repo;
+import com.bornfire.brrs.entities.BRRS_M_OPTR_Resub_Summary_Repo;
+import com.bornfire.brrs.entities.BRRS_M_OPTR_Summary_Repo;
+import com.bornfire.brrs.entities.M_OPTR_Archival_Detail_Entity;
+import com.bornfire.brrs.entities.M_OPTR_Archival_Summary_Entity;
+import com.bornfire.brrs.entities.M_OPTR_Detail_Entity;
+import com.bornfire.brrs.entities.M_OPTR_Resub_Detail_Entity;
+import com.bornfire.brrs.entities.M_OPTR_Resub_Summary_Entity;
+import com.bornfire.brrs.entities.M_OPTR_Summary_Entity;
 
 @Component
 @Service
+
 public class BRRS_M_OPTR_ReportService {
 	private static final Logger logger = LoggerFactory.getLogger(BRRS_M_OPTR_ReportService.class);
 
@@ -89,83 +61,112 @@ public class BRRS_M_OPTR_ReportService {
 	SessionFactory sessionFactory;
 
 	@Autowired
-	private JdbcTemplate jdbcTemplate;
-
-
-	@Autowired
-	BRRS_M_OPTR_Summary_Repo BRRS_M_OPTR_Summary_Repo;
-	
-	@Autowired
-	BRRS_M_OPTR_Detail_Repo OPTR_Detail_Repo;
+	BRRS_M_OPTR_Summary_Repo brrs_M_OPTR_summary_repo;
 
 	@Autowired
-	BRRS_M_OPTR_Archival_Summary_Repo BRRS_M_OPTR_Archival_Summary_Repo;
-	
+	BRRS_M_OPTR_Detail_Repo brrs_M_OPTR_detail_repo;
+
 	@Autowired
-	BRRS_M_OPTR_Archival_Detail_Repo M_OPTR_Archival_Detail_Repo;
+	BRRS_M_OPTR_Archival_Summary_Repo M_OPTR_Archival_Summary_Repo;
+
+	@Autowired
+	BRRS_M_OPTR_Archival_Detail_Repo BRRS_M_OPTR_Archival_Detail_Repo;
+
+	@Autowired
+	BRRS_M_OPTR_Resub_Summary_Repo M_OPTR_Resub_Summary_Repo;
+
+	@Autowired
+	BRRS_M_OPTR_Resub_Detail_Repo M_OPTR_Resub_Detail_Repo;
 
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
-	public ModelAndView getMOPTRView(String reportId, String fromdate, String todate, String currency, String dtltype,
-			Pageable pageable, String type, BigDecimal version) {
+	public ModelAndView getBRRS_M_OPTRView(String reportId, String fromdate, String todate, String currency,
+			String dtltype, Pageable pageable, String type, BigDecimal version) {
+
 		ModelAndView mv = new ModelAndView();
 		Session hs = sessionFactory.getCurrentSession();
 
 		int pageSize = pageable.getPageSize();
 		int currentPage = pageable.getPageNumber();
 		int startItem = currentPage * pageSize;
+		System.out.println("dtltype...." + dtltype);
+		System.out.println("type...." + type);
 
 		try {
+
+			// Parse only once
 			Date d1 = dateformat.parse(todate);
+
+			System.out.println("======= VIEW SCREEN =======");
+			System.out.println("TYPE      : " + type);
+			System.out.println("DTLTYPE   : " + dtltype);
+			System.out.println("DATE      : " + d1);
+			System.out.println("VERSION   : " + version);
+			System.out.println("==========================");
+
+			// ===========================================================
+			// SUMMARY SECTION
+			// ===========================================================
 
 			// ---------- CASE 1: ARCHIVAL ----------
 			if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
-				List<M_OPTR_Archival_Summary_Entity> T1Master = BRRS_M_OPTR_Archival_Summary_Repo
+				List<M_OPTR_Archival_Summary_Entity> T1Master = M_OPTR_Archival_Summary_Repo
 						.getdatabydateListarchival(d1, version);
-
 				mv.addObject("displaymode", "summary");
+
 				mv.addObject("reportsummary", T1Master);
 			}
 
 			// ---------- CASE 2: RESUB ----------
 			else if ("RESUB".equalsIgnoreCase(type) && version != null) {
-				List<M_OPTR_Archival_Summary_Entity> T1Master = BRRS_M_OPTR_Archival_Summary_Repo
-						.getdatabydateListarchival(d1, version);
+				List<M_OPTR_Resub_Summary_Entity> T1Master = M_OPTR_Resub_Summary_Repo.getdatabydateListarchival(d1,
+						version);
 
-				mv.addObject("displaymode", "summary");
+				mv.addObject("displaymode", "resubSummary");
 				mv.addObject("reportsummary", T1Master);
 			}
 
 			// ---------- CASE 3: NORMAL ----------
 			else {
-				List<M_OPTR_Summary_Entity> T1Master = BRRS_M_OPTR_Summary_Repo
+				List<M_OPTR_Summary_Entity> T1Master = brrs_M_OPTR_summary_repo
 						.getdatabydateList(dateformat.parse(todate));
 				System.out.println("T1Master Size " + T1Master.size());
-				mv.addObject("reportsummary", T1Master);
-
 				mv.addObject("displaymode", "summary");
+				mv.addObject("reportsummary", T1Master);
 			}
-			
-	        if ("detail".equalsIgnoreCase(dtltype)) {
 
-	            // DETAIL + ARCHIVAL
-	            if (version != null) {
+			// ---------- CASE 4: DETAIL (NEW, ONLY ADDITION) ----------
+			if ("detail".equalsIgnoreCase(dtltype)) {
 
-					/* List<M_OPTR_Archival_Detail_Entity> T1Master =
-	            	M_OPTR_Archival_Detail_Repo.getdatabydateListarchival(d1, version);
-	                mv.addObject("displaymode", "Details");
-	                mv.addObject("reportsummary", T1Master);*/
-	            }
-	            // DETAIL + NORMAL
-	            else {
+				// DETAIL + ARCHIVAL
+				if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
 
-	                List<M_OPTR_Detail_Entity> T1Master =
-	                		OPTR_Detail_Repo
-	                                .getdatabydateList(dateformat.parse(todate));
-	                mv.addObject("displaymode", "Details");
-	                mv.addObject("reportsummary", T1Master);
-	            }
-	        }
+					List<M_OPTR_Archival_Detail_Entity> T1Master = BRRS_M_OPTR_Archival_Detail_Repo
+							.getdatabydateListarchival(d1, version);
+					mv.addObject("displaymode", "Details");
+					mv.addObject("reportsummary", T1Master);
+				}
+				// ---------- RESUB DETAIL ----------
+				else if ("RESUB".equalsIgnoreCase(type) && version != null) {
+
+					List<M_OPTR_Resub_Detail_Entity> T1Master = M_OPTR_Resub_Detail_Repo.getdatabydateListarchival(d1,
+							version);
+
+					System.out.println("Resub Detail Size : " + T1Master.size());
+
+					mv.addObject("displaymode", "resubDetail");
+					mv.addObject("reportsummary", T1Master);
+				}
+				// DETAIL + NORMAL
+				else {
+
+					List<M_OPTR_Detail_Entity> T1Master = brrs_M_OPTR_detail_repo
+							.getdatabydateList(dateformat.parse(todate));
+					System.out.println("Details......T1Master Size " + T1Master.size());
+					mv.addObject("displaymode", "Details");
+					mv.addObject("reportsummary", T1Master);
+				}
+			}
 
 		} catch (ParseException e) {
 			e.printStackTrace();
@@ -175,18 +176,17 @@ public class BRRS_M_OPTR_ReportService {
 		System.out.println("View set to: " + mv.getViewName());
 		return mv;
 	}
-	
-	
+
 	public void updateReport(M_OPTR_Summary_Entity updatedEntity) {
 	    System.out.println("Came to services");
 	    System.out.println("Report Date: " + updatedEntity.getReportDate());
 
-	    M_OPTR_Summary_Entity existing = BRRS_M_OPTR_Summary_Repo.findById(updatedEntity.getReportDate())
+	    M_OPTR_Summary_Entity existing = brrs_M_OPTR_summary_repo.findById(updatedEntity.getReportDate())
 	            .orElseThrow(() -> new RuntimeException(
 	                    "Record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
 
 	    M_OPTR_Detail_Entity existingDetail =
-	    		OPTR_Detail_Repo.findById(updatedEntity.getReportDate())
+	    		brrs_M_OPTR_detail_repo.findById(updatedEntity.getReportDate())
 	                    .orElseGet(() -> {
 	                        M_OPTR_Detail_Entity d = new M_OPTR_Detail_Entity();
 	                        d.setReportDate(updatedEntity.getReportDate());
@@ -232,752 +232,1182 @@ public class BRRS_M_OPTR_ReportService {
 	    }
 
 	    // 3️⃣ Save updated entity
-	    OPTR_Detail_Repo.save(existingDetail);
-	    BRRS_M_OPTR_Summary_Repo.save(existing);
+	    brrs_M_OPTR_detail_repo.save(existingDetail);
+	    brrs_M_OPTR_summary_repo.save(existing);
 	    
+		
 	}
 	
-	/*
-	public ModelAndView getM_OPTRcurrentDtl(String reportId, String fromdate, String todate, String currency,
-			String dtltype, Pageable pageable, String Filter, String type, String version) {
+	public void updateResubReport(M_OPTR_Resub_Summary_Entity updatedEntity) {
 
-		int pageSize = pageable != null ? pageable.getPageSize() : 10;
-		int currentPage = pageable != null ? pageable.getPageNumber() : 0;
-		int totalPages = 0;
+		Date reportDate = updatedEntity.getReportDate();
 
-		ModelAndView mv = new ModelAndView();
-		Session hs = sessionFactory.getCurrentSession();
+		// ----------------------------------------------------
+		// 1️⃣ GET CURRENT VERSION FROM RESUB TABLE
+		// ----------------------------------------------------
 
+		BigDecimal maxResubVer = M_OPTR_Resub_Summary_Repo.findMaxVersion(reportDate);
+
+		if (maxResubVer == null)
+			throw new RuntimeException("No record for: " + reportDate);
+
+		BigDecimal newVersion = maxResubVer.add(BigDecimal.ONE);
+
+		Date now = new Date();
+
+		// ====================================================
+		// 2️⃣ RESUB SUMMARY – FROM UPDATED VALUES
+		// ====================================================
+
+		M_OPTR_Resub_Summary_Entity resubSummary = new M_OPTR_Resub_Summary_Entity();
+
+		BeanUtils.copyProperties(updatedEntity, resubSummary, "reportDate", "reportVersion", "reportResubDate");
+
+		resubSummary.setReportDate(reportDate);
+		resubSummary.setReportVersion(newVersion);
+		resubSummary.setReportResubDate(now);
+
+		// ====================================================
+		// 3️⃣ RESUB DETAIL – SAME UPDATED VALUES
+		// ====================================================
+
+		M_OPTR_Resub_Detail_Entity resubDetail = new M_OPTR_Resub_Detail_Entity();
+
+		BeanUtils.copyProperties(updatedEntity, resubDetail, "reportDate", "reportVersion", "reportResubDate");
+
+		resubDetail.setReportDate(reportDate);
+		resubDetail.setReportVersion(newVersion);
+		resubDetail.setReportResubDate(now);
+
+		// ====================================================
+		// 4️⃣ ARCHIVAL SUMMARY – SAME VALUES + SAME VERSION
+		// ====================================================
+
+		M_OPTR_Archival_Summary_Entity archSummary = new M_OPTR_Archival_Summary_Entity();
+
+		BeanUtils.copyProperties(updatedEntity, archSummary, "reportDate", "reportVersion", "reportResubDate");
+
+		archSummary.setReportDate(reportDate);
+		archSummary.setReportVersion(newVersion); // SAME VERSION
+		archSummary.setReportResubDate(now);
+
+		// ====================================================
+		// 5️⃣ ARCHIVAL DETAIL – SAME VALUES + SAME VERSION
+		// ====================================================
+
+		M_OPTR_Archival_Detail_Entity archDetail = new M_OPTR_Archival_Detail_Entity();
+
+		BeanUtils.copyProperties(updatedEntity, archDetail, "reportDate", "reportVersion", "reportResubDate");
+
+		archDetail.setReportDate(reportDate);
+		archDetail.setReportVersion(newVersion); // SAME VERSION
+		archDetail.setReportResubDate(now);
+
+		// ====================================================
+		// 6️⃣ SAVE ALL WITH SAME DATA
+		// ====================================================
+
+		M_OPTR_Resub_Summary_Repo.save(resubSummary);
+		M_OPTR_Resub_Detail_Repo.save(resubDetail);
+
+		M_OPTR_Archival_Summary_Repo.save(archSummary);
+		BRRS_M_OPTR_Archival_Detail_Repo.save(archDetail);
+	}
+
+	public List<Object[]> getM_OPTRResub() {
+		List<Object[]> resubList = new ArrayList<>();
 		try {
-			Date parsedDate = null;
-			if (todate != null && !todate.isEmpty()) {
-				parsedDate = dateformat.parse(todate);
-			}
+			List<M_OPTR_Archival_Summary_Entity> latestArchivalList = M_OPTR_Archival_Summary_Repo
+					.getdatabydateListWithVersionAll();
 
-			String rowId = null;
-			String columnId = null;
-
-			// ✅ Split filter string into rowId & columnId
-			if (Filter != null && Filter.contains(",")) {
-				String[] parts = Filter.split(",");
-				if (parts.length >= 2) {
-					rowId = parts[0];
-					columnId = parts[1];
+			if (latestArchivalList != null && !latestArchivalList.isEmpty()) {
+				for (M_OPTR_Archival_Summary_Entity entity : latestArchivalList) {
+					Object[] row = new Object[] { entity.getReportDate(), entity.getReportVersion(),
+							entity.getReportResubDate() };
+					resubList.add(row);
 				}
-			}
-			System.out.println(type);
-			if ("ARCHIVAL".equals(type) && version != null) {
-				System.out.println(type);
-				// 🔹 Archival branch
-				List<M_OPTR_Archival_Detail_Entity> T1Dt1;
-				if (rowId != null && columnId != null) {
-					T1Dt1 = M_OPTR_Archival_Detail_Repo.GetDataByRowIdAndColumnId(rowId, columnId, parsedDate,
-							version);
-				} else {
-					T1Dt1 = M_OPTR_Archival_Detail_Repo.getdatabydateList(parsedDate, version);
-				}
-
-				mv.addObject("reportdetails", T1Dt1);
-				mv.addObject("reportmaster12", T1Dt1);
-				System.out.println("ARCHIVAL COUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
-
+				System.out.println("Fetched " + resubList.size() + " record(s)");
 			} else {
-				// 🔹 Current branch
-				List<M_OPTR_Detail_Entity> T1Dt1;
-				if (rowId != null && columnId != null) {
-					T1Dt1 = OPTR_Detail_Repo.GetDataByRowIdAndColumnId(rowId, columnId, parsedDate);
-				} else {
-					T1Dt1 = OPTR_Detail_Repo.getdatabydateList(parsedDate);
-					System.out.println("bdisb2 size is : " + T1Dt1.size());
-					totalPages = OPTR_Detail_Repo.getdatacount(parsedDate);
-					mv.addObject("pagination", "YES");
-				}
-
-				mv.addObject("reportdetails", T1Dt1);
-				mv.addObject("reportmaster12", T1Dt1);
-				System.out.println("LISTCOUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
+				System.out.println("No archival data found.");
 			}
-
-		} catch (ParseException e) {
-			e.printStackTrace();
-			mv.addObject("errorMessage", "Invalid date format: " + todate);
 		} catch (Exception e) {
+			System.err.println("Error fetching M_OPTR Resub data: " + e.getMessage());
 			e.printStackTrace();
-			mv.addObject("errorMessage", "Unexpected error: " + e.getMessage());
 		}
-
-		// ✅ Common attributes
-		mv.setViewName("BRRS/M_OPTR");
-		mv.addObject("displaymode", "Details");
-		mv.addObject("currentPage", currentPage);
-		System.out.println("totalPages: " + (int) Math.ceil((double) totalPages / 100));
-		mv.addObject("totalPages", (int) Math.ceil((double) totalPages / 100));
-		mv.addObject("reportsflag", "reportsflag");
-		mv.addObject("menu", reportId);
-
-		return mv;
-	}*/
-	/*
-	public void updateDetailFromForm(Date reportDate, Map<String, String> params) {
-
-	    System.out.println("came to service for update ");
-
-	    for (Map.Entry<String, String> entry : params.entrySet()) {
-
-	        String key = entry.getKey();
-	        String value = entry.getValue();
-
-	        // ✅ Allow only valid keys for required columns
-	        if (!key.matches("R\\d+_C\\d+_(INTEREST_RATES|EQUITIES|FOREIGN_EXC_GOLD|COMMODITIES|TOTAL)")) {
-	            continue;
-	        }
-
-	        String[] parts = key.split("_");
-	        String reportLabel = parts[0];       // R1, R2, etc.
-	        String addlCriteria = parts[1];      // C1, C2, etc.
-	        String column = String.join("_", Arrays.copyOfRange(parts, 2, parts.length));
-
-	        BigDecimal amount = new BigDecimal(value);
-
-	        List<M_OPTR_Detail_Entity> rows =
-	        		OPTR_Detail_Repo.findByReportDateAndReportLableAndReportAddlCriteria1(
-	                reportDate, reportLabel, addlCriteria
-	            );
-
-	        for (M_OPTR_Detail_Entity row : rows) {
-
-	            if ("INTEREST_RATES".equals(column)) {
-	                row.setINTEREST_RATES(amount);
-
-	            } else if ("EQUITIES".equals(column)) {
-	                row.setEQUITIES(amount);
-
-	            } else if ("FOREIGN_EXC_GOLD".equals(column)) {
-	                row.setFOREIGN_EXC_GOLD(amount);
-
-	            } else if ("COMMODITIES".equals(column)) {
-	                row.setCOMMODITIES(amount);
-
-	            } else if ("TOTAL".equals(column)) {
-	                row.setTOTAL(amount);
-	            }
-	        }
-
-	        OPTR_Detail_Repo.saveAll(rows);
-	    }
-
-	    // ✅ CALL ORACLE PROCEDURE AFTER ALL UPDATES
-	    callSummaryProcedure(reportDate);
-	}
-	*/
-	private void callSummaryProcedure(Date reportDate) {
-
-	    String sql = "{ call BRRS_M_OPTR_SUMMARY_PROCEDURE(?) }";
-
-	    jdbcTemplate.update(connection -> {
-	        CallableStatement cs = connection.prepareCall(sql);
-
-	        // Force exact format expected by procedure
-	        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
-	        sdf.setLenient(false);
-
-	        String formattedDate = sdf.format(reportDate);
-
-	        cs.setString(1, formattedDate);  // 🔥 THIS IS MANDATORY
-	        return cs;
-	    });
-
-	    System.out.println("✅ Summary procedure executed for date: " +
-	            new SimpleDateFormat("dd-MM-yyyy").format(reportDate));
+		return resubList;
 	}
 
-
-
-	public void updateReport1(M_OPTR_Summary_Entity updatedEntity) {
-		System.out.println("Came to services1");
-		System.out.println("Report Date: " + updatedEntity.getReportDate());
-
-		M_OPTR_Summary_Entity existing = BRRS_M_OPTR_Summary_Repo.findById(updatedEntity.getReportDate()).orElseThrow(
-				() -> new RuntimeException("Record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
+	public List<Object[]> getM_OPTRArchival() {
+		List<Object[]> archivalList = new ArrayList<>();
 
 		try {
-			// 1. Loop from R15 to R50 and copy fields
-			for (int i = 10; i <= 14; i++) {
-				if (i == 12) {
-					continue;
+			List<M_OPTR_Archival_Summary_Entity> repoData = M_OPTR_Archival_Summary_Repo
+					.getdatabydateListWithVersionAll();
+
+			if (repoData != null && !repoData.isEmpty()) {
+				for (M_OPTR_Archival_Summary_Entity entity : repoData) {
+					Object[] row = new Object[] { entity.getReportDate(), entity.getReportVersion() };
+					archivalList.add(row);
 				}
-				String prefix = "R" + i + "_";
 
-				String[] fields = { "INTEREST_RATES", "EQUITIES", "FOREIGN_EXC_GOLD", "COMMODITIES" };
-
-				for (String field : fields) {
-					String getterName = "get" + prefix + field;
-					String setterName = "set" + prefix + field;
-
-					try {
-						Method getter = M_OPTR_Summary_Entity.class.getMethod(getterName);
-						Method setter = M_OPTR_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-
-						Object newValue = getter.invoke(updatedEntity);
-						setter.invoke(existing, newValue);
-
-					} catch (NoSuchMethodException e) {
-						// Skip missing fields
-						continue;
-					}
-				}
+				System.out.println("Fetched " + archivalList.size() + " archival records");
+				M_OPTR_Archival_Summary_Entity first = repoData.get(0);
+				System.out.println("Latest archival version: " + first.getReportVersion());
+			} else {
+				System.out.println("No archival data found.");
 			}
 
-			// Loop through rows for formula fields
-			int[] targetRows = { 12 };
-
-			for (int i : targetRows) {
-				String prefix = "R" + i + "_";
-
-				String[] fields = { "INTEREST_RATES", "EQUITIES", "FOREIGN_EXC_GOLD", "COMMODITIES" };
-
-				for (String field : fields) {
-					String getterName = "get" + prefix + field;
-					String setterName = "set" + prefix + field;
-
-					try {
-						Method getter = M_OPTR_Summary_Entity.class.getMethod(getterName);
-						Method setter = M_OPTR_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-
-						Object newValue = getter.invoke(updatedEntity);
-						setter.invoke(existing, newValue);
-					} catch (NoSuchMethodException e) {
-						// Skip missing fields
-						continue;
-					}
-				}
-			}
-//Loop through rows for formula fields 
-			int[] target = { 10, 11, 12, 13, 14 };
-
-			for (int i : target) {
-				String prefix = "R" + i + "_";
-
-				String[] fields = { "TOTAL" };
-
-				for (String field : fields) {
-					String getterName = "get" + prefix + field;
-					String setterName = "set" + prefix + field;
-
-					try {
-						Method getter = M_OPTR_Summary_Entity.class.getMethod(getterName);
-						Method setter = M_OPTR_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-
-						Object newValue = getter.invoke(updatedEntity);
-						setter.invoke(existing, newValue);
-
-					} catch (NoSuchMethodException e) {
-						// Skip missing fields
-						continue;
-					}
-				}
-			}
-
+		} catch (Exception e) {
+			System.err.println("Error fetching M_OPTR Archival data: " + e.getMessage());
+			e.printStackTrace();
 		}
 
-		catch (Exception e) {
-			throw new RuntimeException("Error while updating report fields", e);
-		}
-
-		// 3️⃣ Save updated entity
-		BRRS_M_OPTR_Summary_Repo.save(existing);
+		return archivalList;
 	}
-	
-	
-//	public ModelAndView getM_OPTRcurrentDtl(String reportId, String fromdate, String todate, String currency,
-//											  String dtltype, Pageable pageable, String Filter, String type, String version) {
-//
-//		int pageSize = pageable != null ? pageable.getPageSize() : 10;
-//		int currentPage = pageable != null ? pageable.getPageNumber() : 0;
-//		int totalPages = 0;
-//
-//		ModelAndView mv = new ModelAndView();
-//		Session hs = sessionFactory.getCurrentSession();
-//
-//		try {
-//			Date parsedDate = null;
-//			if (todate != null && !todate.isEmpty()) {
-//				parsedDate = dateformat.parse(todate);
-//			}
-//
-//			String rowId = null;
-//			String columnId = null;
-//
-//			// ✅ Split filter string into rowId & columnId
-//			if (Filter != null && Filter.contains(",")) {
-//				String[] parts = Filter.split(",");
-//				if (parts.length >= 2) {
-//					rowId = parts[0];
-//					columnId = parts[1];
-//				}
-//			}
-//			System.out.println(type);
-//			if ("ARCHIVAL".equals(type) && version != null) {
-//				System.out.println(type);
-//				// 🔹 Archival branch
-//				List<BRRS_M_OPTR_Archival_Detail_Entity> T1Dt1;
-//				if (rowId != null && columnId != null) {
-//					T1Dt1 = BRRS_M_OPTR_Archival_Detail_Repo.GetDataByRowIdAndColumnId(rowId, columnId, parsedDate, version);
-//				} else {
-//					T1Dt1 = BRRS_M_OPTR_Archival_Detail_Repo.getdatabydateList(parsedDate, version);
-//				}
-//
-//				mv.addObject("reportdetails", T1Dt1);
-//				mv.addObject("reportmaster12", T1Dt1);
-//				System.out.println("ARCHIVAL COUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
-//
-//			} else {
-//				// 🔹 Current branch
-//				List<BRRS_M_OPTR_Detail_Entity> T1Dt1;
-//				if (rowId != null && columnId != null) {
-//					T1Dt1 = BRRS_M_OPTR_Detail_Repo.GetDataByRowIdAndColumnId(rowId, columnId, parsedDate);
-//				} else {
-//					T1Dt1 = BRRS_M_OPTR_Detail_Repo.getdatabydateList(parsedDate, currentPage, pageSize);
-//					totalPages = BRRS_M_OPTR_Detail_Repo.getdatacount(parsedDate);
-//					mv.addObject("pagination", "YES");
-//				}
-//
-//				mv.addObject("reportdetails", T1Dt1);
-//				mv.addObject("reportmaster12", T1Dt1);
-//				System.out.println("LISTCOUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
-//			}
-//
-//		} catch (ParseException e) {
-//			e.printStackTrace();
-//			mv.addObject("errorMessage", "Invalid date format: " + todate);
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//			mv.addObject("errorMessage", "Unexpected error: " + e.getMessage());
-//		}
-//
-//		// ✅ Common attributes
-//		mv.setViewName("BRRS/M_OPTR");
-//		mv.addObject("displaymode", "Details");
-//		mv.addObject("currentPage", currentPage);
-//		System.out.println("totalPages: " + (int) Math.ceil((double) totalPages / 100));
-//		mv.addObject("totalPages", (int) Math.ceil((double) totalPages / 100));
-//		mv.addObject("reportsflag", "reportsflag");
-//		mv.addObject("menu", reportId);
-//
-//		return mv;
-//	}
 
+	// Normal format Excel
 
-	public byte[] getM_OPTRExcel(String filename, String reportId, String fromdate, String todate, String currency,
-			 String dtltype, String type, BigDecimal version) throws Exception {
-logger.info("Service: Starting Excel generation process in memory.");
-// Convert string to Date
-Date reportDate = dateformat.parse(todate);
+	public byte[] getBRRS_M_OPTRExcel(String filename, String reportId, String fromdate, String todate, String currency,
+			String dtltype, String type, String format, BigDecimal version) throws Exception {
+		logger.info("Service: Starting Excel generation process in memory.");
 
-// ARCHIVAL check
-if ("ARCHIVAL".equalsIgnoreCase(type) && version != null ) {
-logger.info("Service: Generating ARCHIVAL report for version {}", version);
-return getExcelM_OPTRARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
-}
-// RESUB check
-else if ("RESUB".equalsIgnoreCase(type) && version != null) {
-logger.info("Service: Generating RESUB report for version {}", version);
+		System.out.println("======= VIEW SCREEN =======");
+		System.out.println("TYPE      : " + type);
+		System.out.println("FORMAT      : " + format);
+		System.out.println("DTLTYPE   : " + dtltype);
+		System.out.println("DATE      : " + dateformat.parse(todate));
+		System.out.println("VERSION   : " + version);
+		System.out.println("==========================");
 
+		// ARCHIVAL check
+		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
+			try {
+				// Redirecting to Archival
+				return getExcelM_OPTRARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, format,
+						version);
+			} catch (ParseException e) {
+				logger.error("Invalid report date format: {}", fromdate, e);
+				throw new RuntimeException("Date format must be dd-MMM-yyyy (e.g. 31-Jul-2025)");
+			}
+		} else if ("RESUB".equalsIgnoreCase(type) && version != null) {
+			logger.info("Service: Generating RESUB report for version {}", version);
 
-List<M_OPTR_Archival_Summary_Entity> T1Master =
-        BRRS_M_OPTR_Archival_Summary_Repo.getdatabydateListarchival(reportDate, version);
+			try {
+				// ✅ Redirecting to Resub Excel
+				return BRRS_M_OPTRResubExcel(filename, reportId, fromdate, todate, currency, dtltype, type, format,
+						version);
 
-// Generate Excel for RESUB
-return BRRS_M_OPTRResubExcel(filename, reportId, fromdate, todate, currency, dtltype, type, version);
-}
+			} catch (ParseException e) {
+				logger.error("Invalid report date format: {}", fromdate, e);
+				throw new RuntimeException("Date format must be dd-MMM-yyyy (e.g. 31-Jul-2025)");
+			}
+		} else {
 
-if ("email".equalsIgnoreCase(type)  && version == null) {
-    logger.info("Service: Generating Email report for version {}", version);
-    return BRRS_M_OPTREmailExcel(filename, reportId, fromdate, todate, currency, dtltype, type, version);
-} /*else if ("email".equalsIgnoreCase(type) && version != null) {
-    logger.info("Service: Generating Email report for version {}", version);
-    return BRRS_M_OPTRARCHIVALEmailExcel(filename, reportId, fromdate, todate,
-            currency, dtltype, type, version);
+			if ("email".equalsIgnoreCase(format) && version == null) {
+				logger.info("Got format as Email");
+				logger.info("Service: Generating Email report for version {}", version);
+				return BRRS_M_OPTREmailExcel(filename, reportId, fromdate, todate, currency, dtltype, type, version);
+			} else {
 
-}*/
+				// Fetch data
 
+				List<M_OPTR_Summary_Entity> dataList = brrs_M_OPTR_summary_repo
+						.getdatabydateList(dateformat.parse(todate));
 
-// Default (LIVE) case
-List<M_OPTR_Summary_Entity> dataList = BRRS_M_OPTR_Summary_Repo.getdatabydateList(reportDate);
+				if (dataList.isEmpty()) {
+					logger.warn("Service: No data found for BRRS_M_OPTR report. Returning empty result.");
+					return new byte[0];
+				}
 
-String templateDir = env.getProperty("output.exportpathtemp");
-String templateFileName = filename;
-System.out.println(filename);
-Path templatePath = Paths.get(templateDir, templateFileName);
-System.out.println(templatePath);
+				String templateDir = env.getProperty("output.exportpathtemp");
+				String templateFileName = filename;
+				System.out.println(filename);
+				Path templatePath = Paths.get(templateDir, templateFileName);
+				System.out.println(templatePath);
 
-logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
+				logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
 
-if (!Files.exists(templatePath)) {
-	// This specific exception will be caught by the controller.
-	throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
-}
-if (!Files.isReadable(templatePath)) {
-	// A specific exception for permission errors.
-	throw new SecurityException(
-			"Template file exists but is not readable (check permissions): " + templatePath.toAbsolutePath());
-}
+				if (!Files.exists(templatePath)) {
+					// This specific exception will be caught by the controller.
+					throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
+				}
+				if (!Files.isReadable(templatePath)) {
+					// A specific exception for permission errors.
+					throw new SecurityException("Template file exists but is not readable (check permissions): "
+							+ templatePath.toAbsolutePath());
+				}
+
+				// This try-with-resources block is perfect. It guarantees all resources are
+				// closed automatically.
+				try (InputStream templateInputStream = Files.newInputStream(templatePath);
+						Workbook workbook = WorkbookFactory.create(templateInputStream);
+						ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+
+					Sheet sheet = workbook.getSheetAt(0);
+
+					// --- Style Definitions ---
+					CreationHelper createHelper = workbook.getCreationHelper();
+
+					CellStyle dateStyle = workbook.createCellStyle();
+					dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
+					dateStyle.setBorderBottom(BorderStyle.THIN);
+					dateStyle.setBorderTop(BorderStyle.THIN);
+					dateStyle.setBorderLeft(BorderStyle.THIN);
+					dateStyle.setBorderRight(BorderStyle.THIN);
+
+					CellStyle textStyle = workbook.createCellStyle();
+					textStyle.setBorderBottom(BorderStyle.THIN);
+					textStyle.setBorderTop(BorderStyle.THIN);
+					textStyle.setBorderLeft(BorderStyle.THIN);
+					textStyle.setBorderRight(BorderStyle.THIN);
+
+					// Create the font
+					Font font = workbook.createFont();
+					font.setFontHeightInPoints((short) 8); // size 8
+					font.setFontName("Arial");
+
+					CellStyle numberStyle = workbook.createCellStyle();
+					// numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
+					numberStyle.setBorderBottom(BorderStyle.THIN);
+					numberStyle.setBorderTop(BorderStyle.THIN);
+					numberStyle.setBorderLeft(BorderStyle.THIN);
+					numberStyle.setBorderRight(BorderStyle.THIN);
+					numberStyle.setFont(font);
+					// --- End of Style Definitions ---
+
+					int startRow = 9;
+
+					if (!dataList.isEmpty()) {
+						for (int i = 0; i < dataList.size(); i++) {
+							M_OPTR_Summary_Entity record = dataList.get(i);
+							System.out.println("rownumber=" + startRow + i);
+							Row row = sheet.getRow(startRow + i);
+							if (row == null) {
+								row = sheet.createRow(startRow + i);
+							}
+
+							Cell cell2 = row.createCell(4);
+							if (record.getR10_INTEREST_RATES() != null) {
+								cell2.setCellValue(record.getR10_INTEREST_RATES().doubleValue());
+								cell2.setCellStyle(numberStyle);
+							} else {
+								cell2.setCellValue("");
+								cell2.setCellStyle(textStyle);
+							}
+
+							Cell cell3 = row.createCell(5);
+							if (record.getR10_EQUITIES() != null) {
+								cell3.setCellValue(record.getR10_EQUITIES().doubleValue());
+								cell3.setCellStyle(numberStyle);
+							} else {
+								cell3.setCellValue("");
+								cell3.setCellStyle(textStyle);
+							}
+
+							Cell cell4 = row.createCell(6);
+							if (record.getR10_FOREIGN_EXC_GOLD() != null) {
+								cell4.setCellValue(record.getR10_FOREIGN_EXC_GOLD().doubleValue());
+								cell4.setCellStyle(numberStyle);
+							} else {
+								cell4.setCellValue("");
+								cell4.setCellStyle(textStyle);
+							}
+
+							Cell cell5 = row.createCell(7);
+							if (record.getR10_COMMODITIES() != null) {
+								cell5.setCellValue(record.getR10_COMMODITIES().doubleValue());
+								cell5.setCellStyle(numberStyle);
+							} else {
+								cell5.setCellValue("");
+								cell5.setCellStyle(textStyle);
+							}
+
+							row = sheet.getRow(10);
+
+							cell2 = row.createCell(4);
+							if (record.getR11_INTEREST_RATES() != null) {
+								cell2.setCellValue(record.getR11_INTEREST_RATES().doubleValue());
+								cell2.setCellStyle(numberStyle);
+							} else {
+								cell2.setCellValue("");
+								cell2.setCellStyle(textStyle);
+							}
+
+							cell3 = row.createCell(5);
+							if (record.getR11_EQUITIES() != null) {
+								cell3.setCellValue(record.getR11_EQUITIES().doubleValue());
+								cell3.setCellStyle(numberStyle);
+							} else {
+								cell3.setCellValue("");
+								cell3.setCellStyle(textStyle);
+							}
+
+							cell4 = row.createCell(6);
+							if (record.getR11_FOREIGN_EXC_GOLD() != null) {
+								cell4.setCellValue(record.getR11_FOREIGN_EXC_GOLD().doubleValue());
+								cell4.setCellStyle(numberStyle);
+							} else {
+								cell4.setCellValue("");
+								cell4.setCellStyle(textStyle);
+							}
+
+							cell5 = row.createCell(7);
+							if (record.getR11_COMMODITIES() != null) {
+								cell5.setCellValue(record.getR11_COMMODITIES().doubleValue());
+								cell5.setCellStyle(numberStyle);
+							} else {
+								cell5.setCellValue("");
+								cell5.setCellStyle(textStyle);
+							}
+
+							row = sheet.getRow(12);
+							cell2 = row.createCell(4);
+							if (record.getR13_INTEREST_RATES() != null) {
+								cell2.setCellValue(record.getR13_INTEREST_RATES().doubleValue());
+								cell2.setCellStyle(numberStyle);
+							} else {
+								cell2.setCellValue("");
+								cell2.setCellStyle(textStyle);
+							}
+
+							cell3 = row.createCell(5);
+							if (record.getR13_EQUITIES() != null) {
+								cell3.setCellValue(record.getR13_EQUITIES().doubleValue());
+								cell3.setCellStyle(numberStyle);
+							} else {
+								cell3.setCellValue("");
+								cell3.setCellStyle(textStyle);
+							}
+
+							cell4 = row.createCell(6);
+							if (record.getR13_FOREIGN_EXC_GOLD() != null) {
+								cell4.setCellValue(record.getR13_FOREIGN_EXC_GOLD().doubleValue());
+								cell4.setCellStyle(numberStyle);
+							} else {
+								cell4.setCellValue("");
+								cell4.setCellStyle(textStyle);
+							}
+
+							cell5 = row.createCell(7);
+							if (record.getR13_COMMODITIES() != null) {
+								cell5.setCellValue(record.getR13_COMMODITIES().doubleValue());
+								cell5.setCellStyle(numberStyle);
+							} else {
+								cell5.setCellValue("");
+								cell5.setCellStyle(textStyle);
+							}
+
+							row = sheet.getRow(13);
+							cell2 = row.createCell(4);
+							if (record.getR14_INTEREST_RATES() != null) {
+								cell2.setCellValue(record.getR14_INTEREST_RATES().doubleValue());
+								cell2.setCellStyle(numberStyle);
+							} else {
+								cell2.setCellValue("");
+								cell2.setCellStyle(textStyle);
+							}
+
+							cell3 = row.createCell(5);
+							if (record.getR14_EQUITIES() != null) {
+								cell3.setCellValue(record.getR14_EQUITIES().doubleValue());
+								cell3.setCellStyle(numberStyle);
+							} else {
+								cell3.setCellValue("");
+								cell3.setCellStyle(textStyle);
+							}
+
+							cell4 = row.createCell(6);
+							if (record.getR14_FOREIGN_EXC_GOLD() != null) {
+								cell4.setCellValue(record.getR14_FOREIGN_EXC_GOLD().doubleValue());
+								cell4.setCellStyle(numberStyle);
+							} else {
+								cell4.setCellValue("");
+								cell4.setCellStyle(textStyle);
+							}
+
+							cell5 = row.createCell(7);
+							if (record.getR14_COMMODITIES() != null) {
+								cell5.setCellValue(record.getR14_COMMODITIES().doubleValue());
+								cell5.setCellStyle(numberStyle);
+							} else {
+								cell5.setCellValue("");
+								cell5.setCellStyle(textStyle);
+							}
+
+						}
+						workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
+					} else {
+
+					}
+
+					// Write the final workbook content to the in-memory stream.
+					workbook.write(out);
+
+					logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
+
+					return out.toByteArray();
+				}
+			}
+		}
+	}
+
+	// Normal Email Excel
+	public byte[] BRRS_M_OPTREmailExcel(String filename, String reportId, String fromdate, String todate,
+			String currency, String dtltype, String type, BigDecimal version) throws Exception {
+
+		logger.info("Service: Starting Email Excel generation process in memory.");
+
+		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
+			try {
+				// Redirecting to Archival
+				return BRRS_M_OPTRArchivalEmailExcel(filename, reportId, fromdate, todate, currency, dtltype, type,
+						version);
+			} catch (ParseException e) {
+				logger.error("Invalid report date format: {}", fromdate, e);
+				throw new RuntimeException("Date format must be dd-MMM-yyyy (e.g. 31-Jul-2025)");
+			}
+		} else if ("RESUB".equalsIgnoreCase(type) && version != null) {
+			logger.info("Service: Generating RESUB report for version {}", version);
+
+			try {
+				// ✅ Redirecting to Resub Excel
+				return BRRS_M_OPTRResubEmailExcel(filename, reportId, fromdate, todate, currency, dtltype, type,
+						version);
+
+			} catch (ParseException e) {
+				logger.error("Invalid report date format: {}", fromdate, e);
+				throw new RuntimeException("Date format must be dd-MMM-yyyy (e.g. 31-Jul-2025)");
+			}
+		} else {
+			List<M_OPTR_Summary_Entity> dataList = brrs_M_OPTR_summary_repo.getdatabydateList(dateformat.parse(todate));
+
+			if (dataList.isEmpty()) {
+				logger.warn("Service: No data found for BRRS_M_OPTR report. Returning empty result.");
+				return new byte[0];
+			}
+
+			String templateDir = env.getProperty("output.exportpathtemp");
+			String templateFileName = filename;
+			System.out.println(filename);
+			Path templatePath = Paths.get(templateDir, templateFileName);
+			System.out.println(templatePath);
+
+			logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
+
+			if (!Files.exists(templatePath)) {
+				// This specific exception will be caught by the controller.
+				throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
+			}
+			if (!Files.isReadable(templatePath)) {
+				// A specific exception for permission errors.
+				throw new SecurityException("Template file exists but is not readable (check permissions): "
+						+ templatePath.toAbsolutePath());
+			}
+
+			// This try-with-resources block is perfect. It guarantees all resources are
+			// closed automatically.
+			try (InputStream templateInputStream = Files.newInputStream(templatePath);
+					Workbook workbook = WorkbookFactory.create(templateInputStream);
+					ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+
+				Sheet sheet = workbook.getSheetAt(0);
+
+				// --- Style Definitions ---
+				CreationHelper createHelper = workbook.getCreationHelper();
+
+				CellStyle dateStyle = workbook.createCellStyle();
+				dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
+				dateStyle.setBorderBottom(BorderStyle.THIN);
+				dateStyle.setBorderTop(BorderStyle.THIN);
+				dateStyle.setBorderLeft(BorderStyle.THIN);
+				dateStyle.setBorderRight(BorderStyle.THIN);
+
+				CellStyle textStyle = workbook.createCellStyle();
+				textStyle.setBorderBottom(BorderStyle.THIN);
+				textStyle.setBorderTop(BorderStyle.THIN);
+				textStyle.setBorderLeft(BorderStyle.THIN);
+				textStyle.setBorderRight(BorderStyle.THIN);
+
+				// Create the font
+				Font font = workbook.createFont();
+				font.setFontHeightInPoints((short) 8); // size 8
+				font.setFontName("Arial");
+
+				CellStyle numberStyle = workbook.createCellStyle();
+				// numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
+				numberStyle.setBorderBottom(BorderStyle.THIN);
+				numberStyle.setBorderTop(BorderStyle.THIN);
+				numberStyle.setBorderLeft(BorderStyle.THIN);
+				numberStyle.setBorderRight(BorderStyle.THIN);
+				numberStyle.setFont(font);
+				// --- End of Style Definitions ---
+
+				int startRow = 9;
+
+				if (!dataList.isEmpty()) {
+					for (int i = 0; i < dataList.size(); i++) {
+						M_OPTR_Summary_Entity record = dataList.get(i);
+						System.out.println("rownumber=" + startRow + i);
+						Row row = sheet.getRow(startRow + i);
+						if (row == null) {
+							row = sheet.createRow(startRow + i);
+						}
+
+						/*
+						 * Cell cell2 = row.createCell(4); if (record.getR10_INTEREST_RATES() != null) {
+						 * cell2.setCellValue(record.getR10_INTEREST_RATES().doubleValue());
+						 * cell2.setCellStyle(numberStyle); } else { cell2.setCellValue("");
+						 * cell2.setCellStyle(textStyle); }
+						 * 
+						 * Cell cell3 = row.createCell(5); if (record.getR10_EQUITIES() != null) {
+						 * cell3.setCellValue(record.getR10_EQUITIES().doubleValue());
+						 * cell3.setCellStyle(numberStyle); } else { cell3.setCellValue("");
+						 * cell3.setCellStyle(textStyle); }
+						 * 
+						 * Cell cell4 = row.createCell(6); if (record.getR10_FOREIGN_EXC_GOLD() != null)
+						 * { cell4.setCellValue(record.getR10_FOREIGN_EXC_GOLD().doubleValue());
+						 * cell4.setCellStyle(numberStyle); } else { cell4.setCellValue("");
+						 * cell4.setCellStyle(textStyle); }
+						 * 
+						 * Cell cell5 = row.createCell(7); if (record.getR10_COMMODITIES() != null) {
+						 * cell5.setCellValue(record.getR10_COMMODITIES().doubleValue());
+						 * cell5.setCellStyle(numberStyle); } else { cell5.setCellValue("");
+						 * cell5.setCellStyle(textStyle); }
+						 */
+						row = sheet.getRow(10);
+
+						Cell cell2 = row.createCell(4);
+						if (record.getR11_INTEREST_RATES() != null) {
+							cell2.setCellValue(record.getR11_INTEREST_RATES().doubleValue());
+							cell2.setCellStyle(numberStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						Cell cell3 = row.createCell(5);
+						if (record.getR11_EQUITIES() != null) {
+							cell3.setCellValue(record.getR11_EQUITIES().doubleValue());
+							cell3.setCellStyle(numberStyle);
+						} else {
+							cell3.setCellValue("");
+							cell3.setCellStyle(textStyle);
+						}
+
+						Cell cell4 = row.createCell(6);
+						if (record.getR11_FOREIGN_EXC_GOLD() != null) {
+							cell4.setCellValue(record.getR11_FOREIGN_EXC_GOLD().doubleValue());
+							cell4.setCellStyle(numberStyle);
+						} else {
+							cell4.setCellValue("");
+							cell4.setCellStyle(textStyle);
+						}
+
+						Cell cell5 = row.createCell(7);
+						if (record.getR11_COMMODITIES() != null) {
+							cell5.setCellValue(record.getR11_COMMODITIES().doubleValue());
+							cell5.setCellStyle(numberStyle);
+						} else {
+							cell5.setCellValue("");
+							cell5.setCellStyle(textStyle);
+						}
+
+						row = sheet.getRow(12);
+						cell2 = row.createCell(4);
+						if (record.getR13_INTEREST_RATES() != null) {
+							cell2.setCellValue(record.getR13_INTEREST_RATES().doubleValue());
+							cell2.setCellStyle(numberStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						cell3 = row.createCell(5);
+						if (record.getR13_EQUITIES() != null) {
+							cell3.setCellValue(record.getR13_EQUITIES().doubleValue());
+							cell3.setCellStyle(numberStyle);
+						} else {
+							cell3.setCellValue("");
+							cell3.setCellStyle(textStyle);
+						}
+
+						cell4 = row.createCell(6);
+						if (record.getR13_FOREIGN_EXC_GOLD() != null) {
+							cell4.setCellValue(record.getR13_FOREIGN_EXC_GOLD().doubleValue());
+							cell4.setCellStyle(numberStyle);
+						} else {
+							cell4.setCellValue("");
+							cell4.setCellStyle(textStyle);
+						}
+
+						cell5 = row.createCell(7);
+						if (record.getR13_COMMODITIES() != null) {
+							cell5.setCellValue(record.getR13_COMMODITIES().doubleValue());
+							cell5.setCellStyle(numberStyle);
+						} else {
+							cell5.setCellValue("");
+							cell5.setCellStyle(textStyle);
+						}
+
+						row = sheet.getRow(13);
+						cell2 = row.createCell(4);
+						if (record.getR14_INTEREST_RATES() != null) {
+							cell2.setCellValue(record.getR14_INTEREST_RATES().doubleValue());
+							cell2.setCellStyle(numberStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						cell3 = row.createCell(5);
+						if (record.getR14_EQUITIES() != null) {
+							cell3.setCellValue(record.getR14_EQUITIES().doubleValue());
+							cell3.setCellStyle(numberStyle);
+						} else {
+							cell3.setCellValue("");
+							cell3.setCellStyle(textStyle);
+						}
+
+						cell4 = row.createCell(6);
+						if (record.getR14_FOREIGN_EXC_GOLD() != null) {
+							cell4.setCellValue(record.getR14_FOREIGN_EXC_GOLD().doubleValue());
+							cell4.setCellStyle(numberStyle);
+						} else {
+							cell4.setCellValue("");
+							cell4.setCellStyle(textStyle);
+						}
+
+						cell5 = row.createCell(7);
+						if (record.getR14_COMMODITIES() != null) {
+							cell5.setCellValue(record.getR14_COMMODITIES().doubleValue());
+							cell5.setCellStyle(numberStyle);
+						} else {
+							cell5.setCellValue("");
+							cell5.setCellStyle(textStyle);
+						}
+
+					}
+					workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
+				} else {
+
+				}
+
+				// Write the final workbook content to the in-memory stream.
+				workbook.write(out);
+
+				logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
+
+				return out.toByteArray();
+			}
+		}
+	}
+
+	// Archival format excel
+	public byte[] getExcelM_OPTRARCHIVAL(String filename, String reportId, String fromdate, String todate,
+			String currency, String dtltype, String type, String format, BigDecimal version) throws Exception {
+
+		logger.info("Service: Starting Excel generation process in memory in Archival.");
+
+		if ("email".equalsIgnoreCase(format) && version != null) {
+			try {
+				// Redirecting to Archival
+				return BRRS_M_OPTRArchivalEmailExcel(filename, reportId, fromdate, todate, currency, dtltype, type,
+						version);
+			} catch (ParseException e) {
+				logger.error("Invalid report date format: {}", fromdate, e);
+				throw new RuntimeException("Date format must be dd-MMM-yyyy (e.g. 31-Jul-2025)");
+			}
+		}
+
+		List<M_OPTR_Archival_Summary_Entity> dataList = M_OPTR_Archival_Summary_Repo
+				.getdatabydateListarchival(dateformat.parse(todate), version);
+
+		if (dataList.isEmpty()) {
+			logger.warn("Service: No data found for M_OPTR report. Returning empty result.");
+			return new byte[0];
+		}
+
+		String templateDir = env.getProperty("output.exportpathtemp");
+		String templateFileName = filename;
+		System.out.println(filename);
+		Path templatePath = Paths.get(templateDir, templateFileName);
+		System.out.println(templatePath);
+
+		logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
+
+		if (!Files.exists(templatePath)) {
+// This specific exception will be caught by the controller.
+			throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
+		}
+		if (!Files.isReadable(templatePath)) {
+// A specific exception for permission errors.
+			throw new SecurityException(
+					"Template file exists but is not readable (check permissions): " + templatePath.toAbsolutePath());
+		}
 
 // This try-with-resources block is perfect. It guarantees all resources are
 // closed automatically.
-try (InputStream templateInputStream = Files.newInputStream(templatePath);
-		Workbook workbook = WorkbookFactory.create(templateInputStream);
-		ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+		try (InputStream templateInputStream = Files.newInputStream(templatePath);
+				Workbook workbook = WorkbookFactory.create(templateInputStream);
+				ByteArrayOutputStream out = new ByteArrayOutputStream()) {
 
-	Sheet sheet = workbook.getSheetAt(0);
+			Sheet sheet = workbook.getSheetAt(0);
 
 // --- Style Definitions ---
-CreationHelper createHelper = workbook.getCreationHelper();
+			CreationHelper createHelper = workbook.getCreationHelper();
 
-CellStyle dateStyle = workbook.createCellStyle();
-dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
-dateStyle.setBorderBottom(BorderStyle.THIN);
-dateStyle.setBorderTop(BorderStyle.THIN);
-dateStyle.setBorderLeft(BorderStyle.THIN);
-dateStyle.setBorderRight(BorderStyle.THIN);
-CellStyle textStyle = workbook.createCellStyle();
-textStyle.setBorderBottom(BorderStyle.THIN);
-textStyle.setBorderTop(BorderStyle.THIN);
-textStyle.setBorderLeft(BorderStyle.THIN);
-textStyle.setBorderRight(BorderStyle.THIN);
+			CellStyle dateStyle = workbook.createCellStyle();
+			dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
+			dateStyle.setBorderBottom(BorderStyle.THIN);
+			dateStyle.setBorderTop(BorderStyle.THIN);
+			dateStyle.setBorderLeft(BorderStyle.THIN);
+			dateStyle.setBorderRight(BorderStyle.THIN);
+
+			CellStyle textStyle = workbook.createCellStyle();
+			textStyle.setBorderBottom(BorderStyle.THIN);
+			textStyle.setBorderTop(BorderStyle.THIN);
+			textStyle.setBorderLeft(BorderStyle.THIN);
+			textStyle.setBorderRight(BorderStyle.THIN);
 
 // Create the font
-Font font = workbook.createFont();
-font.setFontHeightInPoints((short) 8); // size 8
-font.setFontName("Arial");
-CellStyle numberStyle = workbook.createCellStyle();
+			Font font = workbook.createFont();
+			font.setFontHeightInPoints((short) 8); // size 8
+			font.setFontName("Arial");
+
+			CellStyle numberStyle = workbook.createCellStyle();
 // numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
-numberStyle.setBorderBottom(BorderStyle.THIN);
-numberStyle.setBorderTop(BorderStyle.THIN);
-numberStyle.setBorderLeft(BorderStyle.THIN);
-numberStyle.setBorderRight(BorderStyle.THIN);
-numberStyle.setFont(font);
+			numberStyle.setBorderBottom(BorderStyle.THIN);
+			numberStyle.setBorderTop(BorderStyle.THIN);
+			numberStyle.setBorderLeft(BorderStyle.THIN);
+			numberStyle.setBorderRight(BorderStyle.THIN);
+			numberStyle.setFont(font);
 // --- End of Style Definitions ---
-int startRow = 9;
 
-if (!dataList.isEmpty()) {
-for (int i = 0; i < dataList.size(); i++) {
-M_OPTR_Summary_Entity record = dataList.get(i);
-System.out.println("rownumber=" + startRow + i);
-Row row = sheet.getRow(startRow + i);	
+			int startRow = 9;
 
-if (row == null) {
-row = sheet.createRow(startRow + i);
-}
+			if (!dataList.isEmpty()) {
+				for (int i = 0; i < dataList.size(); i++) {
+					M_OPTR_Archival_Summary_Entity record = dataList.get(i);
+					System.out.println("rownumber=" + startRow + i);
+					Row row = sheet.getRow(startRow + i);
+					if (row == null) {
+						row = sheet.createRow(startRow + i);
+					}
 
+					Cell cell2 = row.createCell(4);
+					if (record.getR10_INTEREST_RATES() != null) {
+						cell2.setCellValue(record.getR10_INTEREST_RATES().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
 
+					Cell cell3 = row.createCell(5);
+					if (record.getR10_EQUITIES() != null) {
+						cell3.setCellValue(record.getR10_EQUITIES().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
 
-Cell cell2 = row.createCell(4);
-if (record.getR10_INTEREST_RATES() != null) {
-cell2.setCellValue(record.getR10_INTEREST_RATES().doubleValue());
-cell2.setCellStyle(numberStyle);
-} else {
-cell2.setCellValue("");
-cell2.setCellStyle(textStyle);
-}
+					Cell cell4 = row.createCell(6);
+					if (record.getR10_FOREIGN_EXC_GOLD() != null) {
+						cell4.setCellValue(record.getR10_FOREIGN_EXC_GOLD().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
 
-Cell cell3 = row.createCell(5);
-if (record.getR10_EQUITIES() != null) {
-cell3.setCellValue(record.getR10_EQUITIES().doubleValue());
-cell3.setCellStyle(numberStyle);
-} else {
-cell3.setCellValue("");
-cell3.setCellStyle(textStyle);
-}
+					Cell cell5 = row.createCell(7);
+					if (record.getR10_COMMODITIES() != null) {
+						cell5.setCellValue(record.getR10_COMMODITIES().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
 
-Cell cell4 = row.createCell(6);
-if (record.getR10_FOREIGN_EXC_GOLD() != null) {
-cell4.setCellValue(record.getR10_FOREIGN_EXC_GOLD().doubleValue());
-cell4.setCellStyle(numberStyle);
-} else {
-cell4.setCellValue("");
-cell4.setCellStyle(textStyle);
-}
+					row = sheet.getRow(10);
 
-Cell cell5 = row.createCell(7);
-if (record.getR10_COMMODITIES() != null) {
-cell5.setCellValue(record.getR10_COMMODITIES().doubleValue());
-cell5.setCellStyle(numberStyle);
-} else {
-cell5.setCellValue("");
-cell5.setCellStyle(textStyle);
-}
+					cell2 = row.createCell(4);
+					if (record.getR11_INTEREST_RATES() != null) {
+						cell2.setCellValue(record.getR11_INTEREST_RATES().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
 
-row = sheet.getRow(10);
+					cell3 = row.createCell(5);
+					if (record.getR11_EQUITIES() != null) {
+						cell3.setCellValue(record.getR11_EQUITIES().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
 
- cell2 = row.createCell(4);
-if (record.getR11_INTEREST_RATES() != null) {
-cell2.setCellValue(record.getR11_INTEREST_RATES().doubleValue());
-cell2.setCellStyle(numberStyle);
-} else {
-cell2.setCellValue("");
-cell2.setCellStyle(textStyle);
-}
+					cell4 = row.createCell(6);
+					if (record.getR11_FOREIGN_EXC_GOLD() != null) {
+						cell4.setCellValue(record.getR11_FOREIGN_EXC_GOLD().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
 
- cell3 = row.createCell(5);
-if (record.getR11_EQUITIES() != null) {
-cell3.setCellValue(record.getR11_EQUITIES().doubleValue());
-cell3.setCellStyle(numberStyle);
-} else {
-cell3.setCellValue("");
-cell3.setCellStyle(textStyle);
-}
+					cell5 = row.createCell(7);
+					if (record.getR11_COMMODITIES() != null) {
+						cell5.setCellValue(record.getR11_COMMODITIES().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
 
- cell4 = row.createCell(6);
-if (record.getR11_FOREIGN_EXC_GOLD() != null) {
-cell4.setCellValue(record.getR11_FOREIGN_EXC_GOLD().doubleValue());
-cell4.setCellStyle(numberStyle);
-} else {
-cell4.setCellValue("");
-cell4.setCellStyle(textStyle);
-}
+					row = sheet.getRow(12);
+					cell2 = row.createCell(4);
+					if (record.getR13_INTEREST_RATES() != null) {
+						cell2.setCellValue(record.getR13_INTEREST_RATES().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
 
- cell5 = row.createCell(7);
-if (record.getR11_COMMODITIES() != null) {
-cell5.setCellValue(record.getR11_COMMODITIES().doubleValue());
-cell5.setCellStyle(numberStyle);
-} else {
-cell5.setCellValue("");
-cell5.setCellStyle(textStyle);
-}
-				
-row = sheet.getRow(12);
- cell2 = row.createCell(4);
-if (record.getR13_INTEREST_RATES() != null) {
-cell2.setCellValue(record.getR13_INTEREST_RATES().doubleValue());
-cell2.setCellStyle(numberStyle);
-} else {
-cell2.setCellValue("");
-cell2.setCellStyle(textStyle);
-}
+					cell3 = row.createCell(5);
+					if (record.getR13_EQUITIES() != null) {
+						cell3.setCellValue(record.getR13_EQUITIES().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
 
- cell3 = row.createCell(5);
-if (record.getR13_EQUITIES() != null) {
-cell3.setCellValue(record.getR13_EQUITIES().doubleValue());
-cell3.setCellStyle(numberStyle);
-} else {
-cell3.setCellValue("");
-cell3.setCellStyle(textStyle);
-}
+					cell4 = row.createCell(6);
+					if (record.getR13_FOREIGN_EXC_GOLD() != null) {
+						cell4.setCellValue(record.getR13_FOREIGN_EXC_GOLD().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
 
- cell4 = row.createCell(6);
-if (record.getR13_FOREIGN_EXC_GOLD() != null) {
-cell4.setCellValue(record.getR13_FOREIGN_EXC_GOLD().doubleValue());
-cell4.setCellStyle(numberStyle);
-} else {
-cell4.setCellValue("");
-cell4.setCellStyle(textStyle);
-}
+					cell5 = row.createCell(7);
+					if (record.getR13_COMMODITIES() != null) {
+						cell5.setCellValue(record.getR13_COMMODITIES().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
 
-cell5 = row.createCell(7);
-if (record.getR13_COMMODITIES() != null) {
-cell5.setCellValue(record.getR13_COMMODITIES().doubleValue());
-cell5.setCellStyle(numberStyle);
-} else {
-cell5.setCellValue("");
-cell5.setCellStyle(textStyle);
-}
+					row = sheet.getRow(13);
+					cell2 = row.createCell(4);
+					if (record.getR14_INTEREST_RATES() != null) {
+						cell2.setCellValue(record.getR14_INTEREST_RATES().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
 
+					cell3 = row.createCell(5);
+					if (record.getR14_EQUITIES() != null) {
+						cell3.setCellValue(record.getR14_EQUITIES().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
 
-row = sheet.getRow(13);
-				cell2 = row.createCell(4);
-if (record.getR14_INTEREST_RATES() != null) {
-cell2.setCellValue(record.getR14_INTEREST_RATES().doubleValue());
-cell2.setCellStyle(numberStyle);
-} else {
-cell2.setCellValue("");
-cell2.setCellStyle(textStyle);
-}
+					cell4 = row.createCell(6);
+					if (record.getR14_FOREIGN_EXC_GOLD() != null) {
+						cell4.setCellValue(record.getR14_FOREIGN_EXC_GOLD().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
 
- cell3 = row.createCell(5);
-if (record.getR14_EQUITIES() != null) {
-cell3.setCellValue(record.getR14_EQUITIES().doubleValue());
-cell3.setCellStyle(numberStyle);
-} else {
-cell3.setCellValue("");
-cell3.setCellStyle(textStyle);
-}
+					cell5 = row.createCell(7);
+					if (record.getR14_COMMODITIES() != null) {
+						cell5.setCellValue(record.getR14_COMMODITIES().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
 
-cell4 = row.createCell(6);
-if (record.getR14_FOREIGN_EXC_GOLD() != null) {
-cell4.setCellValue(record.getR14_FOREIGN_EXC_GOLD().doubleValue());
-cell4.setCellStyle(numberStyle);
-} else {
-cell4.setCellValue("");
-cell4.setCellStyle(textStyle);
-}
+				}
+				workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
+			} else {
 
- cell5 = row.createCell(7);
-if (record.getR14_COMMODITIES() != null) {
-cell5.setCellValue(record.getR14_COMMODITIES().doubleValue());
-cell5.setCellStyle(numberStyle);
-} else {
-cell5.setCellValue("");
-cell5.setCellStyle(textStyle);
-}
+			}
 
-
-
-
-
-
-}
-workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
-} else {
-
-}
 // Write the final workbook content to the in-memory stream.
-workbook.write(out);
-logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
+			workbook.write(out);
 
+			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
 
-return out.toByteArray();
-}
-}
-
-
-//
-////	public byte[] BRRS_M_OPTRDetailExcel(String filename, String fromdate, String todate, String currency,
-////										   String dtltype, String type, String version) {
-////
-////		try {
-////			logger.info("Generating Excel for BRRS_M_OPTR Details...");
-////			System.out.println("came to Detail download service");
-////			if (type.equals("ARCHIVAL") & version != null) {
-////				byte[] ARCHIVALreport = getDetailExcelARCHIVAL(filename, fromdate, todate, currency, dtltype, type,
-////						version);
-////				return ARCHIVALreport;
-////			}
-////			XSSFWorkbook workbook = new XSSFWorkbook();
-////			XSSFSheet sheet = workbook.createSheet("BRRS_M_OPTRDetails");
-////
-////			// Common border style
-////			BorderStyle border = BorderStyle.THIN;
-////			// Header style (left aligned)
-////			CellStyle headerStyle = workbook.createCellStyle();
-////			Font headerFont = workbook.createFont();
-////			headerFont.setBold(true);
-////			headerFont.setFontHeightInPoints((short) 10);
-////			headerStyle.setFont(headerFont);
-////			headerStyle.setAlignment(HorizontalAlignment.LEFT);
-////			headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
-////			headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-////			headerStyle.setBorderTop(border);
-////			headerStyle.setBorderBottom(border);
-////			headerStyle.setBorderLeft(border);
-////			headerStyle.setBorderRight(border);
-////
-////			// Right-aligned header style for ACCT BALANCE
-////			CellStyle rightAlignedHeaderStyle = workbook.createCellStyle();
-////			rightAlignedHeaderStyle.cloneStyleFrom(headerStyle);
-////			rightAlignedHeaderStyle.setAlignment(HorizontalAlignment.RIGHT);
-////
-////			// Default data style (left aligned)
-////			CellStyle dataStyle = workbook.createCellStyle();
-////			dataStyle.setAlignment(HorizontalAlignment.LEFT);
-////			dataStyle.setBorderTop(border);
-////			dataStyle.setBorderBottom(border);
-////			dataStyle.setBorderLeft(border);
-////			dataStyle.setBorderRight(border);
-////
-////			// ACCT BALANCE style (right aligned with 3 decimals)
-////			CellStyle balanceStyle = workbook.createCellStyle();
-////			balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
-////			balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0.000"));
-////			balanceStyle.setBorderTop(border);
-////			balanceStyle.setBorderBottom(border);
-////			balanceStyle.setBorderLeft(border);
-////			balanceStyle.setBorderRight(border);
-////			// Header row
-////			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "ROWID", "COLUMNID",
-////					"REPORT_DATE" };
-////			XSSFRow headerRow = sheet.createRow(0);
-////			for (int i = 0; i < headers.length; i++) {
-////				Cell cell = headerRow.createCell(i);
-////				cell.setCellValue(headers[i]);
-////				if (i == 3) { // ACCT BALANCE
-////					cell.setCellStyle(rightAlignedHeaderStyle);
-////				} else {
-////					cell.setCellStyle(headerStyle);
-////				}
-////				sheet.setColumnWidth(i, 5000);
-////			}
-////			// Get data
-////			Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
-////			List<BRRS_M_OPTR_Detail_Entity> reportData = BRRS_M_OPTR_Detail_Repo.getdatabydateList(parsedToDate);
-////			if (reportData != null && !reportData.isEmpty()) {
-////				int rowIndex = 1;
-////				for (BRRS_M_OPTR_Detail_Entity item : reportData) {
-////					XSSFRow row = sheet.createRow(rowIndex++);
-////					row.createCell(0).setCellValue(item.getCUST_ID());
-////					row.createCell(1).setCellValue(item.getACCT_NUMBER());
-////					row.createCell(2).setCellValue(item.getACCT_NAME());
-////					// ACCT BALANCE (right aligned, 3 decimal places)
-////					Cell balanceCell = row.createCell(3);
-////					if (item.getACCT_BALANCE_IN_PULA() != null) {
-////						balanceCell.setCellValue(item.getACCT_BALANCE_IN_PULA().doubleValue());
-////					} else {
-////						balanceCell.setCellValue(0.000);
-////					}
-////					balanceCell.setCellStyle(balanceStyle);
-////					row.createCell(4).setCellValue(item.getROW_ID());
-////					row.createCell(5).setCellValue(item.getCOLUMN_ID());
-////					row.createCell(6)
-////							.setCellValue(item.getREPORT_DATE() != null
-////									? new SimpleDateFormat("dd-MM-yyyy").format(item.getREPORT_DATE())
-////									: "");
-////					// Apply data style for all other cells
-////					for (int j = 0; j < 7; j++) {
-////						if (j != 3) {
-////							row.getCell(j).setCellStyle(dataStyle);
-////						}
-////					}
-////				}
-////			} else {
-////				logger.info("No data found for BRRS_M_OPTR — only header will be written.");
-////			}
-////			// Write to byte[]
-////			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-////			workbook.write(bos);
-////			workbook.close();
-////			logger.info("Excel generation completed with {} row(s).", reportData != null ? reportData.size() : 0);
-////			return bos.toByteArray();
-////		} catch (Exception e) {
-////			logger.error("Error generating BRRS_M_OPTR Excel", e);
-////			return new byte[0];
-////		}
-////	}
-//
-	
-//	public List<Object> getM_OPTRArchival() {
-//		List<Object> M_OPTRArchivallist = new ArrayList<>();
-//		try {
-//			M_OPTRArchivallist = BRRS_M_OPTR_Archival_Summary_Repo.getM_OPTRarchival();
-//			System.out.println("countser" + M_OPTRArchivallist.size());
-//		} catch (Exception e) {
-//			// Log the exception
-//			System.err.println("Error fetching M_OPTR Archival data: " + e.getMessage());
-//			e.printStackTrace();
-//
-//			// Optionally, you can rethrow it or return empty list
-//			// throw new RuntimeException("Failed to fetch data", e);
-//		}
-//		return M_OPTRArchivallist;
-//	}
-	
-
-	public byte[] getExcelM_OPTRARCHIVAL(String filename, String reportId, String fromdate, String todate,
-										   String currency, String dtltype, String type, BigDecimal version) throws Exception {
-		logger.info("Service: Starting Excel generation process in memory.");
-		if (type.equals("ARCHIVAL") & version != null) {
-
+			return out.toByteArray();
 		}
-		List<M_OPTR_Archival_Summary_Entity> dataList = BRRS_M_OPTR_Archival_Summary_Repo
+
+	}
+
+	// Archival Email Excel
+	public byte[] BRRS_M_OPTRArchivalEmailExcel(String filename, String reportId, String fromdate, String todate,
+			String currency, String dtltype, String type, BigDecimal version) throws Exception {
+
+		logger.info("Service: Starting Archival Email Excel generation process in memory.");
+
+		List<M_OPTR_Archival_Summary_Entity> dataList = M_OPTR_Archival_Summary_Repo
+				.getdatabydateListarchival(dateformat.parse(todate), version);
+
+		if (dataList.isEmpty()) {
+			logger.warn("Service: No data found for BRRS_M_OPTR report. Returning empty result.");
+			return new byte[0];
+		}
+
+		String templateDir = env.getProperty("output.exportpathtemp");
+		String templateFileName = filename;
+		System.out.println(filename);
+		Path templatePath = Paths.get(templateDir, templateFileName);
+		System.out.println(templatePath);
+
+		logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
+
+		if (!Files.exists(templatePath)) {
+			// This specific exception will be caught by the controller.
+			throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
+		}
+		if (!Files.isReadable(templatePath)) {
+			// A specific exception for permission errors.
+			throw new SecurityException(
+					"Template file exists but is not readable (check permissions): " + templatePath.toAbsolutePath());
+		}
+
+		// This try-with-resources block is perfect. It guarantees all resources are
+		// closed automatically.
+		try (InputStream templateInputStream = Files.newInputStream(templatePath);
+				Workbook workbook = WorkbookFactory.create(templateInputStream);
+				ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+
+			Sheet sheet = workbook.getSheetAt(0);
+
+			// --- Style Definitions ---
+			CreationHelper createHelper = workbook.getCreationHelper();
+
+			CellStyle dateStyle = workbook.createCellStyle();
+			dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
+			dateStyle.setBorderBottom(BorderStyle.THIN);
+			dateStyle.setBorderTop(BorderStyle.THIN);
+			dateStyle.setBorderLeft(BorderStyle.THIN);
+			dateStyle.setBorderRight(BorderStyle.THIN);
+
+			CellStyle textStyle = workbook.createCellStyle();
+			textStyle.setBorderBottom(BorderStyle.THIN);
+			textStyle.setBorderTop(BorderStyle.THIN);
+			textStyle.setBorderLeft(BorderStyle.THIN);
+			textStyle.setBorderRight(BorderStyle.THIN);
+
+			// Create the font
+			Font font = workbook.createFont();
+			font.setFontHeightInPoints((short) 8); // size 8
+			font.setFontName("Arial");
+
+			CellStyle numberStyle = workbook.createCellStyle();
+			// numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
+			numberStyle.setBorderBottom(BorderStyle.THIN);
+			numberStyle.setBorderTop(BorderStyle.THIN);
+			numberStyle.setBorderLeft(BorderStyle.THIN);
+			numberStyle.setBorderRight(BorderStyle.THIN);
+			numberStyle.setFont(font);
+			// --- End of Style Definitions ---
+
+			int startRow = 9;
+
+			if (!dataList.isEmpty()) {
+				for (int i = 0; i < dataList.size(); i++) {
+					M_OPTR_Archival_Summary_Entity record = dataList.get(i);
+					System.out.println("rownumber=" + startRow + i);
+					Row row = sheet.getRow(startRow + i);
+					if (row == null) {
+						row = sheet.createRow(startRow + i);
+					}
+
+					/*
+					 * Cell cell2 = row.createCell(4); if (record.getR10_INTEREST_RATES() != null) {
+					 * cell2.setCellValue(record.getR10_INTEREST_RATES().doubleValue());
+					 * cell2.setCellStyle(numberStyle); } else { cell2.setCellValue("");
+					 * cell2.setCellStyle(textStyle); }
+					 * 
+					 * Cell cell3 = row.createCell(5); if (record.getR10_EQUITIES() != null) {
+					 * cell3.setCellValue(record.getR10_EQUITIES().doubleValue());
+					 * cell3.setCellStyle(numberStyle); } else { cell3.setCellValue("");
+					 * cell3.setCellStyle(textStyle); }
+					 * 
+					 * Cell cell4 = row.createCell(6); if (record.getR10_FOREIGN_EXC_GOLD() != null)
+					 * { cell4.setCellValue(record.getR10_FOREIGN_EXC_GOLD().doubleValue());
+					 * cell4.setCellStyle(numberStyle); } else { cell4.setCellValue("");
+					 * cell4.setCellStyle(textStyle); }
+					 * 
+					 * Cell cell5 = row.createCell(7); if (record.getR10_COMMODITIES() != null) {
+					 * cell5.setCellValue(record.getR10_COMMODITIES().doubleValue());
+					 * cell5.setCellStyle(numberStyle); } else { cell5.setCellValue("");
+					 * cell5.setCellStyle(textStyle); }
+					 */
+					row = sheet.getRow(10);
+
+					Cell cell2 = row.createCell(4);
+					if (record.getR11_INTEREST_RATES() != null) {
+						cell2.setCellValue(record.getR11_INTEREST_RATES().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					Cell cell3 = row.createCell(5);
+					if (record.getR11_EQUITIES() != null) {
+						cell3.setCellValue(record.getR11_EQUITIES().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					Cell cell4 = row.createCell(6);
+					if (record.getR11_FOREIGN_EXC_GOLD() != null) {
+						cell4.setCellValue(record.getR11_FOREIGN_EXC_GOLD().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					Cell cell5 = row.createCell(7);
+					if (record.getR11_COMMODITIES() != null) {
+						cell5.setCellValue(record.getR11_COMMODITIES().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(12);
+					cell2 = row.createCell(4);
+					if (record.getR13_INTEREST_RATES() != null) {
+						cell2.setCellValue(record.getR13_INTEREST_RATES().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(5);
+					if (record.getR13_EQUITIES() != null) {
+						cell3.setCellValue(record.getR13_EQUITIES().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(6);
+					if (record.getR13_FOREIGN_EXC_GOLD() != null) {
+						cell4.setCellValue(record.getR13_FOREIGN_EXC_GOLD().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(7);
+					if (record.getR13_COMMODITIES() != null) {
+						cell5.setCellValue(record.getR13_COMMODITIES().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(13);
+					cell2 = row.createCell(4);
+					if (record.getR14_INTEREST_RATES() != null) {
+						cell2.setCellValue(record.getR14_INTEREST_RATES().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(5);
+					if (record.getR14_EQUITIES() != null) {
+						cell3.setCellValue(record.getR14_EQUITIES().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(6);
+					if (record.getR14_FOREIGN_EXC_GOLD() != null) {
+						cell4.setCellValue(record.getR14_FOREIGN_EXC_GOLD().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(7);
+					if (record.getR14_COMMODITIES() != null) {
+						cell5.setCellValue(record.getR14_COMMODITIES().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+				}
+				workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
+			} else {
+
+			}
+
+			// Write the final workbook content to the in-memory stream.
+			workbook.write(out);
+
+			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
+
+			return out.toByteArray();
+		}
+	}
+
+	// Resub Format excel
+	public byte[] BRRS_M_OPTRResubExcel(String filename, String reportId, String fromdate, String todate,
+			String currency, String dtltype, String type, String format, BigDecimal version) throws Exception {
+
+		logger.info("Service: Starting Excel generation process in memory for RESUB (Format) Excel.");
+
+		if ("email".equalsIgnoreCase(format) && version != null) {
+			logger.info("Service: Generating RESUB report for version {}", version);
+
+			try {
+				// ✅ Redirecting to Resub Excel
+				return BRRS_M_OPTRResubEmailExcel(filename, reportId, fromdate, todate, currency, dtltype, type,
+						version);
+
+			} catch (ParseException e) {
+				logger.error("Invalid report date format: {}", fromdate, e);
+				throw new RuntimeException("Date format must be dd-MMM-yyyy (e.g. 31-Jul-2025)");
+			}
+		}
+
+		List<M_OPTR_Resub_Summary_Entity> dataList = M_OPTR_Resub_Summary_Repo
 				.getdatabydateListarchival(dateformat.parse(todate), version);
 
 		if (dataList.isEmpty()) {
@@ -1006,8 +1436,8 @@ return out.toByteArray();
 		// This try-with-resources block is perfect. It guarantees all resources are
 		// closed automatically.
 		try (InputStream templateInputStream = Files.newInputStream(templatePath);
-			 Workbook workbook = WorkbookFactory.create(templateInputStream);
-			 ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+				Workbook workbook = WorkbookFactory.create(templateInputStream);
+				ByteArrayOutputStream out = new ByteArrayOutputStream()) {
 
 			Sheet sheet = workbook.getSheetAt(0);
 
@@ -1031,6 +1461,7 @@ return out.toByteArray();
 			Font font = workbook.createFont();
 			font.setFontHeightInPoints((short) 8); // size 8
 			font.setFontName("Arial");
+
 			CellStyle numberStyle = workbook.createCellStyle();
 			// numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
 			numberStyle.setBorderBottom(BorderStyle.THIN);
@@ -1039,176 +1470,399 @@ return out.toByteArray();
 			numberStyle.setBorderRight(BorderStyle.THIN);
 			numberStyle.setFont(font);
 			// --- End of Style Definitions ---
+
 			int startRow = 9;
 
 			if (!dataList.isEmpty()) {
-			for (int i = 0; i < dataList.size(); i++) {
-			M_OPTR_Archival_Summary_Entity record = dataList.get(i);
-			System.out.println("rownumber=" + startRow + i);
-			Row row = sheet.getRow(startRow + i);	
+				for (int i = 0; i < dataList.size(); i++) {
 
-			if (row == null) {
-			row = sheet.createRow(startRow + i);
-			}
+					M_OPTR_Resub_Summary_Entity record = dataList.get(i);
+					System.out.println("rownumber=" + startRow + i);
+					System.out.println("rownumber=" + startRow + i);
+					Row row = sheet.getRow(startRow + i);
+					if (row == null) {
+						row = sheet.createRow(startRow + i);
+					}
 
+					Cell cell2 = row.createCell(4);
+					if (record.getR10_INTEREST_RATES() != null) {
+						cell2.setCellValue(record.getR10_INTEREST_RATES().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
 
+					Cell cell3 = row.createCell(5);
+					if (record.getR10_EQUITIES() != null) {
+						cell3.setCellValue(record.getR10_EQUITIES().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
 
-			Cell cell2 = row.createCell(4);
-			if (record.getR10_INTEREST_RATES() != null) {
-			cell2.setCellValue(record.getR10_INTEREST_RATES().doubleValue());
-			cell2.setCellStyle(numberStyle);
-			} else {
-			cell2.setCellValue("");
-			cell2.setCellStyle(textStyle);
-			}
+					Cell cell4 = row.createCell(6);
+					if (record.getR10_FOREIGN_EXC_GOLD() != null) {
+						cell4.setCellValue(record.getR10_FOREIGN_EXC_GOLD().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
 
-			Cell cell3 = row.createCell(5);
-			if (record.getR10_EQUITIES() != null) {
-			cell3.setCellValue(record.getR10_EQUITIES().doubleValue());
-			cell3.setCellStyle(numberStyle);
-			} else {
-			cell3.setCellValue("");
-			cell3.setCellStyle(textStyle);
-			}
+					Cell cell5 = row.createCell(7);
+					if (record.getR10_COMMODITIES() != null) {
+						cell5.setCellValue(record.getR10_COMMODITIES().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
 
-			Cell cell4 = row.createCell(6);
-			if (record.getR10_FOREIGN_EXC_GOLD() != null) {
-			cell4.setCellValue(record.getR10_FOREIGN_EXC_GOLD().doubleValue());
-			cell4.setCellStyle(numberStyle);
-			} else {
-			cell4.setCellValue("");
-			cell4.setCellStyle(textStyle);
-			}
+					row = sheet.getRow(10);
 
-			Cell cell5 = row.createCell(7);
-			if (record.getR10_COMMODITIES() != null) {
-			cell5.setCellValue(record.getR10_COMMODITIES().doubleValue());
-			cell5.setCellStyle(numberStyle);
-			} else {
-			cell5.setCellValue("");
-			cell5.setCellStyle(textStyle);
-			}
+					cell2 = row.createCell(4);
+					if (record.getR11_INTEREST_RATES() != null) {
+						cell2.setCellValue(record.getR11_INTEREST_RATES().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
 
-			row = sheet.getRow(10);
+					cell3 = row.createCell(5);
+					if (record.getR11_EQUITIES() != null) {
+						cell3.setCellValue(record.getR11_EQUITIES().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
 
-			 cell2 = row.createCell(4);
-			if (record.getR11_INTEREST_RATES() != null) {
-			cell2.setCellValue(record.getR11_INTEREST_RATES().doubleValue());
-			cell2.setCellStyle(numberStyle);
-			} else {
-			cell2.setCellValue("");
-			cell2.setCellStyle(textStyle);
-			}
+					cell4 = row.createCell(6);
+					if (record.getR11_FOREIGN_EXC_GOLD() != null) {
+						cell4.setCellValue(record.getR11_FOREIGN_EXC_GOLD().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
 
-			 cell3 = row.createCell(5);
-			if (record.getR11_EQUITIES() != null) {
-			cell3.setCellValue(record.getR11_EQUITIES().doubleValue());
-			cell3.setCellStyle(numberStyle);
-			} else {
-			cell3.setCellValue("");
-			cell3.setCellStyle(textStyle);
-			}
+					cell5 = row.createCell(7);
+					if (record.getR11_COMMODITIES() != null) {
+						cell5.setCellValue(record.getR11_COMMODITIES().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
 
-			 cell4 = row.createCell(6);
-			if (record.getR11_FOREIGN_EXC_GOLD() != null) {
-			cell4.setCellValue(record.getR11_FOREIGN_EXC_GOLD().doubleValue());
-			cell4.setCellStyle(numberStyle);
-			} else {
-			cell4.setCellValue("");
-			cell4.setCellStyle(textStyle);
-			}
+					row = sheet.getRow(12);
+					cell2 = row.createCell(4);
+					if (record.getR13_INTEREST_RATES() != null) {
+						cell2.setCellValue(record.getR13_INTEREST_RATES().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
 
-			 cell5 = row.createCell(7);
-			if (record.getR11_COMMODITIES() != null) {
-			cell5.setCellValue(record.getR11_COMMODITIES().doubleValue());
-			cell5.setCellStyle(numberStyle);
-			} else {
-			cell5.setCellValue("");
-			cell5.setCellStyle(textStyle);
-			}
-							
-			row = sheet.getRow(12);
-			 cell2 = row.createCell(4);
-			if (record.getR13_INTEREST_RATES() != null) {
-			cell2.setCellValue(record.getR13_INTEREST_RATES().doubleValue());
-			cell2.setCellStyle(numberStyle);
-			} else {
-			cell2.setCellValue("");
-			cell2.setCellStyle(textStyle);
-			}
+					cell3 = row.createCell(5);
+					if (record.getR13_EQUITIES() != null) {
+						cell3.setCellValue(record.getR13_EQUITIES().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
 
-			 cell3 = row.createCell(5);
-			if (record.getR13_EQUITIES() != null) {
-			cell3.setCellValue(record.getR13_EQUITIES().doubleValue());
-			cell3.setCellStyle(numberStyle);
-			} else {
-			cell3.setCellValue("");
-			cell3.setCellStyle(textStyle);
-			}
+					cell4 = row.createCell(6);
+					if (record.getR13_FOREIGN_EXC_GOLD() != null) {
+						cell4.setCellValue(record.getR13_FOREIGN_EXC_GOLD().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
 
-			 cell4 = row.createCell(6);
-			if (record.getR13_FOREIGN_EXC_GOLD() != null) {
-			cell4.setCellValue(record.getR13_FOREIGN_EXC_GOLD().doubleValue());
-			cell4.setCellStyle(numberStyle);
-			} else {
-			cell4.setCellValue("");
-			cell4.setCellStyle(textStyle);
-			}
+					cell5 = row.createCell(7);
+					if (record.getR13_COMMODITIES() != null) {
+						cell5.setCellValue(record.getR13_COMMODITIES().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
 
-			cell5 = row.createCell(7);
-			if (record.getR13_COMMODITIES() != null) {
-			cell5.setCellValue(record.getR13_COMMODITIES().doubleValue());
-			cell5.setCellStyle(numberStyle);
-			} else {
-			cell5.setCellValue("");
-			cell5.setCellStyle(textStyle);
-			}
+					row = sheet.getRow(13);
+					cell2 = row.createCell(4);
+					if (record.getR14_INTEREST_RATES() != null) {
+						cell2.setCellValue(record.getR14_INTEREST_RATES().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
 
+					cell3 = row.createCell(5);
+					if (record.getR14_EQUITIES() != null) {
+						cell3.setCellValue(record.getR14_EQUITIES().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
 
-			row = sheet.getRow(13);
-							cell2 = row.createCell(4);
-			if (record.getR14_INTEREST_RATES() != null) {
-			cell2.setCellValue(record.getR14_INTEREST_RATES().doubleValue());
-			cell2.setCellStyle(numberStyle);
-			} else {
-			cell2.setCellValue("");
-			cell2.setCellStyle(textStyle);
-			}
+					cell4 = row.createCell(6);
+					if (record.getR14_FOREIGN_EXC_GOLD() != null) {
+						cell4.setCellValue(record.getR14_FOREIGN_EXC_GOLD().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
 
-			 cell3 = row.createCell(5);
-			if (record.getR14_EQUITIES() != null) {
-			cell3.setCellValue(record.getR14_EQUITIES().doubleValue());
-			cell3.setCellStyle(numberStyle);
-			} else {
-			cell3.setCellValue("");
-			cell3.setCellStyle(textStyle);
-			}
+					cell5 = row.createCell(7);
+					if (record.getR14_COMMODITIES() != null) {
+						cell5.setCellValue(record.getR14_COMMODITIES().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
 
-			cell4 = row.createCell(6);
-			if (record.getR14_FOREIGN_EXC_GOLD() != null) {
-			cell4.setCellValue(record.getR14_FOREIGN_EXC_GOLD().doubleValue());
-			cell4.setCellStyle(numberStyle);
-			} else {
-			cell4.setCellValue("");
-			cell4.setCellStyle(textStyle);
-			}
-
-			 cell5 = row.createCell(7);
-			if (record.getR14_COMMODITIES() != null) {
-			cell5.setCellValue(record.getR14_COMMODITIES().doubleValue());
-			cell5.setCellStyle(numberStyle);
-			} else {
-			cell5.setCellValue("");
-			cell5.setCellStyle(textStyle);
-			}
-
-
-
-
-
-			
 				}
+				workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
+			} else {
 
+			}
+
+			// Write the final workbook content to the in-memory stream.
+			workbook.write(out);
+
+			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
+
+			return out.toByteArray();
+		}
+
+	}
+
+	// Resub Email Excel
+	public byte[] BRRS_M_OPTRResubEmailExcel(String filename, String reportId, String fromdate, String todate,
+			String currency, String dtltype, String type, BigDecimal version) throws Exception {
+
+		logger.info("Service: Starting Archival Email Excel generation process in memory.");
+
+		List<M_OPTR_Resub_Summary_Entity> dataList = M_OPTR_Resub_Summary_Repo
+				.getdatabydateListarchival(dateformat.parse(todate), version);
+
+		if (dataList.isEmpty()) {
+			logger.warn("Service: No data found for BRRS_M_OPTR report. Returning empty result.");
+			return new byte[0];
+		}
+
+		String templateDir = env.getProperty("output.exportpathtemp");
+		String templateFileName = filename;
+		System.out.println(filename);
+		Path templatePath = Paths.get(templateDir, templateFileName);
+		System.out.println(templatePath);
+
+		logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
+
+		if (!Files.exists(templatePath)) {
+			// This specific exception will be caught by the controller.
+			throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
+		}
+		if (!Files.isReadable(templatePath)) {
+			// A specific exception for permission errors.
+			throw new SecurityException(
+					"Template file exists but is not readable (check permissions): " + templatePath.toAbsolutePath());
+		}
+
+		// This try-with-resources block is perfect. It guarantees all resources are
+		// closed automatically.
+		try (InputStream templateInputStream = Files.newInputStream(templatePath);
+				Workbook workbook = WorkbookFactory.create(templateInputStream);
+				ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+
+			Sheet sheet = workbook.getSheetAt(0);
+
+			// --- Style Definitions ---
+			CreationHelper createHelper = workbook.getCreationHelper();
+
+			CellStyle dateStyle = workbook.createCellStyle();
+			dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
+			dateStyle.setBorderBottom(BorderStyle.THIN);
+			dateStyle.setBorderTop(BorderStyle.THIN);
+			dateStyle.setBorderLeft(BorderStyle.THIN);
+			dateStyle.setBorderRight(BorderStyle.THIN);
+
+			CellStyle textStyle = workbook.createCellStyle();
+			textStyle.setBorderBottom(BorderStyle.THIN);
+			textStyle.setBorderTop(BorderStyle.THIN);
+			textStyle.setBorderLeft(BorderStyle.THIN);
+			textStyle.setBorderRight(BorderStyle.THIN);
+
+			// Create the font
+			Font font = workbook.createFont();
+			font.setFontHeightInPoints((short) 8); // size 8
+			font.setFontName("Arial");
+
+			CellStyle numberStyle = workbook.createCellStyle();
+			// numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
+			numberStyle.setBorderBottom(BorderStyle.THIN);
+			numberStyle.setBorderTop(BorderStyle.THIN);
+			numberStyle.setBorderLeft(BorderStyle.THIN);
+			numberStyle.setBorderRight(BorderStyle.THIN);
+			numberStyle.setFont(font);
+			// --- End of Style Definitions ---
+
+			int startRow = 9;
+
+			if (!dataList.isEmpty()) {
+				for (int i = 0; i < dataList.size(); i++) {
+					M_OPTR_Resub_Summary_Entity record = dataList.get(i);
+					System.out.println("rownumber=" + startRow + i);
+					Row row = sheet.getRow(startRow + i);
+					if (row == null) {
+						row = sheet.createRow(startRow + i);
+					}
+
+					/*
+					 * Cell cell2 = row.createCell(4); if (record.getR10_INTEREST_RATES() != null) {
+					 * cell2.setCellValue(record.getR10_INTEREST_RATES().doubleValue());
+					 * cell2.setCellStyle(numberStyle); } else { cell2.setCellValue("");
+					 * cell2.setCellStyle(textStyle); }
+					 * 
+					 * Cell cell3 = row.createCell(5); if (record.getR10_EQUITIES() != null) {
+					 * cell3.setCellValue(record.getR10_EQUITIES().doubleValue());
+					 * cell3.setCellStyle(numberStyle); } else { cell3.setCellValue("");
+					 * cell3.setCellStyle(textStyle); }
+					 * 
+					 * Cell cell4 = row.createCell(6); if (record.getR10_FOREIGN_EXC_GOLD() != null)
+					 * { cell4.setCellValue(record.getR10_FOREIGN_EXC_GOLD().doubleValue());
+					 * cell4.setCellStyle(numberStyle); } else { cell4.setCellValue("");
+					 * cell4.setCellStyle(textStyle); }
+					 * 
+					 * Cell cell5 = row.createCell(7); if (record.getR10_COMMODITIES() != null) {
+					 * cell5.setCellValue(record.getR10_COMMODITIES().doubleValue());
+					 * cell5.setCellStyle(numberStyle); } else { cell5.setCellValue("");
+					 * cell5.setCellStyle(textStyle); }
+					 */
+					row = sheet.getRow(10);
+
+					Cell cell2 = row.createCell(4);
+					if (record.getR11_INTEREST_RATES() != null) {
+						cell2.setCellValue(record.getR11_INTEREST_RATES().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					Cell cell3 = row.createCell(5);
+					if (record.getR11_EQUITIES() != null) {
+						cell3.setCellValue(record.getR11_EQUITIES().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					Cell cell4 = row.createCell(6);
+					if (record.getR11_FOREIGN_EXC_GOLD() != null) {
+						cell4.setCellValue(record.getR11_FOREIGN_EXC_GOLD().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					Cell cell5 = row.createCell(7);
+					if (record.getR11_COMMODITIES() != null) {
+						cell5.setCellValue(record.getR11_COMMODITIES().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(12);
+					cell2 = row.createCell(4);
+					if (record.getR13_INTEREST_RATES() != null) {
+						cell2.setCellValue(record.getR13_INTEREST_RATES().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(5);
+					if (record.getR13_EQUITIES() != null) {
+						cell3.setCellValue(record.getR13_EQUITIES().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(6);
+					if (record.getR13_FOREIGN_EXC_GOLD() != null) {
+						cell4.setCellValue(record.getR13_FOREIGN_EXC_GOLD().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(7);
+					if (record.getR13_COMMODITIES() != null) {
+						cell5.setCellValue(record.getR13_COMMODITIES().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					row = sheet.getRow(13);
+					cell2 = row.createCell(4);
+					if (record.getR14_INTEREST_RATES() != null) {
+						cell2.setCellValue(record.getR14_INTEREST_RATES().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(5);
+					if (record.getR14_EQUITIES() != null) {
+						cell3.setCellValue(record.getR14_EQUITIES().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(6);
+					if (record.getR14_FOREIGN_EXC_GOLD() != null) {
+						cell4.setCellValue(record.getR14_FOREIGN_EXC_GOLD().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(7);
+					if (record.getR14_COMMODITIES() != null) {
+						cell5.setCellValue(record.getR14_COMMODITIES().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+				}
 				workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
 			} else {
 
@@ -1222,1161 +1876,5 @@ return out.toByteArray();
 			return out.toByteArray();
 		}
 	}
-	
-	
-//////////////////////////////////////////RESUBMISSION///////////////////////////////////////////////////////////////////	
-/// Report Date | Report Version | Domain
-/// RESUB VIEW
-public List<Object[]> getM_OPTRResub() {
-List<Object[]> resubList = new ArrayList<>();
-try {
-List<M_OPTR_Archival_Summary_Entity> latestArchivalList = 
-BRRS_M_OPTR_Archival_Summary_Repo.getdatabydateListWithVersionAll();
-
-if (latestArchivalList != null && !latestArchivalList.isEmpty()) {
-for (M_OPTR_Archival_Summary_Entity entity : latestArchivalList) {
-Object[] row = new Object[] {
-entity.getReportDate(),
-entity.getReportVersion()
-};
-resubList.add(row);
-}
-System.out.println("Fetched " + resubList.size() + " record(s)");
-} else {
-System.out.println("No archival data found.");
-}
-} catch (Exception e) {
-System.err.println("Error fetching M_OPTR Resub data: " + e.getMessage());
-e.printStackTrace();
-}
-return resubList;
-}
-
-
-//Archival View
-public List<Object[]> getM_OPTRArchival() {
-List<Object[]> archivalList = new ArrayList<>();
-
-try {
-List<M_OPTR_Archival_Summary_Entity> repoData = BRRS_M_OPTR_Archival_Summary_Repo
-.getdatabydateListWithVersionAll();
-
-if (repoData != null && !repoData.isEmpty()) {
-for (M_OPTR_Archival_Summary_Entity entity : repoData) {
-Object[] row = new Object[] {
-entity.getReportDate(), 
-entity.getReportVersion() 
-};
-archivalList.add(row);
-}
-
-System.out.println("Fetched " + archivalList.size() + " archival records");
-M_OPTR_Archival_Summary_Entity first = repoData.get(0);
-System.out.println("Latest archival version: " + first.getReportVersion());
-} else {
-System.out.println("No archival data found.");
-}
-
-} catch (Exception e) {
-System.err.println("Error fetching M_OPTR Archival data: " + e.getMessage());
-e.printStackTrace();
-}
-
-return archivalList;
-}
-
-
-@Transactional
-public void updateReportReSub(M_OPTR_Summary_Entity updatedEntity) {
-
-System.out.println("Came to Resub Service");
-
-Date reportDate = updatedEntity.getReportDate();
-System.out.println("Report Date: " + reportDate);
-
-try {
-/* =========================================================
-* 1️⃣ FETCH LATEST ARCHIVAL VERSION
-* ========================================================= */
-Optional<M_OPTR_Archival_Summary_Entity> latestArchivalOpt =
-BRRS_M_OPTR_Archival_Summary_Repo
-.getLatestArchivalVersionByDate(reportDate);
-
-BigDecimal newVersion = BigDecimal.ONE;
-if (latestArchivalOpt.isPresent()) {
-try {
-newVersion =
-latestArchivalOpt.get().getReportVersion() .add(BigDecimal.ONE);
-} catch (NumberFormatException e) {
-newVersion = BigDecimal.ONE;
-}
-}
-
-boolean exists = BRRS_M_OPTR_Archival_Summary_Repo.findByReportDateAndReportVersion(reportDate, newVersion).isPresent();
-
-if (exists) {
-throw new RuntimeException(
-"Version " + newVersion + " already exists for report date " + reportDate);
-}
-
-/* =========================================================
-* 2️⃣ CREATE NEW ARCHIVAL ENTITY (BASE COPY)
-* ========================================================= */
-M_OPTR_Archival_Summary_Entity archivalEntity =
-new M_OPTR_Archival_Summary_Entity();
-
-if (latestArchivalOpt.isPresent()) {
-BeanUtils.copyProperties(latestArchivalOpt.get(), archivalEntity);
-}
-
-/* =========================================================
-* 3️⃣ READ RAW REQUEST PARAMETERS (CRITICAL FIX)
-* ========================================================= */
-HttpServletRequest request =
-((ServletRequestAttributes) RequestContextHolder
-.getRequestAttributes()).getRequest();
-
-Map<String, String[]> parameterMap = request.getParameterMap();
-
-for (Map.Entry<String, String[]> entry : parameterMap.entrySet()) {
-
-String key = entry.getKey();              // R6_C11_ACCT_NUM
-String value = entry.getValue()[0];
-
-//Ignore non-field params
-if ("asondate".equalsIgnoreCase(key) || "type".equalsIgnoreCase(key)) {
-continue;
-}
-
-//Normalize: R6_C11_ACCT_NUM → R6_ACCT_NUM
-String normalizedKey = key.replaceFirst("_C\\d+_", "_");
-
-/* =====================================================
-* 4️⃣ APPLY VALUES (EXPLICIT, SAFE, NO REFLECTION)
-* ===================================================== */
-//======================= R5 – R11 =======================
-
-if ("R10_INTEREST_RATES".equals(normalizedKey)) {
-    archivalEntity.setR10_INTEREST_RATES(parseBigDecimal(value));
-
-} else if ("R10_EQUITIES".equals(normalizedKey)) {
-    archivalEntity.setR10_EQUITIES(parseBigDecimal(value));
-
-} else if ("R10_FOREIGN_EXC_GOLD".equals(normalizedKey)) {
-    archivalEntity.setR10_FOREIGN_EXC_GOLD(parseBigDecimal(value));
-
-} else if ("R10_COMMODITIES".equals(normalizedKey)) {
-    archivalEntity.setR10_COMMODITIES(parseBigDecimal(value));
-
-} else if ("R10_TOTAL".equals(normalizedKey)) {
-    archivalEntity.setR10_TOTAL(parseBigDecimal(value));
-
-
-} else if ("R11_INTEREST_RATES".equals(normalizedKey)) {
-    archivalEntity.setR11_INTEREST_RATES(parseBigDecimal(value));
-
-} else if ("R11_EQUITIES".equals(normalizedKey)) {
-    archivalEntity.setR11_EQUITIES(parseBigDecimal(value));
-
-} else if ("R11_FOREIGN_EXC_GOLD".equals(normalizedKey)) {
-    archivalEntity.setR11_FOREIGN_EXC_GOLD(parseBigDecimal(value));
-
-} else if ("R11_COMMODITIES".equals(normalizedKey)) {
-    archivalEntity.setR11_COMMODITIES(parseBigDecimal(value));
-
-} else if ("R11_TOTAL".equals(normalizedKey)) {
-    archivalEntity.setR11_TOTAL(parseBigDecimal(value));
-
-
-} else if ("R12_INTEREST_RATES".equals(normalizedKey)) {
-    archivalEntity.setR12_INTEREST_RATES(parseBigDecimal(value));
-
-} else if ("R12_EQUITIES".equals(normalizedKey)) {
-    archivalEntity.setR12_EQUITIES(parseBigDecimal(value));
-
-} else if ("R12_FOREIGN_EXC_GOLD".equals(normalizedKey)) {
-    archivalEntity.setR12_FOREIGN_EXC_GOLD(parseBigDecimal(value));
-
-} else if ("R12_COMMODITIES".equals(normalizedKey)) {
-    archivalEntity.setR12_COMMODITIES(parseBigDecimal(value));
-
-} else if ("R12_TOTAL".equals(normalizedKey)) {
-    archivalEntity.setR12_TOTAL(parseBigDecimal(value));
-
-
-} else if ("R13_INTEREST_RATES".equals(normalizedKey)) {
-    archivalEntity.setR13_INTEREST_RATES(parseBigDecimal(value));
-
-} else if ("R13_EQUITIES".equals(normalizedKey)) {
-    archivalEntity.setR13_EQUITIES(parseBigDecimal(value));
-
-} else if ("R13_FOREIGN_EXC_GOLD".equals(normalizedKey)) {
-    archivalEntity.setR13_FOREIGN_EXC_GOLD(parseBigDecimal(value));
-
-} else if ("R13_COMMODITIES".equals(normalizedKey)) {
-    archivalEntity.setR13_COMMODITIES(parseBigDecimal(value));
-
-} else if ("R13_TOTAL".equals(normalizedKey)) {
-    archivalEntity.setR13_TOTAL(parseBigDecimal(value));
-
-
-} else if ("R14_INTEREST_RATES".equals(normalizedKey)) {
-    archivalEntity.setR14_INTEREST_RATES(parseBigDecimal(value));
-
-} else if ("R14_EQUITIES".equals(normalizedKey)) {
-    archivalEntity.setR14_EQUITIES(parseBigDecimal(value));
-
-} else if ("R14_FOREIGN_EXC_GOLD".equals(normalizedKey)) {
-    archivalEntity.setR14_FOREIGN_EXC_GOLD(parseBigDecimal(value));
-
-} else if ("R14_COMMODITIES".equals(normalizedKey)) {
-    archivalEntity.setR14_COMMODITIES(parseBigDecimal(value));
-
-} else if ("R14_TOTAL".equals(normalizedKey)) {
-    archivalEntity.setR14_TOTAL(parseBigDecimal(value));
-}
-
 
 }
-
-/* =========================================================
-* 5️⃣ SET RESUB METADATA
-* ========================================================= */
-archivalEntity.setReportDate(reportDate);
-archivalEntity.setReportVersion(newVersion);
-archivalEntity.setReportResubDate(new Date());
-
-/* =========================================================
-* 6️⃣ SAVE NEW ARCHIVAL VERSION
-* ========================================================= */
-BRRS_M_OPTR_Archival_Summary_Repo.save(archivalEntity);
-
-System.out.println("✅ RESUB saved successfully. Version = " + newVersion);
-
-} catch (Exception e) {
-e.printStackTrace();
-throw new RuntimeException(
-"Error while creating archival resubmission record", e);
-}
-}
-
-private BigDecimal parseBigDecimal(String value) {
-return (value == null || value.trim().isEmpty())
-? BigDecimal.ZERO
-: new BigDecimal(value.replace(",", ""));
-}
-/// Downloaded for Archival & Resub
-public byte[] BRRS_M_OPTRResubExcel(String filename, String reportId, String fromdate,
-String todate, String currency, String dtltype,
-String type, BigDecimal version) throws Exception {
-
-logger.info("Service: Starting Excel generation process in memory for RESUB Excel.");
-
-if (type.equals("RESUB") & version != null) {
-
-}
-
-List<M_OPTR_Archival_Summary_Entity> dataList =
-BRRS_M_OPTR_Archival_Summary_Repo.getdatabydateListarchival(dateformat.parse(todate), version);
-
-if (dataList.isEmpty()) {
-logger.warn("Service: No data found for M_OPTR report. Returning empty result.");
-return new byte[0];
-}
-
-String templateDir = env.getProperty("output.exportpathtemp");
-String templateFileName = filename;
-System.out.println(filename);
-Path templatePath = Paths.get(templateDir, templateFileName);
-System.out.println(templatePath);
-
-logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
-
-if (!Files.exists(templatePath)) {
-//This specific exception will be caught by the controller.
-throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
-}
-if (!Files.isReadable(templatePath)) {
-//A specific exception for permission errors.
-throw new SecurityException(
-"Template file exists but is not readable (check permissions): " + templatePath.toAbsolutePath());
-}
-
-//This try-with-resources block is perfect. It guarantees all resources are
-//closed automatically.
-try (InputStream templateInputStream = Files.newInputStream(templatePath);
-Workbook workbook = WorkbookFactory.create(templateInputStream);
-ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-
-Sheet sheet = workbook.getSheetAt(0);
-	
-	
-// --- Style Definitions ---
-CreationHelper createHelper = workbook.getCreationHelper();
-
-CellStyle dateStyle = workbook.createCellStyle();
-dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
-dateStyle.setBorderBottom(BorderStyle.THIN);
-dateStyle.setBorderTop(BorderStyle.THIN);
-dateStyle.setBorderLeft(BorderStyle.THIN);
-dateStyle.setBorderRight(BorderStyle.THIN);
-
-CellStyle textStyle = workbook.createCellStyle();
-textStyle.setBorderBottom(BorderStyle.THIN);
-textStyle.setBorderTop(BorderStyle.THIN);
-textStyle.setBorderLeft(BorderStyle.THIN);
-textStyle.setBorderRight(BorderStyle.THIN);
-
-// Create the font
-Font font = workbook.createFont();
-font.setFontHeightInPoints((short) 8); // size 8
-font.setFontName("Arial");
-CellStyle numberStyle = workbook.createCellStyle();
-// numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
-numberStyle.setBorderBottom(BorderStyle.THIN);
-numberStyle.setBorderTop(BorderStyle.THIN);
-numberStyle.setBorderLeft(BorderStyle.THIN);
-numberStyle.setBorderRight(BorderStyle.THIN);
-numberStyle.setFont(font);
-// --- End of Style Definitions ---
-int startRow = 9;
-
-if (!dataList.isEmpty()) {
-for (int i = 0; i < dataList.size(); i++) {
-M_OPTR_Archival_Summary_Entity record = dataList.get(i);
-System.out.println("rownumber=" + startRow + i);
-Row row = sheet.getRow(startRow + i);	
-
-if (row == null) {
-row = sheet.createRow(startRow + i);
-}
-
-
-
-Cell cell2 = row.createCell(4);
-if (record.getR10_INTEREST_RATES() != null) {
-cell2.setCellValue(record.getR10_INTEREST_RATES().doubleValue());
-cell2.setCellStyle(numberStyle);
-} else {
-cell2.setCellValue("");
-cell2.setCellStyle(textStyle);
-}
-
-Cell cell3 = row.createCell(5);
-if (record.getR10_EQUITIES() != null) {
-cell3.setCellValue(record.getR10_EQUITIES().doubleValue());
-cell3.setCellStyle(numberStyle);
-} else {
-cell3.setCellValue("");
-cell3.setCellStyle(textStyle);
-}
-
-Cell cell4 = row.createCell(6);
-if (record.getR10_FOREIGN_EXC_GOLD() != null) {
-cell4.setCellValue(record.getR10_FOREIGN_EXC_GOLD().doubleValue());
-cell4.setCellStyle(numberStyle);
-} else {
-cell4.setCellValue("");
-cell4.setCellStyle(textStyle);
-}
-
-Cell cell5 = row.createCell(7);
-if (record.getR10_COMMODITIES() != null) {
-cell5.setCellValue(record.getR10_COMMODITIES().doubleValue());
-cell5.setCellStyle(numberStyle);
-} else {
-cell5.setCellValue("");
-cell5.setCellStyle(textStyle);
-}
-
-row = sheet.getRow(10);
-
- cell2 = row.createCell(4);
-if (record.getR11_INTEREST_RATES() != null) {
-cell2.setCellValue(record.getR11_INTEREST_RATES().doubleValue());
-cell2.setCellStyle(numberStyle);
-} else {
-cell2.setCellValue("");
-cell2.setCellStyle(textStyle);
-}
-
- cell3 = row.createCell(5);
-if (record.getR11_EQUITIES() != null) {
-cell3.setCellValue(record.getR11_EQUITIES().doubleValue());
-cell3.setCellStyle(numberStyle);
-} else {
-cell3.setCellValue("");
-cell3.setCellStyle(textStyle);
-}
-
- cell4 = row.createCell(6);
-if (record.getR11_FOREIGN_EXC_GOLD() != null) {
-cell4.setCellValue(record.getR11_FOREIGN_EXC_GOLD().doubleValue());
-cell4.setCellStyle(numberStyle);
-} else {
-cell4.setCellValue("");
-cell4.setCellStyle(textStyle);
-}
-
- cell5 = row.createCell(7);
-if (record.getR11_COMMODITIES() != null) {
-cell5.setCellValue(record.getR11_COMMODITIES().doubleValue());
-cell5.setCellStyle(numberStyle);
-} else {
-cell5.setCellValue("");
-cell5.setCellStyle(textStyle);
-}
-				
-row = sheet.getRow(12);
- cell2 = row.createCell(4);
-if (record.getR13_INTEREST_RATES() != null) {
-cell2.setCellValue(record.getR13_INTEREST_RATES().doubleValue());
-cell2.setCellStyle(numberStyle);
-} else {
-cell2.setCellValue("");
-cell2.setCellStyle(textStyle);
-}
-
- cell3 = row.createCell(5);
-if (record.getR13_EQUITIES() != null) {
-cell3.setCellValue(record.getR13_EQUITIES().doubleValue());
-cell3.setCellStyle(numberStyle);
-} else {
-cell3.setCellValue("");
-cell3.setCellStyle(textStyle);
-}
-
- cell4 = row.createCell(6);
-if (record.getR13_FOREIGN_EXC_GOLD() != null) {
-cell4.setCellValue(record.getR13_FOREIGN_EXC_GOLD().doubleValue());
-cell4.setCellStyle(numberStyle);
-} else {
-cell4.setCellValue("");
-cell4.setCellStyle(textStyle);
-}
-
-cell5 = row.createCell(7);
-if (record.getR13_COMMODITIES() != null) {
-cell5.setCellValue(record.getR13_COMMODITIES().doubleValue());
-cell5.setCellStyle(numberStyle);
-} else {
-cell5.setCellValue("");
-cell5.setCellStyle(textStyle);
-}
-
-
-row = sheet.getRow(13);
-				cell2 = row.createCell(4);
-if (record.getR14_INTEREST_RATES() != null) {
-cell2.setCellValue(record.getR14_INTEREST_RATES().doubleValue());
-cell2.setCellStyle(numberStyle);
-} else {
-cell2.setCellValue("");
-cell2.setCellStyle(textStyle);
-}
-
- cell3 = row.createCell(5);
-if (record.getR14_EQUITIES() != null) {
-cell3.setCellValue(record.getR14_EQUITIES().doubleValue());
-cell3.setCellStyle(numberStyle);
-} else {
-cell3.setCellValue("");
-cell3.setCellStyle(textStyle);
-}
-
-cell4 = row.createCell(6);
-if (record.getR14_FOREIGN_EXC_GOLD() != null) {
-cell4.setCellValue(record.getR14_FOREIGN_EXC_GOLD().doubleValue());
-cell4.setCellStyle(numberStyle);
-} else {
-cell4.setCellValue("");
-cell4.setCellStyle(textStyle);
-}
-
- cell5 = row.createCell(7);
-if (record.getR14_COMMODITIES() != null) {
-cell5.setCellValue(record.getR14_COMMODITIES().doubleValue());
-cell5.setCellStyle(numberStyle);
-} else {
-cell5.setCellValue("");
-cell5.setCellStyle(textStyle);
-}
-
-
-
-
-
-
-	}
-
-	workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
-} else {
-
-}
-
-// Write the final workbook content to the in-memory stream.
-workbook.write(out);
-
-logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-
-return out.toByteArray();
-}
-}
-
-/*
-public byte[] getM_OPTRDetailExcel(String filename, String fromdate, String todate,
-        String currency, String dtltype, String type, String version) {
-
-    try {
-        logger.info("Generating Excel for M_OPTR Details...");
-        System.out.println("came to Detail download service");
-
-        // ================= ARCHIVAL HANDLING =================
-        if ("ARCHIVAL".equals(type) && version != null) {
-            return getDetailExcelARCHIVAL(filename, fromdate, todate, currency, dtltype, type, version);
-        }
-
-        // ================= WORKBOOK & SHEET =================
-        XSSFWorkbook workbook = new XSSFWorkbook();
-        XSSFSheet sheet = workbook.createSheet("M_OPTRDetail");
-
-        BorderStyle border = BorderStyle.THIN;
-
-        // ================= HEADER STYLE =================
-        CellStyle headerStyle = workbook.createCellStyle();
-        Font headerFont = workbook.createFont();
-        headerFont.setBold(true);
-        headerFont.setFontHeightInPoints((short) 10);
-        headerStyle.setFont(headerFont);
-        headerStyle.setAlignment(HorizontalAlignment.LEFT);
-        headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
-        headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-        headerStyle.setBorderTop(border);
-        headerStyle.setBorderBottom(border);
-        headerStyle.setBorderLeft(border);
-        headerStyle.setBorderRight(border);
-
-        CellStyle rightHeaderStyle = workbook.createCellStyle();
-        rightHeaderStyle.cloneStyleFrom(headerStyle);
-        rightHeaderStyle.setAlignment(HorizontalAlignment.RIGHT);
-
-        // ================= DATA STYLES =================
-        CellStyle textStyle = workbook.createCellStyle();
-        textStyle.setAlignment(HorizontalAlignment.LEFT);
-        textStyle.setBorderTop(border);
-        textStyle.setBorderBottom(border);
-        textStyle.setBorderLeft(border);
-        textStyle.setBorderRight(border);
-
-        CellStyle amountStyle = workbook.createCellStyle();
-        amountStyle.setAlignment(HorizontalAlignment.RIGHT);
-        amountStyle.setDataFormat(workbook.createDataFormat().getFormat("#,##0"));
-        amountStyle.setBorderTop(border);
-        amountStyle.setBorderBottom(border);
-        amountStyle.setBorderLeft(border);
-        amountStyle.setBorderRight(border);
-
-        // ================= HEADER ROW =================
-        String[] headers = {
-           "INTEREST_RATES",
-        	"EQUITIES",
-            "FOREIGN_EXC_GOLD",
-        	"COMMODITIES",
-            "REPORT LABEL",
-            "REPORT ADDL CRITERIA1",
-            "REPORT DATE"
-        };
-
-        XSSFRow headerRow = sheet.createRow(0);
-        for (int i = 0; i < headers.length; i++) {
-            Cell cell = headerRow.createCell(i);
-            cell.setCellValue(headers[i]);
-            cell.setCellStyle((i == 0 || i == 1 || i == 2 || i == 3) ? rightHeaderStyle : headerStyle);
-            sheet.setColumnWidth(i, 6000);
-        }
-
-        // ================= DATA FETCH =================
-        Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
-        List<M_OPTR_Detail_Entity> reportData = OPTR_Detail_Repo.getdatabydateList(parsedToDate);
-
-        // ================= DATA ROWS =================
-        int rowIndex = 1;
-
-        if (reportData != null && !reportData.isEmpty()) {
-            for (M_OPTR_Detail_Entity item : reportData) {
-
-                XSSFRow row = sheet.createRow(rowIndex++);
-
-                // Column 0 - AGGREGATE BALANCE
-                Cell c0 = row.createCell(0);
-                c0.setCellValue(item.getINTEREST_RATES() != null
-                        ? item.getINTEREST_RATES().doubleValue() : 0);
-                c0.setCellStyle(amountStyle);
-
-                // Column 1 - COMPENSATABLE AMOUNT
-                Cell c1 = row.createCell(1);
-                c1.setCellValue(item.getEQUITIES() != null
-                        ? item.getEQUITIES().doubleValue() : 0);
-                c1.setCellStyle(amountStyle);
-                
-                Cell c2 = row.createCell(2);
-                c2.setCellValue(item.getFOREIGN_EXC_GOLD() != null
-                        ? item.getFOREIGN_EXC_GOLD().doubleValue() : 0);
-                c2.setCellStyle(amountStyle);
-                
-                Cell c3 = row.createCell(3);
-                c3.setCellValue(item.getCOMMODITIES() != null
-                        ? item.getCOMMODITIES().doubleValue() : 0);
-                c3.setCellStyle(amountStyle);
-
-                // Column 2 - REPORT LABEL
-                Cell c4 = row.createCell(4);
-                c4.setCellValue(item.getReportLable());
-                c4.setCellStyle(textStyle);
-
-                // Column 3 - REPORT ADDL CRITERIA 1
-                Cell c5 = row.createCell(5);
-                c5.setCellValue(item.getReportAddlCriteria1());
-                c5.setCellStyle(textStyle);
-
-                // Column 4 - REPORT DATE
-                Cell c6 = row.createCell(6);
-                c6.setCellValue(item.getReportDate() != null
-                        ? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
-                        : "");
-                c6.setCellStyle(textStyle);
-            }
-        } else {
-            logger.info("No data found for M-OPTR — only header written.");
-        }
-
-        // ================= WRITE FILE =================
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        workbook.write(bos);
-        workbook.close();
-
-        logger.info("Excel generation completed with {} row(s).",
-                reportData != null ? reportData.size() : 0);
-
-        return bos.toByteArray();
-
-    } catch (Exception e) {
-        logger.error("Error generating BDISB3 Excel", e);
-        return new byte[0];
-    }
-}
-*/
-public byte[] getDetailExcelARCHIVAL(String filename, String fromdate, String todate,
-        String currency, String dtltype, String type, String version) {
-
-    try {
-        logger.info("Generating Excel for BRRS_M_OPTR ARCHIVAL Details...");
-        System.out.println("came to Detail download service");
-
-        // ================= WORKBOOK & SHEET =================
-        XSSFWorkbook workbook = new XSSFWorkbook();
-        XSSFSheet sheet = workbook.createSheet("M_OPTRDetail");
-
-        BorderStyle border = BorderStyle.THIN;
-
-        // ================= HEADER STYLE =================
-        CellStyle headerStyle = workbook.createCellStyle();
-        Font headerFont = workbook.createFont();
-        headerFont.setBold(true);
-        headerFont.setFontHeightInPoints((short) 10);
-        headerStyle.setFont(headerFont);
-        headerStyle.setAlignment(HorizontalAlignment.LEFT);
-        headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
-        headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-        headerStyle.setBorderTop(border);
-        headerStyle.setBorderBottom(border);
-        headerStyle.setBorderLeft(border);
-        headerStyle.setBorderRight(border);
-
-        CellStyle rightHeaderStyle = workbook.createCellStyle();
-        rightHeaderStyle.cloneStyleFrom(headerStyle);
-        rightHeaderStyle.setAlignment(HorizontalAlignment.RIGHT);
-
-        // ================= DATA STYLES =================
-        CellStyle textStyle = workbook.createCellStyle();
-        textStyle.setAlignment(HorizontalAlignment.LEFT);
-        textStyle.setBorderTop(border);
-        textStyle.setBorderBottom(border);
-        textStyle.setBorderLeft(border);
-        textStyle.setBorderRight(border);
-
-        CellStyle amountStyle = workbook.createCellStyle();
-        amountStyle.setAlignment(HorizontalAlignment.RIGHT);
-        amountStyle.setDataFormat(workbook.createDataFormat().getFormat("#,##0"));
-        amountStyle.setBorderTop(border);
-        amountStyle.setBorderBottom(border);
-        amountStyle.setBorderLeft(border);
-        amountStyle.setBorderRight(border);
-
-        // ================= HEADER ROW =================
-        String[] headers = {
-        		"INTEREST_RATES",
-            	"EQUITIES",
-                "FOREIGN_EXC_GOLD",
-            	"COMMODITIES",
-                "REPORT LABEL",
-                "REPORT ADDL CRITERIA1",
-                "REPORT DATE"
-        };
-
-        XSSFRow headerRow = sheet.createRow(0);
-        for (int i = 0; i < headers.length; i++) {
-            Cell cell = headerRow.createCell(i);
-            cell.setCellValue(headers[i]);
-            cell.setCellStyle((i == 0 || i == 1 || i == 2 || i == 3) ? rightHeaderStyle : headerStyle);
-            sheet.setColumnWidth(i, 6000);
-        }
-
-        // ================= DATA FETCH =================
-        Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
-        List<M_OPTR_Archival_Detail_Entity> reportData =
-                M_OPTR_Archival_Detail_Repo.getdatabydateList(parsedToDate, version);
-
-        // ================= DATA ROWS =================
-        int rowIndex = 1;
-
-        if (reportData != null && !reportData.isEmpty()) {
-            for (M_OPTR_Archival_Detail_Entity item : reportData) {
-
-                XSSFRow row = sheet.createRow(rowIndex++);
-
-             // Column 0 - AGGREGATE BALANCE
-                Cell c0 = row.createCell(0);
-                c0.setCellValue(item.getINTEREST_RATES() != null
-                        ? item.getINTEREST_RATES().doubleValue() : 0);
-                c0.setCellStyle(amountStyle);
-
-                // Column 1 - COMPENSATABLE AMOUNT
-                Cell c1 = row.createCell(1);
-                c1.setCellValue(item.getEQUITIES() != null
-                        ? item.getEQUITIES().doubleValue() : 0);
-                c1.setCellStyle(amountStyle);
-                
-                Cell c2 = row.createCell(2);
-                c2.setCellValue(item.getFOREIGN_EXC_GOLD() != null
-                        ? item.getFOREIGN_EXC_GOLD().doubleValue() : 0);
-                c2.setCellStyle(amountStyle);
-                
-                Cell c3 = row.createCell(3);
-                c3.setCellValue(item.getCOMMODITIES() != null
-                        ? item.getCOMMODITIES().doubleValue() : 0);
-                c3.setCellStyle(amountStyle);
-
-                // Column 2 - REPORT LABEL
-                Cell c4 = row.createCell(4);
-                c4.setCellValue(item.getReportLable());
-                c4.setCellStyle(textStyle);
-
-                // Column 3 - REPORT ADDL CRITERIA 1
-                Cell c5 = row.createCell(5);
-                c5.setCellValue(item.getReportAddlCriteria1());
-                c5.setCellStyle(textStyle);
-
-                // Column 4 - REPORT DATE
-                Cell c6 = row.createCell(6);
-                c6.setCellValue(item.getReportDate() != null
-                        ? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
-                        : "");
-                c6.setCellStyle(textStyle);
-            }
-        } else {
-            logger.info("No archival data found for M_OPTR — only header written.");
-        }
-
-        // ================= WRITE FILE =================
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        workbook.write(bos);
-        workbook.close();
-
-        logger.info("ARCHIVAL Excel generation completed with {} row(s).",
-                reportData != null ? reportData.size() : 0);
-
-        return bos.toByteArray();
-
-    } catch (Exception e) {
-        logger.error("Error generating M_OPTR ARCHIVAL Excel", e);
-        return new byte[0];
-    }
-}
-
-	
-public byte[] BRRS_M_OPTREmailExcel(String filename, String reportId, String fromdate, String todate,
-		String currency, String dtltype, String type, BigDecimal version) throws Exception {
-
-	Date reportDate = dateformat.parse(todate);
-	// Default (LIVE) case
-	List<M_OPTR_Summary_Entity> dataList = BRRS_M_OPTR_Summary_Repo.getdatabydateList(reportDate);
-
-	String templateDir = env.getProperty("output.exportpathtemp");
-	String templateFileName = filename;
-	System.out.println(filename);
-	Path templatePath = Paths.get(templateDir, templateFileName);
-	System.out.println(templatePath);
-
-	logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
-
-	if (!Files.exists(templatePath)) {
-		// This specific exception will be caught by the controller.
-		throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
-	}
-	if (!Files.isReadable(templatePath)) {
-		// A specific exception for permission errors.
-		throw new SecurityException(
-				"Template file exists but is not readable (check permissions): " + templatePath.toAbsolutePath());
-	}
-
-	// This try-with-resources block is perfect. It guarantees all resources are
-	// closed automatically.
-	try (InputStream templateInputStream = Files.newInputStream(templatePath);
-			Workbook workbook = WorkbookFactory.create(templateInputStream);
-			ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-
-		Sheet sheet = workbook.getSheetAt(0);
-
-	// --- Style Definitions ---
-	CreationHelper createHelper = workbook.getCreationHelper();
-
-	CellStyle dateStyle = workbook.createCellStyle();
-	dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
-	dateStyle.setBorderBottom(BorderStyle.THIN);
-	dateStyle.setBorderTop(BorderStyle.THIN);
-	dateStyle.setBorderLeft(BorderStyle.THIN);
-	dateStyle.setBorderRight(BorderStyle.THIN);
-	CellStyle textStyle = workbook.createCellStyle();
-	textStyle.setBorderBottom(BorderStyle.THIN);
-	textStyle.setBorderTop(BorderStyle.THIN);
-	textStyle.setBorderLeft(BorderStyle.THIN);
-	textStyle.setBorderRight(BorderStyle.THIN);
-
-	// Create the font
-	Font font = workbook.createFont();
-	font.setFontHeightInPoints((short) 8); // size 8
-	font.setFontName("Arial");
-	CellStyle numberStyle = workbook.createCellStyle();
-	// numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
-	numberStyle.setBorderBottom(BorderStyle.THIN);
-	numberStyle.setBorderTop(BorderStyle.THIN);
-	numberStyle.setBorderLeft(BorderStyle.THIN);
-	numberStyle.setBorderRight(BorderStyle.THIN);
-	numberStyle.setFont(font);
-	// --- End of Style Definitions ---
-	int startRow = 9;
-
-	if (!dataList.isEmpty()) {
-	for (int i = 0; i < dataList.size(); i++) {
-	M_OPTR_Summary_Entity record = dataList.get(i);
-	System.out.println("rownumber=" + startRow + i);
-	Row row = sheet.getRow(startRow + i);	
-
-	if (row == null) {
-	row = sheet.createRow(startRow + i);
-	}
-
-
-/*
-	Cell cell2 = row.createCell(4);
-	if (record.getR10_INTEREST_RATES() != null) {
-	cell2.setCellValue(record.getR10_INTEREST_RATES().doubleValue());
-	cell2.setCellStyle(numberStyle);
-	} else {
-	cell2.setCellValue("");
-	cell2.setCellStyle(textStyle);
-	}
-
-	Cell cell3 = row.createCell(5);
-	if (record.getR10_EQUITIES() != null) {
-	cell3.setCellValue(record.getR10_EQUITIES().doubleValue());
-	cell3.setCellStyle(numberStyle);
-	} else {
-	cell3.setCellValue("");
-	cell3.setCellStyle(textStyle);
-	}
-
-	Cell cell4 = row.createCell(6);
-	if (record.getR10_FOREIGN_EXC_GOLD() != null) {
-	cell4.setCellValue(record.getR10_FOREIGN_EXC_GOLD().doubleValue());
-	cell4.setCellStyle(numberStyle);
-	} else {
-	cell4.setCellValue("");
-	cell4.setCellStyle(textStyle);
-	}
-
-	Cell cell5 = row.createCell(7);
-	if (record.getR10_COMMODITIES() != null) {
-	cell5.setCellValue(record.getR10_COMMODITIES().doubleValue());
-	cell5.setCellStyle(numberStyle);
-	} else {
-	cell5.setCellValue("");
-	cell5.setCellStyle(textStyle);
-	}
-*/
-	row = sheet.getRow(10);
-
-	Cell  cell2 = row.createCell(4);
-	if (record.getR11_INTEREST_RATES() != null) {
-	cell2.setCellValue(record.getR11_INTEREST_RATES().doubleValue());
-	cell2.setCellStyle(numberStyle);
-	} else {
-	cell2.setCellValue("");
-	cell2.setCellStyle(textStyle);
-	}
-
-	Cell  cell3 = row.createCell(5);
-	if (record.getR11_EQUITIES() != null) {
-	cell3.setCellValue(record.getR11_EQUITIES().doubleValue());
-	cell3.setCellStyle(numberStyle);
-	} else {
-	cell3.setCellValue("");
-	cell3.setCellStyle(textStyle);
-	}
-
-	Cell  cell4 = row.createCell(6);
-	if (record.getR11_FOREIGN_EXC_GOLD() != null) {
-	cell4.setCellValue(record.getR11_FOREIGN_EXC_GOLD().doubleValue());
-	cell4.setCellStyle(numberStyle);
-	} else {
-	cell4.setCellValue("");
-	cell4.setCellStyle(textStyle);
-	}
-
-	Cell  cell5 = row.createCell(7);
-	if (record.getR11_COMMODITIES() != null) {
-	cell5.setCellValue(record.getR11_COMMODITIES().doubleValue());
-	cell5.setCellStyle(numberStyle);
-	} else {
-	cell5.setCellValue("");
-	cell5.setCellStyle(textStyle);
-	}
-					
-	row = sheet.getRow(12);
-	 cell2 = row.createCell(4);
-	if (record.getR13_INTEREST_RATES() != null) {
-	cell2.setCellValue(record.getR13_INTEREST_RATES().doubleValue());
-	cell2.setCellStyle(numberStyle);
-	} else {
-	cell2.setCellValue("");
-	cell2.setCellStyle(textStyle);
-	}
-
-	 cell3 = row.createCell(5);
-	if (record.getR13_EQUITIES() != null) {
-	cell3.setCellValue(record.getR13_EQUITIES().doubleValue());
-	cell3.setCellStyle(numberStyle);
-	} else {
-	cell3.setCellValue("");
-	cell3.setCellStyle(textStyle);
-	}
-
-	 cell4 = row.createCell(6);
-	if (record.getR13_FOREIGN_EXC_GOLD() != null) {
-	cell4.setCellValue(record.getR13_FOREIGN_EXC_GOLD().doubleValue());
-	cell4.setCellStyle(numberStyle);
-	} else {
-	cell4.setCellValue("");
-	cell4.setCellStyle(textStyle);
-	}
-
-	cell5 = row.createCell(7);
-	if (record.getR13_COMMODITIES() != null) {
-	cell5.setCellValue(record.getR13_COMMODITIES().doubleValue());
-	cell5.setCellStyle(numberStyle);
-	} else {
-	cell5.setCellValue("");
-	cell5.setCellStyle(textStyle);
-	}
-
-
-	row = sheet.getRow(13);
-					cell2 = row.createCell(4);
-	if (record.getR14_INTEREST_RATES() != null) {
-	cell2.setCellValue(record.getR14_INTEREST_RATES().doubleValue());
-	cell2.setCellStyle(numberStyle);
-	} else {
-	cell2.setCellValue("");
-	cell2.setCellStyle(textStyle);
-	}
-
-	 cell3 = row.createCell(5);
-	if (record.getR14_EQUITIES() != null) {
-	cell3.setCellValue(record.getR14_EQUITIES().doubleValue());
-	cell3.setCellStyle(numberStyle);
-	} else {
-	cell3.setCellValue("");
-	cell3.setCellStyle(textStyle);
-	}
-
-	cell4 = row.createCell(6);
-	if (record.getR14_FOREIGN_EXC_GOLD() != null) {
-	cell4.setCellValue(record.getR14_FOREIGN_EXC_GOLD().doubleValue());
-	cell4.setCellStyle(numberStyle);
-	} else {
-	cell4.setCellValue("");
-	cell4.setCellStyle(textStyle);
-	}
-
-	 cell5 = row.createCell(7);
-	if (record.getR14_COMMODITIES() != null) {
-	cell5.setCellValue(record.getR14_COMMODITIES().doubleValue());
-	cell5.setCellStyle(numberStyle);
-	} else {
-	cell5.setCellValue("");
-	cell5.setCellStyle(textStyle);
-	}
-
-
-
-
-
-
-	}
-	workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
-	} else {
-
-	}
-	// Write the final workbook content to the in-memory stream.
-	workbook.write(out);
-	logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-
-
-	return out.toByteArray();
-}
-	
-	
-	
-}
-	
-	
-	
-	
-	
-	}
-//
-////	public byte[] getDetailExcelARCHIVAL(String filename, String fromdate, String todate, String currency,
-////										 String dtltype, String type, String version) {
-////		try {
-////			logger.info("Generating Excel for BRRS_M_OPTR ARCHIVAL Details...");
-////			System.out.println("came to Detail download service");
-////			if (type.equals("ARCHIVAL") & version != null) {
-////
-////			}
-////			XSSFWorkbook workbook = new XSSFWorkbook();
-////			XSSFSheet sheet = workbook.createSheet("M_OPTRDetail");
-////
-////			// Common border style
-////			BorderStyle border = BorderStyle.THIN;
-////
-////			// Header style (left aligned)
-////			CellStyle headerStyle = workbook.createCellStyle();
-////			Font headerFont = workbook.createFont();
-////			headerFont.setBold(true);
-////			headerFont.setFontHeightInPoints((short) 10);
-////			headerStyle.setFont(headerFont);
-////			headerStyle.setAlignment(HorizontalAlignment.LEFT);
-////			headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
-////			headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-////			headerStyle.setBorderTop(border);
-////			headerStyle.setBorderBottom(border);
-////			headerStyle.setBorderLeft(border);
-////			headerStyle.setBorderRight(border);
-////
-////			// Right-aligned header style for ACCT BALANCE
-////			CellStyle rightAlignedHeaderStyle = workbook.createCellStyle();
-////			rightAlignedHeaderStyle.cloneStyleFrom(headerStyle);
-////			rightAlignedHeaderStyle.setAlignment(HorizontalAlignment.RIGHT);
-////
-////			// Default data style (left aligned)
-////			CellStyle dataStyle = workbook.createCellStyle();
-////			dataStyle.setAlignment(HorizontalAlignment.LEFT);
-////			dataStyle.setBorderTop(border);
-////			dataStyle.setBorderBottom(border);
-////			dataStyle.setBorderLeft(border);
-////			dataStyle.setBorderRight(border);
-////
-////			// ACCT BALANCE style (right aligned with 3 decimals)
-////			CellStyle balanceStyle = workbook.createCellStyle();
-////			balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
-////			balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0.000"));
-////			balanceStyle.setBorderTop(border);
-////			balanceStyle.setBorderBottom(border);
-////			balanceStyle.setBorderLeft(border);
-////			balanceStyle.setBorderRight(border);
-////
-////			// Header row
-////			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "ROWID", "COLUMNID",
-////					"REPORT_DATE" };
-////
-////			XSSFRow headerRow = sheet.createRow(0);
-////			for (int i = 0; i < headers.length; i++) {
-////				Cell cell = headerRow.createCell(i);
-////				cell.setCellValue(headers[i]);
-////
-////				if (i == 3) { // ACCT BALANCE
-////					cell.setCellStyle(rightAlignedHeaderStyle);
-////				} else {
-////					cell.setCellStyle(headerStyle);
-////				}
-////
-////				sheet.setColumnWidth(i, 5000);
-////			}
-////
-////			// Get data
-////			Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
-////			List<BRRS_M_OPTR_Archival_Detail_Entity> reportData = BRRS_M_OPTR_Archival_Detail_Repo
-////					.getdatabydateList(parsedToDate, version);
-////
-////			if (reportData != null && !reportData.isEmpty()) {
-////				int rowIndex = 1;
-////				for (BRRS_M_OPTR_Archival_Detail_Entity item : reportData) {
-////					XSSFRow row = sheet.createRow(rowIndex++);
-////
-////					row.createCell(0).setCellValue(item.getCUST_ID());
-////					row.createCell(1).setCellValue(item.getACCT_NUMBER());
-////					row.createCell(2).setCellValue(item.getACCT_NAME());
-////
-////					// ACCT BALANCE (right aligned, 3 decimal places)
-////					Cell balanceCell = row.createCell(3);
-////					if (item.getACCT_BALANCE_IN_PULA() != null) {
-////						balanceCell.setCellValue(item.getACCT_BALANCE_IN_PULA().doubleValue());
-////					} else {
-////						balanceCell.setCellValue(0.000);
-////					}
-////					balanceCell.setCellStyle(balanceStyle);
-////
-////					row.createCell(4).setCellValue(item.getROW_ID());
-////					row.createCell(5).setCellValue(item.getCOLUMN_ID());
-////					row.createCell(6)
-////							.setCellValue(item.getREPORT_DATE() != null
-////									? new SimpleDateFormat("dd-MM-yyyy").format(item.getREPORT_DATE())
-////									: "");
-////
-////					// Apply data style for all other cells
-////					for (int j = 0; j < 7; j++) {
-////						if (j != 3) {
-////							row.getCell(j).setCellStyle(dataStyle);
-////						}
-////					}
-////				}
-////			} else {
-////				logger.info("No data found for BRRS_M_OPTR — only header will be written.");
-////			}
-////
-////			// Write to byte[]
-////			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-////			workbook.write(bos);
-////			workbook.close();
-////
-////			logger.info("Excel generation completed with {} row(s).", reportData != null ? reportData.size() : 0);
-////			return bos.toByteArray();
-////
-////		} catch (Exception e) {
-////			logger.error("Error generating BRRS_M_OPTRExcel", e);
-////			return new byte[0];
-////		}
-////	}
-//
-	//}

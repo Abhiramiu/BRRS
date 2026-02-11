@@ -41,6 +41,7 @@ import com.bornfire.brrs.entities.BRRS_M_LA2_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_M_LA2_Resub_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_M_LA2_Resub_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_M_LA2_Summary_Repo;
+import com.bornfire.brrs.entities.M_CR_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.M_LA2_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.M_LA2_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.M_LA2_Detail_Entity;
