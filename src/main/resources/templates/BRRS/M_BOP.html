@@ -608,7 +608,6 @@ window.onload = function() {
 
 
 function downloadfile(button) {
-
     var reportid = button.getAttribute('data-reportid');
     var asondate = button.getAttribute('data-asondate');
     var fromdate = button.getAttribute('data-fromdate');
@@ -620,41 +619,34 @@ function downloadfile(button) {
     var filename = button.getAttribute('data-filename');
     var type = button.getAttribute('data-type');
     var version = button.getAttribute('data-version');
+    var format = button.getAttribute('data-format');
 
-    var loader = new bootstrap.Modal(
-        document.getElementById('loader'),
-        { backdrop: 'static', keyboard: false }
-    );
-    loader.show();
-
-    // ✅ Build URL safely
-    var url = './downloadExcel?reportid=' + reportid +
-        '&fromdate=' + fromdate +
-        '&asondate=' + asondate +
-        '&todate=' + todate +
-        '&currency=' + currency +
-        '&subreportid=' + subreportid +
-        '&secid=' + secid +
-        '&filename=' + filename +
-        '&type=' + type;
-
-    // ✅ ONLY append version if valid
-    if (version && version.trim() !== '') {
-        url += '&version=' + version;
+    if (format === null) {
+        format = '';   // treat as null
     }
 
-    $.ajax({
-        url: url,
-        type: 'GET',
-        xhrFields: { responseType: 'blob' },
+    $('#loader').modal('show');
 
+    $.ajax({
+        url: './downloadExcel?reportid=' + reportid +
+             '&fromdate=' + fromdate +
+             '&asondate=' + asondate +
+             '&todate=' + todate +
+             '&currency=' + currency +
+             '&subreportid=' + subreportid +
+             '&secid=' + secid +
+             '&filename=' + filename +
+             '&type=' + type +
+             '&version=' + version +
+             '&format=' + format,
+        type: 'GET',
+        xhrFields: {
+            responseType: 'blob'
+        },
         success: function (data) {
             $('#loader').modal('hide');
-
             if (data && data.size > 100) {
-                const blob = new Blob([data], {
-                    type: 'application/vnd.ms-excel'
-                });
+                const blob = new Blob([data], { type: 'application/vnd.ms-excel' });
                 const url = window.URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.style.display = 'none';
@@ -664,13 +656,11 @@ function downloadfile(button) {
                 a.click();
                 window.URL.revokeObjectURL(url);
                 document.body.removeChild(a);
-
                 showResultModal('BRRS', filename + ' downloaded successfully.');
             } else {
                 showResultModal('Information', 'No data was available to create a download.');
             }
         },
-
         error: function () {
             $('#loader').modal('hide');
             showResultModal('Error', 'An error occurred while downloading the file.');
@@ -682,11 +672,11 @@ function editRecord(){
 	showResultModal('Alert', 'Development in progress');
 	
 }
-function closemodel(){
+/* function closemodel(){
 	$('#alert').modal('hide');
 	$('#resultModal').modal('hide');
 	
-}
+} */
 
 
  function showResultModal(title, message) {
@@ -699,6 +689,25 @@ function closemodel(){
 } 
 
 </script>
+
+<script>
+		function closemodel() {
+			$("#resultModal").modal("hide");
+			$('#loader').modal('hide');
+
+			// Check if the success message is showing
+			const message = $("#resultModalBody").text();
+
+			if (message.includes("Resubmission Updated Successfully")) {
+				// ✅ Go back to the previous page
+				window.history.back();
+			} else {
+				// For other messages, just reload the same page
+				setTimeout(() => location.reload(), 300);
+			}
+		}
+	</script>
+
 
 <script>
 
@@ -1130,7 +1139,7 @@ $(document).ready(function() {
 
 	// This function is for closing the modal after an action is complete.
 	// It hides the result and loader modals and reloads the page.
-	function closemodel() {
+	/* function closemodel() {
     $("#resultModal").modal("hide");
     $('#loader').modal('hide');
 
@@ -1144,7 +1153,7 @@ $(document).ready(function() {
         isDetailsModal = false;
     }
 }
-	
+	 */
 	
 	
 
@@ -1288,27 +1297,22 @@ window.fileuploads = function (btn) {
     Report Date: <span th:text="${#strings.replace(asondate, '/', '-')}">2025-07-04</span>
 </span>
 
-						<!-- Buttons -->
-						<input type="hidden" id="selectedTab" th:value="${displaymode}">
+						<!-- DETAILS button (hide when dtltype = 'detail') -->
 						<button type="button" class="custom-tab-btn"
-							id="custom-tab-btnSummary" onclick="showsummary();"
-							th:if="${displaymode == 'Details'}">Summary</button>
+							id="custom-tab-btnDetails" onclick="showdetails()"
+							th:if="${dtltype ne 'detail'}">Details</button>
+
+						<!-- SUMMARY button (show when dtltype = 'detail') -->
 						<button type="button" class="custom-tab-btn"
-							id="custom-tab-btnDetails" onclick="showdetails();"
-							th:if="${displaymode == 'summary'}">Details</button>
-							
-							
-							
-								<!-- Modify button -->
-						<button type="button"
-        class="custom-tab-btn"
-        onclick="showmodify(this);"
-        title="Click to EDIT Records"
-        th:classappend="${session.PERMISSIONS == 'W' and dtltype == 'report'} ? 'addedit'"
-        th:if="${type != 'ARCHIVAL' and dtltype ne 'detail'}"
-        id="addRecord">
-    Modify
-</button>
+							id="custom-tab-btnSummary" onclick="showsummary()"
+							th:if="${dtltype eq 'detail'}">Summary</button>
+
+						<!-- Modify button -->
+						<button type="button" class="custom-tab-btn"
+							onclick="showmodify(this);" title="Click to EDIT Records"
+							th:classappend="${session.PERMISSIONS == 'W' and dtltype == 'report'} ? 'addedit'"
+							th:if="${type != 'ARCHIVAL' and dtltype ne 'detail'}"
+							id="addRecord">Modify</button>
 
 						<!-- Cancel button (hidden initially) -->
 						<button type="button" class="custom-tab-btn"
@@ -1320,7 +1324,7 @@ window.fileuploads = function (btn) {
 							
 							
 					<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
-							onclick="downloadfile(this)" th:if="${displaymode == 'summary' or displaymode == 'Details'}"
+							onclick="downloadfile(this)" th:if="${displaymode == 'summary' or displaymode == 'detail'or displaymode == 'resub'}"
 							th:attr="data-reportid=${reportid},
                    data-asondate=${asondate},
                    data-fromdate=${fromdate},
@@ -1330,12 +1334,12 @@ window.fileuploads = function (btn) {
                    data-filename='M_BOP.xlsx',
                    data-type=${type},
                    data-version=${version != null ? version : ''}" style="font-family: Arial;font-weight: bold;">
-							<i class="fa fa-download"></i> Excel
+							<i class="fa fa-download"></i> Format
 						</button>
 						
 						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
 							 onclick="downloadfile(this)" 
-								th:if="${displaymode == 'summary' or displaymode == 'Details'}"
+								th:if="${displaymode == 'summary' or displaymode == 'detail'or displaymode == 'resub'}"
 							
 							th:attr="data-reportid=${reportid},
             data-asondate=${asondate},
@@ -1344,9 +1348,10 @@ window.fileuploads = function (btn) {
             data-currency=${currency}, 
             data-dtltype=${dtltype},
             data-filename='EMAIL_M_BOP.xlsx',
-            data-type='email',
+            data-type=${type},
+            data-format='email',
             data-version=${version != null ? version : ''}" style="font-family: Arial;font-weight: bold;">
-								<i class="fa fa-download"></i> E-mail 
+								<i class="fa fa-download"></i> Email
 							
 						</button>
 						
@@ -1355,19 +1360,29 @@ window.fileuploads = function (btn) {
 
 
 
-			<h1 th:if="${displaymode == 'summary' and type == 'ARCHIVAL' and displaymode != 'Details'}"
+			<h1 th:if="${displaymode == 'summary' and type == 'ARCHIVAL' and displaymode != 'detail'}"
   style="text-align: left; font-family: arial;   font-weight: bold; color: white;  font-size: 20px;  
 				background-color: rgb(107, 122, 143); margin-top:10px; margin-bottom:10px;padding-top: 10px; padding-bottom: 10px; " >Archival Summary View - M_BOP</h1>
 				
-				<h1 th:if="${displaymode == 'Details' and type == 'ARCHIVAL' and displaymode != 'summary'}"
+				<h1 th:if="${displaymode == 'detail' and type == 'ARCHIVAL' and displaymode != 'summary'}"
   style="text-align: left; font-family: arial;   font-weight: bold; color: white;  font-size: 20px;  
 				background-color: rgb(107, 122, 143); margin-top:10px; margin-bottom:10px;padding-top: 10px; padding-bottom: 10px; " >Archival Detail View - M_BOP</h1>
 
 				<h1 th:if="${displaymode == 'summary'and type != 'ARCHIVAL'}"  style="text-align: left; font-family: arial;   font-weight: bold; color: white;  font-size: 20px;  
 				background-color: rgb(107, 122, 143); margin-top:10px; margin-bottom:10px;padding-top: 10px; padding-bottom: 10px; " >Summary View - M_BOP </h1>
-			<h1 th:if="${displaymode == 'Details' and type != 'ARCHIVAL'}"  style="text-align: left;   font-family: arial; font-weight: bold;  color: white; font-size: 20px; 
+			<h1 th:if="${displaymode == 'detail' and type != 'ARCHIVAL'}"  style="text-align: left;   font-family: arial; font-weight: bold;  color: white; font-size: 20px; 
 			 background-color: rgb(107, 122, 143); margin-top:10px; margin-bottom:10px; padding-top: 10px; padding-bottom: 10px;  ">Detail View - M_BOP</h1>
-				<div th:if="${displaymode == 'summary' or displaymode == 'Details'}">
+				 <h1
+					th:if="${displaymode == 'resub' and type == 'RESUB' and dtltype ne 'detail' }"
+					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">
+					Resubmission Summary View - M_BOP</h1>
+
+				<h1
+					th:if="${displaymode == 'resub' and type == 'RESUB' and dtltype ne 'report' }"
+					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">
+					Resubmission Detail View - M_BOP</h1>
+					
+						<div th:if="${displaymode == 'summary' or displaymode == 'detail' or displaymode == 'resub'}">
 					<div class="row">
 						<div class="col-sm-12">
 						<form action="#" method="POST" id="fileupload">
@@ -3027,25 +3042,23 @@ window.fileuploads = function (btn) {
 
 	<!-- Custom Alert/Result Modal (Matches your existing style) -->
 	<div class="modal fade" id="resultModal">
-		<div class="modal-dialog modal-dialog-centered">
-			<div class="modal-content">
-				<!-- Your custom styled header -->
-				<div class="menu-title-header">
-					<div class="modal-title" id="resultModalLabel"
-						style="text-align: center; color: white;">
-						<!-- Title will be set by JavaScript -->
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content">
+					<!-- Your custom styled header -->
+					<div class="menu-title-header">
+						<div class="modal-title" id="resultModalLabel" style="text-align: center; color: white;">
+							<!-- Title will be set by JavaScript -->
+						</div>
 					</div>
-				</div>
-				<div class="modal-body"
-					style="text-align: center; font-size: 1.1rem;">
-					<p id="resultModalBody"></p>
-					<!-- Your custom styled button -->
-					<button type="button" class="custom-tab-btn" onclick="closemodel()"
-						data-dismiss="modal">OK</button>
+					<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+						<p id="resultModalBody"></p>
+						<!-- Your custom styled button -->
+						<button type="button" class="custom-tab-btn" onclick="closemodel()"
+							data-bs-dismiss="modal">OK</button>
+					</div>
 				</div>
 			</div>
 		</div>
-	</div>
 
 	<!-- Custom Cellresult Modal -->
 	<div class="modal fade" id="cellresultModal">

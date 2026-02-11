@@ -3662,7 +3662,7 @@ public class RegulatoryReportServices {
 		case "M_BOP":
 			try {
 				repfile = BRRS_M_BOP_ReportService.getM_BOPExcel(filename, reportId, fromdate, todate, currency,
-						dtltype, type, version);
+						dtltype, type, format, version);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -4947,15 +4947,22 @@ public class RegulatoryReportServices {
 			archivalData.addAll(qrlfa1List);
 			System.out.println("Fetched Q_RLFA1 archival data: " + qrlfa1List.size());
 			break;
-
+			
+			
 		case "M_BOP":
-			try {
-				archivalData = BRRS_M_BOP_ReportService.getM_BOPArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+			List<Object[]> BOPList = BRRS_M_BOP_ReportService.getM_BOPArchival();
+					archivalData.addAll(BOPList);
+					System.out.println("Fetched M_BOP archival data: " + BOPList.size());
+					break;
+
+//		case "M_BOP":
+//			try {
+//				archivalData = BRRS_M_BOP_ReportService.getM_BOPArchival();
+//			} catch (Exception e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//			break;
 
 		/*
 		 * case "M_BOP": List<Object[]> BOPList =

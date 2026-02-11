@@ -16,10 +16,10 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 
 @Entity
-@Table(name = "BRRS_M_BOP_ARCHIVALTABLE_SUMMARY")  
+@Table(name = "BRRS_M_BOP_RESUB_SUMMARYTABLE")  
 @IdClass(M_BOP_PK.class)
 
-public class M_BOP_Archival_Summary_Entity {
+public class M_BOP_RESUB_Summary_Entity {
 	private String	r13_product;
 	private BigDecimal	r13_open_position;
 	private BigDecimal	r13_cpdm_dt_inc;
@@ -1437,7 +1437,7 @@ public class M_BOP_Archival_Summary_Entity {
 	public void setDel_flg(String del_flg) {
 		this.del_flg = del_flg;
 	}
-	public M_BOP_Archival_Summary_Entity() {
+	public M_BOP_RESUB_Summary_Entity() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
