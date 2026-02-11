@@ -173,6 +173,4 @@ GeneralMasterEntity getdataBybfbl(String account_no, Date reportDate);
     String findLastUploadedReportDate();
 
 
-
-
 }

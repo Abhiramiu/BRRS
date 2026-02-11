@@ -2427,7 +2427,7 @@ public class RegulatoryReportServices {
 		case "M_CA6":
 			try {
 				repfile = BRRS_M_CA6_reportservice.getM_CA6Excel(filename, reportId, fromdate, todate, currency,
-						dtltype, type, version);
+						dtltype, type, format, version);
 			} catch (Exception e) { // TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -2436,7 +2436,7 @@ public class RegulatoryReportServices {
 		case "M_CA7":
 			try {
 				repfile = BRRS_M_CA7_reportservice.getM_CA7Excel(filename, reportId, fromdate, todate, currency,
-						dtltype, type, version);
+						dtltype, type, format, version);
 			} catch (Exception e) { // TODO Auto-generated catch block
 				e.printStackTrace();
 			}

@@ -1194,6 +1194,28 @@
 									</li>
 								</ul>
 							</li>
+							
+							<li class="nav-item" style=" text-align: center;"
+								th:if="${session.DOMAINID != null and #strings.containsIgnoreCase(session.DOMAINID, 'AUDIT_US')}">
+
+								<a href="#" class="dropdown-toggle" id="MCBL" onclick="contentLoad(this)">File
+									Upload</a>
+								<!-- <ul class="dropdown-menu">
+								
+								<li>
+								<a  href="#" class="nav-link" id="MCBL"  onclick="contentLoad(this)">File Upload</a>
+								</li>
+								<li>
+								<a  href="#" class="nav-link" id="BDGF"  onclick="contentLoad(this)">BDGF</a>
+								</li>
+								<li>
+								<a  href="#" class="nav-link" id="BFDB"  onclick="contentLoad(this)">BFDB</a>
+								</li>
+								<li>
+								<a  href="#" class="nav-link" id="BLBF"  onclick="contentLoad(this)">BLBF</a>
+								</li>
+							</ul> -->
+							</li>
 
 
 							<li class="nav-item dropdown" style="text-align: center;"
@@ -1331,114 +1353,7 @@ th:if="${session.DOMAINID != null and #strings.containsIgnoreCase(session.DOMAIN
 								</ul>
 							</li> -->
 
-							<li class="nav-item dropdown" style=" text-align: center;"
-								th:if="${session.DOMAINID != null and #strings.containsIgnoreCase(session.DOMAINID, 'Archival')}">
-
-								<a href="#" class="dropdown-toggle">Resubmission</a>
-								<ul class="dropdown-menu">
-								
-									<li class="dropdown-submenu">
-											<a href="#" class="nav-link">Basel Returns</a>
-	
-												<ul class="dropdown-menu">
-				
-				
-													<li><a href="#" class="nav-link" id="Monthly1-Resubmission"
-															onclick="contentLoad(this)">Monthly</a></li>
-				
-													<li><a href="#" class="nav-link" id="QuarterlyResub"
-															onclick="contentLoad(this)">Quarterly</a></li>
-															
-													<li>
-														<a href="#" class="nav-link" id="HalfYearlyResubmission"
-															onclick="contentLoad(this)">Half Yearly</a>
-													</li>
-				
-												</ul>
-									</li>
-									
-									<li class="dropdown-submenu">
-											<a href="#" class="nav-link">RBR Reports</a>
-											<ul class="dropdown-menu two-column-dropdown">
-												<li>
-													<a href="#" class="nav-link" id="PulaCFSResubmission"
-														onclick="contentLoad(this)">Pula CFS</a>
-												</li>
-												
-												<li>
-													<a href="#" class="nav-link" id="Pillar3DisclosureResubmission"
-														onclick="contentLoad(this)">Pillar 3 Disclosure</a>
-												</li>
-												
-												<li>
-													<a href="#" class="nav-link" id="LCRResubmission"
-														onclick="contentLoad(this)">LCR</a>
-												</li>
-												
-												<li>
-													<a href="#" class="nav-link" id="NSFRResubmission"
-														onclick="contentLoad(this)">NSFR</a>
-												</li>
-												
-												<li>
-													<a href="#" class="nav-link" id="CPRResubmission"
-														onclick="contentLoad(this)">CPR</a>
-												</li>
-												
-												<li>
-													<a href="#" class="nav-link" id="FSIResubmission"
-														onclick="contentLoad(this)">FSI</a>
-												</li>
-												
-												<li>
-													<a href="#" class="nav-link" id="AMLCFTResubmission"
-														onclick="contentLoad(this)">AML-CFT</a>
-												</li>
-												
-												<li>
-													<a href="#" class="nav-link" id="Top100borrowerResubmission"
-														onclick="contentLoad(this)">Top 100 borrower</a>
-												</li>
-												
-												<li>
-													<a href="#" class="nav-link" id="DISBAnnualReturnResubmission"
-														onclick="contentLoad(this)">DISB Annual Return</a>
-												</li>
-												
-												<li>
-													<a href="#" class="nav-link" id="DISBBiannualReturnResubmission"
-														onclick="contentLoad(this)">DISB Single Customer View Biannual Return</a>
-												</li>
-												
-												<li>
-													<a href="#" class="nav-link" id="DISBMonthlyAndQuaterlyResubmission"
-														onclick="contentLoad(this)">DISB Monthly and Quaterly Returns</a>
-												</li>
-												
-												<li>
-													<a href="#" class="nav-link" id="BGREPORTResubmission"
-														onclick="contentLoad(this)">BG REPORT</a>
-												</li>
-												
-												<li>
-													<a href="#" class="nav-link" id="UFCEResubmission"
-														onclick="contentLoad(this)">UFCE</a>
-												</li>
-												
-												<li>
-													<a href="#" class="nav-link" id="IRRBBResubmission"
-														onclick="contentLoad(this)">IRRBB</a>
-												</li>
-												
-												<li>
-													<a href="#" class="nav-link"
-														onclick="contentLoad(this)">  </a>
-												</li>
 							
-											</ul>
-										</li>
-									</ul>
-							</li>
 
 							<li class="nav-item dropdown" style=" text-align: center;"
 								th:if="${session.DOMAINID != null and #strings.containsIgnoreCase(session.DOMAINID, 'Archival')}">
@@ -1548,6 +1463,132 @@ th:if="${session.DOMAINID != null and #strings.containsIgnoreCase(session.DOMAIN
 										</li>
 									</ul>
 							</li>
+							
+							<li class="nav-item dropdown" style=" text-align: center;"
+								th:if="${session.DOMAINID != null and #strings.containsIgnoreCase(session.DOMAINID, 'Archival')}">
+
+								<a href="#" class="dropdown-toggle">Resubmission</a>
+								<ul class="dropdown-menu">
+								
+									<li class="dropdown-submenu">
+											<a href="#" class="nav-link">Basel Returns</a>
+	
+												<ul class="dropdown-menu">
+				
+				
+													<li><a href="#" class="nav-link" id="Monthly1-Resubmission"
+															onclick="contentLoad(this)">Monthly</a></li>
+				
+													<li><a href="#" class="nav-link" id="QuarterlyResub"
+															onclick="contentLoad(this)">Quarterly</a></li>
+															
+													<li>
+														<a href="#" class="nav-link" id="HalfYearlyResubmission"
+															onclick="contentLoad(this)">Half Yearly</a>
+													</li>
+				
+												</ul>
+									</li>
+									
+									<li class="dropdown-submenu">
+											<a href="#" class="nav-link">RBR Reports</a>
+											<ul class="dropdown-menu two-column-dropdown">
+												<li>
+													<a href="#" class="nav-link" id="PulaCFSResubmission"
+														onclick="contentLoad(this)">Pula CFS</a>
+												</li>
+												
+												<li>
+													<a href="#" class="nav-link" id="Pillar3DisclosureResubmission"
+														onclick="contentLoad(this)">Pillar 3 Disclosure</a>
+												</li>
+												
+												<li>
+													<a href="#" class="nav-link" id="LCRResubmission"
+														onclick="contentLoad(this)">LCR</a>
+												</li>
+												
+												<li>
+													<a href="#" class="nav-link" id="NSFRResubmission"
+														onclick="contentLoad(this)">NSFR</a>
+												</li>
+												
+												<li>
+													<a href="#" class="nav-link" id="CPRResubmission"
+														onclick="contentLoad(this)">CPR</a>
+												</li>
+												
+												<li>
+													<a href="#" class="nav-link" id="FSIResubmission"
+														onclick="contentLoad(this)">FSI</a>
+												</li>
+												
+												<li>
+													<a href="#" class="nav-link" id="AMLCFTResubmission"
+														onclick="contentLoad(this)">AML-CFT</a>
+												</li>
+												
+												<li>
+													<a href="#" class="nav-link" id="Top100borrowerResubmission"
+														onclick="contentLoad(this)">Top 100 borrower</a>
+												</li>
+												
+												<li>
+													<a href="#" class="nav-link" id="DISBAnnualReturnResubmission"
+														onclick="contentLoad(this)">DISB Annual Return</a>
+												</li>
+												
+												<li>
+													<a href="#" class="nav-link" id="DISBBiannualReturnResubmission"
+														onclick="contentLoad(this)">DISB Single Customer View Biannual Return</a>
+												</li>
+												
+												<li>
+													<a href="#" class="nav-link" id="DISBMonthlyAndQuaterlyResubmission"
+														onclick="contentLoad(this)">DISB Monthly and Quaterly Returns</a>
+												</li>
+												
+												<li>
+													<a href="#" class="nav-link" id="BGREPORTResubmission"
+														onclick="contentLoad(this)">BG REPORT</a>
+												</li>
+												
+												<li>
+													<a href="#" class="nav-link" id="UFCEResubmission"
+														onclick="contentLoad(this)">UFCE</a>
+												</li>
+												
+												<li>
+													<a href="#" class="nav-link" id="IRRBBResubmission"
+														onclick="contentLoad(this)">IRRBB</a>
+												</li>
+												
+												<li>
+													<a href="#" class="nav-link"
+														onclick="contentLoad(this)">  </a>
+												</li>
+							
+											</ul>
+										</li>
+									</ul>
+							</li>
+
+							
+
+						
+							<!--  this list is for download option -->
+							<!--<li class="nav-item" style=" text-align: center;"	
+								th:if="${true}">
+ th:if="${session.DOMAINID != null and #strings.containsIgnoreCase(session.DOMAINID, 'BRRS_Reports')}"> 
+								<a href="#" class="dropdown-toggle" id="downloadbtn" onclick="downloadFile()">Download</a>
+
+
+							</li>-->
+                           <a href="#" class="dropdown-toggle" id="CONSOLIDATED_REPORT" onclick="contentLoad(this)">
+                           BASEL RETURN DOWNLOAD</a>
+
+
+
 
 							<li class="nav-item dropdown" style=" text-align: center;"
 								th:if="${session.DOMAINID != null and #strings.containsIgnoreCase(session.DOMAINID, 'AUDIT_US')}">
@@ -1565,40 +1606,6 @@ th:if="${session.DOMAINID != null and #strings.containsIgnoreCase(session.DOMAIN
 									</li>
 								</ul>
 							</li>
-
-							<li class="nav-item" style=" text-align: center;"
-								th:if="${session.DOMAINID != null and #strings.containsIgnoreCase(session.DOMAINID, 'AUDIT_US')}">
-
-								<a href="#" class="dropdown-toggle" id="MCBL" onclick="contentLoad(this)">File
-									Upload</a>
-								<!-- <ul class="dropdown-menu">
-								
-								<li>
-								<a  href="#" class="nav-link" id="MCBL"  onclick="contentLoad(this)">File Upload</a>
-								</li>
-								<li>
-								<a  href="#" class="nav-link" id="BDGF"  onclick="contentLoad(this)">BDGF</a>
-								</li>
-								<li>
-								<a  href="#" class="nav-link" id="BFDB"  onclick="contentLoad(this)">BFDB</a>
-								</li>
-								<li>
-								<a  href="#" class="nav-link" id="BLBF"  onclick="contentLoad(this)">BLBF</a>
-								</li>
-							</ul> -->
-							</li>
-
-							<!--  this list is for download option -->
-							<!--<li class="nav-item" style=" text-align: center;"	
-								th:if="${true}">
- th:if="${session.DOMAINID != null and #strings.containsIgnoreCase(session.DOMAINID, 'BRRS_Reports')}"> 
-								<a href="#" class="dropdown-toggle" id="downloadbtn" onclick="downloadFile()">Download</a>
-
-
-							</li>-->
-                           <a href="#" class="dropdown-toggle" id="CONSOLIDATED_REPORT" onclick="contentLoad(this)">Consolidated Excel
-									Upload</a>
-
 							<!-- <li class="nav-item dropdown" style=" text-align: center;">
 							<a href="#" class="dropdown-toggle">BRRS Reports</a>
 								<ul class="dropdown-menu">

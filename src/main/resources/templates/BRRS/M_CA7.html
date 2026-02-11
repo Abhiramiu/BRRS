@@ -302,7 +302,6 @@ label.error {
 }
 </style>
 
-</style>
 
 
 <script th:inline="javascript">
@@ -411,6 +410,18 @@ $(window).on('beforeunload', function() {
 	function showsummary() {
 		$('#loader').modal('show');
 		var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate}, version=${version})}]]*/;
+		location.href = Callurl;
+	}
+	
+	function showsummaryResub() {
+		$('#loader').modal('show');
+		var Callurl = /*[[@{'/Reports/' + ${reportid} (
+				dtltype='report', 
+				fromdate=${fromdate}, 
+				todate=${todate}, 
+				type='RESUB', 
+				asondate=${asondate},
+				version=${version})}]]*/;
 		location.href = Callurl;
 	}
     </script>
@@ -766,76 +777,118 @@ $(document).ready(function() {
 
 
 <script>
-	function fileuploads(btn){
-	    const asondate = btn.getAttribute("data-todate");
-	    const type = btn.getAttribute("data-type");
+function fileuploads(btn) {
 
-	    // Recalculate totals
-	    calculate12Totals();
+    try {
 
-	    $('#loader').modal('show');
+        const asondate = btn.getAttribute("data-todate");
+        const type = btn.getAttribute("data-type");
 
-	    if (!$("#fileupload").valid()) {
-	        $('#loader').modal('hide');
-	        return;
-	    }
+        calculate12Totals();
+        $('#loader').modal('show');
 
-	    const formData = new FormData();
-	    formData.append("asondate", asondate);
-	    formData.append("type", type);
+        if (!$("#fileupload").valid()) {
+            $('#loader').modal('hide');
+            return;
+        }
 
-	    // ✅ Send raw numeric values
-	    $('#fileupload').find(':input').each(function () {
-	        const name = $(this).attr('name');
-	        if (!name) return;
+        // ✅ Detect RESUB (extra safe)
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlType = urlParams.get("type");
+        const isResub = (type && type.toUpperCase() === 'RESUB') ||
+                        (urlType && urlType.toUpperCase() === 'RESUB');
 
-	        let value = $(this).val().trim();
+        // ✅ Previous URL logic
+        const previousUrl = window.previousUrl || document.referrer || null;
 
-	        // Remove commas, percentage signs, etc.
-	        value = value.replace(/,/g, '').replace('%','');
+        const redirectUrl = isResub
+            ? (previousUrl ? previousUrl : "/BRRS/Resubmission?rptcode=M_CA7")
+            : null;
 
-	        formData.append(name, value);
-	    });
-		
-				
-				let apiUrl = './MCA7updateAll';
-				if (type && type.toUpperCase() === 'RESUB') {
-					apiUrl = './UpdateM_CA7_ReSub'; 
-				}
-				  
-	    $.ajax({
-	        url: apiUrl,
-	        type: 'POST',
-	        data: formData,
-	        processData: false,
-	        contentType: false,
-	        dataType: 'text',
-	        success: function () {
-	            $("#resultModalLabel").text("BRRS");
-	            $("#resultModalBody").text("Updated Successfully.");
-	            $("#resultModal").modal("show");
-				//  Wait for user to close the modal manually
-							    $("#resultModal").off("hidden.bs.modal").on("hidden.bs.modal", function () {
-							        location.reload(); // reload ONLY when modal is closed
-							    });
-							},
+        // ✅ API selection
+        let apiUrl = './MCA7updateAll';
+        if (isResub) {
+            apiUrl = './UpdateM_CA7_ReSub';
+        }
 
-	        error: function (jqXHR) {
-	            console.error("Error response:", jqXHR.responseText);
-	            $("#resultModalLabel").text("Error");
-	            $("#resultModalBody").text("Update failed. Check console for details.");
-	            $("#resultModal").modal("show");
-	        },
-	        complete: function () {
-	            $('#loader').modal('hide');
-	        }
-	    });
-	}
+        // ✅ Build FormData
+        const formData = new FormData();
+        formData.append("asondate", asondate);
+        formData.append("type", type || "");
+
+        $('#fileupload').find(':input').each(function () {
+
+            const name = $(this).attr('name');
+            if (!name) return;
+
+            let value = $(this).val().trim();
+            value = value.replace(/,/g, '').replace('%', '');
+
+            formData.append(name, value);
+        });
+
+        // ✅ AJAX
+        $.ajax({
+            url: apiUrl,
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            dataType: 'text',
+
+            success: function (response) {
+
+                $("#resultModalLabel").text("BRRS");
+                $("#resultModalBody").text(response || "Updated Successfully.");
+                $("#resultModal").modal("show");
+
+                if (redirectUrl) {
+                    // RESUB → redirect after modal close
+                    $("#resultModal").off("hidden.bs.modal")
+                        .on("hidden.bs.modal", function () {
+                            window.location.href = redirectUrl;
+                        });
+                } else {
+                    // Normal → reload
+                    $("#resultModal").off("hidden.bs.modal")
+                        .on("hidden.bs.modal", function () {
+                            location.reload();
+                        });
+                }
+            },
+
+            error: function (jqXHR) {
+
+                console.error("Error response:", jqXHR.responseText);
+
+                $("#resultModalLabel").text("Error");
+                $("#resultModalBody").text(
+                    "Update failed: " + (jqXHR.responseText || "Unknown error")
+                );
+                $("#resultModal").modal("show");
+
+                if (redirectUrl) {
+                    $("#resultModal").off("hidden.bs.modal")
+                        .on("hidden.bs.modal", function () {
+                            window.location.href = redirectUrl;
+                        });
+                }
+            },
+
+            complete: function () {
+                $('#loader').modal('hide');
+            }
+        });
+
+    } catch (error) {
+        $('#loader').modal('hide');
+        console.error("Error during file upload:", error);
+    }
+}
 
 	
 </script>
 
-</script>
 
 <style>
 .left-arrow-circle {
@@ -1025,12 +1078,21 @@ table.dataTable th.dt-type-numeric:nth-child(6) {
 
 						<!-- Buttons -->
 						<input type="hidden" id="selectedTab" th:value="${displaymode}">
+						
 						<button type="button" class="custom-tab-btn"
 							id="custom-tab-btnSummary" onclick="showsummary();"
 							th:if="${displaymode == 'Details'}">Summary</button>
+						
+						<button type="button" class="custom-tab-btn"
+							id="custom-tab-btnSummary" onclick="showsummaryResub();"
+							th:if="${displaymode == 'resubDetail'}">Summary</button>
+						
+						
 						<button type="button" class="custom-tab-btn"
 							id="custom-tab-btnDetails" onclick="showdetails();"
-							th:if="${displaymode == 'summary'}">Details</button>
+							th:if="${displaymode == 'summary' or displaymode == 'resubSummary'}">Details</button>
+
+
 						<!-- Modify button -->
 						<!-- Modify button -->
 						<button type="button" class="custom-tab-btn"
@@ -1045,7 +1107,8 @@ table.dataTable th.dt-type-numeric:nth-child(6) {
 							onclick="cancelModify();" style="display: none;">Cancel</button>
 
 						<button type="button" class="custom-tab-btn"
-							id="custom-tab-btnAdd" th:if="${displaymode == 'summary' or displaymode == 'Details'}"
+							id="custom-tab-btnAdd" 
+							th:if="${displaymode == 'summary' or displaymode == 'Details' or displaymode == 'resubSummary'or displaymode == 'resubDetail'}"
 							th:attr="data-reportid=${reportid}, 
                      data-asondate=${asondate}, 
                      data-fromdate=${fromdate}, 
@@ -1056,11 +1119,11 @@ table.dataTable th.dt-type-numeric:nth-child(6) {
                      data-type=${type},
                      data-version=${version}"
 							onclick="downloadfile(this);">
-							<i class="fa fa-download"></i>
+							<i class="fa fa-download"></i> Format
 						</button>
 							<button type="button" class="custom-tab-btn "
 							id="custom-tab-btnAdd" onclick="downloadfile(this)"
-							th:if="${displaymode == 'summary' or displaymode == 'Details'}"
+							th:if="${displaymode == 'summary' or displaymode == 'Details'or displaymode == 'resubSummary'or displaymode == 'resubDetail'}"
 							th:attr="data-reportid=${reportid},
             data-asondate=${asondate},
             data-fromdate=${fromdate},
@@ -1068,10 +1131,11 @@ table.dataTable th.dt-type-numeric:nth-child(6) {
             data-currency=${currency}, 
             data-dtltype=${dtltype},
             data-filename='EMAIL_M_CA7.xlsx',
-            data-type='email',
+            data-type=${type},
+            data-format='email',
             data-version=${version != null ? version : ''}"
 							style="font-family: Arial; font-weight: bold;">
-							<i class="fa fa-download"></i> Email Format
+							<i class="fa fa-download"></i> Email
 
 						</button>
 					</div>
@@ -1094,9 +1158,21 @@ table.dataTable th.dt-type-numeric:nth-child(6) {
 					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">Detail
 					View - M-CA7</h1>
 			
+				<h1 th:if="${type == 'RESUB' and displaymode == 'resubSummary'}" style="text-align: left; font-weight: bold; 
+				          color: white; font-size: 20px;
+				          background-color: rgb(107, 122, 143); 
+				          margin-top:10px; margin-bottom:10px; padding: 5px;">
+					Re-submission Summary View - M-CA7
+				</h1>
 
+				<h1 th:if="${type == 'RESUB' and displaymode == 'resubDetail'}" style="text-align: left; font-weight: bold;
+				          color: white; font-size: 20px;
+				          background-color: rgb(107, 122, 143); 
+				          margin-top:10px; margin-bottom:10px; padding: 5px;">
+					Re-submission Detail View - M-CA7
+				</h1>
 
-				<div th:if="${displaymode == 'summary' or displaymode == 'Details'}">
+				<div th:if="${displaymode == 'summary' or displaymode == 'Details'or displaymode == 'resubSummary'or displaymode == 'resubDetail'}">
 					<div class="row">
 						<div class="col-sm-12">
 							<form action="#" method="POST" id="fileupload">

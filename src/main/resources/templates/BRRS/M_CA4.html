@@ -427,7 +427,24 @@ function showdetails() {
 
 		function showsummary() {
 			$('#loader').modal('show');
-			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/;
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (
+					dtltype='report', 
+					fromdate=${fromdate}, 
+					todate=${todate}, 
+					type=${type}, 
+					asondate=${asondate})}]]*/;
+			location.href = Callurl;
+		}
+		
+		function showsummaryResub() {
+			$('#loader').modal('show');
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (
+					dtltype='report', 
+					fromdate=${fromdate}, 
+					todate=${todate}, 
+					type='RESUB', 
+					asondate=${asondate},
+					version=${version})}]]*/;
 			location.href = Callurl;
 		}
 
@@ -1358,7 +1375,12 @@ window.fileuploads = function (btn) {
 						<input type="hidden" id="selectedTab" th:value="${displaymode}">
 						<button type="button" class="custom-tab-btn"
 							id="custom-tab-btnSummary" onclick="showsummary();"
-							th:if="${displaymode == 'Details' or displaymode == 'resubDetail'}">Summary</button>
+							th:if="${displaymode == 'Details'}">Summary</button>
+						
+						<button type="button" class="custom-tab-btn"
+							id="custom-tab-btnSummary" onclick="showsummaryResub();"
+							th:if="${displaymode == 'resubDetail'}">Summary</button>
+						
 						<button type="button" class="custom-tab-btn"
 							id="custom-tab-btnDetails" onclick="showdetails();"
 							th:if="${displaymode == 'summary' or displaymode == 'resubSummary'}">Details</button>
@@ -4547,7 +4569,7 @@ window.fileuploads = function (btn) {
 /* Your existing CSS - this is the correct approach */
 .scrollable-table-container {
 	/* This is the key: it creates the scroll context */
-	max-height: 600px;
+	max-height: 510px;
 	/* Or a suitable height like 80vh for responsive design */
 	overflow-y: auto;
 	border: 1px solid #ccc;

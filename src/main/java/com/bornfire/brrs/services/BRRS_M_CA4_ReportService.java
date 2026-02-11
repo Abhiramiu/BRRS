@@ -1,6 +1,7 @@
 package com.bornfire.brrs.services;
 
 import java.io.ByteArrayOutputStream;
+
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
@@ -138,7 +139,7 @@ public class BRRS_M_CA4_ReportService {
 
 			// ---------- CASE 3: NORMAL ----------
 			else {
-				List<M_CA4_Summary_Entity> T1Master = brrs_m_ca4_summary_repo.getdatabydateListWithVersion(todate);
+				List<M_CA4_Summary_Entity> T1Master = brrs_m_ca4_summary_repo.getdatabydateList(todate);
 				System.out.println("T1Master Size " + T1Master.size());
 				mv.addObject("displaymode", "summary");
 				mv.addObject("reportsummary", T1Master);
@@ -373,7 +374,7 @@ public class BRRS_M_CA4_ReportService {
 			String dtltype, String type, String format, BigDecimal version) throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.");
 
-		System.out.println("======= VIEW SCREEN =======");
+		System.out.println("======= DOWNLOAD DETAILS =======");
 		System.out.println("TYPE      : " + type);
 		System.out.println("FORMAT      : " + format);
 		System.out.println("DTLTYPE   : " + dtltype);
@@ -413,7 +414,7 @@ public class BRRS_M_CA4_ReportService {
 				// Fetch data
 
 				List<M_CA4_Summary_Entity> dataList = brrs_m_ca4_summary_repo
-						.getdatabydateList(dateformat.parse(todate));
+						.getdatabydateList(todate);
 
 				if (dataList.isEmpty()) {
 					logger.warn("Service: No data found for BRRS_M_CA4 report. Returning empty result.");
@@ -3031,7 +3032,7 @@ public class BRRS_M_CA4_ReportService {
 			}
 		} 
 		else {
-		List<M_CA4_Summary_Entity> dataList = brrs_m_ca4_summary_repo.getdatabydateList(dateformat.parse(todate));
+		List<M_CA4_Summary_Entity> dataList = brrs_m_ca4_summary_repo.getdatabydateList(todate);
 
 		if (dataList.isEmpty()) {
 			logger.warn("Service: No data found for BRRS_M_CA4 report. Returning empty result.");

@@ -3645,7 +3645,7 @@ public class BRRS_ReportsController {
 	@ResponseBody
 	public ResponseEntity<String> updateReportReSub(
 			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@ModelAttribute M_CA7_Summary_Entity request1, HttpServletRequest req) {
+			@ModelAttribute M_CA7_RESUB_Summary_Entity request1, HttpServletRequest req) {
 
 		try {
 			System.out.println("Came to Resub Controller");
@@ -3658,7 +3658,7 @@ public class BRRS_ReportsController {
 			}
 
 			// Call service to create a new versioned row
-			M_CA7_ReportService.updateReportReSub(request1);
+			M_CA7_ReportService.updateResubReport(request1);
 
 			return ResponseEntity.ok("Resubmission Updated Successfully");
 
@@ -3876,8 +3876,8 @@ public class BRRS_ReportsController {
 	public ResponseEntity<String> updateReportReSub(
 
 			@RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date asondate, // ✅ ISO format
-			@RequestParam(required = false) String type, @ModelAttribute M_CA6_Summary_Entity2 request1,
-			@ModelAttribute M_CA6_Summary_Entity1 request2, HttpServletRequest req) {
+			@RequestParam(required = false) String type, @ModelAttribute M_CA6_RESUB_Summary_Entity1 request1,
+			@ModelAttribute M_CA6_RESUB_Summary_Entity2 request2, HttpServletRequest req) {
 
 		try {
 			System.out.println("Came to M_CA6 Resub Controller");
@@ -3889,7 +3889,7 @@ public class BRRS_ReportsController {
 			}
 
 			// Call service
-			BRRS_M_CA6_ReportService.updateReportReSub(request2, request1);
+			BRRS_M_CA6_ReportService.updateResubReport(request1, request2);
 			return ResponseEntity.ok("Resubmission Updated Successfully");
 
 		} catch (Exception e) {

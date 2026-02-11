@@ -30,6 +30,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
@@ -40,10 +41,18 @@ import org.springframework.web.servlet.ModelAndView;
 import com.bornfire.brrs.entities.BRRS_M_CA7_Archival_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_M_CA7_Archival_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_M_CA7_Detail_Repo;
+import com.bornfire.brrs.entities.BRRS_M_CA7_RESUB_Detail_Repo;
+import com.bornfire.brrs.entities.BRRS_M_CA7_RESUB_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_M_CA7_Summary_Repo;
+import com.bornfire.brrs.entities.M_CA4_Archival_Detail_Entity;
+import com.bornfire.brrs.entities.M_CA4_Archival_Summary_Entity;
+import com.bornfire.brrs.entities.M_CA4_Resub_Detail_Entity;
+import com.bornfire.brrs.entities.M_CA4_Resub_Summary_Entity;
 import com.bornfire.brrs.entities.M_CA7_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.M_CA7_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.M_CA7_Detail_Entity;
+import com.bornfire.brrs.entities.M_CA7_RESUB_Detail_Entity;
+import com.bornfire.brrs.entities.M_CA7_RESUB_Summary_Entity;
 import com.bornfire.brrs.entities.M_CA7_Summary_Entity;
 
 @Component
@@ -71,52 +80,15 @@ public class BRRS_M_CA7_ReportService {
 	@Autowired
 	BRRS_M_CA7_Archival_Detail_Repo BRRS_M_CA7_Archival_Detail_Repo;
 
+	@Autowired
+	BRRS_M_CA7_RESUB_Summary_Repo BRRS_M_CA7_resub_Summary_Repo;
+
+	@Autowired
+	BRRS_M_CA7_RESUB_Detail_Repo BRRS_M_CA7_resub_Detail_Repo;
+
+	
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
-	/*public ModelAndView getM_CA7View(String reportId, String fromdate, String todate, String currency, String dtltype,
-			Pageable pageable, String type, BigDecimal version) {
-		System.out.println("Entered service method M_CA7......................");
-		ModelAndView mv = new ModelAndView();
-		Session hs = sessionFactory.getCurrentSession();
-		int pageSize = pageable.getPageSize();
-		int currentPage = pageable.getPageNumber();
-		int startItem = currentPage * pageSize;
-		try {
-			Date d1 = dateformat.parse(todate);
-
-			// ---------- CASE 1: ARCHIVAL ----------
-			if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
-				List<M_CA7_Archival_Summary_Entity> T1Master = BRRS_M_CA7_Archival_Summary_Repo
-						.getdatabydateListarchival(d1, version);
-
-				mv.addObject("reportsummary", T1Master);
-			}
-
-			// ---------- CASE 2: RESUB ----------
-			else if ("RESUB".equalsIgnoreCase(type) && version != null) {
-				List<M_CA7_Archival_Summary_Entity> T1Master = BRRS_M_CA7_Archival_Summary_Repo
-						.getdatabydateListarchival(d1, version);
-
-				mv.addObject("reportsummary", T1Master);
-			}
-
-			// ---------- CASE 3: NORMAL ----------
-			else {
-				List<M_CA7_Summary_Entity> T1Master = BRRS_M_CA7_Summary_Repo.getdatabydateListWithVersion(todate);
-				System.out.println("T1Master Size " + T1Master.size());
-				mv.addObject("reportsummary", T1Master);
-			}
-
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
-
-		mv.setViewName("BRRS/M_CA7");
-		mv.addObject("displaymode", "summary");
-		System.out.println("scv" + mv.getViewName());
-		return mv;
-
-	}*/
 
 	public ModelAndView getM_CA7View(String reportId, String fromdate, String todate, String currency, String dtltype,
 			Pageable pageable, String type, BigDecimal version) {
@@ -131,19 +103,29 @@ public class BRRS_M_CA7_ReportService {
 		try {
 			Date d1 = dateformat.parse(todate);
 
+			System.out.println("======= VIEW SCREEN =======");
+			System.out.println("TYPE      : " + type);
+			System.out.println("DTLTYPE   : " + dtltype);
+			System.out.println("DATE      : " + d1);
+			System.out.println("VERSION   : " + version);
+			System.out.println("==========================");
+			
 			// ---------- CASE 1: ARCHIVAL ----------
 			if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
 				List<M_CA7_Archival_Summary_Entity> T1Master = BRRS_M_CA7_Archival_Summary_Repo
 						.getdatabydateListarchival(d1, version);
+
+				mv.addObject("displaymode", "summary");
 
 				mv.addObject("reportsummary", T1Master);
 			}
 
 			// ---------- CASE 2: RESUB ----------
 			else if ("RESUB".equalsIgnoreCase(type) && version != null) {
-				List<M_CA7_Archival_Summary_Entity> T1Master = BRRS_M_CA7_Archival_Summary_Repo
+				List<M_CA7_RESUB_Summary_Entity> T1Master = BRRS_M_CA7_resub_Summary_Repo
 						.getdatabydateListarchival(d1, version);
 
+				mv.addObject("displaymode", "resubSummary");
 				mv.addObject("reportsummary", T1Master);
 			}
 
@@ -163,12 +145,23 @@ public class BRRS_M_CA7_ReportService {
 			if ("detail".equalsIgnoreCase(dtltype)) {
 
 				// DETAIL + ARCHIVAL
-				if (version != null) {
+				if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
 
 					List<M_CA7_Archival_Detail_Entity> T1Master = BRRS_M_CA7_Archival_Detail_Repo
 							.getdatabydateListarchival(dateformat.parse(todate),version);
 					
 					mv.addObject("displaymode", "Details");
+					mv.addObject("reportsummary", T1Master);
+				}
+				// ---------- RESUB DETAIL ----------
+				else if ("RESUB".equalsIgnoreCase(type) && version != null) {
+
+					List<M_CA7_RESUB_Detail_Entity> T1Master = BRRS_M_CA7_resub_Detail_Repo
+							.getdatabydateListarchival(d1, version);
+
+					System.out.println("Resub Detail Size : " + T1Master.size());
+
+					mv.addObject("displaymode", "resubDetail");
 					mv.addObject("reportsummary", T1Master);
 				}
 				// DETAIL + NORMAL
@@ -305,40 +298,238 @@ public class BRRS_M_CA7_ReportService {
 		BRRS_M_CA7_Detail_Repo.save(existing);
 	}
 
+	public void updateResubReport(M_CA7_RESUB_Summary_Entity updatedEntity) {
+
+		Date reportDate = updatedEntity.getReportDate();
+
+		// ----------------------------------------------------
+		// 1️⃣ GET CURRENT VERSION FROM RESUB TABLE
+		// ----------------------------------------------------
+
+		BigDecimal maxResubVer = BRRS_M_CA7_resub_Summary_Repo.findMaxVersion(reportDate);
+
+		if (maxResubVer == null)
+			throw new RuntimeException("No record for: " + reportDate);
+
+		BigDecimal newVersion = maxResubVer.add(BigDecimal.ONE);
+
+		Date now = new Date();
+
+		// ====================================================
+		// 2️⃣ RESUB SUMMARY – FROM UPDATED VALUES
+		// ====================================================
+
+		M_CA7_RESUB_Summary_Entity resubSummary = new M_CA7_RESUB_Summary_Entity();
+
+		BeanUtils.copyProperties(updatedEntity, resubSummary, "reportDate", "reportVersion", "reportResubDate");
+
+		resubSummary.setReportDate(reportDate);
+		resubSummary.setReportVersion(newVersion);
+		resubSummary.setReportResubDate(now);
+
+		// ====================================================
+		// 3️⃣ RESUB DETAIL – SAME UPDATED VALUES
+		// ====================================================
+
+		M_CA7_RESUB_Detail_Entity resubDetail = new M_CA7_RESUB_Detail_Entity();
+
+		BeanUtils.copyProperties(updatedEntity, resubDetail, "reportDate", "reportVersion", "reportResubDate");
+
+		resubDetail.setReportDate(reportDate);
+		resubDetail.setReportVersion(newVersion);
+		resubDetail.setReportResubDate(now);
+
+		// ====================================================
+		// 4️⃣ ARCHIVAL SUMMARY – SAME VALUES + SAME VERSION
+		// ====================================================
+
+		M_CA7_Archival_Summary_Entity archSummary = new M_CA7_Archival_Summary_Entity();
+
+		BeanUtils.copyProperties(updatedEntity, archSummary, "reportDate", "reportVersion", "reportResubDate");
+
+		archSummary.setReportDate(reportDate);
+		archSummary.setReportVersion(newVersion); // SAME VERSION
+		archSummary.setReportResubDate(now);
+
+		// ====================================================
+		// 5️⃣ ARCHIVAL DETAIL – SAME VALUES + SAME VERSION
+		// ====================================================
+
+		M_CA7_Archival_Detail_Entity archDetail = new M_CA7_Archival_Detail_Entity();
+
+		BeanUtils.copyProperties(updatedEntity, archDetail, "reportDate", "reportVersion", "reportResubDate");
+
+		archDetail.setReportDate(reportDate);
+		archDetail.setReportVersion(newVersion); // SAME VERSION
+		archDetail.setReportResubDate(now);
+
+		// ====================================================
+		// 6️⃣ SAVE ALL WITH SAME DATA
+		// ====================================================
+
+		BRRS_M_CA7_resub_Summary_Repo.save(resubSummary);
+		BRRS_M_CA7_resub_Detail_Repo.save(resubDetail);
+
+		BRRS_M_CA7_Archival_Summary_Repo.save(archSummary);
+		BRRS_M_CA7_Archival_Detail_Repo.save(archDetail);
+	}
+
+	// Resubmit the values , latest version and Resub Date
+	public void updateReportReSub(M_CA7_Summary_Entity updatedEntity) {
+		System.out.println("Came to Resub Service");
+		System.out.println("Report Date: " + updatedEntity.getReportDate());
+
+		Date reportDate = updatedEntity.getReportDate();
+		BigDecimal newVersion = BigDecimal.ONE;
+
+		try {
+			// Fetch the latest archival version for this report date
+			Optional<M_CA7_Archival_Summary_Entity> latestArchivalOpt = BRRS_M_CA7_Archival_Summary_Repo
+					.getLatestArchivalVersionByDate(reportDate);
+
+			// Determine next version number
+			if (latestArchivalOpt.isPresent()) {
+				M_CA7_Archival_Summary_Entity latestArchival = latestArchivalOpt.get();
+				try {
+					newVersion = latestArchival.getReportVersion().add(BigDecimal.ONE);
+				} catch (NumberFormatException e) {
+					System.err.println("Invalid version format. Defaulting to version 1");
+					newVersion = BigDecimal.ONE;
+				}
+			} else {
+				System.out.println("No previous archival found for date: " + reportDate);
+			}
+
+			// Prevent duplicate version number
+			boolean exists = BRRS_M_CA7_Archival_Summary_Repo.findByReportDateAndReportVersion(reportDate, newVersion)
+					.isPresent();
+
+			if (exists) {
+				throw new RuntimeException("Version " + newVersion + " already exists for report date " + reportDate);
+			}
+
+			// Copy summary entity to archival entity
+			M_CA7_Archival_Summary_Entity archivalEntity = new M_CA7_Archival_Summary_Entity();
+			org.springframework.beans.BeanUtils.copyProperties(updatedEntity, archivalEntity);
+
+			archivalEntity.setReportDate(reportDate);
+			archivalEntity.setReportVersion(newVersion);
+			archivalEntity.setReportResubDate(new Date());
+
+			System.out.println("Saving new archival version: " + newVersion);
+
+			// Save new version to repository
+			BRRS_M_CA7_Archival_Summary_Repo.save(archivalEntity);
+
+			System.out.println(" Saved archival version successfully: " + newVersion);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException("Error while creating archival resubmission record", e);
+		}
+	}
+
+	/// RESUB VIEW
+	public List<Object[]> getM_CA7Resub() {
+		List<Object[]> resubList = new ArrayList<>();
+		try {
+			List<M_CA7_Archival_Summary_Entity> latestArchivalList = BRRS_M_CA7_Archival_Summary_Repo
+					.getdatabydateListWithVersionAll();
+
+			if (latestArchivalList != null && !latestArchivalList.isEmpty()) {
+				for (M_CA7_Archival_Summary_Entity entity : latestArchivalList) {
+					Object[] row = new Object[] { entity.getReportDate(), 
+							entity.getReportVersion(),
+							entity.getReportResubDate()
+							};
+					resubList.add(row);
+				}
+				System.out.println("Fetched " + resubList.size() + " record(s)");
+			} else {
+				System.out.println("No archival data found.");
+			}
+		} catch (Exception e) {
+			System.err.println("Error fetching M_CA7 Resub data: " + e.getMessage());
+			e.printStackTrace();
+		}
+		return resubList;
+	}
+
+	// Archival View
+	public List<Object[]> getM_CA7Archival() {
+		List<Object[]> archivalList = new ArrayList<>();
+
+		try {
+			List<M_CA7_Archival_Summary_Entity> repoData = BRRS_M_CA7_Archival_Summary_Repo
+					.getdatabydateListWithVersionAll();
+
+			if (repoData != null && !repoData.isEmpty()) {
+				for (M_CA7_Archival_Summary_Entity entity : repoData) {
+					Object[] row = new Object[] { entity.getReportDate(), entity.getReportVersion() };
+					archivalList.add(row);
+				}
+
+				System.out.println("Fetched " + archivalList.size() + " archival records");
+				M_CA7_Archival_Summary_Entity first = repoData.get(0);
+				System.out.println("Latest archival version: " + first.getReportVersion());
+			} else {
+				System.out.println("No archival data found.");
+			}
+
+		} catch (Exception e) {
+			System.err.println("Error fetching M_CA7 Archival data: " + e.getMessage());
+			e.printStackTrace();
+		}
+
+		return archivalList;
+	}
+
+	
+	//NORMAL FORMAT EXCEL
 	public byte[] getM_CA7Excel(String filename, String reportId, String fromdate, String todate, String currency,
-			String dtltype, String type, BigDecimal version) throws Exception {
+			String dtltype, String type, String format, BigDecimal version) throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.");
 
-		logger.info("DownloadFile: reportId={}, filename={}", reportId, filename, type, version);
-
+		System.out.println("======= DOWNLOAD DETAILS =======");
+		System.out.println("TYPE      : " + type);
+		System.out.println("FORMAT      : " + format);
+		System.out.println("DTLTYPE   : " + dtltype);
+		System.out.println("DATE      : " + dateformat.parse(todate));
+		System.out.println("VERSION   : " + version);
+		System.out.println("==========================");
+		
 // Convert string to Date
 		Date reportDate = dateformat.parse(todate);
 // ARCHIVAL check
 		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
-			logger.info("Service: Generating ARCHIVAL report for version {}", version);
-			return getExcelM_CA7ARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
-		}
-
-				if ("email".equalsIgnoreCase(type) && version == null) {
-			logger.info("Service: Generating Email report for version {}", version);
-			return getEmail_M_CA7Excel(filename, reportId, fromdate, todate, currency, dtltype, type, version);
-		} else if ("email".equalsIgnoreCase(type) && version != null) {
-			logger.info("Service: Generating Email report for version {}", version);
-			return BRRS_M_CA7ARCHIVALEmailExcel(filename, reportId, fromdate, todate, currency, dtltype, type, version);
-
-		}
-
-		// RESUB check
-		else if ("RESUB".equalsIgnoreCase(type) && version != null) {
+			try {
+				// Redirecting to Archival
+				return getExcelM_CA7ARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, format, version);
+			} catch (ParseException e) {
+				logger.error("Invalid report date format: {}", fromdate, e);
+				throw new RuntimeException("Date format must be dd-MMM-yyyy (e.g. 31-Jul-2025)");
+			}
+		}else if ("RESUB".equalsIgnoreCase(type) && version != null) {
 			logger.info("Service: Generating RESUB report for version {}", version);
 
-			List<M_CA7_Archival_Summary_Entity> T1Master = BRRS_M_CA7_Archival_Summary_Repo
-					.getdatabydateListarchival(reportDate, version);
-
-			// Generate Excel for RESUB
-			return BRRS_M_CA7ResubExcel(filename, reportId, fromdate, todate, currency, dtltype, type, version);
+			try {
+				// ✅ Redirecting to Resub Excel
+				return BRRS_M_CA7ResubExcel(filename, reportId, fromdate, todate, currency, dtltype, type, format, version);
+				
+			} catch (ParseException e) {
+				logger.error("Invalid report date format: {}", fromdate, e);
+				throw new RuntimeException("Date format must be dd-MMM-yyyy (e.g. 31-Jul-2025)");
+			}
 		}
+		 else {
+			 if ("email".equalsIgnoreCase(format) && version == null) {
+					logger.info("Got format as Email");
+					logger.info("Service: Generating Email report for version {}", version);
+					return getEmail_M_CA7Excel(filename, reportId, fromdate, todate, currency, dtltype, type, version);
+			} else {
 
+		
+		
 		List<M_CA7_Summary_Entity> dataList = BRRS_M_CA7_Summary_Repo.getdatabydateList(dateformat.parse(todate));
 
 		if (dataList.isEmpty()) {
@@ -545,11 +736,14 @@ public class BRRS_M_CA7_ReportService {
 
 			return out.toByteArray();
 		}
+			}
+			 }
 	}
 
+	//NORMAL EMAIL EXCEL
 	public byte[] getEmail_M_CA7Excel(String filename, String reportId, String fromdate, String todate, String currency,
 			String dtltype, String type, BigDecimal version) throws Exception {
-		logger.info("Service: Starting Excel generation process in memory.");
+		logger.info("Service: Starting Normal EMAIL EXCEL.");
 
 		logger.info("DownloadFile: reportId={}, filename={}", reportId, filename, type, version);
 
@@ -764,229 +958,21 @@ public class BRRS_M_CA7_ReportService {
 		}
 	}
 
-	public byte[] BRRS_M_CA7ARCHIVALEmailExcel(String filename, String reportId, String fromdate, String todate, String currency,
-			String dtltype, String type, BigDecimal version) throws Exception {
-		logger.info("Service: Starting Excel generation process in memory.");
-
-		logger.info("DownloadFile: reportId={}, filename={}", reportId, filename, type, version);
-
-// Convert string to Date
-		Date reportDate = dateformat.parse(todate);
-		
-		List<M_CA7_Summary_Entity> dataList = BRRS_M_CA7_Summary_Repo.getdatabydateList(dateformat.parse(todate));
-
-		if (dataList.isEmpty()) {
-			logger.warn("Service: No data found for M_CA7 report. Returning empty result.");
-			return new byte[0];
-		}
-
-		String templateDir = env.getProperty("output.exportpathtemp");
-		String templateFileName = filename;
-		System.out.println(filename);
-		Path templatePath = Paths.get(templateDir, templateFileName);
-		System.out.println(templatePath);
-
-		logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
-
-		if (!Files.exists(templatePath)) {
-			// This specific exception will be caught by the controller.
-			throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
-		}
-		if (!Files.isReadable(templatePath)) {
-			// A specific exception for permission errors.
-			throw new SecurityException(
-					"Template file exists but is not readable (check permissions): " + templatePath.toAbsolutePath());
-		}
-
-		// This try-with-resources block is perfect. It guarantees all resources are
-		// closed automatically.
-		try (InputStream templateInputStream = Files.newInputStream(templatePath);
-				Workbook workbook = WorkbookFactory.create(templateInputStream);
-				ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-
-			Sheet sheet = workbook.getSheetAt(0);
-
-			// --- Style Definitions ---
-			CreationHelper createHelper = workbook.getCreationHelper();
-
-			CellStyle dateStyle = workbook.createCellStyle();
-			dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
-			dateStyle.setBorderBottom(BorderStyle.THIN);
-			dateStyle.setBorderTop(BorderStyle.THIN);
-			dateStyle.setBorderLeft(BorderStyle.THIN);
-			dateStyle.setBorderRight(BorderStyle.THIN);
-
-			CellStyle textStyle = workbook.createCellStyle();
-			textStyle.setBorderBottom(BorderStyle.THIN);
-			textStyle.setBorderTop(BorderStyle.THIN);
-			textStyle.setBorderLeft(BorderStyle.THIN);
-			textStyle.setBorderRight(BorderStyle.THIN);
-
-			// Create the font
-			Font font = workbook.createFont();
-			font.setFontHeightInPoints((short) 8); // size 8
-			font.setFontName("Arial");
-
-			CellStyle numberStyle = workbook.createCellStyle();
-			// numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
-			numberStyle.setBorderBottom(BorderStyle.THIN);
-			numberStyle.setBorderTop(BorderStyle.THIN);
-			numberStyle.setBorderLeft(BorderStyle.THIN);
-			numberStyle.setBorderRight(BorderStyle.THIN);
-			numberStyle.setFont(font);
-			numberStyle.setAlignment(HorizontalAlignment.CENTER);
-			numberStyle.setVerticalAlignment(VerticalAlignment.CENTER);
-
-			CellStyle percentStyle = workbook.createCellStyle();
-			percentStyle.cloneStyleFrom(numberStyle);
-			percentStyle.setDataFormat(workbook.createDataFormat().getFormat("0.00%"));
-			percentStyle.setAlignment(HorizontalAlignment.RIGHT);
-			// --- End of Style Definitions ---
-
-			int startRow = 11;
-
-			if (!dataList.isEmpty()) {
-				for (int i = 0; i < dataList.size(); i++) {
-					M_CA7_Summary_Entity record = dataList.get(i);
-					System.out.println("rownumber=" + startRow + i);
-					Row row = sheet.getRow(startRow + i);
-					if (row == null) {
-						row = sheet.createRow(startRow + i);
-					}
-
-					// row12
-					// Column b
-					Cell cell1 = row.getCell(1);
-					if (record.getR12_pre_ifrs_pro() != null) {
-						cell1.setCellValue(record.getR12_pre_ifrs_pro().doubleValue());
-
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-					// row12
-					// Column c
-					cell1 = row.getCell(2);
-					if (record.getR12_post_ifrs9_pro() != null) {
-						cell1.setCellValue(record.getR12_post_ifrs9_pro().doubleValue());
-
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-					// row12
-					// Column d
-
-					cell1 = row.getCell(3);
-					if (record.getR12_trans_amt() != null) {
-						cell1.setCellValue(record.getR12_trans_amt().doubleValue());
-
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-					// row19
-					// Column c
-					/*
-					 * row=sheet.getRow(18); cell1 = row.getCell(2); if (record.getR19_cap_year1()!=
-					 * null) { cell1.setCellValue(record.getR19_cap_year1().toString() + "%");
-					 * cell1.setCellStyle(numberStyle); } else { cell1.setCellValue("");
-					 * cell1.setCellStyle(textStyle); }
-					 */
-
-					// row19
-					// Column d
-					cell1 = row.getCell(3);
-					if (record.getR19_amt_add_year1() != null) {
-						cell1.setCellValue(record.getR19_amt_add_year1().doubleValue());
-
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-
-					// row20
-					// Column c
-					/*
-					 * row=sheet.getRow(19); cell1 = row.getCell(2); if (record.getR20_cap_year2()!=
-					 * null) { cell1.setCellValue(record.getR20_cap_year2().toString() + "%");
-					 * cell1.setCellStyle(numberStyle);
-					 * 
-					 * } else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
-					 */
-					// row20
-					// Column d
-					cell1 = row.getCell(3);
-					if (record.getR20_amt_add_year2() != null) {
-						cell1.setCellValue(record.getR20_amt_add_year2().doubleValue());
-
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-					// row21
-					// Column c
-					/*
-					 * row=sheet.getRow(20); cell1 = row.getCell(2); if (record.getR21_cap_year3()!=
-					 * null) { cell1.setCellValue(record.getR21_cap_year3().toString() + "%");
-					 * cell1.setCellStyle(numberStyle);
-					 * 
-					 * } else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
-					 */
-					// row21
-					// Column d
-					cell1 = row.getCell(3);
-					if (record.getR21_amt_add_year3() != null) {
-						cell1.setCellValue(record.getR21_amt_add_year3().doubleValue());
-
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-					// row22
-					// Column c
-
-					row = sheet.getRow(21);
-					cell1 = row.getCell(2);
-					if (record.getR22_cap_year4() != null) {
-						cell1.setCellValue(record.getR22_cap_year4().doubleValue());
-						cell1.setCellStyle(numberStyle);
-
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-					// row22
-					// Column d
-					cell1 = row.getCell(3);
-					if (record.getR22_amt_add_year4() != null) {
-						cell1.setCellValue(record.getR22_amt_add_year4().doubleValue());
-
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-				}
-				workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
-			} else {
-
-			}
-
-// Write the final workbook content to the in-memory stream.
-			workbook.write(out);
-
-			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-
-			return out.toByteArray();
-		}
-	}
-
+	//ARCHIVAL FORMAT EXCEL
 	public byte[] getExcelM_CA7ARCHIVAL(String filename, String reportId, String fromdate, String todate,
-			String currency, String dtltype, String type, BigDecimal version) throws Exception {
-		logger.info("Service: Starting Excel generation process in memory.");
-		if (type.equals("ARCHIVAL") & version != null) {
+			String currency, String dtltype, String type, String format, BigDecimal version) throws Exception {
+		logger.info("Service: Starting ARCHIVAL FORMAT EXCEL.");
+		
+		if ("email".equalsIgnoreCase(format) && version != null) {
+			try {
+				// Redirecting to Archival
+				return BRRS_M_CA7ARCHIVALEmailExcel(filename, reportId, fromdate, todate, currency, dtltype, type, version);
+			} catch (ParseException e) {
+				logger.error("Invalid report date format: {}", fromdate, e);
+				throw new RuntimeException("Date format must be dd-MMM-yyyy (e.g. 31-Jul-2025)");
+			}
+		} 
 
-		}
 		List<M_CA7_Archival_Summary_Entity> dataList = BRRS_M_CA7_Archival_Summary_Repo
 				.getdatabydateListarchival(dateformat.parse(todate), version);
 
@@ -1194,127 +1180,245 @@ public class BRRS_M_CA7_ReportService {
 		}
 	}
 
-	/// RESUB VIEW
-	public List<Object[]> getM_CA7Resub() {
-		List<Object[]> resubList = new ArrayList<>();
-		try {
-			List<M_CA7_Archival_Summary_Entity> latestArchivalList = BRRS_M_CA7_Archival_Summary_Repo
-					.getdatabydateListWithVersionAll();
+	//ARCHIVAL EMAIL EXCEL
+	public byte[] BRRS_M_CA7ARCHIVALEmailExcel(String filename, String reportId, String fromdate, String todate, String currency,
+			String dtltype, String type, BigDecimal version) throws Exception {
+		logger.info("Service: Starting Archival EMAIL EXCEL.");
 
-			if (latestArchivalList != null && !latestArchivalList.isEmpty()) {
-				for (M_CA7_Archival_Summary_Entity entity : latestArchivalList) {
-					Object[] row = new Object[] { entity.getReportDate(), 
-							entity.getReportVersion(),
-							entity.getReportResubDate()
-							};
-					resubList.add(row);
-				}
-				System.out.println("Fetched " + resubList.size() + " record(s)");
-			} else {
-				System.out.println("No archival data found.");
-			}
-		} catch (Exception e) {
-			System.err.println("Error fetching M_CA7 Resub data: " + e.getMessage());
-			e.printStackTrace();
-		}
-		return resubList;
-	}
+		logger.info("DownloadFile: reportId={}, filename={}", reportId, filename, type, version);
 
-	// Archival View
-	public List<Object[]> getM_CA7Archival() {
-		List<Object[]> archivalList = new ArrayList<>();
+// Convert string to Date
+		Date reportDate = dateformat.parse(todate);
+		
+		List<M_CA7_Archival_Summary_Entity> dataList = BRRS_M_CA7_Archival_Summary_Repo
+				.getdatabydateListarchival(dateformat.parse(todate), version);
 
-		try {
-			List<M_CA7_Archival_Summary_Entity> repoData = BRRS_M_CA7_Archival_Summary_Repo
-					.getdatabydateListWithVersionAll();
-
-			if (repoData != null && !repoData.isEmpty()) {
-				for (M_CA7_Archival_Summary_Entity entity : repoData) {
-					Object[] row = new Object[] { entity.getReportDate(), entity.getReportVersion() };
-					archivalList.add(row);
-				}
-
-				System.out.println("Fetched " + archivalList.size() + " archival records");
-				M_CA7_Archival_Summary_Entity first = repoData.get(0);
-				System.out.println("Latest archival version: " + first.getReportVersion());
-			} else {
-				System.out.println("No archival data found.");
-			}
-
-		} catch (Exception e) {
-			System.err.println("Error fetching M_CA7 Archival data: " + e.getMessage());
-			e.printStackTrace();
+		if (dataList.isEmpty()) {
+			logger.warn("Service: No data found for M_CA7 report. Returning empty result.");
+			return new byte[0];
 		}
 
-		return archivalList;
-	}
+		String templateDir = env.getProperty("output.exportpathtemp");
+		String templateFileName = filename;
+		System.out.println(filename);
+		Path templatePath = Paths.get(templateDir, templateFileName);
+		System.out.println(templatePath);
 
-	// Resubmit the values , latest version and Resub Date
-	public void updateReportReSub(M_CA7_Summary_Entity updatedEntity) {
-		System.out.println("Came to Resub Service");
-		System.out.println("Report Date: " + updatedEntity.getReportDate());
+		logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
 
-		Date reportDate = updatedEntity.getReportDate();
-		BigDecimal newVersion = BigDecimal.ONE;
+		if (!Files.exists(templatePath)) {
+			// This specific exception will be caught by the controller.
+			throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
+		}
+		if (!Files.isReadable(templatePath)) {
+			// A specific exception for permission errors.
+			throw new SecurityException(
+					"Template file exists but is not readable (check permissions): " + templatePath.toAbsolutePath());
+		}
 
-		try {
-			// Fetch the latest archival version for this report date
-			Optional<M_CA7_Archival_Summary_Entity> latestArchivalOpt = BRRS_M_CA7_Archival_Summary_Repo
-					.getLatestArchivalVersionByDate(reportDate);
+		// This try-with-resources block is perfect. It guarantees all resources are
+		// closed automatically.
+		try (InputStream templateInputStream = Files.newInputStream(templatePath);
+				Workbook workbook = WorkbookFactory.create(templateInputStream);
+				ByteArrayOutputStream out = new ByteArrayOutputStream()) {
 
-			// Determine next version number
-			if (latestArchivalOpt.isPresent()) {
-				M_CA7_Archival_Summary_Entity latestArchival = latestArchivalOpt.get();
-				try {
-					newVersion = latestArchival.getReportVersion().add(BigDecimal.ONE);
-				} catch (NumberFormatException e) {
-					System.err.println("Invalid version format. Defaulting to version 1");
-					newVersion = BigDecimal.ONE;
+			Sheet sheet = workbook.getSheetAt(0);
+
+			// --- Style Definitions ---
+			CreationHelper createHelper = workbook.getCreationHelper();
+
+			CellStyle dateStyle = workbook.createCellStyle();
+			dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
+			dateStyle.setBorderBottom(BorderStyle.THIN);
+			dateStyle.setBorderTop(BorderStyle.THIN);
+			dateStyle.setBorderLeft(BorderStyle.THIN);
+			dateStyle.setBorderRight(BorderStyle.THIN);
+
+			CellStyle textStyle = workbook.createCellStyle();
+			textStyle.setBorderBottom(BorderStyle.THIN);
+			textStyle.setBorderTop(BorderStyle.THIN);
+			textStyle.setBorderLeft(BorderStyle.THIN);
+			textStyle.setBorderRight(BorderStyle.THIN);
+
+			// Create the font
+			Font font = workbook.createFont();
+			font.setFontHeightInPoints((short) 8); // size 8
+			font.setFontName("Arial");
+
+			CellStyle numberStyle = workbook.createCellStyle();
+			// numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
+			numberStyle.setBorderBottom(BorderStyle.THIN);
+			numberStyle.setBorderTop(BorderStyle.THIN);
+			numberStyle.setBorderLeft(BorderStyle.THIN);
+			numberStyle.setBorderRight(BorderStyle.THIN);
+			numberStyle.setFont(font);
+			numberStyle.setAlignment(HorizontalAlignment.CENTER);
+			numberStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+
+			CellStyle percentStyle = workbook.createCellStyle();
+			percentStyle.cloneStyleFrom(numberStyle);
+			percentStyle.setDataFormat(workbook.createDataFormat().getFormat("0.00%"));
+			percentStyle.setAlignment(HorizontalAlignment.RIGHT);
+			// --- End of Style Definitions ---
+
+			int startRow = 11;
+
+			if (!dataList.isEmpty()) {
+				for (int i = 0; i < dataList.size(); i++) {
+					M_CA7_Archival_Summary_Entity record = dataList.get(i);
+					System.out.println("rownumber=" + startRow + i);
+					Row row = sheet.getRow(startRow + i);
+					if (row == null) {
+						row = sheet.createRow(startRow + i);
+					}
+
+					// row12
+					// Column b
+					Cell cell1 = row.getCell(1);
+					if (record.getR12_pre_ifrs_pro() != null) {
+						cell1.setCellValue(record.getR12_pre_ifrs_pro().doubleValue());
+
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					// row12
+					// Column c
+					cell1 = row.getCell(2);
+					if (record.getR12_post_ifrs9_pro() != null) {
+						cell1.setCellValue(record.getR12_post_ifrs9_pro().doubleValue());
+
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					// row12
+					// Column d
+
+					cell1 = row.getCell(3);
+					if (record.getR12_trans_amt() != null) {
+						cell1.setCellValue(record.getR12_trans_amt().doubleValue());
+
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					// row19
+					// Column c
+					/*
+					 * row=sheet.getRow(18); cell1 = row.getCell(2); if (record.getR19_cap_year1()!=
+					 * null) { cell1.setCellValue(record.getR19_cap_year1().toString() + "%");
+					 * cell1.setCellStyle(numberStyle); } else { cell1.setCellValue("");
+					 * cell1.setCellStyle(textStyle); }
+					 */
+
+					// row19
+					// Column d
+					cell1 = row.getCell(3);
+					if (record.getR19_amt_add_year1() != null) {
+						cell1.setCellValue(record.getR19_amt_add_year1().doubleValue());
+
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					// row20
+					// Column c
+					/*
+					 * row=sheet.getRow(19); cell1 = row.getCell(2); if (record.getR20_cap_year2()!=
+					 * null) { cell1.setCellValue(record.getR20_cap_year2().toString() + "%");
+					 * cell1.setCellStyle(numberStyle);
+					 * 
+					 * } else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+					 */
+					// row20
+					// Column d
+					cell1 = row.getCell(3);
+					if (record.getR20_amt_add_year2() != null) {
+						cell1.setCellValue(record.getR20_amt_add_year2().doubleValue());
+
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					// row21
+					// Column c
+					/*
+					 * row=sheet.getRow(20); cell1 = row.getCell(2); if (record.getR21_cap_year3()!=
+					 * null) { cell1.setCellValue(record.getR21_cap_year3().toString() + "%");
+					 * cell1.setCellStyle(numberStyle);
+					 * 
+					 * } else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+					 */
+					// row21
+					// Column d
+					cell1 = row.getCell(3);
+					if (record.getR21_amt_add_year3() != null) {
+						cell1.setCellValue(record.getR21_amt_add_year3().doubleValue());
+
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					// row22
+					// Column c
+
+					row = sheet.getRow(21);
+					cell1 = row.getCell(2);
+					if (record.getR22_cap_year4() != null) {
+						cell1.setCellValue(record.getR22_cap_year4().doubleValue());
+						cell1.setCellStyle(numberStyle);
+
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					// row22
+					// Column d
+					cell1 = row.getCell(3);
+					if (record.getR22_amt_add_year4() != null) {
+						cell1.setCellValue(record.getR22_amt_add_year4().doubleValue());
+
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
 				}
+				workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
 			} else {
-				System.out.println("No previous archival found for date: " + reportDate);
+
 			}
 
-			// Prevent duplicate version number
-			boolean exists = BRRS_M_CA7_Archival_Summary_Repo.findByReportDateAndReportVersion(reportDate, newVersion)
-					.isPresent();
+// Write the final workbook content to the in-memory stream.
+			workbook.write(out);
 
-			if (exists) {
-				throw new RuntimeException("Version " + newVersion + " already exists for report date " + reportDate);
-			}
+			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
 
-			// Copy summary entity to archival entity
-			M_CA7_Archival_Summary_Entity archivalEntity = new M_CA7_Archival_Summary_Entity();
-			org.springframework.beans.BeanUtils.copyProperties(updatedEntity, archivalEntity);
-
-			archivalEntity.setReportDate(reportDate);
-			archivalEntity.setReportVersion(newVersion);
-			archivalEntity.setReportResubDate(new Date());
-
-			System.out.println("Saving new archival version: " + newVersion);
-
-			// Save new version to repository
-			BRRS_M_CA7_Archival_Summary_Repo.save(archivalEntity);
-
-			System.out.println(" Saved archival version successfully: " + newVersion);
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new RuntimeException("Error while creating archival resubmission record", e);
+			return out.toByteArray();
 		}
 	}
 
-	/// Downloaded for Archival & Resub
+	//RESUB FORMAT EXCEL
 	public byte[] BRRS_M_CA7ResubExcel(String filename, String reportId, String fromdate, String todate,
-			String currency, String dtltype, String type, BigDecimal version) throws Exception {
+			String currency, String dtltype, String type, String format, BigDecimal version) throws Exception {
 
-		logger.info("Service: Starting Excel generation process in memory for RESUB Excel.");
+		logger.info("Service: Starting RESUB FORMAT EXCEL.");
 
-		if (type.equals("RESUB") & version != null) {
+		if ("email".equalsIgnoreCase(format) && version != null) {
+			logger.info("Service: Generating RESUB report for version {}", version);
 
+			try {
+				// ✅ Redirecting to Resub Excel
+				return BRRS_M_CA7RESUBEmailExcel(filename, reportId, fromdate, todate, currency, dtltype, type, version);
+
+			} catch (ParseException e) {
+				logger.error("Invalid report date format: {}", fromdate, e);
+				throw new RuntimeException("Date format must be dd-MMM-yyyy (e.g. 31-Jul-2025)");
 		}
+	}
 
-		List<M_CA7_Archival_Summary_Entity> dataList1 = BRRS_M_CA7_Archival_Summary_Repo
+		List<M_CA7_RESUB_Summary_Entity> dataList1 = BRRS_M_CA7_resub_Summary_Repo
 				.getdatabydateListarchival(dateformat.parse(todate), version);
 
 		if (dataList1.isEmpty()) {
@@ -1388,7 +1492,7 @@ public class BRRS_M_CA7_ReportService {
 
 			if (!dataList1.isEmpty()) {
 				for (int i = 0; i < dataList1.size(); i++) {
-					M_CA7_Archival_Summary_Entity record = dataList1.get(i);
+					M_CA7_RESUB_Summary_Entity record = dataList1.get(i);
 					System.out.println("rownumber=" + startRow + i);
 					Row row = sheet.getRow(startRow + i);
 					if (row == null) {
@@ -1521,4 +1625,224 @@ public class BRRS_M_CA7_ReportService {
 			return out.toByteArray();
 		}
 	}
+
+	//RESUB EMAIL EXCEL
+	public byte[] BRRS_M_CA7RESUBEmailExcel(String filename, String reportId, String fromdate, String todate, String currency,
+			String dtltype, String type, BigDecimal version) throws Exception {
+		logger.info("Service: STARTING RESUB EMAIL FORMAT EXCEL");
+
+		logger.info("DownloadFile: reportId={}, filename={}", reportId, filename, type, version);
+
+// Convert string to Date
+		Date reportDate = dateformat.parse(todate);
+		
+		List<M_CA7_RESUB_Summary_Entity> dataList = BRRS_M_CA7_resub_Summary_Repo
+				.getdatabydateListarchival(dateformat.parse(todate), version);
+
+		if (dataList.isEmpty()) {
+			logger.warn("Service: No data found for M_CA7 report. Returning empty result.");
+			return new byte[0];
+		}
+
+		String templateDir = env.getProperty("output.exportpathtemp");
+		String templateFileName = filename;
+		System.out.println(filename);
+		Path templatePath = Paths.get(templateDir, templateFileName);
+		System.out.println(templatePath);
+
+		logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
+
+		if (!Files.exists(templatePath)) {
+			// This specific exception will be caught by the controller.
+			throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
+		}
+		if (!Files.isReadable(templatePath)) {
+			// A specific exception for permission errors.
+			throw new SecurityException(
+					"Template file exists but is not readable (check permissions): " + templatePath.toAbsolutePath());
+		}
+
+		// This try-with-resources block is perfect. It guarantees all resources are
+		// closed automatically.
+		try (InputStream templateInputStream = Files.newInputStream(templatePath);
+				Workbook workbook = WorkbookFactory.create(templateInputStream);
+				ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+
+			Sheet sheet = workbook.getSheetAt(0);
+
+			// --- Style Definitions ---
+			CreationHelper createHelper = workbook.getCreationHelper();
+
+			CellStyle dateStyle = workbook.createCellStyle();
+			dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
+			dateStyle.setBorderBottom(BorderStyle.THIN);
+			dateStyle.setBorderTop(BorderStyle.THIN);
+			dateStyle.setBorderLeft(BorderStyle.THIN);
+			dateStyle.setBorderRight(BorderStyle.THIN);
+
+			CellStyle textStyle = workbook.createCellStyle();
+			textStyle.setBorderBottom(BorderStyle.THIN);
+			textStyle.setBorderTop(BorderStyle.THIN);
+			textStyle.setBorderLeft(BorderStyle.THIN);
+			textStyle.setBorderRight(BorderStyle.THIN);
+
+			// Create the font
+			Font font = workbook.createFont();
+			font.setFontHeightInPoints((short) 8); // size 8
+			font.setFontName("Arial");
+
+			CellStyle numberStyle = workbook.createCellStyle();
+			// numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
+			numberStyle.setBorderBottom(BorderStyle.THIN);
+			numberStyle.setBorderTop(BorderStyle.THIN);
+			numberStyle.setBorderLeft(BorderStyle.THIN);
+			numberStyle.setBorderRight(BorderStyle.THIN);
+			numberStyle.setFont(font);
+			numberStyle.setAlignment(HorizontalAlignment.CENTER);
+			numberStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+
+			CellStyle percentStyle = workbook.createCellStyle();
+			percentStyle.cloneStyleFrom(numberStyle);
+			percentStyle.setDataFormat(workbook.createDataFormat().getFormat("0.00%"));
+			percentStyle.setAlignment(HorizontalAlignment.RIGHT);
+			// --- End of Style Definitions ---
+
+			int startRow = 11;
+
+			if (!dataList.isEmpty()) {
+				for (int i = 0; i < dataList.size(); i++) {
+					M_CA7_RESUB_Summary_Entity record = dataList.get(i);
+					System.out.println("rownumber=" + startRow + i);
+					Row row = sheet.getRow(startRow + i);
+					if (row == null) {
+						row = sheet.createRow(startRow + i);
+					}
+
+					// row12
+					// Column b
+					Cell cell1 = row.getCell(1);
+					if (record.getR12_pre_ifrs_pro() != null) {
+						cell1.setCellValue(record.getR12_pre_ifrs_pro().doubleValue());
+
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					// row12
+					// Column c
+					cell1 = row.getCell(2);
+					if (record.getR12_post_ifrs9_pro() != null) {
+						cell1.setCellValue(record.getR12_post_ifrs9_pro().doubleValue());
+
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					// row12
+					// Column d
+
+					cell1 = row.getCell(3);
+					if (record.getR12_trans_amt() != null) {
+						cell1.setCellValue(record.getR12_trans_amt().doubleValue());
+
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					// row19
+					// Column c
+					/*
+					 * row=sheet.getRow(18); cell1 = row.getCell(2); if (record.getR19_cap_year1()!=
+					 * null) { cell1.setCellValue(record.getR19_cap_year1().toString() + "%");
+					 * cell1.setCellStyle(numberStyle); } else { cell1.setCellValue("");
+					 * cell1.setCellStyle(textStyle); }
+					 */
+
+					// row19
+					// Column d
+					cell1 = row.getCell(3);
+					if (record.getR19_amt_add_year1() != null) {
+						cell1.setCellValue(record.getR19_amt_add_year1().doubleValue());
+
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					// row20
+					// Column c
+					/*
+					 * row=sheet.getRow(19); cell1 = row.getCell(2); if (record.getR20_cap_year2()!=
+					 * null) { cell1.setCellValue(record.getR20_cap_year2().toString() + "%");
+					 * cell1.setCellStyle(numberStyle);
+					 * 
+					 * } else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+					 */
+					// row20
+					// Column d
+					cell1 = row.getCell(3);
+					if (record.getR20_amt_add_year2() != null) {
+						cell1.setCellValue(record.getR20_amt_add_year2().doubleValue());
+
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					// row21
+					// Column c
+					/*
+					 * row=sheet.getRow(20); cell1 = row.getCell(2); if (record.getR21_cap_year3()!=
+					 * null) { cell1.setCellValue(record.getR21_cap_year3().toString() + "%");
+					 * cell1.setCellStyle(numberStyle);
+					 * 
+					 * } else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+					 */
+					// row21
+					// Column d
+					cell1 = row.getCell(3);
+					if (record.getR21_amt_add_year3() != null) {
+						cell1.setCellValue(record.getR21_amt_add_year3().doubleValue());
+
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					// row22
+					// Column c
+
+					row = sheet.getRow(21);
+					cell1 = row.getCell(2);
+					if (record.getR22_cap_year4() != null) {
+						cell1.setCellValue(record.getR22_cap_year4().doubleValue());
+						cell1.setCellStyle(numberStyle);
+
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+					// row22
+					// Column d
+					cell1 = row.getCell(3);
+					if (record.getR22_amt_add_year4() != null) {
+						cell1.setCellValue(record.getR22_amt_add_year4().doubleValue());
+
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+				}
+				workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
+			} else {
+
+			}
+
+// Write the final workbook content to the in-memory stream.
+			workbook.write(out);
+
+			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
+
+			return out.toByteArray();
+		}
+	}
+
 }
