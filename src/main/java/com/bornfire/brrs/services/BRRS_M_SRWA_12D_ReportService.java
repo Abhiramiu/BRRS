@@ -36,6 +36,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.bornfire.brrs.entities.BRRS_M_SECL_Archival_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_M_SFINP2_Detail_Repo;
+import com.bornfire.brrs.entities.BRRS_M_SRWA_12D_Archival_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_M_SRWA_12D_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_M_SRWA_12D_Summary_Repo;
 import com.bornfire.brrs.entities.M_SECL_Archival_Summary_Entity;
@@ -68,6 +69,9 @@ public class BRRS_M_SRWA_12D_ReportService {
 
 	@Autowired
 	BRRS_M_SRWA_12D_Detail_Repo bRRS_M_SRWA_12D_Detail_Repo;
+	
+	@Autowired
+	BRRS_M_SRWA_12D_Archival_Summary_Repo bRRS_M_SRWA_12D_Archival_Summary_Repo;
 
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
@@ -1413,5 +1417,22 @@ public class BRRS_M_SRWA_12D_ReportService {
 			return out.toByteArray();
 		}
 	}
+
+	
+	public List<Object> getSRWA_12DArchival() {
+
+        List<Object> archivalList = new ArrayList<>();
+
+        try {
+            archivalList = bRRS_M_SRWA_12D_Archival_Summary_Repo.getM_SECLParchival();
+            System.out.println("Archival count : " + archivalList.size());
+        } catch (Exception e) {
+            System.err.println("Error fetching SRWA_12D Archival data : " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return archivalList;
+    }
+
 
 }

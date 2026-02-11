@@ -23,4 +23,7 @@ public interface BRRS_M_AIDP_Resub_Summary_Repo1 extends JpaRepository<M_AIDP_Re
 
 	@Query("SELECT COALESCE(MAX(e.id.report_version), 0) FROM M_AIDP_Resub_Summary_Entity1 e")
 	BigDecimal findGlobalMaxReportVersion();
+	
+	@Query(value = "select * from BRRS_M_AIDP_RESUBTABLE_SUMMARY1 ", nativeQuery = true)
+	List<M_AIDP_Resub_Summary_Entity1> getdatabydateList(Date rpt_code);
 }

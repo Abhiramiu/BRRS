@@ -29,7 +29,6 @@ public class M_AIDP_Resub_Summary_Entity4 implements Serializable{
 	private BigDecimal report_version;
 
 	@Column(name = "REPORT_RESUBDATE")
-
 	private Date reportResubDate;
 	private String REPORT_FREQUENCY;
 	private String REPORT_CODE;

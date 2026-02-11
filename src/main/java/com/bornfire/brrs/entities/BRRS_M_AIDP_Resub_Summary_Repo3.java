@@ -21,8 +21,10 @@ public interface BRRS_M_AIDP_Resub_Summary_Repo3 extends JpaRepository<M_AIDP_Re
 	@Query(value = "SELECT REPORT_DATE, REPORT_VERSION, REPORT_RESUBDATE " + "FROM BRRS_M_AIDP_RESUBTABLE_SUMMARY3 "
 			+ "WHERE REPORT_VERSION IS NOT NULL " + "ORDER BY REPORT_VERSION", nativeQuery = true)
 	List<Object[]> getResubData();
-	
+
 	@Query("SELECT COALESCE(MAX(e.id.report_version), 0) FROM M_AIDP_Resub_Summary_Entity3 e")
 	BigDecimal findGlobalMaxReportVersion();
 
+	@Query(value = "select * from BRRS_M_AIDP_RESUBTABLE_SUMMARY3 ", nativeQuery = true)
+	List<M_AIDP_Resub_Summary_Entity3> getdatabydateList(Date rpt_code);
 }
