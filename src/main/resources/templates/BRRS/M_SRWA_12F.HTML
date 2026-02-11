@@ -428,7 +428,6 @@ PURPOSE		: M_SRWA_12F BRRSREPORT
 			activateTab(selectedTab);
 		};
 		function downloadfile(button) {
-
 			var reportid = button.getAttribute('data-reportid');
 			var asondate = button.getAttribute('data-asondate');
 			var fromdate = button.getAttribute('data-fromdate');
@@ -440,41 +439,34 @@ PURPOSE		: M_SRWA_12F BRRSREPORT
 			var filename = button.getAttribute('data-filename');
 			var type = button.getAttribute('data-type');
 			var version = button.getAttribute('data-version');
+			var format = button.getAttribute('data-format');
 
-			var loader = new bootstrap.Modal(
-				document.getElementById('loader'),
-				{backdrop: 'static', keyboard: false}
-			);
-			loader.show();
-
-			// ✅ Build URL safely
-			var url = './downloadExcel?reportid=' + reportid +
-				'&fromdate=' + fromdate +
-				'&asondate=' + asondate +
-				'&todate=' + todate +
-				'&currency=' + currency +
-				'&subreportid=' + subreportid +
-				'&secid=' + secid +
-				'&filename=' + filename +
-				'&type=' + type;
-
-			// ✅ ONLY append version if valid
-			if (version && version.trim() !== '') {
-				url += '&version=' + version;
+			if (format === null) {
+				format = '';   // treat as null
 			}
 
-			$.ajax({
-				url: url,
-				type: 'GET',
-				xhrFields: {responseType: 'blob'},
+			$('#loader').modal('show');
 
+			$.ajax({
+				url: './downloadExcel?reportid=' + reportid +
+					'&fromdate=' + fromdate +
+					'&asondate=' + asondate +
+					'&todate=' + todate +
+					'&currency=' + currency +
+					'&subreportid=' + subreportid +
+					'&secid=' + secid +
+					'&filename=' + filename +
+					'&type=' + type +
+					'&version=' + version +
+					'&format=' + format,
+				type: 'GET',
+				xhrFields: {
+					responseType: 'blob'
+				},
 				success: function (data) {
 					$('#loader').modal('hide');
-
 					if (data && data.size > 100) {
-						const blob = new Blob([data], {
-							type: 'application/vnd.ms-excel'
-						});
+						const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
 						const url = window.URL.createObjectURL(blob);
 						const a = document.createElement('a');
 						a.style.display = 'none';
@@ -484,13 +476,11 @@ PURPOSE		: M_SRWA_12F BRRSREPORT
 						a.click();
 						window.URL.revokeObjectURL(url);
 						document.body.removeChild(a);
-
 						showResultModal('BRRS', filename + ' downloaded successfully.');
 					} else {
 						showResultModal('Information', 'No data was available to create a download.');
 					}
 				},
-
 				error: function () {
 					$('#loader').modal('hide');
 					showResultModal('Error', 'An error occurred while downloading the file.');
@@ -503,20 +493,7 @@ PURPOSE		: M_SRWA_12F BRRSREPORT
 			showResultModal('Alert', 'Development in progress');
 
 		}
-		/* function closemodel() {
-			$("#resultModal").modal("hide");
-			$('#loader').modal('hide');
 
-			// Only reload if not from Details modal
-			if (!isDetailsModal) {
-				setTimeout(function () {
-					location.reload();
-				}, 300);
-			} else {
-				// reset flag for next modal usage
-				isDetailsModal = false;
-			}
-		} */
 		function showResultModal(title, message) {
 			// Set the text for the modal elements
 			$('#resultModalLabel').text(title);
@@ -633,6 +610,23 @@ PURPOSE		: M_SRWA_12F BRRSREPORT
 				}
 			});
 		}
+
+
+		function closemodel() {
+			$("#resultModal").modal("hide");
+			$('#loader').modal('hide');
+
+			// Check if the success message is showing
+			const message = $("#resultModalBody").text();
+
+			if (message.includes("Resubmission Updated Successfully")) {
+				// ✅ Go back to the previous page
+				window.history.back();
+			} else {
+				// For other messages, just reload the same page
+				setTimeout(() => location.reload(), 300);
+			}
+		}
 	</script>
 
 
@@ -731,26 +725,7 @@ PURPOSE		: M_SRWA_12F BRRSREPORT
 
 	<script>
 
-		// This function is for closing the modal after an action is complete.
-		// It hides the result and loader modals and reloads the page.
-		function closemodel() {
-			$("#resultModal").modal("hide");
-			$('#loader').modal('hide');
 
-			if (isResubmissionUpdate) {
-				return;
-			}
-
-			// Only reload if not from Details modal
-			if (!isDetailsModal) {
-				setTimeout(function () {
-					location.reload();
-				}, 300);
-			} else {
-				// reset flag for next modal usage
-				isDetailsModal = false;
-			}
-		}
 
 
 		$(document).ready(function () {
@@ -853,28 +828,6 @@ PURPOSE		: M_SRWA_12F BRRSREPORT
 
 
 	<script>
-
-
-		// This function is for closing the modal after an action is complete.
-		// It hides the result and loader modals and reloads the page.
-		function closemodel() {
-			$("#resultModal").modal("hide");
-			$('#loader').modal('hide');
-
-			if (isResubmissionUpdate) {
-				return;
-			}
-
-			// Only reload if not from Details modal
-			if (!isDetailsModal) {
-				setTimeout(function () {
-					location.reload();
-				}, 300);
-			} else {
-				// reset flag for next modal usage
-				isDetailsModal = false;
-			}
-		}
 
 		function fileupload_all(btn) {
 
@@ -1080,7 +1033,8 @@ PURPOSE		: M_SRWA_12F BRRSREPORT
             data-currency=${currency}, 
             data-dtltype=${dtltype},
             data-filename='EMAIL_M_SRWA_12F.xlsx',
-            data-type='email',
+             data-format='email',
+			 data-type=${type},
             data-version=${version != null ? version : ''}" style="font-family: Arial;font-weight: bold;">
 							<i class="fa fa-download"></i> E-Mail
 
@@ -1088,7 +1042,6 @@ PURPOSE		: M_SRWA_12F BRRSREPORT
 
 
 					</div>
-
 				</div>
 				<p th:if="${displaymode == 'summary'and type != 'ARCHIVAL'}" style="text-align: left; font-weight: bold; 
 						color: white;  font-size: 20px;  background-color: rgb(107, 122, 143); 
@@ -2665,7 +2618,6 @@ PURPOSE		: M_SRWA_12F BRRSREPORT
 			</div>
 		</div>
 	</div>
-	<!-- Custom Alert/Result Modal (Matches your existing style) -->
 	<div class="modal fade" id="resultModal">
 		<div class="modal-dialog modal-dialog-centered">
 			<div class="modal-content">
@@ -2684,6 +2636,7 @@ PURPOSE		: M_SRWA_12F BRRSREPORT
 			</div>
 		</div>
 	</div>
+
 
 </body>
 

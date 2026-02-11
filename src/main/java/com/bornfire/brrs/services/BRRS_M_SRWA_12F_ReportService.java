@@ -49,6 +49,7 @@ import com.bornfire.brrs.entities.M_SRWA_12F_Detail_Entity;
 import com.bornfire.brrs.entities.M_SRWA_12F_Resub_Detail_Entity;
 import com.bornfire.brrs.entities.M_SRWA_12F_Resub_Summary_Entity;
 import com.bornfire.brrs.entities.M_SRWA_12F_Summary_Entity;
+import com.bornfire.brrs.entities.M_SRWA_12F_Archival_Summary_Entity;
 
 @Component
 @Service
@@ -63,22 +64,24 @@ public class BRRS_M_SRWA_12F_ReportService {
 	SessionFactory sessionFactory;
 
 	@Autowired
-	BRRS_M_SRWA_12F_Detail_Repo M_SRWA_12F_Detail_Repo;
+	BRRS_M_SRWA_12F_Summary_Repo brrs_M_SRWA_12F_summary_repo;
 
 	@Autowired
-	BRRS_M_SRWA_12F_Summary_Repo M_SRWA_12F_Summary_Repo;
+	BRRS_M_SRWA_12F_Detail_Repo brrs_M_SRWA_12F_detail_repo;
 
 	@Autowired
 	BRRS_M_SRWA_12F_Archival_Summary_Repo M_SRWA_12F_Archival_Summary_Repo;
 
-	@Autowired
-	BRRS_M_SRWA_12F_Archival_Detail_Repo M_SRWA_12F_Archival_Detail_Repo;
+
 
 	@Autowired
-	BRRS_M_SRWA_12F_Resub_Summary_Repo M_SRWA_12F_Resub_Summary_Repo;
+	BRRS_M_SRWA_12F_Archival_Detail_Repo BRRS_M_SRWA_12F_Archival_Detail_Repo;
 
 	@Autowired
-	BRRS_M_SRWA_12F_Resub_Detail_Repo M_SRWA_12F_Resub_Detail_Repo;
+	BRRS_M_SRWA_12F_Resub_Summary_Repo brrs_M_SRWA_12F_resub_summary_repo;
+
+	@Autowired
+	BRRS_M_SRWA_12F_Resub_Detail_Repo brrs_M_SRWA_12F_resub_detail_repo;
 
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
@@ -122,7 +125,7 @@ public class BRRS_M_SRWA_12F_ReportService {
 			// ---------- RESUB SUMMARY ----------
 			else if ("RESUB".equalsIgnoreCase(type) && version != null) {
 
-				List<M_SRWA_12F_Resub_Summary_Entity> T1Master = M_SRWA_12F_Resub_Summary_Repo
+				List<M_SRWA_12F_Resub_Summary_Entity> T1Master = brrs_M_SRWA_12F_resub_summary_repo
 						.getdatabydateListarchival(d1, version);
 
 				System.out.println("Resub Summary Size : " + T1Master.size());
@@ -134,7 +137,7 @@ public class BRRS_M_SRWA_12F_ReportService {
 			// ---------- NORMAL SUMMARY ----------
 			else {
 
-				List<M_SRWA_12F_Summary_Entity> T1Master = M_SRWA_12F_Summary_Repo.getdatabydateList(d1);
+				List<M_SRWA_12F_Summary_Entity> T1Master = brrs_M_SRWA_12F_summary_repo.getdatabydateList(d1);
 
 				System.out.println("Normal Summary Size : " + T1Master.size());
 
@@ -151,7 +154,7 @@ public class BRRS_M_SRWA_12F_ReportService {
 				// ---------- ARCHIVAL DETAIL ----------
 				if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
 
-					List<M_SRWA_12F_Archival_Detail_Entity> T1Master = M_SRWA_12F_Archival_Detail_Repo
+					List<M_SRWA_12F_Archival_Detail_Entity> T1Master = BRRS_M_SRWA_12F_Archival_Detail_Repo
 							.getdatabydateListarchival(d1, version);
 
 					System.out.println("Archival Detail Size : " + T1Master.size());
@@ -163,7 +166,7 @@ public class BRRS_M_SRWA_12F_ReportService {
 				// ---------- RESUB DETAIL ----------
 				else if ("RESUB".equalsIgnoreCase(type) && version != null) {
 
-					List<M_SRWA_12F_Resub_Detail_Entity> T1Master = M_SRWA_12F_Resub_Detail_Repo
+					List<M_SRWA_12F_Resub_Detail_Entity> T1Master = brrs_M_SRWA_12F_resub_detail_repo
 							.getdatabydateListarchival(d1, version);
 
 					System.out.println("Resub Detail Size : " + T1Master.size());
@@ -175,7 +178,7 @@ public class BRRS_M_SRWA_12F_ReportService {
 				// ---------- NORMAL DETAIL ----------
 				else {
 
-					List<M_SRWA_12F_Detail_Entity> T1Master = M_SRWA_12F_Detail_Repo.getdatabydateList(d1);
+					List<M_SRWA_12F_Detail_Entity> T1Master = brrs_M_SRWA_12F_detail_repo.getdatabydateList(d1);
 
 					System.out.println("Normal Detail Size : " + T1Master.size());
 
@@ -202,12 +205,12 @@ public class BRRS_M_SRWA_12F_ReportService {
 		System.out.println("Report Date: " + updatedEntity.getReportDate());
 
 		// 🔹 Fetch existing SUMMARY
-		M_SRWA_12F_Summary_Entity existingSummary = M_SRWA_12F_Summary_Repo.findById(updatedEntity.getReportDate())
+		M_SRWA_12F_Summary_Entity existingSummary = brrs_M_SRWA_12F_summary_repo.findById(updatedEntity.getReportDate())
 				.orElseThrow(() -> new RuntimeException(
 						"Record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
 
 		// 🔹 Fetch or create DETAIL
-		M_SRWA_12F_Detail_Entity detailEntity = M_SRWA_12F_Detail_Repo.findById(updatedEntity.getReportDate())
+		M_SRWA_12F_Detail_Entity detailEntity = brrs_M_SRWA_12F_detail_repo.findById(updatedEntity.getReportDate())
 				.orElseGet(() -> {
 					M_SRWA_12F_Detail_Entity d = new M_SRWA_12F_Detail_Entity();
 					d.setReportDate(updatedEntity.getReportDate());
@@ -259,8 +262,8 @@ public class BRRS_M_SRWA_12F_ReportService {
 		System.out.println("Saving Summary & Detail tables");
 
 		// 💾 Save both tables
-		M_SRWA_12F_Summary_Repo.save(existingSummary);
-		M_SRWA_12F_Detail_Repo.save(detailEntity);
+		brrs_M_SRWA_12F_summary_repo.save(existingSummary);
+		brrs_M_SRWA_12F_detail_repo.save(detailEntity);
 
 		System.out.println("Update completed successfully");
 	}
@@ -274,7 +277,7 @@ public class BRRS_M_SRWA_12F_ReportService {
 		// 1️⃣ GET CURRENT VERSION FROM RESUB TABLE
 		// ----------------------------------------------------
 
-		BigDecimal maxResubVer = M_SRWA_12F_Resub_Summary_Repo.findMaxVersion(reportDate);
+		BigDecimal maxResubVer = brrs_M_SRWA_12F_resub_summary_repo.findMaxVersion(reportDate);
 
 		if (maxResubVer == null)
 			throw new RuntimeException("No record for: " + reportDate);
@@ -335,82 +338,2826 @@ public class BRRS_M_SRWA_12F_ReportService {
 		// 6️⃣ SAVE ALL WITH SAME DATA
 		// ====================================================
 
-		M_SRWA_12F_Resub_Summary_Repo.save(resubSummary);
-		M_SRWA_12F_Resub_Detail_Repo.save(resubDetail);
+		brrs_M_SRWA_12F_resub_summary_repo.save(resubSummary);
+		brrs_M_SRWA_12F_resub_detail_repo.save(resubDetail);
 
 		M_SRWA_12F_Archival_Summary_Repo.save(archSummary);
-		M_SRWA_12F_Archival_Detail_Repo.save(archDetail);
+		BRRS_M_SRWA_12F_Archival_Detail_Repo.save(archDetail);
 	}
 
-	// Download For Summary
-	// Download For Summary
-	public byte[] getM_SRWA_12FExcel(String filename, String reportId, String fromdate, String todate,
-			String currency, String dtltype, String type, BigDecimal version) throws Exception {
+	public List<Object[]> getM_SRWA_12FResub() {
+		List<Object[]> resubList = new ArrayList<>();
+		try {
+			List<M_SRWA_12F_Archival_Summary_Entity> latestArchivalList = M_SRWA_12F_Archival_Summary_Repo
+					.getdatabydateListWithVersion();
+
+			if (latestArchivalList != null && !latestArchivalList.isEmpty()) {
+				for (M_SRWA_12F_Archival_Summary_Entity entity : latestArchivalList) {
+					Object[] row = new Object[] { entity.getReportDate(), entity.getReportVersion(),
+							entity.getReportResubDate() };
+					resubList.add(row);
+				}
+				System.out.println("Fetched " + resubList.size() + " record(s)");
+			} else {
+				System.out.println("No archival data found.");
+			}
+		} catch (Exception e) {
+			System.err.println("Error fetching M_SRWA_12F Resub data: " + e.getMessage());
+			e.printStackTrace();
+		}
+		return resubList;
+	}
+
+	// Archival View
+		public List<Object[]> getM_SRWA_12FArchival() {
+			List<Object[]> archivalList = new ArrayList<>();
+
+			try {
+				List<M_SRWA_12F_Archival_Summary_Entity> repoData = M_SRWA_12F_Archival_Summary_Repo
+						.getdatabydateListWithVersion();
+
+				if (repoData != null && !repoData.isEmpty()) {
+					for (M_SRWA_12F_Archival_Summary_Entity entity : repoData) {
+						Object[] row = new Object[] { entity.getReportDate(), entity.getReportVersion() };
+						archivalList.add(row);
+					}
+
+					System.out.println("Fetched " + archivalList.size() + " archival records");
+					M_SRWA_12F_Archival_Summary_Entity first = repoData.get(0);
+					System.out.println("Latest archival version: " + first.getReportVersion());
+				} else {
+					System.out.println("No archival data found.");
+				}
+
+			} catch (Exception e) {
+				System.err.println("Error fetching M_SRWA_12F Archival data: " + e.getMessage());
+				e.printStackTrace();
+			}
+			
+
+			return archivalList;
+		}
+
+	// Normal format Excel
+
+	public byte[] getM_SRWA_12FExcel(String filename, String reportId, String fromdate, String todate, String currency,
+			String dtltype, String type, String format, BigDecimal version) throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.");
 
-		// Convert string to Date
-		Date reportDate = dateformat.parse(todate);
+		System.out.println("======= VIEW SCREEN =======");
+		System.out.println("TYPE      : " + type);
+		System.out.println("FORMAT      : " + format);
+		System.out.println("DTLTYPE   : " + dtltype);
+		System.out.println("DATE      : " + dateformat.parse(todate));
+		System.out.println("VERSION   : " + version);
+		System.out.println("==========================");
 
-		// 1. ARCHIVAL – FORMAT
-		if ("ARCHIVAL".equalsIgnoreCase(type) 
-		        && version != null 
-		        && "report".equalsIgnoreCase(dtltype)) {
+		// ARCHIVAL check
+		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
+			try {
+				// Redirecting to Archival
+				return getExcelM_SRWA_12FARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, format,
+						version);
+			} catch (ParseException e) {
+				logger.error("Invalid report date format: {}", fromdate, e);
+				throw new RuntimeException("Date format must be dd-MMM-yyyy (e.g. 31-Jul-2025)");
+			}
+		} else if ("RESUB".equalsIgnoreCase(type) && version != null) {
+			logger.info("Service: Generating RESUB report for version {}", version);
 
-		    logger.info("Service: Generating ARCHIVAL report for version {}", version);
+			try {
+				// ✅ Redirecting to Resub Excel
+				return BRRS_M_SRWA_12FResubExcel(filename, reportId, fromdate, todate, currency, dtltype, type, format,
+						version);
 
-		    return getExcelM_SRWA_12FARCHIVAL(
-		        filename, reportId, fromdate, todate,
-		        currency, dtltype, type, version);
+			} catch (ParseException e) {
+				logger.error("Invalid report date format: {}", fromdate, e);
+				throw new RuntimeException("Date format must be dd-MMM-yyyy (e.g. 31-Jul-2025)");
+			}
+		} else {
+
+			if ("email".equalsIgnoreCase(format) && version == null) {
+				logger.info("Got format as Email");
+				logger.info("Service: Generating Email report for version {}", version);
+				return BRRS_M_SRWA_12FEmailExcel(filename, reportId, fromdate, todate, currency, dtltype, type,
+						version);
+			} else {
+
+				// Fetch data
+
+				List<M_SRWA_12F_Summary_Entity> dataList = brrs_M_SRWA_12F_summary_repo
+						.getdatabydateList(dateformat.parse(todate));
+
+				if (dataList.isEmpty()) {
+					logger.warn("Service: No data found for BRRS_M_SRWA_12F report. Returning empty result.");
+					return new byte[0];
+				}
+
+				String templateDir = env.getProperty("output.exportpathtemp");
+				String templateFileName = filename;
+				System.out.println(filename);
+				Path templatePath = Paths.get(templateDir, templateFileName);
+				System.out.println(templatePath);
+
+				logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
+
+				if (!Files.exists(templatePath)) {
+					// This specific exception will be caught by the controller.
+					throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
+				}
+				if (!Files.isReadable(templatePath)) {
+					// A specific exception for permission errors.
+					throw new SecurityException("Template file exists but is not readable (check permissions): "
+							+ templatePath.toAbsolutePath());
+				}
+
+				// This try-with-resources block is perfect. It guarantees all resources are
+				// closed automatically.
+				try (InputStream templateInputStream = Files.newInputStream(templatePath);
+						Workbook workbook = WorkbookFactory.create(templateInputStream);
+						ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+
+					Sheet sheet = workbook.getSheetAt(0);
+
+					// --- Style Definitions ---
+					CreationHelper createHelper = workbook.getCreationHelper();
+
+					CellStyle dateStyle = workbook.createCellStyle();
+					dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
+					dateStyle.setBorderBottom(BorderStyle.THIN);
+					dateStyle.setBorderTop(BorderStyle.THIN);
+					dateStyle.setBorderLeft(BorderStyle.THIN);
+					dateStyle.setBorderRight(BorderStyle.THIN);
+
+					CellStyle textStyle = workbook.createCellStyle();
+					textStyle.setBorderBottom(BorderStyle.THIN);
+					textStyle.setBorderTop(BorderStyle.THIN);
+					textStyle.setBorderLeft(BorderStyle.THIN);
+					textStyle.setBorderRight(BorderStyle.THIN);
+
+					// Create the font
+					Font font = workbook.createFont();
+					font.setFontHeightInPoints((short) 8); // size 8
+					font.setFontName("Arial");
+
+					CellStyle numberStyle = workbook.createCellStyle();
+					// numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
+					numberStyle.setBorderBottom(BorderStyle.THIN);
+					numberStyle.setBorderTop(BorderStyle.THIN);
+					numberStyle.setBorderLeft(BorderStyle.THIN);
+					numberStyle.setBorderRight(BorderStyle.THIN);
+					numberStyle.setFont(font);
+					// --- End of Style Definitions ---
+
+					int startRow = 10;
+
+					if (!dataList.isEmpty()) {
+						for (int i = 0; i < dataList.size(); i++) {
+							M_SRWA_12F_Summary_Entity record = dataList.get(i);
+							System.out.println("rownumber=" + startRow + i);
+							Row row = sheet.getRow(startRow + i);
+							if (row == null) {
+								row = sheet.createRow(startRow + i);
+							}
+
+							Cell cell1 = row.createCell(1);
+							if (record.getR11_NAME_OF_CORPORATE() != null) {
+								cell1.setCellValue(record.getR11_NAME_OF_CORPORATE());
+								cell1.setCellStyle(textStyle);
+							} else {
+								cell1.setCellValue("");
+								cell1.setCellStyle(textStyle);
+							}
+
+							Cell cell2 = row.createCell(2);
+							if (record.getR11_CREDIT_RATING() != null) {
+								cell2.setCellValue(record.getR11_CREDIT_RATING());
+								cell2.setCellStyle(textStyle);
+							} else {
+								cell2.setCellValue("");
+								cell2.setCellStyle(textStyle);
+							}
+
+							Cell cell3 = row.createCell(3);
+							if (record.getR11_RATING_AGENCY() != null) {
+								cell3.setCellValue(record.getR11_RATING_AGENCY());
+								cell3.setCellStyle(textStyle);
+							} else {
+								cell3.setCellValue("");
+								cell3.setCellStyle(textStyle);
+							}
+							// row11
+							// Column E
+							Cell cell4 = row.createCell(4);
+							if (record.getR11_EXPOSURE_AMT() != null) {
+								cell4.setCellValue(record.getR11_EXPOSURE_AMT().doubleValue());
+								cell4.setCellStyle(numberStyle);
+							} else {
+								cell4.setCellValue("");
+								cell4.setCellStyle(textStyle);
+							}
+
+							// row11
+							// Column F
+							Cell cell5 = row.createCell(5);
+							if (record.getR11_RISK_WEIGHT() != null) {
+								cell5.setCellValue(record.getR11_RISK_WEIGHT().doubleValue());
+								cell5.setCellStyle(numberStyle);
+							} else {
+								cell5.setCellValue("");
+								cell5.setCellStyle(textStyle);
+							}
+
+							// row12
+							row = sheet.getRow(11);
+
+							cell1 = row.createCell(1);
+							if (record.getR12_NAME_OF_CORPORATE() != null) {
+								cell1.setCellValue(record.getR12_NAME_OF_CORPORATE());
+								cell1.setCellStyle(textStyle);
+							} else {
+								cell1.setCellValue("");
+								cell1.setCellStyle(textStyle);
+							}
+
+							cell2 = row.createCell(2);
+							if (record.getR12_CREDIT_RATING() != null) {
+								cell2.setCellValue(record.getR12_CREDIT_RATING());
+								cell2.setCellStyle(textStyle);
+							} else {
+								cell2.setCellValue("");
+								cell2.setCellStyle(textStyle);
+							}
+
+							cell3 = row.createCell(3);
+							if (record.getR12_RATING_AGENCY() != null) {
+								cell3.setCellValue(record.getR12_RATING_AGENCY());
+								cell3.setCellStyle(textStyle);
+							} else {
+								cell3.setCellValue("");
+								cell3.setCellStyle(textStyle);
+							}
+							// Column E
+							cell4 = row.createCell(4);
+							if (record.getR12_EXPOSURE_AMT() != null) {
+								cell4.setCellValue(record.getR12_EXPOSURE_AMT().doubleValue());
+								cell4.setCellStyle(numberStyle);
+							} else {
+								cell4.setCellValue("");
+								cell4.setCellStyle(textStyle);
+							}
+
+							// row12
+							// Column F
+							cell5 = row.createCell(5);
+							if (record.getR12_RISK_WEIGHT() != null) {
+								cell5.setCellValue(record.getR12_RISK_WEIGHT().doubleValue());
+								cell5.setCellStyle(numberStyle);
+							} else {
+								cell5.setCellValue("");
+								cell5.setCellStyle(textStyle);
+							}
+
+							// row13
+							row = sheet.getRow(12);
+							// R13_NAME_OF_CORPORATE
+							cell1 = row.createCell(1);
+							if (record.getR13_NAME_OF_CORPORATE() != null) {
+								cell1.setCellValue(record.getR13_NAME_OF_CORPORATE());
+							} else {
+								cell1.setCellValue("");
+							}
+							cell1.setCellStyle(textStyle);
+
+							// R13_CREDIT_RATING
+							cell2 = row.createCell(2);
+							if (record.getR13_CREDIT_RATING() != null) {
+								cell2.setCellValue(record.getR13_CREDIT_RATING());
+							} else {
+								cell2.setCellValue("");
+							}
+							cell2.setCellStyle(textStyle);
+
+							// R13_RATING_AGENCY
+							cell3 = row.createCell(3);
+							if (record.getR13_RATING_AGENCY() != null) {
+								cell3.setCellValue(record.getR13_RATING_AGENCY());
+							} else {
+								cell3.setCellValue("");
+							}
+							cell3.setCellStyle(textStyle);
+
+							// Column E
+							cell4 = row.createCell(4);
+							if (record.getR13_EXPOSURE_AMT() != null) {
+								cell4.setCellValue(record.getR13_EXPOSURE_AMT().doubleValue());
+								cell4.setCellStyle(numberStyle);
+							} else {
+								cell4.setCellValue("");
+								cell4.setCellStyle(textStyle);
+							}
+
+							// row13
+							// Column F
+							cell5 = row.createCell(5);
+							if (record.getR13_RISK_WEIGHT() != null) {
+								cell5.setCellValue(record.getR13_RISK_WEIGHT().doubleValue());
+								cell5.setCellStyle(numberStyle);
+							} else {
+								cell5.setCellValue("");
+								cell5.setCellStyle(textStyle);
+							}
+
+							// row14
+							row = sheet.getRow(13);
+							// R14_NAME_OF_CORPORATE
+							cell1 = row.createCell(1);
+							if (record.getR14_NAME_OF_CORPORATE() != null) {
+								cell1.setCellValue(record.getR14_NAME_OF_CORPORATE());
+							} else {
+								cell1.setCellValue("");
+							}
+							cell1.setCellStyle(textStyle);
+
+							// R14_CREDIT_RATING
+							cell2 = row.createCell(2);
+							if (record.getR14_CREDIT_RATING() != null) {
+								cell2.setCellValue(record.getR14_CREDIT_RATING());
+							} else {
+								cell2.setCellValue("");
+							}
+							cell2.setCellStyle(textStyle);
+
+							// R14_RATING_AGENCY
+							cell3 = row.createCell(3);
+							if (record.getR14_RATING_AGENCY() != null) {
+								cell3.setCellValue(record.getR14_RATING_AGENCY());
+							} else {
+								cell3.setCellValue("");
+							}
+							cell3.setCellStyle(textStyle);
+
+							// Column E
+							cell4 = row.createCell(4);
+							if (record.getR14_EXPOSURE_AMT() != null) {
+								cell4.setCellValue(record.getR14_EXPOSURE_AMT().doubleValue());
+								cell4.setCellStyle(numberStyle);
+							} else {
+								cell4.setCellValue("");
+								cell4.setCellStyle(textStyle);
+							}
+
+							// row14
+							// Column F
+							cell5 = row.createCell(5);
+							if (record.getR14_RISK_WEIGHT() != null) {
+								cell5.setCellValue(record.getR14_RISK_WEIGHT().doubleValue());
+								cell5.setCellStyle(numberStyle);
+							} else {
+								cell5.setCellValue("");
+								cell5.setCellStyle(textStyle);
+							}
+
+							// row15
+							row = sheet.getRow(14);
+							cell1 = row.createCell(1);
+							cell1.setCellValue(
+									record.getR15_NAME_OF_CORPORATE() != null ? record.getR15_NAME_OF_CORPORATE() : "");
+							cell1.setCellStyle(textStyle);
+
+							cell2 = row.createCell(2);
+							cell2.setCellValue(
+									record.getR15_CREDIT_RATING() != null ? record.getR15_CREDIT_RATING() : "");
+							cell2.setCellStyle(textStyle);
+
+							cell3 = row.createCell(3);
+							cell3.setCellValue(
+									record.getR15_RATING_AGENCY() != null ? record.getR15_RATING_AGENCY() : "");
+							cell3.setCellStyle(textStyle);
+
+							// Column E
+							cell4 = row.createCell(4);
+							if (record.getR15_EXPOSURE_AMT() != null) {
+								cell4.setCellValue(record.getR15_EXPOSURE_AMT().doubleValue());
+								cell4.setCellStyle(numberStyle);
+							} else {
+								cell4.setCellValue("");
+								cell4.setCellStyle(textStyle);
+							}
+
+							// row15
+							// Column F
+							cell5 = row.createCell(5);
+							if (record.getR15_RISK_WEIGHT() != null) {
+								cell5.setCellValue(record.getR15_RISK_WEIGHT().doubleValue());
+								cell5.setCellStyle(numberStyle);
+							} else {
+								cell5.setCellValue("");
+								cell5.setCellStyle(textStyle);
+							}
+
+							// row16
+							row = sheet.getRow(15);
+							cell1 = row.createCell(1);
+							cell1.setCellValue(
+									record.getR16_NAME_OF_CORPORATE() != null ? record.getR16_NAME_OF_CORPORATE() : "");
+							cell1.setCellStyle(textStyle);
+
+							cell2 = row.createCell(2);
+							cell2.setCellValue(
+									record.getR16_CREDIT_RATING() != null ? record.getR16_CREDIT_RATING() : "");
+							cell2.setCellStyle(textStyle);
+
+							cell3 = row.createCell(3);
+							cell3.setCellValue(
+									record.getR16_RATING_AGENCY() != null ? record.getR16_RATING_AGENCY() : "");
+							cell3.setCellStyle(textStyle);
+
+							// Column E
+							cell4 = row.createCell(4);
+							if (record.getR16_EXPOSURE_AMT() != null) {
+								cell4.setCellValue(record.getR16_EXPOSURE_AMT().doubleValue());
+								cell4.setCellStyle(numberStyle);
+							} else {
+								cell4.setCellValue("");
+								cell4.setCellStyle(textStyle);
+							}
+
+							// row16
+							// Column F
+							cell5 = row.createCell(5);
+							if (record.getR16_RISK_WEIGHT() != null) {
+								cell5.setCellValue(record.getR16_RISK_WEIGHT().doubleValue());
+								cell5.setCellStyle(numberStyle);
+							} else {
+								cell5.setCellValue("");
+								cell5.setCellStyle(textStyle);
+							}
+
+							// row17
+							row = sheet.getRow(16);
+							cell1 = row.createCell(1);
+							cell1.setCellValue(
+									record.getR17_NAME_OF_CORPORATE() != null ? record.getR17_NAME_OF_CORPORATE() : "");
+							cell1.setCellStyle(textStyle);
+
+							cell2 = row.createCell(2);
+							cell2.setCellValue(
+									record.getR17_CREDIT_RATING() != null ? record.getR17_CREDIT_RATING() : "");
+							cell2.setCellStyle(textStyle);
+
+							cell3 = row.createCell(3);
+							cell3.setCellValue(
+									record.getR17_RATING_AGENCY() != null ? record.getR17_RATING_AGENCY() : "");
+							cell3.setCellStyle(textStyle);
+
+							// Column E
+							cell4 = row.createCell(4);
+							if (record.getR17_EXPOSURE_AMT() != null) {
+								cell4.setCellValue(record.getR17_EXPOSURE_AMT().doubleValue());
+								cell4.setCellStyle(numberStyle);
+							} else {
+								cell4.setCellValue("");
+								cell4.setCellStyle(textStyle);
+							}
+
+							// row17
+							// Column F
+							cell5 = row.createCell(5);
+							if (record.getR17_RISK_WEIGHT() != null) {
+								cell5.setCellValue(record.getR17_RISK_WEIGHT().doubleValue());
+								cell5.setCellStyle(numberStyle);
+							} else {
+								cell5.setCellValue("");
+								cell5.setCellStyle(textStyle);
+							}
+
+							// row18
+							row = sheet.getRow(17);
+							// R18 Cells
+							cell1 = row.createCell(1); // adjust column index as needed
+							cell1.setCellValue(
+									record.getR18_NAME_OF_CORPORATE() != null ? record.getR18_NAME_OF_CORPORATE() : "");
+							cell1.setCellStyle(textStyle);
+
+							cell2 = row.createCell(2);
+							cell2.setCellValue(
+									record.getR18_CREDIT_RATING() != null ? record.getR18_CREDIT_RATING() : "");
+							cell2.setCellStyle(textStyle);
+
+							cell3 = row.createCell(3);
+							cell3.setCellValue(
+									record.getR18_RATING_AGENCY() != null ? record.getR18_RATING_AGENCY() : "");
+							cell3.setCellStyle(textStyle);
+
+							// Column E
+							cell4 = row.createCell(4);
+							if (record.getR18_EXPOSURE_AMT() != null) {
+								cell4.setCellValue(record.getR18_EXPOSURE_AMT().doubleValue());
+								cell4.setCellStyle(numberStyle);
+							} else {
+								cell4.setCellValue("");
+								cell4.setCellStyle(textStyle);
+							}
+
+							// row18
+							// Column F
+							cell5 = row.createCell(5);
+							if (record.getR18_RISK_WEIGHT() != null) {
+								cell5.setCellValue(record.getR18_RISK_WEIGHT().doubleValue());
+								cell5.setCellStyle(numberStyle);
+							} else {
+								cell5.setCellValue("");
+								cell5.setCellStyle(textStyle);
+							}
+
+							// row19
+							row = sheet.getRow(18);
+							cell1 = row.createCell(1);
+							cell1.setCellValue(
+									record.getR19_NAME_OF_CORPORATE() != null ? record.getR19_NAME_OF_CORPORATE() : "");
+							cell1.setCellStyle(textStyle);
+
+							cell2 = row.createCell(2);
+							cell2.setCellValue(
+									record.getR19_CREDIT_RATING() != null ? record.getR19_CREDIT_RATING() : "");
+							cell2.setCellStyle(textStyle);
+
+							cell3 = row.createCell(3);
+							cell3.setCellValue(
+									record.getR19_RATING_AGENCY() != null ? record.getR19_RATING_AGENCY() : "");
+							cell3.setCellStyle(textStyle);
+							// Column E
+							cell4 = row.createCell(4);
+							if (record.getR19_EXPOSURE_AMT() != null) {
+								cell4.setCellValue(record.getR19_EXPOSURE_AMT().doubleValue());
+								cell4.setCellStyle(numberStyle);
+							} else {
+								cell4.setCellValue("");
+								cell4.setCellStyle(textStyle);
+							}
+
+							// row19
+							// Column F
+							cell5 = row.createCell(5);
+							if (record.getR19_RISK_WEIGHT() != null) {
+								cell5.setCellValue(record.getR19_RISK_WEIGHT().doubleValue());
+								cell5.setCellStyle(numberStyle);
+							} else {
+								cell5.setCellValue("");
+								cell5.setCellStyle(textStyle);
+							}
+
+							// row20
+							row = sheet.getRow(19);
+							cell1 = row.createCell(1);
+							cell1.setCellValue(
+									record.getR20_NAME_OF_CORPORATE() != null ? record.getR20_NAME_OF_CORPORATE() : "");
+							cell1.setCellStyle(textStyle);
+
+							cell2 = row.createCell(2);
+							cell2.setCellValue(
+									record.getR20_CREDIT_RATING() != null ? record.getR20_CREDIT_RATING() : "");
+							cell2.setCellStyle(textStyle);
+
+							cell3 = row.createCell(3);
+							cell3.setCellValue(
+									record.getR20_RATING_AGENCY() != null ? record.getR20_RATING_AGENCY() : "");
+							cell3.setCellStyle(textStyle);
+							// Column E
+							cell4 = row.createCell(4);
+							if (record.getR20_EXPOSURE_AMT() != null) {
+								cell4.setCellValue(record.getR20_EXPOSURE_AMT().doubleValue());
+								cell4.setCellStyle(numberStyle);
+							} else {
+								cell4.setCellValue("");
+								cell4.setCellStyle(textStyle);
+							}
+
+							// row20
+							// Column F
+							cell5 = row.createCell(5);
+							if (record.getR20_RISK_WEIGHT() != null) {
+								cell5.setCellValue(record.getR20_RISK_WEIGHT().doubleValue());
+								cell5.setCellStyle(numberStyle);
+							} else {
+								cell5.setCellValue("");
+								cell5.setCellStyle(textStyle);
+							}
+
+							// row21
+							row = sheet.getRow(20);
+							cell1 = row.createCell(1);
+							cell1.setCellValue(
+									record.getR21_NAME_OF_CORPORATE() != null ? record.getR21_NAME_OF_CORPORATE() : "");
+							cell1.setCellStyle(textStyle);
+
+							cell2 = row.createCell(2);
+							cell2.setCellValue(
+									record.getR21_CREDIT_RATING() != null ? record.getR21_CREDIT_RATING() : "");
+							cell2.setCellStyle(textStyle);
+
+							cell3 = row.createCell(3);
+							cell3.setCellValue(
+									record.getR21_RATING_AGENCY() != null ? record.getR21_RATING_AGENCY() : "");
+							cell3.setCellStyle(textStyle);
+							// Column E
+							cell4 = row.createCell(4);
+							if (record.getR21_EXPOSURE_AMT() != null) {
+								cell4.setCellValue(record.getR21_EXPOSURE_AMT().doubleValue());
+								cell4.setCellStyle(numberStyle);
+							} else {
+								cell4.setCellValue("");
+								cell4.setCellStyle(textStyle);
+							}
+
+							// row21
+							// Column F
+							cell5 = row.createCell(5);
+							if (record.getR21_RISK_WEIGHT() != null) {
+								cell5.setCellValue(record.getR21_RISK_WEIGHT().doubleValue());
+								cell5.setCellStyle(numberStyle);
+							} else {
+								cell5.setCellValue("");
+								cell5.setCellStyle(textStyle);
+							}
+
+							// row22
+							row = sheet.getRow(21);
+							cell1 = row.createCell(1);
+							cell1.setCellValue(
+									record.getR22_NAME_OF_CORPORATE() != null ? record.getR22_NAME_OF_CORPORATE() : "");
+							cell1.setCellStyle(textStyle);
+
+							cell2 = row.createCell(2);
+							cell2.setCellValue(
+									record.getR22_CREDIT_RATING() != null ? record.getR22_CREDIT_RATING() : "");
+							cell2.setCellStyle(textStyle);
+
+							cell3 = row.createCell(3);
+							cell3.setCellValue(
+									record.getR22_RATING_AGENCY() != null ? record.getR22_RATING_AGENCY() : "");
+							cell3.setCellStyle(textStyle);
+							// Column E
+							cell4 = row.createCell(4);
+							if (record.getR22_EXPOSURE_AMT() != null) {
+								cell4.setCellValue(record.getR22_EXPOSURE_AMT().doubleValue());
+								cell4.setCellStyle(numberStyle);
+							} else {
+								cell4.setCellValue("");
+								cell4.setCellStyle(textStyle);
+							}
+
+							// row22
+							// Column F
+							cell5 = row.createCell(5);
+							if (record.getR22_RISK_WEIGHT() != null) {
+								cell5.setCellValue(record.getR22_RISK_WEIGHT().doubleValue());
+								cell5.setCellStyle(numberStyle);
+							} else {
+								cell5.setCellValue("");
+								cell5.setCellStyle(textStyle);
+							}
+
+							// row23
+							row = sheet.getRow(22);
+							cell1 = row.createCell(1);
+							cell1.setCellValue(
+									record.getR23_NAME_OF_CORPORATE() != null ? record.getR23_NAME_OF_CORPORATE() : "");
+							cell1.setCellStyle(textStyle);
+
+							cell2 = row.createCell(2);
+							cell2.setCellValue(
+									record.getR23_CREDIT_RATING() != null ? record.getR23_CREDIT_RATING() : "");
+							cell2.setCellStyle(textStyle);
+
+							cell3 = row.createCell(3);
+							cell3.setCellValue(
+									record.getR23_RATING_AGENCY() != null ? record.getR23_RATING_AGENCY() : "");
+							cell3.setCellStyle(textStyle);
+							// Column E
+							cell4 = row.createCell(4);
+							if (record.getR23_EXPOSURE_AMT() != null) {
+								cell4.setCellValue(record.getR23_EXPOSURE_AMT().doubleValue());
+								cell4.setCellStyle(numberStyle);
+							} else {
+								cell4.setCellValue("");
+								cell4.setCellStyle(textStyle);
+							}
+
+							// row23
+							// Column F
+							cell5 = row.createCell(5);
+							if (record.getR23_RISK_WEIGHT() != null) {
+								cell5.setCellValue(record.getR23_RISK_WEIGHT().doubleValue());
+								cell5.setCellStyle(numberStyle);
+							} else {
+								cell5.setCellValue("");
+								cell5.setCellStyle(textStyle);
+							}
+
+							// row24
+							row = sheet.getRow(23);
+							cell1 = row.createCell(1);
+							cell1.setCellValue(
+									record.getR24_NAME_OF_CORPORATE() != null ? record.getR24_NAME_OF_CORPORATE() : "");
+							cell1.setCellStyle(textStyle);
+
+							cell2 = row.createCell(2);
+							cell2.setCellValue(
+									record.getR24_CREDIT_RATING() != null ? record.getR24_CREDIT_RATING() : "");
+							cell2.setCellStyle(textStyle);
+
+							cell3 = row.createCell(3);
+							cell3.setCellValue(
+									record.getR24_RATING_AGENCY() != null ? record.getR24_RATING_AGENCY() : "");
+							cell3.setCellStyle(textStyle);
+							// Column E
+							cell4 = row.createCell(4);
+							if (record.getR24_EXPOSURE_AMT() != null) {
+								cell4.setCellValue(record.getR24_EXPOSURE_AMT().doubleValue());
+								cell4.setCellStyle(numberStyle);
+							} else {
+								cell4.setCellValue("");
+								cell4.setCellStyle(textStyle);
+							}
+
+							// row24
+							// Column F
+							cell5 = row.createCell(5);
+							if (record.getR24_RISK_WEIGHT() != null) {
+								cell5.setCellValue(record.getR24_RISK_WEIGHT().doubleValue());
+								cell5.setCellStyle(numberStyle);
+							} else {
+								cell5.setCellValue("");
+								cell5.setCellStyle(textStyle);
+							}
+
+							// row25
+							row = sheet.getRow(24);
+							cell1 = row.createCell(1);
+							cell1.setCellValue(
+									record.getR25_NAME_OF_CORPORATE() != null ? record.getR25_NAME_OF_CORPORATE() : "");
+							cell1.setCellStyle(textStyle);
+
+							cell2 = row.createCell(2);
+							cell2.setCellValue(
+									record.getR25_CREDIT_RATING() != null ? record.getR25_CREDIT_RATING() : "");
+							cell2.setCellStyle(textStyle);
+
+							cell3 = row.createCell(3);
+							cell3.setCellValue(
+									record.getR25_RATING_AGENCY() != null ? record.getR25_RATING_AGENCY() : "");
+							cell3.setCellStyle(textStyle);
+							// Column E
+							cell4 = row.createCell(4);
+							if (record.getR25_EXPOSURE_AMT() != null) {
+								cell4.setCellValue(record.getR25_EXPOSURE_AMT().doubleValue());
+								cell4.setCellStyle(numberStyle);
+							} else {
+								cell4.setCellValue("");
+								cell4.setCellStyle(textStyle);
+							}
+
+							// row25
+							// Column F
+							cell5 = row.createCell(5);
+							if (record.getR25_RISK_WEIGHT() != null) {
+								cell5.setCellValue(record.getR25_RISK_WEIGHT().doubleValue());
+								cell5.setCellStyle(numberStyle);
+							} else {
+								cell5.setCellValue("");
+								cell5.setCellStyle(textStyle);
+							}
+
+							// row26
+							row = sheet.getRow(25);
+							cell1 = row.createCell(1);
+							cell1.setCellValue(
+									record.getR26_NAME_OF_CORPORATE() != null ? record.getR26_NAME_OF_CORPORATE() : "");
+							cell1.setCellStyle(textStyle);
+
+							cell2 = row.createCell(2);
+							cell2.setCellValue(
+									record.getR26_CREDIT_RATING() != null ? record.getR26_CREDIT_RATING() : "");
+							cell2.setCellStyle(textStyle);
+
+							cell3 = row.createCell(3);
+							cell3.setCellValue(
+									record.getR26_RATING_AGENCY() != null ? record.getR26_RATING_AGENCY() : "");
+							cell3.setCellStyle(textStyle);
+							// Column E
+							cell4 = row.createCell(4);
+							if (record.getR26_EXPOSURE_AMT() != null) {
+								cell4.setCellValue(record.getR26_EXPOSURE_AMT().doubleValue());
+								cell4.setCellStyle(numberStyle);
+							} else {
+								cell4.setCellValue("");
+								cell4.setCellStyle(textStyle);
+							}
+
+							// row26
+							// Column F
+							cell5 = row.createCell(5);
+							if (record.getR26_RISK_WEIGHT() != null) {
+								cell5.setCellValue(record.getR26_RISK_WEIGHT().doubleValue());
+								cell5.setCellStyle(numberStyle);
+							} else {
+								cell5.setCellValue("");
+								cell5.setCellStyle(textStyle);
+							}
+
+							// row27
+							row = sheet.getRow(26);
+							cell1 = row.createCell(1);
+							cell1.setCellValue(
+									record.getR27_NAME_OF_CORPORATE() != null ? record.getR27_NAME_OF_CORPORATE() : "");
+							cell1.setCellStyle(textStyle);
+
+							cell2 = row.createCell(2);
+							cell2.setCellValue(
+									record.getR27_CREDIT_RATING() != null ? record.getR27_CREDIT_RATING() : "");
+							cell2.setCellStyle(textStyle);
+
+							cell3 = row.createCell(3);
+							cell3.setCellValue(
+									record.getR27_RATING_AGENCY() != null ? record.getR27_RATING_AGENCY() : "");
+							cell3.setCellStyle(textStyle);
+							// Column E
+							cell4 = row.createCell(4);
+							if (record.getR27_EXPOSURE_AMT() != null) {
+								cell4.setCellValue(record.getR27_EXPOSURE_AMT().doubleValue());
+								cell4.setCellStyle(numberStyle);
+							} else {
+								cell4.setCellValue("");
+								cell4.setCellStyle(textStyle);
+							}
+
+							// row27
+							// Column F
+							cell5 = row.createCell(5);
+							if (record.getR27_RISK_WEIGHT() != null) {
+								cell5.setCellValue(record.getR27_RISK_WEIGHT().doubleValue());
+								cell5.setCellStyle(numberStyle);
+							} else {
+								cell5.setCellValue("");
+								cell5.setCellStyle(textStyle);
+							}
+
+							// row28
+							row = sheet.getRow(27);
+							cell1 = row.createCell(1);
+							cell1.setCellValue(
+									record.getR28_NAME_OF_CORPORATE() != null ? record.getR28_NAME_OF_CORPORATE() : "");
+							cell1.setCellStyle(textStyle);
+
+							cell2 = row.createCell(2);
+							cell2.setCellValue(
+									record.getR28_CREDIT_RATING() != null ? record.getR28_CREDIT_RATING() : "");
+							cell2.setCellStyle(textStyle);
+
+							cell3 = row.createCell(3);
+							cell3.setCellValue(
+									record.getR28_RATING_AGENCY() != null ? record.getR28_RATING_AGENCY() : "");
+							cell3.setCellStyle(textStyle);
+							// Column E
+							cell4 = row.createCell(4);
+							if (record.getR28_EXPOSURE_AMT() != null) {
+								cell4.setCellValue(record.getR28_EXPOSURE_AMT().doubleValue());
+								cell4.setCellStyle(numberStyle);
+							} else {
+								cell4.setCellValue("");
+								cell4.setCellStyle(textStyle);
+							}
+
+							// row28
+							// Column F
+							cell5 = row.createCell(5);
+							if (record.getR28_RISK_WEIGHT() != null) {
+								cell5.setCellValue(record.getR28_RISK_WEIGHT().doubleValue());
+								cell5.setCellStyle(numberStyle);
+							} else {
+								cell5.setCellValue("");
+								cell5.setCellStyle(textStyle);
+							}
+
+							// row29
+							row = sheet.getRow(28);
+							cell1 = row.createCell(1);
+							cell1.setCellValue(
+									record.getR29_NAME_OF_CORPORATE() != null ? record.getR29_NAME_OF_CORPORATE() : "");
+							cell1.setCellStyle(textStyle);
+
+							cell2 = row.createCell(2);
+							cell2.setCellValue(
+									record.getR29_CREDIT_RATING() != null ? record.getR29_CREDIT_RATING() : "");
+							cell2.setCellStyle(textStyle);
+
+							cell3 = row.createCell(3);
+							cell3.setCellValue(
+									record.getR29_RATING_AGENCY() != null ? record.getR29_RATING_AGENCY() : "");
+							cell3.setCellStyle(textStyle);
+							// Column E
+							cell4 = row.createCell(4);
+							if (record.getR29_EXPOSURE_AMT() != null) {
+								cell4.setCellValue(record.getR29_EXPOSURE_AMT().doubleValue());
+								cell4.setCellStyle(numberStyle);
+							} else {
+								cell4.setCellValue("");
+								cell4.setCellStyle(textStyle);
+							}
+
+							// row29
+							// Column F
+							cell5 = row.createCell(5);
+							if (record.getR29_RISK_WEIGHT() != null) {
+								cell5.setCellValue(record.getR29_RISK_WEIGHT().doubleValue());
+								cell5.setCellStyle(numberStyle);
+							} else {
+								cell5.setCellValue("");
+								cell5.setCellStyle(textStyle);
+							}
+
+							// row30
+							row = sheet.getRow(29);
+							cell1 = row.createCell(1);
+							cell1.setCellValue(
+									record.getR30_NAME_OF_CORPORATE() != null ? record.getR30_NAME_OF_CORPORATE() : "");
+							cell1.setCellStyle(textStyle);
+
+							cell2 = row.createCell(2);
+							cell2.setCellValue(
+									record.getR30_CREDIT_RATING() != null ? record.getR30_CREDIT_RATING() : "");
+							cell2.setCellStyle(textStyle);
+
+							cell3 = row.createCell(3);
+							cell3.setCellValue(
+									record.getR30_RATING_AGENCY() != null ? record.getR30_RATING_AGENCY() : "");
+							cell3.setCellStyle(textStyle);
+
+							// Column E
+							cell4 = row.createCell(4);
+							if (record.getR30_EXPOSURE_AMT() != null) {
+								cell4.setCellValue(record.getR30_EXPOSURE_AMT().doubleValue());
+								cell4.setCellStyle(numberStyle);
+							} else {
+								cell4.setCellValue("");
+								cell4.setCellStyle(textStyle);
+							}
+
+							// row30
+							// Column F
+							cell5 = row.createCell(5);
+							if (record.getR30_RISK_WEIGHT() != null) {
+								cell5.setCellValue(record.getR30_RISK_WEIGHT().doubleValue());
+								cell5.setCellStyle(numberStyle);
+							} else {
+								cell5.setCellValue("");
+								cell5.setCellStyle(textStyle);
+							}
+
+							// row31
+							row = sheet.getRow(30);
+							cell1 = row.createCell(1);
+							cell1.setCellValue(
+									record.getR31_NAME_OF_CORPORATE() != null ? record.getR31_NAME_OF_CORPORATE() : "");
+							cell1.setCellStyle(textStyle);
+
+							cell2 = row.createCell(2);
+							cell2.setCellValue(
+									record.getR31_CREDIT_RATING() != null ? record.getR31_CREDIT_RATING() : "");
+							cell2.setCellStyle(textStyle);
+
+							cell3 = row.createCell(3);
+							cell3.setCellValue(
+									record.getR31_RATING_AGENCY() != null ? record.getR31_RATING_AGENCY() : "");
+							cell3.setCellStyle(textStyle);
+							// Column E
+							cell4 = row.createCell(4);
+							if (record.getR31_EXPOSURE_AMT() != null) {
+								cell4.setCellValue(record.getR31_EXPOSURE_AMT().doubleValue());
+								cell4.setCellStyle(numberStyle);
+							} else {
+								cell4.setCellValue("");
+								cell4.setCellStyle(textStyle);
+							}
+
+							// row31
+							// Column F
+							cell5 = row.createCell(5);
+							if (record.getR31_RISK_WEIGHT() != null) {
+								cell5.setCellValue(record.getR31_RISK_WEIGHT().doubleValue());
+								cell5.setCellStyle(numberStyle);
+							} else {
+								cell5.setCellValue("");
+								cell5.setCellStyle(textStyle);
+							}
+
+							// row32
+							row = sheet.getRow(31);
+							cell1 = row.createCell(1);
+							cell1.setCellValue(
+									record.getR32_NAME_OF_CORPORATE() != null ? record.getR32_NAME_OF_CORPORATE() : "");
+							cell1.setCellStyle(textStyle);
+
+							cell2 = row.createCell(2);
+							cell2.setCellValue(
+									record.getR32_CREDIT_RATING() != null ? record.getR32_CREDIT_RATING() : "");
+							cell2.setCellStyle(textStyle);
+
+							cell3 = row.createCell(3);
+							cell3.setCellValue(
+									record.getR32_RATING_AGENCY() != null ? record.getR32_RATING_AGENCY() : "");
+							cell3.setCellStyle(textStyle);
+							// Column E
+							cell4 = row.createCell(4);
+							if (record.getR32_EXPOSURE_AMT() != null) {
+								cell4.setCellValue(record.getR32_EXPOSURE_AMT().doubleValue());
+								cell4.setCellStyle(numberStyle);
+							} else {
+								cell4.setCellValue("");
+								cell4.setCellStyle(textStyle);
+							}
+
+							// row32
+							// Column F
+							cell5 = row.createCell(5);
+							if (record.getR32_RISK_WEIGHT() != null) {
+								cell5.setCellValue(record.getR32_RISK_WEIGHT().doubleValue());
+								cell5.setCellStyle(numberStyle);
+							} else {
+								cell5.setCellValue("");
+								cell5.setCellStyle(textStyle);
+							}
+
+							// row33
+							row = sheet.getRow(32);
+							cell1 = row.createCell(1);
+							cell1.setCellValue(
+									record.getR33_NAME_OF_CORPORATE() != null ? record.getR33_NAME_OF_CORPORATE() : "");
+							cell1.setCellStyle(textStyle);
+
+							cell2 = row.createCell(2);
+							cell2.setCellValue(
+									record.getR33_CREDIT_RATING() != null ? record.getR33_CREDIT_RATING() : "");
+							cell2.setCellStyle(textStyle);
+
+							cell3 = row.createCell(3);
+							cell3.setCellValue(
+									record.getR33_RATING_AGENCY() != null ? record.getR33_RATING_AGENCY() : "");
+							cell3.setCellStyle(textStyle);
+							// Column E
+							cell4 = row.createCell(4);
+							if (record.getR33_EXPOSURE_AMT() != null) {
+								cell4.setCellValue(record.getR33_EXPOSURE_AMT().doubleValue());
+								cell4.setCellStyle(numberStyle);
+							} else {
+								cell4.setCellValue("");
+								cell4.setCellStyle(textStyle);
+							}
+
+							// row33
+							// Column F
+							cell5 = row.createCell(5);
+							if (record.getR33_RISK_WEIGHT() != null) {
+								cell5.setCellValue(record.getR33_RISK_WEIGHT().doubleValue());
+								cell5.setCellStyle(numberStyle);
+							} else {
+								cell5.setCellValue("");
+								cell5.setCellStyle(textStyle);
+							}
+
+							// row34
+							row = sheet.getRow(33);
+							cell1 = row.createCell(1);
+							cell1.setCellValue(
+									record.getR34_NAME_OF_CORPORATE() != null ? record.getR34_NAME_OF_CORPORATE() : "");
+							cell1.setCellStyle(textStyle);
+
+							cell2 = row.createCell(2);
+							cell2.setCellValue(
+									record.getR34_CREDIT_RATING() != null ? record.getR34_CREDIT_RATING() : "");
+							cell2.setCellStyle(textStyle);
+
+							cell3 = row.createCell(3);
+							cell3.setCellValue(
+									record.getR34_RATING_AGENCY() != null ? record.getR34_RATING_AGENCY() : "");
+							cell3.setCellStyle(textStyle);
+							// Column E
+							cell4 = row.createCell(4);
+							if (record.getR34_EXPOSURE_AMT() != null) {
+								cell4.setCellValue(record.getR34_EXPOSURE_AMT().doubleValue());
+								cell4.setCellStyle(numberStyle);
+							} else {
+								cell4.setCellValue("");
+								cell4.setCellStyle(textStyle);
+							}
+
+							// row34
+							// Column F
+							cell5 = row.createCell(5);
+							if (record.getR34_RISK_WEIGHT() != null) {
+								cell5.setCellValue(record.getR34_RISK_WEIGHT().doubleValue());
+								cell5.setCellStyle(numberStyle);
+							} else {
+								cell5.setCellValue("");
+								cell5.setCellStyle(textStyle);
+							}
+
+							// row35
+							row = sheet.getRow(34);
+							cell1 = row.createCell(1);
+							cell1.setCellValue(
+									record.getR35_NAME_OF_CORPORATE() != null ? record.getR35_NAME_OF_CORPORATE() : "");
+							cell1.setCellStyle(textStyle);
+
+							cell2 = row.createCell(2);
+							cell2.setCellValue(
+									record.getR35_CREDIT_RATING() != null ? record.getR35_CREDIT_RATING() : "");
+							cell2.setCellStyle(textStyle);
+
+							cell3 = row.createCell(3);
+							cell3.setCellValue(
+									record.getR35_RATING_AGENCY() != null ? record.getR35_RATING_AGENCY() : "");
+							cell3.setCellStyle(textStyle);
+							// Column E
+							cell4 = row.createCell(4);
+							if (record.getR35_EXPOSURE_AMT() != null) {
+								cell4.setCellValue(record.getR35_EXPOSURE_AMT().doubleValue());
+								cell4.setCellStyle(numberStyle);
+							} else {
+								cell4.setCellValue("");
+								cell4.setCellStyle(textStyle);
+							}
+							cell5 = row.createCell(5);
+							if (record.getR35_RISK_WEIGHT() != null) {
+								cell5.setCellValue(record.getR35_RISK_WEIGHT().doubleValue());
+								cell5.setCellStyle(numberStyle);
+							} else {
+								cell5.setCellValue("");
+								cell5.setCellStyle(textStyle);
+							}
+
+							// row35
+							// Column F
+							row = sheet.getRow(35);
+							cell1 = row.createCell(1);
+							cell1.setCellValue(
+									record.getR36_NAME_OF_CORPORATE() != null ? record.getR36_NAME_OF_CORPORATE() : "");
+							cell1.setCellStyle(textStyle);
+
+							cell2 = row.createCell(2);
+							cell2.setCellValue(
+									record.getR36_CREDIT_RATING() != null ? record.getR36_CREDIT_RATING() : "");
+							cell2.setCellStyle(textStyle);
+
+							cell3 = row.createCell(3);
+							cell3.setCellValue(
+									record.getR36_RATING_AGENCY() != null ? record.getR36_RATING_AGENCY() : "");
+							cell3.setCellStyle(textStyle);
+
+							// Column E
+							cell4 = row.createCell(4);
+							if (record.getR36_EXPOSURE_AMT() != null) {
+								cell4.setCellValue(record.getR36_EXPOSURE_AMT().doubleValue());
+								cell4.setCellStyle(numberStyle);
+							} else {
+								cell4.setCellValue("");
+								cell4.setCellStyle(textStyle);
+							}
+
+							// row36
+							// Column F
+							cell5 = row.createCell(5);
+							if (record.getR36_RISK_WEIGHT() != null) {
+								cell5.setCellValue(record.getR36_RISK_WEIGHT().doubleValue());
+								cell5.setCellStyle(numberStyle);
+							} else {
+								cell5.setCellValue("");
+								cell5.setCellStyle(textStyle);
+							}
+
+						}
+						workbook.setForceFormulaRecalculation(true);
+					} else {
+
+					}
+
+					// Write the final workbook content to the in-memory stream.
+					workbook.write(out);
+
+					logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
+
+					return out.toByteArray();
+				}
+			}
+		}
+	}
+
+	// Normal Email Excel
+	public byte[] BRRS_M_SRWA_12FEmailExcel(String filename, String reportId, String fromdate, String todate,
+			String currency, String dtltype, String type, BigDecimal version) throws Exception {
+
+		logger.info("Service: Starting Email Excel generation process in memory.");
+
+		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
+			try {
+				// Redirecting to Archival
+				return BRRS_M_SRWA_12FEmailArchivalExcel(filename, reportId, fromdate, todate, currency, dtltype, type,
+						version);
+			} catch (ParseException e) {
+				logger.error("Invalid report date format: {}", fromdate, e);
+				throw new RuntimeException("Date format must be dd-MMM-yyyy (e.g. 31-Jul-2025)");
+			}
+		} else if ("RESUB".equalsIgnoreCase(type) && version != null) {
+			logger.info("Service: Generating RESUB report for version {}", version);
+
+			try {
+				// ✅ Redirecting to Resub Excel
+				return BRRS_M_SRWA_12FEmailResubExcel(filename, reportId, fromdate, todate, currency, dtltype, type,
+						version);
+
+			} catch (ParseException e) {
+				logger.error("Invalid report date format: {}", fromdate, e);
+				throw new RuntimeException("Date format must be dd-MMM-yyyy (e.g. 31-Jul-2025)");
+			}
+		} else {
+			List<M_SRWA_12F_Summary_Entity> dataList = brrs_M_SRWA_12F_summary_repo
+					.getdatabydateList(dateformat.parse(todate));
+
+			if (dataList.isEmpty()) {
+				logger.warn("Service: No data found for BRRS_M_SRWA_12F report. Returning empty result.");
+				return new byte[0];
+			}
+
+			String templateDir = env.getProperty("output.exportpathtemp");
+			String templateFileName = filename;
+			System.out.println(filename);
+			Path templatePath = Paths.get(templateDir, templateFileName);
+			System.out.println(templatePath);
+
+			logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
+
+			if (!Files.exists(templatePath)) {
+				// This specific exception will be caught by the controller.
+				throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
+			}
+			if (!Files.isReadable(templatePath)) {
+				// A specific exception for permission errors.
+				throw new SecurityException("Template file exists but is not readable (check permissions): "
+						+ templatePath.toAbsolutePath());
+			}
+
+			// This try-with-resources block is perfect. It guarantees all resources are
+			// closed automatically.
+			try (InputStream templateInputStream = Files.newInputStream(templatePath);
+					Workbook workbook = WorkbookFactory.create(templateInputStream);
+					ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+
+				Sheet sheet = workbook.getSheetAt(0);
+
+				// --- Style Definitions ---
+				CreationHelper createHelper = workbook.getCreationHelper();
+
+				CellStyle dateStyle = workbook.createCellStyle();
+				dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
+				dateStyle.setBorderBottom(BorderStyle.THIN);
+				dateStyle.setBorderTop(BorderStyle.THIN);
+				dateStyle.setBorderLeft(BorderStyle.THIN);
+				dateStyle.setBorderRight(BorderStyle.THIN);
+
+				CellStyle textStyle = workbook.createCellStyle();
+				textStyle.setBorderBottom(BorderStyle.THIN);
+				textStyle.setBorderTop(BorderStyle.THIN);
+				textStyle.setBorderLeft(BorderStyle.THIN);
+				textStyle.setBorderRight(BorderStyle.THIN);
+
+				// Create the font
+				Font font = workbook.createFont();
+				font.setFontHeightInPoints((short) 8); // size 8
+				font.setFontName("Arial");
+
+				CellStyle numberStyle = workbook.createCellStyle();
+				// numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
+				numberStyle.setBorderBottom(BorderStyle.THIN);
+				numberStyle.setBorderTop(BorderStyle.THIN);
+				numberStyle.setBorderLeft(BorderStyle.THIN);
+				numberStyle.setBorderRight(BorderStyle.THIN);
+				numberStyle.setFont(font);
+				// --- End of Style Definitions ---
+
+				int startRow = 10;
+
+				if (!dataList.isEmpty()) {
+					for (int i = 0; i < dataList.size(); i++) {
+						M_SRWA_12F_Summary_Entity record1 = dataList.get(i);
+						System.out.println("rownumber=" + startRow + i);
+						Row row = sheet.getRow(startRow + i);
+						if (row == null) {
+							row = sheet.createRow(startRow + i);
+						}
+
+// row11
+						// Column E
+						Cell cell1 = row.createCell(1);
+						if (record1.getR11_NAME_OF_CORPORATE() != null) {
+							cell1.setCellValue(record1.getR11_NAME_OF_CORPORATE());
+							cell1.setCellStyle(textStyle);
+						} else {
+							cell1.setCellValue("");
+							cell1.setCellStyle(textStyle);
+						}
+
+						Cell cell2 = row.createCell(2);
+						if (record1.getR11_CREDIT_RATING() != null) {
+							cell2.setCellValue(record1.getR11_CREDIT_RATING());
+							cell2.setCellStyle(textStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						Cell cell3 = row.createCell(4);
+						if (record1.getR11_RATING_AGENCY() != null) {
+							cell3.setCellValue(record1.getR11_RATING_AGENCY());
+							cell3.setCellStyle(textStyle);
+						} else {
+							cell3.setCellValue("");
+							cell3.setCellStyle(textStyle);
+						}
+						// row11
+						// Column E
+						Cell cell4 = row.createCell(6);
+						if (record1.getR11_EXPOSURE_AMT() != null) {
+							cell4.setCellValue(record1.getR11_EXPOSURE_AMT().doubleValue());
+							cell4.setCellStyle(numberStyle);
+						} else {
+							cell4.setCellValue("");
+							cell4.setCellStyle(textStyle);
+						}
+
+						// row11
+						// Column F
+						Cell cell5 = row.createCell(7);
+						if (record1.getR11_RISK_WEIGHT() != null) {
+							cell5.setCellValue(record1.getR11_RISK_WEIGHT().doubleValue());
+							cell5.setCellStyle(numberStyle);
+						} else {
+							cell5.setCellValue("");
+							cell5.setCellStyle(textStyle);
+						}
+						// row11
+						// Column F
+						Cell cell6 = row.createCell(8);
+						if (record1.getR11_RISK_WEIGHTED_AMT() != null) {
+							cell6.setCellValue(record1.getR11_RISK_WEIGHTED_AMT().doubleValue());
+							cell6.setCellStyle(numberStyle);
+						} else {
+							cell6.setCellValue("");
+							cell6.setCellStyle(textStyle);
+						}
+
+						// row12
+						row = sheet.getRow(11);
+
+						cell1 = row.createCell(1);
+						if (record1.getR12_NAME_OF_CORPORATE() != null) {
+							cell1.setCellValue(record1.getR12_NAME_OF_CORPORATE());
+							cell1.setCellStyle(textStyle);
+						} else {
+							cell1.setCellValue("");
+							cell1.setCellStyle(textStyle);
+						}
+
+						cell2 = row.createCell(2);
+						if (record1.getR12_CREDIT_RATING() != null) {
+							cell2.setCellValue(record1.getR12_CREDIT_RATING());
+							cell2.setCellStyle(textStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						cell3 = row.createCell(4);
+						if (record1.getR12_RATING_AGENCY() != null) {
+							cell3.setCellValue(record1.getR12_RATING_AGENCY());
+							cell3.setCellStyle(textStyle);
+						} else {
+							cell3.setCellValue("");
+							cell3.setCellStyle(textStyle);
+						}
+						// Column E
+						cell4 = row.createCell(6);
+						if (record1.getR12_EXPOSURE_AMT() != null) {
+							cell4.setCellValue(record1.getR12_EXPOSURE_AMT().doubleValue());
+							cell4.setCellStyle(numberStyle);
+						} else {
+							cell4.setCellValue("");
+							cell4.setCellStyle(textStyle);
+						}
+
+						// row12
+						// Column F
+						cell5 = row.createCell(7);
+						if (record1.getR12_RISK_WEIGHT() != null) {
+							cell5.setCellValue(record1.getR12_RISK_WEIGHT().doubleValue());
+							cell5.setCellStyle(numberStyle);
+						} else {
+							cell5.setCellValue("");
+							cell5.setCellStyle(textStyle);
+						}
+						cell6 = row.createCell(8);
+						if (record1.getR12_RISK_WEIGHTED_AMT() != null) {
+							cell6.setCellValue(record1.getR12_RISK_WEIGHTED_AMT().doubleValue());
+							cell6.setCellStyle(numberStyle);
+						} else {
+							cell6.setCellValue("");
+							cell6.setCellStyle(textStyle);
+						}
+
+						// row13
+						row = sheet.getRow(12);
+
+						cell1 = row.createCell(1);
+						if (record1.getR13_NAME_OF_CORPORATE() != null) {
+							cell1.setCellValue(record1.getR13_NAME_OF_CORPORATE());
+							cell1.setCellStyle(textStyle);
+						} else {
+							cell1.setCellValue("");
+							cell1.setCellStyle(textStyle);
+						}
+
+						cell2 = row.createCell(2);
+						if (record1.getR13_CREDIT_RATING() != null) {
+							cell2.setCellValue(record1.getR13_CREDIT_RATING());
+							cell2.setCellStyle(textStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						cell3 = row.createCell(4);
+						if (record1.getR13_RATING_AGENCY() != null) {
+							cell3.setCellValue(record1.getR13_RATING_AGENCY());
+							cell3.setCellStyle(textStyle);
+						} else {
+							cell3.setCellValue("");
+							cell3.setCellStyle(textStyle);
+						}
+
+						cell4 = row.createCell(6);
+						if (record1.getR13_EXPOSURE_AMT() != null) {
+							cell4.setCellValue(record1.getR13_EXPOSURE_AMT().doubleValue());
+							cell4.setCellStyle(numberStyle);
+						} else {
+							cell4.setCellValue("");
+							cell4.setCellStyle(textStyle);
+						}
+
+						cell5 = row.createCell(7);
+						if (record1.getR13_RISK_WEIGHT() != null) {
+							cell5.setCellValue(record1.getR13_RISK_WEIGHT().doubleValue());
+							cell5.setCellStyle(numberStyle);
+						} else {
+							cell5.setCellValue("");
+							cell5.setCellStyle(textStyle);
+						}
+
+						cell6 = row.createCell(8);
+						if (record1.getR13_RISK_WEIGHTED_AMT() != null) {
+							cell6.setCellValue(record1.getR13_RISK_WEIGHTED_AMT().doubleValue());
+							cell6.setCellStyle(numberStyle);
+						} else {
+							cell6.setCellValue("");
+							cell6.setCellStyle(textStyle);
+						}
+
+						// row14
+						row = sheet.getRow(13);
+
+						cell1 = row.createCell(1);
+						if (record1.getR14_NAME_OF_CORPORATE() != null) {
+							cell1.setCellValue(record1.getR14_NAME_OF_CORPORATE());
+							cell1.setCellStyle(textStyle);
+						} else {
+							cell1.setCellValue("");
+							cell1.setCellStyle(textStyle);
+						}
+
+						cell2 = row.createCell(2);
+						if (record1.getR14_CREDIT_RATING() != null) {
+							cell2.setCellValue(record1.getR14_CREDIT_RATING());
+							cell2.setCellStyle(textStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						cell3 = row.createCell(4);
+						if (record1.getR14_RATING_AGENCY() != null) {
+							cell3.setCellValue(record1.getR14_RATING_AGENCY());
+							cell3.setCellStyle(textStyle);
+						} else {
+							cell3.setCellValue("");
+							cell3.setCellStyle(textStyle);
+						}
+
+						cell4 = row.createCell(6);
+						if (record1.getR14_EXPOSURE_AMT() != null) {
+							cell4.setCellValue(record1.getR14_EXPOSURE_AMT().doubleValue());
+							cell4.setCellStyle(numberStyle);
+						} else {
+							cell4.setCellValue("");
+							cell4.setCellStyle(textStyle);
+						}
+
+						cell5 = row.createCell(7);
+						if (record1.getR14_RISK_WEIGHT() != null) {
+							cell5.setCellValue(record1.getR14_RISK_WEIGHT().doubleValue());
+							cell5.setCellStyle(numberStyle);
+						} else {
+							cell5.setCellValue("");
+							cell5.setCellStyle(textStyle);
+						}
+
+						cell6 = row.createCell(8);
+						if (record1.getR14_RISK_WEIGHTED_AMT() != null) {
+							cell6.setCellValue(record1.getR14_RISK_WEIGHTED_AMT().doubleValue());
+							cell6.setCellStyle(numberStyle);
+						} else {
+							cell6.setCellValue("");
+							cell6.setCellStyle(textStyle);
+						}
+
+						// row15
+						row = sheet.getRow(14);
+
+						cell1 = row.createCell(1);
+						if (record1.getR15_NAME_OF_CORPORATE() != null) {
+							cell1.setCellValue(record1.getR15_NAME_OF_CORPORATE());
+							cell1.setCellStyle(textStyle);
+						} else {
+							cell1.setCellValue("");
+							cell1.setCellStyle(textStyle);
+						}
+
+						cell2 = row.createCell(2);
+						if (record1.getR15_CREDIT_RATING() != null) {
+							cell2.setCellValue(record1.getR15_CREDIT_RATING());
+							cell2.setCellStyle(textStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						cell3 = row.createCell(4);
+						if (record1.getR15_RATING_AGENCY() != null) {
+							cell3.setCellValue(record1.getR15_RATING_AGENCY());
+							cell3.setCellStyle(textStyle);
+						} else {
+							cell3.setCellValue("");
+							cell3.setCellStyle(textStyle);
+						}
+
+						cell4 = row.createCell(6);
+						if (record1.getR15_EXPOSURE_AMT() != null) {
+							cell4.setCellValue(record1.getR15_EXPOSURE_AMT().doubleValue());
+							cell4.setCellStyle(numberStyle);
+						} else {
+							cell4.setCellValue("");
+							cell4.setCellStyle(textStyle);
+						}
+
+						cell5 = row.createCell(7);
+						if (record1.getR15_RISK_WEIGHT() != null) {
+							cell5.setCellValue(record1.getR15_RISK_WEIGHT().doubleValue());
+							cell5.setCellStyle(numberStyle);
+						} else {
+							cell5.setCellValue("");
+							cell5.setCellStyle(textStyle);
+						}
+
+						cell6 = row.createCell(8);
+						if (record1.getR15_RISK_WEIGHTED_AMT() != null) {
+							cell6.setCellValue(record1.getR15_RISK_WEIGHTED_AMT().doubleValue());
+							cell6.setCellStyle(numberStyle);
+						} else {
+							cell6.setCellValue("");
+							cell6.setCellStyle(textStyle);
+						}
+
+						// row16
+						row = sheet.getRow(15);
+
+						cell1 = row.createCell(1);
+						if (record1.getR16_NAME_OF_CORPORATE() != null) {
+							cell1.setCellValue(record1.getR16_NAME_OF_CORPORATE());
+							cell1.setCellStyle(textStyle);
+						} else {
+							cell1.setCellValue("");
+							cell1.setCellStyle(textStyle);
+						}
+
+						cell2 = row.createCell(2);
+						if (record1.getR16_CREDIT_RATING() != null) {
+							cell2.setCellValue(record1.getR16_CREDIT_RATING());
+							cell2.setCellStyle(textStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						cell3 = row.createCell(4);
+						if (record1.getR16_RATING_AGENCY() != null) {
+							cell3.setCellValue(record1.getR16_RATING_AGENCY());
+							cell3.setCellStyle(textStyle);
+						} else {
+							cell3.setCellValue("");
+							cell3.setCellStyle(textStyle);
+						}
+
+						cell4 = row.createCell(6);
+						if (record1.getR16_EXPOSURE_AMT() != null) {
+							cell4.setCellValue(record1.getR16_EXPOSURE_AMT().doubleValue());
+							cell4.setCellStyle(numberStyle);
+						} else {
+							cell4.setCellValue("");
+							cell4.setCellStyle(textStyle);
+						}
+
+						cell5 = row.createCell(7);
+						if (record1.getR16_RISK_WEIGHT() != null) {
+							cell5.setCellValue(record1.getR16_RISK_WEIGHT().doubleValue());
+							cell5.setCellStyle(numberStyle);
+						} else {
+							cell5.setCellValue("");
+							cell5.setCellStyle(textStyle);
+						}
+
+						cell6 = row.createCell(8);
+						if (record1.getR16_RISK_WEIGHTED_AMT() != null) {
+							cell6.setCellValue(record1.getR16_RISK_WEIGHTED_AMT().doubleValue());
+							cell6.setCellStyle(numberStyle);
+						} else {
+							cell6.setCellValue("");
+							cell6.setCellStyle(textStyle);
+						}
+
+						// row17
+						row = sheet.getRow(16);
+
+						cell1 = row.createCell(1);
+						if (record1.getR17_NAME_OF_CORPORATE() != null) {
+							cell1.setCellValue(record1.getR17_NAME_OF_CORPORATE());
+							cell1.setCellStyle(textStyle);
+						} else {
+							cell1.setCellValue("");
+							cell1.setCellStyle(textStyle);
+						}
+
+						cell2 = row.createCell(2);
+						if (record1.getR17_CREDIT_RATING() != null) {
+							cell2.setCellValue(record1.getR17_CREDIT_RATING());
+							cell2.setCellStyle(textStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						cell3 = row.createCell(4);
+						if (record1.getR17_RATING_AGENCY() != null) {
+							cell3.setCellValue(record1.getR17_RATING_AGENCY());
+							cell3.setCellStyle(textStyle);
+						} else {
+							cell3.setCellValue("");
+							cell3.setCellStyle(textStyle);
+						}
+
+						cell4 = row.createCell(6);
+						if (record1.getR17_EXPOSURE_AMT() != null) {
+							cell4.setCellValue(record1.getR17_EXPOSURE_AMT().doubleValue());
+							cell4.setCellStyle(numberStyle);
+						} else {
+							cell4.setCellValue("");
+							cell4.setCellStyle(textStyle);
+						}
+
+						cell5 = row.createCell(7);
+						if (record1.getR17_RISK_WEIGHT() != null) {
+							cell5.setCellValue(record1.getR17_RISK_WEIGHT().doubleValue());
+							cell5.setCellStyle(numberStyle);
+						} else {
+							cell5.setCellValue("");
+							cell5.setCellStyle(textStyle);
+						}
+
+						cell6 = row.createCell(8);
+						if (record1.getR17_RISK_WEIGHTED_AMT() != null) {
+							cell6.setCellValue(record1.getR17_RISK_WEIGHTED_AMT().doubleValue());
+							cell6.setCellStyle(numberStyle);
+						} else {
+							cell6.setCellValue("");
+							cell6.setCellStyle(textStyle);
+						}
+
+						// row18
+						row = sheet.getRow(17);
+
+						cell1 = row.createCell(1);
+						if (record1.getR18_NAME_OF_CORPORATE() != null) {
+							cell1.setCellValue(record1.getR18_NAME_OF_CORPORATE());
+							cell1.setCellStyle(textStyle);
+						} else {
+							cell1.setCellValue("");
+							cell1.setCellStyle(textStyle);
+						}
+
+						cell2 = row.createCell(2);
+						if (record1.getR18_CREDIT_RATING() != null) {
+							cell2.setCellValue(record1.getR18_CREDIT_RATING());
+							cell2.setCellStyle(textStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						cell3 = row.createCell(4);
+						if (record1.getR18_RATING_AGENCY() != null) {
+							cell3.setCellValue(record1.getR18_RATING_AGENCY());
+							cell3.setCellStyle(textStyle);
+						} else {
+							cell3.setCellValue("");
+							cell3.setCellStyle(textStyle);
+						}
+
+						cell4 = row.createCell(6);
+						if (record1.getR18_EXPOSURE_AMT() != null) {
+							cell4.setCellValue(record1.getR18_EXPOSURE_AMT().doubleValue());
+							cell4.setCellStyle(numberStyle);
+						} else {
+							cell4.setCellValue("");
+							cell4.setCellStyle(textStyle);
+						}
+
+						cell5 = row.createCell(7);
+						if (record1.getR18_RISK_WEIGHT() != null) {
+							cell5.setCellValue(record1.getR18_RISK_WEIGHT().doubleValue());
+							cell5.setCellStyle(numberStyle);
+						} else {
+							cell5.setCellValue("");
+							cell5.setCellStyle(textStyle);
+						}
+
+						cell6 = row.createCell(8);
+						if (record1.getR18_RISK_WEIGHTED_AMT() != null) {
+							cell6.setCellValue(record1.getR18_RISK_WEIGHTED_AMT().doubleValue());
+							cell6.setCellStyle(numberStyle);
+						} else {
+							cell6.setCellValue("");
+							cell6.setCellStyle(textStyle);
+						}
+
+						// row19
+						row = sheet.getRow(18);
+
+						cell1 = row.createCell(1);
+						if (record1.getR19_NAME_OF_CORPORATE() != null) {
+							cell1.setCellValue(record1.getR19_NAME_OF_CORPORATE());
+							cell1.setCellStyle(textStyle);
+						} else {
+							cell1.setCellValue("");
+							cell1.setCellStyle(textStyle);
+						}
+
+						cell2 = row.createCell(2);
+						if (record1.getR19_CREDIT_RATING() != null) {
+							cell2.setCellValue(record1.getR19_CREDIT_RATING());
+							cell2.setCellStyle(textStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						cell3 = row.createCell(4);
+						if (record1.getR19_RATING_AGENCY() != null) {
+							cell3.setCellValue(record1.getR19_RATING_AGENCY());
+							cell3.setCellStyle(textStyle);
+						} else {
+							cell3.setCellValue("");
+							cell3.setCellStyle(textStyle);
+						}
+
+						cell4 = row.createCell(6);
+						if (record1.getR19_EXPOSURE_AMT() != null) {
+							cell4.setCellValue(record1.getR19_EXPOSURE_AMT().doubleValue());
+							cell4.setCellStyle(numberStyle);
+						} else {
+							cell4.setCellValue("");
+							cell4.setCellStyle(textStyle);
+						}
+
+						cell5 = row.createCell(7);
+						if (record1.getR19_RISK_WEIGHT() != null) {
+							cell5.setCellValue(record1.getR19_RISK_WEIGHT().doubleValue());
+							cell5.setCellStyle(numberStyle);
+						} else {
+							cell5.setCellValue("");
+							cell5.setCellStyle(textStyle);
+						}
+
+						cell6 = row.createCell(8);
+						if (record1.getR19_RISK_WEIGHTED_AMT() != null) {
+							cell6.setCellValue(record1.getR19_RISK_WEIGHTED_AMT().doubleValue());
+							cell6.setCellStyle(numberStyle);
+						} else {
+							cell6.setCellValue("");
+							cell6.setCellStyle(textStyle);
+						}
+
+						// row20
+						row = sheet.getRow(19);
+
+						cell1 = row.createCell(1);
+						if (record1.getR20_NAME_OF_CORPORATE() != null) {
+							cell1.setCellValue(record1.getR20_NAME_OF_CORPORATE());
+							cell1.setCellStyle(textStyle);
+						} else {
+							cell1.setCellValue("");
+							cell1.setCellStyle(textStyle);
+						}
+
+						cell2 = row.createCell(2);
+						if (record1.getR20_CREDIT_RATING() != null) {
+							cell2.setCellValue(record1.getR20_CREDIT_RATING());
+							cell2.setCellStyle(textStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						cell3 = row.createCell(4);
+						if (record1.getR20_RATING_AGENCY() != null) {
+							cell3.setCellValue(record1.getR20_RATING_AGENCY());
+							cell3.setCellStyle(textStyle);
+						} else {
+							cell3.setCellValue("");
+							cell3.setCellStyle(textStyle);
+						}
+
+						cell4 = row.createCell(6);
+						if (record1.getR20_EXPOSURE_AMT() != null) {
+							cell4.setCellValue(record1.getR20_EXPOSURE_AMT().doubleValue());
+							cell4.setCellStyle(numberStyle);
+						} else {
+							cell4.setCellValue("");
+							cell4.setCellStyle(textStyle);
+						}
+
+						cell5 = row.createCell(7);
+						if (record1.getR20_RISK_WEIGHT() != null) {
+							cell5.setCellValue(record1.getR20_RISK_WEIGHT().doubleValue());
+							cell5.setCellStyle(numberStyle);
+						} else {
+							cell5.setCellValue("");
+							cell5.setCellStyle(textStyle);
+						}
+
+						cell6 = row.createCell(8);
+						if (record1.getR20_RISK_WEIGHTED_AMT() != null) {
+							cell6.setCellValue(record1.getR20_RISK_WEIGHTED_AMT().doubleValue());
+							cell6.setCellStyle(numberStyle);
+						} else {
+							cell6.setCellValue("");
+							cell6.setCellStyle(textStyle);
+						}
+
+						// row21
+						row = sheet.getRow(20);
+
+						cell1 = row.createCell(1);
+						if (record1.getR21_NAME_OF_CORPORATE() != null) {
+							cell1.setCellValue(record1.getR21_NAME_OF_CORPORATE());
+							cell1.setCellStyle(textStyle);
+						} else {
+							cell1.setCellValue("");
+							cell1.setCellStyle(textStyle);
+						}
+
+						cell2 = row.createCell(2);
+						if (record1.getR21_CREDIT_RATING() != null) {
+							cell2.setCellValue(record1.getR21_CREDIT_RATING());
+							cell2.setCellStyle(textStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						cell3 = row.createCell(4);
+						if (record1.getR21_RATING_AGENCY() != null) {
+							cell3.setCellValue(record1.getR21_RATING_AGENCY());
+							cell3.setCellStyle(textStyle);
+						} else {
+							cell3.setCellValue("");
+							cell3.setCellStyle(textStyle);
+						}
+
+						cell4 = row.createCell(6);
+						if (record1.getR21_EXPOSURE_AMT() != null) {
+							cell4.setCellValue(record1.getR21_EXPOSURE_AMT().doubleValue());
+							cell4.setCellStyle(numberStyle);
+						} else {
+							cell4.setCellValue("");
+							cell4.setCellStyle(textStyle);
+						}
+
+						cell5 = row.createCell(7);
+						if (record1.getR21_RISK_WEIGHT() != null) {
+							cell5.setCellValue(record1.getR21_RISK_WEIGHT().doubleValue());
+							cell5.setCellStyle(numberStyle);
+						} else {
+							cell5.setCellValue("");
+							cell5.setCellStyle(textStyle);
+						}
+
+						cell6 = row.createCell(8);
+						if (record1.getR21_RISK_WEIGHTED_AMT() != null) {
+							cell6.setCellValue(record1.getR21_RISK_WEIGHTED_AMT().doubleValue());
+							cell6.setCellStyle(numberStyle);
+						} else {
+							cell6.setCellValue("");
+							cell6.setCellStyle(textStyle);
+						}
+
+						// row22
+						row = sheet.getRow(21);
+
+						cell1 = row.createCell(1);
+						if (record1.getR22_NAME_OF_CORPORATE() != null) {
+							cell1.setCellValue(record1.getR22_NAME_OF_CORPORATE());
+							cell1.setCellStyle(textStyle);
+						} else {
+							cell1.setCellValue("");
+							cell1.setCellStyle(textStyle);
+						}
+
+						cell2 = row.createCell(2);
+						if (record1.getR22_CREDIT_RATING() != null) {
+							cell2.setCellValue(record1.getR22_CREDIT_RATING());
+							cell2.setCellStyle(textStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						cell6 = row.createCell(8);
+						if (record1.getR22_RISK_WEIGHTED_AMT() != null) {
+							cell6.setCellValue(record1.getR22_RISK_WEIGHTED_AMT().doubleValue());
+							cell6.setCellStyle(numberStyle);
+						} else {
+							cell6.setCellValue("");
+							cell6.setCellStyle(textStyle);
+						}
+
+						// row23
+						row = sheet.getRow(22);
+
+						cell1 = row.createCell(1);
+						if (record1.getR23_NAME_OF_CORPORATE() != null) {
+							cell1.setCellValue(record1.getR23_NAME_OF_CORPORATE());
+							cell1.setCellStyle(textStyle);
+						} else {
+							cell1.setCellValue("");
+							cell1.setCellStyle(textStyle);
+						}
+
+						cell2 = row.createCell(2);
+						if (record1.getR23_CREDIT_RATING() != null) {
+							cell2.setCellValue(record1.getR23_CREDIT_RATING());
+							cell2.setCellStyle(textStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						cell6 = row.createCell(8);
+						if (record1.getR23_RISK_WEIGHTED_AMT() != null) {
+							cell6.setCellValue(record1.getR23_RISK_WEIGHTED_AMT().doubleValue());
+							cell6.setCellStyle(numberStyle);
+						} else {
+							cell6.setCellValue("");
+							cell6.setCellStyle(textStyle);
+						}
+
+						// row24
+						row = sheet.getRow(23);
+
+						cell1 = row.createCell(1);
+						if (record1.getR24_NAME_OF_CORPORATE() != null) {
+							cell1.setCellValue(record1.getR24_NAME_OF_CORPORATE());
+							cell1.setCellStyle(textStyle);
+						} else {
+							cell1.setCellValue("");
+							cell1.setCellStyle(textStyle);
+						}
+
+						cell2 = row.createCell(2);
+						if (record1.getR24_CREDIT_RATING() != null) {
+							cell2.setCellValue(record1.getR24_CREDIT_RATING());
+							cell2.setCellStyle(textStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						cell6 = row.createCell(8);
+						if (record1.getR24_RISK_WEIGHTED_AMT() != null) {
+							cell6.setCellValue(record1.getR24_RISK_WEIGHTED_AMT().doubleValue());
+							cell6.setCellStyle(numberStyle);
+						} else {
+							cell6.setCellValue("");
+							cell6.setCellStyle(textStyle);
+						}
+
+						// row25
+						row = sheet.getRow(24);
+
+						cell1 = row.createCell(1);
+						if (record1.getR25_NAME_OF_CORPORATE() != null) {
+							cell1.setCellValue(record1.getR25_NAME_OF_CORPORATE());
+							cell1.setCellStyle(textStyle);
+						} else {
+							cell1.setCellValue("");
+							cell1.setCellStyle(textStyle);
+						}
+
+						cell2 = row.createCell(2);
+						if (record1.getR25_CREDIT_RATING() != null) {
+							cell2.setCellValue(record1.getR25_CREDIT_RATING());
+							cell2.setCellStyle(textStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						cell3 = row.createCell(4);
+						if (record1.getR25_RATING_AGENCY() != null) {
+							cell3.setCellValue(record1.getR25_RATING_AGENCY());
+							cell3.setCellStyle(textStyle);
+						} else {
+							cell3.setCellValue("");
+							cell3.setCellStyle(textStyle);
+						}
+
+						cell4 = row.createCell(6);
+						if (record1.getR25_EXPOSURE_AMT() != null) {
+							cell4.setCellValue(record1.getR25_EXPOSURE_AMT().doubleValue());
+							cell4.setCellStyle(numberStyle);
+						} else {
+							cell4.setCellValue("");
+							cell4.setCellStyle(textStyle);
+						}
+
+						cell5 = row.createCell(7);
+						if (record1.getR25_RISK_WEIGHT() != null) {
+							cell5.setCellValue(record1.getR25_RISK_WEIGHT().doubleValue());
+							cell5.setCellStyle(numberStyle);
+						} else {
+							cell5.setCellValue("");
+							cell5.setCellStyle(textStyle);
+						}
+
+						cell6 = row.createCell(8);
+						if (record1.getR25_RISK_WEIGHTED_AMT() != null) {
+							cell6.setCellValue(record1.getR25_RISK_WEIGHTED_AMT().doubleValue());
+							cell6.setCellStyle(numberStyle);
+						} else {
+							cell6.setCellValue("");
+							cell6.setCellStyle(textStyle);
+						}
+
+						// row26
+						row = sheet.getRow(25);
+
+						cell1 = row.createCell(1);
+						if (record1.getR26_NAME_OF_CORPORATE() != null) {
+							cell1.setCellValue(record1.getR26_NAME_OF_CORPORATE());
+							cell1.setCellStyle(textStyle);
+						} else {
+							cell1.setCellValue("");
+							cell1.setCellStyle(textStyle);
+						}
+
+						cell2 = row.createCell(2);
+						if (record1.getR26_CREDIT_RATING() != null) {
+							cell2.setCellValue(record1.getR26_CREDIT_RATING());
+							cell2.setCellStyle(textStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						cell3 = row.createCell(4);
+						if (record1.getR26_RATING_AGENCY() != null) {
+							cell3.setCellValue(record1.getR26_RATING_AGENCY());
+							cell3.setCellStyle(textStyle);
+						} else {
+							cell3.setCellValue("");
+							cell3.setCellStyle(textStyle);
+						}
+
+						cell4 = row.createCell(6);
+						if (record1.getR26_EXPOSURE_AMT() != null) {
+							cell4.setCellValue(record1.getR26_EXPOSURE_AMT().doubleValue());
+							cell4.setCellStyle(numberStyle);
+						} else {
+							cell4.setCellValue("");
+							cell4.setCellStyle(textStyle);
+						}
+
+						cell5 = row.createCell(7);
+						if (record1.getR26_RISK_WEIGHT() != null) {
+							cell5.setCellValue(record1.getR26_RISK_WEIGHT().doubleValue());
+							cell5.setCellStyle(numberStyle);
+						} else {
+							cell5.setCellValue("");
+							cell5.setCellStyle(textStyle);
+						}
+
+						cell6 = row.createCell(8);
+						if (record1.getR26_RISK_WEIGHTED_AMT() != null) {
+							cell6.setCellValue(record1.getR26_RISK_WEIGHTED_AMT().doubleValue());
+							cell6.setCellStyle(numberStyle);
+						} else {
+							cell6.setCellValue("");
+							cell6.setCellStyle(textStyle);
+						}
+
+						// row27
+						row = sheet.getRow(26);
+
+						cell1 = row.createCell(1);
+						if (record1.getR27_NAME_OF_CORPORATE() != null) {
+							cell1.setCellValue(record1.getR27_NAME_OF_CORPORATE());
+							cell1.setCellStyle(textStyle);
+						} else {
+							cell1.setCellValue("");
+							cell1.setCellStyle(textStyle);
+						}
+
+						cell2 = row.createCell(2);
+						if (record1.getR27_CREDIT_RATING() != null) {
+							cell2.setCellValue(record1.getR27_CREDIT_RATING());
+							cell2.setCellStyle(textStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						cell3 = row.createCell(4);
+						if (record1.getR27_RATING_AGENCY() != null) {
+							cell3.setCellValue(record1.getR27_RATING_AGENCY());
+							cell3.setCellStyle(textStyle);
+						} else {
+							cell3.setCellValue("");
+							cell3.setCellStyle(textStyle);
+						}
+
+						cell4 = row.createCell(6);
+						if (record1.getR27_EXPOSURE_AMT() != null) {
+							cell4.setCellValue(record1.getR27_EXPOSURE_AMT().doubleValue());
+							cell4.setCellStyle(numberStyle);
+						} else {
+							cell4.setCellValue("");
+							cell4.setCellStyle(textStyle);
+						}
+
+						cell5 = row.createCell(7);
+						if (record1.getR27_RISK_WEIGHT() != null) {
+							cell5.setCellValue(record1.getR27_RISK_WEIGHT().doubleValue());
+							cell5.setCellStyle(numberStyle);
+						} else {
+							cell5.setCellValue("");
+							cell5.setCellStyle(textStyle);
+						}
+
+						cell6 = row.createCell(8);
+						if (record1.getR27_RISK_WEIGHTED_AMT() != null) {
+							cell6.setCellValue(record1.getR27_RISK_WEIGHTED_AMT().doubleValue());
+							cell6.setCellStyle(numberStyle);
+						} else {
+							cell6.setCellValue("");
+							cell6.setCellStyle(textStyle);
+						}
+
+						// row28
+						row = sheet.getRow(27);
+
+						cell1 = row.createCell(1);
+						if (record1.getR28_NAME_OF_CORPORATE() != null) {
+							cell1.setCellValue(record1.getR28_NAME_OF_CORPORATE());
+							cell1.setCellStyle(textStyle);
+						} else {
+							cell1.setCellValue("");
+							cell1.setCellStyle(textStyle);
+						}
+
+						cell2 = row.createCell(2);
+						if (record1.getR28_CREDIT_RATING() != null) {
+							cell2.setCellValue(record1.getR28_CREDIT_RATING());
+							cell2.setCellStyle(textStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						cell3 = row.createCell(4);
+						if (record1.getR28_RATING_AGENCY() != null) {
+							cell3.setCellValue(record1.getR28_RATING_AGENCY());
+							cell3.setCellStyle(textStyle);
+						} else {
+							cell3.setCellValue("");
+							cell3.setCellStyle(textStyle);
+						}
+
+						cell4 = row.createCell(6);
+						if (record1.getR28_EXPOSURE_AMT() != null) {
+							cell4.setCellValue(record1.getR28_EXPOSURE_AMT().doubleValue());
+							cell4.setCellStyle(numberStyle);
+						} else {
+							cell4.setCellValue("");
+							cell4.setCellStyle(textStyle);
+						}
+
+						cell5 = row.createCell(7);
+						if (record1.getR28_RISK_WEIGHT() != null) {
+							cell5.setCellValue(record1.getR28_RISK_WEIGHT().doubleValue());
+							cell5.setCellStyle(numberStyle);
+						} else {
+							cell5.setCellValue("");
+							cell5.setCellStyle(textStyle);
+						}
+
+						cell6 = row.createCell(8);
+						if (record1.getR28_RISK_WEIGHTED_AMT() != null) {
+							cell6.setCellValue(record1.getR28_RISK_WEIGHTED_AMT().doubleValue());
+							cell6.setCellStyle(numberStyle);
+						} else {
+							cell6.setCellValue("");
+							cell6.setCellStyle(textStyle);
+						}
+
+						// row29
+						row = sheet.getRow(28);
+
+						cell1 = row.createCell(1);
+						if (record1.getR29_NAME_OF_CORPORATE() != null) {
+							cell1.setCellValue(record1.getR29_NAME_OF_CORPORATE());
+							cell1.setCellStyle(textStyle);
+						} else {
+							cell1.setCellValue("");
+							cell1.setCellStyle(textStyle);
+						}
+
+						cell2 = row.createCell(2);
+						if (record1.getR29_CREDIT_RATING() != null) {
+							cell2.setCellValue(record1.getR29_CREDIT_RATING());
+							cell2.setCellStyle(textStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						cell3 = row.createCell(4);
+						if (record1.getR29_RATING_AGENCY() != null) {
+							cell3.setCellValue(record1.getR29_RATING_AGENCY());
+							cell3.setCellStyle(textStyle);
+						} else {
+							cell3.setCellValue("");
+							cell3.setCellStyle(textStyle);
+						}
+
+						cell4 = row.createCell(6);
+						if (record1.getR29_EXPOSURE_AMT() != null) {
+							cell4.setCellValue(record1.getR29_EXPOSURE_AMT().doubleValue());
+							cell4.setCellStyle(numberStyle);
+						} else {
+							cell4.setCellValue("");
+							cell4.setCellStyle(textStyle);
+						}
+
+						cell5 = row.createCell(7);
+						if (record1.getR29_RISK_WEIGHT() != null) {
+							cell5.setCellValue(record1.getR29_RISK_WEIGHT().doubleValue());
+							cell5.setCellStyle(numberStyle);
+						} else {
+							cell5.setCellValue("");
+							cell5.setCellStyle(textStyle);
+						}
+
+						cell6 = row.createCell(8);
+						if (record1.getR29_RISK_WEIGHTED_AMT() != null) {
+							cell6.setCellValue(record1.getR29_RISK_WEIGHTED_AMT().doubleValue());
+							cell6.setCellStyle(numberStyle);
+						} else {
+							cell6.setCellValue("");
+							cell6.setCellStyle(textStyle);
+						}
+
+						// row30
+						row = sheet.getRow(29);
+
+						cell1 = row.createCell(1);
+						if (record1.getR30_NAME_OF_CORPORATE() != null) {
+							cell1.setCellValue(record1.getR30_NAME_OF_CORPORATE());
+							cell1.setCellStyle(textStyle);
+						} else {
+							cell1.setCellValue("");
+							cell1.setCellStyle(textStyle);
+						}
+
+						cell2 = row.createCell(2);
+						if (record1.getR30_CREDIT_RATING() != null) {
+							cell2.setCellValue(record1.getR30_CREDIT_RATING());
+							cell2.setCellStyle(textStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						cell3 = row.createCell(4);
+						if (record1.getR30_RATING_AGENCY() != null) {
+							cell3.setCellValue(record1.getR30_RATING_AGENCY());
+							cell3.setCellStyle(textStyle);
+						} else {
+							cell3.setCellValue("");
+							cell3.setCellStyle(textStyle);
+						}
+
+						cell4 = row.createCell(6);
+						if (record1.getR30_EXPOSURE_AMT() != null) {
+							cell4.setCellValue(record1.getR30_EXPOSURE_AMT().doubleValue());
+							cell4.setCellStyle(numberStyle);
+						} else {
+							cell4.setCellValue("");
+							cell4.setCellStyle(textStyle);
+						}
+
+						cell5 = row.createCell(7);
+						if (record1.getR30_RISK_WEIGHT() != null) {
+							cell5.setCellValue(record1.getR30_RISK_WEIGHT().doubleValue());
+							cell5.setCellStyle(numberStyle);
+						} else {
+							cell5.setCellValue("");
+							cell5.setCellStyle(textStyle);
+						}
+
+						cell6 = row.createCell(8);
+						if (record1.getR30_RISK_WEIGHTED_AMT() != null) {
+							cell6.setCellValue(record1.getR30_RISK_WEIGHTED_AMT().doubleValue());
+							cell6.setCellStyle(numberStyle);
+						} else {
+							cell6.setCellValue("");
+							cell6.setCellStyle(textStyle);
+						}
+
+						// row31
+						row = sheet.getRow(30);
+
+						cell1 = row.createCell(1);
+						if (record1.getR31_NAME_OF_CORPORATE() != null) {
+							cell1.setCellValue(record1.getR31_NAME_OF_CORPORATE());
+							cell1.setCellStyle(textStyle);
+						} else {
+							cell1.setCellValue("");
+							cell1.setCellStyle(textStyle);
+						}
+
+						cell2 = row.createCell(2);
+						if (record1.getR31_CREDIT_RATING() != null) {
+							cell2.setCellValue(record1.getR31_CREDIT_RATING());
+							cell2.setCellStyle(textStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						cell3 = row.createCell(4);
+						if (record1.getR31_RATING_AGENCY() != null) {
+							cell3.setCellValue(record1.getR31_RATING_AGENCY());
+							cell3.setCellStyle(textStyle);
+						} else {
+							cell3.setCellValue("");
+							cell3.setCellStyle(textStyle);
+						}
+
+						cell4 = row.createCell(6);
+						if (record1.getR31_EXPOSURE_AMT() != null) {
+							cell4.setCellValue(record1.getR31_EXPOSURE_AMT().doubleValue());
+							cell4.setCellStyle(numberStyle);
+						} else {
+							cell4.setCellValue("");
+							cell4.setCellStyle(textStyle);
+						}
+
+						cell5 = row.createCell(7);
+						if (record1.getR31_RISK_WEIGHT() != null) {
+							cell5.setCellValue(record1.getR31_RISK_WEIGHT().doubleValue());
+							cell5.setCellStyle(numberStyle);
+						} else {
+							cell5.setCellValue("");
+							cell5.setCellStyle(textStyle);
+						}
+
+						cell6 = row.createCell(8);
+						if (record1.getR31_RISK_WEIGHTED_AMT() != null) {
+							cell6.setCellValue(record1.getR31_RISK_WEIGHTED_AMT().doubleValue());
+							cell6.setCellStyle(numberStyle);
+						} else {
+							cell6.setCellValue("");
+							cell6.setCellStyle(textStyle);
+						}
+
+						// row32
+						row = sheet.getRow(31);
+
+						cell1 = row.createCell(1);
+						if (record1.getR32_NAME_OF_CORPORATE() != null) {
+							cell1.setCellValue(record1.getR32_NAME_OF_CORPORATE());
+							cell1.setCellStyle(textStyle);
+						} else {
+							cell1.setCellValue("");
+							cell1.setCellStyle(textStyle);
+						}
+
+						cell2 = row.createCell(2);
+						if (record1.getR32_CREDIT_RATING() != null) {
+							cell2.setCellValue(record1.getR32_CREDIT_RATING());
+							cell2.setCellStyle(textStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						cell3 = row.createCell(4);
+						if (record1.getR32_RATING_AGENCY() != null) {
+							cell3.setCellValue(record1.getR32_RATING_AGENCY());
+							cell3.setCellStyle(textStyle);
+						} else {
+							cell3.setCellValue("");
+							cell3.setCellStyle(textStyle);
+						}
+
+						cell4 = row.createCell(6);
+						if (record1.getR32_EXPOSURE_AMT() != null) {
+							cell4.setCellValue(record1.getR32_EXPOSURE_AMT().doubleValue());
+							cell4.setCellStyle(numberStyle);
+						} else {
+							cell4.setCellValue("");
+							cell4.setCellStyle(textStyle);
+						}
+
+						cell5 = row.createCell(7);
+						if (record1.getR32_RISK_WEIGHT() != null) {
+							cell5.setCellValue(record1.getR32_RISK_WEIGHT().doubleValue());
+							cell5.setCellStyle(numberStyle);
+						} else {
+							cell5.setCellValue("");
+							cell5.setCellStyle(textStyle);
+						}
+
+						cell6 = row.createCell(8);
+						if (record1.getR32_RISK_WEIGHTED_AMT() != null) {
+							cell6.setCellValue(record1.getR32_RISK_WEIGHTED_AMT().doubleValue());
+							cell6.setCellStyle(numberStyle);
+						} else {
+							cell6.setCellValue("");
+							cell6.setCellStyle(textStyle);
+						}
+
+						// row33
+						row = sheet.getRow(32);
+
+						cell1 = row.createCell(1);
+						if (record1.getR33_NAME_OF_CORPORATE() != null) {
+							cell1.setCellValue(record1.getR33_NAME_OF_CORPORATE());
+							cell1.setCellStyle(textStyle);
+						} else {
+							cell1.setCellValue("");
+							cell1.setCellStyle(textStyle);
+						}
+
+						cell2 = row.createCell(2);
+						if (record1.getR33_CREDIT_RATING() != null) {
+							cell2.setCellValue(record1.getR33_CREDIT_RATING());
+							cell2.setCellStyle(textStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						cell3 = row.createCell(4);
+						if (record1.getR33_RATING_AGENCY() != null) {
+							cell3.setCellValue(record1.getR33_RATING_AGENCY());
+							cell3.setCellStyle(textStyle);
+						} else {
+							cell3.setCellValue("");
+							cell3.setCellStyle(textStyle);
+						}
+
+						cell4 = row.createCell(6);
+						if (record1.getR33_EXPOSURE_AMT() != null) {
+							cell4.setCellValue(record1.getR33_EXPOSURE_AMT().doubleValue());
+							cell4.setCellStyle(numberStyle);
+						} else {
+							cell4.setCellValue("");
+							cell4.setCellStyle(textStyle);
+						}
+
+						cell5 = row.createCell(7);
+						if (record1.getR33_RISK_WEIGHT() != null) {
+							cell5.setCellValue(record1.getR33_RISK_WEIGHT().doubleValue());
+							cell5.setCellStyle(numberStyle);
+						} else {
+							cell5.setCellValue("");
+							cell5.setCellStyle(textStyle);
+						}
+
+						cell6 = row.createCell(8);
+						if (record1.getR33_RISK_WEIGHTED_AMT() != null) {
+							cell6.setCellValue(record1.getR33_RISK_WEIGHTED_AMT().doubleValue());
+							cell6.setCellStyle(numberStyle);
+						} else {
+							cell6.setCellValue("");
+							cell6.setCellStyle(textStyle);
+						}
+
+						// row34
+						row = sheet.getRow(33);
+
+						cell1 = row.createCell(1);
+						if (record1.getR34_NAME_OF_CORPORATE() != null) {
+							cell1.setCellValue(record1.getR34_NAME_OF_CORPORATE());
+							cell1.setCellStyle(textStyle);
+						} else {
+							cell1.setCellValue("");
+							cell1.setCellStyle(textStyle);
+						}
+
+						cell2 = row.createCell(2);
+						if (record1.getR34_CREDIT_RATING() != null) {
+							cell2.setCellValue(record1.getR34_CREDIT_RATING());
+							cell2.setCellStyle(textStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						cell3 = row.createCell(4);
+						if (record1.getR34_RATING_AGENCY() != null) {
+							cell3.setCellValue(record1.getR34_RATING_AGENCY());
+							cell3.setCellStyle(textStyle);
+						} else {
+							cell3.setCellValue("");
+							cell3.setCellStyle(textStyle);
+						}
+
+						cell4 = row.createCell(6);
+						if (record1.getR34_EXPOSURE_AMT() != null) {
+							cell4.setCellValue(record1.getR34_EXPOSURE_AMT().doubleValue());
+							cell4.setCellStyle(numberStyle);
+						} else {
+							cell4.setCellValue("");
+							cell4.setCellStyle(textStyle);
+						}
+
+						cell5 = row.createCell(7);
+						if (record1.getR34_RISK_WEIGHT() != null) {
+							cell5.setCellValue(record1.getR34_RISK_WEIGHT().doubleValue());
+							cell5.setCellStyle(numberStyle);
+						} else {
+							cell5.setCellValue("");
+							cell5.setCellStyle(textStyle);
+						}
+
+						cell6 = row.createCell(8);
+						if (record1.getR34_RISK_WEIGHTED_AMT() != null) {
+							cell6.setCellValue(record1.getR34_RISK_WEIGHTED_AMT().doubleValue());
+							cell6.setCellStyle(numberStyle);
+						} else {
+							cell6.setCellValue("");
+							cell6.setCellStyle(textStyle);
+						}
+
+						// row35
+						row = sheet.getRow(34);
+
+						cell1 = row.createCell(1);
+						if (record1.getR35_NAME_OF_CORPORATE() != null) {
+							cell1.setCellValue(record1.getR35_NAME_OF_CORPORATE());
+							cell1.setCellStyle(textStyle);
+						} else {
+							cell1.setCellValue("");
+							cell1.setCellStyle(textStyle);
+						}
+
+						cell2 = row.createCell(2);
+						if (record1.getR35_CREDIT_RATING() != null) {
+							cell2.setCellValue(record1.getR35_CREDIT_RATING());
+							cell2.setCellStyle(textStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						cell3 = row.createCell(4);
+						if (record1.getR35_RATING_AGENCY() != null) {
+							cell3.setCellValue(record1.getR35_RATING_AGENCY());
+							cell3.setCellStyle(textStyle);
+						} else {
+							cell3.setCellValue("");
+							cell3.setCellStyle(textStyle);
+						}
+
+						cell4 = row.createCell(6);
+						if (record1.getR35_EXPOSURE_AMT() != null) {
+							cell4.setCellValue(record1.getR35_EXPOSURE_AMT().doubleValue());
+							cell4.setCellStyle(numberStyle);
+						} else {
+							cell4.setCellValue("");
+							cell4.setCellStyle(textStyle);
+						}
+
+						cell5 = row.createCell(7);
+						if (record1.getR35_RISK_WEIGHT() != null) {
+							cell5.setCellValue(record1.getR35_RISK_WEIGHT().doubleValue());
+							cell5.setCellStyle(numberStyle);
+						} else {
+							cell5.setCellValue("");
+							cell5.setCellStyle(textStyle);
+						}
+
+						cell6 = row.createCell(8);
+						if (record1.getR35_RISK_WEIGHTED_AMT() != null) {
+							cell6.setCellValue(record1.getR35_RISK_WEIGHTED_AMT().doubleValue());
+							cell6.setCellStyle(numberStyle);
+						} else {
+							cell6.setCellValue("");
+							cell6.setCellStyle(textStyle);
+						}
+
+						// row36
+						row = sheet.getRow(35);
+
+						cell1 = row.createCell(1);
+						if (record1.getR36_NAME_OF_CORPORATE() != null) {
+							cell1.setCellValue(record1.getR36_NAME_OF_CORPORATE());
+							cell1.setCellStyle(textStyle);
+						} else {
+							cell1.setCellValue("");
+							cell1.setCellStyle(textStyle);
+						}
+
+						cell2 = row.createCell(2);
+						if (record1.getR36_CREDIT_RATING() != null) {
+							cell2.setCellValue(record1.getR36_CREDIT_RATING());
+							cell2.setCellStyle(textStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						cell3 = row.createCell(4);
+						if (record1.getR36_RATING_AGENCY() != null) {
+							cell3.setCellValue(record1.getR36_RATING_AGENCY());
+							cell3.setCellStyle(textStyle);
+						} else {
+							cell3.setCellValue("");
+							cell3.setCellStyle(textStyle);
+						}
+
+						cell4 = row.createCell(6);
+						if (record1.getR36_EXPOSURE_AMT() != null) {
+							cell4.setCellValue(record1.getR36_EXPOSURE_AMT().doubleValue());
+							cell4.setCellStyle(numberStyle);
+						} else {
+							cell4.setCellValue("");
+							cell4.setCellStyle(textStyle);
+						}
+
+						cell5 = row.createCell(7);
+						if (record1.getR36_RISK_WEIGHT() != null) {
+							cell5.setCellValue(record1.getR36_RISK_WEIGHT().doubleValue());
+							cell5.setCellStyle(numberStyle);
+						} else {
+							cell5.setCellValue("");
+							cell5.setCellStyle(textStyle);
+						}
+
+						cell6 = row.createCell(8);
+						if (record1.getR36_RISK_WEIGHTED_AMT() != null) {
+							cell6.setCellValue(record1.getR36_RISK_WEIGHTED_AMT().doubleValue());
+							cell6.setCellStyle(numberStyle);
+						} else {
+							cell6.setCellValue("");
+							cell6.setCellStyle(textStyle);
+						}
+
+						// row37
+						row = sheet.getRow(36);
+
+						cell1 = row.createCell(1);
+						if (record1.getR37_NAME_OF_CORPORATE() != null) {
+							cell1.setCellValue(record1.getR37_NAME_OF_CORPORATE());
+							cell1.setCellStyle(textStyle);
+						} else {
+							cell1.setCellValue("");
+							cell1.setCellStyle(textStyle);
+						}
+
+						cell2 = row.createCell(2);
+						if (record1.getR37_CREDIT_RATING() != null) {
+							cell2.setCellValue(record1.getR37_CREDIT_RATING());
+							cell2.setCellStyle(textStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						cell3 = row.createCell(4);
+						if (record1.getR37_RATING_AGENCY() != null) {
+							cell3.setCellValue(record1.getR37_RATING_AGENCY());
+							cell3.setCellStyle(textStyle);
+						} else {
+							cell3.setCellValue("");
+							cell3.setCellStyle(textStyle);
+						}
+
+						cell4 = row.createCell(6);
+						if (record1.getR37_EXPOSURE_AMT() != null) {
+							cell4.setCellValue(record1.getR37_EXPOSURE_AMT().doubleValue());
+							cell4.setCellStyle(numberStyle);
+						} else {
+							cell4.setCellValue("");
+							cell4.setCellStyle(textStyle);
+						}
+
+						cell5 = row.createCell(7);
+						if (record1.getR37_RISK_WEIGHT() != null) {
+							cell5.setCellValue(record1.getR37_RISK_WEIGHT().doubleValue());
+							cell5.setCellStyle(numberStyle);
+						} else {
+							cell5.setCellValue("");
+							cell5.setCellStyle(textStyle);
+						}
+
+						cell6 = row.createCell(8);
+						if (record1.getR37_RISK_WEIGHTED_AMT() != null) {
+							cell6.setCellValue(record1.getR37_RISK_WEIGHTED_AMT().doubleValue());
+							cell6.setCellStyle(numberStyle);
+						} else {
+							cell6.setCellValue("");
+							cell6.setCellStyle(textStyle);
+						}
+					}
+					workbook.setForceFormulaRecalculation(true);
+				} else {
+
+				}
+
+				// Write the final workbook content to the in-memory stream.
+				workbook.write(out);
+
+				logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
+
+				return out.toByteArray();
+			}
+		}
+	}
+
+	// Archival format excel
+	public byte[] getExcelM_SRWA_12FARCHIVAL(String filename, String reportId, String fromdate, String todate,
+			String currency, String dtltype, String type, String format, BigDecimal version) throws Exception {
+
+		logger.info("Service: Starting Excel generation process in memory in Archival.");
+
+		if ("email".equalsIgnoreCase(format) && version != null) {
+			try {
+				// Redirecting to Archival
+				return BRRS_M_SRWA_12FEmailArchivalExcel(filename, reportId, fromdate, todate, currency, dtltype, type,
+						version);
+			} catch (ParseException e) {
+				logger.error("Invalid report date format: {}", fromdate, e);
+				throw new RuntimeException("Date format must be dd-MMM-yyyy (e.g. 31-Jul-2025)");
+			}
 		}
 
-		// 2. RESUB – FORMAT
-		else if ("RESUB".equalsIgnoreCase(type) 
-		        && version != null
-		        && "report".equalsIgnoreCase(dtltype)) {
+		List<M_SRWA_12F_Archival_Summary_Entity> dataList = M_SRWA_12F_Archival_Summary_Repo
+				.getdatabydateListarchival(dateformat.parse(todate), version);
 
-		    logger.info("Service: Generating RESUB report for version {}", version);
-
-		    return BRRS_M_SRWA_12FResubExcel(
-		        filename, reportId, fromdate, todate,
-		        currency, dtltype, type, version);
+		if (dataList.isEmpty()) {
+			logger.warn("Service: No data found for M_SRWA_12F report. Returning empty result.");
+			return new byte[0];
 		}
-
-		// 3. RESUB – EMAIL
-		else if ("RESUB".equalsIgnoreCase(type) 
-		        && "email".equalsIgnoreCase(dtltype)) {
-
-		    logger.info("Service: Generating RESUB Email for version {}", version);
-
-		    return BRRS_M_SRWA_12FEmailResubExcel(
-		        filename, reportId, fromdate, todate,
-		        currency, dtltype, type, version);
-		}
-
-		// 4. NORMAL EMAIL (NO VERSION)
-		else if ("email".equalsIgnoreCase(dtltype) 
-		        && version == null) {
-
-		    logger.info("Service: Generating Normal Email");
-
-		    return BRRS_M_SRWA_12FEmailExcel(
-		        filename, reportId, fromdate, todate,
-		        currency, dtltype, type, null);
-		}
-
-		// 5. ARCHIVAL – EMAIL
-		else if ("ARCHIVAL".equalsIgnoreCase(type) 
-		        && "email".equalsIgnoreCase(dtltype)
-		        && version != null) {
-
-		    logger.info("Service: Generating ARCHIVAL Email for version {}", version);
-
-		    return BRRS_M_SRWA_12FEmailArchivalExcel(
-		        filename, reportId, fromdate, todate,
-		        currency, dtltype, type, version);
-		}
-
-		// Default (LIVE) case
-		List<M_SRWA_12F_Summary_Entity> dataList = M_SRWA_12F_Summary_Repo.getdatabydateList(reportDate);
 
 		String templateDir = env.getProperty("output.exportpathtemp");
 		String templateFileName = filename;
@@ -421,24 +3168,24 @@ public class BRRS_M_SRWA_12F_ReportService {
 		logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
 
 		if (!Files.exists(templatePath)) {
-			// This specific exception will be caught by the controller.
+// This specific exception will be caught by the controller.
 			throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
 		}
 		if (!Files.isReadable(templatePath)) {
-			// A specific exception for permission errors.
+// A specific exception for permission errors.
 			throw new SecurityException(
 					"Template file exists but is not readable (check permissions): " + templatePath.toAbsolutePath());
 		}
 
-		// This try-with-resources block is perfect. It guarantees all resources are
-		// closed automatically.
+// This try-with-resources block is perfect. It guarantees all resources are
+// closed automatically.
 		try (InputStream templateInputStream = Files.newInputStream(templatePath);
 				Workbook workbook = WorkbookFactory.create(templateInputStream);
 				ByteArrayOutputStream out = new ByteArrayOutputStream()) {
 
 			Sheet sheet = workbook.getSheetAt(0);
 
-			// --- Style Definitions ---
+// --- Style Definitions ---
 			CreationHelper createHelper = workbook.getCreationHelper();
 
 			CellStyle dateStyle = workbook.createCellStyle();
@@ -454,27 +3201,25 @@ public class BRRS_M_SRWA_12F_ReportService {
 			textStyle.setBorderLeft(BorderStyle.THIN);
 			textStyle.setBorderRight(BorderStyle.THIN);
 
-			// Create the font
+// Create the font
 			Font font = workbook.createFont();
 			font.setFontHeightInPoints((short) 8); // size 8
 			font.setFontName("Arial");
 
 			CellStyle numberStyle = workbook.createCellStyle();
-			// numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
+// numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
 			numberStyle.setBorderBottom(BorderStyle.THIN);
 			numberStyle.setBorderTop(BorderStyle.THIN);
 			numberStyle.setBorderLeft(BorderStyle.THIN);
 			numberStyle.setBorderRight(BorderStyle.THIN);
 			numberStyle.setFont(font);
-
 // --- End of Style Definitions ---
 
 			int startRow = 10;
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
-
-					M_SRWA_12F_Summary_Entity record = dataList.get(i);
+					M_SRWA_12F_Archival_Summary_Entity record = dataList.get(i);
 					System.out.println("rownumber=" + startRow + i);
 					Row row = sheet.getRow(startRow + i);
 					if (row == null) {
@@ -1459,6 +4204,1564 @@ public class BRRS_M_SRWA_12F_ReportService {
 
 			}
 
+// Write the final workbook content to the in-memory stream.
+			workbook.write(out);
+
+			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
+
+			return out.toByteArray();
+		}
+
+	}
+
+	// Archival Email Excel
+	public byte[] BRRS_M_SRWA_12FEmailArchivalExcel(String filename, String reportId, String fromdate, String todate,
+			String currency, String dtltype, String type, BigDecimal version) throws Exception {
+
+		logger.info("Service: Starting Archival Email Excel generation process in memory.");
+
+		List<M_SRWA_12F_Archival_Summary_Entity> dataList = M_SRWA_12F_Archival_Summary_Repo
+				.getdatabydateListarchival(dateformat.parse(todate), version);
+
+		if (dataList.isEmpty()) {
+			logger.warn("Service: No data found for BRRS_M_SRWA_12F report. Returning empty result.");
+			return new byte[0];
+		}
+
+		String templateDir = env.getProperty("output.exportpathtemp");
+		String templateFileName = filename;
+		System.out.println(filename);
+		Path templatePath = Paths.get(templateDir, templateFileName);
+		System.out.println(templatePath);
+
+		logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
+
+		if (!Files.exists(templatePath)) {
+			// This specific exception will be caught by the controller.
+			throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
+		}
+		if (!Files.isReadable(templatePath)) {
+			// A specific exception for permission errors.
+			throw new SecurityException(
+					"Template file exists but is not readable (check permissions): " + templatePath.toAbsolutePath());
+		}
+
+		// This try-with-resources block is perfect. It guarantees all resources are
+		// closed automatically.
+		try (InputStream templateInputStream = Files.newInputStream(templatePath);
+				Workbook workbook = WorkbookFactory.create(templateInputStream);
+				ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+
+			Sheet sheet = workbook.getSheetAt(0);
+
+			// --- Style Definitions ---
+			CreationHelper createHelper = workbook.getCreationHelper();
+
+			CellStyle dateStyle = workbook.createCellStyle();
+			dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
+			dateStyle.setBorderBottom(BorderStyle.THIN);
+			dateStyle.setBorderTop(BorderStyle.THIN);
+			dateStyle.setBorderLeft(BorderStyle.THIN);
+			dateStyle.setBorderRight(BorderStyle.THIN);
+
+			CellStyle textStyle = workbook.createCellStyle();
+			textStyle.setBorderBottom(BorderStyle.THIN);
+			textStyle.setBorderTop(BorderStyle.THIN);
+			textStyle.setBorderLeft(BorderStyle.THIN);
+			textStyle.setBorderRight(BorderStyle.THIN);
+
+			// Create the font
+			Font font = workbook.createFont();
+			font.setFontHeightInPoints((short) 8); // size 8
+			font.setFontName("Arial");
+
+			CellStyle numberStyle = workbook.createCellStyle();
+			// numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
+			numberStyle.setBorderBottom(BorderStyle.THIN);
+			numberStyle.setBorderTop(BorderStyle.THIN);
+			numberStyle.setBorderLeft(BorderStyle.THIN);
+			numberStyle.setBorderRight(BorderStyle.THIN);
+			numberStyle.setFont(font);
+			// --- End of Style Definitions ---
+
+			int startRow = 10;
+
+			if (!dataList.isEmpty()) {
+				for (int i = 0; i < dataList.size(); i++) {
+					M_SRWA_12F_Archival_Summary_Entity record1 = dataList.get(i);
+					System.out.println("rownumber=" + startRow + i);
+					Row row = sheet.getRow(startRow + i);
+					if (row == null) {
+						row = sheet.createRow(startRow + i);
+					}
+
+// row11
+					// Column E
+					Cell cell1 = row.createCell(1);
+					if (record1.getR11_NAME_OF_CORPORATE() != null) {
+						cell1.setCellValue(record1.getR11_NAME_OF_CORPORATE());
+						cell1.setCellStyle(textStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					Cell cell2 = row.createCell(2);
+					if (record1.getR11_CREDIT_RATING() != null) {
+						cell2.setCellValue(record1.getR11_CREDIT_RATING());
+						cell2.setCellStyle(textStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					Cell cell3 = row.createCell(4);
+					if (record1.getR11_RATING_AGENCY() != null) {
+						cell3.setCellValue(record1.getR11_RATING_AGENCY());
+						cell3.setCellStyle(textStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+					// row11
+					// Column E
+					Cell cell4 = row.createCell(6);
+					if (record1.getR11_EXPOSURE_AMT() != null) {
+						cell4.setCellValue(record1.getR11_EXPOSURE_AMT().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					// row11
+					// Column F
+					Cell cell5 = row.createCell(7);
+					if (record1.getR11_RISK_WEIGHT() != null) {
+						cell5.setCellValue(record1.getR11_RISK_WEIGHT().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+					// row11
+					// Column F
+					Cell cell6 = row.createCell(8);
+					if (record1.getR11_RISK_WEIGHTED_AMT() != null) {
+						cell6.setCellValue(record1.getR11_RISK_WEIGHTED_AMT().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					// row12
+					row = sheet.getRow(11);
+
+					cell1 = row.createCell(1);
+					if (record1.getR12_NAME_OF_CORPORATE() != null) {
+						cell1.setCellValue(record1.getR12_NAME_OF_CORPORATE());
+						cell1.setCellStyle(textStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record1.getR12_CREDIT_RATING() != null) {
+						cell2.setCellValue(record1.getR12_CREDIT_RATING());
+						cell2.setCellStyle(textStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(4);
+					if (record1.getR12_RATING_AGENCY() != null) {
+						cell3.setCellValue(record1.getR12_RATING_AGENCY());
+						cell3.setCellStyle(textStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+					// Column E
+					cell4 = row.createCell(6);
+					if (record1.getR12_EXPOSURE_AMT() != null) {
+						cell4.setCellValue(record1.getR12_EXPOSURE_AMT().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					// row12
+					// Column F
+					cell5 = row.createCell(7);
+					if (record1.getR12_RISK_WEIGHT() != null) {
+						cell5.setCellValue(record1.getR12_RISK_WEIGHT().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+					cell6 = row.createCell(8);
+					if (record1.getR12_RISK_WEIGHTED_AMT() != null) {
+						cell6.setCellValue(record1.getR12_RISK_WEIGHTED_AMT().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					// row13
+					row = sheet.getRow(12);
+
+					cell1 = row.createCell(1);
+					if (record1.getR13_NAME_OF_CORPORATE() != null) {
+						cell1.setCellValue(record1.getR13_NAME_OF_CORPORATE());
+						cell1.setCellStyle(textStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record1.getR13_CREDIT_RATING() != null) {
+						cell2.setCellValue(record1.getR13_CREDIT_RATING());
+						cell2.setCellStyle(textStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(4);
+					if (record1.getR13_RATING_AGENCY() != null) {
+						cell3.setCellValue(record1.getR13_RATING_AGENCY());
+						cell3.setCellStyle(textStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(6);
+					if (record1.getR13_EXPOSURE_AMT() != null) {
+						cell4.setCellValue(record1.getR13_EXPOSURE_AMT().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(7);
+					if (record1.getR13_RISK_WEIGHT() != null) {
+						cell5.setCellValue(record1.getR13_RISK_WEIGHT().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(8);
+					if (record1.getR13_RISK_WEIGHTED_AMT() != null) {
+						cell6.setCellValue(record1.getR13_RISK_WEIGHTED_AMT().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					// row14
+					row = sheet.getRow(13);
+
+					cell1 = row.createCell(1);
+					if (record1.getR14_NAME_OF_CORPORATE() != null) {
+						cell1.setCellValue(record1.getR14_NAME_OF_CORPORATE());
+						cell1.setCellStyle(textStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record1.getR14_CREDIT_RATING() != null) {
+						cell2.setCellValue(record1.getR14_CREDIT_RATING());
+						cell2.setCellStyle(textStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(4);
+					if (record1.getR14_RATING_AGENCY() != null) {
+						cell3.setCellValue(record1.getR14_RATING_AGENCY());
+						cell3.setCellStyle(textStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(6);
+					if (record1.getR14_EXPOSURE_AMT() != null) {
+						cell4.setCellValue(record1.getR14_EXPOSURE_AMT().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(7);
+					if (record1.getR14_RISK_WEIGHT() != null) {
+						cell5.setCellValue(record1.getR14_RISK_WEIGHT().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(8);
+					if (record1.getR14_RISK_WEIGHTED_AMT() != null) {
+						cell6.setCellValue(record1.getR14_RISK_WEIGHTED_AMT().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					// row15
+					row = sheet.getRow(14);
+
+					cell1 = row.createCell(1);
+					if (record1.getR15_NAME_OF_CORPORATE() != null) {
+						cell1.setCellValue(record1.getR15_NAME_OF_CORPORATE());
+						cell1.setCellStyle(textStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record1.getR15_CREDIT_RATING() != null) {
+						cell2.setCellValue(record1.getR15_CREDIT_RATING());
+						cell2.setCellStyle(textStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(4);
+					if (record1.getR15_RATING_AGENCY() != null) {
+						cell3.setCellValue(record1.getR15_RATING_AGENCY());
+						cell3.setCellStyle(textStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(6);
+					if (record1.getR15_EXPOSURE_AMT() != null) {
+						cell4.setCellValue(record1.getR15_EXPOSURE_AMT().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(7);
+					if (record1.getR15_RISK_WEIGHT() != null) {
+						cell5.setCellValue(record1.getR15_RISK_WEIGHT().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(8);
+					if (record1.getR15_RISK_WEIGHTED_AMT() != null) {
+						cell6.setCellValue(record1.getR15_RISK_WEIGHTED_AMT().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					// row16
+					row = sheet.getRow(15);
+
+					cell1 = row.createCell(1);
+					if (record1.getR16_NAME_OF_CORPORATE() != null) {
+						cell1.setCellValue(record1.getR16_NAME_OF_CORPORATE());
+						cell1.setCellStyle(textStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record1.getR16_CREDIT_RATING() != null) {
+						cell2.setCellValue(record1.getR16_CREDIT_RATING());
+						cell2.setCellStyle(textStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(4);
+					if (record1.getR16_RATING_AGENCY() != null) {
+						cell3.setCellValue(record1.getR16_RATING_AGENCY());
+						cell3.setCellStyle(textStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(6);
+					if (record1.getR16_EXPOSURE_AMT() != null) {
+						cell4.setCellValue(record1.getR16_EXPOSURE_AMT().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(7);
+					if (record1.getR16_RISK_WEIGHT() != null) {
+						cell5.setCellValue(record1.getR16_RISK_WEIGHT().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(8);
+					if (record1.getR16_RISK_WEIGHTED_AMT() != null) {
+						cell6.setCellValue(record1.getR16_RISK_WEIGHTED_AMT().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					// row17
+					row = sheet.getRow(16);
+
+					cell1 = row.createCell(1);
+					if (record1.getR17_NAME_OF_CORPORATE() != null) {
+						cell1.setCellValue(record1.getR17_NAME_OF_CORPORATE());
+						cell1.setCellStyle(textStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record1.getR17_CREDIT_RATING() != null) {
+						cell2.setCellValue(record1.getR17_CREDIT_RATING());
+						cell2.setCellStyle(textStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(4);
+					if (record1.getR17_RATING_AGENCY() != null) {
+						cell3.setCellValue(record1.getR17_RATING_AGENCY());
+						cell3.setCellStyle(textStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(6);
+					if (record1.getR17_EXPOSURE_AMT() != null) {
+						cell4.setCellValue(record1.getR17_EXPOSURE_AMT().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(7);
+					if (record1.getR17_RISK_WEIGHT() != null) {
+						cell5.setCellValue(record1.getR17_RISK_WEIGHT().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(8);
+					if (record1.getR17_RISK_WEIGHTED_AMT() != null) {
+						cell6.setCellValue(record1.getR17_RISK_WEIGHTED_AMT().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					// row18
+					row = sheet.getRow(17);
+
+					cell1 = row.createCell(1);
+					if (record1.getR18_NAME_OF_CORPORATE() != null) {
+						cell1.setCellValue(record1.getR18_NAME_OF_CORPORATE());
+						cell1.setCellStyle(textStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record1.getR18_CREDIT_RATING() != null) {
+						cell2.setCellValue(record1.getR18_CREDIT_RATING());
+						cell2.setCellStyle(textStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(4);
+					if (record1.getR18_RATING_AGENCY() != null) {
+						cell3.setCellValue(record1.getR18_RATING_AGENCY());
+						cell3.setCellStyle(textStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(6);
+					if (record1.getR18_EXPOSURE_AMT() != null) {
+						cell4.setCellValue(record1.getR18_EXPOSURE_AMT().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(7);
+					if (record1.getR18_RISK_WEIGHT() != null) {
+						cell5.setCellValue(record1.getR18_RISK_WEIGHT().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(8);
+					if (record1.getR18_RISK_WEIGHTED_AMT() != null) {
+						cell6.setCellValue(record1.getR18_RISK_WEIGHTED_AMT().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					// row19
+					row = sheet.getRow(18);
+
+					cell1 = row.createCell(1);
+					if (record1.getR19_NAME_OF_CORPORATE() != null) {
+						cell1.setCellValue(record1.getR19_NAME_OF_CORPORATE());
+						cell1.setCellStyle(textStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record1.getR19_CREDIT_RATING() != null) {
+						cell2.setCellValue(record1.getR19_CREDIT_RATING());
+						cell2.setCellStyle(textStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(4);
+					if (record1.getR19_RATING_AGENCY() != null) {
+						cell3.setCellValue(record1.getR19_RATING_AGENCY());
+						cell3.setCellStyle(textStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(6);
+					if (record1.getR19_EXPOSURE_AMT() != null) {
+						cell4.setCellValue(record1.getR19_EXPOSURE_AMT().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(7);
+					if (record1.getR19_RISK_WEIGHT() != null) {
+						cell5.setCellValue(record1.getR19_RISK_WEIGHT().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(8);
+					if (record1.getR19_RISK_WEIGHTED_AMT() != null) {
+						cell6.setCellValue(record1.getR19_RISK_WEIGHTED_AMT().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					// row20
+					row = sheet.getRow(19);
+
+					cell1 = row.createCell(1);
+					if (record1.getR20_NAME_OF_CORPORATE() != null) {
+						cell1.setCellValue(record1.getR20_NAME_OF_CORPORATE());
+						cell1.setCellStyle(textStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record1.getR20_CREDIT_RATING() != null) {
+						cell2.setCellValue(record1.getR20_CREDIT_RATING());
+						cell2.setCellStyle(textStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(4);
+					if (record1.getR20_RATING_AGENCY() != null) {
+						cell3.setCellValue(record1.getR20_RATING_AGENCY());
+						cell3.setCellStyle(textStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(6);
+					if (record1.getR20_EXPOSURE_AMT() != null) {
+						cell4.setCellValue(record1.getR20_EXPOSURE_AMT().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(7);
+					if (record1.getR20_RISK_WEIGHT() != null) {
+						cell5.setCellValue(record1.getR20_RISK_WEIGHT().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(8);
+					if (record1.getR20_RISK_WEIGHTED_AMT() != null) {
+						cell6.setCellValue(record1.getR20_RISK_WEIGHTED_AMT().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					// row21
+					row = sheet.getRow(20);
+
+					cell1 = row.createCell(1);
+					if (record1.getR21_NAME_OF_CORPORATE() != null) {
+						cell1.setCellValue(record1.getR21_NAME_OF_CORPORATE());
+						cell1.setCellStyle(textStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record1.getR21_CREDIT_RATING() != null) {
+						cell2.setCellValue(record1.getR21_CREDIT_RATING());
+						cell2.setCellStyle(textStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(4);
+					if (record1.getR21_RATING_AGENCY() != null) {
+						cell3.setCellValue(record1.getR21_RATING_AGENCY());
+						cell3.setCellStyle(textStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(6);
+					if (record1.getR21_EXPOSURE_AMT() != null) {
+						cell4.setCellValue(record1.getR21_EXPOSURE_AMT().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(7);
+					if (record1.getR21_RISK_WEIGHT() != null) {
+						cell5.setCellValue(record1.getR21_RISK_WEIGHT().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(8);
+					if (record1.getR21_RISK_WEIGHTED_AMT() != null) {
+						cell6.setCellValue(record1.getR21_RISK_WEIGHTED_AMT().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					// row22
+					row = sheet.getRow(21);
+
+					cell1 = row.createCell(1);
+					if (record1.getR22_NAME_OF_CORPORATE() != null) {
+						cell1.setCellValue(record1.getR22_NAME_OF_CORPORATE());
+						cell1.setCellStyle(textStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record1.getR22_CREDIT_RATING() != null) {
+						cell2.setCellValue(record1.getR22_CREDIT_RATING());
+						cell2.setCellStyle(textStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(8);
+					if (record1.getR22_RISK_WEIGHTED_AMT() != null) {
+						cell6.setCellValue(record1.getR22_RISK_WEIGHTED_AMT().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					// row23
+					row = sheet.getRow(22);
+
+					cell1 = row.createCell(1);
+					if (record1.getR23_NAME_OF_CORPORATE() != null) {
+						cell1.setCellValue(record1.getR23_NAME_OF_CORPORATE());
+						cell1.setCellStyle(textStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record1.getR23_CREDIT_RATING() != null) {
+						cell2.setCellValue(record1.getR23_CREDIT_RATING());
+						cell2.setCellStyle(textStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(8);
+					if (record1.getR23_RISK_WEIGHTED_AMT() != null) {
+						cell6.setCellValue(record1.getR23_RISK_WEIGHTED_AMT().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					// row24
+					row = sheet.getRow(23);
+
+					cell1 = row.createCell(1);
+					if (record1.getR24_NAME_OF_CORPORATE() != null) {
+						cell1.setCellValue(record1.getR24_NAME_OF_CORPORATE());
+						cell1.setCellStyle(textStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record1.getR24_CREDIT_RATING() != null) {
+						cell2.setCellValue(record1.getR24_CREDIT_RATING());
+						cell2.setCellStyle(textStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(8);
+					if (record1.getR24_RISK_WEIGHTED_AMT() != null) {
+						cell6.setCellValue(record1.getR24_RISK_WEIGHTED_AMT().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					// row25
+					row = sheet.getRow(24);
+
+					cell1 = row.createCell(1);
+					if (record1.getR25_NAME_OF_CORPORATE() != null) {
+						cell1.setCellValue(record1.getR25_NAME_OF_CORPORATE());
+						cell1.setCellStyle(textStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record1.getR25_CREDIT_RATING() != null) {
+						cell2.setCellValue(record1.getR25_CREDIT_RATING());
+						cell2.setCellStyle(textStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(4);
+					if (record1.getR25_RATING_AGENCY() != null) {
+						cell3.setCellValue(record1.getR25_RATING_AGENCY());
+						cell3.setCellStyle(textStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(6);
+					if (record1.getR25_EXPOSURE_AMT() != null) {
+						cell4.setCellValue(record1.getR25_EXPOSURE_AMT().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(7);
+					if (record1.getR25_RISK_WEIGHT() != null) {
+						cell5.setCellValue(record1.getR25_RISK_WEIGHT().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(8);
+					if (record1.getR25_RISK_WEIGHTED_AMT() != null) {
+						cell6.setCellValue(record1.getR25_RISK_WEIGHTED_AMT().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					// row26
+					row = sheet.getRow(25);
+
+					cell1 = row.createCell(1);
+					if (record1.getR26_NAME_OF_CORPORATE() != null) {
+						cell1.setCellValue(record1.getR26_NAME_OF_CORPORATE());
+						cell1.setCellStyle(textStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record1.getR26_CREDIT_RATING() != null) {
+						cell2.setCellValue(record1.getR26_CREDIT_RATING());
+						cell2.setCellStyle(textStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(4);
+					if (record1.getR26_RATING_AGENCY() != null) {
+						cell3.setCellValue(record1.getR26_RATING_AGENCY());
+						cell3.setCellStyle(textStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(6);
+					if (record1.getR26_EXPOSURE_AMT() != null) {
+						cell4.setCellValue(record1.getR26_EXPOSURE_AMT().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(7);
+					if (record1.getR26_RISK_WEIGHT() != null) {
+						cell5.setCellValue(record1.getR26_RISK_WEIGHT().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(8);
+					if (record1.getR26_RISK_WEIGHTED_AMT() != null) {
+						cell6.setCellValue(record1.getR26_RISK_WEIGHTED_AMT().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					// row27
+					row = sheet.getRow(26);
+
+					cell1 = row.createCell(1);
+					if (record1.getR27_NAME_OF_CORPORATE() != null) {
+						cell1.setCellValue(record1.getR27_NAME_OF_CORPORATE());
+						cell1.setCellStyle(textStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record1.getR27_CREDIT_RATING() != null) {
+						cell2.setCellValue(record1.getR27_CREDIT_RATING());
+						cell2.setCellStyle(textStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(4);
+					if (record1.getR27_RATING_AGENCY() != null) {
+						cell3.setCellValue(record1.getR27_RATING_AGENCY());
+						cell3.setCellStyle(textStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(6);
+					if (record1.getR27_EXPOSURE_AMT() != null) {
+						cell4.setCellValue(record1.getR27_EXPOSURE_AMT().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(7);
+					if (record1.getR27_RISK_WEIGHT() != null) {
+						cell5.setCellValue(record1.getR27_RISK_WEIGHT().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(8);
+					if (record1.getR27_RISK_WEIGHTED_AMT() != null) {
+						cell6.setCellValue(record1.getR27_RISK_WEIGHTED_AMT().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					// row28
+					row = sheet.getRow(27);
+
+					cell1 = row.createCell(1);
+					if (record1.getR28_NAME_OF_CORPORATE() != null) {
+						cell1.setCellValue(record1.getR28_NAME_OF_CORPORATE());
+						cell1.setCellStyle(textStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record1.getR28_CREDIT_RATING() != null) {
+						cell2.setCellValue(record1.getR28_CREDIT_RATING());
+						cell2.setCellStyle(textStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(4);
+					if (record1.getR28_RATING_AGENCY() != null) {
+						cell3.setCellValue(record1.getR28_RATING_AGENCY());
+						cell3.setCellStyle(textStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(6);
+					if (record1.getR28_EXPOSURE_AMT() != null) {
+						cell4.setCellValue(record1.getR28_EXPOSURE_AMT().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(7);
+					if (record1.getR28_RISK_WEIGHT() != null) {
+						cell5.setCellValue(record1.getR28_RISK_WEIGHT().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(8);
+					if (record1.getR28_RISK_WEIGHTED_AMT() != null) {
+						cell6.setCellValue(record1.getR28_RISK_WEIGHTED_AMT().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					// row29
+					row = sheet.getRow(28);
+
+					cell1 = row.createCell(1);
+					if (record1.getR29_NAME_OF_CORPORATE() != null) {
+						cell1.setCellValue(record1.getR29_NAME_OF_CORPORATE());
+						cell1.setCellStyle(textStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record1.getR29_CREDIT_RATING() != null) {
+						cell2.setCellValue(record1.getR29_CREDIT_RATING());
+						cell2.setCellStyle(textStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(4);
+					if (record1.getR29_RATING_AGENCY() != null) {
+						cell3.setCellValue(record1.getR29_RATING_AGENCY());
+						cell3.setCellStyle(textStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(6);
+					if (record1.getR29_EXPOSURE_AMT() != null) {
+						cell4.setCellValue(record1.getR29_EXPOSURE_AMT().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(7);
+					if (record1.getR29_RISK_WEIGHT() != null) {
+						cell5.setCellValue(record1.getR29_RISK_WEIGHT().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(8);
+					if (record1.getR29_RISK_WEIGHTED_AMT() != null) {
+						cell6.setCellValue(record1.getR29_RISK_WEIGHTED_AMT().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					// row30
+					row = sheet.getRow(29);
+
+					cell1 = row.createCell(1);
+					if (record1.getR30_NAME_OF_CORPORATE() != null) {
+						cell1.setCellValue(record1.getR30_NAME_OF_CORPORATE());
+						cell1.setCellStyle(textStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record1.getR30_CREDIT_RATING() != null) {
+						cell2.setCellValue(record1.getR30_CREDIT_RATING());
+						cell2.setCellStyle(textStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(4);
+					if (record1.getR30_RATING_AGENCY() != null) {
+						cell3.setCellValue(record1.getR30_RATING_AGENCY());
+						cell3.setCellStyle(textStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(6);
+					if (record1.getR30_EXPOSURE_AMT() != null) {
+						cell4.setCellValue(record1.getR30_EXPOSURE_AMT().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(7);
+					if (record1.getR30_RISK_WEIGHT() != null) {
+						cell5.setCellValue(record1.getR30_RISK_WEIGHT().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(8);
+					if (record1.getR30_RISK_WEIGHTED_AMT() != null) {
+						cell6.setCellValue(record1.getR30_RISK_WEIGHTED_AMT().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					// row31
+					row = sheet.getRow(30);
+
+					cell1 = row.createCell(1);
+					if (record1.getR31_NAME_OF_CORPORATE() != null) {
+						cell1.setCellValue(record1.getR31_NAME_OF_CORPORATE());
+						cell1.setCellStyle(textStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record1.getR31_CREDIT_RATING() != null) {
+						cell2.setCellValue(record1.getR31_CREDIT_RATING());
+						cell2.setCellStyle(textStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(4);
+					if (record1.getR31_RATING_AGENCY() != null) {
+						cell3.setCellValue(record1.getR31_RATING_AGENCY());
+						cell3.setCellStyle(textStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(6);
+					if (record1.getR31_EXPOSURE_AMT() != null) {
+						cell4.setCellValue(record1.getR31_EXPOSURE_AMT().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(7);
+					if (record1.getR31_RISK_WEIGHT() != null) {
+						cell5.setCellValue(record1.getR31_RISK_WEIGHT().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(8);
+					if (record1.getR31_RISK_WEIGHTED_AMT() != null) {
+						cell6.setCellValue(record1.getR31_RISK_WEIGHTED_AMT().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					// row32
+					row = sheet.getRow(31);
+
+					cell1 = row.createCell(1);
+					if (record1.getR32_NAME_OF_CORPORATE() != null) {
+						cell1.setCellValue(record1.getR32_NAME_OF_CORPORATE());
+						cell1.setCellStyle(textStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record1.getR32_CREDIT_RATING() != null) {
+						cell2.setCellValue(record1.getR32_CREDIT_RATING());
+						cell2.setCellStyle(textStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(4);
+					if (record1.getR32_RATING_AGENCY() != null) {
+						cell3.setCellValue(record1.getR32_RATING_AGENCY());
+						cell3.setCellStyle(textStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(6);
+					if (record1.getR32_EXPOSURE_AMT() != null) {
+						cell4.setCellValue(record1.getR32_EXPOSURE_AMT().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(7);
+					if (record1.getR32_RISK_WEIGHT() != null) {
+						cell5.setCellValue(record1.getR32_RISK_WEIGHT().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(8);
+					if (record1.getR32_RISK_WEIGHTED_AMT() != null) {
+						cell6.setCellValue(record1.getR32_RISK_WEIGHTED_AMT().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					// row33
+					row = sheet.getRow(32);
+
+					cell1 = row.createCell(1);
+					if (record1.getR33_NAME_OF_CORPORATE() != null) {
+						cell1.setCellValue(record1.getR33_NAME_OF_CORPORATE());
+						cell1.setCellStyle(textStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record1.getR33_CREDIT_RATING() != null) {
+						cell2.setCellValue(record1.getR33_CREDIT_RATING());
+						cell2.setCellStyle(textStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(4);
+					if (record1.getR33_RATING_AGENCY() != null) {
+						cell3.setCellValue(record1.getR33_RATING_AGENCY());
+						cell3.setCellStyle(textStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(6);
+					if (record1.getR33_EXPOSURE_AMT() != null) {
+						cell4.setCellValue(record1.getR33_EXPOSURE_AMT().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(7);
+					if (record1.getR33_RISK_WEIGHT() != null) {
+						cell5.setCellValue(record1.getR33_RISK_WEIGHT().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(8);
+					if (record1.getR33_RISK_WEIGHTED_AMT() != null) {
+						cell6.setCellValue(record1.getR33_RISK_WEIGHTED_AMT().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					// row34
+					row = sheet.getRow(33);
+
+					cell1 = row.createCell(1);
+					if (record1.getR34_NAME_OF_CORPORATE() != null) {
+						cell1.setCellValue(record1.getR34_NAME_OF_CORPORATE());
+						cell1.setCellStyle(textStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record1.getR34_CREDIT_RATING() != null) {
+						cell2.setCellValue(record1.getR34_CREDIT_RATING());
+						cell2.setCellStyle(textStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(4);
+					if (record1.getR34_RATING_AGENCY() != null) {
+						cell3.setCellValue(record1.getR34_RATING_AGENCY());
+						cell3.setCellStyle(textStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(6);
+					if (record1.getR34_EXPOSURE_AMT() != null) {
+						cell4.setCellValue(record1.getR34_EXPOSURE_AMT().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(7);
+					if (record1.getR34_RISK_WEIGHT() != null) {
+						cell5.setCellValue(record1.getR34_RISK_WEIGHT().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(8);
+					if (record1.getR34_RISK_WEIGHTED_AMT() != null) {
+						cell6.setCellValue(record1.getR34_RISK_WEIGHTED_AMT().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					// row35
+					row = sheet.getRow(34);
+
+					cell1 = row.createCell(1);
+					if (record1.getR35_NAME_OF_CORPORATE() != null) {
+						cell1.setCellValue(record1.getR35_NAME_OF_CORPORATE());
+						cell1.setCellStyle(textStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record1.getR35_CREDIT_RATING() != null) {
+						cell2.setCellValue(record1.getR35_CREDIT_RATING());
+						cell2.setCellStyle(textStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(4);
+					if (record1.getR35_RATING_AGENCY() != null) {
+						cell3.setCellValue(record1.getR35_RATING_AGENCY());
+						cell3.setCellStyle(textStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(6);
+					if (record1.getR35_EXPOSURE_AMT() != null) {
+						cell4.setCellValue(record1.getR35_EXPOSURE_AMT().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(7);
+					if (record1.getR35_RISK_WEIGHT() != null) {
+						cell5.setCellValue(record1.getR35_RISK_WEIGHT().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(8);
+					if (record1.getR35_RISK_WEIGHTED_AMT() != null) {
+						cell6.setCellValue(record1.getR35_RISK_WEIGHTED_AMT().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					// row36
+					row = sheet.getRow(35);
+
+					cell1 = row.createCell(1);
+					if (record1.getR36_NAME_OF_CORPORATE() != null) {
+						cell1.setCellValue(record1.getR36_NAME_OF_CORPORATE());
+						cell1.setCellStyle(textStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record1.getR36_CREDIT_RATING() != null) {
+						cell2.setCellValue(record1.getR36_CREDIT_RATING());
+						cell2.setCellStyle(textStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(4);
+					if (record1.getR36_RATING_AGENCY() != null) {
+						cell3.setCellValue(record1.getR36_RATING_AGENCY());
+						cell3.setCellStyle(textStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(6);
+					if (record1.getR36_EXPOSURE_AMT() != null) {
+						cell4.setCellValue(record1.getR36_EXPOSURE_AMT().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(7);
+					if (record1.getR36_RISK_WEIGHT() != null) {
+						cell5.setCellValue(record1.getR36_RISK_WEIGHT().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(8);
+					if (record1.getR36_RISK_WEIGHTED_AMT() != null) {
+						cell6.setCellValue(record1.getR36_RISK_WEIGHTED_AMT().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					// row37
+					row = sheet.getRow(36);
+
+					cell1 = row.createCell(1);
+					if (record1.getR37_NAME_OF_CORPORATE() != null) {
+						cell1.setCellValue(record1.getR37_NAME_OF_CORPORATE());
+						cell1.setCellStyle(textStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record1.getR37_CREDIT_RATING() != null) {
+						cell2.setCellValue(record1.getR37_CREDIT_RATING());
+						cell2.setCellStyle(textStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(4);
+					if (record1.getR37_RATING_AGENCY() != null) {
+						cell3.setCellValue(record1.getR37_RATING_AGENCY());
+						cell3.setCellStyle(textStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(6);
+					if (record1.getR37_EXPOSURE_AMT() != null) {
+						cell4.setCellValue(record1.getR37_EXPOSURE_AMT().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(7);
+					if (record1.getR37_RISK_WEIGHT() != null) {
+						cell5.setCellValue(record1.getR37_RISK_WEIGHT().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(8);
+					if (record1.getR37_RISK_WEIGHTED_AMT() != null) {
+						cell6.setCellValue(record1.getR37_RISK_WEIGHTED_AMT().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+				}
+				workbook.setForceFormulaRecalculation(true);
+			} else {
+
+			}
+
 			// Write the final workbook content to the in-memory stream.
 			workbook.write(out);
 
@@ -1468,4262 +5771,31 @@ public class BRRS_M_SRWA_12F_ReportService {
 		}
 	}
 
-	public byte[] getExcelM_SRWA_12FARCHIVAL(String filename, String reportId, String fromdate, String todate,
-			String currency, String dtltype, String type, BigDecimal version) throws Exception {
-		logger.info("Service: Starting Excel generation process in memory.");
+	// Resub Format excel
+	public byte[] BRRS_M_SRWA_12FResubExcel(String filename, String reportId, String fromdate, String todate,
+			String currency, String dtltype, String type, String format, BigDecimal version) throws Exception {
 
-		if (type.equals("ARCHIVAL") & version != null) {
+		logger.info("Service: Starting Excel generation process in memory for RESUB (Format) Excel.");
 
+		if ("email".equalsIgnoreCase(format) && version != null) {
+			logger.info("Service: Generating RESUB report for version {}", version);
+
+			try {
+				// ✅ Redirecting to Resub Excel
+				return BRRS_M_SRWA_12FEmailResubExcel(filename, reportId, fromdate, todate, currency, dtltype, type,
+						version);
+
+			} catch (ParseException e) {
+				logger.error("Invalid report date format: {}", fromdate, e);
+				throw new RuntimeException("Date format must be dd-MMM-yyyy (e.g. 31-Jul-2025)");
+			}
 		}
 
-		List<M_SRWA_12F_Archival_Summary_Entity> dataList = M_SRWA_12F_Archival_Summary_Repo
+		List<M_SRWA_12F_Resub_Summary_Entity> dataList = brrs_M_SRWA_12F_resub_summary_repo
 				.getdatabydateListarchival(dateformat.parse(todate), version);
 
 		if (dataList.isEmpty()) {
 			logger.warn("Service: No data found for M_SRWA_12F report. Returning empty result.");
-			return new byte[0];
-		}
-
-		String templateDir = env.getProperty("output.exportpathtemp");
-		String templateFileName = filename;
-		System.out.println(filename);
-		Path templatePath = Paths.get(templateDir, templateFileName);
-		System.out.println(templatePath);
-
-		logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
-
-		if (!Files.exists(templatePath)) {
-			// This specific exception will be caught by the controller.
-			throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
-		}
-		if (!Files.isReadable(templatePath)) {
-			// A specific exception for permission errors.
-			throw new SecurityException(
-					"Template file exists but is not readable (check permissions): " + templatePath.toAbsolutePath());
-		}
-
-		// This try-with-resources block is perfect. It guarantees all resources are
-		// closed automatically.
-		try (InputStream templateInputStream = Files.newInputStream(templatePath);
-				Workbook workbook = WorkbookFactory.create(templateInputStream);
-				ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-
-			Sheet sheet = workbook.getSheetAt(0);
-
-			// --- Style Definitions ---
-			CreationHelper createHelper = workbook.getCreationHelper();
-
-			CellStyle dateStyle = workbook.createCellStyle();
-			dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
-			dateStyle.setBorderBottom(BorderStyle.THIN);
-			dateStyle.setBorderTop(BorderStyle.THIN);
-			dateStyle.setBorderLeft(BorderStyle.THIN);
-			dateStyle.setBorderRight(BorderStyle.THIN);
-
-			CellStyle textStyle = workbook.createCellStyle();
-			textStyle.setBorderBottom(BorderStyle.THIN);
-			textStyle.setBorderTop(BorderStyle.THIN);
-			textStyle.setBorderLeft(BorderStyle.THIN);
-			textStyle.setBorderRight(BorderStyle.THIN);
-
-			// Create the font
-			Font font = workbook.createFont();
-			font.setFontHeightInPoints((short) 8); // size 8
-			font.setFontName("Arial");
-
-			CellStyle numberStyle = workbook.createCellStyle();
-			// numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
-			numberStyle.setBorderBottom(BorderStyle.THIN);
-			numberStyle.setBorderTop(BorderStyle.THIN);
-			numberStyle.setBorderLeft(BorderStyle.THIN);
-			numberStyle.setBorderRight(BorderStyle.THIN);
-			numberStyle.setFont(font);
-
-			// --- End of Style Definitions ---
-
-			int startRow = 10;
-
-			if (!dataList.isEmpty()) {
-				for (int i = 0; i < dataList.size(); i++) {
-
-					M_SRWA_12F_Archival_Summary_Entity record1 = dataList.get(i);
-					System.out.println("rownumber=" + startRow + i);
-					Row row = sheet.getRow(startRow + i);
-					if (row == null) {
-						row = sheet.createRow(startRow + i);
-					}
-
-					// row11
-					// Column E
-					Cell cell1 = row.createCell(1);
-					if (record1.getR11_NAME_OF_CORPORATE() != null) {
-						cell1.setCellValue(record1.getR11_NAME_OF_CORPORATE());
-						cell1.setCellStyle(textStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-
-					Cell cell2 = row.createCell(2);
-					if (record1.getR11_CREDIT_RATING() != null) {
-						cell2.setCellValue(record1.getR11_CREDIT_RATING());
-						cell2.setCellStyle(textStyle);
-					} else {
-						cell2.setCellValue("");
-						cell2.setCellStyle(textStyle);
-					}
-
-					Cell cell3 = row.createCell(3);
-					if (record1.getR11_RATING_AGENCY() != null) {
-						cell3.setCellValue(record1.getR11_RATING_AGENCY());
-						cell3.setCellStyle(textStyle);
-					} else {
-						cell3.setCellValue("");
-						cell3.setCellStyle(textStyle);
-					}
-					// row11
-					// Column E
-					Cell cell4 = row.createCell(4);
-					if (record1.getR11_EXPOSURE_AMT() != null) {
-						cell4.setCellValue(record1.getR11_EXPOSURE_AMT().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					// row11
-					// Column F
-					Cell cell5 = row.createCell(5);
-					if (record1.getR11_RISK_WEIGHT() != null) {
-						cell5.setCellValue(record1.getR11_RISK_WEIGHT().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					// row12
-					row = sheet.getRow(11);
-
-					cell1 = row.createCell(1);
-					if (record1.getR12_NAME_OF_CORPORATE() != null) {
-						cell1.setCellValue(record1.getR12_NAME_OF_CORPORATE());
-						cell1.setCellStyle(textStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-
-					cell2 = row.createCell(2);
-					if (record1.getR12_CREDIT_RATING() != null) {
-						cell2.setCellValue(record1.getR12_CREDIT_RATING());
-						cell2.setCellStyle(textStyle);
-					} else {
-						cell2.setCellValue("");
-						cell2.setCellStyle(textStyle);
-					}
-
-					cell3 = row.createCell(3);
-					if (record1.getR12_RATING_AGENCY() != null) {
-						cell3.setCellValue(record1.getR12_RATING_AGENCY());
-						cell3.setCellStyle(textStyle);
-					} else {
-						cell3.setCellValue("");
-						cell3.setCellStyle(textStyle);
-					}
-					// Column E
-					cell4 = row.createCell(4);
-					if (record1.getR12_EXPOSURE_AMT() != null) {
-						cell4.setCellValue(record1.getR12_EXPOSURE_AMT().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					// row12
-					// Column F
-					cell5 = row.createCell(5);
-					if (record1.getR12_RISK_WEIGHT() != null) {
-						cell5.setCellValue(record1.getR12_RISK_WEIGHT().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					// row13
-					row = sheet.getRow(12);
-					// R13_NAME_OF_CORPORATE
-					cell1 = row.createCell(1);
-					if (record1.getR13_NAME_OF_CORPORATE() != null) {
-						cell1.setCellValue(record1.getR13_NAME_OF_CORPORATE());
-					} else {
-						cell1.setCellValue("");
-					}
-					cell1.setCellStyle(textStyle);
-
-					// R13_CREDIT_RATING
-					cell2 = row.createCell(2);
-					if (record1.getR13_CREDIT_RATING() != null) {
-						cell2.setCellValue(record1.getR13_CREDIT_RATING());
-					} else {
-						cell2.setCellValue("");
-					}
-					cell2.setCellStyle(textStyle);
-
-					// R13_RATING_AGENCY
-					cell3 = row.createCell(3);
-					if (record1.getR13_RATING_AGENCY() != null) {
-						cell3.setCellValue(record1.getR13_RATING_AGENCY());
-					} else {
-						cell3.setCellValue("");
-					}
-					cell3.setCellStyle(textStyle);
-
-					// Column E
-					cell4 = row.createCell(4);
-					if (record1.getR13_EXPOSURE_AMT() != null) {
-						cell4.setCellValue(record1.getR13_EXPOSURE_AMT().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					// row13
-					// Column F
-					cell5 = row.createCell(5);
-					if (record1.getR13_RISK_WEIGHT() != null) {
-						cell5.setCellValue(record1.getR13_RISK_WEIGHT().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					// row14
-					row = sheet.getRow(13);
-					// R14_NAME_OF_CORPORATE
-					cell1 = row.createCell(1);
-					if (record1.getR14_NAME_OF_CORPORATE() != null) {
-						cell1.setCellValue(record1.getR14_NAME_OF_CORPORATE());
-					} else {
-						cell1.setCellValue("");
-					}
-					cell1.setCellStyle(textStyle);
-
-					// R14_CREDIT_RATING
-					cell2 = row.createCell(2);
-					if (record1.getR14_CREDIT_RATING() != null) {
-						cell2.setCellValue(record1.getR14_CREDIT_RATING());
-					} else {
-						cell2.setCellValue("");
-					}
-					cell2.setCellStyle(textStyle);
-
-					// R14_RATING_AGENCY
-					cell3 = row.createCell(3);
-					if (record1.getR14_RATING_AGENCY() != null) {
-						cell3.setCellValue(record1.getR14_RATING_AGENCY());
-					} else {
-						cell3.setCellValue("");
-					}
-					cell3.setCellStyle(textStyle);
-
-					// Column E
-					cell4 = row.createCell(4);
-					if (record1.getR14_EXPOSURE_AMT() != null) {
-						cell4.setCellValue(record1.getR14_EXPOSURE_AMT().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					// row14
-					// Column F
-					cell5 = row.createCell(5);
-					if (record1.getR14_RISK_WEIGHT() != null) {
-						cell5.setCellValue(record1.getR14_RISK_WEIGHT().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					// row15
-					row = sheet.getRow(14);
-					cell1 = row.createCell(1);
-					cell1.setCellValue(
-							record1.getR15_NAME_OF_CORPORATE() != null ? record1.getR15_NAME_OF_CORPORATE() : "");
-					cell1.setCellStyle(textStyle);
-
-					cell2 = row.createCell(2);
-					cell2.setCellValue(record1.getR15_CREDIT_RATING() != null ? record1.getR15_CREDIT_RATING() : "");
-					cell2.setCellStyle(textStyle);
-
-					cell3 = row.createCell(3);
-					cell3.setCellValue(record1.getR15_RATING_AGENCY() != null ? record1.getR15_RATING_AGENCY() : "");
-					cell3.setCellStyle(textStyle);
-
-					// Column E
-					cell4 = row.createCell(4);
-					if (record1.getR15_EXPOSURE_AMT() != null) {
-						cell4.setCellValue(record1.getR15_EXPOSURE_AMT().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					// row15
-					// Column F
-					cell5 = row.createCell(5);
-					if (record1.getR15_RISK_WEIGHT() != null) {
-						cell5.setCellValue(record1.getR15_RISK_WEIGHT().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					// row16
-					row = sheet.getRow(15);
-					cell1 = row.createCell(1);
-					cell1.setCellValue(
-							record1.getR16_NAME_OF_CORPORATE() != null ? record1.getR16_NAME_OF_CORPORATE() : "");
-					cell1.setCellStyle(textStyle);
-
-					cell2 = row.createCell(2);
-					cell2.setCellValue(record1.getR16_CREDIT_RATING() != null ? record1.getR16_CREDIT_RATING() : "");
-					cell2.setCellStyle(textStyle);
-
-					cell3 = row.createCell(3);
-					cell3.setCellValue(record1.getR16_RATING_AGENCY() != null ? record1.getR16_RATING_AGENCY() : "");
-					cell3.setCellStyle(textStyle);
-
-					// Column E
-					cell4 = row.createCell(4);
-					if (record1.getR16_EXPOSURE_AMT() != null) {
-						cell4.setCellValue(record1.getR16_EXPOSURE_AMT().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					// row16
-					// Column F
-					cell5 = row.createCell(5);
-					if (record1.getR16_RISK_WEIGHT() != null) {
-						cell5.setCellValue(record1.getR16_RISK_WEIGHT().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					// row17
-					row = sheet.getRow(16);
-					cell1 = row.createCell(1);
-					cell1.setCellValue(
-							record1.getR17_NAME_OF_CORPORATE() != null ? record1.getR17_NAME_OF_CORPORATE() : "");
-					cell1.setCellStyle(textStyle);
-
-					cell2 = row.createCell(2);
-					cell2.setCellValue(record1.getR17_CREDIT_RATING() != null ? record1.getR17_CREDIT_RATING() : "");
-					cell2.setCellStyle(textStyle);
-
-					cell3 = row.createCell(3);
-					cell3.setCellValue(record1.getR17_RATING_AGENCY() != null ? record1.getR17_RATING_AGENCY() : "");
-					cell3.setCellStyle(textStyle);
-
-					// Column E
-					cell4 = row.createCell(4);
-					if (record1.getR17_EXPOSURE_AMT() != null) {
-						cell4.setCellValue(record1.getR17_EXPOSURE_AMT().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					// row17
-					// Column F
-					cell5 = row.createCell(5);
-					if (record1.getR17_RISK_WEIGHT() != null) {
-						cell5.setCellValue(record1.getR17_RISK_WEIGHT().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					// row18
-					row = sheet.getRow(17);
-					// R18 Cells
-					cell1 = row.createCell(1); // adjust column index as needed
-					cell1.setCellValue(
-							record1.getR18_NAME_OF_CORPORATE() != null ? record1.getR18_NAME_OF_CORPORATE() : "");
-					cell1.setCellStyle(textStyle);
-
-					cell2 = row.createCell(2);
-					cell2.setCellValue(record1.getR18_CREDIT_RATING() != null ? record1.getR18_CREDIT_RATING() : "");
-					cell2.setCellStyle(textStyle);
-
-					cell3 = row.createCell(3);
-					cell3.setCellValue(record1.getR18_RATING_AGENCY() != null ? record1.getR18_RATING_AGENCY() : "");
-					cell3.setCellStyle(textStyle);
-
-					// Column E
-					cell4 = row.createCell(4);
-					if (record1.getR18_EXPOSURE_AMT() != null) {
-						cell4.setCellValue(record1.getR18_EXPOSURE_AMT().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					// row18
-					// Column F
-					cell5 = row.createCell(5);
-					if (record1.getR18_RISK_WEIGHT() != null) {
-						cell5.setCellValue(record1.getR18_RISK_WEIGHT().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					// row19
-					row = sheet.getRow(18);
-					cell1 = row.createCell(1);
-					cell1.setCellValue(
-							record1.getR19_NAME_OF_CORPORATE() != null ? record1.getR19_NAME_OF_CORPORATE() : "");
-					cell1.setCellStyle(textStyle);
-
-					cell2 = row.createCell(2);
-					cell2.setCellValue(record1.getR19_CREDIT_RATING() != null ? record1.getR19_CREDIT_RATING() : "");
-					cell2.setCellStyle(textStyle);
-
-					cell3 = row.createCell(3);
-					cell3.setCellValue(record1.getR19_RATING_AGENCY() != null ? record1.getR19_RATING_AGENCY() : "");
-					cell3.setCellStyle(textStyle);
-					// Column E
-					cell4 = row.createCell(4);
-					if (record1.getR19_EXPOSURE_AMT() != null) {
-						cell4.setCellValue(record1.getR19_EXPOSURE_AMT().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					// row19
-					// Column F
-					cell5 = row.createCell(5);
-					if (record1.getR19_RISK_WEIGHT() != null) {
-						cell5.setCellValue(record1.getR19_RISK_WEIGHT().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					// row20
-					row = sheet.getRow(19);
-					cell1 = row.createCell(1);
-					cell1.setCellValue(
-							record1.getR20_NAME_OF_CORPORATE() != null ? record1.getR20_NAME_OF_CORPORATE() : "");
-					cell1.setCellStyle(textStyle);
-
-					cell2 = row.createCell(2);
-					cell2.setCellValue(record1.getR20_CREDIT_RATING() != null ? record1.getR20_CREDIT_RATING() : "");
-					cell2.setCellStyle(textStyle);
-
-					cell3 = row.createCell(3);
-					cell3.setCellValue(record1.getR20_RATING_AGENCY() != null ? record1.getR20_RATING_AGENCY() : "");
-					cell3.setCellStyle(textStyle);
-					// Column E
-					cell4 = row.createCell(4);
-					if (record1.getR20_EXPOSURE_AMT() != null) {
-						cell4.setCellValue(record1.getR20_EXPOSURE_AMT().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					// row20
-					// Column F
-					cell5 = row.createCell(5);
-					if (record1.getR20_RISK_WEIGHT() != null) {
-						cell5.setCellValue(record1.getR20_RISK_WEIGHT().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					// row21
-					row = sheet.getRow(20);
-					cell1 = row.createCell(1);
-					cell1.setCellValue(
-							record1.getR21_NAME_OF_CORPORATE() != null ? record1.getR21_NAME_OF_CORPORATE() : "");
-					cell1.setCellStyle(textStyle);
-
-					cell2 = row.createCell(2);
-					cell2.setCellValue(record1.getR21_CREDIT_RATING() != null ? record1.getR21_CREDIT_RATING() : "");
-					cell2.setCellStyle(textStyle);
-
-					cell3 = row.createCell(3);
-					cell3.setCellValue(record1.getR21_RATING_AGENCY() != null ? record1.getR21_RATING_AGENCY() : "");
-					cell3.setCellStyle(textStyle);
-					// Column E
-					cell4 = row.createCell(4);
-					if (record1.getR21_EXPOSURE_AMT() != null) {
-						cell4.setCellValue(record1.getR21_EXPOSURE_AMT().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					// row21
-					// Column F
-					cell5 = row.createCell(5);
-					if (record1.getR21_RISK_WEIGHT() != null) {
-						cell5.setCellValue(record1.getR21_RISK_WEIGHT().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					// row22
-					row = sheet.getRow(21);
-					cell1 = row.createCell(1);
-					cell1.setCellValue(
-							record1.getR22_NAME_OF_CORPORATE() != null ? record1.getR22_NAME_OF_CORPORATE() : "");
-					cell1.setCellStyle(textStyle);
-
-					cell2 = row.createCell(2);
-					cell2.setCellValue(record1.getR22_CREDIT_RATING() != null ? record1.getR22_CREDIT_RATING() : "");
-					cell2.setCellStyle(textStyle);
-
-					cell3 = row.createCell(3);
-					cell3.setCellValue(record1.getR22_RATING_AGENCY() != null ? record1.getR22_RATING_AGENCY() : "");
-					cell3.setCellStyle(textStyle);
-					// Column E
-					cell4 = row.createCell(4);
-					if (record1.getR22_EXPOSURE_AMT() != null) {
-						cell4.setCellValue(record1.getR22_EXPOSURE_AMT().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					// row22
-					// Column F
-					cell5 = row.createCell(5);
-					if (record1.getR22_RISK_WEIGHT() != null) {
-						cell5.setCellValue(record1.getR22_RISK_WEIGHT().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					// row23
-					row = sheet.getRow(22);
-					cell1 = row.createCell(1);
-					cell1.setCellValue(
-							record1.getR23_NAME_OF_CORPORATE() != null ? record1.getR23_NAME_OF_CORPORATE() : "");
-					cell1.setCellStyle(textStyle);
-
-					cell2 = row.createCell(2);
-					cell2.setCellValue(record1.getR23_CREDIT_RATING() != null ? record1.getR23_CREDIT_RATING() : "");
-					cell2.setCellStyle(textStyle);
-
-					cell3 = row.createCell(3);
-					cell3.setCellValue(record1.getR23_RATING_AGENCY() != null ? record1.getR23_RATING_AGENCY() : "");
-					cell3.setCellStyle(textStyle);
-					// Column E
-					cell4 = row.createCell(4);
-					if (record1.getR23_EXPOSURE_AMT() != null) {
-						cell4.setCellValue(record1.getR23_EXPOSURE_AMT().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					// row23
-					// Column F
-					cell5 = row.createCell(5);
-					if (record1.getR23_RISK_WEIGHT() != null) {
-						cell5.setCellValue(record1.getR23_RISK_WEIGHT().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					// row24
-					row = sheet.getRow(23);
-					cell1 = row.createCell(1);
-					cell1.setCellValue(
-							record1.getR24_NAME_OF_CORPORATE() != null ? record1.getR24_NAME_OF_CORPORATE() : "");
-					cell1.setCellStyle(textStyle);
-
-					cell2 = row.createCell(2);
-					cell2.setCellValue(record1.getR24_CREDIT_RATING() != null ? record1.getR24_CREDIT_RATING() : "");
-					cell2.setCellStyle(textStyle);
-
-					cell3 = row.createCell(3);
-					cell3.setCellValue(record1.getR24_RATING_AGENCY() != null ? record1.getR24_RATING_AGENCY() : "");
-					cell3.setCellStyle(textStyle);
-					// Column E
-					cell4 = row.createCell(4);
-					if (record1.getR24_EXPOSURE_AMT() != null) {
-						cell4.setCellValue(record1.getR24_EXPOSURE_AMT().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					// row24
-					// Column F
-					cell5 = row.createCell(5);
-					if (record1.getR24_RISK_WEIGHT() != null) {
-						cell5.setCellValue(record1.getR24_RISK_WEIGHT().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					// row25
-					row = sheet.getRow(24);
-					cell1 = row.createCell(1);
-					cell1.setCellValue(
-							record1.getR25_NAME_OF_CORPORATE() != null ? record1.getR25_NAME_OF_CORPORATE() : "");
-					cell1.setCellStyle(textStyle);
-
-					cell2 = row.createCell(2);
-					cell2.setCellValue(record1.getR25_CREDIT_RATING() != null ? record1.getR25_CREDIT_RATING() : "");
-					cell2.setCellStyle(textStyle);
-
-					cell3 = row.createCell(3);
-					cell3.setCellValue(record1.getR25_RATING_AGENCY() != null ? record1.getR25_RATING_AGENCY() : "");
-					cell3.setCellStyle(textStyle);
-					// Column E
-					cell4 = row.createCell(4);
-					if (record1.getR25_EXPOSURE_AMT() != null) {
-						cell4.setCellValue(record1.getR25_EXPOSURE_AMT().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					// row25
-					// Column F
-					cell5 = row.createCell(5);
-					if (record1.getR25_RISK_WEIGHT() != null) {
-						cell5.setCellValue(record1.getR25_RISK_WEIGHT().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					// row26
-					row = sheet.getRow(25);
-					cell1 = row.createCell(1);
-					cell1.setCellValue(
-							record1.getR26_NAME_OF_CORPORATE() != null ? record1.getR26_NAME_OF_CORPORATE() : "");
-					cell1.setCellStyle(textStyle);
-
-					cell2 = row.createCell(2);
-					cell2.setCellValue(record1.getR26_CREDIT_RATING() != null ? record1.getR26_CREDIT_RATING() : "");
-					cell2.setCellStyle(textStyle);
-
-					cell3 = row.createCell(3);
-					cell3.setCellValue(record1.getR26_RATING_AGENCY() != null ? record1.getR26_RATING_AGENCY() : "");
-					cell3.setCellStyle(textStyle);
-					// Column E
-					cell4 = row.createCell(4);
-					if (record1.getR26_EXPOSURE_AMT() != null) {
-						cell4.setCellValue(record1.getR26_EXPOSURE_AMT().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					// row26
-					// Column F
-					cell5 = row.createCell(5);
-					if (record1.getR26_RISK_WEIGHT() != null) {
-						cell5.setCellValue(record1.getR26_RISK_WEIGHT().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					// row27
-					row = sheet.getRow(26);
-					cell1 = row.createCell(1);
-					cell1.setCellValue(
-							record1.getR27_NAME_OF_CORPORATE() != null ? record1.getR27_NAME_OF_CORPORATE() : "");
-					cell1.setCellStyle(textStyle);
-
-					cell2 = row.createCell(2);
-					cell2.setCellValue(record1.getR27_CREDIT_RATING() != null ? record1.getR27_CREDIT_RATING() : "");
-					cell2.setCellStyle(textStyle);
-
-					cell3 = row.createCell(3);
-					cell3.setCellValue(record1.getR27_RATING_AGENCY() != null ? record1.getR27_RATING_AGENCY() : "");
-					cell3.setCellStyle(textStyle);
-					// Column E
-					cell4 = row.createCell(4);
-					if (record1.getR27_EXPOSURE_AMT() != null) {
-						cell4.setCellValue(record1.getR27_EXPOSURE_AMT().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					// row27
-					// Column F
-					cell5 = row.createCell(5);
-					if (record1.getR27_RISK_WEIGHT() != null) {
-						cell5.setCellValue(record1.getR27_RISK_WEIGHT().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					// row28
-					row = sheet.getRow(27);
-					cell1 = row.createCell(1);
-					cell1.setCellValue(
-							record1.getR28_NAME_OF_CORPORATE() != null ? record1.getR28_NAME_OF_CORPORATE() : "");
-					cell1.setCellStyle(textStyle);
-
-					cell2 = row.createCell(2);
-					cell2.setCellValue(record1.getR28_CREDIT_RATING() != null ? record1.getR28_CREDIT_RATING() : "");
-					cell2.setCellStyle(textStyle);
-
-					cell3 = row.createCell(3);
-					cell3.setCellValue(record1.getR28_RATING_AGENCY() != null ? record1.getR28_RATING_AGENCY() : "");
-					cell3.setCellStyle(textStyle);
-					// Column E
-					cell4 = row.createCell(4);
-					if (record1.getR28_EXPOSURE_AMT() != null) {
-						cell4.setCellValue(record1.getR28_EXPOSURE_AMT().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					// row28
-					// Column F
-					cell5 = row.createCell(5);
-					if (record1.getR28_RISK_WEIGHT() != null) {
-						cell5.setCellValue(record1.getR28_RISK_WEIGHT().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					// row29
-					row = sheet.getRow(28);
-					cell1 = row.createCell(1);
-					cell1.setCellValue(
-							record1.getR29_NAME_OF_CORPORATE() != null ? record1.getR29_NAME_OF_CORPORATE() : "");
-					cell1.setCellStyle(textStyle);
-
-					cell2 = row.createCell(2);
-					cell2.setCellValue(record1.getR29_CREDIT_RATING() != null ? record1.getR29_CREDIT_RATING() : "");
-					cell2.setCellStyle(textStyle);
-
-					cell3 = row.createCell(3);
-					cell3.setCellValue(record1.getR29_RATING_AGENCY() != null ? record1.getR29_RATING_AGENCY() : "");
-					cell3.setCellStyle(textStyle);
-					// Column E
-					cell4 = row.createCell(4);
-					if (record1.getR29_EXPOSURE_AMT() != null) {
-						cell4.setCellValue(record1.getR29_EXPOSURE_AMT().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					// row29
-					// Column F
-					cell5 = row.createCell(5);
-					if (record1.getR29_RISK_WEIGHT() != null) {
-						cell5.setCellValue(record1.getR29_RISK_WEIGHT().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					// row30
-					row = sheet.getRow(29);
-					cell1 = row.createCell(1);
-					cell1.setCellValue(
-							record1.getR30_NAME_OF_CORPORATE() != null ? record1.getR30_NAME_OF_CORPORATE() : "");
-					cell1.setCellStyle(textStyle);
-
-					cell2 = row.createCell(2);
-					cell2.setCellValue(record1.getR30_CREDIT_RATING() != null ? record1.getR30_CREDIT_RATING() : "");
-					cell2.setCellStyle(textStyle);
-
-					cell3 = row.createCell(3);
-					cell3.setCellValue(record1.getR30_RATING_AGENCY() != null ? record1.getR30_RATING_AGENCY() : "");
-					cell3.setCellStyle(textStyle);
-
-					// Column E
-					cell4 = row.createCell(4);
-					if (record1.getR30_EXPOSURE_AMT() != null) {
-						cell4.setCellValue(record1.getR30_EXPOSURE_AMT().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					// row30
-					// Column F
-					cell5 = row.createCell(5);
-					if (record1.getR30_RISK_WEIGHT() != null) {
-						cell5.setCellValue(record1.getR30_RISK_WEIGHT().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					// row31
-					row = sheet.getRow(30);
-					cell1 = row.createCell(1);
-					cell1.setCellValue(
-							record1.getR31_NAME_OF_CORPORATE() != null ? record1.getR31_NAME_OF_CORPORATE() : "");
-					cell1.setCellStyle(textStyle);
-
-					cell2 = row.createCell(2);
-					cell2.setCellValue(record1.getR31_CREDIT_RATING() != null ? record1.getR31_CREDIT_RATING() : "");
-					cell2.setCellStyle(textStyle);
-
-					cell3 = row.createCell(3);
-					cell3.setCellValue(record1.getR31_RATING_AGENCY() != null ? record1.getR31_RATING_AGENCY() : "");
-					cell3.setCellStyle(textStyle);
-					// Column E
-					cell4 = row.createCell(4);
-					if (record1.getR31_EXPOSURE_AMT() != null) {
-						cell4.setCellValue(record1.getR31_EXPOSURE_AMT().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					// row31
-					// Column F
-					cell5 = row.createCell(5);
-					if (record1.getR31_RISK_WEIGHT() != null) {
-						cell5.setCellValue(record1.getR31_RISK_WEIGHT().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					// row32
-					row = sheet.getRow(31);
-					cell1 = row.createCell(1);
-					cell1.setCellValue(
-							record1.getR32_NAME_OF_CORPORATE() != null ? record1.getR32_NAME_OF_CORPORATE() : "");
-					cell1.setCellStyle(textStyle);
-
-					cell2 = row.createCell(2);
-					cell2.setCellValue(record1.getR32_CREDIT_RATING() != null ? record1.getR32_CREDIT_RATING() : "");
-					cell2.setCellStyle(textStyle);
-
-					cell3 = row.createCell(3);
-					cell3.setCellValue(record1.getR32_RATING_AGENCY() != null ? record1.getR32_RATING_AGENCY() : "");
-					cell3.setCellStyle(textStyle);
-					// Column E
-					cell4 = row.createCell(4);
-					if (record1.getR32_EXPOSURE_AMT() != null) {
-						cell4.setCellValue(record1.getR32_EXPOSURE_AMT().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					// row32
-					// Column F
-					cell5 = row.createCell(5);
-					if (record1.getR32_RISK_WEIGHT() != null) {
-						cell5.setCellValue(record1.getR32_RISK_WEIGHT().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					// row33
-					row = sheet.getRow(32);
-					cell1 = row.createCell(1);
-					cell1.setCellValue(
-							record1.getR33_NAME_OF_CORPORATE() != null ? record1.getR33_NAME_OF_CORPORATE() : "");
-					cell1.setCellStyle(textStyle);
-
-					cell2 = row.createCell(2);
-					cell2.setCellValue(record1.getR33_CREDIT_RATING() != null ? record1.getR33_CREDIT_RATING() : "");
-					cell2.setCellStyle(textStyle);
-
-					cell3 = row.createCell(3);
-					cell3.setCellValue(record1.getR33_RATING_AGENCY() != null ? record1.getR33_RATING_AGENCY() : "");
-					cell3.setCellStyle(textStyle);
-					// Column E
-					cell4 = row.createCell(4);
-					if (record1.getR33_EXPOSURE_AMT() != null) {
-						cell4.setCellValue(record1.getR33_EXPOSURE_AMT().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					// row33
-					// Column F
-					cell5 = row.createCell(5);
-					if (record1.getR33_RISK_WEIGHT() != null) {
-						cell5.setCellValue(record1.getR33_RISK_WEIGHT().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					// row34
-					row = sheet.getRow(33);
-					cell1 = row.createCell(1);
-					cell1.setCellValue(
-							record1.getR34_NAME_OF_CORPORATE() != null ? record1.getR34_NAME_OF_CORPORATE() : "");
-					cell1.setCellStyle(textStyle);
-
-					cell2 = row.createCell(2);
-					cell2.setCellValue(record1.getR34_CREDIT_RATING() != null ? record1.getR34_CREDIT_RATING() : "");
-					cell2.setCellStyle(textStyle);
-
-					cell3 = row.createCell(3);
-					cell3.setCellValue(record1.getR34_RATING_AGENCY() != null ? record1.getR34_RATING_AGENCY() : "");
-					cell3.setCellStyle(textStyle);
-					// Column E
-					cell4 = row.createCell(4);
-					if (record1.getR34_EXPOSURE_AMT() != null) {
-						cell4.setCellValue(record1.getR34_EXPOSURE_AMT().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					// row34
-					// Column F
-					cell5 = row.createCell(5);
-					if (record1.getR34_RISK_WEIGHT() != null) {
-						cell5.setCellValue(record1.getR34_RISK_WEIGHT().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					// row35
-					row = sheet.getRow(34);
-					cell1 = row.createCell(1);
-					cell1.setCellValue(
-							record1.getR35_NAME_OF_CORPORATE() != null ? record1.getR35_NAME_OF_CORPORATE() : "");
-					cell1.setCellStyle(textStyle);
-
-					cell2 = row.createCell(2);
-					cell2.setCellValue(record1.getR35_CREDIT_RATING() != null ? record1.getR35_CREDIT_RATING() : "");
-					cell2.setCellStyle(textStyle);
-
-					cell3 = row.createCell(3);
-					cell3.setCellValue(record1.getR35_RATING_AGENCY() != null ? record1.getR35_RATING_AGENCY() : "");
-					cell3.setCellStyle(textStyle);
-					// Column E
-					cell4 = row.createCell(4);
-					if (record1.getR35_EXPOSURE_AMT() != null) {
-						cell4.setCellValue(record1.getR35_EXPOSURE_AMT().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					// row35
-					// Column F
-					cell5 = row.createCell(5);
-					if (record1.getR35_RISK_WEIGHT() != null) {
-						cell5.setCellValue(record1.getR35_RISK_WEIGHT().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-					// row35
-					// Column F
-					row = sheet.getRow(35);
-					cell1 = row.createCell(1);
-					cell1.setCellValue(
-							record1.getR36_NAME_OF_CORPORATE() != null ? record1.getR36_NAME_OF_CORPORATE() : "");
-					cell1.setCellStyle(textStyle);
-
-					cell2 = row.createCell(2);
-					cell2.setCellValue(record1.getR36_CREDIT_RATING() != null ? record1.getR36_CREDIT_RATING() : "");
-					cell2.setCellStyle(textStyle);
-
-					cell3 = row.createCell(3);
-					cell3.setCellValue(record1.getR36_RATING_AGENCY() != null ? record1.getR36_RATING_AGENCY() : "");
-					cell3.setCellStyle(textStyle);
-
-					// Column E
-					cell4 = row.createCell(4);
-					if (record1.getR36_EXPOSURE_AMT() != null) {
-						cell4.setCellValue(record1.getR36_EXPOSURE_AMT().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					// row36
-					// Column F
-					cell5 = row.createCell(5);
-					if (record1.getR36_RISK_WEIGHT() != null) {
-						cell5.setCellValue(record1.getR36_RISK_WEIGHT().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-				}
-				workbook.setForceFormulaRecalculation(true);
-			} else {
-
-			}
-			// Write the final workbook content to the in-memory stream.
-			workbook.write(out);
-
-			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-
-			return out.toByteArray();
-		}
-	}
-
-//////////////////////////////////////////RESUBMISSION///////////////////////////////////////////////////////////////////	
-/// Report Date | Report Version | Domain
-/// RESUB VIEW
-	public List<Object[]> getM_SRWA_12FResub() {
-		List<Object[]> resubList = new ArrayList<>();
-		try {
-			List<M_SRWA_12F_Archival_Summary_Entity> latestArchivalList = M_SRWA_12F_Archival_Summary_Repo
-					.getdatabydateListWithVersion();
-
-			if (latestArchivalList != null && !latestArchivalList.isEmpty()) {
-				for (M_SRWA_12F_Archival_Summary_Entity entity : latestArchivalList) {
-					resubList.add(new Object[] { entity.getReportDate(), entity.getReportVersion(),
-							entity.getReportResubDate() });
-				}
-				System.out.println("Fetched " + resubList.size() + " record(s)");
-			} else {
-				System.out.println("No archival data found.");
-			}
-
-		} catch (Exception e) {
-			System.err.println("Error fetching M_SRWA_12F Resub data: " + e.getMessage());
-			e.printStackTrace();
-		}
-		return resubList;
-	}
-
-	// Archival View
-	public List<Object[]> getM_SRWA_12FArchival() {
-		List<Object[]> archivalList = new ArrayList<>();
-
-		try {
-			List<M_SRWA_12F_Archival_Summary_Entity> repoData = M_SRWA_12F_Archival_Summary_Repo
-					.getdatabydateListWithVersion();
-
-			if (repoData != null && !repoData.isEmpty()) {
-				for (M_SRWA_12F_Archival_Summary_Entity entity : repoData) {
-					Object[] row = new Object[] { entity.getReportDate(), entity.getReportVersion() };
-					archivalList.add(row);
-				}
-
-				System.out.println("Fetched " + archivalList.size() + " archival records");
-				M_SRWA_12F_Archival_Summary_Entity first = repoData.get(0);
-				System.out.println("Latest archival version: " + first.getReportVersion());
-			} else {
-				System.out.println("No archival data found.");
-			}
-
-		} catch (Exception e) {
-			System.err.println("Error fetching M_SRWA_12F Archival data: " + e.getMessage());
-			e.printStackTrace();
-		}
-
-		return archivalList;
-	}
-
-//Email Download 
-	public byte[] BRRS_M_SRWA_12FEmailExcel(String filename, String reportId, String fromdate, String todate,
-			String currency, String dtltype, String type, BigDecimal version) throws Exception {
-		logger.info("Service: Starting Excel generation process in memory.");
-		Date reportDate = dateformat.parse(todate);
-		if (type.equals("email") & version != null) {
-
-		}
-		List<M_SRWA_12F_Summary_Entity> dataList = M_SRWA_12F_Summary_Repo.getdatabydateList(reportDate);
-
-		if (dataList.isEmpty()) {
-			logger.warn("Service: No data found forM_SRWA_12F report. Returning empty result.");
-			return new byte[0];
-		}
-
-		String templateDir = env.getProperty("output.exportpathtemp");
-		String templateFileName = filename;
-		System.out.println(filename);
-		Path templatePath = Paths.get(templateDir, templateFileName);
-		System.out.println(templatePath);
-
-		logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
-
-		if (!Files.exists(templatePath)) {
-			// This specific exception will be caught by the controller.
-			throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
-		}
-		if (!Files.isReadable(templatePath)) {
-			// A specific exception for permission errors.
-			throw new SecurityException(
-					"Template file exists but is not readable (check permissions): " + templatePath.toAbsolutePath());
-		}
-
-		// This try-with-resources block is perfect. It guarantees all resources are
-		// closed automatically.
-		try (InputStream templateInputStream = Files.newInputStream(templatePath);
-				Workbook workbook = WorkbookFactory.create(templateInputStream);
-				ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-
-			Sheet sheet = workbook.getSheetAt(0);
-
-			// --- Style Definitions ---
-			CreationHelper createHelper = workbook.getCreationHelper();
-
-			CellStyle dateStyle = workbook.createCellStyle();
-			dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
-			dateStyle.setBorderBottom(BorderStyle.THIN);
-			dateStyle.setBorderTop(BorderStyle.THIN);
-			dateStyle.setBorderLeft(BorderStyle.THIN);
-			dateStyle.setBorderRight(BorderStyle.THIN);
-
-			CellStyle textStyle = workbook.createCellStyle();
-			textStyle.setBorderBottom(BorderStyle.THIN);
-			textStyle.setBorderTop(BorderStyle.THIN);
-			textStyle.setBorderLeft(BorderStyle.THIN);
-			textStyle.setBorderRight(BorderStyle.THIN);
-
-			// Create the font
-			Font font = workbook.createFont();
-			font.setFontHeightInPoints((short) 8); // size 8
-			font.setFontName("Arial");
-
-			CellStyle numberStyle = workbook.createCellStyle();
-			// numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
-			numberStyle.setBorderBottom(BorderStyle.THIN);
-			numberStyle.setBorderTop(BorderStyle.THIN);
-			numberStyle.setBorderLeft(BorderStyle.THIN);
-			numberStyle.setBorderRight(BorderStyle.THIN);
-			numberStyle.setFont(font);
-			// --- End of Style Definitions ---
-
-			int startRow = 10;
-
-			if (!dataList.isEmpty()) {
-				for (int i = 0; i < dataList.size(); i++) {
-
-					M_SRWA_12F_Summary_Entity record1 = dataList.get(i);
-					System.out.println("rownumber=" + startRow + i);
-					Row row = sheet.getRow(startRow + i);
-					if (row == null) {
-						row = sheet.createRow(startRow + i);
-					}
-					// row11
-					// Column E
-					Cell cell1 = row.createCell(1);
-					if (record1.getR11_NAME_OF_CORPORATE() != null) {
-						cell1.setCellValue(record1.getR11_NAME_OF_CORPORATE());
-						cell1.setCellStyle(textStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-
-					Cell cell2 = row.createCell(2);
-					if (record1.getR11_CREDIT_RATING() != null) {
-						cell2.setCellValue(record1.getR11_CREDIT_RATING());
-						cell2.setCellStyle(textStyle);
-					} else {
-						cell2.setCellValue("");
-						cell2.setCellStyle(textStyle);
-					}
-
-					Cell cell3 = row.createCell(4);
-					if (record1.getR11_RATING_AGENCY() != null) {
-						cell3.setCellValue(record1.getR11_RATING_AGENCY());
-						cell3.setCellStyle(textStyle);
-					} else {
-						cell3.setCellValue("");
-						cell3.setCellStyle(textStyle);
-					}
-					// row11
-					// Column E
-					Cell cell4 = row.createCell(6);
-					if (record1.getR11_EXPOSURE_AMT() != null) {
-						cell4.setCellValue(record1.getR11_EXPOSURE_AMT().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					// row11
-					// Column F
-					Cell cell5 = row.createCell(7);
-					if (record1.getR11_RISK_WEIGHT() != null) {
-						cell5.setCellValue(record1.getR11_RISK_WEIGHT().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-					// row11
-					// Column F
-					Cell cell6 = row.createCell(8);
-					if (record1.getR11_RISK_WEIGHTED_AMT() != null) {
-						cell6.setCellValue(record1.getR11_RISK_WEIGHTED_AMT().doubleValue());
-						cell6.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					// row12
-					row = sheet.getRow(11);
-
-					cell1 = row.createCell(1);
-					if (record1.getR12_NAME_OF_CORPORATE() != null) {
-						cell1.setCellValue(record1.getR12_NAME_OF_CORPORATE());
-						cell1.setCellStyle(textStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-
-					cell2 = row.createCell(2);
-					if (record1.getR12_CREDIT_RATING() != null) {
-						cell2.setCellValue(record1.getR12_CREDIT_RATING());
-						cell2.setCellStyle(textStyle);
-					} else {
-						cell2.setCellValue("");
-						cell2.setCellStyle(textStyle);
-					}
-
-					cell3 = row.createCell(4);
-					if (record1.getR12_RATING_AGENCY() != null) {
-						cell3.setCellValue(record1.getR12_RATING_AGENCY());
-						cell3.setCellStyle(textStyle);
-					} else {
-						cell3.setCellValue("");
-						cell3.setCellStyle(textStyle);
-					}
-					// Column E
-					cell4 = row.createCell(6);
-					if (record1.getR12_EXPOSURE_AMT() != null) {
-						cell4.setCellValue(record1.getR12_EXPOSURE_AMT().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					// row12
-					// Column F
-					cell5 = row.createCell(7);
-					if (record1.getR12_RISK_WEIGHT() != null) {
-						cell5.setCellValue(record1.getR12_RISK_WEIGHT().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-					cell6 = row.createCell(8);
-					if (record1.getR12_RISK_WEIGHTED_AMT() != null) {
-						cell6.setCellValue(record1.getR12_RISK_WEIGHTED_AMT().doubleValue());
-						cell6.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					// row13
-					row = sheet.getRow(12);
-
-					cell1 = row.createCell(1);
-					if (record1.getR13_NAME_OF_CORPORATE() != null) {
-						cell1.setCellValue(record1.getR13_NAME_OF_CORPORATE());
-						cell1.setCellStyle(textStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-
-					cell2 = row.createCell(2);
-					if (record1.getR13_CREDIT_RATING() != null) {
-						cell2.setCellValue(record1.getR13_CREDIT_RATING());
-						cell2.setCellStyle(textStyle);
-					} else {
-						cell2.setCellValue("");
-						cell2.setCellStyle(textStyle);
-					}
-
-					cell3 = row.createCell(4);
-					if (record1.getR13_RATING_AGENCY() != null) {
-						cell3.setCellValue(record1.getR13_RATING_AGENCY());
-						cell3.setCellStyle(textStyle);
-					} else {
-						cell3.setCellValue("");
-						cell3.setCellStyle(textStyle);
-					}
-
-					cell4 = row.createCell(6);
-					if (record1.getR13_EXPOSURE_AMT() != null) {
-						cell4.setCellValue(record1.getR13_EXPOSURE_AMT().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					cell5 = row.createCell(7);
-					if (record1.getR13_RISK_WEIGHT() != null) {
-						cell5.setCellValue(record1.getR13_RISK_WEIGHT().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					cell6 = row.createCell(8);
-					if (record1.getR13_RISK_WEIGHTED_AMT() != null) {
-						cell6.setCellValue(record1.getR13_RISK_WEIGHTED_AMT().doubleValue());
-						cell6.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					// row14
-					row = sheet.getRow(13);
-
-					cell1 = row.createCell(1);
-					if (record1.getR14_NAME_OF_CORPORATE() != null) {
-						cell1.setCellValue(record1.getR14_NAME_OF_CORPORATE());
-						cell1.setCellStyle(textStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-
-					cell2 = row.createCell(2);
-					if (record1.getR14_CREDIT_RATING() != null) {
-						cell2.setCellValue(record1.getR14_CREDIT_RATING());
-						cell2.setCellStyle(textStyle);
-					} else {
-						cell2.setCellValue("");
-						cell2.setCellStyle(textStyle);
-					}
-
-					cell3 = row.createCell(4);
-					if (record1.getR14_RATING_AGENCY() != null) {
-						cell3.setCellValue(record1.getR14_RATING_AGENCY());
-						cell3.setCellStyle(textStyle);
-					} else {
-						cell3.setCellValue("");
-						cell3.setCellStyle(textStyle);
-					}
-
-					cell4 = row.createCell(6);
-					if (record1.getR14_EXPOSURE_AMT() != null) {
-						cell4.setCellValue(record1.getR14_EXPOSURE_AMT().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					cell5 = row.createCell(7);
-					if (record1.getR14_RISK_WEIGHT() != null) {
-						cell5.setCellValue(record1.getR14_RISK_WEIGHT().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					cell6 = row.createCell(8);
-					if (record1.getR14_RISK_WEIGHTED_AMT() != null) {
-						cell6.setCellValue(record1.getR14_RISK_WEIGHTED_AMT().doubleValue());
-						cell6.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					// row15
-					row = sheet.getRow(14);
-
-					cell1 = row.createCell(1);
-					if (record1.getR15_NAME_OF_CORPORATE() != null) {
-						cell1.setCellValue(record1.getR15_NAME_OF_CORPORATE());
-						cell1.setCellStyle(textStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-
-					cell2 = row.createCell(2);
-					if (record1.getR15_CREDIT_RATING() != null) {
-						cell2.setCellValue(record1.getR15_CREDIT_RATING());
-						cell2.setCellStyle(textStyle);
-					} else {
-						cell2.setCellValue("");
-						cell2.setCellStyle(textStyle);
-					}
-
-					cell3 = row.createCell(4);
-					if (record1.getR15_RATING_AGENCY() != null) {
-						cell3.setCellValue(record1.getR15_RATING_AGENCY());
-						cell3.setCellStyle(textStyle);
-					} else {
-						cell3.setCellValue("");
-						cell3.setCellStyle(textStyle);
-					}
-
-					cell4 = row.createCell(6);
-					if (record1.getR15_EXPOSURE_AMT() != null) {
-						cell4.setCellValue(record1.getR15_EXPOSURE_AMT().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					cell5 = row.createCell(7);
-					if (record1.getR15_RISK_WEIGHT() != null) {
-						cell5.setCellValue(record1.getR15_RISK_WEIGHT().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					cell6 = row.createCell(8);
-					if (record1.getR15_RISK_WEIGHTED_AMT() != null) {
-						cell6.setCellValue(record1.getR15_RISK_WEIGHTED_AMT().doubleValue());
-						cell6.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					// row16
-					row = sheet.getRow(15);
-
-					cell1 = row.createCell(1);
-					if (record1.getR16_NAME_OF_CORPORATE() != null) {
-						cell1.setCellValue(record1.getR16_NAME_OF_CORPORATE());
-						cell1.setCellStyle(textStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-
-					cell2 = row.createCell(2);
-					if (record1.getR16_CREDIT_RATING() != null) {
-						cell2.setCellValue(record1.getR16_CREDIT_RATING());
-						cell2.setCellStyle(textStyle);
-					} else {
-						cell2.setCellValue("");
-						cell2.setCellStyle(textStyle);
-					}
-
-					cell3 = row.createCell(4);
-					if (record1.getR16_RATING_AGENCY() != null) {
-						cell3.setCellValue(record1.getR16_RATING_AGENCY());
-						cell3.setCellStyle(textStyle);
-					} else {
-						cell3.setCellValue("");
-						cell3.setCellStyle(textStyle);
-					}
-
-					cell4 = row.createCell(6);
-					if (record1.getR16_EXPOSURE_AMT() != null) {
-						cell4.setCellValue(record1.getR16_EXPOSURE_AMT().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					cell5 = row.createCell(7);
-					if (record1.getR16_RISK_WEIGHT() != null) {
-						cell5.setCellValue(record1.getR16_RISK_WEIGHT().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					cell6 = row.createCell(8);
-					if (record1.getR16_RISK_WEIGHTED_AMT() != null) {
-						cell6.setCellValue(record1.getR16_RISK_WEIGHTED_AMT().doubleValue());
-						cell6.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					// row17
-					row = sheet.getRow(16);
-
-					cell1 = row.createCell(1);
-					if (record1.getR17_NAME_OF_CORPORATE() != null) {
-						cell1.setCellValue(record1.getR17_NAME_OF_CORPORATE());
-						cell1.setCellStyle(textStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-
-					cell2 = row.createCell(2);
-					if (record1.getR17_CREDIT_RATING() != null) {
-						cell2.setCellValue(record1.getR17_CREDIT_RATING());
-						cell2.setCellStyle(textStyle);
-					} else {
-						cell2.setCellValue("");
-						cell2.setCellStyle(textStyle);
-					}
-
-					cell3 = row.createCell(4);
-					if (record1.getR17_RATING_AGENCY() != null) {
-						cell3.setCellValue(record1.getR17_RATING_AGENCY());
-						cell3.setCellStyle(textStyle);
-					} else {
-						cell3.setCellValue("");
-						cell3.setCellStyle(textStyle);
-					}
-
-					cell4 = row.createCell(6);
-					if (record1.getR17_EXPOSURE_AMT() != null) {
-						cell4.setCellValue(record1.getR17_EXPOSURE_AMT().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					cell5 = row.createCell(7);
-					if (record1.getR17_RISK_WEIGHT() != null) {
-						cell5.setCellValue(record1.getR17_RISK_WEIGHT().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					cell6 = row.createCell(8);
-					if (record1.getR17_RISK_WEIGHTED_AMT() != null) {
-						cell6.setCellValue(record1.getR17_RISK_WEIGHTED_AMT().doubleValue());
-						cell6.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					// row18
-					row = sheet.getRow(17);
-
-					cell1 = row.createCell(1);
-					if (record1.getR18_NAME_OF_CORPORATE() != null) {
-						cell1.setCellValue(record1.getR18_NAME_OF_CORPORATE());
-						cell1.setCellStyle(textStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-
-					cell2 = row.createCell(2);
-					if (record1.getR18_CREDIT_RATING() != null) {
-						cell2.setCellValue(record1.getR18_CREDIT_RATING());
-						cell2.setCellStyle(textStyle);
-					} else {
-						cell2.setCellValue("");
-						cell2.setCellStyle(textStyle);
-					}
-
-					cell3 = row.createCell(4);
-					if (record1.getR18_RATING_AGENCY() != null) {
-						cell3.setCellValue(record1.getR18_RATING_AGENCY());
-						cell3.setCellStyle(textStyle);
-					} else {
-						cell3.setCellValue("");
-						cell3.setCellStyle(textStyle);
-					}
-
-					cell4 = row.createCell(6);
-					if (record1.getR18_EXPOSURE_AMT() != null) {
-						cell4.setCellValue(record1.getR18_EXPOSURE_AMT().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					cell5 = row.createCell(7);
-					if (record1.getR18_RISK_WEIGHT() != null) {
-						cell5.setCellValue(record1.getR18_RISK_WEIGHT().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					cell6 = row.createCell(8);
-					if (record1.getR18_RISK_WEIGHTED_AMT() != null) {
-						cell6.setCellValue(record1.getR18_RISK_WEIGHTED_AMT().doubleValue());
-						cell6.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					// row19
-					row = sheet.getRow(18);
-
-					cell1 = row.createCell(1);
-					if (record1.getR19_NAME_OF_CORPORATE() != null) {
-						cell1.setCellValue(record1.getR19_NAME_OF_CORPORATE());
-						cell1.setCellStyle(textStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-
-					cell2 = row.createCell(2);
-					if (record1.getR19_CREDIT_RATING() != null) {
-						cell2.setCellValue(record1.getR19_CREDIT_RATING());
-						cell2.setCellStyle(textStyle);
-					} else {
-						cell2.setCellValue("");
-						cell2.setCellStyle(textStyle);
-					}
-
-					cell3 = row.createCell(4);
-					if (record1.getR19_RATING_AGENCY() != null) {
-						cell3.setCellValue(record1.getR19_RATING_AGENCY());
-						cell3.setCellStyle(textStyle);
-					} else {
-						cell3.setCellValue("");
-						cell3.setCellStyle(textStyle);
-					}
-
-					cell4 = row.createCell(6);
-					if (record1.getR19_EXPOSURE_AMT() != null) {
-						cell4.setCellValue(record1.getR19_EXPOSURE_AMT().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					cell5 = row.createCell(7);
-					if (record1.getR19_RISK_WEIGHT() != null) {
-						cell5.setCellValue(record1.getR19_RISK_WEIGHT().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					cell6 = row.createCell(8);
-					if (record1.getR19_RISK_WEIGHTED_AMT() != null) {
-						cell6.setCellValue(record1.getR19_RISK_WEIGHTED_AMT().doubleValue());
-						cell6.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					// row20
-					row = sheet.getRow(19);
-
-					cell1 = row.createCell(1);
-					if (record1.getR20_NAME_OF_CORPORATE() != null) {
-						cell1.setCellValue(record1.getR20_NAME_OF_CORPORATE());
-						cell1.setCellStyle(textStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-
-					cell2 = row.createCell(2);
-					if (record1.getR20_CREDIT_RATING() != null) {
-						cell2.setCellValue(record1.getR20_CREDIT_RATING());
-						cell2.setCellStyle(textStyle);
-					} else {
-						cell2.setCellValue("");
-						cell2.setCellStyle(textStyle);
-					}
-
-					cell3 = row.createCell(4);
-					if (record1.getR20_RATING_AGENCY() != null) {
-						cell3.setCellValue(record1.getR20_RATING_AGENCY());
-						cell3.setCellStyle(textStyle);
-					} else {
-						cell3.setCellValue("");
-						cell3.setCellStyle(textStyle);
-					}
-
-					cell4 = row.createCell(6);
-					if (record1.getR20_EXPOSURE_AMT() != null) {
-						cell4.setCellValue(record1.getR20_EXPOSURE_AMT().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					cell5 = row.createCell(7);
-					if (record1.getR20_RISK_WEIGHT() != null) {
-						cell5.setCellValue(record1.getR20_RISK_WEIGHT().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					cell6 = row.createCell(8);
-					if (record1.getR20_RISK_WEIGHTED_AMT() != null) {
-						cell6.setCellValue(record1.getR20_RISK_WEIGHTED_AMT().doubleValue());
-						cell6.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					// row21
-					row = sheet.getRow(20);
-
-					cell1 = row.createCell(1);
-					if (record1.getR21_NAME_OF_CORPORATE() != null) {
-						cell1.setCellValue(record1.getR21_NAME_OF_CORPORATE());
-						cell1.setCellStyle(textStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-
-					cell2 = row.createCell(2);
-					if (record1.getR21_CREDIT_RATING() != null) {
-						cell2.setCellValue(record1.getR21_CREDIT_RATING());
-						cell2.setCellStyle(textStyle);
-					} else {
-						cell2.setCellValue("");
-						cell2.setCellStyle(textStyle);
-					}
-
-					cell3 = row.createCell(4);
-					if (record1.getR21_RATING_AGENCY() != null) {
-						cell3.setCellValue(record1.getR21_RATING_AGENCY());
-						cell3.setCellStyle(textStyle);
-					} else {
-						cell3.setCellValue("");
-						cell3.setCellStyle(textStyle);
-					}
-
-					cell4 = row.createCell(6);
-					if (record1.getR21_EXPOSURE_AMT() != null) {
-						cell4.setCellValue(record1.getR21_EXPOSURE_AMT().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					cell5 = row.createCell(7);
-					if (record1.getR21_RISK_WEIGHT() != null) {
-						cell5.setCellValue(record1.getR21_RISK_WEIGHT().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					cell6 = row.createCell(8);
-					if (record1.getR21_RISK_WEIGHTED_AMT() != null) {
-						cell6.setCellValue(record1.getR21_RISK_WEIGHTED_AMT().doubleValue());
-						cell6.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					// row22
-					row = sheet.getRow(21);
-
-					cell1 = row.createCell(1);
-					if (record1.getR22_NAME_OF_CORPORATE() != null) {
-						cell1.setCellValue(record1.getR22_NAME_OF_CORPORATE());
-						cell1.setCellStyle(textStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-
-					cell2 = row.createCell(2);
-					if (record1.getR22_CREDIT_RATING() != null) {
-						cell2.setCellValue(record1.getR22_CREDIT_RATING());
-						cell2.setCellStyle(textStyle);
-					} else {
-						cell2.setCellValue("");
-						cell2.setCellStyle(textStyle);
-					}
-
-					cell6 = row.createCell(8);
-					if (record1.getR22_RISK_WEIGHTED_AMT() != null) {
-						cell6.setCellValue(record1.getR22_RISK_WEIGHTED_AMT().doubleValue());
-						cell6.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					// row23
-					row = sheet.getRow(22);
-
-					cell1 = row.createCell(1);
-					if (record1.getR23_NAME_OF_CORPORATE() != null) {
-						cell1.setCellValue(record1.getR23_NAME_OF_CORPORATE());
-						cell1.setCellStyle(textStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-
-					cell2 = row.createCell(2);
-					if (record1.getR23_CREDIT_RATING() != null) {
-						cell2.setCellValue(record1.getR23_CREDIT_RATING());
-						cell2.setCellStyle(textStyle);
-					} else {
-						cell2.setCellValue("");
-						cell2.setCellStyle(textStyle);
-					}
-
-					cell6 = row.createCell(8);
-					if (record1.getR23_RISK_WEIGHTED_AMT() != null) {
-						cell6.setCellValue(record1.getR23_RISK_WEIGHTED_AMT().doubleValue());
-						cell6.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					// row24
-					row = sheet.getRow(23);
-
-					cell1 = row.createCell(1);
-					if (record1.getR24_NAME_OF_CORPORATE() != null) {
-						cell1.setCellValue(record1.getR24_NAME_OF_CORPORATE());
-						cell1.setCellStyle(textStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-
-					cell2 = row.createCell(2);
-					if (record1.getR24_CREDIT_RATING() != null) {
-						cell2.setCellValue(record1.getR24_CREDIT_RATING());
-						cell2.setCellStyle(textStyle);
-					} else {
-						cell2.setCellValue("");
-						cell2.setCellStyle(textStyle);
-					}
-
-					cell6 = row.createCell(8);
-					if (record1.getR24_RISK_WEIGHTED_AMT() != null) {
-						cell6.setCellValue(record1.getR24_RISK_WEIGHTED_AMT().doubleValue());
-						cell6.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					// row25
-					row = sheet.getRow(24);
-
-					cell1 = row.createCell(1);
-					if (record1.getR25_NAME_OF_CORPORATE() != null) {
-						cell1.setCellValue(record1.getR25_NAME_OF_CORPORATE());
-						cell1.setCellStyle(textStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-
-					cell2 = row.createCell(2);
-					if (record1.getR25_CREDIT_RATING() != null) {
-						cell2.setCellValue(record1.getR25_CREDIT_RATING());
-						cell2.setCellStyle(textStyle);
-					} else {
-						cell2.setCellValue("");
-						cell2.setCellStyle(textStyle);
-					}
-
-					cell3 = row.createCell(4);
-					if (record1.getR25_RATING_AGENCY() != null) {
-						cell3.setCellValue(record1.getR25_RATING_AGENCY());
-						cell3.setCellStyle(textStyle);
-					} else {
-						cell3.setCellValue("");
-						cell3.setCellStyle(textStyle);
-					}
-
-					cell4 = row.createCell(6);
-					if (record1.getR25_EXPOSURE_AMT() != null) {
-						cell4.setCellValue(record1.getR25_EXPOSURE_AMT().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					cell5 = row.createCell(7);
-					if (record1.getR25_RISK_WEIGHT() != null) {
-						cell5.setCellValue(record1.getR25_RISK_WEIGHT().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					cell6 = row.createCell(8);
-					if (record1.getR25_RISK_WEIGHTED_AMT() != null) {
-						cell6.setCellValue(record1.getR25_RISK_WEIGHTED_AMT().doubleValue());
-						cell6.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					// row26
-					row = sheet.getRow(25);
-
-					cell1 = row.createCell(1);
-					if (record1.getR26_NAME_OF_CORPORATE() != null) {
-						cell1.setCellValue(record1.getR26_NAME_OF_CORPORATE());
-						cell1.setCellStyle(textStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-
-					cell2 = row.createCell(2);
-					if (record1.getR26_CREDIT_RATING() != null) {
-						cell2.setCellValue(record1.getR26_CREDIT_RATING());
-						cell2.setCellStyle(textStyle);
-					} else {
-						cell2.setCellValue("");
-						cell2.setCellStyle(textStyle);
-					}
-
-					cell3 = row.createCell(4);
-					if (record1.getR26_RATING_AGENCY() != null) {
-						cell3.setCellValue(record1.getR26_RATING_AGENCY());
-						cell3.setCellStyle(textStyle);
-					} else {
-						cell3.setCellValue("");
-						cell3.setCellStyle(textStyle);
-					}
-
-					cell4 = row.createCell(6);
-					if (record1.getR26_EXPOSURE_AMT() != null) {
-						cell4.setCellValue(record1.getR26_EXPOSURE_AMT().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					cell5 = row.createCell(7);
-					if (record1.getR26_RISK_WEIGHT() != null) {
-						cell5.setCellValue(record1.getR26_RISK_WEIGHT().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					cell6 = row.createCell(8);
-					if (record1.getR26_RISK_WEIGHTED_AMT() != null) {
-						cell6.setCellValue(record1.getR26_RISK_WEIGHTED_AMT().doubleValue());
-						cell6.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					// row27
-					row = sheet.getRow(26);
-
-					cell1 = row.createCell(1);
-					if (record1.getR27_NAME_OF_CORPORATE() != null) {
-						cell1.setCellValue(record1.getR27_NAME_OF_CORPORATE());
-						cell1.setCellStyle(textStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-
-					cell2 = row.createCell(2);
-					if (record1.getR27_CREDIT_RATING() != null) {
-						cell2.setCellValue(record1.getR27_CREDIT_RATING());
-						cell2.setCellStyle(textStyle);
-					} else {
-						cell2.setCellValue("");
-						cell2.setCellStyle(textStyle);
-					}
-
-					cell3 = row.createCell(4);
-					if (record1.getR27_RATING_AGENCY() != null) {
-						cell3.setCellValue(record1.getR27_RATING_AGENCY());
-						cell3.setCellStyle(textStyle);
-					} else {
-						cell3.setCellValue("");
-						cell3.setCellStyle(textStyle);
-					}
-
-					cell4 = row.createCell(6);
-					if (record1.getR27_EXPOSURE_AMT() != null) {
-						cell4.setCellValue(record1.getR27_EXPOSURE_AMT().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					cell5 = row.createCell(7);
-					if (record1.getR27_RISK_WEIGHT() != null) {
-						cell5.setCellValue(record1.getR27_RISK_WEIGHT().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					cell6 = row.createCell(8);
-					if (record1.getR27_RISK_WEIGHTED_AMT() != null) {
-						cell6.setCellValue(record1.getR27_RISK_WEIGHTED_AMT().doubleValue());
-						cell6.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					// row28
-					row = sheet.getRow(27);
-
-					cell1 = row.createCell(1);
-					if (record1.getR28_NAME_OF_CORPORATE() != null) {
-						cell1.setCellValue(record1.getR28_NAME_OF_CORPORATE());
-						cell1.setCellStyle(textStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-
-					cell2 = row.createCell(2);
-					if (record1.getR28_CREDIT_RATING() != null) {
-						cell2.setCellValue(record1.getR28_CREDIT_RATING());
-						cell2.setCellStyle(textStyle);
-					} else {
-						cell2.setCellValue("");
-						cell2.setCellStyle(textStyle);
-					}
-
-					cell3 = row.createCell(4);
-					if (record1.getR28_RATING_AGENCY() != null) {
-						cell3.setCellValue(record1.getR28_RATING_AGENCY());
-						cell3.setCellStyle(textStyle);
-					} else {
-						cell3.setCellValue("");
-						cell3.setCellStyle(textStyle);
-					}
-
-					cell4 = row.createCell(6);
-					if (record1.getR28_EXPOSURE_AMT() != null) {
-						cell4.setCellValue(record1.getR28_EXPOSURE_AMT().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					cell5 = row.createCell(7);
-					if (record1.getR28_RISK_WEIGHT() != null) {
-						cell5.setCellValue(record1.getR28_RISK_WEIGHT().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					cell6 = row.createCell(8);
-					if (record1.getR28_RISK_WEIGHTED_AMT() != null) {
-						cell6.setCellValue(record1.getR28_RISK_WEIGHTED_AMT().doubleValue());
-						cell6.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					// row29
-					row = sheet.getRow(28);
-
-					cell1 = row.createCell(1);
-					if (record1.getR29_NAME_OF_CORPORATE() != null) {
-						cell1.setCellValue(record1.getR29_NAME_OF_CORPORATE());
-						cell1.setCellStyle(textStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-
-					cell2 = row.createCell(2);
-					if (record1.getR29_CREDIT_RATING() != null) {
-						cell2.setCellValue(record1.getR29_CREDIT_RATING());
-						cell2.setCellStyle(textStyle);
-					} else {
-						cell2.setCellValue("");
-						cell2.setCellStyle(textStyle);
-					}
-
-					cell3 = row.createCell(4);
-					if (record1.getR29_RATING_AGENCY() != null) {
-						cell3.setCellValue(record1.getR29_RATING_AGENCY());
-						cell3.setCellStyle(textStyle);
-					} else {
-						cell3.setCellValue("");
-						cell3.setCellStyle(textStyle);
-					}
-
-					cell4 = row.createCell(6);
-					if (record1.getR29_EXPOSURE_AMT() != null) {
-						cell4.setCellValue(record1.getR29_EXPOSURE_AMT().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					cell5 = row.createCell(7);
-					if (record1.getR29_RISK_WEIGHT() != null) {
-						cell5.setCellValue(record1.getR29_RISK_WEIGHT().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					cell6 = row.createCell(8);
-					if (record1.getR29_RISK_WEIGHTED_AMT() != null) {
-						cell6.setCellValue(record1.getR29_RISK_WEIGHTED_AMT().doubleValue());
-						cell6.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					// row30
-					row = sheet.getRow(29);
-
-					cell1 = row.createCell(1);
-					if (record1.getR30_NAME_OF_CORPORATE() != null) {
-						cell1.setCellValue(record1.getR30_NAME_OF_CORPORATE());
-						cell1.setCellStyle(textStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-
-					cell2 = row.createCell(2);
-					if (record1.getR30_CREDIT_RATING() != null) {
-						cell2.setCellValue(record1.getR30_CREDIT_RATING());
-						cell2.setCellStyle(textStyle);
-					} else {
-						cell2.setCellValue("");
-						cell2.setCellStyle(textStyle);
-					}
-
-					cell3 = row.createCell(4);
-					if (record1.getR30_RATING_AGENCY() != null) {
-						cell3.setCellValue(record1.getR30_RATING_AGENCY());
-						cell3.setCellStyle(textStyle);
-					} else {
-						cell3.setCellValue("");
-						cell3.setCellStyle(textStyle);
-					}
-
-					cell4 = row.createCell(6);
-					if (record1.getR30_EXPOSURE_AMT() != null) {
-						cell4.setCellValue(record1.getR30_EXPOSURE_AMT().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					cell5 = row.createCell(7);
-					if (record1.getR30_RISK_WEIGHT() != null) {
-						cell5.setCellValue(record1.getR30_RISK_WEIGHT().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					cell6 = row.createCell(8);
-					if (record1.getR30_RISK_WEIGHTED_AMT() != null) {
-						cell6.setCellValue(record1.getR30_RISK_WEIGHTED_AMT().doubleValue());
-						cell6.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					// row31
-					row = sheet.getRow(30);
-
-					cell1 = row.createCell(1);
-					if (record1.getR31_NAME_OF_CORPORATE() != null) {
-						cell1.setCellValue(record1.getR31_NAME_OF_CORPORATE());
-						cell1.setCellStyle(textStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-
-					cell2 = row.createCell(2);
-					if (record1.getR31_CREDIT_RATING() != null) {
-						cell2.setCellValue(record1.getR31_CREDIT_RATING());
-						cell2.setCellStyle(textStyle);
-					} else {
-						cell2.setCellValue("");
-						cell2.setCellStyle(textStyle);
-					}
-
-					cell3 = row.createCell(4);
-					if (record1.getR31_RATING_AGENCY() != null) {
-						cell3.setCellValue(record1.getR31_RATING_AGENCY());
-						cell3.setCellStyle(textStyle);
-					} else {
-						cell3.setCellValue("");
-						cell3.setCellStyle(textStyle);
-					}
-
-					cell4 = row.createCell(6);
-					if (record1.getR31_EXPOSURE_AMT() != null) {
-						cell4.setCellValue(record1.getR31_EXPOSURE_AMT().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					cell5 = row.createCell(7);
-					if (record1.getR31_RISK_WEIGHT() != null) {
-						cell5.setCellValue(record1.getR31_RISK_WEIGHT().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					cell6 = row.createCell(8);
-					if (record1.getR31_RISK_WEIGHTED_AMT() != null) {
-						cell6.setCellValue(record1.getR31_RISK_WEIGHTED_AMT().doubleValue());
-						cell6.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					// row32
-					row = sheet.getRow(31);
-
-					cell1 = row.createCell(1);
-					if (record1.getR32_NAME_OF_CORPORATE() != null) {
-						cell1.setCellValue(record1.getR32_NAME_OF_CORPORATE());
-						cell1.setCellStyle(textStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-
-					cell2 = row.createCell(2);
-					if (record1.getR32_CREDIT_RATING() != null) {
-						cell2.setCellValue(record1.getR32_CREDIT_RATING());
-						cell2.setCellStyle(textStyle);
-					} else {
-						cell2.setCellValue("");
-						cell2.setCellStyle(textStyle);
-					}
-
-					cell3 = row.createCell(4);
-					if (record1.getR32_RATING_AGENCY() != null) {
-						cell3.setCellValue(record1.getR32_RATING_AGENCY());
-						cell3.setCellStyle(textStyle);
-					} else {
-						cell3.setCellValue("");
-						cell3.setCellStyle(textStyle);
-					}
-
-					cell4 = row.createCell(6);
-					if (record1.getR32_EXPOSURE_AMT() != null) {
-						cell4.setCellValue(record1.getR32_EXPOSURE_AMT().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					cell5 = row.createCell(7);
-					if (record1.getR32_RISK_WEIGHT() != null) {
-						cell5.setCellValue(record1.getR32_RISK_WEIGHT().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					cell6 = row.createCell(8);
-					if (record1.getR32_RISK_WEIGHTED_AMT() != null) {
-						cell6.setCellValue(record1.getR32_RISK_WEIGHTED_AMT().doubleValue());
-						cell6.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					// row33
-					row = sheet.getRow(32);
-
-					cell1 = row.createCell(1);
-					if (record1.getR33_NAME_OF_CORPORATE() != null) {
-						cell1.setCellValue(record1.getR33_NAME_OF_CORPORATE());
-						cell1.setCellStyle(textStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-
-					cell2 = row.createCell(2);
-					if (record1.getR33_CREDIT_RATING() != null) {
-						cell2.setCellValue(record1.getR33_CREDIT_RATING());
-						cell2.setCellStyle(textStyle);
-					} else {
-						cell2.setCellValue("");
-						cell2.setCellStyle(textStyle);
-					}
-
-					cell3 = row.createCell(4);
-					if (record1.getR33_RATING_AGENCY() != null) {
-						cell3.setCellValue(record1.getR33_RATING_AGENCY());
-						cell3.setCellStyle(textStyle);
-					} else {
-						cell3.setCellValue("");
-						cell3.setCellStyle(textStyle);
-					}
-
-					cell4 = row.createCell(6);
-					if (record1.getR33_EXPOSURE_AMT() != null) {
-						cell4.setCellValue(record1.getR33_EXPOSURE_AMT().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					cell5 = row.createCell(7);
-					if (record1.getR33_RISK_WEIGHT() != null) {
-						cell5.setCellValue(record1.getR33_RISK_WEIGHT().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					cell6 = row.createCell(8);
-					if (record1.getR33_RISK_WEIGHTED_AMT() != null) {
-						cell6.setCellValue(record1.getR33_RISK_WEIGHTED_AMT().doubleValue());
-						cell6.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					// row34
-					row = sheet.getRow(33);
-
-					cell1 = row.createCell(1);
-					if (record1.getR34_NAME_OF_CORPORATE() != null) {
-						cell1.setCellValue(record1.getR34_NAME_OF_CORPORATE());
-						cell1.setCellStyle(textStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-
-					cell2 = row.createCell(2);
-					if (record1.getR34_CREDIT_RATING() != null) {
-						cell2.setCellValue(record1.getR34_CREDIT_RATING());
-						cell2.setCellStyle(textStyle);
-					} else {
-						cell2.setCellValue("");
-						cell2.setCellStyle(textStyle);
-					}
-
-					cell3 = row.createCell(4);
-					if (record1.getR34_RATING_AGENCY() != null) {
-						cell3.setCellValue(record1.getR34_RATING_AGENCY());
-						cell3.setCellStyle(textStyle);
-					} else {
-						cell3.setCellValue("");
-						cell3.setCellStyle(textStyle);
-					}
-
-					cell4 = row.createCell(6);
-					if (record1.getR34_EXPOSURE_AMT() != null) {
-						cell4.setCellValue(record1.getR34_EXPOSURE_AMT().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					cell5 = row.createCell(7);
-					if (record1.getR34_RISK_WEIGHT() != null) {
-						cell5.setCellValue(record1.getR34_RISK_WEIGHT().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					cell6 = row.createCell(8);
-					if (record1.getR34_RISK_WEIGHTED_AMT() != null) {
-						cell6.setCellValue(record1.getR34_RISK_WEIGHTED_AMT().doubleValue());
-						cell6.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					// row35
-					row = sheet.getRow(34);
-
-					cell1 = row.createCell(1);
-					if (record1.getR35_NAME_OF_CORPORATE() != null) {
-						cell1.setCellValue(record1.getR35_NAME_OF_CORPORATE());
-						cell1.setCellStyle(textStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-
-					cell2 = row.createCell(2);
-					if (record1.getR35_CREDIT_RATING() != null) {
-						cell2.setCellValue(record1.getR35_CREDIT_RATING());
-						cell2.setCellStyle(textStyle);
-					} else {
-						cell2.setCellValue("");
-						cell2.setCellStyle(textStyle);
-					}
-
-					cell3 = row.createCell(4);
-					if (record1.getR35_RATING_AGENCY() != null) {
-						cell3.setCellValue(record1.getR35_RATING_AGENCY());
-						cell3.setCellStyle(textStyle);
-					} else {
-						cell3.setCellValue("");
-						cell3.setCellStyle(textStyle);
-					}
-
-					cell4 = row.createCell(6);
-					if (record1.getR35_EXPOSURE_AMT() != null) {
-						cell4.setCellValue(record1.getR35_EXPOSURE_AMT().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					cell5 = row.createCell(7);
-					if (record1.getR35_RISK_WEIGHT() != null) {
-						cell5.setCellValue(record1.getR35_RISK_WEIGHT().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					cell6 = row.createCell(8);
-					if (record1.getR35_RISK_WEIGHTED_AMT() != null) {
-						cell6.setCellValue(record1.getR35_RISK_WEIGHTED_AMT().doubleValue());
-						cell6.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					// row36
-					row = sheet.getRow(35);
-
-					cell1 = row.createCell(1);
-					if (record1.getR36_NAME_OF_CORPORATE() != null) {
-						cell1.setCellValue(record1.getR36_NAME_OF_CORPORATE());
-						cell1.setCellStyle(textStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-
-					cell2 = row.createCell(2);
-					if (record1.getR36_CREDIT_RATING() != null) {
-						cell2.setCellValue(record1.getR36_CREDIT_RATING());
-						cell2.setCellStyle(textStyle);
-					} else {
-						cell2.setCellValue("");
-						cell2.setCellStyle(textStyle);
-					}
-
-					cell3 = row.createCell(4);
-					if (record1.getR36_RATING_AGENCY() != null) {
-						cell3.setCellValue(record1.getR36_RATING_AGENCY());
-						cell3.setCellStyle(textStyle);
-					} else {
-						cell3.setCellValue("");
-						cell3.setCellStyle(textStyle);
-					}
-
-					cell4 = row.createCell(6);
-					if (record1.getR36_EXPOSURE_AMT() != null) {
-						cell4.setCellValue(record1.getR36_EXPOSURE_AMT().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					cell5 = row.createCell(7);
-					if (record1.getR36_RISK_WEIGHT() != null) {
-						cell5.setCellValue(record1.getR36_RISK_WEIGHT().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					cell6 = row.createCell(8);
-					if (record1.getR36_RISK_WEIGHTED_AMT() != null) {
-						cell6.setCellValue(record1.getR36_RISK_WEIGHTED_AMT().doubleValue());
-						cell6.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					// row37
-					row = sheet.getRow(36);
-
-					cell1 = row.createCell(1);
-					if (record1.getR37_NAME_OF_CORPORATE() != null) {
-						cell1.setCellValue(record1.getR37_NAME_OF_CORPORATE());
-						cell1.setCellStyle(textStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-
-					cell2 = row.createCell(2);
-					if (record1.getR37_CREDIT_RATING() != null) {
-						cell2.setCellValue(record1.getR37_CREDIT_RATING());
-						cell2.setCellStyle(textStyle);
-					} else {
-						cell2.setCellValue("");
-						cell2.setCellStyle(textStyle);
-					}
-
-					cell3 = row.createCell(4);
-					if (record1.getR37_RATING_AGENCY() != null) {
-						cell3.setCellValue(record1.getR37_RATING_AGENCY());
-						cell3.setCellStyle(textStyle);
-					} else {
-						cell3.setCellValue("");
-						cell3.setCellStyle(textStyle);
-					}
-
-					cell4 = row.createCell(6);
-					if (record1.getR37_EXPOSURE_AMT() != null) {
-						cell4.setCellValue(record1.getR37_EXPOSURE_AMT().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					cell5 = row.createCell(7);
-					if (record1.getR37_RISK_WEIGHT() != null) {
-						cell5.setCellValue(record1.getR37_RISK_WEIGHT().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					cell6 = row.createCell(8);
-					if (record1.getR37_RISK_WEIGHTED_AMT() != null) {
-						cell6.setCellValue(record1.getR37_RISK_WEIGHTED_AMT().doubleValue());
-						cell6.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-				}
-				workbook.setForceFormulaRecalculation(true);
-			} else {
-
-			}
-			// Write the final workbook content to the in-memory stream.
-			workbook.write(out);
-			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-			return out.toByteArray();
-		}
-	}
-
-	// Archival download for email
-	public byte[] BRRS_M_SRWA_12FEmailArchivalExcel(String filename, String reportId, String fromdate, String todate,
-			String currency, String dtltype, String type, BigDecimal version) throws Exception {
-		logger.info("Service: Starting Excel generation process in memory.");
-		Date reportDate = dateformat.parse(todate);
-		if (type.equals("email") & version != null) {
-
-		}
-		List<M_SRWA_12F_Archival_Summary_Entity> dataList = M_SRWA_12F_Archival_Summary_Repo
-				.getdatabydateListarchival(dateformat.parse(todate), version);
-
-		if (dataList.isEmpty()) {
-			logger.warn("Service: No data found forM_SRWA_12F report. Returning empty result.");
-			return new byte[0];
-		}
-
-		String templateDir = env.getProperty("output.exportpathtemp");
-		String templateFileName = filename;
-		System.out.println(filename);
-		Path templatePath = Paths.get(templateDir, templateFileName);
-		System.out.println(templatePath);
-
-		logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
-
-		if (!Files.exists(templatePath)) {
-			// This specific exception will be caught by the controller.
-			throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
-		}
-		if (!Files.isReadable(templatePath)) {
-			// A specific exception for permission errors.
-			throw new SecurityException(
-					"Template file exists but is not readable (check permissions): " + templatePath.toAbsolutePath());
-		}
-
-		// This try-with-resources block is perfect. It guarantees all resources are
-		// closed automatically.
-		try (InputStream templateInputStream = Files.newInputStream(templatePath);
-				Workbook workbook = WorkbookFactory.create(templateInputStream);
-				ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-
-			Sheet sheet = workbook.getSheetAt(0);
-
-			// --- Style Definitions ---
-			CreationHelper createHelper = workbook.getCreationHelper();
-
-			CellStyle dateStyle = workbook.createCellStyle();
-			dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
-			dateStyle.setBorderBottom(BorderStyle.THIN);
-			dateStyle.setBorderTop(BorderStyle.THIN);
-			dateStyle.setBorderLeft(BorderStyle.THIN);
-			dateStyle.setBorderRight(BorderStyle.THIN);
-
-			CellStyle textStyle = workbook.createCellStyle();
-			textStyle.setBorderBottom(BorderStyle.THIN);
-			textStyle.setBorderTop(BorderStyle.THIN);
-			textStyle.setBorderLeft(BorderStyle.THIN);
-			textStyle.setBorderRight(BorderStyle.THIN);
-
-			// Create the font
-			Font font = workbook.createFont();
-			font.setFontHeightInPoints((short) 8); // size 8
-			font.setFontName("Arial");
-
-			CellStyle numberStyle = workbook.createCellStyle();
-			// numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
-			numberStyle.setBorderBottom(BorderStyle.THIN);
-			numberStyle.setBorderTop(BorderStyle.THIN);
-			numberStyle.setBorderLeft(BorderStyle.THIN);
-			numberStyle.setBorderRight(BorderStyle.THIN);
-			numberStyle.setFont(font);
-			// --- End of Style Definitions ---
-
-			int startRow = 10;
-
-			if (!dataList.isEmpty()) {
-				for (int i = 0; i < dataList.size(); i++) {
-
-					M_SRWA_12F_Archival_Summary_Entity record1 = dataList.get(i);
-					System.out.println("rownumber=" + startRow + i);
-					Row row = sheet.getRow(startRow + i);
-					if (row == null) {
-						row = sheet.createRow(startRow + i);
-					}
-					// row11
-					// Column E
-					Cell cell1 = row.createCell(1);
-					if (record1.getR11_NAME_OF_CORPORATE() != null) {
-						cell1.setCellValue(record1.getR11_NAME_OF_CORPORATE());
-						cell1.setCellStyle(textStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-
-					Cell cell2 = row.createCell(2);
-					if (record1.getR11_CREDIT_RATING() != null) {
-						cell2.setCellValue(record1.getR11_CREDIT_RATING());
-						cell2.setCellStyle(textStyle);
-					} else {
-						cell2.setCellValue("");
-						cell2.setCellStyle(textStyle);
-					}
-
-					Cell cell3 = row.createCell(4);
-					if (record1.getR11_RATING_AGENCY() != null) {
-						cell3.setCellValue(record1.getR11_RATING_AGENCY());
-						cell3.setCellStyle(textStyle);
-					} else {
-						cell3.setCellValue("");
-						cell3.setCellStyle(textStyle);
-					}
-					// row11
-					// Column E
-					Cell cell4 = row.createCell(6);
-					if (record1.getR11_EXPOSURE_AMT() != null) {
-						cell4.setCellValue(record1.getR11_EXPOSURE_AMT().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					// row11
-					// Column F
-					Cell cell5 = row.createCell(7);
-					if (record1.getR11_RISK_WEIGHT() != null) {
-						cell5.setCellValue(record1.getR11_RISK_WEIGHT().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-					// row11
-					// Column F
-					Cell cell6 = row.createCell(8);
-					if (record1.getR11_RISK_WEIGHTED_AMT() != null) {
-						cell6.setCellValue(record1.getR11_RISK_WEIGHTED_AMT().doubleValue());
-						cell6.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					// row12
-					row = sheet.getRow(11);
-
-					cell1 = row.createCell(1);
-					if (record1.getR12_NAME_OF_CORPORATE() != null) {
-						cell1.setCellValue(record1.getR12_NAME_OF_CORPORATE());
-						cell1.setCellStyle(textStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-
-					cell2 = row.createCell(2);
-					if (record1.getR12_CREDIT_RATING() != null) {
-						cell2.setCellValue(record1.getR12_CREDIT_RATING());
-						cell2.setCellStyle(textStyle);
-					} else {
-						cell2.setCellValue("");
-						cell2.setCellStyle(textStyle);
-					}
-
-					cell3 = row.createCell(4);
-					if (record1.getR12_RATING_AGENCY() != null) {
-						cell3.setCellValue(record1.getR12_RATING_AGENCY());
-						cell3.setCellStyle(textStyle);
-					} else {
-						cell3.setCellValue("");
-						cell3.setCellStyle(textStyle);
-					}
-					// Column E
-					cell4 = row.createCell(6);
-					if (record1.getR12_EXPOSURE_AMT() != null) {
-						cell4.setCellValue(record1.getR12_EXPOSURE_AMT().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					// row12
-					// Column F
-					cell5 = row.createCell(7);
-					if (record1.getR12_RISK_WEIGHT() != null) {
-						cell5.setCellValue(record1.getR12_RISK_WEIGHT().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-					cell6 = row.createCell(8);
-					if (record1.getR12_RISK_WEIGHTED_AMT() != null) {
-						cell6.setCellValue(record1.getR12_RISK_WEIGHTED_AMT().doubleValue());
-						cell6.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					// row13
-					row = sheet.getRow(12);
-
-					cell1 = row.createCell(1);
-					if (record1.getR13_NAME_OF_CORPORATE() != null) {
-						cell1.setCellValue(record1.getR13_NAME_OF_CORPORATE());
-						cell1.setCellStyle(textStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-
-					cell2 = row.createCell(2);
-					if (record1.getR13_CREDIT_RATING() != null) {
-						cell2.setCellValue(record1.getR13_CREDIT_RATING());
-						cell2.setCellStyle(textStyle);
-					} else {
-						cell2.setCellValue("");
-						cell2.setCellStyle(textStyle);
-					}
-
-					cell3 = row.createCell(4);
-					if (record1.getR13_RATING_AGENCY() != null) {
-						cell3.setCellValue(record1.getR13_RATING_AGENCY());
-						cell3.setCellStyle(textStyle);
-					} else {
-						cell3.setCellValue("");
-						cell3.setCellStyle(textStyle);
-					}
-
-					cell4 = row.createCell(6);
-					if (record1.getR13_EXPOSURE_AMT() != null) {
-						cell4.setCellValue(record1.getR13_EXPOSURE_AMT().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					cell5 = row.createCell(7);
-					if (record1.getR13_RISK_WEIGHT() != null) {
-						cell5.setCellValue(record1.getR13_RISK_WEIGHT().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					cell6 = row.createCell(8);
-					if (record1.getR13_RISK_WEIGHTED_AMT() != null) {
-						cell6.setCellValue(record1.getR13_RISK_WEIGHTED_AMT().doubleValue());
-						cell6.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					// row14
-					row = sheet.getRow(13);
-
-					cell1 = row.createCell(1);
-					if (record1.getR14_NAME_OF_CORPORATE() != null) {
-						cell1.setCellValue(record1.getR14_NAME_OF_CORPORATE());
-						cell1.setCellStyle(textStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-
-					cell2 = row.createCell(2);
-					if (record1.getR14_CREDIT_RATING() != null) {
-						cell2.setCellValue(record1.getR14_CREDIT_RATING());
-						cell2.setCellStyle(textStyle);
-					} else {
-						cell2.setCellValue("");
-						cell2.setCellStyle(textStyle);
-					}
-
-					cell3 = row.createCell(4);
-					if (record1.getR14_RATING_AGENCY() != null) {
-						cell3.setCellValue(record1.getR14_RATING_AGENCY());
-						cell3.setCellStyle(textStyle);
-					} else {
-						cell3.setCellValue("");
-						cell3.setCellStyle(textStyle);
-					}
-
-					cell4 = row.createCell(6);
-					if (record1.getR14_EXPOSURE_AMT() != null) {
-						cell4.setCellValue(record1.getR14_EXPOSURE_AMT().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					cell5 = row.createCell(7);
-					if (record1.getR14_RISK_WEIGHT() != null) {
-						cell5.setCellValue(record1.getR14_RISK_WEIGHT().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					cell6 = row.createCell(8);
-					if (record1.getR14_RISK_WEIGHTED_AMT() != null) {
-						cell6.setCellValue(record1.getR14_RISK_WEIGHTED_AMT().doubleValue());
-						cell6.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					// row15
-					row = sheet.getRow(14);
-
-					cell1 = row.createCell(1);
-					if (record1.getR15_NAME_OF_CORPORATE() != null) {
-						cell1.setCellValue(record1.getR15_NAME_OF_CORPORATE());
-						cell1.setCellStyle(textStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-
-					cell2 = row.createCell(2);
-					if (record1.getR15_CREDIT_RATING() != null) {
-						cell2.setCellValue(record1.getR15_CREDIT_RATING());
-						cell2.setCellStyle(textStyle);
-					} else {
-						cell2.setCellValue("");
-						cell2.setCellStyle(textStyle);
-					}
-
-					cell3 = row.createCell(4);
-					if (record1.getR15_RATING_AGENCY() != null) {
-						cell3.setCellValue(record1.getR15_RATING_AGENCY());
-						cell3.setCellStyle(textStyle);
-					} else {
-						cell3.setCellValue("");
-						cell3.setCellStyle(textStyle);
-					}
-
-					cell4 = row.createCell(6);
-					if (record1.getR15_EXPOSURE_AMT() != null) {
-						cell4.setCellValue(record1.getR15_EXPOSURE_AMT().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					cell5 = row.createCell(7);
-					if (record1.getR15_RISK_WEIGHT() != null) {
-						cell5.setCellValue(record1.getR15_RISK_WEIGHT().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					cell6 = row.createCell(8);
-					if (record1.getR15_RISK_WEIGHTED_AMT() != null) {
-						cell6.setCellValue(record1.getR15_RISK_WEIGHTED_AMT().doubleValue());
-						cell6.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					// row16
-					row = sheet.getRow(15);
-
-					cell1 = row.createCell(1);
-					if (record1.getR16_NAME_OF_CORPORATE() != null) {
-						cell1.setCellValue(record1.getR16_NAME_OF_CORPORATE());
-						cell1.setCellStyle(textStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-
-					cell2 = row.createCell(2);
-					if (record1.getR16_CREDIT_RATING() != null) {
-						cell2.setCellValue(record1.getR16_CREDIT_RATING());
-						cell2.setCellStyle(textStyle);
-					} else {
-						cell2.setCellValue("");
-						cell2.setCellStyle(textStyle);
-					}
-
-					cell3 = row.createCell(4);
-					if (record1.getR16_RATING_AGENCY() != null) {
-						cell3.setCellValue(record1.getR16_RATING_AGENCY());
-						cell3.setCellStyle(textStyle);
-					} else {
-						cell3.setCellValue("");
-						cell3.setCellStyle(textStyle);
-					}
-
-					cell4 = row.createCell(6);
-					if (record1.getR16_EXPOSURE_AMT() != null) {
-						cell4.setCellValue(record1.getR16_EXPOSURE_AMT().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					cell5 = row.createCell(7);
-					if (record1.getR16_RISK_WEIGHT() != null) {
-						cell5.setCellValue(record1.getR16_RISK_WEIGHT().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					cell6 = row.createCell(8);
-					if (record1.getR16_RISK_WEIGHTED_AMT() != null) {
-						cell6.setCellValue(record1.getR16_RISK_WEIGHTED_AMT().doubleValue());
-						cell6.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					// row17
-					row = sheet.getRow(16);
-
-					cell1 = row.createCell(1);
-					if (record1.getR17_NAME_OF_CORPORATE() != null) {
-						cell1.setCellValue(record1.getR17_NAME_OF_CORPORATE());
-						cell1.setCellStyle(textStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-
-					cell2 = row.createCell(2);
-					if (record1.getR17_CREDIT_RATING() != null) {
-						cell2.setCellValue(record1.getR17_CREDIT_RATING());
-						cell2.setCellStyle(textStyle);
-					} else {
-						cell2.setCellValue("");
-						cell2.setCellStyle(textStyle);
-					}
-
-					cell3 = row.createCell(4);
-					if (record1.getR17_RATING_AGENCY() != null) {
-						cell3.setCellValue(record1.getR17_RATING_AGENCY());
-						cell3.setCellStyle(textStyle);
-					} else {
-						cell3.setCellValue("");
-						cell3.setCellStyle(textStyle);
-					}
-
-					cell4 = row.createCell(6);
-					if (record1.getR17_EXPOSURE_AMT() != null) {
-						cell4.setCellValue(record1.getR17_EXPOSURE_AMT().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					cell5 = row.createCell(7);
-					if (record1.getR17_RISK_WEIGHT() != null) {
-						cell5.setCellValue(record1.getR17_RISK_WEIGHT().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					cell6 = row.createCell(8);
-					if (record1.getR17_RISK_WEIGHTED_AMT() != null) {
-						cell6.setCellValue(record1.getR17_RISK_WEIGHTED_AMT().doubleValue());
-						cell6.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					// row18
-					row = sheet.getRow(17);
-
-					cell1 = row.createCell(1);
-					if (record1.getR18_NAME_OF_CORPORATE() != null) {
-						cell1.setCellValue(record1.getR18_NAME_OF_CORPORATE());
-						cell1.setCellStyle(textStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-
-					cell2 = row.createCell(2);
-					if (record1.getR18_CREDIT_RATING() != null) {
-						cell2.setCellValue(record1.getR18_CREDIT_RATING());
-						cell2.setCellStyle(textStyle);
-					} else {
-						cell2.setCellValue("");
-						cell2.setCellStyle(textStyle);
-					}
-
-					cell3 = row.createCell(4);
-					if (record1.getR18_RATING_AGENCY() != null) {
-						cell3.setCellValue(record1.getR18_RATING_AGENCY());
-						cell3.setCellStyle(textStyle);
-					} else {
-						cell3.setCellValue("");
-						cell3.setCellStyle(textStyle);
-					}
-
-					cell4 = row.createCell(6);
-					if (record1.getR18_EXPOSURE_AMT() != null) {
-						cell4.setCellValue(record1.getR18_EXPOSURE_AMT().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					cell5 = row.createCell(7);
-					if (record1.getR18_RISK_WEIGHT() != null) {
-						cell5.setCellValue(record1.getR18_RISK_WEIGHT().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					cell6 = row.createCell(8);
-					if (record1.getR18_RISK_WEIGHTED_AMT() != null) {
-						cell6.setCellValue(record1.getR18_RISK_WEIGHTED_AMT().doubleValue());
-						cell6.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					// row19
-					row = sheet.getRow(18);
-
-					cell1 = row.createCell(1);
-					if (record1.getR19_NAME_OF_CORPORATE() != null) {
-						cell1.setCellValue(record1.getR19_NAME_OF_CORPORATE());
-						cell1.setCellStyle(textStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-
-					cell2 = row.createCell(2);
-					if (record1.getR19_CREDIT_RATING() != null) {
-						cell2.setCellValue(record1.getR19_CREDIT_RATING());
-						cell2.setCellStyle(textStyle);
-					} else {
-						cell2.setCellValue("");
-						cell2.setCellStyle(textStyle);
-					}
-
-					cell3 = row.createCell(4);
-					if (record1.getR19_RATING_AGENCY() != null) {
-						cell3.setCellValue(record1.getR19_RATING_AGENCY());
-						cell3.setCellStyle(textStyle);
-					} else {
-						cell3.setCellValue("");
-						cell3.setCellStyle(textStyle);
-					}
-
-					cell4 = row.createCell(6);
-					if (record1.getR19_EXPOSURE_AMT() != null) {
-						cell4.setCellValue(record1.getR19_EXPOSURE_AMT().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					cell5 = row.createCell(7);
-					if (record1.getR19_RISK_WEIGHT() != null) {
-						cell5.setCellValue(record1.getR19_RISK_WEIGHT().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					cell6 = row.createCell(8);
-					if (record1.getR19_RISK_WEIGHTED_AMT() != null) {
-						cell6.setCellValue(record1.getR19_RISK_WEIGHTED_AMT().doubleValue());
-						cell6.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					// row20
-					row = sheet.getRow(19);
-
-					cell1 = row.createCell(1);
-					if (record1.getR20_NAME_OF_CORPORATE() != null) {
-						cell1.setCellValue(record1.getR20_NAME_OF_CORPORATE());
-						cell1.setCellStyle(textStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-
-					cell2 = row.createCell(2);
-					if (record1.getR20_CREDIT_RATING() != null) {
-						cell2.setCellValue(record1.getR20_CREDIT_RATING());
-						cell2.setCellStyle(textStyle);
-					} else {
-						cell2.setCellValue("");
-						cell2.setCellStyle(textStyle);
-					}
-
-					cell3 = row.createCell(4);
-					if (record1.getR20_RATING_AGENCY() != null) {
-						cell3.setCellValue(record1.getR20_RATING_AGENCY());
-						cell3.setCellStyle(textStyle);
-					} else {
-						cell3.setCellValue("");
-						cell3.setCellStyle(textStyle);
-					}
-
-					cell4 = row.createCell(6);
-					if (record1.getR20_EXPOSURE_AMT() != null) {
-						cell4.setCellValue(record1.getR20_EXPOSURE_AMT().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					cell5 = row.createCell(7);
-					if (record1.getR20_RISK_WEIGHT() != null) {
-						cell5.setCellValue(record1.getR20_RISK_WEIGHT().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					cell6 = row.createCell(8);
-					if (record1.getR20_RISK_WEIGHTED_AMT() != null) {
-						cell6.setCellValue(record1.getR20_RISK_WEIGHTED_AMT().doubleValue());
-						cell6.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					// row21
-					row = sheet.getRow(20);
-
-					cell1 = row.createCell(1);
-					if (record1.getR21_NAME_OF_CORPORATE() != null) {
-						cell1.setCellValue(record1.getR21_NAME_OF_CORPORATE());
-						cell1.setCellStyle(textStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-
-					cell2 = row.createCell(2);
-					if (record1.getR21_CREDIT_RATING() != null) {
-						cell2.setCellValue(record1.getR21_CREDIT_RATING());
-						cell2.setCellStyle(textStyle);
-					} else {
-						cell2.setCellValue("");
-						cell2.setCellStyle(textStyle);
-					}
-
-					cell3 = row.createCell(4);
-					if (record1.getR21_RATING_AGENCY() != null) {
-						cell3.setCellValue(record1.getR21_RATING_AGENCY());
-						cell3.setCellStyle(textStyle);
-					} else {
-						cell3.setCellValue("");
-						cell3.setCellStyle(textStyle);
-					}
-
-					cell4 = row.createCell(6);
-					if (record1.getR21_EXPOSURE_AMT() != null) {
-						cell4.setCellValue(record1.getR21_EXPOSURE_AMT().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					cell5 = row.createCell(7);
-					if (record1.getR21_RISK_WEIGHT() != null) {
-						cell5.setCellValue(record1.getR21_RISK_WEIGHT().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					cell6 = row.createCell(8);
-					if (record1.getR21_RISK_WEIGHTED_AMT() != null) {
-						cell6.setCellValue(record1.getR21_RISK_WEIGHTED_AMT().doubleValue());
-						cell6.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					// row22
-					row = sheet.getRow(21);
-
-					cell1 = row.createCell(1);
-					if (record1.getR22_NAME_OF_CORPORATE() != null) {
-						cell1.setCellValue(record1.getR22_NAME_OF_CORPORATE());
-						cell1.setCellStyle(textStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-
-					cell2 = row.createCell(2);
-					if (record1.getR22_CREDIT_RATING() != null) {
-						cell2.setCellValue(record1.getR22_CREDIT_RATING());
-						cell2.setCellStyle(textStyle);
-					} else {
-						cell2.setCellValue("");
-						cell2.setCellStyle(textStyle);
-					}
-
-					cell6 = row.createCell(8);
-					if (record1.getR22_RISK_WEIGHTED_AMT() != null) {
-						cell6.setCellValue(record1.getR22_RISK_WEIGHTED_AMT().doubleValue());
-						cell6.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					// row23
-					row = sheet.getRow(22);
-
-					cell1 = row.createCell(1);
-					if (record1.getR23_NAME_OF_CORPORATE() != null) {
-						cell1.setCellValue(record1.getR23_NAME_OF_CORPORATE());
-						cell1.setCellStyle(textStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-
-					cell2 = row.createCell(2);
-					if (record1.getR23_CREDIT_RATING() != null) {
-						cell2.setCellValue(record1.getR23_CREDIT_RATING());
-						cell2.setCellStyle(textStyle);
-					} else {
-						cell2.setCellValue("");
-						cell2.setCellStyle(textStyle);
-					}
-
-					cell6 = row.createCell(8);
-					if (record1.getR23_RISK_WEIGHTED_AMT() != null) {
-						cell6.setCellValue(record1.getR23_RISK_WEIGHTED_AMT().doubleValue());
-						cell6.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					// row24
-					row = sheet.getRow(23);
-
-					cell1 = row.createCell(1);
-					if (record1.getR24_NAME_OF_CORPORATE() != null) {
-						cell1.setCellValue(record1.getR24_NAME_OF_CORPORATE());
-						cell1.setCellStyle(textStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-
-					cell2 = row.createCell(2);
-					if (record1.getR24_CREDIT_RATING() != null) {
-						cell2.setCellValue(record1.getR24_CREDIT_RATING());
-						cell2.setCellStyle(textStyle);
-					} else {
-						cell2.setCellValue("");
-						cell2.setCellStyle(textStyle);
-					}
-
-					cell6 = row.createCell(8);
-					if (record1.getR24_RISK_WEIGHTED_AMT() != null) {
-						cell6.setCellValue(record1.getR24_RISK_WEIGHTED_AMT().doubleValue());
-						cell6.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					// row25
-					row = sheet.getRow(24);
-
-					cell1 = row.createCell(1);
-					if (record1.getR25_NAME_OF_CORPORATE() != null) {
-						cell1.setCellValue(record1.getR25_NAME_OF_CORPORATE());
-						cell1.setCellStyle(textStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-
-					cell2 = row.createCell(2);
-					if (record1.getR25_CREDIT_RATING() != null) {
-						cell2.setCellValue(record1.getR25_CREDIT_RATING());
-						cell2.setCellStyle(textStyle);
-					} else {
-						cell2.setCellValue("");
-						cell2.setCellStyle(textStyle);
-					}
-
-					cell3 = row.createCell(4);
-					if (record1.getR25_RATING_AGENCY() != null) {
-						cell3.setCellValue(record1.getR25_RATING_AGENCY());
-						cell3.setCellStyle(textStyle);
-					} else {
-						cell3.setCellValue("");
-						cell3.setCellStyle(textStyle);
-					}
-
-					cell4 = row.createCell(6);
-					if (record1.getR25_EXPOSURE_AMT() != null) {
-						cell4.setCellValue(record1.getR25_EXPOSURE_AMT().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					cell5 = row.createCell(7);
-					if (record1.getR25_RISK_WEIGHT() != null) {
-						cell5.setCellValue(record1.getR25_RISK_WEIGHT().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					cell6 = row.createCell(8);
-					if (record1.getR25_RISK_WEIGHTED_AMT() != null) {
-						cell6.setCellValue(record1.getR25_RISK_WEIGHTED_AMT().doubleValue());
-						cell6.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					// row26
-					row = sheet.getRow(25);
-
-					cell1 = row.createCell(1);
-					if (record1.getR26_NAME_OF_CORPORATE() != null) {
-						cell1.setCellValue(record1.getR26_NAME_OF_CORPORATE());
-						cell1.setCellStyle(textStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-
-					cell2 = row.createCell(2);
-					if (record1.getR26_CREDIT_RATING() != null) {
-						cell2.setCellValue(record1.getR26_CREDIT_RATING());
-						cell2.setCellStyle(textStyle);
-					} else {
-						cell2.setCellValue("");
-						cell2.setCellStyle(textStyle);
-					}
-
-					cell3 = row.createCell(4);
-					if (record1.getR26_RATING_AGENCY() != null) {
-						cell3.setCellValue(record1.getR26_RATING_AGENCY());
-						cell3.setCellStyle(textStyle);
-					} else {
-						cell3.setCellValue("");
-						cell3.setCellStyle(textStyle);
-					}
-
-					cell4 = row.createCell(6);
-					if (record1.getR26_EXPOSURE_AMT() != null) {
-						cell4.setCellValue(record1.getR26_EXPOSURE_AMT().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					cell5 = row.createCell(7);
-					if (record1.getR26_RISK_WEIGHT() != null) {
-						cell5.setCellValue(record1.getR26_RISK_WEIGHT().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					cell6 = row.createCell(8);
-					if (record1.getR26_RISK_WEIGHTED_AMT() != null) {
-						cell6.setCellValue(record1.getR26_RISK_WEIGHTED_AMT().doubleValue());
-						cell6.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					// row27
-					row = sheet.getRow(26);
-
-					cell1 = row.createCell(1);
-					if (record1.getR27_NAME_OF_CORPORATE() != null) {
-						cell1.setCellValue(record1.getR27_NAME_OF_CORPORATE());
-						cell1.setCellStyle(textStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-
-					cell2 = row.createCell(2);
-					if (record1.getR27_CREDIT_RATING() != null) {
-						cell2.setCellValue(record1.getR27_CREDIT_RATING());
-						cell2.setCellStyle(textStyle);
-					} else {
-						cell2.setCellValue("");
-						cell2.setCellStyle(textStyle);
-					}
-
-					cell3 = row.createCell(4);
-					if (record1.getR27_RATING_AGENCY() != null) {
-						cell3.setCellValue(record1.getR27_RATING_AGENCY());
-						cell3.setCellStyle(textStyle);
-					} else {
-						cell3.setCellValue("");
-						cell3.setCellStyle(textStyle);
-					}
-
-					cell4 = row.createCell(6);
-					if (record1.getR27_EXPOSURE_AMT() != null) {
-						cell4.setCellValue(record1.getR27_EXPOSURE_AMT().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					cell5 = row.createCell(7);
-					if (record1.getR27_RISK_WEIGHT() != null) {
-						cell5.setCellValue(record1.getR27_RISK_WEIGHT().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					cell6 = row.createCell(8);
-					if (record1.getR27_RISK_WEIGHTED_AMT() != null) {
-						cell6.setCellValue(record1.getR27_RISK_WEIGHTED_AMT().doubleValue());
-						cell6.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					// row28
-					row = sheet.getRow(27);
-
-					cell1 = row.createCell(1);
-					if (record1.getR28_NAME_OF_CORPORATE() != null) {
-						cell1.setCellValue(record1.getR28_NAME_OF_CORPORATE());
-						cell1.setCellStyle(textStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-
-					cell2 = row.createCell(2);
-					if (record1.getR28_CREDIT_RATING() != null) {
-						cell2.setCellValue(record1.getR28_CREDIT_RATING());
-						cell2.setCellStyle(textStyle);
-					} else {
-						cell2.setCellValue("");
-						cell2.setCellStyle(textStyle);
-					}
-
-					cell3 = row.createCell(4);
-					if (record1.getR28_RATING_AGENCY() != null) {
-						cell3.setCellValue(record1.getR28_RATING_AGENCY());
-						cell3.setCellStyle(textStyle);
-					} else {
-						cell3.setCellValue("");
-						cell3.setCellStyle(textStyle);
-					}
-
-					cell4 = row.createCell(6);
-					if (record1.getR28_EXPOSURE_AMT() != null) {
-						cell4.setCellValue(record1.getR28_EXPOSURE_AMT().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					cell5 = row.createCell(7);
-					if (record1.getR28_RISK_WEIGHT() != null) {
-						cell5.setCellValue(record1.getR28_RISK_WEIGHT().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					cell6 = row.createCell(8);
-					if (record1.getR28_RISK_WEIGHTED_AMT() != null) {
-						cell6.setCellValue(record1.getR28_RISK_WEIGHTED_AMT().doubleValue());
-						cell6.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					// row29
-					row = sheet.getRow(28);
-
-					cell1 = row.createCell(1);
-					if (record1.getR29_NAME_OF_CORPORATE() != null) {
-						cell1.setCellValue(record1.getR29_NAME_OF_CORPORATE());
-						cell1.setCellStyle(textStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-
-					cell2 = row.createCell(2);
-					if (record1.getR29_CREDIT_RATING() != null) {
-						cell2.setCellValue(record1.getR29_CREDIT_RATING());
-						cell2.setCellStyle(textStyle);
-					} else {
-						cell2.setCellValue("");
-						cell2.setCellStyle(textStyle);
-					}
-
-					cell3 = row.createCell(4);
-					if (record1.getR29_RATING_AGENCY() != null) {
-						cell3.setCellValue(record1.getR29_RATING_AGENCY());
-						cell3.setCellStyle(textStyle);
-					} else {
-						cell3.setCellValue("");
-						cell3.setCellStyle(textStyle);
-					}
-
-					cell4 = row.createCell(6);
-					if (record1.getR29_EXPOSURE_AMT() != null) {
-						cell4.setCellValue(record1.getR29_EXPOSURE_AMT().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					cell5 = row.createCell(7);
-					if (record1.getR29_RISK_WEIGHT() != null) {
-						cell5.setCellValue(record1.getR29_RISK_WEIGHT().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					cell6 = row.createCell(8);
-					if (record1.getR29_RISK_WEIGHTED_AMT() != null) {
-						cell6.setCellValue(record1.getR29_RISK_WEIGHTED_AMT().doubleValue());
-						cell6.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					// row30
-					row = sheet.getRow(29);
-
-					cell1 = row.createCell(1);
-					if (record1.getR30_NAME_OF_CORPORATE() != null) {
-						cell1.setCellValue(record1.getR30_NAME_OF_CORPORATE());
-						cell1.setCellStyle(textStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-
-					cell2 = row.createCell(2);
-					if (record1.getR30_CREDIT_RATING() != null) {
-						cell2.setCellValue(record1.getR30_CREDIT_RATING());
-						cell2.setCellStyle(textStyle);
-					} else {
-						cell2.setCellValue("");
-						cell2.setCellStyle(textStyle);
-					}
-
-					cell3 = row.createCell(4);
-					if (record1.getR30_RATING_AGENCY() != null) {
-						cell3.setCellValue(record1.getR30_RATING_AGENCY());
-						cell3.setCellStyle(textStyle);
-					} else {
-						cell3.setCellValue("");
-						cell3.setCellStyle(textStyle);
-					}
-
-					cell4 = row.createCell(6);
-					if (record1.getR30_EXPOSURE_AMT() != null) {
-						cell4.setCellValue(record1.getR30_EXPOSURE_AMT().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					cell5 = row.createCell(7);
-					if (record1.getR30_RISK_WEIGHT() != null) {
-						cell5.setCellValue(record1.getR30_RISK_WEIGHT().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					cell6 = row.createCell(8);
-					if (record1.getR30_RISK_WEIGHTED_AMT() != null) {
-						cell6.setCellValue(record1.getR30_RISK_WEIGHTED_AMT().doubleValue());
-						cell6.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					// row31
-					row = sheet.getRow(30);
-
-					cell1 = row.createCell(1);
-					if (record1.getR31_NAME_OF_CORPORATE() != null) {
-						cell1.setCellValue(record1.getR31_NAME_OF_CORPORATE());
-						cell1.setCellStyle(textStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-
-					cell2 = row.createCell(2);
-					if (record1.getR31_CREDIT_RATING() != null) {
-						cell2.setCellValue(record1.getR31_CREDIT_RATING());
-						cell2.setCellStyle(textStyle);
-					} else {
-						cell2.setCellValue("");
-						cell2.setCellStyle(textStyle);
-					}
-
-					cell3 = row.createCell(4);
-					if (record1.getR31_RATING_AGENCY() != null) {
-						cell3.setCellValue(record1.getR31_RATING_AGENCY());
-						cell3.setCellStyle(textStyle);
-					} else {
-						cell3.setCellValue("");
-						cell3.setCellStyle(textStyle);
-					}
-
-					cell4 = row.createCell(6);
-					if (record1.getR31_EXPOSURE_AMT() != null) {
-						cell4.setCellValue(record1.getR31_EXPOSURE_AMT().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					cell5 = row.createCell(7);
-					if (record1.getR31_RISK_WEIGHT() != null) {
-						cell5.setCellValue(record1.getR31_RISK_WEIGHT().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					cell6 = row.createCell(8);
-					if (record1.getR31_RISK_WEIGHTED_AMT() != null) {
-						cell6.setCellValue(record1.getR31_RISK_WEIGHTED_AMT().doubleValue());
-						cell6.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					// row32
-					row = sheet.getRow(31);
-
-					cell1 = row.createCell(1);
-					if (record1.getR32_NAME_OF_CORPORATE() != null) {
-						cell1.setCellValue(record1.getR32_NAME_OF_CORPORATE());
-						cell1.setCellStyle(textStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-
-					cell2 = row.createCell(2);
-					if (record1.getR32_CREDIT_RATING() != null) {
-						cell2.setCellValue(record1.getR32_CREDIT_RATING());
-						cell2.setCellStyle(textStyle);
-					} else {
-						cell2.setCellValue("");
-						cell2.setCellStyle(textStyle);
-					}
-
-					cell3 = row.createCell(4);
-					if (record1.getR32_RATING_AGENCY() != null) {
-						cell3.setCellValue(record1.getR32_RATING_AGENCY());
-						cell3.setCellStyle(textStyle);
-					} else {
-						cell3.setCellValue("");
-						cell3.setCellStyle(textStyle);
-					}
-
-					cell4 = row.createCell(6);
-					if (record1.getR32_EXPOSURE_AMT() != null) {
-						cell4.setCellValue(record1.getR32_EXPOSURE_AMT().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					cell5 = row.createCell(7);
-					if (record1.getR32_RISK_WEIGHT() != null) {
-						cell5.setCellValue(record1.getR32_RISK_WEIGHT().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					cell6 = row.createCell(8);
-					if (record1.getR32_RISK_WEIGHTED_AMT() != null) {
-						cell6.setCellValue(record1.getR32_RISK_WEIGHTED_AMT().doubleValue());
-						cell6.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					// row33
-					row = sheet.getRow(32);
-
-					cell1 = row.createCell(1);
-					if (record1.getR33_NAME_OF_CORPORATE() != null) {
-						cell1.setCellValue(record1.getR33_NAME_OF_CORPORATE());
-						cell1.setCellStyle(textStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-
-					cell2 = row.createCell(2);
-					if (record1.getR33_CREDIT_RATING() != null) {
-						cell2.setCellValue(record1.getR33_CREDIT_RATING());
-						cell2.setCellStyle(textStyle);
-					} else {
-						cell2.setCellValue("");
-						cell2.setCellStyle(textStyle);
-					}
-
-					cell3 = row.createCell(4);
-					if (record1.getR33_RATING_AGENCY() != null) {
-						cell3.setCellValue(record1.getR33_RATING_AGENCY());
-						cell3.setCellStyle(textStyle);
-					} else {
-						cell3.setCellValue("");
-						cell3.setCellStyle(textStyle);
-					}
-
-					cell4 = row.createCell(6);
-					if (record1.getR33_EXPOSURE_AMT() != null) {
-						cell4.setCellValue(record1.getR33_EXPOSURE_AMT().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					cell5 = row.createCell(7);
-					if (record1.getR33_RISK_WEIGHT() != null) {
-						cell5.setCellValue(record1.getR33_RISK_WEIGHT().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					cell6 = row.createCell(8);
-					if (record1.getR33_RISK_WEIGHTED_AMT() != null) {
-						cell6.setCellValue(record1.getR33_RISK_WEIGHTED_AMT().doubleValue());
-						cell6.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					// row34
-					row = sheet.getRow(33);
-
-					cell1 = row.createCell(1);
-					if (record1.getR34_NAME_OF_CORPORATE() != null) {
-						cell1.setCellValue(record1.getR34_NAME_OF_CORPORATE());
-						cell1.setCellStyle(textStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-
-					cell2 = row.createCell(2);
-					if (record1.getR34_CREDIT_RATING() != null) {
-						cell2.setCellValue(record1.getR34_CREDIT_RATING());
-						cell2.setCellStyle(textStyle);
-					} else {
-						cell2.setCellValue("");
-						cell2.setCellStyle(textStyle);
-					}
-
-					cell3 = row.createCell(4);
-					if (record1.getR34_RATING_AGENCY() != null) {
-						cell3.setCellValue(record1.getR34_RATING_AGENCY());
-						cell3.setCellStyle(textStyle);
-					} else {
-						cell3.setCellValue("");
-						cell3.setCellStyle(textStyle);
-					}
-
-					cell4 = row.createCell(6);
-					if (record1.getR34_EXPOSURE_AMT() != null) {
-						cell4.setCellValue(record1.getR34_EXPOSURE_AMT().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					cell5 = row.createCell(7);
-					if (record1.getR34_RISK_WEIGHT() != null) {
-						cell5.setCellValue(record1.getR34_RISK_WEIGHT().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					cell6 = row.createCell(8);
-					if (record1.getR34_RISK_WEIGHTED_AMT() != null) {
-						cell6.setCellValue(record1.getR34_RISK_WEIGHTED_AMT().doubleValue());
-						cell6.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					// row35
-					row = sheet.getRow(34);
-
-					cell1 = row.createCell(1);
-					if (record1.getR35_NAME_OF_CORPORATE() != null) {
-						cell1.setCellValue(record1.getR35_NAME_OF_CORPORATE());
-						cell1.setCellStyle(textStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-
-					cell2 = row.createCell(2);
-					if (record1.getR35_CREDIT_RATING() != null) {
-						cell2.setCellValue(record1.getR35_CREDIT_RATING());
-						cell2.setCellStyle(textStyle);
-					} else {
-						cell2.setCellValue("");
-						cell2.setCellStyle(textStyle);
-					}
-
-					cell3 = row.createCell(4);
-					if (record1.getR35_RATING_AGENCY() != null) {
-						cell3.setCellValue(record1.getR35_RATING_AGENCY());
-						cell3.setCellStyle(textStyle);
-					} else {
-						cell3.setCellValue("");
-						cell3.setCellStyle(textStyle);
-					}
-
-					cell4 = row.createCell(6);
-					if (record1.getR35_EXPOSURE_AMT() != null) {
-						cell4.setCellValue(record1.getR35_EXPOSURE_AMT().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					cell5 = row.createCell(7);
-					if (record1.getR35_RISK_WEIGHT() != null) {
-						cell5.setCellValue(record1.getR35_RISK_WEIGHT().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					cell6 = row.createCell(8);
-					if (record1.getR35_RISK_WEIGHTED_AMT() != null) {
-						cell6.setCellValue(record1.getR35_RISK_WEIGHTED_AMT().doubleValue());
-						cell6.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					// row36
-					row = sheet.getRow(35);
-
-					cell1 = row.createCell(1);
-					if (record1.getR36_NAME_OF_CORPORATE() != null) {
-						cell1.setCellValue(record1.getR36_NAME_OF_CORPORATE());
-						cell1.setCellStyle(textStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-
-					cell2 = row.createCell(2);
-					if (record1.getR36_CREDIT_RATING() != null) {
-						cell2.setCellValue(record1.getR36_CREDIT_RATING());
-						cell2.setCellStyle(textStyle);
-					} else {
-						cell2.setCellValue("");
-						cell2.setCellStyle(textStyle);
-					}
-
-					cell3 = row.createCell(4);
-					if (record1.getR36_RATING_AGENCY() != null) {
-						cell3.setCellValue(record1.getR36_RATING_AGENCY());
-						cell3.setCellStyle(textStyle);
-					} else {
-						cell3.setCellValue("");
-						cell3.setCellStyle(textStyle);
-					}
-
-					cell4 = row.createCell(6);
-					if (record1.getR36_EXPOSURE_AMT() != null) {
-						cell4.setCellValue(record1.getR36_EXPOSURE_AMT().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					cell5 = row.createCell(7);
-					if (record1.getR36_RISK_WEIGHT() != null) {
-						cell5.setCellValue(record1.getR36_RISK_WEIGHT().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					cell6 = row.createCell(8);
-					if (record1.getR36_RISK_WEIGHTED_AMT() != null) {
-						cell6.setCellValue(record1.getR36_RISK_WEIGHTED_AMT().doubleValue());
-						cell6.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-
-					// row37
-					row = sheet.getRow(36);
-
-					cell1 = row.createCell(1);
-					if (record1.getR37_NAME_OF_CORPORATE() != null) {
-						cell1.setCellValue(record1.getR37_NAME_OF_CORPORATE());
-						cell1.setCellStyle(textStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-
-					cell2 = row.createCell(2);
-					if (record1.getR37_CREDIT_RATING() != null) {
-						cell2.setCellValue(record1.getR37_CREDIT_RATING());
-						cell2.setCellStyle(textStyle);
-					} else {
-						cell2.setCellValue("");
-						cell2.setCellStyle(textStyle);
-					}
-
-					cell3 = row.createCell(4);
-					if (record1.getR37_RATING_AGENCY() != null) {
-						cell3.setCellValue(record1.getR37_RATING_AGENCY());
-						cell3.setCellStyle(textStyle);
-					} else {
-						cell3.setCellValue("");
-						cell3.setCellStyle(textStyle);
-					}
-
-					cell4 = row.createCell(6);
-					if (record1.getR37_EXPOSURE_AMT() != null) {
-						cell4.setCellValue(record1.getR37_EXPOSURE_AMT().doubleValue());
-						cell4.setCellStyle(numberStyle);
-					} else {
-						cell4.setCellValue("");
-						cell4.setCellStyle(textStyle);
-					}
-
-					cell5 = row.createCell(7);
-					if (record1.getR37_RISK_WEIGHT() != null) {
-						cell5.setCellValue(record1.getR37_RISK_WEIGHT().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
-					cell6 = row.createCell(8);
-					if (record1.getR37_RISK_WEIGHTED_AMT() != null) {
-						cell6.setCellValue(record1.getR37_RISK_WEIGHTED_AMT().doubleValue());
-						cell6.setCellStyle(numberStyle);
-					} else {
-						cell6.setCellValue("");
-						cell6.setCellStyle(textStyle);
-					}
-				}
-				workbook.setForceFormulaRecalculation(true);
-			} else {
-
-			}
-			// Write the final workbook content to the in-memory stream.
-			workbook.write(out);
-			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-			return out.toByteArray();
-		}
-	}
-
-	// Resub Download
-	public byte[] BRRS_M_SRWA_12FResubExcel(String filename, String reportId, String fromdate, String todate,
-			String currency, String dtltype, String type, BigDecimal version) throws Exception {
-		logger.info("Service: Starting Excel generation process in memory.");
-		Date reportDate = dateformat.parse(todate);
-
-		if (type.equals("RESUB") & version != null) {
-
-		}
-		List<M_SRWA_12F_Resub_Summary_Entity> dataList = M_SRWA_12F_Resub_Summary_Repo
-				.getdatabydateListarchival(dateformat.parse(todate), version);
-
-		if (dataList.isEmpty()) {
-			logger.warn("Service: No data found forM_SRWA_12F report. Returning empty result.");
 			return new byte[0];
 		}
 
@@ -5790,10 +5862,12 @@ public class BRRS_M_SRWA_12F_ReportService {
 
 					M_SRWA_12F_Resub_Summary_Entity record = dataList.get(i);
 					System.out.println("rownumber=" + startRow + i);
+					System.out.println("rownumber=" + startRow + i);
 					Row row = sheet.getRow(startRow + i);
 					if (row == null) {
 						row = sheet.createRow(startRow + i);
 					}
+
 					Cell cell1 = row.createCell(1);
 					if (record.getR11_NAME_OF_CORPORATE() != null) {
 						cell1.setCellValue(record.getR11_NAME_OF_CORPORATE());
@@ -6767,7 +6841,6 @@ public class BRRS_M_SRWA_12F_ReportService {
 						cell5.setCellStyle(textStyle);
 					}
 
-
 				}
 				workbook.setForceFormulaRecalculation(true);
 			} else {
@@ -6775,25 +6848,25 @@ public class BRRS_M_SRWA_12F_ReportService {
 			}
 			// Write the final workbook content to the in-memory stream.
 			workbook.write(out);
+
 			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
+
 			return out.toByteArray();
-		}
-	}
-	
-//Resub Email Format
-	// Archival download for email
-	public byte[] BRRS_M_SRWA_12FEmailResubExcel(String filename, String reportId, String fromdate, String todate,
-			String currency, String dtltype, String type, BigDecimal version) throws Exception {
-		logger.info("Service: Starting Excel generation process in memory.");
-		Date reportDate = dateformat.parse(todate);
-		if (type.equals("RESUB") & version != null) {
 
 		}
-		List<M_SRWA_12F_Resub_Summary_Entity> dataList = M_SRWA_12F_Resub_Summary_Repo
+	}
+
+	// Resub Email Excel
+	public byte[] BRRS_M_SRWA_12FEmailResubExcel(String filename, String reportId, String fromdate, String todate,
+			String currency, String dtltype, String type, BigDecimal version) throws Exception {
+
+		logger.info("Service: Starting Archival Email Excel generation process in memory.");
+
+		List<M_SRWA_12F_Resub_Summary_Entity> dataList = brrs_M_SRWA_12F_resub_summary_repo
 				.getdatabydateListarchival(dateformat.parse(todate), version);
 
 		if (dataList.isEmpty()) {
-			logger.warn("Service: No data found forM_SRWA_12F report. Returning empty result.");
+			logger.warn("Service: No data found for BRRS_M_SRWA_12F report. Returning empty result.");
 			return new byte[0];
 		}
 
@@ -6851,20 +6924,20 @@ public class BRRS_M_SRWA_12F_ReportService {
 			numberStyle.setBorderLeft(BorderStyle.THIN);
 			numberStyle.setBorderRight(BorderStyle.THIN);
 			numberStyle.setFont(font);
-// --- End of Style Definitions ---
+			// --- End of Style Definitions ---
 
 			int startRow = 10;
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
-
 					M_SRWA_12F_Resub_Summary_Entity record1 = dataList.get(i);
 					System.out.println("rownumber=" + startRow + i);
 					Row row = sheet.getRow(startRow + i);
 					if (row == null) {
 						row = sheet.createRow(startRow + i);
 					}
-					// row11
+
+// row11
 					// Column E
 					Cell cell1 = row.createCell(1);
 					if (record1.getR11_NAME_OF_CORPORATE() != null) {
@@ -8325,17 +8398,19 @@ public class BRRS_M_SRWA_12F_ReportService {
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-					
-					
 				}
-                workbook.setForceFormulaRecalculation(true);
-            } else {
+				workbook.setForceFormulaRecalculation(true);
+			} else {
 
-            }
-            // Write the final workbook content to the in-memory stream.
-            workbook.write(out);
-            logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-            return out.toByteArray();
-        }
-    }
+			}
+
+			// Write the final workbook content to the in-memory stream.
+			workbook.write(out);
+
+			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
+
+			return out.toByteArray();
+		}
+	}
+
 }

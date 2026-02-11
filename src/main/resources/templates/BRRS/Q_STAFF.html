@@ -790,48 +790,27 @@ PURPOSE		: BWRBRREPORT
 			}
 		});
 
-		function closemodels() {
-			$("#resultModal").modal("hide");
-			$('#loader').modal('hide');
+		function closemodel() {
+		    $("#resultModal").modal("hide");
+		    $('#loader').modal('hide');
 
-			// Reload the page after a short delay to ensure the modal animation completes smoothly.
-			setTimeout(function () {
-				location.reload();
-			}, 300);
+		    // Check if the success message is showing
+		    const message = $("#resultModalBody").text();
+
+		    if (message.includes("Resubmission Updated Successfully")) {
+		        // ✅ Go back to the previous page
+		        window.history.back();
+		    } else {
+		        // For other messages, just reload the same page (without delay)
+		        location.reload();
+		    }
 		}
+
 	</SCRIPT>
 
 
 	<script>
-		function closemodel() {
-			$("#resultModal").modal("hide");
-			$('#loader').modal('hide');
 
-			// Check if the success message is showing
-			const message = $("#resultModalBody").text();
-
-			if (message.includes("Resubmission Updated Successfully")) {
-				// ✅ Go back to the previous page
-				window.history.back();
-			} else {
-				// For other messages, just reload the same page
-				setTimeout(() => location.reload(), 300);
-			}
-		}
-		function closemodel() {
-			$("#resultModal").modal("hide");
-			$('#loader').modal('hide');
-
-			// Only reload if not from Details modal
-			if (!isDetailsModal) {
-				setTimeout(function () {
-					location.reload();
-				}, 300);
-			} else {
-				// reset flag for next modal usage
-				isDetailsModal = false;
-			}
-		}
 		function fileuploads(btn) {
 			const asondate = btn.getAttribute("data-todate");
 			const type = btn.getAttribute("data-type"); // MAIN / RESUB / ARCHIVAL
@@ -864,53 +843,55 @@ PURPOSE		: BWRBRREPORT
 				if (name) formData.append(name, $(this).val());
 			});
 
-			// Step 5: Select API endpoint dynamically
-			let apiUrl = './Q_STAFFupdateAll'; // normal update
-			if (type && type.toUpperCase() === 'RESUB') {
-				apiUrl = './UpdateQ_STAFF_ReSub'; // Resubmission endpoint
-			}
-
-			// Step 6: AJAX call
-			$.ajax({
-				url: apiUrl,
-				type: 'POST',
-				data: formData,
-				processData: false,
-				contentType: false,
-				dataType: 'text',
-				success: function (response) {
-					$("#resultModalLabel").text("BRRS");
-					$("#resultModalBody").text(response);
-					$("#resultModal").modal("show");
-
-					// ✅ Redirect after short delay (so user sees the success message)
-					if (response.includes("Resubmission Updated Successfully")) {
-						setTimeout(function () {
-							// Go back to the previous page user came from
-							if (document.referrer && document.referrer !== '') {
-								// Redirect to the page that opened this one
-								window.location.href = document.referrer;
-							} else {
-								// If no referrer, just go one step back in history
-								window.history.back();
-							}
-						}, 2000); // wait 2 seconds before redirect
+			// Select API dynamically (OLD LOGIC)
+					let apiUrl = './Q_STAFFupdateAll';
+					if (type && type.toUpperCase() === 'RESUB') {
+						apiUrl = './UpdateQ_STAFF_ReSub';
 					}
-				},
-				error: function (jqXHR) {
-					$("#resultModalLabel").text("Error");
-					$("#resultModalBody").text("Update failed: " + jqXHR.responseText);
-					$("#resultModal").modal("show");
-				},
-				complete: function () {
-					$('#loader').modal('hide');
-				}
-			});
 
-		}
+					// ✅ AJAX CALL (NEW STYLE)
+					$.ajax({
+						url: apiUrl,
+						type: 'POST',
+						data: formData,
+						processData: false,
+						contentType: false,
+						dataType: 'text',
+
+						success: function (response) {
+							$("#resultModalLabel").text("BRRS");
+							$("#resultModalBody").text(response);
+							$("#resultModal").modal("show");
+
+							// Redirect after modal close (OLD LOGIC)
+							$("#resultModal")
+								.off("hidden.bs.modal")
+								.on("hidden.bs.modal", function () {
+									if (isResubmissionUpdate) {
+										window.location.href = previousUrl
+											? previousUrl
+											: "/BRRS/Resubmission?rptcode=Q_STAFF";
+									}
+								});
+						},
+
+						error: function (jqXHR) {
+							console.log("Error response:", jqXHR.responseText);
+							$("#resultModalLabel").text("Error");
+							$("#resultModalBody").text("Update failed. Check console.");
+							$("#resultModal").modal("show");
+						},
+
+						complete: function () {
+							$('#loader').modal('hide');
+						}
+					});
+
+					console.log("✅ AJAX executed successfully");
+				}
+
 
 		function downloadfile(button) {
-
 			var reportid = button.getAttribute('data-reportid');
 			var asondate = button.getAttribute('data-asondate');
 			var fromdate = button.getAttribute('data-fromdate');
@@ -922,41 +903,34 @@ PURPOSE		: BWRBRREPORT
 			var filename = button.getAttribute('data-filename');
 			var type = button.getAttribute('data-type');
 			var version = button.getAttribute('data-version');
+			var format = button.getAttribute('data-format');
 
-			var loader = new bootstrap.Modal(
-				document.getElementById('loader'),
-				{backdrop: 'static', keyboard: false}
-			);
-			loader.show();
-
-			// ✅ Build URL safely
-			var url = './downloadExcel?reportid=' + reportid +
-				'&fromdate=' + fromdate +
-				'&asondate=' + asondate +
-				'&todate=' + todate +
-				'&currency=' + currency +
-				'&subreportid=' + subreportid +
-				'&secid=' + secid +
-				'&filename=' + filename +
-				'&type=' + type;
-
-			// ✅ ONLY append version if valid
-			if (version && version.trim() !== '') {
-				url += '&version=' + version;
+			if (format === null) {
+				format = '';   // treat as null
 			}
 
-			$.ajax({
-				url: url,
-				type: 'GET',
-				xhrFields: {responseType: 'blob'},
+			$('#loader').modal('show');
 
+			$.ajax({
+				url: './downloadExcel?reportid=' + reportid +
+					'&fromdate=' + fromdate +
+					'&asondate=' + asondate +
+					'&todate=' + todate +
+					'&currency=' + currency +
+					'&subreportid=' + subreportid +
+					'&secid=' + secid +
+					'&filename=' + filename +
+					'&type=' + type +
+					'&version=' + version +
+					'&format=' + format,
+				type: 'GET',
+				xhrFields: {
+					responseType: 'blob'
+				},
 				success: function (data) {
 					$('#loader').modal('hide');
-
 					if (data && data.size > 100) {
-						const blob = new Blob([data], {
-							type: 'application/vnd.ms-excel'
-						});
+						const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
 						const url = window.URL.createObjectURL(blob);
 						const a = document.createElement('a');
 						a.style.display = 'none';
@@ -966,19 +940,18 @@ PURPOSE		: BWRBRREPORT
 						a.click();
 						window.URL.revokeObjectURL(url);
 						document.body.removeChild(a);
-
 						showResultModal('BRRS', filename + ' downloaded successfully.');
 					} else {
 						showResultModal('Information', 'No data was available to create a download.');
 					}
 				},
-
 				error: function () {
 					$('#loader').modal('hide');
 					showResultModal('Error', 'An error occurred while downloading the file.');
 				}
 			});
 		}
+
 	</script>
 
 
@@ -1062,7 +1035,8 @@ PURPOSE		: BWRBRREPORT
             data-currency=${currency}, 
             data-dtltype=${dtltype},
             data-filename='EMAIL_Q_STAFF.xlsx',
-            data-type='email',
+			data-type=${type},
+            data-format='email',
             data-version=${version != null ? version : ''}" style="font-family: Arial;font-weight: bold;">
 							<i class="fa fa-download"></i> E-Mail
 
@@ -2077,8 +2051,6 @@ PURPOSE		: BWRBRREPORT
 		</div>
 
 
-
-		<!-- Custom Alert/Result Modal (Matches your existing style) For Modify in Summary -->
 		<div class="modal fade" id="resultModal">
 			<div class="modal-dialog modal-dialog-centered">
 				<div class="modal-content">
@@ -2091,27 +2063,13 @@ PURPOSE		: BWRBRREPORT
 					<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
 						<p id="resultModalBody"></p>
 						<!-- Your custom styled button -->
-						<button type="button" class="custom-tab-btn" onclick="closemodels()"
-							data-dismiss="modal">Ok</button>
+						<button type="button" class="custom-tab-btn" onclick="closemodel()"
+							data-bs-dismiss="modal">OK</button>
 					</div>
 				</div>
 			</div>
 		</div>
-		<!-- For Edit in Detail page -->
-		<div class="modal fade" id="resultModal1" tabindex="-1">
-			<div class="modal-dialog modal-dialog-centered">
-				<div class="modal-content">
-					<div class="menu-title-header">
-						<div class="modal-title " id="resultModalLabel1" style="text-align: center; color: white;">
-						</div>
-					</div>
-					<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
-						<p id="resultModalBody1"></p>
-						<button type="button" class="custom-tab-btn" onclick="redirectBack()">OK</button>
-					</div>
-				</div>
-			</div>
-		</div>
+
 
 
 		<!-- Custom Cellresult Modal -->
