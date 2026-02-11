@@ -837,7 +837,7 @@ PURPOSE		: BRRS MANUAL REPORT
 
 						<!-- Title -->
 						<h5
-							style="font-family: arial; font-size: 20px; font-weight: bold; color: white; margin: 0 10px;">
+							style="font-family: arial; font-size: 16px; font-weight: bold; color: white; margin: 0 10px;">
 
 							Monthly Schedule M-SRWA 12g - Schedule of Rated Security Firms
 
@@ -864,7 +864,7 @@ PURPOSE		: BRRS MANUAL REPORT
 
 
 
-						<span class="white-text" style="color: white !important; font-size: 16px; margin-right: 20px;">
+						<span class="white-text" style="color: white !important; font-size: 13px; margin-right: 20px;">
 							Report Date: <span th:text="${#strings.replace(asondate, '/', '-')}">2025-07-04</span>
 						</span>
 
@@ -903,7 +903,7 @@ PURPOSE		: BRRS MANUAL REPORT
                      data-filename='M_SRWA_12G.xlsx',
                      data-type=${type},
 					 data-version=${version != null ? version : ''} " onclick="downloadfile(this);"
-							style="font-family: Arial; font-weight: bold;">
+							style="font-family: Arial; font-weight: bold;font-size: 14px;">
 							<i class="fa fa-download"></i> Format
 						</button>
 
@@ -919,7 +919,7 @@ PURPOSE		: BRRS MANUAL REPORT
             data-filename='EMAIL_M_SRWA_12G.xlsx',
             data-type=${type},
             data-format='email',
-            data-version=${version != null ? version : ''}" style="font-family: Arial; font-weight: bold;">
+            data-version=${version != null ? version : ''}" style="font-family: Arial; font-weight: bold;font-size: 14px;">
 							<i class="fa fa-download"></i> Email
 
 						</button>
