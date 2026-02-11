@@ -1,10 +1,7 @@
-
 package com.bornfire.brrs.entities;
 
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.List;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -16,12 +13,10 @@ import javax.persistence.TemporalType;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
-@Table(name = "BRRS_M_INT_RATES_FCA_ARCHIVALTABLE_SUMMARY")
+@Table(name = "BRRS_M_INT_RATES_FCA_RESUB_DETAILTABLE")
 @IdClass(M_INT_RATES_FCA_PK.class)
+public class M_INT_RATES_FCA_RESUB_Detail_Entity {
 
-
-public class M_INT_RATES_FCA_Archival_Summary_Entity {
-	
 	private String R10_CURRENCY;
 	private BigDecimal R10_CURRENT;
 	private BigDecimal R10_CALL;
@@ -107,27 +102,23 @@ public class M_INT_RATES_FCA_Archival_Summary_Entity {
 	private BigDecimal R15_TOTAL;
 	
 	
+	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern = "dd/MM/yyyy")
 	@Id
-    @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "dd/MM/yyyy")
-	@Column(name = "REPORT_DATE")
-    private Date report_date;
 	
+		
+	private Date	report_date;
 	@Id
-	@Column(name = "REPORT_VERSION")
-	private BigDecimal report_version;
-	
-    @Column(name = "REPORT_RESUBDATE")
-    
-    private Date reportResubDate;
-    
-    
-	private String report_frequency;
-	private String report_code;
-	private String report_desc;
-	private String entity_flg;
-	private String modify_flg;
-	private String del_flg;
+	private BigDecimal	report_version;
+	 @Column(name = "REPORT_RESUBDATE")
+	    
+	    private Date reportResubDate;
+	private String	report_frequency;
+	private String	report_code;
+	private String	report_desc;
+	private String	entity_flg;
+	private String	modify_flg;
+	private String	 del_flg;
 	public String getR10_CURRENCY() {
 		return R10_CURRENCY;
 	}
@@ -650,13 +641,10 @@ public class M_INT_RATES_FCA_Archival_Summary_Entity {
 	public void setDel_flg(String del_flg) {
 		this.del_flg = del_flg;
 	}
-	public M_INT_RATES_FCA_Archival_Summary_Entity() {
+	public M_INT_RATES_FCA_RESUB_Detail_Entity() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	
-	
-	
 	
 	
 	

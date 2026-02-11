@@ -15,10 +15,10 @@ import javax.persistence.TemporalType;
 
 import org.springframework.format.annotation.DateTimeFormat;
 @Entity
-@Table(name = "BRRS_M_INT_RATES_ARCHIVALTABLE_SUMMARY")
+@Table(name = "BRRS_M_INT_RATES_RESUB_SUMMARYTABLE")
 @IdClass(M_INT_RATES_PK.class)
 
-public class M_INT_RATES_Archival_Summary_Entity{	
+public class M_INT_RATES_RESUB_Summary_Entity{	
 
 
 
@@ -1027,7 +1027,7 @@ public class M_INT_RATES_Archival_Summary_Entity{
 	public void setR42_VOLUME(BigDecimal r42_VOLUME) {
 		R42_VOLUME = r42_VOLUME;
 	}
-	public M_INT_RATES_Archival_Summary_Entity() {
+	public M_INT_RATES_RESUB_Summary_Entity() {
 		super();
 		// TODO Auto-generated constructor stub
 	}

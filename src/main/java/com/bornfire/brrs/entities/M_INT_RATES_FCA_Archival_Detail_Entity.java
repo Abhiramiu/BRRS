@@ -5,6 +5,7 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -13,6 +14,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
 @Table(name = "BRRS_M_INT_RATES_FCA_ARCHIVALTABLE_DETAIL")
+@IdClass(M_INT_RATES_FCA_PK.class)
 public class M_INT_RATES_FCA_Archival_Detail_Entity {
 
 	private String R10_CURRENCY;
@@ -106,7 +108,11 @@ public class M_INT_RATES_FCA_Archival_Detail_Entity {
 	
 		
 	private Date	report_date;
+	@Id
 	private BigDecimal	report_version;
+	 @Column(name = "REPORT_RESUBDATE")
+	    
+	    private Date reportResubDate;
 	private String	report_frequency;
 	private String	report_code;
 	private String	report_desc;
@@ -593,6 +599,12 @@ public class M_INT_RATES_FCA_Archival_Detail_Entity {
 	public void setReport_version(BigDecimal report_version) {
 		this.report_version = report_version;
 	}
+	public Date getReportResubDate() {
+		return reportResubDate;
+	}
+	public void setReportResubDate(Date reportResubDate) {
+		this.reportResubDate = reportResubDate;
+	}
 	public String getReport_frequency() {
 		return report_frequency;
 	}
@@ -633,7 +645,9 @@ public class M_INT_RATES_FCA_Archival_Detail_Entity {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	    
+	
+	
+	
 	    
 
 

@@ -461,11 +461,11 @@ function showsummary() {
 			showResultModal('Alert', 'Development in progress');
 
 		}
-		function closemodel() {
+		/* function closemodel() {
 			$('#alert').modal('hide');
 			$('#resultModal').modal('hide');
 
-		}
+		} */
 		function showResultModal(title, message) {
 			// Set the text for the modal elements
 			$('#resultModalLabel').text(title);
@@ -812,14 +812,30 @@ function cancelModify() {
 
 </SCRIPT>
 
+<script>
+		function closemodel() {
+			$("#resultModal").modal("hide");
+			$('#loader').modal('hide');
 
+			// Check if the success message is showing
+			const message = $("#resultModalBody").text();
+
+			if (message.includes("Resubmission Updated Successfully")) {
+				// ✅ Go back to the previous page
+				window.history.back();
+			} else {
+				// For other messages, just reload the same page
+				setTimeout(() => location.reload(), 300);
+			}
+		}
+	</script>
 
 	<script>
 	
 
 	// This function is for closing the modal after an action is complete.
 	// It hides the result and loader modals and reloads the page.
-	function closemodel() {
+	/* function closemodel() {
     $("#resultModal").modal("hide");
 	/*    $("#resultModal").modal("hide");
     $('#loader').modal('hide');
@@ -827,7 +843,7 @@ function cancelModify() {
         location.reload();
     }, 300);
         }, 300);*/
-        $("#resultModal").modal("hide");
+       /*  $("#resultModal").modal("hide");
         $('#loader').modal('hide');
 
         // Only reload if not from Details modal
@@ -839,7 +855,7 @@ function cancelModify() {
             // reset flag for next modal usage
             isDetailsModal = false;
         }
-}
+} */
 
 function fileuploads(btn) {
     var asondate = btn.getAttribute("data-todate");
@@ -1075,7 +1091,7 @@ function fileuploads(btn) {
 	
 	
 </head>
-<title>BRRS</title>
+<title>M_INT_RATES</title>
 
 <body>
 	<div class="container-fluid" style="padding-left: 0px; padding-right: 0px;">
@@ -1107,22 +1123,21 @@ function fileuploads(btn) {
 							Date:<span th:text="${#strings.replace(asondate, '/', '-')}">2025-09-18</span>
 						</span>
 						<!-- Buttons -->
-						<input type="hidden" id="selectedTab" th:value="${displaymode}">
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showsummary();"
-							th:if="${displaymode == 'Details'}">Summary</button>
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails();"
-							th:if="${displaymode == 'summary'}">Details</button>
-				
-						<!-- Modify button -->
-						<button type="button"
-        class="custom-tab-btn"
-        onclick="showmodify(this);"
-        title="Click to EDIT Records"
-        th:classappend="${session.PERMISSIONS == 'W' and dtltype == 'report'} ? 'addedit'"
-        th:if="${type != 'ARCHIVAL' and dtltype ne 'detail'}"
-        id="addRecord">
-    Modify
-</button>
+						 <button type="button" class="custom-tab-btn"
+							id="custom-tab-btnDetails" onclick="showdetails()"
+							th:if="${dtltype ne 'detail'}">Details</button>
+
+						<!-- SUMMARY button (show when dtltype = 'detail') -->
+						<button type="button" class="custom-tab-btn"
+							id="custom-tab-btnSummary" onclick="showsummary()"
+							th:if="${dtltype eq 'detail'}">Summary</button>
+
+      <!-- Modify button -->
+     <button type="button" class="custom-tab-btn"
+							onclick="showmodify(this);" title="Click to EDIT Records"
+							th:classappend="${session.PERMISSIONS == 'W' and dtltype == 'report'} ? 'addedit'"
+							th:if="${type != 'ARCHIVAL' and dtltype ne 'detail'}"
+							id="addRecord">Modify</button>
 
 
 						<!-- Cancel button (hidden initially) -->
@@ -1131,7 +1146,7 @@ function fileuploads(btn) {
 							
 							
 						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
-							onclick="downloadfile(this)" th:if="${displaymode == 'summary' or displaymode == 'Details'}"
+							onclick="downloadfile(this)" th:if="${displaymode == 'summary' or displaymode == 'detail'  or displaymode == 'resub'}"
 							th:attr="data-reportid=${reportid},
                    data-asondate=${asondate},
                    data-fromdate=${fromdate},
@@ -1141,12 +1156,12 @@ function fileuploads(btn) {
                    data-filename='M_INTRATES.xlsx',
                    data-type=${type},
                    data-version=${version != null ? version : ''}" style="font-family: Arial;font-weight: bold;">
-							<i class="fa fa-download"></i>  Excel
+							<i class="fa fa-download"></i>  Formate
 						</button>
 						
 						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
 							 onclick="downloadfile(this)" 
-								th:if="${displaymode == 'summary' or displaymode == 'Details'}"
+								th:if="${displaymode == 'summary' or displaymode == 'detail'  or displaymode == 'resub'}"
 							
 							th:attr="data-reportid=${reportid},
             data-asondate=${asondate},
@@ -1157,7 +1172,7 @@ function fileuploads(btn) {
             data-filename='EMAIL_M_INTRATES.xlsx',
             data-type='email',
             data-version=${version != null ? version : ''}" style="font-family: Arial;font-weight: bold;">
-								<i class="fa fa-download"></i>  E- Mail
+								<i class="fa fa-download"></i>  Email
 							
 						</button>
 
@@ -1168,19 +1183,29 @@ function fileuploads(btn) {
 				</div>
 				
 				
-				<h1 th:if="${displaymode == 'summary' and type == 'ARCHIVAL' and displaymode != 'Details'}"
+				<h1 th:if="${displaymode == 'summary' and type == 'ARCHIVAL' and displaymode != 'detail'}"
   style="text-align: left; font-family: arial;   font-weight: bold; color: white;  font-size: 20px;  
 				background-color: rgb(107, 122, 143); margin-top:10px; margin-bottom:10px;padding-top: 10px; padding-bottom: 10px; " >Archival Summary View - M_INTRATES</h1>
 				
-				<h1 th:if="${displaymode == 'Details' and type == 'ARCHIVAL' and displaymode != 'summary'}"
+				<h1 th:if="${displaymode == 'detail' and type == 'ARCHIVAL' and displaymode != 'summary'}"
   style="text-align: left; font-family: arial;   font-weight: bold; color: white;  font-size: 20px;  
 				background-color: rgb(107, 122, 143); margin-top:10px; margin-bottom:10px;padding-top: 10px; padding-bottom: 10px; " >Archival Detail View - M_INTRATES</h1>
 
 				<h1 th:if="${displaymode == 'summary'and type != 'ARCHIVAL'}"  style="text-align: left; font-family: arial;   font-weight: bold; color: white;  font-size: 20px;  
 				background-color: rgb(107, 122, 143); margin-top:10px; margin-bottom:10px;padding-top: 10px; padding-bottom: 10px; " >Summary View - M_INTRATES </h1>
-			<h1 th:if="${displaymode == 'Details' and type != 'ARCHIVAL'}"  style="text-align: left;   font-family: arial; font-weight: bold;  color: white; font-size: 20px; 
+			<h1 th:if="${displaymode == 'detail' and type != 'ARCHIVAL'}"  style="text-align: left;   font-family: arial; font-weight: bold;  color: white; font-size: 20px; 
 			 background-color: rgb(107, 122, 143); margin-top:10px; margin-bottom:10px; padding-top: 10px; padding-bottom: 10px;  ">Detail View - M_INTRATES</h1>
-				<div th:if="${displaymode == 'summary' or displaymode == 'Details'}">
+				<h1
+					th:if="${displaymode == 'resub' and type == 'RESUB' and dtltype ne 'detail' }"
+					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">
+					Resubmission Summary View - M_INT_RATES</h1>
+
+				<h1
+					th:if="${displaymode == 'resub' and type == 'RESUB' and dtltype ne 'report' }"
+					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">
+					Resubmission Detail View - M_INT_RATES</h1>
+					
+						<div th:if="${displaymode == 'summary' or displaymode == 'detail' or displaymode == 'resub'}">
 					<div class="row">
 						<div class="col-sm-12">
 						<form action="#" method="POST" id="fileupload">
@@ -2449,27 +2474,24 @@ function fileuploads(btn) {
 
 
 	<!-- Custom Alert/Result Modal (Matches your existing style) -->
-	<div class="modal fade" id="resultModal">
-		<div class="modal-dialog modal-dialog-centered">
-			<div class="modal-content">
-				<!-- Your custom styled header -->
-				<div class="menu-title-header">
-					<div class="modal-title" id="resultModalLabel"
-						style="text-align: center; color: white;">
-						<!-- Title will be set by JavaScript -->
+<div class="modal fade" id="resultModal">
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content">
+					<!-- Your custom styled header -->
+					<div class="menu-title-header">
+						<div class="modal-title" id="resultModalLabel" style="text-align: center; color: white;">
+							<!-- Title will be set by JavaScript -->
+						</div>
 					</div>
-				</div>
-				<div class="modal-body"
-					style="text-align: center; font-size: 1.1rem;">
-					<p id="resultModalBody"></p>
-					<!-- Your custom styled button -->
-					<button type="button" class="custom-tab-btn" onclick="closemodel()"
-						data-dismiss="modal">OK</button>
+					<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+						<p id="resultModalBody"></p>
+						<!-- Your custom styled button -->
+						<button type="button" class="custom-tab-btn" onclick="closemodel()"
+							data-bs-dismiss="modal">OK</button>
+					</div>
 				</div>
 			</div>
 		</div>
-	</div>
-	
 	
 	<!-- Custom Cellresult Modal -->
 		<div class="modal fade" id="cellresultModal">
@@ -2509,24 +2531,7 @@ function fileuploads(btn) {
 			</div>
 		</div>
 	</div>
-	<!-- Custom Alert/Result Modal (Matches your existing style) -->
-	<div class="modal fade" id="resultModal">
-		<div class="modal-dialog modal-dialog-centered">
-			<div class="modal-content">
-				<!-- Your custom styled header -->
-				<div class="menu-title-header">
-					<div class="modal-title" id="resultModalLabel" style="text-align: center; color: white;">
-						<!-- Title will be set by JavaScript -->
-					</div>
-				</div>
-				<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
-					<p id="resultModalBody"></p>
-					<!-- Your custom styled button -->
-					<button type="button" class="custom-tab-btn" onclick="closemodel()" data-bs-dismiss="modal">OK</button>
-				</div>
-			</div>
-		</div>
-	</div>
+	
 
 </body>
 

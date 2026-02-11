@@ -234,7 +234,6 @@ public class BRRS_M_EPR_ReportService {
 		logger.info("Service: Starting Excel generation process in memory.");
 		
 		
-		
 		// ARCHIVAL check
         if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
             logger.info("Service: Generating ARCHIVAL report for version {}", version);
@@ -250,17 +249,23 @@ public class BRRS_M_EPR_ReportService {
          if ("email".equalsIgnoreCase(type)  && version == null) {
             logger.info("Service: Generating Email report for version {}", version);
             return BRRS_M_EPREmailExcel(filename, reportId, fromdate, todate, currency, dtltype, type, version);
-        } else if ("email".equalsIgnoreCase(type) && version != null) {
+        }
+         
+         else if("email".equalsIgnoreCase(type) && version != null) {
+ 			logger.info("Service: Generating Email1 report for version {}", version);
+ 			return BRRS_M_EPREmailResubExcel(filename, reportId, fromdate, todate, currency, dtltype, type,
+ 					version);
+ 		}else if ("email".equalsIgnoreCase(type) && version != null) {
             logger.info("Service: Generating Email report for version {}", version);
             return BRRS_M_EPRARCHIVALEmailExcel(filename, reportId, fromdate, todate,
                     currency, dtltype, type, version);
         }
-        else if("email".equalsIgnoreCase(type) && version != null) {
-			logger.info("Service: Generating Email report for version {}", version);
-			return BRRS_M_EPREmailResubExcel(filename, reportId, fromdate, todate, currency, dtltype, type,
-					version);
+        
 
-		}
+	
+
+
+
 
 	    /* ===================== NORMAL ===================== */
 	    List<M_EPR_Summary_Entity> dataList =
@@ -1534,7 +1539,7 @@ public class BRRS_M_EPR_ReportService {
 
 					
 				}
-				workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
+				workbook.setForceFormulaRecalculation(true);
 			} else {
 
 			}
@@ -2865,7 +2870,7 @@ public class BRRS_M_EPR_ReportService {
 
 				}
 
-				workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
+				workbook.setForceFormulaRecalculation(true);
 			} else {
 
 			}
@@ -8439,7 +8444,7 @@ public class BRRS_M_EPR_ReportService {
 						}
 
 					}
-					workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
+					workbook.setForceFormulaRecalculation(true);
 				} else {
 
 				}

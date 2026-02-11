@@ -16,11 +16,11 @@ import javax.persistence.TemporalType;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
-@Table(name = "BRRS_M_INT_RATES_FCA_ARCHIVALTABLE_SUMMARY")
+@Table(name = "BRRS_M_INT_RATES_FCA_RESUB_SUMMARYTABLE")
 @IdClass(M_INT_RATES_FCA_PK.class)
 
 
-public class M_INT_RATES_FCA_Archival_Summary_Entity {
+public class M_INT_RATES_FCA_RESUB_Summary_Entity {
 	
 	private String R10_CURRENCY;
 	private BigDecimal R10_CURRENT;
@@ -650,7 +650,7 @@ public class M_INT_RATES_FCA_Archival_Summary_Entity {
 	public void setDel_flg(String del_flg) {
 		this.del_flg = del_flg;
 	}
-	public M_INT_RATES_FCA_Archival_Summary_Entity() {
+	public M_INT_RATES_FCA_RESUB_Summary_Entity() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
@@ -658,8 +658,7 @@ public class M_INT_RATES_FCA_Archival_Summary_Entity {
 	
 	
 	
-	
-	
+
 	
 
 }

@@ -4250,23 +4250,44 @@ public class RegulatoryReportServices {
 		// }
 		// break;
 
+//		case "M_INT_RATES_FCA":
+//			try {
+//				archivalData = BRRS_M_INT_RATES_FCA_ReportService.getM_INT_RATES_FCAArchival();
+//			} catch (Exception e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//			break;
+//
+//		case "M_INT_RATES":
+//			try {
+//				archivalData = brrs_m_int_rates_reportservice.getM_INT_RATESArchival();
+//			} catch (Exception e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//			break;
+			
+			
+			
 		case "M_INT_RATES_FCA":
-			try {
-				archivalData = BRRS_M_INT_RATES_FCA_ReportService.getM_INT_RATES_FCAArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
-
+		List<Object[]> intratesfcaList = BRRS_M_INT_RATES_FCA_ReportService.getM_INT_RATES_FCAArchival();
+		archivalData.addAll(intratesfcaList);
+		System.out.println("Fetched M_INT_RATES_FCA archival data: " + intratesfcaList.size());
+		break;
+		
+		
+		
+		
+		
+		
+		
 		case "M_INT_RATES":
-			try {
-				archivalData = brrs_m_int_rates_reportservice.getM_INT_RATESArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+		
+		List<Object[]> intratesList = brrs_m_int_rates_reportservice.getM_INT_RATESArchival();
+		archivalData.addAll(intratesList);
+		System.out.println("Fetched M_INT_RATES archival data: " + intratesList.size());
+		break;
 
 		case "M_INT_RATES_FCA_NEW":
 			try {

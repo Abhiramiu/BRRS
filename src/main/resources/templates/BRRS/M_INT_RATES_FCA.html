@@ -959,30 +959,28 @@ $(document).ready(function () {
 							Date:<span th:text="${#strings.replace(asondate, '/', '-')}">2025-09-18</span>
 						</span>
 						<!-- Buttons -->
-      <input type="hidden" id="selectedTab" th:value="${displaymode}">
-      <button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showsummary();"
-       th:if="${displaymode == 'Details'}">Summary</button>
-      <button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails();"
-       th:if="${displaymode == 'summary'}">Details</button>
+     <button type="button" class="custom-tab-btn"
+							id="custom-tab-btnDetails" onclick="showdetails()"
+							th:if="${dtltype ne 'detail'}">Details</button>
+
+						<!-- SUMMARY button (show when dtltype = 'detail') -->
+						<button type="button" class="custom-tab-btn"
+							id="custom-tab-btnSummary" onclick="showsummary()"
+							th:if="${dtltype eq 'detail'}">Summary</button>
 
       <!-- Modify button -->
-      <button type="button"
-        class="custom-tab-btn"
-        onclick="showmodify(this);"
-        title="Click to EDIT Records"
-        th:classappend="${session.PERMISSIONS == 'W' and dtltype == 'report'} ? 'addedit'"
-        th:if="${type != 'ARCHIVAL' and dtltype ne 'detail'}"
-        id="addRecord">
-    Modify
-</button>
-
+     <button type="button" class="custom-tab-btn"
+							onclick="showmodify(this);" title="Click to EDIT Records"
+							th:classappend="${session.PERMISSIONS == 'W' and dtltype == 'report'} ? 'addedit'"
+							th:if="${type != 'ARCHIVAL' and dtltype ne 'detail'}"
+							id="addRecord">Modify</button>
 
       <!-- Cancel button (hidden initially) -->
       <button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord" onclick="cancelModify();"
        style="display: none;">Cancel</button>
 
 <button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
-							onclick="downloadfile(this)" th:if="${displaymode == 'summary' or displaymode == 'Details'}"
+							onclick="downloadfile(this)" th:if="${displaymode == 'summary' or displaymode == 'detail' or displaymode == 'resub'}"
 							th:attr="data-reportid=${reportid},
                    data-asondate=${asondate},
                    data-fromdate=${fromdate},
@@ -992,12 +990,12 @@ $(document).ready(function () {
                    data-filename='M_INTRATESFCA.xlsx',
                    data-type=${type},
                    data-version=${version != null ? version : ''}" style="font-family: Arial;font-weight: bold;">
-							<i class="fa fa-download"></i> Download
+							<i class="fa fa-download"></i> Format
 						</button>
 						
 						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
 							 onclick="downloadfile(this)" 
-								th:if="${displaymode == 'summary' or displaymode == 'Details'}"
+								th:if="${displaymode == 'summary' or displaymode == 'detail' or displaymode == 'resub'}"
 							
 							th:attr="data-reportid=${reportid},
             data-asondate=${asondate},
@@ -1008,7 +1006,7 @@ $(document).ready(function () {
             data-filename='EMAIL_M_INTRATESFCA.xlsx',
             data-type='email',
             data-version=${version != null ? version : ''}" style="font-family: Arial;font-weight: bold;">
-								<i class="fa fa-download"></i> Email Format
+								<i class="fa fa-download"></i> Email 
 							
 						</button>
 
@@ -1020,19 +1018,29 @@ $(document).ready(function () {
 					
 				</div>
 				
-<h1 th:if="${displaymode == 'summary' and type == 'ARCHIVAL' and displaymode != 'Details'}"
+<h1 th:if="${displaymode == 'summary' and type == 'ARCHIVAL' and displaymode != 'detail'}"
   style="text-align: left; font-family: arial;   font-weight: bold; color: white;  font-size: 20px;  
 				background-color: rgb(107, 122, 143); margin-top:10px; margin-bottom:10px;padding-top: 10px; padding-bottom: 10px; " >Archival Summary View - M_INTRATES_FCA</h1>
 				
-				<h1 th:if="${displaymode == 'Details' and type == 'ARCHIVAL' and displaymode != 'summary'}"
+				<h1 th:if="${displaymode == 'detail' and type == 'ARCHIVAL' and displaymode != 'summary'}"
   style="text-align: left; font-family: arial;   font-weight: bold; color: white;  font-size: 20px;  
 				background-color: rgb(107, 122, 143); margin-top:10px; margin-bottom:10px;padding-top: 10px; padding-bottom: 10px; " >Archival Detail View - M_INTRATES_FCA </h1>
 
 				<h1 th:if="${displaymode == 'summary'and type != 'ARCHIVAL'}"  style="text-align: left; font-family: arial;   font-weight: bold; color: white;  font-size: 20px;  
 				background-color: rgb(107, 122, 143); margin-top:10px; margin-bottom:10px;padding-top: 10px; padding-bottom: 10px; " >Summary View - M_INTRATES_FCA </h1>
-			<h1 th:if="${displaymode == 'Details' and type != 'ARCHIVAL'}"  style="text-align: left;   font-family: arial; font-weight: bold;  color: white; font-size: 20px; 
+			<h1 th:if="${displaymode == 'detail' and type != 'ARCHIVAL'}"  style="text-align: left;   font-family: arial; font-weight: bold;  color: white; font-size: 20px; 
 			 background-color: rgb(107, 122, 143); margin-top:10px; margin-bottom:10px; padding-top: 10px; padding-bottom: 10px;  ">Detail View - M_INTRATES_FCA  </h1>
-				<div th:if="${displaymode == 'summary' or displaymode == 'Details'}">
+				<h1
+					th:if="${displaymode == 'resub' and type == 'RESUB' and dtltype ne 'detail' }"
+					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">
+					Resubmission Summary View - M_INT_RATES_FCA</h1>
+
+				<h1
+					th:if="${displaymode == 'resub' and type == 'RESUB' and dtltype ne 'report' }"
+					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">
+					Resubmission Detail View - M_INT_RATES_FCA</h1>
+					
+						<div th:if="${displaymode == 'summary' or displaymode == 'detail' or displaymode == 'resub'}">
 
 					<div class="row">
 						<div class="col-sm-12">
