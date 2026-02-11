@@ -12,9 +12,9 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-@Table(name = "BRRS_M_SIR_ARCHIVALTABLE_SUMMARY")
+@Table(name = "BRRS_M_SIR_RESUB_SUMMARYTABLE")
 @IdClass(M_SIR_PK.class)
-public class M_SIR_Archival_Summary_Entity {
+public class M_SIR_Resub_Summary_Entity {
 
 	 // ================= r12 =================
    private String r12_product;
@@ -292,6 +292,7 @@ public class M_SIR_Archival_Summary_Entity {
 	private BigDecimal reportVersion;
 
 	@Column(name = "REPORT_RESUBDATE")
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date reportResubDate;
    private String report_frequency;
    private String report_code;
@@ -302,12 +303,13 @@ public class M_SIR_Archival_Summary_Entity {
    private String del_flg;	
 
    
+   
    public Date getReportResubDate() {
-		return reportResubDate;
-	}
-	   public void setReportResubDate(Date reportResubDate) {
-		this.reportResubDate = reportResubDate;
-	   }
+	return reportResubDate;
+}
+   public void setReportResubDate(Date reportResubDate) {
+	this.reportResubDate = reportResubDate;
+   }
    public String getR12_product() {
 	return r12_product;
    }
@@ -1682,7 +1684,7 @@ public class M_SIR_Archival_Summary_Entity {
    public void setDel_flg(String del_flg) {
 	this.del_flg = del_flg;
    }
-   public M_SIR_Archival_Summary_Entity() {
+   public M_SIR_Resub_Summary_Entity() {
 	super();
 	// TODO Auto-generated constructor stub
    }

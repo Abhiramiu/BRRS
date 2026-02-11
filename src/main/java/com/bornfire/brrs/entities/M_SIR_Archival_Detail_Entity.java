@@ -6,14 +6,14 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import org.springframework.format.annotation.DateTimeFormat;
-
 @Entity
 @Table(name = "BRRS_M_SIR_ARCHIVALTABLE_DETAIL")
+@IdClass(M_SIR_PK.class)
 public class M_SIR_Archival_Detail_Entity {
 	 // ================= r12 =================
     private String r12_product;
@@ -281,13 +281,18 @@ public class M_SIR_Archival_Detail_Entity {
     // ================= R35 =================
     private BigDecimal r35_tot_spec_risk_ch;
 
+
+@Id
 	@Temporal(TemporalType.DATE)
-	@Id
 	@Column(name = "REPORT_DATE")
 	private Date reportDate;
-	
+
+	@Id
 	@Column(name = "REPORT_VERSION")
 	private BigDecimal reportVersion;
+
+	@Column(name = "REPORT_RESUBDATE")
+	private Date reportResubDate;
     private String report_frequency;
     private String report_code;
     private String report_desc;
@@ -295,6 +300,13 @@ public class M_SIR_Archival_Detail_Entity {
     private String entity_flg;
     private String modify_flg;
     private String del_flg;
+    
+    public Date getReportResubDate() {
+    	return reportResubDate;
+    }
+       public void setReportResubDate(Date reportResubDate) {
+    	this.reportResubDate = reportResubDate;
+       }
 	public String getR12_product() {
 		return r12_product;
 	}

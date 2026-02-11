@@ -461,7 +461,7 @@ public class RegulatoryReportServices {
 					currency, dtltype, pageable, type, version);
 			break;
 		case "M_SIR":
-			repsummary = BRRS_M_SIR_ReportService.getM_SIRView(reportId, fromdate, todate, currency, dtltype, pageable,
+			repsummary = BRRS_M_SIR_ReportService.getBRRS_M_SIRView(reportId, fromdate, todate, currency, dtltype, pageable,
 					type, version);
 			break;
 
@@ -2408,8 +2408,8 @@ public class RegulatoryReportServices {
 
 		case "M_SIR":
 			try {
-				repfile = BRRS_M_SIR_ReportService.getM_SIRExcel(filename, reportId, fromdate, todate, currency,
-						dtltype, type, version);
+				repfile = BRRS_M_SIR_ReportService.BRRS_M_SIRExcel(filename, reportId, fromdate, todate, currency,
+						dtltype, type, format, version);
 			} catch (Exception e) { // TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -4493,14 +4493,7 @@ public class RegulatoryReportServices {
 		 * brrs_m_epr_reportservice.getM_EPRArchival(); } catch (Exception e) { // TODO
 		 * Auto-generated catch block e.printStackTrace(); } break;
 		 */
-		case "M_SIR":
-			try {
-				archivalData = BRRS_M_SIR_ReportService.getM_SIRArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+	
 		case "M_SRWA_12A":
 			try {
 				archivalData = brrs_m_srwa_12a_reportservice.getM_SRWA_12AArchival();
@@ -4783,6 +4776,12 @@ public class RegulatoryReportServices {
 			List<Object[]> srwFList1 = BRRS_M_SRWA_12F_reportservice.getM_SRWA_12FArchival();
 			archivalData.addAll(srwFList1);
 			System.out.println("Fetched 12F archival data: " + srwFList1.size());
+			break;
+			
+		case "M_SIR":
+			List<Object[]> msir = BRRS_M_SIR_ReportService.getM_SIRArchival();
+			archivalData.addAll(msir);
+			System.out.println("Fetched 12F archival data: " + msir.size());
 			break;
 
 		case "M_SRWA_12H":
@@ -6330,6 +6329,18 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
+			
+		case "M_SIR":
+			try {
+				List<Object[]> resubList = BRRS_M_SIR_ReportService.getM_SIRResub();
+				resubmissionData.addAll(resubList);
+				System.out.println("Resubmission data fetched for SIR: " + resubList.size());
+			} catch (Exception e) {
+				System.err.println("Error fetching resubmission data for M_SIR: " + e.getMessage());
+				e.printStackTrace();
+			}
+
+			break;
 
 		// case "M_SRWA_12F":
 		// try {
@@ -6686,18 +6697,8 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
-//
-//		case "M_SIR":
-//			try {
-//				List<Object[]> resubList = BRRS_M_SIR_ReportService.getM_SIRResub();
-//				resubmissionData.addAll(resubList);
-//				System.out.println("Resubmission data fetched for SIR: " + resubList.size());
-//			} catch (Exception e) {
-//				System.err.println("Error fetching resubmission data for M_SIR: " + e.getMessage());
-//				e.printStackTrace();
-//			}
-//
-//			break;
+
+	
 		case "M_RPD":
 			try {
 				List<Object[]> resubList = BRRS_M_RPD_ReportService.getM_RPDResub();

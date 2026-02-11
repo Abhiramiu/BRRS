@@ -12,9 +12,9 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-@Table(name = "BRRS_M_SIR_ARCHIVALTABLE_SUMMARY")
+@Table(name = "BRRS_M_SIR_RESUB_DETAILTABLE")
 @IdClass(M_SIR_PK.class)
-public class M_SIR_Archival_Summary_Entity {
+public class M_SIR_Resub_Detail_Entity {
 
 	 // ================= r12 =================
    private String r12_product;
@@ -1682,7 +1682,7 @@ public class M_SIR_Archival_Summary_Entity {
    public void setDel_flg(String del_flg) {
 	this.del_flg = del_flg;
    }
-   public M_SIR_Archival_Summary_Entity() {
+   public M_SIR_Resub_Detail_Entity() {
 	super();
 	// TODO Auto-generated constructor stub
    }
