@@ -804,7 +804,7 @@ function cancelModify() {
 </SCRIPT>
 
 <script>
-		function closemodel() {
+	function closemodel() {
 			$("#resultModal").modal("hide");
 			$('#loader').modal('hide');
 
@@ -2422,18 +2422,18 @@ function fileuploads(btn) {
 </table>
 								
 </div>
-							<div style="text-align: center; margin-top: 10px;">
-								
-    <button id="submitButton" 
-            type="button"
-            class="custom-tab-btn Show_input" 
-            form="fileupload"
-            th:attr="data-todate=${asondate}, data-type=${type}"
-            onclick="fileuploads(this);" 
-            style="display: none;">
-        Submit
-    </button>
-</div>
+<div style="text-align: center; background-color: white;padding: 10px;">
+
+								<!-- <button id="submitButton" type="button" class="custom-tab-btn Show_input"
+                                    form="fileupload" th:attr="data-todate=${asondate}" onclick="fileuploads(this);"
+                                    style="display: none;">
+                                    Submit
+                                </button> -->
+								<button id="submitButton" type="button" class="custom-tab-btn Show_input"
+									form="fileupload" th:attr="data-todate=${asondate},data-type=${type}"
+									onclick="fileuploads(this);" style="display: none;">
+									Submit </button>
+							</div>
 							</form>
 							</div>
 						</div>
@@ -2447,7 +2447,7 @@ function fileuploads(btn) {
 			</div>
 		</div>
 		
-		<div class="modal fade" id="loader" data-backdrop="static"
+<!--		<div class="modal fade" id="loader" data-backdrop="static"
 		data-keyboard="false">
 		<div
 			class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
@@ -2461,30 +2461,27 @@ function fileuploads(btn) {
 				</div>
 			</div>
 		</div>
-	</div>
+	</div>-->
 
 
-
-	<!-- Custom Alert/Result Modal (Matches your existing style) -->
-<div class="modal fade" id="resultModal">
-			<div class="modal-dialog modal-dialog-centered">
-				<div class="modal-content">
-					<!-- Your custom styled header -->
-					<div class="menu-title-header">
-						<div class="modal-title" id="resultModalLabel" style="text-align: center; color: white;">
-							<!-- Title will be set by JavaScript -->
-						</div>
+	<div class="modal fade" id="resultModal">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<!-- Your custom styled header -->
+				<div class="menu-title-header">
+					<div class="modal-title" id="resultModalLabel" style="text-align: center; color: white;">
+						<!-- Title will be set by JavaScript -->
 					</div>
-					<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
-						<p id="resultModalBody"></p>
-						<!-- Your custom styled button -->
-						<button type="button" class="custom-tab-btn" onclick="closemodel()"
-							data-bs-dismiss="modal">OK</button>
-					</div>
+				</div>
+				<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+					<p id="resultModalBody"></p>
+					<!-- Your custom styled button -->
+					<button type="button" class="custom-tab-btn" onclick="closemodel()"
+						data-bs-dismiss="modal">OK</button>
 				</div>
 			</div>
 		</div>
-	
+	</div>
 	<!-- Custom Cellresult Modal -->
 		<div class="modal fade" id="cellresultModal">
 		  <div class="modal-dialog modal-dialog-centered">

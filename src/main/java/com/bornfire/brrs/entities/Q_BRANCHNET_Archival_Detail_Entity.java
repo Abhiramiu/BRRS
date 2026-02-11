@@ -13,7 +13,7 @@ import javax.persistence.TemporalType;
 
 
 @Entity
-@Table(name = "BRRS_Q_STAFF_ARCHIVALTABLE_DETAIL")
+@Table(name = "BRRS_Q_BRANCHNET_ARCHIVALTABLE_DETAIL")
 @IdClass(Q_BRANCHNET_PK.class)
 public class Q_BRANCHNET_Archival_Detail_Entity {
     private String r10_bran_sub_bran_district;

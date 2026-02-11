@@ -144,7 +144,7 @@ public class BRRS_Q_BRANCHNET_ReportService {
 
 					List<Q_BRANCHNET_Archival_Detail_Entity> T1Master = BRRS_Q_BRANCHNET_Archival_Detail_Repo
 							.getdatabydateListarchival(d1, version);
-					mv.addObject("displaymode", "Details");
+					mv.addObject("displaymode", "detail");
 					mv.addObject("reportsummary", T1Master);
 				}
 				// ---------- RESUB DETAIL ----------
@@ -164,7 +164,7 @@ public class BRRS_Q_BRANCHNET_ReportService {
 					List<Q_BRANCHNET_Detail_Entity> T1Master = brrs_Q_BRANCHNET_detail_repo
 							.getdatabydateList(dateformat.parse(todate));
 					System.out.println("Details......T1Master Size " + T1Master.size());
-					mv.addObject("displaymode", "Details");
+					mv.addObject("displaymode", "detail");
 					mv.addObject("reportsummary", T1Master);
 				}
 			}
@@ -3419,8 +3419,8 @@ public class BRRS_Q_BRANCHNET_ReportService {
 						// R64 Col E
 						row = sheet.getRow(63);
 						Cell R64cell1 = row.createCell(4);
-						if (record.getR64_opening_no_of_cards() != null) {
-							R64cell1.setCellValue(record.getR64_opening_no_of_cards().doubleValue());
+						if (record.getR65_opening_no_of_cards() != null) {
+							R64cell1.setCellValue(record.getR65_opening_no_of_cards().doubleValue());
 							R64cell1.setCellStyle(numberStyle);
 						} else {
 							R64cell1.setCellValue("");
@@ -3429,8 +3429,8 @@ public class BRRS_Q_BRANCHNET_ReportService {
 
 						// R64 Col F
 						Cell R64cell2 = row.createCell(5);
-						if (record.getR64_no_of_cards_issued() != null) {
-							R64cell2.setCellValue(record.getR64_no_of_cards_issued().doubleValue());
+						if (record.getR65_no_of_cards_issued() != null) {
+							R64cell2.setCellValue(record.getR65_no_of_cards_issued().doubleValue());
 							R64cell2.setCellStyle(numberStyle);
 						} else {
 							R64cell2.setCellValue("");
@@ -3438,8 +3438,8 @@ public class BRRS_Q_BRANCHNET_ReportService {
 						}
 						// R64 Col G
 						Cell R64cell3 = row.createCell(6);
-						if (record.getR64_no_cards_of_closed() != null) {
-							R64cell3.setCellValue(record.getR64_no_cards_of_closed().doubleValue());
+						if (record.getR65_no_cards_of_closed() != null) {
+							R64cell3.setCellValue(record.getR65_no_cards_of_closed().doubleValue());
 							R64cell3.setCellStyle(numberStyle);
 						} else {
 							R64cell3.setCellValue("");
@@ -3447,8 +3447,8 @@ public class BRRS_Q_BRANCHNET_ReportService {
 						}
 						// R64 Col H
 						Cell R64cell4 = row.createCell(7);
-						if (record.getR64_closing_bal_of_active_cards() != null) {
-							R64cell4.setCellValue(record.getR64_closing_bal_of_active_cards().doubleValue());
+						if (record.getR65_closing_bal_of_active_cards() != null) {
+							R64cell4.setCellValue(record.getR65_closing_bal_of_active_cards().doubleValue());
 							R64cell4.setCellStyle(numberStyle);
 						} else {
 							R64cell4.setCellValue("");
@@ -6260,8 +6260,8 @@ public class BRRS_Q_BRANCHNET_ReportService {
 					// R64 Col E
 					row = sheet.getRow(63);
 					Cell R64cell1 = row.createCell(4);
-					if (record.getR64_opening_no_of_cards() != null) {
-						R64cell1.setCellValue(record.getR64_opening_no_of_cards().doubleValue());
+					if (record.getR65_opening_no_of_cards() != null) {
+						R64cell1.setCellValue(record.getR65_opening_no_of_cards().doubleValue());
 						R64cell1.setCellStyle(numberStyle);
 					} else {
 						R64cell1.setCellValue("");
@@ -6270,8 +6270,8 @@ public class BRRS_Q_BRANCHNET_ReportService {
 
 					// R64 Col F
 					Cell R64cell2 = row.createCell(5);
-					if (record.getR64_no_of_cards_issued() != null) {
-						R64cell2.setCellValue(record.getR64_no_of_cards_issued().doubleValue());
+					if (record.getR65_no_of_cards_issued() != null) {
+						R64cell2.setCellValue(record.getR65_no_of_cards_issued().doubleValue());
 						R64cell2.setCellStyle(numberStyle);
 					} else {
 						R64cell2.setCellValue("");
@@ -6279,8 +6279,8 @@ public class BRRS_Q_BRANCHNET_ReportService {
 					}
 					// R64 Col G
 					Cell R64cell3 = row.createCell(6);
-					if (record.getR64_no_cards_of_closed() != null) {
-						R64cell3.setCellValue(record.getR64_no_cards_of_closed().doubleValue());
+					if (record.getR65_no_cards_of_closed() != null) {
+						R64cell3.setCellValue(record.getR65_no_cards_of_closed().doubleValue());
 						R64cell3.setCellStyle(numberStyle);
 					} else {
 						R64cell3.setCellValue("");
@@ -6288,8 +6288,8 @@ public class BRRS_Q_BRANCHNET_ReportService {
 					}
 					// R64 Col H
 					Cell R64cell4 = row.createCell(7);
-					if (record.getR64_closing_bal_of_active_cards() != null) {
-						R64cell4.setCellValue(record.getR64_closing_bal_of_active_cards().doubleValue());
+					if (record.getR65_closing_bal_of_active_cards() != null) {
+						R64cell4.setCellValue(record.getR65_closing_bal_of_active_cards().doubleValue());
 						R64cell4.setCellStyle(numberStyle);
 					} else {
 						R64cell4.setCellValue("");
@@ -9104,8 +9104,8 @@ public class BRRS_Q_BRANCHNET_ReportService {
 					// R64 Col E
 					row = sheet.getRow(63);
 					Cell R64cell1 = row.createCell(4);
-					if (record.getR64_opening_no_of_cards() != null) {
-						R64cell1.setCellValue(record.getR64_opening_no_of_cards().doubleValue());
+					if (record.getR65_opening_no_of_cards() != null) {
+						R64cell1.setCellValue(record.getR65_opening_no_of_cards().doubleValue());
 						R64cell1.setCellStyle(numberStyle);
 					} else {
 						R64cell1.setCellValue("");
@@ -9114,8 +9114,8 @@ public class BRRS_Q_BRANCHNET_ReportService {
 
 					// R64 Col F
 					Cell R64cell2 = row.createCell(5);
-					if (record.getR64_no_of_cards_issued() != null) {
-						R64cell2.setCellValue(record.getR64_no_of_cards_issued().doubleValue());
+					if (record.getR65_no_of_cards_issued() != null) {
+						R64cell2.setCellValue(record.getR65_no_of_cards_issued().doubleValue());
 						R64cell2.setCellStyle(numberStyle);
 					} else {
 						R64cell2.setCellValue("");
@@ -9123,8 +9123,8 @@ public class BRRS_Q_BRANCHNET_ReportService {
 					}
 					// R64 Col G
 					Cell R64cell3 = row.createCell(6);
-					if (record.getR64_no_cards_of_closed() != null) {
-						R64cell3.setCellValue(record.getR64_no_cards_of_closed().doubleValue());
+					if (record.getR65_no_cards_of_closed() != null) {
+						R64cell3.setCellValue(record.getR65_no_cards_of_closed().doubleValue());
 						R64cell3.setCellStyle(numberStyle);
 					} else {
 						R64cell3.setCellValue("");
@@ -9132,8 +9132,8 @@ public class BRRS_Q_BRANCHNET_ReportService {
 					}
 					// R64 Col H
 					Cell R64cell4 = row.createCell(7);
-					if (record.getR64_closing_bal_of_active_cards() != null) {
-						R64cell4.setCellValue(record.getR64_closing_bal_of_active_cards().doubleValue());
+					if (record.getR65_closing_bal_of_active_cards() != null) {
+						R64cell4.setCellValue(record.getR65_closing_bal_of_active_cards().doubleValue());
 						R64cell4.setCellStyle(numberStyle);
 					} else {
 						R64cell4.setCellValue("");
