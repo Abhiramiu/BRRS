@@ -12,8 +12,8 @@ import javax.persistence.TemporalType;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
-@Table(name = "BRRS_Q_RLFA2_SUMMARYTABLE")
-public class Q_RLFA2_Summary_Entity {
+@Table(name = "BRRS_Q_RLFA2_DETAILTABLE")
+public class Q_RLFA2_Detail_Entity {
 
 	private String	r10_sche_fore_ass;
 	private BigDecimal	r10_orig_amt;
@@ -284,25 +284,24 @@ public class Q_RLFA2_Summary_Entity {
 	private BigDecimal	r63_orig_amt;
 	private BigDecimal	r63_fore_amt;
 	private BigDecimal	r63_no_of_acc;
-	
-	//RealEstate/Property Development
-	private String	r64_sche_fore_ass;
-	private BigDecimal	r64_orig_amt;
-	private BigDecimal	r64_fore_amt;
-	private BigDecimal	r64_no_of_acc;
-	
-	//Transport
-	private String	r65_sche_fore_ass;
-	private BigDecimal	r65_orig_amt;
-	private BigDecimal	r65_fore_amt;
-	private BigDecimal	r65_no_of_acc;
-	
-	//Others
-	private String	r66_sche_fore_ass;
-	private BigDecimal	r66_orig_amt;
-	private BigDecimal	r66_fore_amt;
-	private BigDecimal	r66_no_of_acc;
 
+	//RealEstate/Property Development
+		private String	r64_sche_fore_ass;
+		private BigDecimal	r64_orig_amt;
+		private BigDecimal	r64_fore_amt;
+		private BigDecimal	r64_no_of_acc;
+		
+		//Transport
+		private String	r65_sche_fore_ass;
+		private BigDecimal	r65_orig_amt;
+		private BigDecimal	r65_fore_amt;
+		private BigDecimal	r65_no_of_acc;
+		
+		//Others
+		private String	r66_sche_fore_ass;
+		private BigDecimal	r66_orig_amt;
+		private BigDecimal	r66_fore_amt;
+		private BigDecimal	r66_no_of_acc;
 	
 	@Temporal(TemporalType.DATE)
 	@DateTimeFormat(pattern = "dd/MM/yyyy")
@@ -1712,8 +1711,6 @@ public class Q_RLFA2_Summary_Entity {
 	public void setR65_no_of_acc(BigDecimal r65_no_of_acc) {
 		this.r65_no_of_acc = r65_no_of_acc;
 	}
-	
-	
 	public String getR66_sche_fore_ass() {
 		return r66_sche_fore_ass;
 	}
@@ -1738,7 +1735,7 @@ public class Q_RLFA2_Summary_Entity {
 	public void setR66_no_of_acc(BigDecimal r66_no_of_acc) {
 		this.r66_no_of_acc = r66_no_of_acc;
 	}
-	public Q_RLFA2_Summary_Entity() {
+	public Q_RLFA2_Detail_Entity() {
 		super();
 		// TODO Auto-generated constructor stub
 	}

@@ -15,9 +15,9 @@ import javax.persistence.TemporalType;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
-@Table(name = "BRRS_M_SECL_ARCHIVALTABLE_SUMMARY")
-@IdClass(M_SECL_Archival_Summary_PK.class) 
-public class M_SECL_Archival_Summary_Entity{	
+@Table(name = "BRRS_M_SECL_ARCHIVALTABLE_DETAIL")
+@IdClass(M_SECL_Archival_Detail_PK.class)
+public class M_SECL_Archival_Detail_Entity{	
 
 
 	@Id
@@ -3683,7 +3683,7 @@ public class M_SECL_Archival_Summary_Entity{
 	public void setR57_TOTAL(BigDecimal r57_TOTAL) {
 		R57_TOTAL = r57_TOTAL;
 	}
-	public M_SECL_Archival_Summary_Entity() {
+	public M_SECL_Archival_Detail_Entity() {
 		super();
 		// TODO Auto-generated constructor stub
 	}

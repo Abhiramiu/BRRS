@@ -1,0 +1,41 @@
+package com.bornfire.brrs.entities;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+
+
+
+public interface BRRS_Q_RLFA2_Detail_Repo extends JpaRepository<Q_RLFA2_Detail_Entity, Date> {
+
+	 @Query(value = "SELECT * FROM BRRS_Q_RLFA2_DETAILTABLE WHERE REPORT_DATE = ?1", nativeQuery = true)
+	    List<Q_RLFA2_Detail_Entity> getdatabydateList(Date reportdate);
+	    
+	    
+	    @Query(value = "SELECT *  FROM BRRS_Q_RLFA2_DETAILTABLE WHERE REPORT_DATE = ?1   AND REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION DESC FETCH FIRST 1 ROWS ONLY ", nativeQuery = true)
+	    List<Q_RLFA2_Detail_Entity> getdatabydateListWithVersion(String todate);
+
+	    
+	    // ✅ Find the latest version for a report date
+	    @Query(value = "SELECT * FROM BRRS_Q_RLFA2_DETAILTABLE " +
+	                   "WHERE REPORT_DATE = ?1 " +
+	                   "ORDER BY TO_NUMBER(REPORT_VERSION) DESC " +
+	                   "FETCH FIRST 1 ROWS ONLY",
+	           nativeQuery = true)
+	    Optional<Q_RLFA2_Detail_Entity> findTopByReport_dateOrderByReport_versionDesc(Date report_date);
+
+	    // ✅ Check if a version exists for a report date
+	    @Query(value = "SELECT * FROM BRRS_Q_RLFA2_DETAILTABLE " +
+	                   "WHERE REPORT_DATE = ?1 AND REPORT_VERSION = ?2",
+	           nativeQuery = true)
+	    Optional<Q_RLFA2_Detail_Entity> findByReport_dateAndReport_version(Date report_date, String report_version);
+
+
+	            @Query(value = "SELECT *  FROM BRRS_Q_RLFA2_DETAILTABLE WHERE REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION ASC FETCH FIRST 1 ROWS ONLY ", nativeQuery = true)
+	        List<Q_RLFA2_Detail_Entity> getdatabydateListWithVersion();
+
+}
+

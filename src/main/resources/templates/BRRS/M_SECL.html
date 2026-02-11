@@ -330,7 +330,7 @@ PURPOSE		: BWRBRREPORT
 		     }
 		    });
 		}
-
+ // alert()
 		function home() {
 			$("#loader").modal("toggle");
 			location.href = 'Dashboard'
@@ -342,16 +342,51 @@ PURPOSE		: BWRBRREPORT
 
 		//to fetch summary from the database - called from the summary button
 		function showdetails() {
-		    isDetailsModal = true; // mark that this modal is from Details
-			 showResultModal('BRRS',' Details page not available for Manual Report');
+		   // isDetailsModal = true; // mark that this modal is from Details
+		  // $('#loader').modal('show');
+		 
+		    var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='details', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/
+				location.href = Callurl;
+		    
+			// showResultModal('BRRS',' Details page not available for Manual Report');
 		}
 		
 		function showsummary() {
+			
 			$('#loader').modal('show');
 			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/
 			location.href = Callurl;
 		}
 
+	//ARCHIVAL	
+		function showarchivaldetails() {
+			   // isDetailsModal = true; // mark that this modal is from Details
+			  // $('#loader').modal('show');
+			 
+			    var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='details',version = ${version}, fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/
+					location.href = Callurl;
+			    
+				// showResultModal('BRRS',' Details page not available for Manual Report');
+			}
+			
+			function showarchivalsummary() {
+				
+				$('#loader').modal('show');
+				var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', version = ${version},fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/
+				location.href = Callurl;
+			}
+//RESUB
+function showresubdetails() {				
+				$('#loader').modal('show');
+				var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='details', version = ${version},fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/
+				location.href = Callurl;
+			}
+function showresubsummary() {
+	
+	$('#loader').modal('show');
+	var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', version = ${version},fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/
+	location.href = Callurl;
+}
 
 	</script>
 	<script>
@@ -389,7 +424,71 @@ PURPOSE		: BWRBRREPORT
 			var filename = button.getAttribute('data-filename');
 			var type = button.getAttribute('data-type');
 			var version = button.getAttribute('data-version');
+		
+			
+			//alert(asondate+fromdate+todate)
+			
+		//	alert()
+			//alert(version.typeof)
 			$('#loader').modal('show');
+			$.ajax({
+				url: './downloadExcel?reportid=' + reportid +
+					'&fromdate=' + fromdate +
+					'&asondate=' + asondate +
+					'&todate=' + todate +
+					'&currency=' + currency +
+					'&subreportid=' + subreportid +
+					'&secid=' + secid +
+					'&filename=' + filename +
+					'&type=' + type +
+					'&version=' + version +
+					'&dtltype=' + dtltype,
+				type: 'GET',
+				xhrFields: {
+					responseType: 'blob'
+				},
+				success: function (data) {
+					$('#loader').modal('hide');
+					if (data && data.size > 100) {
+						const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
+						const url = window.URL.createObjectURL(blob);
+						const a = document.createElement('a');
+						a.style.display = 'none';
+						a.href = url;
+						a.download = filename;
+						document.body.appendChild(a);
+						a.click();
+						window.URL.revokeObjectURL(url);
+						document.body.removeChild(a);
+						showResultModal('BRRS', filename + ' downloaded successfully.');
+					} else {
+						showResultModal('Information', 'No data was available to create a download.');
+					}
+				},
+				error: function (jqXHR, textStatus, errorThrown) {
+					$('#loader').modal('hide');
+					console.error("Download failed:", textStatus, errorThrown);
+					showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
+				}
+			});
+		}
+		function startReport(button)
+		{
+			var reportid = button.getAttribute('data-reportid');
+			var asondate = button.getAttribute('data-asondate');
+			var fromdate = button.getAttribute('data-fromdate');
+			var todate = button.getAttribute('data-todate');
+			var currency = button.getAttribute('data-currency');
+			var subreportid = button.getAttribute('data-subreportid');
+			var secid = button.getAttribute('data-secid');
+			var dtltype = button.getAttribute('data-dtltype');
+			var filename = button.getAttribute('data-filename');
+			var type = button.getAttribute('data-type');
+			var version = button.getAttribute('data-version');
+		//	alert()
+	//	alert(filename)
+			//alert(version.typeof)
+			 $('#loader').modal('show');
 			$.ajax({
 				url: './downloadExcel?reportid=' + reportid +
 					'&fromdate=' + fromdate +
@@ -428,7 +527,7 @@ PURPOSE		: BWRBRREPORT
 					console.error("Download failed:", textStatus, errorThrown);
 					showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
 				}
-			});
+			}); 
 		}
 		
 		function editRecord() {
@@ -3598,11 +3697,7 @@ function cancelModify() {
 	        .on("input", calculateAllR57Columns);
 	});
 
-
-
 </SCRIPT>
-
-
 
 	<script>
 	
@@ -3816,6 +3911,12 @@ $.ajax({
 
 console.log("✅ AJAX executed successfully");
 }
+
+$(document).ready(function(){
+    var value = $('#selectedTab').val();
+  //  alert(value);
+});
+
 </script>
 
 <style>
@@ -3963,7 +4064,13 @@ console.log("✅ AJAX executed successfully");
 	</script>
 
 
+<!-- <script type="text/javascript">
+$(document).ready(function(){
+	var version=$("#ver").val();
+alert(version)
+})
 
+</script> -->
 
 
 
@@ -4001,16 +4108,31 @@ console.log("✅ AJAX executed successfully");
 						</span>
 						<!-- Buttons -->
 						<input type="hidden" id="selectedTab" th:value="${displaymode}">
+						<input type="hidden" id="ver" th:value="${version}">
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showsummary();"
-							th:if="${displaymode == 'Details'}">Summary</button>
+							th:if="${displaymode == 'details'}">Summary</button>
+							
+						<button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showarchivalsummary();"
+							th:if="${displaymode == 'archivalDetails'}">Summary</button>
+								
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails();"
 							th:if="${displaymode == 'summary'}">Details</button>
+							
+							<button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showarchivaldetails();"
+							th:if="${displaymode == 'archivalSummary'}">Details</button>
+				
+				      <button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showresubsummary();"
+							th:if="${displaymode == 'resubDetails'}">Summary</button>
+								
+						<button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showresubdetails();"
+							th:if="${displaymode == 'resubSummary'}">Details</button>
+							
+				
 				
 						<!-- Modify button -->
-						<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
+						 <button type="button" class="custom-tab-btn" onclick="showmodify(this);"
 							title="Click to EDIT Records"
-							th:if="${type == 'RESUB' or type=='BRRS' and type != 'ARCHIVAL'}"
-							th:classappend="${session.PERMISSIONS == 'W'} and ${dtltype == 'report'} ? 'addedit' "
+							th:if="${displaymode == 'summary' or displaymode == 'resubSummary' }"							
 							id="addRecord">
 							Modify
 						</button>
@@ -4020,7 +4142,7 @@ console.log("✅ AJAX executed successfully");
 						<button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord"
 							onclick="cancelModify();" style="display: none;">Cancel</button>
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'summary'}" th:attr="data-reportid=${reportid},
+							th:if="${displaymode == 'summary' or displaymode == 'details' }" th:attr="data-reportid=${reportid},
                    				 data-asondate=${asondate},
                    				 data-fromdate=${fromdate},
                     				 data-todate=${todate},
@@ -4029,11 +4151,97 @@ console.log("✅ AJAX executed successfully");
                     				 data-filename='M_SECL.xlsx',
 					 				 data-type=${type},
 					    			 data-version=${version}"
-									  onclick="downloadfile(this);">
+									  onclick="downloadfile(this);">EXCEL
 							<i class="fa fa-download"></i>
 						</button>
-
+						
+						
+						<button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord"
+							onclick="cancelModify();" style="display: none;">Cancel</button>
+							
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
+							th:if="${displaymode == 'resubDetails' or displaymode == 'resubSummary'}" th:attr="data-reportid=${reportid},
+                   				 data-asondate=${asondate},
+                   				 data-fromdate=${fromdate},
+                    				 data-todate=${todate},
+                    				 data-currency=${currency}, 
+                    				 data-dtltype=${dtltype},
+                    				 data-filename='M_SECL.xlsx',
+					 				 data-type=${type},
+					    			 data-version=${version}"
+									  onclick="downloadfile(this);">EXCEL
+							<i class="fa fa-download"></i>
+						</button>
+						 <button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
+							th:if="${displaymode == 'resubDetails' or displaymode == 'resubSummary'}" th:attr="data-reportid=${reportid},
+								    data-asondate=${asondate},
+								    data-fromdate=${fromdate},
+								    data-todate=${todate},
+									data-currency=${currency},  
+									data-dtltype=${dtltype}, 
+								    data-filename='EMAIL_M_SECL.xlsx',
+									data-type=${type},
+									data-version=${version}
+								  " onclick="downloadfile(this);" >E-MAIL
+							<i class="fa fa-download"></i>
+						</button>
+						
+						<button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord"
+							onclick="cancelModify();" style="display: none;">Cancel</button>
+							
+						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
+							th:if="${displaymode == 'archivalSummary' or displaymode == 'archivalDetails'}" th:attr="data-reportid=${reportid},
+                   				 data-asondate=${asondate},
+                   				 data-fromdate=${fromdate},
+                    				 data-todate=${todate},
+                    				 data-currency=${currency}, 
+                    				 data-dtltype=${dtltype},
+                    				 data-filename='M_SECL.xlsx',
+					 				 data-type=${type},
+					    			 data-version=${version}"
+									  onclick="downloadfile(this);">EXCEL
+							<i class="fa fa-download"></i>
+						</button>
+						 <button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
+							th:if="${displaymode == 'archivalSummary' or displaymode == 'archivalDetails'}" th:attr="data-reportid=${reportid},
+								    data-asondate=${asondate},
+								    data-fromdate=${fromdate},
+								    data-todate=${todate},
+									data-currency=${currency},  
+									data-dtltype=${dtltype}, 
+								    data-filename='EMAIL_M_SECL.xlsx',
+									data-type=${type},
+									data-version=${version}
+								  " onclick="downloadfile(this);" >E-MAIL
+							<i class="fa fa-download"></i>
+						</button>
+						
+                        <button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
+							th:if="${displaymode == 'summary' or displaymode == 'details'}" th:attr="data-reportid=${reportid},
+								    data-asondate=${asondate},
+								    data-fromdate=${fromdate},
+								    data-todate=${todate},
+									data-currency=${currency},  
+									data-dtltype=${dtltype}, 
+								    data-filename='EMAIL_M_SECL.xlsx',
+									data-type=${type},
+									data-version=${version}
+								  " onclick="downloadfile(this);" >E-MAIL
+							<i class="fa fa-download"></i>
+						</button>
+						<!-- <button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"  
+						th:if="${displaymode == 'summary' or displaymode == 'details'}" onclick="#" th:attr="
+								    data-fromdate=${fromdate},
+								    data-todate=${todate},
+									data-currency=${currency},  
+												data-dtltype=${dtltype}, 
+								    data-filename='M_SECLDetail',
+									data-type=${type},
+												data-version=${version}
+								  ">PDF
+							<i class="fa fa-download"></i>
+						</button> -->
+						<!-- <button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
 							th:if="${displaymode == 'Details'}" onclick="startReport(this);" th:attr="
 								    data-fromdate=${fromdate},
 								    data-todate=${todate},
@@ -4044,12 +4252,12 @@ console.log("✅ AJAX executed successfully");
 												data-version=${version}
 								  ">
 							<i class="fa fa-download"></i>
-						</button>
+						</button> -->
 
 					</div>
 					
 				</div>
-				<div th:if="${displaymode == 'summary'}">
+				<div th:if="${displaymode == 'summary' or displaymode == 'details' or displaymode == 'archivalSummary' or displaymode == 'archivalDetails' or displaymode == 'resubSummary' or displaymode == 'resubDetails'}">
 					<div class="row">
 						<div class="col-sm-12">
 						<form action="#" method="POST" id="fileupload">

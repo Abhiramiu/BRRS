@@ -378,9 +378,12 @@
 		location.href = 'Resubmission?rptcode=' + reportid;
 	}
 	
-	
 	</script>
 	
+	<script th:inline="javascript">
+    let data = [[${Resubmitdata}]];
+    console.log(data);
+</script>
 	
 	  
 	</head>
@@ -420,33 +423,31 @@
 									<tr>									
 											<th>Report Date</th>
 											<th>Report Version</th>
-	                    <th>Report Resubdate</th>
+	                                         <th>Report Resubdate</th>
 											<th>Domain</th>
 										</tr>
 								</thead>
 								<tbody style="font-family: Arial;">
 									<tr th:each="ReData : ${Resubmitdata}">
-	
-									    <!-- Report Date clickable -->
 									    <td class="underline"
 									        th:attr="data-rptcode=${rptcode},
-									                 data-todate=${#dates.format(ReData[0],'dd/MM/yyyy')},
+									                 data-todate=${ReData[0] != null ? #dates.format(ReData[0],'dd/MM/yyyy') : ''},
 									                 data-version=${ReData[1]}"
-									        style="color: #08a6f1;"
-									        th:text="${#dates.format(ReData[0],'dd/MM/yyyy')}"
+									        style="color:#08a6f1;"
+									        th:text="${ReData[0] != null ? #dates.format(ReData[0],'dd/MM/yyyy') : ''}"
 									        onclick="getReport(this);">
 									    </td>
-	
-									    <!-- Version -->
-									    <td th:text="${ReData[1]}" style="text-align: left;"></td>
-	
-									    <!--✅ Resub Date--> 
-									    <td th:text="${#dates.format(ReData[2], 'dd/MM/yyyy')}"style="color: #08a6f1;"></td>
-	
-									    <!-- Domain -->
+									
+									    <td th:text="${ReData[1]}" style="text-align:left;"></td>
+									
+									   <td th:text="${ReData[2] != null ? #dates.format(ReData[2],'dd/MM/yyyy') : ''}"
+									        style="color:#08a6f1;"></td>
+									       									
 									    <td th:text="${domain}"></td>
-	
+									
 									</tr>
+
+
 	
 	<!-- <tr th:each="ReData : ${Resubmitdata}">
 	<td class="underline"

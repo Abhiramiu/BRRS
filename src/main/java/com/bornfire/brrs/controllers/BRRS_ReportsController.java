@@ -1864,16 +1864,16 @@ public class BRRS_ReportsController {
 
 			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
 
-			@ModelAttribute M_SECL_Summary_Entity request, HttpServletRequest req) {
+			@ModelAttribute M_SECL_Resub_Summary_Entity request, HttpServletRequest req) {
 
 		try {
 			System.out.println("Came to Resub Controller");
 
 			if (asondate != null) { // Set the asondate into the entity
-				request.setReportDate(asondate);
+				request.setReport_date(asondate);
 				System.out.println("Set Report Date: " + asondate);
 			} else {
-				System.out.println("Asondate parameter is null; using entity value: " + request.getReportDate());
+				System.out.println("Asondate parameter is null; using entity value: " + request.getReport_date());
 			}
 
 			// Call service to create a new versioned row

@@ -1,8 +1,8 @@
 package com.bornfire.brrs.entities;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -15,32 +15,28 @@ import javax.persistence.TemporalType;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
-@Table(name = "BRRS_M_SECL_ARCHIVALTABLE_SUMMARY")
-@IdClass(M_SECL_Archival_Summary_PK.class) 
-public class M_SECL_Archival_Summary_Entity{	
-
-
-	@Id
+@Table(name = "BRRS_M_SECL_RESUB_DETAIL")
+@IdClass(M_SECL_Resub_Detail_PK.class)
+public class M_SECL_Resub_Detail_Entity  {
+ 
+	
 	@Temporal(TemporalType.DATE)
 	@DateTimeFormat(pattern = "dd/MM/yyyy")
-	@Column(name = "REPORT_DATE")
-	private Date reportDate;
+	@Id
 	
-     @Id
-	@Column(name = "REPORT_VERSION")
-	private BigDecimal reportVersion;
+	private Date	report_date;
+	@Id
+	private BigDecimal	report_version;
 	
-    @Column(name = "REPORT_RESUBDATE")
+	@Column(name = "REPORT_RESUBDATE")
     @Temporal(TemporalType.TIMESTAMP)
-    private Date reportResubDate;	
-	
-	public String report_frequency;
-	public String report_code;
-	public String report_desc;
-	public String entity_flg;
-	public String modify_flg;
-	public String del_flg;
-	
+    private Date reportResubDate;
+	private String	report_frequency;
+	private String	report_code;
+	private String	report_desc;
+	private String	entity_flg;
+	private String	modify_flg;
+	private String	 del_flg;
 	
 	private String R12_PRODUCT;
 	private BigDecimal R12_EQUITY;
@@ -593,17 +589,17 @@ public class M_SECL_Archival_Summary_Entity{
 	private BigDecimal R57_PLEDGED_ASSETS;
 	private BigDecimal R57_OTHER_SPECIFY;
 	private BigDecimal R57_TOTAL;
-	public Date getReportDate() {
-		return reportDate;
+	public Date getReport_date() {
+		return report_date;
 	}
-	public void setReportDate(Date reportDate) {
-		this.reportDate = reportDate;
+	public void setReport_date(Date report_date) {
+		this.report_date = report_date;
 	}
-	public BigDecimal getReportVersion() {
-		return reportVersion;
+	public BigDecimal getReport_version() {
+		return report_version;
 	}
-	public void setReportVersion(BigDecimal reportVersion) {
-		this.reportVersion = reportVersion;
+	public void setReport_version(BigDecimal report_version) {
+		this.report_version = report_version;
 	}
 	public Date getReportResubDate() {
 		return reportResubDate;
@@ -3683,10 +3679,9 @@ public class M_SECL_Archival_Summary_Entity{
 	public void setR57_TOTAL(BigDecimal r57_TOTAL) {
 		R57_TOTAL = r57_TOTAL;
 	}
-	public M_SECL_Archival_Summary_Entity() {
+	public M_SECL_Resub_Detail_Entity() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
-	
+
 	
 }

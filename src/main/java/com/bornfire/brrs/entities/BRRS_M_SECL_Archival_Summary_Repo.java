@@ -34,7 +34,7 @@ public interface BRRS_M_SECL_Archival_Summary_Repo
 
     // Fetch by primary key (FIXED incorrect return type)
     Optional<M_SECL_Archival_Summary_Entity> findByReportDateAndReportVersion(
-            Date reportDate, String reportVersion);
+            Date reportDate, BigDecimal reportVersion);
 
     // Get only the latest version (using ASC only if you want smallest version)
     @Query(value = "SELECT * FROM BRRS_M_SECL_ARCHIVALTABLE_SUMMARY " +

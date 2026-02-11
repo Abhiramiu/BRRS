@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -47,12 +48,30 @@ import com.bornfire.brrs.entities.BRRS_M_RPD_Summary_Repo9;
 import com.bornfire.brrs.entities.M_CA6_Archival_Summary_Entity1;
 import com.bornfire.brrs.entities.M_CA6_Archival_Summary_Entity2;
 import com.bornfire.brrs.entities.M_CA7_Archival_Summary_Entity;
+import com.bornfire.brrs.entities.M_RPD_Detail_Entity1;
+import com.bornfire.brrs.entities.M_RPD_Detail_Entity2;
+import com.bornfire.brrs.entities.M_RPD_Detail_Entity3;
+import com.bornfire.brrs.entities.M_RPD_Detail_Entity4;
+import com.bornfire.brrs.entities.M_RPD_Detail_Entity5;
+import com.bornfire.brrs.entities.M_RPD_Detail_Entity6;
+import com.bornfire.brrs.entities.M_RPD_Detail_Entity7;
+import com.bornfire.brrs.entities.M_RPD_Detail_Entity8;
+import com.bornfire.brrs.entities.M_RPD_Detail_Entity9;
 import com.bornfire.brrs.entities.BRRS_M_RPD_Archival_Summary_Repo1;
 import com.bornfire.brrs.entities.BRRS_M_RPD_Archival_Summary_Repo5;
 import com.bornfire.brrs.entities.BRRS_M_RPD_Archival_Summary_Repo6;
 import com.bornfire.brrs.entities.BRRS_M_RPD_Archival_Summary_Repo7;
 import com.bornfire.brrs.entities.BRRS_M_RPD_Archival_Summary_Repo8;
 import com.bornfire.brrs.entities.BRRS_M_RPD_Archival_Summary_Repo9;
+import com.bornfire.brrs.entities.BRRS_M_RPD_Detail_Repo1;
+import com.bornfire.brrs.entities.BRRS_M_RPD_Detail_Repo2;
+import com.bornfire.brrs.entities.BRRS_M_RPD_Detail_Repo3;
+import com.bornfire.brrs.entities.BRRS_M_RPD_Detail_Repo4;
+import com.bornfire.brrs.entities.BRRS_M_RPD_Detail_Repo5;
+import com.bornfire.brrs.entities.BRRS_M_RPD_Detail_Repo6;
+import com.bornfire.brrs.entities.BRRS_M_RPD_Detail_Repo7;
+import com.bornfire.brrs.entities.BRRS_M_RPD_Detail_Repo8;
+import com.bornfire.brrs.entities.BRRS_M_RPD_Detail_Repo9;
 import com.bornfire.brrs.entities.BRRS_M_RPD_Archival_Summary_Entity4;
 import com.bornfire.brrs.entities.BRRS_M_RPD_Archival_Summary_Entity5;
 import com.bornfire.brrs.entities.BRRS_M_RPD_Archival_Summary_Entity6;
@@ -129,11 +148,32 @@ public class BRRS_M_RPD_ReportService {
 	BRRS_M_RPD_Archival_Summary_Repo8 BRRS_M_RPD_Archival_Summary_Repo8;
 	@Autowired
 	BRRS_M_RPD_Archival_Summary_Repo9 BRRS_M_RPD_Archival_Summary_Repo9;
+	@Autowired
+	BRRS_M_RPD_Detail_Repo1 brrs_M_RPD_Detail_Repo1;
+	@Autowired
+	BRRS_M_RPD_Detail_Repo2 brrs_M_RPD_Detail_Repo2;
+	@Autowired
+	BRRS_M_RPD_Detail_Repo3 brrs_M_RPD_Detail_Repo3;
+	@Autowired
+	BRRS_M_RPD_Detail_Repo4 brrs_M_RPD_Detail_Repo4;
+	@Autowired
+	BRRS_M_RPD_Detail_Repo5 brrs_M_RPD_Detail_Repo5;
+	@Autowired
+	BRRS_M_RPD_Detail_Repo6 brrs_M_RPD_Detail_Repo6;
+	@Autowired
+	BRRS_M_RPD_Detail_Repo7 brrs_M_RPD_Detail_Repo7;
+	@Autowired
+	BRRS_M_RPD_Detail_Repo8  brrs_M_RPD_Detail_Repo8;
+	@Autowired
+	BRRS_M_RPD_Detail_Repo9 brrs_M_RPD_Detail_Repo9;
+	
+	
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
 	public ModelAndView getM_RPDView(String reportId, String fromdate, String todate, String currency, String dtltype,
-			Pageable pageable,String type, String version) {
+			Pageable pageable,String type, BigDecimal version) {
 		System.out.println("Entered service method M_RPD......................");
+		System.out.println(dtltype+" = Type");
 		ModelAndView mv = new ModelAndView();
 		Session hs = sessionFactory.getCurrentSession();
 		int pageSize = pageable.getPageSize();
@@ -173,6 +213,8 @@ public class BRRS_M_RPD_ReportService {
 	    			mv.addObject("reportsummary7", T7Master);
 	    			mv.addObject("reportsummary8", T8Master);
 	    			mv.addObject("reportsummary9", T9Master);
+	    			
+	    			mv.addObject("displaymode", "summary");
 	            }
 	         // ---------- CASE 2: RESUB ----------
 	            else if ("RESUB".equalsIgnoreCase(type) && version != null) {
@@ -205,10 +247,12 @@ public class BRRS_M_RPD_ReportService {
 		    			mv.addObject("reportsummary7", T7Master);
 		    			mv.addObject("reportsummary8", T8Master);
 		    			mv.addObject("reportsummary9", T9Master);
+		    			
+		    			mv.addObject("displaymode", "summary");
 	            }
 	            // ---------- CASE 3: NORMAL ----------
 	            else {
-
+	            	System.out.println("I'am in Normal");
 	                List<M_RPD_Summary_Entity1> T1Master = BRRS_M_RPD_Summary_Repo1.getdatabydateList(d1);
 	                List<M_RPD_Summary_Entity2> T2Master = BRRS_M_RPD_Summary_Repo2.getdatabydateList(d1);
 	                List<M_RPD_Summary_Entity3> T3Master = BRRS_M_RPD_Summary_Repo3.getdatabydateList(d1);
@@ -238,11 +282,50 @@ public class BRRS_M_RPD_ReportService {
 	        		mv.addObject("reportsummary6", T6Master);
 	        		mv.addObject("reportsummary7", T7Master);
 	        		mv.addObject("reportsummary8", T8Master);
-	        		mv.addObject("reportsummary9", T9Master);	            }
-		
+	        		mv.addObject("reportsummary9", T9Master);	    
+	        		
+	        		mv.addObject("displaymode", "summary");	
+	            }
+		  
+	            if(dtltype.equals("detail"))
+	            {
+	            	System.out.println("I'am in Detail");
+	            	    List<M_RPD_Detail_Entity1> T1Master = brrs_M_RPD_Detail_Repo1.getdatabydateList(d1);
+		                List<M_RPD_Detail_Entity2> T2Master = brrs_M_RPD_Detail_Repo2.getdatabydateList(d1);
+		                List<M_RPD_Detail_Entity3> T3Master = brrs_M_RPD_Detail_Repo3.getdatabydateList(d1);
+		                List<M_RPD_Detail_Entity4> T4Master = brrs_M_RPD_Detail_Repo4.getdatabydateList(d1);
+		                List<M_RPD_Detail_Entity5> T5Master = brrs_M_RPD_Detail_Repo5.getdatabydateList(d1);
+		                List<M_RPD_Detail_Entity6> T6Master = brrs_M_RPD_Detail_Repo6.getdatabydateList(d1);
+		                List<M_RPD_Detail_Entity7> T7Master = brrs_M_RPD_Detail_Repo7.getdatabydateList(d1);
+		                List<M_RPD_Detail_Entity8> T8Master = brrs_M_RPD_Detail_Repo8.getdatabydateList(d1);
+		                List<M_RPD_Detail_Entity9> T9Master = brrs_M_RPD_Detail_Repo9.getdatabydateList(d1);
+
+
+		                System.out.println("count "+T1Master.size());		
+		                System.out.println("count2 "+T2Master.size());
+		                System.out.println("count3 "+T3Master.size());
+		                System.out.println("count4 "+T4Master.size());
+		                System.out.println("count5 "+T5Master.size());
+		                System.out.println("count6 "+T6Master.size());
+		                System.out.println("count7 "+T7Master.size());
+		                System.out.println("count8 "+T8Master.size());
+		                System.out.println("count9 "+T9Master.size());
+
+		            	mv.addObject("reportsummary", T1Master);
+		        		mv.addObject("reportsummary2", T2Master);
+		        		mv.addObject("reportsummary3", T3Master);
+		        		mv.addObject("reportsummary4", T4Master);
+		        		mv.addObject("reportsummary5", T5Master);
+		        		mv.addObject("reportsummary6", T6Master);
+		        		mv.addObject("reportsummary7", T7Master);
+		        		mv.addObject("reportsummary8", T8Master);
+		        		mv.addObject("reportsummary9", T9Master);
+		        		
+		        		mv.addObject("displaymode", "Details");
+		        	}
 	
 		mv.setViewName("BRRS/M_RPD");		
-		mv.addObject("displaymode", "summary");
+		
 		System.out.println("scv" + mv.getViewName());
 
 		 } catch (ParseException e) {
@@ -263,6 +346,10 @@ public void updateReport1(M_RPD_Summary_Entity1 entity1) {
     M_RPD_Summary_Entity1 existing = BRRS_M_RPD_Summary_Repo1.findById(entity1.getReportDate())
         .orElseThrow(() -> new RuntimeException(
             "Record not found for REPORT_DATE: " + entity1.getReportDate()));
+    
+    M_RPD_Detail_Entity1 existingDtl = brrs_M_RPD_Detail_Repo1.findById(entity1.getReportDate())
+            .orElseThrow(() -> new RuntimeException(
+                "Record not found for REPORT_DATE: " + entity1.getReportDate()));
 
     // --------------------------
     // Update R28–R34 amounts
@@ -289,10 +376,13 @@ public void updateReport1(M_RPD_Summary_Entity1 entity1) {
 
                 try {
                     Method getter = M_RPD_Summary_Entity1.class.getMethod(getterName);
-                    Method setter = M_RPD_Summary_Entity1.class.getMethod(setterName, getter.getReturnType());
-
                     Object newValue = getter.invoke(entity1);
+                    
+                    Method setter = M_RPD_Summary_Entity1.class.getMethod(setterName, getter.getReturnType());
+                    Method detailsetter = M_RPD_Detail_Entity1.class.getMethod(setterName, getter.getReturnType());
+                    
                     setter.invoke(existing, newValue);
+                    detailsetter.invoke(existingDtl,newValue);
                 } catch (NoSuchMethodException e) {
                     // if any field is missing in entity class, skip it
                     continue;
@@ -304,6 +394,7 @@ public void updateReport1(M_RPD_Summary_Entity1 entity1) {
     }  
 
     BRRS_M_RPD_Summary_Repo1.save(existing);
+    brrs_M_RPD_Detail_Repo1.save(existingDtl);
 }
 public void updateReport2(M_RPD_Summary_Entity2 entity2) {
     System.out.println("Report Date: " + entity2.getReportDate());
@@ -311,6 +402,10 @@ public void updateReport2(M_RPD_Summary_Entity2 entity2) {
     M_RPD_Summary_Entity2 existing = BRRS_M_RPD_Summary_Repo2.findById(entity2.getReportDate())
         .orElseThrow(() -> new RuntimeException(
             "Record not found for REPORT_DATE: " + entity2.getReportDate()));
+    
+    M_RPD_Detail_Entity2 detailexisting = brrs_M_RPD_Detail_Repo2.findById(entity2.getReportDate())
+            .orElseThrow(() -> new RuntimeException(
+                "Record not found for REPORT_DATE: " + entity2.getReportDate()));
 
     try {
         for (int i = 51; i <= 100; i++) {
@@ -332,10 +427,13 @@ public void updateReport2(M_RPD_Summary_Entity2 entity2) {
 
                 try {
                     Method getter = M_RPD_Summary_Entity2.class.getMethod(getterName);
-                    Method setter = M_RPD_Summary_Entity2.class.getMethod(setterName, getter.getReturnType());
-
                     Object newValue = getter.invoke(entity2);
+                    
+                    Method setter = M_RPD_Summary_Entity2.class.getMethod(setterName, getter.getReturnType());
+                    Method detailsetter = M_RPD_Detail_Entity2.class.getMethod(setterName, getter.getReturnType());
+                    
                     setter.invoke(existing, newValue);
+                    detailsetter.invoke(detailexisting, newValue);
                 } catch (NoSuchMethodException e) {
                     // if any field is missing in entity class, skip it
                     continue;
@@ -346,6 +444,7 @@ public void updateReport2(M_RPD_Summary_Entity2 entity2) {
         throw new RuntimeException("Error while updating R51-100 fields", e);
     }
     BRRS_M_RPD_Summary_Repo2.save(existing);
+    brrs_M_RPD_Detail_Repo2.save(detailexisting);
 }
 
 public void updateReport3(M_RPD_Summary_Entity3 entity3) {
@@ -354,6 +453,10 @@ public void updateReport3(M_RPD_Summary_Entity3 entity3) {
     M_RPD_Summary_Entity3 existing = BRRS_M_RPD_Summary_Repo3.findById(entity3.getReportDate())
         .orElseThrow(() -> new RuntimeException(
             "Record not found for REPORT_DATE: " + entity3.getReportDate()));
+    
+    M_RPD_Detail_Entity3 detailexisting = brrs_M_RPD_Detail_Repo3.findById(entity3.getReportDate())
+            .orElseThrow(() -> new RuntimeException(
+                "Record not found for REPORT_DATE: " + entity3.getReportDate()));
 
     try {
         for (int i = 101; i <= 150; i++) {
@@ -378,10 +481,13 @@ public void updateReport3(M_RPD_Summary_Entity3 entity3) {
 
                 try {
                     Method getter = M_RPD_Summary_Entity3.class.getMethod(getterName);
-                    Method setter = M_RPD_Summary_Entity3.class.getMethod(setterName, getter.getReturnType());
-
                     Object newValue = getter.invoke(entity3);
+                    
+                    Method setter = M_RPD_Summary_Entity3.class.getMethod(setterName, getter.getReturnType());
+                    Method detailsetter = M_RPD_Detail_Entity3.class.getMethod(setterName, getter.getReturnType());
+                    
                     setter.invoke(existing, newValue);
+                    detailsetter.invoke(detailexisting, newValue);
                 } catch (NoSuchMethodException e) {
                     // if any field is missing in entity class, skip it
                     continue;
@@ -392,6 +498,7 @@ public void updateReport3(M_RPD_Summary_Entity3 entity3) {
         throw new RuntimeException("Error while updating R101-150 fields", e);
     }
     BRRS_M_RPD_Summary_Repo3.save(existing);
+    brrs_M_RPD_Detail_Repo3.save(detailexisting);
 }
 
 public void updateReport4(M_RPD_Summary_Entity4 entity4) {
@@ -400,6 +507,10 @@ public void updateReport4(M_RPD_Summary_Entity4 entity4) {
     M_RPD_Summary_Entity4 existing = BRRS_M_RPD_Summary_Repo4.findById(entity4.getReportDate())
         .orElseThrow(() -> new RuntimeException(
             "Record not found for REPORT_DATE: " + entity4.getReportDate()));
+    
+    M_RPD_Detail_Entity4 detailexisting = brrs_M_RPD_Detail_Repo4.findById(entity4.getReportDate())
+            .orElseThrow(() -> new RuntimeException(
+                "Record not found for REPORT_DATE: " + entity4.getReportDate()));
 
     try {
         for (int i = 151; i <= 200; i++) {
@@ -424,10 +535,13 @@ public void updateReport4(M_RPD_Summary_Entity4 entity4) {
 
                 try {
                     Method getter = M_RPD_Summary_Entity4.class.getMethod(getterName);
-                    Method setter = M_RPD_Summary_Entity4.class.getMethod(setterName, getter.getReturnType());
-
                     Object newValue = getter.invoke(entity4);
+                    
+                    Method setter = M_RPD_Summary_Entity4.class.getMethod(setterName, getter.getReturnType());
+                    Method detailsetter = M_RPD_Detail_Entity4.class.getMethod(setterName, getter.getReturnType());
+                   
                     setter.invoke(existing, newValue);
+                    detailsetter.invoke(detailexisting, newValue);
                 } catch (NoSuchMethodException e) {
                     // if any field is missing in entity class, skip it
                     continue;
@@ -438,6 +552,7 @@ public void updateReport4(M_RPD_Summary_Entity4 entity4) {
         throw new RuntimeException("Error while updating R151-200 fields", e);
     }
     BRRS_M_RPD_Summary_Repo4.save(existing);
+    brrs_M_RPD_Detail_Repo4.save(detailexisting);
 }
 
 public void updateReport5(M_RPD_Summary_Entity5 entity5) {
@@ -447,6 +562,10 @@ public void updateReport5(M_RPD_Summary_Entity5 entity5) {
         .orElseThrow(() -> new RuntimeException(
             "Record not found for REPORT_DATE: " + entity5.getReportDate()));
 
+    M_RPD_Detail_Entity5 detailexisting =brrs_M_RPD_Detail_Repo5.findById(entity5.getReportDate())
+            .orElseThrow(() -> new RuntimeException(
+                "Record not found for REPORT_DATE: " + entity5.getReportDate()));
+    
     try {
         for (int i = 201; i <= 250; i++) {
             String prefix = "R" + i + "_";
@@ -470,10 +589,13 @@ public void updateReport5(M_RPD_Summary_Entity5 entity5) {
 
                 try {
                     Method getter = M_RPD_Summary_Entity5.class.getMethod(getterName);
-                    Method setter = M_RPD_Summary_Entity5.class.getMethod(setterName, getter.getReturnType());
-
                     Object newValue = getter.invoke(entity5);
+                    
+                    Method setter = M_RPD_Summary_Entity5.class.getMethod(setterName, getter.getReturnType());
+                    Method detailsetter = M_RPD_Detail_Entity5.class.getMethod(setterName, getter.getReturnType());
+                    
                     setter.invoke(existing, newValue);
+                    detailsetter.invoke(detailexisting, newValue);
                 } catch (NoSuchMethodException e) {
                     // if any field is missing in entity class, skip it
                     continue;
@@ -484,6 +606,7 @@ public void updateReport5(M_RPD_Summary_Entity5 entity5) {
         throw new RuntimeException("Error while updating R201-250 fields", e);
     }
     BRRS_M_RPD_Summary_Repo5.save(existing);
+    brrs_M_RPD_Detail_Repo5.save(detailexisting);
 }
 
 public void updateReport6(M_RPD_Summary_Entity6 entity6) {
@@ -492,6 +615,10 @@ public void updateReport6(M_RPD_Summary_Entity6 entity6) {
     M_RPD_Summary_Entity6 existing = BRRS_M_RPD_Summary_Repo6.findById(entity6.getReportDate())
         .orElseThrow(() -> new RuntimeException(
             "Record not found for REPORT_DATE: " + entity6.getReportDate()));
+    
+    M_RPD_Detail_Entity6 detailexisting = brrs_M_RPD_Detail_Repo6.findById(entity6.getReportDate())
+            .orElseThrow(() -> new RuntimeException(
+                "Record not found for REPORT_DATE: " + entity6.getReportDate()));
 
     try {
         for (int i = 251; i <= 300; i++) {
@@ -516,10 +643,13 @@ public void updateReport6(M_RPD_Summary_Entity6 entity6) {
 
                 try {
                     Method getter = M_RPD_Summary_Entity6.class.getMethod(getterName);
-                    Method setter = M_RPD_Summary_Entity6.class.getMethod(setterName, getter.getReturnType());
-
                     Object newValue = getter.invoke(entity6);
+                    
+                    Method setter = M_RPD_Summary_Entity6.class.getMethod(setterName, getter.getReturnType());
+                    Method detailsetter = M_RPD_Detail_Entity6.class.getMethod(setterName, getter.getReturnType());
+                   
                     setter.invoke(existing, newValue);
+                    detailsetter.invoke(detailexisting, newValue);
                 } catch (NoSuchMethodException e) {
                     // if any field is missing in entity class, skip it
                     continue;
@@ -530,6 +660,7 @@ public void updateReport6(M_RPD_Summary_Entity6 entity6) {
         throw new RuntimeException("Error while updating R251-300 fields", e);
     }
     BRRS_M_RPD_Summary_Repo6.save(existing);
+    brrs_M_RPD_Detail_Repo6.save(detailexisting);
 }
 
 public void updateReport7(M_RPD_Summary_Entity7 entity7) {
@@ -538,6 +669,10 @@ public void updateReport7(M_RPD_Summary_Entity7 entity7) {
     M_RPD_Summary_Entity7 existing = BRRS_M_RPD_Summary_Repo7.findById(entity7.getReportDate())
         .orElseThrow(() -> new RuntimeException(
             "Record not found for REPORT_DATE: " + entity7.getReportDate()));
+    
+    M_RPD_Detail_Entity7 detailexisting = brrs_M_RPD_Detail_Repo7.findById(entity7.getReportDate())
+            .orElseThrow(() -> new RuntimeException(
+                "Record not found for REPORT_DATE: " + entity7.getReportDate()));
 
     try {
         for (int i = 301; i <= 350; i++) {
@@ -562,10 +697,13 @@ public void updateReport7(M_RPD_Summary_Entity7 entity7) {
 
                 try {
                     Method getter = M_RPD_Summary_Entity7.class.getMethod(getterName);
-                    Method setter = M_RPD_Summary_Entity7.class.getMethod(setterName, getter.getReturnType());
-
                     Object newValue = getter.invoke(entity7);
+                    
+                    Method setter = M_RPD_Summary_Entity7.class.getMethod(setterName, getter.getReturnType());
+                    Method detailsetter = M_RPD_Detail_Entity7.class.getMethod(setterName, getter.getReturnType());
+                    
                     setter.invoke(existing, newValue);
+                    detailsetter.invoke(detailexisting, newValue);
                 } catch (NoSuchMethodException e) {
                     // if any field is missing in entity class, skip it
                     continue;
@@ -576,6 +714,7 @@ public void updateReport7(M_RPD_Summary_Entity7 entity7) {
         throw new RuntimeException("Error while updating R301-350 fields", e);
     }
     BRRS_M_RPD_Summary_Repo7.save(existing);
+     brrs_M_RPD_Detail_Repo7.save(detailexisting);
 }
 
 public void updateReport8(M_RPD_Summary_Entity8 entity8) {
@@ -584,6 +723,10 @@ public void updateReport8(M_RPD_Summary_Entity8 entity8) {
     M_RPD_Summary_Entity8 existing = BRRS_M_RPD_Summary_Repo8.findById(entity8.getReportDate())
         .orElseThrow(() -> new RuntimeException(
             "Record not found for REPORT_DATE: " + entity8.getReportDate()));
+    
+    M_RPD_Detail_Entity8 detailexisting = brrs_M_RPD_Detail_Repo8.findById(entity8.getReportDate())
+            .orElseThrow(() -> new RuntimeException(
+                "Record not found for REPORT_DATE: " + entity8.getReportDate()));
 
     try {
         for (int i = 351; i <= 400; i++) {
@@ -608,10 +751,13 @@ public void updateReport8(M_RPD_Summary_Entity8 entity8) {
 
                 try {
                     Method getter = M_RPD_Summary_Entity8.class.getMethod(getterName);
-                    Method setter = M_RPD_Summary_Entity8.class.getMethod(setterName, getter.getReturnType());
-
                     Object newValue = getter.invoke(entity8);
+                    
+                    Method setter = M_RPD_Summary_Entity8.class.getMethod(setterName, getter.getReturnType());
+                    Method detailsetter = M_RPD_Detail_Entity8.class.getMethod(setterName, getter.getReturnType());
+                    
                     setter.invoke(existing, newValue);
+                    detailsetter.invoke(detailexisting, newValue);
                 } catch (NoSuchMethodException e) {
                     // if any field is missing in entity class, skip it
                     continue;
@@ -622,6 +768,7 @@ public void updateReport8(M_RPD_Summary_Entity8 entity8) {
         throw new RuntimeException("Error while updating R101-150 fields", e);
     }
     BRRS_M_RPD_Summary_Repo8.save(existing);
+    brrs_M_RPD_Detail_Repo8.save(detailexisting);
 }
 
 public void updateReport9(M_RPD_Summary_Entity9 entity9) {
@@ -630,6 +777,10 @@ public void updateReport9(M_RPD_Summary_Entity9 entity9) {
     M_RPD_Summary_Entity9 existing = BRRS_M_RPD_Summary_Repo9.findById(entity9.getReportDate())
         .orElseThrow(() -> new RuntimeException(
             "Record not found for REPORT_DATE: " + entity9.getReportDate()));
+    
+    M_RPD_Detail_Entity9 detailexisting = brrs_M_RPD_Detail_Repo9.findById(entity9.getReportDate())
+            .orElseThrow(() -> new RuntimeException(
+                "Record not found for REPORT_DATE: " + entity9.getReportDate()));
 
     try {
         for (int i = 401; i <= 450; i++) {
@@ -654,10 +805,14 @@ public void updateReport9(M_RPD_Summary_Entity9 entity9) {
 
                 try {
                     Method getter = M_RPD_Summary_Entity9.class.getMethod(getterName);
-                    Method setter = M_RPD_Summary_Entity9.class.getMethod(setterName, getter.getReturnType());
-
                     Object newValue = getter.invoke(entity9);
+                    
+                    Method setter = M_RPD_Summary_Entity9.class.getMethod(setterName, getter.getReturnType());
+                    Method detailsetter = M_RPD_Detail_Entity9.class.getMethod(setterName, getter.getReturnType());
+
+                    
                     setter.invoke(existing, newValue);
+                    detailsetter.invoke(detailexisting, newValue);
                 } catch (NoSuchMethodException e) {
                     // if any field is missing in entity class, skip it
                     continue;
@@ -667,26 +822,53 @@ public void updateReport9(M_RPD_Summary_Entity9 entity9) {
         Method getter1 = M_RPD_Summary_Entity9.class.getMethod("getR451_APPROVED_LIMIT");
         Method setter1 = M_RPD_Summary_Entity9.class.getMethod("setR451_APPROVED_LIMIT", getter1.getReturnType());
         
+        Method detailgetter1 = M_RPD_Detail_Entity9.class.getMethod("getR451_APPROVED_LIMIT");
+        Method detailsetter1 = M_RPD_Detail_Entity9.class.getMethod("setR451_APPROVED_LIMIT", detailgetter1.getReturnType());
+        
         Method getter2 = M_RPD_Summary_Entity9.class.getMethod("getR451_OUTSTANDING_AMOUNT");
         Method setter2 = M_RPD_Summary_Entity9.class.getMethod("setR451_OUTSTANDING_AMOUNT", getter2.getReturnType());
         
+        Method detailgetter2 = M_RPD_Detail_Entity9.class.getMethod("getR451_OUTSTANDING_AMOUNT");
+        Method detailsetter2 = M_RPD_Detail_Entity9.class.getMethod("setR451_OUTSTANDING_AMOUNT", detailgetter2.getReturnType());
+        
         Method getter3 = M_RPD_Summary_Entity9.class.getMethod("getR451_EXCESS_OVER_CEILING");
         Method setter3 = M_RPD_Summary_Entity9.class.getMethod("setR451_EXCESS_OVER_CEILING", getter3.getReturnType());
+        
+        Method detailgetter3 = M_RPD_Detail_Entity9.class.getMethod("getR451_EXCESS_OVER_CEILING");
+        Method detailsetter3 = M_RPD_Detail_Entity9.class.getMethod("setR451_EXCESS_OVER_CEILING", detailgetter3.getReturnType());
 
         Method getter4 = M_RPD_Summary_Entity9.class.getMethod("getR451_CURRENT_PROVISIONS");
         Method setter4 = M_RPD_Summary_Entity9.class.getMethod("setR451_CURRENT_PROVISIONS", getter4.getReturnType());
+        
+        Method detailgetter4 = M_RPD_Detail_Entity9.class.getMethod("getR451_CURRENT_PROVISIONS");
+        Method detailsetter4 = M_RPD_Detail_Entity9.class.getMethod("setR451_CURRENT_PROVISIONS", detailgetter4.getReturnType());
 
         Method getter5 = M_RPD_Summary_Entity9.class.getMethod("getR451_VALUE");
         Method setter5 = M_RPD_Summary_Entity9.class.getMethod("setR451_VALUE", getter5.getReturnType());
+        
+        Method detailgetter5 = M_RPD_Detail_Entity9.class.getMethod("getR451_VALUE");
+        Method detailsetter5 = M_RPD_Detail_Entity9.class.getMethod("setR451_VALUE", detailgetter5.getReturnType());
+        
         setter1.invoke(existing, getter1.invoke(entity9));
+        detailsetter1.invoke(detailexisting, detailgetter1.invoke(entity9));
+        
         setter2.invoke(existing, getter2.invoke(entity9));
+        detailsetter2.invoke(detailexisting, detailgetter2.invoke(entity9));
+        
         setter3.invoke(existing, getter3.invoke(entity9));
+        detailsetter3.invoke(detailexisting, detailgetter3.invoke(entity9));
+        
         setter4.invoke(existing, getter4.invoke(entity9));
+        detailsetter4.invoke(detailexisting, detailgetter4.invoke(entity9));
+        
         setter5.invoke(existing, getter5.invoke(entity9));
+        detailsetter5.invoke(detailexisting, detailgetter5.invoke(entity9));
+        
     } catch (Exception e) {
-        throw new RuntimeException("Error while updating R101-150 fields", e);
+        throw new RuntimeException("Error while updating R401-450 fields", e);
     }
     BRRS_M_RPD_Summary_Repo9.save(existing);
+    brrs_M_RPD_Detail_Repo9.save(detailexisting);
 }
 
 public List<Object> getM_RPDarchival() {
@@ -713,7 +895,7 @@ public List<Object> getM_RPDarchival() {
 	return M_RPDArchivallist;
 }
 
-public byte[] getM_RPDExcel(String filename,String reportId, String fromdate, String todate, String currency, String dtltype,String type,String version) throws Exception {
+public byte[] getM_RPDExcel(String filename,String reportId, String fromdate, String todate, String currency, String dtltype,String type,BigDecimal version) throws Exception {
 	logger.info("Service: Starting Excel generation process in memory.");
 
 
@@ -731,7 +913,7 @@ Date reportDate = dateformat.parse(todate);
 
 
 	// RESUB check
-	else if ("RESUB".equalsIgnoreCase(type) && version != null && !version.trim().isEmpty()) {
+	else if ("RESUB".equalsIgnoreCase(type) && version != null) {
 	logger.info("Service: Generating RESUB report for version {}", version);
 
 
@@ -27258,7 +27440,7 @@ public void next401_3(Sheet sheet, M_RPD_Summary_Entity9 record9, CellStyle numb
 	}
 	}
 
-public byte[] getExcelM_RPDARCHIVAL(String filename,String reportId, String fromdate, String todate, String currency, String dtltype,String type,String version) throws Exception {
+public byte[] getExcelM_RPDARCHIVAL(String filename,String reportId, String fromdate, String todate, String currency, String dtltype,String type,BigDecimal version) throws Exception {
 	logger.info("Service: Starting Excel generation process in memory.");
 	System.out.println(type);
 	System.out.println(version);
@@ -49592,7 +49774,7 @@ public void updateReportReSub(
 
 public byte[] BRRS_M_RPDResubExcel(String filename, String reportId, String fromdate,
 		String todate, String currency, String dtltype,
-		String type, String version) throws Exception {
+		String type, BigDecimal version) throws Exception {
 
 	logger.info("Service: Starting Excel generation process in memory for RESUB Excel.");
 

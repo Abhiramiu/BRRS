@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -36,10 +37,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.bornfire.brrs.entities.BRRS_Q_RLFA2_Archival_Summary_Repo;
+import com.bornfire.brrs.entities.BRRS_Q_RLFA2_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_Q_RLFA2_Summary_Repo;
 import com.bornfire.brrs.entities.M_CA4_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.M_CA4_Summary_Entity;
 import com.bornfire.brrs.entities.Q_RLFA2_Archival_Summary_Entity;
+import com.bornfire.brrs.entities.Q_RLFA2_Detail_Entity;
 import com.bornfire.brrs.entities.Q_RLFA2_Summary_Entity;
 
 @Component
@@ -57,6 +60,9 @@ public class BRRS_Q_RLFA2_ReportService {
 
 	@Autowired
 	BRRS_Q_RLFA2_Summary_Repo brrs_q_rlfa2_summary_repo;
+	
+	@Autowired
+	BRRS_Q_RLFA2_Detail_Repo brrs_q_rlfa2_detail_repo;
 
 	@Autowired
 	BRRS_Q_RLFA2_Archival_Summary_Repo brrs_q_rlfa2_archival_summary_repo;
@@ -122,7 +128,7 @@ public class BRRS_Q_RLFA2_ReportService {
 	  
 	  public ModelAndView getQ_RLFA2View(String reportId, String fromdate, String
 			  todate, String currency, String dtltype, Pageable pageable, String type,
-			  String version) {
+			  BigDecimal version) {
 			  
 			  ModelAndView mv = new ModelAndView(); Session hs =
 			  sessionFactory.getCurrentSession();
@@ -137,7 +143,7 @@ public class BRRS_Q_RLFA2_ReportService {
 			  ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
 			  List<Q_RLFA2_Archival_Summary_Entity> T1Master =
 					  brrs_q_rlfa2_archival_summary_repo.getdatabydateListarchival(d1, version);
-			  
+			  mv.addObject("displaymode", "summary");
 			  mv.addObject("reportsummary", T1Master); }
 			  
 			  // ---------- CASE 2: RESUB ---------- 
@@ -145,7 +151,7 @@ public class BRRS_Q_RLFA2_ReportService {
 			  ("RESUB".equalsIgnoreCase(type) && version != null) {
 			  List<Q_RLFA2_Archival_Summary_Entity> T1Master =
 					  brrs_q_rlfa2_archival_summary_repo.getdatabydateListarchival(d1, version);
-			  
+			  mv.addObject("displaymode", "summary");
 			  mv.addObject("reportsummary", T1Master); }
 			  
 			  // ---------- CASE 3: NORMAL ---------- 
@@ -153,14 +159,26 @@ public class BRRS_Q_RLFA2_ReportService {
 			  T1Master =
 					  brrs_q_rlfa2_summary_repo.getdatabydateListWithVersion(todate);
 			  System.out.println("T1Master Size "+T1Master.size());
-			  mv.addObject("reportsummary", T1Master); }
+			  mv.addObject("reportsummary", T1Master);
+			  mv.addObject("displaymode", "summary");
+			  }
+			  
+			   
+			  if(dtltype.equals("detail"))
+			  {
+				  List<Q_RLFA2_Detail_Entity>
+				  T1Master = brrs_q_rlfa2_detail_repo.getdatabydateListWithVersion(todate);
+				  System.out.println("T1Master Size = "+T1Master.size());
+				  mv.addObject("reportsummary", T1Master);
+				  mv.addObject("displaymode", "Details");
+			  }
 			  
 			  } catch (ParseException e) { e.printStackTrace(); }
 			  
-			  mv.setViewName("BRRS/Q_RLFA2"); mv.addObject("displaymode", "summary");
+			  mv.setViewName("BRRS/Q_RLFA2"); 
 			  System.out.println("View set to: " + mv.getViewName()); return mv; }
 
-	 
+	         
 	
 
 	  
@@ -209,16 +227,16 @@ public class BRRS_Q_RLFA2_ReportService {
 	  
 	  
 	  public byte[] getQ_RLFA2Excel(String filename, String reportId, String fromdate, String todate, String currency,
-				String dtltype, String type, String version) throws Exception {
+				String dtltype, String type, BigDecimal version) throws Exception {
 			logger.info("Service: Starting Excel generation process in memory.");
 
 			// ARCHIVAL check
-			if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && !version.trim().isEmpty()) {
+			if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
 				logger.info("Service: Generating ARCHIVAL report for version {}", version);
 				return getExcelQ_RLFA2ARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
 			}
 
-			else if ("RESUB".equalsIgnoreCase(type) && version != null && !version.trim().isEmpty()) {
+			else if ("RESUB".equalsIgnoreCase(type) && version != null) {
 			    logger.info("Service: Generating RESUB report for version {}", version);
 
 			    try {
@@ -243,11 +261,14 @@ public class BRRS_Q_RLFA2_ReportService {
 			// Fetch data
 
 			List<Q_RLFA2_Summary_Entity> dataList = brrs_q_rlfa2_summary_repo.getdatabydateList(dateformat.parse(todate));
+			
+			//List<Q_RLFA2_Detail_Entity> detaildataList = brrs_q_rlfa2_detail_repo.getdatabydateList(dateformat.parse(todate));
 
 			if (dataList.isEmpty()) {
 				logger.warn("Service: No data found for Q_RLFA2 report. Returning empty result.");
 				return new byte[0];
 			}
+			
 
 			String templateDir = env.getProperty("output.exportpathtemp");
 			String templateFileName = filename;
@@ -1934,7 +1955,7 @@ public class BRRS_Q_RLFA2_ReportService {
 	  
 	  
 	  public byte[] getExcelQ_RLFA2ARCHIVAL(String filename, String reportId, String fromdate, String todate,
-				String currency, String dtltype, String type, String version) throws Exception {
+				String currency, String dtltype, String type, BigDecimal version) throws Exception {
 
 			logger.info("Service: Starting Excel generation process in memory.");
 
@@ -3687,7 +3708,11 @@ public class BRRS_Q_RLFA2_ReportService {
 		    Q_RLFA2_Summary_Entity existing = brrs_q_rlfa2_summary_repo.findById(updatedEntity.getReport_date())
 		            .orElseThrow(() -> new RuntimeException(
 		                    "Record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
-
+  
+		    Q_RLFA2_Detail_Entity detailexisting = brrs_q_rlfa2_detail_repo.findById(updatedEntity.getReport_date())
+		            .orElseThrow(() -> new RuntimeException(
+		                    "Record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
+		    
 		    try {
 		        // 1️⃣ Loop from R10 to R63 and copy fields
 		    	
@@ -3703,11 +3728,13 @@ public class BRRS_Q_RLFA2_ReportService {
 
 		                try {
 		                    Method getter = Q_RLFA2_Summary_Entity.class.getMethod(getterName);
-		                    Method setter = Q_RLFA2_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-
 		                    Object newValue = getter.invoke(updatedEntity);
+		                    
+		                    Method setter = Q_RLFA2_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+		                    Method detailsetter = Q_RLFA2_Detail_Entity.class.getMethod(setterName, getter.getReturnType());
+		                   
 		                    setter.invoke(existing, newValue);
-
+		                    detailsetter.invoke(detailexisting, newValue);
 		                } catch (NoSuchMethodException e) {
 		                    // Skip missing fields
 		                    continue;
@@ -3815,7 +3842,7 @@ public class BRRS_Q_RLFA2_ReportService {
 		/// Downloaded for Archival & Resub
 		public byte[] BRRS_Q_RLFA2ResubExcel(String filename, String reportId, String fromdate,
 	        String todate, String currency, String dtltype,
-	        String type, String version) throws Exception {
+	        String type, BigDecimal version) throws Exception {
 
 	    logger.info("Service: Starting Excel generation process in memory for RESUB Excel.");
 

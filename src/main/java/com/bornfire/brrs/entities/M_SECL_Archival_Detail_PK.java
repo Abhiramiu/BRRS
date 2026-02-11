@@ -5,16 +5,16 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Objects;
 
-public class M_SECL_Archival_Summary_PK implements Serializable {
+public class M_SECL_Archival_Detail_PK implements Serializable {
 
     private Date reportDate;
     private BigDecimal reportVersion;
 
     // default constructor
-    public M_SECL_Archival_Summary_PK() {}
+    public M_SECL_Archival_Detail_PK() {}
 
     // parameterized constructor
-    public M_SECL_Archival_Summary_PK(Date reportDate, BigDecimal reportVersion) {
+    public M_SECL_Archival_Detail_PK(Date reportDate, BigDecimal reportVersion) {
         this.reportDate = reportDate;
         this.reportVersion = reportVersion;
     }
@@ -23,8 +23,8 @@ public class M_SECL_Archival_Summary_PK implements Serializable {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof M_SECL_Archival_Summary_PK)) return false;
-        M_SECL_Archival_Summary_PK that = (M_SECL_Archival_Summary_PK) o;
+        if (!(o instanceof M_SECL_Archival_Detail_PK)) return false;
+        M_SECL_Archival_Detail_PK that = (M_SECL_Archival_Detail_PK) o;
         return Objects.equals(reportDate, that.reportDate) &&
                Objects.equals(reportVersion, that.reportVersion);
     }

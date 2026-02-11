@@ -512,6 +512,10 @@ public class RegulatoryReportServices {
 			repsummary = BRRS_M_OPTR_ReportService.getBRRS_M_OPTRView(reportId, fromdate, todate, currency, dtltype, pageable,
 					type, version);
 			break;
+		case "M_SECL":
+			repsummary = brrs_m_secl_reportservice.getM_SECLView(reportId, fromdate, todate, currency, dtltype,
+					pageable, type, version);
+			break;
 		/*
 		 * 
 		 * 
@@ -660,8 +664,7 @@ public class RegulatoryReportServices {
 		 * 
 		 * 
 		 * 
-		 * case "M_SECL": repsummary = brrs_m_secl_reportservice.getM_SECLView(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
+		
 		 * 
 		 * 
 		 * 
@@ -2497,7 +2500,14 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
-
+		case "M_SECL":
+			try {
+				repfile = brrs_m_secl_reportservice.getM_SECLExcel(filename, reportId, fromdate, todate, currency,
+						dtltype, type, version);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			break;
 		/*
 		 * case "M_CA4": try { repfile =
 		 * BRRS_M_CA4_reportservice.getBRRS_M_CA4Excel(filename, reportId, fromdate,
@@ -2667,10 +2677,7 @@ public class RegulatoryReportServices {
 		 * fromdate, todate, currency, dtltype, type, version); } catch (Exception e) {
 		 * // TODO Auto-generated catch block e.printStackTrace(); } break;
 		 * 
-		 * case "M_SECL": try { repfile =
-		 * brrs_m_secl_reportservice.getM_SECLExcel(filename, reportId, fromdate,
-		 * todate, currency, dtltype, type, version); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
+		 
 		 * 
 		 * 
 		 * 

@@ -2,12 +2,10 @@ package com.bornfire.brrs.entities;
 
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.IdClass;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -15,24 +13,21 @@ import javax.persistence.TemporalType;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
-@Table(name = "BRRS_M_SECL_ARCHIVALTABLE_SUMMARY")
-@IdClass(M_SECL_Archival_Summary_PK.class) 
-public class M_SECL_Archival_Summary_Entity{	
-
-
-	@Id
+@Table(name = "BRRS_M_SECL_DETAILTABLE")
+public class M_SECL_Detail_Entity 
+{
 	@Temporal(TemporalType.DATE)
 	@DateTimeFormat(pattern = "dd/MM/yyyy")
+	@Id
 	@Column(name = "REPORT_DATE")
 	private Date reportDate;
 	
-     @Id
 	@Column(name = "REPORT_VERSION")
-	private BigDecimal reportVersion;
+	private String reportVersion;
 	
-    @Column(name = "REPORT_RESUBDATE")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date reportResubDate;	
+	//@Column(name = "REPORT_RESUBDATE")
+	//@Temporal(TemporalType.TIMESTAMP)
+	//private Date reportResubDate;
 	
 	public String report_frequency;
 	public String report_code;
@@ -41,7 +36,7 @@ public class M_SECL_Archival_Summary_Entity{
 	public String modify_flg;
 	public String del_flg;
 	
-	
+
 	private String R12_PRODUCT;
 	private BigDecimal R12_EQUITY;
 	private BigDecimal R12_BONDS;
@@ -599,17 +594,11 @@ public class M_SECL_Archival_Summary_Entity{
 	public void setReportDate(Date reportDate) {
 		this.reportDate = reportDate;
 	}
-	public BigDecimal getReportVersion() {
+	public String getReportVersion() {
 		return reportVersion;
 	}
-	public void setReportVersion(BigDecimal reportVersion) {
+	public void setReportVersion(String reportVersion) {
 		this.reportVersion = reportVersion;
-	}
-	public Date getReportResubDate() {
-		return reportResubDate;
-	}
-	public void setReportResubDate(Date reportResubDate) {
-		this.reportResubDate = reportResubDate;
 	}
 	public String getReport_frequency() {
 		return report_frequency;
@@ -3683,9 +3672,8 @@ public class M_SECL_Archival_Summary_Entity{
 	public void setR57_TOTAL(BigDecimal r57_TOTAL) {
 		R57_TOTAL = r57_TOTAL;
 	}
-	public M_SECL_Archival_Summary_Entity() {
+	public M_SECL_Detail_Entity() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 	
 	
