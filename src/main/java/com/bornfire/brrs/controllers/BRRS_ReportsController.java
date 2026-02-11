@@ -4768,4 +4768,31 @@ public class BRRS_ReportsController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
 		}
 	}
+	
+	@RequestMapping(value = "/SRWA12DupdateAll1", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<String> updateAllReports1(
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+			@RequestParam("reportType") String reportType,
+			@ModelAttribute M_SRWA_12D_Resub_Summary_Entity request1,@ModelAttribute M_SRWA_12D_Resub_Detail_Entity request2,
+			@ModelAttribute  M_SRWA_12D_Archival_Summary_Entity request3,@ModelAttribute M_SRWA_12D_Archival_Detail_Entity request4
+
+	) {
+		try {
+			System.out.println("Came to single controller");
+			// set date into all 4 entities
+			request1.setReport_date(asondate);
+
+			// call services
+			SRWA12DreportService.updateReport1(request1);
+			SRWA12DreportService.updateReport2(request2);
+			SRWA12DreportService.updateReport3(request3);
+			SRWA12DreportService.updateReport4(request4);
+
+			return ResponseEntity.ok("Updated Successfully");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
+		}
+	}
 }

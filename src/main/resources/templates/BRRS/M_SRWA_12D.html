@@ -308,16 +308,18 @@ PURPOSE		: BWRBRREPORT
 			window.history.back();
 		}
 
-		//to fetch summary from the database - called from the summary button
 		function showdetails() {
+			var Callurl;
 			$('#loader').modal('show');
-			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='detail', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/
+			Callurl = Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='detail', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate},
+			version=${version})}]]*/
 				location.href = Callurl;
+			console.log(Callurl);
 		}
 
 		function showsummary() {
 			$('#loader').modal('show');
-			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate},version=${version})}]]*/
 				location.href = Callurl;
 		}
 
@@ -1677,6 +1679,8 @@ PURPOSE		: BWRBRREPORT
 
 		function fileuploads(btn) {
 			const asondate = btn.getAttribute("data-todate");
+			const reportId = btn.getAttribute("data-reporttype"); // RESUB / NORMAL
+
 			$('#loader').modal('show');
 
 			// ✅ Step 1: Calculate TOTALs
@@ -1692,11 +1696,6 @@ PURPOSE		: BWRBRREPORT
 			calculate_R14_PFCE_EXCHANGE();
 			calculateR12_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS();
 			calculateR12_CREDIT_EQUIVALENT_INTEREST_CONTRACTS();
-
-
-
-
-
 
 			// Step 2: Remove commas AND percentage signs
 			$("#fileupload input[type='text']").each(function () {
@@ -1715,13 +1714,22 @@ PURPOSE		: BWRBRREPORT
 			// Step 4: Prepare FormData
 			const formData = new FormData();
 			formData.append("asondate", asondate);
+			formData.append("reportType", reportId);
 			$('#fileupload :input[name]').each(function () {
 				formData.append($(this).attr('name'), $(this).val());
 			});
 
+			// ✅ Step 5: Decide URL based on reportType
+			let urlToCall = './SRWA12DupdateAll';
+
+			if (reportId === 'RESUB') {
+				alert()
+				urlToCall = './SRWA12DupdateAll1';
+			}
+
 			// Step 5: Send AJAX
 			$.ajax({
-				url: './SRWA12DupdateAll',
+				 url: urlToCall,
 				type: 'POST',
 				data: formData,
 				processData: false,
@@ -1932,7 +1940,8 @@ PURPOSE		: BWRBRREPORT
 
 						<!-- Modify button -->
 						<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
-							title="Click to EDIT Records" th:if="${displaymode == 'summary'}" id="addRecord">
+							title="Click to EDIT Records" th:if="${displaymode == 'summary' and type != 'ARCHIVAL'}"
+							id="addRecord">
 							Modify
 						</button>
 
@@ -1951,7 +1960,7 @@ PURPOSE		: BWRBRREPORT
                     				 data-dtltype=${dtltype},
                     				 data-filename='M_SRWA12D.xlsx',
 					 				 data-type=${type},
-					    			 data-version=${version}" onclick="downloadfile(this);">Excel
+					    			 data-version=${version}" onclick="downloadfile(this);">Format
 							<i class="fa fa-download"></i>
 						</button>
 
@@ -1962,7 +1971,7 @@ PURPOSE		: BWRBRREPORT
 						                    				 data-todate=${todate},
 						                    				 data-currency=${currency}, 
 						                    				 data-dtltype='email',
-						                    				 data-filename='M_SRWA_12D-NEW.xlsx',
+						                    				 data-filename='EMAIL_M_SRWA_12D.xlsx',
 											 				 data-type=${type},
 											    			 data-version=${version}" onclick="downloadfile(this);">Email
 							<i class="fa fa-download"></i>
@@ -4974,7 +4983,7 @@ PURPOSE		: BWRBRREPORT
 								<div style="text-align: center; margin-top: 10px;">
 
 									<button id="submitButton" type="button" class="custom-tab-btn Show_input"
-										form="fileupload" th:attr="data-todate=${asondate}" onclick="fileuploads(this);"
+										form="fileupload" th:attr="data-todate=${asondate},data-reporttype=${type}" onclick="fileuploads(this);"
 										style="display: none;">
 										Submit
 									</button>

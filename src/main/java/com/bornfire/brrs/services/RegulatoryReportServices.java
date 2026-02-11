@@ -216,8 +216,6 @@ public class RegulatoryReportServices {
 
 	BRRS_M_INT_RATES_FCA_ReportService BRRS_M_INT_RATES_FCA_ReportService;
 
-	
-
 	@Autowired
 	BRRS_M_LARADV_ReportService brrs_m_laradv_reportservice;
 
@@ -460,8 +458,8 @@ public class RegulatoryReportServices {
 					currency, dtltype, pageable, type, version);
 			break;
 		case "M_SIR":
-			repsummary = BRRS_M_SIR_ReportService.getBRRS_M_SIRView(reportId, fromdate, todate, currency, dtltype, pageable,
-					type, version);
+			repsummary = BRRS_M_SIR_ReportService.getBRRS_M_SIRView(reportId, fromdate, todate, currency, dtltype,
+					pageable, type, version);
 			break;
 
 		case "M_CA4":
@@ -509,8 +507,8 @@ public class RegulatoryReportServices {
 			break;
 
 		case "M_OPTR":
-			repsummary = BRRS_M_OPTR_ReportService.getBRRS_M_OPTRView(reportId, fromdate, todate, currency, dtltype, pageable,
-					type, version);
+			repsummary = BRRS_M_OPTR_ReportService.getBRRS_M_OPTRView(reportId, fromdate, todate, currency, dtltype,
+					pageable, type, version);
 			break;
 		case "M_SECL":
 			repsummary = brrs_m_secl_reportservice.getM_SECLView(reportId, fromdate, todate, currency, dtltype,
@@ -664,7 +662,7 @@ public class RegulatoryReportServices {
 		 * 
 		 * 
 		 * 
-		
+		 * 
 		 * 
 		 * 
 		 * 
@@ -1172,7 +1170,6 @@ public class RegulatoryReportServices {
 			repsummary = BRRS_M_INT_RATES_FCA_ReportService.getINT_RATES_FCAView(reportId, fromdate, todate, currency,
 					dtltype, pageable, type, version);
 			break;
-
 
 		case "M_INT_RATES":
 			repsummary = brrs_m_int_rates_reportservice.getM_INTRATESView(reportId, fromdate, todate, currency, dtltype,
@@ -1860,8 +1857,6 @@ public class RegulatoryReportServices {
 					currency, dtltype, pageable, Filter, type, version);
 			break;
 
-		
-
 		case "CPR_STRUCT_LIQ":
 
 			repdetail = BRRS_CPR_STRUCT_LIQ_ReportService.getCPR_STRUCT_LIQcurrentDtl(reportId, fromdate, todate,
@@ -2266,8 +2261,8 @@ public class RegulatoryReportServices {
 		case "M_GP":
 			try {
 
-				repfile = BRRS_M_GP_ReportService.getM_GPExcel(filename, reportId, fromdate, todate, currency,
-						dtltype, type, format, version);
+				repfile = BRRS_M_GP_ReportService.getM_GPExcel(filename, reportId, fromdate, todate, currency, dtltype,
+						type, format, version);
 			} catch (Exception e) { // TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -2677,7 +2672,7 @@ public class RegulatoryReportServices {
 		 * fromdate, todate, currency, dtltype, type, version); } catch (Exception e) {
 		 * // TODO Auto-generated catch block e.printStackTrace(); } break;
 		 * 
-		 
+		 * 
 		 * 
 		 * 
 		 * 
@@ -3681,8 +3676,6 @@ public class RegulatoryReportServices {
 			}
 			break;
 
-		
-
 		case "Q_STAFF":
 			try {
 				repfile = BRRS_Q_STAFF_report_service.getBRRS_Q_STAFFExcel(filename, reportId, fromdate, todate,
@@ -3939,8 +3932,6 @@ public class RegulatoryReportServices {
 			return brrs_m_int_new_rates_reportservice.getM_INT_RATESNEWDetailExcel(filename, fromdate, todate, currency,
 					dtltype, type, version);
 		}
-
-	
 
 		else if ("MDISB5Detail".equals(filename)) {
 			return BRRS_MDISB5_ReportService.getMDISB5DetailExcel(filename, fromdate, todate, currency, dtltype, type,
@@ -4261,8 +4252,6 @@ public class RegulatoryReportServices {
 			System.out.println("Fetched M_INT_RATES_FCA archival data: " + intratesfcaList.size());
 			break;
 
-		
-
 		case "M_AIDP":
 			try {
 				archivalData = BRRS_M_AIDP_ReportService.getM_AIDPArchival();
@@ -4472,7 +4461,7 @@ public class RegulatoryReportServices {
 		 * brrs_m_epr_reportservice.getM_EPRArchival(); } catch (Exception e) { // TODO
 		 * Auto-generated catch block e.printStackTrace(); } break;
 		 */
-	
+
 		case "M_SRWA_12A":
 			try {
 				archivalData = brrs_m_srwa_12a_reportservice.getM_SRWA_12AArchival();
@@ -4731,12 +4720,12 @@ public class RegulatoryReportServices {
 //				e.printStackTrace();
 //			}
 //			break;
-			
+
 		case "M_GP":
 			List<Object[]> gpList = BRRS_M_GP_ReportService.getM_GPArchival();
-					archivalData.addAll(gpList);
-					System.out.println("Fetched M_GP archival data: " + gpList.size());
-					break;
+			archivalData.addAll(gpList);
+			System.out.println("Fetched M_GP archival data: " + gpList.size());
+			break;
 
 		case "M_OR2":
 			try {
@@ -4762,7 +4751,7 @@ public class RegulatoryReportServices {
 			archivalData.addAll(srwFList1);
 			System.out.println("Fetched 12F archival data: " + srwFList1.size());
 			break;
-			
+
 		case "M_SIR":
 			List<Object[]> msir = BRRS_M_SIR_ReportService.getM_SIRArchival();
 			archivalData.addAll(msir);
@@ -5193,6 +5182,13 @@ public class RegulatoryReportServices {
 			System.out.println("Fetched Q_STAFF archival data: " + QSList.size());
 			break;
 
+		case "M_SRWA_12D":
+			try {
+				archivalData = brrs_m_srwa_12d_reportservice.getSRWA_12DArchival1();
+			} catch (Exception e) {
+			}
+			break;
+
 		default:
 			System.out.println("No archival logic defined for report: " + rptcode);
 			break;
@@ -5567,7 +5563,6 @@ public class RegulatoryReportServices {
 					currency, dtltype, type, version);
 		}
 
-		
 		else if ("BDISB3Detail".equals(filename)) {
 
 			fileData = brrs_bdisb3_reportservice.getBDISB3DetailExcel(filename, fromdate, todate, currency, dtltype,
@@ -6309,7 +6304,7 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
-			
+
 		case "M_SIR":
 			try {
 				List<Object[]> resubList = BRRS_M_SIR_ReportService.getM_SIRResub();
@@ -6556,8 +6551,6 @@ public class RegulatoryReportServices {
 			}
 			break;
 
-		
-
 		case "M_CA5":
 			try {
 				List<Object[]> resubList = BRRS_M_CA5_reportservice.getM_CA5Resub();
@@ -6669,7 +6662,6 @@ public class RegulatoryReportServices {
 			}
 			break;
 
-	
 		case "M_RPD":
 			try {
 				List<Object[]> resubList = BRRS_M_RPD_ReportService.getM_RPDResub();
@@ -6753,6 +6745,17 @@ public class RegulatoryReportServices {
 		case "M_AIDP":
 			try {
 				List<Object[]> resubList = BRRS_M_AIDP_ReportService.getM_AIDPResub();
+				resubmissionData.addAll(resubList);
+				System.out.println("Resubmission data fetched for M_AIDP: " + resubList.size());
+			} catch (Exception e) {
+				System.err.println("Error fetching resubmission data for M_AIDP: " + e.getMessage());
+				e.printStackTrace();
+			}
+			break;
+
+		case "M_SRWA_12D":
+			try {
+				List<Object[]> resubList = brrs_m_srwa_12d_reportservice.getM_SRWA_12DResub();
 				resubmissionData.addAll(resubList);
 				System.out.println("Resubmission data fetched for M_AIDP: " + resubList.size());
 			} catch (Exception e) {
