@@ -618,125 +618,65 @@ window.onload = function() {
 
 
 function downloadfile(button) {
+    var reportid = button.getAttribute('data-reportid');
+    var asondate = button.getAttribute('data-asondate');
+    var fromdate = button.getAttribute('data-fromdate');
+    var todate = button.getAttribute('data-todate');
+    var currency = button.getAttribute('data-currency');
+    var subreportid = button.getAttribute('data-subreportid');
+    var secid = button.getAttribute('data-secid');
+    var dtltype = button.getAttribute('data-dtltype');
+    var filename = button.getAttribute('data-filename');
+    var type = button.getAttribute('data-type');
+    var version = button.getAttribute('data-version');
+    var format = button.getAttribute('data-format');
 
-		    var reportid   = button.getAttribute('data-reportid');
-		    var asondate   = button.getAttribute('data-asondate');
-		    var fromdate   = button.getAttribute('data-fromdate');
-		    var todate     = button.getAttribute('data-todate');
-		    var currency   = button.getAttribute('data-currency');
-		    var subreportid = button.getAttribute('data-subreportid');
-		    var secid      = button.getAttribute('data-secid');
-		    var dtltype    = button.getAttribute('data-dtltype');
-		    var filename   = button.getAttribute('data-filename');
-		    var type       = button.getAttribute('data-type');
-		    var version    = button.getAttribute('data-version');
+    if (format === null) {
+        format = '';   // treat as null
+    }
 
-		    console.log("==== DOWNLOAD PARAMS ====");
-		    console.log("type     :", type);
-		    console.log("version  :", version);
-		    console.log("dtltype  :", dtltype);
-		    console.log("=========================");
+    $('#loader').modal('show');
 
-		    // SHOW LOADER
-		    var loader = new bootstrap.Modal(
-		        document.getElementById('loader'),
-		        { backdrop: 'static', keyboard: false }
-		    );
-		    loader.show();
-
-		    // ======================================================
-		    // BUILD URL
-		    // ======================================================
-		    var url =
-		        './downloadExcel?' +
-		        'reportid='   + encodeURIComponent(reportid) +
-		        '&asondate='  + encodeURIComponent(asondate) +
-		        '&fromdate='  + encodeURIComponent(fromdate) +
-		        '&todate='    + encodeURIComponent(todate) +
-		        '&currency='  + encodeURIComponent(currency) +
-		        '&filename='  + encodeURIComponent(filename) +
-		        '&type='      + encodeURIComponent(type);
-
-		    // optional fields
-		    if (subreportid) {
-		        url += '&subreportid=' + encodeURIComponent(subreportid);
-		    }
-
-		    if (secid) {
-		        url += '&secid=' + encodeURIComponent(secid);
-		    }
-
-		    if (dtltype) {
-		        url += '&dtltype=' + encodeURIComponent(dtltype);
-		    }
-
-		    // ONLY append version if valid
-		    if (version && version.trim() !== '') {
-		        url += '&version=' + encodeURIComponent(version);
-		    }
-
-		    // ======================================================
-		    // AJAX CALL
-		    // ======================================================
-		    $.ajax({
-
-		        url: url,
-		        type: 'GET',
-		        xhrFields: {
-		            responseType: 'blob'
-		        },
-
-		        success: function (data) {
-
-		            $('#loader').modal('hide');
-
-		            // check valid file
-		            if (data && data.size > 100) {
-
-		                const blob = new Blob([data], {
-		                    type: 'application/vnd.ms-excel'
-		                });
-
-		                const downloadUrl = window.URL.createObjectURL(blob);
-
-		                const a = document.createElement('a');
-		                a.style.display = 'none';
-		                a.href = downloadUrl;
-		                a.download = filename;
-
-		                document.body.appendChild(a);
-		                a.click();
-
-		                window.URL.revokeObjectURL(downloadUrl);
-		                document.body.removeChild(a);
-
-		                showResultModal(
-		                    'BRRS',
-		                    filename + ' downloaded successfully.'
-		                );
-
-		            } else {
-		                showResultModal(
-		                    'Information',
-		                    'No data was available to create a download.'
-		                );
-		            }
-		        },
-
-		        error: function (xhr) {
-
-		            $('#loader').modal('hide');
-
-		            console.log("Download Error:", xhr);
-
-		            showResultModal(
-		                'Error',
-		                'An error occurred while downloading the file.'
-		            );
-		        }
-		    });
-		}
-
+    $.ajax({
+        url: './downloadExcel?reportid=' + reportid +
+             '&fromdate=' + fromdate +
+             '&asondate=' + asondate +
+             '&todate=' + todate +
+             '&currency=' + currency +
+             '&subreportid=' + subreportid +
+             '&secid=' + secid +
+             '&filename=' + filename +
+             '&type=' + type +
+             '&version=' + version +
+             '&format=' + format,
+        type: 'GET',
+        xhrFields: {
+            responseType: 'blob'
+        },
+        success: function (data) {
+            $('#loader').modal('hide');
+            if (data && data.size > 100) {
+                const blob = new Blob([data], { type: 'application/vnd.ms-excel' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+                showResultModal('BRRS', filename + ' downloaded successfully.');
+            } else {
+                showResultModal('Information', 'No data was available to create a download.');
+            }
+        },
+        error: function () {
+            $('#loader').modal('hide');
+            showResultModal('Error', 'An error occurred while downloading the file.');
+        }
+    });
+}
 		
 function editRecord(){
 	showResultModal('Alert', 'Development in progress');
@@ -1237,7 +1177,8 @@ $(document).ready(function() {
             data-currency=${currency}, 
             data-dtltype=${dtltype},
             data-filename='EMAIL_M_EPR.xlsx',
-            data-type='email',
+            data-type=${type},
+            data-format='email',
             data-version=${version != null ? version : ''}"
 							style="font-family: Arial; font-weight: bold;">
 							<i class="fa fa-download"></i> Email 

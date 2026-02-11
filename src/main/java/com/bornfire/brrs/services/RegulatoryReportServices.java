@@ -2245,7 +2245,7 @@ public class RegulatoryReportServices {
 			try {
 
 				repfile = brrs_m_epr_reportservice.getM_EPRExcel(filename, reportId, fromdate, todate, currency,
-						dtltype, type, version);
+						dtltype, type, format, version);
 			} catch (Exception e) { // TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -3651,8 +3651,8 @@ public class RegulatoryReportServices {
 
 		case "M_INT_RATES":
 			try {
-				repfile = brrs_m_int_rates_reportservice.getM_INTRATESExcel(filename, reportId, fromdate, todate,
-						currency, dtltype, type, version);
+				repfile = brrs_m_int_rates_reportservice.getM_INTRATESExcel(filename, reportId, fromdate, todate, currency,
+						dtltype, type, format, version);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -3681,8 +3681,8 @@ public class RegulatoryReportServices {
 
 		case "M_INT_RATES_FCA":
 			try {
-				repfile = BRRS_M_INT_RATES_FCA_ReportService.getM_INTRATESFCAExcel(filename, reportId, fromdate, todate,
-						currency, dtltype, type, version);
+				repfile = BRRS_M_INT_RATES_FCA_ReportService.getM_INTRATESFCAExcel(filename, reportId, fromdate, todate, currency,
+						dtltype, type, format, version);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

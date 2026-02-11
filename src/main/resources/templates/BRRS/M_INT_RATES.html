@@ -388,7 +388,6 @@ function showsummary() {
 			activateTab(selectedTab);
 		};
 		function downloadfile(button) {
-
 		    var reportid = button.getAttribute('data-reportid');
 		    var asondate = button.getAttribute('data-asondate');
 		    var fromdate = button.getAttribute('data-fromdate');
@@ -400,41 +399,34 @@ function showsummary() {
 		    var filename = button.getAttribute('data-filename');
 		    var type = button.getAttribute('data-type');
 		    var version = button.getAttribute('data-version');
+		    var format = button.getAttribute('data-format');
 
-		    var loader = new bootstrap.Modal(
-		        document.getElementById('loader'),
-		        { backdrop: 'static', keyboard: false }
-		    );
-		    loader.show();
-
-		    // ✅ Build URL safely
-		    var url = './downloadExcel?reportid=' + reportid +
-		        '&fromdate=' + fromdate +
-		        '&asondate=' + asondate +
-		        '&todate=' + todate +
-		        '&currency=' + currency +
-		        '&subreportid=' + subreportid +
-		        '&secid=' + secid +
-		        '&filename=' + filename +
-		        '&type=' + type;
-
-		    // ✅ ONLY append version if valid
-		    if (version && version.trim() !== '') {
-		        url += '&version=' + version;
+		    if (format === null) {
+		        format = '';   // treat as null
 		    }
 
-		    $.ajax({
-		        url: url,
-		        type: 'GET',
-		        xhrFields: { responseType: 'blob' },
+		    $('#loader').modal('show');
 
+		    $.ajax({
+		        url: './downloadExcel?reportid=' + reportid +
+		             '&fromdate=' + fromdate +
+		             '&asondate=' + asondate +
+		             '&todate=' + todate +
+		             '&currency=' + currency +
+		             '&subreportid=' + subreportid +
+		             '&secid=' + secid +
+		             '&filename=' + filename +
+		             '&type=' + type +
+		             '&version=' + version +
+		             '&format=' + format,
+		        type: 'GET',
+		        xhrFields: {
+		            responseType: 'blob'
+		        },
 		        success: function (data) {
 		            $('#loader').modal('hide');
-
 		            if (data && data.size > 100) {
-		                const blob = new Blob([data], {
-		                    type: 'application/vnd.ms-excel'
-		                });
+		                const blob = new Blob([data], { type: 'application/vnd.ms-excel' });
 		                const url = window.URL.createObjectURL(blob);
 		                const a = document.createElement('a');
 		                a.style.display = 'none';
@@ -444,19 +436,18 @@ function showsummary() {
 		                a.click();
 		                window.URL.revokeObjectURL(url);
 		                document.body.removeChild(a);
-
 		                showResultModal('BRRS', filename + ' downloaded successfully.');
 		            } else {
 		                showResultModal('Information', 'No data was available to create a download.');
 		            }
 		        },
-
 		        error: function () {
 		            $('#loader').modal('hide');
 		            showResultModal('Error', 'An error occurred while downloading the file.');
 		        }
 		    });
 		}
+				
 		function editRecord() {
 			showResultModal('Alert', 'Development in progress');
 
@@ -1156,7 +1147,7 @@ function fileuploads(btn) {
                    data-filename='M_INTRATES.xlsx',
                    data-type=${type},
                    data-version=${version != null ? version : ''}" style="font-family: Arial;font-weight: bold;">
-							<i class="fa fa-download"></i>  Formate
+							<i class="fa fa-download"></i>  Format
 						</button>
 						
 						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
@@ -1170,7 +1161,8 @@ function fileuploads(btn) {
             data-currency=${currency}, 
             data-dtltype=${dtltype},
             data-filename='EMAIL_M_INTRATES.xlsx',
-            data-type='email',
+            data-type=${type},
+            data-format='email',
             data-version=${version != null ? version : ''}" style="font-family: Arial;font-weight: bold;">
 								<i class="fa fa-download"></i>  Email
 							
