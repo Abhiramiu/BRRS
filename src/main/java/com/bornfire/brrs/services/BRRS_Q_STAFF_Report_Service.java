@@ -503,7 +503,8 @@ public class BRRS_Q_STAFF_Report_Service {
 
 			if (repoData != null && !repoData.isEmpty()) {
 				for (Q_STAFF_Archival_Summary_Entity entity : repoData) {
-					Object[] row = new Object[] { entity.getReportDate(), entity.getReportVersion() };
+					Object[] row = new Object[] { entity.getReportDate(), entity.getReportVersion(),
+							entity.getReportResubDate() };
 					archivalList.add(row);
 				}
 

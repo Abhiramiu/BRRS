@@ -559,7 +559,8 @@ public class BRRS_Q_BRANCHNET_ReportService {
 
 			if (repoData != null && !repoData.isEmpty()) {
 				for (Q_BRANCHNET_Archival_Summary_Entity entity : repoData) {
-					Object[] row = new Object[] { entity.getReportDate(), entity.getReportVersion() };
+					Object[] row = new Object[] { entity.getReportDate(), entity.getReportVersion(),
+							entity.getReportResubDate() };
 					archivalList.add(row);
 				}
 

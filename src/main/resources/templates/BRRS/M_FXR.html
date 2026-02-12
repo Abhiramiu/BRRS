@@ -10,8 +10,8 @@ PURPOSE		: BRRSREPORT
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<!-- CSS -->
-	
-	
+
+
 	<link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}">
 	<link rel="stylesheet" type="text/css" th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}">
 	<link rel="stylesheet" type="text/css" th:href="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.css}">
@@ -200,7 +200,6 @@ PURPOSE		: BRRSREPORT
 			pointer-events: none;
 			transition: 0.3s ease;
 		}
-
 	</style>
 	<style>
 		/* Red border for invalid inputs */
@@ -265,21 +264,22 @@ PURPOSE		: BRRSREPORT
 		.table-bordered th {
 			border: 1px solid #000 !important;
 		}
-		
-				/* 🚌 Bus display style box */
-					.boards {
-						transform: translateY(6px);
-					  background-color: rgb(107, 122, 143);
-					  color: white;
-					  padding: 5px 5px;
-					  border-radius: 8px;
-					  overflow: hidden;
-					  white-space: nowrap;
-					  flex: 1; /* ✅ makes it take available space dynamically */
-					  min-width: 200px;
-					  box-shadow: 0 0 10px rgb(107, 122, 143);
-					  position: relative;
-					}
+
+		/* 🚌 Bus display style box */
+		.boards {
+			transform: translateY(6px);
+			background-color: rgb(107, 122, 143);
+			color: white;
+			padding: 5px 5px;
+			border-radius: 8px;
+			overflow: hidden;
+			white-space: nowrap;
+			flex: 1;
+			/* ✅ makes it take available space dynamically */
+			min-width: 200px;
+			box-shadow: 0 0 10px rgb(107, 122, 143);
+			position: relative;
+		}
 
 		/* ✨ Scrolling animation */
 		.scrolling-text {
@@ -300,11 +300,9 @@ PURPOSE		: BRRSREPORT
 				transform: translateX(-100%);
 			}
 		}
-		
-		
 	</style>
 	<script th:inline="javascript">
-	let isDetailsModal = false;
+		let isDetailsModal = false;
 		$(document).ready(function () {
 			// hide loader on normal load
 			$('#loader').modal('hide');
@@ -317,35 +315,35 @@ PURPOSE		: BRRSREPORT
 			// hide loader on leaving page
 			$('#loader').modal('hide');
 		});
-        
-				
-		$(document).ready(function() {
-			Maker_Checker_Function(); 
+
+
+		$(document).ready(function () {
+			Maker_Checker_Function();
 		});
 
 		// if logged user is a Checker, checker cannot modify, if user is maker , then maker cant download
 		function Maker_Checker_Function() {
 			$.ajax({
-				url: "/BRRS/getUserRole",    
+				url: "/BRRS/getUserRole",
 				type: "GET",
-				success: function(roleId) {
+				success: function (roleId) {
 					// console.log("User Role ID:", roleId);
-				
-					if (roleId === "ADM-C" || roleId === "USR-C"  || roleId === "USER-AUDIT") {
+
+					if (roleId === "ADM-C" || roleId === "USR-C" || roleId === "USER-AUDIT") {
 						const modifyBtn = document.getElementById("addRecord");
 						if (modifyBtn) modifyBtn.style.display = "none";
 					}
 
 					if (roleId === "ADM-M" || roleId === "USR-M") {
-								const button = document.getElementById("custom-tab-btnAdd");
-								if (button) button.style.display = "none";
-							}
+						const button = document.getElementById("custom-tab-btnAdd");
+						if (button) button.style.display = "none";
+					}
 
 				},
-				error: function(err) {
+				error: function (err) {
 					console.error("Error fetching role:", err);
-		     }
-		    });
+				}
+			});
 		}
 
 
@@ -375,7 +373,7 @@ PURPOSE		: BRRSREPORT
 		function showsummary() {
 			$('#loader').modal('show');
 			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate}, version=${version})}]]*/
-			location.href = Callurl;
+				location.href = Callurl;
 		}
 
 
@@ -403,76 +401,67 @@ PURPOSE		: BRRSREPORT
 			var selectedTab = document.getElementById("selectedTab").value;
 			activateTab(selectedTab);
 		};
-				function downloadfile(button) {
+		function downloadfile(button) {
+				var reportid = button.getAttribute('data-reportid');
+				var asondate = button.getAttribute('data-asondate');
+				var fromdate = button.getAttribute('data-fromdate');
+				var todate = button.getAttribute('data-todate');
+				var currency = button.getAttribute('data-currency');
+				var subreportid = button.getAttribute('data-subreportid');
+				var secid = button.getAttribute('data-secid');
+				var dtltype = button.getAttribute('data-dtltype');
+				var filename = button.getAttribute('data-filename');
+				var type = button.getAttribute('data-type');
+				var version = button.getAttribute('data-version');
+				var format = button.getAttribute('data-format');
 
-		    var reportid = button.getAttribute('data-reportid');
-		    var asondate = button.getAttribute('data-asondate');
-		    var fromdate = button.getAttribute('data-fromdate');
-		    var todate = button.getAttribute('data-todate');
-		    var currency = button.getAttribute('data-currency');
-		    var subreportid = button.getAttribute('data-subreportid');
-		    var secid = button.getAttribute('data-secid');
-		    var dtltype = button.getAttribute('data-dtltype');
-		    var filename = button.getAttribute('data-filename');
-		    var type = button.getAttribute('data-type');
-		    var version = button.getAttribute('data-version');
+				if (format === null) {
+					format = '';   // treat as null
+				}
 
-		    var loader = new bootstrap.Modal(
-		        document.getElementById('loader'),
-		        { backdrop: 'static', keyboard: false }
-		    );
-		    loader.show();
+				$('#loader').modal('show');
 
-		    // ✅ Build URL safely
-		    var url = './downloadExcel?reportid=' + reportid +
-		        '&fromdate=' + fromdate +
-		        '&asondate=' + asondate +
-		        '&todate=' + todate +
-		        '&currency=' + currency +
-		        '&subreportid=' + subreportid +
-		        '&secid=' + secid +
-		        '&filename=' + filename +
-		        '&type=' + type;
+				$.ajax({
+					url: './downloadExcel?reportid=' + reportid +
+						'&fromdate=' + fromdate +
+						'&asondate=' + asondate +
+						'&todate=' + todate +
+						'&currency=' + currency +
+						'&subreportid=' + subreportid +
+						'&secid=' + secid +
+						'&filename=' + filename +
+						'&type=' + type +
+						'&version=' + version +
+						'&format=' + format,
+					type: 'GET',
+					xhrFields: {
+						responseType: 'blob'
+					},
+					success: function (data) {
+						$('#loader').modal('hide');
+						if (data && data.size > 100) {
+							const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
+							const url = window.URL.createObjectURL(blob);
+							const a = document.createElement('a');
+							a.style.display = 'none';
+							a.href = url;
+							a.download = filename;
+							document.body.appendChild(a);
+							a.click();
+							window.URL.revokeObjectURL(url);
+							document.body.removeChild(a);
+							showResultModal('BRRS', filename + ' downloaded successfully.');
+						} else {
+							showResultModal('Information', 'No data was available to create a download.');
+						}
+					},
+					error: function () {
+						$('#loader').modal('hide');
+						showResultModal('Error', 'An error occurred while downloading the file.');
+					}
+				});
+			}
 
-		    // ✅ ONLY append version if valid
-		    if (version && version.trim() !== '') {
-		        url += '&version=' + version;
-		    }
-
-		    $.ajax({
-		        url: url,
-		        type: 'GET',
-		        xhrFields: { responseType: 'blob' },
-
-		        success: function (data) {
-		            $('#loader').modal('hide');
-
-		            if (data && data.size > 100) {
-		                const blob = new Blob([data], {
-		                    type: 'application/vnd.ms-excel'
-		                });
-		                const url = window.URL.createObjectURL(blob);
-		                const a = document.createElement('a');
-		                a.style.display = 'none';
-		                a.href = url;
-		                a.download = filename;
-		                document.body.appendChild(a);
-		                a.click();
-		                window.URL.revokeObjectURL(url);
-		                document.body.removeChild(a);
-
-		                showResultModal('BRRS', filename + ' downloaded successfully.');
-		            } else {
-		                showResultModal('Information', 'No data was available to create a download.');
-		            }
-		        },
-
-		        error: function () {
-		            $('#loader').modal('hide');
-		            showResultModal('Error', 'An error occurred while downloading the file.');
-		        }
-		    });
-		}
 		function editRecord() {
 			showResultModal('Alert', 'Development in progress');
 
@@ -490,322 +479,322 @@ PURPOSE		: BRRSREPORT
 			$('#resultModal').modal('show');
 		}
 	</script>
-	
-	
-		
-	
-	
-	
-	
-	
-<script>
-	// Show Modify (enable inputs & dropdowns)
-function showmodify(btn) {
-    // Make all inputs editable
-    //$(".Show_input").removeAttr("readonly").removeAttr("disabled");
-    $(".Show_input").not(".nonEditable").removeAttr("readonly").removeAttr("disabled");
 
 
-    // Highlight editable fields for rows 10 to 16
-    for (let i = 10; i <= 16; i++) {  
-        let fields = [
-             "net_spot_position", "net_forward_position", "guarantees",
-            "net_future_inc_or_exp", "net_delta_wei_fx_opt_posi", "other_items",
-            "net_long_position",  "net_short_position"
-        ];
-
-        fields.forEach(field => {
-            let selector = `#r${i}_${field}`; // ✅ Corrected: backticks for template literal
-            if ($(selector).length) {        // Check if element exists
-                $(selector).css({ "background-color": "#d3d3d3" }); // Highlight
-            }
-        });
-    }
-    // Highlight editable fields for rows 21 to 22
-    for (let i = 21; i <= 22; i++) {  
-        let fields = [
-        	"long", "short"
-        ];
-
-        fields.forEach(field => {
-            let selector = `#r${i}_${field}`; // ✅ Corrected: backticks for template literal
-            if ($(selector).length) {        // Check if element exists
-                $(selector).css({ "background-color": "#d3d3d3" }); // Highlight
-            }
-        });
-    }
-    
-    
- // Highlight editable fields for rows 21 to 22
-    let selector = "#r30_capital_require";
-    if ($(selector).length) { // Check if element exists
-        $(selector).css({ "background-color": "#d3d3d3" }); // Highlight
-    }
-
-    // Show buttons
-    $("#submitButton").show();
-    $("#cancelRecord").show(); // Show Cancel button only when Modify is clicked
-    
-    // Hide the clicked Modify button
-    $(btn).hide();
-}
 
 
-//Cancel / Reset function
-function cancelModify() {
-    if (confirm("Are you sure you want to cancel changes? Page will reload.")) {
-        // ✅ Only when user clicks YES
-        location.reload();
-        
-        $(".Show_input").attr("readonly", true).attr("disabled", true);
 
 
-        $("#submitButton, #btnBack_edit").hide();
-        $("#btnBack").show();
-
-        // Hide Cancel button again
-        $("#cancelRecord").hide();
-
-        // Show all Modify buttons
-        $("#addRecord").show();
-    }
-    // ❌ If user clicks CANCEL, nothing happens
-}
 
 
-	
+	<script>
+		// Show Modify (enable inputs & dropdowns)
+		function showmodify(btn) {
+			// Make all inputs editable
+			//$(".Show_input").removeAttr("readonly").removeAttr("disabled");
+			$(".Show_input").not(".nonEditable").removeAttr("readonly").removeAttr("disabled");
+
+
+			// Highlight editable fields for rows 10 to 16
+			for (let i = 10; i <= 16; i++) {
+				let fields = [
+					"net_spot_position", "net_forward_position", "guarantees",
+					"net_future_inc_or_exp", "net_delta_wei_fx_opt_posi", "other_items",
+					"net_long_position", "net_short_position"
+				];
+
+				fields.forEach(field => {
+					let selector = `#r${i}_${field}`; // ✅ Corrected: backticks for template literal
+					if ($(selector).length) {        // Check if element exists
+						$(selector).css({"background-color": "#d3d3d3"}); // Highlight
+					}
+				});
+			}
+			// Highlight editable fields for rows 21 to 22
+			for (let i = 21; i <= 22; i++) {
+				let fields = [
+					"long", "short"
+				];
+
+				fields.forEach(field => {
+					let selector = `#r${i}_${field}`; // ✅ Corrected: backticks for template literal
+					if ($(selector).length) {        // Check if element exists
+						$(selector).css({"background-color": "#d3d3d3"}); // Highlight
+					}
+				});
+			}
+
+
+			// Highlight editable fields for rows 21 to 22
+			let selector = "#r30_capital_require";
+			if ($(selector).length) { // Check if element exists
+				$(selector).css({"background-color": "#d3d3d3"}); // Highlight
+			}
+
+			// Show buttons
+			$("#submitButton").show();
+			$("#cancelRecord").show(); // Show Cancel button only when Modify is clicked
+
+			// Hide the clicked Modify button
+			$(btn).hide();
+		}
+
+
+		//Cancel / Reset function
+		function cancelModify() {
+			if (confirm("Are you sure you want to cancel changes? Page will reload.")) {
+				// ✅ Only when user clicks YES
+				location.reload();
+
+				$(".Show_input").attr("readonly", true).attr("disabled", true);
+
+
+				$("#submitButton, #btnBack_edit").hide();
+				$("#btnBack").show();
+
+				// Hide Cancel button again
+				$("#cancelRecord").hide();
+
+				// Show all Modify buttons
+				$("#addRecord").show();
+			}
+			// ❌ If user clicks CANCEL, nothing happens
+		}
+
+
+
 
 	</script>
-	
+
 	<SCRIPT>
-	//Calculating Totals for 17'th row 	I column and K column
-	function calculateR17Totals() {
-	    let totalLong = 0;
-	    let totalShort = 0;
+		//Calculating Totals for 17'th row 	I column and K column
+		function calculateR17Totals() {
+			let totalLong = 0;
+			let totalShort = 0;
 
-	    // Loop through rows R11 → R16
-	    for (let i = 11; i <= 16; i++) {
-	        let longVal = parseFloat($("#r" + i + "_net_long_position").val().replace(/,/g, "")) || 0;
-	        let shortVal = parseFloat($("#r" + i + "_net_short_position").val().replace(/,/g, "")) || 0;
+			// Loop through rows R11 → R16
+			for (let i = 11; i <= 16; i++) {
+				let longVal = parseFloat($("#r" + i + "_net_long_position").val().replace(/,/g, "")) || 0;
+				let shortVal = parseFloat($("#r" + i + "_net_short_position").val().replace(/,/g, "")) || 0;
 
-	        totalLong += longVal;
-	        totalShort += shortVal;
-	    }
+				totalLong += longVal;
+				totalShort += shortVal;
+			}
 
-	    // Put the totals into R17
-	    $("#r17_net_long_position").val(totalLong.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
-	    $("#r17_net_short_position").val(totalShort.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
-	}
+			// Put the totals into R17
+			$("#r17_net_long_position").val(totalLong.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0}));
+			$("#r17_net_short_position").val(totalShort.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0}));
+		}
 
-	$(document).ready(function() {
-	    // Calculate once on load
-	    calculateR17Totals();
+		$(document).ready(function () {
+			// Calculate once on load
+			calculateR17Totals();
 
-	    // Recalculate whenever R11–R16 values change
-	    for (let i = 11; i <= 16; i++) {
-	        $("#r" + i + "_net_long_position, #r" + i + "_net_short_position").on("input", function() {
-	            calculateR17Totals();
-	        });
-	    }
-	});
-	
-	//Calculating Totals for 21'st row I column	
-	function calculateR21Totals() {
-	    // Get the long and short values from R21
-	    let longVal = parseFloat($("#r21_long").val().replace(/,/g, "")) || 0;
-	    let shortVal = parseFloat($("#r21_short").val().replace(/,/g, "")) || 0;
+			// Recalculate whenever R11–R16 values change
+			for (let i = 11; i <= 16; i++) {
+				$("#r" + i + "_net_long_position, #r" + i + "_net_short_position").on("input", function () {
+					calculateR17Totals();
+				});
+			}
+		});
 
-	    // Calculate total
-	    let total = longVal + shortVal;
+		//Calculating Totals for 21'st row I column	
+		function calculateR21Totals() {
+			// Get the long and short values from R21
+			let longVal = parseFloat($("#r21_long").val().replace(/,/g, "")) || 0;
+			let shortVal = parseFloat($("#r21_short").val().replace(/,/g, "")) || 0;
 
-	    // Put the total into r21_total_gross_long_short
-	    $("#r21_total_gross_long_short").val(total.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
-	}
+			// Calculate total
+			let total = longVal + shortVal;
 
-	$(document).ready(function () {
-	    // Calculate once on load
-	    calculateR21Totals();
+			// Put the total into r21_total_gross_long_short
+			$("#r21_total_gross_long_short").val(total.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0}));
+		}
 
-	    // Recalculate whenever r21_long or r21_short changes
-	    $("#r21_long, #r21_short").on("input", function () {
-	        calculateR21Totals();
-	    });
-	});
+		$(document).ready(function () {
+			// Calculate once on load
+			calculateR21Totals();
 
-
-	//Calculating Totals for 21'st row J column	
-	function calculateR21Difference() {
-	    // Get the long and short values from R21
-	    let longVal = parseFloat($("#r21_long").val().replace(/,/g, "")) || 0;
-	    let shortVal = parseFloat($("#r21_short").val().replace(/,/g, "")) || 0;
-
-	    // Calculate difference
-	    let difference = longVal - shortVal;
-
-	    // Put the diffrence into r21_net_position
-	    $("#r21_net_position").val(difference.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
-	}
-
-	$(document).ready(function () {
-	    // Calculate once on load
-	    calculateR21Difference();
-
-	    // Recalculate whenever r21_long or r21_short changes
-	    $("#r21_long, #r21_short").on("input", function () {
-	    	calculateR21Difference();
-	    });
-	});
-
-	//Calculating Totals for 22'nd row I column	
-	function calculateR22Totals() {
-	    // Get the long and short values from R22
-	    let longVal = parseFloat($("#r22_long").val().replace(/,/g, "")) || 0;
-	    let shortVal = parseFloat($("#r22_short").val().replace(/,/g, "")) || 0;
-
-	    // Calculate total
-	    let total = longVal + shortVal;
-
-	    // Put the total into r22_total_gross_long_short
-	    $("#r22_total_gross_long_short").val(total.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
-	}
-
-	$(document).ready(function () {
-	    // Calculate once on load
-	    calculateR22Totals();
-
-	    // Recalculate whenever r22_long or r22_short changes
-	    $("#r22_long, #r22_short").on("input", function () {
-	        calculateR22Totals();
-	    });
-	});
+			// Recalculate whenever r21_long or r21_short changes
+			$("#r21_long, #r21_short").on("input", function () {
+				calculateR21Totals();
+			});
+		});
 
 
-	//Calculating Totals for 22'nd row J column	
-	function calculateR22Difference() {
-	    // Get the long and short values from R22
-	    let longVal = parseFloat($("#r22_long").val().replace(/,/g, "")) || 0;
-	    let shortVal = parseFloat($("#r22_short").val().replace(/,/g, "")) || 0;
+		//Calculating Totals for 21'st row J column	
+		function calculateR21Difference() {
+			// Get the long and short values from R21
+			let longVal = parseFloat($("#r21_long").val().replace(/,/g, "")) || 0;
+			let shortVal = parseFloat($("#r21_short").val().replace(/,/g, "")) || 0;
 
-	    // Calculate difference
-	    let difference = longVal - shortVal;
+			// Calculate difference
+			let difference = longVal - shortVal;
 
-	    // Put the diffrence into r22_net_position
-	    $("#r22_net_position").val(difference.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
-	}
+			// Put the diffrence into r21_net_position
+			$("#r21_net_position").val(difference.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0}));
+		}
 
-	$(document).ready(function () {
-	    // Calculate once on load
-	    calculateR22Difference();
+		$(document).ready(function () {
+			// Calculate once on load
+			calculateR21Difference();
 
-	    // Recalculate whenever r22_long or r22_short changes
-	    $("#r22_long, #r22_short").on("input", function () {
-	    	calculateR22Difference();
-	    });
-	});
+			// Recalculate whenever r21_long or r21_short changes
+			$("#r21_long, #r21_short").on("input", function () {
+				calculateR21Difference();
+			});
+		});
 
-	//Calculating Totals for 23'rd row J column	
-	function calculateR23Totals() {
-	    // Get the net position value from R21 and R22
-	    let firstVal = parseFloat($("#r21_net_position").val().replace(/,/g, "")) || 0;
-	    let secondVal = parseFloat($("#r22_net_position").val().replace(/,/g, "")) || 0;
+		//Calculating Totals for 22'nd row I column	
+		function calculateR22Totals() {
+			// Get the long and short values from R22
+			let longVal = parseFloat($("#r22_long").val().replace(/,/g, "")) || 0;
+			let shortVal = parseFloat($("#r22_short").val().replace(/,/g, "")) || 0;
 
-	    // Calculate total
-	    let total = firstVal + secondVal;
+			// Calculate total
+			let total = longVal + shortVal;
 
-	    // Put the total into r23_net_position
-	    $("#r23_net_position").val(
-	        total.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
-	    );
-	}
+			// Put the total into r22_total_gross_long_short
+			$("#r22_total_gross_long_short").val(total.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0}));
+		}
 
-	$(document).ready(function () {
-	    // Calculate once on load
-	    calculateR23Totals();
+		$(document).ready(function () {
+			// Calculate once on load
+			calculateR22Totals();
 
-	    // Recalculate whenever r21_net_position or r22_net_position changes
-	    $("#r21_long, #r21_short, #r22_long, #r22_short").on("input", function () {
-	        calculateR23Totals();
-	    });
-	});
-	
-	
-	//Calculating Result for 29'th row G column	
-	function calculateR29GreaterNet() {
-	    // Get R17 values
-	    let r17Long = parseFloat($("#r17_net_long_position").val().replace(/,/g, "")) || 0;
-	    let r17Short = parseFloat($("#r17_net_short_position").val().replace(/,/g, "")) || 0;
+			// Recalculate whenever r22_long or r22_short changes
+			$("#r22_long, #r22_short").on("input", function () {
+				calculateR22Totals();
+			});
+		});
 
-	    // Calculate greater of the two
-	    let greaterVal = Math.max(r17Long, r17Short);
 
-	    // Set the value in R29 greater_net_long_or_short
-	    $("#r29_greater_net_long_or_short").val(greaterVal.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
-	}
-	$(document).ready(function () {
-	    // Calculate once on load
-	    calculateR29GreaterNet();
+		//Calculating Totals for 22'nd row J column	
+		function calculateR22Difference() {
+			// Get the long and short values from R22
+			let longVal = parseFloat($("#r22_long").val().replace(/,/g, "")) || 0;
+			let shortVal = parseFloat($("#r22_short").val().replace(/,/g, "")) || 0;
 
-	 // Recalculate whenever R11–R16 values change
-	    for (let i = 11; i <= 16; i++) {
-	        $("#r" + i + "_net_long_position, #r" + i + "_net_short_position").on("input", function() {
-	            calculateR29GreaterNet();
-	        });
-	    }
-	});
-	
-	//Calculating Result for 29'th row H column	
-	function calculateR29NetGoldPosition() {
-	    // Get R23 value
-	    let r23result = parseFloat($("#r23_net_position").val().replace(/,/g, "")) || 0;
+			// Calculate difference
+			let difference = longVal - shortVal;
 
-	    // just copying r23_net_position value
-	    let answer = r23result;
+			// Put the diffrence into r22_net_position
+			$("#r22_net_position").val(difference.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0}));
+		}
 
-	    // Set the value in r29_abs_value_net_gold_posi 
-	    $("#r29_abs_value_net_gold_posi").val(answer.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
-	}
-	$(document).ready(function () {
-	    // Calculate once on load
-	    calculateR29NetGoldPosition();
+		$(document).ready(function () {
+			// Calculate once on load
+			calculateR22Difference();
 
-	    // Recalculate whenever #r17_net_long_position or #r17_net_short_position changes
-	    $("#r21_long, #r21_short, #r22_long, #r22_short").on("input", function () {
-	    	calculateR29NetGoldPosition();
-	    });
-	});
-	
-	
-	//Calculating Result for 29'th row J column	
-	function calculateR29Result() {
-	    // Get the greater_net_long_or_short & abs_value_net_gold_posi & capital_require values from R29
-	    let firstVal = parseFloat($("#r29_greater_net_long_or_short").val().replace(/,/g, "")) || 0;
-	    let secondVal = parseFloat($("#r29_abs_value_net_gold_posi").val().replace(/,/g, "")) || 0;
-	    let thirdVal = 8;
-	    // Calculate result
-	    let result = (firstVal + secondVal) * (thirdVal/100);
+			// Recalculate whenever r22_long or r22_short changes
+			$("#r22_long, #r22_short").on("input", function () {
+				calculateR22Difference();
+			});
+		});
 
-	    // Put the result into r29_capital_charge
-	    $("#r29_capital_charge").val(result.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
-	}
+		//Calculating Totals for 23'rd row J column	
+		function calculateR23Totals() {
+			// Get the net position value from R21 and R22
+			let firstVal = parseFloat($("#r21_net_position").val().replace(/,/g, "")) || 0;
+			let secondVal = parseFloat($("#r22_net_position").val().replace(/,/g, "")) || 0;
 
-	$(document).ready(function () {
-	    // Calculate once on load
-	    calculateR29Result();
+			// Calculate total
+			let total = firstVal + secondVal;
 
-	 // Recalculate whenever #r17_net_long_position or #r17_net_short_position changes
-	    $("#r21_long, #r21_short, #r22_long, #r22_short").on("input", function () {
-	    	calculateR29Result();
-	    });
-	    // Recalculate whenever R11–R16 values change
-	    for (let i = 11; i <= 16; i++) {
-	        $("#r" + i + "_net_long_position, #r" + i + "_net_short_position").on("input", function() {
-	            calculateR29Result();
-	        });
-	    }
-	});
+			// Put the total into r23_net_position
+			$("#r23_net_position").val(
+				total.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0})
+			);
+		}
 
-</SCRIPT>
-<!-- <script>
+		$(document).ready(function () {
+			// Calculate once on load
+			calculateR23Totals();
+
+			// Recalculate whenever r21_net_position or r22_net_position changes
+			$("#r21_long, #r21_short, #r22_long, #r22_short").on("input", function () {
+				calculateR23Totals();
+			});
+		});
+
+
+		//Calculating Result for 29'th row G column	
+		function calculateR29GreaterNet() {
+			// Get R17 values
+			let r17Long = parseFloat($("#r17_net_long_position").val().replace(/,/g, "")) || 0;
+			let r17Short = parseFloat($("#r17_net_short_position").val().replace(/,/g, "")) || 0;
+
+			// Calculate greater of the two
+			let greaterVal = Math.max(r17Long, r17Short);
+
+			// Set the value in R29 greater_net_long_or_short
+			$("#r29_greater_net_long_or_short").val(greaterVal.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0}));
+		}
+		$(document).ready(function () {
+			// Calculate once on load
+			calculateR29GreaterNet();
+
+			// Recalculate whenever R11–R16 values change
+			for (let i = 11; i <= 16; i++) {
+				$("#r" + i + "_net_long_position, #r" + i + "_net_short_position").on("input", function () {
+					calculateR29GreaterNet();
+				});
+			}
+		});
+
+		//Calculating Result for 29'th row H column	
+		function calculateR29NetGoldPosition() {
+			// Get R23 value
+			let r23result = parseFloat($("#r23_net_position").val().replace(/,/g, "")) || 0;
+
+			// just copying r23_net_position value
+			let answer = r23result;
+
+			// Set the value in r29_abs_value_net_gold_posi 
+			$("#r29_abs_value_net_gold_posi").val(answer.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0}));
+		}
+		$(document).ready(function () {
+			// Calculate once on load
+			calculateR29NetGoldPosition();
+
+			// Recalculate whenever #r17_net_long_position or #r17_net_short_position changes
+			$("#r21_long, #r21_short, #r22_long, #r22_short").on("input", function () {
+				calculateR29NetGoldPosition();
+			});
+		});
+
+
+		//Calculating Result for 29'th row J column	
+		function calculateR29Result() {
+			// Get the greater_net_long_or_short & abs_value_net_gold_posi & capital_require values from R29
+			let firstVal = parseFloat($("#r29_greater_net_long_or_short").val().replace(/,/g, "")) || 0;
+			let secondVal = parseFloat($("#r29_abs_value_net_gold_posi").val().replace(/,/g, "")) || 0;
+			let thirdVal = 8;
+			// Calculate result
+			let result = (firstVal + secondVal) * (thirdVal / 100);
+
+			// Put the result into r29_capital_charge
+			$("#r29_capital_charge").val(result.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0}));
+		}
+
+		$(document).ready(function () {
+			// Calculate once on load
+			calculateR29Result();
+
+			// Recalculate whenever #r17_net_long_position or #r17_net_short_position changes
+			$("#r21_long, #r21_short, #r22_long, #r22_short").on("input", function () {
+				calculateR29Result();
+			});
+			// Recalculate whenever R11–R16 values change
+			for (let i = 11; i <= 16; i++) {
+				$("#r" + i + "_net_long_position, #r" + i + "_net_short_position").on("input", function () {
+					calculateR29Result();
+				});
+			}
+		});
+
+	</SCRIPT>
+	<!-- <script>
     // ✅ This function is for closing the modal after an action is complete.
     function closemodel() {
         $("#resultModal").modal("hide");
@@ -900,7 +889,7 @@ function cancelModify() {
         });
     }
 </script> -->
-<!-- <script>
+	<!-- <script>
 function closemodel() {
     $("#resultModal").modal("hide");
     $('#loader').modal('hide');
@@ -1002,158 +991,158 @@ function fileuploads(btn) {
     });console.log("✅ajax  executed successfully");
 }
 </script> -->
-<script>
-function closemodel() {
-	/*    $("#resultModal").modal("hide");
-    $('#loader').modal('hide');
-    setTimeout(function () {
-        location.reload();
-        }, 300);*/
-        $("#resultModal").modal("hide");
-        $('#loader').modal('hide');
+	<script>
+		function closemodel() {
+			/*    $("#resultModal").modal("hide");
+			$('#loader').modal('hide');
+			setTimeout(function () {
+				location.reload();
+				}, 300);*/
+			$("#resultModal").modal("hide");
+			$('#loader').modal('hide');
 
-        // Only reload if not from Details modal
-        if (!isDetailsModal) {
-            setTimeout(function () {
-                location.reload();
-            }, 300);
-        } else {
-            // reset flag for next modal usage
-            isDetailsModal = false;
-        }
-}
+			// Only reload if not from Details modal
+			if (!isDetailsModal) {
+				setTimeout(function () {
+					location.reload();
+				}, 300);
+			} else {
+				// reset flag for next modal usage
+				isDetailsModal = false;
+			}
+		}
 
-function fileuploads(btn) {
-    var asondate = btn.getAttribute("data-todate");
-    const type = btn.getAttribute("data-type"); // MAIN / RESUB / ARCHIVAL
-    
-    $('#loader').modal('show');
-    
+		function fileuploads(btn) {
+			var asondate = btn.getAttribute("data-todate");
+			const type = btn.getAttribute("data-type"); // MAIN / RESUB / ARCHIVAL
 
-    // Pre-calculations
-    calculateR17Totals();
-    calculateR21Totals();
-    calculateR21Difference();
-    calculateR22Totals();
-    calculateR22Difference();
-    calculateR23Totals();
-    calculateR29Result();
-    calculateR29GreaterNet();
-    calculateR29NetGoldPosition();
-    console.log("✅ Calculations executed successfully");
+			$('#loader').modal('show');
 
-    // Remove commas from numeric inputs
-    $("#fileupload input[type='text']").each(function () {
-        var val = $(this).val();
-        if (val && val.includes(",")) {
-            $(this).val(val.replace(/,/g, ''));
-        }
-    });
 
-    if (!$("#fileupload").valid()) {
-        $('#loader').modal('hide');
-        return;
-    }
+			// Pre-calculations
+			calculateR17Totals();
+			calculateR21Totals();
+			calculateR21Difference();
+			calculateR22Totals();
+			calculateR22Difference();
+			calculateR23Totals();
+			calculateR29Result();
+			calculateR29GreaterNet();
+			calculateR29NetGoldPosition();
+			console.log("✅ Calculations executed successfully");
 
-    // ✅ One combined FormData for all entities
-    const formData = new FormData();
-    formData.append("asondate", asondate);
-    formData.append("type", type);
+			// Remove commas from numeric inputs
+			$("#fileupload input[type='text']").each(function () {
+				var val = $(this).val();
+				if (val && val.includes(",")) {
+					$(this).val(val.replace(/,/g, ''));
+				}
+			});
 
-    // --- NEW: append type value (NORMAL, RESUB, ARCHIVAL) ---
-    //const selectedType = $("#fxrType").val(); // Get from dropdown
-    //formData.append("type", selectedType);
-    //console.log("Selected type:", selectedType);
+			if (!$("#fileupload").valid()) {
+				$('#loader').modal('hide');
+				return;
+			}
 
-    // --- Entity 1 fields (R10-R17) ---
-    for (let i = 10; i <= 17; i++) {
-        ["net_spot_position", "net_forward_position", "guarantees",
-        "net_future_inc_or_exp", "net_delta_wei_fx_opt_posi", "other_items",
-        "net_long_position", "or", "net_short_position"].forEach(field => {
-            const input = $("#r" + i + "_" + field);
-            if (input.length) {
-                formData.append(input.attr("name"), input.val());
-            }
-        });
-    }
-    console.log("✅ Entity 1 executed successfully");
+			// ✅ One combined FormData for all entities
+			const formData = new FormData();
+			formData.append("asondate", asondate);
+			formData.append("type", type);
 
-    // --- Entity 2 fields (R21-R23) ---
-    for (let i = 21; i <= 23; i++) {
-        ["long", "short", "total_gross_long_short", "net_position"].forEach(field => {
-            const input = $("#r" + i + "_" + field);
-            if (input.length) {
-                formData.append(input.attr("name"), input.val());
-            }
-        });
-    }
-    console.log("✅ Entity 2 executed successfully");
+			// --- NEW: append type value (NORMAL, RESUB, ARCHIVAL) ---
+			//const selectedType = $("#fxrType").val(); // Get from dropdown
+			//formData.append("type", selectedType);
+			//console.log("Selected type:", selectedType);
 
-    // --- Entity 3 fields (R29 only) ---
-    ["greater_net_long_or_short", "abs_value_net_gold_posi", "capital_require", "capital_charge"]
-        .forEach(field => {
-            const input = $("#r29_" + field);
-            if (input.length) {
-                formData.append(input.attr("name"), input.val());
-            }
-        });
-    ["capital_require"]
-    .forEach(field => {
-        const input = $("#r30_" + field);
-        if (input.length) {
-            formData.append(input.attr("name"), input.val());
-        }
-    });
-    console.log("✅ Entity 3 executed successfully");
+			// --- Entity 1 fields (R10-R17) ---
+			for (let i = 10; i <= 17; i++) {
+				["net_spot_position", "net_forward_position", "guarantees",
+					"net_future_inc_or_exp", "net_delta_wei_fx_opt_posi", "other_items",
+					"net_long_position", "or", "net_short_position"].forEach(field => {
+						const input = $("#r" + i + "_" + field);
+						if (input.length) {
+							formData.append(input.attr("name"), input.val());
+						}
+					});
+			}
+			console.log("✅ Entity 1 executed successfully");
 
- // Step 5: Select API endpoint dynamically
-    let apiUrl = './FXRupdateAll'; // normal update
-    if (type && type.toUpperCase() === 'RESUB') {
-    	apiUrl = './UpdateM_FXR_ReSub'; // Resubmission endpoint
-    }
+			// --- Entity 2 fields (R21-R23) ---
+			for (let i = 21; i <= 23; i++) {
+				["long", "short", "total_gross_long_short", "net_position"].forEach(field => {
+					const input = $("#r" + i + "_" + field);
+					if (input.length) {
+						formData.append(input.attr("name"), input.val());
+					}
+				});
+			}
+			console.log("✅ Entity 2 executed successfully");
 
-    // Step 6: AJAX call
-    $.ajax({
-    	url: apiUrl,
-    	type: 'POST',
-    	data: formData,
-    	processData: false,
-    	contentType: false,
-    	dataType: 'text',
-    	success: function (response) {
-    		$("#resultModalLabel").text("BRRS");
-    		$("#resultModalBody").text(response);
-    		$("#resultModal").modal("show");
+			// --- Entity 3 fields (R29 only) ---
+			["greater_net_long_or_short", "abs_value_net_gold_posi", "capital_require", "capital_charge"]
+				.forEach(field => {
+					const input = $("#r29_" + field);
+					if (input.length) {
+						formData.append(input.attr("name"), input.val());
+					}
+				});
+			["capital_require"]
+				.forEach(field => {
+					const input = $("#r30_" + field);
+					if (input.length) {
+						formData.append(input.attr("name"), input.val());
+					}
+				});
+			console.log("✅ Entity 3 executed successfully");
 
-    		// ✅ Redirect after short delay (so user sees the success message)
-    		if (response.includes("Resubmission Updated Successfully")) {
-    			setTimeout(function() {
-    				// Go back to the previous page user came from
-    				if (document.referrer && document.referrer !== '') {
-    					// Redirect to the page that opened this one
-    					window.location.href = document.referrer;
-    				} else {
-    					// If no referrer, just go one step back in history
-    					window.history.back();
-    				}
-    			}, 2000); // wait 2 seconds before redirect
-    		}
-    	},
-    	error: function (jqXHR) {
-    		$("#resultModalLabel").text("Error");
-    		$("#resultModalBody").text("Update failed: " + jqXHR.responseText);
-    		$("#resultModal").modal("show");
-    	},
-    	complete: function () {
-    		$('#loader').modal('hide');
-    	}
-    });
+			// Step 5: Select API endpoint dynamically
+			let apiUrl = './FXRupdateAll'; // normal update
+			if (type && type.toUpperCase() === 'RESUB') {
+				apiUrl = './UpdateM_FXR_ReSub'; // Resubmission endpoint
+			}
 
-    console.log("✅ AJAX executed successfully");
-}
-</script>
+			// Step 6: AJAX call
+			$.ajax({
+				url: apiUrl,
+				type: 'POST',
+				data: formData,
+				processData: false,
+				contentType: false,
+				dataType: 'text',
+				success: function (response) {
+					$("#resultModalLabel").text("BRRS");
+					$("#resultModalBody").text(response);
+					$("#resultModal").modal("show");
 
-	
+					// ✅ Redirect after short delay (so user sees the success message)
+					if (response.includes("Resubmission Updated Successfully")) {
+						setTimeout(function () {
+							// Go back to the previous page user came from
+							if (document.referrer && document.referrer !== '') {
+								// Redirect to the page that opened this one
+								window.location.href = document.referrer;
+							} else {
+								// If no referrer, just go one step back in history
+								window.history.back();
+							}
+						}, 2000); // wait 2 seconds before redirect
+					}
+				},
+				error: function (jqXHR) {
+					$("#resultModalLabel").text("Error");
+					$("#resultModalBody").text("Update failed: " + jqXHR.responseText);
+					$("#resultModal").modal("show");
+				},
+				complete: function () {
+					$('#loader').modal('hide');
+				}
+			});
+
+			console.log("✅ AJAX executed successfully");
+		}
+	</script>
+
+
 </head>
 
 
@@ -1174,47 +1163,46 @@ function fileuploads(btn) {
 						<!-- Title -->
 						<h5
 							style="font-family: arial; font-size: 20px; padding-top: 10px; font-weight: bold; color: white;margin-right: 10px;">
-(20) MONTHLY SCHEDLE: M-FXR: FOREIGN EXCHANGE RISK</h5>
+							(20) MONTHLY SCHEDLE: M-FXR: FOREIGN EXCHANGE RISK</h5>
 					</div>
-        <!-- Bus Scrolling Text -->
-        <div class="boards" style="min-width: 250px;">
-            <p class="scrolling-text">BANK OF BOTSWANA - BANKING SUPERVISION DEPARTMENT</p>
-        </div>
+					<!-- Bus Scrolling Text -->
+					<div class="boards" style="min-width: 250px;">
+						<p class="scrolling-text">BANK OF BOTSWANA - BANKING SUPERVISION DEPARTMENT</p>
+					</div>
 					<div class="custom-tab-btn-group nav-buttons"
 						style="display: flex; color: white; align-items: center;margin-left: 10px;">
 						<!-- 📅 Date -->
 						<span class="white-text"
-							style="color: white !important; font-size: 16px; margin-right: 20px;">Report Date: <span th:text="${#strings.replace(asondate, '/', '-')}">2025-09-18</span>
+							style="color: white !important; font-size: 16px; margin-right: 20px;">Report Date: <span
+								th:text="${#strings.replace(asondate, '/', '-')}">2025-09-18</span>
 						</span>
 						<!-- Buttons -->
 						<input type="hidden" id="selectedTab" th:value="${displaymode}">
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showsummary();"
-							th:if="${displaymode == 'detail'}">Summary</button>
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails();"
-							th:if="${displaymode == 'summary'}">Details</button>
-						
-<!-- Modify button
+												<button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showsummary();"
+													th:if="${displaymode == 'detail' or displaymode == 'resubDetail'}">Summary</button>
+												<button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails();"
+													th:if="${displaymode == 'summary'or displaymode == 'resubSummary'}">Details</button>
+
+
+						<!-- Modify button
 <button type="button" class="custom-tab-btn"
         onclick="showmodify(this);"
         title="Click to EDIT Records"th:if="${type != 'ARCHIVAL'}" 
         th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
         id="addRecord">Modify</button> -->
-	<!-- Modify button -->
+						<!-- Modify button -->
 						<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
 							title="Click to EDIT Records" th:if="${type != 'ARCHIVAL'} and ${dtltype != 'detail'}"
 							th:classappend="${session.PERMISSIONS == 'W'} and ${dtltype == 'report'} ? 'addedit'"
 							id="addRecord">
 							Modify
 						</button>
-<!-- Cancel button (hidden initially) -->
-<button type="button" class="custom-tab-btn"
-        title="Cancel editing"
-        id="cancelRecord"
-        onclick="cancelModify();"
-        style="display: none;">Cancel</button>
+						<!-- Cancel button (hidden initially) -->
+						<button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord"
+							onclick="cancelModify();" style="display: none;">Cancel</button>
 
-<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
-							onclick="downloadfile(this)" th:if="${displaymode == 'summary' or displaymode == 'detail'}"
+						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
+							onclick="downloadfile(this)" th:if="${displaymode == 'summary' or displaymode == 'detail'or displaymode == 'resubSummary'or displaymode == 'resubDetail'}"
 							th:attr="data-reportid=${reportid},
                    data-asondate=${asondate},
                    data-fromdate=${fromdate},
@@ -1227,24 +1215,25 @@ function fileuploads(btn) {
 							<i class="fa fa-download"></i> Format
 						</button>
 						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
-							onclick="downloadfile(this)"
-							th:if="${displaymode == 'summary' or displaymode == 'detail'}" th:attr="data-reportid=${reportid},
+							onclick="downloadfile(this)" th:if="${displaymode == 'summary' or displaymode == 'detail'or displaymode == 'resubSummary'or displaymode == 'resubDetail'}"
+							th:attr="data-reportid=${reportid},
             data-asondate=${asondate},
             data-fromdate=${fromdate},
             data-todate=${todate},
             data-currency=${currency}, 
             data-dtltype=${dtltype},
             data-filename='EMAIL_M_FXR.xlsx',
-            data-type='email',
+			data-type=${type},
+			        data-format='email',
             data-version=${version != null ? version : ''}" style="font-family: Arial;font-weight: bold;">
-							<i class="fa fa-download"></i> E-Mail
+							<i class="fa fa-download"></i> Email
 
 						</button>
 
 
 
 					</div>
-					
+
 				</div>
 				<p th:if="${displaymode == 'summary'and type != 'ARCHIVAL'}" style="text-align: left; font-weight: bold; 
 						color: white;  font-size: 20px;  background-color: rgb(107, 122, 143); 
@@ -1269,54 +1258,73 @@ function fileuploads(btn) {
 					Archival Detail View - M FXR
 				</p>
 
-				<div th:if="${displaymode == 'summary' or displaymode == 'detail'}">
+				<p th:if="${type == 'RESUB' and displaymode == 'resubSummary'}" style="text-align: left; font-weight: bold; 
+									          color: white; font-size: 20px;
+									          background-color: rgb(107, 122, 143); 
+									          margin-top:10px; margin-bottom:10px; padding: 5px;">
+					Resubmission Summary View - M FXR
+				</p>
+
+				<p th:if="${type == 'RESUB' and displaymode == 'resubDetail'}" style="text-align: left; font-weight: bold;
+									          color: white; font-size: 20px;
+									          background-color: rgb(107, 122, 143); 
+									          margin-top:10px; margin-bottom:10px; padding: 5px;">
+					Resubmission Detail View - M FXR
+				</p>
+
+				<div
+					th:if="${displaymode == 'summary' or displaymode == 'detail'or displaymode == 'resubSummary'or displaymode == 'resubDetail'}">
+
 					<div class="row">
 						<div class="col-sm-12">
-						<form action="#" method="POST" id="fileupload">
-						<input type="hidden" name="asondate" id="asondate" th:value="${asondate}" />
-						
-							<div class="table-wrapper table-responsive scrollable-table-container"
-								style="border-right: 1px solid #dee2e6; ">
-								
-								
-								<table
-									class="sticky-header-table table table-bordered table-hover table-sm table-condensed"
-									id="reports">
-									<thead class="thead-light" style="background-color: #D8D8D8;">
-									<tr  style="background-color: #b3b6b9;">
-										<th  style="text-align: left; color:black;">Line no.</th>
-										<th  style="text-align: left; color:black;">Currency</th>
-										<th  style="text-align: right; color:black;">Net Spot Position</th>
-										<th  style="text-align: right; color:black;">Net Forward Position</th>
-										<th  style="text-align: right; color:black;">Guarantees</th>
-										<th  style="text-align: right; color:black;">Net Future income/expenses</th>
-										<th  style="text-align: right; color:black;">Net Delta Weighted FX Option Position</th>
-										<th  style="text-align: right; color:black; ">Other Items</th>
-										<th  style="text-align: right; color:black; ">Net Long Position</th>
-										<th  style="text-align: right; color:black; ">or</th>
-										<th  style="text-align: right; color:black; ">Net Short Position</th>
-									</tr>
-					
-										<tr>
-										    <th  style="text-align: left; color:black; "></th>
-											<th  style="text-align: center;color:black; ">A</th>
-											<th  style="text-align: right;color:black; ">B</th>
-											<th  style="text-align: right;color:black; ">C</th>
-											<th  style="text-align: right;color:black; ">D</th>
-											<th  style="text-align: right;color:black; ">E</th>
-											<th  style="text-align: right; color:black;">F</th>
-											<th  style="text-align: right; color:black;">G</th>
-											<th  style="text-align: right; color:black;">H</th>
-											<th  style="text-align: right; color:black;"></th>
-											<th  style="text-align: right; color:black;">I</th>
-										</tr>
+							<form action="#" method="POST" id="fileupload">
+								<input type="hidden" name="asondate" id="asondate" th:value="${asondate}" />
 
-										
-									</thead>
-		<tbody id="entity1" th:each="report: ${reportsummary}" style="font-family: Arial;">
-<tr>
-	<td id="ROW11"></td>
-	<!-- <td id="ROW11" >
+								<div class="table-wrapper table-responsive scrollable-table-container"
+									style="border-right: 1px solid #dee2e6; ">
+
+
+									<table
+										class="sticky-header-table table table-bordered table-hover table-sm table-condensed"
+										id="reports">
+										<thead class="thead-light" style="background-color: #D8D8D8;">
+											<tr style="background-color: #b3b6b9;">
+												<th style="text-align: left; color:black;">Line no.</th>
+												<th style="text-align: left; color:black;">Currency</th>
+												<th style="text-align: right; color:black;">Net Spot Position</th>
+												<th style="text-align: right; color:black;">Net Forward Position</th>
+												<th style="text-align: right; color:black;">Guarantees</th>
+												<th style="text-align: right; color:black;">Net Future income/expenses
+												</th>
+												<th style="text-align: right; color:black;">Net Delta Weighted FX Option
+													Position</th>
+												<th style="text-align: right; color:black; ">Other Items</th>
+												<th style="text-align: right; color:black; ">Net Long Position</th>
+												<th style="text-align: right; color:black; ">or</th>
+												<th style="text-align: right; color:black; ">Net Short Position</th>
+											</tr>
+
+											<tr>
+												<th style="text-align: left; color:black; "></th>
+												<th style="text-align: center;color:black; ">A</th>
+												<th style="text-align: right;color:black; ">B</th>
+												<th style="text-align: right;color:black; ">C</th>
+												<th style="text-align: right;color:black; ">D</th>
+												<th style="text-align: right;color:black; ">E</th>
+												<th style="text-align: right; color:black;">F</th>
+												<th style="text-align: right; color:black;">G</th>
+												<th style="text-align: right; color:black;">H</th>
+												<th style="text-align: right; color:black;"></th>
+												<th style="text-align: right; color:black;">I</th>
+											</tr>
+
+
+										</thead>
+										<tbody id="entity1" th:each="report: ${reportsummary}"
+											style="font-family: Arial;">
+											<tr>
+												<td id="ROW11"></td>
+												<!-- <td id="ROW11" >
         <input class="display-input Show_input"
                type="text"
                th:value="${#strings.defaultString(report.r11_currency, 'N/A')}"
@@ -1325,95 +1333,78 @@ function fileuploads(btn) {
                style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
                readonly />
     </td> -->
-    
-    <td>Euro</td>
-    <td id="ROW11" style="padding-left: 20px;">
-    <input class="display-input Show_input"
-           type="text"
-           th:value="${report.r11_net_spot_position != null ? #numbers.formatDecimal(report.r11_net_spot_position, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="r11_net_spot_position"
-           name="r11_net_spot_position"
-           style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-	</td>
-	<td id="ROW11" style="padding-left: 20px;">
-    <input class="display-input Show_input"
-           type="text"
-           th:value="${report.r11_net_forward_position != null ? #numbers.formatDecimal(report.r11_net_forward_position, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="r11_net_forward_position"
-           name="r11_net_forward_position"
-           style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-	</td>
-	<td id="ROW11" style="padding-left: 20px;">
-    <input class="display-input Show_input"
-           type="text"
-           th:value="${report.r11_guarantees != null ? #numbers.formatDecimal(report.r11_guarantees, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="r11_guarantees"
-           name="r11_guarantees"
-           style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-	</td>
-	<td id="ROW11" style="padding-left: 20px;">
-    <input class="display-input Show_input"
-           type="text"
-           th:value="${report.r11_net_future_inc_or_exp != null ? #numbers.formatDecimal(report.r11_net_future_inc_or_exp, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="r11_net_future_inc_or_exp"
-           name="r11_net_future_inc_or_exp"
-           style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-	</td>
-	<td id="ROW11" style="padding-left: 20px;">
-    <input class="display-input Show_input"
-           type="text"
-           th:value="${report.r11_net_delta_wei_fx_opt_posi != null ? #numbers.formatDecimal(report.r11_net_delta_wei_fx_opt_posi, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="r11_net_delta_wei_fx_opt_posi"
-           name="r11_net_delta_wei_fx_opt_posi"
-           style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-	</td>
-	<td id="ROW11" style="padding-left: 20px;">
-    <input class="display-input Show_input"
-           type="text"
-           th:value="${report.r11_other_items != null ? #numbers.formatDecimal(report.r11_other_items, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="r11_other_items"
-           name="r11_other_items"
-           style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-	</td>
-	<td id="ROW11" style="padding-left: 20px;">
-    <input class="display-input Show_input"
-           type="text"
-           th:value="${report.r11_net_long_position != null ? #numbers.formatDecimal(report.r11_net_long_position, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="r11_net_long_position"
-           name="r11_net_long_position"
-           style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-	</td>
-	<td id="ROW11" style="padding-left: 20px;">
-    <input class="display-input Show_input nonEditable"
-           type="text"
-           th:value="${report.r11_or != null ? #numbers.formatDecimal(report.r11_or, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="r11_or"
-           name="r11_or"
-           style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-	</td>
-	<td id="ROW11" style="padding-left: 20px;">
-    <input class="display-input Show_input"
-           type="text"
-           th:value="${report.r11_net_short_position != null ? #numbers.formatDecimal(report.r11_net_short_position, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="r11_net_short_position"
-           name="r11_net_short_position"
-           style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-	</td>
-	
-    
-</tr>
-<tr>
-	<td id="ROW12"></td>
-	<!-- <td id="ROW12" >
+
+												<td>Euro</td>
+												<td id="ROW11" style="padding-left: 20px;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r11_net_spot_position != null ? #numbers.formatDecimal(report.r11_net_spot_position, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r11_net_spot_position" name="r11_net_spot_position"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td id="ROW11" style="padding-left: 20px;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r11_net_forward_position != null ? #numbers.formatDecimal(report.r11_net_forward_position, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r11_net_forward_position" name="r11_net_forward_position"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td id="ROW11" style="padding-left: 20px;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r11_guarantees != null ? #numbers.formatDecimal(report.r11_guarantees, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r11_guarantees" name="r11_guarantees"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td id="ROW11" style="padding-left: 20px;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r11_net_future_inc_or_exp != null ? #numbers.formatDecimal(report.r11_net_future_inc_or_exp, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r11_net_future_inc_or_exp" name="r11_net_future_inc_or_exp"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td id="ROW11" style="padding-left: 20px;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r11_net_delta_wei_fx_opt_posi != null ? #numbers.formatDecimal(report.r11_net_delta_wei_fx_opt_posi, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r11_net_delta_wei_fx_opt_posi"
+														name="r11_net_delta_wei_fx_opt_posi"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td id="ROW11" style="padding-left: 20px;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r11_other_items != null ? #numbers.formatDecimal(report.r11_other_items, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r11_other_items" name="r11_other_items"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td id="ROW11" style="padding-left: 20px;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r11_net_long_position != null ? #numbers.formatDecimal(report.r11_net_long_position, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r11_net_long_position" name="r11_net_long_position"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td id="ROW11" style="padding-left: 20px;">
+													<input class="display-input Show_input nonEditable" type="text"
+														th:value="${report.r11_or != null ? #numbers.formatDecimal(report.r11_or, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r11_or" name="r11_or"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td id="ROW11" style="padding-left: 20px;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r11_net_short_position != null ? #numbers.formatDecimal(report.r11_net_short_position, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r11_net_short_position" name="r11_net_short_position"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+
+
+											</tr>
+											<tr>
+												<td id="ROW12"></td>
+												<!-- <td id="ROW12" >
         <input class="display-input Show_input"
                type="text"
                th:value="${#strings.defaultString(report.r12_currency, 'N/A')}"
@@ -1422,94 +1413,77 @@ function fileuploads(btn) {
                style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
                readonly />
     </td> -->
-    <td>Pound Sterling</td>
-    <td id="ROW12" style="padding-left: 20px;">
-    <input class="display-input Show_input"
-           type="text"
-           th:value="${report.r12_net_spot_position != null ? #numbers.formatDecimal(report.r12_net_spot_position, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="r12_net_spot_position"
-           name="r12_net_spot_position"
-           style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-	</td>
-	<td id="ROW12" style="padding-left: 20px;">
-    <input class="display-input Show_input"
-           type="text"
-           th:value="${report.r12_net_forward_position != null ? #numbers.formatDecimal(report.r12_net_forward_position, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="r12_net_forward_position"
-           name="r12_net_forward_position"
-           style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-	</td>
-	<td id="ROW12" style="padding-left: 20px;">
-    <input class="display-input Show_input"
-           type="text"
-           th:value="${report.r12_guarantees != null ? #numbers.formatDecimal(report.r12_guarantees, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="r12_guarantees"
-           name="r12_guarantees"
-           style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-	</td>
-	<td id="ROW12" style="padding-left: 20px;">
-    <input class="display-input Show_input"
-           type="text"
-           th:value="${report.r12_net_future_inc_or_exp != null ? #numbers.formatDecimal(report.r12_net_future_inc_or_exp, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="r12_net_future_inc_or_exp"
-           name="r12_net_future_inc_or_exp"
-           style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-	</td>
-	<td id="ROW12" style="padding-left: 20px;">
-    <input class="display-input Show_input"
-           type="text"
-           th:value="${report.r12_net_delta_wei_fx_opt_posi != null ? #numbers.formatDecimal(report.r12_net_delta_wei_fx_opt_posi, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="r12_net_delta_wei_fx_opt_posi"
-           name="r12_net_delta_wei_fx_opt_posi"
-           style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-	</td>
-	<td id="ROW12" style="padding-left: 20px;">
-    <input class="display-input Show_input"
-           type="text"
-           th:value="${report.r12_other_items != null ? #numbers.formatDecimal(report.r12_other_items, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="r12_other_items"
-           name="r12_other_items"
-           style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-	</td>
-	<td id="ROW12" style="padding-left: 20px;">
-    <input class="display-input Show_input"
-           type="text"
-           th:value="${report.r12_net_long_position != null ? #numbers.formatDecimal(report.r12_net_long_position, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="r12_net_long_position"
-           name="r12_net_long_position"
-           style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-	</td>
-	<td id="ROW12" style="padding-left: 20px;">
-    <input class="display-input Show_input nonEditable"
-           type="text"
-           th:value="${report.r12_or != null ? #numbers.formatDecimal(report.r12_or, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="r12_or"
-           name="r12_or"
-           style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-	</td>
-	<td id="ROW12" style="padding-left: 20px;">
-    <input class="display-input Show_input"
-           type="text"
-           th:value="${report.r12_net_short_position != null ? #numbers.formatDecimal(report.r12_net_short_position, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="r12_net_short_position"
-           name="r12_net_short_position"
-           style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-	</td>
-	
-    
-</tr>
-<tr>
-	<td id="ROW13"></td>
-	<!-- <td id="ROW13" >
+												<td>Pound Sterling</td>
+												<td id="ROW12" style="padding-left: 20px;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r12_net_spot_position != null ? #numbers.formatDecimal(report.r12_net_spot_position, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r12_net_spot_position" name="r12_net_spot_position"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td id="ROW12" style="padding-left: 20px;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r12_net_forward_position != null ? #numbers.formatDecimal(report.r12_net_forward_position, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r12_net_forward_position" name="r12_net_forward_position"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td id="ROW12" style="padding-left: 20px;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r12_guarantees != null ? #numbers.formatDecimal(report.r12_guarantees, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r12_guarantees" name="r12_guarantees"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td id="ROW12" style="padding-left: 20px;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r12_net_future_inc_or_exp != null ? #numbers.formatDecimal(report.r12_net_future_inc_or_exp, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r12_net_future_inc_or_exp" name="r12_net_future_inc_or_exp"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td id="ROW12" style="padding-left: 20px;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r12_net_delta_wei_fx_opt_posi != null ? #numbers.formatDecimal(report.r12_net_delta_wei_fx_opt_posi, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r12_net_delta_wei_fx_opt_posi"
+														name="r12_net_delta_wei_fx_opt_posi"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td id="ROW12" style="padding-left: 20px;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r12_other_items != null ? #numbers.formatDecimal(report.r12_other_items, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r12_other_items" name="r12_other_items"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td id="ROW12" style="padding-left: 20px;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r12_net_long_position != null ? #numbers.formatDecimal(report.r12_net_long_position, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r12_net_long_position" name="r12_net_long_position"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td id="ROW12" style="padding-left: 20px;">
+													<input class="display-input Show_input nonEditable" type="text"
+														th:value="${report.r12_or != null ? #numbers.formatDecimal(report.r12_or, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r12_or" name="r12_or"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td id="ROW12" style="padding-left: 20px;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r12_net_short_position != null ? #numbers.formatDecimal(report.r12_net_short_position, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r12_net_short_position" name="r12_net_short_position"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+
+
+											</tr>
+											<tr>
+												<td id="ROW13"></td>
+												<!-- <td id="ROW13" >
         <input class="display-input Show_input"
                type="text"
                th:value="${#strings.defaultString(report.r13_currency, 'N/A')}"
@@ -1518,94 +1492,77 @@ function fileuploads(btn) {
                style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
                readonly />
     </td> -->
-    <td>Indian Rupee</td>
-    <td id="ROW13" style="padding-left: 20px;">
-    <input class="display-input Show_input"
-           type="text"
-           th:value="${report.r13_net_spot_position != null ? #numbers.formatDecimal(report.r13_net_spot_position, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="r13_net_spot_position"
-           name="r13_net_spot_position"
-           style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-	</td>
-	<td id="ROW13" style="padding-left: 20px;">
-    <input class="display-input Show_input"
-           type="text"
-           th:value="${report.r13_net_forward_position != null ? #numbers.formatDecimal(report.r13_net_forward_position, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="r13_net_forward_position"
-           name="r13_net_forward_position"
-           style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-	</td>
-	<td id="ROW13" style="padding-left: 20px;">
-    <input class="display-input Show_input"
-           type="text"
-           th:value="${report.r13_guarantees != null ? #numbers.formatDecimal(report.r13_guarantees, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="r13_guarantees"
-           name="r13_guarantees"
-           style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-	</td>
-	<td id="ROW13" style="padding-left: 20px;">
-    <input class="display-input Show_input"
-           type="text"
-           th:value="${report.r13_net_future_inc_or_exp != null ? #numbers.formatDecimal(report.r13_net_future_inc_or_exp, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="r13_net_future_inc_or_exp"
-           name="r13_net_future_inc_or_exp"
-           style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-	</td>
-	<td id="ROW13" style="padding-left: 20px;">
-    <input class="display-input Show_input"
-           type="text"
-           th:value="${report.r13_net_delta_wei_fx_opt_posi != null ? #numbers.formatDecimal(report.r13_net_delta_wei_fx_opt_posi, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="r13_net_delta_wei_fx_opt_posi"
-           name="r13_net_delta_wei_fx_opt_posi"
-           style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-	</td>
-	<td id="ROW13" style="padding-left: 20px;">
-    <input class="display-input Show_input"
-           type="text"
-           th:value="${report.r13_other_items != null ? #numbers.formatDecimal(report.r13_other_items, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="r13_other_items"
-           name="r13_other_items"
-           style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-	</td>
-	<td id="ROW13" style="padding-left: 20px;">
-    <input class="display-input Show_input"
-           type="text"
-           th:value="${report.r13_net_long_position != null ? #numbers.formatDecimal(report.r13_net_long_position, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="r13_net_long_position"
-           name="r13_net_long_position"
-           style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-	</td>
-	<td id="ROW13" style="padding-left: 20px;">
-    <input class="display-input Show_input nonEditable"
-           type="text"
-           th:value="${report.r13_or != null ? #numbers.formatDecimal(report.r13_or, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="r13_or"
-           name="r13_or"
-           style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-	</td>
-	<td id="ROW13" style="padding-left: 20px;">
-    <input class="display-input Show_input"
-           type="text"
-           th:value="${report.r13_net_short_position != null ? #numbers.formatDecimal(report.r13_net_short_position, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="r13_net_short_position"
-           name="r13_net_short_position"
-           style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-	</td>
-	
-    
-</tr>
-<tr>
-	<td id="ROW14"></td>
-	<!-- <td id="ROW14" >
+												<td>Indian Rupee</td>
+												<td id="ROW13" style="padding-left: 20px;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r13_net_spot_position != null ? #numbers.formatDecimal(report.r13_net_spot_position, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r13_net_spot_position" name="r13_net_spot_position"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td id="ROW13" style="padding-left: 20px;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r13_net_forward_position != null ? #numbers.formatDecimal(report.r13_net_forward_position, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r13_net_forward_position" name="r13_net_forward_position"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td id="ROW13" style="padding-left: 20px;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r13_guarantees != null ? #numbers.formatDecimal(report.r13_guarantees, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r13_guarantees" name="r13_guarantees"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td id="ROW13" style="padding-left: 20px;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r13_net_future_inc_or_exp != null ? #numbers.formatDecimal(report.r13_net_future_inc_or_exp, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r13_net_future_inc_or_exp" name="r13_net_future_inc_or_exp"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td id="ROW13" style="padding-left: 20px;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r13_net_delta_wei_fx_opt_posi != null ? #numbers.formatDecimal(report.r13_net_delta_wei_fx_opt_posi, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r13_net_delta_wei_fx_opt_posi"
+														name="r13_net_delta_wei_fx_opt_posi"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td id="ROW13" style="padding-left: 20px;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r13_other_items != null ? #numbers.formatDecimal(report.r13_other_items, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r13_other_items" name="r13_other_items"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td id="ROW13" style="padding-left: 20px;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r13_net_long_position != null ? #numbers.formatDecimal(report.r13_net_long_position, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r13_net_long_position" name="r13_net_long_position"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td id="ROW13" style="padding-left: 20px;">
+													<input class="display-input Show_input nonEditable" type="text"
+														th:value="${report.r13_or != null ? #numbers.formatDecimal(report.r13_or, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r13_or" name="r13_or"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td id="ROW13" style="padding-left: 20px;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r13_net_short_position != null ? #numbers.formatDecimal(report.r13_net_short_position, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r13_net_short_position" name="r13_net_short_position"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+
+
+											</tr>
+											<tr>
+												<td id="ROW14"></td>
+												<!-- <td id="ROW14" >
         <input class="display-input Show_input"
                type="text"
                th:value="${#strings.defaultString(report.r14_currency, 'N/A')}"
@@ -1614,94 +1571,77 @@ function fileuploads(btn) {
                style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
                readonly />
     </td> -->
-    <td>South African Rand</td>
-    <td id="ROW14" style="padding-left: 20px;">
-    <input class="display-input Show_input"
-           type="text"
-           th:value="${report.r14_net_spot_position != null ? #numbers.formatDecimal(report.r14_net_spot_position, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="r14_net_spot_position"
-           name="r14_net_spot_position"
-           style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-	</td>
-	<td id="ROW14" style="padding-left: 20px;">
-    <input class="display-input Show_input"
-           type="text"
-           th:value="${report.r14_net_forward_position != null ? #numbers.formatDecimal(report.r14_net_forward_position, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="r14_net_forward_position"
-           name="r14_net_forward_position"
-           style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-	</td>
-	<td id="ROW14" style="padding-left: 20px;">
-    <input class="display-input Show_input"
-           type="text"
-           th:value="${report.r14_guarantees != null ? #numbers.formatDecimal(report.r14_guarantees, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="r14_guarantees"
-           name="r14_guarantees"
-           style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-	</td>
-	<td id="ROW14" style="padding-left: 20px;">
-    <input class="display-input Show_input"
-           type="text"
-           th:value="${report.r14_net_future_inc_or_exp != null ? #numbers.formatDecimal(report.r14_net_future_inc_or_exp, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="r14_net_future_inc_or_exp"
-           name="r14_net_future_inc_or_exp"
-           style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-	</td>
-	<td id="ROW14" style="padding-left: 20px;">
-    <input class="display-input Show_input"
-           type="text"
-           th:value="${report.r14_net_delta_wei_fx_opt_posi != null ? #numbers.formatDecimal(report.r14_net_delta_wei_fx_opt_posi, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="r14_net_delta_wei_fx_opt_posi"
-           name="r14_net_delta_wei_fx_opt_posi"
-           style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-	</td>
-	<td id="ROW14" style="padding-left: 20px;">
-    <input class="display-input Show_input"
-           type="text"
-           th:value="${report.r14_other_items != null ? #numbers.formatDecimal(report.r14_other_items, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="r14_other_items"
-           name="r14_other_items"
-           style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-	</td>
-	<td id="ROW14" style="padding-left: 20px;">
-    <input class="display-input Show_input"
-           type="text"
-           th:value="${report.r14_net_long_position != null ? #numbers.formatDecimal(report.r14_net_long_position, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="r14_net_long_position"
-           name="r14_net_long_position"
-           style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-	</td>
-	<td id="ROW14" style="padding-left: 20px;">
-    <input class="display-input Show_input nonEditable"
-           type="text"
-           th:value="${report.r14_or != null ? #numbers.formatDecimal(report.r14_or, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="r14_or"
-           name="r14_or"
-           style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-	</td>
-	<td id="ROW14" style="padding-left: 20px;">
-    <input class="display-input Show_input"
-           type="text"
-           th:value="${report.r14_net_short_position != null ? #numbers.formatDecimal(report.r14_net_short_position, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="r14_net_short_position"
-           name="r14_net_short_position"
-           style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-	</td>
-	
-    
-</tr>
-<tr>
-	<td id="ROW15"></td>
-	<!-- <td id="ROW15" >
+												<td>South African Rand</td>
+												<td id="ROW14" style="padding-left: 20px;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r14_net_spot_position != null ? #numbers.formatDecimal(report.r14_net_spot_position, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r14_net_spot_position" name="r14_net_spot_position"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td id="ROW14" style="padding-left: 20px;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r14_net_forward_position != null ? #numbers.formatDecimal(report.r14_net_forward_position, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r14_net_forward_position" name="r14_net_forward_position"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td id="ROW14" style="padding-left: 20px;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r14_guarantees != null ? #numbers.formatDecimal(report.r14_guarantees, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r14_guarantees" name="r14_guarantees"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td id="ROW14" style="padding-left: 20px;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r14_net_future_inc_or_exp != null ? #numbers.formatDecimal(report.r14_net_future_inc_or_exp, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r14_net_future_inc_or_exp" name="r14_net_future_inc_or_exp"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td id="ROW14" style="padding-left: 20px;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r14_net_delta_wei_fx_opt_posi != null ? #numbers.formatDecimal(report.r14_net_delta_wei_fx_opt_posi, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r14_net_delta_wei_fx_opt_posi"
+														name="r14_net_delta_wei_fx_opt_posi"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td id="ROW14" style="padding-left: 20px;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r14_other_items != null ? #numbers.formatDecimal(report.r14_other_items, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r14_other_items" name="r14_other_items"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td id="ROW14" style="padding-left: 20px;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r14_net_long_position != null ? #numbers.formatDecimal(report.r14_net_long_position, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r14_net_long_position" name="r14_net_long_position"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td id="ROW14" style="padding-left: 20px;">
+													<input class="display-input Show_input nonEditable" type="text"
+														th:value="${report.r14_or != null ? #numbers.formatDecimal(report.r14_or, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r14_or" name="r14_or"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td id="ROW14" style="padding-left: 20px;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r14_net_short_position != null ? #numbers.formatDecimal(report.r14_net_short_position, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r14_net_short_position" name="r14_net_short_position"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+
+
+											</tr>
+											<tr>
+												<td id="ROW15"></td>
+												<!-- <td id="ROW15" >
         <input class="display-input Show_input"
                type="text"
                th:value="${#strings.defaultString(report.r15_currency, 'N/A')}"
@@ -1710,94 +1650,77 @@ function fileuploads(btn) {
                style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
                readonly />
     </td> -->
-    <td>US Dollar</td>
-    <td id="ROW15" style="padding-left: 20px;">
-    <input class="display-input Show_input"
-           type="text"
-           th:value="${report.r15_net_spot_position != null ? #numbers.formatDecimal(report.r15_net_spot_position, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="r15_net_spot_position"
-           name="r15_net_spot_position"
-           style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-	</td>
-	<td id="ROW15" style="padding-left: 20px;">
-    <input class="display-input Show_input"
-           type="text"
-           th:value="${report.r15_net_forward_position != null ? #numbers.formatDecimal(report.r15_net_forward_position, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="r15_net_forward_position"
-           name="r15_net_forward_position"
-           style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-	</td>
-	<td id="ROW15" style="padding-left: 20px;">
-    <input class="display-input Show_input"
-           type="text"
-           th:value="${report.r15_guarantees != null ? #numbers.formatDecimal(report.r15_guarantees, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="r15_guarantees"
-           name="r15_guarantees"
-           style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-	</td>
-	<td id="ROW15" style="padding-left: 20px;">
-    <input class="display-input Show_input"
-           type="text"
-           th:value="${report.r15_net_future_inc_or_exp != null ? #numbers.formatDecimal(report.r15_net_future_inc_or_exp, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="r15_net_future_inc_or_exp"
-           name="r15_net_future_inc_or_exp"
-           style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-	</td>
-	<td id="ROW15" style="padding-left: 20px;">
-    <input class="display-input Show_input"
-           type="text"
-           th:value="${report.r15_net_delta_wei_fx_opt_posi != null ? #numbers.formatDecimal(report.r15_net_delta_wei_fx_opt_posi, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="r15_net_delta_wei_fx_opt_posi"
-           name="r15_net_delta_wei_fx_opt_posi"
-           style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-	</td>
-	<td id="ROW15" style="padding-left: 20px;">
-    <input class="display-input Show_input"
-           type="text"
-           th:value="${report.r15_other_items != null ? #numbers.formatDecimal(report.r15_other_items, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="r15_other_items"
-           name="r15_other_items"
-           style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-	</td>
-	<td id="ROW15" style="padding-left: 20px;">
-    <input class="display-input Show_input"
-           type="text"
-           th:value="${report.r15_net_long_position != null ? #numbers.formatDecimal(report.r15_net_long_position, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="r15_net_long_position"
-           name="r15_net_long_position"
-           style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-	</td>
-	<td id="ROW15" style="padding-left: 20px;">
-    <input class="display-input Show_input nonEditable"
-           type="text"
-           th:value="${report.r15_or != null ? #numbers.formatDecimal(report.r15_or, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="r15_or"
-           name="r15_or"
-           style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-	</td>
-	<td id="ROW15" style="padding-left: 20px;">
-    <input class="display-input Show_input"
-           type="text"
-           th:value="${report.r15_net_short_position != null ? #numbers.formatDecimal(report.r15_net_short_position, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="r15_net_short_position"
-           name="r15_net_short_position"
-           style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-	</td>
-	
-    
-</tr>
-<tr>
-	<td id="ROW16"></td>
-	<!-- <td id="ROW16" >
+												<td>US Dollar</td>
+												<td id="ROW15" style="padding-left: 20px;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r15_net_spot_position != null ? #numbers.formatDecimal(report.r15_net_spot_position, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r15_net_spot_position" name="r15_net_spot_position"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td id="ROW15" style="padding-left: 20px;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r15_net_forward_position != null ? #numbers.formatDecimal(report.r15_net_forward_position, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r15_net_forward_position" name="r15_net_forward_position"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td id="ROW15" style="padding-left: 20px;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r15_guarantees != null ? #numbers.formatDecimal(report.r15_guarantees, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r15_guarantees" name="r15_guarantees"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td id="ROW15" style="padding-left: 20px;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r15_net_future_inc_or_exp != null ? #numbers.formatDecimal(report.r15_net_future_inc_or_exp, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r15_net_future_inc_or_exp" name="r15_net_future_inc_or_exp"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td id="ROW15" style="padding-left: 20px;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r15_net_delta_wei_fx_opt_posi != null ? #numbers.formatDecimal(report.r15_net_delta_wei_fx_opt_posi, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r15_net_delta_wei_fx_opt_posi"
+														name="r15_net_delta_wei_fx_opt_posi"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td id="ROW15" style="padding-left: 20px;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r15_other_items != null ? #numbers.formatDecimal(report.r15_other_items, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r15_other_items" name="r15_other_items"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td id="ROW15" style="padding-left: 20px;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r15_net_long_position != null ? #numbers.formatDecimal(report.r15_net_long_position, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r15_net_long_position" name="r15_net_long_position"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td id="ROW15" style="padding-left: 20px;">
+													<input class="display-input Show_input nonEditable" type="text"
+														th:value="${report.r15_or != null ? #numbers.formatDecimal(report.r15_or, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r15_or" name="r15_or"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td id="ROW15" style="padding-left: 20px;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r15_net_short_position != null ? #numbers.formatDecimal(report.r15_net_short_position, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r15_net_short_position" name="r15_net_short_position"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+
+
+											</tr>
+											<tr>
+												<td id="ROW16"></td>
+												<!-- <td id="ROW16" >
         <input class="display-input Show_input"
                type="text"
                th:value="${#strings.defaultString(report.r16_currency, 'N/A')}"
@@ -1806,341 +1729,350 @@ function fileuploads(btn) {
                style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
                readonly />
     </td> -->
-    <td>Other Exotic Currencies</td>
-    <td id="ROW16" style="padding-left: 20px;">
-    <input class="display-input Show_input"
-           type="text"
-           th:value="${report.r16_net_spot_position != null ? #numbers.formatDecimal(report.r16_net_spot_position, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="r16_net_spot_position"
-           name="r16_net_spot_position"
-           style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-	</td>
-	<td id="ROW16" style="padding-left: 20px;">
-    <input class="display-input Show_input"
-           type="text"
-           th:value="${report.r16_net_forward_position != null ? #numbers.formatDecimal(report.r16_net_forward_position, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="r16_net_forward_position"
-           name="r16_net_forward_position"
-           style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-	</td>
-	<td id="ROW16" style="padding-left: 20px;">
-    <input class="display-input Show_input"
-           type="text"
-           th:value="${report.r16_guarantees != null ? #numbers.formatDecimal(report.r16_guarantees, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="r16_guarantees"
-           name="r16_guarantees"
-           style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-	</td>
-	<td id="ROW16" style="padding-left: 20px;">
-    <input class="display-input Show_input"
-           type="text"
-           th:value="${report.r16_net_future_inc_or_exp != null ? #numbers.formatDecimal(report.r16_net_future_inc_or_exp, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="r16_net_future_inc_or_exp"
-           name="r16_net_future_inc_or_exp"
-           style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-	</td>
-	<td id="ROW16" style="padding-left: 20px;">
-    <input class="display-input Show_input"
-           type="text"
-           th:value="${report.r16_net_delta_wei_fx_opt_posi != null ? #numbers.formatDecimal(report.r16_net_delta_wei_fx_opt_posi, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="r16_net_delta_wei_fx_opt_posi"
-           name="r16_net_delta_wei_fx_opt_posi"
-           style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-	</td>
-	<td id="ROW16" style="padding-left: 20px;">
-    <input class="display-input Show_input"
-           type="text"
-           th:value="${report.r16_other_items != null ? #numbers.formatDecimal(report.r16_other_items, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="r16_other_items"
-           name="r16_other_items"
-           style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-	</td>
-	<td id="ROW16" style="padding-left: 20px;">
-    <input class="display-input Show_input"
-           type="text"
-           th:value="${report.r16_net_long_position != null ? #numbers.formatDecimal(report.r16_net_long_position, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="r16_net_long_position"
-           name="r16_net_long_position"
-           style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-	</td>
-	<td id="ROW16" style="padding-left: 20px;">
-    <input class="display-input Show_input nonEditable"
-           type="text"
-           th:value="${report.r16_or != null ? #numbers.formatDecimal(report.r16_or, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="r16_or"
-           name="r16_or"
-           style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-	</td>
-	<td id="ROW16" style="padding-left: 20px;">
-    <input class="display-input Show_input"
-           type="text"
-           th:value="${report.r16_net_short_position != null ? #numbers.formatDecimal(report.r16_net_short_position, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="r16_net_short_position"
-           name="r16_net_short_position"
-           style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-	</td>
-	
-    
-</tr>
-<tr>
-<td style="border: none !important;" id="ROW17" colspan="7" ></td>
-<td id="ROW17" style="font-weight: bold; text-align: left; border: none;">Total Position</td>
-   <!-- th:value="${report.r17_net_long_position != null ? #numbers.formatDecimal(report.r17_net_long_position, 0, 'COMMA', 0, 'POINT') : '0'}" -->
-<td id="ROW17" style="padding-left: 20px; font-weight: bold; background-color: rgb(107, 122, 143); color: white;">
-    <input class="display-input Show_input nonEditable"
-           type="text"
-        
-           id="r17_net_long_position"
-           name="r17_net_long_position"
-           style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border: none; text-align: right;"
-           readonly />
-</td>
+												<td>Other Exotic Currencies</td>
+												<td id="ROW16" style="padding-left: 20px;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r16_net_spot_position != null ? #numbers.formatDecimal(report.r16_net_spot_position, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r16_net_spot_position" name="r16_net_spot_position"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td id="ROW16" style="padding-left: 20px;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r16_net_forward_position != null ? #numbers.formatDecimal(report.r16_net_forward_position, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r16_net_forward_position" name="r16_net_forward_position"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td id="ROW16" style="padding-left: 20px;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r16_guarantees != null ? #numbers.formatDecimal(report.r16_guarantees, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r16_guarantees" name="r16_guarantees"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td id="ROW16" style="padding-left: 20px;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r16_net_future_inc_or_exp != null ? #numbers.formatDecimal(report.r16_net_future_inc_or_exp, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r16_net_future_inc_or_exp" name="r16_net_future_inc_or_exp"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td id="ROW16" style="padding-left: 20px;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r16_net_delta_wei_fx_opt_posi != null ? #numbers.formatDecimal(report.r16_net_delta_wei_fx_opt_posi, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r16_net_delta_wei_fx_opt_posi"
+														name="r16_net_delta_wei_fx_opt_posi"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td id="ROW16" style="padding-left: 20px;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r16_other_items != null ? #numbers.formatDecimal(report.r16_other_items, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r16_other_items" name="r16_other_items"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td id="ROW16" style="padding-left: 20px;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r16_net_long_position != null ? #numbers.formatDecimal(report.r16_net_long_position, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r16_net_long_position" name="r16_net_long_position"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td id="ROW16" style="padding-left: 20px;">
+													<input class="display-input Show_input nonEditable" type="text"
+														th:value="${report.r16_or != null ? #numbers.formatDecimal(report.r16_or, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r16_or" name="r16_or"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td id="ROW16" style="padding-left: 20px;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r16_net_short_position != null ? #numbers.formatDecimal(report.r16_net_short_position, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r16_net_short_position" name="r16_net_short_position"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
 
 
-	<td id="ROW17" style="background-color: #D9D9D9;"></td>
-	<!-- th:value="${report.r17_net_short_position != null ? #numbers.formatDecimal(report.r17_net_short_position, 1, 'COMMA', 0, 'POINT') : '0'}" -->
-	<td id="ROW17" style="padding-left: 20px; font-weight: bold; background-color: rgb(107, 122, 143); color: white;">
-    <input class="display-input Show_input nonEditable"
-           type="text"
-           
-           id="r17_net_short_position"
-           name="r17_net_short_position"
-           style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-	</td>
-</tr>
-<!-- <tr>
+											</tr>
+											<tr>
+												<td style="border: none !important;" id="ROW17" colspan="7"></td>
+												<td id="ROW17"
+													style="font-weight: bold; text-align: left; border: none;">Total
+													Position</td>
+												<!-- th:value="${report.r17_net_long_position != null ? #numbers.formatDecimal(report.r17_net_long_position, 0, 'COMMA', 0, 'POINT') : '0'}" -->
+												<td id="ROW17"
+													style="padding-left: 20px; font-weight: bold; background-color: rgb(107, 122, 143); color: white;">
+													<input class="display-input Show_input nonEditable" type="text"
+														id="r17_net_long_position" name="r17_net_long_position"
+														style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border: none; text-align: right;"
+														readonly />
+												</td>
+
+
+												<td id="ROW17" style="background-color: #D9D9D9;"></td>
+												<!-- th:value="${report.r17_net_short_position != null ? #numbers.formatDecimal(report.r17_net_short_position, 1, 'COMMA', 0, 'POINT') : '0'}" -->
+												<td id="ROW17"
+													style="padding-left: 20px; font-weight: bold; background-color: rgb(107, 122, 143); color: white;">
+													<input class="display-input Show_input nonEditable" type="text"
+														id="r17_net_short_position" name="r17_net_short_position"
+														style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+											</tr>
+											<!-- <tr>
     <td colspan="8"></td>
     <td style="text-align: right;">J</td>
     <td style="border: none;"></td>
     <td style="text-align: right;">K</td>
   </tr> -->
-  
-<tr class="noborder">
-  <td colspan="8"></td>
-  <td style="text-align: right;">J</td>
-  <td></td>
-  <td style="text-align: right;">K</td>
-</tr>
 
-  
-	</tbody>
-										
-</table>
-
-<head>
-  <style>
-  /* Applies only to the row with this specific class */
-  .row23-noborder td:first-child,
-  .row23-noborder td:last-child {
-    border: none !important;
-  }
-  </style>
-</head>	
-
-<!-- Outer table to align texts (left) and data table (right) -->
-<table style="border-collapse: collapse;">
-  <tr>
-    <!-- Left texts -->
-    <td style="padding-right: 942px; padding-left:50px; vertical-align: top;">
-      <p style="font-weight:bold; width:153px; ">Gold Position</p>
-      <p style="padding-top:2px;">Non-Physical Trading</p>
-      <p>Physical Trading</p>
-    </td>
-
-    <!-- Right data table -->
-    <td>
-      <table class="sticky-header-table table table-bordered table-hover table-sm table-condensed" id="reports">
-        <thead class="thead-light">
-          <tr>
-            <th style="vertical-align: middle; text-align:right; color:black;">Long</th>
-            <th style="vertical-align: middle; text-align:right; color:black;">Short</th>
-            <th style="vertical-align: middle; text-align:right; color:black;">Total Gross Long &<br> Short Position</th>
-            <th style="vertical-align: middle; text-align:right; color:black;">Net Position</th>
-            
-          </tr>
-        </thead>
-        <tbody id="entity2" th:each="report: ${reportsummary}" style="font-family: Arial;">
-          <tr>
-            <td id="ROW21" style="padding-left: 20px; font-weight: bold;">
-              <input class="display-input Show_input"
-                     type="text"
-                     th:value="${report.r21_long != null ? #numbers.formatDecimal(report.r21_long, 1, 'COMMA', 0, 'POINT') : '0'}"
-                     id="r21_long"
-                     name="r21_long"
-                     style="width: 200px; height: 28px; border-color: transparent; text-align: right;"
-                     readonly />
-            </td>
-            <td id="ROW21" style="padding-left: 20px; font-weight: bold;">
-              <input class="display-input Show_input"
-                     type="text"
-                     th:value="${report.r21_short != null ? #numbers.formatDecimal(report.r21_short, 1, 'COMMA', 0, 'POINT') : '0'}"
-                     id="r21_short"
-                     name="r21_short"
-                     style="width: 200px; height: 28px; border-color: transparent; text-align: right;"
-                     readonly />
-            </td>
-            <td id="ROW21" style="padding-left: 20px; font-weight: bold; background-color: rgb(107, 122, 143); color: white;">
-              <input class="display-input Show_input nonEditable"
-                     type="text"
-                     id="r21_total_gross_long_short"
-                     name="r21_total_gross_long_short"
-                     style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-                     readonly />
-            </td>
-            <td id="ROW21" style="padding-left: 20px; font-weight: bold; background-color: rgb(107, 122, 143); color: white;">
-              <input class="display-input Show_input nonEditable"
-                     type="text"
-                     id="r21_net_position"
-                     name="r21_net_position"
-                     style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-                     readonly />
-            </td>
-            
-          </tr>
-
-          <tr>
-            <td id="ROW22" style="padding-left: 20px; font-weight: bold;">
-              <input class="display-input Show_input"
-                     type="text"
-                     th:value="${report.r22_long != null ? #numbers.formatDecimal(report.r22_long, 1, 'COMMA', 0, 'POINT') : '0'}"
-                     id="r22_long"
-                     name="r22_long"
-                     style="width: 200px; height: 28px; border-color: transparent; text-align: right;"
-                     readonly />
-            </td>
-            <td id="ROW22" style="padding-left: 20px; font-weight: bold;">
-              <input class="display-input Show_input"
-                     type="text"
-                     th:value="${report.r22_short != null ? #numbers.formatDecimal(report.r22_short, 1, 'COMMA', 0, 'POINT') : '0'}"
-                     id="r22_short"
-                     name="r22_short"
-                     style="width: 200px; height: 28px; border-color: transparent; text-align: right;"
-                     readonly />
-            </td>
-            <td id="ROW22" style="padding-left: 20px; font-weight: bold; background-color: rgb(107, 122, 143); color: white;">
-              <input class="display-input Show_input nonEditable"
-                     type="text"
-                     id="r22_total_gross_long_short"
-                     name="r22_total_gross_long_short"
-                     style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-                     readonly />
-            </td>
-            <td id="ROW22" style="padding-left: 20px; font-weight: bold; background-color: rgb(107, 122, 143); color: white;">
-              <input class="display-input Show_input nonEditable"
-                     type="text"
-                     id="r22_net_position"
-                     name="r22_net_position"
-                     style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-                     readonly />
-            </td>
-            
-          </tr>
-          <tr class="row23-noborder">
-    <td colspan="3"></td>
-    
-    <td id="ROW23"
-        style="padding-left: 20px; font-weight: bold; background-color: rgb(107, 122, 143); color: white; border: 1px solid black;">
-      <input class="display-input Show_input nonEditable"
-             type="text"
-             id="r23_net_position"
-             name="r23_net_position"
-             style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-             readonly />
-    </td>
-    
-    <td style="text-align: left; min-width: 150px; height: 30px;">L</td>
-  </tr>
-        </tbody>
-      </table>
-    </td>
-  </tr>
-</table>
+											<tr class="noborder">
+												<td colspan="8"></td>
+												<td style="text-align: right;">J</td>
+												<td></td>
+												<td style="text-align: right;">K</td>
+											</tr>
 
 
-<table style="border-collapse: collapse;">
-  <tr>
-    <!-- Left texts -->
-    <td style="padding-right: 841px; padding-left:50px; vertical-align: top;">
-      <p style="font-weight:bold; width:153px; ">Capital Calculation</p>
-    </td>
+										</tbody>
 
-    <!-- Right data table -->
-    <td>
-      <table class="sticky-header-table table table-bordered table-hover table-sm table-condensed" id="reports">
-        <thead class="thead-light">
-          <tr>
-          	<th style="background-color: white; border: none !important;"></th>
-            <th style="vertical-align: middle; text-align:right; color:black;">Greater of the Absolute <br>Value of Net Long<br> Position (J) or Net Short <br>Position (K)</th>
-            <th style="vertical-align: middle; text-align:right; color:black;">Absolute <br>Value Net<br> Gold Position (L)</th>
-            <th style="vertical-align: middle; text-align:left; color:black;">Capital Requirement</th>
-            <th style="vertical-align: middle; text-align:right; color:black;">Capital Charge</th>
-          </tr>
-          <tr>
-          	<th style="background-color: white; border: none !important;"></th>
-            <th style="text-align:right; color:black;">M</th>
-            <th style="text-align:right; color:black;">N</th>
-            <th style="text-align:left; color:black;">P</th>
-            <th style="text-align:right; color:black;">Q=(M+N)xP</th>
-          </tr>
-        </thead>
-        <tbody id="entity3" th:each="report: ${reportsummary}" style="font-family: Arial;">
-            <tr>
-          	<td id="ROW29" style="font-weight:bold; text-align:left; border: none !important;" >General risk</td>
-            <td style="padding-left: 20px; text-align:right;background-color: rgb(107, 122, 143); color: white;">
-              <input class="display-input Show_input nonEditable"
-                     type="text"
-                     id="r29_greater_net_long_or_short"
-                     name="r29_greater_net_long_or_short"
-                     style="background-color: rgb(107, 122, 143); color: white;width: 200px; height: 28px; border-color: transparent; text-align: right;"
-                     readonly />
-            </td>
-            <td id="ROW29" style="padding-left: 20px; text-align:right;background-color: rgb(107, 122, 143); color: white;">
-              <input class="display-input Show_input nonEditable"
-                     type="text"
-                     id="r29_abs_value_net_gold_posi"
-                     name="r29_abs_value_net_gold_posi"
-                     style="background-color: rgb(107, 122, 143); color: white;width: 200px; height: 28px; border-color: transparent; text-align: right;"
-                     readonly />
-            </td>
-            <!-- th:value="${report.r29_capital_require != null ? #numbers.formatDecimal(report.r29_capital_require, 1, 'COMMA', 0, 'POINT') : '0'}" -->
-           <td id="ROW29" style="padding-left: 20px; font-weight: bold; background-color: grey; text-align: center; position: relative;">8.00%
-  <!-- <input class="display-input Show_input"
+									</table>
+
+									<head>
+										<style>
+											/* Applies only to the row with this specific class */
+											.row23-noborder td:first-child,
+											.row23-noborder td:last-child {
+												border: none !important;
+											}
+										</style>
+									</head>
+
+									<!-- Outer table to align texts (left) and data table (right) -->
+									<table style="border-collapse: collapse;">
+										<tr>
+											<!-- Left texts -->
+											<td style="padding-right: 942px; padding-left:50px; vertical-align: top;">
+												<p style="font-weight:bold; width:153px; ">Gold Position</p>
+												<p style="padding-top:2px;">Non-Physical Trading</p>
+												<p>Physical Trading</p>
+											</td>
+
+											<!-- Right data table -->
+											<td>
+												<table
+													class="sticky-header-table table table-bordered table-hover table-sm table-condensed"
+													id="reports">
+													<thead class="thead-light">
+														<tr>
+															<th
+																style="vertical-align: middle; text-align:right; color:black;">
+																Long</th>
+															<th
+																style="vertical-align: middle; text-align:right; color:black;">
+																Short</th>
+															<th
+																style="vertical-align: middle; text-align:right; color:black;">
+																Total Gross Long &<br> Short Position</th>
+															<th
+																style="vertical-align: middle; text-align:right; color:black;">
+																Net Position</th>
+
+														</tr>
+													</thead>
+													<tbody id="entity2" th:each="report: ${reportsummary}"
+														style="font-family: Arial;">
+														<tr>
+															<td id="ROW21"
+																style="padding-left: 20px; font-weight: bold;">
+																<input class="display-input Show_input" type="text"
+																	th:value="${report.r21_long != null ? #numbers.formatDecimal(report.r21_long, 1, 'COMMA', 0, 'POINT') : '0'}"
+																	id="r21_long" name="r21_long"
+																	style="width: 200px; height: 28px; border-color: transparent; text-align: right;"
+																	readonly />
+															</td>
+															<td id="ROW21"
+																style="padding-left: 20px; font-weight: bold;">
+																<input class="display-input Show_input" type="text"
+																	th:value="${report.r21_short != null ? #numbers.formatDecimal(report.r21_short, 1, 'COMMA', 0, 'POINT') : '0'}"
+																	id="r21_short" name="r21_short"
+																	style="width: 200px; height: 28px; border-color: transparent; text-align: right;"
+																	readonly />
+															</td>
+															<td id="ROW21"
+																style="padding-left: 20px; font-weight: bold; background-color: rgb(107, 122, 143); color: white;">
+																<input class="display-input Show_input nonEditable"
+																	type="text" id="r21_total_gross_long_short"
+																	name="r21_total_gross_long_short"
+																	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+																	readonly />
+															</td>
+															<td id="ROW21"
+																style="padding-left: 20px; font-weight: bold; background-color: rgb(107, 122, 143); color: white;">
+																<input class="display-input Show_input nonEditable"
+																	type="text" id="r21_net_position"
+																	name="r21_net_position"
+																	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+																	readonly />
+															</td>
+
+														</tr>
+
+														<tr>
+															<td id="ROW22"
+																style="padding-left: 20px; font-weight: bold;">
+																<input class="display-input Show_input" type="text"
+																	th:value="${report.r22_long != null ? #numbers.formatDecimal(report.r22_long, 1, 'COMMA', 0, 'POINT') : '0'}"
+																	id="r22_long" name="r22_long"
+																	style="width: 200px; height: 28px; border-color: transparent; text-align: right;"
+																	readonly />
+															</td>
+															<td id="ROW22"
+																style="padding-left: 20px; font-weight: bold;">
+																<input class="display-input Show_input" type="text"
+																	th:value="${report.r22_short != null ? #numbers.formatDecimal(report.r22_short, 1, 'COMMA', 0, 'POINT') : '0'}"
+																	id="r22_short" name="r22_short"
+																	style="width: 200px; height: 28px; border-color: transparent; text-align: right;"
+																	readonly />
+															</td>
+															<td id="ROW22"
+																style="padding-left: 20px; font-weight: bold; background-color: rgb(107, 122, 143); color: white;">
+																<input class="display-input Show_input nonEditable"
+																	type="text" id="r22_total_gross_long_short"
+																	name="r22_total_gross_long_short"
+																	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+																	readonly />
+															</td>
+															<td id="ROW22"
+																style="padding-left: 20px; font-weight: bold; background-color: rgb(107, 122, 143); color: white;">
+																<input class="display-input Show_input nonEditable"
+																	type="text" id="r22_net_position"
+																	name="r22_net_position"
+																	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+																	readonly />
+															</td>
+
+														</tr>
+														<tr class="row23-noborder">
+															<td colspan="3"></td>
+
+															<td id="ROW23"
+																style="padding-left: 20px; font-weight: bold; background-color: rgb(107, 122, 143); color: white; border: 1px solid black;">
+																<input class="display-input Show_input nonEditable"
+																	type="text" id="r23_net_position"
+																	name="r23_net_position"
+																	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+																	readonly />
+															</td>
+
+															<td
+																style="text-align: left; min-width: 150px; height: 30px;">
+																L</td>
+														</tr>
+													</tbody>
+												</table>
+											</td>
+										</tr>
+									</table>
+
+
+									<table style="border-collapse: collapse;">
+										<tr>
+											<!-- Left texts -->
+											<td style="padding-right: 841px; padding-left:50px; vertical-align: top;">
+												<p style="font-weight:bold; width:153px; ">Capital Calculation</p>
+											</td>
+
+											<!-- Right data table -->
+											<td>
+												<table
+													class="sticky-header-table table table-bordered table-hover table-sm table-condensed"
+													id="reports">
+													<thead class="thead-light">
+														<tr>
+															<th
+																style="background-color: white; border: none !important;">
+															</th>
+															<th
+																style="vertical-align: middle; text-align:right; color:black;">
+																Greater of the Absolute <br>Value of Net Long<br>
+																Position (J) or Net Short <br>Position (K)</th>
+															<th
+																style="vertical-align: middle; text-align:right; color:black;">
+																Absolute <br>Value Net<br> Gold Position (L)</th>
+															<th
+																style="vertical-align: middle; text-align:left; color:black;">
+																Capital Requirement</th>
+															<th
+																style="vertical-align: middle; text-align:right; color:black;">
+																Capital Charge</th>
+														</tr>
+														<tr>
+															<th
+																style="background-color: white; border: none !important;">
+															</th>
+															<th style="text-align:right; color:black;">M</th>
+															<th style="text-align:right; color:black;">N</th>
+															<th style="text-align:left; color:black;">P</th>
+															<th style="text-align:right; color:black;">Q=(M+N)xP</th>
+														</tr>
+													</thead>
+													<tbody id="entity3" th:each="report: ${reportsummary}"
+														style="font-family: Arial;">
+														<tr>
+															<td id="ROW29"
+																style="font-weight:bold; text-align:left; border: none !important;">
+																General risk</td>
+															<td
+																style="padding-left: 20px; text-align:right;background-color: rgb(107, 122, 143); color: white;">
+																<input class="display-input Show_input nonEditable"
+																	type="text" id="r29_greater_net_long_or_short"
+																	name="r29_greater_net_long_or_short"
+																	style="background-color: rgb(107, 122, 143); color: white;width: 200px; height: 28px; border-color: transparent; text-align: right;"
+																	readonly />
+															</td>
+															<td id="ROW29"
+																style="padding-left: 20px; text-align:right;background-color: rgb(107, 122, 143); color: white;">
+																<input class="display-input Show_input nonEditable"
+																	type="text" id="r29_abs_value_net_gold_posi"
+																	name="r29_abs_value_net_gold_posi"
+																	style="background-color: rgb(107, 122, 143); color: white;width: 200px; height: 28px; border-color: transparent; text-align: right;"
+																	readonly />
+															</td>
+															<!-- th:value="${report.r29_capital_require != null ? #numbers.formatDecimal(report.r29_capital_require, 1, 'COMMA', 0, 'POINT') : '0'}" -->
+															<td id="ROW29"
+																style="padding-left: 20px; font-weight: bold; background-color: grey; text-align: center; position: relative;">
+																8.00%
+																<!-- <input class="display-input Show_input"
          type="text"
          id="r29_capital_require"
          name="r29_capital_require"
          style="background-color: grey; width: 200px; height: 28px; border-color: transparent; text-align: right; padding-right: 20px; display: inline-block;"
          readonly /> -->
-  <!-- <span style="position: absolute; right: 5px; top: 50%; transform: translateY(-50%); pointer-events: none; color: black;">%</span> -->
-</td>
+																<!-- <span style="position: absolute; right: 5px; top: 50%; transform: translateY(-50%); pointer-events: none; color: black;">%</span> -->
+															</td>
 
 
-            <td id="ROW29" style="padding-left: 20px; font-weight: bold; background-color: rgb(107, 122, 143); color: white;">
-              <input class="display-input Show_input nonEditable"
-                     type="text"
-                     id="r29_capital_charge"
-                     name="r29_capital_charge"
-                     style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-                     readonly />
-            </td>
-    <!-- <td id="r29_capital_charge"
+															<td id="ROW29"
+																style="padding-left: 20px; font-weight: bold; background-color: rgb(107, 122, 143); color: white;">
+																<input class="display-input Show_input nonEditable"
+																	type="text" id="r29_capital_charge"
+																	name="r29_capital_charge"
+																	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+																	readonly />
+															</td>
+															<!-- <td id="r29_capital_charge"
     name="r29_capital_charge"
     th:text="${report.r29_capital_charge}"
     style=" text-align: right; background-color: rgb(107, 122, 143); color: white;">
 </td> -->
 
 
-          </tr>
-         <!--  <tr>            
+														</tr>
+														<!--  <tr>            
           <td colspan = 3></td>
           <td id="ROW30" style="padding-left: 20px; font-weight: bold;">
               <input class="display-input Show_input"
@@ -2154,62 +2086,61 @@ function fileuploads(btn) {
           
             
             </tr> -->
-        </tbody>
-      </table>
-    </td>
-  </tr>
-</table>
-									
+													</tbody>
+												</table>
+											</td>
+										</tr>
+									</table>
 
 
-							</div>
-							<div style="text-align: center; margin-top: 10px;">
-								
-    <button id="submitButton" 
-            type="button"
-            class="custom-tab-btn Show_input" 
-            form="fileupload"
-            th:attr="data-todate=${asondate}, data-type=${type}" 
-            onclick="fileuploads(this);" 
-            style="display: none;">
-        Submit
-    </button>
-</div>
+
+								</div>
+								<div style="text-align: center; margin-top: 10px;">
+
+									<button id="submitButton" type="button" class="custom-tab-btn Show_input"
+										form="fileupload" th:attr="data-todate=${asondate}, data-type=${type}"
+										onclick="fileuploads(this);" style="display: none;">
+										Submit
+									</button>
+								</div>
 							</form>
-							</div>
 						</div>
 					</div>
 				</div>
-				
+			</div>
+
+		</div>
+	</div>
+
+
+	<!-- Custom Cellresult Modal -->
+	<div class="modal fade" id="cellresultModal">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+
+				<!-- Custom header -->
+				<div class="menu-title-header"
+					style="background-color:#6c7a91; padding: 8px; border-radius:5px 5px 0 0;">
+					<div class="modal-title" id="cellresultModalLabel" style="text-align: center; color: white;">
+						Do you want to open the report?
+					</div>
+				</div>
+
+				<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+					<button type="button" class="custom-tab-btn cancel-btn" data-bs-dismiss="modal"
+						style="margin-right:10px; border:2px solid #6c7a91; background:white; color:black; border-radius:20px; padding:5px 15px;">
+						Cancel
+					</button>
+					<button type="button" class="custom-tab-btn yes-btn"
+						style="background:#6c7a91; color:white; border:none; border-radius:20px; padding:5px 20px;">
+						Yes
+					</button>
+				</div>
 			</div>
 		</div>
-	
-	
-	<!-- Custom Cellresult Modal -->
-		<div class="modal fade" id="cellresultModal">
-		  <div class="modal-dialog modal-dialog-centered">
-		    <div class="modal-content">
-		      
-		      <!-- Custom header -->
-		      <div class="menu-title-header" style="background-color:#6c7a91; padding: 8px; border-radius:5px 5px 0 0;">
-		        <div class="modal-title" id="cellresultModalLabel" style="text-align: center; color: white;">
-		          Do you want to open the report?
-		        </div>
-		      </div>
+	</div>
 
-		      <div class="modal-body" style="text-align: center; font-size: 1.1rem;">
-		        <button type="button" class="custom-tab-btn cancel-btn" data-bs-dismiss="modal"  style="margin-right:10px; border:2px solid #6c7a91; background:white; color:black; border-radius:20px; padding:5px 15px;">
-		          Cancel
-		        </button>
-		        <button type="button" class="custom-tab-btn yes-btn" style="background:#6c7a91; color:white; border:none; border-radius:20px; padding:5px 20px;">
-		          Yes
-		        </button>
-		      </div>
-		    </div>
-		  </div>
-		</div>
 
-	
 	<div class="modal fade" id="loader" data-backdrop="static" data-keyboard="false">
 		<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
 			<div class="modal-content" style="background: transparent;">
@@ -2236,7 +2167,8 @@ function fileuploads(btn) {
 				<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
 					<p id="resultModalBody"></p>
 					<!-- Your custom styled button -->
-					<button type="button" class="custom-tab-btn" onclick="closemodel()" data-bs-dismiss="modal">OK</button>
+					<button type="button" class="custom-tab-btn" onclick="closemodel()"
+						data-bs-dismiss="modal">OK</button>
 				</div>
 			</div>
 		</div>
@@ -2256,19 +2188,19 @@ function fileuploads(btn) {
 															  });
 	
 														</script> -->
-														
-														<style>
-														  #BRFdet td {
-														    border: 1px solid #ccc;
-														    padding: 8px;
-														  }
 
-														  #BRFdet {
-														    border-collapse: collapse;
-														    width: 100%;
-														  }
-														</style>
-														
+<style>
+	#BRFdet td {
+		border: 1px solid #ccc;
+		padding: 8px;
+	}
+
+	#BRFdet {
+		border-collapse: collapse;
+		width: 100%;
+	}
+</style>
+
 <style>
 	/* Your existing CSS - this is the correct approach */
 	.scrollable-table-container {
@@ -2331,7 +2263,8 @@ function fileuploads(btn) {
 	#reports thead th {
 		position: sticky;
 		top: 0;
-		background-color: #D8D8D8; /* light gray header */
+		background-color: #D8D8D8;
+		/* light gray header */
 		/* Match Bootstrap thead-light */
 		z-index: 2;
 	}
@@ -2371,20 +2304,22 @@ function fileuploads(btn) {
 		display: inline-block;
 		width: auto;
 	}
+
 	.scrollable-table-container thead tr:nth-child(1),
-.scrollable-table-container thead tr:nth-child(2),
-.scrollable-table-container thead tr:nth-child(3),
-.scrollable-table-container thead tr:nth-child(4),
-.scrollable-table-container thead tr:nth-child(5) {
-    background-color: #D8D8D8; /* set header color */
-}
-	
+	.scrollable-table-container thead tr:nth-child(2),
+	.scrollable-table-container thead tr:nth-child(3),
+	.scrollable-table-container thead tr:nth-child(4),
+	.scrollable-table-container thead tr:nth-child(5) {
+		background-color: #D8D8D8;
+		/* set header color */
+	}
 </style>
 
 <style>
-  .noborder td, tr {
-    border: none !important;
-  }
+	.noborder td,
+	tr {
+		border: none !important;
+	}
 </style>
 
 

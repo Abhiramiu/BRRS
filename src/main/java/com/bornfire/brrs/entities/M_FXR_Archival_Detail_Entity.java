@@ -6,13 +6,14 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
 @Table(name = "BRRS_M_FXR_ARCHIVALTABLE_DETAIL")
-
+@IdClass(M_FXR_PK.class)
 public class M_FXR_Archival_Detail_Entity {
 
 //	private String r11_currency;
@@ -97,12 +98,17 @@ public class M_FXR_Archival_Detail_Entity {
 	private BigDecimal r29_capital_charge;
 	private BigDecimal r30_capital_require;
 
-	@Temporal(TemporalType.DATE)
 	@Id
+	@Temporal(TemporalType.DATE)
 	@Column(name = "REPORT_DATE")
 	private Date reportDate;
+
+	@Id
 	@Column(name = "REPORT_VERSION")
-	private String reportVersion;
+	private BigDecimal reportVersion;
+
+	@Column(name = "REPORT_RESUBDATE")
+	private Date reportResubDate;
 
 	private String report_frequency;
 	private String report_code;
@@ -679,11 +685,11 @@ public class M_FXR_Archival_Detail_Entity {
 		this.reportDate = reportDate;
 	}
 
-	public String getReportVersion() {
+	public BigDecimal getReportVersion() {
 		return reportVersion;
 	}
 
-	public void setReportVersion(String reportVersion) {
+	public void setReportVersion(BigDecimal reportVersion) {
 		this.reportVersion = reportVersion;
 	}
 
@@ -738,6 +744,14 @@ public class M_FXR_Archival_Detail_Entity {
 	public M_FXR_Archival_Detail_Entity() {
 		super();
 		// TODO Auto-generated constructor stub
+	}
+
+	public Date getReportResubDate() {
+		return reportResubDate;
+	}
+
+	public void setReportResubDate(Date reportResubDate) {
+		this.reportResubDate = reportResubDate;
 	}
 
 }

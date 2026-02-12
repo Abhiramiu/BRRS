@@ -420,87 +420,71 @@ PURPOSE		: BRFREPORT
 		};
 
 
-				function downloadfile(button) {
+		function downloadfile(button) {
+			var reportid = button.getAttribute('data-reportid');
+			var asondate = button.getAttribute('data-asondate');
+			var fromdate = button.getAttribute('data-fromdate');
+			var todate = button.getAttribute('data-todate');
+			var currency = button.getAttribute('data-currency');
+			var subreportid = button.getAttribute('data-subreportid');
+			var secid = button.getAttribute('data-secid');
+			var dtltype = button.getAttribute('data-dtltype');
+			var filename = button.getAttribute('data-filename');
+			var type = button.getAttribute('data-type');
+			var version = button.getAttribute('data-version');
+			var format = button.getAttribute('data-format');
 
-		    var reportid = button.getAttribute('data-reportid');
-		    var asondate = button.getAttribute('data-asondate');
-		    var fromdate = button.getAttribute('data-fromdate');
-		    var todate = button.getAttribute('data-todate');
-		    var currency = button.getAttribute('data-currency');
-		    var subreportid = button.getAttribute('data-subreportid');
-		    var secid = button.getAttribute('data-secid');
-		    var dtltype = button.getAttribute('data-dtltype');
-		    var filename = button.getAttribute('data-filename');
-		    var type = button.getAttribute('data-type');
-		    var version = button.getAttribute('data-version');
+			if (format === null) {
+				format = '';   // treat as null
+			}
 
-		    var loader = new bootstrap.Modal(
-		        document.getElementById('loader'),
-		        { backdrop: 'static', keyboard: false }
-		    );
-		    loader.show();
+			$('#loader').modal('show');
 
-		    // ✅ Build URL safely
-		    var url = './downloadExcel?reportid=' + reportid +
-		        '&fromdate=' + fromdate +
-		        '&asondate=' + asondate +
-		        '&todate=' + todate +
-		        '&currency=' + currency +
-		        '&subreportid=' + subreportid +
-		        '&secid=' + secid +
-		        '&filename=' + filename +
-		        '&type=' + type;
-
-		    // ✅ ONLY append version if valid
-		    if (version && version.trim() !== '') {
-		        url += '&version=' + version;
-		    }
-
-		    $.ajax({
-		        url: url,
-		        type: 'GET',
-		        xhrFields: { responseType: 'blob' },
-
-		        success: function (data) {
-		            $('#loader').modal('hide');
-
-		            if (data && data.size > 100) {
-		                const blob = new Blob([data], {
-		                    type: 'application/vnd.ms-excel'
-		                });
-		                const url = window.URL.createObjectURL(blob);
-		                const a = document.createElement('a');
-		                a.style.display = 'none';
-		                a.href = url;
-		                a.download = filename;
-		                document.body.appendChild(a);
-		                a.click();
-		                window.URL.revokeObjectURL(url);
-		                document.body.removeChild(a);
-
-		                showResultModal('BRRS', filename + ' downloaded successfully.');
-		            } else {
-		                showResultModal('Information', 'No data was available to create a download.');
-		            }
-		        },
-
-		        error: function () {
-		            $('#loader').modal('hide');
-		            showResultModal('Error', 'An error occurred while downloading the file.');
-		        }
-		    });
+			$.ajax({
+				url: './downloadExcel?reportid=' + reportid +
+					'&fromdate=' + fromdate +
+					'&asondate=' + asondate +
+					'&todate=' + todate +
+					'&currency=' + currency +
+					'&subreportid=' + subreportid +
+					'&secid=' + secid +
+					'&filename=' + filename +
+					'&type=' + type +
+					'&version=' + version +
+					'&format=' + format,
+				type: 'GET',
+				xhrFields: {
+					responseType: 'blob'
+				},
+				success: function (data) {
+					$('#loader').modal('hide');
+					if (data && data.size > 100) {
+						const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
+						const url = window.URL.createObjectURL(blob);
+						const a = document.createElement('a');
+						a.style.display = 'none';
+						a.href = url;
+						a.download = filename;
+						document.body.appendChild(a);
+						a.click();
+						window.URL.revokeObjectURL(url);
+						document.body.removeChild(a);
+						showResultModal('BRRS', filename + ' downloaded successfully.');
+					} else {
+						showResultModal('Information', 'No data was available to create a download.');
+					}
+				},
+				error: function () {
+					$('#loader').modal('hide');
+					showResultModal('Error', 'An error occurred while downloading the file.');
+				}
+			});
 		}
-			
-
 		function editRecord() {
 			showResultModal('Alert', 'Development in progress');
 
 		}
-		function closemodel() {
-			$('#alert').modal('hide');
-			$('#resultModal').modal('hide');
-
-		}
+		
 
 		function showResultModal(title, message) {
 			// Set the text for the modal elements
@@ -956,53 +940,46 @@ PURPOSE		: BRFREPORT
 			if (type && type.toUpperCase() === 'RESUB') {
 				apiUrl = './UpdateM_SIR_ReSub';
 			}
-			// Step 6: AJAX call
 			$.ajax({
-				url: apiUrl,
-				type: 'POST',
-				data: formData,
-				processData: false,
-				contentType: false,
-				dataType: 'text',
-				success: function (response) {
-					$("#resultModalLabel").text("BRRS");
-					$("#resultModalBody").text(response);
-					$("#resultModal").modal("show");
+								url: apiUrl,
+								type: 'POST',
+								data: formData,
+								processData: false,
+								contentType: false,
+								dataType: 'text',
 
-					// ✅ Redirect after short delay (so user sees the success message)
-					if (response.includes("Resubmission Updated Successfully")) {
-						setTimeout(function () {
-							// Go back to the previous page user came from
-							if (document.referrer && document.referrer !== '') {
-								// Redirect to the page that opened this one
-								window.location.href = document.referrer;
-							} else {
-								// If no referrer, just go one step back in history
-								window.history.back();
-							}
-						}, 2000); // wait 2 seconds before redirect
-					}
-				},
-				error: function (jqXHR) {
-					$("#resultModalLabel").text("Error");
-					$("#resultModalBody").text("Update failed: " + jqXHR.responseText);
-					$("#resultModal").modal("show");
-				},
-				complete: function () {
-					$('#loader').modal('hide');
-				}
-			});
+								success: function (response) {
+									$("#resultModalLabel").text("BRRS");
+									$("#resultModalBody").text(response);
+									$("#resultModal").modal("show");
 
-		}
-		function closemodels() {
-				$("#resultModal").modal("hide");
-				$('#loader').modal('hide');
+									// Redirect after modal close (OLD LOGIC)
+									$("#resultModal")
+										.off("hidden.bs.modal")
+										.on("hidden.bs.modal", function () {
+											if (isResubmissionUpdate) {
+												window.location.href = previousUrl
+													? previousUrl
+													: "/BRRS/Resubmission?rptcode=Q_STAFF";
+											}
+										});
+								},
 
-				// Reload the page after a short delay to ensure the modal animation completes smoothly.
-				setTimeout(function () {
-					location.reload();
-				}, 300);
-			}
+								error: function (jqXHR) {
+									console.log("Error response:", jqXHR.responseText);
+									$("#resultModalLabel").text("Error");
+									$("#resultModalBody").text("Update failed. Check console.");
+									$("#resultModal").modal("show");
+								},
+
+								complete: function () {
+									$('#loader').modal('hide');
+								}
+							});
+
+							console.log("✅ AJAX executed successfully");
+						}
+	
 	</script>
 
 	</script>
@@ -1149,6 +1126,21 @@ PURPOSE		: BRFREPORT
 		/*<![CDATA[*/
 		const reportId = /*[[${reportid}]]*/ null;
 		/*]]>*/
+		function closemodel() {
+		    $("#resultModal").modal("hide");
+		    $('#loader').modal('hide');
+
+		    // Check if the success message is showing
+		    const message = $("#resultModalBody").text();
+
+		    if (message.includes("Resubmission Updated Successfully")) {
+		        // ✅ Go back to the previous page
+		        window.history.back();
+		    } else {
+		        // For other messages, just reload the same page (without delay)
+		        location.reload();
+		    }
+		}
 	</script>
 
 
@@ -1198,9 +1190,9 @@ PURPOSE		: BRFREPORT
 
 						<input type="hidden" id="selectedTab" th:value="${displaymode}">
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showsummary();"
-							th:if="${displaymode == 'detail'}">Summary</button>
+							th:if="${displaymode == 'detail' or displaymode == 'resubDetail'}">Summary</button>
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails();"
-							th:if="${displaymode == 'summary'}">Details</button>
+							th:if="${displaymode == 'summary'or displaymode == 'resubSummary'}">Details</button>
 						<!-- Modify button -->
 
 						<!--<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
@@ -1221,9 +1213,9 @@ PURPOSE		: BRFREPORT
 						<button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord"
 							onclick="cancelModify();" style="display: none;">Cancel</button>
 
-							<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
-													onclick="downloadfile(this)" th:if="${displaymode == 'summary' or displaymode == 'detail'}"
-													th:attr="data-reportid=${reportid},
+						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
+							onclick="downloadfile(this)" th:if="${displaymode == 'summary' or displaymode == 'detail'or displaymode == 'resubSummary'or displaymode == 'resubDetail'}"
+							th:attr="data-reportid=${reportid},
 							               data-asondate=${asondate},
 							               data-fromdate=${fromdate},
 							               data-todate=${todate},
@@ -1232,22 +1224,23 @@ PURPOSE		: BRFREPORT
 							               data-filename='M_SIR.xlsx',
 							               data-type=${type},
 							               data-version=${version != null ? version : ''}" style="font-family: Arial;font-weight: bold;">
-													<i class="fa fa-download"></i> Format
-												</button>
-												<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
-													onclick="downloadfile(this)"
-													th:if="${displaymode == 'summary' or displaymode == 'detail'}" th:attr="data-reportid=${reportid},
+							<i class="fa fa-download"></i> Format
+						</button>
+						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
+							onclick="downloadfile(this)" th:if="${displaymode == 'summary' or displaymode == 'detail'or displaymode == 'resubSummary'or displaymode == 'resubDetail'}"
+							th:attr="data-reportid=${reportid},
 							        data-asondate=${asondate},
 							        data-fromdate=${fromdate},
 							        data-todate=${todate},
 							        data-currency=${currency}, 
 							        data-dtltype=${dtltype},
 							        data-filename='EMAIL_M_SIR.xlsx',
-							        data-type='email',
+									data-type=${type},
+									data-format='email',
 							        data-version=${version != null ? version : ''}" style="font-family: Arial;font-weight: bold;">
-													<i class="fa fa-download"></i> E-Mail
+							<i class="fa fa-download"></i> Email
 
-												</button>
+						</button>
 
 					</div>
 				</div>
@@ -1275,7 +1268,23 @@ PURPOSE		: BRFREPORT
 					Archival Detail View - M SIR
 				</p>
 
-				<div th:if="${displaymode == 'summary' or displaymode == 'detail'}">
+				<p th:if="${type == 'RESUB' and displaymode == 'resubSummary'}" style="text-align: left; font-weight: bold; 
+							          color: white; font-size: 20px;
+							          background-color: rgb(107, 122, 143); 
+							          margin-top:10px; margin-bottom:10px; padding: 5px;">
+					Resubmission Summary View - M SIR
+				</p>
+
+				<p th:if="${type == 'RESUB' and displaymode == 'resubDetail'}" style="text-align: left; font-weight: bold;
+							          color: white; font-size: 20px;
+							          background-color: rgb(107, 122, 143); 
+							          margin-top:10px; margin-bottom:10px; padding: 5px;">
+					Resubmission Detail View - M SIR
+				</p>
+
+				<div
+					th:if="${displaymode == 'summary' or displaymode == 'detail'or displaymode == 'resubSummary'or displaymode == 'resubDetail'}">
+
 					<div class="row">
 						<div class="col-sm-12">
 							<form action="#" method="POST" id="fileupload">
@@ -3411,6 +3420,7 @@ PURPOSE		: BRFREPORT
 
 
 		<!-- Custom Alert/Result Modal (Matches your existing style) For Modify in Summary -->
+
 		<div class="modal fade" id="resultModal">
 			<div class="modal-dialog modal-dialog-centered">
 				<div class="modal-content">
@@ -3423,8 +3433,8 @@ PURPOSE		: BRFREPORT
 					<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
 						<p id="resultModalBody"></p>
 						<!-- Your custom styled button -->
-						<button type="button" class="custom-tab-btn" onclick="closemodels()"
-							data-dismiss="modal">Ok</button>
+						<button type="button" class="custom-tab-btn" onclick="closemodel()"
+							data-bs-dismiss="modal">OK</button>
 					</div>
 				</div>
 			</div>

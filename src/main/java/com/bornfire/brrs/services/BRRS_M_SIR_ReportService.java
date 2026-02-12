@@ -616,7 +616,8 @@ public class BRRS_M_SIR_ReportService {
 
 			if (repoData != null && !repoData.isEmpty()) {
 				for (M_SIR_Archival_Summary_Entity entity : repoData) {
-					Object[] row = new Object[] { entity.getReportDate(), entity.getReportVersion() };
+					Object[] row = new Object[] { entity.getReportDate(), entity.getReportVersion(),
+							entity.getReportResubDate() };
 					archivalList.add(row);
 				}
 

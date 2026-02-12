@@ -12,9 +12,9 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-@Table(name = "BRRS_M_FXR_ARCHIVALTABLE_SUMMARY")
+@Table(name = "BRRS_M_FXR_RESUB_SUMMARYTABLE")
 @IdClass(M_FXR_PK.class)
-public class M_FXR_Archival_Summary_Entity {
+public class M_FXR_Resub_Summary_Entity {
 
 //	private String r11_currency;
 	private BigDecimal r11_net_spot_position;
@@ -741,12 +741,10 @@ public class M_FXR_Archival_Summary_Entity {
 		this.del_flg = del_flg;
 	}
 
-	public M_FXR_Archival_Summary_Entity() {
+	public M_FXR_Resub_Summary_Entity() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	
-	
 
 	public Date getReportResubDate() {
 		return reportResubDate;

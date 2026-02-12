@@ -11,8 +11,8 @@ public interface BRRS_M_FXR_Summary_Repo
         extends JpaRepository<M_FXR_Summary_Entity, Date> {
 
     // Fetch all rows for a specific report date
-	@Query(value = "SELECT * FROM BRRS_M_FXR_SUMMARYTABLE WHERE REPORT_DATE = ?1", nativeQuery = true)
-	List<M_FXR_Summary_Entity> getdatabydateList(Date rpt_date);
+    @Query(value = "SELECT * FROM BRRS_M_FXR_SUMMARYTABLE WHERE REPORT_DATE = ?1", nativeQuery = true)
+    List<M_FXR_Summary_Entity> getdatabydateList(Date rpt_date);
 
 
 }

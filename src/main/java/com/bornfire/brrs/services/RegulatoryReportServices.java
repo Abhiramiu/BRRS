@@ -2454,8 +2454,8 @@ public class RegulatoryReportServices {
 		case "M_FXR":
 			try {
 
-				repfile = BRRS_M_FXR_reportservice.getM_FXRExcel(filename, reportId, fromdate, todate, currency,
-						dtltype, type, version);
+				repfile = BRRS_M_FXR_reportservice.getM_FXRExcel(filename, reportId, fromdate, todate,
+						currency, dtltype, type, format, version);
 
 			} catch (Exception e) { // TODO Auto-generated catch block
 				e.printStackTrace();
