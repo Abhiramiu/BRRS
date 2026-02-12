@@ -25,4 +25,7 @@ public interface BRRS_M_CA4_RESUB_Summary_Repo extends JpaRepository<M_CA4_Resub
 	@Query(value = "SELECT *  FROM BRRS_M_CA4_RESUB_SUMMARYTABLE WHERE REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION ASC FETCH FIRST 1 ROWS ONLY ", nativeQuery = true)
 	List<M_CA4_Resub_Summary_Entity> getdatabydateListWithVersion();
 
+    @Query(value = "SELECT *  FROM BRRS_M_CA4_RESUB_SUMMARYTABLE WHERE REPORT_VERSION IS NOT NULL ", nativeQuery = true)
+    List<M_CA4_Resub_Summary_Entity> getdatabydateListWithVersionAll();
+
 }

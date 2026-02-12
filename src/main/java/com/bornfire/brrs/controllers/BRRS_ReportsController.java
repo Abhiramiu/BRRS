@@ -4004,8 +4004,37 @@ public class BRRS_ReportsController {
 		brrs_m_gmirt_reportservice.updateReport(summary);
 		brrs_m_gmirt_reportservice.updateDetail(detail);
 
-		return ResponseEntity.ok("Updated Successfully");
+		return ResponseEntity.ok("Modified Successfully");
 	}
+	
+	@RequestMapping(value = "/UpdateM_GMIRT_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<String> updateGMIRTReSub(
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+			@ModelAttribute M_GMIRT_RESUB_Summary_Entity request1, HttpServletRequest req) {
+
+		try {
+			System.out.println("Came to Resub Controller");
+
+			if (asondate != null) {
+				request1.setReport_date(asondate);
+				System.out.println("Set Report Date: " + asondate);
+			} else {
+				System.out.println("Asondate parameter is null; using entity value: " + request1.getReport_date());
+			}
+
+			// Call service to create a new versioned row
+			brrs_m_gmirt_reportservice.updateResubReport(request1);
+
+			return ResponseEntity.ok("Resubmission Updated Successfully");
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Resubmission Update Failed: " + e.getMessage());
+		}
+	}
+
 
 	/*
 	 * @RequestMapping(value = "/UpdateM_TBS_ReSub", method = { RequestMethod.GET,

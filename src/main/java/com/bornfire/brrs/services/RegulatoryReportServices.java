@@ -2445,7 +2445,7 @@ public class RegulatoryReportServices {
 			try {
 
 				repfile = brrs_m_gmirt_reportservice.getM_GMIRTExcel(filename, reportId, fromdate, todate, currency,
-						dtltype, type, version);
+						dtltype, type, format, version);
 
 			} catch (Exception e) { // TODO Auto-generated catch block
 				e.printStackTrace();
@@ -4544,9 +4544,12 @@ public class RegulatoryReportServices {
 			}
 			break;
 
+		
 		case "M_GMIRT":
 			try {
-				archivalData = brrs_m_gmirt_reportservice.getM_GMIRTArchival();
+			List<Object[]> gmirtList = brrs_m_gmirt_reportservice.getM_GMIRTResub();
+			archivalData.addAll(gmirtList);
+			System.out.println("Fetched M_GMIRT archival data: " + gmirtList.size());
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -6464,6 +6467,18 @@ public class RegulatoryReportServices {
 			}
 			break;
 
+		case "M_GMIRT":
+			try {
+				List<Object[]> resubList = brrs_m_gmirt_reportservice.getM_GMIRTResub();
+				resubmissionData.addAll(resubList);
+				System.out.println("Resubmission data fetched for M_GMIRT: " + resubList.size());
+			} catch (Exception e) {
+				System.err.println("Error fetching resubmission data for M_GMIRT: " + e.getMessage());
+				e.printStackTrace();
+			}
+			break;
+			
+			
 		case "Q_RLFA2":
 			try {
 				List<Object[]> resubList = brrs_q_rlfa2_reportservice.getQ_RLFA2Resub();

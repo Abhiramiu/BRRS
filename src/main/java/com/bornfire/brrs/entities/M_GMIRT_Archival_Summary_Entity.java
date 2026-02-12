@@ -4,8 +4,10 @@ package com.bornfire.brrs.entities;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -20,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 @Table(name = "BRRS_M_GMIRT_ARCHIVALTABLE_SUMMARY")
 
 
+@IdClass(M_GMIRT_PK.class)
 public class M_GMIRT_Archival_Summary_Entity {
 	
 	private String	r9_currency;
@@ -72,19 +75,34 @@ public class M_GMIRT_Archival_Summary_Entity {
 	private BigDecimal	r12_tot_cap_req;
 
 	
+	@Id
 	@Temporal(TemporalType.DATE)
 	@DateTimeFormat(pattern = "dd/MM/yyyy")
-	@Id
-	
-	
+	@Column(name = "REPORT_DATE")
 	private Date	report_date;
+	
+	@Id
+	@Column(name = "REPORT_VERSION")
 	private BigDecimal	report_version;
+	
 	private String	report_frequency;
 	private String	report_code;
 	private String	report_desc;
 	private String	entity_flg;
 	private String	modify_flg;
 	private String	del_flg;
+	
+	@Column(name = "REPORT_RESUBDATE")
+	 private Date reportResubDate;	
+		
+	
+	
+	public Date getReportResubDate() {
+		return reportResubDate;
+	}
+	public void setReportResubDate(Date reportResubDate) {
+		this.reportResubDate = reportResubDate;
+	}
 	public String getR9_currency() {
 		return r9_currency;
 	}

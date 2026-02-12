@@ -797,6 +797,7 @@ public class BRRS_M_CA6_ReportService {
 		return resubList;
 	}
 
+	
 	public List<Object[]> getM_CA6Archival() {
 		List<Object[]> archivalList = new ArrayList<>();
 		try {
@@ -805,7 +806,10 @@ public class BRRS_M_CA6_ReportService {
 
 			if (latestArchivalList != null && !latestArchivalList.isEmpty()) {
 				for (M_CA6_Archival_Summary_Entity1 entity : latestArchivalList) {
-					archivalList.add(new Object[] { entity.getReportDate(), entity.getReportVersion() });
+					archivalList.add(new Object[] { 
+							entity.getReportDate(), 
+							entity.getReportVersion(),
+							entity.getReportResubDate()});
 				}
 				System.out.println("Fetched " + archivalList.size() + " record(s)");
 			} else {

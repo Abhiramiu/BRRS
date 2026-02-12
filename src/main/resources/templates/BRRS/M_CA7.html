@@ -465,7 +465,12 @@ function downloadfile(button) {
     var filename = button.getAttribute('data-filename') || "Your_Filename.xls";
     var type = button.getAttribute('data-type');
     var version = button.getAttribute('data-version');
+    var format = button.getAttribute('data-format');
 
+    if (format === null) {
+        format = '';   // treat as null
+    }
+    
     // ✅ Show loader modal
     var loader = new bootstrap.Modal(document.getElementById('loader'), {
         backdrop: 'static',
@@ -483,7 +488,8 @@ function downloadfile(button) {
              '&secid=' + secid +
              '&filename=' + filename +
              '&type=' + type +
-             '&version=' + version,
+             '&version=' + version +
+             '&format=' + format,
         type: 'GET',
         xhrFields: {
             responseType: 'blob'

@@ -15,11 +15,10 @@ import javax.persistence.TemporalType;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
-@Table(name = "BRRS_M_GMIRT_ARCHIVALTABLE_DETAIL")
-
+@Table(name = "BRRS_M_GMIRT_RESUB_DETAILTABLE")
 
 @IdClass(M_GMIRT_PK.class)
-public class M_GMIRT_Archival_Detail_Entity {
+public class M_GMIRT_RESUB_Detail_Entity {
 
 	private String r9_currency;
 	private BigDecimal r9_pula;
@@ -96,6 +95,7 @@ public class M_GMIRT_Archival_Detail_Entity {
 	public void setReportResubDate(Date reportResubDate) {
 		this.reportResubDate = reportResubDate;
 	}
+	
 	public String getR9_currency() {
 		return r9_currency;
 	}
@@ -512,7 +512,7 @@ public class M_GMIRT_Archival_Detail_Entity {
 		this.del_flg = del_flg;
 	}
 
-	public M_GMIRT_Archival_Detail_Entity() {
+	public M_GMIRT_RESUB_Detail_Entity() {
 		super();
 		// TODO Auto-generated constructor stub
 	}

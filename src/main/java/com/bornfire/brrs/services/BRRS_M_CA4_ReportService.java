@@ -51,6 +51,7 @@ import com.bornfire.brrs.entities.M_CA4_Resub_Detail_Entity;
 import com.bornfire.brrs.entities.M_CA4_Resub_Summary_Entity;
 import com.bornfire.brrs.entities.M_CA4_Summary_Entity;
 import com.bornfire.brrs.entities.M_EPR_Archival_Summary_Entity;
+import com.bornfire.brrs.entities.M_GMIRT_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.M_SRWA_12H_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.M_SRWA_12H_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.M_SRWA_12H_Resub_Detail_Entity;
@@ -320,11 +321,11 @@ public class BRRS_M_CA4_ReportService {
 	public List<Object[]> getM_CA4Resub() {
 		List<Object[]> resubList = new ArrayList<>();
 		try {
-			List<M_CA4_Archival_Summary_Entity> latestArchivalList = m_ca4_Archival_Summary_Repo
+			List<M_CA4_Resub_Summary_Entity> latestArchivalList = brrs_m_ca4_resub_summary_repo
 					.getdatabydateListWithVersionAll();
 
 			if (latestArchivalList != null && !latestArchivalList.isEmpty()) {
-				for (M_CA4_Archival_Summary_Entity entity : latestArchivalList) {
+				for (M_CA4_Resub_Summary_Entity entity : latestArchivalList) {
 					Object[] row = new Object[] { entity.getReport_date(), entity.getReport_version(),
 							entity.getReportResubDate() };
 					resubList.add(row);
@@ -340,34 +341,41 @@ public class BRRS_M_CA4_ReportService {
 		return resubList;
 	}
 
+
+	//Archival View
 	public List<Object[]> getM_CA4Archival() {
-		List<Object[]> archivalList = new ArrayList<>();
+			List<Object[]> archivalList = new ArrayList<>();
 
-		try {
-			List<M_CA4_Archival_Summary_Entity> repoData = m_ca4_Archival_Summary_Repo
-					.getdatabydateListWithVersionAll();
+			try {
+				List<M_CA4_Archival_Summary_Entity> repoData = m_ca4_Archival_Summary_Repo
+						.getdatabydateListWithVersions();
 
-			if (repoData != null && !repoData.isEmpty()) {
-				for (M_CA4_Archival_Summary_Entity entity : repoData) {
-					Object[] row = new Object[] { entity.getReport_date(), entity.getReport_version() };
-					archivalList.add(row);
+				if (repoData != null && !repoData.isEmpty()) {
+					for (M_CA4_Archival_Summary_Entity entity : repoData) {
+						Object[] row = new Object[] {
+								entity.getReport_date(), 
+								entity.getReport_version(), 
+								 entity.getReportResubDate()
+						};
+						archivalList.add(row);
+					}
+
+					System.out.println("Fetched " + archivalList.size() + " archival records");
+					M_CA4_Archival_Summary_Entity first = repoData.get(0);
+					System.out.println("Latest archival version: " + first.getReport_version());
+				} else {
+					System.out.println("No archival data found.");
 				}
 
-				System.out.println("Fetched " + archivalList.size() + " archival records");
-				M_CA4_Archival_Summary_Entity first = repoData.get(0);
-				System.out.println("Latest archival version: " + first.getReport_version());
-			} else {
-				System.out.println("No archival data found.");
+			} catch (Exception e) {
+				System.err.println("Error fetching  M_CA4  Archival data: " + e.getMessage());
+				e.printStackTrace();
 			}
 
-		} catch (Exception e) {
-			System.err.println("Error fetching m_ca4 Archival data: " + e.getMessage());
-			e.printStackTrace();
+			return archivalList;
 		}
 
-		return archivalList;
-	}
-
+	
 	// Normal format Excel
 
 	public byte[] getBRRS_M_CA4Excel(String filename, String reportId, String fromdate, String todate, String currency,
