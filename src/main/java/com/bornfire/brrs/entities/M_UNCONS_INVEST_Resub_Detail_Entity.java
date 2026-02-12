@@ -10,9 +10,9 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 @Entity
-@Table(name = "BRRS_M_UNCONS_INVEST_ARCHIVALTABLE_DETAIL")
+@Table(name = "BRRS_M_UNCONS_INVEST_RESUB_DETAILTABLE")
 @IdClass(M_UNCONS_INVEST_PK.class)
-public class M_UNCONS_INVEST_Archival_Detail_Entity {
+public class M_UNCONS_INVEST_Resub_Detail_Entity {
 	
 	private String r11_product;
     private BigDecimal r11_amount;
@@ -625,24 +625,7 @@ public class M_UNCONS_INVEST_Archival_Detail_Entity {
 	public void setR38_accumulated_equity_interest(BigDecimal r38_accumulated_equity_interest) {
 		this.r38_accumulated_equity_interest = r38_accumulated_equity_interest;
 	}
-	public Date getReportDate() {
-		return reportDate;
-	}
-	public void setReportDate(Date reportDate) {
-		this.reportDate = reportDate;
-	}
-	public BigDecimal getReportVersion() {
-		return reportVersion;
-	}
-	public void setReportVersion(BigDecimal reportVersion) {
-		this.reportVersion = reportVersion;
-	}
-	public Date getReportResubDate() {
-		return reportResubDate;
-	}
-	public void setReportResubDate(Date reportResubDate) {
-		this.reportResubDate = reportResubDate;
-	}
+
 	public String getReport_frequency() {
 		return report_frequency;
 	}
@@ -679,9 +662,27 @@ public class M_UNCONS_INVEST_Archival_Detail_Entity {
 	public void setDel_flg(String del_flg) {
 		this.del_flg = del_flg;
 	}
-	public M_UNCONS_INVEST_Archival_Detail_Entity() {
+	public M_UNCONS_INVEST_Resub_Detail_Entity() {
 		super();
 		// TODO Auto-generated constructor stub
+	}
+	public Date getReportDate() {
+		return reportDate;
+	}
+	public void setReportDate(Date reportDate) {
+		this.reportDate = reportDate;
+	}
+	public BigDecimal getReportVersion() {
+		return reportVersion;
+	}
+	public void setReportVersion(BigDecimal reportVersion) {
+		this.reportVersion = reportVersion;
+	}
+	public Date getReportResubDate() {
+		return reportResubDate;
+	}
+	public void setReportResubDate(Date reportResubDate) {
+		this.reportResubDate = reportResubDate;
 	}
 	
 	

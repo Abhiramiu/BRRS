@@ -10,9 +10,9 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 @Entity
-@Table(name = "BRRS_M_UNCONS_INVEST_ARCHIVALTABLE_DETAIL")
+@Table(name = "BRRS_M_UNCONS_INVEST_RESUB_SUMMARYTABLE")
 @IdClass(M_UNCONS_INVEST_PK.class)
-public class M_UNCONS_INVEST_Archival_Detail_Entity {
+public class M_UNCONS_INVEST_Resub_Summary_Entity {
 	
 	private String r11_product;
     private BigDecimal r11_amount;
@@ -679,7 +679,7 @@ public class M_UNCONS_INVEST_Archival_Detail_Entity {
 	public void setDel_flg(String del_flg) {
 		this.del_flg = del_flg;
 	}
-	public M_UNCONS_INVEST_Archival_Detail_Entity() {
+	public M_UNCONS_INVEST_Resub_Summary_Entity() {
 		super();
 		// TODO Auto-generated constructor stub
 	}

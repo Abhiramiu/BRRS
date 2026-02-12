@@ -21,7 +21,6 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.Font;
-import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -30,6 +29,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
@@ -40,10 +40,14 @@ import org.springframework.web.servlet.ModelAndView;
 import com.bornfire.brrs.entities.BRRS_M_UNCONS_INVEST_Archival_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_M_UNCONS_INVEST_Archival_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_M_UNCONS_INVEST_Detail_Repo;
+import com.bornfire.brrs.entities.BRRS_M_UNCONS_INVEST_Resub_Detail_Repo;
+import com.bornfire.brrs.entities.BRRS_M_UNCONS_INVEST_Resub_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_M_UNCONS_INVEST_Summary_Repo;
 import com.bornfire.brrs.entities.M_UNCONS_INVEST_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.M_UNCONS_INVEST_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.M_UNCONS_INVEST_Detail_Entity;
+import com.bornfire.brrs.entities.M_UNCONS_INVEST_Resub_Detail_Entity;
+import com.bornfire.brrs.entities.M_UNCONS_INVEST_Resub_Summary_Entity;
 import com.bornfire.brrs.entities.M_UNCONS_INVEST_Summary_Entity;
 
 @Component
@@ -59,19 +63,22 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 	SessionFactory sessionFactory;
 
 	@Autowired
-	AuditService auditService;
+	BRRS_M_UNCONS_INVEST_Summary_Repo brrs_M_UNCONS_INVEST_summary_repo;
 
 	@Autowired
-	BRRS_M_UNCONS_INVEST_Summary_Repo M_UNCONS_INVEST_Summary_Repo;
-
-	@Autowired
-	BRRS_M_UNCONS_INVEST_Detail_Repo M_UNCONS_INVEST_Detail_Repo;
+	BRRS_M_UNCONS_INVEST_Detail_Repo brrs_M_UNCONS_INVEST_detail_repo;
 
 	@Autowired
 	BRRS_M_UNCONS_INVEST_Archival_Summary_Repo M_UNCONS_INVEST_Archival_Summary_Repo;
 
 	@Autowired
-	BRRS_M_UNCONS_INVEST_Archival_Detail_Repo M_UNCONS_INVEST_Archival_Detail_Repo;
+	BRRS_M_UNCONS_INVEST_Archival_Detail_Repo BRRS_M_UNCONS_INVEST_Archival_Detail_Repo;
+
+	@Autowired
+	BRRS_M_UNCONS_INVEST_Resub_Summary_Repo brrs_M_UNCONS_INVEST_resub_summary_repo;
+
+	@Autowired
+	BRRS_M_UNCONS_INVEST_Resub_Detail_Repo brrs_M_UNCONS_INVEST_resub_detail_repo;
 
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
@@ -84,35 +91,48 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 		int pageSize = pageable.getPageSize();
 		int currentPage = pageable.getPageNumber();
 		int startItem = currentPage * pageSize;
+		System.out.println("dtltype...." + dtltype);
+		System.out.println("type...." + type);
 
 		try {
+
+			// Parse only once
 			Date d1 = dateformat.parse(todate);
+
+			System.out.println("======= VIEW SCREEN =======");
+			System.out.println("TYPE      : " + type);
+			System.out.println("DTLTYPE   : " + dtltype);
+			System.out.println("DATE      : " + d1);
+			System.out.println("VERSION   : " + version);
+			System.out.println("==========================");
+
+			// ===========================================================
+			// SUMMARY SECTION
+			// ===========================================================
 
 			// ---------- CASE 1: ARCHIVAL ----------
 			if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
-
 				List<M_UNCONS_INVEST_Archival_Summary_Entity> T1Master = M_UNCONS_INVEST_Archival_Summary_Repo
 						.getdatabydateListarchival(d1, version);
 				mv.addObject("displaymode", "summary");
+
 				mv.addObject("reportsummary", T1Master);
 			}
 
 			// ---------- CASE 2: RESUB ----------
 			else if ("RESUB".equalsIgnoreCase(type) && version != null) {
-
-				List<M_UNCONS_INVEST_Archival_Summary_Entity> T1Master = M_UNCONS_INVEST_Archival_Summary_Repo
+				List<M_UNCONS_INVEST_Resub_Summary_Entity> T1Master = brrs_M_UNCONS_INVEST_resub_summary_repo
 						.getdatabydateListarchival(d1, version);
-				mv.addObject("displaymode", "summary");
+
+				mv.addObject("displaymode", "resubSummary");
 				mv.addObject("reportsummary", T1Master);
 			}
 
 			// ---------- CASE 3: NORMAL ----------
 			else {
-
-				List<M_UNCONS_INVEST_Summary_Entity> T1Master = M_UNCONS_INVEST_Summary_Repo
-						.getdatabydateList(dateformat.parse(todate));
-				mv.addObject("displaymode", "summary");
+				List<M_UNCONS_INVEST_Summary_Entity> T1Master = brrs_M_UNCONS_INVEST_summary_repo.getdatabydateList(d1);
 				System.out.println("T1Master Size " + T1Master.size());
+				mv.addObject("displaymode", "summary");
 				mv.addObject("reportsummary", T1Master);
 			}
 
@@ -120,17 +140,30 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 			if ("detail".equalsIgnoreCase(dtltype)) {
 
 				// DETAIL + ARCHIVAL
-				if (version != null) {
-					List<M_UNCONS_INVEST_Archival_Detail_Entity> T1Master = M_UNCONS_INVEST_Archival_Detail_Repo
+				if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
+
+					List<M_UNCONS_INVEST_Archival_Detail_Entity> T1Master = BRRS_M_UNCONS_INVEST_Archival_Detail_Repo
 							.getdatabydateListarchival(d1, version);
 					mv.addObject("displaymode", "detail");
+					mv.addObject("reportsummary", T1Master);
+				}
+				// ---------- RESUB DETAIL ----------
+				else if ("RESUB".equalsIgnoreCase(type) && version != null) {
+
+					List<M_UNCONS_INVEST_Resub_Detail_Entity> T1Master = brrs_M_UNCONS_INVEST_resub_detail_repo
+							.getdatabydateListarchival(d1, version);
+
+					System.out.println("Resub Detail Size : " + T1Master.size());
+
+					mv.addObject("displaymode", "resubDetail");
 					mv.addObject("reportsummary", T1Master);
 				}
 				// DETAIL + NORMAL
 				else {
 
-					List<M_UNCONS_INVEST_Detail_Entity> T1Master = M_UNCONS_INVEST_Detail_Repo
+					List<M_UNCONS_INVEST_Detail_Entity> T1Master = brrs_M_UNCONS_INVEST_detail_repo
 							.getdatabydateList(dateformat.parse(todate));
+					System.out.println("Details......T1Master Size " + T1Master.size());
 					mv.addObject("displaymode", "detail");
 					mv.addObject("reportsummary", T1Master);
 				}
@@ -141,434 +174,567 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 		}
 
 		mv.setViewName("BRRS/M_UNCONS_INVEST");
-
 		System.out.println("View set to: " + mv.getViewName());
-
 		return mv;
 	}
 
 	@Transactional
-public void updateReport(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
-    System.out.println("Came to services 1");
-    System.out.println("Report Date: " + updatedEntity.getReport_date());
-  // 🔹 Fetch existing SUMMARY
-    M_UNCONS_INVEST_Summary_Entity existingSummary = M_UNCONS_INVEST_Summary_Repo.findById(updatedEntity.getReport_date())
-            .orElseThrow(() -> new RuntimeException(
-                    "Record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
+	public void updateReport(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
+		System.out.println("Came to services 1");
+		System.out.println("Report Date: " + updatedEntity.getReport_date());
+		// 🔹 Fetch existing SUMMARY
+		M_UNCONS_INVEST_Summary_Entity existingSummary = brrs_M_UNCONS_INVEST_summary_repo
+				.findById(updatedEntity.getReport_date()).orElseThrow(() -> new RuntimeException(
+						"Record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
 
-    // 🔹 Fetch or create DETAIL
-    M_UNCONS_INVEST_Detail_Entity detailEntity = M_UNCONS_INVEST_Detail_Repo.findById(updatedEntity.getReport_date())
-            .orElseGet(() -> {
-                M_UNCONS_INVEST_Detail_Entity d = new M_UNCONS_INVEST_Detail_Entity();
-                d.setReport_date(updatedEntity.getReport_date());
-                return d;
-            });
+		// 🔹 Fetch or create DETAIL
+		M_UNCONS_INVEST_Detail_Entity detailEntity = brrs_M_UNCONS_INVEST_detail_repo
+				.findById(updatedEntity.getReport_date()).orElseGet(() -> {
+					M_UNCONS_INVEST_Detail_Entity d = new M_UNCONS_INVEST_Detail_Entity();
+					d.setReport_date(updatedEntity.getReport_date());
+					return d;
+				});
 
-    try {
-        // 1️⃣ Loop from R11 to R15 and copy fields
-        for (int i = 11; i <= 15; i++) {
-            String prefix = "R" + i + "_";
-            
+		try {
+			// 1️⃣ Loop from R11 to R15 and copy fields
+			for (int i = 11; i <= 15; i++) {
+				String prefix = "R" + i + "_";
 
-            String[] fields = {  "product","amount", "percent_of_cet1_holding", "percent_of_additional_tier_1_holding",
-                                "percent_of_tier_2_holding"};
+				String[] fields = { "product", "amount", "percent_of_cet1_holding",
+						"percent_of_additional_tier_1_holding", "percent_of_tier_2_holding" };
 
-            for (String field : fields) {
-                String getterName = "get" + prefix + field;
-                String setterName = "set" + prefix + field;
+				for (String field : fields) {
+					String getterName = "get" + prefix + field;
+					String setterName = "set" + prefix + field;
 
-                 try {
-                    // Getter from UPDATED entity
-                    Method getter = M_UNCONS_INVEST_Summary_Entity.class.getMethod(getterName);
+					try {
+						// Getter from UPDATED entity
+						Method getter = M_UNCONS_INVEST_Summary_Entity.class.getMethod(getterName);
 
-                    Object newValue = getter.invoke(updatedEntity);
+						Object newValue = getter.invoke(updatedEntity);
 
-                    // SUMMARY setter
-                    Method summarySetter = M_UNCONS_INVEST_Summary_Entity.class.getMethod(
-                            setterName, getter.getReturnType());
+						// SUMMARY setter
+						Method summarySetter = M_UNCONS_INVEST_Summary_Entity.class.getMethod(setterName,
+								getter.getReturnType());
 
-                    summarySetter.invoke(existingSummary, newValue);
+						summarySetter.invoke(existingSummary, newValue);
 
-                    // DETAIL setter
-                    Method detailSetter = M_UNCONS_INVEST_Detail_Entity.class.getMethod(
-                            setterName, getter.getReturnType());
+						// DETAIL setter
+						Method detailSetter = M_UNCONS_INVEST_Detail_Entity.class.getMethod(setterName,
+								getter.getReturnType());
 
-                    detailSetter.invoke(detailEntity, newValue);
+						detailSetter.invoke(detailEntity, newValue);
 
-                }catch (NoSuchMethodException e) {
-                    // Skip missing fields
-                    continue;
-                }
-            }
-        }
+					} catch (NoSuchMethodException e) {
+						// Skip missing fields
+						continue;
+					}
+				}
+			}
 
-        // 2️⃣ Handle R15 totals
-        String[] totalFields = { "product","amount", "percent_of_cet1_holding","percent_of_additional_tier_1_holding","percent_of_tier_2_holding" };
-        
-        for (String field : totalFields) {
-            String getterName = "getR15_" + field;
-            String setterName = "setR15_" + field;
+			// 2️⃣ Handle R15 totals
+			String[] totalFields = { "product", "amount", "percent_of_cet1_holding",
+					"percent_of_additional_tier_1_holding", "percent_of_tier_2_holding" };
 
-             try {
-                    // Getter from UPDATED entity
-                    Method getter = M_UNCONS_INVEST_Summary_Entity.class.getMethod(getterName);
+			for (String field : totalFields) {
+				String getterName = "getR15_" + field;
+				String setterName = "setR15_" + field;
 
-                    Object newValue = getter.invoke(updatedEntity);
+				try {
+					// Getter from UPDATED entity
+					Method getter = M_UNCONS_INVEST_Summary_Entity.class.getMethod(getterName);
 
-                    // SUMMARY setter
-                    Method summarySetter = M_UNCONS_INVEST_Summary_Entity.class.getMethod(
-                            setterName, getter.getReturnType());
+					Object newValue = getter.invoke(updatedEntity);
 
-                    summarySetter.invoke(existingSummary, newValue);
+					// SUMMARY setter
+					Method summarySetter = M_UNCONS_INVEST_Summary_Entity.class.getMethod(setterName,
+							getter.getReturnType());
 
-                    // DETAIL setter
-                    Method detailSetter = M_UNCONS_INVEST_Detail_Entity.class.getMethod(
-                            setterName, getter.getReturnType());
+					summarySetter.invoke(existingSummary, newValue);
 
-                    detailSetter.invoke(detailEntity, newValue);
+					// DETAIL setter
+					Method detailSetter = M_UNCONS_INVEST_Detail_Entity.class.getMethod(setterName,
+							getter.getReturnType());
 
-                }catch (NoSuchMethodException e) {
-                // Skip if not present
-                continue;
-            }
-        }
-      
-    } catch (Exception e) {
-        throw new RuntimeException("Error while updating report fields", e);
-    }
+					detailSetter.invoke(detailEntity, newValue);
 
-    System.out.println("Saving Summary & Detail tables");
+				} catch (NoSuchMethodException e) {
+					// Skip if not present
+					continue;
+				}
+			}
 
-    // 💾 Save both tables
-    M_UNCONS_INVEST_Summary_Repo.save(existingSummary);
-    M_UNCONS_INVEST_Detail_Repo.save(detailEntity);
+		} catch (Exception e) {
+			throw new RuntimeException("Error while updating report fields", e);
+		}
 
-    System.out.println("Update completed successfully");
+		System.out.println("Saving Summary & Detail tables");
+
+		// 💾 Save both tables
+		brrs_M_UNCONS_INVEST_summary_repo.save(existingSummary);
+		brrs_M_UNCONS_INVEST_detail_repo.save(detailEntity);
+
+		System.out.println("Update completed successfully");
+	}
+
+	public void updateReport2(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
+		System.out.println("Came to services 2");
+		System.out.println("Report Date: " + updatedEntity.getReport_date());
+
+		// 🔹 Fetch existing SUMMARY
+		M_UNCONS_INVEST_Summary_Entity existingSummary = brrs_M_UNCONS_INVEST_summary_repo
+				.findById(updatedEntity.getReport_date()).orElseThrow(() -> new RuntimeException(
+						"Record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
+
+		// 🔹 Fetch or create DETAIL
+		M_UNCONS_INVEST_Detail_Entity detailEntity = brrs_M_UNCONS_INVEST_detail_repo
+				.findById(updatedEntity.getReport_date()).orElseGet(() -> {
+					M_UNCONS_INVEST_Detail_Entity d = new M_UNCONS_INVEST_Detail_Entity();
+					d.setReport_date(updatedEntity.getReport_date());
+					return d;
+				});
+
+		try {
+			// 1️⃣ Loop from R11 to R50 and copy fields
+			for (int i = 22; i <= 24; i++) {
+				String prefix = "R" + i + "_";
+
+				String[] fields = { "product", "accuulated_equity_interest_5", "assets", "liabilities", "revenue",
+						"profit_or_loss", "unreg_share_of_loss", "cumulative_unreg_share_of_loss" };
+
+				for (String field : fields) {
+					String getterName = "get" + prefix + field;
+					String setterName = "set" + prefix + field;
+
+					try {
+						// Getter from UPDATED entity
+						Method getter = M_UNCONS_INVEST_Summary_Entity.class.getMethod(getterName);
+
+						Object newValue = getter.invoke(updatedEntity);
+
+						// SUMMARY setter
+						Method summarySetter = M_UNCONS_INVEST_Summary_Entity.class.getMethod(setterName,
+								getter.getReturnType());
+
+						summarySetter.invoke(existingSummary, newValue);
+
+						// DETAIL setter
+						Method detailSetter = M_UNCONS_INVEST_Detail_Entity.class.getMethod(setterName,
+								getter.getReturnType());
+
+						detailSetter.invoke(detailEntity, newValue);
+
+					} catch (NoSuchMethodException e) {
+						// Skip missing fields
+						continue;
+					}
+				}
+			}
+
+		} catch (Exception e) {
+			throw new RuntimeException("Error while updating report fields", e);
+		}
+
+		System.out.println("Saving Summary & Detail tables");
+
+		// 💾 Save both tables
+		brrs_M_UNCONS_INVEST_summary_repo.save(existingSummary);
+		brrs_M_UNCONS_INVEST_detail_repo.save(detailEntity);
+
+		System.out.println("Update completed successfully");
+	}
+
+	public void updateReport3(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
+
+		System.out.println("Came to services 3");
+		System.out.println("Report Date: " + updatedEntity.getReport_date());
+
+		// 🔹 Fetch existing SUMMARY
+		M_UNCONS_INVEST_Summary_Entity existingSummary = brrs_M_UNCONS_INVEST_summary_repo
+				.findById(updatedEntity.getReport_date()).orElseThrow(() -> new RuntimeException(
+						"Record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
+
+		// 🔹 Fetch or create DETAIL
+		M_UNCONS_INVEST_Detail_Entity detailEntity = brrs_M_UNCONS_INVEST_detail_repo
+				.findById(updatedEntity.getReport_date()).orElseGet(() -> {
+					M_UNCONS_INVEST_Detail_Entity d = new M_UNCONS_INVEST_Detail_Entity();
+					d.setReport_date(updatedEntity.getReport_date());
+					return d;
+				});
+
+		try {
+
+			// 🔁 LOOP FOR R29 ONLY (LIKE OTHER METHODS)
+
+			int i = 29;
+			String prefix = "R" + i + "_";
+
+			String[] fields = { "product", "fair_value" };
+
+			for (String field : fields) {
+
+				String getterName = "get" + prefix + field;
+				String setterName = "set" + prefix + field;
+
+				try {
+
+					// Getter from UPDATED entity
+					Method getter = M_UNCONS_INVEST_Summary_Entity.class.getMethod(getterName);
+
+					Object newValue = getter.invoke(updatedEntity);
+
+					// SUMMARY setter
+					Method summarySetter = M_UNCONS_INVEST_Summary_Entity.class.getMethod(setterName,
+							getter.getReturnType());
+
+					summarySetter.invoke(existingSummary, newValue);
+
+					// DETAIL setter
+					Method detailSetter = M_UNCONS_INVEST_Detail_Entity.class.getMethod(setterName,
+							getter.getReturnType());
+
+					detailSetter.invoke(detailEntity, newValue);
+
+				} catch (NoSuchMethodException e) {
+					// Skip if not present
+					continue;
+				}
+			}
+
+		} catch (Exception e) {
+			throw new RuntimeException("Error while updating report fields", e);
+		}
+
+		System.out.println("Saving Summary & Detail tables");
+
+		// 💾 Save both tables
+		brrs_M_UNCONS_INVEST_summary_repo.save(existingSummary);
+		brrs_M_UNCONS_INVEST_detail_repo.save(detailEntity);
+
+		System.out.println("Update completed successfully");
+	}
+
+	public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
+		System.out.println("Came to services 4");
+		System.out.println("Report Date: " + updatedEntity.getReport_date());
+
+		// 🔹 Fetch existing SUMMARY
+		M_UNCONS_INVEST_Summary_Entity existingSummary = brrs_M_UNCONS_INVEST_summary_repo
+				.findById(updatedEntity.getReport_date()).orElseThrow(() -> new RuntimeException(
+						"Record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
+
+		// 🔹 Fetch or create DETAIL
+		M_UNCONS_INVEST_Detail_Entity detailEntity = brrs_M_UNCONS_INVEST_detail_repo
+				.findById(updatedEntity.getReport_date()).orElseGet(() -> {
+					M_UNCONS_INVEST_Detail_Entity d = new M_UNCONS_INVEST_Detail_Entity();
+					d.setReport_date(updatedEntity.getReport_date());
+					return d;
+				});
+
+		try {
+			// 1️⃣ Loop from R11 to R50 and copy fields
+			for (int i = 35; i <= 38; i++) {
+				String prefix = "R" + i + "_";
+
+				String[] fields = { "product", "company", "jurisdiction_of_incorp_1", "jurisdiction_of_incorp_2",
+						"line_of_business", "currency", "share_capital", "accumulated_equity_interest" };
+
+				for (String field : fields) {
+					String getterName = "get" + prefix + field;
+					String setterName = "set" + prefix + field;
+
+					try {
+						// Getter from UPDATED entity
+						Method getter = M_UNCONS_INVEST_Summary_Entity.class.getMethod(getterName);
+
+						Object newValue = getter.invoke(updatedEntity);
+
+						// SUMMARY setter
+						Method summarySetter = M_UNCONS_INVEST_Summary_Entity.class.getMethod(setterName,
+								getter.getReturnType());
+
+						summarySetter.invoke(existingSummary, newValue);
+
+						// DETAIL setter
+						Method detailSetter = M_UNCONS_INVEST_Detail_Entity.class.getMethod(setterName,
+								getter.getReturnType());
+
+						detailSetter.invoke(detailEntity, newValue);
+
+					} catch (NoSuchMethodException e) {
+						// Skip missing fields
+						continue;
+					}
+				}
+			}
+
+		} catch (Exception e) {
+			throw new RuntimeException("Error while updating report fields", e);
+		}
+
+		System.out.println("Saving Summary & Detail tables");
+
+		// 💾 Save both tables
+		brrs_M_UNCONS_INVEST_summary_repo.save(existingSummary);
+		brrs_M_UNCONS_INVEST_detail_repo.save(detailEntity);
+
+		System.out.println("Update completed successfully");
+	}
+
+	public void updateResubReport(M_UNCONS_INVEST_Resub_Summary_Entity updatedEntity) {
+
+		Date reportDate = updatedEntity.getReportDate();
+
+		// ----------------------------------------------------
+		// 1️⃣ GET CURRENT VERSION FROM RESUB TABLE
+		// ----------------------------------------------------
+
+		BigDecimal maxResubVer = brrs_M_UNCONS_INVEST_resub_summary_repo.findMaxVersion(reportDate);
+
+		if (maxResubVer == null)
+			throw new RuntimeException("No record for: " + reportDate);
+
+		BigDecimal newVersion = maxResubVer.add(BigDecimal.ONE);
+
+		Date now = new Date();
+
+		// ====================================================
+		// 2️⃣ RESUB SUMMARY – FROM UPDATED VALUES
+		// ====================================================
+
+		M_UNCONS_INVEST_Resub_Summary_Entity resubSummary = new M_UNCONS_INVEST_Resub_Summary_Entity();
+
+		BeanUtils.copyProperties(updatedEntity, resubSummary, "reportDate", "reportVersion", "reportResubDate");
+
+		resubSummary.setReportDate(reportDate);
+		resubSummary.setReportVersion(newVersion);
+		resubSummary.setReportResubDate(now);
+
+		// ====================================================
+		// 3️⃣ RESUB DETAIL – SAME UPDATED VALUES
+		// ====================================================
+
+		M_UNCONS_INVEST_Resub_Detail_Entity resubDetail = new M_UNCONS_INVEST_Resub_Detail_Entity();
+
+		BeanUtils.copyProperties(updatedEntity, resubDetail, "reportDate", "reportVersion", "reportResubDate");
+
+		resubDetail.setReportDate(reportDate);
+		resubDetail.setReportVersion(newVersion);
+		resubDetail.setReportResubDate(now);
+
+		// ====================================================
+		// 4️⃣ ARCHIVAL SUMMARY – SAME VALUES + SAME VERSION
+		// ====================================================
+
+		M_UNCONS_INVEST_Archival_Summary_Entity archSummary = new M_UNCONS_INVEST_Archival_Summary_Entity();
+
+		BeanUtils.copyProperties(updatedEntity, archSummary, "reportDate", "reportVersion", "reportResubDate");
+
+		archSummary.setReportDate(reportDate);
+		archSummary.setReportVersion(newVersion); // SAME VERSION
+		archSummary.setReportResubDate(now);
+
+		// ====================================================
+		// 5️⃣ ARCHIVAL DETAIL – SAME VALUES + SAME VERSION
+		// ====================================================
+
+		M_UNCONS_INVEST_Archival_Detail_Entity archDetail = new M_UNCONS_INVEST_Archival_Detail_Entity();
+
+		BeanUtils.copyProperties(updatedEntity, archDetail, "reportDate", "reportVersion", "reportResubDate");
+
+		archDetail.setReportDate(reportDate);
+		archDetail.setReportVersion(newVersion); // SAME VERSION
+		archDetail.setReportResubDate(now);
+
+		// ====================================================
+		// 6️⃣ SAVE ALL WITH SAME DATA
+		// ====================================================
+
+		brrs_M_UNCONS_INVEST_resub_summary_repo.save(resubSummary);
+		brrs_M_UNCONS_INVEST_resub_detail_repo.save(resubDetail);
+
+		M_UNCONS_INVEST_Archival_Summary_Repo.save(archSummary);
+		BRRS_M_UNCONS_INVEST_Archival_Detail_Repo.save(archDetail);
+	}
+
+//////////////////////////////////////////RESUBMISSION///////////////////////////////////////////////////////////////////	
+/// Report Date | Report Version | Domain
+/// RESUB VIEW
+public List<Object[]> getM_UNCONS_INVESTResub() {
+List<Object[]> resubList = new ArrayList<>();
+try {
+List<M_UNCONS_INVEST_Archival_Summary_Entity> latestArchivalList = M_UNCONS_INVEST_Archival_Summary_Repo
+.getdatabydateListWithVersion();
+
+if (latestArchivalList != null && !latestArchivalList.isEmpty()) {
+for (M_UNCONS_INVEST_Archival_Summary_Entity entity : latestArchivalList) {
+resubList.add(new Object[] { entity.getReportDate(), entity.getReportVersion(),
+entity.getReportResubDate() });
+}
+System.out.println("Fetched " + resubList.size() + " record(s)");
+} else {
+System.out.println("No archival data found.");
 }
 
-
-public void updateReport2(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
-    System.out.println("Came to services 2");
-    System.out.println("Report Date: " + updatedEntity.getReport_date());
-
-  // 🔹 Fetch existing SUMMARY
-    M_UNCONS_INVEST_Summary_Entity existingSummary = M_UNCONS_INVEST_Summary_Repo.findById(updatedEntity.getReport_date())
-            .orElseThrow(() -> new RuntimeException(
-                    "Record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
-
-    // 🔹 Fetch or create DETAIL
-    M_UNCONS_INVEST_Detail_Entity detailEntity = M_UNCONS_INVEST_Detail_Repo.findById(updatedEntity.getReport_date())
-            .orElseGet(() -> {
-                M_UNCONS_INVEST_Detail_Entity d = new M_UNCONS_INVEST_Detail_Entity();
-                d.setReport_date(updatedEntity.getReport_date());
-                return d;
-            });
-
-    try {
-        // 1️⃣ Loop from R11 to R50 and copy fields
-        for (int i = 22; i <= 24; i++) {
-            String prefix = "R" + i + "_";
-
-            String[] fields = { "product","accuulated_equity_interest_5", "assets", "liabilities",
-                                "revenue", "profit_or_loss", "unreg_share_of_loss" ,"cumulative_unreg_share_of_loss" };
-
-            for (String field : fields) {
-                String getterName = "get" + prefix + field;
-                String setterName = "set" + prefix + field;
-
-                try {
-                    // Getter from UPDATED entity
-                    Method getter = M_UNCONS_INVEST_Summary_Entity.class.getMethod(getterName);
-
-                    Object newValue = getter.invoke(updatedEntity);
-
-                    // SUMMARY setter
-                    Method summarySetter = M_UNCONS_INVEST_Summary_Entity.class.getMethod(
-                            setterName, getter.getReturnType());
-
-                    summarySetter.invoke(existingSummary, newValue);
-
-                    // DETAIL setter
-                    Method detailSetter = M_UNCONS_INVEST_Detail_Entity.class.getMethod(
-                            setterName, getter.getReturnType());
-
-                    detailSetter.invoke(detailEntity, newValue);
-
-                } catch (NoSuchMethodException e) {
-                    // Skip missing fields
-                    continue;
-                }
-            }
-        }
-
-        
-
-      
-    } catch (Exception e) {
-        throw new RuntimeException("Error while updating report fields", e);
-    }
-
-    System.out.println("Saving Summary & Detail tables");
-
-    // 💾 Save both tables
-    M_UNCONS_INVEST_Summary_Repo.save(existingSummary);
-    M_UNCONS_INVEST_Detail_Repo.save(detailEntity);
-
-    System.out.println("Update completed successfully");
+} catch (Exception e) {
+System.err.println("Error fetching M_UNCONS_INVEST Resub data: " + e.getMessage());
+e.printStackTrace();
+}
+return resubList;
 }
 
+// Archival View
+public List<Object[]> getM_UNCONS_INVESTArchival() {
+List<Object[]> archivalList = new ArrayList<>();
 
-public void updateReport3(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
+try {
+List<M_UNCONS_INVEST_Archival_Summary_Entity> repoData = M_UNCONS_INVEST_Archival_Summary_Repo
+.getdatabydateListWithVersion();
 
-    System.out.println("Came to services 3");
-    System.out.println("Report Date: " + updatedEntity.getReport_date());
-
-    // 🔹 Fetch existing SUMMARY
-    M_UNCONS_INVEST_Summary_Entity existingSummary =
-            M_UNCONS_INVEST_Summary_Repo.findById(updatedEntity.getReport_date())
-            .orElseThrow(() -> new RuntimeException(
-                    "Record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
-
-    // 🔹 Fetch or create DETAIL
-    M_UNCONS_INVEST_Detail_Entity detailEntity =
-            M_UNCONS_INVEST_Detail_Repo.findById(updatedEntity.getReport_date())
-            .orElseGet(() -> {
-                M_UNCONS_INVEST_Detail_Entity d = new M_UNCONS_INVEST_Detail_Entity();
-                d.setReport_date(updatedEntity.getReport_date());
-                return d;
-            });
-
-    try {
-
-        // 🔁 LOOP FOR R29 ONLY (LIKE OTHER METHODS)
-
-        int i = 29;
-        String prefix = "R" + i + "_";
-
-        String[] fields = {
-        		"product", "fair_value"
-        };
-
-        for (String field : fields) {
-
-            String getterName = "get" + prefix + field;
-            String setterName = "set" + prefix + field;
-
-            try {
-
-                // Getter from UPDATED entity
-                Method getter =
-                        M_UNCONS_INVEST_Summary_Entity.class.getMethod(getterName);
-
-                Object newValue =
-                        getter.invoke(updatedEntity);
-
-                // SUMMARY setter
-                Method summarySetter =
-                        M_UNCONS_INVEST_Summary_Entity.class.getMethod(
-                                setterName, getter.getReturnType());
-
-                summarySetter.invoke(existingSummary, newValue);
-
-                // DETAIL setter
-                Method detailSetter =
-                        M_UNCONS_INVEST_Detail_Entity.class.getMethod(
-                                setterName, getter.getReturnType());
-
-                detailSetter.invoke(detailEntity, newValue);
-
-            } catch (NoSuchMethodException e) {
-                // Skip if not present
-                continue;
-            }
-        }
-
-    } catch (Exception e) {
-        throw new RuntimeException("Error while updating report fields", e);
-    }
-
-    System.out.println("Saving Summary & Detail tables");
-
-    // 💾 Save both tables
-    M_UNCONS_INVEST_Summary_Repo.save(existingSummary);
-    M_UNCONS_INVEST_Detail_Repo.save(detailEntity);
-
-    System.out.println("Update completed successfully");
+if (repoData != null && !repoData.isEmpty()) {
+for (M_UNCONS_INVEST_Archival_Summary_Entity entity : repoData) {
+Object[] row = new Object[] { entity.getReportDate(), entity.getReportVersion(),
+entity.getReportResubDate() };
+archivalList.add(row);
 }
 
-public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
-    System.out.println("Came to services 4");
-    System.out.println("Report Date: " + updatedEntity.getReport_date());
-
-  // 🔹 Fetch existing SUMMARY
-    M_UNCONS_INVEST_Summary_Entity existingSummary = M_UNCONS_INVEST_Summary_Repo.findById(updatedEntity.getReport_date())
-            .orElseThrow(() -> new RuntimeException(
-                    "Record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
-
-    // 🔹 Fetch or create DETAIL
-    M_UNCONS_INVEST_Detail_Entity detailEntity = M_UNCONS_INVEST_Detail_Repo.findById(updatedEntity.getReport_date())
-            .orElseGet(() -> {
-                M_UNCONS_INVEST_Detail_Entity d = new M_UNCONS_INVEST_Detail_Entity();
-                d.setReport_date(updatedEntity.getReport_date());
-                return d;
-            });
-
-    try {
-        // 1️⃣ Loop from R11 to R50 and copy fields
-        for (int i = 35; i <= 38; i++) {
-            String prefix = "R" + i + "_";
-
-            String[] fields = { "product","company","jurisdiction_of_incorp_1", "jurisdiction_of_incorp_2", "line_of_business", "currency",
-                                "share_capital", "accumulated_equity_interest" };
-
-            for (String field : fields) {
-                String getterName = "get" + prefix + field;
-                String setterName = "set" + prefix + field;
-
-                try {
-                    // Getter from UPDATED entity
-                    Method getter = M_UNCONS_INVEST_Summary_Entity.class.getMethod(getterName);
-
-                    Object newValue = getter.invoke(updatedEntity);
-
-                    // SUMMARY setter
-                    Method summarySetter = M_UNCONS_INVEST_Summary_Entity.class.getMethod(
-                            setterName, getter.getReturnType());
-
-                    summarySetter.invoke(existingSummary, newValue);
-
-                    // DETAIL setter
-                    Method detailSetter = M_UNCONS_INVEST_Detail_Entity.class.getMethod(
-                            setterName, getter.getReturnType());
-
-                    detailSetter.invoke(detailEntity, newValue);
-
-                }catch (NoSuchMethodException e) {
-                    // Skip missing fields
-                    continue;
-                }
-            }
-        }
-
-      
-    } catch (Exception e) {
-        throw new RuntimeException("Error while updating report fields", e);
-    }
-
-    System.out.println("Saving Summary & Detail tables");
-
-    // 💾 Save both tables
-    M_UNCONS_INVEST_Summary_Repo.save(existingSummary);
-    M_UNCONS_INVEST_Detail_Repo.save(detailEntity);
-
-    System.out.println("Update completed successfully");
+System.out.println("Fetched " + archivalList.size() + " archival records");
+M_UNCONS_INVEST_Archival_Summary_Entity first = repoData.get(0);
+System.out.println("Latest archival version: " + first.getReportVersion());
+} else {
+System.out.println("No archival data found.");
 }
 
+} catch (Exception e) {
+System.err.println("Error fetching M_UNCONS_INVEST Archival data: " + e.getMessage());
+e.printStackTrace();
+}
 
+return archivalList;
+}
+
+	// Normal format Excel
 
 	public byte[] BRRS_M_UNCONS_INVESTExcel(String filename, String reportId, String fromdate, String todate,
-			String currency, String dtltype, String type, BigDecimal version) throws Exception {
+			String currency, String dtltype, String type, String format, BigDecimal version) throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.");
-		System.out.println(type);
-		System.out.println(version);
-		Date reportDate = dateformat.parse(todate);
+
+		System.out.println("======= VIEW SCREEN =======");
+		System.out.println("TYPE      : " + type);
+		System.out.println("FORMAT      : " + format);
+		System.out.println("DTLTYPE   : " + dtltype);
+		System.out.println("DATE      : " + dateformat.parse(todate));
+		System.out.println("VERSION   : " + version);
+		System.out.println("==========================");
 
 		// ARCHIVAL check
-		if (type.equals("ARCHIVAL") & version != null) {
-			logger.info("Service: Generating ARCHIVAL report for version {}", version);
-			return getExcelM_UNCONS_INVESTARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
+		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
+			try {
+				// Redirecting to Archival
+				return getExcelM_UNCONS_INVESTARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type,
+						format, version);
+			} catch (ParseException e) {
+				logger.error("Invalid report date format: {}", fromdate, e);
+				throw new RuntimeException("Date format must be dd-MMM-yyyy (e.g. 31-Jul-2025)");
+			}
+		} else if ("RESUB".equalsIgnoreCase(type) && version != null) {
+			logger.info("Service: Generating RESUB report for version {}", version);
 
-		}
-		// Email check
-		if ("email".equalsIgnoreCase(type) && version == null) {
-			logger.info("Service: Generating Email report for version {}", version);
-			return BRRS_M_UNCONS_INVESTEmailExcel(filename, reportId, fromdate, todate, currency, dtltype, type, version);
-		} else if ("email".equalsIgnoreCase(type) && version != null) {
-			logger.info("Service: Generating Email report for version {}", version);
-			return BRRS_M_UNCONS_INVESTEmailArchivalExcel(filename, reportId, fromdate, todate, currency, dtltype, type,
-					version);
+			try {
+				// ✅ Redirecting to Resub Excel
+				return BRRS_M_UNCONS_INVESTResubExcel(filename, reportId, fromdate, todate, currency, dtltype, type,
+						format, version);
 
-		}
-		List<M_UNCONS_INVEST_Summary_Entity> dataList = M_UNCONS_INVEST_Summary_Repo
-				.getdatabydateList(dateformat.parse(todate));
+			} catch (ParseException e) {
+				logger.error("Invalid report date format: {}", fromdate, e);
+				throw new RuntimeException("Date format must be dd-MMM-yyyy (e.g. 31-Jul-2025)");
+			}
+		} else {
 
-		if (dataList.isEmpty()) {
-			logger.warn("Service: No data found for brrs2.4 report. Returning empty result.");
-			return new byte[0];
-		}
+			if ("email".equalsIgnoreCase(format) && version == null) {
+				logger.info("Got format as Email");
+				logger.info("Service: Generating Email report for version {}", version);
+				return BRRS_M_UNCONS_INVESTEmailExcel(filename, reportId, fromdate, todate, currency, dtltype, type,
+						version);
+			} else {
 
-		String templateDir = env.getProperty("output.exportpathtemp");
-		String templateFileName = filename;
-		System.out.println(filename);
-		Path templatePath = Paths.get(templateDir, templateFileName);
-		System.out.println(templatePath);
+				// Fetch data
 
-		logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
+				List<M_UNCONS_INVEST_Summary_Entity> dataList = brrs_M_UNCONS_INVEST_summary_repo
+						.getdatabydateList(dateformat.parse(todate));
 
-		if (!Files.exists(templatePath)) {
-			// This specific exception will be caught by the controller.
-			throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
-		}
-		if (!Files.isReadable(templatePath)) {
-			// A specific exception for permission errors.
-			throw new SecurityException(
-					"Template file exists but is not readable (check permissions): " + templatePath.toAbsolutePath());
-		}
+				if (dataList.isEmpty()) {
+					logger.warn("Service: No data found for BRRS_M_UNCONS_INVEST report. Returning empty result.");
+					return new byte[0];
+				}
 
-		// This try-with-resources block is perfect. It guarantees all resources are
-		// closed automatically.
-		try (InputStream templateInputStream = Files.newInputStream(templatePath);
-				Workbook workbook = WorkbookFactory.create(templateInputStream);
-				ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+				String templateDir = env.getProperty("output.exportpathtemp");
+				String templateFileName = filename;
+				System.out.println(filename);
+				Path templatePath = Paths.get(templateDir, templateFileName);
+				System.out.println(templatePath);
 
-			Sheet sheet = workbook.getSheetAt(0);
+				logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
 
-			// --- Style Definitions ---
-			CreationHelper createHelper = workbook.getCreationHelper();
+				if (!Files.exists(templatePath)) {
+					// This specific exception will be caught by the controller.
+					throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
+				}
+				if (!Files.isReadable(templatePath)) {
+					// A specific exception for permission errors.
+					throw new SecurityException("Template file exists but is not readable (check permissions): "
+							+ templatePath.toAbsolutePath());
+				}
 
-			CellStyle dateStyle = workbook.createCellStyle();
-			dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
-			dateStyle.setBorderBottom(BorderStyle.THIN);
-			dateStyle.setBorderTop(BorderStyle.THIN);
-			dateStyle.setBorderLeft(BorderStyle.THIN);
-			dateStyle.setBorderRight(BorderStyle.THIN);
+				// This try-with-resources block is perfect. It guarantees all resources are
+				// closed automatically.
+				try (InputStream templateInputStream = Files.newInputStream(templatePath);
+						Workbook workbook = WorkbookFactory.create(templateInputStream);
+						ByteArrayOutputStream out = new ByteArrayOutputStream()) {
 
-			CellStyle textStyle = workbook.createCellStyle();
-			textStyle.setBorderBottom(BorderStyle.THIN);
-			textStyle.setBorderTop(BorderStyle.THIN);
-			textStyle.setBorderLeft(BorderStyle.THIN);
-			textStyle.setBorderRight(BorderStyle.THIN);
+					Sheet sheet = workbook.getSheetAt(0);
 
-			// Create the font
-			Font font = workbook.createFont();
-			font.setFontHeightInPoints((short) 8); // size 8
-			font.setFontName("Arial");
+					// --- Style Definitions ---
+					CreationHelper createHelper = workbook.getCreationHelper();
 
-			CellStyle numberStyle = workbook.createCellStyle();
-			// numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
-			numberStyle.setBorderBottom(BorderStyle.THIN);
-			numberStyle.setBorderTop(BorderStyle.THIN);
-			numberStyle.setBorderLeft(BorderStyle.THIN);
-			numberStyle.setBorderRight(BorderStyle.THIN);
-			numberStyle.setFont(font);
+					CellStyle dateStyle = workbook.createCellStyle();
+					dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
+					dateStyle.setBorderBottom(BorderStyle.THIN);
+					dateStyle.setBorderTop(BorderStyle.THIN);
+					dateStyle.setBorderLeft(BorderStyle.THIN);
+					dateStyle.setBorderRight(BorderStyle.THIN);
 
-			CellStyle percentStyle = workbook.createCellStyle();
-			percentStyle.cloneStyleFrom(numberStyle);
-			percentStyle.setDataFormat(workbook.createDataFormat().getFormat("0.00%"));
-			percentStyle.setAlignment(HorizontalAlignment.RIGHT);
-			// --- End of Style Definitions ---
+					CellStyle textStyle = workbook.createCellStyle();
+					textStyle.setBorderBottom(BorderStyle.THIN);
+					textStyle.setBorderTop(BorderStyle.THIN);
+					textStyle.setBorderLeft(BorderStyle.THIN);
+					textStyle.setBorderRight(BorderStyle.THIN);
+
+					// Create the font
+					Font font = workbook.createFont();
+					font.setFontHeightInPoints((short) 8); // size 8
+					font.setFontName("Arial");
+
+					CellStyle numberStyle = workbook.createCellStyle();
+					// numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
+					numberStyle.setBorderBottom(BorderStyle.THIN);
+					numberStyle.setBorderTop(BorderStyle.THIN);
+					numberStyle.setBorderLeft(BorderStyle.THIN);
+					numberStyle.setBorderRight(BorderStyle.THIN);
+					numberStyle.setFont(font);
+					// --- End of Style Definitions ---
 
 					int startRow = 10;
 
 					if (!dataList.isEmpty()) {
 						for (int i = 0; i < dataList.size(); i++) {
 							M_UNCONS_INVEST_Summary_Entity record = dataList.get(i);
-
 							System.out.println("rownumber=" + startRow + i);
 							Row row = sheet.getRow(startRow + i);
 							if (row == null) {
 								row = sheet.createRow(startRow + i);
 							}
+//NORMAL
 
 							// row11
 							// Column D
@@ -592,7 +758,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 								cell4.setCellValue("");
 								cell4.setCellStyle(textStyle);
 							}
-							
+
 							// row11
 							// Column F
 							Cell cell5 = row.createCell(5);
@@ -603,7 +769,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 								cell5.setCellValue("");
 								cell5.setCellStyle(textStyle);
 							}
-							
+
 							// row11
 							// Column G
 							Cell cell6 = row.createCell(6);
@@ -638,7 +804,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 								cell4.setCellValue("");
 								cell4.setCellStyle(textStyle);
 							}
-							
+
 							// row12
 							// Column F
 							cell5 = row.createCell(5);
@@ -649,7 +815,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 								cell5.setCellValue("");
 								cell5.setCellStyle(textStyle);
 							}
-							
+
 							// row12
 							// Column G
 							cell6 = row.createCell(6);
@@ -660,7 +826,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 								cell6.setCellValue("");
 								cell6.setCellStyle(textStyle);
 							}
-							
+
 							// row13
 							row = sheet.getRow(12);
 							// Column D
@@ -684,7 +850,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 								cell4.setCellValue("");
 								cell4.setCellStyle(textStyle);
 							}
-							
+
 							// row13
 							// Column F
 							cell5 = row.createCell(5);
@@ -695,7 +861,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 								cell5.setCellValue("");
 								cell5.setCellStyle(textStyle);
 							}
-							
+
 							// row13
 							// Column G
 							cell6 = row.createCell(6);
@@ -706,7 +872,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 								cell6.setCellValue("");
 								cell6.setCellStyle(textStyle);
 							}
-							
+
 							// row14
 							row = sheet.getRow(13);
 							// Column D
@@ -730,7 +896,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 								cell4.setCellValue("");
 								cell4.setCellStyle(textStyle);
 							}
-							
+
 							// row14
 							// Column F
 							cell5 = row.createCell(5);
@@ -741,7 +907,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 								cell5.setCellValue("");
 								cell5.setCellStyle(textStyle);
 							}
-							
+
 							// row14
 							// Column G
 							cell6 = row.createCell(6);
@@ -752,10 +918,9 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 								cell6.setCellValue("");
 								cell6.setCellStyle(textStyle);
 							}
-							
+
 							// row15
 							row = sheet.getRow(14);
-						
 
 							// row15
 							// Column E
@@ -767,7 +932,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 								cell4.setCellValue("");
 								cell4.setCellStyle(textStyle);
 							}
-							
+
 							// row15
 							// Column F
 							cell5 = row.createCell(5);
@@ -778,7 +943,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 								cell5.setCellValue("");
 								cell5.setCellStyle(textStyle);
 							}
-							
+
 							// row15
 							// Column G
 							cell6 = row.createCell(6);
@@ -812,7 +977,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 								cell3.setCellValue("");
 								cell3.setCellStyle(textStyle);
 							}
-							
+
 							// row22
 							// Column E
 							cell4 = row.createCell(4);
@@ -823,7 +988,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 								cell4.setCellValue("");
 								cell4.setCellStyle(textStyle);
 							}
-							
+
 							// row22
 							// Column F
 							cell5 = row.createCell(5);
@@ -834,7 +999,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 								cell5.setCellValue("");
 								cell5.setCellStyle(textStyle);
 							}
-							
+
 							// row22
 							// Column G
 							cell6 = row.createCell(6);
@@ -845,7 +1010,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 								cell6.setCellValue("");
 								cell6.setCellStyle(textStyle);
 							}
-							
+
 							// row22
 							// Column H
 							Cell cell7 = row.createCell(7);
@@ -856,7 +1021,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 								cell7.setCellValue("");
 								cell7.setCellStyle(textStyle);
 							}
-							
+
 							// row22
 							// Column I
 							Cell cell8 = row.createCell(8);
@@ -867,7 +1032,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 								cell8.setCellValue("");
 								cell8.setCellStyle(textStyle);
 							}
-							
+
 							// row23
 							row = sheet.getRow(22);
 							// Column C
@@ -891,7 +1056,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 								cell3.setCellValue("");
 								cell3.setCellStyle(textStyle);
 							}
-							
+
 							// row23
 							// Column E
 							cell4 = row.createCell(4);
@@ -902,7 +1067,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 								cell4.setCellValue("");
 								cell4.setCellStyle(textStyle);
 							}
-							
+
 							// row23
 							// Column F
 							cell5 = row.createCell(5);
@@ -913,7 +1078,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 								cell5.setCellValue("");
 								cell5.setCellStyle(textStyle);
 							}
-							
+
 							// row23
 							// Column G
 							cell6 = row.createCell(6);
@@ -924,7 +1089,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 								cell6.setCellValue("");
 								cell6.setCellStyle(textStyle);
 							}
-							
+
 							// row23
 							// Column H
 							cell7 = row.createCell(7);
@@ -935,7 +1100,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 								cell7.setCellValue("");
 								cell7.setCellStyle(textStyle);
 							}
-							
+
 							// row23
 							// Column I
 							cell8 = row.createCell(8);
@@ -946,8 +1111,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 								cell8.setCellValue("");
 								cell8.setCellStyle(textStyle);
 							}
-							
-							
+
 							// row24
 							row = sheet.getRow(23);
 							// Column C
@@ -971,7 +1135,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 								cell3.setCellValue("");
 								cell3.setCellStyle(textStyle);
 							}
-							
+
 							// row24
 							// Column E
 							cell4 = row.createCell(4);
@@ -982,7 +1146,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 								cell4.setCellValue("");
 								cell4.setCellStyle(textStyle);
 							}
-							
+
 							// row24
 							// Column F
 							cell5 = row.createCell(5);
@@ -993,7 +1157,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 								cell5.setCellValue("");
 								cell5.setCellStyle(textStyle);
 							}
-							
+
 							// row24
 							// Column G
 							cell6 = row.createCell(6);
@@ -1004,7 +1168,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 								cell6.setCellValue("");
 								cell6.setCellStyle(textStyle);
 							}
-							
+
 							// row24
 							// Column H
 							cell7 = row.createCell(7);
@@ -1015,7 +1179,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 								cell7.setCellValue("");
 								cell7.setCellStyle(textStyle);
 							}
-							
+
 							// row24
 							// Column I
 							cell8 = row.createCell(8);
@@ -1026,7 +1190,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 								cell8.setCellValue("");
 								cell8.setCellStyle(textStyle);
 							}
-							
+
 							// row29
 							row = sheet.getRow(28);
 							// Column G
@@ -1039,7 +1203,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 								cell6.setCellStyle(textStyle);
 
 							}
-							
+
 							// row35
 							row = sheet.getRow(34);
 							// Column C
@@ -1063,7 +1227,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 								cell3.setCellValue("");
 								cell3.setCellStyle(textStyle);
 							}
-							
+
 							// row35
 							// Column E
 							cell4 = row.createCell(4);
@@ -1074,7 +1238,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 								cell4.setCellValue("");
 								cell4.setCellStyle(textStyle);
 							}
-							
+
 							// row35
 							// Column F
 							cell5 = row.createCell(5);
@@ -1085,7 +1249,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 								cell5.setCellValue("");
 								cell5.setCellStyle(textStyle);
 							}
-							
+
 							// row35
 							// Column G
 							cell6 = row.createCell(6);
@@ -1096,7 +1260,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 								cell6.setCellValue("");
 								cell6.setCellStyle(textStyle);
 							}
-							
+
 							// row35
 							// Column H
 							cell7 = row.createCell(7);
@@ -1107,7 +1271,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 								cell7.setCellValue("");
 								cell7.setCellStyle(textStyle);
 							}
-							
+
 							// row35
 							// Column I
 							cell8 = row.createCell(8);
@@ -1118,7 +1282,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 								cell8.setCellValue("");
 								cell8.setCellStyle(textStyle);
 							}
-							
+
 							// row36
 							row = sheet.getRow(35);
 							// Column C
@@ -1142,7 +1306,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 								cell3.setCellValue("");
 								cell3.setCellStyle(textStyle);
 							}
-							
+
 							// row36
 							// Column E
 							cell4 = row.createCell(4);
@@ -1153,7 +1317,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 								cell4.setCellValue("");
 								cell4.setCellStyle(textStyle);
 							}
-							
+
 							// row36
 							// Column F
 							cell5 = row.createCell(5);
@@ -1164,7 +1328,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 								cell5.setCellValue("");
 								cell5.setCellStyle(textStyle);
 							}
-							
+
 							// row36
 							// Column G
 							cell6 = row.createCell(6);
@@ -1175,7 +1339,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 								cell6.setCellValue("");
 								cell6.setCellStyle(textStyle);
 							}
-							
+
 							// row36
 							// Column H
 							cell7 = row.createCell(7);
@@ -1186,7 +1350,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 								cell7.setCellValue("");
 								cell7.setCellStyle(textStyle);
 							}
-							
+
 							// row36
 							// Column I
 							cell8 = row.createCell(8);
@@ -1197,7 +1361,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 								cell8.setCellValue("");
 								cell8.setCellStyle(textStyle);
 							}
-							
+
 							// row37
 							row = sheet.getRow(36);
 							// Column C
@@ -1221,7 +1385,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 								cell3.setCellValue("");
 								cell3.setCellStyle(textStyle);
 							}
-							
+
 							// row37
 							// Column E
 							cell4 = row.createCell(4);
@@ -1232,7 +1396,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 								cell4.setCellValue("");
 								cell4.setCellStyle(textStyle);
 							}
-							
+
 							// row37
 							// Column F
 							cell5 = row.createCell(5);
@@ -1243,7 +1407,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 								cell5.setCellValue("");
 								cell5.setCellStyle(textStyle);
 							}
-							
+
 							// row37
 							// Column G
 							cell6 = row.createCell(6);
@@ -1254,7 +1418,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 								cell6.setCellValue("");
 								cell6.setCellStyle(textStyle);
 							}
-							
+
 							// row37
 							// Column H
 							cell7 = row.createCell(7);
@@ -1265,7 +1429,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 								cell7.setCellValue("");
 								cell7.setCellStyle(textStyle);
 							}
-							
+
 							// row37
 							// Column I
 							cell8 = row.createCell(8);
@@ -1276,7 +1440,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 								cell8.setCellValue("");
 								cell8.setCellStyle(textStyle);
 							}
-							
+
 							// row38
 							row = sheet.getRow(37);
 							// Column C
@@ -1300,7 +1464,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 								cell3.setCellValue("");
 								cell3.setCellStyle(textStyle);
 							}
-							
+
 							// row38
 							// Column E
 							cell4 = row.createCell(4);
@@ -1311,7 +1475,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 								cell4.setCellValue("");
 								cell4.setCellStyle(textStyle);
 							}
-							
+
 							// row38
 							// Column F
 							cell5 = row.createCell(5);
@@ -1322,7 +1486,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 								cell5.setCellValue("");
 								cell5.setCellStyle(textStyle);
 							}
-							
+
 							// row38
 							// Column G
 							cell6 = row.createCell(6);
@@ -1333,7 +1497,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 								cell6.setCellValue("");
 								cell6.setCellStyle(textStyle);
 							}
-							
+
 							// row38
 							// Column H
 							cell7 = row.createCell(7);
@@ -1344,7 +1508,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 								cell7.setCellValue("");
 								cell7.setCellStyle(textStyle);
 							}
-							
+
 							// row38
 							// Column I
 							cell8 = row.createCell(8);
@@ -1355,24 +1519,679 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 								cell8.setCellValue("");
 								cell8.setCellStyle(textStyle);
 							}
-				}
-				workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
-			} else {
+							// Normal
 
+						}
+						workbook.setForceFormulaRecalculation(true);
+					} else {
+
+					}
+
+					// Write the final workbook content to the in-memory stream.
+					workbook.write(out);
+
+					logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
+
+					return out.toByteArray();
+				}
 			}
-			// Write the final workbook content to the in-memory stream.
-			workbook.write(out);
-			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-			return out.toByteArray();
 		}
 	}
 
-	public byte[] getExcelM_UNCONS_INVESTARCHIVAL(String filename, String reportId, String fromdate, String todate,
+	// Normal Email Excel
+	public byte[] BRRS_M_UNCONS_INVESTEmailExcel(String filename, String reportId, String fromdate, String todate,
 			String currency, String dtltype, String type, BigDecimal version) throws Exception {
-		logger.info("Service: Starting Excel generation process in memory.");
-		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && version != null) {
 
+		logger.info("Service: Starting Email Excel generation process in memory.");
+
+		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
+			try {
+				// Redirecting to Archival
+				return BRRS_M_UNCONS_INVESTEmailArchivalExcel(filename, reportId, fromdate, todate, currency, dtltype,
+						type, version);
+			} catch (ParseException e) {
+				logger.error("Invalid report date format: {}", fromdate, e);
+				throw new RuntimeException("Date format must be dd-MMM-yyyy (e.g. 31-Jul-2025)");
+			}
+		} else if ("RESUB".equalsIgnoreCase(type) && version != null) {
+			logger.info("Service: Generating RESUB report for version {}", version);
+
+			try {
+				// ✅ Redirecting to Resub Excel
+				return BRRS_M_UNCONS_INVESTResubEmailExcel(filename, reportId, fromdate, todate, currency, dtltype,
+						type, version);
+
+			} catch (ParseException e) {
+				logger.error("Invalid report date format: {}", fromdate, e);
+				throw new RuntimeException("Date format must be dd-MMM-yyyy (e.g. 31-Jul-2025)");
+			}
+		} else {
+			List<M_UNCONS_INVEST_Summary_Entity> dataList = brrs_M_UNCONS_INVEST_summary_repo
+					.getdatabydateList(dateformat.parse(todate));
+
+			if (dataList.isEmpty()) {
+				logger.warn("Service: No data found for BRRS_M_UNCONS_INVEST report. Returning empty result.");
+				return new byte[0];
+			}
+
+			String templateDir = env.getProperty("output.exportpathtemp");
+			String templateFileName = filename;
+			System.out.println(filename);
+			Path templatePath = Paths.get(templateDir, templateFileName);
+			System.out.println(templatePath);
+
+			logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
+
+			if (!Files.exists(templatePath)) {
+				// This specific exception will be caught by the controller.
+				throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
+			}
+			if (!Files.isReadable(templatePath)) {
+				// A specific exception for permission errors.
+				throw new SecurityException("Template file exists but is not readable (check permissions): "
+						+ templatePath.toAbsolutePath());
+			}
+
+			// This try-with-resources block is perfect. It guarantees all resources are
+			// closed automatically.
+			try (InputStream templateInputStream = Files.newInputStream(templatePath);
+					Workbook workbook = WorkbookFactory.create(templateInputStream);
+					ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+
+				Sheet sheet = workbook.getSheetAt(0);
+
+				// --- Style Definitions ---
+				CreationHelper createHelper = workbook.getCreationHelper();
+
+				CellStyle dateStyle = workbook.createCellStyle();
+				dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
+				dateStyle.setBorderBottom(BorderStyle.THIN);
+				dateStyle.setBorderTop(BorderStyle.THIN);
+				dateStyle.setBorderLeft(BorderStyle.THIN);
+				dateStyle.setBorderRight(BorderStyle.THIN);
+
+				CellStyle textStyle = workbook.createCellStyle();
+				textStyle.setBorderBottom(BorderStyle.THIN);
+				textStyle.setBorderTop(BorderStyle.THIN);
+				textStyle.setBorderLeft(BorderStyle.THIN);
+				textStyle.setBorderRight(BorderStyle.THIN);
+
+				// Create the font
+				Font font = workbook.createFont();
+				font.setFontHeightInPoints((short) 8); // size 8
+				font.setFontName("Arial");
+
+				CellStyle numberStyle = workbook.createCellStyle();
+				// numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
+				numberStyle.setBorderBottom(BorderStyle.THIN);
+				numberStyle.setBorderTop(BorderStyle.THIN);
+				numberStyle.setBorderLeft(BorderStyle.THIN);
+				numberStyle.setBorderRight(BorderStyle.THIN);
+				numberStyle.setFont(font);
+				// --- End of Style Definitions ---
+
+				int startRow = 9;
+
+				if (!dataList.isEmpty()) {
+					for (int i = 0; i < dataList.size(); i++) {
+						M_UNCONS_INVEST_Summary_Entity record = dataList.get(i);
+						System.out.println("rownumber=" + startRow + i);
+						Row row = sheet.getRow(startRow + i);
+						if (row == null) {
+							row = sheet.createRow(startRow + i);
+						}
+//EMAIL
+
+						// row11
+						// Column D
+						Cell cell3 = row.getCell(4);
+						if (record.getR11_amount() != null) {
+							cell3.setCellValue(record.getR11_amount().doubleValue());
+							cell3.setCellStyle(numberStyle);
+						} else {
+							cell3.setCellValue("");
+							cell3.setCellStyle(textStyle);
+
+						}
+
+						// row14
+						row = sheet.getRow(12);
+						// Column D
+						cell3 = row.getCell(4);
+						if (record.getR14_amount() != null) {
+							cell3.setCellValue(record.getR14_amount().doubleValue());
+							cell3.setCellStyle(numberStyle);
+						} else {
+							cell3.setCellValue("");
+							cell3.setCellStyle(textStyle);
+
+						}
+
+						// row15
+						row = sheet.getRow(13);
+						// Column D
+						cell3 = row.getCell(4);
+						if (record.getR15_amount() != null) {
+							cell3.setCellValue(record.getR15_amount().doubleValue());
+							cell3.setCellStyle(numberStyle);
+						} else {
+							cell3.setCellValue("");
+							cell3.setCellStyle(textStyle);
+
+						}
+
+						// row22
+						row = sheet.getRow(20);
+						// Column C
+						Cell cell2 = row.getCell(3);
+						if (record.getR22_accuulated_equity_interest_5() != null) {
+							cell2.setCellValue(record.getR22_accuulated_equity_interest_5().doubleValue());
+							cell2.setCellStyle(numberStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+
+						}
+
+						// row22
+						// Column D
+						cell3 = row.createCell(4);
+						if (record.getR22_assets() != null) {
+							cell3.setCellValue(record.getR22_assets().doubleValue());
+							cell3.setCellStyle(numberStyle);
+						} else {
+							cell3.setCellValue("");
+							cell3.setCellStyle(textStyle);
+						}
+
+						// row22
+						// Column E
+						Cell cell4 = row.createCell(5);
+						if (record.getR22_liabilities() != null) {
+							cell4.setCellValue(record.getR22_liabilities().doubleValue());
+							cell4.setCellStyle(numberStyle);
+						} else {
+							cell4.setCellValue("");
+							cell4.setCellStyle(textStyle);
+						}
+
+						// row22
+						// Column F
+						Cell cell5 = row.createCell(6);
+						if (record.getR22_revenue() != null) {
+							cell5.setCellValue(record.getR22_revenue().doubleValue());
+							cell5.setCellStyle(numberStyle);
+						} else {
+							cell5.setCellValue("");
+							cell5.setCellStyle(textStyle);
+						}
+
+						// row22
+						// Column G
+						Cell cell6 = row.createCell(7);
+						if (record.getR22_profit_or_loss() != null) {
+							cell6.setCellValue(record.getR22_profit_or_loss().doubleValue());
+							cell6.setCellStyle(numberStyle);
+						} else {
+							cell6.setCellValue("");
+							cell6.setCellStyle(textStyle);
+						}
+
+						// row22
+						// Column H
+						Cell cell7 = row.createCell(8);
+						if (record.getR22_unreg_share_of_loss() != null) {
+							cell7.setCellValue(record.getR22_unreg_share_of_loss().doubleValue());
+							cell7.setCellStyle(numberStyle);
+						} else {
+							cell7.setCellValue("");
+							cell7.setCellStyle(textStyle);
+						}
+
+						// row22
+						// Column I
+						Cell cell8 = row.createCell(9);
+						if (record.getR22_cumulative_unreg_share_of_loss() != null) {
+							cell8.setCellValue(record.getR22_cumulative_unreg_share_of_loss().doubleValue());
+							cell8.setCellStyle(numberStyle);
+						} else {
+							cell8.setCellValue("");
+							cell8.setCellStyle(textStyle);
+						}
+
+						// row23
+						row = sheet.getRow(21);
+						// Column C
+						cell2 = row.getCell(3);
+						if (record.getR23_accuulated_equity_interest_5() != null) {
+							cell2.setCellValue(record.getR23_accuulated_equity_interest_5().doubleValue());
+							cell2.setCellStyle(numberStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+
+						}
+
+						// row23
+						// Column H
+						cell7 = row.createCell(8);
+						if (record.getR23_unreg_share_of_loss() != null) {
+							cell7.setCellValue(record.getR23_unreg_share_of_loss().doubleValue());
+							cell7.setCellStyle(numberStyle);
+						} else {
+							cell7.setCellValue("");
+							cell7.setCellStyle(textStyle);
+						}
+
+						// row23
+						// Column I
+						cell8 = row.createCell(9);
+						if (record.getR23_cumulative_unreg_share_of_loss() != null) {
+							cell8.setCellValue(record.getR23_cumulative_unreg_share_of_loss().doubleValue());
+							cell8.setCellStyle(numberStyle);
+						} else {
+							cell8.setCellValue("");
+							cell8.setCellStyle(textStyle);
+						}
+
+						// row24
+						row = sheet.getRow(22);
+						// Column C
+						cell2 = row.getCell(3);
+						if (record.getR24_accuulated_equity_interest_5() != null) {
+							cell2.setCellValue(record.getR24_accuulated_equity_interest_5().doubleValue());
+							cell2.setCellStyle(numberStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+
+						}
+
+						// row24
+						// Column D
+						cell3 = row.createCell(4);
+						if (record.getR24_assets() != null) {
+							cell3.setCellValue(record.getR24_assets().doubleValue());
+							cell3.setCellStyle(numberStyle);
+						} else {
+							cell3.setCellValue("");
+							cell3.setCellStyle(textStyle);
+						}
+
+						// row24
+						// Column E
+						cell4 = row.createCell(5);
+						if (record.getR24_liabilities() != null) {
+							cell4.setCellValue(record.getR24_liabilities().doubleValue());
+							cell4.setCellStyle(numberStyle);
+						} else {
+							cell4.setCellValue("");
+							cell4.setCellStyle(textStyle);
+						}
+
+						// row24
+						// Column F
+						cell5 = row.createCell(6);
+						if (record.getR24_revenue() != null) {
+							cell5.setCellValue(record.getR24_revenue().doubleValue());
+							cell5.setCellStyle(numberStyle);
+						} else {
+							cell5.setCellValue("");
+							cell5.setCellStyle(textStyle);
+						}
+
+						// row24
+						// Column G
+						cell6 = row.createCell(7);
+						if (record.getR24_profit_or_loss() != null) {
+							cell6.setCellValue(record.getR24_profit_or_loss().doubleValue());
+							cell6.setCellStyle(numberStyle);
+						} else {
+							cell6.setCellValue("");
+							cell6.setCellStyle(textStyle);
+						}
+
+						// row24
+						// Column H
+						cell7 = row.createCell(8);
+						if (record.getR24_unreg_share_of_loss() != null) {
+							cell7.setCellValue(record.getR24_unreg_share_of_loss().doubleValue());
+							cell7.setCellStyle(numberStyle);
+						} else {
+							cell7.setCellValue("");
+							cell7.setCellStyle(textStyle);
+						}
+
+						// row24
+						// Column I
+						cell8 = row.createCell(9);
+						if (record.getR24_cumulative_unreg_share_of_loss() != null) {
+							cell8.setCellValue(record.getR24_cumulative_unreg_share_of_loss().doubleValue());
+							cell8.setCellStyle(numberStyle);
+						} else {
+							cell8.setCellValue("");
+							cell8.setCellStyle(textStyle);
+						}
+
+						// row29
+						row = sheet.getRow(27);
+						// Column G
+						cell6 = row.getCell(7);
+						if (record.getR29_fair_value() != null) {
+							cell6.setCellValue(record.getR29_fair_value().doubleValue());
+							cell6.setCellStyle(numberStyle);
+						} else {
+							cell6.setCellValue("");
+							cell6.setCellStyle(textStyle);
+
+						}
+
+						// row35
+						row = sheet.getRow(33);
+						// Column C
+						cell2 = row.getCell(3);
+						if (record.getR35_company() != null) {
+							cell2.setCellValue(record.getR35_company().doubleValue());
+							cell2.setCellStyle(numberStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+
+						}
+
+						// row35
+						// Column D
+						cell3 = row.createCell(4);
+						if (record.getR35_jurisdiction_of_incorp_1() != null) {
+							cell3.setCellValue(record.getR35_jurisdiction_of_incorp_1().doubleValue());
+							cell3.setCellStyle(numberStyle);
+						} else {
+							cell3.setCellValue("");
+							cell3.setCellStyle(textStyle);
+						}
+
+						// row35
+						// Column E
+						cell4 = row.createCell(5);
+						if (record.getR35_jurisdiction_of_incorp_2() != null) {
+							cell4.setCellValue(record.getR35_jurisdiction_of_incorp_2().doubleValue());
+							cell4.setCellStyle(numberStyle);
+						} else {
+							cell4.setCellValue("");
+							cell4.setCellStyle(textStyle);
+						}
+
+						// row35
+						// Column F
+						cell5 = row.createCell(6);
+						if (record.getR35_line_of_business() != null) {
+							cell5.setCellValue(record.getR35_line_of_business().doubleValue());
+							cell5.setCellStyle(numberStyle);
+						} else {
+							cell5.setCellValue("");
+							cell5.setCellStyle(textStyle);
+						}
+
+						// row35
+						// Column G
+						cell6 = row.createCell(7);
+						if (record.getR35_currency() != null) {
+							cell6.setCellValue(record.getR35_currency().doubleValue());
+							cell6.setCellStyle(numberStyle);
+						} else {
+							cell6.setCellValue("");
+							cell6.setCellStyle(textStyle);
+						}
+
+						// row35
+						// Column H
+						cell7 = row.createCell(8);
+						if (record.getR35_share_capital() != null) {
+							cell7.setCellValue(record.getR35_share_capital().doubleValue());
+							cell7.setCellStyle(numberStyle);
+						} else {
+							cell7.setCellValue("");
+							cell7.setCellStyle(textStyle);
+						}
+
+						// row35
+						// Column I
+						cell8 = row.createCell(9);
+						if (record.getR35_accumulated_equity_interest() != null) {
+							cell8.setCellValue(record.getR35_accumulated_equity_interest().doubleValue());
+							cell8.setCellStyle(numberStyle);
+						} else {
+							cell8.setCellValue("");
+							cell8.setCellStyle(textStyle);
+						}
+
+						// row36
+						row = sheet.getRow(34);
+						// Column C
+						cell2 = row.getCell(3);
+						if (record.getR36_company() != null) {
+							cell2.setCellValue(record.getR36_company().doubleValue());
+							cell2.setCellStyle(numberStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+
+						}
+
+						// row36
+						// Column H
+						cell7 = row.createCell(8);
+						if (record.getR36_share_capital() != null) {
+							cell7.setCellValue(record.getR36_share_capital().doubleValue());
+							cell7.setCellStyle(numberStyle);
+						} else {
+							cell7.setCellValue("");
+							cell7.setCellStyle(textStyle);
+						}
+
+						// row36
+						// Column I
+						cell8 = row.createCell(9);
+						if (record.getR36_accumulated_equity_interest() != null) {
+							cell8.setCellValue(record.getR36_accumulated_equity_interest().doubleValue());
+							cell8.setCellStyle(numberStyle);
+						} else {
+							cell8.setCellValue("");
+							cell8.setCellStyle(textStyle);
+						}
+
+						// row37
+						row = sheet.getRow(35);
+						// Column C
+						cell2 = row.getCell(3);
+						if (record.getR37_company() != null) {
+							cell2.setCellValue(record.getR37_company().doubleValue());
+							cell2.setCellStyle(numberStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+
+						}
+
+						// row37
+						// Column D
+						cell3 = row.createCell(4);
+						if (record.getR37_jurisdiction_of_incorp_1() != null) {
+							cell3.setCellValue(record.getR37_jurisdiction_of_incorp_1().doubleValue());
+							cell3.setCellStyle(numberStyle);
+						} else {
+							cell3.setCellValue("");
+							cell3.setCellStyle(textStyle);
+						}
+
+						// row37
+						// Column E
+						cell4 = row.createCell(5);
+						if (record.getR37_jurisdiction_of_incorp_2() != null) {
+							cell4.setCellValue(record.getR37_jurisdiction_of_incorp_2().doubleValue());
+							cell4.setCellStyle(numberStyle);
+						} else {
+							cell4.setCellValue("");
+							cell4.setCellStyle(textStyle);
+						}
+
+						// row37
+						// Column F
+						cell5 = row.createCell(6);
+						if (record.getR37_line_of_business() != null) {
+							cell5.setCellValue(record.getR37_line_of_business().doubleValue());
+							cell5.setCellStyle(numberStyle);
+						} else {
+							cell5.setCellValue("");
+							cell5.setCellStyle(textStyle);
+						}
+
+						// row37
+						// Column G
+						cell6 = row.createCell(7);
+						if (record.getR37_currency() != null) {
+							cell6.setCellValue(record.getR37_currency().doubleValue());
+							cell6.setCellStyle(numberStyle);
+						} else {
+							cell6.setCellValue("");
+							cell6.setCellStyle(textStyle);
+						}
+
+						// row37
+						// Column H
+						cell7 = row.createCell(8);
+						if (record.getR37_share_capital() != null) {
+							cell7.setCellValue(record.getR37_share_capital().doubleValue());
+							cell7.setCellStyle(numberStyle);
+						} else {
+							cell7.setCellValue("");
+							cell7.setCellStyle(textStyle);
+						}
+
+						// row37
+						// Column I
+						cell8 = row.createCell(9);
+						if (record.getR37_accumulated_equity_interest() != null) {
+							cell8.setCellValue(record.getR37_accumulated_equity_interest().doubleValue());
+							cell8.setCellStyle(numberStyle);
+						} else {
+							cell8.setCellValue("");
+							cell8.setCellStyle(textStyle);
+						}
+
+						// row38
+						row = sheet.getRow(36);
+						// Column C
+						cell2 = row.getCell(3);
+						if (record.getR38_company() != null) {
+							cell2.setCellValue(record.getR38_company().doubleValue());
+							cell2.setCellStyle(numberStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+
+						}
+
+						// row38
+						// Column D
+						cell3 = row.createCell(4);
+						if (record.getR38_jurisdiction_of_incorp_1() != null) {
+							cell3.setCellValue(record.getR38_jurisdiction_of_incorp_1().doubleValue());
+							cell3.setCellStyle(numberStyle);
+						} else {
+							cell3.setCellValue("");
+							cell3.setCellStyle(textStyle);
+						}
+
+						// row38
+						// Column E
+						cell4 = row.createCell(5);
+						if (record.getR38_jurisdiction_of_incorp_2() != null) {
+							cell4.setCellValue(record.getR38_jurisdiction_of_incorp_2().doubleValue());
+							cell4.setCellStyle(numberStyle);
+						} else {
+							cell4.setCellValue("");
+							cell4.setCellStyle(textStyle);
+						}
+
+						// row38
+						// Column F
+						cell5 = row.createCell(6);
+						if (record.getR38_line_of_business() != null) {
+							cell5.setCellValue(record.getR38_line_of_business().doubleValue());
+							cell5.setCellStyle(numberStyle);
+						} else {
+							cell5.setCellValue("");
+							cell5.setCellStyle(textStyle);
+						}
+
+						// row38
+						// Column G
+						cell6 = row.createCell(7);
+						if (record.getR38_currency() != null) {
+							cell6.setCellValue(record.getR38_currency().doubleValue());
+							cell6.setCellStyle(numberStyle);
+						} else {
+							cell6.setCellValue("");
+							cell6.setCellStyle(textStyle);
+						}
+
+						// row38
+						// Column H
+						cell7 = row.createCell(8);
+						if (record.getR38_share_capital() != null) {
+							cell7.setCellValue(record.getR38_share_capital().doubleValue());
+							cell7.setCellStyle(numberStyle);
+						} else {
+							cell7.setCellValue("");
+							cell7.setCellStyle(textStyle);
+						}
+
+						// row38
+						// Column I
+						cell8 = row.createCell(9);
+						if (record.getR38_accumulated_equity_interest() != null) {
+							cell8.setCellValue(record.getR38_accumulated_equity_interest().doubleValue());
+							cell8.setCellStyle(numberStyle);
+						} else {
+							cell8.setCellValue("");
+							cell8.setCellStyle(textStyle);
+						}
+						// Email
+
+					}
+					workbook.setForceFormulaRecalculation(true);
+				} else {
+
+				}
+
+				// Write the final workbook content to the in-memory stream.
+				workbook.write(out);
+
+				logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
+
+				return out.toByteArray();
+			}
 		}
+	}
+
+	// Archival format excel
+	public byte[] getExcelM_UNCONS_INVESTARCHIVAL(String filename, String reportId, String fromdate, String todate,
+			String currency, String dtltype, String type, String format, BigDecimal version) throws Exception {
+
+		logger.info("Service: Starting Excel generation process in memory in Archival.");
+
+		if ("email".equalsIgnoreCase(format) && version != null) {
+			try {
+				// Redirecting to Archival
+				return BRRS_M_UNCONS_INVESTEmailArchivalExcel(filename, reportId, fromdate, todate, currency, dtltype,
+						type, version);
+			} catch (ParseException e) {
+				logger.error("Invalid report date format: {}", fromdate, e);
+				throw new RuntimeException("Date format must be dd-MMM-yyyy (e.g. 31-Jul-2025)");
+			}
+		}
+
 		List<M_UNCONS_INVEST_Archival_Summary_Entity> dataList = M_UNCONS_INVEST_Archival_Summary_Repo
 				.getdatabydateListarchival(dateformat.parse(todate), version);
 
@@ -1390,23 +2209,24 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 		logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
 
 		if (!Files.exists(templatePath)) {
-			// This specific exception will be caught by the controller.
+// This specific exception will be caught by the controller.
 			throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
 		}
 		if (!Files.isReadable(templatePath)) {
-			// A specific exception for permission errors.
+// A specific exception for permission errors.
 			throw new SecurityException(
 					"Template file exists but is not readable (check permissions): " + templatePath.toAbsolutePath());
 		}
 
-		// This try-with-resources block is perfect. It guarantees all resources are
-		// closed automatically.
+// This try-with-resources block is perfect. It guarantees all resources are
+// closed automatically.
 		try (InputStream templateInputStream = Files.newInputStream(templatePath);
 				Workbook workbook = WorkbookFactory.create(templateInputStream);
 				ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+
 			Sheet sheet = workbook.getSheetAt(0);
 
-			// --- Style Definitions ---
+// --- Style Definitions ---
 			CreationHelper createHelper = workbook.getCreationHelper();
 
 			CellStyle dateStyle = workbook.createCellStyle();
@@ -1415,34 +2235,38 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 			dateStyle.setBorderTop(BorderStyle.THIN);
 			dateStyle.setBorderLeft(BorderStyle.THIN);
 			dateStyle.setBorderRight(BorderStyle.THIN);
+
 			CellStyle textStyle = workbook.createCellStyle();
 			textStyle.setBorderBottom(BorderStyle.THIN);
 			textStyle.setBorderTop(BorderStyle.THIN);
 			textStyle.setBorderLeft(BorderStyle.THIN);
 			textStyle.setBorderRight(BorderStyle.THIN);
 
-			// Create the font
+// Create the font
 			Font font = workbook.createFont();
 			font.setFontHeightInPoints((short) 8); // size 8
 			font.setFontName("Arial");
+
 			CellStyle numberStyle = workbook.createCellStyle();
-			// numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
+// numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
 			numberStyle.setBorderBottom(BorderStyle.THIN);
 			numberStyle.setBorderTop(BorderStyle.THIN);
 			numberStyle.setBorderLeft(BorderStyle.THIN);
 			numberStyle.setBorderRight(BorderStyle.THIN);
 			numberStyle.setFont(font);
+// --- End of Style Definitions ---
+
 			int startRow = 10;
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
 					M_UNCONS_INVEST_Archival_Summary_Entity record = dataList.get(i);
-
 					System.out.println("rownumber=" + startRow + i);
 					Row row = sheet.getRow(startRow + i);
 					if (row == null) {
 						row = sheet.createRow(startRow + i);
 					}
+//NORMAL
 
 					// row11
 					// Column D
@@ -1466,7 +2290,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					// row11
 					// Column F
 					Cell cell5 = row.createCell(5);
@@ -1477,7 +2301,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell5.setCellValue("");
 						cell5.setCellStyle(textStyle);
 					}
-					
+
 					// row11
 					// Column G
 					Cell cell6 = row.createCell(6);
@@ -1512,7 +2336,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					// row12
 					// Column F
 					cell5 = row.createCell(5);
@@ -1523,7 +2347,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell5.setCellValue("");
 						cell5.setCellStyle(textStyle);
 					}
-					
+
 					// row12
 					// Column G
 					cell6 = row.createCell(6);
@@ -1534,7 +2358,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-					
+
 					// row13
 					row = sheet.getRow(12);
 					// Column D
@@ -1558,7 +2382,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					// row13
 					// Column F
 					cell5 = row.createCell(5);
@@ -1569,7 +2393,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell5.setCellValue("");
 						cell5.setCellStyle(textStyle);
 					}
-					
+
 					// row13
 					// Column G
 					cell6 = row.createCell(6);
@@ -1580,7 +2404,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-					
+
 					// row14
 					row = sheet.getRow(13);
 					// Column D
@@ -1604,7 +2428,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					// row14
 					// Column F
 					cell5 = row.createCell(5);
@@ -1615,7 +2439,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell5.setCellValue("");
 						cell5.setCellStyle(textStyle);
 					}
-					
+
 					// row14
 					// Column G
 					cell6 = row.createCell(6);
@@ -1626,10 +2450,9 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-					
+
 					// row15
 					row = sheet.getRow(14);
-				
 
 					// row15
 					// Column E
@@ -1641,7 +2464,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					// row15
 					// Column F
 					cell5 = row.createCell(5);
@@ -1652,7 +2475,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell5.setCellValue("");
 						cell5.setCellStyle(textStyle);
 					}
-					
+
 					// row15
 					// Column G
 					cell6 = row.createCell(6);
@@ -1686,7 +2509,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row22
 					// Column E
 					cell4 = row.createCell(4);
@@ -1697,7 +2520,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					// row22
 					// Column F
 					cell5 = row.createCell(5);
@@ -1708,7 +2531,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell5.setCellValue("");
 						cell5.setCellStyle(textStyle);
 					}
-					
+
 					// row22
 					// Column G
 					cell6 = row.createCell(6);
@@ -1719,7 +2542,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-					
+
 					// row22
 					// Column H
 					Cell cell7 = row.createCell(7);
@@ -1730,7 +2553,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell7.setCellValue("");
 						cell7.setCellStyle(textStyle);
 					}
-					
+
 					// row22
 					// Column I
 					Cell cell8 = row.createCell(8);
@@ -1741,7 +2564,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell8.setCellValue("");
 						cell8.setCellStyle(textStyle);
 					}
-					
+
 					// row23
 					row = sheet.getRow(22);
 					// Column C
@@ -1765,7 +2588,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row23
 					// Column E
 					cell4 = row.createCell(4);
@@ -1776,7 +2599,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					// row23
 					// Column F
 					cell5 = row.createCell(5);
@@ -1787,7 +2610,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell5.setCellValue("");
 						cell5.setCellStyle(textStyle);
 					}
-					
+
 					// row23
 					// Column G
 					cell6 = row.createCell(6);
@@ -1798,7 +2621,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-					
+
 					// row23
 					// Column H
 					cell7 = row.createCell(7);
@@ -1809,7 +2632,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell7.setCellValue("");
 						cell7.setCellStyle(textStyle);
 					}
-					
+
 					// row23
 					// Column I
 					cell8 = row.createCell(8);
@@ -1820,8 +2643,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell8.setCellValue("");
 						cell8.setCellStyle(textStyle);
 					}
-					
-					
+
 					// row24
 					row = sheet.getRow(23);
 					// Column C
@@ -1845,7 +2667,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row24
 					// Column E
 					cell4 = row.createCell(4);
@@ -1856,7 +2678,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					// row24
 					// Column F
 					cell5 = row.createCell(5);
@@ -1867,7 +2689,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell5.setCellValue("");
 						cell5.setCellStyle(textStyle);
 					}
-					
+
 					// row24
 					// Column G
 					cell6 = row.createCell(6);
@@ -1878,7 +2700,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-					
+
 					// row24
 					// Column H
 					cell7 = row.createCell(7);
@@ -1889,7 +2711,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell7.setCellValue("");
 						cell7.setCellStyle(textStyle);
 					}
-					
+
 					// row24
 					// Column I
 					cell8 = row.createCell(8);
@@ -1900,7 +2722,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell8.setCellValue("");
 						cell8.setCellStyle(textStyle);
 					}
-					
+
 					// row29
 					row = sheet.getRow(28);
 					// Column G
@@ -1913,7 +2735,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell6.setCellStyle(textStyle);
 
 					}
-					
+
 					// row35
 					row = sheet.getRow(34);
 					// Column C
@@ -1937,7 +2759,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row35
 					// Column E
 					cell4 = row.createCell(4);
@@ -1948,7 +2770,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					// row35
 					// Column F
 					cell5 = row.createCell(5);
@@ -1959,7 +2781,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell5.setCellValue("");
 						cell5.setCellStyle(textStyle);
 					}
-					
+
 					// row35
 					// Column G
 					cell6 = row.createCell(6);
@@ -1970,7 +2792,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-					
+
 					// row35
 					// Column H
 					cell7 = row.createCell(7);
@@ -1981,7 +2803,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell7.setCellValue("");
 						cell7.setCellStyle(textStyle);
 					}
-					
+
 					// row35
 					// Column I
 					cell8 = row.createCell(8);
@@ -1992,7 +2814,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell8.setCellValue("");
 						cell8.setCellStyle(textStyle);
 					}
-					
+
 					// row36
 					row = sheet.getRow(35);
 					// Column C
@@ -2016,7 +2838,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row36
 					// Column E
 					cell4 = row.createCell(4);
@@ -2027,7 +2849,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					// row36
 					// Column F
 					cell5 = row.createCell(5);
@@ -2038,7 +2860,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell5.setCellValue("");
 						cell5.setCellStyle(textStyle);
 					}
-					
+
 					// row36
 					// Column G
 					cell6 = row.createCell(6);
@@ -2049,7 +2871,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-					
+
 					// row36
 					// Column H
 					cell7 = row.createCell(7);
@@ -2060,7 +2882,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell7.setCellValue("");
 						cell7.setCellStyle(textStyle);
 					}
-					
+
 					// row36
 					// Column I
 					cell8 = row.createCell(8);
@@ -2071,7 +2893,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell8.setCellValue("");
 						cell8.setCellStyle(textStyle);
 					}
-					
+
 					// row37
 					row = sheet.getRow(36);
 					// Column C
@@ -2095,7 +2917,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row37
 					// Column E
 					cell4 = row.createCell(4);
@@ -2106,7 +2928,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					// row37
 					// Column F
 					cell5 = row.createCell(5);
@@ -2117,7 +2939,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell5.setCellValue("");
 						cell5.setCellStyle(textStyle);
 					}
-					
+
 					// row37
 					// Column G
 					cell6 = row.createCell(6);
@@ -2128,7 +2950,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-					
+
 					// row37
 					// Column H
 					cell7 = row.createCell(7);
@@ -2139,7 +2961,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell7.setCellValue("");
 						cell7.setCellStyle(textStyle);
 					}
-					
+
 					// row37
 					// Column I
 					cell8 = row.createCell(8);
@@ -2150,7 +2972,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell8.setCellValue("");
 						cell8.setCellStyle(textStyle);
 					}
-					
+
 					// row38
 					row = sheet.getRow(37);
 					// Column C
@@ -2174,7 +2996,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row38
 					// Column E
 					cell4 = row.createCell(4);
@@ -2185,7 +3007,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					// row38
 					// Column F
 					cell5 = row.createCell(5);
@@ -2196,7 +3018,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell5.setCellValue("");
 						cell5.setCellStyle(textStyle);
 					}
-					
+
 					// row38
 					// Column G
 					cell6 = row.createCell(6);
@@ -2207,7 +3029,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-					
+
 					// row38
 					// Column H
 					cell7 = row.createCell(7);
@@ -2218,7 +3040,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell7.setCellValue("");
 						cell7.setCellStyle(textStyle);
 					}
-					
+
 					// row38
 					// Column I
 					cell8 = row.createCell(8);
@@ -2229,79 +3051,36 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell8.setCellValue("");
 						cell8.setCellStyle(textStyle);
 					}
+					// Normal
+
 				}
-				workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
+
+				workbook.setForceFormulaRecalculation(true);
 			} else {
 
 			}
-			// Write the final workbook content to the in-memory stream.
+
+// Write the final workbook content to the in-memory stream.
 			workbook.write(out);
+
 			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
+
 			return out.toByteArray();
 		}
+
 	}
 
-	////////////////////////////////////////// RESUBMISSION///////////////////////////////////////////////////////////////////
-	/// Report Date | Report Version | Domain
-	/// RESUB VIEW
+	// Archival Email Excel
+	public byte[] BRRS_M_UNCONS_INVESTEmailArchivalExcel(String filename, String reportId, String fromdate,
+			String todate, String currency, String dtltype, String type, BigDecimal version) throws Exception {
 
-//	public List<Object[]> getM_UNCONS_INVESTResub() {
-//		List<Object[]> resubList = new ArrayList<>();
-//		try {
-//			List<M_UNCONS_INVEST_Archival_Summary_Entity> latestArchivalList = M_UNCONS_INVEST_Archival_Summary_Repo
-//					.getdatabydateListWithVersion();
-//
-//			if (latestArchivalList != null && !latestArchivalList.isEmpty()) {
-//				for (M_UNCONS_INVEST_Archival_Summary_Entity entity : latestArchivalList) {
-//					resubList.add(new Object[] { entity.getReport_date(), entity.getReport_version() });
-//				}
-//				System.out.println("Fetched " + resubList.size() + " record(s)");
-//			} else {
-//				System.out.println("No archival data found.");
-//			}
-//
-//		} catch (Exception e) {
-//			System.err.println("Error fetching M_UNCONS_INVEST Resub data: " + e.getMessage());
-//			e.printStackTrace();
-//		}
-//		return resubList;
-//	}
+		logger.info("Service: Starting Archival Email Excel generation process in memory.");
 
-	public List<Object[]> getM_UNCONS_INVESTArchival() {
-		List<Object[]> archivalList = new ArrayList<>();
-		try {
-			List<M_UNCONS_INVEST_Archival_Summary_Entity> latestArchivalList = M_UNCONS_INVEST_Archival_Summary_Repo
-					.getdatabydateListWithVersion();
-
-			if (latestArchivalList != null && !latestArchivalList.isEmpty()) {
-				for (M_UNCONS_INVEST_Archival_Summary_Entity entity : latestArchivalList) {
-					archivalList.add(new Object[] { entity.getReport_date(), entity.getReport_version() });
-				}
-				System.out.println("Fetched " + archivalList.size() + " record(s)");
-			} else {
-				System.out.println("No archival data found.");
-			}
-
-		} catch (Exception e) {
-			System.err.println("Error fetching M_UNCONS_INVEST Resub data: " + e.getMessage());
-			e.printStackTrace();
-		}
-		return archivalList;
-	}
-
-	// Email
-	public byte[] BRRS_M_UNCONS_INVESTEmailExcel(String filename, String reportId, String fromdate, String todate,
-			String currency,
-			String dtltype, String type, BigDecimal version) throws Exception {
-		logger.info("Service: Starting Excel generation process in memory.");
-		Date reportDate = dateformat.parse(todate);
-		if (type.equals("email") & version != null) {
-
-		}
-		List<M_UNCONS_INVEST_Summary_Entity> dataList = M_UNCONS_INVEST_Summary_Repo.getdatabydateList(reportDate);
+		List<M_UNCONS_INVEST_Archival_Summary_Entity> dataList = M_UNCONS_INVEST_Archival_Summary_Repo
+				.getdatabydateListarchival(dateformat.parse(todate), version);
 
 		if (dataList.isEmpty()) {
-			logger.warn("Service: No data found forM_UNCONS_INVEST report. Returning empty result.");
+			logger.warn("Service: No data found for BRRS_M_UNCONS_INVEST report. Returning empty result.");
 			return new byte[0];
 		}
 
@@ -2365,13 +3144,13 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
-					M_UNCONS_INVEST_Summary_Entity record = dataList.get(i);
-
+					M_UNCONS_INVEST_Archival_Summary_Entity record = dataList.get(i);
 					System.out.println("rownumber=" + startRow + i);
 					Row row = sheet.getRow(startRow + i);
 					if (row == null) {
 						row = sheet.createRow(startRow + i);
 					}
+//EMAIL
 
 					// row11
 					// Column D
@@ -2384,7 +3163,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell3.setCellStyle(textStyle);
 
 					}
-					
+
 					// row14
 					row = sheet.getRow(12);
 					// Column D
@@ -2410,8 +3189,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell3.setCellStyle(textStyle);
 
 					}
-					
-					
+
 					// row22
 					row = sheet.getRow(20);
 					// Column C
@@ -2435,7 +3213,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row22
 					// Column E
 					Cell cell4 = row.createCell(5);
@@ -2446,7 +3224,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					// row22
 					// Column F
 					Cell cell5 = row.createCell(6);
@@ -2457,7 +3235,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell5.setCellValue("");
 						cell5.setCellStyle(textStyle);
 					}
-					
+
 					// row22
 					// Column G
 					Cell cell6 = row.createCell(7);
@@ -2468,7 +3246,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-					
+
 					// row22
 					// Column H
 					Cell cell7 = row.createCell(8);
@@ -2479,7 +3257,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell7.setCellValue("");
 						cell7.setCellStyle(textStyle);
 					}
-					
+
 					// row22
 					// Column I
 					Cell cell8 = row.createCell(9);
@@ -2490,7 +3268,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell8.setCellValue("");
 						cell8.setCellStyle(textStyle);
 					}
-					
+
 					// row23
 					row = sheet.getRow(21);
 					// Column C
@@ -2503,7 +3281,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell2.setCellStyle(textStyle);
 
 					}
-					
+
 					// row23
 					// Column H
 					cell7 = row.createCell(8);
@@ -2514,7 +3292,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell7.setCellValue("");
 						cell7.setCellStyle(textStyle);
 					}
-					
+
 					// row23
 					// Column I
 					cell8 = row.createCell(9);
@@ -2525,8 +3303,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell8.setCellValue("");
 						cell8.setCellStyle(textStyle);
 					}
-					
-					
+
 					// row24
 					row = sheet.getRow(22);
 					// Column C
@@ -2550,7 +3327,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row24
 					// Column E
 					cell4 = row.createCell(5);
@@ -2561,7 +3338,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					// row24
 					// Column F
 					cell5 = row.createCell(6);
@@ -2572,7 +3349,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell5.setCellValue("");
 						cell5.setCellStyle(textStyle);
 					}
-					
+
 					// row24
 					// Column G
 					cell6 = row.createCell(7);
@@ -2583,7 +3360,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-					
+
 					// row24
 					// Column H
 					cell7 = row.createCell(8);
@@ -2594,7 +3371,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell7.setCellValue("");
 						cell7.setCellStyle(textStyle);
 					}
-					
+
 					// row24
 					// Column I
 					cell8 = row.createCell(9);
@@ -2605,7 +3382,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell8.setCellValue("");
 						cell8.setCellStyle(textStyle);
 					}
-					
+
 					// row29
 					row = sheet.getRow(27);
 					// Column G
@@ -2618,7 +3395,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell6.setCellStyle(textStyle);
 
 					}
-					
+
 					// row35
 					row = sheet.getRow(33);
 					// Column C
@@ -2642,7 +3419,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row35
 					// Column E
 					cell4 = row.createCell(5);
@@ -2653,7 +3430,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					// row35
 					// Column F
 					cell5 = row.createCell(6);
@@ -2664,7 +3441,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell5.setCellValue("");
 						cell5.setCellStyle(textStyle);
 					}
-					
+
 					// row35
 					// Column G
 					cell6 = row.createCell(7);
@@ -2675,7 +3452,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-					
+
 					// row35
 					// Column H
 					cell7 = row.createCell(8);
@@ -2686,7 +3463,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell7.setCellValue("");
 						cell7.setCellStyle(textStyle);
 					}
-					
+
 					// row35
 					// Column I
 					cell8 = row.createCell(9);
@@ -2697,7 +3474,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell8.setCellValue("");
 						cell8.setCellStyle(textStyle);
 					}
-					
+
 					// row36
 					row = sheet.getRow(34);
 					// Column C
@@ -2710,7 +3487,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell2.setCellStyle(textStyle);
 
 					}
-					
+
 					// row36
 					// Column H
 					cell7 = row.createCell(8);
@@ -2721,7 +3498,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell7.setCellValue("");
 						cell7.setCellStyle(textStyle);
 					}
-					
+
 					// row36
 					// Column I
 					cell8 = row.createCell(9);
@@ -2732,7 +3509,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell8.setCellValue("");
 						cell8.setCellStyle(textStyle);
 					}
-					
+
 					// row37
 					row = sheet.getRow(35);
 					// Column C
@@ -2756,7 +3533,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row37
 					// Column E
 					cell4 = row.createCell(5);
@@ -2767,7 +3544,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					// row37
 					// Column F
 					cell5 = row.createCell(6);
@@ -2778,7 +3555,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell5.setCellValue("");
 						cell5.setCellStyle(textStyle);
 					}
-					
+
 					// row37
 					// Column G
 					cell6 = row.createCell(7);
@@ -2789,7 +3566,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-					
+
 					// row37
 					// Column H
 					cell7 = row.createCell(8);
@@ -2800,7 +3577,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell7.setCellValue("");
 						cell7.setCellStyle(textStyle);
 					}
-					
+
 					// row37
 					// Column I
 					cell8 = row.createCell(9);
@@ -2811,7 +3588,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell8.setCellValue("");
 						cell8.setCellStyle(textStyle);
 					}
-					
+
 					// row38
 					row = sheet.getRow(36);
 					// Column C
@@ -2835,7 +3612,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row38
 					// Column E
 					cell4 = row.createCell(5);
@@ -2846,7 +3623,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					// row38
 					// Column F
 					cell5 = row.createCell(6);
@@ -2857,7 +3634,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell5.setCellValue("");
 						cell5.setCellStyle(textStyle);
 					}
-					
+
 					// row38
 					// Column G
 					cell6 = row.createCell(7);
@@ -2868,7 +3645,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-					
+
 					// row38
 					// Column H
 					cell7 = row.createCell(8);
@@ -2879,7 +3656,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell7.setCellValue("");
 						cell7.setCellStyle(textStyle);
 					}
-					
+
 					// row38
 					// Column I
 					cell8 = row.createCell(9);
@@ -2890,98 +3667,1003 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell8.setCellValue("");
 						cell8.setCellStyle(textStyle);
 					}
-				}
+					// Email
 
+				}
 				workbook.setForceFormulaRecalculation(true);
 			} else {
 
 			}
+
 			// Write the final workbook content to the in-memory stream.
 			workbook.write(out);
+
 			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
+
 			return out.toByteArray();
 		}
 	}
 
-	public byte[] BRRS_M_UNCONS_INVESTEmailArchivalExcel(String filename, String reportId, String fromdate,
-            String todate,
-            String currency, String dtltype, String type, BigDecimal version) throws Exception {
-        logger.info("Service: Starting Excel generation process in memory.");
+	// Resub Format excel
+	public byte[] BRRS_M_UNCONS_INVESTResubExcel(String filename, String reportId, String fromdate, String todate,
+			String currency, String dtltype, String type, String format, BigDecimal version) throws Exception {
 
-        List<M_UNCONS_INVEST_Archival_Summary_Entity> dataList = M_UNCONS_INVEST_Archival_Summary_Repo
-                .getdatabydateListarchival(dateformat.parse(todate), version);
+		logger.info("Service: Starting Excel generation process in memory for RESUB (Format) Excel.");
 
-        if (dataList.isEmpty()) {
-            logger.warn("Service: No data found forM_UNCONS_INVEST report. Returning empty result.");
-            return new byte[0];
-        }
+		if ("email".equalsIgnoreCase(format) && version != null) {
+			logger.info("Service: Generating RESUB report for version {}", version);
 
-        String templateDir = env.getProperty("output.exportpathtemp");
-        String templateFileName = filename;
-        System.out.println(filename);
-        Path templatePath = Paths.get(templateDir, templateFileName);
-        System.out.println(templatePath);
+			try {
+				// ✅ Redirecting to Resub Excel
+				return BRRS_M_UNCONS_INVESTResubEmailExcel(filename, reportId, fromdate, todate, currency, dtltype,
+						type, version);
 
-        logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
+			} catch (ParseException e) {
+				logger.error("Invalid report date format: {}", fromdate, e);
+				throw new RuntimeException("Date format must be dd-MMM-yyyy (e.g. 31-Jul-2025)");
+			}
+		}
 
-        if (!Files.exists(templatePath)) {
-            // This specific exception will be caught by the controller.
-            throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
-        }
-        if (!Files.isReadable(templatePath)) {
-            // A specific exception for permission errors.
-            throw new SecurityException(
-                    "Template file exists but is not readable (check permissions): " + templatePath.toAbsolutePath());
-        }
+		List<M_UNCONS_INVEST_Resub_Summary_Entity> dataList = brrs_M_UNCONS_INVEST_resub_summary_repo
+				.getdatabydateListarchival(dateformat.parse(todate), version);
 
-        // This try-with-resources block is perfect. It guarantees all resources are
-        // closed automatically.
-        try (InputStream templateInputStream = Files.newInputStream(templatePath);
-                Workbook workbook = WorkbookFactory.create(templateInputStream);
-                ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+		if (dataList.isEmpty()) {
+			logger.warn("Service: No data found for M_UNCONS_INVEST report. Returning empty result.");
+			return new byte[0];
+		}
 
-            Sheet sheet = workbook.getSheetAt(0);
+		String templateDir = env.getProperty("output.exportpathtemp");
+		String templateFileName = filename;
+		System.out.println(filename);
+		Path templatePath = Paths.get(templateDir, templateFileName);
+		System.out.println(templatePath);
 
-            // --- Style Definitions ---
-            CreationHelper createHelper = workbook.getCreationHelper();
+		logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
 
-            CellStyle dateStyle = workbook.createCellStyle();
-            dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
-            dateStyle.setBorderBottom(BorderStyle.THIN);
-            dateStyle.setBorderTop(BorderStyle.THIN);
-            dateStyle.setBorderLeft(BorderStyle.THIN);
-            dateStyle.setBorderRight(BorderStyle.THIN);
+		if (!Files.exists(templatePath)) {
+			// This specific exception will be caught by the controller.
+			throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
+		}
+		if (!Files.isReadable(templatePath)) {
+			// A specific exception for permission errors.
+			throw new SecurityException(
+					"Template file exists but is not readable (check permissions): " + templatePath.toAbsolutePath());
+		}
 
-            CellStyle textStyle = workbook.createCellStyle();
-            textStyle.setBorderBottom(BorderStyle.THIN);
-            textStyle.setBorderTop(BorderStyle.THIN);
-            textStyle.setBorderLeft(BorderStyle.THIN);
-            textStyle.setBorderRight(BorderStyle.THIN);
+		// This try-with-resources block is perfect. It guarantees all resources are
+		// closed automatically.
+		try (InputStream templateInputStream = Files.newInputStream(templatePath);
+				Workbook workbook = WorkbookFactory.create(templateInputStream);
+				ByteArrayOutputStream out = new ByteArrayOutputStream()) {
 
-            // Create the font
-            Font font = workbook.createFont();
-            font.setFontHeightInPoints((short) 8); // size 8
-            font.setFontName("Arial");
+			Sheet sheet = workbook.getSheetAt(0);
 
-            CellStyle numberStyle = workbook.createCellStyle();
-            // numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
-            numberStyle.setBorderBottom(BorderStyle.THIN);
-            numberStyle.setBorderTop(BorderStyle.THIN);
-            numberStyle.setBorderLeft(BorderStyle.THIN);
-            numberStyle.setBorderRight(BorderStyle.THIN);
-            numberStyle.setFont(font);
-            // --- End of Style Definitions ---
-            int startRow = 9;
+			// --- Style Definitions ---
+			CreationHelper createHelper = workbook.getCreationHelper();
+
+			CellStyle dateStyle = workbook.createCellStyle();
+			dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
+			dateStyle.setBorderBottom(BorderStyle.THIN);
+			dateStyle.setBorderTop(BorderStyle.THIN);
+			dateStyle.setBorderLeft(BorderStyle.THIN);
+			dateStyle.setBorderRight(BorderStyle.THIN);
+
+			CellStyle textStyle = workbook.createCellStyle();
+			textStyle.setBorderBottom(BorderStyle.THIN);
+			textStyle.setBorderTop(BorderStyle.THIN);
+			textStyle.setBorderLeft(BorderStyle.THIN);
+			textStyle.setBorderRight(BorderStyle.THIN);
+
+			// Create the font
+			Font font = workbook.createFont();
+			font.setFontHeightInPoints((short) 8); // size 8
+			font.setFontName("Arial");
+
+			CellStyle numberStyle = workbook.createCellStyle();
+			// numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
+			numberStyle.setBorderBottom(BorderStyle.THIN);
+			numberStyle.setBorderTop(BorderStyle.THIN);
+			numberStyle.setBorderLeft(BorderStyle.THIN);
+			numberStyle.setBorderRight(BorderStyle.THIN);
+			numberStyle.setFont(font);
+			// --- End of Style Definitions ---
+
+			int startRow = 10;
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
-					M_UNCONS_INVEST_Archival_Summary_Entity record = dataList.get(i);
 
+					M_UNCONS_INVEST_Resub_Summary_Entity record = dataList.get(i);
+					System.out.println("rownumber=" + startRow + i);
 					System.out.println("rownumber=" + startRow + i);
 					Row row = sheet.getRow(startRow + i);
 					if (row == null) {
 						row = sheet.createRow(startRow + i);
 					}
+//NORMAL
+
+					// row11
+					// Column D
+					Cell cell3 = row.getCell(3);
+					if (record.getR11_amount() != null) {
+						cell3.setCellValue(record.getR11_amount().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+
+					}
+
+					// row11
+					// Column E
+					Cell cell4 = row.createCell(4);
+					if (record.getR11_percent_of_cet1_holding() != null) {
+						cell4.setCellValue(record.getR11_percent_of_cet1_holding().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					// row11
+					// Column F
+					Cell cell5 = row.createCell(5);
+					if (record.getR11_percent_of_additional_tier_1_holding() != null) {
+						cell5.setCellValue(record.getR11_percent_of_additional_tier_1_holding().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					// row11
+					// Column G
+					Cell cell6 = row.createCell(6);
+					if (record.getR11_percent_of_tier_2_holding() != null) {
+						cell6.setCellValue(record.getR11_percent_of_tier_2_holding().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					// row12
+					row = sheet.getRow(11);
+					// Column D
+					cell3 = row.getCell(3);
+					if (record.getR12_amount() != null) {
+						cell3.setCellValue(record.getR12_amount().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+
+					}
+
+					// row12
+					// Column E
+					cell4 = row.createCell(4);
+					if (record.getR12_percent_of_cet1_holding() != null) {
+						cell4.setCellValue(record.getR12_percent_of_cet1_holding().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					// row12
+					// Column F
+					cell5 = row.createCell(5);
+					if (record.getR12_percent_of_additional_tier_1_holding() != null) {
+						cell5.setCellValue(record.getR12_percent_of_additional_tier_1_holding().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					// row12
+					// Column G
+					cell6 = row.createCell(6);
+					if (record.getR12_percent_of_tier_2_holding() != null) {
+						cell6.setCellValue(record.getR12_percent_of_tier_2_holding().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					// row13
+					row = sheet.getRow(12);
+					// Column D
+					cell3 = row.getCell(3);
+					if (record.getR13_amount() != null) {
+						cell3.setCellValue(record.getR13_amount().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+
+					}
+
+					// row13
+					// Column E
+					cell4 = row.createCell(4);
+					if (record.getR13_percent_of_cet1_holding() != null) {
+						cell4.setCellValue(record.getR13_percent_of_cet1_holding().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					// row13
+					// Column F
+					cell5 = row.createCell(5);
+					if (record.getR13_percent_of_additional_tier_1_holding() != null) {
+						cell5.setCellValue(record.getR13_percent_of_additional_tier_1_holding().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					// row13
+					// Column G
+					cell6 = row.createCell(6);
+					if (record.getR13_percent_of_tier_2_holding() != null) {
+						cell6.setCellValue(record.getR13_percent_of_tier_2_holding().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					// row14
+					row = sheet.getRow(13);
+					// Column D
+					cell3 = row.getCell(3);
+					if (record.getR14_amount() != null) {
+						cell3.setCellValue(record.getR14_amount().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+
+					}
+
+					// row14
+					// Column E
+					cell4 = row.createCell(4);
+					if (record.getR14_percent_of_cet1_holding() != null) {
+						cell4.setCellValue(record.getR14_percent_of_cet1_holding().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					// row14
+					// Column F
+					cell5 = row.createCell(5);
+					if (record.getR14_percent_of_additional_tier_1_holding() != null) {
+						cell5.setCellValue(record.getR14_percent_of_additional_tier_1_holding().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					// row14
+					// Column G
+					cell6 = row.createCell(6);
+					if (record.getR14_percent_of_tier_2_holding() != null) {
+						cell6.setCellValue(record.getR14_percent_of_tier_2_holding().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					// row15
+					row = sheet.getRow(14);
+
+					// row15
+					// Column E
+					cell4 = row.createCell(4);
+					if (record.getR15_percent_of_cet1_holding() != null) {
+						cell4.setCellValue(record.getR15_percent_of_cet1_holding().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					// row15
+					// Column F
+					cell5 = row.createCell(5);
+					if (record.getR15_percent_of_additional_tier_1_holding() != null) {
+						cell5.setCellValue(record.getR15_percent_of_additional_tier_1_holding().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					// row15
+					// Column G
+					cell6 = row.createCell(6);
+					if (record.getR15_percent_of_tier_2_holding() != null) {
+						cell6.setCellValue(record.getR15_percent_of_tier_2_holding().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+					// row22
+					row = sheet.getRow(21);
+					// Column C
+					Cell cell2 = row.getCell(2);
+					if (record.getR22_accuulated_equity_interest_5() != null) {
+						cell2.setCellValue(record.getR22_accuulated_equity_interest_5().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+
+					}
+
+					// row22
+					// Column D
+					cell3 = row.createCell(3);
+					if (record.getR22_assets() != null) {
+						cell3.setCellValue(record.getR22_assets().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					// row22
+					// Column E
+					cell4 = row.createCell(4);
+					if (record.getR22_liabilities() != null) {
+						cell4.setCellValue(record.getR22_liabilities().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					// row22
+					// Column F
+					cell5 = row.createCell(5);
+					if (record.getR22_revenue() != null) {
+						cell5.setCellValue(record.getR22_revenue().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					// row22
+					// Column G
+					cell6 = row.createCell(6);
+					if (record.getR22_profit_or_loss() != null) {
+						cell6.setCellValue(record.getR22_profit_or_loss().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					// row22
+					// Column H
+					Cell cell7 = row.createCell(7);
+					if (record.getR22_unreg_share_of_loss() != null) {
+						cell7.setCellValue(record.getR22_unreg_share_of_loss().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					// row22
+					// Column I
+					Cell cell8 = row.createCell(8);
+					if (record.getR22_cumulative_unreg_share_of_loss() != null) {
+						cell8.setCellValue(record.getR22_cumulative_unreg_share_of_loss().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					// row23
+					row = sheet.getRow(22);
+					// Column C
+					cell2 = row.getCell(2);
+					if (record.getR23_accuulated_equity_interest_5() != null) {
+						cell2.setCellValue(record.getR23_accuulated_equity_interest_5().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+
+					}
+
+					// row23
+					// Column D
+					cell3 = row.createCell(3);
+					if (record.getR23_assets() != null) {
+						cell3.setCellValue(record.getR23_assets().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					// row23
+					// Column E
+					cell4 = row.createCell(4);
+					if (record.getR23_liabilities() != null) {
+						cell4.setCellValue(record.getR23_liabilities().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					// row23
+					// Column F
+					cell5 = row.createCell(5);
+					if (record.getR23_revenue() != null) {
+						cell5.setCellValue(record.getR23_revenue().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					// row23
+					// Column G
+					cell6 = row.createCell(6);
+					if (record.getR23_profit_or_loss() != null) {
+						cell6.setCellValue(record.getR23_profit_or_loss().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					// row23
+					// Column H
+					cell7 = row.createCell(7);
+					if (record.getR23_unreg_share_of_loss() != null) {
+						cell7.setCellValue(record.getR23_unreg_share_of_loss().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					// row23
+					// Column I
+					cell8 = row.createCell(8);
+					if (record.getR23_cumulative_unreg_share_of_loss() != null) {
+						cell8.setCellValue(record.getR23_cumulative_unreg_share_of_loss().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					// row24
+					row = sheet.getRow(23);
+					// Column C
+					cell2 = row.getCell(2);
+					if (record.getR24_accuulated_equity_interest_5() != null) {
+						cell2.setCellValue(record.getR24_accuulated_equity_interest_5().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+
+					}
+
+					// row24
+					// Column D
+					cell3 = row.createCell(3);
+					if (record.getR24_assets() != null) {
+						cell3.setCellValue(record.getR24_assets().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					// row24
+					// Column E
+					cell4 = row.createCell(4);
+					if (record.getR24_liabilities() != null) {
+						cell4.setCellValue(record.getR24_liabilities().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					// row24
+					// Column F
+					cell5 = row.createCell(5);
+					if (record.getR24_revenue() != null) {
+						cell5.setCellValue(record.getR24_revenue().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					// row24
+					// Column G
+					cell6 = row.createCell(6);
+					if (record.getR24_profit_or_loss() != null) {
+						cell6.setCellValue(record.getR24_profit_or_loss().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					// row24
+					// Column H
+					cell7 = row.createCell(7);
+					if (record.getR24_unreg_share_of_loss() != null) {
+						cell7.setCellValue(record.getR24_unreg_share_of_loss().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					// row24
+					// Column I
+					cell8 = row.createCell(8);
+					if (record.getR24_cumulative_unreg_share_of_loss() != null) {
+						cell8.setCellValue(record.getR24_cumulative_unreg_share_of_loss().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					// row29
+					row = sheet.getRow(28);
+					// Column G
+					cell6 = row.getCell(6);
+					if (record.getR29_fair_value() != null) {
+						cell6.setCellValue(record.getR29_fair_value().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+
+					}
+
+					// row35
+					row = sheet.getRow(34);
+					// Column C
+					cell2 = row.getCell(2);
+					if (record.getR35_company() != null) {
+						cell2.setCellValue(record.getR35_company().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+
+					}
+
+					// row35
+					// Column D
+					cell3 = row.createCell(3);
+					if (record.getR35_jurisdiction_of_incorp_1() != null) {
+						cell3.setCellValue(record.getR35_jurisdiction_of_incorp_1().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					// row35
+					// Column E
+					cell4 = row.createCell(4);
+					if (record.getR35_jurisdiction_of_incorp_2() != null) {
+						cell4.setCellValue(record.getR35_jurisdiction_of_incorp_2().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					// row35
+					// Column F
+					cell5 = row.createCell(5);
+					if (record.getR35_line_of_business() != null) {
+						cell5.setCellValue(record.getR35_line_of_business().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					// row35
+					// Column G
+					cell6 = row.createCell(6);
+					if (record.getR35_currency() != null) {
+						cell6.setCellValue(record.getR35_currency().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					// row35
+					// Column H
+					cell7 = row.createCell(7);
+					if (record.getR35_share_capital() != null) {
+						cell7.setCellValue(record.getR35_share_capital().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					// row35
+					// Column I
+					cell8 = row.createCell(8);
+					if (record.getR35_accumulated_equity_interest() != null) {
+						cell8.setCellValue(record.getR35_accumulated_equity_interest().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					// row36
+					row = sheet.getRow(35);
+					// Column C
+					cell2 = row.getCell(2);
+					if (record.getR36_company() != null) {
+						cell2.setCellValue(record.getR36_company().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+
+					}
+
+					// row36
+					// Column D
+					cell3 = row.createCell(3);
+					if (record.getR36_jurisdiction_of_incorp_1() != null) {
+						cell3.setCellValue(record.getR36_jurisdiction_of_incorp_1().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					// row36
+					// Column E
+					cell4 = row.createCell(4);
+					if (record.getR36_jurisdiction_of_incorp_2() != null) {
+						cell4.setCellValue(record.getR36_jurisdiction_of_incorp_2().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					// row36
+					// Column F
+					cell5 = row.createCell(5);
+					if (record.getR36_line_of_business() != null) {
+						cell5.setCellValue(record.getR36_line_of_business().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					// row36
+					// Column G
+					cell6 = row.createCell(6);
+					if (record.getR36_currency() != null) {
+						cell6.setCellValue(record.getR36_currency().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					// row36
+					// Column H
+					cell7 = row.createCell(7);
+					if (record.getR36_share_capital() != null) {
+						cell7.setCellValue(record.getR36_share_capital().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					// row36
+					// Column I
+					cell8 = row.createCell(8);
+					if (record.getR36_accumulated_equity_interest() != null) {
+						cell8.setCellValue(record.getR36_accumulated_equity_interest().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					// row37
+					row = sheet.getRow(36);
+					// Column C
+					cell2 = row.getCell(2);
+					if (record.getR37_company() != null) {
+						cell2.setCellValue(record.getR37_company().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+
+					}
+
+					// row37
+					// Column D
+					cell3 = row.createCell(3);
+					if (record.getR37_jurisdiction_of_incorp_1() != null) {
+						cell3.setCellValue(record.getR37_jurisdiction_of_incorp_1().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					// row37
+					// Column E
+					cell4 = row.createCell(4);
+					if (record.getR37_jurisdiction_of_incorp_2() != null) {
+						cell4.setCellValue(record.getR37_jurisdiction_of_incorp_2().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					// row37
+					// Column F
+					cell5 = row.createCell(5);
+					if (record.getR37_line_of_business() != null) {
+						cell5.setCellValue(record.getR37_line_of_business().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					// row37
+					// Column G
+					cell6 = row.createCell(6);
+					if (record.getR37_currency() != null) {
+						cell6.setCellValue(record.getR37_currency().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					// row37
+					// Column H
+					cell7 = row.createCell(7);
+					if (record.getR37_share_capital() != null) {
+						cell7.setCellValue(record.getR37_share_capital().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					// row37
+					// Column I
+					cell8 = row.createCell(8);
+					if (record.getR37_accumulated_equity_interest() != null) {
+						cell8.setCellValue(record.getR37_accumulated_equity_interest().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					// row38
+					row = sheet.getRow(37);
+					// Column C
+					cell2 = row.getCell(2);
+					if (record.getR38_company() != null) {
+						cell2.setCellValue(record.getR38_company().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+
+					}
+
+					// row38
+					// Column D
+					cell3 = row.createCell(3);
+					if (record.getR38_jurisdiction_of_incorp_1() != null) {
+						cell3.setCellValue(record.getR38_jurisdiction_of_incorp_1().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					// row38
+					// Column E
+					cell4 = row.createCell(4);
+					if (record.getR38_jurisdiction_of_incorp_2() != null) {
+						cell4.setCellValue(record.getR38_jurisdiction_of_incorp_2().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					// row38
+					// Column F
+					cell5 = row.createCell(5);
+					if (record.getR38_line_of_business() != null) {
+						cell5.setCellValue(record.getR38_line_of_business().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					// row38
+					// Column G
+					cell6 = row.createCell(6);
+					if (record.getR38_currency() != null) {
+						cell6.setCellValue(record.getR38_currency().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					// row38
+					// Column H
+					cell7 = row.createCell(7);
+					if (record.getR38_share_capital() != null) {
+						cell7.setCellValue(record.getR38_share_capital().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					// row38
+					// Column I
+					cell8 = row.createCell(8);
+					if (record.getR38_accumulated_equity_interest() != null) {
+						cell8.setCellValue(record.getR38_accumulated_equity_interest().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+					// Normal
+
+				}
+				workbook.setForceFormulaRecalculation(true);
+			} else {
+
+			}
+
+			// Write the final workbook content to the in-memory stream.
+			workbook.write(out);
+
+			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
+
+			return out.toByteArray();
+		}
+
+	}
+
+	// Resub Email Excel
+	public byte[] BRRS_M_UNCONS_INVESTResubEmailExcel(String filename, String reportId, String fromdate, String todate,
+			String currency, String dtltype, String type, BigDecimal version) throws Exception {
+
+		logger.info("Service: Starting Archival Email Excel generation process in memory.");
+
+		List<M_UNCONS_INVEST_Resub_Summary_Entity> dataList = brrs_M_UNCONS_INVEST_resub_summary_repo
+				.getdatabydateListarchival(dateformat.parse(todate), version);
+
+		if (dataList.isEmpty()) {
+			logger.warn("Service: No data found for BRRS_M_UNCONS_INVEST report. Returning empty result.");
+			return new byte[0];
+		}
+
+		String templateDir = env.getProperty("output.exportpathtemp");
+		String templateFileName = filename;
+		System.out.println(filename);
+		Path templatePath = Paths.get(templateDir, templateFileName);
+		System.out.println(templatePath);
+
+		logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
+
+		if (!Files.exists(templatePath)) {
+			// This specific exception will be caught by the controller.
+			throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
+		}
+		if (!Files.isReadable(templatePath)) {
+			// A specific exception for permission errors.
+			throw new SecurityException(
+					"Template file exists but is not readable (check permissions): " + templatePath.toAbsolutePath());
+		}
+
+		// This try-with-resources block is perfect. It guarantees all resources are
+		// closed automatically.
+		try (InputStream templateInputStream = Files.newInputStream(templatePath);
+				Workbook workbook = WorkbookFactory.create(templateInputStream);
+				ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+
+			Sheet sheet = workbook.getSheetAt(0);
+
+			// --- Style Definitions ---
+			CreationHelper createHelper = workbook.getCreationHelper();
+
+			CellStyle dateStyle = workbook.createCellStyle();
+			dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
+			dateStyle.setBorderBottom(BorderStyle.THIN);
+			dateStyle.setBorderTop(BorderStyle.THIN);
+			dateStyle.setBorderLeft(BorderStyle.THIN);
+			dateStyle.setBorderRight(BorderStyle.THIN);
+
+			CellStyle textStyle = workbook.createCellStyle();
+			textStyle.setBorderBottom(BorderStyle.THIN);
+			textStyle.setBorderTop(BorderStyle.THIN);
+			textStyle.setBorderLeft(BorderStyle.THIN);
+			textStyle.setBorderRight(BorderStyle.THIN);
+
+			// Create the font
+			Font font = workbook.createFont();
+			font.setFontHeightInPoints((short) 8); // size 8
+			font.setFontName("Arial");
+
+			CellStyle numberStyle = workbook.createCellStyle();
+			// numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
+			numberStyle.setBorderBottom(BorderStyle.THIN);
+			numberStyle.setBorderTop(BorderStyle.THIN);
+			numberStyle.setBorderLeft(BorderStyle.THIN);
+			numberStyle.setBorderRight(BorderStyle.THIN);
+			numberStyle.setFont(font);
+			// --- End of Style Definitions ---
+
+			int startRow = 9;
+
+			if (!dataList.isEmpty()) {
+				for (int i = 0; i < dataList.size(); i++) {
+					M_UNCONS_INVEST_Resub_Summary_Entity record = dataList.get(i);
+					System.out.println("rownumber=" + startRow + i);
+					Row row = sheet.getRow(startRow + i);
+					if (row == null) {
+						row = sheet.createRow(startRow + i);
+					}
+//EMAIL
 
 					// row11
 					// Column D
@@ -2994,7 +4676,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell3.setCellStyle(textStyle);
 
 					}
-					
+
 					// row14
 					row = sheet.getRow(12);
 					// Column D
@@ -3020,8 +4702,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell3.setCellStyle(textStyle);
 
 					}
-					
-					
+
 					// row22
 					row = sheet.getRow(20);
 					// Column C
@@ -3045,7 +4726,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row22
 					// Column E
 					Cell cell4 = row.createCell(5);
@@ -3056,7 +4737,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					// row22
 					// Column F
 					Cell cell5 = row.createCell(6);
@@ -3067,7 +4748,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell5.setCellValue("");
 						cell5.setCellStyle(textStyle);
 					}
-					
+
 					// row22
 					// Column G
 					Cell cell6 = row.createCell(7);
@@ -3078,7 +4759,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-					
+
 					// row22
 					// Column H
 					Cell cell7 = row.createCell(8);
@@ -3089,7 +4770,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell7.setCellValue("");
 						cell7.setCellStyle(textStyle);
 					}
-					
+
 					// row22
 					// Column I
 					Cell cell8 = row.createCell(9);
@@ -3100,7 +4781,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell8.setCellValue("");
 						cell8.setCellStyle(textStyle);
 					}
-					
+
 					// row23
 					row = sheet.getRow(21);
 					// Column C
@@ -3113,7 +4794,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell2.setCellStyle(textStyle);
 
 					}
-					
+
 					// row23
 					// Column H
 					cell7 = row.createCell(8);
@@ -3124,7 +4805,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell7.setCellValue("");
 						cell7.setCellStyle(textStyle);
 					}
-					
+
 					// row23
 					// Column I
 					cell8 = row.createCell(9);
@@ -3135,8 +4816,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell8.setCellValue("");
 						cell8.setCellStyle(textStyle);
 					}
-					
-					
+
 					// row24
 					row = sheet.getRow(22);
 					// Column C
@@ -3160,7 +4840,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row24
 					// Column E
 					cell4 = row.createCell(5);
@@ -3171,7 +4851,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					// row24
 					// Column F
 					cell5 = row.createCell(6);
@@ -3182,7 +4862,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell5.setCellValue("");
 						cell5.setCellStyle(textStyle);
 					}
-					
+
 					// row24
 					// Column G
 					cell6 = row.createCell(7);
@@ -3193,7 +4873,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-					
+
 					// row24
 					// Column H
 					cell7 = row.createCell(8);
@@ -3204,7 +4884,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell7.setCellValue("");
 						cell7.setCellStyle(textStyle);
 					}
-					
+
 					// row24
 					// Column I
 					cell8 = row.createCell(9);
@@ -3215,7 +4895,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell8.setCellValue("");
 						cell8.setCellStyle(textStyle);
 					}
-					
+
 					// row29
 					row = sheet.getRow(27);
 					// Column G
@@ -3228,7 +4908,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell6.setCellStyle(textStyle);
 
 					}
-					
+
 					// row35
 					row = sheet.getRow(33);
 					// Column C
@@ -3252,7 +4932,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row35
 					// Column E
 					cell4 = row.createCell(5);
@@ -3263,7 +4943,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					// row35
 					// Column F
 					cell5 = row.createCell(6);
@@ -3274,7 +4954,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell5.setCellValue("");
 						cell5.setCellStyle(textStyle);
 					}
-					
+
 					// row35
 					// Column G
 					cell6 = row.createCell(7);
@@ -3285,7 +4965,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-					
+
 					// row35
 					// Column H
 					cell7 = row.createCell(8);
@@ -3296,7 +4976,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell7.setCellValue("");
 						cell7.setCellStyle(textStyle);
 					}
-					
+
 					// row35
 					// Column I
 					cell8 = row.createCell(9);
@@ -3307,7 +4987,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell8.setCellValue("");
 						cell8.setCellStyle(textStyle);
 					}
-					
+
 					// row36
 					row = sheet.getRow(34);
 					// Column C
@@ -3320,7 +5000,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell2.setCellStyle(textStyle);
 
 					}
-					
+
 					// row36
 					// Column H
 					cell7 = row.createCell(8);
@@ -3331,7 +5011,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell7.setCellValue("");
 						cell7.setCellStyle(textStyle);
 					}
-					
+
 					// row36
 					// Column I
 					cell8 = row.createCell(9);
@@ -3342,7 +5022,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell8.setCellValue("");
 						cell8.setCellStyle(textStyle);
 					}
-					
+
 					// row37
 					row = sheet.getRow(35);
 					// Column C
@@ -3366,7 +5046,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row37
 					// Column E
 					cell4 = row.createCell(5);
@@ -3377,7 +5057,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					// row37
 					// Column F
 					cell5 = row.createCell(6);
@@ -3388,7 +5068,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell5.setCellValue("");
 						cell5.setCellStyle(textStyle);
 					}
-					
+
 					// row37
 					// Column G
 					cell6 = row.createCell(7);
@@ -3399,7 +5079,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-					
+
 					// row37
 					// Column H
 					cell7 = row.createCell(8);
@@ -3410,7 +5090,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell7.setCellValue("");
 						cell7.setCellStyle(textStyle);
 					}
-					
+
 					// row37
 					// Column I
 					cell8 = row.createCell(9);
@@ -3421,7 +5101,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell8.setCellValue("");
 						cell8.setCellStyle(textStyle);
 					}
-					
+
 					// row38
 					row = sheet.getRow(36);
 					// Column C
@@ -3445,7 +5125,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row38
 					// Column E
 					cell4 = row.createCell(5);
@@ -3456,7 +5136,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+
 					// row38
 					// Column F
 					cell5 = row.createCell(6);
@@ -3467,7 +5147,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell5.setCellValue("");
 						cell5.setCellStyle(textStyle);
 					}
-					
+
 					// row38
 					// Column G
 					cell6 = row.createCell(7);
@@ -3478,7 +5158,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-					
+
 					// row38
 					// Column H
 					cell7 = row.createCell(8);
@@ -3489,7 +5169,7 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell7.setCellValue("");
 						cell7.setCellStyle(textStyle);
 					}
-					
+
 					// row38
 					// Column I
 					cell8 = row.createCell(9);
@@ -3500,15 +5180,19 @@ public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 						cell8.setCellValue("");
 						cell8.setCellStyle(textStyle);
 					}
-				}
+					// Email
 
+				}
 				workbook.setForceFormulaRecalculation(true);
 			} else {
 
 			}
+
 			// Write the final workbook content to the in-memory stream.
 			workbook.write(out);
+
 			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
+
 			return out.toByteArray();
 		}
 	}
