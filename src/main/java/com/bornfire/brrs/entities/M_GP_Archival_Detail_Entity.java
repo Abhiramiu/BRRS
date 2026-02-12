@@ -6,6 +6,7 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -14,6 +15,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
 @Table(name = "BRRS_M_GP_ARCHIVALTABLE_DETAIL")
+@IdClass(M_GP_PK.class)
 public class M_GP_Archival_Detail_Entity {
 	private String R11_PRODUCT;
 	private BigDecimal R11_STAGE1_PROVISIONS;
@@ -285,14 +287,18 @@ public class M_GP_Archival_Detail_Entity {
 	private BigDecimal R64_QUALIFY_STAGE2_PROVISIONS;
 	private BigDecimal R64_TOTAL_GENERAL_PROVISIONS;
 
-	@Temporal(TemporalType.DATE)
-	@DateTimeFormat(pattern = "dd/MM/yyyy")
 	@Id
+	@Temporal(TemporalType.DATE)
 	@Column(name = "REPORT_DATE")
-	private Date reportDate;
-	@Column(name = "REPORT_VERSION")
-	private BigDecimal reportVersion;
+	private Date report_date;
 
+	@Id
+	@Column(name = "REPORT_VERSION")
+	private BigDecimal report_version;
+
+	@Column(name = "REPORT_RESUBDATE")
+	
+	private Date reportResubDate;
     public String REPORT_FREQUENCY;
     public String REPORT_CODE;
     public String REPORT_DESC;
@@ -1595,18 +1601,23 @@ public class M_GP_Archival_Detail_Entity {
 	public void setR64_TOTAL_GENERAL_PROVISIONS(BigDecimal r64_TOTAL_GENERAL_PROVISIONS) {
 		R64_TOTAL_GENERAL_PROVISIONS = r64_TOTAL_GENERAL_PROVISIONS;
 	}
-
-	public Date getReportDate() {
-		return reportDate;
+	public Date getReport_date() {
+		return report_date;
 	}
-	public void setReportDate(Date reportDate) {
-		this.reportDate = reportDate;
+	public void setReport_date(Date report_date) {
+		this.report_date = report_date;
 	}
-	public BigDecimal getReportVersion() {
-		return reportVersion;
+	public BigDecimal getReport_version() {
+		return report_version;
 	}
-	public void setReportVersion(BigDecimal reportVersion) {
-		this.reportVersion = reportVersion;
+	public void setReport_version(BigDecimal report_version) {
+		this.report_version = report_version;
+	}
+	public Date getReportResubDate() {
+		return reportResubDate;
+	}
+	public void setReportResubDate(Date reportResubDate) {
+		this.reportResubDate = reportResubDate;
 	}
 	public String getREPORT_FREQUENCY() {
 		return REPORT_FREQUENCY;
@@ -1648,4 +1659,6 @@ public class M_GP_Archival_Detail_Entity {
 		super();
 		// TODO Auto-generated constructor stub
 	}
+	
+    
 }

@@ -72,7 +72,7 @@ import com.bornfire.brrs.services.BRRS_M_FXR_ReportService;
 import com.bornfire.brrs.services.BRRS_M_GALOR_ReportService;
 import com.bornfire.brrs.services.BRRS_M_GMIRT_ReportService;
 import com.bornfire.brrs.services.BRRS_M_GP_ReportService;
-import com.bornfire.brrs.services.BRRS_M_INT_RATES_FCA_NEW_ReportService;
+
 import com.bornfire.brrs.services.BRRS_M_INT_RATES_FCA_ReportService;
 import com.bornfire.brrs.services.BRRS_M_INT_RATES_NEW_ReportService;
 import com.bornfire.brrs.services.BRRS_M_INT_RATES_ReportService;
@@ -1335,25 +1335,7 @@ public class BRRS_ReportsController {
 	 * .body("Resubmission Update Failed: " + e.getMessage()); } }
 	 */
 
-	@Autowired
-	BRRS_M_INT_RATES_FCA_NEW_ReportService INT_RATES_FCA_NEWreportService;
-
-	@PostMapping("/INTRATESFCANEWupdateAll")
-	@ResponseBody
-	public ResponseEntity<String> updateINTRATESFCANEWAllReports(
-			@RequestParam @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@RequestParam Map<String, String> allParams) {
-		try {
-			System.out.println("Came to INT_RATES_FCA_NEW controller");
-
-			INT_RATES_FCA_NEWreportService.updateDetailFromForm(asondate, allParams);
-
-			return ResponseEntity.ok("Updated Successfully.");
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
-		}
-	}
+	
 	
 	
 	@RequestMapping(value = "/UpdateM_INTRATESReSub",
@@ -3692,6 +3674,58 @@ public class BRRS_ReportsController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
 		}
 	}
+	
+	@RequestMapping(value = "/UpdateM_GP_ReSub",
+	        method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<String> updateReportReSub(
+
+	        @RequestParam(required = false)
+	        @DateTimeFormat(pattern = "dd/MM/yyyy")
+	        Date asondate,
+
+	        @ModelAttribute M_GP_RESUB_Summary_Entity request,
+
+	        HttpServletRequest req) {
+
+	    try {
+
+	        System.out.println("Came to Resub Controller");
+
+	        // =====================================================
+	        //  SET REPORT DATE
+	        // =====================================================
+
+	        if (asondate != null) {
+
+	            request.setReport_date(asondate);
+	            System.out.println("Set Report Date: " + asondate);
+
+	        } else {
+
+	            System.out.println(
+	                "Asondate parameter is null; using entity value: "
+	                + request.getReport_date()
+	            );
+	        }
+
+	        // =====================================================
+	        //  CALL YOUR SERVICE
+	        // =====================================================
+
+	        BRRS_M_GP_ReportService.updateResubReport(request);
+
+	        return ResponseEntity.ok("Resubmission Updated Successfully");
+
+	    } catch (Exception e) {
+
+	        e.printStackTrace();
+
+	        return ResponseEntity
+	                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                .body("Resubmission Update Failed: " + e.getMessage());
+	    }
+	}
 
 //	@RequestMapping(value = "/UpdateM_GP_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
 //	@ResponseBody
@@ -3900,42 +3934,9 @@ public class BRRS_ReportsController {
 	}
 	
 	
-		@RequestMapping(value = "/UpdateM_SIR_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
-	@ResponseBody
-	public ResponseEntity<String> updateReportReSub(
 
-			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-
-			@ModelAttribute M_SIR_Resub_Summary_Entity request,
-
-			HttpServletRequest req) {
-
-		try {
-
-			System.out.println("Came to Resub Controller");
-
-			if (asondate != null) {
-
-				request.setReportDate(asondate);
-				System.out.println("Set Report Date: " + asondate);
-
-			} else {
-
-				System.out.println("Asondate parameter is null; using entity value: " + request.getReportDate());
-			}
-
-			BRRS_M_SIR_ReportService.updateResubReport(request);
-
-			return ResponseEntity.ok("Resubmission Updated Successfully");
-
-		} catch (Exception e) {
-
-			e.printStackTrace();
-
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body("Resubmission Update Failed: " + e.getMessage());
-		}
-	}
+	
+	
 
 	@RequestMapping(value = "/UpdateM_RPD_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
@@ -4591,6 +4592,43 @@ public class BRRS_ReportsController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
+		}
+	}
+	
+	@RequestMapping(value = "/UpdateM_SIR_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<String> updateReportReSub(
+
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+
+			@ModelAttribute M_SIR_Resub_Summary_Entity request,
+
+			HttpServletRequest req) {
+
+		try {
+
+			System.out.println("Came to Resub Controller");
+
+			if (asondate != null) {
+
+				request.setReportDate(asondate);
+				System.out.println("Set Report Date: " + asondate);
+
+			} else {
+
+				System.out.println("Asondate parameter is null; using entity value: " + request.getReportDate());
+			}
+
+			BRRS_M_SIR_ReportService.updateResubReport(request);
+
+			return ResponseEntity.ok("Resubmission Updated Successfully");
+
+		} catch (Exception e) {
+
+			e.printStackTrace();
+
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Resubmission Update Failed: " + e.getMessage());
 		}
 	}
 

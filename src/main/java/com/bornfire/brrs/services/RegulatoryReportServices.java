@@ -216,8 +216,7 @@ public class RegulatoryReportServices {
 
 	BRRS_M_INT_RATES_FCA_ReportService BRRS_M_INT_RATES_FCA_ReportService;
 
-	@Autowired
-	BRRS_M_INT_RATES_FCA_NEW_ReportService BRRS_M_INT_RATES_FCA_NEW_ReportService;
+	
 
 	@Autowired
 	BRRS_M_LARADV_ReportService brrs_m_laradv_reportservice;
@@ -1171,10 +1170,6 @@ public class RegulatoryReportServices {
 					dtltype, pageable, type, version);
 			break;
 
-		case "M_INT_RATES_FCA_NEW":
-			repsummary = BRRS_M_INT_RATES_FCA_NEW_ReportService.getINT_RATES_FCA_NEWView(reportId, fromdate, todate,
-					currency, dtltype, pageable, type, version);
-			break;
 
 		case "M_INT_RATES":
 			repsummary = brrs_m_int_rates_reportservice.getM_INTRATESView(reportId, fromdate, todate, currency, dtltype,
@@ -1862,11 +1857,7 @@ public class RegulatoryReportServices {
 					currency, dtltype, pageable, Filter, type, version);
 			break;
 
-		case "M_INT_RATES_FCA_NEW":
-
-			repdetail = BRRS_M_INT_RATES_FCA_NEW_ReportService.getM_INT_RATES_FCA_NEWcurrentDtl(reportId, fromdate,
-					todate, currency, dtltype, pageable, Filter, type, version);
-			break;
+		
 
 		case "CPR_STRUCT_LIQ":
 
@@ -2272,8 +2263,8 @@ public class RegulatoryReportServices {
 		case "M_GP":
 			try {
 
-				repfile = BRRS_M_GP_ReportService.getM_GPExcel(filename, reportId, fromdate, todate, currency, dtltype,
-						type, version);
+				repfile = BRRS_M_GP_ReportService.getM_GPExcel(filename, reportId, fromdate, todate, currency,
+						dtltype, type, format, version);
 			} catch (Exception e) { // TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -3683,16 +3674,7 @@ public class RegulatoryReportServices {
 			}
 			break;
 
-		case "M_INT_RATES_FCA_NEW":
-			try {
-
-				repfile = BRRS_M_INT_RATES_FCA_NEW_ReportService.getM_INTRATESFCANEWExcel(filename, reportId, fromdate,
-						todate, currency, dtltype, type, version);
-			} catch (Exception e) {
-				// TODO }Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+		
 
 		case "Q_STAFF":
 			try {
@@ -3951,10 +3933,7 @@ public class RegulatoryReportServices {
 					dtltype, type, version);
 		}
 
-		else if ("M_INTRATESFCANEWDetailExcel".equals(filename)) {
-			return BRRS_M_INT_RATES_FCA_NEW_ReportService.getM_INTRATESFCANEWDetailExcel(filename, fromdate, todate,
-					currency, dtltype, type, version);
-		}
+	
 
 		else if ("MDISB5Detail".equals(filename)) {
 			return BRRS_MDISB5_ReportService.getMDISB5DetailExcel(filename, fromdate, todate, currency, dtltype, type,
@@ -4275,14 +4254,7 @@ public class RegulatoryReportServices {
 			System.out.println("Fetched M_INT_RATES_FCA archival data: " + intratesfcaList.size());
 			break;
 
-		case "M_INT_RATES_FCA_NEW":
-			try {
-				archivalData = BRRS_M_INT_RATES_FCA_NEW_ReportService.getM_INT_RATES_FCA_NEWArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+		
 
 		case "M_AIDP":
 			try {
@@ -4744,14 +4716,20 @@ public class RegulatoryReportServices {
 			}
 			break;
 
+//		case "M_GP":
+//			try {
+//				archivalData = BRRS_M_GP_ReportService.getM_GPArchival();
+//			} catch (Exception e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//			break;
+			
 		case "M_GP":
-			try {
-				archivalData = BRRS_M_GP_ReportService.getM_GPArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+			List<Object[]> gpList = BRRS_M_GP_ReportService.getM_GPArchival();
+					archivalData.addAll(gpList);
+					System.out.println("Fetched M_GP archival data: " + gpList.size());
+					break;
 
 		case "M_OR2":
 			try {
@@ -5582,12 +5560,7 @@ public class RegulatoryReportServices {
 					currency, dtltype, type, version);
 		}
 
-		else if ("M_INTRATESFCANEWDetail".equals(filename)) {
-
-			fileData = BRRS_M_INT_RATES_FCA_NEW_ReportService.getM_INTRATESFCANEWDetailExcel(filename, fromdate, todate,
-					currency, dtltype, type, version);
-		}
-
+		
 		else if ("BDISB3Detail".equals(filename)) {
 
 			fileData = brrs_bdisb3_reportservice.getBDISB3DetailExcel(filename, fromdate, todate, currency, dtltype,
@@ -6576,16 +6549,7 @@ public class RegulatoryReportServices {
 			}
 			break;
 
-		case "M_INT_RATES_FCA_NEW":
-			try {
-				List<Object[]> resubList = BRRS_M_INT_RATES_FCA_NEW_ReportService.getM_INT_RATES_FCA_NEWResub();
-				resubmissionData.addAll(resubList);
-				System.out.println("Resubmission data fetched for M_INT_RATES_FCA: " + resubList.size());
-			} catch (Exception e) {
-				System.err.println("Error fetching resubmission data for M_INT_RATES_FCA: " + e.getMessage());
-				e.printStackTrace();
-			}
-			break;
+		
 
 		case "M_CA5":
 			try {
