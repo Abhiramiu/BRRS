@@ -8,11 +8,12 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public interface BRRS_M_LARADV_Archival_Summary_Repo3
-        extends JpaRepository<M_LARADV_Archival_Summary_Entity3,M_LARADV_Archival_Summary3_PK> {
+        extends JpaRepository<M_LARADV_Archival_Summary_Entity3,M_LARADV_PK> {
 
     // Fetch specific archival data by report date & version
     @Query(value = "SELECT * FROM BRRS_M_LARADV_ARCHIVALTABLE_SUMMARY3 WHERE REPORT_DATE = ?1 AND REPORT_VERSION = ?2", nativeQuery = true)
@@ -25,7 +26,10 @@ public interface BRRS_M_LARADV_Archival_Summary_Repo3
     Optional<M_LARADV_Archival_Summary_Entity3> getLatestArchivalVersionByDate(Date reportDate);
 
     // Fetch by primary key (used internally by Spring Data JPA)
-    Optional<M_LARADV_Summary_Entity3> findByReportDateAndReportVersion(Date reportDate, String reportVersion);
+    @Query("SELECT e FROM M_LARADV_Archival_Summary_Entity3 e " + "WHERE e.report_date = :reportDate "
+ 			+ "AND e.report_version = :reportVersion")
+ 	Optional<M_LARADV_Archival_Summary_Entity3> checkVersion(@Param("reportDate") Date reportDate,
+ 			@Param("reportVersion") BigDecimal reportVersion);
 
     @Query(value = "SELECT * FROM BRRS_M_LARADV_ARCHIVALTABLE_SUMMARY3 WHERE REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION ASC", nativeQuery = true)
     List<M_LARADV_Archival_Summary_Entity3> getdatabydateListWithVersion();

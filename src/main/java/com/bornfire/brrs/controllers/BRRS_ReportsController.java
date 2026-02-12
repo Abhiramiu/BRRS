@@ -3892,8 +3892,8 @@ public class BRRS_ReportsController {
 		try {
 
 			// set date into all 4 entities
-			request1.setReportDate(asondate);
-			request2.setReportDate(asondate);
+			request1.setReport_date(asondate);
+			request2.setReport_date(asondate);
 			request3.setReportDate(asondate);
 			request4.setReportDate(asondate);
 			request5.setReportDate(asondate);
@@ -3924,8 +3924,8 @@ public class BRRS_ReportsController {
 			System.out.println("Came to Q_BRANCHNET Resub Controller");
 
 			if (asondate != null) {
-				request1.setReportDate(asondate);
-				request2.setReportDate(asondate);
+				request1.setReport_date(asondate);
+				request2.setReport_date(asondate);
 				request3.setReportDate(asondate);
 				request4.setReportDate(asondate);
 				request5.setReportDate(asondate);

@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface BRRS_M_AIDP_Archival_Summary_Repo4 extends JpaRepository<M_AIDP_Archival_Summary_Entity4, M_AIDP_PK> {
 
-	@Query(value = "select REPORT_DATE, REPORT_VERSION from BRRS_M_AIDP_ARCHIVALTABLE_SUMMARY4 order by REPORT_VERSION", nativeQuery = true)
+	@Query(value = "select REPORT_DATE, REPORT_VERSION,REPORT_RESUBDATE from BRRS_M_AIDP_ARCHIVALTABLE_SUMMARY4 order by REPORT_VERSION", nativeQuery = true)
 	List<Object> getM_AIDParchival();
 
 	@Query(value = "select * from BRRS_M_AIDP_ARCHIVALTABLE_SUMMARY4 where REPORT_DATE = ?1 and REPORT_VERSION = ?2", nativeQuery = true)

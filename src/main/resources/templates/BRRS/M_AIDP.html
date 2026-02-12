@@ -476,7 +476,7 @@ PURPOSE		: BWRBRREPORT
 			var dtltype = button.getAttribute('data-dtltype'); // ✅ already read
 			var filename = button.getAttribute('data-filename');
 			var type = button.getAttribute('data-type');
-			var version = "1";
+			var version = button.getAttribute('data-version');
 
 			console.log("dtltype sent to backend =", dtltype); // ✅ DEBUG
 
@@ -547,7 +547,7 @@ PURPOSE		: BWRBRREPORT
 			var dtltype = "email";
 			var filename = button.getAttribute('data-filename');
 			var type = button.getAttribute('data-type');
-			var version = "1";
+			var version = button.getAttribute('data-version');
 
 			console.log("dtltype sent to backend =", dtltype); // ✅ DEBUG
 
@@ -615,6 +615,7 @@ PURPOSE		: BWRBRREPORT
 			$('#resultModal').modal('hide');
 
 		}
+
 		function showResultModal(title, message) {
 			// Set the text for the modal elements
 			$('#resultModalLabel').text(title);
@@ -622,14 +623,13 @@ PURPOSE		: BWRBRREPORT
 			// Show the modal
 			$('#resultModal').modal('show');
 		}
+
+		function closemodel1() {
+
+			window.location.href = '/BRRS/Resubmission?rptcode=M_AIDP';
+
+		}
 	</script>
-
-
-
-
-
-
-
 
 	<script>
 		// Show Modify (enable inputs & dropdowns)
@@ -993,70 +993,70 @@ PURPOSE		: BWRBRREPORT
 
 		function fileuploads(btn) {
 
-		    const asondate = btn.getAttribute("data-todate");
-		    const reportId = btn.getAttribute("data-reporttype"); // RESUB / NORMAL
+			const asondate = btn.getAttribute("data-todate");
+			const reportId = btn.getAttribute("data-reporttype"); // RESUB / NORMAL
 
-		    $('#loader').modal('show');
+			$('#loader').modal('show');
 
-		    // Step 1: Calculate totals
-		    calculateR51Totals();
-		    calculateR96Totals();
-		    calculateR142Totals();
-		    calculateR194Totals();
+			// Step 1: Calculate totals
+			calculateR51Totals();
+			calculateR96Totals();
+			calculateR142Totals();
+			calculateR194Totals();
 
-		    // Step 2: Remove commas
-		    $("#fileupload input[type='text']").each(function () {
-		        $(this).val($(this).val().replace(/,/g, ''));
-		    });
+			// Step 2: Remove commas
+			$("#fileupload input[type='text']").each(function () {
+				$(this).val($(this).val().replace(/,/g, ''));
+			});
 
-		    // Step 3: Validate form
-		    if (!$("#fileupload").valid()) {
-		        $('#loader').modal('hide');
-		        return;
-		    }
+			// Step 3: Validate form
+			if (!$("#fileupload").valid()) {
+				$('#loader').modal('hide');
+				return;
+			}
 
-		    // Step 4: Build FormData
-		    const formData = new FormData();
-		    formData.append("asondate", asondate);
-		    formData.append("reportType", reportId);
+			// Step 4: Build FormData
+			const formData = new FormData();
+			formData.append("asondate", asondate);
+			formData.append("reportType", reportId);
 
-		    $('#fileupload').find(':input').each(function () {
-		        const name = $(this).attr('name');
-		        if (name) {
-		            formData.append(name, $(this).val());
-		        }
-		    });
+			$('#fileupload').find(':input').each(function () {
+				const name = $(this).attr('name');
+				if (name) {
+					formData.append(name, $(this).val());
+				}
+			});
 
-		    // ✅ Step 5: Decide URL based on reportType
-		    let urlToCall = './AIDPupdateAll';
+			// ✅ Step 5: Decide URL based on reportType
+			let urlToCall = './AIDPupdateAll';
 
-		    if (reportId === 'RESUB') {
-		        urlToCall = './AIDPupdateAll1';
-		    }
+			if (reportId === 'RESUB') {
+				urlToCall = './AIDPupdateAll1';
+			}
 
-		    // Step 6: Ajax call
-		    $.ajax({
-		        url: urlToCall,
-		        type: 'POST',
-		        data: formData,
-		        processData: false,
-		        contentType: false,
-		        dataType: 'text',
-		        success: function () {
-		            $("#resultModalLabel").text("BRRS");
-		            $("#resultModalBody").text("Updated Successfully");
-		            $("#resultModal").modal("show");
-		        },
-		        error: function (jqXHR) {
-		            console.error("Error response:", jqXHR.responseText);
-		            $("#resultModalLabel").text("Error");
-		            $("#resultModalBody").text("Update failed. Check console.");
-		            $("#resultModal").modal("show");
-		        },
-		        complete: function () {
-		            $('#loader').modal('hide');
-		        }
-		    });
+			// Step 6: Ajax call
+			$.ajax({
+				url: urlToCall,
+				type: 'POST',
+				data: formData,
+				processData: false,
+				contentType: false,
+				dataType: 'text',
+				success: function () {
+					$("#resultModalLabel").text("BRRS");
+					$("#resultModalBody").text("Updated Successfully");
+					$("#resultModal").modal("show");
+				},
+				error: function (jqXHR) {
+					console.error("Error response:", jqXHR.responseText);
+					$("#resultModalLabel").text("Error");
+					$("#resultModalBody").text("Update failed. Check console.");
+					$("#resultModal1").modal("show");
+				},
+				complete: function () {
+					$('#loader').modal('hide');
+				}
+			});
 		}
 
 
@@ -22067,9 +22067,30 @@ PURPOSE		: BWRBRREPORT
 				</div>
 				<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
 					<p id="resultModalBody"></p>
-					<!-- Your custom styled button -->
-					<button type="button" class="custom-tab-btn" onclick="closemodel()"
-						data-bs-dismiss="modal">OK</button>
+
+					<button type="button" class="custom-tab-btn" onclick="closemodel()" data-bs-dismiss="modal">
+						OK
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade" id="resultModal1">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<!-- Your custom styled header -->
+				<div class="menu-title-header">
+					<div class="modal-title" id="resultModalLabel" style="text-align: center; color: white;">
+						<!-- Title will be set by JavaScript -->
+					</div>
+				</div>
+				<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+					<p id="resultModalBody"></p>
+
+					<button type="button" class="custom-tab-btn" onclick="closemodel1()" data-bs-dismiss="modal">
+						OK
+					</button>
 				</div>
 			</div>
 		</div>

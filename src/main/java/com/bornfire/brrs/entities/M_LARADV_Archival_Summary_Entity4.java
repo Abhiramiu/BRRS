@@ -1,5 +1,6 @@
 package com.bornfire.brrs.entities;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -14,9 +15,9 @@ import javax.persistence.TemporalType;
 import org.springframework.format.annotation.DateTimeFormat;
 @Entity
 @Table(name = "BRRS_M_LARADV_ARCHIVALTABLE_SUMMARY4")
-@IdClass(M_LARADV_Archival_Summary4_PK.class)
-public class M_LARADV_Archival_Summary_Entity4 {
-	
+@IdClass(M_LARADV_PK.class)
+public class M_LARADV_Archival_Summary_Entity4 implements Serializable{
+	private static final long serialVersionUID = 1L;
 	 // Fields for R211
     private String R211_NO_OF_GROUP;
     private String R211_NO_OF_CUSTOMER;
@@ -1279,13 +1280,8 @@ public class M_LARADV_Archival_Summary_Entity4 {
 	
 
     @Id
-    @Temporal(TemporalType.DATE)
-    @Column(name = "REPORT_DATE")
-    private Date reportDate;
-
-    @Id
-    @Column(name = "REPORT_VERSION")
-    private String reportVersion;
+    private Date report_date;
+    private BigDecimal report_version;
 
     @Column(name = "REPORT_RESUBDATE")
     @Temporal(TemporalType.TIMESTAMP)
@@ -7176,18 +7172,20 @@ public class M_LARADV_Archival_Summary_Entity4 {
 	public void setR280_LIMIT_PCT_UNIMPAIRED_CAP(BigDecimal r280_LIMIT_PCT_UNIMPAIRED_CAP) {
 		R280_LIMIT_PCT_UNIMPAIRED_CAP = r280_LIMIT_PCT_UNIMPAIRED_CAP;
 	}
-
-	public Date getReportDate() {
-		return reportDate;
+	public Date getReport_date() {
+		return report_date;
 	}
-	public void setReportDate(Date reportDate) {
-		this.reportDate = reportDate;
+	public void setReport_date(Date report_date) {
+		this.report_date = report_date;
 	}
-	public String getReportVersion() {
-		return reportVersion;
+	public BigDecimal getReport_version() {
+		return report_version;
 	}
-	public void setReportVersion(String reportVersion) {
-		this.reportVersion = reportVersion;
+	public void setReport_version(BigDecimal report_version) {
+		this.report_version = report_version;
+	}
+	public static long getSerialversionuid() {
+		return serialVersionUID;
 	}
 	public Date getReportResubDate() {
 		return reportResubDate;

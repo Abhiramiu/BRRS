@@ -18,6 +18,7 @@ public class M_AIDP_Archival_Detail_Entity1 implements Serializable {
 	private Date report_date;
 
 	private BigDecimal report_version;
+	private Date report_resubdate;
 	private String REPORT_FREQUENCY;
 	private String REPORT_CODE;
 	private String REPORT_DESC;
@@ -2631,6 +2632,14 @@ public class M_AIDP_Archival_Detail_Entity1 implements Serializable {
 
 	public void setR51_TOT_AMT_MORE_184_DAYS(BigDecimal r51_TOT_AMT_MORE_184_DAYS) {
 		R51_TOT_AMT_MORE_184_DAYS = r51_TOT_AMT_MORE_184_DAYS;
+	}
+
+	public Date getReport_resubdate() {
+		return report_resubdate;
+	}
+
+	public void setReport_resubdate(Date report_resubdate) {
+		this.report_resubdate = report_resubdate;
 	}
 
 	public M_AIDP_Archival_Detail_Entity1() {

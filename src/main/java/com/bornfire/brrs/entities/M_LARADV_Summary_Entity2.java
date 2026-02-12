@@ -1277,16 +1277,10 @@ public class M_LARADV_Summary_Entity2 {
     private BigDecimal R140_OUTSTANDING_BAL_PCT_UNIMPAIRED_CAP;
     private BigDecimal R140_LIMIT_PCT_UNIMPAIRED_CAP;
 	
-	
-  
     @Id
-    @Temporal(TemporalType.DATE)
-    @Column(name = "REPORT_DATE")
-    private Date reportDate;
-
+    private Date report_date;
+    private BigDecimal report_version;
     
-    @Column(name = "REPORT_VERSION")
-    private String reportVersion;
 	private String report_frequency;
 	private String report_code;
 	private String report_desc;
@@ -7173,17 +7167,17 @@ public class M_LARADV_Summary_Entity2 {
 	public void setR140_LIMIT_PCT_UNIMPAIRED_CAP(BigDecimal r140_LIMIT_PCT_UNIMPAIRED_CAP) {
 		R140_LIMIT_PCT_UNIMPAIRED_CAP = r140_LIMIT_PCT_UNIMPAIRED_CAP;
 	}
-	public Date getReportDate() {
-		return reportDate;
+	public Date getReport_date() {
+		return report_date;
 	}
-	public void setReportDate(Date reportDate) {
-		this.reportDate = reportDate;
+	public void setReport_date(Date report_date) {
+		this.report_date = report_date;
 	}
-	public String getReportVersion() {
-		return reportVersion;
+	public BigDecimal getReport_version() {
+		return report_version;
 	}
-	public void setReportVersion(String reportVersion) {
-		this.reportVersion = reportVersion;
+	public void setReport_version(BigDecimal report_version) {
+		this.report_version = report_version;
 	}
 	public String getReport_frequency() {
 		return report_frequency;
@@ -7225,11 +7219,5 @@ public class M_LARADV_Summary_Entity2 {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	
-	
-	
-	
-
-
 }
 
