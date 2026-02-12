@@ -386,7 +386,8 @@ public class BRRS_M_INT_RATES_ReportService {
 			for (M_INT_RATES_Archival_Summary_Entity entity : repoData) {
 				Object[] row = new Object[] {
 						entity.getReport_date(), 
-						entity.getReport_version() 
+						entity.getReport_version(), 
+						 entity.getReportResubDate()
 				};
 				archivalList.add(row);
 			}

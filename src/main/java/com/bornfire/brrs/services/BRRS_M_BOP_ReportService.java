@@ -425,7 +425,8 @@ public class BRRS_M_BOP_ReportService {
 						for (M_BOP_Archival_Summary_Entity entity : repoData) {
 							Object[] row = new Object[] {
 									entity.getReport_date(), 
-									entity.getReport_version() 
+									entity.getReport_version(), 
+									 entity.getReportResubDate() 
 							};
 							archivalList.add(row);
 						}

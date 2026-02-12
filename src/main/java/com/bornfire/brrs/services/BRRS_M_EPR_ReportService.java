@@ -1574,7 +1574,8 @@ public class BRRS_M_EPR_ReportService {
 				for (M_EPR_Archival_Summary_Entity entity : repoData) {
 					Object[] row = new Object[] {
 							entity.getReport_date(), 
-							entity.getReport_version() 
+							entity.getReport_version(), 
+							 entity.getReportResubDate()
 					};
 					archivalList.add(row);
 				}
