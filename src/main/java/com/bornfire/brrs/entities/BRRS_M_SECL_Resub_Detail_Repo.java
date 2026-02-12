@@ -10,7 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface BRRS_M_SECL_Resub_Detail_Repo extends JpaRepository<M_SECL_Resub_Detail_Entity, Date> {
+public interface BRRS_M_SECL_Resub_Detail_Repo extends JpaRepository<M_SECL_Resub_Detail_Entity, M_SECL_Resub_Detail_PK> {
 
 	/*
 	 * @Query(value =

@@ -3,7 +3,6 @@ package com.bornfire.brrs.services;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.nio.file.Files;
@@ -14,7 +13,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.function.Function;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
@@ -58,8 +56,6 @@ import com.bornfire.brrs.entities.BRRS_M_TOP_100_BORROWER_Manual_Archival_Summar
 import com.bornfire.brrs.entities.BRRS_M_TOP_100_BORROWER_Manual_Summary_Repo1;
 import com.bornfire.brrs.entities.BRRS_M_TOP_100_BORROWER_Manual_Summary_Repo2;
 import com.bornfire.brrs.entities.BRRS_M_TOP_100_BORROWER_Summary_Repo;
-import com.bornfire.brrs.entities.M_CA2_Manual_Summary_Entity;
-import com.bornfire.brrs.entities.M_LCR_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.M_TOP_100_BORROWER_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.M_TOP_100_BORROWER_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.M_TOP_100_BORROWER_Detail_Entity;
@@ -68,11 +64,6 @@ import com.bornfire.brrs.entities.M_TOP_100_BORROWER_Manual_Archival_Summary_Ent
 import com.bornfire.brrs.entities.M_TOP_100_BORROWER_Manual_Summary_Entity1;
 import com.bornfire.brrs.entities.M_TOP_100_BORROWER_Manual_Summary_Entity2;
 import com.bornfire.brrs.entities.M_TOP_100_BORROWER_Summary_Entity;
-import com.bornfire.brrs.entities.M_UNCONS_INVEST_Summary_Entity1;
-
-import java.lang.reflect.Method;
-import java.math.BigDecimal;
-import java.util.List;
 
 @Component
 @Service

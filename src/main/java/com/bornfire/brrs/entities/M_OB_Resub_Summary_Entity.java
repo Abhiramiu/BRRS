@@ -1,4 +1,3 @@
-
 package com.bornfire.brrs.entities;
 
 import java.math.BigDecimal;
@@ -16,9 +15,9 @@ import javax.persistence.TemporalType;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
-@Table(name = "BRRS_M_OB_ARCHIVALTABLE_SUMMARY")
+@Table(name = "BRRS_M_OB_RESUB_SUMMARYTABLE")
 @IdClass(M_OB_PK.class)
-public class M_OB_Archival_Summary_Entity {
+public class M_OB_Resub_Summary_Entity {
 	
 	
 	@Id
@@ -31,9 +30,7 @@ public class M_OB_Archival_Summary_Entity {
 	private BigDecimal reportVersion;
 
 	@Column(name = "REPORT_RESUBDATE")
-	
 	private Date reportResubDate;
-	
     
     public String REPORT_FREQUENCY;
     public String REPORT_CODE;
@@ -1240,7 +1237,7 @@ public class M_OB_Archival_Summary_Entity {
 
 
 
-	public M_OB_Archival_Summary_Entity() {
+	public M_OB_Resub_Summary_Entity() {
         super();
     }
 

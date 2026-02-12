@@ -1,7 +1,6 @@
 package com.bornfire.brrs.services;
 
 import java.io.ByteArrayOutputStream;
-
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
@@ -19,17 +18,11 @@ import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CreationHelper;
-import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.Font;
-import org.apache.poi.ss.usermodel.HorizontalAlignment;
-import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
@@ -39,45 +32,16 @@ import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-
 import org.springframework.web.servlet.ModelAndView;
 
-import com.bornfire.brrs.entities.BRRS_M_AIDP_Summary_Entity1;
 import com.bornfire.brrs.entities.BRRS_M_CA5_Archival_Summary_Repo1;
 import com.bornfire.brrs.entities.BRRS_M_CA5_Archival_Summary_Repo2;
-import com.bornfire.brrs.entities.M_CA5_Summary_Entity2;
-import com.bornfire.brrs.entities.M_FXR_Archival_Summary_Entity1;
-import com.bornfire.brrs.entities.M_FXR_Archival_Summary_Entity2;
-import com.bornfire.brrs.entities.M_FXR_Archival_Summary_Entity3;
-import com.bornfire.brrs.entities.M_FXR_Summary_Entity1;
-import com.bornfire.brrs.entities.M_FXR_Summary_Entity2;
-import com.bornfire.brrs.entities.M_FXR_Summary_Entity3;
-import com.bornfire.brrs.entities.M_IS_Archival_Detail_Entity;
-import com.bornfire.brrs.entities.M_IS_Archival_Summary_Entity1;
-import com.bornfire.brrs.entities.M_IS_Archival_Summary_Entity2;
-import com.bornfire.brrs.entities.M_IS_Detail_Entity;
-import com.bornfire.brrs.entities.M_IS_Summary_Entity2;
-import com.bornfire.brrs.entities.M_LA4_Archival_Detail_Entity;
-import com.bornfire.brrs.entities.M_LA4_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.M_LA4_Detail_Entity;
-import com.bornfire.brrs.entities.M_LARADV_Archival_Summary_Entity1;
-import com.bornfire.brrs.entities.M_LARADV_Archival_Summary_Entity2;
-import com.bornfire.brrs.entities.M_LARADV_Archival_Summary_Entity3;
-import com.bornfire.brrs.entities.M_LARADV_Archival_Summary_Entity4;
-import com.bornfire.brrs.entities.M_LARADV_Archival_Summary_Entity5;
-import com.bornfire.brrs.entities.M_LARADV_Summary_Entity1;
-import com.bornfire.brrs.entities.M_LARADV_Summary_Entity2;
-import com.bornfire.brrs.entities.M_LARADV_Summary_Entity3;
-import com.bornfire.brrs.entities.M_LARADV_Summary_Entity4;
-import com.bornfire.brrs.entities.M_LARADV_Summary_Entity5;
 import com.bornfire.brrs.entities.BRRS_M_CA5_Summary_Repo1;
 import com.bornfire.brrs.entities.BRRS_M_CA5_Summary_Repo2;
-import com.bornfire.brrs.entities.BRRS_M_IS_Archival_Detail_Repo;
-import com.bornfire.brrs.entities.BRRS_M_IS_Archival_Summary_Repo1;
-import com.bornfire.brrs.entities.BRRS_M_IS_Archival_Summary_Repo2;
 import com.bornfire.brrs.entities.M_CA5_Archival_Summary_Entity1;
 import com.bornfire.brrs.entities.M_CA5_Archival_Summary_Entity2;
 import com.bornfire.brrs.entities.M_CA5_Summary_Entity1;
+import com.bornfire.brrs.entities.M_CA5_Summary_Entity2;
 
 @Component
 @Service

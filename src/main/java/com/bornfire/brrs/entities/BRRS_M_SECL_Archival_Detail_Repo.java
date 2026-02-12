@@ -8,7 +8,7 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-public interface BRRS_M_SECL_Archival_Detail_Repo extends JpaRepository<M_SECL_Archival_Detail_Entity,Date>
+public interface BRRS_M_SECL_Archival_Detail_Repo extends JpaRepository<M_SECL_Archival_Detail_Entity,M_SECL_Archival_Detail_PK>
 {
 	
 	// Fetch specific archival data by report date & version

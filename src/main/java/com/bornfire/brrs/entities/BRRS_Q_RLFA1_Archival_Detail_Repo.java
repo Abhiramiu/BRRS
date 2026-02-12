@@ -10,7 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface BRRS_Q_RLFA1_Archival_Detail_Repo extends JpaRepository<Q_RLFA1_Archival_Detail_Entity, Date> {
+public interface BRRS_Q_RLFA1_Archival_Detail_Repo extends JpaRepository<Q_RLFA1_Archival_Detail_Entity, Q_RLFA1_Archival_Detail_PK> {
 
 	/*
 	 * @Query(value =

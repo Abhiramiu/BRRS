@@ -17,23 +17,21 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
 @Table(name = "BRRS_M_OB_ARCHIVALTABLE_DETAIL")
-
+@IdClass(M_OB_PK.class)
 public class M_OB_Archival_Detail_Entity {
 	
 	
 	@Id
-    @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "dd/MM/yyyy")
+	@Temporal(TemporalType.DATE)
 	@Column(name = "REPORT_DATE")
-    private Date reportDate;
-	
-	
+	private Date reportDate;
+
+	@Id
 	@Column(name = "REPORT_VERSION")
 	private BigDecimal reportVersion;
-	
-    @Column(name = "REPORT_RESUBDATE")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date reportResubDate;
+
+	@Column(name = "REPORT_RESUBDATE")
+	private Date reportResubDate;
     
     public String REPORT_FREQUENCY;
     public String REPORT_CODE;
