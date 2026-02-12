@@ -1228,7 +1228,7 @@ public class RegulatoryReportServices {
 
 		case "M_TBS":
 
-			repsummary = BRRS_M_TBS_ReportService.getM_TBSView(reportId, fromdate, todate, currency, dtltype, pageable,
+			repsummary = BRRS_M_TBS_ReportService.getBRRS_M_TBSView(reportId, fromdate, todate, currency, dtltype, pageable,
 					type, version);
 
 			break;
@@ -2291,8 +2291,8 @@ public class RegulatoryReportServices {
 		case "M_TBS":
 			try {
 
-				repfile = BRRS_M_TBS_ReportService.getM_TBSExcel(filename, reportId, fromdate, todate, currency,
-						dtltype, type, version);
+				repfile = BRRS_M_TBS_ReportService.getBRRS_M_TBSExcel(filename, reportId, fromdate, todate, currency,
+						dtltype, type, format, version);
 			} catch (Exception e) { // TODO Auto-generated catch block
 				e.printStackTrace();
 			}

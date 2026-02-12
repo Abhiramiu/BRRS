@@ -408,7 +408,7 @@ public class BRRS_M_SRWA_12G_ReportService {
 
 			if (repoData != null && !repoData.isEmpty()) {
 				for (M_SRWA_12G_Archival_Summary_Entity entity : repoData) {
-					Object[] row = new Object[] { entity.getReportDate(), entity.getReportVersion() };
+					Object[] row = new Object[] { entity.getReportDate(), entity.getReportVersion(),entity.getReportResubDate()};
 					archivalList.add(row);
 				}
 

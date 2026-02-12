@@ -360,7 +360,7 @@ public class BRRS_M_CR_ReportService {
 
 			if (repoData != null && !repoData.isEmpty()) {
 				for (M_CR_Archival_Summary_Entity entity : repoData) {
-					Object[] row = new Object[] { entity.getReportDate(), entity.getReportVersion() };
+					Object[] row = new Object[] { entity.getReportDate(), entity.getReportVersion(),entity.getReportResubDate() };
 					archivalList.add(row);
 				}
 

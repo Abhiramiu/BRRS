@@ -15,7 +15,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
 @Table(name = "BRRS_M_TBS_ARCHIVALTABLE_SUMMARY")
-
+@IdClass(M_TBS_PK.class)
 public class M_TBS_Archival_Summary_Entity {
 
 	// ---------- R11 ----------
@@ -381,16 +381,15 @@ public class M_TBS_Archival_Summary_Entity {
 
 			@Id
 			@Temporal(TemporalType.DATE)
-			@DateTimeFormat(pattern = "dd/MM/yyyy")
 			@Column(name = "REPORT_DATE")
 			private Date reportDate;
-			
-				@Column(name = "REPORT_VERSION")
+
+			@Id
+			@Column(name = "REPORT_VERSION")
 			private BigDecimal reportVersion;
-			
-		    @Column(name = "REPORT_RESUBDATE")
-		    @Temporal(TemporalType.TIMESTAMP)
-		    private Date reportResubDate;	
+
+			@Column(name = "REPORT_RESUBDATE")
+			private Date reportResubDate;
 			
 		    public String REPORT_FREQUENCY;
 		    public String REPORT_CODE;

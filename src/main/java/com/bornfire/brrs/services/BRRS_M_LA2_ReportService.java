@@ -355,7 +355,7 @@ public class BRRS_M_LA2_ReportService {
 
 			if (repoData != null && !repoData.isEmpty()) {
 				for (M_LA2_Archival_Summary_Entity entity : repoData) {
-					Object[] row = new Object[] { entity.getReportDate(), entity.getReportVersion() };
+					Object[] row = new Object[] { entity.getReportDate(), entity.getReportVersion(), entity.getReportResubDate() };
 					archivalList.add(row);
 				}
 
