@@ -2214,6 +2214,19 @@ public class M_LARADV_Resub_Detail_Entity5 {
 	public void setDel_flg(String del_flg) {
 		this.del_flg = del_flg;
 	}
+	
+	public Date getReport_date() {
+		return report_date;
+	}
+	public void setReport_date(Date report_date) {
+		this.report_date = report_date;
+	}
+	public BigDecimal getReport_version() {
+		return report_version;
+	}
+	public void setReport_version(BigDecimal report_version) {
+		this.report_version = report_version;
+	}
 	public M_LARADV_Resub_Detail_Entity5() {
 		super();
 		// TODO Auto-generated constructor stub

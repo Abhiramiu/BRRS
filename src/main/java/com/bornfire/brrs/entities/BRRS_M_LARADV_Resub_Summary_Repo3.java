@@ -29,4 +29,8 @@ public interface BRRS_M_LARADV_Resub_Summary_Repo3  extends JpaRepository<M_LARA
 
     @Query(value = "SELECT * FROM BRRS_M_LARADV_RESUBTABLE_SUMMARY3 WHERE REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION ASC", nativeQuery = true)
     List<M_LARADV_Resub_Summary_Entity3> getdatabydateListWithVersion();
+    
+	@Query(value = "SELECT REPORT_DATE, REPORT_VERSION, REPORT_RESUBDATE " + "FROM BRRS_M_LARADV_RESUBTABLE_SUMMARY3 "
+			+ "WHERE REPORT_VERSION IS NOT NULL " + "ORDER BY REPORT_VERSION", nativeQuery = true)
+	List<Object[]> getResubData();
 }

@@ -11,8 +11,11 @@ import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import javax.transaction.Transactional;
@@ -67,11 +70,31 @@ import com.bornfire.brrs.entities.BRRS_M_LARADV_Summary_Repo2;
 import com.bornfire.brrs.entities.BRRS_M_LARADV_Summary_Repo3;
 import com.bornfire.brrs.entities.BRRS_M_LARADV_Summary_Repo4;
 import com.bornfire.brrs.entities.BRRS_M_LARADV_Summary_Repo5;
+import com.bornfire.brrs.entities.M_LARADV_Archival_Detail_Entity1;
+import com.bornfire.brrs.entities.M_LARADV_Archival_Detail_Entity2;
+import com.bornfire.brrs.entities.M_LARADV_Archival_Detail_Entity3;
+import com.bornfire.brrs.entities.M_LARADV_Archival_Detail_Entity4;
+import com.bornfire.brrs.entities.M_LARADV_Archival_Detail_Entity5;
 import com.bornfire.brrs.entities.M_LARADV_Archival_Summary_Entity1;
 import com.bornfire.brrs.entities.M_LARADV_Archival_Summary_Entity2;
 import com.bornfire.brrs.entities.M_LARADV_Archival_Summary_Entity3;
 import com.bornfire.brrs.entities.M_LARADV_Archival_Summary_Entity4;
 import com.bornfire.brrs.entities.M_LARADV_Archival_Summary_Entity5;
+import com.bornfire.brrs.entities.M_LARADV_Detail_Entity1;
+import com.bornfire.brrs.entities.M_LARADV_Detail_Entity2;
+import com.bornfire.brrs.entities.M_LARADV_Detail_Entity3;
+import com.bornfire.brrs.entities.M_LARADV_Detail_Entity4;
+import com.bornfire.brrs.entities.M_LARADV_Detail_Entity5;
+import com.bornfire.brrs.entities.M_LARADV_Resub_Detail_Entity1;
+import com.bornfire.brrs.entities.M_LARADV_Resub_Detail_Entity2;
+import com.bornfire.brrs.entities.M_LARADV_Resub_Detail_Entity3;
+import com.bornfire.brrs.entities.M_LARADV_Resub_Detail_Entity4;
+import com.bornfire.brrs.entities.M_LARADV_Resub_Detail_Entity5;
+import com.bornfire.brrs.entities.M_LARADV_Resub_Summary_Entity1;
+import com.bornfire.brrs.entities.M_LARADV_Resub_Summary_Entity2;
+import com.bornfire.brrs.entities.M_LARADV_Resub_Summary_Entity3;
+import com.bornfire.brrs.entities.M_LARADV_Resub_Summary_Entity4;
+import com.bornfire.brrs.entities.M_LARADV_Resub_Summary_Entity5;
 import com.bornfire.brrs.entities.M_LARADV_Summary_Entity1;
 import com.bornfire.brrs.entities.M_LARADV_Summary_Entity2;
 import com.bornfire.brrs.entities.M_LARADV_Summary_Entity3;
@@ -317,6 +340,9 @@ public class BRRS_M_LARADV_ReportService {
 
 		M_LARADV_Summary_Entity1 existing = M_LARADV_Summary_Repo1.findById(updatedEntity.getReport_date()).orElseThrow(
 				() -> new RuntimeException("Record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
+		
+		M_LARADV_Detail_Entity1 existing1 = M_LARADV_Detail_Repo1.findById(updatedEntity.getReport_date()).orElseThrow(
+				() -> new RuntimeException("Record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
 
 		try {
 			// 1️⃣ Loop through R14 to R100
@@ -439,9 +465,132 @@ public class BRRS_M_LARADV_ReportService {
 		} catch (Exception e) {
 			throw new RuntimeException("Error while updating date fields", e);
 		}
+		
+		try {
+			// 1️⃣ Loop through R14 to R100
+			for (int i = 10; i <= 70; i++) {
+				String prefix = "R" + i + "_";
+
+				String[] fields = { "NO_OF_GROUP", "NO_OF_CUSTOMER", "SECTOR_TYPE", "FACILITY_TYPE", "ORIGINAL_AMOUNT",
+						"UTILISATION_OUTSTANDING_BAL", "EFFECTIVE_DATE", "REPAYMENT_PERIOD", "PERFORMANCE_STATUS",
+						"SECURITY", "BOARD_APPROVAL", "INTEREST_RATE" };
+
+				for (String field : fields) {
+					String getterName = "get" + prefix + field;
+					String setterName = "set" + prefix + field;
+
+					try {
+						Method getter = M_LARADV_Detail_Entity1.class.getMethod(getterName);
+						Method setter = M_LARADV_Detail_Entity1.class.getMethod(setterName, getter.getReturnType());
+
+						Object newValue = getter.invoke(updatedEntity);
+						setter.invoke(existing1, newValue);
+
+					} catch (NoSuchMethodException e) {
+						// Skip missing fields
+						continue;
+					}
+				}
+			}
+
+			// 2️⃣ Handle R100 total fields using same structure
+			String prefix = "R70_";
+			String[] totalFields = { "NO_OF_GROUP", "NO_OF_CUSTOMER", "SECTOR_TYPE", "FACILITY_TYPE", "ORIGINAL_AMOUNT",
+					"UTILISATION_OUTSTANDING_BAL", "EFFECTIVE_DATE", "REPAYMENT_PERIOD", "PERFORMANCE_STATUS",
+					"SECURITY", "BOARD_APPROVAL", "INTEREST_RATE", "OUTSTANDING_BAL_PCT_UNIMPAIRED_CAP",
+					"LIMIT_PCT_UNIMPAIRED_CAP" };
+
+			for (String field : totalFields) {
+				String getterName = "get" + prefix + field;
+				String setterName = "set" + prefix + field;
+
+				try {
+					Method getter = M_LARADV_Detail_Entity1.class.getMethod(getterName);
+					Method setter = M_LARADV_Detail_Entity1.class.getMethod(setterName, getter.getReturnType());
+
+					Object newValue = getter.invoke(updatedEntity);
+					setter.invoke(existing, newValue);
+
+				} catch (NoSuchMethodException e) {
+					// Skip missing total fields
+					continue;
+				}
+			}
+
+		} catch (Exception e) {
+			throw new RuntimeException("Error while updating report fields", e);
+		}
+
+		try {
+			existing.setR10_EFFECTIVE_DATE(updatedEntity.getR10_EFFECTIVE_DATE());
+			existing.setR11_EFFECTIVE_DATE(updatedEntity.getR11_EFFECTIVE_DATE());
+			existing.setR12_EFFECTIVE_DATE(updatedEntity.getR12_EFFECTIVE_DATE());
+			existing.setR13_EFFECTIVE_DATE(updatedEntity.getR13_EFFECTIVE_DATE());
+			existing.setR14_EFFECTIVE_DATE(updatedEntity.getR14_EFFECTIVE_DATE());
+			existing.setR15_EFFECTIVE_DATE(updatedEntity.getR15_EFFECTIVE_DATE());
+			existing.setR16_EFFECTIVE_DATE(updatedEntity.getR16_EFFECTIVE_DATE());
+			existing.setR17_EFFECTIVE_DATE(updatedEntity.getR17_EFFECTIVE_DATE());
+			existing.setR18_EFFECTIVE_DATE(updatedEntity.getR18_EFFECTIVE_DATE());
+			existing.setR19_EFFECTIVE_DATE(updatedEntity.getR19_EFFECTIVE_DATE());
+			existing.setR20_EFFECTIVE_DATE(updatedEntity.getR20_EFFECTIVE_DATE());
+			existing.setR21_EFFECTIVE_DATE(updatedEntity.getR21_EFFECTIVE_DATE());
+			existing.setR22_EFFECTIVE_DATE(updatedEntity.getR22_EFFECTIVE_DATE());
+			existing.setR23_EFFECTIVE_DATE(updatedEntity.getR23_EFFECTIVE_DATE());
+			existing.setR24_EFFECTIVE_DATE(updatedEntity.getR24_EFFECTIVE_DATE());
+			existing.setR25_EFFECTIVE_DATE(updatedEntity.getR25_EFFECTIVE_DATE());
+			existing.setR26_EFFECTIVE_DATE(updatedEntity.getR26_EFFECTIVE_DATE());
+			existing.setR27_EFFECTIVE_DATE(updatedEntity.getR27_EFFECTIVE_DATE());
+			existing.setR28_EFFECTIVE_DATE(updatedEntity.getR28_EFFECTIVE_DATE());
+			existing.setR29_EFFECTIVE_DATE(updatedEntity.getR29_EFFECTIVE_DATE());
+			existing.setR30_EFFECTIVE_DATE(updatedEntity.getR30_EFFECTIVE_DATE());
+			existing.setR31_EFFECTIVE_DATE(updatedEntity.getR31_EFFECTIVE_DATE());
+			existing.setR32_EFFECTIVE_DATE(updatedEntity.getR32_EFFECTIVE_DATE());
+			existing.setR33_EFFECTIVE_DATE(updatedEntity.getR33_EFFECTIVE_DATE());
+			existing.setR34_EFFECTIVE_DATE(updatedEntity.getR34_EFFECTIVE_DATE());
+			existing.setR35_EFFECTIVE_DATE(updatedEntity.getR35_EFFECTIVE_DATE());
+			existing.setR36_EFFECTIVE_DATE(updatedEntity.getR36_EFFECTIVE_DATE());
+			existing.setR37_EFFECTIVE_DATE(updatedEntity.getR37_EFFECTIVE_DATE());
+			existing.setR38_EFFECTIVE_DATE(updatedEntity.getR38_EFFECTIVE_DATE());
+			existing.setR39_EFFECTIVE_DATE(updatedEntity.getR39_EFFECTIVE_DATE());
+			existing.setR40_EFFECTIVE_DATE(updatedEntity.getR40_EFFECTIVE_DATE());
+			existing.setR41_EFFECTIVE_DATE(updatedEntity.getR41_EFFECTIVE_DATE());
+			existing.setR42_EFFECTIVE_DATE(updatedEntity.getR42_EFFECTIVE_DATE());
+			existing.setR43_EFFECTIVE_DATE(updatedEntity.getR43_EFFECTIVE_DATE());
+			existing.setR44_EFFECTIVE_DATE(updatedEntity.getR44_EFFECTIVE_DATE());
+			existing.setR45_EFFECTIVE_DATE(updatedEntity.getR45_EFFECTIVE_DATE());
+			existing.setR46_EFFECTIVE_DATE(updatedEntity.getR46_EFFECTIVE_DATE());
+			existing.setR47_EFFECTIVE_DATE(updatedEntity.getR47_EFFECTIVE_DATE());
+			existing.setR48_EFFECTIVE_DATE(updatedEntity.getR48_EFFECTIVE_DATE());
+			existing.setR49_EFFECTIVE_DATE(updatedEntity.getR49_EFFECTIVE_DATE());
+			existing.setR50_EFFECTIVE_DATE(updatedEntity.getR50_EFFECTIVE_DATE());
+			existing.setR51_EFFECTIVE_DATE(updatedEntity.getR51_EFFECTIVE_DATE());
+			existing.setR52_EFFECTIVE_DATE(updatedEntity.getR52_EFFECTIVE_DATE());
+			existing.setR53_EFFECTIVE_DATE(updatedEntity.getR53_EFFECTIVE_DATE());
+			existing.setR54_EFFECTIVE_DATE(updatedEntity.getR54_EFFECTIVE_DATE());
+			existing.setR55_EFFECTIVE_DATE(updatedEntity.getR55_EFFECTIVE_DATE());
+			existing.setR56_EFFECTIVE_DATE(updatedEntity.getR56_EFFECTIVE_DATE());
+			existing.setR57_EFFECTIVE_DATE(updatedEntity.getR57_EFFECTIVE_DATE());
+			existing.setR58_EFFECTIVE_DATE(updatedEntity.getR58_EFFECTIVE_DATE());
+			existing.setR59_EFFECTIVE_DATE(updatedEntity.getR59_EFFECTIVE_DATE());
+			existing.setR60_EFFECTIVE_DATE(updatedEntity.getR60_EFFECTIVE_DATE());
+			existing.setR61_EFFECTIVE_DATE(updatedEntity.getR61_EFFECTIVE_DATE());
+			existing.setR62_EFFECTIVE_DATE(updatedEntity.getR62_EFFECTIVE_DATE());
+			existing.setR63_EFFECTIVE_DATE(updatedEntity.getR63_EFFECTIVE_DATE());
+			existing.setR64_EFFECTIVE_DATE(updatedEntity.getR64_EFFECTIVE_DATE());
+			existing.setR65_EFFECTIVE_DATE(updatedEntity.getR65_EFFECTIVE_DATE());
+			existing.setR66_EFFECTIVE_DATE(updatedEntity.getR66_EFFECTIVE_DATE());
+			existing.setR67_EFFECTIVE_DATE(updatedEntity.getR67_EFFECTIVE_DATE());
+			existing.setR68_EFFECTIVE_DATE(updatedEntity.getR68_EFFECTIVE_DATE());
+			existing.setR69_EFFECTIVE_DATE(updatedEntity.getR69_EFFECTIVE_DATE());
+			existing.setR70_EFFECTIVE_DATE(updatedEntity.getR70_EFFECTIVE_DATE());
+
+		} catch (Exception e) {
+			throw new RuntimeException("Error while updating date fields", e);
+		}
 
 		// 3️⃣ Save updated entity
 		M_LARADV_Summary_Repo1.save(existing);
+		M_LARADV_Detail_Repo1.save(existing1);
 	}
 
 	public void updateReport2(M_LARADV_Summary_Entity2 updatedEntity) {
@@ -449,6 +598,9 @@ public class BRRS_M_LARADV_ReportService {
 		System.out.println("Report Date: " + updatedEntity.getReport_date());
 
 		M_LARADV_Summary_Entity2 existing = M_LARADV_Summary_Repo2.findById(updatedEntity.getReport_date()).orElseThrow(
+				() -> new RuntimeException("Record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
+		
+		M_LARADV_Detail_Entity2 existing1 = M_LARADV_Detail_Repo2.findById(updatedEntity.getReport_date()).orElseThrow(
 				() -> new RuntimeException("Record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
 
 		try {
@@ -581,9 +733,141 @@ public class BRRS_M_LARADV_ReportService {
 		} catch (Exception e) {
 			throw new RuntimeException("Error while updating date fields", e);
 		}
+		
+		try {
+			// 1️⃣ Loop through R14 to R100
+			for (int i = 71; i <= 140; i++) {
+				String prefix = "R" + i + "_";
+
+				String[] fields = { "NO_OF_GROUP", "NO_OF_CUSTOMER", "SECTOR_TYPE", "FACILITY_TYPE", "ORIGINAL_AMOUNT",
+						"UTILISATION_OUTSTANDING_BAL", "EFFECTIVE_DATE", "REPAYMENT_PERIOD", "PERFORMANCE_STATUS",
+						"SECURITY", "BOARD_APPROVAL", "INTEREST_RATE" };
+
+				for (String field : fields) {
+					String getterName = "get" + prefix + field;
+					String setterName = "set" + prefix + field;
+
+					try {
+						Method getter = M_LARADV_Detail_Entity1.class.getMethod(getterName);
+						Method setter = M_LARADV_Detail_Entity1.class.getMethod(setterName, getter.getReturnType());
+
+						Object newValue = getter.invoke(updatedEntity);
+						setter.invoke(existing1, newValue);
+
+					} catch (NoSuchMethodException e) {
+						// Skip missing fields
+						continue;
+					}
+				}
+			}
+
+			// 2️⃣ Handle R100 total fields using same structure
+			String prefix = "R140_";
+			String[] totalFields = { "NO_OF_GROUP", "NO_OF_CUSTOMER", "SECTOR_TYPE", "FACILITY_TYPE", "ORIGINAL_AMOUNT",
+					"UTILISATION_OUTSTANDING_BAL", "EFFECTIVE_DATE", "REPAYMENT_PERIOD", "PERFORMANCE_STATUS",
+					"SECURITY", "BOARD_APPROVAL", "INTEREST_RATE", "OUTSTANDING_BAL_PCT_UNIMPAIRED_CAP",
+					"LIMIT_PCT_UNIMPAIRED_CAP" };
+
+			for (String field : totalFields) {
+				String getterName = "get" + prefix + field;
+				String setterName = "set" + prefix + field;
+
+				try {
+					Method getter = M_LARADV_Detail_Entity2.class.getMethod(getterName);
+					Method setter = M_LARADV_Detail_Entity2.class.getMethod(setterName, getter.getReturnType());
+
+					Object newValue = getter.invoke(updatedEntity);
+					setter.invoke(existing1, newValue);
+
+				} catch (NoSuchMethodException e) {
+					// Skip missing total fields
+					continue;
+				}
+			}
+
+		} catch (Exception e) {
+			throw new RuntimeException("Error while updating report fields", e);
+		}
+
+		try {
+			existing.setR71_EFFECTIVE_DATE(updatedEntity.getR71_EFFECTIVE_DATE());
+			existing.setR72_EFFECTIVE_DATE(updatedEntity.getR72_EFFECTIVE_DATE());
+			existing.setR73_EFFECTIVE_DATE(updatedEntity.getR73_EFFECTIVE_DATE());
+			existing.setR74_EFFECTIVE_DATE(updatedEntity.getR74_EFFECTIVE_DATE());
+			existing.setR75_EFFECTIVE_DATE(updatedEntity.getR75_EFFECTIVE_DATE());
+			existing.setR76_EFFECTIVE_DATE(updatedEntity.getR76_EFFECTIVE_DATE());
+			existing.setR77_EFFECTIVE_DATE(updatedEntity.getR77_EFFECTIVE_DATE());
+			existing.setR78_EFFECTIVE_DATE(updatedEntity.getR78_EFFECTIVE_DATE());
+			existing.setR79_EFFECTIVE_DATE(updatedEntity.getR79_EFFECTIVE_DATE());
+			existing.setR80_EFFECTIVE_DATE(updatedEntity.getR80_EFFECTIVE_DATE());
+			existing.setR81_EFFECTIVE_DATE(updatedEntity.getR81_EFFECTIVE_DATE());
+			existing.setR82_EFFECTIVE_DATE(updatedEntity.getR82_EFFECTIVE_DATE());
+			existing.setR83_EFFECTIVE_DATE(updatedEntity.getR83_EFFECTIVE_DATE());
+			existing.setR84_EFFECTIVE_DATE(updatedEntity.getR84_EFFECTIVE_DATE());
+			existing.setR85_EFFECTIVE_DATE(updatedEntity.getR85_EFFECTIVE_DATE());
+			existing.setR86_EFFECTIVE_DATE(updatedEntity.getR86_EFFECTIVE_DATE());
+			existing.setR87_EFFECTIVE_DATE(updatedEntity.getR87_EFFECTIVE_DATE());
+			existing.setR88_EFFECTIVE_DATE(updatedEntity.getR88_EFFECTIVE_DATE());
+			existing.setR89_EFFECTIVE_DATE(updatedEntity.getR89_EFFECTIVE_DATE());
+			existing.setR90_EFFECTIVE_DATE(updatedEntity.getR90_EFFECTIVE_DATE());
+			existing.setR91_EFFECTIVE_DATE(updatedEntity.getR91_EFFECTIVE_DATE());
+			existing.setR92_EFFECTIVE_DATE(updatedEntity.getR92_EFFECTIVE_DATE());
+			existing.setR93_EFFECTIVE_DATE(updatedEntity.getR93_EFFECTIVE_DATE());
+			existing.setR94_EFFECTIVE_DATE(updatedEntity.getR94_EFFECTIVE_DATE());
+			existing.setR95_EFFECTIVE_DATE(updatedEntity.getR95_EFFECTIVE_DATE());
+			existing.setR96_EFFECTIVE_DATE(updatedEntity.getR96_EFFECTIVE_DATE());
+			existing.setR97_EFFECTIVE_DATE(updatedEntity.getR97_EFFECTIVE_DATE());
+			existing.setR98_EFFECTIVE_DATE(updatedEntity.getR98_EFFECTIVE_DATE());
+			existing.setR99_EFFECTIVE_DATE(updatedEntity.getR99_EFFECTIVE_DATE());
+			existing.setR100_EFFECTIVE_DATE(updatedEntity.getR100_EFFECTIVE_DATE());
+			existing.setR101_EFFECTIVE_DATE(updatedEntity.getR101_EFFECTIVE_DATE());
+			existing.setR102_EFFECTIVE_DATE(updatedEntity.getR102_EFFECTIVE_DATE());
+			existing.setR103_EFFECTIVE_DATE(updatedEntity.getR103_EFFECTIVE_DATE());
+			existing.setR104_EFFECTIVE_DATE(updatedEntity.getR104_EFFECTIVE_DATE());
+			existing.setR105_EFFECTIVE_DATE(updatedEntity.getR105_EFFECTIVE_DATE());
+			existing.setR106_EFFECTIVE_DATE(updatedEntity.getR106_EFFECTIVE_DATE());
+			existing.setR107_EFFECTIVE_DATE(updatedEntity.getR107_EFFECTIVE_DATE());
+			existing.setR108_EFFECTIVE_DATE(updatedEntity.getR108_EFFECTIVE_DATE());
+			existing.setR109_EFFECTIVE_DATE(updatedEntity.getR109_EFFECTIVE_DATE());
+			existing.setR110_EFFECTIVE_DATE(updatedEntity.getR110_EFFECTIVE_DATE());
+			existing.setR111_EFFECTIVE_DATE(updatedEntity.getR111_EFFECTIVE_DATE());
+			existing.setR112_EFFECTIVE_DATE(updatedEntity.getR112_EFFECTIVE_DATE());
+			existing.setR113_EFFECTIVE_DATE(updatedEntity.getR113_EFFECTIVE_DATE());
+			existing.setR114_EFFECTIVE_DATE(updatedEntity.getR114_EFFECTIVE_DATE());
+			existing.setR115_EFFECTIVE_DATE(updatedEntity.getR115_EFFECTIVE_DATE());
+			existing.setR116_EFFECTIVE_DATE(updatedEntity.getR116_EFFECTIVE_DATE());
+			existing.setR117_EFFECTIVE_DATE(updatedEntity.getR117_EFFECTIVE_DATE());
+			existing.setR118_EFFECTIVE_DATE(updatedEntity.getR118_EFFECTIVE_DATE());
+			existing.setR119_EFFECTIVE_DATE(updatedEntity.getR119_EFFECTIVE_DATE());
+			existing.setR120_EFFECTIVE_DATE(updatedEntity.getR120_EFFECTIVE_DATE());
+			existing.setR121_EFFECTIVE_DATE(updatedEntity.getR121_EFFECTIVE_DATE());
+			existing.setR122_EFFECTIVE_DATE(updatedEntity.getR122_EFFECTIVE_DATE());
+			existing.setR123_EFFECTIVE_DATE(updatedEntity.getR123_EFFECTIVE_DATE());
+			existing.setR124_EFFECTIVE_DATE(updatedEntity.getR124_EFFECTIVE_DATE());
+			existing.setR125_EFFECTIVE_DATE(updatedEntity.getR125_EFFECTIVE_DATE());
+			existing.setR126_EFFECTIVE_DATE(updatedEntity.getR126_EFFECTIVE_DATE());
+			existing.setR127_EFFECTIVE_DATE(updatedEntity.getR127_EFFECTIVE_DATE());
+			existing.setR128_EFFECTIVE_DATE(updatedEntity.getR128_EFFECTIVE_DATE());
+			existing.setR129_EFFECTIVE_DATE(updatedEntity.getR129_EFFECTIVE_DATE());
+			existing.setR130_EFFECTIVE_DATE(updatedEntity.getR130_EFFECTIVE_DATE());
+			existing.setR131_EFFECTIVE_DATE(updatedEntity.getR131_EFFECTIVE_DATE());
+			existing.setR132_EFFECTIVE_DATE(updatedEntity.getR132_EFFECTIVE_DATE());
+			existing.setR133_EFFECTIVE_DATE(updatedEntity.getR133_EFFECTIVE_DATE());
+			existing.setR134_EFFECTIVE_DATE(updatedEntity.getR134_EFFECTIVE_DATE());
+			existing.setR135_EFFECTIVE_DATE(updatedEntity.getR135_EFFECTIVE_DATE());
+			existing.setR136_EFFECTIVE_DATE(updatedEntity.getR136_EFFECTIVE_DATE());
+			existing.setR137_EFFECTIVE_DATE(updatedEntity.getR137_EFFECTIVE_DATE());
+			existing.setR138_EFFECTIVE_DATE(updatedEntity.getR138_EFFECTIVE_DATE());
+			existing.setR139_EFFECTIVE_DATE(updatedEntity.getR139_EFFECTIVE_DATE());
+			existing.setR140_EFFECTIVE_DATE(updatedEntity.getR140_EFFECTIVE_DATE());
+
+		} catch (Exception e) {
+			throw new RuntimeException("Error while updating date fields", e);
+		}
 
 		// 3️⃣ Save updated entity
 		M_LARADV_Summary_Repo2.save(existing);
+		M_LARADV_Detail_Repo2.save(existing1);
 	}
 
 	public void updateReport3(M_LARADV_Summary_Entity3 updatedEntity) {
@@ -593,6 +877,9 @@ public class BRRS_M_LARADV_ReportService {
 		M_LARADV_Summary_Entity3 existing = M_LARADV_Summary_Repo3.findById(updatedEntity.getReportDate()).orElseThrow(
 				() -> new RuntimeException("Record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
 
+		M_LARADV_Detail_Entity3 existing1 = M_LARADV_Detail_Repo3.findById(updatedEntity.getReportDate()).orElseThrow(
+				() -> new RuntimeException("Record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
+		
 		try {
 			// 1️⃣ Loop through R14 to R100
 			for (int i = 141; i <= 210; i++) {
@@ -724,8 +1011,140 @@ public class BRRS_M_LARADV_ReportService {
 			throw new RuntimeException("Error while updating date fields", e);
 		}
 
+		try {
+			// 1️⃣ Loop through R14 to R100
+			for (int i = 141; i <= 210; i++) {
+				String prefix = "R" + i + "_";
+
+				String[] fields = { "NO_OF_GROUP", "NO_OF_CUSTOMER", "SECTOR_TYPE", "FACILITY_TYPE", "ORIGINAL_AMOUNT",
+						"UTILISATION_OUTSTANDING_BAL", "EFFECTIVE_DATE", "REPAYMENT_PERIOD", "PERFORMANCE_STATUS",
+						"SECURITY", "BOARD_APPROVAL", "INTEREST_RATE" };
+
+				for (String field : fields) {
+					String getterName = "get" + prefix + field;
+					String setterName = "set" + prefix + field;
+
+					try {
+						Method getter = M_LARADV_Detail_Entity3.class.getMethod(getterName);
+						Method setter = M_LARADV_Detail_Entity3.class.getMethod(setterName, getter.getReturnType());
+
+						Object newValue = getter.invoke(updatedEntity);
+						setter.invoke(existing1, newValue);
+
+					} catch (NoSuchMethodException e) {
+						// Skip missing fields
+						continue;
+					}
+				}
+			}
+
+			// 2️⃣ Handle R100 total fields using same structure
+			String prefix = "R210_";
+			String[] totalFields = { "NO_OF_GROUP", "NO_OF_CUSTOMER", "SECTOR_TYPE", "FACILITY_TYPE", "ORIGINAL_AMOUNT",
+					"UTILISATION_OUTSTANDING_BAL", "EFFECTIVE_DATE", "REPAYMENT_PERIOD", "PERFORMANCE_STATUS",
+					"SECURITY", "BOARD_APPROVAL", "INTEREST_RATE", "OUTSTANDING_BAL_PCT_UNIMPAIRED_CAP",
+					"LIMIT_PCT_UNIMPAIRED_CAP" };
+
+			for (String field : totalFields) {
+				String getterName = "get" + prefix + field;
+				String setterName = "set" + prefix + field;
+
+				try {
+					Method getter = M_LARADV_Detail_Entity3.class.getMethod(getterName);
+					Method setter = M_LARADV_Detail_Entity3.class.getMethod(setterName, getter.getReturnType());
+
+					Object newValue = getter.invoke(updatedEntity);
+					setter.invoke(existing1, newValue);
+
+				} catch (NoSuchMethodException e) {
+					// Skip missing total fields
+					continue;
+				}
+			}
+
+		} catch (Exception e) {
+			throw new RuntimeException("Error while updating report fields", e);
+		}
+
+		try {
+			existing.setR141_EFFECTIVE_DATE(updatedEntity.getR141_EFFECTIVE_DATE());
+			existing.setR142_EFFECTIVE_DATE(updatedEntity.getR142_EFFECTIVE_DATE());
+			existing.setR143_EFFECTIVE_DATE(updatedEntity.getR143_EFFECTIVE_DATE());
+			existing.setR144_EFFECTIVE_DATE(updatedEntity.getR144_EFFECTIVE_DATE());
+			existing.setR145_EFFECTIVE_DATE(updatedEntity.getR145_EFFECTIVE_DATE());
+			existing.setR146_EFFECTIVE_DATE(updatedEntity.getR146_EFFECTIVE_DATE());
+			existing.setR147_EFFECTIVE_DATE(updatedEntity.getR147_EFFECTIVE_DATE());
+			existing.setR148_EFFECTIVE_DATE(updatedEntity.getR148_EFFECTIVE_DATE());
+			existing.setR149_EFFECTIVE_DATE(updatedEntity.getR149_EFFECTIVE_DATE());
+			existing.setR150_EFFECTIVE_DATE(updatedEntity.getR150_EFFECTIVE_DATE());
+			existing.setR151_EFFECTIVE_DATE(updatedEntity.getR151_EFFECTIVE_DATE());
+			existing.setR152_EFFECTIVE_DATE(updatedEntity.getR152_EFFECTIVE_DATE());
+			existing.setR153_EFFECTIVE_DATE(updatedEntity.getR153_EFFECTIVE_DATE());
+			existing.setR154_EFFECTIVE_DATE(updatedEntity.getR154_EFFECTIVE_DATE());
+			existing.setR155_EFFECTIVE_DATE(updatedEntity.getR155_EFFECTIVE_DATE());
+			existing.setR156_EFFECTIVE_DATE(updatedEntity.getR156_EFFECTIVE_DATE());
+			existing.setR157_EFFECTIVE_DATE(updatedEntity.getR157_EFFECTIVE_DATE());
+			existing.setR158_EFFECTIVE_DATE(updatedEntity.getR158_EFFECTIVE_DATE());
+			existing.setR159_EFFECTIVE_DATE(updatedEntity.getR159_EFFECTIVE_DATE());
+			existing.setR160_EFFECTIVE_DATE(updatedEntity.getR160_EFFECTIVE_DATE());
+			existing.setR161_EFFECTIVE_DATE(updatedEntity.getR161_EFFECTIVE_DATE());
+			existing.setR162_EFFECTIVE_DATE(updatedEntity.getR162_EFFECTIVE_DATE());
+			existing.setR163_EFFECTIVE_DATE(updatedEntity.getR163_EFFECTIVE_DATE());
+			existing.setR164_EFFECTIVE_DATE(updatedEntity.getR164_EFFECTIVE_DATE());
+			existing.setR165_EFFECTIVE_DATE(updatedEntity.getR165_EFFECTIVE_DATE());
+			existing.setR166_EFFECTIVE_DATE(updatedEntity.getR166_EFFECTIVE_DATE());
+			existing.setR167_EFFECTIVE_DATE(updatedEntity.getR167_EFFECTIVE_DATE());
+			existing.setR168_EFFECTIVE_DATE(updatedEntity.getR168_EFFECTIVE_DATE());
+			existing.setR169_EFFECTIVE_DATE(updatedEntity.getR169_EFFECTIVE_DATE());
+			existing.setR170_EFFECTIVE_DATE(updatedEntity.getR170_EFFECTIVE_DATE());
+			existing.setR171_EFFECTIVE_DATE(updatedEntity.getR171_EFFECTIVE_DATE());
+			existing.setR172_EFFECTIVE_DATE(updatedEntity.getR172_EFFECTIVE_DATE());
+			existing.setR173_EFFECTIVE_DATE(updatedEntity.getR173_EFFECTIVE_DATE());
+			existing.setR174_EFFECTIVE_DATE(updatedEntity.getR174_EFFECTIVE_DATE());
+			existing.setR175_EFFECTIVE_DATE(updatedEntity.getR175_EFFECTIVE_DATE());
+			existing.setR176_EFFECTIVE_DATE(updatedEntity.getR176_EFFECTIVE_DATE());
+			existing.setR177_EFFECTIVE_DATE(updatedEntity.getR177_EFFECTIVE_DATE());
+			existing.setR178_EFFECTIVE_DATE(updatedEntity.getR178_EFFECTIVE_DATE());
+			existing.setR179_EFFECTIVE_DATE(updatedEntity.getR179_EFFECTIVE_DATE());
+			existing.setR180_EFFECTIVE_DATE(updatedEntity.getR180_EFFECTIVE_DATE());
+			existing.setR181_EFFECTIVE_DATE(updatedEntity.getR181_EFFECTIVE_DATE());
+			existing.setR182_EFFECTIVE_DATE(updatedEntity.getR182_EFFECTIVE_DATE());
+			existing.setR183_EFFECTIVE_DATE(updatedEntity.getR183_EFFECTIVE_DATE());
+			existing.setR184_EFFECTIVE_DATE(updatedEntity.getR184_EFFECTIVE_DATE());
+			existing.setR185_EFFECTIVE_DATE(updatedEntity.getR185_EFFECTIVE_DATE());
+			existing.setR186_EFFECTIVE_DATE(updatedEntity.getR186_EFFECTIVE_DATE());
+			existing.setR187_EFFECTIVE_DATE(updatedEntity.getR187_EFFECTIVE_DATE());
+			existing.setR188_EFFECTIVE_DATE(updatedEntity.getR188_EFFECTIVE_DATE());
+			existing.setR189_EFFECTIVE_DATE(updatedEntity.getR189_EFFECTIVE_DATE());
+			existing.setR190_EFFECTIVE_DATE(updatedEntity.getR190_EFFECTIVE_DATE());
+			existing.setR191_EFFECTIVE_DATE(updatedEntity.getR191_EFFECTIVE_DATE());
+			existing.setR192_EFFECTIVE_DATE(updatedEntity.getR192_EFFECTIVE_DATE());
+			existing.setR193_EFFECTIVE_DATE(updatedEntity.getR193_EFFECTIVE_DATE());
+			existing.setR194_EFFECTIVE_DATE(updatedEntity.getR194_EFFECTIVE_DATE());
+			existing.setR195_EFFECTIVE_DATE(updatedEntity.getR195_EFFECTIVE_DATE());
+			existing.setR196_EFFECTIVE_DATE(updatedEntity.getR196_EFFECTIVE_DATE());
+			existing.setR197_EFFECTIVE_DATE(updatedEntity.getR197_EFFECTIVE_DATE());
+			existing.setR198_EFFECTIVE_DATE(updatedEntity.getR198_EFFECTIVE_DATE());
+			existing.setR199_EFFECTIVE_DATE(updatedEntity.getR199_EFFECTIVE_DATE());
+			existing.setR200_EFFECTIVE_DATE(updatedEntity.getR200_EFFECTIVE_DATE());
+			existing.setR201_EFFECTIVE_DATE(updatedEntity.getR201_EFFECTIVE_DATE());
+			existing.setR202_EFFECTIVE_DATE(updatedEntity.getR202_EFFECTIVE_DATE());
+			existing.setR203_EFFECTIVE_DATE(updatedEntity.getR203_EFFECTIVE_DATE());
+			existing.setR204_EFFECTIVE_DATE(updatedEntity.getR204_EFFECTIVE_DATE());
+			existing.setR205_EFFECTIVE_DATE(updatedEntity.getR205_EFFECTIVE_DATE());
+			existing.setR206_EFFECTIVE_DATE(updatedEntity.getR206_EFFECTIVE_DATE());
+			existing.setR207_EFFECTIVE_DATE(updatedEntity.getR207_EFFECTIVE_DATE());
+			existing.setR208_EFFECTIVE_DATE(updatedEntity.getR208_EFFECTIVE_DATE());
+			existing.setR209_EFFECTIVE_DATE(updatedEntity.getR209_EFFECTIVE_DATE());
+			existing.setR210_EFFECTIVE_DATE(updatedEntity.getR210_EFFECTIVE_DATE());
+
+		} catch (Exception e) {
+			throw new RuntimeException("Error while updating date fields", e);
+		}
+		
 		// 3️⃣ Save updated entity
 		M_LARADV_Summary_Repo3.save(existing);
+		M_LARADV_Detail_Repo3.save(existing1);
 	}
 
 	public void updateReport4(M_LARADV_Summary_Entity4 updatedEntity) {
@@ -733,6 +1152,9 @@ public class BRRS_M_LARADV_ReportService {
 		System.out.println("Report Date: " + updatedEntity.getReportDate());
 
 		M_LARADV_Summary_Entity4 existing = M_LARADV_Summary_Repo4.findById(updatedEntity.getReportDate()).orElseThrow(
+				() -> new RuntimeException("Record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
+		
+		M_LARADV_Detail_Entity4 existing1 = M_LARADV_Detail_Repo4.findById(updatedEntity.getReportDate()).orElseThrow(
 				() -> new RuntimeException("Record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
 
 		try {
@@ -866,8 +1288,139 @@ public class BRRS_M_LARADV_ReportService {
 			throw new RuntimeException("Error while updating date fields", e);
 		}
 
+		try {
+			// 1️⃣ Loop through R14 to R100
+			for (int i = 211; i <= 280; i++) {
+				String prefix = "R" + i + "_";
+
+				String[] fields = { "NO_OF_GROUP", "NO_OF_CUSTOMER", "SECTOR_TYPE", "FACILITY_TYPE", "ORIGINAL_AMOUNT",
+						"UTILISATION_OUTSTANDING_BAL", "EFFECTIVE_DATE", "REPAYMENT_PERIOD", "PERFORMANCE_STATUS",
+						"SECURITY", "BOARD_APPROVAL", "INTEREST_RATE" };
+
+				for (String field : fields) {
+					String getterName = "get" + prefix + field;
+					String setterName = "set" + prefix + field;
+
+					try {
+						Method getter = M_LARADV_Detail_Entity4.class.getMethod(getterName);
+						Method setter = M_LARADV_Detail_Entity4.class.getMethod(setterName, getter.getReturnType());
+
+						Object newValue = getter.invoke(updatedEntity);
+						setter.invoke(existing1, newValue);
+
+					} catch (NoSuchMethodException e) {
+						// Skip missing fields
+						continue;
+					}
+				}
+			}
+
+			// 2️⃣ Handle R100 total fields using same structure
+			String prefix = "R280_";
+			String[] totalFields = { "NO_OF_GROUP", "NO_OF_CUSTOMER", "SECTOR_TYPE", "FACILITY_TYPE", "ORIGINAL_AMOUNT",
+					"UTILISATION_OUTSTANDING_BAL", "EFFECTIVE_DATE", "REPAYMENT_PERIOD", "PERFORMANCE_STATUS",
+					"SECURITY", "BOARD_APPROVAL", "INTEREST_RATE", "OUTSTANDING_BAL_PCT_UNIMPAIRED_CAP",
+					"LIMIT_PCT_UNIMPAIRED_CAP" };
+
+			for (String field : totalFields) {
+				String getterName = "get" + prefix + field;
+				String setterName = "set" + prefix + field;
+
+				try {
+					Method getter = M_LARADV_Detail_Entity4.class.getMethod(getterName);
+					Method setter = M_LARADV_Detail_Entity4.class.getMethod(setterName, getter.getReturnType());
+
+					Object newValue = getter.invoke(updatedEntity);
+					setter.invoke(existing1, newValue);
+
+				} catch (NoSuchMethodException e) {
+					// Skip missing total fields
+					continue;
+				}
+			}
+
+		} catch (Exception e) {
+			throw new RuntimeException("Error while updating report fields", e);
+		}
+
+		try {
+			existing.setR211_EFFECTIVE_DATE(updatedEntity.getR211_EFFECTIVE_DATE());
+			existing.setR212_EFFECTIVE_DATE(updatedEntity.getR212_EFFECTIVE_DATE());
+			existing.setR213_EFFECTIVE_DATE(updatedEntity.getR213_EFFECTIVE_DATE());
+			existing.setR214_EFFECTIVE_DATE(updatedEntity.getR214_EFFECTIVE_DATE());
+			existing.setR215_EFFECTIVE_DATE(updatedEntity.getR215_EFFECTIVE_DATE());
+			existing.setR216_EFFECTIVE_DATE(updatedEntity.getR216_EFFECTIVE_DATE());
+			existing.setR217_EFFECTIVE_DATE(updatedEntity.getR217_EFFECTIVE_DATE());
+			existing.setR218_EFFECTIVE_DATE(updatedEntity.getR218_EFFECTIVE_DATE());
+			existing.setR219_EFFECTIVE_DATE(updatedEntity.getR219_EFFECTIVE_DATE());
+			existing.setR220_EFFECTIVE_DATE(updatedEntity.getR220_EFFECTIVE_DATE());
+			existing.setR221_EFFECTIVE_DATE(updatedEntity.getR221_EFFECTIVE_DATE());
+			existing.setR222_EFFECTIVE_DATE(updatedEntity.getR222_EFFECTIVE_DATE());
+			existing.setR223_EFFECTIVE_DATE(updatedEntity.getR223_EFFECTIVE_DATE());
+			existing.setR224_EFFECTIVE_DATE(updatedEntity.getR224_EFFECTIVE_DATE());
+			existing.setR225_EFFECTIVE_DATE(updatedEntity.getR225_EFFECTIVE_DATE());
+			existing.setR226_EFFECTIVE_DATE(updatedEntity.getR226_EFFECTIVE_DATE());
+			existing.setR227_EFFECTIVE_DATE(updatedEntity.getR227_EFFECTIVE_DATE());
+			existing.setR228_EFFECTIVE_DATE(updatedEntity.getR228_EFFECTIVE_DATE());
+			existing.setR229_EFFECTIVE_DATE(updatedEntity.getR229_EFFECTIVE_DATE());
+			existing.setR230_EFFECTIVE_DATE(updatedEntity.getR230_EFFECTIVE_DATE());
+			existing.setR231_EFFECTIVE_DATE(updatedEntity.getR231_EFFECTIVE_DATE());
+			existing.setR232_EFFECTIVE_DATE(updatedEntity.getR232_EFFECTIVE_DATE());
+			existing.setR233_EFFECTIVE_DATE(updatedEntity.getR233_EFFECTIVE_DATE());
+			existing.setR234_EFFECTIVE_DATE(updatedEntity.getR234_EFFECTIVE_DATE());
+			existing.setR235_EFFECTIVE_DATE(updatedEntity.getR235_EFFECTIVE_DATE());
+			existing.setR236_EFFECTIVE_DATE(updatedEntity.getR236_EFFECTIVE_DATE());
+			existing.setR237_EFFECTIVE_DATE(updatedEntity.getR237_EFFECTIVE_DATE());
+			existing.setR238_EFFECTIVE_DATE(updatedEntity.getR238_EFFECTIVE_DATE());
+			existing.setR239_EFFECTIVE_DATE(updatedEntity.getR239_EFFECTIVE_DATE());
+			existing.setR240_EFFECTIVE_DATE(updatedEntity.getR240_EFFECTIVE_DATE());
+			existing.setR241_EFFECTIVE_DATE(updatedEntity.getR241_EFFECTIVE_DATE());
+			existing.setR242_EFFECTIVE_DATE(updatedEntity.getR242_EFFECTIVE_DATE());
+			existing.setR243_EFFECTIVE_DATE(updatedEntity.getR243_EFFECTIVE_DATE());
+			existing.setR244_EFFECTIVE_DATE(updatedEntity.getR244_EFFECTIVE_DATE());
+			existing.setR245_EFFECTIVE_DATE(updatedEntity.getR245_EFFECTIVE_DATE());
+			existing.setR246_EFFECTIVE_DATE(updatedEntity.getR246_EFFECTIVE_DATE());
+			existing.setR247_EFFECTIVE_DATE(updatedEntity.getR247_EFFECTIVE_DATE());
+			existing.setR248_EFFECTIVE_DATE(updatedEntity.getR248_EFFECTIVE_DATE());
+			existing.setR249_EFFECTIVE_DATE(updatedEntity.getR249_EFFECTIVE_DATE());
+			existing.setR250_EFFECTIVE_DATE(updatedEntity.getR250_EFFECTIVE_DATE());
+			existing.setR251_EFFECTIVE_DATE(updatedEntity.getR251_EFFECTIVE_DATE());
+			existing.setR252_EFFECTIVE_DATE(updatedEntity.getR252_EFFECTIVE_DATE());
+			existing.setR253_EFFECTIVE_DATE(updatedEntity.getR253_EFFECTIVE_DATE());
+			existing.setR254_EFFECTIVE_DATE(updatedEntity.getR254_EFFECTIVE_DATE());
+			existing.setR255_EFFECTIVE_DATE(updatedEntity.getR255_EFFECTIVE_DATE());
+			existing.setR256_EFFECTIVE_DATE(updatedEntity.getR256_EFFECTIVE_DATE());
+			existing.setR257_EFFECTIVE_DATE(updatedEntity.getR257_EFFECTIVE_DATE());
+			existing.setR258_EFFECTIVE_DATE(updatedEntity.getR258_EFFECTIVE_DATE());
+			existing.setR259_EFFECTIVE_DATE(updatedEntity.getR259_EFFECTIVE_DATE());
+			existing.setR260_EFFECTIVE_DATE(updatedEntity.getR260_EFFECTIVE_DATE());
+			existing.setR261_EFFECTIVE_DATE(updatedEntity.getR261_EFFECTIVE_DATE());
+			existing.setR262_EFFECTIVE_DATE(updatedEntity.getR262_EFFECTIVE_DATE());
+			existing.setR263_EFFECTIVE_DATE(updatedEntity.getR263_EFFECTIVE_DATE());
+			existing.setR264_EFFECTIVE_DATE(updatedEntity.getR264_EFFECTIVE_DATE());
+			existing.setR265_EFFECTIVE_DATE(updatedEntity.getR265_EFFECTIVE_DATE());
+			existing.setR266_EFFECTIVE_DATE(updatedEntity.getR266_EFFECTIVE_DATE());
+			existing.setR267_EFFECTIVE_DATE(updatedEntity.getR267_EFFECTIVE_DATE());
+			existing.setR268_EFFECTIVE_DATE(updatedEntity.getR268_EFFECTIVE_DATE());
+			existing.setR269_EFFECTIVE_DATE(updatedEntity.getR269_EFFECTIVE_DATE());
+			existing.setR270_EFFECTIVE_DATE(updatedEntity.getR270_EFFECTIVE_DATE());
+			existing.setR271_EFFECTIVE_DATE(updatedEntity.getR271_EFFECTIVE_DATE());
+			existing.setR272_EFFECTIVE_DATE(updatedEntity.getR272_EFFECTIVE_DATE());
+			existing.setR273_EFFECTIVE_DATE(updatedEntity.getR273_EFFECTIVE_DATE());
+			existing.setR274_EFFECTIVE_DATE(updatedEntity.getR274_EFFECTIVE_DATE());
+			existing.setR275_EFFECTIVE_DATE(updatedEntity.getR275_EFFECTIVE_DATE());
+			existing.setR276_EFFECTIVE_DATE(updatedEntity.getR276_EFFECTIVE_DATE());
+			existing.setR277_EFFECTIVE_DATE(updatedEntity.getR277_EFFECTIVE_DATE());
+			existing.setR278_EFFECTIVE_DATE(updatedEntity.getR278_EFFECTIVE_DATE());
+			existing.setR279_EFFECTIVE_DATE(updatedEntity.getR279_EFFECTIVE_DATE());
+			existing.setR280_EFFECTIVE_DATE(updatedEntity.getR280_EFFECTIVE_DATE());
+
+		} catch (Exception e) {
+			throw new RuntimeException("Error while updating date fields", e);
+		}
 		// 3️⃣ Save updated entity
 		M_LARADV_Summary_Repo4.save(existing);
+		M_LARADV_Detail_Repo4.save(existing1);
 	}
 
 	public void updateReport5(M_LARADV_Summary_Entity5 updatedEntity) {
@@ -875,6 +1428,9 @@ public class BRRS_M_LARADV_ReportService {
 		System.out.println("Report Date: " + updatedEntity.getReportDate());
 
 		M_LARADV_Summary_Entity5 existing = M_LARADV_Summary_Repo5.findById(updatedEntity.getReportDate()).orElseThrow(
+				() -> new RuntimeException("Record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
+		
+		M_LARADV_Detail_Entity5 existing1 = M_LARADV_Detail_Repo5.findById(updatedEntity.getReportDate()).orElseThrow(
 				() -> new RuntimeException("Record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
 
 		try {
@@ -959,8 +1515,90 @@ public class BRRS_M_LARADV_ReportService {
 			throw new RuntimeException("Error while updating date fields", e);
 		}
 
+		try {
+			// 1️⃣ Loop through R14 to R100
+			for (int i = 281; i <= 301; i++) {
+				String prefix = "R" + i + "_";
+
+				String[] fields = { "NO_OF_GROUP", "NO_OF_CUSTOMER", "SECTOR_TYPE", "FACILITY_TYPE", "ORIGINAL_AMOUNT",
+						"UTILISATION_OUTSTANDING_BAL", "EFFECTIVE_DATE", "REPAYMENT_PERIOD", "PERFORMANCE_STATUS",
+						"SECURITY", "BOARD_APPROVAL", "INTEREST_RATE" };
+
+				for (String field : fields) {
+					String getterName = "get" + prefix + field;
+					String setterName = "set" + prefix + field;
+
+					try {
+						Method getter = M_LARADV_Detail_Entity5.class.getMethod(getterName);
+						Method setter = M_LARADV_Detail_Entity5.class.getMethod(setterName, getter.getReturnType());
+
+						Object newValue = getter.invoke(updatedEntity);
+						setter.invoke(existing1, newValue);
+
+					} catch (NoSuchMethodException e) {
+						// Skip missing fields
+						continue;
+					}
+				}
+			}
+
+			// 2️⃣ Handle R100 total fields using same structure
+			String prefix = "R301_";
+			String[] totalFields = { "NO_OF_GROUP", "NO_OF_CUSTOMER", "SECTOR_TYPE", "FACILITY_TYPE", "ORIGINAL_AMOUNT",
+					"UTILISATION_OUTSTANDING_BAL", "EFFECTIVE_DATE", "REPAYMENT_PERIOD", "PERFORMANCE_STATUS",
+					"SECURITY", "BOARD_APPROVAL", "INTEREST_RATE", "OUTSTANDING_BAL_PCT_UNIMPAIRED_CAP",
+					"LIMIT_PCT_UNIMPAIRED_CAP" };
+
+			for (String field : totalFields) {
+				String getterName = "get" + prefix + field;
+				String setterName = "set" + prefix + field;
+
+				try {
+					Method getter = M_LARADV_Detail_Entity5.class.getMethod(getterName);
+					Method setter = M_LARADV_Detail_Entity5.class.getMethod(setterName, getter.getReturnType());
+
+					Object newValue = getter.invoke(updatedEntity);
+					setter.invoke(existing1, newValue);
+
+				} catch (NoSuchMethodException e) {
+					// Skip missing total fields
+					continue;
+				}
+			}
+
+		} catch (Exception e) {
+			throw new RuntimeException("Error while updating report fields", e);
+		}
+
+		try {
+			existing.setR281_EFFECTIVE_DATE(updatedEntity.getR281_EFFECTIVE_DATE());
+			existing.setR282_EFFECTIVE_DATE(updatedEntity.getR282_EFFECTIVE_DATE());
+			existing.setR283_EFFECTIVE_DATE(updatedEntity.getR283_EFFECTIVE_DATE());
+			existing.setR284_EFFECTIVE_DATE(updatedEntity.getR284_EFFECTIVE_DATE());
+			existing.setR285_EFFECTIVE_DATE(updatedEntity.getR285_EFFECTIVE_DATE());
+			existing.setR286_EFFECTIVE_DATE(updatedEntity.getR286_EFFECTIVE_DATE());
+			existing.setR287_EFFECTIVE_DATE(updatedEntity.getR287_EFFECTIVE_DATE());
+			existing.setR288_EFFECTIVE_DATE(updatedEntity.getR288_EFFECTIVE_DATE());
+			existing.setR289_EFFECTIVE_DATE(updatedEntity.getR289_EFFECTIVE_DATE());
+			existing.setR290_EFFECTIVE_DATE(updatedEntity.getR290_EFFECTIVE_DATE());
+			existing.setR291_EFFECTIVE_DATE(updatedEntity.getR291_EFFECTIVE_DATE());
+			existing.setR292_EFFECTIVE_DATE(updatedEntity.getR292_EFFECTIVE_DATE());
+			existing.setR293_EFFECTIVE_DATE(updatedEntity.getR293_EFFECTIVE_DATE());
+			existing.setR294_EFFECTIVE_DATE(updatedEntity.getR294_EFFECTIVE_DATE());
+			existing.setR295_EFFECTIVE_DATE(updatedEntity.getR295_EFFECTIVE_DATE());
+			existing.setR296_EFFECTIVE_DATE(updatedEntity.getR296_EFFECTIVE_DATE());
+			existing.setR297_EFFECTIVE_DATE(updatedEntity.getR297_EFFECTIVE_DATE());
+			existing.setR298_EFFECTIVE_DATE(updatedEntity.getR298_EFFECTIVE_DATE());
+			existing.setR299_EFFECTIVE_DATE(updatedEntity.getR299_EFFECTIVE_DATE());
+			existing.setR300_EFFECTIVE_DATE(updatedEntity.getR300_EFFECTIVE_DATE());
+			existing.setR301_EFFECTIVE_DATE(updatedEntity.getR301_EFFECTIVE_DATE());
+
+		} catch (Exception e) {
+			throw new RuntimeException("Error while updating date fields", e);
+		}
 		// 3️⃣ Save updated entity
 		M_LARADV_Summary_Repo5.save(existing);
+		M_LARADV_Detail_Repo5.save(existing1);
 	}
 
 	public byte[] getM_LARADVExcel(String filename, String reportId, String fromdate, String todate, String currency,
@@ -67847,8 +68485,84 @@ public class BRRS_M_LARADV_ReportService {
 	////////////////////////////////////////// RESUBMISSION///////////////////////////////////////////////////////////////////
 	/// Report Date | Report Version | Domain
 	/// RESUB VIEW
+	///
 
 	public List<Object[]> getM_LARADVResub() {
+
+		List<Object[]> mergedList = new ArrayList<>();
+
+		try {
+			List<Object[]> list5 = M_LARADV_Resub_Summary_Repo1.getResubData();
+
+			for (Object[] e : list5) {
+				Date reportDate = e[0] != null ? (Date) e[0] : null;
+				BigDecimal reportVersion = e[1] != null ? (BigDecimal) e[1] : null;
+				Date reportResubDate = e[2] != null ? (Date) e[2] : null;
+
+				mergedList.add(new Object[] { reportDate, reportVersion, reportResubDate });
+			}
+
+			List<Object[]> list6 = M_LARADV_Resub_Summary_Repo2.getResubData();
+
+			for (Object[] e : list6) {
+				Date reportDate = e[0] != null ? (Date) e[0] : null;
+				BigDecimal reportVersion = e[1] != null ? (BigDecimal) e[1] : null;
+				Date reportResubDate = e[2] != null ? (Date) e[2] : null;
+
+				mergedList.add(new Object[] { reportDate, reportVersion, reportResubDate });
+			}
+
+			List<Object[]> list7 = M_LARADV_Resub_Summary_Repo3.getResubData();
+
+			for (Object[] e : list7) {
+				Date reportDate = e[0] != null ? (Date) e[0] : null;
+				BigDecimal reportVersion = e[1] != null ? (BigDecimal) e[1] : null;
+				Date reportResubDate = e[2] != null ? (Date) e[2] : null;
+
+				mergedList.add(new Object[] { reportDate, reportVersion, reportResubDate });
+			}
+
+			List<Object[]> list8 = M_LARADV_Resub_Summary_Repo4.getResubData();
+
+			for (Object[] e : list8) {
+				Date reportDate = e[0] != null ? (Date) e[0] : null;
+				BigDecimal reportVersion = e[1] != null ? (BigDecimal) e[1] : null;
+				Date reportResubDate = e[2] != null ? (Date) e[2] : null;
+
+				mergedList.add(new Object[] { reportDate, reportVersion, reportResubDate });
+			}
+			
+			List<Object[]> list9 = M_LARADV_Resub_Summary_Repo5.getResubData();
+
+			for (Object[] e : list9) {
+				Date reportDate = e[0] != null ? (Date) e[0] : null;
+				BigDecimal reportVersion = e[1] != null ? (BigDecimal) e[1] : null;
+				Date reportResubDate = e[2] != null ? (Date) e[2] : null;
+
+				mergedList.add(new Object[] { reportDate, reportVersion, reportResubDate });
+			}
+
+			Map<String, Object[]> uniqueMap = new LinkedHashMap<>();
+
+			for (Object[] row : mergedList) {
+				Date reportDate = (Date) row[0];
+				Object reportVersion = row[1];
+
+				String key = reportDate + "_" + reportVersion;
+				uniqueMap.putIfAbsent(key, row);
+			}
+
+			List<Object[]> result = new ArrayList<>(uniqueMap.values());
+
+			return result;
+
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			return Collections.emptyList();
+		}
+	}
+	
+	public List<Object[]> getM_LARADVResub1() {
 		List<Object[]> resubList = new ArrayList<>();
 		try {
 			List<M_LARADV_Archival_Summary_Entity1> latestArchivalList = M_LARADV_Archival_Summary_Repo1
@@ -67878,7 +68592,7 @@ public class BRRS_M_LARADV_ReportService {
 
 			if (latestArchivalList != null && !latestArchivalList.isEmpty()) {
 				for (M_LARADV_Archival_Summary_Entity1 entity : latestArchivalList) {
-					archivalList.add(new Object[] { entity.getReport_date(), entity.getReport_version() });
+					archivalList.add(new Object[] { entity.getReport_date(), entity.getReport_version(),entity.getReportResubDate() });
 				}
 				System.out.println("Fetched " + archivalList.size() + " record(s)");
 			} else {
@@ -101518,6 +102232,214 @@ public class BRRS_M_LARADV_ReportService {
 			c.setCellValue("");
 			c.setCellStyle(txtStyle);
 		}
+	}
+	
+	@Transactional
+	public BigDecimal updateReportReSub1(
+			M_LARADV_Resub_Summary_Entity1 updatedEntity1,
+			M_LARADV_Resub_Summary_Entity2 updatedEntity2,
+			M_LARADV_Resub_Summary_Entity3 updatedEntity3,
+			M_LARADV_Resub_Summary_Entity4 updatedEntity4,
+			M_LARADV_Resub_Summary_Entity5 updatedEntity5) {
+
+	    System.out.println("=========== START LARADV RESUB SERVICE ===========");
+	    System.out.println("Report Date: " + updatedEntity1.getReport_date());
+
+	    Date reportDate = updatedEntity1.getReport_date();
+	    BigDecimal newVersion = BigDecimal.ONE;
+	    
+	    BigDecimal maxVersion = M_LARADV_Resub_Summary_Repo1.findGlobalMaxReportVersion();
+		BigDecimal nextVersion = (maxVersion == null) ? BigDecimal.ONE : maxVersion.add(BigDecimal.ONE);
+
+	    try {
+	        // 3️⃣ CREATE ARCHIVAL ENTITIES
+	        M_LARADV_Resub_Summary_Entity1 archivalEntity1 =
+	                new M_LARADV_Resub_Summary_Entity1();
+	        M_LARADV_Resub_Summary_Entity2 archivalEntity2 =
+	                new M_LARADV_Resub_Summary_Entity2();
+	        M_LARADV_Resub_Summary_Entity3 archivalEntity3 =
+	                new M_LARADV_Resub_Summary_Entity3();
+	        M_LARADV_Resub_Summary_Entity4 archivalEntity4 =
+	                new M_LARADV_Resub_Summary_Entity4();
+	        M_LARADV_Resub_Summary_Entity5 archivalEntity5 =
+	                new M_LARADV_Resub_Summary_Entity5();
+	        
+	        
+	        // 3️⃣ CREATE ARCHIVAL ENTITIES
+	        M_LARADV_Resub_Detail_Entity1 archivalEntity6 =
+	                new M_LARADV_Resub_Detail_Entity1();
+	        M_LARADV_Resub_Detail_Entity2 archivalEntity7 =
+	                new M_LARADV_Resub_Detail_Entity2();
+	        M_LARADV_Resub_Detail_Entity3 archivalEntity8 =
+	                new M_LARADV_Resub_Detail_Entity3();
+	        M_LARADV_Resub_Detail_Entity4 archivalEntity9 =
+	                new M_LARADV_Resub_Detail_Entity4();
+	        M_LARADV_Resub_Detail_Entity5 archivalEntity10 =
+	                new M_LARADV_Resub_Detail_Entity5();
+	        
+	        // 3️⃣ CREATE ARCHIVAL ENTITIES
+	        M_LARADV_Archival_Summary_Entity1 archivalEntity11 =
+	                new M_LARADV_Archival_Summary_Entity1();
+	        M_LARADV_Archival_Summary_Entity2 archivalEntity12 =
+	                new M_LARADV_Archival_Summary_Entity2();
+	        M_LARADV_Archival_Summary_Entity3 archivalEntity13 =
+	                new M_LARADV_Archival_Summary_Entity3();
+	        M_LARADV_Archival_Summary_Entity4 archivalEntity14 =
+	                new M_LARADV_Archival_Summary_Entity4();
+	        M_LARADV_Archival_Summary_Entity5 archivalEntity15 =
+	                new M_LARADV_Archival_Summary_Entity5();
+	        
+	        
+	        // 3️⃣ CREATE ARCHIVAL ENTITIES
+	        M_LARADV_Archival_Detail_Entity1 archivalEntity16 =
+	                new M_LARADV_Archival_Detail_Entity1();
+	        M_LARADV_Archival_Detail_Entity2 archivalEntity17 =
+	                new M_LARADV_Archival_Detail_Entity2();
+	        M_LARADV_Archival_Detail_Entity3 archivalEntity18 =
+	                new M_LARADV_Archival_Detail_Entity3();
+	        M_LARADV_Archival_Detail_Entity4 archivalEntity19 =
+	                new M_LARADV_Archival_Detail_Entity4();
+	        M_LARADV_Archival_Detail_Entity5 archivalEntity20 =
+	                new M_LARADV_Archival_Detail_Entity5();
+
+	        // 4️⃣ COPY DATA
+	        BeanUtils.copyProperties(updatedEntity1, archivalEntity1);
+	        BeanUtils.copyProperties(updatedEntity2, archivalEntity2);
+	        BeanUtils.copyProperties(updatedEntity3, archivalEntity3);
+	        BeanUtils.copyProperties(updatedEntity4, archivalEntity4);
+	        BeanUtils.copyProperties(updatedEntity5, archivalEntity5);
+	        
+	        BeanUtils.copyProperties(updatedEntity1, archivalEntity6);
+	        BeanUtils.copyProperties(updatedEntity2, archivalEntity7);
+	        BeanUtils.copyProperties(updatedEntity3, archivalEntity8);
+	        BeanUtils.copyProperties(updatedEntity4, archivalEntity9);
+	        BeanUtils.copyProperties(updatedEntity5, archivalEntity10);
+
+	        BeanUtils.copyProperties(updatedEntity1, archivalEntity11);
+	        BeanUtils.copyProperties(updatedEntity2, archivalEntity12);
+	        BeanUtils.copyProperties(updatedEntity3, archivalEntity13);
+	        BeanUtils.copyProperties(updatedEntity4, archivalEntity14);
+	        BeanUtils.copyProperties(updatedEntity5, archivalEntity15);
+	        
+	        BeanUtils.copyProperties(updatedEntity1, archivalEntity16);
+	        BeanUtils.copyProperties(updatedEntity2, archivalEntity17);
+	        BeanUtils.copyProperties(updatedEntity3, archivalEntity18);
+	        BeanUtils.copyProperties(updatedEntity4, archivalEntity19);
+	        BeanUtils.copyProperties(updatedEntity5, archivalEntity20);
+
+
+	        Date now = new Date();
+
+	        // 5️⃣ SET COMMON VALUES
+	        archivalEntity1.setReport_date(reportDate);
+	        archivalEntity2.setReport_date(reportDate);
+	        archivalEntity3.setReport_date(reportDate);
+	        archivalEntity4.setReport_date(reportDate);
+	        archivalEntity5.setReport_date(reportDate);
+
+	        archivalEntity1.setReport_version(nextVersion);
+	        archivalEntity2.setReport_version(nextVersion);
+	        archivalEntity3.setReport_version(nextVersion);
+	        archivalEntity4.setReport_version(nextVersion);
+	        archivalEntity5.setReport_version(nextVersion);
+
+	        archivalEntity1.setReportResubDate(now);
+	        archivalEntity2.setReportResubDate(now);
+	        archivalEntity3.setReportResubDate(now);
+	        archivalEntity4.setReportResubDate(now);
+	        archivalEntity5.setReportResubDate(now);
+	        
+	        archivalEntity6.setReport_date(reportDate);
+	        archivalEntity7.setReport_date(reportDate);
+	        archivalEntity8.setReport_date(reportDate);
+	        archivalEntity9.setReport_date(reportDate);
+	        archivalEntity10.setReport_date(reportDate);
+
+	        archivalEntity6.setReport_version(nextVersion);
+	        archivalEntity7.setReport_version(nextVersion);
+	        archivalEntity8.setReport_version(nextVersion);
+	        archivalEntity9.setReport_version(nextVersion);
+	        archivalEntity10.setReport_version(nextVersion);
+
+	        archivalEntity6.setReportResubDate(now);
+	        archivalEntity7.setReportResubDate(now);
+	        archivalEntity8.setReportResubDate(now);
+	        archivalEntity9.setReportResubDate(now);
+	        archivalEntity10.setReportResubDate(now);
+	        
+	        
+	     // 5️⃣ SET COMMON VALUES
+	        archivalEntity11.setReport_date(reportDate);
+	        archivalEntity12.setReport_date(reportDate);
+	        archivalEntity13.setReport_date(reportDate);
+	        archivalEntity14.setReport_date(reportDate);
+	        archivalEntity15.setReport_date(reportDate);
+
+	        archivalEntity11.setReport_version(nextVersion);
+	        archivalEntity12.setReport_version(nextVersion);
+	        archivalEntity13.setReport_version(nextVersion);
+	        archivalEntity14.setReport_version(nextVersion);
+	        archivalEntity15.setReport_version(nextVersion);
+
+	        archivalEntity11.setReportResubDate(now);
+	        archivalEntity12.setReportResubDate(now);
+	        archivalEntity13.setReportResubDate(now);
+	        archivalEntity14.setReportResubDate(now);
+	        archivalEntity15.setReportResubDate(now);
+	        
+	        archivalEntity16.setReport_date(reportDate);
+	        archivalEntity17.setReport_date(reportDate);
+	        archivalEntity18.setReport_date(reportDate);
+	        archivalEntity19.setReport_date(reportDate);
+	        archivalEntity20.setReport_date(reportDate);
+
+	        archivalEntity16.setReport_version(nextVersion);
+	        archivalEntity17.setReport_version(nextVersion);
+	        archivalEntity18.setReport_version(nextVersion);
+	        archivalEntity19.setReport_version(nextVersion);
+	        archivalEntity20.setReport_version(nextVersion);
+
+	        archivalEntity16.setReportResubDate(now);
+	        archivalEntity17.setReportResubDate(now);
+	        archivalEntity18.setReportResubDate(now);
+	        archivalEntity19.setReportResubDate(now);
+	        archivalEntity20.setReportResubDate(now);
+
+
+	        // 6️⃣ SAVE
+	        M_LARADV_Resub_Summary_Repo1.save(archivalEntity1);
+	        M_LARADV_Resub_Summary_Repo2.save(archivalEntity2);
+	        M_LARADV_Resub_Summary_Repo3.save(archivalEntity3);
+	        M_LARADV_Resub_Summary_Repo4.save(archivalEntity4);
+	        M_LARADV_Resub_Summary_Repo5.save(archivalEntity5);
+	        
+	        M_LARADV_Resub_Detail_Repo1.save(archivalEntity6);
+	        M_LARADV_Resub_Detail_Repo2.save(archivalEntity7);
+	        M_LARADV_Resub_Detail_Repo3.save(archivalEntity8);
+	        M_LARADV_Resub_Detail_Repo4.save(archivalEntity9);
+	        M_LARADV_Resub_Detail_Repo5.save(archivalEntity10);
+	        
+	        // 6️⃣ SAVE
+	        M_LARADV_Archival_Summary_Repo1.save(archivalEntity11);
+	        M_LARADV_Archival_Summary_Repo2.save(archivalEntity12);
+	        M_LARADV_Archival_Summary_Repo3.save(archivalEntity13);
+	        M_LARADV_Archival_Summary_Repo4.save(archivalEntity14);
+	        M_LARADV_Archival_Summary_Repo5.save(archivalEntity15);
+	        
+	        M_LARADV_Archival_Detail_Repo1.save(archivalEntity16);
+	        M_LARADV_Archival_Detail_Repo2.save(archivalEntity17);
+	        M_LARADV_Archival_Detail_Repo3.save(archivalEntity18);
+	        M_LARADV_Archival_Detail_Repo4.save(archivalEntity19);
+	        M_LARADV_Archival_Detail_Repo5.save(archivalEntity20);
+
+	        System.out.println("=========== ARCHIVAL SAVE SUCCESS ==========");
+	        return newVersion;
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        throw new RuntimeException(
+	                "Error while creating LARADV archival resubmission record", e);
+	    }
 	}
 
 }

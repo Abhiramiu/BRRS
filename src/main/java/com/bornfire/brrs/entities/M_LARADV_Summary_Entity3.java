@@ -1281,12 +1281,7 @@ public class M_LARADV_Summary_Entity3 {
 	
   
     @Id
-    @Temporal(TemporalType.DATE)
-    @Column(name = "REPORT_DATE")
     private Date reportDate;
-
-   
-    @Column(name = "REPORT_VERSION")
     private String reportVersion;
 	private String report_frequency;
 	private String report_code;

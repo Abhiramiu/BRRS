@@ -1118,7 +1118,7 @@ public class M_LARADV_Archival_Detail_Entity1 implements Serializable{
 
     @Id
     private Date report_date;
-    private String report_version;
+    private BigDecimal report_version;
 
     @Column(name = "REPORT_RESUBDATE")
     @Temporal(TemporalType.TIMESTAMP)
@@ -6259,10 +6259,10 @@ public class M_LARADV_Archival_Detail_Entity1 implements Serializable{
 	public void setReportDate(Date reportDate) {
 		this.report_date = reportDate;
 	}
-	public String getReportVersion() {
+	public BigDecimal getReportVersion() {
 		return report_version;
 	}
-	public void setReportVersion(String reportVersion) {
+	public void setReportVersion(BigDecimal reportVersion) {
 		this.report_version = reportVersion;
 	}
 	public Date getReportResubDate() {
@@ -6306,6 +6306,22 @@ public class M_LARADV_Archival_Detail_Entity1 implements Serializable{
 	}
 	public void setDel_flg(String del_flg) {
 		this.del_flg = del_flg;
+	}
+	
+	public Date getReport_date() {
+		return report_date;
+	}
+	public void setReport_date(Date report_date) {
+		this.report_date = report_date;
+	}
+	public BigDecimal getReport_version() {
+		return report_version;
+	}
+	public void setReport_version(BigDecimal report_version) {
+		this.report_version = report_version;
+	}
+	public static long getSerialversionuid() {
+		return serialVersionUID;
 	}
 	public M_LARADV_Archival_Detail_Entity1() {
 		super();

@@ -396,6 +396,12 @@ PURPOSE		: BWRBRREPORT
 			// Show the modal
 			$('#resultModal').modal('show');
 		}
+
+		function closemodel1() {
+
+			window.location.href = '/BRRS/Resubmission?rptcode=M_SRWA_12D';
+
+		}
 	</script>
 
 
@@ -1701,13 +1707,12 @@ PURPOSE		: BWRBRREPORT
 			let urlToCall = './SRWA12DupdateAll';
 
 			if (reportId === 'RESUB') {
-				alert()
 				urlToCall = './SRWA12DupdateAll1';
 			}
 
 			// Step 5: Send AJAX
 			$.ajax({
-				 url: urlToCall,
+				url: urlToCall,
 				type: 'POST',
 				data: formData,
 				processData: false,
@@ -1715,7 +1720,7 @@ PURPOSE		: BWRBRREPORT
 				success: function () {
 					$("#resultModalLabel").text("BRRS");
 					$("#resultModalBody").text("Updated Successfully");
-					$("#resultModal").modal("show");
+					$("#resultModal1").modal("show");
 				},
 				error: function (jqXHR) {
 					console.error("Error:", jqXHR.responseText);
@@ -1879,7 +1884,7 @@ PURPOSE		: BWRBRREPORT
 	</script>
 
 </head>
-<title>BRRS</title>
+<title>M_SRWA_12D</title>
 
 <body>
 	<div class="container-fluid" style="padding-left: 0px; padding-right: 0px;">
@@ -4961,8 +4966,8 @@ PURPOSE		: BWRBRREPORT
 								<div style="text-align: center; margin-top: 10px;">
 
 									<button id="submitButton" type="button" class="custom-tab-btn Show_input"
-										form="fileupload" th:attr="data-todate=${asondate},data-reporttype=${type}" onclick="fileuploads(this);"
-										style="display: none;">
+										form="fileupload" th:attr="data-todate=${asondate},data-reporttype=${type}"
+										onclick="fileuploads(this);" style="display: none;">
 										Submit
 									</button>
 								</div>
@@ -5018,6 +5023,7 @@ PURPOSE		: BWRBRREPORT
 		</div>
 	</div>
 	<!-- Custom Alert/Result Modal (Matches your existing style) -->
+	<!-- Custom Alert/Result Modal (Matches your existing style) -->
 	<div class="modal fade" id="resultModal">
 		<div class="modal-dialog modal-dialog-centered">
 			<div class="modal-content">
@@ -5029,9 +5035,30 @@ PURPOSE		: BWRBRREPORT
 				</div>
 				<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
 					<p id="resultModalBody"></p>
-					<!-- Your custom styled button -->
-					<button type="button" class="custom-tab-btn" onclick="closemodel()"
-						data-bs-dismiss="modal">OK</button>
+
+					<button type="button" class="custom-tab-btn" onclick="closemodel()" data-bs-dismiss="modal">
+						OK
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade" id="resultModal1">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<!-- Your custom styled header -->
+				<div class="menu-title-header">
+					<div class="modal-title" id="resultModalLabel" style="text-align: center; color: white;">
+						<!-- Title will be set by JavaScript -->
+					</div>
+				</div>
+				<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+					<p id="resultModalBody"></p>
+
+					<button type="button" class="custom-tab-btn" onclick="closemodel1()" data-bs-dismiss="modal">
+						OK
+					</button>
 				</div>
 			</div>
 		</div>

@@ -3781,7 +3781,8 @@ public class BRRS_M_SRWA_12D_ReportService {
 
 				for (M_SRWA_12D_Archival_Summary_Entity entity : repoData) {
 
-					Object[] row = new Object[] { entity.getReport_date(), entity.getReport_version() };
+					Object[] row = new Object[] { entity.getReport_date(), entity.getReport_version(),
+							entity.getReportResubDate() };
 
 					archivalList.add(row); // Object[] stored as Object
 				}
@@ -3968,332 +3969,389 @@ public class BRRS_M_SRWA_12D_ReportService {
 	@Transactional
 	public void updateReport2(M_SRWA_12D_Resub_Detail_Entity updatedEntity) {
 
-	    System.out.println("========== START updateReport2 ==========");
-	    System.out.println("report_date: " + updatedEntity.getReport_date());
+		System.out.println("========== START updateReport2 ==========");
+		System.out.println("report_date: " + updatedEntity.getReport_date());
 
-	    try {
+		try {
 
-	        // ==========================
-	        // 1️⃣ GET NEW VERSION
-	        // ==========================
-	        BigDecimal maxVersion =
-	                bRRS_M_SRWA_12D_Resub_Detail_Repo.findGlobalMaxReportVersion();
+			// ==========================
+			// 1️⃣ GET NEW VERSION
+			// ==========================
+			BigDecimal maxVersion = bRRS_M_SRWA_12D_Resub_Detail_Repo.findGlobalMaxReportVersion();
 
-	        BigDecimal newVersion =
-	                (maxVersion == null) ? BigDecimal.ONE : maxVersion.add(BigDecimal.ONE);
+			BigDecimal newVersion = (maxVersion == null) ? BigDecimal.ONE : maxVersion.add(BigDecimal.ONE);
 
-	        System.out.println("New Version: " + newVersion);
+			System.out.println("New Version: " + newVersion);
 
-	        // ==========================
-	        // 2️⃣ CREATE NEW ENTITY
-	        // ==========================
-	        M_SRWA_12D_Resub_Detail_Entity newEntity =
-	                new M_SRWA_12D_Resub_Detail_Entity();
+			// ==========================
+			// 2️⃣ CREATE NEW ENTITY
+			// ==========================
+			M_SRWA_12D_Resub_Detail_Entity newEntity = new M_SRWA_12D_Resub_Detail_Entity();
 
-	        // ==========================
-	        // 3️⃣ SET PRIMARY KEY
-	        // ==========================
-	        newEntity.setReport_date(updatedEntity.getReport_date());
-	        newEntity.setReport_version(newVersion);
-	        newEntity.setReportResubDate(new Date());
+			// ==========================
+			// 3️⃣ SET PRIMARY KEY
+			// ==========================
+			newEntity.setReport_date(updatedEntity.getReport_date());
+			newEntity.setReport_version(newVersion);
+			newEntity.setReportResubDate(new Date());
 
-	        // ==========================
-	        // 4️⃣ COPY NORMAL FIELDS
-	        // ==========================
-	        newEntity.setReport_frequency(updatedEntity.getReport_frequency());
-	        newEntity.setReport_code(updatedEntity.getReport_code());
-	        newEntity.setReport_desc(updatedEntity.getReport_desc());
-	        newEntity.setEntity_flg(updatedEntity.getEntity_flg());
-	        newEntity.setModify_flg(updatedEntity.getModify_flg());
-	        newEntity.setDel_flg(updatedEntity.getDel_flg());
+			// ==========================
+			// 4️⃣ COPY NORMAL FIELDS
+			// ==========================
+			newEntity.setReport_frequency(updatedEntity.getReport_frequency());
+			newEntity.setReport_code(updatedEntity.getReport_code());
+			newEntity.setReport_desc(updatedEntity.getReport_desc());
+			newEntity.setEntity_flg(updatedEntity.getEntity_flg());
+			newEntity.setModify_flg(updatedEntity.getModify_flg());
+			newEntity.setDel_flg(updatedEntity.getDel_flg());
 
-	        // ==========================
-	        // 5️⃣ COPY ALL R FIELDS
-	        // ==========================
-	        for (int i = 12; i <= 15; i++) {
-	            copyFieldsDetail(updatedEntity, newEntity, i);
-	        }
+			// ==========================
+			// 5️⃣ COPY ALL R FIELDS
+			// ==========================
+			for (int i = 12; i <= 15; i++) {
+				copyFieldsDetail(updatedEntity, newEntity, i);
+			}
 
-	        for (int i = 21; i <= 24; i++) {
-	            copyFieldsDetail(updatedEntity, newEntity, i);
-	        }
+			for (int i = 21; i <= 24; i++) {
+				copyFieldsDetail(updatedEntity, newEntity, i);
+			}
 
-	        for (int i = 30; i <= 33; i++) {
-	            copyFieldsDetail(updatedEntity, newEntity, i);
-	        }
+			for (int i = 30; i <= 33; i++) {
+				copyFieldsDetail(updatedEntity, newEntity, i);
+			}
 
-	        for (int i = 43; i <= 45; i++) {
-	            copyFieldsDetail(updatedEntity, newEntity, i);
-	        }
+			for (int i = 43; i <= 45; i++) {
+				copyFieldsDetail(updatedEntity, newEntity, i);
+			}
 
-	        // ==========================
-	        // 6️⃣ SAVE NEW ROW
-	        // ==========================
-	        bRRS_M_SRWA_12D_Resub_Detail_Repo.saveAndFlush(newEntity);
+			// ==========================
+			// 6️⃣ SAVE NEW ROW
+			// ==========================
+			bRRS_M_SRWA_12D_Resub_Detail_Repo.saveAndFlush(newEntity);
 
-	        System.out.println("✅ Detail Insert Success with Version: " + newVersion);
-	        System.out.println("========== END updateReport2 ==========");
+			System.out.println("✅ Detail Insert Success with Version: " + newVersion);
+			System.out.println("========== END updateReport2 ==========");
 
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        throw new RuntimeException("Detail Insert failed", e);
-	    }
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException("Detail Insert failed", e);
+		}
 	}
 
-	private void copyFieldsDetail(
-	        M_SRWA_12D_Resub_Detail_Entity source,
-	        M_SRWA_12D_Resub_Detail_Entity target,
-	        int rowNo) {
+	private void copyFieldsDetail(M_SRWA_12D_Resub_Detail_Entity source, M_SRWA_12D_Resub_Detail_Entity target,
+			int rowNo) {
 
-	    String prefix = "R" + rowNo + "_";
+		String prefix = "R" + rowNo + "_";
 
-	    for (Method method : source.getClass().getMethods()) {
+		String[] fields = {
 
-	        try {
+				"LINE_NO_EXCHANGE_CONTRACTS", "PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS", "TOTAL_CURRENT_EXCHANGE_CONTRACTS",
+				"POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS", "APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS",
+				"CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS", "RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS",
 
-	            if (method.getName().startsWith("get" + prefix)) {
+				"LINE_NO_INTEREST_CONTRACTS", "PRINCIPAL_AMOUNT_INTEREST_CONTRACTS", "TOTAL_CURRENT_INTEREST_CONTRACTS",
+				"POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS", "APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS",
+				"CREDIT_EQUIVALENT_INTEREST_CONTRACTS", "RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS",
 
-	                Object value = method.invoke(source);
+				"LINE_NO_EQUITY_CONTRACTS", "PRINCIPAL_AMOUNT_EQUITY_CONTRACTS", "TOTAL_CURRENT_EQUITY_CONTRACTS",
+				"POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS", "APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS",
+				"CREDIT_EQUIVALENT_EQUITY_CONTRACTS", "RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS",
 
-	                String setterName = method.getName().replaceFirst("get", "set");
+				"LINE_NO_PRECIOUS_CONTRACTS", "PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS", "TOTAL_CURRENT_PRECIOUS_CONTRACTS",
+				"POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS", "APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS",
+				"CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS", "RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS",
 
-	                try {
-	                    Method setter = target.getClass()
-	                            .getMethod(setterName, method.getReturnType());
+				"LINE_NO_DEBT_CONTRACTS", "PRINCIPAL_AMOUNT_DEBT_CONTRACTS", "TOTAL_CURRENT_DEBT_CONTRACTS",
+				"POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS", "APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS",
+				"CREDIT_EQUIVALENT_DEBT_CONTRACTS", "RISK_WEIGHTED_ASSET_DEBT_CONTRACTS",
 
-	                    setter.invoke(target, value);
+				"LINE_NO_CREDIT_CONTRACTS", "PRINCIPAL_AMOUNT_CREDIT_CONTRACTS", "TOTAL_CURRENT_CREDIT_CONTRACTS",
+				"POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS", "APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS",
+				"CREDIT_EQUIVALENT_CREDIT_CONTRACTS", "RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS",
 
-	                } catch (NoSuchMethodException ignored) {
-	                    // Field not present for this row
-	                }
-	            }
+				"LINE_NO_DERIVATIVE_CONTRACTS", "PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS",
+				"POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS", "ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS",
+				"APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS", "CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS",
+				"RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS" };
 
-	        } catch (Exception e) {
-	            throw new RuntimeException(
-	                    "Error copying field: " + prefix, e);
-	        }
-	    }
+		for (String field : fields) {
+
+			try {
+
+				String getterName = "get" + prefix + field;
+				String setterName = "set" + prefix + field;
+
+				Method getter = M_SRWA_12D_Resub_Detail_Entity.class.getMethod(getterName);
+
+				Method setter = M_SRWA_12D_Resub_Detail_Entity.class.getMethod(setterName, getter.getReturnType());
+
+				Object value = getter.invoke(source);
+				setter.invoke(target, value);
+
+			} catch (NoSuchMethodException ignored) {
+				// Skip if field not available for that row
+			} catch (Exception e) {
+				throw new RuntimeException("Error copying field: " + prefix + field, e);
+			}
+		}
 	}
 
 	@Transactional
 	public void updateReport3(M_SRWA_12D_Archival_Summary_Entity updatedEntity) {
 
-	    System.out.println("========== START updateReport3 ==========");
-	    System.out.println("Report Date: " + updatedEntity.getReport_date());
+		System.out.println("========== START updateReport3 ==========");
+		System.out.println("Report Date: " + updatedEntity.getReport_date());
 
-	    try {
+		try {
 
-	        // ==========================
-	        // 1️⃣ GET NEW VERSION
-	        // ==========================
-	        BigDecimal maxVersion =
-	                bRRS_M_SRWA_12D_Archival_Summary_Repo.findGlobalMaxReportVersion();
+			// ==========================
+			// 1️⃣ GET NEW VERSION
+			// ==========================
+			BigDecimal maxVersion = bRRS_M_SRWA_12D_Archival_Summary_Repo.findGlobalMaxReportVersion();
 
-	        BigDecimal newVersion =
-	                (maxVersion == null) ? BigDecimal.ONE : maxVersion.add(BigDecimal.ONE);
+			BigDecimal newVersion = (maxVersion == null) ? BigDecimal.ONE : maxVersion.add(BigDecimal.ONE);
 
-	        System.out.println("New Version: " + newVersion);
+			System.out.println("New Version: " + newVersion);
 
-	        // ==========================
-	        // 2️⃣ CREATE NEW ENTITY
-	        // ==========================
-	        M_SRWA_12D_Archival_Summary_Entity newEntity =
-	                new M_SRWA_12D_Archival_Summary_Entity();
+			// ==========================
+			// 2️⃣ CREATE NEW ENTITY
+			// ==========================
+			M_SRWA_12D_Archival_Summary_Entity newEntity = new M_SRWA_12D_Archival_Summary_Entity();
 
-	        // ==========================
-	        // 3️⃣ SET PRIMARY KEY FIRST
-	        // ==========================
-	        newEntity.setReport_date(updatedEntity.getReport_date());
-	        newEntity.setReport_version(newVersion);
-	        newEntity.setReportResubDate(new Date());
+			// ==========================
+			// 3️⃣ SET PRIMARY KEY FIRST
+			// ==========================
+			newEntity.setReport_date(updatedEntity.getReport_date());
+			newEntity.setReport_version(newVersion);
+			newEntity.setReportResubDate(new Date());
 
-	        // ==========================
-	        // 4️⃣ COPY NORMAL FIELDS
-	        // ==========================
-	        newEntity.setReport_frequency(updatedEntity.getReport_frequency());
-	        newEntity.setReport_code(updatedEntity.getReport_code());
-	        newEntity.setReport_desc(updatedEntity.getReport_desc());
-	        newEntity.setEntity_flg(updatedEntity.getEntity_flg());
-	        newEntity.setModify_flg(updatedEntity.getModify_flg());
-	        newEntity.setDel_flg(updatedEntity.getDel_flg());
+			// ==========================
+			// 4️⃣ COPY NORMAL FIELDS
+			// ==========================
+			newEntity.setReport_frequency(updatedEntity.getReport_frequency());
+			newEntity.setReport_code(updatedEntity.getReport_code());
+			newEntity.setReport_desc(updatedEntity.getReport_desc());
+			newEntity.setEntity_flg(updatedEntity.getEntity_flg());
+			newEntity.setModify_flg(updatedEntity.getModify_flg());
+			newEntity.setDel_flg(updatedEntity.getDel_flg());
 
-	        // ==========================
-	        // 5️⃣ COPY ALL R FIELDS
-	        // ==========================
-	        for (int i = 12; i <= 15; i++) {
-	            copyFieldsArchSummary(updatedEntity, newEntity, i);
-	        }
+			// ==========================
+			// 5️⃣ COPY ALL R FIELDS
+			// ==========================
+			for (int i = 12; i <= 15; i++) {
+				copyFieldsArchSummary(updatedEntity, newEntity, i);
+			}
 
-	        for (int i = 21; i <= 24; i++) {
-	            copyFieldsArchSummary(updatedEntity, newEntity, i);
-	        }
+			for (int i = 21; i <= 24; i++) {
+				copyFieldsArchSummary(updatedEntity, newEntity, i);
+			}
 
-	        for (int i = 30; i <= 33; i++) {
-	            copyFieldsArchSummary(updatedEntity, newEntity, i);
-	        }
+			for (int i = 30; i <= 33; i++) {
+				copyFieldsArchSummary(updatedEntity, newEntity, i);
+			}
 
-	        for (int i = 43; i <= 45; i++) {
-	            copyFieldsArchSummary(updatedEntity, newEntity, i);
-	        }
+			for (int i = 43; i <= 45; i++) {
+				copyFieldsArchSummary(updatedEntity, newEntity, i);
+			}
 
-	        // ==========================
-	        // 6️⃣ SAVE NEW ROW
-	        // ==========================
-	        bRRS_M_SRWA_12D_Archival_Summary_Repo.saveAndFlush(newEntity);
+			// ==========================
+			// 6️⃣ SAVE NEW ROW
+			// ==========================
+			bRRS_M_SRWA_12D_Archival_Summary_Repo.saveAndFlush(newEntity);
 
-	        System.out.println("✅ Archival Summary Insert Success Version: " + newVersion);
-	        System.out.println("========== END updateReport3 ==========");
+			System.out.println("✅ Archival Summary Insert Success Version: " + newVersion);
+			System.out.println("========== END updateReport3 ==========");
 
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        throw new RuntimeException("Archival Summary Insert failed", e);
-	    }
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException("Archival Summary Insert failed", e);
+		}
 	}
 
-	private void copyFieldsArchSummary(
-	        M_SRWA_12D_Archival_Summary_Entity source,
-	        M_SRWA_12D_Archival_Summary_Entity target,
-	        int rowNo) {
+	private void copyFieldsArchSummary(M_SRWA_12D_Archival_Summary_Entity source,
+			M_SRWA_12D_Archival_Summary_Entity target, int rowNo) {
 
-	    String prefix = "R" + rowNo + "_";
+		String prefix = "R" + rowNo + "_";
 
-	    for (Method method : source.getClass().getMethods()) {
+		String[] fields = {
 
-	        try {
+				"LINE_NO_EXCHANGE_CONTRACTS", "PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS", "TOTAL_CURRENT_EXCHANGE_CONTRACTS",
+				"POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS", "APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS",
+				"CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS", "RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS",
 
-	            if (method.getName().startsWith("get" + prefix)) {
+				"LINE_NO_INTEREST_CONTRACTS", "PRINCIPAL_AMOUNT_INTEREST_CONTRACTS", "TOTAL_CURRENT_INTEREST_CONTRACTS",
+				"POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS", "APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS",
+				"CREDIT_EQUIVALENT_INTEREST_CONTRACTS", "RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS",
 
-	                Object value = method.invoke(source);
+				"LINE_NO_EQUITY_CONTRACTS", "PRINCIPAL_AMOUNT_EQUITY_CONTRACTS", "TOTAL_CURRENT_EQUITY_CONTRACTS",
+				"POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS", "APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS",
+				"CREDIT_EQUIVALENT_EQUITY_CONTRACTS", "RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS",
 
-	                String setterName = method.getName().replaceFirst("get", "set");
+				"LINE_NO_PRECIOUS_CONTRACTS", "PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS", "TOTAL_CURRENT_PRECIOUS_CONTRACTS",
+				"POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS", "APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS",
+				"CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS", "RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS",
 
-	                try {
-	                    Method setter = target.getClass()
-	                            .getMethod(setterName, method.getReturnType());
+				"LINE_NO_DEBT_CONTRACTS", "PRINCIPAL_AMOUNT_DEBT_CONTRACTS", "TOTAL_CURRENT_DEBT_CONTRACTS",
+				"POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS", "APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS",
+				"CREDIT_EQUIVALENT_DEBT_CONTRACTS", "RISK_WEIGHTED_ASSET_DEBT_CONTRACTS",
 
-	                    setter.invoke(target, value);
+				"LINE_NO_CREDIT_CONTRACTS", "PRINCIPAL_AMOUNT_CREDIT_CONTRACTS", "TOTAL_CURRENT_CREDIT_CONTRACTS",
+				"POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS", "APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS",
+				"CREDIT_EQUIVALENT_CREDIT_CONTRACTS", "RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS",
 
-	                } catch (NoSuchMethodException ignored) {
-	                    // Skip missing fields
-	                }
-	            }
+				"LINE_NO_DERIVATIVE_CONTRACTS", "PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS",
+				"POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS", "ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS",
+				"APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS", "CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS",
+				"RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS" };
 
-	        } catch (Exception e) {
-	            throw new RuntimeException(
-	                    "Error copying field: " + prefix, e);
-	        }
-	    }
+		for (String field : fields) {
+
+			try {
+
+				String getterName = "get" + prefix + field;
+				String setterName = "set" + prefix + field;
+
+				Method getter = M_SRWA_12D_Archival_Summary_Entity.class.getMethod(getterName);
+
+				Method setter = M_SRWA_12D_Archival_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+
+				Object value = getter.invoke(source);
+				setter.invoke(target, value);
+
+			} catch (NoSuchMethodException ignored) {
+				// Skip if field not available for that row
+			} catch (Exception e) {
+				throw new RuntimeException("Error copying field: " + prefix + field, e);
+			}
+		}
 	}
 
 	@Transactional
 	public void updateReport4(M_SRWA_12D_Archival_Detail_Entity updatedEntity) {
 
-	    System.out.println("========== START updateReport4 ==========");
-	    System.out.println("Report Date: " + updatedEntity.getReport_date());
+		System.out.println("========== START updateReport4 ==========");
+		System.out.println("Report Date: " + updatedEntity.getReport_date());
 
-	    try {
+		try {
 
-	        // ==========================
-	        // 1️⃣ GET NEW VERSION
-	        // ==========================
-	        BigDecimal maxVersion =
-	                bRRS_M_SRWA_12D_Archival_Detail_Repo.findGlobalMaxReportVersion();
+			// ==========================
+			// 1️⃣ GET NEW VERSION
+			// ==========================
+			BigDecimal maxVersion = bRRS_M_SRWA_12D_Archival_Detail_Repo.findGlobalMaxReportVersion();
 
-	        BigDecimal newVersion =
-	                (maxVersion == null) ? BigDecimal.ONE : maxVersion.add(BigDecimal.ONE);
+			BigDecimal newVersion = (maxVersion == null) ? BigDecimal.ONE : maxVersion.add(BigDecimal.ONE);
 
-	        System.out.println("New Version: " + newVersion);
+			System.out.println("New Version: " + newVersion);
 
-	        // ==========================
-	        // 2️⃣ CREATE NEW ENTITY
-	        // ==========================
-	        M_SRWA_12D_Archival_Detail_Entity newEntity =
-	                new M_SRWA_12D_Archival_Detail_Entity();
+			// ==========================
+			// 2️⃣ CREATE NEW ENTITY
+			// ==========================
+			M_SRWA_12D_Archival_Detail_Entity newEntity = new M_SRWA_12D_Archival_Detail_Entity();
 
-	        // ==========================
-	        // 3️⃣ SET PRIMARY KEY FIRST
-	        // ==========================
-	        newEntity.setReport_date(updatedEntity.getReport_date());
-	        newEntity.setReport_version(newVersion);
-	        newEntity.setReportResubDate(new Date());
+			// ==========================
+			// 3️⃣ SET PRIMARY KEY FIRST
+			// ==========================
+			newEntity.setReport_date(updatedEntity.getReport_date());
+			newEntity.setReport_version(newVersion);
+			newEntity.setReportResubDate(new Date());
 
-	        // ==========================
-	        // 4️⃣ COPY NORMAL FIELDS
-	        // ==========================
-	        newEntity.setReport_frequency(updatedEntity.getReport_frequency());
-	        newEntity.setReport_code(updatedEntity.getReport_code());
-	        newEntity.setReport_desc(updatedEntity.getReport_desc());
-	        newEntity.setEntity_flg(updatedEntity.getEntity_flg());
-	        newEntity.setModify_flg(updatedEntity.getModify_flg());
-	        newEntity.setDel_flg(updatedEntity.getDel_flg());
+			// ==========================
+			// 4️⃣ COPY NORMAL FIELDS
+			// ==========================
+			newEntity.setReport_frequency(updatedEntity.getReport_frequency());
+			newEntity.setReport_code(updatedEntity.getReport_code());
+			newEntity.setReport_desc(updatedEntity.getReport_desc());
+			newEntity.setEntity_flg(updatedEntity.getEntity_flg());
+			newEntity.setModify_flg(updatedEntity.getModify_flg());
+			newEntity.setDel_flg(updatedEntity.getDel_flg());
 
-	        // ==========================
-	        // 5️⃣ COPY ALL R FIELDS
-	        // ==========================
-	        for (int i = 12; i <= 15; i++) {
-	            copyFieldsArchDetail(updatedEntity, newEntity, i);
-	        }
+			// ==========================
+			// 5️⃣ COPY ALL R FIELDS
+			// ==========================
+			for (int i = 12; i <= 15; i++) {
+				copyFieldsArchDetail(updatedEntity, newEntity, i);
+			}
 
-	        for (int i = 21; i <= 24; i++) {
-	            copyFieldsArchDetail(updatedEntity, newEntity, i);
-	        }
+			for (int i = 21; i <= 24; i++) {
+				copyFieldsArchDetail(updatedEntity, newEntity, i);
+			}
 
-	        for (int i = 30; i <= 33; i++) {
-	            copyFieldsArchDetail(updatedEntity, newEntity, i);
-	        }
+			for (int i = 30; i <= 33; i++) {
+				copyFieldsArchDetail(updatedEntity, newEntity, i);
+			}
 
-	        for (int i = 43; i <= 45; i++) {
-	            copyFieldsArchDetail(updatedEntity, newEntity, i);
-	        }
+			for (int i = 43; i <= 45; i++) {
+				copyFieldsArchDetail(updatedEntity, newEntity, i);
+			}
 
-	        // ==========================
-	        // 6️⃣ SAVE NEW ROW
-	        // ==========================
-	        bRRS_M_SRWA_12D_Archival_Detail_Repo.saveAndFlush(newEntity);
+			// ==========================
+			// 6️⃣ SAVE NEW ROW
+			// ==========================
+			bRRS_M_SRWA_12D_Archival_Detail_Repo.saveAndFlush(newEntity);
 
-	        System.out.println("✅ Archival Detail Insert Success Version: " + newVersion);
-	        System.out.println("========== END updateReport4 ==========");
+			System.out.println("✅ Archival Detail Insert Success Version: " + newVersion);
+			System.out.println("========== END updateReport4 ==========");
 
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        throw new RuntimeException("Archival Detail Insert failed", e);
-	    }
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException("Archival Detail Insert failed", e);
+		}
 	}
 
-	private void copyFieldsArchDetail(
-	        M_SRWA_12D_Archival_Detail_Entity source,
-	        M_SRWA_12D_Archival_Detail_Entity target,
-	        int rowNo) {
+	private void copyFieldsArchDetail(M_SRWA_12D_Archival_Detail_Entity source, M_SRWA_12D_Archival_Detail_Entity target, int rowNo) {
 
-	    String prefix = "R" + rowNo + "_";
+		String prefix = "R" + rowNo + "_";
 
-	    for (Method method : source.getClass().getMethods()) {
+		String[] fields = {
 
-	        try {
+				"LINE_NO_EXCHANGE_CONTRACTS", "PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS", "TOTAL_CURRENT_EXCHANGE_CONTRACTS",
+				"POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS", "APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS",
+				"CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS", "RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS",
 
-	            if (method.getName().startsWith("get" + prefix)) {
+				"LINE_NO_INTEREST_CONTRACTS", "PRINCIPAL_AMOUNT_INTEREST_CONTRACTS", "TOTAL_CURRENT_INTEREST_CONTRACTS",
+				"POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS", "APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS",
+				"CREDIT_EQUIVALENT_INTEREST_CONTRACTS", "RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS",
 
-	                Object value = method.invoke(source);
+				"LINE_NO_EQUITY_CONTRACTS", "PRINCIPAL_AMOUNT_EQUITY_CONTRACTS", "TOTAL_CURRENT_EQUITY_CONTRACTS",
+				"POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS", "APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS",
+				"CREDIT_EQUIVALENT_EQUITY_CONTRACTS", "RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS",
 
-	                String setterName = method.getName().replaceFirst("get", "set");
+				"LINE_NO_PRECIOUS_CONTRACTS", "PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS", "TOTAL_CURRENT_PRECIOUS_CONTRACTS",
+				"POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS", "APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS",
+				"CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS", "RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS",
 
-	                try {
-	                    Method setter = target.getClass()
-	                            .getMethod(setterName, method.getReturnType());
+				"LINE_NO_DEBT_CONTRACTS", "PRINCIPAL_AMOUNT_DEBT_CONTRACTS", "TOTAL_CURRENT_DEBT_CONTRACTS",
+				"POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS", "APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS",
+				"CREDIT_EQUIVALENT_DEBT_CONTRACTS", "RISK_WEIGHTED_ASSET_DEBT_CONTRACTS",
 
-	                    setter.invoke(target, value);
+				"LINE_NO_CREDIT_CONTRACTS", "PRINCIPAL_AMOUNT_CREDIT_CONTRACTS", "TOTAL_CURRENT_CREDIT_CONTRACTS",
+				"POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS", "APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS",
+				"CREDIT_EQUIVALENT_CREDIT_CONTRACTS", "RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS",
 
-	                } catch (NoSuchMethodException ignored) {
-	                    // Skip missing fields
-	                }
-	            }
+				"LINE_NO_DERIVATIVE_CONTRACTS", "PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS",
+				"POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS", "ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS",
+				"APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS", "CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS",
+				"RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS" };
 
-	        } catch (Exception e) {
-	            throw new RuntimeException(
-	                    "Error copying field: " + prefix, e);
-	        }
-	    }
+		for (String field : fields) {
+
+			try {
+
+				String getterName = "get" + prefix + field;
+				String setterName = "set" + prefix + field;
+
+				Method getter = M_SRWA_12D_Archival_Detail_Entity.class.getMethod(getterName);
+
+				Method setter = M_SRWA_12D_Archival_Detail_Entity.class.getMethod(setterName, getter.getReturnType());
+
+				Object value = getter.invoke(source);
+				setter.invoke(target, value);
+
+			} catch (NoSuchMethodException ignored) {
+				// Skip if field not available for that row
+			} catch (Exception e) {
+				throw new RuntimeException("Error copying field: " + prefix + field, e);
+			}
+		}
 	}
-
-	
 }

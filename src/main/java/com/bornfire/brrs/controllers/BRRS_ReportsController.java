@@ -3918,9 +3918,9 @@ public class BRRS_ReportsController {
 	@ResponseBody
 	public ResponseEntity<String> updateReportReSub(
 			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@ModelAttribute M_LARADV_Summary_Entity1 request1, @ModelAttribute M_LARADV_Summary_Entity2 request2,
-			@ModelAttribute M_LARADV_Summary_Entity3 request3, @ModelAttribute M_LARADV_Summary_Entity4 request4,
-			@ModelAttribute M_LARADV_Summary_Entity5 request5, HttpServletRequest req) {
+			@ModelAttribute M_LARADV_Resub_Summary_Entity1 request1, @ModelAttribute M_LARADV_Resub_Summary_Entity2 request2,
+			@ModelAttribute M_LARADV_Resub_Summary_Entity3 request3, @ModelAttribute M_LARADV_Resub_Summary_Entity4 request4,
+			@ModelAttribute M_LARADV_Resub_Summary_Entity5 request5, HttpServletRequest req) {
 
 		try {
 			System.out.println("Came to Q_BRANCHNET Resub Controller");
@@ -3928,14 +3928,14 @@ public class BRRS_ReportsController {
 			if (asondate != null) {
 				request1.setReport_date(asondate);
 				request2.setReport_date(asondate);
-				request3.setReportDate(asondate);
-				request4.setReportDate(asondate);
-				request5.setReportDate(asondate);
+				request3.setReport_date(asondate);
+				request4.setReport_date(asondate);
+				request5.setReport_date(asondate);
 				System.out.println("Set Report Date: " + asondate);
 			}
 
 			// Call service
-			LARADVreportService.updateReportReSub(request1, request2, request3, request4, request5);
+			LARADVreportService.updateReportReSub1(request1, request2, request3, request4, request5);
 
 			return ResponseEntity.ok("Resubmission Updated Successfully");
 
