@@ -670,7 +670,6 @@ $(document).ready(function() {
 	    }
 	    return val; // already in ISO format
 	}
-
 	function fileuploads(btn) {
 
 	    try {
@@ -681,13 +680,37 @@ $(document).ready(function() {
 	        $('#loader').modal('show');
 	        calculateAllTotals();
 
+	        // ✅ Remove commas and % from text inputs
+	        $('#fileupload input[type="text"]').each(function () {
+	            let val = $(this).val();
+	            if (val) {
+	                val = val.replace(/,/g, '').replace('%', '');
+	                $(this).val(val);
+	            }
+	        });
+
+	        // ✅ Convert date fields to ISO format
+	        $('#fileupload input[type="date"], #fileupload input.date-field').each(function () {
+	            let val = $(this).val();
+	            if (val) {
+	                $(this).val(convertDateToISO(val));
+	            }
+	        });
+
+	        // ✅ Validate form
+	        if (!$("#fileupload").valid()) {
+	            $('#loader').modal('hide');
+	            return;
+	        }
+
 	        // ✅ Detect RESUB from URL also (safer)
 	        const urlParams = new URLSearchParams(window.location.search);
 	        const urlType = urlParams.get("type");
-	        const isResub = (type && type.toUpperCase() === 'RESUB') ||
-	                        (urlType && urlType.toUpperCase() === 'RESUB');
 
-	        // ✅ Previous URL logic
+	        const isResub =
+	            (type && type.toUpperCase() === 'RESUB') ||
+	            (urlType && urlType.toUpperCase() === 'RESUB');
+
 	        const previousUrl = window.previousUrl || null;
 
 	        const redirectUrl = isResub
@@ -700,32 +723,19 @@ $(document).ready(function() {
 	            apiUrl = './UpdateM_CA6_ReSub';
 	        }
 
-	        // ✅ Build FormData
-	        const formData = new FormData();
-	        formData.append("asondate", asondate);
-	        formData.append("type", type || "");
+	        // ✅ SERIALIZE FORM (NO FormData)
+	        const formData =
+	            $('#fileupload').serialize()
+	            + '&asondate=' + encodeURIComponent(asondate)
+	            + '&type=' + encodeURIComponent(type || '');
 
-	        // Text fields
-	        $('#fileupload input[type="text"]').each(function () {
-	            const name = $(this).attr('name');
-	            let val = $(this).val().replace(/,/g, '').replace('%', '');
-	            if (name && val.trim()) formData.append(name, val);
-	        });
-
-	        // Date fields
-	        $('#fileupload input[type="date"], #fileupload input.date-field').each(function () {
-	            const name = $(this).attr('name');
-	            let val = convertDateToISO($(this).val());
-	            if (name && val.trim()) formData.append(name, val);
-	        });
+	        console.log("✅ Form data prepared");
 
 	        // ✅ AJAX call
 	        $.ajax({
 	            url: apiUrl,
 	            type: 'POST',
 	            data: formData,
-	            processData: false,
-	            contentType: false,
 	            dataType: 'text',
 
 	            success: function (response) {
@@ -734,31 +744,32 @@ $(document).ready(function() {
 	                $("#resultModalBody").text(response || "Modified Successfully.");
 	                $("#resultModal").modal("show");
 
-	                // ✅ Redirect AFTER modal closes (RESUB only)
-	                if (redirectUrl) {
-	                    $("#resultModal").off("hidden.bs.modal")
-	                        .on("hidden.bs.modal", function () {
+	                $("#resultModal")
+	                    .off("hidden.bs.modal")
+	                    .on("hidden.bs.modal", function () {
+
+	                        if (redirectUrl) {
 	                            window.location.href = redirectUrl;
-	                        });
-	                } else {
-	                    // Normal mode → just reload
-	                    $("#resultModal").off("hidden.bs.modal")
-	                        .on("hidden.bs.modal", function () {
+	                        } else {
 	                            location.reload();
-	                        });
-	                }
+	                        }
+	                    });
 	            },
 
 	            error: function (jqXHR) {
 
+	                console.log("Error response:", jqXHR.responseText);
+
 	                $("#resultModalLabel").text("Error");
 	                $("#resultModalBody").text(
-	                    "Update failed: " + (jqXHR.responseText || "Unknown error")
+	                    "Update failed: " +
+	                    (jqXHR.responseText || "Unknown error")
 	                );
 	                $("#resultModal").modal("show");
 
 	                if (redirectUrl) {
-	                    $("#resultModal").off("hidden.bs.modal")
+	                    $("#resultModal")
+	                        .off("hidden.bs.modal")
 	                        .on("hidden.bs.modal", function () {
 	                            window.location.href = redirectUrl;
 	                        });

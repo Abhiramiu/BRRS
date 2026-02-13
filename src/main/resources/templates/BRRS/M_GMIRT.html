@@ -907,7 +907,7 @@ $(document).ready(function() {
 	// This is the main function that orchestrates the entire form submission process.
 	// It is triggered by the "Update" button click.
 // Make the function global so onclick="fileuploads(this)" can see it
-window.fileuploads = function (btn) {
+function fileuploads(btn) {
 
     try {
 
@@ -924,7 +924,7 @@ window.fileuploads = function (btn) {
         // ✅ Remove commas from text inputs
         $("#fileupload input[type='text']").each(function () {
             const val = $(this).val();
-            if (val && val.includes(",")) {
+            if (val) {
                 $(this).val(val.replace(/,/g, ''));
             }
         });
@@ -938,10 +938,11 @@ window.fileuploads = function (btn) {
         // ✅ Detect RESUB
         const urlParams = new URLSearchParams(window.location.search);
         const urlType = urlParams.get("type");
-        const isResub = (type && type.toUpperCase() === 'RESUB') ||
-                        (urlType && urlType.toUpperCase() === 'RESUB');
 
-        // ✅ Previous URL logic
+        const isResub =
+            (type && type.toUpperCase() === 'RESUB') ||
+            (urlType && urlType.toUpperCase() === 'RESUB');
+
         const previousUrl = window.previousUrl || document.referrer || null;
 
         const redirectUrl = isResub
@@ -954,31 +955,46 @@ window.fileuploads = function (btn) {
             apiUrl = './UpdateM_GMIRT_ReSub';
         }
 
-        // ✅ Prepare FormData
-        const formData1 = new FormData();
-        formData1.append("asondate", asondate);
-        formData1.append("type", type || "");
+        // ✅ Build serialized data manually (since you append specific fields)
+        let formData =
+            "asondate=" + encodeURIComponent(asondate) +
+            "&type=" + encodeURIComponent(type || "");
 
-        // ✅ Append row fields
+        // ✅ Append row fields (9–12)
         for (let i = 9; i <= 12; i++) {
-            ["currency", "pula", "usd", "zar", "gbp", "euro", "jpy",
-             "rupee", "renminbi", "other", "tot_cap_req"]
-            .forEach(field => {
+
+            [
+                "currency", "pula", "usd", "zar", "gbp", "euro",
+                "jpy", "rupee", "renminbi", "other", "tot_cap_req"
+            ].forEach(function (field) {
 
                 const input = $("#r" + i + "_" + field);
+
                 if (input.length) {
-                    formData1.append(input.attr("name"), input.val());
+
+                    const name = input.attr("name");
+                    let value = input.val();
+
+                    if (value) {
+                        value = value.replace(/,/g, '');
+                    }
+
+                    if (name) {
+                        formData += "&" +
+                            encodeURIComponent(name) + "=" +
+                            encodeURIComponent(value || "");
+                    }
                 }
             });
         }
 
-        // ✅ AJAX Call
+        console.log("✅ Form data prepared");
+
+        // ✅ AJAX Call (NORMAL POST)
         $.ajax({
             url: apiUrl,
             type: 'POST',
-            data: formData1,
-            processData: false,
-            contentType: false,
+            data: formData,
             dataType: 'text'
         })
 
@@ -988,19 +1004,16 @@ window.fileuploads = function (btn) {
             $("#resultModalBody").text(response || "Modified successfully.");
             $("#resultModal").modal("show");
 
-            if (redirectUrl) {
-                // RESUB → redirect after modal close
-                $("#resultModal").off("hidden.bs.modal")
-                    .on("hidden.bs.modal", function () {
+            $("#resultModal")
+                .off("hidden.bs.modal")
+                .on("hidden.bs.modal", function () {
+
+                    if (redirectUrl) {
                         window.location.href = redirectUrl;
-                    });
-            } else {
-                // Normal → reload
-                $("#resultModal").off("hidden.bs.modal")
-                    .on("hidden.bs.modal", function () {
+                    } else {
                         location.reload();
-                    });
-            }
+                    }
+                });
         })
 
         .fail(function (jqXHR) {
@@ -1009,12 +1022,14 @@ window.fileuploads = function (btn) {
 
             $("#resultModalLabel").text("Error");
             $("#resultModalBody").text(
-                "Update failed: " + (jqXHR.responseText || "Unknown error")
+                "Update failed: " +
+                (jqXHR.responseText || "Unknown error")
             );
             $("#resultModal").modal("show");
 
             if (redirectUrl) {
-                $("#resultModal").off("hidden.bs.modal")
+                $("#resultModal")
+                    .off("hidden.bs.modal")
                     .on("hidden.bs.modal", function () {
                         window.location.href = redirectUrl;
                     });
@@ -1029,8 +1044,7 @@ window.fileuploads = function (btn) {
         $('#loader').modal('hide');
         console.error("Error during file upload:", error);
     }
-};
-
+}
 
 
 

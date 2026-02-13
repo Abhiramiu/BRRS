@@ -1004,7 +1004,10 @@ $(document).ready(function() {
 
 	        // ✅ Step 2: Remove commas
 	        $("#fileupload input[type='text']").each(function () {
-	            $(this).val($(this).val().replace(/,/g, ''));
+	            const val = $(this).val();
+	            if (val) {
+	                $(this).val(val.replace(/,/g, ''));
+	            }
 	        });
 
 	        // ✅ Step 3: Validate
@@ -1018,24 +1021,11 @@ $(document).ready(function() {
 	        const urlType = urlParams.get("type");
 	        const isResub = urlType && urlType.toUpperCase() === 'RESUB';
 
-	        // ✅ Previous URL logic
 	        const previousUrl = window.previousUrl || document.referrer || null;
 
 	        const redirectUrl = isResub
 	            ? (previousUrl ? previousUrl : "/BRRS/Resubmission?rptcode=M_SRWA_12C")
 	            : null;
-
-	        // ✅ Build FormData
-	        const formData = new FormData();
-	        formData.append("asondate", asondate);
-	        formData.append("type", urlType || "");
-
-	        $('#fileupload').find(':input').each(function () {
-	            const name = $(this).attr('name');
-	            if (name) {
-	                formData.append(name, $(this).val());
-	            }
-	        });
 
 	        // ✅ Select API
 	        let apiUrl = './M_SRWA_12Cupdate';
@@ -1043,13 +1033,19 @@ $(document).ready(function() {
 	            apiUrl = './UpdateM_SRWA_12C_ReSub';
 	        }
 
+	        // ✅ SERIALIZE FORM (NO FormData)
+	        const formData =
+	            $('#fileupload').serialize()
+	            + '&asondate=' + encodeURIComponent(asondate)
+	            + '&type=' + encodeURIComponent(urlType || '');
+
+	        console.log("✅ Form data prepared");
+
 	        // ✅ AJAX
 	        $.ajax({
 	            url: apiUrl,
 	            type: 'POST',
 	            data: formData,
-	            processData: false,
-	            contentType: false,
 	            dataType: 'text',
 
 	            success: function (response) {
@@ -1058,31 +1054,32 @@ $(document).ready(function() {
 	                $("#resultModalBody").text(response || "Updated Successfully.");
 	                $("#resultModal").modal("show");
 
-	                if (redirectUrl) {
-	                    // 🔵 RESUB → Redirect after modal close
-	                    $("#resultModal").off("hidden.bs.modal")
-	                        .on("hidden.bs.modal", function () {
+	                $("#resultModal")
+	                    .off("hidden.bs.modal")
+	                    .on("hidden.bs.modal", function () {
+
+	                        if (redirectUrl) {
 	                            window.location.href = redirectUrl;
-	                        });
-	                } else {
-	                    // 🟢 Normal → Reload
-	                    $("#resultModal").off("hidden.bs.modal")
-	                        .on("hidden.bs.modal", function () {
+	                        } else {
 	                            location.reload();
-	                        });
-	                }
+	                        }
+	                    });
 	            },
 
 	            error: function (jqXHR) {
 
+	                console.error("Error response:", jqXHR.responseText);
+
 	                $("#resultModalLabel").text("Error");
 	                $("#resultModalBody").text(
-	                    "Update failed: " + (jqXHR.responseText || "Unknown error")
+	                    "Update failed: " +
+	                    (jqXHR.responseText || "Unknown error")
 	                );
 	                $("#resultModal").modal("show");
 
 	                if (redirectUrl) {
-	                    $("#resultModal").off("hidden.bs.modal")
+	                    $("#resultModal")
+	                        .off("hidden.bs.modal")
 	                        .on("hidden.bs.modal", function () {
 	                            window.location.href = redirectUrl;
 	                        });
