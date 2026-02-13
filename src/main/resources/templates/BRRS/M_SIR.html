@@ -1127,20 +1127,18 @@ PURPOSE		: BRFREPORT
 		const reportId = /*[[${reportid}]]*/ null;
 		/*]]>*/
 		function closemodel() {
-		    $("#resultModal").modal("hide");
-		    $('#loader').modal('hide');
+				    const modalElement = document.getElementById('resultModal');
+				    const modal = bootstrap.Modal.getInstance(modalElement);
+				    modal.hide();
 
-		    // Check if the success message is showing
-		    const message = $("#resultModalBody").text();
+				    const message = document.getElementById("resultModalBody").innerText.toLowerCase();
 
-		    if (message.includes("Resubmission Updated Successfully")) {
-		        // ✅ Go back to the previous page
-		        window.history.back();
-		    } else {
-		        // For other messages, just reload the same page (without delay)
-		        location.reload();
-		    }
-		}
+				    if (message.includes("resubmission")) {
+				        window.history.back();
+				    } else {
+				        location.reload();
+				    }
+				}
 	</script>
 
 

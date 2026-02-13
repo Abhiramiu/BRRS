@@ -663,20 +663,19 @@ PURPOSE		: BWRBRREPORT
 
 	<script>
 		function closemodel() {
-			$("#resultModal").modal("hide");
-			$('#loader').modal('hide');
+			function closemodel() {
+					    const modalElement = document.getElementById('resultModal');
+					    const modal = bootstrap.Modal.getInstance(modalElement);
+					    modal.hide();
 
-			// Check if the success message is showing
-			const message = $("#resultModalBody").text();
+					    const message = document.getElementById("resultModalBody").innerText.toLowerCase();
 
-			if (message.includes("Resubmission Updated Successfully")) {
-				// ✅ Go back to the previous page
-				window.history.back();
-			} else {
-				// For other messages, just reload the same page
-				setTimeout(() => location.reload(), 300);
-			}
-		}
+					    if (message.includes("resubmission")) {
+					        window.history.back();
+					    } else {
+					        location.reload();
+					    }
+					}
 	</script>
 	<script>
 		

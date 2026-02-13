@@ -10,10 +10,11 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-@Entity
-@Table(name = "BRRS_Q_SMME_DEP_SUMMARYTABLE")
 
-public class Q_SMME_DEP_Summary_Entity {	
+@Entity
+@Table(name = "BRRS_Q_SMME_DEP_DETAILTABLE")
+
+public class Q_SMME_DEP_Detail_Entity {	
 	
 	
 	  // -------------------- R11 --------------------
@@ -3501,7 +3502,7 @@ public class Q_SMME_DEP_Summary_Entity {
 	public void setDel_flg(String del_flg) {
 		this.del_flg = del_flg;
 	}
-	public Q_SMME_DEP_Summary_Entity() {
+	public Q_SMME_DEP_Detail_Entity() {
 		super();
 		// TODO Auto-generated constructor stub
 	}

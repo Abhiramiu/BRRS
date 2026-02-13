@@ -466,11 +466,7 @@ PURPOSE		: BRRSREPORT
 			showResultModal('Alert', 'Development in progress');
 
 		}
-		function closemodel() {
-			$('#alert').modal('hide');
-			$('#resultModal').modal('hide');
-
-		}
+	
 		function showResultModal(title, message) {
 			// Set the text for the modal elements
 			$('#resultModalLabel').text(title);
@@ -794,224 +790,21 @@ PURPOSE		: BRRSREPORT
 		});
 
 	</SCRIPT>
-	<!-- <script>
-    // ✅ This function is for closing the modal after an action is complete.
-    function closemodel() {
-        $("#resultModal").modal("hide");
-        $('#loader').modal('hide');
-        setTimeout(function () {
-            location.reload();
-        }, 300);
-    }
 
-    // ✅ Percentage formatting logic for R29 cell
-    $(document).ready(function () {
-        let $r29Input = $("#r29_capital_require");
-
-        function formatAsPercent() {
-            let val = parseFloat($r29Input.val().replace(/,/g, "").replace("%", "")) || 0;
-            $r29Input.val(
-                val.toLocaleString( { minimumFractionDigits: 0, maximumFractionDigits: 0 }) + " %"
-            );
-        }
-
-        // Initial format
-        formatAsPercent();
-
-        // Reformat on blur
-        $r29Input.on("blur", function () {
-            formatAsPercent();
-        });
-    });
-
-    // ✅ File upload and submission logic
-    function fileuploads(btn) {
-        const asondate = btn.getAttribute("data-todate");
-        $('#loader').modal('show');
-
-        // Step 1: Calculate totals
-        calculateR17Totals();
-        calculateR21Totals();
-        calculateR21Difference();
-        calculateR22Totals();
-        calculateR22Difference();
-        calculateR23Totals();
-        calculateR29Result();
-
-        // Step 2: Remove commas + special handling for % before sending
-        $("#fileupload input[type='text']").each(function () {
-            let val = $(this).val().replace(/,/g, '');
-            if (this.id === "r29_capital_require") {
-                val = val.replace("%", "").trim(); // strip % only for R29
-            }
-            $(this).val(val);
-        });
-
-        // Step 3: Validate form
-        if (!$("#fileupload").valid()) {
-            $('#loader').modal('hide');
-            return;
-        }
-
-        // Step 4: Build one FormData object for all entities
-        const formData = new FormData();
-        formData.append("asondate", asondate);
-
-        $('#fileupload').find(':input').each(function () {
-            const name = $(this).attr('name');
-            if (name) {
-                formData.append(name, $(this).val());
-            }
-        });
-
-        // Step 5: Send Ajax request
-        $.ajax({
-            url: './FXRupdateAll',
-            type: 'POST',
-            data: formData,
-            processData: false,
-            contentType: false,
-            dataType: 'text',
-            success: function () {
-                $("#resultModalLabel").text("Success");
-                $("#resultModalBody").text("All reports updated successfully.");
-                $("#resultModal").modal("show");
-            },
-            error: function (jqXHR) {
-                console.error("Error response:", jqXHR.responseText);
-                $("#resultModalLabel").text("Error");
-                $("#resultModalBody").text("Update failed. Check console for details.");
-                $("#resultModal").modal("show");
-            },
-            complete: function () {
-                $('#loader').modal('hide');
-            }
-        });
-    }
-</script> -->
-	<!-- <script>
-function closemodel() {
-    $("#resultModal").modal("hide");
-    $('#loader').modal('hide');
-    setTimeout(function () {
-        location.reload();
-    }, 300);
-}
-
-function fileuploads(btn) {
-    var asondate = btn.getAttribute("data-todate");
-    $('#loader').modal('show');
-
-    // Pre-calculations
-    calculateR17Totals();
-    calculateR21Totals();
-    calculateR21Difference();
-    calculateR22Totals();
-    calculateR22Difference();
-    calculateR23Totals();
-    calculateR29Result();
-    calculateR29GreaterNet();
-    calculateR29NetGoldPosition();
-    console.log("✅calculated fn executed successfully");
-    // Remove commas from numeric inputs
-    $("#fileupload input[type='text']").each(function () {
-        var val = $(this).val();
-        if (val && val.includes(",")) {
-            $(this).val(val.replace(/,/g, ''));
-        }
-    });
-
-    if (!$("#fileupload").valid()) {
-        $('#loader').modal('hide');
-        return;
-    }
-
-    // ✅ One combined FormData for all entities
-    const formData = new FormData();
-    formData.append("asondate", asondate);
-
-    // --- Entity 1 fields (R10-R17) ---
-    for (let i = 10; i <= 17; i++) {
-        ["currency", "net_spot_position", "net_forward_position", "guarantees",
-        "net_future_inc_or_exp", "net_delta_wei_fx_opt_posi", "other_items",
-        "net_long_position", "or", "net_short_position"].forEach(field => {
-            const input = $("#r" + i + "_" + field);
-            if (input.length) {
-                formData.append(input.attr("name"), input.val());
-            }
-        });
-    }console.log("✅entity 1 executed successfully");
-
-    // --- Entity 2 fields (R21-R23) ---
-    for (let i = 21; i <= 23; i++) {
-        ["long", "short", "total_gross_long_short", "net_position"].forEach(field => {
-            const input = $("#r" + i + "_" + field);
-            if (input.length) {
-                formData.append(input.attr("name"), input.val());
-            }
-        });
-    }console.log("✅entity 2 executed successfully");
-
-    // --- Entity 3 fields (R29 only) ---
-    ["greater_net_long_or_short", "abs_value_net_gold_posi", "capital_require", "capital_charge"]
-        .forEach(field => {
-            const input = $("#r29_" + field);
-            if (input.length) {
-                formData.append(input.attr("name"), input.val());
-            }
-        });console.log("✅entity 3 executed successfully");
-
-    // --- Optional Entity 4 (commented in your code) ---
-    // getEntityFields(147, 193, "R194_TOT").each(function () {
-    //     formData.append($(this).attr('name'), $(this).val());
-    // });
-
-    // ✅ Single AJAX call instead of 3
-    $.ajax({
-        url: './FXRupdateAll',
-        type: 'POST',
-        data: formData,
-        processData: false,
-        contentType: false,
-        dataType: 'text',
-        success: function (response) {
-            $("#resultModalLabel").text("Success");
-            $("#resultModalBody").text(response);
-            $("#resultModal").modal("show");
-        },
-        error: function (xhr) {
-            console.log("Error response:", xhr.responseText);
-            $("#resultModalLabel").text("Error");
-            $("#resultModalBody").text("Update failed. Check console for details.");
-            $("#resultModal").modal("show");
-        },
-        complete: function () {
-            $('#loader').modal('hide');
-        }
-    });console.log("✅ajax  executed successfully");
-}
-</script> -->
 	<script>
 		function closemodel() {
-			/*    $("#resultModal").modal("hide");
-			$('#loader').modal('hide');
-			setTimeout(function () {
-				location.reload();
-				}, 300);*/
-			$("#resultModal").modal("hide");
-			$('#loader').modal('hide');
+				    const modalElement = document.getElementById('resultModal');
+				    const modal = bootstrap.Modal.getInstance(modalElement);
+				    modal.hide();
 
-			// Only reload if not from Details modal
-			if (!isDetailsModal) {
-				setTimeout(function () {
-					location.reload();
-				}, 300);
-			} else {
-				// reset flag for next modal usage
-				isDetailsModal = false;
-			}
-		}
+				    const message = document.getElementById("resultModalBody").innerText.toLowerCase();
 
+				    if (message.includes("resubmission")) {
+				        window.history.back();
+				    } else {
+				        location.reload();
+				    }
+				}
 		function fileuploads(btn) {
 			var asondate = btn.getAttribute("data-todate");
 			const type = btn.getAttribute("data-type"); // MAIN / RESUB / ARCHIVAL
