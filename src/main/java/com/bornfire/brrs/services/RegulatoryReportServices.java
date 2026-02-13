@@ -1201,7 +1201,7 @@ public class RegulatoryReportServices {
 			break;
 
 		case "M_OR2":
-			repsummary = brrs_m_or2_reportservice.getBRRS_M_OR2view(reportId, fromdate, todate, currency, dtltype,
+			repsummary = brrs_m_or2_reportservice.getM_OR2View(reportId, fromdate, todate, currency, dtltype,
 					pageable, type, version);
 			break;
 
@@ -2251,8 +2251,8 @@ public class RegulatoryReportServices {
 		case "M_OR2":
 			try {
 
-				repfile = brrs_m_or2_reportservice.getM_OR2Excel(filename, reportId, fromdate, todate, currency,
-						dtltype, type, version);
+				repfile = brrs_m_or2_reportservice.getM_OR2Excel(filename, reportId, fromdate, todate, currency, dtltype,
+						type, format, version);
 			} catch (Exception e) { // TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -4729,15 +4729,22 @@ public class RegulatoryReportServices {
 			archivalData.addAll(gpList);
 			System.out.println("Fetched M_GP archival data: " + gpList.size());
 			break;
-
+			
+			
 		case "M_OR2":
-			try {
-				archivalData = brrs_m_or2_reportservice.getM_OR2Archival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			List<Object[]> or2List = brrs_m_or2_reportservice.getM_OR2Archival();
+			archivalData.addAll(or2List);
+			System.out.println("Fetched M_OR2 archival data: " + or2List.size());
 			break;
+
+//		case "M_OR2":
+//			try {
+//				archivalData = brrs_m_or2_reportservice.getM_OR2Archival();
+//			} catch (Exception e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//			break;
 
 //		// New Archival
 //

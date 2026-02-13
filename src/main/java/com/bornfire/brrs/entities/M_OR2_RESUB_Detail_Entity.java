@@ -3,7 +3,6 @@ package com.bornfire.brrs.entities;
 
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -16,10 +15,9 @@ import javax.persistence.TemporalType;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
-@Table(name = "BRRS_M_OR2_ARCHIVALTABLE_SUMMARY")
+@Table(name = "BRRS_M_OR2_RESUB_DETAILTABLE") 
 @IdClass(M_OR2_PK.class)
-
-public class M_OR2_Archival_Summary_Entity{	
+public class M_OR2_RESUB_Detail_Entity {
 	
 	private String	r12_product; 
 	private String	r12_business_line_month; 
@@ -3062,7 +3060,7 @@ public class M_OR2_Archival_Summary_Entity{
 	public void setDel_flg(String del_flg) {
 		this.del_flg = del_flg;
 	}
-	public M_OR2_Archival_Summary_Entity() {
+	public M_OR2_RESUB_Detail_Entity() {
 		super();
 		// TODO Auto-generated constructor stub
 	}

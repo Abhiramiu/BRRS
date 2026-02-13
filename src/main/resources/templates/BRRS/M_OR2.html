@@ -386,57 +386,64 @@ function showsummary() {
 			activateTab(selectedTab);
 		};
 		function downloadfile(button) {
-			var reportid = button.getAttribute('data-reportid');
-			var asondate = button.getAttribute('data-asondate');
-			var fromdate = button.getAttribute('data-fromdate');
-			var todate = button.getAttribute('data-todate');
-			var currency = button.getAttribute('data-currency');
-			var subreportid = button.getAttribute('data-subreportid');
-			var secid = button.getAttribute('data-secid');
-			var dtltype = button.getAttribute('data-dtltype');
-			var filename = button.getAttribute('data-filename');
-			var type = button.getAttribute('data-type');
-			var version = button.getAttribute('data-version');
-			$('#loader').modal('show');
-			$.ajax({
-				url: './downloadExcel?reportid=' + reportid +
-					'&fromdate=' + fromdate +
-					'&asondate=' + asondate +
-					'&todate=' + todate +
-					'&currency=' + currency +
-					'&subreportid=' + subreportid +
-					'&secid=' + secid +
-					'&filename=' + filename +
-					'&type=' + type +
-					'&version=' + version,
-				type: 'GET',
-				xhrFields: {
-					responseType: 'blob'
-				},
-				success: function (data) {
-					$('#loader').modal('hide');
-					if (data && data.size > 100) {
-						const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
-						const url = window.URL.createObjectURL(blob);
-						const a = document.createElement('a');
-						a.style.display = 'none';
-						a.href = url;
-						a.download = filename;
-						document.body.appendChild(a);
-						a.click();
-						window.URL.revokeObjectURL(url);
-						document.body.removeChild(a);
-						showResultModal('BRRS', filename + ' downloaded successfully.');
-					} else {
-						showResultModal('Information', 'No data was available to create a download.');
-					}
-				},
-				error: function (jqXHR, textStatus, errorThrown) {
-					$('#loader').modal('hide');
-					console.error("Download failed:", textStatus, errorThrown);
-					showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
-				}
-			});
+		    var reportid = button.getAttribute('data-reportid');
+		    var asondate = button.getAttribute('data-asondate');
+		    var fromdate = button.getAttribute('data-fromdate');
+		    var todate = button.getAttribute('data-todate');
+		    var currency = button.getAttribute('data-currency');
+		    var subreportid = button.getAttribute('data-subreportid');
+		    var secid = button.getAttribute('data-secid');
+		    var dtltype = button.getAttribute('data-dtltype');
+		    var filename = button.getAttribute('data-filename');
+		    var type = button.getAttribute('data-type');
+		    var version = button.getAttribute('data-version');
+		    var format = button.getAttribute('data-format');
+
+		    if (format === null) {
+		        format = '';   // treat as null
+		    }
+
+		    $('#loader').modal('show');
+
+		    $.ajax({
+		        url: './downloadExcel?reportid=' + reportid +
+		             '&fromdate=' + fromdate +
+		             '&asondate=' + asondate +
+		             '&todate=' + todate +
+		             '&currency=' + currency +
+		             '&subreportid=' + subreportid +
+		             '&secid=' + secid +
+		             '&filename=' + filename +
+		             '&type=' + type +
+		             '&version=' + version +
+		             '&format=' + format,
+		        type: 'GET',
+		        xhrFields: {
+		            responseType: 'blob'
+		        },
+		        success: function (data) {
+		            $('#loader').modal('hide');
+		            if (data && data.size > 100) {
+		                const blob = new Blob([data], { type: 'application/vnd.ms-excel' });
+		                const url = window.URL.createObjectURL(blob);
+		                const a = document.createElement('a');
+		                a.style.display = 'none';
+		                a.href = url;
+		                a.download = filename;
+		                document.body.appendChild(a);
+		                a.click();
+		                window.URL.revokeObjectURL(url);
+		                document.body.removeChild(a);
+		                showResultModal('BRRS', filename + ' downloaded successfully.');
+		            } else {
+		                showResultModal('Information', 'No data was available to create a download.');
+		            }
+		        },
+		        error: function () {
+		            $('#loader').modal('hide');
+		            showResultModal('Error', 'An error occurred while downloading the file.');
+		        }
+		    });
 		}
 		
 		function editRecord() {
@@ -1770,29 +1777,28 @@ function fileuploads(btn) {
 							style="color: white !important; font-size: 16px; margin-right: 20px;margin-left: 20px;">Report Date: <span th:text="${#strings.replace(asondate, '/', '-')}">2025-09-18</span>
 						</span>
 						<!-- Buttons -->
-						<input type="hidden" id="selectedTab" th:value="${displaymode}">
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showsummary();"
-							th:if="${displaymode == 'Details'}">Summary</button>
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails();"
-							th:if="${displaymode == 'summary'}">Details</button>
+						<!-- DETAILS button (hide when dtltype = 'detail') -->
+						<button type="button" class="custom-tab-btn"
+							id="custom-tab-btnDetails" onclick="showdetails()"
+							th:if="${dtltype ne 'detail'}">Details</button>
+
+						<!-- SUMMARY button (show when dtltype = 'detail') -->
+						<button type="button" class="custom-tab-btn"
+							id="custom-tab-btnSummary" onclick="showsummary()"
+							th:if="${dtltype eq 'detail'}">Summary</button>
 				
 						<!-- Modify button -->
-						<button type="button"
-        class="custom-tab-btn"
-        onclick="showmodify(this);"
-        title="Click to EDIT Records"
-        th:classappend="${session.PERMISSIONS == 'W' and dtltype == 'report'} ? 'addedit'"
-        th:if="${type != 'ARCHIVAL' and dtltype ne 'detail'}"
-        id="addRecord">
-    Modify
-</button>
-
+						<button type="button" class="custom-tab-btn"
+							onclick="showmodify(this);" title="Click to EDIT Records"
+							th:classappend="${session.PERMISSIONS == 'W' and dtltype == 'report'} ? 'addedit'"
+							th:if="${type != 'ARCHIVAL' and dtltype ne 'detail'}"
+							id="addRecord">Modify</button>
 
 						<!-- Cancel button (hidden initially) -->
 						<button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord"
 							onclick="cancelModify();" style="display: none;">Cancel</button>
 						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
-							onclick="downloadfile(this)" th:if="${displaymode == 'summary' or displaymode == 'Details'}"
+							onclick="downloadfile(this)" th:if="${displaymode == 'summary' or displaymode == 'detail' or displaymode == 'resub'}"
 							th:attr="data-reportid=${reportid},
                    data-asondate=${asondate},
                    data-fromdate=${fromdate},
@@ -1802,13 +1808,12 @@ function fileuploads(btn) {
                    data-filename='M_OR2.xlsx',
                    data-type=${type},
                    data-version=${version != null ? version : ''}" style="font-family: Arial;font-weight: bold;">
-							<i class="fa fa-download"></i> Download
+							<i class="fa fa-download"></i> Format
 						</button>
 						
-						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
-							 onclick="downloadfile(this)" 
-								th:if="${displaymode == 'summary' or displaymode == 'Details'}"
-							
+						<button type="button" class="custom-tab-btn "
+							id="custom-tab-btnAdd" onclick="downloadfile(this)"
+							th:if="${displaymode == 'summary' or displaymode == 'detail'or displaymode == 'resub'}"
 							th:attr="data-reportid=${reportid},
             data-asondate=${asondate},
             data-fromdate=${fromdate},
@@ -1816,28 +1821,40 @@ function fileuploads(btn) {
             data-currency=${currency}, 
             data-dtltype=${dtltype},
             data-filename='EMAIL_M_OR2.xlsx',
-            data-type='email',
-            data-version=${version != null ? version : ''}" style="font-family: Arial;font-weight: bold;">
-								<i class="fa fa-download"></i> Email Format
-							
+            data-type=${type},
+            data-format='email',
+            data-version=${version != null ? version : ''}"
+							style="font-family: Arial; font-weight: bold;">
+							<i class="fa fa-download"></i> Email 
+
 						</button>
 
 					</div>
 					
 				</div>
-				<h1 th:if="${displaymode == 'summary' and type == 'ARCHIVAL' and displaymode != 'Details'}"
+				<h1 th:if="${displaymode == 'summary' and type == 'ARCHIVAL' and displaymode != 'detail'}"
   style="text-align: left; font-family: arial;   font-weight: bold; color: white;  font-size: 20px;  
 				background-color: rgb(107, 122, 143); margin-top:10px; margin-bottom:10px;padding-top: 10px; padding-bottom: 10px; " >Archival Summary View - M_OR2</h1>
 				
-				<h1 th:if="${displaymode == 'Details' and type == 'ARCHIVAL' and displaymode != 'summary'}"
+				<h1 th:if="${displaymode == 'detail' and type == 'ARCHIVAL' and displaymode != 'summary'}"
   style="text-align: left; font-family: arial;   font-weight: bold; color: white;  font-size: 20px;  
 				background-color: rgb(107, 122, 143); margin-top:10px; margin-bottom:10px;padding-top: 10px; padding-bottom: 10px; " >Archival Detail View - M_OR2</h1>
 
 				<h1 th:if="${displaymode == 'summary'and type != 'ARCHIVAL'}"  style="text-align: left; font-family: arial;   font-weight: bold; color: white;  font-size: 20px;  
 				background-color: rgb(107, 122, 143); margin-top:10px; margin-bottom:10px;padding-top: 10px; padding-bottom: 10px; " >Summary View - M_OR2 </h1>
-			<h1 th:if="${displaymode == 'Details' and type != 'ARCHIVAL'}"  style="text-align: left;   font-family: arial; font-weight: bold;  color: white; font-size: 20px; 
+			<h1 th:if="${displaymode == 'detail' and type != 'ARCHIVAL'}"  style="text-align: left;   font-family: arial; font-weight: bold;  color: white; font-size: 20px; 
 			 background-color: rgb(107, 122, 143); margin-top:10px; margin-bottom:10px; padding-top: 10px; padding-bottom: 10px;  ">Detail View - M_OR2</h1>
-				<div th:if="${displaymode == 'summary' or displaymode == 'Details'}">
+				  <h1
+					th:if="${displaymode == 'resub' and type == 'RESUB' and dtltype ne 'detail' }"
+					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">
+					Resubmission Summary View - M_OR2</h1>
+
+				<h1
+					th:if="${displaymode == 'resub' and type == 'RESUB' and dtltype ne 'report' }"
+					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">
+					Resubmission Detail View - M_OR2</h1>
+					
+						<div th:if="${displaymode == 'summary' or displaymode == 'detail' or displaymode == 'resub'}">
 					<div class="row">
 						<div class="col-sm-12">
 						<form action="#" method="POST" id="fileupload">
@@ -1851,7 +1868,7 @@ function fileuploads(btn) {
 										<!-- Row 1 -->
 										<tr>
     <th colspan="12"
-        style="background-color: white; color: black; vertical-align: bottom; font-weight: bold; text-align: left; border: none !important;">
+        style="background-color: #D8D8D8; color: black; vertical-align: bottom; font-weight: bold; text-align: left; border: none !important; ">
         RISK-WEIGHTED ASSETS FOR OPERATIONAL RISK: THE STANDARDISED APPROACH
     </th>
 </tr>
@@ -1867,42 +1884,42 @@ function fileuploads(btn) {
 
 										<!--Row 2-->
 										<tr>
-											<th style="width: 50px; background-color: white; vertical-align:middle; font-weight: bold;"></th>
+											<th style="width: 50px; background-color: white; vertical-align:middle; font-weight: bold; border-top: 3px solid black !important;"></th>
 											<th
-												style="text-align: left; background-color: #D8D8D8;vertical-align:bottom; font-weight: bold; color: black;">
+												style="text-align: left; background-color: #D8D8D8;vertical-align:bottom; font-weight: bold; color: black; border-top: 3px solid black !important; ">
 												Year</th>
 											<th
-												style="text-align: left; background-color: #D8D8D8;vertical-align:bottom; font-weight: bold; color: black;">
+												style="text-align: left; background-color: #D8D8D8;vertical-align:bottom; font-weight: bold; color: black; border-top: 3px solid black !important;">
 												Business Line/Month</th>
 											<th
-												style="text-align: right; background-color: #D8D8D8;vertical-align:middle; font-weight: bold; color: black;">
+												style="text-align: right; background-color: #D8D8D8;vertical-align:middle; font-weight: bold; color: black; border-top: 3px solid black !important; ">
 												Corporate Finance</th>
 											<th
-												style="text-align: right; background-color: #D8D8D8;vertical-align:middle; font-weight: bold; color: black;">
+												style="text-align: right; background-color: #D8D8D8;vertical-align:middle; font-weight: bold; color: black; border-top: 3px solid black !important;">
 												Trading and Sales</th>
 											<th
-												style="text-align: right; background-color: #D8D8D8;vertical-align:middle; font-weight: bold; color: black;">
+												style="text-align: right; background-color: #D8D8D8;vertical-align:middle; font-weight: bold; color: black; border-top: 3px solid black !important;">
 												Retail Banking</th>
 											<th
-												style="text-align: right; background-color: #D8D8D8;vertical-align:middle; font-weight: bold; color: black;">
+												style="text-align: right; background-color: #D8D8D8;vertical-align:middle; font-weight: bold; color: black; border-top: 3px solid black !important;">
 												Commercial Banking</th>
 											<th
-												style="text-align: right; background-color: #D8D8D8;vertical-align:middle; font-weight: bold; color: black;">
+												style="text-align: right; background-color: #D8D8D8;vertical-align:middle; font-weight: bold; color: black; border-top: 3px solid black !important;">
 												Payments and Settlemements</th>
 											<th
-												style="text-align: right; background-color: #D8D8D8;vertical-align:middle; font-weight: bold; color: black;">
+												style="text-align: right; background-color: #D8D8D8;vertical-align:middle; font-weight: bold; color: black; border-top: 3px solid black !important;">
 												Agency Services</th>
 											<th
-												style="text-align: right; background-color: #D8D8D8;vertical-align:middle; font-weight: bold; color: black;">
+												style="text-align: right; background-color: #D8D8D8;vertical-align:middle; font-weight: bold; color: black; border-top: 3px solid black !important;">
 												Asset Managemet</th>
 											<th
-												style="text-align: right; background-color: #D8D8D8;vertical-align:middle; font-weight: bold; color: black;">
+												style="text-align: right; background-color: #D8D8D8;vertical-align:middle; font-weight: bold; color: black; border-top: 3px solid black !important;">
 												Retail Brokerage</th>
 											<th
-												style="text-align: right; background-color: #D8D8D8;vertical-align:middle; font-weight: bold; color: black;">
+												style="text-align: right; background-color: #D8D8D8;vertical-align:middle; font-weight: bold; color: black; border-top: 3px solid black !important;">
 												Operational Risk Capital Charge</th>
 											<th
-												style="text-align: right; background-color: #D8D8D8;vertical-align:middle; font-weight: bold; color: black;">
+												style="text-align: right; background-color: #D8D8D8;vertical-align:middle; font-weight: bold; color: black; border-top: 3px solid black !important;">
 												Risk Weight Factor</th>
 										</tr>
 										
