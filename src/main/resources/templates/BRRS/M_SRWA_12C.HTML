@@ -458,6 +458,17 @@ function showdetails() {
 		location.href = Callurl;
 
 	}
+	function showsummaryResub() {
+		$('#loader').modal('show');
+		var Callurl = /*[[@{'/Reports/' + ${reportid} (
+				dtltype='report', 
+				fromdate=${fromdate}, 
+				todate=${todate}, 
+				type='RESUB', 
+				asondate=${asondate},
+				version=${version})}]]*/;
+		location.href = Callurl;
+	}
     </script>
 
 <script>
@@ -500,6 +511,13 @@ function downloadfile(button) {
 	var filename = button.getAttribute('data-filename');
 	var type = button.getAttribute('data-type');
 	var version = button.getAttribute('data-version');
+	var format = button.getAttribute('data-format');
+
+	 if (format === null) {
+	        format = '';   // treat as null
+	    }
+
+	 
 	$('#loader').modal('show');
 	$.ajax({
 		url: './downloadExcel?reportid=' + reportid +
@@ -511,7 +529,8 @@ function downloadfile(button) {
 			'&secid=' + secid +
 			'&filename=' + filename +
 			'&type=' + type +
-			'&version=' + version,
+			'&version=' + version +
+            '&format=' + format,
 		type: 'GET',
 		xhrFields: {
 			responseType: 'blob'
@@ -971,10 +990,11 @@ $(document).ready(function() {
 
 	
 	function fileuploads(btn) {
+
 	    try {
+
 	        const asondate = btn.getAttribute("data-todate");
 
-	        // Show loader
 	        $('#loader').modal('show');
 
 	        // ✅ Step 1: Calculate totals
@@ -982,28 +1002,34 @@ $(document).ready(function() {
 	            calculateRwaForRows();
 	        }
 
-	        // ✅ Step 2: Remove commas from all text inputs
+	        // ✅ Step 2: Remove commas
 	        $("#fileupload input[type='text']").each(function () {
 	            $(this).val($(this).val().replace(/,/g, ''));
 	        });
 
-	        // ✅ Step 3: Validate form
+	        // ✅ Step 3: Validate
 	        if (!$("#fileupload").valid()) {
 	            $('#loader').modal('hide');
 	            return;
 	        }
 
-	        // ✅ Retrieve type from URL
+	        // ✅ Detect RESUB
 	        const urlParams = new URLSearchParams(window.location.search);
 	        const urlType = urlParams.get("type");
-	        const type = urlType || "";
+	        const isResub = urlType && urlType.toUpperCase() === 'RESUB';
+
+	        // ✅ Previous URL logic
+	        const previousUrl = window.previousUrl || document.referrer || null;
+
+	        const redirectUrl = isResub
+	            ? (previousUrl ? previousUrl : "/BRRS/Resubmission?rptcode=M_SRWA_12C")
+	            : null;
 
 	        // ✅ Build FormData
 	        const formData = new FormData();
 	        formData.append("asondate", asondate);
-	        formData.append("type", type);
+	        formData.append("type", urlType || "");
 
-	        // ✅ Append all input fields to FormData
 	        $('#fileupload').find(':input').each(function () {
 	            const name = $(this).attr('name');
 	            if (name) {
@@ -1011,13 +1037,13 @@ $(document).ready(function() {
 	            }
 	        });
 
-	        // ✅ Choose endpoint based on type
+	        // ✅ Select API
 	        let apiUrl = './M_SRWA_12Cupdate';
-	        if (urlType && urlType.toUpperCase() === 'RESUB') {
+	        if (isResub) {
 	            apiUrl = './UpdateM_SRWA_12C_ReSub';
 	        }
 
-	        // ✅ Send AJAX request
+	        // ✅ AJAX
 	        $.ajax({
 	            url: apiUrl,
 	            type: 'POST',
@@ -1025,16 +1051,44 @@ $(document).ready(function() {
 	            processData: false,
 	            contentType: false,
 	            dataType: 'text',
+
 	            success: function (response) {
+
 	                $("#resultModalLabel").text("BRRS");
-	                $("#resultModalBody").text(response);
+	                $("#resultModalBody").text(response || "Updated Successfully.");
 	                $("#resultModal").modal("show");
+
+	                if (redirectUrl) {
+	                    // 🔵 RESUB → Redirect after modal close
+	                    $("#resultModal").off("hidden.bs.modal")
+	                        .on("hidden.bs.modal", function () {
+	                            window.location.href = redirectUrl;
+	                        });
+	                } else {
+	                    // 🟢 Normal → Reload
+	                    $("#resultModal").off("hidden.bs.modal")
+	                        .on("hidden.bs.modal", function () {
+	                            location.reload();
+	                        });
+	                }
 	            },
+
 	            error: function (jqXHR) {
+
 	                $("#resultModalLabel").text("Error");
-	                $("#resultModalBody").text("Update failed: " + jqXHR.responseText);
+	                $("#resultModalBody").text(
+	                    "Update failed: " + (jqXHR.responseText || "Unknown error")
+	                );
 	                $("#resultModal").modal("show");
+
+	                if (redirectUrl) {
+	                    $("#resultModal").off("hidden.bs.modal")
+	                        .on("hidden.bs.modal", function () {
+	                            window.location.href = redirectUrl;
+	                        });
+	                }
 	            },
+
 	            complete: function () {
 	                $('#loader').modal('hide');
 	            }
@@ -1102,9 +1156,19 @@ $(document).ready(function() {
 
 						<!-- Buttons -->
         <input type="hidden" id="selectedTab" th:value="${displaymode}">
-        <button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showsummary();" th:if="${displaymode == 'Details'}">Summary</button>
-        <button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails();" th:if="${displaymode == 'summary'}">Details</button>
-        
+      				 	<button type="button" class="custom-tab-btn"
+							id="custom-tab-btnSummary" onclick="showsummary();"
+							th:if="${displaymode == 'Details'}">Summary</button>
+						
+						<button type="button" class="custom-tab-btn"
+							id="custom-tab-btnSummary" onclick="showsummaryResub();"
+							th:if="${displaymode == 'resubDetail'}">Summary</button>
+						
+						<button type="button" class="custom-tab-btn"
+							id="custom-tab-btnDetails" onclick="showdetails();"
+							th:if="${displaymode == 'summary' or displaymode == 'resubSummary'}">Details</button>
+		
+		 
         
         
         
@@ -1128,8 +1192,9 @@ $(document).ready(function() {
         
         
         
-        <button type="button" class="custom-tab-btn" id="custom-tab-btnAdd" th:if="${displaymode == 'summary' or displaymode == 'Details'}"
-            th:attr="data-reportid=${reportid}, 
+        <button type="button" class="custom-tab-btn" id="custom-tab-btnAdd" 
+        th:if="${displaymode == 'summary' or displaymode == 'Details' or displaymode == 'resubSummary'or displaymode == 'resubDetail'}"
+	    th:attr="data-reportid=${reportid}, 
                      data-asondate=${asondate}, 
                      data-fromdate=${fromdate}, 
                      data-todate=${todate}, 
@@ -1140,26 +1205,13 @@ $(document).ready(function() {
                      data-version=${version}"
                      
             onclick="downloadfile(this);">
-            <i class="fa fa-download"></i>
+            <i class="fa fa-download"></i> Format
         </button>
-       <!--  <button
-		  type="button"
-		  class="custom-tab-btn"
-		  id="custom-tab-btnAdd"
-		  th:if="${displaymode == 'Details'}"
-		  onclick="startReport(this);"
-		  th:attr="
-		    data-fromdate=${fromdate},
-		    data-todate=${todate},
-		    data-filename='M_SRWA_12CDetail'
-		  ">
-		  <i class="fa fa-download"></i>
-		</button> -->
-		
+      
 		
 						<button type="button" class="custom-tab-btn "
 							id="custom-tab-btnAdd" onclick="downloadfile(this)"
-							th:if="${displaymode == 'summary' or displaymode == 'Details'}"
+							th:if="${displaymode == 'summary' or displaymode == 'Details'or displaymode == 'resubSummary'or displaymode == 'resubDetail'}"
 							th:attr="data-reportid=${reportid},
             data-asondate=${asondate},
             data-fromdate=${fromdate},
@@ -1167,10 +1219,11 @@ $(document).ready(function() {
             data-currency=${currency}, 
             data-dtltype=${dtltype},
             data-filename='EMAIL_M_SRWA12c.xlsx',
-            data-type='email',
+           data-type=${type},
+            data-format='email',
             data-version=${version != null ? version : ''}"
 							style="font-family: Arial; font-weight: bold;">
-							<i class="fa fa-download"></i> Email Format
+							<i class="fa fa-download"></i> Email 
 
 						</button>
 		
@@ -1194,8 +1247,23 @@ $(document).ready(function() {
 					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">Detail
 					View - M-SRWA_12C</h1>
 			
-			<div th:if="${displaymode == 'summary' or displaymode == 'Details'}">
-			<div class="row" >
+			<h1 th:if="${type == 'RESUB' and displaymode == 'resubSummary'}" style="text-align: left; font-weight: bold; 
+				          color: white; font-size: 20px;
+				          background-color: rgb(107, 122, 143); 
+				          margin-top:10px; margin-bottom:10px; padding: 5px;">
+					Re-submission Summary View - M-SRWA_12C
+				</h1>
+
+				<h1 th:if="${type == 'RESUB' and displaymode == 'resubDetail'}" style="text-align: left; font-weight: bold;
+				          color: white; font-size: 20px;
+				          background-color: rgb(107, 122, 143); 
+				          margin-top:10px; margin-bottom:10px; padding: 5px;">
+					Re-submission Detail View - M-SRWA_12C
+				</h1>
+				
+				
+			<div th:if="${displaymode == 'summary' or displaymode == 'Details'or displaymode == 'resubSummary'or displaymode == 'resubDetail'}">
+				<div class="row" >
 				<div class="col-sm-12">
 					<form action="#" method="POST" id="fileupload">
 					<div class="table-wrapper table-responsive scrollable-table-container" style="border-right: 1px solid #dee2e6; ">
@@ -2326,7 +2394,8 @@ $(document).ready(function() {
 
 									<button id="submitButton" type="button"
 										class="custom-tab-btn Show_input" form="fileupload"
-										th:attr="data-todate=${asondate}" onclick="fileuploads(this);"
+										th:attr="data-todate=${asondate},data-type=${type}"
+										onclick="fileuploads(this);"
 										style="display: none;">Submit</button>
 								</div>
 								
@@ -2424,7 +2493,7 @@ $(document).ready(function() {
 /* Your existing CSS - this is the correct approach */
 .scrollable-table-container {
 	/* This is the key: it creates the scroll context */
-	max-height: 720px;
+	max-height: 550px;
 	/* Or a suitable height like 80vh for responsive design */
 	overflow-y: auto;
 	border: 1px solid #ccc;
@@ -2470,7 +2539,7 @@ $(document).ready(function() {
 
 <style>
 .inner {
-	max-height: 600px; /* Adjust height as needed */
+	max-height: 550px; /* Adjust height as needed */
 	overflow: auto;
 	border: 1px solid #dee2e6;
 }

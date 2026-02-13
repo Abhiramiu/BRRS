@@ -314,45 +314,40 @@ label.error {
 
 /* 🚌 Bus display style box */
 /* 🚌 Bus display style box */
-.boards {
-	transform: translateY(6px);
-	background-color: rgb(107, 122, 143);
-	color: white;
-	padding: 5px 80px;
-	border-radius: 8px;
-	overflow: hidden;
-	white-space: nowrap;
-	flex: 1; /* ✅ makes it take available space dynamically */
-	min-width: 200px;
-	box-shadow: 0 0 10px rgb(107, 122, 143);
-	position: relative;
-}
+/* 🚌 Bus display style box */
+					.boards {
+						transform: translateY(6px);
+					  background-color: rgb(107, 122, 143);
+					  color: white;
+					  padding: 5px 5px;
+					  border-radius: 8px;
+					  overflow: hidden;
+					  white-space: nowrap;
+					  flex: 1; /* ✅ makes it take available space dynamically */
+					  min-width: 200px;
+					  box-shadow: 0 0 10px rgb(107, 122, 143);
+					  position: relative;
+					}
 
-/* ✨ Scrolling animation */
-.scrolling-text {
-	display: inline-block;
-	font-family: "Courier New", monospace;
-	font-weight: bold;
-	letter-spacing: 1px;
-	animation: scroll-left 10s linear infinite;
-}
+		/* ✨ Scrolling animation */
+		.scrolling-text {
+			display: inline-block;
+			font-family: "Courier New", monospace;
+			font-weight: bold;
+			letter-spacing: 1px;
+			animation: scroll-left 10s linear infinite;
+		}
 
-/* Animation keyframes */
-@
-keyframes scroll-left { 0% {
-	transform: translateX(100%);
-}
-100%
-{
-transform
-:
- 
-translateX
-(-100%);
+		/* Animation keyframes */
+		@keyframes scroll-left {
+			0% {
+				transform: translateX(100%);
+			}
 
-			
-}
-}
+			100% {
+				transform: translateX(-100%);
+			}
+		}
 </style>
 <script th:inline="javascript">
 
@@ -1204,7 +1199,7 @@ function cancelModify() {
 	// This is the main function that orchestrates the entire form submission process.
 	// It is triggered by the "Update" button click.
 // Make the function global so onclick="fileuploads(this)" can see it
-window.fileuploads = function (btn) {
+ /*function fileuploads (btn) {
     try {
         // ✅ Get report date
         const asondate = btn.getAttribute("data-todate");
@@ -1308,6 +1303,95 @@ window.fileuploads = function (btn) {
         console.error("Error during file upload:", error);
     }
 };
+*/
+function fileuploads(btn) {
+
+    try {
+
+        const asondate = btn.getAttribute("data-todate");
+
+        $('#loader').modal('show');
+
+        if (typeof calculateTotals === "function") {
+            calculateTotals();
+        }
+
+        // Remove commas
+        $("#fileupload input[type='text']").each(function () {
+            const val = $(this).val();
+            if (val && val.includes(",")) {
+                $(this).val(val.replace(/,/g, ''));
+            }
+        });
+
+        if (!$("#fileupload").valid()) {
+            $('#loader').modal('hide');
+            return;
+        }
+
+        // Get type from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlType = urlParams.get("type");
+
+        const isResub = urlType && urlType.toUpperCase() === 'RESUB';
+
+        // ✅ Use SERIALIZE (NOT FormData)
+        const formData =
+            $('#fileupload').serialize()
+            + '&asondate=' + encodeURIComponent(asondate)
+            + '&type=' + encodeURIComponent(urlType || '');
+
+        console.log("✅ Form data prepared");
+
+        let apiUrl = './M_CA4update';
+        if (isResub) {
+            apiUrl = './UpdateM_CA4_ReSub';
+        }
+
+        $.ajax({
+            url: apiUrl,
+            type: 'POST',
+            data: formData,
+            dataType: 'text',
+
+            success: function (response) {
+                $("#resultModalLabel").text("BRRS");
+                $("#resultModalBody").text(response);
+                $("#resultModal").modal("show");
+
+                $("#resultModal")
+                    .off("hidden.bs.modal")
+                    .on("hidden.bs.modal", function () {
+                        if (isResub) {
+                            window.location.href =
+                                window.previousUrl
+                                    ? window.previousUrl
+                                    : "/BRRS/Resubmission?rptcode=M_CA4";
+                        }
+                    });
+            },
+
+            error: function (jqXHR) {
+                console.log("Error response:", jqXHR.responseText);
+
+                $("#resultModalLabel").text("Error");
+                $("#resultModalBody").text(
+                    "Update failed: " +
+                    (jqXHR.responseText || "Unknown error")
+                );
+                $("#resultModal").modal("show");
+            },
+
+            complete: function () {
+                $('#loader').modal('hide');
+            }
+        });
+
+    } catch (error) {
+        $('#loader').modal('hide');
+        console.error("Error during file upload:", error);
+    }
+}
 
 
 
@@ -1571,7 +1655,7 @@ window.fileuploads = function (btn) {
 													class="display-input Show_input " type="text"
 													th:value="${report.r10_amt_name_of_sub1 != null ? #numbers.formatDecimal(report.r10_amt_name_of_sub1, 1, 'COMMA', 0, 'POINT') : '0'}"
 													id="r10_amt_name_of_sub1" name="r10_amt_name_of_sub1"
-													style="background-color: #FFFFFF; width: 300px; height: 28px; border-color: transparent; text-align: right;"
+													style="background-color: #FFFFFF; width: 100px; height: 28px; border-color: transparent; text-align: right;"
 													readonly /></td>
 
 

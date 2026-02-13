@@ -2439,7 +2439,7 @@ public class RegulatoryReportServices {
 		case "M_SRWA_12C":
 			try {
 				repfile = BRRS_M_SRWA_12C_reportservice.getBRRS_M_SRWA_12CExcel(filename, reportId, fromdate, todate,
-						currency, dtltype, type, version);
+						currency, dtltype, type, format, version);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

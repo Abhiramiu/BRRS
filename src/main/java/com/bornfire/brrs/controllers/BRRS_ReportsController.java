@@ -747,7 +747,7 @@ public class BRRS_ReportsController {
 			// call services
 			BRRS_M_SRWA_12C_reportservice.updateReport(request);
 
-			return ResponseEntity.ok(" Updated Successfully.");
+			return ResponseEntity.ok(" Modified Successfully.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -758,7 +758,7 @@ public class BRRS_ReportsController {
 	@ResponseBody
 	public ResponseEntity<String> updateReportReSub(
 			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@ModelAttribute M_SRWA_12C_Summary_Entity request, HttpServletRequest req) {
+			@ModelAttribute M_SRWA_12C_RESUB_Summary_Entity request, HttpServletRequest req) {
 
 		try {
 			System.out.println("Came to Resub Controller");
@@ -772,7 +772,7 @@ public class BRRS_ReportsController {
 			}
 
 			// Call service to create a new versioned row
-			BRRS_M_SRWA_12C_reportservice.updateReportResub(request);
+			BRRS_M_SRWA_12C_reportservice.updateResubReport(request);
 
 			return ResponseEntity.ok("Resubmission Updated Successfully");
 

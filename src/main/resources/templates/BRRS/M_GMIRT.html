@@ -404,6 +404,17 @@ $(window).on('beforeunload', function() {
 			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate}, version=${version})}]]*/;
 			location.href = Callurl;
 		}
+		function showsummaryResub() {
+			$('#loader').modal('show');
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (
+					dtltype='report', 
+					fromdate=${fromdate}, 
+					todate=${todate}, 
+					type='RESUB', 
+					asondate=${asondate},
+					version=${version})}]]*/;
+			location.href = Callurl;
+		}
     </script>
 
 <script>
@@ -446,7 +457,11 @@ function downloadfile(button) {
 			var filename = button.getAttribute('data-filename');
 			var type = button.getAttribute('data-type');
 			var version = button.getAttribute('data-version');
+			var format = button.getAttribute('data-format');
 
+		    if (format === null) {
+		        format = '';   // treat as null
+		    }
 
 			var loader = new bootstrap.Modal(document.getElementById('loader'), {backdrop: 'static',keyboard: false});
 			loader.show();
@@ -461,7 +476,9 @@ function downloadfile(button) {
 					'&secid=' + secid +
 					'&filename=' + filename +
 					'&type=' + type +
-					'&version=' + version,
+					'&version=' + version +
+		             '&format=' + format,
+		             
 				type: 'GET',
 				xhrFields: {
 					responseType: 'blob'
@@ -890,71 +907,130 @@ $(document).ready(function() {
 	// This is the main function that orchestrates the entire form submission process.
 	// It is triggered by the "Update" button click.
 // Make the function global so onclick="fileuploads(this)" can see it
-window.fileuploads = function(btn) {
-    // Get the report date from the button's data attribute
-    const asondate = btn.getAttribute("data-todate");
+window.fileuploads = function (btn) {
 
-    // Show loading spinner
-    $('#loader').modal('show');
+    try {
 
-    // Ensure totals are calculated before submission
-    if (typeof  calculateR12Totals === "function") calculateR12Totals();
+        const asondate = btn.getAttribute("data-todate");
+        const type = btn.getAttribute("data-type");
 
-    // Remove commas from all text inputs inside #fileupload
-    $("#fileupload input[type='text']").each(function () {
-        const val = $(this).val();
-        if (val && val.includes(",")) {
-            $(this).val(val.replace(/,/g, ''));
+        $('#loader').modal('show');
+
+        // ✅ Calculate totals if function exists
+        if (typeof calculateR12Totals === "function") {
+            calculateR12Totals();
         }
-    });
 
-    // Validate form
-    if (!$("#fileupload").valid()) {
-        $('#loader').modal('hide');
-        return;
-    }
-
-    // Prepare FormData
-    const formData1 = new FormData();
-    formData1.append("asondate", asondate);
-
- // Append row fields to FormData
-    for (let i = 9; i <= 12; i++) {
-        ["currency", "pula", "usd", "zar", "gbp", "euro", "jpy", "rupee", "renminbi", "other", "tot_cap_req"]
-        .forEach(field => {
-
-            
-            const input = $("#r" + i + "_" + field);
-            if (input.length) {
-                formData1.append(input.attr("name"), input.val());
+        // ✅ Remove commas from text inputs
+        $("#fileupload input[type='text']").each(function () {
+            const val = $(this).val();
+            if (val && val.includes(",")) {
+                $(this).val(val.replace(/,/g, ''));
             }
         });
-    }
 
-    // Send AJAX request
-    $.ajax({
-        url: './M_GMIRTupdate',
-        type: 'POST',
-        data: formData1,
-        processData: false,
-        contentType: false,
-        dataType: 'text'
-    })
-    .done(function() {
-        $("#resultModalLabel").text("BRRS");
-        $("#resultModalBody").text("Modified successfully.");
-        $("#resultModal").modal("show");
-    })
-    .fail(function(jqXHR) {
-        console.error("Error response:", jqXHR.responseText);
-        $("#resultModalLabel").text("Error");
-        $("#resultModalBody").text("One or more updates failed. Check console for details.");
-        $("#resultModal").modal("show");
-    })
-    .always(function() {
+        // ✅ Validate form
+        if (!$("#fileupload").valid()) {
+            $('#loader').modal('hide');
+            return;
+        }
+
+        // ✅ Detect RESUB
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlType = urlParams.get("type");
+        const isResub = (type && type.toUpperCase() === 'RESUB') ||
+                        (urlType && urlType.toUpperCase() === 'RESUB');
+
+        // ✅ Previous URL logic
+        const previousUrl = window.previousUrl || document.referrer || null;
+
+        const redirectUrl = isResub
+            ? (previousUrl ? previousUrl : "/BRRS/Resubmission?rptcode=M_GMIRT")
+            : null;
+
+        // ✅ Select API dynamically
+        let apiUrl = './M_GMIRTupdate';
+        if (isResub) {
+            apiUrl = './UpdateM_GMIRT_ReSub';
+        }
+
+        // ✅ Prepare FormData
+        const formData1 = new FormData();
+        formData1.append("asondate", asondate);
+        formData1.append("type", type || "");
+
+        // ✅ Append row fields
+        for (let i = 9; i <= 12; i++) {
+            ["currency", "pula", "usd", "zar", "gbp", "euro", "jpy",
+             "rupee", "renminbi", "other", "tot_cap_req"]
+            .forEach(field => {
+
+                const input = $("#r" + i + "_" + field);
+                if (input.length) {
+                    formData1.append(input.attr("name"), input.val());
+                }
+            });
+        }
+
+        // ✅ AJAX Call
+        $.ajax({
+            url: apiUrl,
+            type: 'POST',
+            data: formData1,
+            processData: false,
+            contentType: false,
+            dataType: 'text'
+        })
+
+        .done(function (response) {
+
+            $("#resultModalLabel").text("BRRS");
+            $("#resultModalBody").text(response || "Modified successfully.");
+            $("#resultModal").modal("show");
+
+            if (redirectUrl) {
+                // RESUB → redirect after modal close
+                $("#resultModal").off("hidden.bs.modal")
+                    .on("hidden.bs.modal", function () {
+                        window.location.href = redirectUrl;
+                    });
+            } else {
+                // Normal → reload
+                $("#resultModal").off("hidden.bs.modal")
+                    .on("hidden.bs.modal", function () {
+                        location.reload();
+                    });
+            }
+        })
+
+        .fail(function (jqXHR) {
+
+            console.error("Error response:", jqXHR.responseText);
+
+            $("#resultModalLabel").text("Error");
+            $("#resultModalBody").text(
+                "Update failed: " + (jqXHR.responseText || "Unknown error")
+            );
+            $("#resultModal").modal("show");
+
+            if (redirectUrl) {
+                $("#resultModal").off("hidden.bs.modal")
+                    .on("hidden.bs.modal", function () {
+                        window.location.href = redirectUrl;
+                    });
+            }
+        })
+
+        .always(function () {
+            $('#loader').modal('hide');
+        });
+
+    } catch (error) {
         $('#loader').modal('hide');
-    });
+        console.error("Error during file upload:", error);
+    }
 };
+
 
 
 
@@ -1028,13 +1104,18 @@ window.fileuploads = function(btn) {
 
 						<!-- Buttons -->
 						<input type="hidden" id="selectedTab" th:value="${displaymode}">
-						<button type="button" class="custom-tab-btn"
+					<button type="button" class="custom-tab-btn"
 							id="custom-tab-btnSummary" onclick="showsummary();"
 							th:if="${displaymode == 'Details'}">Summary</button>
+						
 						<button type="button" class="custom-tab-btn"
+							id="custom-tab-btnSummary" onclick="showsummaryResub();"
+							th:if="${displaymode == 'resubDetail'}">Summary</button>
+						
+					<button type="button" class="custom-tab-btn"
 							id="custom-tab-btnDetails" onclick="showdetails();"
-							th:if="${displaymode == 'summary'}">Details</button>
-							
+							th:if="${displaymode == 'summary' or displaymode == 'resubSummary'}">Details</button>
+		
 							
 							
 							
@@ -1054,7 +1135,8 @@ window.fileuploads = function(btn) {
 							
 							
 						<button type="button" class="custom-tab-btn"
-							id="custom-tab-btnAdd" th:if="${displaymode == 'summary' or displaymode == 'Details'}"
+							id="custom-tab-btnAdd" 
+							th:if="${displaymode == 'summary' or displaymode == 'Details' or displaymode == 'resubSummary'or displaymode == 'resubDetail'}"
 							th:attr="data-reportid=${reportid}, 
                     				 data-asondate=${asondate}, 
                     				 data-fromdate=${fromdate}, 
@@ -1065,11 +1147,11 @@ window.fileuploads = function(btn) {
 					 				 data-type=${type},
 					    			 data-version=${version}"
 							onclick="downloadfile(this);">
-							<i class="fa fa-download"></i>
+							<i class="fa fa-download"></i> Format
 						</button>
 						<button type="button" class="custom-tab-btn "
 							id="custom-tab-btnAdd" onclick="downloadfile(this)"
-							th:if="${displaymode == 'summary' or displaymode == 'Details'}"
+							th:if="${displaymode == 'summary' or displaymode == 'Details'or displaymode == 'resubSummary'or displaymode == 'resubDetail'}"
 							th:attr="data-reportid=${reportid},
             data-asondate=${asondate},
             data-fromdate=${fromdate},
@@ -1077,10 +1159,11 @@ window.fileuploads = function(btn) {
             data-currency=${currency}, 
             data-dtltype=${dtltype},
             data-filename='EMAIL_M_GMIRT.xlsx',
-            data-type='email',
+            data-type=${type},
+            data-format='email',
             data-version=${version != null ? version : ''}"
 							style="font-family: Arial; font-weight: bold;">
-							<i class="fa fa-download"></i> Email Format
+							<i class="fa fa-download"></i> Email
 
 						</button>
 					
@@ -1106,7 +1189,22 @@ window.fileuploads = function(btn) {
 				<h1 th:if="${displaymode == 'Details' and type != 'ARCHIVAL'}"
 					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">Detail
 					View - M-GMIRT</h1>
-				<div th:if="${displaymode == 'summary' or displaymode == 'Details'}">
+				
+				<h1 th:if="${type == 'RESUB' and displaymode == 'resubSummary'}" style="text-align: left; font-weight: bold; 
+				          color: white; font-size: 20px;
+				          background-color: rgb(107, 122, 143); 
+				          margin-top:10px; margin-bottom:10px; padding: 5px;">
+					Re-submission Summary View - M-GMIRT
+				</h1>
+
+				<h1 th:if="${type == 'RESUB' and displaymode == 'resubDetail'}" style="text-align: left; font-weight: bold;
+				          color: white; font-size: 20px;
+				          background-color: rgb(107, 122, 143); 
+				          margin-top:10px; margin-bottom:10px; padding: 5px;">
+					Re-submission Detail View - M-GMIRT
+				</h1>
+				
+				<div th:if="${displaymode == 'summary' or displaymode == 'Details'or displaymode == 'resubSummary'or displaymode == 'resubDetail'}">
 					<div class="row">
 						<div class="col-sm-12">
 						
@@ -1522,7 +1620,8 @@ window.fileuploads = function(btn) {
 
 									<button id="submitButton" type="button"
 										class="custom-tab-btn Show_input" form="fileupload"
-										th:attr="data-todate=${asondate}" onclick="fileuploads(this);"
+										th:attr="data-todate=${asondate},data-type=${type}"
+										 onclick="fileuploads(this);"
 										style="display: none;">Submit</button>
 								</div>
 
