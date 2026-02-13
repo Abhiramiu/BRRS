@@ -1718,15 +1718,15 @@ PURPOSE		: BWRBRREPORT
 				processData: false,
 				contentType: false,
 				success: function () {
-					$("#resultModalLabel").text("BRRS");
-					$("#resultModalBody").text("Updated Successfully");
+					$("#resultModalLabel1").text("BRRS");
+					$("#resultModalBody1").text("Updated Successfully");
 					$("#resultModal1").modal("show");
 				},
 				error: function (jqXHR) {
 					console.error("Error:", jqXHR.responseText);
-					$("#resultModalLabel").text("Error");
-					$("#resultModalBody").text("Update failed. Check console for details.");
-					$("#resultModal").modal("show");
+					$("#resultModalLabel1").text("Error");
+					$("#resultModalBody1").text("Update failed. Check console for details.");
+					$("#resultModal1").modal("show");
 				},
 				complete: function () {
 					$('#loader').modal('hide');
@@ -5049,12 +5049,12 @@ PURPOSE		: BWRBRREPORT
 			<div class="modal-content">
 				<!-- Your custom styled header -->
 				<div class="menu-title-header">
-					<div class="modal-title" id="resultModalLabel" style="text-align: center; color: white;">
+					<div class="modal-title" id="resultModalLabel1" style="text-align: center; color: white;">
 						<!-- Title will be set by JavaScript -->
 					</div>
 				</div>
 				<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
-					<p id="resultModalBody"></p>
+					<p id="resultModalBody1"></p>
 
 					<button type="button" class="custom-tab-btn" onclick="closemodel1()" data-bs-dismiss="modal">
 						OK
