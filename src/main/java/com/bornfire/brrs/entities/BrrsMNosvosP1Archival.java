@@ -7,11 +7,14 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
 @Table(name = "BRRS_M_NOSVOS_P1_ARCHIVAL")
+@IdClass(BRRS_NOSVOS_Summary_PK.class)
 public class BrrsMNosvosP1Archival {
 
 	@Id
 	@Column(name = "REPORT_DATE")
 	private Date REPORT_DATE;
+	@Column(name = "REPORT_RESUB_DATE")
+	private Date REPORT_RESUB_DATE;
 	@Column(name = "REPORT_VERSION")
 	private String REPORT_VERSION;
 	@Column(name = "REPORT_FREQUENCY")
@@ -9223,5 +9226,15 @@ public class BrrsMNosvosP1Archival {
 	public void setR100_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r100_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R100_RISK_WEIGHTED_AMOUNT_NOSTRO = r100_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
+
+	public Date getREPORT_RESUB_DATE() {
+		return REPORT_RESUB_DATE;
+	}
+
+	public void setREPORT_RESUB_DATE(Date rEPORT_RESUB_DATE) {
+		REPORT_RESUB_DATE = rEPORT_RESUB_DATE;
+	}
+	
+	
 
 }

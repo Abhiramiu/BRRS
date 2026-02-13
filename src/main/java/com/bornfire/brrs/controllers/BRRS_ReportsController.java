@@ -2767,7 +2767,7 @@ public class BRRS_ReportsController {
 			@ModelAttribute M_SRWA_12B_Summary_Entity1 request1, @ModelAttribute M_SRWA_12B_Summary_Entity2 request2,
 			@ModelAttribute M_SRWA_12B_Summary_Entity3 request3, @ModelAttribute M_SRWA_12B_Summary_Entity4 request4,
 			@ModelAttribute M_SRWA_12B_Summary_Entity5 request5, @ModelAttribute M_SRWA_12B_Summary_Entity6 request6,
-			@ModelAttribute M_SRWA_12B_Summary_Entity7 request7
+			@ModelAttribute M_SRWA_12B_Summary_Entity7 request7, @ModelAttribute M_SRWA_12B_Summary_Entity8 request8
 
 	) {
 		try {
@@ -2781,6 +2781,7 @@ public class BRRS_ReportsController {
 			request5.setReportDate(asondate);
 			request6.setReportDate(asondate);
 			request7.setReportDate(asondate);
+			request8.setReportDate(asondate);
 
 			// call services
 			brrs_m_srwa_12b_reportservice.updateReport1(request1);
@@ -2790,6 +2791,7 @@ public class BRRS_ReportsController {
 			brrs_m_srwa_12b_reportservice.updateReport5(request5);
 			brrs_m_srwa_12b_reportservice.updateReport6(request6);
 			brrs_m_srwa_12b_reportservice.updateReport7(request7);
+			brrs_m_srwa_12b_reportservice.updateReport8(request8);
 
 			return ResponseEntity.ok("Updated Successfully.");
 		} catch (Exception e) {
@@ -4180,10 +4182,15 @@ public class BRRS_ReportsController {
 	@ResponseBody
 	public ResponseEntity<String> updateReportReSubAll(
 			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@ModelAttribute M_SRWA_12B_Summary_Entity1 request1, @ModelAttribute M_SRWA_12B_Summary_Entity2 request2,
-			@ModelAttribute M_SRWA_12B_Summary_Entity3 request3, @ModelAttribute M_SRWA_12B_Summary_Entity4 request4,
-			@ModelAttribute M_SRWA_12B_Summary_Entity5 request5, @ModelAttribute M_SRWA_12B_Summary_Entity6 request6,
-			@ModelAttribute M_SRWA_12B_Summary_Entity7 request7, HttpServletRequest req) {
+			@ModelAttribute M_SRWA_12B_Summary_Entity1 request1,
+			@ModelAttribute M_SRWA_12B_Summary_Entity2 request2,
+			@ModelAttribute M_SRWA_12B_Summary_Entity3 request3,
+			@ModelAttribute M_SRWA_12B_Summary_Entity4 request4,
+			@ModelAttribute M_SRWA_12B_Summary_Entity5 request5,
+			@ModelAttribute M_SRWA_12B_Summary_Entity6 request6,
+			@ModelAttribute M_SRWA_12B_Summary_Entity7 request7,
+			@ModelAttribute M_SRWA_12B_Summary_Entity8 request8,
+			HttpServletRequest req) {
 
 		try {
 			System.out.println("Came to M_SRWA_!2B Resub Controller");
@@ -4196,13 +4203,13 @@ public class BRRS_ReportsController {
 				request5.setReportDate(asondate);
 				request6.setReportDate(asondate);
 				request7.setReportDate(asondate);
+				request8.setReportDate(asondate);
 
 				System.out.println("🗓 Set Report Date: " + asondate);
 			}
 
-			// ✅ Call service
-			brrs_m_srwa_12b_reportservice.updateReportReSub(request1, request2, request3, request4, request5, request6,
-					request7);
+			brrs_m_srwa_12b_reportservice.updateReportReSub(request1, request2, request3, request4,
+					request5, request6, request7,request8);
 
 			return ResponseEntity.ok("Resubmission Updated Successfully");
 
@@ -4219,7 +4226,9 @@ public class BRRS_ReportsController {
 			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
 
 			@ModelAttribute BrrsMNosvosP1 request1, @ModelAttribute BrrsMNosvosP2 request2,
-			@ModelAttribute BrrsMNosvosP3 request3, @ModelAttribute BrrsMNosvosP4 request4) {
+			@ModelAttribute BrrsMNosvosP3 request3, @ModelAttribute BrrsMNosvosP4 request4,
+			@ModelAttribute BrrsMNosvosP5 request5
+			) {
 		try {
 
 			// set date into all 4 entities
@@ -4227,12 +4236,14 @@ public class BRRS_ReportsController {
 			request2.setREPORT_DATE(asondate);
 			request3.setREPORT_DATE(asondate);
 			request4.setREPORT_DATE(asondate);
+			request5.setREPORT_DATE(asondate);
 
 			// call services
 			BRRS_M_NOSVOS_ReportService.updateReport(request1);
 			BRRS_M_NOSVOS_ReportService.updateReport2(request2);
 			BRRS_M_NOSVOS_ReportService.updateReport3(request3);
 			BRRS_M_NOSVOS_ReportService.updateReport4(request4);
+			BRRS_M_NOSVOS_ReportService.updateReport5(request5);
 
 			return ResponseEntity.ok("All Reports Updated Successfully");
 		} catch (Exception e) {
@@ -4241,6 +4252,38 @@ public class BRRS_ReportsController {
 		}
 	}
 
+	@RequestMapping(value = "/NOSVOSupdateAll_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<String> NOSVOSupdateAllResub(
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+
+			@ModelAttribute BrrsMNosvosP1ResbuSummaryEntity request1, @ModelAttribute BrrsMNosvosP2ResbuSummaryEntity request2,
+			@ModelAttribute BrrsMNosvosP3ResbuSummaryEntity request3,
+			@ModelAttribute BrrsMNosvosP4ResbuSummaryEntity request4,
+			@ModelAttribute BrrsMNosvosP5ResbuSummaryEntity request5) {
+		try {
+
+			// set date into all 4 entities
+			request1.setREPORT_DATE(asondate);
+			request2.setREPORT_DATE(asondate);
+			request3.setREPORT_DATE(asondate);
+			request4.setREPORT_DATE(asondate);
+			request5.setREPORT_DATE(asondate);
+
+			// call services
+			BRRS_M_NOSVOS_ReportService.updateReportResub(request1);
+			BRRS_M_NOSVOS_ReportService.updateReport2Resub(request2);
+			BRRS_M_NOSVOS_ReportService.updateReport3Resub(request3);
+			BRRS_M_NOSVOS_ReportService.updateReport4Resub(request4);
+			BRRS_M_NOSVOS_ReportService.updateReport5Resub(request5);
+
+			return ResponseEntity.ok("All Reports Updated Successfully");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
+		}
+	}
+	
 	@Autowired
 	BRRS_M_GALOR_ReportService m_galor_ReportService;
 

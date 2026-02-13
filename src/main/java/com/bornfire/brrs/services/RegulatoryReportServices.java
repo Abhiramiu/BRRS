@@ -4984,7 +4984,8 @@ public class RegulatoryReportServices {
 
 		case "M_NOSVOS":
 			try {
-				archivalData = BRRS_M_NOSVOS_reportservice.getM_NOSVOSArchival();
+				List<Object[]> nosvosList = BRRS_M_NOSVOS_reportservice.getM_NOSVOSArchivalFirstList();
+				archivalData.addAll(nosvosList);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -6706,7 +6707,18 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
-
+		
+		case "M_NOSVOS":
+			try {
+				List<Object[]> resubList = BRRS_M_NOSVOS_reportservice.getM_NOSVOSResub();
+				resubmissionData.addAll(resubList);
+				System.out.println("Resubmission data fetched for M_NOSVOS: " + resubList.size());
+			} catch (Exception e) {
+				System.err.println("Error fetching resubmission data for M_NOSVOS: " + e.getMessage());
+				e.printStackTrace();
+			}
+			break;
+			
 		case "M_DEP4":
 			try {
 				List<Object[]> resubList = BRRS_M_DEP4_ReportService.getM_DEP4Resub();

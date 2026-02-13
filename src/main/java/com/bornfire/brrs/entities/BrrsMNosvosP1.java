@@ -5,6 +5,7 @@ import java.util.Date;
 import javax.persistence.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
+
 @Entity
 @Table(name = "BRRS_M_NOSVOS_P1")
 public class BrrsMNosvosP1 {

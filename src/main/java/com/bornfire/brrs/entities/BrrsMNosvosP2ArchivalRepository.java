@@ -9,10 +9,10 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
-public interface BrrsMNosvosP2ArchivalRepository extends JpaRepository<BrrsMNosvosP2Archival, Date> {
+public interface BrrsMNosvosP2ArchivalRepository extends JpaRepository<BrrsMNosvosP2Archival, BRRS_NOSVOS_Summary_PK> {
 	
 	@Query(value = "SELECT * FROM BRRS_M_NOSVOS_P2_ARCHIVAL WHERE TRUNC(REPORT_DATE) = TRUNC(?1)", nativeQuery = true)
-	List<BrrsMNosvosP1> getDataByDate(Date report_date);
+	List<BrrsMNosvosP2Archival> getDataByDate(Date report_date);
 	
 	@Query(value = "select REPORT_DATE, REPORT_VERSION from BRRS_M_NOSVOS_P2_ARCHIVAL order by REPORT_VERSION", nativeQuery = true)
     List<Object> getM_NOSVOSarchival();

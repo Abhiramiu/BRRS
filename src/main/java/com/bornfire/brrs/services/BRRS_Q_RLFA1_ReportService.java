@@ -3419,7 +3419,8 @@ public class BRRS_Q_RLFA1_ReportService {
 				for (Q_RLFA1_Archival_Summary_Entity entity : repoData) {
 					Object[] row = new Object[] {
 							entity.getReport_date(), 
-							entity.getReport_version() 
+							entity.getReport_version(),
+							entity.getReportResubDate()
 					};
 					archivalList.add(row);
 				}

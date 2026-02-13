@@ -7,6 +7,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
 @Table(name = "BRRS_M_NOSVOS_P2_ARCHIVAL")
+@IdClass(BRRS_NOSVOS_Summary_PK.class)
 public class BrrsMNosvosP2Archival {
 	@Id
 	@Column(name = "REPORT_DATE")

@@ -333,17 +333,42 @@ td:has(input[id^="R"][id$="_RISK_WEIGHTED_AMOUNT_NOSTRO1"]) {
 			window.history.back();
 		}
 
-		//to fetch summary from the database - called from the summary button
-		function showdetails() {
-			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${'detail'}, asondate=${asondate})}]]*/
-				location.href = Callurl;
-			// showResultModal('BRRS', ' Details page not available for Manual Report');
-		}
-
+	//to fetch summary from the database - called from the summary button
+		function showdetail() {
+            $('#loader').modal('show');
+            var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='detail', fromdate=${fromdate}, todate=${todate}, type=${'detail'}, asondate=${asondate})}]]*/;
+            // showResultModal('BRRS', 'Details page not available for Manual Report');
+            location.href = Callurl;
+        }
 		function showsummary() {
 			$('#loader').modal('show');
-			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${'summary'}, asondate=${asondate})}]]*/
-				location.href = Callurl;
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='summary', fromdate=${fromdate}, todate=${todate}, type=${'summary'}, asondate=${asondate})}]]*/;
+			location.href = Callurl;
+		}
+
+        function showArchivalsummary() {
+			$('#loader').modal('show');
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='summary', fromdate=${fromdate}, todate=${todate}, type=${'ARCHIVAL'}, asondate=${asondate}, version=${version ?: ''})}]]*/;
+			location.href = Callurl;
+		}
+
+
+        function showArchivaldetail() {
+			$('#loader').modal('show');
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='detail', fromdate=${fromdate}, todate=${todate}, type=${'ARCHIVAL'}, asondate=${asondate}, version=${version ?: ''})}]]*/;
+			location.href = Callurl;
+		}
+
+         function showResubsummary() {
+			$('#loader').modal('show');
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='summary', fromdate=${fromdate}, todate=${todate}, type=${'RESUB'}, asondate=${asondate}, version=${version ?: ''})}]]*/;
+			location.href = Callurl;
+		}
+
+         function showResubdetail() {
+			$('#loader').modal('show');
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='detail', fromdate=${fromdate}, todate=${todate}, type=${'RESUB'}, asondate=${asondate}, version=${version ?: ''})}]]*/;
+			location.href = Callurl;
 		}
 
 	</script>
@@ -390,6 +415,7 @@ td:has(input[id^="R"][id$="_RISK_WEIGHTED_AMOUNT_NOSTRO1"]) {
 					'&todate=' + todate +
 					'&currency=' + currency +
 					'&subreportid=' + subreportid +
+					'&dtltype=' + dtltype +
 					'&secid=' + secid +
 					'&filename=' + filename +
 					'&type=' + type +
@@ -736,6 +762,12 @@ function calculateR101Totals() {
 		}
 
 		function fileuploads(btn) {
+
+			   // Retrieve type from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlType = urlParams.get("type");
+        const type = urlType || "";
+
 			const asondate = btn.getAttribute("data-todate");
 			$('#loader').modal('show');
 
@@ -765,9 +797,14 @@ function calculateR101Totals() {
 				}
 			});
 
+			let apiUrl = './NOSVOSupdateAll';
+			if (urlType && urlType.toUpperCase() === 'RESUB') {
+				apiUrl = './NOSVOSupdateAll_ReSub';
+			}
+
 			// ✅ Step 5: Send single Ajax request
 			$.ajax({
-				url: './NOSVOSupdateAll',
+				url: apiUrl,
 				type: 'POST',
 				data: formData,
 				processData: false,
@@ -777,6 +814,7 @@ function calculateR101Totals() {
 					$("#resultModalLabel").text("Success");
 					$("#resultModalBody").text("Updated Successfully");
 					$("#resultModal").modal("show");
+					  back();
 				},
 				error: function (jqXHR) {
 					console.error("Error response:", jqXHR.responseText);
@@ -796,7 +834,7 @@ function calculateR101Totals() {
 
 	</script>
 </head>
-<title>BRRS</title>
+<title>M-NOSVOS</title>
 
 <body>
 	<div class="container-fluid" style="padding-left: 0px; padding-right: 0px;">
@@ -824,15 +862,41 @@ function calculateR101Totals() {
 						</span>
 						<!-- Buttons -->
 						<input type="hidden" id="selectedTab" th:value="${displaymode}">
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showsummary();"
-							th:if="${displaymode == 'detail'}">Summary</button>
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails();"
-							th:if="${displaymode == 'summary'}">Details</button>
+						
+						<!-- Buttons -->
+						<input type="hidden" id="selectedTab" th:value="${displaymode}">
+						
+                        <button type="button" class="custom-tab-btn"
+							id="custom-tab-btnSummary" onclick="showsummary();"
+							th:if="${type != 'ARCHIVAL' and type != 'RESUB' and displaymode == 'detail'}" >Summary</button>
+
+						<button type="button" class="custom-tab-btn" 
+							id="custom-tab-btnDetails" onclick="showdetail();"
+							th:if="${type != 'ARCHIVAL' and type != 'RESUB' and displaymode == 'summary'}" >Details</button>
+
+                        <button type="button" class="custom-tab-btn"
+							id="custom-tab-btnSummary" onclick="showArchivalsummary();"
+							th:if="${type == 'ARCHIVAL' and displaymode == 'detail'}" >Summary</button>
+
+						<button type="button" class="custom-tab-btn" 
+							id="custom-tab-btnDetails" onclick="showArchivaldetail();"
+							th:if="${type == 'ARCHIVAL' and displaymode == 'summary'}" >Details</button>
+
+                        <button type="button" class="custom-tab-btn"
+							id="custom-tab-btnSummary" onclick="showResubsummary();"
+							th:if="${type == 'RESUB' and displaymode == 'detail'}" >Summary</button>
+
+						<button type="button" class="custom-tab-btn" 
+							id="custom-tab-btnDetails" onclick="showResubdetail();"
+							th:if="${type == 'RESUB' and displaymode == 'summary'}" >Details</button>
+							
+							
 
 						<!-- Modify button -->
 						<button type="button" class="custom-tab-btn" onclick="showmodify(this);" 
-							title="Click to EDIT Records" th:if="${displaymode == 'summary'}"
-							th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
+							title="Click to EDIT Records"
+							th:classappend="${session.PERMISSIONS == 'W' and dtltype == 'report'} ? 'addedit' : ''"
+							th:if="${type != 'ARCHIVAL' and displaymode == 'summary'}"
 							id="addRecord">Modify</button>
 
 						<!-- Cancel button (hidden initially) -->
@@ -846,11 +910,11 @@ function calculateR101Totals() {
                    				 data-fromdate=${fromdate},
                     				 data-todate=${todate},
                     				 data-currency=${currency}, 
-                    				 data-dtltype=${'summary'},
+                    				 data-dtltype=${dtltype},
                     				 data-filename='M_NOSVOS.xls',
 					 				 data-type=${type},
 					    			 data-version=${version}" onclick="downloadfile(this);">
-							<i class="fa fa-download"></i>
+							<i class="fa fa-download"></i>Format
 						</button>
 
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
@@ -859,11 +923,11 @@ function calculateR101Totals() {
                    				 data-fromdate=${fromdate},
                     				 data-todate=${todate},
                     				 data-currency=${currency}, 
-                    				 data-dtltype=${'detail'},
+                    				 data-dtltype=${'email_report'},
                     				 data-filename='M_NOSVOS_EMAIL.xlsx',
-					 				 data-type=${'email_report'},
+					 				 data-type=${type},
 					    			 data-version=${version}" onclick="downloadfile(this);">
-							<i class="fa fa-download"></i>Email Download
+							<i class="fa fa-download"></i>Email
 						</button>
 
 
@@ -886,8 +950,13 @@ function calculateR101Totals() {
 
 				</div>
 				<div>
-					<h5 th:if="${displaymode == 'summary'}" style="text-align:center" >Summary Table</h5>
-					<h5 th:if="${displaymode == 'detail'}" style="text-align:center" >Detail Table</h5>
+					                    <p style="text-align: left; font-weight: bold; 
+						color: white;  font-size: 20px;  background-color: rgb(107, 122, 143); 
+						margin-top:10px; margin-bottom:10px;padding: 5px;" th:if="${displaymode == 'summary'}">Summary View - M-NOSVOS</p>
+
+                        <p style="text-align: left; font-weight: bold; 
+						color: white;  font-size: 20px;  background-color: rgb(107, 122, 143); 
+						margin-top:10px; margin-bottom:10px;padding: 5px;" th:if="${displaymode == 'detail'}">Detail View - M-NOSVOS</p>
 					<div class="row">
 						<div class="col-lg-12">
 							<form action="#" method="POST" id="fileupload">
@@ -45953,7 +46022,1788 @@ function calculateR101Totals() {
 										</tbody>
 
 									</table>
+									<table
+										class="sticky-header-table table table-bordered table-hover table-sm table-condensed"
+										id="reports">
+										<thead class="thead-light">
+											<tr>
+												<th colspan="12"
+													style="text-align: left; padding-left: 20px; width: 900px;">
+													DUE FROM DOMESTIC BANKS </th>
+											</tr>
 
+											<tr style="background-color: #b3b6b9;height:80px;">
+												<th
+													style="background-color: #D8D8D8;text-align: left;vertical-align:middle; padding-left: 20px; width: 900px;">
+													Name of Bank
+												</th>
+												<th
+													style="background-color: #D8D8D8;text-align: left; vertical-align:middle; width: 200px;">
+													Type of account</th>
+
+												<th
+													style="background-color: #D8D8D8;text-align: left; vertical-align:middle;width: 150px;">
+													Purpose</th>
+												<th
+													style="background-color: #D8D8D8;text-align: left; vertical-align:middle; width: 150px;">
+													Amount</th>
+												<th
+													style="background-color: #D8D8D8;text-align: right;vertical-align:middle; width: 150px;">
+													Risk Weight</th>
+												<th
+													style="background-color: #D8D8D8;text-align: right;vertical-align:middle; width: 150px;">
+													Currency</th>
+													<th
+													style="background-color: #D8D8D8;text-align: right;vertical-align:middle; width: 150px;">
+													Risk -Weghted Amount </th>
+
+											</tr>
+
+
+										</thead>
+
+										<tbody id="entity5" th:each="report: ${reportsummary5}"
+											style="font-family: Arial;">
+																						<tr>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${#strings.defaultString(report.R1_DUE_FROM_DOMESTIC_NAME_OF_BANK, 'N/A')}"
+														id="R1_DUE_FROM_DOMESTIC_NAME_OF_BANK" name="R1_DUE_FROM_DOMESTIC_NAME_OF_BANK"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R1_DUE_FROM_DOMESTIC_ACCT_TYPE != null ? report.R1_DUE_FROM_DOMESTIC_ACCT_TYPE : 'N/A'}"
+														id="R1_DUE_FROM_DOMESTIC_ACCT_TYPE_TEXT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+													<select class="display-input Show_input"
+														id="R1_DUE_FROM_DOMESTIC_ACCT_TYPE"
+														name="R1_DUE_FROM_DOMESTIC_ACCT_TYPE"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left; display:none;">
+														<option value=""
+															th:selected="${report.R1_DUE_FROM_DOMESTIC_ACCT_TYPE == null}">
+															N/A</option>
+														<option value="CURRENT"
+															th:selected="${report.R1_DUE_FROM_DOMESTIC_ACCT_TYPE == 'CURRENT'}">
+															CURRENT</option>
+														<option value="TERM LOAN"
+															th:selected="${report.R1_DUE_FROM_DOMESTIC_ACCT_TYPE == 'TERM LOAN'}">
+															TERM LOAN</option>
+													</select>
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R1_DUE_FROM_DOMESTIC_PURPOSE != null ? report.R1_DUE_FROM_DOMESTIC_PURPOSE : 'N/A'}"
+														id="R1_DUE_FROM_DOMESTIC_PURPOSE_TEXT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+													<select class="display-input Show_input" id="R1_DUE_FROM_DOMESTIC_PURPOSE"
+														name="R1_DUE_FROM_DOMESTIC_PURPOSE"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left; display:none;">
+														<option value=""
+															th:selected="${report.R1_DUE_FROM_DOMESTIC_PURPOSE == null}">N/A
+														</option>
+														<option value="BORROWING"
+															th:selected="${report.R1_DUE_FROM_DOMESTIC_PURPOSE == 'BORROWING'}">
+															BORROWING</option>
+														<option value="REMITTANCE"
+															th:selected="${report.R1_DUE_FROM_DOMESTIC_PURPOSE == 'REMITTANCE'}">
+															REMITTANCE</option>
+														<option value="TERM LOAN"
+															th:selected="${report.R1_DUE_FROM_DOMESTIC_PURPOSE == 'TERM LOAN'}">
+															TERM LOAN</option>
+													</select>
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R1_DUE_FROM_DOMESTIC_AMOUNT != null ? #numbers.formatDecimal(report.R1_DUE_FROM_DOMESTIC_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0.00'}"
+														id="R1_DUE_FROM_DOMESTIC_AMOUNT" name="R1_DUE_FROM_DOMESTIC_AMOUNT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R1_DUE_FROM_DOMESTIC_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R1_DUE_FROM_DOMESTIC_RISK_WEIGHT, 1, 'COMMA', 0, 'POINT') : '0.00'}"
+														id="R1_DUE_FROM_DOMESTIC_RISK_WEIGHT" name="R1_DUE_FROM_DOMESTIC_RISK_WEIGHT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R1_DUE_FROM_DOMESTIC_CURRENCY != null ? report.R1_DUE_FROM_DOMESTIC_CURRENCY : 'N/A'}"
+														id="R1_DUE_FROM_DOMESTIC_CURRENCY_TEXT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+													<select class="display-input Show_input" id="R1_DUE_FROM_DOMESTIC_CURRENCY"
+														name="R1_DUE_FROM_DOMESTIC_CURRENCY"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left; display:none;">
+														<option value="USD"
+															th:selected="${report.R1_DUE_FROM_DOMESTIC_CURRENCY == 'USD'}">USD
+														</option>
+														<option value="EUR"
+															th:selected="${report.R1_DUE_FROM_DOMESTIC_CURRENCY == 'EUR'}">EUR
+														</option>
+														<option value="GBP"
+															th:selected="${report.R1_DUE_FROM_DOMESTIC_CURRENCY == 'GBP'}">GBP
+														</option>
+														<option value="AUD"
+															th:selected="${report.R1_DUE_FROM_DOMESTIC_CURRENCY == 'AUD'}">AUD
+														</option>
+														<option value="INR"
+															th:selected="${report.R1_DUE_FROM_DOMESTIC_CURRENCY == 'INR'}">INR
+														</option>
+													</select>
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R1_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT != null ? #numbers.formatDecimal(report.R1_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT, 1, 'COMMA', 0, 'POINT') : '0.00'}"
+														id="R1_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT" name="R1_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+											</tr>
+																						<tr>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${#strings.defaultString(report.R2_DUE_FROM_DOMESTIC_NAME_OF_BANK, 'N/A')}"
+														id="R2_DUE_FROM_DOMESTIC_NAME_OF_BANK" name="R2_DUE_FROM_DOMESTIC_NAME_OF_BANK"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R2_DUE_FROM_DOMESTIC_ACCT_TYPE != null ? report.R2_DUE_FROM_DOMESTIC_ACCT_TYPE : 'N/A'}"
+														id="R2_DUE_FROM_DOMESTIC_ACCT_TYPE_TEXT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+													<select class="display-input Show_input"
+														id="R2_DUE_FROM_DOMESTIC_ACCT_TYPE"
+														name="R2_DUE_FROM_DOMESTIC_ACCT_TYPE"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left; display:none;">
+														<option value=""
+															th:selected="${report.R2_DUE_FROM_DOMESTIC_ACCT_TYPE == null}">
+															N/A</option>
+														<option value="CURRENT"
+															th:selected="${report.R2_DUE_FROM_DOMESTIC_ACCT_TYPE == 'CURRENT'}">
+															CURRENT</option>
+														<option value="TERM LOAN"
+															th:selected="${report.R2_DUE_FROM_DOMESTIC_ACCT_TYPE == 'TERM LOAN'}">
+															TERM LOAN</option>
+													</select>
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R2_DUE_FROM_DOMESTIC_PURPOSE != null ? report.R2_DUE_FROM_DOMESTIC_PURPOSE : 'N/A'}"
+														id="R2_DUE_FROM_DOMESTIC_PURPOSE_TEXT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+													<select class="display-input Show_input" id="R2_DUE_FROM_DOMESTIC_PURPOSE"
+														name="R2_DUE_FROM_DOMESTIC_PURPOSE"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left; display:none;">
+														<option value=""
+															th:selected="${report.R2_DUE_FROM_DOMESTIC_PURPOSE == null}">N/A
+														</option>
+														<option value="BORROWING"
+															th:selected="${report.R2_DUE_FROM_DOMESTIC_PURPOSE == 'BORROWING'}">
+															BORROWING</option>
+														<option value="REMITTANCE"
+															th:selected="${report.R2_DUE_FROM_DOMESTIC_PURPOSE == 'REMITTANCE'}">
+															REMITTANCE</option>
+														<option value="TERM LOAN"
+															th:selected="${report.R2_DUE_FROM_DOMESTIC_PURPOSE == 'TERM LOAN'}">
+															TERM LOAN</option>
+													</select>
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R2_DUE_FROM_DOMESTIC_AMOUNT != null ? #numbers.formatDecimal(report.R2_DUE_FROM_DOMESTIC_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0.00'}"
+														id="R2_DUE_FROM_DOMESTIC_AMOUNT" name="R2_DUE_FROM_DOMESTIC_AMOUNT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R2_DUE_FROM_DOMESTIC_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R2_DUE_FROM_DOMESTIC_RISK_WEIGHT, 1, 'COMMA', 0, 'POINT') : '0.00'}"
+														id="R2_DUE_FROM_DOMESTIC_RISK_WEIGHT" name="R2_DUE_FROM_DOMESTIC_RISK_WEIGHT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R2_DUE_FROM_DOMESTIC_CURRENCY != null ? report.R2_DUE_FROM_DOMESTIC_CURRENCY : 'N/A'}"
+														id="R2_DUE_FROM_DOMESTIC_CURRENCY_TEXT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+													<select class="display-input Show_input" id="R2_DUE_FROM_DOMESTIC_CURRENCY"
+														name="R2_DUE_FROM_DOMESTIC_CURRENCY"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left; display:none;">
+														<option value="USD"
+															th:selected="${report.R2_DUE_FROM_DOMESTIC_CURRENCY == 'USD'}">USD
+														</option>
+														<option value="EUR"
+															th:selected="${report.R2_DUE_FROM_DOMESTIC_CURRENCY == 'EUR'}">EUR
+														</option>
+														<option value="GBP"
+															th:selected="${report.R2_DUE_FROM_DOMESTIC_CURRENCY == 'GBP'}">GBP
+														</option>
+														<option value="AUD"
+															th:selected="${report.R2_DUE_FROM_DOMESTIC_CURRENCY == 'AUD'}">AUD
+														</option>
+														<option value="INR"
+															th:selected="${report.R2_DUE_FROM_DOMESTIC_CURRENCY == 'INR'}">INR
+														</option>
+													</select>
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R2_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT != null ? #numbers.formatDecimal(report.R2_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT, 1, 'COMMA', 0, 'POINT') : '0.00'}"
+														id="R2_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT" name="R2_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+											</tr>
+																						<tr>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${#strings.defaultString(report.R3_DUE_FROM_DOMESTIC_NAME_OF_BANK, 'N/A')}"
+														id="R3_DUE_FROM_DOMESTIC_NAME_OF_BANK" name="R3_DUE_FROM_DOMESTIC_NAME_OF_BANK"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R3_DUE_FROM_DOMESTIC_ACCT_TYPE != null ? report.R3_DUE_FROM_DOMESTIC_ACCT_TYPE : 'N/A'}"
+														id="R3_DUE_FROM_DOMESTIC_ACCT_TYPE_TEXT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+													<select class="display-input Show_input"
+														id="R3_DUE_FROM_DOMESTIC_ACCT_TYPE"
+														name="R3_DUE_FROM_DOMESTIC_ACCT_TYPE"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left; display:none;">
+														<option value=""
+															th:selected="${report.R3_DUE_FROM_DOMESTIC_ACCT_TYPE == null}">
+															N/A</option>
+														<option value="CURRENT"
+															th:selected="${report.R3_DUE_FROM_DOMESTIC_ACCT_TYPE == 'CURRENT'}">
+															CURRENT</option>
+														<option value="TERM LOAN"
+															th:selected="${report.R3_DUE_FROM_DOMESTIC_ACCT_TYPE == 'TERM LOAN'}">
+															TERM LOAN</option>
+													</select>
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R3_DUE_FROM_DOMESTIC_PURPOSE != null ? report.R3_DUE_FROM_DOMESTIC_PURPOSE : 'N/A'}"
+														id="R3_DUE_FROM_DOMESTIC_PURPOSE_TEXT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+													<select class="display-input Show_input" id="R3_DUE_FROM_DOMESTIC_PURPOSE"
+														name="R3_DUE_FROM_DOMESTIC_PURPOSE"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left; display:none;">
+														<option value=""
+															th:selected="${report.R3_DUE_FROM_DOMESTIC_PURPOSE == null}">N/A
+														</option>
+														<option value="BORROWING"
+															th:selected="${report.R3_DUE_FROM_DOMESTIC_PURPOSE == 'BORROWING'}">
+															BORROWING</option>
+														<option value="REMITTANCE"
+															th:selected="${report.R3_DUE_FROM_DOMESTIC_PURPOSE == 'REMITTANCE'}">
+															REMITTANCE</option>
+														<option value="TERM LOAN"
+															th:selected="${report.R3_DUE_FROM_DOMESTIC_PURPOSE == 'TERM LOAN'}">
+															TERM LOAN</option>
+													</select>
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R3_DUE_FROM_DOMESTIC_AMOUNT != null ? #numbers.formatDecimal(report.R3_DUE_FROM_DOMESTIC_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0.00'}"
+														id="R3_DUE_FROM_DOMESTIC_AMOUNT" name="R3_DUE_FROM_DOMESTIC_AMOUNT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R3_DUE_FROM_DOMESTIC_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R3_DUE_FROM_DOMESTIC_RISK_WEIGHT, 1, 'COMMA', 0, 'POINT') : '0.00'}"
+														id="R3_DUE_FROM_DOMESTIC_RISK_WEIGHT" name="R3_DUE_FROM_DOMESTIC_RISK_WEIGHT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R3_DUE_FROM_DOMESTIC_CURRENCY != null ? report.R3_DUE_FROM_DOMESTIC_CURRENCY : 'N/A'}"
+														id="R3_DUE_FROM_DOMESTIC_CURRENCY_TEXT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+													<select class="display-input Show_input" id="R3_DUE_FROM_DOMESTIC_CURRENCY"
+														name="R3_DUE_FROM_DOMESTIC_CURRENCY"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left; display:none;">
+														<option value="USD"
+															th:selected="${report.R3_DUE_FROM_DOMESTIC_CURRENCY == 'USD'}">USD
+														</option>
+														<option value="EUR"
+															th:selected="${report.R3_DUE_FROM_DOMESTIC_CURRENCY == 'EUR'}">EUR
+														</option>
+														<option value="GBP"
+															th:selected="${report.R3_DUE_FROM_DOMESTIC_CURRENCY == 'GBP'}">GBP
+														</option>
+														<option value="AUD"
+															th:selected="${report.R3_DUE_FROM_DOMESTIC_CURRENCY == 'AUD'}">AUD
+														</option>
+														<option value="INR"
+															th:selected="${report.R3_DUE_FROM_DOMESTIC_CURRENCY == 'INR'}">INR
+														</option>
+													</select>
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R3_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT != null ? #numbers.formatDecimal(report.R3_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT, 1, 'COMMA', 0, 'POINT') : '0.00'}"
+														id="R3_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT" name="R3_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+											</tr>
+																						<tr>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${#strings.defaultString(report.R4_DUE_FROM_DOMESTIC_NAME_OF_BANK, 'N/A')}"
+														id="R4_DUE_FROM_DOMESTIC_NAME_OF_BANK" name="R4_DUE_FROM_DOMESTIC_NAME_OF_BANK"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R4_DUE_FROM_DOMESTIC_ACCT_TYPE != null ? report.R4_DUE_FROM_DOMESTIC_ACCT_TYPE : 'N/A'}"
+														id="R4_DUE_FROM_DOMESTIC_ACCT_TYPE_TEXT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+													<select class="display-input Show_input"
+														id="R4_DUE_FROM_DOMESTIC_ACCT_TYPE"
+														name="R4_DUE_FROM_DOMESTIC_ACCT_TYPE"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left; display:none;">
+														<option value=""
+															th:selected="${report.R4_DUE_FROM_DOMESTIC_ACCT_TYPE == null}">
+															N/A</option>
+														<option value="CURRENT"
+															th:selected="${report.R4_DUE_FROM_DOMESTIC_ACCT_TYPE == 'CURRENT'}">
+															CURRENT</option>
+														<option value="TERM LOAN"
+															th:selected="${report.R4_DUE_FROM_DOMESTIC_ACCT_TYPE == 'TERM LOAN'}">
+															TERM LOAN</option>
+													</select>
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R4_DUE_FROM_DOMESTIC_PURPOSE != null ? report.R4_DUE_FROM_DOMESTIC_PURPOSE : 'N/A'}"
+														id="R4_DUE_FROM_DOMESTIC_PURPOSE_TEXT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+													<select class="display-input Show_input" id="R4_DUE_FROM_DOMESTIC_PURPOSE"
+														name="R4_DUE_FROM_DOMESTIC_PURPOSE"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left; display:none;">
+														<option value=""
+															th:selected="${report.R4_DUE_FROM_DOMESTIC_PURPOSE == null}">N/A
+														</option>
+														<option value="BORROWING"
+															th:selected="${report.R4_DUE_FROM_DOMESTIC_PURPOSE == 'BORROWING'}">
+															BORROWING</option>
+														<option value="REMITTANCE"
+															th:selected="${report.R4_DUE_FROM_DOMESTIC_PURPOSE == 'REMITTANCE'}">
+															REMITTANCE</option>
+														<option value="TERM LOAN"
+															th:selected="${report.R4_DUE_FROM_DOMESTIC_PURPOSE == 'TERM LOAN'}">
+															TERM LOAN</option>
+													</select>
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R4_DUE_FROM_DOMESTIC_AMOUNT != null ? #numbers.formatDecimal(report.R4_DUE_FROM_DOMESTIC_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0.00'}"
+														id="R4_DUE_FROM_DOMESTIC_AMOUNT" name="R4_DUE_FROM_DOMESTIC_AMOUNT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R4_DUE_FROM_DOMESTIC_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R4_DUE_FROM_DOMESTIC_RISK_WEIGHT, 1, 'COMMA', 0, 'POINT') : '0.00'}"
+														id="R4_DUE_FROM_DOMESTIC_RISK_WEIGHT" name="R4_DUE_FROM_DOMESTIC_RISK_WEIGHT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R4_DUE_FROM_DOMESTIC_CURRENCY != null ? report.R4_DUE_FROM_DOMESTIC_CURRENCY : 'N/A'}"
+														id="R4_DUE_FROM_DOMESTIC_CURRENCY_TEXT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+													<select class="display-input Show_input" id="R4_DUE_FROM_DOMESTIC_CURRENCY"
+														name="R4_DUE_FROM_DOMESTIC_CURRENCY"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left; display:none;">
+														<option value="USD"
+															th:selected="${report.R4_DUE_FROM_DOMESTIC_CURRENCY == 'USD'}">USD
+														</option>
+														<option value="EUR"
+															th:selected="${report.R4_DUE_FROM_DOMESTIC_CURRENCY == 'EUR'}">EUR
+														</option>
+														<option value="GBP"
+															th:selected="${report.R4_DUE_FROM_DOMESTIC_CURRENCY == 'GBP'}">GBP
+														</option>
+														<option value="AUD"
+															th:selected="${report.R4_DUE_FROM_DOMESTIC_CURRENCY == 'AUD'}">AUD
+														</option>
+														<option value="INR"
+															th:selected="${report.R4_DUE_FROM_DOMESTIC_CURRENCY == 'INR'}">INR
+														</option>
+													</select>
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R4_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT != null ? #numbers.formatDecimal(report.R4_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT, 1, 'COMMA', 0, 'POINT') : '0.00'}"
+														id="R4_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT" name="R4_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+											</tr>
+																						<tr>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${#strings.defaultString(report.R5_DUE_FROM_DOMESTIC_NAME_OF_BANK, 'N/A')}"
+														id="R5_DUE_FROM_DOMESTIC_NAME_OF_BANK" name="R5_DUE_FROM_DOMESTIC_NAME_OF_BANK"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R5_DUE_FROM_DOMESTIC_ACCT_TYPE != null ? report.R5_DUE_FROM_DOMESTIC_ACCT_TYPE : 'N/A'}"
+														id="R5_DUE_FROM_DOMESTIC_ACCT_TYPE_TEXT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+													<select class="display-input Show_input"
+														id="R5_DUE_FROM_DOMESTIC_ACCT_TYPE"
+														name="R5_DUE_FROM_DOMESTIC_ACCT_TYPE"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left; display:none;">
+														<option value=""
+															th:selected="${report.R5_DUE_FROM_DOMESTIC_ACCT_TYPE == null}">
+															N/A</option>
+														<option value="CURRENT"
+															th:selected="${report.R5_DUE_FROM_DOMESTIC_ACCT_TYPE == 'CURRENT'}">
+															CURRENT</option>
+														<option value="TERM LOAN"
+															th:selected="${report.R5_DUE_FROM_DOMESTIC_ACCT_TYPE == 'TERM LOAN'}">
+															TERM LOAN</option>
+													</select>
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R5_DUE_FROM_DOMESTIC_PURPOSE != null ? report.R5_DUE_FROM_DOMESTIC_PURPOSE : 'N/A'}"
+														id="R5_DUE_FROM_DOMESTIC_PURPOSE_TEXT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+													<select class="display-input Show_input" id="R5_DUE_FROM_DOMESTIC_PURPOSE"
+														name="R5_DUE_FROM_DOMESTIC_PURPOSE"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left; display:none;">
+														<option value=""
+															th:selected="${report.R5_DUE_FROM_DOMESTIC_PURPOSE == null}">N/A
+														</option>
+														<option value="BORROWING"
+															th:selected="${report.R5_DUE_FROM_DOMESTIC_PURPOSE == 'BORROWING'}">
+															BORROWING</option>
+														<option value="REMITTANCE"
+															th:selected="${report.R5_DUE_FROM_DOMESTIC_PURPOSE == 'REMITTANCE'}">
+															REMITTANCE</option>
+														<option value="TERM LOAN"
+															th:selected="${report.R5_DUE_FROM_DOMESTIC_PURPOSE == 'TERM LOAN'}">
+															TERM LOAN</option>
+													</select>
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R5_DUE_FROM_DOMESTIC_AMOUNT != null ? #numbers.formatDecimal(report.R5_DUE_FROM_DOMESTIC_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0.00'}"
+														id="R5_DUE_FROM_DOMESTIC_AMOUNT" name="R5_DUE_FROM_DOMESTIC_AMOUNT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R5_DUE_FROM_DOMESTIC_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R5_DUE_FROM_DOMESTIC_RISK_WEIGHT, 1, 'COMMA', 0, 'POINT') : '0.00'}"
+														id="R5_DUE_FROM_DOMESTIC_RISK_WEIGHT" name="R5_DUE_FROM_DOMESTIC_RISK_WEIGHT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R5_DUE_FROM_DOMESTIC_CURRENCY != null ? report.R5_DUE_FROM_DOMESTIC_CURRENCY : 'N/A'}"
+														id="R5_DUE_FROM_DOMESTIC_CURRENCY_TEXT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+													<select class="display-input Show_input" id="R5_DUE_FROM_DOMESTIC_CURRENCY"
+														name="R5_DUE_FROM_DOMESTIC_CURRENCY"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left; display:none;">
+														<option value="USD"
+															th:selected="${report.R5_DUE_FROM_DOMESTIC_CURRENCY == 'USD'}">USD
+														</option>
+														<option value="EUR"
+															th:selected="${report.R5_DUE_FROM_DOMESTIC_CURRENCY == 'EUR'}">EUR
+														</option>
+														<option value="GBP"
+															th:selected="${report.R5_DUE_FROM_DOMESTIC_CURRENCY == 'GBP'}">GBP
+														</option>
+														<option value="AUD"
+															th:selected="${report.R5_DUE_FROM_DOMESTIC_CURRENCY == 'AUD'}">AUD
+														</option>
+														<option value="INR"
+															th:selected="${report.R5_DUE_FROM_DOMESTIC_CURRENCY == 'INR'}">INR
+														</option>
+													</select>
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R5_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT != null ? #numbers.formatDecimal(report.R5_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT, 1, 'COMMA', 0, 'POINT') : '0.00'}"
+														id="R5_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT" name="R5_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+											</tr>
+																						<tr>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${#strings.defaultString(report.R6_DUE_FROM_DOMESTIC_NAME_OF_BANK, 'N/A')}"
+														id="R6_DUE_FROM_DOMESTIC_NAME_OF_BANK" name="R6_DUE_FROM_DOMESTIC_NAME_OF_BANK"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R6_DUE_FROM_DOMESTIC_ACCT_TYPE != null ? report.R6_DUE_FROM_DOMESTIC_ACCT_TYPE : 'N/A'}"
+														id="R6_DUE_FROM_DOMESTIC_ACCT_TYPE_TEXT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+													<select class="display-input Show_input"
+														id="R6_DUE_FROM_DOMESTIC_ACCT_TYPE"
+														name="R6_DUE_FROM_DOMESTIC_ACCT_TYPE"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left; display:none;">
+														<option value=""
+															th:selected="${report.R6_DUE_FROM_DOMESTIC_ACCT_TYPE == null}">
+															N/A</option>
+														<option value="CURRENT"
+															th:selected="${report.R6_DUE_FROM_DOMESTIC_ACCT_TYPE == 'CURRENT'}">
+															CURRENT</option>
+														<option value="TERM LOAN"
+															th:selected="${report.R6_DUE_FROM_DOMESTIC_ACCT_TYPE == 'TERM LOAN'}">
+															TERM LOAN</option>
+													</select>
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R6_DUE_FROM_DOMESTIC_PURPOSE != null ? report.R6_DUE_FROM_DOMESTIC_PURPOSE : 'N/A'}"
+														id="R6_DUE_FROM_DOMESTIC_PURPOSE_TEXT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+													<select class="display-input Show_input" id="R6_DUE_FROM_DOMESTIC_PURPOSE"
+														name="R6_DUE_FROM_DOMESTIC_PURPOSE"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left; display:none;">
+														<option value=""
+															th:selected="${report.R6_DUE_FROM_DOMESTIC_PURPOSE == null}">N/A
+														</option>
+														<option value="BORROWING"
+															th:selected="${report.R6_DUE_FROM_DOMESTIC_PURPOSE == 'BORROWING'}">
+															BORROWING</option>
+														<option value="REMITTANCE"
+															th:selected="${report.R6_DUE_FROM_DOMESTIC_PURPOSE == 'REMITTANCE'}">
+															REMITTANCE</option>
+														<option value="TERM LOAN"
+															th:selected="${report.R6_DUE_FROM_DOMESTIC_PURPOSE == 'TERM LOAN'}">
+															TERM LOAN</option>
+													</select>
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R6_DUE_FROM_DOMESTIC_AMOUNT != null ? #numbers.formatDecimal(report.R6_DUE_FROM_DOMESTIC_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0.00'}"
+														id="R6_DUE_FROM_DOMESTIC_AMOUNT" name="R6_DUE_FROM_DOMESTIC_AMOUNT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R6_DUE_FROM_DOMESTIC_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R6_DUE_FROM_DOMESTIC_RISK_WEIGHT, 1, 'COMMA', 0, 'POINT') : '0.00'}"
+														id="R6_DUE_FROM_DOMESTIC_RISK_WEIGHT" name="R6_DUE_FROM_DOMESTIC_RISK_WEIGHT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R6_DUE_FROM_DOMESTIC_CURRENCY != null ? report.R6_DUE_FROM_DOMESTIC_CURRENCY : 'N/A'}"
+														id="R6_DUE_FROM_DOMESTIC_CURRENCY_TEXT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+													<select class="display-input Show_input" id="R6_DUE_FROM_DOMESTIC_CURRENCY"
+														name="R6_DUE_FROM_DOMESTIC_CURRENCY"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left; display:none;">
+														<option value="USD"
+															th:selected="${report.R6_DUE_FROM_DOMESTIC_CURRENCY == 'USD'}">USD
+														</option>
+														<option value="EUR"
+															th:selected="${report.R6_DUE_FROM_DOMESTIC_CURRENCY == 'EUR'}">EUR
+														</option>
+														<option value="GBP"
+															th:selected="${report.R6_DUE_FROM_DOMESTIC_CURRENCY == 'GBP'}">GBP
+														</option>
+														<option value="AUD"
+															th:selected="${report.R6_DUE_FROM_DOMESTIC_CURRENCY == 'AUD'}">AUD
+														</option>
+														<option value="INR"
+															th:selected="${report.R6_DUE_FROM_DOMESTIC_CURRENCY == 'INR'}">INR
+														</option>
+													</select>
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R6_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT != null ? #numbers.formatDecimal(report.R6_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT, 1, 'COMMA', 0, 'POINT') : '0.00'}"
+														id="R6_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT" name="R6_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+											</tr>
+																						<tr>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${#strings.defaultString(report.R7_DUE_FROM_DOMESTIC_NAME_OF_BANK, 'N/A')}"
+														id="R7_DUE_FROM_DOMESTIC_NAME_OF_BANK" name="R7_DUE_FROM_DOMESTIC_NAME_OF_BANK"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R7_DUE_FROM_DOMESTIC_ACCT_TYPE != null ? report.R7_DUE_FROM_DOMESTIC_ACCT_TYPE : 'N/A'}"
+														id="R7_DUE_FROM_DOMESTIC_ACCT_TYPE_TEXT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+													<select class="display-input Show_input"
+														id="R7_DUE_FROM_DOMESTIC_ACCT_TYPE"
+														name="R7_DUE_FROM_DOMESTIC_ACCT_TYPE"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left; display:none;">
+														<option value=""
+															th:selected="${report.R7_DUE_FROM_DOMESTIC_ACCT_TYPE == null}">
+															N/A</option>
+														<option value="CURRENT"
+															th:selected="${report.R7_DUE_FROM_DOMESTIC_ACCT_TYPE == 'CURRENT'}">
+															CURRENT</option>
+														<option value="TERM LOAN"
+															th:selected="${report.R7_DUE_FROM_DOMESTIC_ACCT_TYPE == 'TERM LOAN'}">
+															TERM LOAN</option>
+													</select>
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R7_DUE_FROM_DOMESTIC_PURPOSE != null ? report.R7_DUE_FROM_DOMESTIC_PURPOSE : 'N/A'}"
+														id="R7_DUE_FROM_DOMESTIC_PURPOSE_TEXT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+													<select class="display-input Show_input" id="R7_DUE_FROM_DOMESTIC_PURPOSE"
+														name="R7_DUE_FROM_DOMESTIC_PURPOSE"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left; display:none;">
+														<option value=""
+															th:selected="${report.R7_DUE_FROM_DOMESTIC_PURPOSE == null}">N/A
+														</option>
+														<option value="BORROWING"
+															th:selected="${report.R7_DUE_FROM_DOMESTIC_PURPOSE == 'BORROWING'}">
+															BORROWING</option>
+														<option value="REMITTANCE"
+															th:selected="${report.R7_DUE_FROM_DOMESTIC_PURPOSE == 'REMITTANCE'}">
+															REMITTANCE</option>
+														<option value="TERM LOAN"
+															th:selected="${report.R7_DUE_FROM_DOMESTIC_PURPOSE == 'TERM LOAN'}">
+															TERM LOAN</option>
+													</select>
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R7_DUE_FROM_DOMESTIC_AMOUNT != null ? #numbers.formatDecimal(report.R7_DUE_FROM_DOMESTIC_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0.00'}"
+														id="R7_DUE_FROM_DOMESTIC_AMOUNT" name="R7_DUE_FROM_DOMESTIC_AMOUNT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R7_DUE_FROM_DOMESTIC_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R7_DUE_FROM_DOMESTIC_RISK_WEIGHT, 1, 'COMMA', 0, 'POINT') : '0.00'}"
+														id="R7_DUE_FROM_DOMESTIC_RISK_WEIGHT" name="R7_DUE_FROM_DOMESTIC_RISK_WEIGHT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R7_DUE_FROM_DOMESTIC_CURRENCY != null ? report.R7_DUE_FROM_DOMESTIC_CURRENCY : 'N/A'}"
+														id="R7_DUE_FROM_DOMESTIC_CURRENCY_TEXT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+													<select class="display-input Show_input" id="R7_DUE_FROM_DOMESTIC_CURRENCY"
+														name="R7_DUE_FROM_DOMESTIC_CURRENCY"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left; display:none;">
+														<option value="USD"
+															th:selected="${report.R7_DUE_FROM_DOMESTIC_CURRENCY == 'USD'}">USD
+														</option>
+														<option value="EUR"
+															th:selected="${report.R7_DUE_FROM_DOMESTIC_CURRENCY == 'EUR'}">EUR
+														</option>
+														<option value="GBP"
+															th:selected="${report.R7_DUE_FROM_DOMESTIC_CURRENCY == 'GBP'}">GBP
+														</option>
+														<option value="AUD"
+															th:selected="${report.R7_DUE_FROM_DOMESTIC_CURRENCY == 'AUD'}">AUD
+														</option>
+														<option value="INR"
+															th:selected="${report.R7_DUE_FROM_DOMESTIC_CURRENCY == 'INR'}">INR
+														</option>
+													</select>
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R7_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT != null ? #numbers.formatDecimal(report.R7_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT, 1, 'COMMA', 0, 'POINT') : '0.00'}"
+														id="R7_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT" name="R7_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+											</tr>
+																						<tr>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${#strings.defaultString(report.R8_DUE_FROM_DOMESTIC_NAME_OF_BANK, 'N/A')}"
+														id="R8_DUE_FROM_DOMESTIC_NAME_OF_BANK" name="R8_DUE_FROM_DOMESTIC_NAME_OF_BANK"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R8_DUE_FROM_DOMESTIC_ACCT_TYPE != null ? report.R8_DUE_FROM_DOMESTIC_ACCT_TYPE : 'N/A'}"
+														id="R8_DUE_FROM_DOMESTIC_ACCT_TYPE_TEXT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+													<select class="display-input Show_input"
+														id="R8_DUE_FROM_DOMESTIC_ACCT_TYPE"
+														name="R8_DUE_FROM_DOMESTIC_ACCT_TYPE"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left; display:none;">
+														<option value=""
+															th:selected="${report.R8_DUE_FROM_DOMESTIC_ACCT_TYPE == null}">
+															N/A</option>
+														<option value="CURRENT"
+															th:selected="${report.R8_DUE_FROM_DOMESTIC_ACCT_TYPE == 'CURRENT'}">
+															CURRENT</option>
+														<option value="TERM LOAN"
+															th:selected="${report.R8_DUE_FROM_DOMESTIC_ACCT_TYPE == 'TERM LOAN'}">
+															TERM LOAN</option>
+													</select>
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R8_DUE_FROM_DOMESTIC_PURPOSE != null ? report.R8_DUE_FROM_DOMESTIC_PURPOSE : 'N/A'}"
+														id="R8_DUE_FROM_DOMESTIC_PURPOSE_TEXT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+													<select class="display-input Show_input" id="R8_DUE_FROM_DOMESTIC_PURPOSE"
+														name="R8_DUE_FROM_DOMESTIC_PURPOSE"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left; display:none;">
+														<option value=""
+															th:selected="${report.R8_DUE_FROM_DOMESTIC_PURPOSE == null}">N/A
+														</option>
+														<option value="BORROWING"
+															th:selected="${report.R8_DUE_FROM_DOMESTIC_PURPOSE == 'BORROWING'}">
+															BORROWING</option>
+														<option value="REMITTANCE"
+															th:selected="${report.R8_DUE_FROM_DOMESTIC_PURPOSE == 'REMITTANCE'}">
+															REMITTANCE</option>
+														<option value="TERM LOAN"
+															th:selected="${report.R8_DUE_FROM_DOMESTIC_PURPOSE == 'TERM LOAN'}">
+															TERM LOAN</option>
+													</select>
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R8_DUE_FROM_DOMESTIC_AMOUNT != null ? #numbers.formatDecimal(report.R8_DUE_FROM_DOMESTIC_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0.00'}"
+														id="R8_DUE_FROM_DOMESTIC_AMOUNT" name="R8_DUE_FROM_DOMESTIC_AMOUNT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R8_DUE_FROM_DOMESTIC_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R8_DUE_FROM_DOMESTIC_RISK_WEIGHT, 1, 'COMMA', 0, 'POINT') : '0.00'}"
+														id="R8_DUE_FROM_DOMESTIC_RISK_WEIGHT" name="R8_DUE_FROM_DOMESTIC_RISK_WEIGHT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R8_DUE_FROM_DOMESTIC_CURRENCY != null ? report.R8_DUE_FROM_DOMESTIC_CURRENCY : 'N/A'}"
+														id="R8_DUE_FROM_DOMESTIC_CURRENCY_TEXT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+													<select class="display-input Show_input" id="R8_DUE_FROM_DOMESTIC_CURRENCY"
+														name="R8_DUE_FROM_DOMESTIC_CURRENCY"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left; display:none;">
+														<option value="USD"
+															th:selected="${report.R8_DUE_FROM_DOMESTIC_CURRENCY == 'USD'}">USD
+														</option>
+														<option value="EUR"
+															th:selected="${report.R8_DUE_FROM_DOMESTIC_CURRENCY == 'EUR'}">EUR
+														</option>
+														<option value="GBP"
+															th:selected="${report.R8_DUE_FROM_DOMESTIC_CURRENCY == 'GBP'}">GBP
+														</option>
+														<option value="AUD"
+															th:selected="${report.R8_DUE_FROM_DOMESTIC_CURRENCY == 'AUD'}">AUD
+														</option>
+														<option value="INR"
+															th:selected="${report.R8_DUE_FROM_DOMESTIC_CURRENCY == 'INR'}">INR
+														</option>
+													</select>
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R8_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT != null ? #numbers.formatDecimal(report.R8_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT, 1, 'COMMA', 0, 'POINT') : '0.00'}"
+														id="R8_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT" name="R8_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+											</tr>
+																						<tr>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${#strings.defaultString(report.R9_DUE_FROM_DOMESTIC_NAME_OF_BANK, 'N/A')}"
+														id="R9_DUE_FROM_DOMESTIC_NAME_OF_BANK" name="R9_DUE_FROM_DOMESTIC_NAME_OF_BANK"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R9_DUE_FROM_DOMESTIC_ACCT_TYPE != null ? report.R9_DUE_FROM_DOMESTIC_ACCT_TYPE : 'N/A'}"
+														id="R9_DUE_FROM_DOMESTIC_ACCT_TYPE_TEXT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+													<select class="display-input Show_input"
+														id="R9_DUE_FROM_DOMESTIC_ACCT_TYPE"
+														name="R9_DUE_FROM_DOMESTIC_ACCT_TYPE"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left; display:none;">
+														<option value=""
+															th:selected="${report.R9_DUE_FROM_DOMESTIC_ACCT_TYPE == null}">
+															N/A</option>
+														<option value="CURRENT"
+															th:selected="${report.R9_DUE_FROM_DOMESTIC_ACCT_TYPE == 'CURRENT'}">
+															CURRENT</option>
+														<option value="TERM LOAN"
+															th:selected="${report.R9_DUE_FROM_DOMESTIC_ACCT_TYPE == 'TERM LOAN'}">
+															TERM LOAN</option>
+													</select>
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R9_DUE_FROM_DOMESTIC_PURPOSE != null ? report.R9_DUE_FROM_DOMESTIC_PURPOSE : 'N/A'}"
+														id="R9_DUE_FROM_DOMESTIC_PURPOSE_TEXT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+													<select class="display-input Show_input" id="R9_DUE_FROM_DOMESTIC_PURPOSE"
+														name="R9_DUE_FROM_DOMESTIC_PURPOSE"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left; display:none;">
+														<option value=""
+															th:selected="${report.R9_DUE_FROM_DOMESTIC_PURPOSE == null}">N/A
+														</option>
+														<option value="BORROWING"
+															th:selected="${report.R9_DUE_FROM_DOMESTIC_PURPOSE == 'BORROWING'}">
+															BORROWING</option>
+														<option value="REMITTANCE"
+															th:selected="${report.R9_DUE_FROM_DOMESTIC_PURPOSE == 'REMITTANCE'}">
+															REMITTANCE</option>
+														<option value="TERM LOAN"
+															th:selected="${report.R9_DUE_FROM_DOMESTIC_PURPOSE == 'TERM LOAN'}">
+															TERM LOAN</option>
+													</select>
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R9_DUE_FROM_DOMESTIC_AMOUNT != null ? #numbers.formatDecimal(report.R9_DUE_FROM_DOMESTIC_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0.00'}"
+														id="R9_DUE_FROM_DOMESTIC_AMOUNT" name="R9_DUE_FROM_DOMESTIC_AMOUNT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R9_DUE_FROM_DOMESTIC_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R9_DUE_FROM_DOMESTIC_RISK_WEIGHT, 1, 'COMMA', 0, 'POINT') : '0.00'}"
+														id="R9_DUE_FROM_DOMESTIC_RISK_WEIGHT" name="R9_DUE_FROM_DOMESTIC_RISK_WEIGHT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R9_DUE_FROM_DOMESTIC_CURRENCY != null ? report.R9_DUE_FROM_DOMESTIC_CURRENCY : 'N/A'}"
+														id="R9_DUE_FROM_DOMESTIC_CURRENCY_TEXT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+													<select class="display-input Show_input" id="R9_DUE_FROM_DOMESTIC_CURRENCY"
+														name="R9_DUE_FROM_DOMESTIC_CURRENCY"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left; display:none;">
+														<option value="USD"
+															th:selected="${report.R9_DUE_FROM_DOMESTIC_CURRENCY == 'USD'}">USD
+														</option>
+														<option value="EUR"
+															th:selected="${report.R9_DUE_FROM_DOMESTIC_CURRENCY == 'EUR'}">EUR
+														</option>
+														<option value="GBP"
+															th:selected="${report.R9_DUE_FROM_DOMESTIC_CURRENCY == 'GBP'}">GBP
+														</option>
+														<option value="AUD"
+															th:selected="${report.R9_DUE_FROM_DOMESTIC_CURRENCY == 'AUD'}">AUD
+														</option>
+														<option value="INR"
+															th:selected="${report.R9_DUE_FROM_DOMESTIC_CURRENCY == 'INR'}">INR
+														</option>
+													</select>
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R9_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT != null ? #numbers.formatDecimal(report.R9_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT, 1, 'COMMA', 0, 'POINT') : '0.00'}"
+														id="R9_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT" name="R9_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+											</tr>
+																						<tr>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${#strings.defaultString(report.R10_DUE_FROM_DOMESTIC_NAME_OF_BANK, 'N/A')}"
+														id="R10_DUE_FROM_DOMESTIC_NAME_OF_BANK" name="R10_DUE_FROM_DOMESTIC_NAME_OF_BANK"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R10_DUE_FROM_DOMESTIC_ACCT_TYPE != null ? report.R10_DUE_FROM_DOMESTIC_ACCT_TYPE : 'N/A'}"
+														id="R10_DUE_FROM_DOMESTIC_ACCT_TYPE_TEXT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+													<select class="display-input Show_input"
+														id="R10_DUE_FROM_DOMESTIC_ACCT_TYPE"
+														name="R10_DUE_FROM_DOMESTIC_ACCT_TYPE"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left; display:none;">
+														<option value=""
+															th:selected="${report.R10_DUE_FROM_DOMESTIC_ACCT_TYPE == null}">
+															N/A</option>
+														<option value="CURRENT"
+															th:selected="${report.R10_DUE_FROM_DOMESTIC_ACCT_TYPE == 'CURRENT'}">
+															CURRENT</option>
+														<option value="TERM LOAN"
+															th:selected="${report.R10_DUE_FROM_DOMESTIC_ACCT_TYPE == 'TERM LOAN'}">
+															TERM LOAN</option>
+													</select>
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R10_DUE_FROM_DOMESTIC_PURPOSE != null ? report.R10_DUE_FROM_DOMESTIC_PURPOSE : 'N/A'}"
+														id="R10_DUE_FROM_DOMESTIC_PURPOSE_TEXT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+													<select class="display-input Show_input" id="R10_DUE_FROM_DOMESTIC_PURPOSE"
+														name="R10_DUE_FROM_DOMESTIC_PURPOSE"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left; display:none;">
+														<option value=""
+															th:selected="${report.R10_DUE_FROM_DOMESTIC_PURPOSE == null}">N/A
+														</option>
+														<option value="BORROWING"
+															th:selected="${report.R10_DUE_FROM_DOMESTIC_PURPOSE == 'BORROWING'}">
+															BORROWING</option>
+														<option value="REMITTANCE"
+															th:selected="${report.R10_DUE_FROM_DOMESTIC_PURPOSE == 'REMITTANCE'}">
+															REMITTANCE</option>
+														<option value="TERM LOAN"
+															th:selected="${report.R10_DUE_FROM_DOMESTIC_PURPOSE == 'TERM LOAN'}">
+															TERM LOAN</option>
+													</select>
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R10_DUE_FROM_DOMESTIC_AMOUNT != null ? #numbers.formatDecimal(report.R10_DUE_FROM_DOMESTIC_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0.00'}"
+														id="R10_DUE_FROM_DOMESTIC_AMOUNT" name="R10_DUE_FROM_DOMESTIC_AMOUNT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R10_DUE_FROM_DOMESTIC_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R10_DUE_FROM_DOMESTIC_RISK_WEIGHT, 1, 'COMMA', 0, 'POINT') : '0.00'}"
+														id="R10_DUE_FROM_DOMESTIC_RISK_WEIGHT" name="R10_DUE_FROM_DOMESTIC_RISK_WEIGHT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R10_DUE_FROM_DOMESTIC_CURRENCY != null ? report.R10_DUE_FROM_DOMESTIC_CURRENCY : 'N/A'}"
+														id="R10_DUE_FROM_DOMESTIC_CURRENCY_TEXT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+													<select class="display-input Show_input" id="R10_DUE_FROM_DOMESTIC_CURRENCY"
+														name="R10_DUE_FROM_DOMESTIC_CURRENCY"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left; display:none;">
+														<option value="USD"
+															th:selected="${report.R10_DUE_FROM_DOMESTIC_CURRENCY == 'USD'}">USD
+														</option>
+														<option value="EUR"
+															th:selected="${report.R10_DUE_FROM_DOMESTIC_CURRENCY == 'EUR'}">EUR
+														</option>
+														<option value="GBP"
+															th:selected="${report.R10_DUE_FROM_DOMESTIC_CURRENCY == 'GBP'}">GBP
+														</option>
+														<option value="AUD"
+															th:selected="${report.R10_DUE_FROM_DOMESTIC_CURRENCY == 'AUD'}">AUD
+														</option>
+														<option value="INR"
+															th:selected="${report.R10_DUE_FROM_DOMESTIC_CURRENCY == 'INR'}">INR
+														</option>
+													</select>
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R10_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT != null ? #numbers.formatDecimal(report.R10_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT, 1, 'COMMA', 0, 'POINT') : '0.00'}"
+														id="R10_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT" name="R10_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+											</tr>
+																						<tr>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${#strings.defaultString(report.R11_DUE_FROM_DOMESTIC_NAME_OF_BANK, 'N/A')}"
+														id="R11_DUE_FROM_DOMESTIC_NAME_OF_BANK" name="R11_DUE_FROM_DOMESTIC_NAME_OF_BANK"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R11_DUE_FROM_DOMESTIC_ACCT_TYPE != null ? report.R11_DUE_FROM_DOMESTIC_ACCT_TYPE : 'N/A'}"
+														id="R11_DUE_FROM_DOMESTIC_ACCT_TYPE_TEXT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+													<select class="display-input Show_input"
+														id="R11_DUE_FROM_DOMESTIC_ACCT_TYPE"
+														name="R11_DUE_FROM_DOMESTIC_ACCT_TYPE"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left; display:none;">
+														<option value=""
+															th:selected="${report.R11_DUE_FROM_DOMESTIC_ACCT_TYPE == null}">
+															N/A</option>
+														<option value="CURRENT"
+															th:selected="${report.R11_DUE_FROM_DOMESTIC_ACCT_TYPE == 'CURRENT'}">
+															CURRENT</option>
+														<option value="TERM LOAN"
+															th:selected="${report.R11_DUE_FROM_DOMESTIC_ACCT_TYPE == 'TERM LOAN'}">
+															TERM LOAN</option>
+													</select>
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R11_DUE_FROM_DOMESTIC_PURPOSE != null ? report.R11_DUE_FROM_DOMESTIC_PURPOSE : 'N/A'}"
+														id="R11_DUE_FROM_DOMESTIC_PURPOSE_TEXT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+													<select class="display-input Show_input" id="R11_DUE_FROM_DOMESTIC_PURPOSE"
+														name="R11_DUE_FROM_DOMESTIC_PURPOSE"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left; display:none;">
+														<option value=""
+															th:selected="${report.R11_DUE_FROM_DOMESTIC_PURPOSE == null}">N/A
+														</option>
+														<option value="BORROWING"
+															th:selected="${report.R11_DUE_FROM_DOMESTIC_PURPOSE == 'BORROWING'}">
+															BORROWING</option>
+														<option value="REMITTANCE"
+															th:selected="${report.R11_DUE_FROM_DOMESTIC_PURPOSE == 'REMITTANCE'}">
+															REMITTANCE</option>
+														<option value="TERM LOAN"
+															th:selected="${report.R11_DUE_FROM_DOMESTIC_PURPOSE == 'TERM LOAN'}">
+															TERM LOAN</option>
+													</select>
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R11_DUE_FROM_DOMESTIC_AMOUNT != null ? #numbers.formatDecimal(report.R11_DUE_FROM_DOMESTIC_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0.00'}"
+														id="R11_DUE_FROM_DOMESTIC_AMOUNT" name="R11_DUE_FROM_DOMESTIC_AMOUNT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R11_DUE_FROM_DOMESTIC_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R11_DUE_FROM_DOMESTIC_RISK_WEIGHT, 1, 'COMMA', 0, 'POINT') : '0.00'}"
+														id="R11_DUE_FROM_DOMESTIC_RISK_WEIGHT" name="R11_DUE_FROM_DOMESTIC_RISK_WEIGHT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R11_DUE_FROM_DOMESTIC_CURRENCY != null ? report.R11_DUE_FROM_DOMESTIC_CURRENCY : 'N/A'}"
+														id="R11_DUE_FROM_DOMESTIC_CURRENCY_TEXT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+													<select class="display-input Show_input" id="R11_DUE_FROM_DOMESTIC_CURRENCY"
+														name="R11_DUE_FROM_DOMESTIC_CURRENCY"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left; display:none;">
+														<option value="USD"
+															th:selected="${report.R11_DUE_FROM_DOMESTIC_CURRENCY == 'USD'}">USD
+														</option>
+														<option value="EUR"
+															th:selected="${report.R11_DUE_FROM_DOMESTIC_CURRENCY == 'EUR'}">EUR
+														</option>
+														<option value="GBP"
+															th:selected="${report.R11_DUE_FROM_DOMESTIC_CURRENCY == 'GBP'}">GBP
+														</option>
+														<option value="AUD"
+															th:selected="${report.R11_DUE_FROM_DOMESTIC_CURRENCY == 'AUD'}">AUD
+														</option>
+														<option value="INR"
+															th:selected="${report.R11_DUE_FROM_DOMESTIC_CURRENCY == 'INR'}">INR
+														</option>
+													</select>
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R11_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT != null ? #numbers.formatDecimal(report.R11_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT, 1, 'COMMA', 0, 'POINT') : '0.00'}"
+														id="R11_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT" name="R11_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+											</tr>
+										</tbody>
+
+
+
+									</table>
+<table
+										class="sticky-header-table table table-bordered table-hover table-sm table-condensed"
+										id="reports">
+										<thead class="thead-light">
+											<tr>
+												<th colspan="12"
+													style="text-align: left; padding-left: 20px; width: 900px;">
+													DUE TO DOMESTIC BANKS </th>
+											</tr>
+
+											<tr style="background-color: #b3b6b9;height:80px;">
+												<th
+													style="background-color: #D8D8D8;text-align: left;vertical-align:middle; padding-left: 20px; width: 900px;">
+													Name of Bank
+												</th>
+												<th
+													style="background-color: #D8D8D8;text-align: left; vertical-align:middle; width: 200px;">
+													Type of account</th>
+
+												<th
+													style="background-color: #D8D8D8;text-align: left; vertical-align:middle;width: 150px;">
+													Purpose</th>
+												<th
+													style="background-color: #D8D8D8;text-align: left; vertical-align:middle; width: 150px;">
+													Amount</th>
+												<th
+													style="background-color: #D8D8D8;text-align: right;vertical-align:middle; width: 150px;">
+													Risk Weight</th>
+													<th
+													style="background-color: #D8D8D8;text-align: right;vertical-align:middle; width: 150px;">
+													Risk -Weghted Amount </th>
+
+											</tr>
+
+
+										</thead>
+
+										<tbody id="entity6" th:each="report: ${reportsummary5}"
+											style="font-family: Arial;">
+												<tr>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${#strings.defaultString(report.R1_DUE_TO_DOMESTIC_NAME_OF_BANK, 'N/A')}"
+														id="R1_DUE_TO_DOMESTIC_NAME_OF_BANK" name="R1_DUE_TO_DOMESTIC_NAME_OF_BANK"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R1_DUE_TO_DOMESTIC_ACCT_TYPE != null ? report.R1_DUE_TO_DOMESTIC_ACCT_TYPE : 'N/A'}"
+														id="R1_DUE_TO_DOMESTIC_ACCT_TYPE_TEXT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+													<select class="display-input Show_input"
+														id="R1_DUE_TO_DOMESTIC_ACCT_TYPE"
+														name="R1_DUE_TO_DOMESTIC_ACCT_TYPE"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left; display:none;">
+														<option value=""
+															th:selected="${report.R1_DUE_TO_DOMESTIC_ACCT_TYPE == null}">
+															N/A</option>
+														<option value="CURRENT"
+															th:selected="${report.R1_DUE_TO_DOMESTIC_ACCT_TYPE == 'CURRENT'}">
+															CURRENT</option>
+														<option value="TERM LOAN"
+															th:selected="${report.R1_DUE_TO_DOMESTIC_ACCT_TYPE == 'TERM LOAN'}">
+															TERM LOAN</option>
+													</select>
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R1_DUE_TO_DOMESTIC_PURPOSE != null ? report.R1_DUE_TO_DOMESTIC_PURPOSE : 'N/A'}"
+														id="R1_DUE_TO_DOMESTIC_PURPOSE_TEXT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+													<select class="display-input Show_input" id="R1_DUE_TO_DOMESTIC_PURPOSE"
+														name="R1_DUE_TO_DOMESTIC_PURPOSE"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left; display:none;">
+														<option value=""
+															th:selected="${report.R1_DUE_TO_DOMESTIC_PURPOSE == null}">N/A
+														</option>
+														<option value="BORROWING"
+															th:selected="${report.R1_DUE_TO_DOMESTIC_PURPOSE == 'BORROWING'}">
+															BORROWING</option>
+														<option value="REMITTANCE"
+															th:selected="${report.R1_DUE_TO_DOMESTIC_PURPOSE == 'REMITTANCE'}">
+															REMITTANCE</option>
+														<option value="TERM LOAN"
+															th:selected="${report.R1_DUE_TO_DOMESTIC_PURPOSE == 'TERM LOAN'}">
+															TERM LOAN</option>
+													</select>
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R1_DUE_TO_DOMESTIC_AMOUNT != null ? #numbers.formatDecimal(report.R1_DUE_TO_DOMESTIC_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0.00'}"
+														id="R1_DUE_TO_DOMESTIC_AMOUNT" name="R1_DUE_TO_DOMESTIC_AMOUNT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R1_DUE_TO_DOMESTIC_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R1_DUE_TO_DOMESTIC_RISK_WEIGHT, 1, 'COMMA', 0, 'POINT') : '0.00'}"
+														id="R1_DUE_TO_DOMESTIC_RISK_WEIGHT" name="R1_DUE_TO_DOMESTIC_RISK_WEIGHT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R1_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT != null ? #numbers.formatDecimal(report.R1_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT, 1, 'COMMA', 0, 'POINT') : '0.00'}"
+														id="R1_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT" name="R1_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+											</tr>
+																						<tr>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${#strings.defaultString(report.R2_DUE_TO_DOMESTIC_NAME_OF_BANK, 'N/A')}"
+														id="R2_DUE_TO_DOMESTIC_NAME_OF_BANK" name="R2_DUE_TO_DOMESTIC_NAME_OF_BANK"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R2_DUE_TO_DOMESTIC_ACCT_TYPE != null ? report.R2_DUE_TO_DOMESTIC_ACCT_TYPE : 'N/A'}"
+														id="R2_DUE_TO_DOMESTIC_ACCT_TYPE_TEXT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+													<select class="display-input Show_input"
+														id="R2_DUE_TO_DOMESTIC_ACCT_TYPE"
+														name="R2_DUE_TO_DOMESTIC_ACCT_TYPE"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left; display:none;">
+														<option value=""
+															th:selected="${report.R2_DUE_TO_DOMESTIC_ACCT_TYPE == null}">
+															N/A</option>
+														<option value="CURRENT"
+															th:selected="${report.R2_DUE_TO_DOMESTIC_ACCT_TYPE == 'CURRENT'}">
+															CURRENT</option>
+														<option value="TERM LOAN"
+															th:selected="${report.R2_DUE_TO_DOMESTIC_ACCT_TYPE == 'TERM LOAN'}">
+															TERM LOAN</option>
+													</select>
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R2_DUE_TO_DOMESTIC_PURPOSE != null ? report.R2_DUE_TO_DOMESTIC_PURPOSE : 'N/A'}"
+														id="R2_DUE_TO_DOMESTIC_PURPOSE_TEXT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+													<select class="display-input Show_input" id="R2_DUE_TO_DOMESTIC_PURPOSE"
+														name="R2_DUE_TO_DOMESTIC_PURPOSE"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left; display:none;">
+														<option value=""
+															th:selected="${report.R2_DUE_TO_DOMESTIC_PURPOSE == null}">N/A
+														</option>
+														<option value="BORROWING"
+															th:selected="${report.R2_DUE_TO_DOMESTIC_PURPOSE == 'BORROWING'}">
+															BORROWING</option>
+														<option value="REMITTANCE"
+															th:selected="${report.R2_DUE_TO_DOMESTIC_PURPOSE == 'REMITTANCE'}">
+															REMITTANCE</option>
+														<option value="TERM LOAN"
+															th:selected="${report.R2_DUE_TO_DOMESTIC_PURPOSE == 'TERM LOAN'}">
+															TERM LOAN</option>
+													</select>
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R2_DUE_TO_DOMESTIC_AMOUNT != null ? #numbers.formatDecimal(report.R2_DUE_TO_DOMESTIC_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0.00'}"
+														id="R2_DUE_TO_DOMESTIC_AMOUNT" name="R2_DUE_TO_DOMESTIC_AMOUNT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R2_DUE_TO_DOMESTIC_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R2_DUE_TO_DOMESTIC_RISK_WEIGHT, 1, 'COMMA', 0, 'POINT') : '0.00'}"
+														id="R2_DUE_TO_DOMESTIC_RISK_WEIGHT" name="R2_DUE_TO_DOMESTIC_RISK_WEIGHT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R2_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT != null ? #numbers.formatDecimal(report.R2_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT, 1, 'COMMA', 0, 'POINT') : '0.00'}"
+														id="R2_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT" name="R2_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+											</tr>
+																						<tr>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${#strings.defaultString(report.R3_DUE_TO_DOMESTIC_NAME_OF_BANK, 'N/A')}"
+														id="R3_DUE_TO_DOMESTIC_NAME_OF_BANK" name="R3_DUE_TO_DOMESTIC_NAME_OF_BANK"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R3_DUE_TO_DOMESTIC_ACCT_TYPE != null ? report.R3_DUE_TO_DOMESTIC_ACCT_TYPE : 'N/A'}"
+														id="R3_DUE_TO_DOMESTIC_ACCT_TYPE_TEXT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+													<select class="display-input Show_input"
+														id="R3_DUE_TO_DOMESTIC_ACCT_TYPE"
+														name="R3_DUE_TO_DOMESTIC_ACCT_TYPE"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left; display:none;">
+														<option value=""
+															th:selected="${report.R3_DUE_TO_DOMESTIC_ACCT_TYPE == null}">
+															N/A</option>
+														<option value="CURRENT"
+															th:selected="${report.R3_DUE_TO_DOMESTIC_ACCT_TYPE == 'CURRENT'}">
+															CURRENT</option>
+														<option value="TERM LOAN"
+															th:selected="${report.R3_DUE_TO_DOMESTIC_ACCT_TYPE == 'TERM LOAN'}">
+															TERM LOAN</option>
+													</select>
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R3_DUE_TO_DOMESTIC_PURPOSE != null ? report.R3_DUE_TO_DOMESTIC_PURPOSE : 'N/A'}"
+														id="R3_DUE_TO_DOMESTIC_PURPOSE_TEXT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+													<select class="display-input Show_input" id="R3_DUE_TO_DOMESTIC_PURPOSE"
+														name="R3_DUE_TO_DOMESTIC_PURPOSE"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left; display:none;">
+														<option value=""
+															th:selected="${report.R3_DUE_TO_DOMESTIC_PURPOSE == null}">N/A
+														</option>
+														<option value="BORROWING"
+															th:selected="${report.R3_DUE_TO_DOMESTIC_PURPOSE == 'BORROWING'}">
+															BORROWING</option>
+														<option value="REMITTANCE"
+															th:selected="${report.R3_DUE_TO_DOMESTIC_PURPOSE == 'REMITTANCE'}">
+															REMITTANCE</option>
+														<option value="TERM LOAN"
+															th:selected="${report.R3_DUE_TO_DOMESTIC_PURPOSE == 'TERM LOAN'}">
+															TERM LOAN</option>
+													</select>
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R3_DUE_TO_DOMESTIC_AMOUNT != null ? #numbers.formatDecimal(report.R3_DUE_TO_DOMESTIC_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0.00'}"
+														id="R3_DUE_TO_DOMESTIC_AMOUNT" name="R3_DUE_TO_DOMESTIC_AMOUNT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R3_DUE_TO_DOMESTIC_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R3_DUE_TO_DOMESTIC_RISK_WEIGHT, 1, 'COMMA', 0, 'POINT') : '0.00'}"
+														id="R3_DUE_TO_DOMESTIC_RISK_WEIGHT" name="R3_DUE_TO_DOMESTIC_RISK_WEIGHT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R3_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT != null ? #numbers.formatDecimal(report.R3_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT, 1, 'COMMA', 0, 'POINT') : '0.00'}"
+														id="R3_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT" name="R3_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+											</tr>
+																						<tr>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${#strings.defaultString(report.R4_DUE_TO_DOMESTIC_NAME_OF_BANK, 'N/A')}"
+														id="R4_DUE_TO_DOMESTIC_NAME_OF_BANK" name="R4_DUE_TO_DOMESTIC_NAME_OF_BANK"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R4_DUE_TO_DOMESTIC_ACCT_TYPE != null ? report.R4_DUE_TO_DOMESTIC_ACCT_TYPE : 'N/A'}"
+														id="R4_DUE_TO_DOMESTIC_ACCT_TYPE_TEXT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+													<select class="display-input Show_input"
+														id="R4_DUE_TO_DOMESTIC_ACCT_TYPE"
+														name="R4_DUE_TO_DOMESTIC_ACCT_TYPE"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left; display:none;">
+														<option value=""
+															th:selected="${report.R4_DUE_TO_DOMESTIC_ACCT_TYPE == null}">
+															N/A</option>
+														<option value="CURRENT"
+															th:selected="${report.R4_DUE_TO_DOMESTIC_ACCT_TYPE == 'CURRENT'}">
+															CURRENT</option>
+														<option value="TERM LOAN"
+															th:selected="${report.R4_DUE_TO_DOMESTIC_ACCT_TYPE == 'TERM LOAN'}">
+															TERM LOAN</option>
+													</select>
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R4_DUE_TO_DOMESTIC_PURPOSE != null ? report.R4_DUE_TO_DOMESTIC_PURPOSE : 'N/A'}"
+														id="R4_DUE_TO_DOMESTIC_PURPOSE_TEXT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+													<select class="display-input Show_input" id="R4_DUE_TO_DOMESTIC_PURPOSE"
+														name="R4_DUE_TO_DOMESTIC_PURPOSE"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left; display:none;">
+														<option value=""
+															th:selected="${report.R4_DUE_TO_DOMESTIC_PURPOSE == null}">N/A
+														</option>
+														<option value="BORROWING"
+															th:selected="${report.R4_DUE_TO_DOMESTIC_PURPOSE == 'BORROWING'}">
+															BORROWING</option>
+														<option value="REMITTANCE"
+															th:selected="${report.R4_DUE_TO_DOMESTIC_PURPOSE == 'REMITTANCE'}">
+															REMITTANCE</option>
+														<option value="TERM LOAN"
+															th:selected="${report.R4_DUE_TO_DOMESTIC_PURPOSE == 'TERM LOAN'}">
+															TERM LOAN</option>
+													</select>
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R4_DUE_TO_DOMESTIC_AMOUNT != null ? #numbers.formatDecimal(report.R4_DUE_TO_DOMESTIC_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0.00'}"
+														id="R4_DUE_TO_DOMESTIC_AMOUNT" name="R4_DUE_TO_DOMESTIC_AMOUNT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R4_DUE_TO_DOMESTIC_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R4_DUE_TO_DOMESTIC_RISK_WEIGHT, 1, 'COMMA', 0, 'POINT') : '0.00'}"
+														id="R4_DUE_TO_DOMESTIC_RISK_WEIGHT" name="R4_DUE_TO_DOMESTIC_RISK_WEIGHT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R4_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT != null ? #numbers.formatDecimal(report.R4_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT, 1, 'COMMA', 0, 'POINT') : '0.00'}"
+														id="R4_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT" name="R4_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+											</tr>
+																						<tr>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${#strings.defaultString(report.R5_DUE_TO_DOMESTIC_NAME_OF_BANK, 'N/A')}"
+														id="R5_DUE_TO_DOMESTIC_NAME_OF_BANK" name="R5_DUE_TO_DOMESTIC_NAME_OF_BANK"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R5_DUE_TO_DOMESTIC_ACCT_TYPE != null ? report.R5_DUE_TO_DOMESTIC_ACCT_TYPE : 'N/A'}"
+														id="R5_DUE_TO_DOMESTIC_ACCT_TYPE_TEXT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+													<select class="display-input Show_input"
+														id="R5_DUE_TO_DOMESTIC_ACCT_TYPE"
+														name="R5_DUE_TO_DOMESTIC_ACCT_TYPE"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left; display:none;">
+														<option value=""
+															th:selected="${report.R5_DUE_TO_DOMESTIC_ACCT_TYPE == null}">
+															N/A</option>
+														<option value="CURRENT"
+															th:selected="${report.R5_DUE_TO_DOMESTIC_ACCT_TYPE == 'CURRENT'}">
+															CURRENT</option>
+														<option value="TERM LOAN"
+															th:selected="${report.R5_DUE_TO_DOMESTIC_ACCT_TYPE == 'TERM LOAN'}">
+															TERM LOAN</option>
+													</select>
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R5_DUE_TO_DOMESTIC_PURPOSE != null ? report.R5_DUE_TO_DOMESTIC_PURPOSE : 'N/A'}"
+														id="R5_DUE_TO_DOMESTIC_PURPOSE_TEXT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+													<select class="display-input Show_input" id="R5_DUE_TO_DOMESTIC_PURPOSE"
+														name="R5_DUE_TO_DOMESTIC_PURPOSE"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left; display:none;">
+														<option value=""
+															th:selected="${report.R5_DUE_TO_DOMESTIC_PURPOSE == null}">N/A
+														</option>
+														<option value="BORROWING"
+															th:selected="${report.R5_DUE_TO_DOMESTIC_PURPOSE == 'BORROWING'}">
+															BORROWING</option>
+														<option value="REMITTANCE"
+															th:selected="${report.R5_DUE_TO_DOMESTIC_PURPOSE == 'REMITTANCE'}">
+															REMITTANCE</option>
+														<option value="TERM LOAN"
+															th:selected="${report.R5_DUE_TO_DOMESTIC_PURPOSE == 'TERM LOAN'}">
+															TERM LOAN</option>
+													</select>
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R5_DUE_TO_DOMESTIC_AMOUNT != null ? #numbers.formatDecimal(report.R5_DUE_TO_DOMESTIC_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0.00'}"
+														id="R5_DUE_TO_DOMESTIC_AMOUNT" name="R5_DUE_TO_DOMESTIC_AMOUNT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R5_DUE_TO_DOMESTIC_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R5_DUE_TO_DOMESTIC_RISK_WEIGHT, 1, 'COMMA', 0, 'POINT') : '0.00'}"
+														id="R5_DUE_TO_DOMESTIC_RISK_WEIGHT" name="R5_DUE_TO_DOMESTIC_RISK_WEIGHT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R5_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT != null ? #numbers.formatDecimal(report.R5_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT, 1, 'COMMA', 0, 'POINT') : '0.00'}"
+														id="R5_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT" name="R5_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+											</tr>
+																						<tr>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${#strings.defaultString(report.R6_DUE_TO_DOMESTIC_NAME_OF_BANK, 'N/A')}"
+														id="R6_DUE_TO_DOMESTIC_NAME_OF_BANK" name="R6_DUE_TO_DOMESTIC_NAME_OF_BANK"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R6_DUE_TO_DOMESTIC_ACCT_TYPE != null ? report.R6_DUE_TO_DOMESTIC_ACCT_TYPE : 'N/A'}"
+														id="R6_DUE_TO_DOMESTIC_ACCT_TYPE_TEXT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+													<select class="display-input Show_input"
+														id="R6_DUE_TO_DOMESTIC_ACCT_TYPE"
+														name="R6_DUE_TO_DOMESTIC_ACCT_TYPE"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left; display:none;">
+														<option value=""
+															th:selected="${report.R6_DUE_TO_DOMESTIC_ACCT_TYPE == null}">
+															N/A</option>
+														<option value="CURRENT"
+															th:selected="${report.R6_DUE_TO_DOMESTIC_ACCT_TYPE == 'CURRENT'}">
+															CURRENT</option>
+														<option value="TERM LOAN"
+															th:selected="${report.R6_DUE_TO_DOMESTIC_ACCT_TYPE == 'TERM LOAN'}">
+															TERM LOAN</option>
+													</select>
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R6_DUE_TO_DOMESTIC_PURPOSE != null ? report.R6_DUE_TO_DOMESTIC_PURPOSE : 'N/A'}"
+														id="R6_DUE_TO_DOMESTIC_PURPOSE_TEXT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+													<select class="display-input Show_input" id="R6_DUE_TO_DOMESTIC_PURPOSE"
+														name="R6_DUE_TO_DOMESTIC_PURPOSE"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left; display:none;">
+														<option value=""
+															th:selected="${report.R6_DUE_TO_DOMESTIC_PURPOSE == null}">N/A
+														</option>
+														<option value="BORROWING"
+															th:selected="${report.R6_DUE_TO_DOMESTIC_PURPOSE == 'BORROWING'}">
+															BORROWING</option>
+														<option value="REMITTANCE"
+															th:selected="${report.R6_DUE_TO_DOMESTIC_PURPOSE == 'REMITTANCE'}">
+															REMITTANCE</option>
+														<option value="TERM LOAN"
+															th:selected="${report.R6_DUE_TO_DOMESTIC_PURPOSE == 'TERM LOAN'}">
+															TERM LOAN</option>
+													</select>
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R6_DUE_TO_DOMESTIC_AMOUNT != null ? #numbers.formatDecimal(report.R6_DUE_TO_DOMESTIC_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0.00'}"
+														id="R6_DUE_TO_DOMESTIC_AMOUNT" name="R6_DUE_TO_DOMESTIC_AMOUNT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R6_DUE_TO_DOMESTIC_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R6_DUE_TO_DOMESTIC_RISK_WEIGHT, 1, 'COMMA', 0, 'POINT') : '0.00'}"
+														id="R6_DUE_TO_DOMESTIC_RISK_WEIGHT" name="R6_DUE_TO_DOMESTIC_RISK_WEIGHT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R6_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT != null ? #numbers.formatDecimal(report.R6_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT, 1, 'COMMA', 0, 'POINT') : '0.00'}"
+														id="R6_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT" name="R6_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+											</tr>
+																						<tr>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${#strings.defaultString(report.R7_DUE_TO_DOMESTIC_NAME_OF_BANK, 'N/A')}"
+														id="R7_DUE_TO_DOMESTIC_NAME_OF_BANK" name="R7_DUE_TO_DOMESTIC_NAME_OF_BANK"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R7_DUE_TO_DOMESTIC_ACCT_TYPE != null ? report.R7_DUE_TO_DOMESTIC_ACCT_TYPE : 'N/A'}"
+														id="R7_DUE_TO_DOMESTIC_ACCT_TYPE_TEXT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+													<select class="display-input Show_input"
+														id="R7_DUE_TO_DOMESTIC_ACCT_TYPE"
+														name="R7_DUE_TO_DOMESTIC_ACCT_TYPE"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left; display:none;">
+														<option value=""
+															th:selected="${report.R7_DUE_TO_DOMESTIC_ACCT_TYPE == null}">
+															N/A</option>
+														<option value="CURRENT"
+															th:selected="${report.R7_DUE_TO_DOMESTIC_ACCT_TYPE == 'CURRENT'}">
+															CURRENT</option>
+														<option value="TERM LOAN"
+															th:selected="${report.R7_DUE_TO_DOMESTIC_ACCT_TYPE == 'TERM LOAN'}">
+															TERM LOAN</option>
+													</select>
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R7_DUE_TO_DOMESTIC_PURPOSE != null ? report.R7_DUE_TO_DOMESTIC_PURPOSE : 'N/A'}"
+														id="R7_DUE_TO_DOMESTIC_PURPOSE_TEXT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+													<select class="display-input Show_input" id="R7_DUE_TO_DOMESTIC_PURPOSE"
+														name="R7_DUE_TO_DOMESTIC_PURPOSE"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left; display:none;">
+														<option value=""
+															th:selected="${report.R7_DUE_TO_DOMESTIC_PURPOSE == null}">N/A
+														</option>
+														<option value="BORROWING"
+															th:selected="${report.R7_DUE_TO_DOMESTIC_PURPOSE == 'BORROWING'}">
+															BORROWING</option>
+														<option value="REMITTANCE"
+															th:selected="${report.R7_DUE_TO_DOMESTIC_PURPOSE == 'REMITTANCE'}">
+															REMITTANCE</option>
+														<option value="TERM LOAN"
+															th:selected="${report.R7_DUE_TO_DOMESTIC_PURPOSE == 'TERM LOAN'}">
+															TERM LOAN</option>
+													</select>
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R7_DUE_TO_DOMESTIC_AMOUNT != null ? #numbers.formatDecimal(report.R7_DUE_TO_DOMESTIC_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0.00'}"
+														id="R7_DUE_TO_DOMESTIC_AMOUNT" name="R7_DUE_TO_DOMESTIC_AMOUNT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R7_DUE_TO_DOMESTIC_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R7_DUE_TO_DOMESTIC_RISK_WEIGHT, 1, 'COMMA', 0, 'POINT') : '0.00'}"
+														id="R7_DUE_TO_DOMESTIC_RISK_WEIGHT" name="R7_DUE_TO_DOMESTIC_RISK_WEIGHT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R7_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT != null ? #numbers.formatDecimal(report.R7_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT, 1, 'COMMA', 0, 'POINT') : '0.00'}"
+														id="R7_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT" name="R7_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+											</tr>
+																						<tr>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${#strings.defaultString(report.R8_DUE_TO_DOMESTIC_NAME_OF_BANK, 'N/A')}"
+														id="R8_DUE_TO_DOMESTIC_NAME_OF_BANK" name="R8_DUE_TO_DOMESTIC_NAME_OF_BANK"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R8_DUE_TO_DOMESTIC_ACCT_TYPE != null ? report.R8_DUE_TO_DOMESTIC_ACCT_TYPE : 'N/A'}"
+														id="R8_DUE_TO_DOMESTIC_ACCT_TYPE_TEXT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+													<select class="display-input Show_input"
+														id="R8_DUE_TO_DOMESTIC_ACCT_TYPE"
+														name="R8_DUE_TO_DOMESTIC_ACCT_TYPE"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left; display:none;">
+														<option value=""
+															th:selected="${report.R8_DUE_TO_DOMESTIC_ACCT_TYPE == null}">
+															N/A</option>
+														<option value="CURRENT"
+															th:selected="${report.R8_DUE_TO_DOMESTIC_ACCT_TYPE == 'CURRENT'}">
+															CURRENT</option>
+														<option value="TERM LOAN"
+															th:selected="${report.R8_DUE_TO_DOMESTIC_ACCT_TYPE == 'TERM LOAN'}">
+															TERM LOAN</option>
+													</select>
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R8_DUE_TO_DOMESTIC_PURPOSE != null ? report.R8_DUE_TO_DOMESTIC_PURPOSE : 'N/A'}"
+														id="R8_DUE_TO_DOMESTIC_PURPOSE_TEXT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+													<select class="display-input Show_input" id="R8_DUE_TO_DOMESTIC_PURPOSE"
+														name="R8_DUE_TO_DOMESTIC_PURPOSE"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left; display:none;">
+														<option value=""
+															th:selected="${report.R8_DUE_TO_DOMESTIC_PURPOSE == null}">N/A
+														</option>
+														<option value="BORROWING"
+															th:selected="${report.R8_DUE_TO_DOMESTIC_PURPOSE == 'BORROWING'}">
+															BORROWING</option>
+														<option value="REMITTANCE"
+															th:selected="${report.R8_DUE_TO_DOMESTIC_PURPOSE == 'REMITTANCE'}">
+															REMITTANCE</option>
+														<option value="TERM LOAN"
+															th:selected="${report.R8_DUE_TO_DOMESTIC_PURPOSE == 'TERM LOAN'}">
+															TERM LOAN</option>
+													</select>
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R8_DUE_TO_DOMESTIC_AMOUNT != null ? #numbers.formatDecimal(report.R8_DUE_TO_DOMESTIC_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0.00'}"
+														id="R8_DUE_TO_DOMESTIC_AMOUNT" name="R8_DUE_TO_DOMESTIC_AMOUNT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R8_DUE_TO_DOMESTIC_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R8_DUE_TO_DOMESTIC_RISK_WEIGHT, 1, 'COMMA', 0, 'POINT') : '0.00'}"
+														id="R8_DUE_TO_DOMESTIC_RISK_WEIGHT" name="R8_DUE_TO_DOMESTIC_RISK_WEIGHT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R8_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT != null ? #numbers.formatDecimal(report.R8_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT, 1, 'COMMA', 0, 'POINT') : '0.00'}"
+														id="R8_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT" name="R8_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+											</tr>
+										</tbody>
+
+									</table>
 
 
 								</div>
