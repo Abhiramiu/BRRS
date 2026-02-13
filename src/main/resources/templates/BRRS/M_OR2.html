@@ -450,10 +450,24 @@ function showsummary() {
 			showResultModal('Alert', 'Development in progress');
 
 		}
-		function closemodel() {
+		/* function closemodel() {
 			$('#alert').modal('hide');
 			$('#resultModal').modal('hide');
 
+		} */
+		
+		function closemodel() {
+		    const modalElement = document.getElementById('resultModal');
+		    const modal = bootstrap.Modal.getInstance(modalElement);
+		    modal.hide();
+
+		    const message = document.getElementById("resultModalBody").innerText.toLowerCase();
+
+		    if (message.includes("resubmission")) {
+		        window.history.back();
+		    } else {
+		        location.reload();
+		    }
 		}
 		function showResultModal(title, message) {
 			// Set the text for the modal elements
@@ -5713,25 +5727,23 @@ function fileuploads(btn) {
 
 	<!-- Custom Alert/Result Modal (Matches your existing style) -->
 	<div class="modal fade" id="resultModal">
-		<div class="modal-dialog modal-dialog-centered">
-			<div class="modal-content">
-				<!-- Your custom styled header -->
-				<div class="menu-title-header">
-					<div class="modal-title" id="resultModalLabel"
-						style="text-align: center; color: white;">
-						<!-- Title will be set by JavaScript -->
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content">
+					<!-- Your custom styled header -->
+					<div class="menu-title-header">
+						<div class="modal-title" id="resultModalLabel" style="text-align: center; color: white;">
+							<!-- Title will be set by JavaScript -->
+						</div>
 					</div>
-				</div>
-				<div class="modal-body"
-					style="text-align: center; font-size: 1.1rem;">
-					<p id="resultModalBody"></p>
-					<!-- Your custom styled button -->
-					<button type="button" class="custom-tab-btn" onclick="closemodel()"
-						data-dismiss="modal">OK</button>
+					<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+						<p id="resultModalBody"></p>
+						<!-- Your custom styled button -->
+						<button type="button" class="custom-tab-btn" onclick="closemodel()"
+							data-bs-dismiss="modal">OK</button>
+					</div>
 				</div>
 			</div>
 		</div>
-	</div>
 	
 	
 	<!-- Custom Cellresult Modal -->
@@ -5772,25 +5784,7 @@ function fileuploads(btn) {
 			</div>
 		</div>
 	</div>
-	<!-- Custom Alert/Result Modal (Matches your existing style) -->
-	<div class="modal fade" id="resultModal">
-		<div class="modal-dialog modal-dialog-centered">
-			<div class="modal-content">
-				<!-- Your custom styled header -->
-				<div class="menu-title-header">
-					<div class="modal-title" id="resultModalLabel" style="text-align: center; color: white;">
-						<!-- Title will be set by JavaScript -->
-					</div>
-				</div>
-				<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
-					<p id="resultModalBody"></p>
-					<!-- Your custom styled button -->
-					<button type="button" class="custom-tab-btn" onclick="closemodel()" data-bs-dismiss="modal">OK</button>
-				</div>
-			</div>
-		</div>
-	</div>
-
+	
 </body>
 
 <!-- <script>
