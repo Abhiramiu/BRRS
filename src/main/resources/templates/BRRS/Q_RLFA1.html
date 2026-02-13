@@ -1124,7 +1124,12 @@ window.fileuploads = function (btn) {
                 $("#resultModalLabel").text("BRRS");
                 $("#resultModalBody").text(response);
                 $("#resultModal").modal("show");
-                back();
+                // If no referrer, just go one step back in history
+                if (type && type.toUpperCase() === 'RESUB') {
+                    location.href = '/BRRS/Resubmission?rptcode=Q_RLFA1'
+                }else{
+                    window.history.back();
+                }
             },
             error: function (jqXHR) {
                 $("#resultModalLabel").text("Error");

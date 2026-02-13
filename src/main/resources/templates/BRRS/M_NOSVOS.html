@@ -814,7 +814,14 @@ function calculateR101Totals() {
 					$("#resultModalLabel").text("Success");
 					$("#resultModalBody").text("Updated Successfully");
 					$("#resultModal").modal("show");
-					  back();
+					
+					// If no referrer, just go one step back in history
+                if (type && type.toUpperCase() === 'RESUB') {
+                    location.href = '/BRRS/Resubmission?rptcode=M_NOSVOS'
+                }else{
+                    window.history.back();
+                }
+
 				},
 				error: function (jqXHR) {
 					console.error("Error response:", jqXHR.responseText);
