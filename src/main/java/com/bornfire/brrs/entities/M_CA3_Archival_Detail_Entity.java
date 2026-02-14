@@ -11,11 +11,9 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import org.springframework.format.annotation.DateTimeFormat;
-
 @Entity
 @Table(name="BRRS_M_CA3_ARCHIVALTABLE_DETAIL")
-
+@IdClass(M_CA3_PK.class)
 
 
 public
@@ -158,18 +156,18 @@ class M_CA3_Archival_Detail_Entity {
     private String R60_PRODUCT;
     private BigDecimal R60_AMOUNT;
 
-    @Temporal(TemporalType.DATE)
-	@DateTimeFormat(pattern = "dd/MM/yyyy")
+    @Id
+	@Temporal(TemporalType.DATE)
+	@Column(name = "REPORT_DATE")
+	private Date reportDate;
+
 	@Id
-	
-		
-	private Date	report_date;
-	
-	private BigDecimal	report_version;
-	
+	@Column(name = "REPORT_VERSION")
+	private BigDecimal reportVersion;
+
 	@Column(name = "REPORT_RESUBDATE")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date reportResubDate;
+	
+	private Date reportResubDate;
 	private String	report_frequency;
 	private String	report_code;
 	private String	report_desc;
@@ -596,17 +594,17 @@ class M_CA3_Archival_Detail_Entity {
 	public void setR60_AMOUNT(BigDecimal r60_AMOUNT) {
 		R60_AMOUNT = r60_AMOUNT;
 	}
-	public Date getReport_date() {
-		return report_date;
+	public Date getReportDate() {
+		return reportDate;
 	}
-	public void setReport_date(Date report_date) {
-		this.report_date = report_date;
+	public void setReportDate(Date reportDate) {
+		this.reportDate = reportDate;
 	}
-	public BigDecimal getReport_version() {
-		return report_version;
+	public BigDecimal getReportVersion() {
+		return reportVersion;
 	}
-	public void setReport_version(BigDecimal report_version) {
-		this.report_version = report_version;
+	public void setReportVersion(BigDecimal reportVersion) {
+		this.reportVersion = reportVersion;
 	}
 	public Date getReportResubDate() {
 		return reportResubDate;
@@ -654,8 +652,6 @@ class M_CA3_Archival_Detail_Entity {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	
-	
 	
 	
 

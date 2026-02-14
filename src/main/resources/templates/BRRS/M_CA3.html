@@ -1,42 +1,35 @@
 <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
-
-<!-- 
-CREATED BY	: ISHWARYA 
-CREATED ON	: 01.09.2025
-PURPOSE		: BRRS REPORT
+<!--
+CREATED BY	: ishwarya
+CREATED ON	: 25.09.2025
+PURPOSE		: BRRS MANUAL REPORT
 -->
-
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-
 	<!-- CSS -->
+
+
 	<link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}">
 	<link rel="stylesheet" type="text/css" th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}">
 	<link rel="stylesheet" type="text/css" th:href="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.css}">
 	<link rel="stylesheet" type="text/css" th:href="@{/webjars/datatables/1.10.19/css/jquery.dataTables.min.css}">
 	<link rel="stylesheet" th:href="@{/css/CustomButton.css}" />
 	<link rel="icon" th:href="@{/favicon.ico}" type="image/x-icon" />
-
 	<!-- JavaScript -->
 	<!-- jQuery core (required first) -->
-
-
 	<!-- ✅ Your manually placed jQuery validation
 	<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
 	 <script th:src="/jquery/jquery.validate.min.js"></script>
 	 -->
-
 	<!-- jQuery (required first) -->
 	<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
 	<!-- <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script> -->
-
 	<!-- ✅ jQuery Validation -->
 	<script src="/webjars/jquery-validation/1.19.0/jquery.validate.min.js"
 		th:src="@{/webjars/jquery-validation/1.19.0/jquery.validate.min.js}"></script>
-
 	<!-- Bootstrap + Others -->
 	<script th:src="@{/webjars/popper.js/1.14.7/umd/popper.min.js}"></script>
 	<script th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
@@ -44,9 +37,6 @@ PURPOSE		: BRRS REPORT
 	<script th:src="@{/webjars/jquery-form/4.2.2/jquery.form.min.js}"></script>
 	<script th:src="@{/webjars/datatables/1.10.19/js/jquery.dataTables.min.js}"></script>
 	<script th:src="@{/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js}"></script>
-
-
-
 	<style>
 		.btns {
 			float: right;
@@ -75,8 +65,8 @@ PURPOSE		: BRRS REPORT
 			border-color: #0c0c0c;
 		}
 
-		.btn-primary:not(:disabled):not(.disabled).active,
-		.btn-primary:not(:disabled):not(.disabled):active,
+		.btn-primary:not (:disabled):not (.disabled).active,
+		.btn-primary:not (:disabled):not (.disabled):active,
 		.show>.btn-primary.dropdown-toggle {
 			color: #fff;
 			background-color: #cc000000;
@@ -91,10 +81,6 @@ PURPOSE		: BRRS REPORT
 			padding: 0px;
 		}
 	</style>
-
-
-
-
 	<style>
 		div span {
 			font-weight: bold;
@@ -157,7 +143,7 @@ PURPOSE		: BRRS REPORT
 			border-radius: 4px;
 		}
 
-		#BRFvalidation th,
+		#BRRSvalidation th,
 		#usertable td {
 			vertical-align: middle;
 			text-align: left;
@@ -177,8 +163,6 @@ PURPOSE		: BRRS REPORT
 			text-overflow: ellipsis;
 		}
 	</style>
-
-
 	<style>
 		.form-group {
 			position: relative;
@@ -219,7 +203,7 @@ PURPOSE		: BRRS REPORT
 
 		/* When input or select is focused or has a value, move the label up */
 		.form-control:focus~.form-legend,
-		.form-control:not(:placeholder-shown)~.form-legend {
+		.form-control:not (:placeholder-shown)~.form-legend {
 			top: -8px;
 			font-size: 1rem;
 			color: #007bff;
@@ -232,24 +216,11 @@ PURPOSE		: BRRS REPORT
 		}
 
 		/* Ensure the label returns to the normal color after focus or hover is removed */
-		.form-control:not(:focus)~.form-legend {
+		.form-control:not (:focus)~.form-legend {
 			color: #aaa;
 			/* Normal label color */
 		}
-
-		.table-cell tbody td:hover {
-			background-color: #f0f0f0;
-			/* Hover color for cell */
-			cursor: pointer;
-			/* Optional: pointer cursor */
-		}
-
-		.table-bordered td,
-		.table-bordered th {
-			border: 1px solid #000 !important;
-		}
 	</style>
-
 	<style>
 		/* Red border for invalid inputs */
 		input.error,
@@ -302,15 +273,28 @@ PURPOSE		: BRRS REPORT
 			color: white !important;
 		}
 
-		.green-cell {
+		.table-cell tbody td:hover {
+			background-color: #f0f0f0;
+			/* Hover color for cell */
+			cursor: pointer;
+			/* Optional: pointer cursor */
+		}
+
+		.table-bordered td,
+		.table-bordered th {
+			border: 1px solid #000 !important;
+		}
+
+		.gray-cell {
 			background-color: rgb(107, 122, 143) !important;
 			color: white !important;
 		}
+
+		.graybox {
+			background-color: #BFBFBF !important;
+			color: black !important;
+		}
 	</style>
-
-
-
-
 
 
 	<style>
@@ -325,11 +309,12 @@ PURPOSE		: BRRS REPORT
 
 		/* 🚌 Bus display style box */
 		/* 🚌 Bus display style box */
+		/* 🚌 Bus display style box */
 		.boards {
 			transform: translateY(6px);
 			background-color: rgb(107, 122, 143);
 			color: white;
-			padding: 5px 80px;
+			padding: 5px 5px;
 			border-radius: 8px;
 			overflow: hidden;
 			white-space: nowrap;
@@ -360,18 +345,7 @@ PURPOSE		: BRRS REPORT
 			}
 		}
 	</style>
-
-
-
-
-
-
-
-
-
-
 	<script th:inline="javascript">
-
 
 		let isDetailsModal = false;
 		$(document).ready(function () {
@@ -416,6 +390,8 @@ PURPOSE		: BRRS REPORT
 				}
 			});
 		}
+
+
 		function home() {
 			$("#loader").modal("toggle");
 			location.href = 'Dashboard'
@@ -425,28 +401,149 @@ PURPOSE		: BRRS REPORT
 			window.history.back();
 		}
 
-		//to fetch summary from the database - called from the summary button
+
 		function showdetails() {
 			$('#loader').modal('show');
 			var Callurl = /*[[@{'/Reports/' + ${reportid}(
-			        dtltype='detail',
-			        fromdate=${fromdate},
-			        todate=${todate},
-			        type=${type},
-			        asondate=${asondate},
-			        version=${version}
-			    )}]]*/
-				location.href = Callurl;
+	        dtltype='detail',
+	        fromdate=${fromdate},
+	        todate=${todate},
+	        type=${type},
+	        asondate=${asondate},
+	        version=${version}
+	    )}]]*/;
+			location.href = Callurl;
 
 		}
+
 		function showsummary() {
 			$('#loader').modal('show');
-			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate}, version=${version})}]]*/
-				location.href = Callurl;
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (
+					dtltype='report', 
+					fromdate=${fromdate}, 
+					todate=${todate}, 
+					type=${type}, 
+					asondate=${asondate})}]]*/;
+			location.href = Callurl;
+		}
+
+		function showsummaryResub() {
+			$('#loader').modal('show');
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (
+					dtltype='report', 
+					fromdate=${fromdate}, 
+					todate=${todate}, 
+					type='RESUB', 
+					asondate=${asondate},
+					version=${version})}]]*/;
+			location.href = Callurl;
 		}
 
 
 	</script>
+	<script>
+		function activateTab(tabName) {
+			// Remove 'active' from all buttons
+			document.querySelectorAll('.custom-tab-btn').forEach(btn => {
+				btn.classList.remove('active');
+			});
+			// Add 'active' to selected button
+			if (tabName === 'summary') {
+				document.getElementById('custom-tab-btnSummary').classList.add('active');
+			} else if (tabName === 'Details') {
+				document.getElementById('custom-tab-btnDetails').classList.add('active');
+			}
+		}
+		window.onload = function () {
+			/* setTimeout(function() {
+				var selectedTab = document.getElementById("selectedTab").value;
+				alert(selectedTab);
+				activateTab(selectedTab);
+			}, 10000); */ // 10,000 milliseconds = 10 seconds
+
+			var selectedTab = document.getElementById("selectedTab").value;
+			activateTab(selectedTab);
+		};
+		function downloadfile(button) {
+			var reportid = button.getAttribute('data-reportid');
+			var asondate = button.getAttribute('data-asondate');
+			var fromdate = button.getAttribute('data-fromdate');
+			var todate = button.getAttribute('data-todate');
+			var currency = button.getAttribute('data-currency');
+			var subreportid = button.getAttribute('data-subreportid');
+			var secid = button.getAttribute('data-secid');
+			var dtltype = button.getAttribute('data-dtltype');
+			var filename = button.getAttribute('data-filename');
+			var type = button.getAttribute('data-type');
+			var version = button.getAttribute('data-version');
+			var format = button.getAttribute('data-format');
+
+			if (format === null) {
+				format = '';   // treat as null
+			}
+
+			$('#loader').modal('show');
+
+			$.ajax({
+				url: './downloadExcel?reportid=' + reportid +
+					'&fromdate=' + fromdate +
+					'&asondate=' + asondate +
+					'&todate=' + todate +
+					'&currency=' + currency +
+					'&subreportid=' + subreportid +
+					'&secid=' + secid +
+					'&filename=' + filename +
+					'&type=' + type +
+					'&version=' + version +
+					'&format=' + format,
+				type: 'GET',
+				xhrFields: {
+					responseType: 'blob'
+				},
+				success: function (data) {
+					$('#loader').modal('hide');
+					if (data && data.size > 100) {
+						const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
+						const url = window.URL.createObjectURL(blob);
+						const a = document.createElement('a');
+						a.style.display = 'none';
+						a.href = url;
+						a.download = filename;
+						document.body.appendChild(a);
+						a.click();
+						window.URL.revokeObjectURL(url);
+						document.body.removeChild(a);
+						showResultModal('BRRS', filename + ' downloaded successfully.');
+					} else {
+						showResultModal('Information', 'No data was available to create a download.');
+					}
+				},
+				error: function () {
+					$('#loader').modal('hide');
+					showResultModal('Error', 'An error occurred while downloading the file.');
+				}
+			});
+		}
+
+		function editRecord() {
+			showResultModal('Alert', 'Development in progress');
+
+		}
+		function closemodel() {
+			$('#alert').modal('hide');
+			$('#resultModal').modal('hide');
+
+		}
+		function showResultModal(title, message) {
+			// Set the text for the modal elements
+			$('#resultModalLabel').text(title);
+			$('#resultModalBody').text(message);
+			// Show the modal
+			$('#resultModal').modal('show');
+		}
+	</script>
+
+
 
 
 
@@ -589,284 +686,6 @@ PURPOSE		: BRRS REPORT
 		}
 
 	</script>
-
-
-
-
-
-
-	<script>
-
-		function activateTab(tabName) {
-			// Remove 'active' from all buttons
-			document.querySelectorAll('.custom-tab-btn').forEach(btn => {
-				btn.classList.remove('active');
-			});
-
-			// Add 'active' to selected button
-			if (tabName === 'summary') {
-				document.getElementById('custom-tab-btnSummary').classList.add('active');
-			} else if (tabName === 'Details') {
-				document.getElementById('custom-tab-btnDetails').classList.add('active');
-			}
-		}
-
-		window.onload = function () {
-			/* setTimeout(function() {
-				var selectedTab = document.getElementById("selectedTab").value;
-				alert(selectedTab);
-				activateTab(selectedTab);
-			}, 10000); */ // 10,000 milliseconds = 10 seconds
-
-			var selectedTab = document.getElementById("selectedTab").value;
-			activateTab(selectedTab);
-		};
-
-
-		function downloadfile(button) {
-
-			var reportid = button.getAttribute('data-reportid');
-			var asondate = button.getAttribute('data-asondate');
-			var fromdate = button.getAttribute('data-fromdate');
-			var todate = button.getAttribute('data-todate');
-			var currency = button.getAttribute('data-currency');
-			var subreportid = button.getAttribute('data-subreportid');
-			var secid = button.getAttribute('data-secid');
-			var dtltype = button.getAttribute('data-dtltype');
-			var filename = button.getAttribute('data-filename');
-			var type = button.getAttribute('data-type');
-			var version = button.getAttribute('data-version');
-
-			var loader = new bootstrap.Modal(
-				document.getElementById('loader'),
-				{backdrop: 'static', keyboard: false}
-			);
-			loader.show();
-
-			// ✅ Build URL safely
-			var url = './downloadExcel?reportid=' + reportid +
-				'&fromdate=' + fromdate +
-				'&asondate=' + asondate +
-				'&todate=' + todate +
-				'&currency=' + currency +
-				'&subreportid=' + subreportid +
-				'&secid=' + secid +
-				'&filename=' + filename +
-				'&type=' + type;
-
-			// ✅ ONLY append version if valid
-			if (version && version.trim() !== '') {
-				url += '&version=' + version;
-			}
-
-			$.ajax({
-				url: url,
-				type: 'GET',
-				xhrFields: {responseType: 'blob'},
-
-				success: function (data) {
-					$('#loader').modal('hide');
-
-					if (data && data.size > 100) {
-						const blob = new Blob([data], {
-							type: 'application/vnd.ms-excel'
-						});
-						const url = window.URL.createObjectURL(blob);
-						const a = document.createElement('a');
-						a.style.display = 'none';
-						a.href = url;
-						a.download = filename;
-						document.body.appendChild(a);
-						a.click();
-						window.URL.revokeObjectURL(url);
-						document.body.removeChild(a);
-
-						showResultModal('BRRS', filename + ' downloaded successfully.');
-					} else {
-						showResultModal('Information', 'No data was available to create a download.');
-					}
-				},
-
-				error: function () {
-					$('#loader').modal('hide');
-					showResultModal('Error', 'An error occurred while downloading the file.');
-				}
-			});
-		}
-		function editRecord() {
-			showResultModal('Alert', 'Development in progress');
-
-		}
-		function closemodel() {
-			$('#alert').modal('hide');
-			$('#resultModal').modal('hide');
-
-		}
-
-		function showResultModal(title, message) {
-			// Set the text for the modal elements
-			$('#resultModalLabel').text(title);
-			$('#resultModalBody').text(message);
-
-			// Show the modal
-			$('#resultModal').modal('show');
-		}
-
-	</script>
-
-	<script>
-
-		function startReport(button) {
-			const alertMsg = document.getElementById("alertMessage");
-			const filename = button.getAttribute('data-filename');
-			const fromdate = button.getAttribute('data-fromdate');
-			const todate = button.getAttribute('data-todate');
-			const currency = button.getAttribute('data-currency');
-			const dtltype = button.getAttribute('data-dtltype');
-			const type = button.getAttribute('data-type');
-			const version = button.getAttribute('data-version');
-			const sessionfilename = sessionStorage.getItem("filename");
-
-			if (sessionfilename == filename) {
-				alertMsg.innerHTML = 'Download request already Processing...';
-				showAlert();
-				return;
-			}
-
-			alertMsg.innerHTML = 'Download request Processing...';
-			showAlert();
-
-			const baseUrl = '/BCDRS/Reports/startreport';
-			const downloadUrl = baseUrl +
-				'?filename=' + encodeURIComponent(filename) +
-				'&fromdate=' + encodeURIComponent(fromdate) +
-				'&todate=' + encodeURIComponent(todate) +
-				'&currency=' + encodeURIComponent(currency) +
-				'&dtltype=' + encodeURIComponent(dtltype) +
-				'&type=' + encodeURIComponent(type) +
-				'&version=' + encodeURIComponent(version);
-			fetch(downloadUrl)  // ✅ no invalid characters now
-				.then(res => res.text())
-				.then(jobId => {
-
-					alertMsg.innerHTML = 'Download request received...' + jobId;
-					showAlert();
-					sessionStorage.setItem("jobId", jobId);
-					sessionStorage.setItem("filename", filename);
-					checkReport(jobId);
-				});
-		}
-
-		function checkReport(jobId) {
-			const alertMsg = document.getElementById("alertMessage");
-			fetch('/BCDRS/Reports/checkreport?jobId=' + encodeURIComponent(jobId))
-				.then(res => res.text())
-				.then(status => {
-					if (status === "READY") {
-						alertMsg.innerHTML = 'Report is ready! Downloading…';
-						showAlert();
-						const filename = sessionStorage.getItem("filename");
-						downloadDetailfile(jobId, filename)
-						sessionStorage.removeItem("jobId");
-						sessionStorage.removeItem("filename");
-
-					} else if (status === "PROCESSING") {
-						alertMsg.innerHTML = 'Download Is Processing…';
-						showAlert();
-						setTimeout(() => checkReport(jobId), 5000);
-					}
-					else if (status === "ERROR") {
-						alertMsg.innerHTML = 'No data was available to create a download.';
-						showAlert();
-						sessionStorage.removeItem("jobId");
-						sessionStorage.removeItem("filename");
-					}
-				});
-		}
-
-
-
-		function downloadDetailfile(jobId, filename) {
-
-			//$('#loader').modal('show');
-
-			$.ajax({
-				url: '/BCDRS/Reports/downloaddetailExcel?jobId=' + jobId +
-					'&filename=' + filename,
-				type: 'GET',
-				xhrFields: {
-					responseType: 'blob'
-				},
-				success: function (data) {
-					$('#loader').modal('hide');
-
-					if (data && data.size > 100) {
-						const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
-						const url = window.URL.createObjectURL(blob);
-						const a = document.createElement('a');
-						a.style.display = 'none';
-						a.href = url;
-						a.download = filename;
-						document.body.appendChild(a);
-						a.click();
-						window.URL.revokeObjectURL(url);
-						document.body.removeChild(a);
-
-						showResultModal('BRRS', filename + ' downloaded successfully.');
-					} else {
-						showResultModal('Information', 'No data was available to create a download.');
-					}
-				},
-				error: function (jqXHR, textStatus, errorThrown) {
-					$('#loader').modal('hide');
-					console.error("Download failed:", textStatus, errorThrown);
-					showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
-				}
-			});
-		}
-
-
-	</script>
-
-	<script th:inline="javascript">
-		function showdetailsbyRowAndColumn(a) {
-			var rowId = a.getAttribute('RowId');
-			var columnId = a.getAttribute('ColumnId');
-			var cellValue = a.textContent || a.innerText;
-
-			if (cellValue !== '0') {
-				// Set dynamic message in modal (instead of confirm)
-				document.getElementById("cellresultModalLabel").innerText =
-					"Do you want to open details for Row: " + rowId + " and Column: " + columnId + "?";
-
-				// Show custom Bootstrap modal
-				$('#cellresultModal').modal('show');
-
-				// Handle Yes button
-				document.querySelector('.yes-btn').onclick = function () {
-					$('#cellresultModal').modal('hide');
-
-					// Show loader
-					const loader = bootstrap.Modal.getOrCreateInstance(document.getElementById('loader'), {
-						backdrop: 'static',
-						keyboard: false
-					});
-					$('#loader').modal('show');
-
-					// Build dynamic URL
-					var Callurl = /*[[@{'/Reports/' + ${reportid} + '/Details'(asondate=${asondate}, fromdate=${fromdate}, todate=${todate}, currency=${currency}, dtltype=${dtltype},type=${type},version=${version})}]]*/ "";
-					Callurl += "&filter=" + encodeURIComponent(rowId + "," + columnId);
-
-					location.href = Callurl;
-				};
-			} else {
-				// Use your custom alert modal instead of window.alert
-				showResultModal("Alert", "No Records available for this selected cell.");
-			}
-		}
-	</script>
-
-
 
 	<script>
 		// Calculating Totals for 20 row
@@ -1062,8 +881,6 @@ PURPOSE		: BRRS REPORT
 
 
 
-
-
 	<script>
 
 
@@ -1087,24 +904,124 @@ PURPOSE		: BRRS REPORT
 		// This is the main function that orchestrates the entire form submission process.
 		// It is triggered by the "Update" button click.
 		// Make the function global so onclick="fileuploads(this)" can see it
+		/*function fileuploads (btn) {
+		   try {
+			   // ✅ Get report date
+			   const asondate = btn.getAttribute("data-todate");
+	   
+			   // ✅ Show loader
+			   $('#loader').modal('show');
+	   
+			   // ✅ Calculate totals if exists
+			   if (typeof calculateTotals === "function") {
+				   calculateTotals();
+			   }
+	   
+			   // ✅ Remove commas from text inputs
+			   $("#fileupload input[type='text']").each(function () {
+				   const val = $(this).val();
+				   if (val && val.includes(",")) {
+					   $(this).val(val.replace(/,/g, ''));
+				   }
+			   });
+	   
+			   // ✅ Validate form
+			   if (!$("#fileupload").valid()) {
+				   $('#loader').modal('hide');
+				   return;
+			   }
+	   
+			   // ✅ Get type from URL
+			   const urlParams = new URLSearchParams(window.location.search);
+			   const urlType = urlParams.get("type");
+			   const isResub = urlType && urlType.toUpperCase() === 'RESUB';
+	   
+			   // ✅ Redirect URL (RESUB only, M_CA3 only)
+			   const previousUrl = window.previousUrl || null;
+	   
+			   const redirectUrl = isResub
+				   ? (previousUrl ? previousUrl : "/BRRS/Resubmission?rptcode=M_CA3")
+				   : null;
+	   
+			   // ✅ API endpoint
+			   let apiUrl = './M_CA3update';
+			   if (isResub) {
+				   apiUrl = './UpdateM_CA3_ReSub';
+			   }
+	   
+			   // ✅ Build FormData
+			   const formData = new FormData();
+			   formData.append("asondate", asondate);
+			   formData.append("type", urlType || "");
+	   
+			   $('#fileupload').find(':input').each(function () {
+				   const name = $(this).attr('name');
+				   if (name) {
+					   formData.append(name, $(this).val());
+				   }
+			   });
+	   
+			   // ✅ AJAX call
+			   $.ajax({
+				   url: apiUrl,
+				   type: 'POST',
+				   data: formData,
+				   processData: false,
+				   contentType: false,
+				   dataType: 'text',
+	   
+				   success: function (response) {
+					   $("#resultModalLabel").text("BRRS");
+					   $("#resultModalBody").text(response);
+					   $("#resultModal").modal("show");
+	   
+					   // ✅ Redirect after modal closes (RESUB only)
+					   if (redirectUrl) {
+						   $("#resultModal").one('hidden.bs.modal', function () {
+							   window.location.href = redirectUrl;
+						   });
+					   }
+				   },
+	   
+				   error: function (jqXHR) {
+					   $("#resultModalLabel").text("Error");
+					   $("#resultModalBody").text(
+						   "Update failed: " + (jqXHR.responseText || "Unknown error")
+					   );
+					   $("#resultModal").modal("show");
+	   
+					   // ✅ Redirect after modal closes (RESUB only)
+					   if (redirectUrl) {
+						   $("#resultModal").one('hidden.bs.modal', function () {
+							   window.location.href = redirectUrl;
+						   });
+					   }
+				   },
+	   
+				   complete: function () {
+					   $('#loader').modal('hide');
+				   }
+			   });
+	   
+		   } catch (error) {
+			   $('#loader').modal('hide');
+			   console.error("Error during file upload:", error);
+		   }
+	   };
+	   */
+		function fileuploads(btn) {
 
-		window.fileuploads = function (btn) {
 			try {
+
 				const asondate = btn.getAttribute("data-todate");
-				const btnType = btn.getAttribute("data-type");
 
 				$('#loader').modal('show');
 
-				// ✅ Step 1: Calculate totals (if functions exist)
-				if (typeof calculateR20Totals === "function") calculateR20Totals();
-				if (typeof calculateR28Totals === "function") calculateR28Totals();
-				if (typeof calculateR29Totals === "function") calculateR29Totals();
-				if (typeof calculateR41Totals === "function") calculateR41Totals();
-				if (typeof calculateR46Totals === "function") calculateR46Totals();
-				if (typeof calculateR55Totals === "function") calculateR55Totals();
-				if (typeof calculateR60Totals === "function") calculateR60Totals();
+				if (typeof calculateTotals === "function") {
+					calculateTotals();
+				}
 
-				// ✅ Step 2: Remove commas from all text inputs
+				// Remove commas
 				$("#fileupload input[type='text']").each(function () {
 					const val = $(this).val();
 					if (val && val.includes(",")) {
@@ -1112,54 +1029,64 @@ PURPOSE		: BRRS REPORT
 					}
 				});
 
-				// ✅ Step 3: Validate form
 				if (!$("#fileupload").valid()) {
 					$('#loader').modal('hide');
 					return;
 				}
 
-				// ✅ Step 4: Get type from URL or button
+				// Get type from URL
 				const urlParams = new URLSearchParams(window.location.search);
 				const urlType = urlParams.get("type");
-				const type = urlType || btnType || "";
 
-				// ✅ Step 5: Build FormData
-				const formData1 = new FormData();
-				formData1.append("asondate", asondate);
-				formData1.append("type", type);
+				const isResub = urlType && urlType.toUpperCase() === 'RESUB';
 
-				// Append all inputs from the form
-				$('#fileupload').find(':input').each(function () {
-					const name = $(this).attr('name');
-					if (name) {
-						formData1.append(name, $(this).val());
-					}
-				});
+				// ✅ Use SERIALIZE (NOT FormData)
+				const formData =
+					$('#fileupload').serialize()
+					+ '&asondate=' + encodeURIComponent(asondate)
+					+ '&type=' + encodeURIComponent(urlType || '');
 
-				// ✅ Step 6: Choose endpoint based on type
+				console.log("✅ Form data prepared");
+
 				let apiUrl = './M_CA3update';
-				if (type && type.toUpperCase() === 'RESUB') {
+				if (isResub) {
 					apiUrl = './UpdateM_CA3_ReSub';
 				}
 
-				// ✅ Step 7: AJAX call
 				$.ajax({
 					url: apiUrl,
 					type: 'POST',
-					data: formData1,
-					processData: false,
-					contentType: false,
+					data: formData,
 					dataType: 'text',
+
 					success: function (response) {
 						$("#resultModalLabel").text("BRRS");
 						$("#resultModalBody").text(response);
 						$("#resultModal").modal("show");
+
+						$("#resultModal")
+							.off("hidden.bs.modal")
+							.on("hidden.bs.modal", function () {
+								if (isResub) {
+									window.location.href =
+										window.previousUrl
+											? window.previousUrl
+											: "/BRRS/Resubmission?rptcode=M_CA3";
+								}
+							});
 					},
+
 					error: function (jqXHR) {
+						console.log("Error response:", jqXHR.responseText);
+
 						$("#resultModalLabel").text("Error");
-						$("#resultModalBody").text("Update failed: " + jqXHR.responseText);
+						$("#resultModalBody").text(
+							"Update failed: " +
+							(jqXHR.responseText || "Unknown error")
+						);
 						$("#resultModal").modal("show");
 					},
+
 					complete: function () {
 						$('#loader').modal('hide');
 					}
@@ -1169,26 +1096,17 @@ PURPOSE		: BRRS REPORT
 				$('#loader').modal('hide');
 				console.error("Error during file upload:", error);
 			}
-		};
+		}
+
+
+
+
 	</script>
-
-
-
-
-
-
-
-
-
-
-
-
-
 </head>
 
 
 
-<title>BRRS</title>
+<title>M_CA3</title>
 
 <body>
 	<div class="container-fluid" style="padding-left: 0px; padding-right: 0px;">
@@ -1207,10 +1125,12 @@ PURPOSE		: BRRS REPORT
 
 						<!-- Title -->
 						<h5
-							style="font-family: arial; font-size: 20px; font-weight: bold; color: white; margin: 0 10px;">
-							(26) MONTHLY SCHEDULE: M-LA2: LOANS AND ADVANCES OF <br> PUBLIC NON-FINANCIAL CORPORATIONS
-							BY
-							ECONOMIC SECTOR
+							style="font-family: arial; font-size: 16px; font-weight: bold; color: white; margin: 0 10px;">
+
+							(8) MONTHLY SCHEDULE: M-CA3: REGULATORY ADJUSTMENTS APPLIED IN THE CALCULATION OF CET1
+							CAPITAL
+
+
 						</h5>
 
 
@@ -1226,32 +1146,30 @@ PURPOSE		: BRRS REPORT
 					<div class="custom-tab-btn-group nav-buttons"
 						style="display: flex; color: white; align-items: center;">
 						<!-- 📅 Date -->
-						<span class="white-text" style="color: white !important; font-size: 16px; margin-right: 20px;">
+						<!-- <span class="white-text"
+							style="color: white !important; font-size: 16px; margin-right: 20px;">Report
+							Date: <span th:text="${report_date}">2025-07-04</span>
+						</span> -->
+
+
+
+						<span class="white-text" style="color: white !important; font-size: 13px; margin-right: 20px;">
 							Report Date: <span th:text="${#strings.replace(asondate, '/', '-')}">2025-07-04</span>
-						</span> <input type="hidden" id="selectedTab" th:value="${dtltype}">
+						</span>
 
-						<!-- DETAILS button (hide when dtltype = 'detail') -->
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails()"
-							th:if="${dtltype ne 'detail'}">Details</button>
-
-						<!-- SUMMARY button (show when dtltype = 'detail') -->
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showsummary()"
-							th:if="${dtltype eq 'detail'}">Summary</button>
-
-
-
-
-
-
-
+						<!-- Buttons -->
+						<input type="hidden" id="selectedTab" th:value="${displaymode}">
+						<button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showsummary();"
+							th:if="${displaymode == 'Details' or displaymode == 'resubDetail'}">Summary</button>
+						<button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails();"
+							th:if="${displaymode == 'summary' or displaymode == 'resubSummary'}">Details</button>
 
 
 						<!-- Modify button -->
 						<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
 							title="Click to EDIT Records"
-							th:classappend="${session.PERMISSIONS == 'W' and dtltype == 'report'} ? 'addedit'"
+							th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
 							th:if="${type != 'ARCHIVAL' and dtltype ne 'detail'}" id="addRecord">Modify</button>
-
 
 						<!-- Cancel button (hidden initially) -->
 						<button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord"
@@ -1259,22 +1177,28 @@ PURPOSE		: BRRS REPORT
 
 
 
-						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
-							onclick="downloadfile(this)" th:if="${displaymode == 'summary' or displaymode == 'Details'}"
-							th:attr="data-reportid=${reportid},
-                   data-asondate=${asondate},
-                   data-fromdate=${fromdate},
-                   data-todate=${todate},
-                   data-currency=${currency}, 
-                   data-dtltype=${dtltype},
-                   data-filename='M_CA3.xlsx',
-                   data-type=${type},
-                   data-version=${version != null ? version : ''}" style="font-family: Arial; font-weight: bold;">
-							<i class="fa fa-download"></i> Download
+
+
+
+
+						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
+							th:if="${displaymode == 'summary' or displaymode == 'Details' or displaymode == 'resubSummary'or displaymode == 'resubDetail'}"
+							th:attr="data-reportid=${reportid}, 
+                     data-asondate=${asondate}, 
+                     data-fromdate=${fromdate}, 
+                     data-todate=${todate}, 
+                     data-currency=${currency},  
+                     data-dtltype=${dtltype}, 
+                     data-filename='M_CA3.xlsx',
+                     data-type=${type},
+					 data-version=${version != null ? version : ''} " onclick="downloadfile(this);"
+							style="font-family: Arial; font-weight: bold;font-size: 14px;">
+							<i class="fa fa-download"></i> Format
 						</button>
 
 						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
-							onclick="downloadfile(this)" th:if="${displaymode == 'summary' or displaymode == 'Details'}"
+							onclick="downloadfile(this)"
+							th:if="${displaymode == 'summary' or displaymode == 'Details'or displaymode == 'resubSummary'or displaymode == 'resubDetail'}"
 							th:attr="data-reportid=${reportid},
             data-asondate=${asondate},
             data-fromdate=${fromdate},
@@ -1282,36 +1206,53 @@ PURPOSE		: BRRS REPORT
             data-currency=${currency}, 
             data-dtltype=${dtltype},
             data-filename='EMAIL_M_CA3.xlsx',
-            data-type='email',
-            data-version=${version != null ? version : ''}" style="font-family: Arial; font-weight: bold;">
-							<i class="fa fa-download"></i> Email Format
+            data-type=${type},
+            data-format='email',
+            data-version=${version != null ? version : ''}"
+							style="font-family: Arial; font-weight: bold;font-size: 14px;">
+							<i class="fa fa-download"></i> Email
 
 						</button>
 
 
 
-
 					</div>
 				</div>
-				<h1 th:if="${displaymode == 'summary' and type == 'ARCHIVAL' and displaymode != 'Details'}"
-					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">
-					Archival
-					Summary View - M_CA3</h1>
-
-				<h1 th:if="${displaymode == 'Details' and type == 'ARCHIVAL' and displaymode != 'summary'}"
-					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">
-					Archival
-					Detail View - M_CA3</h1>
 
 				<h1 th:if="${displaymode == 'summary'and type != 'ARCHIVAL'}"
 					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">
 					Summary
-					View - M_CA3</h1>
+					View - M-CA3</h1>
 				<h1 th:if="${displaymode == 'Details' and type != 'ARCHIVAL'}"
 					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">
 					Detail
-					View - M_CA3</h1>
-				<div th:if="${displaymode == 'summary' or displaymode == 'Details'}">
+					View - M-CA3</h1>
+
+				<h1 th:if="${displaymode == 'summary' and type == 'ARCHIVAL' and displaymode != 'Details'}"
+					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">
+					Archival Summary View - M-CA3</h1>
+
+				<h1 th:if="${displaymode == 'Details' and type == 'ARCHIVAL' and displaymode != 'summary'}"
+					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">
+					Archival Detail View - M-CA3</h1>
+
+				<h1 th:if="${type == 'RESUB' and displaymode == 'resubSummary'}" style="text-align: left; font-weight: bold; 
+				          color: white; font-size: 20px;
+				          background-color: rgb(107, 122, 143); 
+				          margin-top:10px; margin-bottom:10px; padding: 5px;">
+					Re-submission Summary View - M-CA3
+				</h1>
+
+				<h1 th:if="${type == 'RESUB' and displaymode == 'resubDetail'}" style="text-align: left; font-weight: bold;
+				          color: white; font-size: 20px;
+				          background-color: rgb(107, 122, 143); 
+				          margin-top:10px; margin-bottom:10px; padding: 5px;">
+					Re-submission Detail View - M-CA3
+				</h1>
+
+				<div
+					th:if="${displaymode == 'summary' or displaymode == 'Details'or displaymode == 'resubSummary'or displaymode == 'resubDetail'}">
+
 
 					<div class="row">
 						<div class="col-sm-12">
@@ -1604,10 +1545,10 @@ PURPOSE		: BRRS REPORT
 											</tr>
 
 											<!-- <tr>
-																					<td></td>
-																					<td></td>
-																					<td></td>
-																				</tr> -->
+																										<td></td>
+																										<td></td>
+																										<td></td>
+																									</tr> -->
 
 										</tbody>
 
@@ -1648,11 +1589,11 @@ PURPOSE		: BRRS REPORT
 
 											<!-- First header row -->
 											<!-- <tr>
-																					<td></td>
-																					<td></td>
-																					<td></td>
+																										<td></td>
+																										<td></td>
+																										<td></td>
 
-																				</tr> -->
+																									</tr> -->
 										</tbody>
 
 										<tbody id="entity" th:each="report: ${reportsummary}"
@@ -1759,11 +1700,11 @@ PURPOSE		: BRRS REPORT
 
 											<!-- First header row -->
 											<!-- <tr>
-																					<td></td>
-																					<td></td>
-																					<td></td>
+																										<td></td>
+																										<td></td>
+																										<td></td>
 
-																				</tr> -->
+																									</tr> -->
 
 										</tbody>
 										<tbody id="entity" th:each="report: ${reportsummary}"
@@ -2003,6 +1944,7 @@ PURPOSE		: BRRS REPORT
 
 									</table>
 								</div>
+
 								<div style="text-align: center; margin-top: 10px;">
 
 									<button id="submitButton" type="button" class="custom-tab-btn Show_input"
@@ -2010,7 +1952,10 @@ PURPOSE		: BRRS REPORT
 										style="display: none;">Submit</button>
 								</div>
 
+
+
 							</form>
+
 
 						</div>
 					</div>
@@ -2065,6 +2010,7 @@ PURPOSE		: BRRS REPORT
 		</div>
 	</div>
 
+
 	<!-- Custom Cellresult Modal -->
 	<div class="modal fade" id="cellresultModal">
 		<div class="modal-dialog modal-dialog-centered">
@@ -2090,20 +2036,40 @@ PURPOSE		: BRRS REPORT
 		</div>
 	</div>
 
-
-
 </body>
-
-
-
-
+<!-- <script>
+															  $(document).ready(function () {
+															    $('#BRFvalidation').DataTable({
+															      "paging": true,
+															      "pageLength": 10,
+															      "lengthChange": false,
+															      "searching": true,
+															      "ordering": true,
+															      "autoWidth": false,
+															      "language": {
+															        "search": "Search:"
+															      }
+															    });
+															  });
+															</script> -->
+<!-- <script>
+															  $(document).ready(function () {
+															    $('#BRFvalidation').DataTable({
+															      "paging": true,
+															      "info": false,       // turn off "Showing x of y"
+															      "searching": false,  // turn off search
+															      "ordering": false,   // turn off ordering
+															      "lengthChange": false // hide "Show x entries"
+															    });
+															  });
+															</script> -->
 
 
 <style>
 	/* Your existing CSS - this is the correct approach */
 	.scrollable-table-container {
 		/* This is the key: it creates the scroll context */
-		max-height: 820px;
+		max-height: 600px;
 		/* Or a suitable height like 80vh for responsive design */
 		overflow-y: auto;
 		border: 1px solid #ccc;
@@ -2203,5 +2169,8 @@ PURPOSE		: BRRS REPORT
 		width: auto;
 	}
 </style>
+
+
+
 
 </html>
