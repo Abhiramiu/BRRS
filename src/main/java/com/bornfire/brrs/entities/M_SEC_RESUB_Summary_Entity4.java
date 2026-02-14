@@ -13,9 +13,9 @@ import javax.persistence.TemporalType;
 
 import org.springframework.format.annotation.DateTimeFormat;
 @Entity
-@Table(name = "BRRS_M_SEC_ARCHIVALTABLE_SUMMARY4")
+@Table(name = "BRRS_M_SEC_RESUB_SUMMARYTABLE4")
 @IdClass(M_SEC_PK.class)
-public class BRRS_M_SEC_Archival_Summary_Entity4 {
+public class M_SEC_RESUB_Summary_Entity4 {
 	
 	// === R36 ===
 		private String R36_PRODUCT;
@@ -833,7 +833,7 @@ public class BRRS_M_SEC_Archival_Summary_Entity4 {
 		public void setDel_flg(String del_flg) {
 			this.del_flg = del_flg;
 		}
-		public BRRS_M_SEC_Archival_Summary_Entity4() {
+		public M_SEC_RESUB_Summary_Entity4() {
 			super();
 			// TODO Auto-generated constructor stub
 		}

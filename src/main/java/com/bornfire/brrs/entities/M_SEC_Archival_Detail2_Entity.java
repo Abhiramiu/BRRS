@@ -16,7 +16,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
 @Table(name = "BRRS_M_SEC_ARCHIVALTABLE_DETAIL2") 
-
+@IdClass(M_SEC_PK.class)
 public class M_SEC_Archival_Detail2_Entity {
 	private String R11_PRODUCT;
 	private BigDecimal R11_TCA2;
@@ -34,18 +34,21 @@ public class M_SEC_Archival_Detail2_Entity {
 	@Temporal(TemporalType.DATE)
 	@DateTimeFormat(pattern = "dd/MM/yyyy")
 	@Id
-	@Column(name = "REPORT_DATE")
-	private Date reportDate;
-	
-	@Column(name = "REPORT_VERSION")
-	private BigDecimal reportVersion;
-	
-	public String report_frequency;
-	public String report_code;
-	public String report_desc;
-	public String entity_flg;
-	public String modify_flg;
-	public String del_flg;
+
+		
+	private Date	report_date;
+	@Id
+	private BigDecimal	report_version;
+
+	@Column(name = "REPORT_RESUBDATE")
+
+	private Date reportResubDate;
+	private String	report_frequency;
+	private String	report_code;
+	private String	report_desc;
+	private String	entity_flg;
+	private String	modify_flg;
+	private String	 del_flg;
 	public String getR11_PRODUCT() {
 		return R11_PRODUCT;
 	}
@@ -118,17 +121,23 @@ public class M_SEC_Archival_Detail2_Entity {
 	public void setR16_TCA2(BigDecimal r16_TCA2) {
 		R16_TCA2 = r16_TCA2;
 	}
-	public Date getReportDate() {
-		return reportDate;
+	public Date getReport_date() {
+		return report_date;
 	}
-	public void setReportDate(Date reportDate) {
-		this.reportDate = reportDate;
+	public void setReport_date(Date report_date) {
+		this.report_date = report_date;
 	}
-	public BigDecimal getReportVersion() {
-		return reportVersion;
+	public BigDecimal getReport_version() {
+		return report_version;
 	}
-	public void setReportVersion(BigDecimal reportVersion) {
-		this.reportVersion = reportVersion;
+	public void setReport_version(BigDecimal report_version) {
+		this.report_version = report_version;
+	}
+	public Date getReportResubDate() {
+		return reportResubDate;
+	}
+	public void setReportResubDate(Date reportResubDate) {
+		this.reportResubDate = reportResubDate;
 	}
 	public String getReport_frequency() {
 		return report_frequency;
@@ -170,6 +179,8 @@ public class M_SEC_Archival_Detail2_Entity {
 		super();
 		// TODO Auto-generated constructor stub
 	}
+	
+	
 	
 	
     

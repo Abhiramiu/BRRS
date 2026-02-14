@@ -2104,6 +2104,41 @@ public class BRRS_ReportsController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
 		}
 	}
+	
+	
+	@RequestMapping(value = "/UpdateM_SEC_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<String> updateReportReSub(
+
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate, // ✅ ISO format
+			@RequestParam(required = false) String type,  
+			
+			@ModelAttribute M_SEC_RESUB_Summary_Entity1 request1,
+			 @ModelAttribute M_SEC_RESUB_Summary_Entity2 request2,
+			  @ModelAttribute M_SEC_RESUB_Summary_Entity3 request3,
+			   @ModelAttribute M_SEC_RESUB_Summary_Entity4 request4, HttpServletRequest req) {
+
+		try {
+			System.out.println("Came to M_SEC Resub Controller");
+
+			if (asondate != null) {
+				request1.setReport_date(asondate);
+				request2.setReport_date(asondate);
+				 request3.setReport_date(asondate);
+	            request4.setReport_date(asondate);
+				System.out.println("Set Report Date: " + asondate);
+			}
+
+			// Call service
+			SECreportService.updateResubReport(request1, request2,request3,request4 );
+			return ResponseEntity.ok("Resubmission Updated Successfully");
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("M_SEC Resubmission Update Failed: " + e.getMessage());
+		}
+	}
 
 //	@RequestMapping(value = "/UpdateM_SEC_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
 //	@ResponseBody

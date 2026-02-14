@@ -15,9 +15,9 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.math.BigDecimal;
 
 @Entity
-@Table(name = "BRRS_M_SEC_ARCHIVALTABLE_DETAIL1") 
+@Table(name = "BRRS_M_SEC_RESUB_DETAILTABLE1") 
 @IdClass(M_SEC_PK.class)
-public class M_SEC_Archival_Detail1_Entity {
+public class M_SEC_RESUB_Detail_Entity1 {
 	
 private String R11_PRODUCT;
 private BigDecimal R11_TCA;
@@ -218,7 +218,7 @@ public String getDel_flg() {
 public void setDel_flg(String del_flg) {
 	this.del_flg = del_flg;
 }
-public M_SEC_Archival_Detail1_Entity() {
+public M_SEC_RESUB_Detail_Entity1() {
 	super();
 	// TODO Auto-generated constructor stub
 }

@@ -362,100 +362,6 @@ function showsummary() {
 		}
 
 	</script>
-	<script>
-		function activateTab(tabName) {
-			// Remove 'active' from all buttons
-			document.querySelectorAll('.custom-tab-btn').forEach(btn => {
-				btn.classList.remove('active');
-			});
-			// Add 'active' to selected button
-			if (tabName === 'summary') {
-				document.getElementById('custom-tab-btnSummary').classList.add('active');
-			} else if (tabName === 'Details') {
-				document.getElementById('custom-tab-btnDetails').classList.add('active');
-			}
-		}
-		window.onload = function () {
-			/* setTimeout(function() {
-				var selectedTab = document.getElementById("selectedTab").value;
-				alert(selectedTab);
-				activateTab(selectedTab);
-			}, 10000); */ // 10,000 milliseconds = 10 seconds
-
-			var selectedTab = document.getElementById("selectedTab").value;
-			activateTab(selectedTab);
-		};
-		function downloadfile(button) {
-			var reportid = button.getAttribute('data-reportid');
-			var asondate = button.getAttribute('data-asondate');
-			var fromdate = button.getAttribute('data-fromdate');
-			var todate = button.getAttribute('data-todate');
-			var currency = button.getAttribute('data-currency');
-			var subreportid = button.getAttribute('data-subreportid');
-			var secid = button.getAttribute('data-secid');
-			var dtltype = button.getAttribute('data-dtltype');
-			var filename = button.getAttribute('data-filename');
-			var type = button.getAttribute('data-type');
-			var version = button.getAttribute('data-version');
-			$('#loader').modal('show');
-			$.ajax({
-				url: './downloadExcel?reportid=' + reportid +
-					'&fromdate=' + fromdate +
-					'&asondate=' + asondate +
-					'&todate=' + todate +
-					'&currency=' + currency +
-					'&subreportid=' + subreportid +
-					'&secid=' + secid +
-					'&filename=' + filename +
-					'&type=' + type +
-					'&version=' + version,
-				type: 'GET',
-				xhrFields: {
-					responseType: 'blob'
-				},
-				success: function (data) {
-					$('#loader').modal('hide');
-					if (data && data.size > 100) {
-						const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
-						const url = window.URL.createObjectURL(blob);
-						const a = document.createElement('a');
-						a.style.display = 'none';
-						a.href = url;
-						a.download = filename;
-						document.body.appendChild(a);
-						a.click();
-						window.URL.revokeObjectURL(url);
-						document.body.removeChild(a);
-						showResultModal('BRRS', filename + ' downloaded successfully.');
-					} else {
-						showResultModal('Information', 'No data was available to create a download.');
-					}
-				},
-				error: function (jqXHR, textStatus, errorThrown) {
-					$('#loader').modal('hide');
-					console.error("Download failed:", textStatus, errorThrown);
-					showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
-				}
-			});
-		}
-		
-		function editRecord() {
-			showResultModal('Alert', 'Development in progress');
-
-		}
-		function closemodel() {
-			$('#alert').modal('hide');
-			$('#resultModal').modal('hide');
-
-		}
-		function showResultModal(title, message) {
-			// Set the text for the modal elements
-			$('#resultModalLabel').text(title);
-			$('#resultModalBody').text(message);
-			// Show the modal
-			$('#resultModal').modal('show');
-		}
-	</script>
 	
 	
 	<script>
@@ -2156,7 +2062,7 @@ $(document).ready(function () {
 
 </script> -->
 
-<script>
+<!-- <script>
 
 
 // This function is for closing the modal after an action is complete.
@@ -2183,7 +2089,7 @@ setTimeout(function () {
     }
 }
 
-</script>
+</script> -->
 
 <script>
 	
@@ -2316,68 +2222,90 @@ function fileuploads(btn) {
         activateTab(selectedTab);
       };
 
+
       function downloadfile(button) {
-			var reportid = button.getAttribute('data-reportid');
-			var asondate = button.getAttribute('data-asondate');
-			var fromdate = button.getAttribute('data-fromdate');
-			var todate = button.getAttribute('data-todate');
-			var currency = button.getAttribute('data-currency');
-			var subreportid = button.getAttribute('data-subreportid');
-			var secid = button.getAttribute('data-secid');
-			var dtltype = button.getAttribute('data-dtltype');
-			var filename = button.getAttribute('data-filename');
-			var type = button.getAttribute('data-type');
-			var version = button.getAttribute('data-version');
-			$('#loader').modal('show');
-			$.ajax({
-				url: './downloadExcel?reportid=' + reportid +
-					'&fromdate=' + fromdate +
-					'&asondate=' + asondate +
-					'&todate=' + todate +
-					'&currency=' + currency +
-					'&subreportid=' + subreportid +
-					'&secid=' + secid +
-					'&filename=' + filename +
-					'&type=' + type +
-					'&version=' + version,
-				type: 'GET',
-				xhrFields: {
-					responseType: 'blob'
-				},
-				success: function (data) {
-					$('#loader').modal('hide');
-					if (data && data.size > 100) {
-						const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
-						const url = window.URL.createObjectURL(blob);
-						const a = document.createElement('a');
-						a.style.display = 'none';
-						a.href = url;
-						a.download = filename;
-						document.body.appendChild(a);
-						a.click();
-						window.URL.revokeObjectURL(url);
-						document.body.removeChild(a);
-						showResultModal('BRRS', filename + ' downloaded successfully.');
-					} else {
-						showResultModal('Information', 'No data was available to create a download.');
-					}
-				},
-				error: function (jqXHR, textStatus, errorThrown) {
-					$('#loader').modal('hide');
-					console.error("Download failed:", textStatus, errorThrown);
-					showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
-				}
-			});
-		}
+          var reportid = button.getAttribute('data-reportid');
+          var asondate = button.getAttribute('data-asondate');
+          var fromdate = button.getAttribute('data-fromdate');
+          var todate = button.getAttribute('data-todate');
+          var currency = button.getAttribute('data-currency');
+          var subreportid = button.getAttribute('data-subreportid');
+          var secid = button.getAttribute('data-secid');
+          var dtltype = button.getAttribute('data-dtltype');
+          var filename = button.getAttribute('data-filename');
+          var type = button.getAttribute('data-type');
+          var version = button.getAttribute('data-version');
+          var format = button.getAttribute('data-format');
+
+          if (format === null) {
+              format = '';   // treat as null
+          }
+
+          $('#loader').modal('show');
+
+          $.ajax({
+              url: './downloadExcel?reportid=' + reportid +
+                   '&fromdate=' + fromdate +
+                   '&asondate=' + asondate +
+                   '&todate=' + todate +
+                   '&currency=' + currency +
+                   '&subreportid=' + subreportid +
+                   '&secid=' + secid +
+                   '&filename=' + filename +
+                   '&type=' + type +
+                   '&version=' + version +
+                   '&format=' + format,
+              type: 'GET',
+              xhrFields: {
+                  responseType: 'blob'
+              },
+              success: function (data) {
+                  $('#loader').modal('hide');
+                  if (data && data.size > 100) {
+                      const blob = new Blob([data], { type: 'application/vnd.ms-excel' });
+                      const url = window.URL.createObjectURL(blob);
+                      const a = document.createElement('a');
+                      a.style.display = 'none';
+                      a.href = url;
+                      a.download = filename;
+                      document.body.appendChild(a);
+                      a.click();
+                      window.URL.revokeObjectURL(url);
+                      document.body.removeChild(a);
+                      showResultModal('BRRS', filename + ' downloaded successfully.');
+                  } else {
+                      showResultModal('Information', 'No data was available to create a download.');
+                  }
+              },
+              error: function () {
+                  $('#loader').modal('hide');
+                  showResultModal('Error', 'An error occurred while downloading the file.');
+              }
+          });
+      }
 
       function editRecord() {
         showResultModal("Alert", "Development in progress");
       }
-      function closemodel() {
+     /*  function closemodel() {
         $("#alert").modal("hide");
         $("#resultModal").modal("hide");
-      }
+      } */
 
+      
+      function closemodel() {
+		    const modalElement = document.getElementById('resultModal');
+		    const modal = bootstrap.Modal.getInstance(modalElement);
+		    modal.hide();
+
+		    const message = document.getElementById("resultModalBody").innerText.toLowerCase();
+
+		    if (message.includes("resubmission")) {
+		        window.history.back();
+		    } else {
+		        location.reload();
+		    }
+		}
       function showResultModal(title, message) {
         // Set the text for the modal elements
         $("#resultModalLabel").text(title);
@@ -2750,22 +2678,23 @@ function fileuploads(btn) {
 							style="color: white !important; font-size: 16px;margin-left: 20px; margin-right: 20px;">Report Date: <span th:text="${#strings.replace(asondate, '/', '-')}">2025-09-18</span>
 						</span>
 						<!-- Buttons -->
-						<input type="hidden" id="selectedTab" th:value="${displaymode}">
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showsummary();"
-							th:if="${displaymode == 'Details'}">Summary</button>
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails();"
-							th:if="${displaymode == 'summary'}">Details</button>
-				
+							<!-- DETAILS button (hide when dtltype = 'detail') -->
+						<button type="button" class="custom-tab-btn"
+							id="custom-tab-btnDetails" onclick="showdetails()"
+							th:if="${dtltype ne 'detail'}">Details</button>
+
+						<!-- SUMMARY button (show when dtltype = 'detail') -->
+						<button type="button" class="custom-tab-btn"
+							id="custom-tab-btnSummary" onclick="showsummary()"
+							th:if="${dtltype eq 'detail'}">Summary</button>
+
+
 						<!-- Modify button -->
-					<button type="button"
-        class="custom-tab-btn"
-        onclick="showmodify(this);"
-        title="Click to EDIT Records"
-        th:classappend="${session.PERMISSIONS == 'W' and dtltype == 'report'} ? 'addedit'"
-        th:if="${type != 'ARCHIVAL' and dtltype ne 'detail'}"
-        id="addRecord">
-    Modify
-</button>
+						<button type="button" class="custom-tab-btn"
+							onclick="showmodify(this);" title="Click to EDIT Records"
+							th:classappend="${session.PERMISSIONS == 'W' and dtltype == 'report'} ? 'addedit'"
+							th:if="${type != 'ARCHIVAL' and dtltype ne 'detail'}"
+							id="addRecord">Modify</button>
 
 
 						<!-- Cancel button (hidden initially) -->
@@ -2774,7 +2703,7 @@ function fileuploads(btn) {
 							
 							
 						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
-							onclick="downloadfile(this)" th:if="${displaymode == 'summary' or displaymode == 'Details'}"
+							onclick="downloadfile(this)" th:if="${displaymode == 'summary' or displaymode == 'detail' or displaymode == 'resub'}"
 							th:attr="data-reportid=${reportid},
                    data-asondate=${asondate},
                    data-fromdate=${fromdate},
@@ -2784,12 +2713,12 @@ function fileuploads(btn) {
                    data-filename='M_SEC.xlsx',
                    data-type=${type},
                    data-version=${version != null ? version : ''}" style="font-family: Arial;font-weight: bold;">
-							<i class="fa fa-download"></i> Download
+							<i class="fa fa-download"></i> Format
 						</button>
 						
 						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
 							 onclick="downloadfile(this)" 
-								th:if="${displaymode == 'summary' or displaymode == 'Details'}"
+								th:if="${displaymode == 'summary' or displaymode == 'detail' or displaymode == 'resub'}"
 							
 							th:attr="data-reportid=${reportid},
             data-asondate=${asondate},
@@ -2798,9 +2727,10 @@ function fileuploads(btn) {
             data-currency=${currency}, 
             data-dtltype=${dtltype},
             data-filename='EMAIL_M_SEC.xlsx',
-            data-type='email',
+            data-type=${type},
+            data-format='email',
             data-version=${version != null ? version : ''}" style="font-family: Arial;font-weight: bold;">
-								<i class="fa fa-download"></i> Email Format
+								<i class="fa fa-download"></i> Email
 							
 						</button>
 						
@@ -2819,19 +2749,33 @@ function fileuploads(btn) {
 					</div>
 				</div>
 
-				<h1 th:if="${displaymode == 'summary' and type == 'ARCHIVAL' and displaymode != 'Details'}"
+				<h1 th:if="${displaymode == 'summary' and type == 'ARCHIVAL' and displaymode != 'detail'}"
   style="text-align: left; font-family: arial;   font-weight: bold; color: white;  font-size: 20px;  
 				background-color: rgb(107, 122, 143); margin-top:10px; margin-bottom:10px;padding-top: 10px; padding-bottom: 10px; " >Archival Summary View - M_SEC</h1>
 				
-				<h1 th:if="${displaymode == 'Details' and type == 'ARCHIVAL' and displaymode != 'summary'}"
+				<h1 th:if="${displaymode == 'detail' and type == 'ARCHIVAL' and displaymode != 'summary'}"
   style="text-align: left; font-family: arial;   font-weight: bold; color: white;  font-size: 20px;  
 				background-color: rgb(107, 122, 143); margin-top:10px; margin-bottom:10px;padding-top: 10px; padding-bottom: 10px; " >Archival Detail View - M_SEC</h1>
 
 				<h1 th:if="${displaymode == 'summary'and type != 'ARCHIVAL'}"  style="text-align: left; font-family: arial;   font-weight: bold; color: white;  font-size: 20px;  
 				background-color: rgb(107, 122, 143); margin-top:10px; margin-bottom:10px;padding-top: 10px; padding-bottom: 10px; " >Summary View - M_SEC </h1>
-			<h1 th:if="${displaymode == 'Details' and type != 'ARCHIVAL'}"  style="text-align: left;   font-family: arial; font-weight: bold;  color: white; font-size: 20px; 
+			<h1 th:if="${displaymode == 'detail' and type != 'ARCHIVAL'}"  style="text-align: left;   font-family: arial; font-weight: bold;  color: white; font-size: 20px; 
 			 background-color: rgb(107, 122, 143); margin-top:10px; margin-bottom:10px; padding-top: 10px; padding-bottom: 10px;  ">Detail View - M_SEC</h1>
-				<div th:if="${displaymode == 'summary' or displaymode == 'Details'}">
+			 
+			 
+	            <h1
+					th:if="${displaymode == 'resub' and type == 'RESUB' and dtltype ne 'detail' }"
+					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">
+					Resubmission Summary View - M_SEC</h1>
+
+				<h1
+					th:if="${displaymode == 'resub' and type == 'RESUB' and dtltype ne 'report' }"
+					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">
+					Resubmission Detail View - M_SEC</h1>
+					
+						<div th:if="${displaymode == 'summary' or displaymode == 'detail' or displaymode == 'resub'}">
+						
+			 
 					<div class="row">
 						<div class="col-sm-12">
 							<form action="#" method="POST" id="fileupload">

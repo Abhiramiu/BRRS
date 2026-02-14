@@ -14,10 +14,10 @@ import javax.persistence.TemporalType;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
-@Table(name = "BRRS_M_SEC_ARCHIVALTABLE_DETAIL3") 
+@Table(name = "BRRS_M_SEC_RESUB_DETAILTABLE3") 
 @IdClass(M_SEC_PK.class)
 
-public class M_SEC_Archival_Detail3_Entity {
+public class M_SEC_RESUB_Detail_Entity3 {
         private String R26_PRODUCT;
 	    private BigDecimal R26_0_1Y_FT;
 	    private BigDecimal R26_0_1Y_HTM;
@@ -649,7 +649,7 @@ public class M_SEC_Archival_Detail3_Entity {
 		public void setDel_flg(String del_flg) {
 			this.del_flg = del_flg;
 		}
-		public M_SEC_Archival_Detail3_Entity() {
+		public M_SEC_RESUB_Detail_Entity3() {
 			super();
 			// TODO Auto-generated constructor stub
 		}

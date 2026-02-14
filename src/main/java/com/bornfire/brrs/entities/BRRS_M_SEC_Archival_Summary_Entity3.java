@@ -14,7 +14,7 @@ import javax.persistence.TemporalType;
 import org.springframework.format.annotation.DateTimeFormat;
 @Entity
 @Table(name = "BRRS_M_SEC_ARCHIVALTABLE_SUMMARY3")
-@IdClass(M_SEC_Archival_Summary3_PK.class)
+@IdClass(M_SEC_PK.class)
 public class BRRS_M_SEC_Archival_Summary_Entity3 {
 	
 	 private String R26_PRODUCT;
@@ -108,27 +108,24 @@ public class BRRS_M_SEC_Archival_Summary_Entity3 {
 	    private BigDecimal R31_T_HTM;
 	    private BigDecimal R31_T_TOTAL;
 	    
-	    @Id
 	    @Temporal(TemporalType.DATE)
 	    @DateTimeFormat(pattern = "dd/MM/yyyy")
-		@Column(name = "REPORT_DATE")
-	    private Date reportDate;
-		
-		@Id
-		@Column(name = "REPORT_VERSION")
-		private BigDecimal reportVersion;
-		
+	    @Id
+
+	    	
+	    private Date	report_date;
+	    @Id
+	    private BigDecimal	report_version;
+
 	    @Column(name = "REPORT_RESUBDATE")
-	    @Temporal(TemporalType.TIMESTAMP)
+
 	    private Date reportResubDate;
-	    
-	    
-		private String report_frequency;
-		private String report_code;
-		private String report_desc;
-		private String entity_flg;
-		private String modify_flg;
-		private String del_flg;
+	    private String	report_frequency;
+	    private String	report_code;
+	    private String	report_desc;
+	    private String	entity_flg;
+	    private String	modify_flg;
+	    private String	 del_flg;
 		public String getR26_PRODUCT() {
 			return R26_PRODUCT;
 		}
@@ -597,17 +594,17 @@ public class BRRS_M_SEC_Archival_Summary_Entity3 {
 		public void setR31_T_TOTAL(BigDecimal r31_T_TOTAL) {
 			R31_T_TOTAL = r31_T_TOTAL;
 		}
-		public Date getReportDate() {
-			return reportDate;
+		public Date getReport_date() {
+			return report_date;
 		}
-		public void setReportDate(Date reportDate) {
-			this.reportDate = reportDate;
+		public void setReport_date(Date report_date) {
+			this.report_date = report_date;
 		}
-		public BigDecimal getReportVersion() {
-			return reportVersion;
+		public BigDecimal getReport_version() {
+			return report_version;
 		}
-		public void setReportVersion(BigDecimal reportVersion) {
-			this.reportVersion = reportVersion;
+		public void setReport_version(BigDecimal report_version) {
+			this.report_version = report_version;
 		}
 		public Date getReportResubDate() {
 			return reportResubDate;
@@ -656,9 +653,7 @@ public class BRRS_M_SEC_Archival_Summary_Entity3 {
 			// TODO Auto-generated constructor stub
 		}
 		
-		
-
-	   
+	    
 	    
 
 }

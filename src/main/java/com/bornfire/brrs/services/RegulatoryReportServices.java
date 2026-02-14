@@ -2246,8 +2246,8 @@ public class RegulatoryReportServices {
 		case "M_SEC":
 			try {
 
-				repfile = brrs_m_sec_reportservice.getM_SECExcel(filename, reportId, fromdate, todate, currency,
-						dtltype, type, version);
+				repfile = brrs_m_sec_reportservice.getM_SECExcel(filename, reportId, fromdate, todate, currency, dtltype,
+						type, format, version);
 			} catch (Exception e) { // TODO Auto-generated catch block
 				e.printStackTrace();
 			}

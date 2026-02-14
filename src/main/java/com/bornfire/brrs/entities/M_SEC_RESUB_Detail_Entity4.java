@@ -15,9 +15,9 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 
 @Entity
-@Table(name = "BRRS_M_SEC_ARCHIVALTABLE_DETAIL4") 
+@Table(name = "BRRS_M_SEC_RESUB_DETAILTABLE4") 
 @IdClass(M_SEC_PK.class)
-public class M_SEC_Archival_Detail4_Entity {
+public class M_SEC_RESUB_Detail_Entity4 {
 	// === R36 ===
 	private String R36_PRODUCT;
 	private BigDecimal R36_0_1Y_FT;
@@ -834,7 +834,7 @@ public class M_SEC_Archival_Detail4_Entity {
 	public void setDel_flg(String del_flg) {
 		this.del_flg = del_flg;
 	}
-	public M_SEC_Archival_Detail4_Entity() {
+	public M_SEC_RESUB_Detail_Entity4() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
