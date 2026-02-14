@@ -701,8 +701,8 @@ PURPOSE		: BRRS MANUAL REPORT
 				isDetailsModal = false;
 			}
 		}
-
-		// This is the main function that orchestrates the entire form submission process.
+</script>
+		<!--// This is the main function that orchestrates the entire form submission process.
 		// It is triggered by the "Update" button click.
 		// Make the function global so onclick="fileuploads(this)" can see it
 		window.fileuploads = function (btn) {
@@ -813,7 +813,101 @@ PURPOSE		: BRRS MANUAL REPORT
 
 
 
-	</script>
+	</script>-->
+	<script>
+	function fileuploads(btn) {
+
+	    try {
+
+	        const asondate = btn.getAttribute("data-todate");
+
+	        $('#loader').modal('show');
+
+	        if (typeof calculateTotals === "function") {
+	            calculateTotals();
+	        }
+
+	        // Remove commas
+	        $("#fileupload input[type='text']").each(function () {
+	            const val = $(this).val();
+	            if (val && val.includes(",")) {
+	                $(this).val(val.replace(/,/g, ''));
+	            }
+	        });
+
+	        if (!$("#fileupload").valid()) {
+	            $('#loader').modal('hide');
+	            return;
+	        }
+
+	        // Get type from URL
+	        const urlParams = new URLSearchParams(window.location.search);
+	        const urlType = urlParams.get("type");
+
+	        const isResub = urlType && urlType.toUpperCase() === 'RESUB';
+
+	        // ✅ Use SERIALIZE (NOT FormData)
+	        const formData =
+	            $('#fileupload').serialize()
+	            + '&asondate=' + encodeURIComponent(asondate)
+	            + '&type=' + encodeURIComponent(urlType || '');
+
+	        console.log("✅ Form data prepared");
+
+	        let apiUrl = './M_SRWA_12Gupdate';
+	        if (isResub) {
+	            apiUrl = './UpdateM_SRWA_12G_ReSub';
+	        }
+
+	        $.ajax({
+	            url: apiUrl,
+	            type: 'POST',
+	            data: formData,
+	            dataType: 'text',
+
+	            success: function (response) {
+	                $("#resultModalLabel").text("BRRS");
+	                $("#resultModalBody").text(response);
+	                $("#resultModal").modal("show");
+
+	                $("#resultModal")
+	                    .off("hidden.bs.modal")
+	                    .on("hidden.bs.modal", function () {
+	                        if (isResub) {
+	                            window.location.href =
+	                                window.previousUrl
+	                                    ? window.previousUrl
+	                                    : "/BRRS/Resubmission?rptcode= M_SRWA_12G";
+	                        }
+	                    });
+	            },
+
+	            error: function (jqXHR) {
+	                console.log("Error response:", jqXHR.responseText);
+
+	                $("#resultModalLabel").text("Error");
+	                $("#resultModalBody").text(
+	                    "Update failed: " +
+	                    (jqXHR.responseText || "Unknown error")
+	                );
+	                $("#resultModal").modal("show");
+	            },
+
+	            complete: function () {
+	                $('#loader').modal('hide');
+	            }
+	        });
+
+	    } catch (error) {
+	        $('#loader').modal('hide');
+	        console.error("Error during file upload:", error);
+	    }
+	}
+
+
+
+
+		</script>
 </head>
 
 
