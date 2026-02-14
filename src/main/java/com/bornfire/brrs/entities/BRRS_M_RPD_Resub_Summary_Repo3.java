@@ -8,7 +8,7 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-public interface BRRS_M_RPD_Resub_Summary_Repo3  extends JpaRepository<BRRS_M_RPD_Resub_Summary_Entity3, M_RPD_Resub_Summary3_PK> {
+public interface BRRS_M_RPD_Resub_Summary_Repo3  extends JpaRepository<BRRS_M_RPD_Resub_Summary_Entity3, M_RPD_PK> {
 
     @Query(value = "select REPORT_DATE, REPORT_VERSION from BRRS_M_RPD_RESUB_SUMMARY3 order by REPORT_VERSION", nativeQuery = true)
     List<Object> getM_RPDarchival();

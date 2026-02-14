@@ -75,13 +75,6 @@ PURPOSE		: BRRS REPORT
 			border-color: #0c0c0c;
 		}
 
-		.btn-primary:not (:disabled):not (.disabled).active,
-		.btn-primary:not (:disabled):not (.disabled):active,
-		.show>.btn-primary.dropdown-toggle {
-			color: #fff;
-			background-color: #cc000000;
-			border-color: #161617;
-		}
 
 		#finusertb {
 			width: 460px;
@@ -218,12 +211,7 @@ PURPOSE		: BRRS REPORT
 		}
 
 		/* When input or select is focused or has a value, move the label up */
-		.form-control:focus~.form-legend,
-		.form-control:not (:placeholder-shown)~.form-legend {
-			top: -8px;
-			font-size: 1rem;
-			color: #007bff;
-		}
+
 
 		/* Hover effect when the input/select is focused */
 		.form-control:focus:hover~.form-legend {
@@ -231,11 +219,7 @@ PURPOSE		: BRRS REPORT
 			/* Darker shade of blue on hover */
 		}
 
-		/* Ensure the label returns to the normal color after focus or hover is removed */
-		.form-control:not (:focus)~.form-legend {
-			color: #aaa;
-			/* Normal label color */
-		}
+
 
 		.table-cell tbody td:hover {
 			background-color: #f0f0f0;
@@ -429,16 +413,23 @@ PURPOSE		: BRRS REPORT
 			window.history.back();
 		}
 
-		//to fetch summary from the database - called from the summary button
 		function showdetails() {
-			isDetailsModal = true; // mark that this modal is from Details
-			showResultModal('BRRS', 'Details page not available for Manual Report');
-		}
+			$('#loader').modal('show');
+			var Callurl = /*[[@{'/Reports/' + ${reportid}(
+			        dtltype='detail',
+			        fromdate=${fromdate},
+			        todate=${todate},
+			        type=${type},
+			        asondate=${asondate},
+			        version=${version}
+			    )}]]*/
+				location.href = Callurl;
 
+		}
 		function showsummary() {
 			$('#loader').modal('show');
-			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/;
-			location.href = Callurl;
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate}, version=${version})}]]*/
+				location.href = Callurl;
 		}
 
 
@@ -456,8 +447,8 @@ PURPOSE		: BRRS REPORT
 			var readonlyIds = [];
 
 			//  Rule 1: R11–R47 (excluding R27–R31)
-			for (let i = 11; i <= 47; i++) {
-				if (![27, 28, 29, 30, 31].includes(i)) {
+			for (let i = 11; i <= 48; i++) {
+				if (![27, 29, 30, 31].includes(i)) {
 					readonlyIds.push(`R${i}_PRODUCT`);
 					readonlyIds.push(`R${i}_TOTAL`);
 				}
@@ -500,7 +491,7 @@ PURPOSE		: BRRS REPORT
 
 			//  Apply gray background for R11–R47 (excluding R25, R27, R28, R29, R30, R31, R46)
 			$(document).ready(function () {
-				const excludedRows = [25, 27, 28, 29, 30, 31, 46];
+				const excludedRows = [25, 28, 29, 30, 31, 46];
 				const targetColumns = [
 					"CURRENT",
 					"CALL",
@@ -518,7 +509,7 @@ PURPOSE		: BRRS REPORT
 					"TOTAL" //  Added TOTAL column
 				];
 
-				for (let i = 11; i <= 47; i++) {
+				for (let i = 11; i <= 48; i++) {
 					if (!excludedRows.includes(i)) {
 						targetColumns.forEach(col => {
 							const selector = `#R${i}_${col}`;
@@ -573,24 +564,6 @@ PURPOSE		: BRRS REPORT
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	<script>
 
 		function activateTab(tabName) {
@@ -620,92 +593,95 @@ PURPOSE		: BRRS REPORT
 
 
 		function downloadfile(button) {
-					var reportid = button.getAttribute('data-reportid');
-					var asondate = button.getAttribute('data-asondate');
-					var fromdate = button.getAttribute('data-fromdate');
-					var todate = button.getAttribute('data-todate');
-					var currency = button.getAttribute('data-currency');
-					var subreportid = button.getAttribute('data-subreportid');
-					var secid = button.getAttribute('data-secid');
-					var dtltype = button.getAttribute('data-dtltype');
-					var filename = button.getAttribute('data-filename');
-					var type = button.getAttribute('data-type');
-					var version = button.getAttribute('data-version');
-					var format = button.getAttribute('data-format');
+			var reportid = button.getAttribute('data-reportid');
+			var asondate = button.getAttribute('data-asondate');
+			var fromdate = button.getAttribute('data-fromdate');
+			var todate = button.getAttribute('data-todate');
+			var currency = button.getAttribute('data-currency');
+			var subreportid = button.getAttribute('data-subreportid');
+			var secid = button.getAttribute('data-secid');
+			var dtltype = button.getAttribute('data-dtltype');
+			var filename = button.getAttribute('data-filename');
+			var type = button.getAttribute('data-type');
+			var version = button.getAttribute('data-version');
+			var format = button.getAttribute('data-format');
 
-					if (format === null) {
-						format = '';   // treat as null
+			if (format === null) {
+				format = '';   // treat as null
+			}
+
+			$('#loader').modal('show');
+
+			$.ajax({
+				url: './downloadExcel?reportid=' + reportid +
+					'&fromdate=' + fromdate +
+					'&asondate=' + asondate +
+					'&todate=' + todate +
+					'&currency=' + currency +
+					'&subreportid=' + subreportid +
+					'&secid=' + secid +
+					'&filename=' + filename +
+					'&type=' + type +
+					'&version=' + version +
+					'&format=' + format,
+				type: 'GET',
+				xhrFields: {
+					responseType: 'blob'
+				},
+				success: function (data) {
+					$('#loader').modal('hide');
+					if (data && data.size > 100) {
+						const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
+						const url = window.URL.createObjectURL(blob);
+						const a = document.createElement('a');
+						a.style.display = 'none';
+						a.href = url;
+						a.download = filename;
+						document.body.appendChild(a);
+						a.click();
+						window.URL.revokeObjectURL(url);
+						document.body.removeChild(a);
+						showResultModal('BRRS', filename + ' downloaded successfully.');
+					} else {
+						showResultModal('Information', 'No data was available to create a download.');
 					}
-
-					$('#loader').modal('show');
-
-					$.ajax({
-						url: './downloadExcel?reportid=' + reportid +
-							'&fromdate=' + fromdate +
-							'&asondate=' + asondate +
-							'&todate=' + todate +
-							'&currency=' + currency +
-							'&subreportid=' + subreportid +
-							'&secid=' + secid +
-							'&filename=' + filename +
-							'&type=' + type +
-							'&version=' + version +
-							'&format=' + format,
-						type: 'GET',
-						xhrFields: {
-							responseType: 'blob'
-						},
-						success: function (data) {
-							$('#loader').modal('hide');
-							if (data && data.size > 100) {
-								const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
-								const url = window.URL.createObjectURL(blob);
-								const a = document.createElement('a');
-								a.style.display = 'none';
-								a.href = url;
-								a.download = filename;
-								document.body.appendChild(a);
-								a.click();
-								window.URL.revokeObjectURL(url);
-								document.body.removeChild(a);
-								showResultModal('BRRS', filename + ' downloaded successfully.');
-							} else {
-								showResultModal('Information', 'No data was available to create a download.');
-							}
-						},
-						error: function () {
-							$('#loader').modal('hide');
-							showResultModal('Error', 'An error occurred while downloading the file.');
-						}
-					});
+				},
+				error: function () {
+					$('#loader').modal('hide');
+					showResultModal('Error', 'An error occurred while downloading the file.');
 				}
+			});
+		}
 
-				function editRecord() {
-					showResultModal('Alert', 'Development in progress');
+		function editRecord() {
+			showResultModal('Alert', 'Development in progress');
 
-				}
-				// function closemodel() {
-				//     $('#alert').modal('hide');
-				//     $('#resultModal').modal('hide');
+		}
 
-				// }
-				function showResultModal(title, message) {
-					// Set the text for the modal elements
-					$('#resultModalLabel').text(title);
-					$('#resultModalBody').text(message);
-					// Show the modal
-					$('#resultModal').modal('show');
-				}
+		function showResultModal(title, message) {
+			// Set the text for the modal elements
+			$('#resultModalLabel').text(title);
+			$('#resultModalBody').text(message);
+			// Show the modal
+			$('#resultModal').modal('show');
+		}
 		function editRecord() {
 			showResultModal('Alert', 'Development in progress');
 
 		}
 		function closemodel() {
-			$('#alert').modal('hide');
-			$('#resultModal').modal('hide');
+				    const modalElement = document.getElementById('resultModal');
+				    const modal = bootstrap.Modal.getInstance(modalElement);
+				    modal.hide();
 
-		}
+				    const message = document.getElementById("resultModalBody").innerText.toLowerCase();
 
+				    if (message.includes("resubmission")) {
+				        window.history.back();
+				    } else {
+				        location.reload();
+				    }
+				}
 
 		function showResultModal(title, message) {
 			// Set the text for the modal elements
@@ -878,9 +854,9 @@ PURPOSE		: BRRS REPORT
 			// ROW ranges to calculate totals
 			const ROWS = [
 				// First group
-				11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 26,
+				11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 26, 27,
 				// Second group
-				32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 47
+				32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 47, 48
 			];
 
 			// Columns B–M represented by field suffixes
@@ -957,8 +933,8 @@ PURPOSE		: BRRS REPORT
 			CALCULATE_TOTALS();
 
 			const INPUT_ROWS = [
-				11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 26,
-				32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 47
+				11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 26, 27,
+				32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 47, 48
 			];
 			const INPUT_FIELDS = [
 				"_CURRENT", "_CALL", "_SAVINGS", "_0_31D_NOTICE", "_32_88D_NOTICE",
@@ -981,137 +957,87 @@ PURPOSE		: BRRS REPORT
 
 	</script>
 
-
-
-
-
-
-
-
-
-
 	<script>
 
 
-		// This function is for closing the modal after an action is complete.
-		// It hides the result and loader modals and reloads the page.
-		function closemodel() {
-			$("#resultModal").modal("hide");
-			$('#loader').modal('hide');
+		function fileuploads(btn) {
+			const asondate = btn.getAttribute("data-todate");
+			const type = btn.getAttribute("data-type"); // MAIN / RESUB / ARCHIVAL
 
-			// Only reload if not from Details modal
-			if (!isDetailsModal) {
-				setTimeout(function () {
-					location.reload();
-				}, 300);
-			} else {
-				// reset flag for next modal usage
-				isDetailsModal = false;
+			$('#loader').modal('show');
+
+			// Step 1: Calculate totals
+			CALCULATE_TOTALS();
+
+			// Step 2: Remove commas
+			$("#fileupload input[type='text']").each(function () {
+				$(this).val($(this).val().replace(/,/g, ''));
+			});
+
+			// Step 3: Validate form
+			if (!$("#fileupload").valid()) {
+				$('#loader').modal('hide');
+				return;
 			}
+
+			// Step 4: Build FormData
+			const formData = new FormData();
+			formData.append("asondate", asondate);
+			formData.append("type", type);
+
+			$('#fileupload').find(':input').each(function () {
+				const name = $(this).attr('name');
+				if (name) formData.append(name, $(this).val());
+			});
+
+			// Select API dynamically (OLD LOGIC)
+			let apiUrl = './Q_SMME_DEPupdate';
+			if (type && type.toUpperCase() === 'RESUB') {
+				apiUrl = './UpdateQ_SMME_DEP_ReSub';
+			}
+
+			// ✅ AJAX CALL (NEW STYLE)
+			$.ajax({
+				url: apiUrl,
+				type: 'POST',
+				data: formData,
+				processData: false,
+				contentType: false,
+				dataType: 'text',
+
+				success: function (response) {
+					$("#resultModalLabel").text("BRRS");
+					$("#resultModalBody").text(response);
+					$("#resultModal").modal("show");
+
+					// Redirect after modal close (OLD LOGIC)
+					$("#resultModal")
+						.off("hidden.bs.modal")
+						.on("hidden.bs.modal", function () {
+							if (isResubmissionUpdate) {
+								window.location.href = previousUrl
+									? previousUrl
+									: "/BRRS/Resubmission?rptcode=Q_STAFF";
+							}
+						});
+				},
+
+				error: function (jqXHR) {
+					console.log("Error response:", jqXHR.responseText);
+					$("#resultModalLabel").text("Error");
+					$("#resultModalBody").text("Update failed. Check console.");
+					$("#resultModal").modal("show");
+				},
+
+				complete: function () {
+					$('#loader').modal('hide');
+				}
+			});
+
+			console.log("✅ AJAX executed successfully");
 		}
 
-
-
-
-		// This is the main function that orchestrates the entire form submission process.
-		// It is triggered by the "Update" button click.
-		// Make the function global so onclick="fileuploads(this)" can see it
-		window.fileuploads = function (btn) {
-			try {
-				// Get the report date from the button's data attribute
-				const asondate = btn.getAttribute("data-todate");
-
-				// Show loading spinner
-				$('#loader').modal('show');
-
-				// Ensure totals are calculated before submission
-				if (typeof CALCULATE_TOTALS === "function") {
-					CALCULATE_TOTALS();
-				}
-
-				// Remove commas from all text inputs inside #fileupload
-				$("#fileupload input[type='text']").each(function () {
-					const val = $(this).val();
-					if (val && val.includes(",")) {
-						$(this).val(val.replace(/,/g, ''));
-					}
-				});
-
-				// Validate form
-				if (!$("#fileupload").valid()) {
-					$('#loader').modal('hide');
-					return;
-				}
-
-				// Retrieve type from URL
-				const urlParams = new URLSearchParams(window.location.search);
-				const urlType = urlParams.get("type");
-				const type = urlType || "";
-
-				// Build FormData
-				const formData = new FormData();
-				formData.append("asondate", asondate);
-				formData.append("type", type);
-
-				// Append all input fields to FormData
-				$('#fileupload').find(':input').each(function () {
-					const name = $(this).attr('name');
-					if (name) {
-						formData.append(name, $(this).val());
-					}
-				});
-
-				// Choose endpoint based on type
-				let apiUrl = './Q_SMME_DEPupdate';
-				if (urlType && urlType.toUpperCase() === 'RESUB') {
-					apiUrl = './UpdateQ_SMME_DEP_ReSub';
-				}
-
-				// Send AJAX request
-				$.ajax({
-					url: apiUrl,
-					type: 'POST',
-					data: formData,
-					processData: false,
-					contentType: false,
-					dataType: 'text',
-					success: function (response) {
-						$("#resultModalLabel").text("BRRS");
-						$("#resultModalBody").text(response);
-						$("#resultModal").modal("show");
-					},
-					error: function (jqXHR) {
-						$("#resultModalLabel").text("Error");
-						$("#resultModalBody").text("Update failed: " + jqXHR.responseText);
-						$("#resultModal").modal("show");
-					},
-					complete: function () {
-						$('#loader').modal('hide');
-					}
-				});
-
-			} catch (error) {
-				$('#loader').modal('hide');
-				console.error("Error during file upload:", error);
-			}
-		};
-
-
-
-
-
 	</script>
-
-
-
-
-
-
-
-
-
-
-
 
 </head>
 
@@ -1137,7 +1063,7 @@ PURPOSE		: BRRS REPORT
 						<!-- Title -->
 						<h5
 							style="font-family: arial; font-size: 20px; font-weight: bold; color: white; margin: 0 10px;">
-							(6) QUARTERLY SCHEDULE : Q-SMME DEP: SMME DEPOSIT <br> ACCOUNTS BY ECONOMIC SECTOR
+							(6) QUARTERLY SCHEDULE : Q-SMME DEP: <br> SMME DEPOSIT ACCOUNTS BY ECONOMIC <br> SECTOR
 							(P'000)
 						</h5>
 
@@ -1159,27 +1085,22 @@ PURPOSE		: BRRS REPORT
 						<!-- Buttons -->
 						<input type="hidden" id="selectedTab" th:value="${displaymode}">
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showsummary();"
-							th:if="${displaymode == 'Details'}">Summary</button>
+							th:if="${displaymode == 'detail' or displaymode == 'resubDetail'}">Summary</button>
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails();"
-							th:if="${displaymode == 'summary'}">Details</button>
-
+							th:if="${displaymode == 'summary'or displaymode == 'resubSummary'}">Details</button>
 
 
 						<!-- Modify button -->
 						<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
-							title="Click to EDIT Records"
-							th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
-							th:if="${type != 'ARCHIVAL'}" id="addRecord">Modify</button>
+							title="Click to EDIT Records" th:if="${type != 'ARCHIVAL'} and ${dtltype != 'detail'}"
+							th:classappend="${session.PERMISSIONS == 'W'} and ${dtltype == 'report'} ? 'addedit'"
+							id="addRecord">
+							Modify
+						</button>
 
 						<!-- Cancel button (hidden initially) -->
 						<button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord"
 							onclick="cancelModify();" style="display: none;">Cancel</button>
-
-
-
-
-
-
 						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
 							onclick="downloadfile(this)"
 							th:if="${displaymode == 'summary' or displaymode == 'detail'or displaymode == 'resubSummary'or displaymode == 'resubDetail'}"
@@ -1242,14 +1163,14 @@ PURPOSE		: BRRS REPORT
 										          color: white; font-size: 20px;
 										          background-color: rgb(107, 122, 143); 
 										          margin-top:10px; margin-bottom:10px; padding: 5px;">
-					Resubmission Summary View -Q SMME DEP
+					Resubmission Summary View - Q SMME DEP
 				</p>
 
 				<p th:if="${type == 'RESUB' and displaymode == 'resubDetail'}" style="text-align: left; font-weight: bold;
 										          color: white; font-size: 20px;
 										          background-color: rgb(107, 122, 143); 
 										          margin-top:10px; margin-bottom:10px; padding: 5px;">
-					Resubmission Detail View -Q SMME DEP
+					Resubmission Detail View - Q SMME DEP
 				</p>
 
 				<div
@@ -2995,7 +2916,142 @@ PURPOSE		: BRRS REPORT
 												</td>
 											</tr>
 
+											<tr>
+												<td id='ROW27' style='font-weight: bold;'>
+													<input class='display-input Show_input' type='text'
+														value='General government (central and local)' id='R27_PRODUCT'
+														name='R27_PRODUCT'
+														style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; '
+														readonly />
+												</td>
 
+												<td id='ROW27'
+													style='padding-left: 20px; font-weight: bold; text-align: right;'>
+													<input class='display-input Show_input' type='text'
+														th:value='${report.R27_CURRENT != null ? #numbers.formatDecimal(report.R27_CURRENT, 1, "COMMA",0, "POINT") : "0"}'
+														id='R27_CURRENT' name='R27_CURRENT'
+														style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;'
+														readonly />
+												</td>
+
+												<td id='ROW27'
+													style='padding-left: 20px; font-weight: bold; text-align: right;'>
+													<input class='display-input Show_input' type='text'
+														th:value='${report.R27_CALL != null ? #numbers.formatDecimal(report.R27_CALL, 1, "COMMA",0, "POINT") : "0"}'
+														id='R27_CALL' name='R27_CALL'
+														style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;'
+														readonly />
+												</td>
+
+												<td id='ROW27'
+													style='padding-left: 20px; font-weight: bold; text-align: right;'>
+													<input class='display-input Show_input' type='text'
+														th:value='${report.R27_SAVINGS != null ? #numbers.formatDecimal(report.R27_SAVINGS, 1, "COMMA",0, "POINT") : "0"}'
+														id='R27_SAVINGS' name='R27_SAVINGS'
+														style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;'
+														readonly />
+												</td>
+
+												<td id='ROW27'
+													style='padding-left: 20px; font-weight: bold; text-align: right;'>
+													<input class='display-input Show_input' type='text'
+														th:value='${report.R27_0_31D_NOTICE != null ? #numbers.formatDecimal(report.R27_0_31D_NOTICE, 1, "COMMA",0, "POINT") : "0"}'
+														id='R27_0_31D_NOTICE' name='R27_0_31D_NOTICE'
+														style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;'
+														readonly />
+												</td>
+
+												<td id='ROW27'
+													style='padding-left: 20px; font-weight: bold; text-align: right;'>
+													<input class='display-input Show_input' type='text'
+														th:value='${report.R27_32_88D_NOTICE != null ? #numbers.formatDecimal(report.R27_32_88D_NOTICE, 1, "COMMA",0, "POINT") : "0"}'
+														id='R27_32_88D_NOTICE' name='R27_32_88D_NOTICE'
+														style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;'
+														readonly />
+												</td>
+
+												<td id='ROW27'
+													style='padding-left: 20px; font-weight: bold; text-align: right;'>
+													<input class='display-input Show_input' type='text'
+														th:value='${report.R27_91D_DEPOSIT != null ? #numbers.formatDecimal(report.R27_91D_DEPOSIT, 1, "COMMA",0, "POINT") : "0"}'
+														id='R27_91D_DEPOSIT' name='R27_91D_DEPOSIT'
+														style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;'
+														readonly />
+												</td>
+
+												<td id='ROW27'
+													style='padding-left: 20px; font-weight: bold; text-align: right;'>
+													<input class='display-input Show_input' type='text'
+														th:value='${report.R27_1_2M_FD != null ? #numbers.formatDecimal(report.R27_1_2M_FD, 1, "COMMA",0, "POINT") : "0"}'
+														id='R27_1_2M_FD' name='R27_1_2M_FD'
+														style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;'
+														readonly />
+												</td>
+
+												<td id='ROW27'
+													style='padding-left: 20px; font-weight: bold; text-align: right;'>
+													<input class='display-input Show_input' type='text'
+														th:value='${report.R27_4_6M_FD != null ? #numbers.formatDecimal(report.R27_4_6M_FD, 1, "COMMA",0, "POINT") : "0"}'
+														id='R27_4_6M_FD' name='R27_4_6M_FD'
+														style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;'
+														readonly />
+												</td>
+
+												<td id='ROW27'
+													style='padding-left: 20px; font-weight: bold; text-align: right;'>
+													<input class='display-input Show_input' type='text'
+														th:value='${report.R27_7_12M_FD != null ? #numbers.formatDecimal(report.R27_7_12M_FD, 1, "COMMA",0, "POINT") : "0"}'
+														id='R27_7_12M_FD' name='R27_7_12M_FD'
+														style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;'
+														readonly />
+												</td>
+
+												<td id='ROW27'
+													style='padding-left: 20px; font-weight: bold; text-align: right;'>
+													<input class='display-input Show_input' type='text'
+														th:value='${report.R27_13_18M_FD != null ? #numbers.formatDecimal(report.R27_13_18M_FD, 1, "COMMA",0, "POINT") : "0"}'
+														id='R27_13_18M_FD' name='R27_13_18M_FD'
+														style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;'
+														readonly />
+												</td>
+
+												<td id='ROW27'
+													style='padding-left: 20px; font-weight: bold; text-align: right;'>
+													<input class='display-input Show_input' type='text'
+														th:value='${report.R27_19_24M_FD != null ? #numbers.formatDecimal(report.R27_19_24M_FD, 1, "COMMA",0, "POINT") : "0"}'
+														id='R27_19_24M_FD' name='R27_19_24M_FD'
+														style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;'
+														readonly />
+												</td>
+
+												<td id='ROW27'
+													style='padding-left: 20px; font-weight: bold; text-align: right;'>
+													<input class='display-input Show_input' type='text'
+														th:value='${report.R27_OVER24_FD != null ? #numbers.formatDecimal(report.R27_OVER24_FD, 1, "COMMA",0, "POINT") : "0"}'
+														id='R27_OVER24_FD' name='R27_OVER24_FD'
+														style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;'
+														readonly />
+												</td>
+
+												<td id='ROW27'
+													style='padding-left: 20px; font-weight: bold; text-align: right;'
+													class="green-cell">
+													<input class='display-input Show_input  green-cell' type='text'
+														th:value='${report.R27_TOTAL != null ? #numbers.formatDecimal(report.R27_TOTAL, 1, "COMMA",0, "POINT") : "0"}'
+														id='R27_TOTAL' name='R27_TOTAL'
+														style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;'
+														readonly />
+												</td>
+
+												<td id='ROW27'
+													style='padding-left: 20px; font-weight: bold; text-align: right;'>
+													<input class='display-input Show_input' type='text'
+														th:value='${report.R27_NOACC != null ? #numbers.formatDecimal(report.R27_NOACC, 1, "COMMA",0, "POINT") : "0"}'
+														id='R27_NOACC' name='R27_NOACC'
+														style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;'
+														readonly />
+												</td>
+											</tr>
 											<tr>
 												<td id='ROW23' style='font-weight: bold;'>
 													<input class='display-input Show_input' type='text'
@@ -5303,7 +5359,142 @@ PURPOSE		: BRRS REPORT
 												</td>
 											</tr>
 
+											<tr>
+												<td id='ROW48' style='font-weight: bold;'>
+													<input class='display-input Show_input' type='text'
+														value='General government (central and local)' id='R48_PRODUCT'
+														name='R48_PRODUCT'
+														style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; '
+														readonly />
+												</td>
 
+												<td id='ROW48'
+													style='padding-left: 20px; font-weight: bold; text-align: right;'>
+													<input class='display-input Show_input' type='text'
+														th:value='${report.R48_CURRENT != null ? #numbers.formatDecimal(report.R48_CURRENT, 1, "COMMA",0, "POINT") : "0"}'
+														id='R48_CURRENT' name='R48_CURRENT'
+														style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;'
+														readonly />
+												</td>
+
+												<td id='ROW48'
+													style='padding-left: 20px; font-weight: bold; text-align: right;'>
+													<input class='display-input Show_input' type='text'
+														th:value='${report.R48_CALL != null ? #numbers.formatDecimal(report.R48_CALL, 1, "COMMA",0, "POINT") : "0"}'
+														id='R48_CALL' name='R48_CALL'
+														style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;'
+														readonly />
+												</td>
+
+												<td id='ROW48'
+													style='padding-left: 20px; font-weight: bold; text-align: right;'>
+													<input class='display-input Show_input' type='text'
+														th:value='${report.R48_SAVINGS != null ? #numbers.formatDecimal(report.R48_SAVINGS, 1, "COMMA",0, "POINT") : "0"}'
+														id='R48_SAVINGS' name='R48_SAVINGS'
+														style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;'
+														readonly />
+												</td>
+
+												<td id='ROW48'
+													style='padding-left: 20px; font-weight: bold; text-align: right;'>
+													<input class='display-input Show_input' type='text'
+														th:value='${report.R48_0_31D_NOTICE != null ? #numbers.formatDecimal(report.R48_0_31D_NOTICE, 1, "COMMA",0, "POINT") : "0"}'
+														id='R48_0_31D_NOTICE' name='R48_0_31D_NOTICE'
+														style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;'
+														readonly />
+												</td>
+
+												<td id='ROW48'
+													style='padding-left: 20px; font-weight: bold; text-align: right;'>
+													<input class='display-input Show_input' type='text'
+														th:value='${report.R48_32_88D_NOTICE != null ? #numbers.formatDecimal(report.R48_32_88D_NOTICE, 1, "COMMA",0, "POINT") : "0"}'
+														id='R48_32_88D_NOTICE' name='R48_32_88D_NOTICE'
+														style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;'
+														readonly />
+												</td>
+
+												<td id='ROW48'
+													style='padding-left: 20px; font-weight: bold; text-align: right;'>
+													<input class='display-input Show_input' type='text'
+														th:value='${report.R48_91D_DEPOSIT != null ? #numbers.formatDecimal(report.R48_91D_DEPOSIT, 1, "COMMA",0, "POINT") : "0"}'
+														id='R48_91D_DEPOSIT' name='R48_91D_DEPOSIT'
+														style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;'
+														readonly />
+												</td>
+
+												<td id='ROW48'
+													style='padding-left: 20px; font-weight: bold; text-align: right;'>
+													<input class='display-input Show_input' type='text'
+														th:value='${report.R48_1_2M_FD != null ? #numbers.formatDecimal(report.R48_1_2M_FD, 1, "COMMA",0, "POINT") : "0"}'
+														id='R48_1_2M_FD' name='R48_1_2M_FD'
+														style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;'
+														readonly />
+												</td>
+
+												<td id='ROW48'
+													style='padding-left: 20px; font-weight: bold; text-align: right;'>
+													<input class='display-input Show_input' type='text'
+														th:value='${report.R48_4_6M_FD != null ? #numbers.formatDecimal(report.R48_4_6M_FD, 1, "COMMA",0, "POINT") : "0"}'
+														id='R48_4_6M_FD' name='R48_4_6M_FD'
+														style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;'
+														readonly />
+												</td>
+
+												<td id='ROW48'
+													style='padding-left: 20px; font-weight: bold; text-align: right;'>
+													<input class='display-input Show_input' type='text'
+														th:value='${report.R48_7_12M_FD != null ? #numbers.formatDecimal(report.R48_7_12M_FD, 1, "COMMA",0, "POINT") : "0"}'
+														id='R48_7_12M_FD' name='R48_7_12M_FD'
+														style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;'
+														readonly />
+												</td>
+
+												<td id='ROW48'
+													style='padding-left: 20px; font-weight: bold; text-align: right;'>
+													<input class='display-input Show_input' type='text'
+														th:value='${report.R48_13_18M_FD != null ? #numbers.formatDecimal(report.R48_13_18M_FD, 1, "COMMA",0, "POINT") : "0"}'
+														id='R48_13_18M_FD' name='R48_13_18M_FD'
+														style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;'
+														readonly />
+												</td>
+
+												<td id='ROW48'
+													style='padding-left: 20px; font-weight: bold; text-align: right;'>
+													<input class='display-input Show_input' type='text'
+														th:value='${report.R48_19_24M_FD != null ? #numbers.formatDecimal(report.R48_19_24M_FD, 1, "COMMA",0, "POINT") : "0"}'
+														id='R48_19_24M_FD' name='R48_19_24M_FD'
+														style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;'
+														readonly />
+												</td>
+
+												<td id='ROW48'
+													style='padding-left: 20px; font-weight: bold; text-align: right;'>
+													<input class='display-input Show_input' type='text'
+														th:value='${report.R48_OVER24_FD != null ? #numbers.formatDecimal(report.R48_OVER24_FD, 1, "COMMA",0, "POINT") : "0"}'
+														id='R48_OVER24_FD' name='R48_OVER24_FD'
+														style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;'
+														readonly />
+												</td>
+
+												<td id='ROW48'
+													style='padding-left: 20px; font-weight: bold; text-align: right;'
+													class="green-cell">
+													<input class='display-input Show_input  green-cell' type='text'
+														th:value='${report.R48_TOTAL != null ? #numbers.formatDecimal(report.R48_TOTAL, 1, "COMMA",0, "POINT") : "0"}'
+														id='R48_TOTAL' name='R48_TOTAL'
+														style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;'
+														readonly />
+												</td>
+
+												<td id='ROW48'
+													style='padding-left: 20px; font-weight: bold; text-align: right;'>
+													<input class='display-input Show_input' type='text'
+														th:value='${report.R48_NOACC != null ? #numbers.formatDecimal(report.R48_NOACC, 1, "COMMA",0, "POINT") : "0"}'
+														id='R48_NOACC' name='R48_NOACC'
+														style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;'
+														readonly />
+												</td>
+											</tr>
 											<tr>
 												<td id='ROW44' style='font-weight: bold;'>
 													<input class='display-input Show_input' type='text'
@@ -5875,9 +6066,11 @@ PURPOSE		: BRRS REPORT
 								</div>
 								<div style="text-align: center; margin-top: 10px;">
 
+
 									<button id="submitButton" type="button" class="custom-tab-btn Show_input"
-										form="fileupload" th:attr="data-todate=${asondate}" onclick="fileuploads(this);"
-										style="display: none;">Submit</button>
+										form="fileupload" th:attr="data-todate=${asondate},data-type=${type}"
+										onclick="fileuploads(this);" style="display: none;">
+										Submit </button>
 								</div>
 
 							</form>
@@ -5916,7 +6109,6 @@ PURPOSE		: BRRS REPORT
 
 
 
-	<!-- Custom Alert/Result Modal (Matches your existing style) -->
 	<div class="modal fade" id="resultModal">
 		<div class="modal-dialog modal-dialog-centered">
 			<div class="modal-content">
@@ -5929,7 +6121,8 @@ PURPOSE		: BRRS REPORT
 				<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
 					<p id="resultModalBody"></p>
 					<!-- Your custom styled button -->
-					<button type="button" class="custom-tab-btn" onclick="closemodel()" data-dismiss="modal">OK</button>
+					<button type="button" class="custom-tab-btn" onclick="closemodel()"
+						data-bs-dismiss="modal">OK</button>
 				</div>
 			</div>
 		</div>

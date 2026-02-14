@@ -15,7 +15,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Entity
 @Table(name = "BRRS_M_RPD_RESUB_SUMMARY3")
 
-@IdClass(M_RPD_Resub_Summary3_PK.class)
+@IdClass(M_RPD_PK.class)
 public class BRRS_M_RPD_Resub_Summary_Entity3 {
 
     private String R101_PRODUCT;

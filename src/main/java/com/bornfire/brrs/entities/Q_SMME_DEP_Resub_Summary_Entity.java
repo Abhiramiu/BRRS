@@ -559,6 +559,40 @@ public class Q_SMME_DEP_Resub_Summary_Entity {
 	private BigDecimal R47_OVER24_FD;
 	private BigDecimal R47_TOTAL;
 	private BigDecimal R47_NOACC;
+
+	// -------------------- R27 --------------------
+	private String R27_PRODUCT;
+	private BigDecimal R27_CURRENT;
+	private BigDecimal R27_CALL;
+	private BigDecimal R27_SAVINGS;
+	private BigDecimal R27_0_31D_NOTICE;
+	private BigDecimal R27_32_88D_NOTICE;
+	private BigDecimal R27_91D_DEPOSIT;
+	private BigDecimal R27_1_2M_FD;
+	private BigDecimal R27_4_6M_FD;
+	private BigDecimal R27_7_12M_FD;
+	private BigDecimal R27_13_18M_FD;
+	private BigDecimal R27_19_24M_FD;
+	private BigDecimal R27_OVER24_FD;
+	private BigDecimal R27_TOTAL;
+	private BigDecimal R27_NOACC;
+
+	// -------------------- R48 --------------------
+	private String R48_PRODUCT;
+	private BigDecimal R48_CURRENT;
+	private BigDecimal R48_CALL;
+	private BigDecimal R48_SAVINGS;
+	private BigDecimal R48_0_31D_NOTICE;
+	private BigDecimal R48_32_88D_NOTICE;
+	private BigDecimal R48_91D_DEPOSIT;
+	private BigDecimal R48_1_2M_FD;
+	private BigDecimal R48_4_6M_FD;
+	private BigDecimal R48_7_12M_FD;
+	private BigDecimal R48_13_18M_FD;
+	private BigDecimal R48_19_24M_FD;
+	private BigDecimal R48_OVER24_FD;
+	private BigDecimal R48_TOTAL;
+	private BigDecimal R48_NOACC;
 	@Id
 	@Temporal(TemporalType.DATE)
 	@Column(name = "REPORT_DATE")
@@ -4493,6 +4527,246 @@ public class Q_SMME_DEP_Resub_Summary_Entity {
 	public Q_SMME_DEP_Resub_Summary_Entity() {
 		super();
 		// TODO Auto-generated constructor stub
+	}
+
+	public String getR27_PRODUCT() {
+		return R27_PRODUCT;
+	}
+
+	public void setR27_PRODUCT(String r27_PRODUCT) {
+		R27_PRODUCT = r27_PRODUCT;
+	}
+
+	public BigDecimal getR27_CURRENT() {
+		return R27_CURRENT;
+	}
+
+	public void setR27_CURRENT(BigDecimal r27_CURRENT) {
+		R27_CURRENT = r27_CURRENT;
+	}
+
+	public BigDecimal getR27_CALL() {
+		return R27_CALL;
+	}
+
+	public void setR27_CALL(BigDecimal r27_CALL) {
+		R27_CALL = r27_CALL;
+	}
+
+	public BigDecimal getR27_SAVINGS() {
+		return R27_SAVINGS;
+	}
+
+	public void setR27_SAVINGS(BigDecimal r27_SAVINGS) {
+		R27_SAVINGS = r27_SAVINGS;
+	}
+
+	public BigDecimal getR27_0_31D_NOTICE() {
+		return R27_0_31D_NOTICE;
+	}
+
+	public void setR27_0_31D_NOTICE(BigDecimal r27_0_31d_NOTICE) {
+		R27_0_31D_NOTICE = r27_0_31d_NOTICE;
+	}
+
+	public BigDecimal getR27_32_88D_NOTICE() {
+		return R27_32_88D_NOTICE;
+	}
+
+	public void setR27_32_88D_NOTICE(BigDecimal r27_32_88d_NOTICE) {
+		R27_32_88D_NOTICE = r27_32_88d_NOTICE;
+	}
+
+	public BigDecimal getR27_91D_DEPOSIT() {
+		return R27_91D_DEPOSIT;
+	}
+
+	public void setR27_91D_DEPOSIT(BigDecimal r27_91d_DEPOSIT) {
+		R27_91D_DEPOSIT = r27_91d_DEPOSIT;
+	}
+
+	public BigDecimal getR27_1_2M_FD() {
+		return R27_1_2M_FD;
+	}
+
+	public void setR27_1_2M_FD(BigDecimal r27_1_2m_FD) {
+		R27_1_2M_FD = r27_1_2m_FD;
+	}
+
+	public BigDecimal getR27_4_6M_FD() {
+		return R27_4_6M_FD;
+	}
+
+	public void setR27_4_6M_FD(BigDecimal r27_4_6m_FD) {
+		R27_4_6M_FD = r27_4_6m_FD;
+	}
+
+	public BigDecimal getR27_7_12M_FD() {
+		return R27_7_12M_FD;
+	}
+
+	public void setR27_7_12M_FD(BigDecimal r27_7_12m_FD) {
+		R27_7_12M_FD = r27_7_12m_FD;
+	}
+
+	public BigDecimal getR27_13_18M_FD() {
+		return R27_13_18M_FD;
+	}
+
+	public void setR27_13_18M_FD(BigDecimal r27_13_18m_FD) {
+		R27_13_18M_FD = r27_13_18m_FD;
+	}
+
+	public BigDecimal getR27_19_24M_FD() {
+		return R27_19_24M_FD;
+	}
+
+	public void setR27_19_24M_FD(BigDecimal r27_19_24m_FD) {
+		R27_19_24M_FD = r27_19_24m_FD;
+	}
+
+	public BigDecimal getR27_OVER24_FD() {
+		return R27_OVER24_FD;
+	}
+
+	public void setR27_OVER24_FD(BigDecimal r27_OVER24_FD) {
+		R27_OVER24_FD = r27_OVER24_FD;
+	}
+
+	public BigDecimal getR27_TOTAL() {
+		return R27_TOTAL;
+	}
+
+	public void setR27_TOTAL(BigDecimal r27_TOTAL) {
+		R27_TOTAL = r27_TOTAL;
+	}
+
+	public BigDecimal getR27_NOACC() {
+		return R27_NOACC;
+	}
+
+	public void setR27_NOACC(BigDecimal r27_NOACC) {
+		R27_NOACC = r27_NOACC;
+	}
+
+	public String getR48_PRODUCT() {
+		return R48_PRODUCT;
+	}
+
+	public void setR48_PRODUCT(String r48_PRODUCT) {
+		R48_PRODUCT = r48_PRODUCT;
+	}
+
+	public BigDecimal getR48_CURRENT() {
+		return R48_CURRENT;
+	}
+
+	public void setR48_CURRENT(BigDecimal r48_CURRENT) {
+		R48_CURRENT = r48_CURRENT;
+	}
+
+	public BigDecimal getR48_CALL() {
+		return R48_CALL;
+	}
+
+	public void setR48_CALL(BigDecimal r48_CALL) {
+		R48_CALL = r48_CALL;
+	}
+
+	public BigDecimal getR48_SAVINGS() {
+		return R48_SAVINGS;
+	}
+
+	public void setR48_SAVINGS(BigDecimal r48_SAVINGS) {
+		R48_SAVINGS = r48_SAVINGS;
+	}
+
+	public BigDecimal getR48_0_31D_NOTICE() {
+		return R48_0_31D_NOTICE;
+	}
+
+	public void setR48_0_31D_NOTICE(BigDecimal r48_0_31d_NOTICE) {
+		R48_0_31D_NOTICE = r48_0_31d_NOTICE;
+	}
+
+	public BigDecimal getR48_32_88D_NOTICE() {
+		return R48_32_88D_NOTICE;
+	}
+
+	public void setR48_32_88D_NOTICE(BigDecimal r48_32_88d_NOTICE) {
+		R48_32_88D_NOTICE = r48_32_88d_NOTICE;
+	}
+
+	public BigDecimal getR48_91D_DEPOSIT() {
+		return R48_91D_DEPOSIT;
+	}
+
+	public void setR48_91D_DEPOSIT(BigDecimal r48_91d_DEPOSIT) {
+		R48_91D_DEPOSIT = r48_91d_DEPOSIT;
+	}
+
+	public BigDecimal getR48_1_2M_FD() {
+		return R48_1_2M_FD;
+	}
+
+	public void setR48_1_2M_FD(BigDecimal r48_1_2m_FD) {
+		R48_1_2M_FD = r48_1_2m_FD;
+	}
+
+	public BigDecimal getR48_4_6M_FD() {
+		return R48_4_6M_FD;
+	}
+
+	public void setR48_4_6M_FD(BigDecimal r48_4_6m_FD) {
+		R48_4_6M_FD = r48_4_6m_FD;
+	}
+
+	public BigDecimal getR48_7_12M_FD() {
+		return R48_7_12M_FD;
+	}
+
+	public void setR48_7_12M_FD(BigDecimal r48_7_12m_FD) {
+		R48_7_12M_FD = r48_7_12m_FD;
+	}
+
+	public BigDecimal getR48_13_18M_FD() {
+		return R48_13_18M_FD;
+	}
+
+	public void setR48_13_18M_FD(BigDecimal r48_13_18m_FD) {
+		R48_13_18M_FD = r48_13_18m_FD;
+	}
+
+	public BigDecimal getR48_19_24M_FD() {
+		return R48_19_24M_FD;
+	}
+
+	public void setR48_19_24M_FD(BigDecimal r48_19_24m_FD) {
+		R48_19_24M_FD = r48_19_24m_FD;
+	}
+
+	public BigDecimal getR48_OVER24_FD() {
+		return R48_OVER24_FD;
+	}
+
+	public void setR48_OVER24_FD(BigDecimal r48_OVER24_FD) {
+		R48_OVER24_FD = r48_OVER24_FD;
+	}
+
+	public BigDecimal getR48_TOTAL() {
+		return R48_TOTAL;
+	}
+
+	public void setR48_TOTAL(BigDecimal r48_TOTAL) {
+		R48_TOTAL = r48_TOTAL;
+	}
+
+	public BigDecimal getR48_NOACC() {
+		return R48_NOACC;
+	}
+
+	public void setR48_NOACC(BigDecimal r48_NOACC) {
+		R48_NOACC = r48_NOACC;
 	}
 
 }

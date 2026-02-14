@@ -8,7 +8,7 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-public interface BRRS_M_RPD_Archival_Detail_Repo1  extends JpaRepository<BRRS_M_RPD_Archival_Detail_Entity1,Date> {
+public interface BRRS_M_RPD_Archival_Detail_Repo1  extends JpaRepository<BRRS_M_RPD_Archival_Detail_Entity1,M_RPD_PK> {
 
     @Query(value = "select REPORT_DATE, REPORT_VERSION from BRRS_M_RPD_ARCHIVAL_DETAIL1 order by REPORT_VERSION", nativeQuery = true)
     List<Object> getM_RPDarchival();
