@@ -16,7 +16,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Entity
 @Table(name = "BRRS_Q_RLFA2_ARCHIVALTABLE_SUMMARY")
 
-@IdClass(Q_RLFA2_Archival_Summary_PK.class)
+@IdClass(Q_RLFA2_PK.class)
 
 
 
@@ -291,6 +291,31 @@ public class Q_RLFA2_Archival_Summary_Entity {
 	private BigDecimal	r63_orig_amt;
 	private BigDecimal	r63_fore_amt;
 	private BigDecimal	r63_no_of_acc;
+	
+	// R64
+	private String     r64_sche_fore_ass;
+	private BigDecimal r64_orig_amt;
+	private BigDecimal r64_fore_amt;
+	private BigDecimal r64_no_of_acc;
+
+	// R65
+	private String     r65_sche_fore_ass;
+	private BigDecimal r65_orig_amt;
+	private BigDecimal r65_fore_amt;
+	private BigDecimal r65_no_of_acc;
+
+	// R66
+	private String     r66_sche_fore_ass;
+	private BigDecimal r66_orig_amt;
+	private BigDecimal r66_fore_amt;
+	private BigDecimal r66_no_of_acc;
+
+	// R67
+	private String     r67_sche_fore_ass;
+	private BigDecimal r67_orig_amt;
+	private BigDecimal r67_fore_amt;
+	private BigDecimal r67_no_of_acc;
+
 
 	
 	@Temporal(TemporalType.DATE)
@@ -300,10 +325,10 @@ public class Q_RLFA2_Archival_Summary_Entity {
 		
 	private Date	report_date;
 	@Id
-	private String	report_version;
+	private BigDecimal	report_version;
 	
 	@Column(name = "REPORT_RESUBDATE")
-    @Temporal(TemporalType.TIMESTAMP)
+   
     private Date reportResubDate;
 	private String	report_frequency;
 	private String	report_code;
@@ -1607,16 +1632,112 @@ public class Q_RLFA2_Archival_Summary_Entity {
 	public void setR63_no_of_acc(BigDecimal r63_no_of_acc) {
 		this.r63_no_of_acc = r63_no_of_acc;
 	}
+	public String getR64_sche_fore_ass() {
+		return r64_sche_fore_ass;
+	}
+	public void setR64_sche_fore_ass(String r64_sche_fore_ass) {
+		this.r64_sche_fore_ass = r64_sche_fore_ass;
+	}
+	public BigDecimal getR64_orig_amt() {
+		return r64_orig_amt;
+	}
+	public void setR64_orig_amt(BigDecimal r64_orig_amt) {
+		this.r64_orig_amt = r64_orig_amt;
+	}
+	public BigDecimal getR64_fore_amt() {
+		return r64_fore_amt;
+	}
+	public void setR64_fore_amt(BigDecimal r64_fore_amt) {
+		this.r64_fore_amt = r64_fore_amt;
+	}
+	public BigDecimal getR64_no_of_acc() {
+		return r64_no_of_acc;
+	}
+	public void setR64_no_of_acc(BigDecimal r64_no_of_acc) {
+		this.r64_no_of_acc = r64_no_of_acc;
+	}
+	public String getR65_sche_fore_ass() {
+		return r65_sche_fore_ass;
+	}
+	public void setR65_sche_fore_ass(String r65_sche_fore_ass) {
+		this.r65_sche_fore_ass = r65_sche_fore_ass;
+	}
+	public BigDecimal getR65_orig_amt() {
+		return r65_orig_amt;
+	}
+	public void setR65_orig_amt(BigDecimal r65_orig_amt) {
+		this.r65_orig_amt = r65_orig_amt;
+	}
+	public BigDecimal getR65_fore_amt() {
+		return r65_fore_amt;
+	}
+	public void setR65_fore_amt(BigDecimal r65_fore_amt) {
+		this.r65_fore_amt = r65_fore_amt;
+	}
+	public BigDecimal getR65_no_of_acc() {
+		return r65_no_of_acc;
+	}
+	public void setR65_no_of_acc(BigDecimal r65_no_of_acc) {
+		this.r65_no_of_acc = r65_no_of_acc;
+	}
+	public String getR66_sche_fore_ass() {
+		return r66_sche_fore_ass;
+	}
+	public void setR66_sche_fore_ass(String r66_sche_fore_ass) {
+		this.r66_sche_fore_ass = r66_sche_fore_ass;
+	}
+	public BigDecimal getR66_orig_amt() {
+		return r66_orig_amt;
+	}
+	public void setR66_orig_amt(BigDecimal r66_orig_amt) {
+		this.r66_orig_amt = r66_orig_amt;
+	}
+	public BigDecimal getR66_fore_amt() {
+		return r66_fore_amt;
+	}
+	public void setR66_fore_amt(BigDecimal r66_fore_amt) {
+		this.r66_fore_amt = r66_fore_amt;
+	}
+	public BigDecimal getR66_no_of_acc() {
+		return r66_no_of_acc;
+	}
+	public void setR66_no_of_acc(BigDecimal r66_no_of_acc) {
+		this.r66_no_of_acc = r66_no_of_acc;
+	}
+	public String getR67_sche_fore_ass() {
+		return r67_sche_fore_ass;
+	}
+	public void setR67_sche_fore_ass(String r67_sche_fore_ass) {
+		this.r67_sche_fore_ass = r67_sche_fore_ass;
+	}
+	public BigDecimal getR67_orig_amt() {
+		return r67_orig_amt;
+	}
+	public void setR67_orig_amt(BigDecimal r67_orig_amt) {
+		this.r67_orig_amt = r67_orig_amt;
+	}
+	public BigDecimal getR67_fore_amt() {
+		return r67_fore_amt;
+	}
+	public void setR67_fore_amt(BigDecimal r67_fore_amt) {
+		this.r67_fore_amt = r67_fore_amt;
+	}
+	public BigDecimal getR67_no_of_acc() {
+		return r67_no_of_acc;
+	}
+	public void setR67_no_of_acc(BigDecimal r67_no_of_acc) {
+		this.r67_no_of_acc = r67_no_of_acc;
+	}
 	public Date getReport_date() {
 		return report_date;
 	}
 	public void setReport_date(Date report_date) {
 		this.report_date = report_date;
 	}
-	public String getReport_version() {
+	public BigDecimal getReport_version() {
 		return report_version;
 	}
-	public void setReport_version(String report_version) {
+	public void setReport_version(BigDecimal report_version) {
 		this.report_version = report_version;
 	}
 	public Date getReportResubDate() {
@@ -1665,6 +1786,8 @@ public class Q_RLFA2_Archival_Summary_Entity {
 		super();
 		// TODO Auto-generated constructor stub
 	}
+	
+	
 	
 
 	

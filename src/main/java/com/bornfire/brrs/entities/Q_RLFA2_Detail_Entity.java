@@ -285,23 +285,30 @@ public class Q_RLFA2_Detail_Entity {
 	private BigDecimal	r63_fore_amt;
 	private BigDecimal	r63_no_of_acc;
 
-	//RealEstate/Property Development
-		private String	r64_sche_fore_ass;
-		private BigDecimal	r64_orig_amt;
-		private BigDecimal	r64_fore_amt;
-		private BigDecimal	r64_no_of_acc;
-		
-		//Transport
-		private String	r65_sche_fore_ass;
-		private BigDecimal	r65_orig_amt;
-		private BigDecimal	r65_fore_amt;
-		private BigDecimal	r65_no_of_acc;
-		
-		//Others
-		private String	r66_sche_fore_ass;
-		private BigDecimal	r66_orig_amt;
-		private BigDecimal	r66_fore_amt;
-		private BigDecimal	r66_no_of_acc;
+	// R64
+	private String     r64_sche_fore_ass;
+	private BigDecimal r64_orig_amt;
+	private BigDecimal r64_fore_amt;
+	private BigDecimal r64_no_of_acc;
+
+	// R65
+	private String     r65_sche_fore_ass;
+	private BigDecimal r65_orig_amt;
+	private BigDecimal r65_fore_amt;
+	private BigDecimal r65_no_of_acc;
+
+	// R66
+	private String     r66_sche_fore_ass;
+	private BigDecimal r66_orig_amt;
+	private BigDecimal r66_fore_amt;
+	private BigDecimal r66_no_of_acc;
+
+	// R67
+	private String     r67_sche_fore_ass;
+	private BigDecimal r67_orig_amt;
+	private BigDecimal r67_fore_amt;
+	private BigDecimal r67_no_of_acc;
+
 	
 	@Temporal(TemporalType.DATE)
 	@DateTimeFormat(pattern = "dd/MM/yyyy")
@@ -309,14 +316,13 @@ public class Q_RLFA2_Detail_Entity {
 	
 		
 	private Date	report_date;
-	private String	report_version;
+	private BigDecimal	report_version;
 	private String	report_frequency;
 	private String	report_code;
 	private String	report_desc;
 	private String	entity_flg;
 	private String	modify_flg;
 	private String	 del_flg;
-	
 	public String getR10_sche_fore_ass() {
 		return r10_sche_fore_ass;
 	}
@@ -1613,56 +1619,6 @@ public class Q_RLFA2_Detail_Entity {
 	public void setR63_no_of_acc(BigDecimal r63_no_of_acc) {
 		this.r63_no_of_acc = r63_no_of_acc;
 	}
-	public Date getReport_date() {
-		return report_date;
-	}
-	public void setReport_date(Date report_date) {
-		this.report_date = report_date;
-	}
-	public String getReport_version() {
-		return report_version;
-	}
-	public void setReport_version(String report_version) {
-		this.report_version = report_version;
-	}
-	public String getReport_frequency() {
-		return report_frequency;
-	}
-	public void setReport_frequency(String report_frequency) {
-		this.report_frequency = report_frequency;
-	}
-	public String getReport_code() {
-		return report_code;
-	}
-	public void setReport_code(String report_code) {
-		this.report_code = report_code;
-	}
-	public String getReport_desc() {
-		return report_desc;
-	}
-	public void setReport_desc(String report_desc) {
-		this.report_desc = report_desc;
-	}
-	public String getEntity_flg() {
-		return entity_flg;
-	}
-	public void setEntity_flg(String entity_flg) {
-		this.entity_flg = entity_flg;
-	}
-	public String getModify_flg() {
-		return modify_flg;
-	}
-	public void setModify_flg(String modify_flg) {
-		this.modify_flg = modify_flg;
-	}
-	public String getDel_flg() {
-		return del_flg;
-	}
-	public void setDel_flg(String del_flg) {
-		this.del_flg = del_flg;
-	}
-	
-	
 	public String getR64_sche_fore_ass() {
 		return r64_sche_fore_ass;
 	}
@@ -1735,10 +1691,85 @@ public class Q_RLFA2_Detail_Entity {
 	public void setR66_no_of_acc(BigDecimal r66_no_of_acc) {
 		this.r66_no_of_acc = r66_no_of_acc;
 	}
+	public String getR67_sche_fore_ass() {
+		return r67_sche_fore_ass;
+	}
+	public void setR67_sche_fore_ass(String r67_sche_fore_ass) {
+		this.r67_sche_fore_ass = r67_sche_fore_ass;
+	}
+	public BigDecimal getR67_orig_amt() {
+		return r67_orig_amt;
+	}
+	public void setR67_orig_amt(BigDecimal r67_orig_amt) {
+		this.r67_orig_amt = r67_orig_amt;
+	}
+	public BigDecimal getR67_fore_amt() {
+		return r67_fore_amt;
+	}
+	public void setR67_fore_amt(BigDecimal r67_fore_amt) {
+		this.r67_fore_amt = r67_fore_amt;
+	}
+	public BigDecimal getR67_no_of_acc() {
+		return r67_no_of_acc;
+	}
+	public void setR67_no_of_acc(BigDecimal r67_no_of_acc) {
+		this.r67_no_of_acc = r67_no_of_acc;
+	}
+	public Date getReport_date() {
+		return report_date;
+	}
+	public void setReport_date(Date report_date) {
+		this.report_date = report_date;
+	}
+	public BigDecimal getReport_version() {
+		return report_version;
+	}
+	public void setReport_version(BigDecimal report_version) {
+		this.report_version = report_version;
+	}
+	public String getReport_frequency() {
+		return report_frequency;
+	}
+	public void setReport_frequency(String report_frequency) {
+		this.report_frequency = report_frequency;
+	}
+	public String getReport_code() {
+		return report_code;
+	}
+	public void setReport_code(String report_code) {
+		this.report_code = report_code;
+	}
+	public String getReport_desc() {
+		return report_desc;
+	}
+	public void setReport_desc(String report_desc) {
+		this.report_desc = report_desc;
+	}
+	public String getEntity_flg() {
+		return entity_flg;
+	}
+	public void setEntity_flg(String entity_flg) {
+		this.entity_flg = entity_flg;
+	}
+	public String getModify_flg() {
+		return modify_flg;
+	}
+	public void setModify_flg(String modify_flg) {
+		this.modify_flg = modify_flg;
+	}
+	public String getDel_flg() {
+		return del_flg;
+	}
+	public void setDel_flg(String del_flg) {
+		this.del_flg = del_flg;
+	}
 	public Q_RLFA2_Detail_Entity() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
+	
+	
+	
 	
 	
 

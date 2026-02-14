@@ -3688,6 +3688,67 @@ public class BRRS_M_EPR_ReportService {
 						    cellE.setCellStyle(textStyle);
 						}
 
+						// Column F --> Nominal Amount
+						cellF = row.createCell(5);
+						if (record.getR15_gpfsr_nom_amt1() != null) {
+						    cellF.setCellValue(record.getR15_gpfsr_nom_amt1().doubleValue());
+						    cellF.setCellStyle(numberStyle);
+						} else {
+						    cellF.setCellValue("");
+						    cellF.setCellStyle(textStyle);
+						}
+
+						// Column G --> Positions Attracting 4 Percent Specific Risk
+						cellG = row.createCell(6);
+						if (record.getR15_gpfsr_pos_att4_per_spe_ris() != null) {
+						    cellG.setCellValue(record.getR15_gpfsr_pos_att4_per_spe_ris().doubleValue());
+						    cellG.setCellStyle(numberStyle);
+						} else {
+						    cellG.setCellValue("");
+						    cellG.setCellStyle(textStyle);
+						}
+
+						// Column H --> Charge
+						cellH = row.createCell(7);
+						if (record.getR15_gpfsr_chrg1() != null) {
+						    cellH.setCellValue(record.getR15_gpfsr_chrg1().doubleValue());
+						    cellH.setCellStyle(numberStyle);
+						} else {
+						    cellH.setCellValue("");
+						    cellH.setCellStyle(textStyle);
+						}
+
+						// Column I --> Nominal Amount
+						cellI = row.createCell(8);
+						if (record.getR15_gpfsr_nom_amt2() != null) {
+						    cellI.setCellValue(record.getR15_gpfsr_nom_amt2().doubleValue());
+						    cellI.setCellStyle(numberStyle);
+						} else {
+						    cellI.setCellValue("");
+						    cellI.setCellStyle(textStyle);
+						}
+
+						// Column J --> Positions Attracting 2 Percent Specific Risk
+						cellJ = row.createCell(9);
+						if (record.getR15_gpfsr_pos_att2_per_spe_ris() != null) {
+						    cellJ.setCellValue(record.getR15_gpfsr_pos_att2_per_spe_ris().doubleValue());
+						    cellJ.setCellStyle(numberStyle);
+						} else {
+						    cellJ.setCellValue("");
+						    cellJ.setCellStyle(textStyle);
+						}
+
+						// Column K --> Charge
+						cellK = row.createCell(10);
+						if (record.getR15_gpfsr_chrg2() != null) {
+						    cellK.setCellValue(record.getR15_gpfsr_chrg2().doubleValue());
+						    cellK.setCellStyle(numberStyle);
+						} else {
+						    cellK.setCellValue("");
+						    cellK.setCellStyle(textStyle);
+						}
+						
+						
 						// row15
 						// Column M -->Net Positions for General Market Risk
 						cellM = row.createCell(12);
@@ -3783,6 +3844,65 @@ public class BRRS_M_EPR_ReportService {
 						    cellE.setCellStyle(textStyle);
 						}
 						
+						// Column F --> Nominal Amount
+						cellF = row.createCell(5);
+						if (record.getR16_gpfsr_nom_amt1() != null) {
+						    cellF.setCellValue(record.getR16_gpfsr_nom_amt1().doubleValue());
+						    cellF.setCellStyle(numberStyle);
+						} else {
+						    cellF.setCellValue("");
+						    cellF.setCellStyle(textStyle);
+						}
+
+						// Column G --> Positions Attracting 4 Percent Specific Risk
+						cellG = row.createCell(6);
+						if (record.getR16_gpfsr_pos_att4_per_spe_ris() != null) {
+						    cellG.setCellValue(record.getR16_gpfsr_pos_att4_per_spe_ris().doubleValue());
+						    cellG.setCellStyle(numberStyle);
+						} else {
+						    cellG.setCellValue("");
+						    cellG.setCellStyle(textStyle);
+						}
+
+						// Column H --> Charge
+						cellH = row.createCell(7);
+						if (record.getR16_gpfsr_chrg1() != null) {
+						    cellH.setCellValue(record.getR16_gpfsr_chrg1().doubleValue());
+						    cellH.setCellStyle(numberStyle);
+						} else {
+						    cellH.setCellValue("");
+						    cellH.setCellStyle(textStyle);
+						}
+
+						// Column I --> Nominal Amount
+						cellI = row.createCell(8);
+						if (record.getR16_gpfsr_nom_amt2() != null) {
+						    cellI.setCellValue(record.getR16_gpfsr_nom_amt2().doubleValue());
+						    cellI.setCellStyle(numberStyle);
+						} else {
+						    cellI.setCellValue("");
+						    cellI.setCellStyle(textStyle);
+						}
+
+						// Column J --> Positions Attracting 2 Percent Specific Risk
+						cellJ = row.createCell(9);
+						if (record.getR16_gpfsr_pos_att2_per_spe_ris() != null) {
+						    cellJ.setCellValue(record.getR16_gpfsr_pos_att2_per_spe_ris().doubleValue());
+						    cellJ.setCellStyle(numberStyle);
+						} else {
+						    cellJ.setCellValue("");
+						    cellJ.setCellStyle(textStyle);
+						}
+
+						// Column K --> Charge
+						cellK = row.createCell(10);
+						if (record.getR16_gpfsr_chrg2() != null) {
+						    cellK.setCellValue(record.getR16_gpfsr_chrg2().doubleValue());
+						    cellK.setCellStyle(numberStyle);
+						} else {
+						    cellK.setCellValue("");
+						    cellK.setCellStyle(textStyle);
+						}
 
 						// row16
 						// Column M -->Net Positions for General Market Risk
@@ -5760,6 +5880,67 @@ public class BRRS_M_EPR_ReportService {
 						    cellE.setCellValue("");
 						    cellE.setCellStyle(textStyle);
 						}
+						
+						
+						// Column F --> Nominal Amount
+						cellF = row.createCell(5);
+						if (record.getR15_gpfsr_nom_amt1() != null) {
+						    cellF.setCellValue(record.getR15_gpfsr_nom_amt1().doubleValue());
+						    cellF.setCellStyle(numberStyle);
+						} else {
+						    cellF.setCellValue("");
+						    cellF.setCellStyle(textStyle);
+						}
+
+						// Column G --> Positions Attracting 4 Percent Specific Risk
+						cellG = row.createCell(6);
+						if (record.getR15_gpfsr_pos_att4_per_spe_ris() != null) {
+						    cellG.setCellValue(record.getR15_gpfsr_pos_att4_per_spe_ris().doubleValue());
+						    cellG.setCellStyle(numberStyle);
+						} else {
+						    cellG.setCellValue("");
+						    cellG.setCellStyle(textStyle);
+						}
+
+						// Column H --> Charge
+						cellH = row.createCell(7);
+						if (record.getR15_gpfsr_chrg1() != null) {
+						    cellH.setCellValue(record.getR15_gpfsr_chrg1().doubleValue());
+						    cellH.setCellStyle(numberStyle);
+						} else {
+						    cellH.setCellValue("");
+						    cellH.setCellStyle(textStyle);
+						}
+
+						// Column I --> Nominal Amount
+						cellI = row.createCell(8);
+						if (record.getR15_gpfsr_nom_amt2() != null) {
+						    cellI.setCellValue(record.getR15_gpfsr_nom_amt2().doubleValue());
+						    cellI.setCellStyle(numberStyle);
+						} else {
+						    cellI.setCellValue("");
+						    cellI.setCellStyle(textStyle);
+						}
+
+						// Column J --> Positions Attracting 2 Percent Specific Risk
+						cellJ = row.createCell(9);
+						if (record.getR15_gpfsr_pos_att2_per_spe_ris() != null) {
+						    cellJ.setCellValue(record.getR15_gpfsr_pos_att2_per_spe_ris().doubleValue());
+						    cellJ.setCellStyle(numberStyle);
+						} else {
+						    cellJ.setCellValue("");
+						    cellJ.setCellStyle(textStyle);
+						}
+
+						// Column K --> Charge
+						cellK = row.createCell(10);
+						if (record.getR15_gpfsr_chrg2() != null) {
+						    cellK.setCellValue(record.getR15_gpfsr_chrg2().doubleValue());
+						    cellK.setCellStyle(numberStyle);
+						} else {
+						    cellK.setCellValue("");
+						    cellK.setCellStyle(textStyle);
+						}
 
 						// row15
 						// Column M -->Net Positions for General Market Risk
@@ -5854,6 +6035,66 @@ public class BRRS_M_EPR_ReportService {
 						} else {
 						    cellE.setCellValue("");
 						    cellE.setCellStyle(textStyle);
+						}
+						
+						// Column F --> Nominal Amount
+						cellF = row.createCell(5);
+						if (record.getR16_gpfsr_nom_amt1() != null) {
+						    cellF.setCellValue(record.getR16_gpfsr_nom_amt1().doubleValue());
+						    cellF.setCellStyle(numberStyle);
+						} else {
+						    cellF.setCellValue("");
+						    cellF.setCellStyle(textStyle);
+						}
+
+						// Column G --> Positions Attracting 4 Percent Specific Risk
+						cellG = row.createCell(6);
+						if (record.getR16_gpfsr_pos_att4_per_spe_ris() != null) {
+						    cellG.setCellValue(record.getR16_gpfsr_pos_att4_per_spe_ris().doubleValue());
+						    cellG.setCellStyle(numberStyle);
+						} else {
+						    cellG.setCellValue("");
+						    cellG.setCellStyle(textStyle);
+						}
+
+						// Column H --> Charge
+						cellH = row.createCell(7);
+						if (record.getR16_gpfsr_chrg1() != null) {
+						    cellH.setCellValue(record.getR16_gpfsr_chrg1().doubleValue());
+						    cellH.setCellStyle(numberStyle);
+						} else {
+						    cellH.setCellValue("");
+						    cellH.setCellStyle(textStyle);
+						}
+
+						// Column I --> Nominal Amount
+						cellI = row.createCell(8);
+						if (record.getR16_gpfsr_nom_amt2() != null) {
+						    cellI.setCellValue(record.getR16_gpfsr_nom_amt2().doubleValue());
+						    cellI.setCellStyle(numberStyle);
+						} else {
+						    cellI.setCellValue("");
+						    cellI.setCellStyle(textStyle);
+						}
+
+						// Column J --> Positions Attracting 2 Percent Specific Risk
+						cellJ = row.createCell(9);
+						if (record.getR16_gpfsr_pos_att2_per_spe_ris() != null) {
+						    cellJ.setCellValue(record.getR16_gpfsr_pos_att2_per_spe_ris().doubleValue());
+						    cellJ.setCellStyle(numberStyle);
+						} else {
+						    cellJ.setCellValue("");
+						    cellJ.setCellStyle(textStyle);
+						}
+
+						// Column K --> Charge
+						cellK = row.createCell(10);
+						if (record.getR16_gpfsr_chrg2() != null) {
+						    cellK.setCellValue(record.getR16_gpfsr_chrg2().doubleValue());
+						    cellK.setCellStyle(numberStyle);
+						} else {
+						    cellK.setCellValue("");
+						    cellK.setCellStyle(textStyle);
 						}
 						
 
@@ -9346,6 +9587,66 @@ public class BRRS_M_EPR_ReportService {
 							    cellE.setCellValue("");
 							    cellE.setCellStyle(textStyle);
 							}
+							
+							// Column F --> Nominal Amount
+							cellF = row.createCell(5);
+							if (record.getR15_gpfsr_nom_amt1() != null) {
+							    cellF.setCellValue(record.getR15_gpfsr_nom_amt1().doubleValue());
+							    cellF.setCellStyle(numberStyle);
+							} else {
+							    cellF.setCellValue("");
+							    cellF.setCellStyle(textStyle);
+							}
+
+							// Column G --> Positions Attracting 4 Percent Specific Risk
+							cellG = row.createCell(6);
+							if (record.getR15_gpfsr_pos_att4_per_spe_ris() != null) {
+							    cellG.setCellValue(record.getR15_gpfsr_pos_att4_per_spe_ris().doubleValue());
+							    cellG.setCellStyle(numberStyle);
+							} else {
+							    cellG.setCellValue("");
+							    cellG.setCellStyle(textStyle);
+							}
+
+							// Column H --> Charge
+							cellH = row.createCell(7);
+							if (record.getR15_gpfsr_chrg1() != null) {
+							    cellH.setCellValue(record.getR15_gpfsr_chrg1().doubleValue());
+							    cellH.setCellStyle(numberStyle);
+							} else {
+							    cellH.setCellValue("");
+							    cellH.setCellStyle(textStyle);
+							}
+
+							// Column I --> Nominal Amount
+							cellI = row.createCell(8);
+							if (record.getR15_gpfsr_nom_amt2() != null) {
+							    cellI.setCellValue(record.getR15_gpfsr_nom_amt2().doubleValue());
+							    cellI.setCellStyle(numberStyle);
+							} else {
+							    cellI.setCellValue("");
+							    cellI.setCellStyle(textStyle);
+							}
+
+							// Column J --> Positions Attracting 2 Percent Specific Risk
+							cellJ = row.createCell(9);
+							if (record.getR15_gpfsr_pos_att2_per_spe_ris() != null) {
+							    cellJ.setCellValue(record.getR15_gpfsr_pos_att2_per_spe_ris().doubleValue());
+							    cellJ.setCellStyle(numberStyle);
+							} else {
+							    cellJ.setCellValue("");
+							    cellJ.setCellStyle(textStyle);
+							}
+
+							// Column K --> Charge
+							cellK = row.createCell(10);
+							if (record.getR15_gpfsr_chrg2() != null) {
+							    cellK.setCellValue(record.getR15_gpfsr_chrg2().doubleValue());
+							    cellK.setCellStyle(numberStyle);
+							} else {
+							    cellK.setCellValue("");
+							    cellK.setCellStyle(textStyle);
+							}
 
 							// row15
 							// Column M -->Net Positions for General Market Risk
@@ -9440,6 +9741,66 @@ public class BRRS_M_EPR_ReportService {
 							} else {
 							    cellE.setCellValue("");
 							    cellE.setCellStyle(textStyle);
+							}
+							
+							// Column F --> Nominal Amount
+							cellF = row.createCell(5);
+							if (record.getR16_gpfsr_nom_amt1() != null) {
+							    cellF.setCellValue(record.getR16_gpfsr_nom_amt1().doubleValue());
+							    cellF.setCellStyle(numberStyle);
+							} else {
+							    cellF.setCellValue("");
+							    cellF.setCellStyle(textStyle);
+							}
+
+							// Column G --> Positions Attracting 4 Percent Specific Risk
+							cellG = row.createCell(6);
+							if (record.getR16_gpfsr_pos_att4_per_spe_ris() != null) {
+							    cellG.setCellValue(record.getR16_gpfsr_pos_att4_per_spe_ris().doubleValue());
+							    cellG.setCellStyle(numberStyle);
+							} else {
+							    cellG.setCellValue("");
+							    cellG.setCellStyle(textStyle);
+							}
+
+							// Column H --> Charge
+							cellH = row.createCell(7);
+							if (record.getR16_gpfsr_chrg1() != null) {
+							    cellH.setCellValue(record.getR16_gpfsr_chrg1().doubleValue());
+							    cellH.setCellStyle(numberStyle);
+							} else {
+							    cellH.setCellValue("");
+							    cellH.setCellStyle(textStyle);
+							}
+
+							// Column I --> Nominal Amount
+							cellI = row.createCell(8);
+							if (record.getR16_gpfsr_nom_amt2() != null) {
+							    cellI.setCellValue(record.getR16_gpfsr_nom_amt2().doubleValue());
+							    cellI.setCellStyle(numberStyle);
+							} else {
+							    cellI.setCellValue("");
+							    cellI.setCellStyle(textStyle);
+							}
+
+							// Column J --> Positions Attracting 2 Percent Specific Risk
+							cellJ = row.createCell(9);
+							if (record.getR16_gpfsr_pos_att2_per_spe_ris() != null) {
+							    cellJ.setCellValue(record.getR16_gpfsr_pos_att2_per_spe_ris().doubleValue());
+							    cellJ.setCellStyle(numberStyle);
+							} else {
+							    cellJ.setCellValue("");
+							    cellJ.setCellStyle(textStyle);
+							}
+
+							// Column K --> Charge
+							cellK = row.createCell(10);
+							if (record.getR16_gpfsr_chrg2() != null) {
+							    cellK.setCellValue(record.getR16_gpfsr_chrg2().doubleValue());
+							    cellK.setCellStyle(numberStyle);
+							} else {
+							    cellK.setCellValue("");
+							    cellK.setCellStyle(textStyle);
 							}
 							
 

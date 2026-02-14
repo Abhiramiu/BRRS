@@ -3,8 +3,10 @@ package com.bornfire.brrs.entities;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -12,8 +14,13 @@ import javax.persistence.TemporalType;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
-@Table(name = "BRRS_Q_RLFA2_SUMMARYTABLE")
-public class Q_RLFA2_Summary_Entity {
+@Table(name = "BRRS_Q_RLFA2_RESUB_SUMMARYTABLE")
+
+@IdClass(Q_RLFA2_PK.class)
+
+
+
+public class Q_RLFA2_RESUB_Summary_Entity {
 
 	private String	r10_sche_fore_ass;
 	private BigDecimal	r10_orig_amt;
@@ -309,6 +316,7 @@ public class Q_RLFA2_Summary_Entity {
 	private BigDecimal r67_fore_amt;
 	private BigDecimal r67_no_of_acc;
 
+
 	
 	@Temporal(TemporalType.DATE)
 	@DateTimeFormat(pattern = "dd/MM/yyyy")
@@ -316,7 +324,12 @@ public class Q_RLFA2_Summary_Entity {
 	
 		
 	private Date	report_date;
+	@Id
 	private BigDecimal	report_version;
+	
+	@Column(name = "REPORT_RESUBDATE")
+   
+    private Date reportResubDate;
 	private String	report_frequency;
 	private String	report_code;
 	private String	report_desc;
@@ -1727,6 +1740,12 @@ public class Q_RLFA2_Summary_Entity {
 	public void setReport_version(BigDecimal report_version) {
 		this.report_version = report_version;
 	}
+	public Date getReportResubDate() {
+		return reportResubDate;
+	}
+	public void setReportResubDate(Date reportResubDate) {
+		this.reportResubDate = reportResubDate;
+	}
 	public String getReport_frequency() {
 		return report_frequency;
 	}
@@ -1763,12 +1782,15 @@ public class Q_RLFA2_Summary_Entity {
 	public void setDel_flg(String del_flg) {
 		this.del_flg = del_flg;
 	}
-	public Q_RLFA2_Summary_Entity() {
+	public Q_RLFA2_RESUB_Summary_Entity() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 	
 	
+	
+	
+
 	
 
 }

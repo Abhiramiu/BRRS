@@ -3,16 +3,16 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
 
-public class Q_RLFA2_Archival_Summary_PK implements Serializable {
+public class Q_RLFA2_PK implements Serializable {
 
     private Date report_date;
     private String report_version;
 
     // default constructor
-    public Q_RLFA2_Archival_Summary_PK() {}
+    public Q_RLFA2_PK() {}
 
     // parameterized constructor
-    public Q_RLFA2_Archival_Summary_PK(Date report_date, String report_version) {
+    public Q_RLFA2_PK(Date report_date, String report_version) {
         this.report_date = report_date;
         this.report_version = report_version;
     }
@@ -21,8 +21,8 @@ public class Q_RLFA2_Archival_Summary_PK implements Serializable {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Q_RLFA2_Archival_Summary_PK)) return false;
-        Q_RLFA2_Archival_Summary_PK that = (Q_RLFA2_Archival_Summary_PK) o;
+        if (!(o instanceof Q_RLFA2_PK)) return false;
+        Q_RLFA2_PK that = (Q_RLFA2_PK) o;
         return Objects.equals(report_date, that.report_date) &&
                Objects.equals(report_version, that.report_version);
     }

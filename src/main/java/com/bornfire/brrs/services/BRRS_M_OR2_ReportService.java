@@ -12624,25 +12624,28 @@ public byte[] getM_OR2Excel(String filename, String reportId, String fromdate, S
 				cell6.setCellStyle(textStyle);
 			}
 
-			/*
-			 * //row28 // Column F cell7 = row.createCell(5); if
-			 * (record.getR28_commercial_banking() != null) {
-			 * cell7.setCellValue(record.getR28_commercial_banking().doubleValue());
-			 * cell7.setCellStyle(numberStyle); } else { cell7.setCellValue("");
-			 * cell7.setCellStyle(textStyle); }
-			 * 
-			 * //row28 // Column G cell8 = row.createCell(6); if
-			 * (record.getR28_payments_and_settlements() != null) {
-			 * cell8.setCellValue(record.getR28_payments_and_settlements().doubleValue());
-			 * cell8.setCellStyle(numberStyle); } else { cell8.setCellValue("");
-			 * cell8.setCellStyle(textStyle); }
-			 * 
-			 * //row28 // Column H cell9 = row.createCell(7); if
-			 * (record.getR28_agency_services() != null) {
-			 * cell9.setCellValue(record.getR28_agency_services().doubleValue());
-			 * cell9.setCellStyle(numberStyle); } else { cell9.setCellValue("");
-			 * cell9.setCellStyle(textStyle); }
-			 */
+			
+			  //row28 // Column F 
+			cell7 = row.createCell(5); if
+			  (record.getR28_commercial_banking() != null) {
+			  cell7.setCellValue(record.getR28_commercial_banking().doubleValue());
+			  cell7.setCellStyle(numberStyle); } else { cell7.setCellValue("");
+			  cell7.setCellStyle(textStyle); }
+			  
+			  //row28 // Column G 
+			cell8 = row.createCell(6); if
+			  (record.getR28_payments_and_settlements() != null) {
+			  cell8.setCellValue(record.getR28_payments_and_settlements().doubleValue());
+			  cell8.setCellStyle(numberStyle); } else { cell8.setCellValue("");
+			  cell8.setCellStyle(textStyle); }
+			  
+			  //row28 // Column H 
+			cell9 = row.createCell(7); if
+			  (record.getR28_agency_services() != null) {
+			  cell9.setCellValue(record.getR28_agency_services().doubleValue());
+			  cell9.setCellStyle(numberStyle); } else { cell9.setCellValue("");
+			  cell9.setCellStyle(textStyle); }
+			 
 
 			//row28
 			// Column I
@@ -12700,38 +12703,38 @@ public byte[] getM_OR2Excel(String filename, String reportId, String fromdate, S
 				cell6.setCellStyle(textStyle);
 			}
 
-//			//row29
-//			// Column F
-//			cell7 = row.createCell(5);
-//			if (record.getR29_commercial_banking() != null) {
-//				cell7.setCellValue(record.getR29_commercial_banking().doubleValue());
-//				cell7.setCellStyle(numberStyle);
-//			} else {
-//				cell7.setCellValue("");
-//				cell7.setCellStyle(textStyle);
-//			}
-		//
-//			//row29
-//			// Column G
-//			cell8 = row.createCell(6);
-//			if (record.getR29_payments_and_settlements() != null) {
-//				cell8.setCellValue(record.getR29_payments_and_settlements().doubleValue());
-//				cell8.setCellStyle(numberStyle);
-//			} else {
-//				cell8.setCellValue("");
-//				cell8.setCellStyle(textStyle);
-//			}
-		//
-//			//row29
-//			// Column H
-//			cell9 = row.createCell(7);
-//			if (record.getR29_agency_services() != null) {
-//				cell9.setCellValue(record.getR29_agency_services().doubleValue());
-//				cell9.setCellStyle(numberStyle);
-//			} else {
-//				cell9.setCellValue("");
-//				cell9.setCellStyle(textStyle);
-//			}
+			//row29
+			// Column F
+			cell7 = row.createCell(5);
+			if (record.getR29_commercial_banking() != null) {
+				cell7.setCellValue(record.getR29_commercial_banking().doubleValue());
+				cell7.setCellStyle(numberStyle);
+			} else {
+				cell7.setCellValue("");
+				cell7.setCellStyle(textStyle);
+			}
+		
+			//row29
+			// Column G
+			cell8 = row.createCell(6);
+			if (record.getR29_payments_and_settlements() != null) {
+				cell8.setCellValue(record.getR29_payments_and_settlements().doubleValue());
+				cell8.setCellStyle(numberStyle);
+			} else {
+				cell8.setCellValue("");
+				cell8.setCellStyle(textStyle);
+			}
+		
+			//row29
+			// Column H
+			cell9 = row.createCell(7);
+			if (record.getR29_agency_services() != null) {
+				cell9.setCellValue(record.getR29_agency_services().doubleValue());
+				cell9.setCellStyle(numberStyle);
+			} else {
+				cell9.setCellValue("");
+				cell9.setCellStyle(textStyle);
+			}
 
 			//row29
 			// Column I
@@ -12789,38 +12792,38 @@ public byte[] getM_OR2Excel(String filename, String reportId, String fromdate, S
 				cell6.setCellStyle(textStyle);
 			}
 
-//			//row30
-//			// Column F
-//			cell7 = row.createCell(5);
-//			if (record.getR30_commercial_banking() != null) {
-//				cell7.setCellValue(record.getR30_commercial_banking().doubleValue());
-//				cell7.setCellStyle(numberStyle);
-//			} else {
-//				cell7.setCellValue("");
-//				cell7.setCellStyle(textStyle);
-//			}
-		//
-//			//row30
-//			// Column G
-//			cell8 = row.createCell(6);
-//			if (record.getR30_payments_and_settlements() != null) {
-//				cell8.setCellValue(record.getR30_payments_and_settlements().doubleValue());
-//				cell8.setCellStyle(numberStyle);
-//			} else {
-//				cell8.setCellValue("");
-//				cell8.setCellStyle(textStyle);
-//			}
-		//
-//			//row30
-//			// Column H
-//			cell9 = row.createCell(7);
-//			if (record.getR30_agency_services() != null) {
-//				cell9.setCellValue(record.getR30_agency_services().doubleValue());
-//				cell9.setCellStyle(numberStyle);
-//			} else {
-//				cell9.setCellValue("");
-//				cell9.setCellStyle(textStyle);
-//			}
+			//row30
+			// Column F
+			cell7 = row.createCell(5);
+			if (record.getR30_commercial_banking() != null) {
+				cell7.setCellValue(record.getR30_commercial_banking().doubleValue());
+				cell7.setCellStyle(numberStyle);
+			} else {
+				cell7.setCellValue("");
+				cell7.setCellStyle(textStyle);
+			}
+		
+			//row30
+			// Column G
+			cell8 = row.createCell(6);
+			if (record.getR30_payments_and_settlements() != null) {
+				cell8.setCellValue(record.getR30_payments_and_settlements().doubleValue());
+				cell8.setCellStyle(numberStyle);
+			} else {
+				cell8.setCellValue("");
+				cell8.setCellStyle(textStyle);
+			}
+		
+			//row30
+			// Column H
+			cell9 = row.createCell(7);
+			if (record.getR30_agency_services() != null) {
+				cell9.setCellValue(record.getR30_agency_services().doubleValue());
+				cell9.setCellStyle(numberStyle);
+			} else {
+				cell9.setCellValue("");
+				cell9.setCellStyle(textStyle);
+			}
 
 			//row30
 			// Column I
@@ -12878,38 +12881,38 @@ public byte[] getM_OR2Excel(String filename, String reportId, String fromdate, S
 				cell6.setCellStyle(textStyle);
 			}
 
-//			//row31
-//			// Column F
-//			cell7 = row.createCell(5);
-//			if (record.getR31_commercial_banking() != null) {
-//				cell7.setCellValue(record.getR31_commercial_banking().doubleValue());
-//				cell7.setCellStyle(numberStyle);
-//			} else {
-//				cell7.setCellValue("");
-//				cell7.setCellStyle(textStyle);
-//			}
-		//
-//			//row31
-//			// Column G
-//			cell8 = row.createCell(6);
-//			if (record.getR31_payments_and_settlements() != null) {
-//				cell8.setCellValue(record.getR31_payments_and_settlements().doubleValue());
-//				cell8.setCellStyle(numberStyle);
-//			} else {
-//				cell8.setCellValue("");
-//				cell8.setCellStyle(textStyle);
-//			}
-		//
-//			//row31
-//			// Column H
-//			cell9 = row.createCell(7);
-//			if (record.getR31_agency_services() != null) {
-//				cell9.setCellValue(record.getR31_agency_services().doubleValue());
-//				cell9.setCellStyle(numberStyle);
-//			} else {
-//				cell9.setCellValue("");
-//				cell9.setCellStyle(textStyle);
-//			}
+			//row31
+			// Column F
+			cell7 = row.createCell(5);
+			if (record.getR31_commercial_banking() != null) {
+				cell7.setCellValue(record.getR31_commercial_banking().doubleValue());
+				cell7.setCellStyle(numberStyle);
+			} else {
+				cell7.setCellValue("");
+				cell7.setCellStyle(textStyle);
+			}
+		
+			//row31
+			// Column G
+			cell8 = row.createCell(6);
+			if (record.getR31_payments_and_settlements() != null) {
+				cell8.setCellValue(record.getR31_payments_and_settlements().doubleValue());
+				cell8.setCellStyle(numberStyle);
+			} else {
+				cell8.setCellValue("");
+				cell8.setCellStyle(textStyle);
+			}
+		
+			//row31
+			// Column H
+			cell9 = row.createCell(7);
+			if (record.getR31_agency_services() != null) {
+				cell9.setCellValue(record.getR31_agency_services().doubleValue());
+				cell9.setCellStyle(numberStyle);
+			} else {
+				cell9.setCellValue("");
+				cell9.setCellStyle(textStyle);
+			}
 
 			//row31
 			// Column I
@@ -12967,38 +12970,38 @@ public byte[] getM_OR2Excel(String filename, String reportId, String fromdate, S
 				cell6.setCellStyle(textStyle);
 			}
 
-//			//row32
-//			// Column F
-//			cell7 = row.createCell(5);
-//			if (record.getR32_commercial_banking() != null) {
-//				cell7.setCellValue(record.getR32_commercial_banking().doubleValue());
-//				cell7.setCellStyle(numberStyle);
-//			} else {
-//				cell7.setCellValue("");
-//				cell7.setCellStyle(textStyle);
-//			}
-		//
-//			//row32
-//			// Column G
-//			cell8 = row.createCell(6);
-//			if (record.getR32_payments_and_settlements() != null) {
-//				cell8.setCellValue(record.getR32_payments_and_settlements().doubleValue());
-//				cell8.setCellStyle(numberStyle);
-//			} else {
-//				cell8.setCellValue("");
-//				cell8.setCellStyle(textStyle);
-//			}
-		//
-//			//row32
-//			// Column H
-//			cell9 = row.createCell(7);
-//			if (record.getR32_agency_services() != null) {
-//				cell9.setCellValue(record.getR32_agency_services().doubleValue());
-//				cell9.setCellStyle(numberStyle);
-//			} else {
-//				cell9.setCellValue("");
-//				cell9.setCellStyle(textStyle);
-//			}
+			//row32
+			// Column F
+			cell7 = row.createCell(5);
+			if (record.getR32_commercial_banking() != null) {
+				cell7.setCellValue(record.getR32_commercial_banking().doubleValue());
+				cell7.setCellStyle(numberStyle);
+			} else {
+				cell7.setCellValue("");
+				cell7.setCellStyle(textStyle);
+			}
+		
+			//row32
+			// Column G
+			cell8 = row.createCell(6);
+			if (record.getR32_payments_and_settlements() != null) {
+				cell8.setCellValue(record.getR32_payments_and_settlements().doubleValue());
+				cell8.setCellStyle(numberStyle);
+			} else {
+				cell8.setCellValue("");
+				cell8.setCellStyle(textStyle);
+			}
+		
+			//row32
+			// Column H
+			cell9 = row.createCell(7);
+			if (record.getR32_agency_services() != null) {
+				cell9.setCellValue(record.getR32_agency_services().doubleValue());
+				cell9.setCellStyle(numberStyle);
+			} else {
+				cell9.setCellValue("");
+				cell9.setCellStyle(textStyle);
+			}
 
 			//row32
 			// Column I
@@ -13056,38 +13059,38 @@ public byte[] getM_OR2Excel(String filename, String reportId, String fromdate, S
 				cell6.setCellStyle(textStyle);
 			}
 
-//			//row33
-//			// Column F
-//			cell7 = row.createCell(5);
-//			if (record.getR33_commercial_banking() != null) {
-//				cell7.setCellValue(record.getR33_commercial_banking().doubleValue());
-//				cell7.setCellStyle(numberStyle);
-//			} else {
-//				cell7.setCellValue("");
-//				cell7.setCellStyle(textStyle);
-//			}
-		//
-//			//row33
-//			// Column G
-//			cell8 = row.createCell(6);
-//			if (record.getR33_payments_and_settlements() != null) {
-//				cell8.setCellValue(record.getR33_payments_and_settlements().doubleValue());
-//				cell8.setCellStyle(numberStyle);
-//			} else {
-//				cell8.setCellValue("");
-//				cell8.setCellStyle(textStyle);
-//			}
-		//
-//			//row33
-//			// Column H
-//			cell9 = row.createCell(7);
-//			if (record.getR33_agency_services() != null) {
-//				cell9.setCellValue(record.getR33_agency_services().doubleValue());
-//				cell9.setCellStyle(numberStyle);
-//			} else {
-//				cell9.setCellValue("");
-//				cell9.setCellStyle(textStyle);
-//			}
+			//row33
+			// Column F
+			cell7 = row.createCell(5);
+			if (record.getR33_commercial_banking() != null) {
+				cell7.setCellValue(record.getR33_commercial_banking().doubleValue());
+				cell7.setCellStyle(numberStyle);
+			} else {
+				cell7.setCellValue("");
+				cell7.setCellStyle(textStyle);
+			}
+		
+			//row33
+			// Column G
+			cell8 = row.createCell(6);
+			if (record.getR33_payments_and_settlements() != null) {
+				cell8.setCellValue(record.getR33_payments_and_settlements().doubleValue());
+				cell8.setCellStyle(numberStyle);
+			} else {
+				cell8.setCellValue("");
+				cell8.setCellStyle(textStyle);
+			}
+		
+			//row33
+			// Column H
+			cell9 = row.createCell(7);
+			if (record.getR33_agency_services() != null) {
+				cell9.setCellValue(record.getR33_agency_services().doubleValue());
+				cell9.setCellStyle(numberStyle);
+			} else {
+				cell9.setCellValue("");
+				cell9.setCellStyle(textStyle);
+			}
 
 			//row33
 			// Column I
@@ -15931,25 +15934,38 @@ public byte[] getM_OR2Excel(String filename, String reportId, String fromdate, S
 			cell6.setCellStyle(textStyle);
 		}
 
-		/*
-		 * //row28 // Column F cell7 = row.createCell(5); if
-		 * (record.getR28_commercial_banking() != null) {
-		 * cell7.setCellValue(record.getR28_commercial_banking().doubleValue());
-		 * cell7.setCellStyle(numberStyle); } else { cell7.setCellValue("");
-		 * cell7.setCellStyle(textStyle); }
-		 * 
-		 * //row28 // Column G cell8 = row.createCell(6); if
-		 * (record.getR28_payments_and_settlements() != null) {
-		 * cell8.setCellValue(record.getR28_payments_and_settlements().doubleValue());
-		 * cell8.setCellStyle(numberStyle); } else { cell8.setCellValue("");
-		 * cell8.setCellStyle(textStyle); }
-		 * 
-		 * //row28 // Column H cell9 = row.createCell(7); if
-		 * (record.getR28_agency_services() != null) {
-		 * cell9.setCellValue(record.getR28_agency_services().doubleValue());
-		 * cell9.setCellStyle(numberStyle); } else { cell9.setCellValue("");
-		 * cell9.setCellStyle(textStyle); }
-		 */
+		// Column G
+		 cell7 = row.createCell(6);
+		if (record.getR28_commercial_banking() != null) {
+			cell7.setCellValue(record.getR28_commercial_banking().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+		
+	
+		// Column H
+		 cell8 = row.createCell(7);
+		if (record.getR28_payments_and_settlements() != null) {
+			cell8.setCellValue(record.getR28_payments_and_settlements().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+		
+		
+		// Column I
+		 cell9 = row.createCell(8);
+		if (record.getR28_agency_services() != null) {
+			cell9.setCellValue(record.getR28_agency_services().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+		
 
 		//row28
 		// Column I
@@ -16007,38 +16023,38 @@ public byte[] getM_OR2Excel(String filename, String reportId, String fromdate, S
 			cell6.setCellStyle(textStyle);
 		}
 
-//		//row29
-//		// Column F
-//		cell7 = row.createCell(5);
-//		if (record.getR29_commercial_banking() != null) {
-//			cell7.setCellValue(record.getR29_commercial_banking().doubleValue());
-//			cell7.setCellStyle(numberStyle);
-//		} else {
-//			cell7.setCellValue("");
-//			cell7.setCellStyle(textStyle);
-//		}
-	//
-//		//row29
-//		// Column G
-//		cell8 = row.createCell(6);
-//		if (record.getR29_payments_and_settlements() != null) {
-//			cell8.setCellValue(record.getR29_payments_and_settlements().doubleValue());
-//			cell8.setCellStyle(numberStyle);
-//		} else {
-//			cell8.setCellValue("");
-//			cell8.setCellStyle(textStyle);
-//		}
-	//
-//		//row29
-//		// Column H
-//		cell9 = row.createCell(7);
-//		if (record.getR29_agency_services() != null) {
-//			cell9.setCellValue(record.getR29_agency_services().doubleValue());
-//			cell9.setCellStyle(numberStyle);
-//		} else {
-//			cell9.setCellValue("");
-//			cell9.setCellStyle(textStyle);
-//		}
+		//row29
+		// Column F
+		cell7 = row.createCell(5);
+		if (record.getR29_commercial_banking() != null) {
+			cell7.setCellValue(record.getR29_commercial_banking().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+	
+		//row29
+		// Column G
+		cell8 = row.createCell(6);
+		if (record.getR29_payments_and_settlements() != null) {
+			cell8.setCellValue(record.getR29_payments_and_settlements().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+	
+		//row29
+		// Column H
+		cell9 = row.createCell(7);
+		if (record.getR29_agency_services() != null) {
+			cell9.setCellValue(record.getR29_agency_services().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
 
 		//row29
 		// Column I
@@ -16096,38 +16112,38 @@ public byte[] getM_OR2Excel(String filename, String reportId, String fromdate, S
 			cell6.setCellStyle(textStyle);
 		}
 
-//		//row30
-//		// Column F
-//		cell7 = row.createCell(5);
-//		if (record.getR30_commercial_banking() != null) {
-//			cell7.setCellValue(record.getR30_commercial_banking().doubleValue());
-//			cell7.setCellStyle(numberStyle);
-//		} else {
-//			cell7.setCellValue("");
-//			cell7.setCellStyle(textStyle);
-//		}
-	//
-//		//row30
-//		// Column G
-//		cell8 = row.createCell(6);
-//		if (record.getR30_payments_and_settlements() != null) {
-//			cell8.setCellValue(record.getR30_payments_and_settlements().doubleValue());
-//			cell8.setCellStyle(numberStyle);
-//		} else {
-//			cell8.setCellValue("");
-//			cell8.setCellStyle(textStyle);
-//		}
-	//
-//		//row30
-//		// Column H
-//		cell9 = row.createCell(7);
-//		if (record.getR30_agency_services() != null) {
-//			cell9.setCellValue(record.getR30_agency_services().doubleValue());
-//			cell9.setCellStyle(numberStyle);
-//		} else {
-//			cell9.setCellValue("");
-//			cell9.setCellStyle(textStyle);
-//		}
+		//row30
+		// Column F
+		cell7 = row.createCell(5);
+		if (record.getR30_commercial_banking() != null) {
+			cell7.setCellValue(record.getR30_commercial_banking().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+	
+		//row30
+		// Column G
+		cell8 = row.createCell(6);
+		if (record.getR30_payments_and_settlements() != null) {
+			cell8.setCellValue(record.getR30_payments_and_settlements().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+	
+		//row30
+		// Column H
+		cell9 = row.createCell(7);
+		if (record.getR30_agency_services() != null) {
+			cell9.setCellValue(record.getR30_agency_services().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
 
 		//row30
 		// Column I
@@ -16185,38 +16201,38 @@ public byte[] getM_OR2Excel(String filename, String reportId, String fromdate, S
 			cell6.setCellStyle(textStyle);
 		}
 
-//		//row31
-//		// Column F
-//		cell7 = row.createCell(5);
-//		if (record.getR31_commercial_banking() != null) {
-//			cell7.setCellValue(record.getR31_commercial_banking().doubleValue());
-//			cell7.setCellStyle(numberStyle);
-//		} else {
-//			cell7.setCellValue("");
-//			cell7.setCellStyle(textStyle);
-//		}
-	//
-//		//row31
-//		// Column G
-//		cell8 = row.createCell(6);
-//		if (record.getR31_payments_and_settlements() != null) {
-//			cell8.setCellValue(record.getR31_payments_and_settlements().doubleValue());
-//			cell8.setCellStyle(numberStyle);
-//		} else {
-//			cell8.setCellValue("");
-//			cell8.setCellStyle(textStyle);
-//		}
-	//
-//		//row31
-//		// Column H
-//		cell9 = row.createCell(7);
-//		if (record.getR31_agency_services() != null) {
-//			cell9.setCellValue(record.getR31_agency_services().doubleValue());
-//			cell9.setCellStyle(numberStyle);
-//		} else {
-//			cell9.setCellValue("");
-//			cell9.setCellStyle(textStyle);
-//		}
+		//row31
+		// Column F
+		cell7 = row.createCell(5);
+		if (record.getR31_commercial_banking() != null) {
+			cell7.setCellValue(record.getR31_commercial_banking().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+	
+		//row31
+		// Column G
+		cell8 = row.createCell(6);
+		if (record.getR31_payments_and_settlements() != null) {
+			cell8.setCellValue(record.getR31_payments_and_settlements().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+	
+		//row31
+		// Column H
+		cell9 = row.createCell(7);
+		if (record.getR31_agency_services() != null) {
+			cell9.setCellValue(record.getR31_agency_services().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
 
 		//row31
 		// Column I
@@ -16274,38 +16290,38 @@ public byte[] getM_OR2Excel(String filename, String reportId, String fromdate, S
 			cell6.setCellStyle(textStyle);
 		}
 
-//		//row32
-//		// Column F
-//		cell7 = row.createCell(5);
-//		if (record.getR32_commercial_banking() != null) {
-//			cell7.setCellValue(record.getR32_commercial_banking().doubleValue());
-//			cell7.setCellStyle(numberStyle);
-//		} else {
-//			cell7.setCellValue("");
-//			cell7.setCellStyle(textStyle);
-//		}
-	//
-//		//row32
-//		// Column G
-//		cell8 = row.createCell(6);
-//		if (record.getR32_payments_and_settlements() != null) {
-//			cell8.setCellValue(record.getR32_payments_and_settlements().doubleValue());
-//			cell8.setCellStyle(numberStyle);
-//		} else {
-//			cell8.setCellValue("");
-//			cell8.setCellStyle(textStyle);
-//		}
-	//
-//		//row32
-//		// Column H
-//		cell9 = row.createCell(7);
-//		if (record.getR32_agency_services() != null) {
-//			cell9.setCellValue(record.getR32_agency_services().doubleValue());
-//			cell9.setCellStyle(numberStyle);
-//		} else {
-//			cell9.setCellValue("");
-//			cell9.setCellStyle(textStyle);
-//		}
+		//row32
+		// Column F
+		cell7 = row.createCell(5);
+		if (record.getR32_commercial_banking() != null) {
+			cell7.setCellValue(record.getR32_commercial_banking().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+	
+		//row32
+		// Column G
+		cell8 = row.createCell(6);
+		if (record.getR32_payments_and_settlements() != null) {
+			cell8.setCellValue(record.getR32_payments_and_settlements().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+	
+		//row32
+		// Column H
+		cell9 = row.createCell(7);
+		if (record.getR32_agency_services() != null) {
+			cell9.setCellValue(record.getR32_agency_services().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
 
 		//row32
 		// Column I
@@ -16363,38 +16379,38 @@ public byte[] getM_OR2Excel(String filename, String reportId, String fromdate, S
 			cell6.setCellStyle(textStyle);
 		}
 
-//		//row33
-//		// Column F
-//		cell7 = row.createCell(5);
-//		if (record.getR33_commercial_banking() != null) {
-//			cell7.setCellValue(record.getR33_commercial_banking().doubleValue());
-//			cell7.setCellStyle(numberStyle);
-//		} else {
-//			cell7.setCellValue("");
-//			cell7.setCellStyle(textStyle);
-//		}
-	//
-//		//row33
-//		// Column G
-//		cell8 = row.createCell(6);
-//		if (record.getR33_payments_and_settlements() != null) {
-//			cell8.setCellValue(record.getR33_payments_and_settlements().doubleValue());
-//			cell8.setCellStyle(numberStyle);
-//		} else {
-//			cell8.setCellValue("");
-//			cell8.setCellStyle(textStyle);
-//		}
-	//
-//		//row33
-//		// Column H
-//		cell9 = row.createCell(7);
-//		if (record.getR33_agency_services() != null) {
-//			cell9.setCellValue(record.getR33_agency_services().doubleValue());
-//			cell9.setCellStyle(numberStyle);
-//		} else {
-//			cell9.setCellValue("");
-//			cell9.setCellStyle(textStyle);
-//		}
+		//row33
+		// Column F
+		cell7 = row.createCell(5);
+		if (record.getR33_commercial_banking() != null) {
+			cell7.setCellValue(record.getR33_commercial_banking().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+	
+		//row33
+		// Column G
+		cell8 = row.createCell(6);
+		if (record.getR33_payments_and_settlements() != null) {
+			cell8.setCellValue(record.getR33_payments_and_settlements().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+	
+		//row33
+		// Column H
+		cell9 = row.createCell(7);
+		if (record.getR33_agency_services() != null) {
+			cell9.setCellValue(record.getR33_agency_services().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
 
 		//row33
 		// Column I
@@ -19231,25 +19247,38 @@ public byte[] getM_OR2Excel(String filename, String reportId, String fromdate, S
 			cell6.setCellStyle(textStyle);
 		}
 
-		/*
-		 * //row28 // Column F cell7 = row.createCell(5); if
-		 * (record.getR28_commercial_banking() != null) {
-		 * cell7.setCellValue(record.getR28_commercial_banking().doubleValue());
-		 * cell7.setCellStyle(numberStyle); } else { cell7.setCellValue("");
-		 * cell7.setCellStyle(textStyle); }
-		 * 
-		 * //row28 // Column G cell8 = row.createCell(6); if
-		 * (record.getR28_payments_and_settlements() != null) {
-		 * cell8.setCellValue(record.getR28_payments_and_settlements().doubleValue());
-		 * cell8.setCellStyle(numberStyle); } else { cell8.setCellValue("");
-		 * cell8.setCellStyle(textStyle); }
-		 * 
-		 * //row28 // Column H cell9 = row.createCell(7); if
-		 * (record.getR28_agency_services() != null) {
-		 * cell9.setCellValue(record.getR28_agency_services().doubleValue());
-		 * cell9.setCellStyle(numberStyle); } else { cell9.setCellValue("");
-		 * cell9.setCellStyle(textStyle); }
-		 */
+		// Column G
+		 cell7 = row.createCell(6);
+		if (record.getR28_commercial_banking() != null) {
+			cell7.setCellValue(record.getR28_commercial_banking().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+		
+	
+		// Column H
+		 cell8 = row.createCell(7);
+		if (record.getR28_payments_and_settlements() != null) {
+			cell8.setCellValue(record.getR28_payments_and_settlements().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+		
+		
+		// Column I
+		 cell9 = row.createCell(8);
+		if (record.getR28_agency_services() != null) {
+			cell9.setCellValue(record.getR28_agency_services().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
+		
 
 		//row28
 		// Column I
@@ -19307,38 +19336,38 @@ public byte[] getM_OR2Excel(String filename, String reportId, String fromdate, S
 			cell6.setCellStyle(textStyle);
 		}
 
-//		//row29
-//		// Column F
-//		cell7 = row.createCell(5);
-//		if (record.getR29_commercial_banking() != null) {
-//			cell7.setCellValue(record.getR29_commercial_banking().doubleValue());
-//			cell7.setCellStyle(numberStyle);
-//		} else {
-//			cell7.setCellValue("");
-//			cell7.setCellStyle(textStyle);
-//		}
-	//
-//		//row29
-//		// Column G
-//		cell8 = row.createCell(6);
-//		if (record.getR29_payments_and_settlements() != null) {
-//			cell8.setCellValue(record.getR29_payments_and_settlements().doubleValue());
-//			cell8.setCellStyle(numberStyle);
-//		} else {
-//			cell8.setCellValue("");
-//			cell8.setCellStyle(textStyle);
-//		}
-	//
-//		//row29
-//		// Column H
-//		cell9 = row.createCell(7);
-//		if (record.getR29_agency_services() != null) {
-//			cell9.setCellValue(record.getR29_agency_services().doubleValue());
-//			cell9.setCellStyle(numberStyle);
-//		} else {
-//			cell9.setCellValue("");
-//			cell9.setCellStyle(textStyle);
-//		}
+		//row29
+		// Column F
+		cell7 = row.createCell(5);
+		if (record.getR29_commercial_banking() != null) {
+			cell7.setCellValue(record.getR29_commercial_banking().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+	
+		//row29
+		// Column G
+		cell8 = row.createCell(6);
+		if (record.getR29_payments_and_settlements() != null) {
+			cell8.setCellValue(record.getR29_payments_and_settlements().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+	
+		//row29
+		// Column H
+		cell9 = row.createCell(7);
+		if (record.getR29_agency_services() != null) {
+			cell9.setCellValue(record.getR29_agency_services().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
 
 		//row29
 		// Column I
@@ -19396,38 +19425,38 @@ public byte[] getM_OR2Excel(String filename, String reportId, String fromdate, S
 			cell6.setCellStyle(textStyle);
 		}
 
-//		//row30
-//		// Column F
-//		cell7 = row.createCell(5);
-//		if (record.getR30_commercial_banking() != null) {
-//			cell7.setCellValue(record.getR30_commercial_banking().doubleValue());
-//			cell7.setCellStyle(numberStyle);
-//		} else {
-//			cell7.setCellValue("");
-//			cell7.setCellStyle(textStyle);
-//		}
-	//
-//		//row30
-//		// Column G
-//		cell8 = row.createCell(6);
-//		if (record.getR30_payments_and_settlements() != null) {
-//			cell8.setCellValue(record.getR30_payments_and_settlements().doubleValue());
-//			cell8.setCellStyle(numberStyle);
-//		} else {
-//			cell8.setCellValue("");
-//			cell8.setCellStyle(textStyle);
-//		}
-	//
-//		//row30
-//		// Column H
-//		cell9 = row.createCell(7);
-//		if (record.getR30_agency_services() != null) {
-//			cell9.setCellValue(record.getR30_agency_services().doubleValue());
-//			cell9.setCellStyle(numberStyle);
-//		} else {
-//			cell9.setCellValue("");
-//			cell9.setCellStyle(textStyle);
-//		}
+		//row30
+		// Column F
+		cell7 = row.createCell(5);
+		if (record.getR30_commercial_banking() != null) {
+			cell7.setCellValue(record.getR30_commercial_banking().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+	
+		//row30
+		// Column G
+		cell8 = row.createCell(6);
+		if (record.getR30_payments_and_settlements() != null) {
+			cell8.setCellValue(record.getR30_payments_and_settlements().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+	
+		//row30
+		// Column H
+		cell9 = row.createCell(7);
+		if (record.getR30_agency_services() != null) {
+			cell9.setCellValue(record.getR30_agency_services().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
 
 		//row30
 		// Column I
@@ -19485,38 +19514,38 @@ public byte[] getM_OR2Excel(String filename, String reportId, String fromdate, S
 			cell6.setCellStyle(textStyle);
 		}
 
-//		//row31
-//		// Column F
-//		cell7 = row.createCell(5);
-//		if (record.getR31_commercial_banking() != null) {
-//			cell7.setCellValue(record.getR31_commercial_banking().doubleValue());
-//			cell7.setCellStyle(numberStyle);
-//		} else {
-//			cell7.setCellValue("");
-//			cell7.setCellStyle(textStyle);
-//		}
-	//
-//		//row31
-//		// Column G
-//		cell8 = row.createCell(6);
-//		if (record.getR31_payments_and_settlements() != null) {
-//			cell8.setCellValue(record.getR31_payments_and_settlements().doubleValue());
-//			cell8.setCellStyle(numberStyle);
-//		} else {
-//			cell8.setCellValue("");
-//			cell8.setCellStyle(textStyle);
-//		}
-	//
-//		//row31
-//		// Column H
-//		cell9 = row.createCell(7);
-//		if (record.getR31_agency_services() != null) {
-//			cell9.setCellValue(record.getR31_agency_services().doubleValue());
-//			cell9.setCellStyle(numberStyle);
-//		} else {
-//			cell9.setCellValue("");
-//			cell9.setCellStyle(textStyle);
-//		}
+		//row31
+		// Column F
+		cell7 = row.createCell(5);
+		if (record.getR31_commercial_banking() != null) {
+			cell7.setCellValue(record.getR31_commercial_banking().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+	
+		//row31
+		// Column G
+		cell8 = row.createCell(6);
+		if (record.getR31_payments_and_settlements() != null) {
+			cell8.setCellValue(record.getR31_payments_and_settlements().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+	
+		//row31
+		// Column H
+		cell9 = row.createCell(7);
+		if (record.getR31_agency_services() != null) {
+			cell9.setCellValue(record.getR31_agency_services().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
 
 		//row31
 		// Column I
@@ -19574,38 +19603,38 @@ public byte[] getM_OR2Excel(String filename, String reportId, String fromdate, S
 			cell6.setCellStyle(textStyle);
 		}
 
-//		//row32
-//		// Column F
-//		cell7 = row.createCell(5);
-//		if (record.getR32_commercial_banking() != null) {
-//			cell7.setCellValue(record.getR32_commercial_banking().doubleValue());
-//			cell7.setCellStyle(numberStyle);
-//		} else {
-//			cell7.setCellValue("");
-//			cell7.setCellStyle(textStyle);
-//		}
-	//
-//		//row32
-//		// Column G
-//		cell8 = row.createCell(6);
-//		if (record.getR32_payments_and_settlements() != null) {
-//			cell8.setCellValue(record.getR32_payments_and_settlements().doubleValue());
-//			cell8.setCellStyle(numberStyle);
-//		} else {
-//			cell8.setCellValue("");
-//			cell8.setCellStyle(textStyle);
-//		}
-	//
-//		//row32
-//		// Column H
-//		cell9 = row.createCell(7);
-//		if (record.getR32_agency_services() != null) {
-//			cell9.setCellValue(record.getR32_agency_services().doubleValue());
-//			cell9.setCellStyle(numberStyle);
-//		} else {
-//			cell9.setCellValue("");
-//			cell9.setCellStyle(textStyle);
-//		}
+		//row32
+		// Column F
+		cell7 = row.createCell(5);
+		if (record.getR32_commercial_banking() != null) {
+			cell7.setCellValue(record.getR32_commercial_banking().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+	
+		//row32
+		// Column G
+		cell8 = row.createCell(6);
+		if (record.getR32_payments_and_settlements() != null) {
+			cell8.setCellValue(record.getR32_payments_and_settlements().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+	
+		//row32
+		// Column H
+		cell9 = row.createCell(7);
+		if (record.getR32_agency_services() != null) {
+			cell9.setCellValue(record.getR32_agency_services().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
 
 		//row32
 		// Column I
@@ -19663,38 +19692,38 @@ public byte[] getM_OR2Excel(String filename, String reportId, String fromdate, S
 			cell6.setCellStyle(textStyle);
 		}
 
-//		//row33
-//		// Column F
-//		cell7 = row.createCell(5);
-//		if (record.getR33_commercial_banking() != null) {
-//			cell7.setCellValue(record.getR33_commercial_banking().doubleValue());
-//			cell7.setCellStyle(numberStyle);
-//		} else {
-//			cell7.setCellValue("");
-//			cell7.setCellStyle(textStyle);
-//		}
-	//
-//		//row33
-//		// Column G
-//		cell8 = row.createCell(6);
-//		if (record.getR33_payments_and_settlements() != null) {
-//			cell8.setCellValue(record.getR33_payments_and_settlements().doubleValue());
-//			cell8.setCellStyle(numberStyle);
-//		} else {
-//			cell8.setCellValue("");
-//			cell8.setCellStyle(textStyle);
-//		}
-	//
-//		//row33
-//		// Column H
-//		cell9 = row.createCell(7);
-//		if (record.getR33_agency_services() != null) {
-//			cell9.setCellValue(record.getR33_agency_services().doubleValue());
-//			cell9.setCellStyle(numberStyle);
-//		} else {
-//			cell9.setCellValue("");
-//			cell9.setCellStyle(textStyle);
-//		}
+		//row33
+		// Column F
+		cell7 = row.createCell(5);
+		if (record.getR33_commercial_banking() != null) {
+			cell7.setCellValue(record.getR33_commercial_banking().doubleValue());
+			cell7.setCellStyle(numberStyle);
+		} else {
+			cell7.setCellValue("");
+			cell7.setCellStyle(textStyle);
+		}
+	
+		//row33
+		// Column G
+		cell8 = row.createCell(6);
+		if (record.getR33_payments_and_settlements() != null) {
+			cell8.setCellValue(record.getR33_payments_and_settlements().doubleValue());
+			cell8.setCellStyle(numberStyle);
+		} else {
+			cell8.setCellValue("");
+			cell8.setCellStyle(textStyle);
+		}
+	
+		//row33
+		// Column H
+		cell9 = row.createCell(7);
+		if (record.getR33_agency_services() != null) {
+			cell9.setCellValue(record.getR33_agency_services().doubleValue());
+			cell9.setCellStyle(numberStyle);
+		} else {
+			cell9.setCellValue("");
+			cell9.setCellStyle(textStyle);
+		}
 
 		//row33
 		// Column I
