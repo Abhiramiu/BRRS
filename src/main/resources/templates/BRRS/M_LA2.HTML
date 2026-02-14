@@ -4,325 +4,330 @@ CREATED BY	: ishwarya
 CREATED ON	: 25.09.2025
 PURPOSE		: BRRS MANUAL REPORT
 -->
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
 
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<!-- CSS -->
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- CSS -->
 
 
-	<link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}">
-	<link rel="stylesheet" type="text/css" th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}">
-	<link rel="stylesheet" type="text/css" th:href="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.css}">
-	<link rel="stylesheet" type="text/css" th:href="@{/webjars/datatables/1.10.19/css/jquery.dataTables.min.css}">
-	<link rel="stylesheet" th:href="@{/css/CustomButton.css}" />
-	<link rel="icon" th:href="@{/favicon.ico}" type="image/x-icon" />
-	<!-- JavaScript -->
-	<!-- jQuery core (required first) -->
-	<!-- ✅ Your manually placed jQuery validation
+<link rel="stylesheet" type="text/css"
+	th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}">
+<link rel="stylesheet" type="text/css"
+	th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}">
+<link rel="stylesheet" type="text/css"
+	th:href="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.css}">
+<link rel="stylesheet" type="text/css"
+	th:href="@{/webjars/datatables/1.10.19/css/jquery.dataTables.min.css}">
+<link rel="stylesheet" th:href="@{/css/CustomButton.css}" />
+<link rel="icon" th:href="@{/favicon.ico}" type="image/x-icon" />
+<!-- JavaScript -->
+<!-- jQuery core (required first) -->
+<!-- ✅ Your manually placed jQuery validation
 	<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
 	 <script th:src="/jquery/jquery.validate.min.js"></script>
 	 -->
-	<!-- jQuery (required first) -->
-	<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
-	<!-- <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script> -->
-	<!-- ✅ jQuery Validation -->
-	<script src="/webjars/jquery-validation/1.19.0/jquery.validate.min.js"
-		th:src="@{/webjars/jquery-validation/1.19.0/jquery.validate.min.js}"></script>
-	<!-- Bootstrap + Others -->
-	<script th:src="@{/webjars/popper.js/1.14.7/umd/popper.min.js}"></script>
-	<script th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
-	<script th:src="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.js}"></script>
-	<script th:src="@{/webjars/jquery-form/4.2.2/jquery.form.min.js}"></script>
-	<script th:src="@{/webjars/datatables/1.10.19/js/jquery.dataTables.min.js}"></script>
-	<script th:src="@{/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js}"></script>
-	<style>
-		.btns {
-			float: right;
-			margin: 5px;
-		}
+<!-- jQuery (required first) -->
+<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+<!-- <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script> -->
+<!-- ✅ jQuery Validation -->
+<script src="/webjars/jquery-validation/1.19.0/jquery.validate.min.js"
+	th:src="@{/webjars/jquery-validation/1.19.0/jquery.validate.min.js}"></script>
+<!-- Bootstrap + Others -->
+<script th:src="@{/webjars/popper.js/1.14.7/umd/popper.min.js}"></script>
+<script th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
+<script th:src="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.js}"></script>
+<script th:src="@{/webjars/jquery-form/4.2.2/jquery.form.min.js}"></script>
+<script
+	th:src="@{/webjars/datatables/1.10.19/js/jquery.dataTables.min.js}"></script>
+<script
+	th:src="@{/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js}"></script>
+<style>
+.btns {
+	float: right;
+	margin: 5px;
+}
 
-		.col-sm-5 {
-			padding-bottom: 15px;
-		}
+.col-sm-5 {
+	padding-bottom: 15px;
+}
 
-		.list-body {
-			padding: 0px;
-		}
+.list-body {
+	padding: 0px;
+}
 
-		.error {
-			color: red;
-			padding-left: 10px;
-		}
+.error {
+	color: red;
+	padding-left: 10px;
+}
 
-		.formline {
-			padding-bottom: 15px;
-		}
+.formline {
+	padding-bottom: 15px;
+}
 
-		.btn-primary {
-			background-color: #E77400;
-			border-color: #0c0c0c;
-		}
+.btn-primary {
+	background-color: #E77400;
+	border-color: #0c0c0c;
+}
 
-		.btn-primary:not (:disabled):not (.disabled).active,
-		.btn-primary:not (:disabled):not (.disabled):active,
-		.show>.btn-primary.dropdown-toggle {
-			color: #fff;
-			background-color: #cc000000;
-			border-color: #161617;
-		}
+.btn-primary:not (:disabled ):not (.disabled ).active, .btn-primary:not 
+	(:disabled ):not (.disabled ):active, .show>.btn-primary.dropdown-toggle
+	{
+	color: #fff;
+	background-color: #cc000000;
+	border-color: #161617;
+}
 
-		#finusertb {
-			width: 460px;
-		}
+#finusertb {
+	width: 460px;
+}
 
-		.dataTables_wrapper .dataTables_paginate .paginate_button {
-			padding: 0px;
-		}
-	</style>
-	<style>
-		div span {
-			font-weight: bold;
-			color: white !important;
-		}
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+	padding: 0px;
+}
+</style>
+<style>
+div span {
+	font-weight: bold;
+	color: white !important;
+}
 
-		.card {
-			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-			border-radius: 8px;
-		}
+.card {
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	border-radius: 8px;
+}
 
-		.card-header h5 {
-			font-size: 22px;
-			color: #fff;
-			font-weight: 600;
-		}
+.card-header h5 {
+	font-size: 22px;
+	color: #fff;
+	font-weight: 600;
+}
 
-		.nav-tabs .nav-link {
-			font-weight: 500;
-			border: 1px solid #dee2e6;
-			border-bottom: none;
-			border-radius: 4px 4px 0 0;
-			background-color: #f1f1f1;
-			margin-right: 5px;
-		}
+.nav-tabs .nav-link {
+	font-weight: 500;
+	border: 1px solid #dee2e6;
+	border-bottom: none;
+	border-radius: 4px 4px 0 0;
+	background-color: #f1f1f1;
+	margin-right: 5px;
+}
 
-		.nav-tabs .nav-link.active {
-			background-color: #ffffff;
-			border-color: #dee2e6 #dee2e6 #ffffff;
-		}
+.nav-tabs .nav-link.active {
+	background-color: #ffffff;
+	border-color: #dee2e6 #dee2e6 #ffffff;
+}
 
-		.table-responsive {
-			border: 1px solid #dee2e6;
-			border-radius: 4px;
-		}
+.table-responsive {
+	border: 1px solid #dee2e6;
+	border-radius: 4px;
+}
 
-		.table-hover tbody tr:hover {
-			background-color: #f3f6f9;
-		}
+.table-hover tbody tr:hover {
+	background-color: #f3f6f9;
+}
 
-		thead th {
-			position: sticky;
-			top: 0;
-			background-color: #e9ecf0;
-			z-index: 1;
-		}
+thead th {
+	position: sticky;
+	top: 0;
+	background-color: #e9ecf0;
+	z-index: 1;
+}
 
-		.table td {
-			background-color: #FFFFFF;
-		}
+.table td {
+	background-color: #FFFFFF;
+}
 
-		.card-footer {
-			padding: 10px;
-			border-top: 1px solid #ccc;
-		}
+.card-footer {
+	padding: 10px;
+	border-top: 1px solid #ccc;
+}
 
-		.btn-xs {
-			padding: 4px 12px;
-			font-size: 14px;
-			border-radius: 4px;
-		}
+.btn-xs {
+	padding: 4px 12px;
+	font-size: 14px;
+	border-radius: 4px;
+}
 
-		#BRRSvalidation th,
-		#usertable td {
-			vertical-align: middle;
-			text-align: left;
-			font-size: 16px;
-			font-family: Arial;
-		}
+#BRRSvalidation th, #usertable td {
+	vertical-align: middle;
+	text-align: left;
+	font-size: 16px;
+	font-family: Arial;
+}
 
-		.fa-edit:hover {
-			color: #28a745;
-			transform: scale(1.1);
-		}
+.fa-edit:hover {
+	color: #28a745;
+	transform: scale(1.1);
+}
 
-		td {
-			border: 1px solid rgb(0, 164, 166);
-			overflow: hidden;
-			white-space: nowrap;
-			text-overflow: ellipsis;
-		}
-	</style>
-	<style>
-		.form-group {
-			position: relative;
-			margin-bottom: 1.5rem;
-		}
+td {
+	border: 1px solid rgb(0, 164, 166);
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+</style>
+<style>
+.form-group {
+	position: relative;
+	margin-bottom: 1.5rem;
+}
 
-		.form-control {
-			width: 100%;
-			border: 2px solid #ccc;
-			border-radius: 8px;
-			font-size: 1rem;
-			outline: none;
-			background: transparent;
-			transition: border-color 0.3s ease, padding-top 0.3s ease;
-		}
+.form-control {
+	width: 100%;
+	border: 2px solid #ccc;
+	border-radius: 8px;
+	font-size: 1rem;
+	outline: none;
+	background: transparent;
+	transition: border-color 0.3s ease, padding-top 0.3s ease;
+}
 
-		.error {
-			color: red;
-			padding-top: 15px;
-		}
+.error {
+	color: red;
+	padding-top: 15px;
+}
 
-		.form-control:focus {
-			border-color: #007bff;
-		}
+.form-control:focus {
+	border-color: #007bff;
+}
 
-		.form-legend {
-			position: absolute;
-			top: 50%;
-			left: 15px;
-			transform: translateY(-50%);
-			font-size: 1rem;
-			color: #aaa;
-			background: white;
-			padding: 0 5px;
-			pointer-events: none;
-			transition: 0.3s ease;
-		}
+.form-legend {
+	position: absolute;
+	top: 50%;
+	left: 15px;
+	transform: translateY(-50%);
+	font-size: 1rem;
+	color: #aaa;
+	background: white;
+	padding: 0 5px;
+	pointer-events: none;
+	transition: 0.3s ease;
+}
 
-		/* When input or select is focused or has a value, move the label up */
-		.form-control:focus~.form-legend,
-		.form-control:not (:placeholder-shown)~.form-legend {
-			top: -8px;
-			font-size: 1rem;
-			color: #007bff;
-		}
+/* When input or select is focused or has a value, move the label up */
+.form-control:focus ~.form-legend, .form-control:not (:placeholder-shown
+	)
+	 ~.form-legend {
+	top: -8px;
+	font-size: 1rem;
+	color: #007bff;
+}
 
-		/* Hover effect when the input/select is focused */
-		.form-control:focus:hover~.form-legend {
-			color: #0056b3;
-			/* Darker shade of blue on hover */
-		}
+/* Hover effect when the input/select is focused */
+.form-control:focus:hover ~.form-legend {
+	color: #0056b3;
+	/* Darker shade of blue on hover */
+}
 
-		/* Ensure the label returns to the normal color after focus or hover is removed */
-		.form-control:not (:focus)~.form-legend {
-			color: #aaa;
-			/* Normal label color */
-		}
-	</style>
-	<style>
-		/* Red border for invalid inputs */
-		input.error,
-		select.error {
-			border: 2px solid red !important;
-		}
+/* Ensure the label returns to the normal color after focus or hover is removed */
+.form-control:not (:focus ) ~.form-legend {
+	color: #aaa;
+	/* Normal label color */
+}
+</style>
+<style>
+/* Red border for invalid inputs */
+input.error, select.error {
+	border: 2px solid red !important;
+}
 
-		/* Error message style */
-		label.error {
-			color: red;
-			font-size: 0.85em;
-			margin-top: 5px;
-			display: block;
-		}
+/* Error message style */
+label.error {
+	color: red;
+	font-size: 0.85em;
+	margin-top: 5px;
+	display: block;
+}
 
-		.underline {
-			text-decoration: underline;
-			color: #08a6f1;
-			cursor: pointer;
-		}
+.underline {
+	text-decoration: underline;
+	color: #08a6f1;
+	cursor: pointer;
+}
 
-		.left-arrow-circle {
-			width: 35px;
-			height: 35px;
-			border-radius: 50%;
-			background-color: white;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			margin-right: 10px;
-			transition: background-color 0.3s, transform 0.2s;
-		}
+.left-arrow-circle {
+	width: 35px;
+	height: 35px;
+	border-radius: 50%;
+	background-color: white;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-right: 10px;
+	transition: background-color 0.3s, transform 0.2s;
+}
 
-		.left-arrow-circle i {
-			color: rgb(107, 122, 143);
-		}
+.left-arrow-circle i {
+	color: rgb(107, 122, 143);
+}
 
-		.left-arrow-circle:hover {
-			background-color: rgb(107, 122, 143);
-			cursor: pointer;
-			transform: scale(1.05);
-			border: 2px solid white;
-		}
+.left-arrow-circle:hover {
+	background-color: rgb(107, 122, 143);
+	cursor: pointer;
+	transform: scale(1.05);
+	border: 2px solid white;
+}
 
-		.left-arrow-circle:hover i {
-			color: white;
-		}
+.left-arrow-circle:hover i {
+	color: white;
+}
 
-		.white-text span {
-			color: white !important;
-		}
+.white-text span {
+	color: white !important;
+}
 
-		.table-cell tbody td:hover {
-			background-color: #f0f0f0;
-			/* Hover color for cell */
-			cursor: pointer;
-			/* Optional: pointer cursor */
-		}
+.table-cell tbody td:hover {
+	background-color: #f0f0f0;
+	/* Hover color for cell */
+	cursor: pointer;
+	/* Optional: pointer cursor */
+}
 
-		.table-bordered td,
-		.table-bordered th {
-			border: 1px solid #000 !important;
-		}
+.table-bordered td, .table-bordered th {
+	border: 1px solid #000 !important;
+}
 
-		.gray-cell {
-			background-color: rgb(107, 122, 143) !important;
-			color: white !important;
-		}
+.gray-cell {
+	background-color: rgb(107, 122, 143) !important;
+	color: white !important;
+}
 
-		.graybox {
-			background-color: #BFBFBF !important;
-			color: black !important;
-		}
-	</style>
+.graybox {
+	background-color: #BFBFBF !important;
+	color: black !important;
+}
+</style>
 
 
-	<style>
-		.left-arrow-circle {
-			background-color: white;
-			color: #007bff;
-			border-radius: 50%;
-			padding: 8px;
-			margin-right: 10px;
-			cursor: pointer;
-		}
+<style>
+.left-arrow-circle {
+	background-color: white;
+	color: #007bff;
+	border-radius: 50%;
+	padding: 8px;
+	margin-right: 10px;
+	cursor: pointer;
+}
 
-		/* 🚌 Bus display style box */
-		/* 🚌 Bus display style box */
-		.boards {
-			transform: translateY(6px);
-			background-color: rgb(107, 122, 143);
-			color: white;
-			padding: 5px 80px;
-			border-radius: 8px;
-			overflow: hidden;
-			white-space: nowrap;
-			flex: 1;
-			/* ✅ makes it take available space dynamically */
-			min-width: 200px;
-			box-shadow: 0 0 10px rgb(107, 122, 143);
-			position: relative;
-		}
+/* 🚌 Bus display style box */
+/* 🚌 Bus display style box */
+/* 🚌 Bus display style box */
+					.boards {
+						transform: translateY(6px);
+					  background-color: rgb(107, 122, 143);
+					  color: white;
+					  padding: 5px 5px;
+					  border-radius: 8px;
+					  overflow: hidden;
+					  white-space: nowrap;
+					  flex: 1; /* ✅ makes it take available space dynamically */
+					  min-width: 200px;
+					  box-shadow: 0 0 10px rgb(107, 122, 143);
+					  position: relative;
+					}
 
 		/* ✨ Scrolling animation */
 		.scrolling-text {
@@ -334,23 +339,19 @@ PURPOSE		: BRRS MANUAL REPORT
 		}
 
 		/* Animation keyframes */
-		@ keyframes scroll-left {
+		@keyframes scroll-left {
 			0% {
 				transform: translateX(100%);
 			}
 
 			100% {
-				transform:
-
-					translateX (-100%);
-
-
+				transform: translateX(-100%);
 			}
 		}
-	</style>
-	<script th:inline="javascript">
+</style>
+<script th:inline="javascript">
 
-		let isDetailsModal = false;
+let isDetailsModal = false;
 		$(document).ready(function () {
 			// hide loader on normal load
 			$('#loader').modal('hide');
@@ -364,34 +365,34 @@ PURPOSE		: BRRS MANUAL REPORT
 			$('#loader').modal('hide');
 		});
 
-
-		$(document).ready(function () {
-			Maker_Checker_Function();
+				
+		$(document).ready(function() {
+			Maker_Checker_Function(); 
 		});
 
 		// if logged user is a Checker, checker cannot modify, if user is maker , then maker cant download
 		function Maker_Checker_Function() {
 			$.ajax({
-				url: "/BRRS/getUserRole",
+				url: "/BRRS/getUserRole",    
 				type: "GET",
-				success: function (roleId) {
+				success: function(roleId) {
 					// console.log("User Role ID:", roleId);
-
-					if (roleId === "ADM-C" || roleId === "USR-C" || roleId === "USER-AUDIT") {
+				
+					if (roleId === "ADM-C" || roleId === "USR-C"  || roleId === "USER-AUDIT") {
 						const modifyBtn = document.getElementById("addRecord");
 						if (modifyBtn) modifyBtn.style.display = "none";
 					}
 
 					if (roleId === "ADM-M" || roleId === "USR-M") {
-						const button = document.getElementById("custom-tab-btnAdd");
-						if (button) button.style.display = "none";
-					}
+								const button = document.getElementById("custom-tab-btnAdd");
+								if (button) button.style.display = "none";
+							}
 
 				},
-				error: function (err) {
+				error: function(err) {
 					console.error("Error fetching role:", err);
-				}
-			});
+		     }
+		    });
 		}
 
 
@@ -404,10 +405,10 @@ PURPOSE		: BRRS MANUAL REPORT
 			window.history.back();
 		}
 
-
-		function showdetails() {
-			$('#loader').modal('show');
-			var Callurl = /*[[@{'/Reports/' + ${reportid}(
+		
+function showdetails() {
+	 $('#loader').modal('show');
+	    var Callurl = /*[[@{'/Reports/' + ${reportid}(
 	        dtltype='detail',
 	        fromdate=${fromdate},
 	        todate=${todate},
@@ -415,19 +416,36 @@ PURPOSE		: BRRS MANUAL REPORT
 	        asondate=${asondate},
 	        version=${version}
 	    )}]]*/;
-			location.href = Callurl;
+	    location.href = Callurl;
 
-		}
+}
 
 		function showsummary() {
-					$('#loader').modal('show');
-					var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/;
-					location.href = Callurl;
-				}
+			$('#loader').modal('show');
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (
+					dtltype='report', 
+					fromdate=${fromdate}, 
+					todate=${todate}, 
+					type=${type}, 
+					asondate=${asondate})}]]*/;
+			location.href = Callurl;
+		}
+		
+		function showsummaryResub() {
+			$('#loader').modal('show');
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (
+					dtltype='report', 
+					fromdate=${fromdate}, 
+					todate=${todate}, 
+					type='RESUB', 
+					asondate=${asondate},
+					version=${version})}]]*/;
+			location.href = Callurl;
+		}
 
 
 	</script>
-	<script>
+<script>
 		function activateTab(tabName) {
 			// Remove 'active' from all buttons
 			document.querySelectorAll('.custom-tab-btn').forEach(btn => {
@@ -451,64 +469,64 @@ PURPOSE		: BRRS MANUAL REPORT
 			activateTab(selectedTab);
 		};
 		function downloadfile(button) {
-			var reportid = button.getAttribute('data-reportid');
-			var asondate = button.getAttribute('data-asondate');
-			var fromdate = button.getAttribute('data-fromdate');
-			var todate = button.getAttribute('data-todate');
-			var currency = button.getAttribute('data-currency');
-			var subreportid = button.getAttribute('data-subreportid');
-			var secid = button.getAttribute('data-secid');
-			var dtltype = button.getAttribute('data-dtltype');
-			var filename = button.getAttribute('data-filename');
-			var type = button.getAttribute('data-type');
-			var version = button.getAttribute('data-version');
-			var format = button.getAttribute('data-format');
+		    var reportid = button.getAttribute('data-reportid');
+		    var asondate = button.getAttribute('data-asondate');
+		    var fromdate = button.getAttribute('data-fromdate');
+		    var todate = button.getAttribute('data-todate');
+		    var currency = button.getAttribute('data-currency');
+		    var subreportid = button.getAttribute('data-subreportid');
+		    var secid = button.getAttribute('data-secid');
+		    var dtltype = button.getAttribute('data-dtltype');
+		    var filename = button.getAttribute('data-filename');
+		    var type = button.getAttribute('data-type');
+		    var version = button.getAttribute('data-version');
+		    var format = button.getAttribute('data-format');
 
-			if (format === null) {
-				format = '';   // treat as null
-			}
+		    if (format === null) {
+		        format = '';   // treat as null
+		    }
 
-			$('#loader').modal('show');
+		    $('#loader').modal('show');
 
-			$.ajax({
-				url: './downloadExcel?reportid=' + reportid +
-					'&fromdate=' + fromdate +
-					'&asondate=' + asondate +
-					'&todate=' + todate +
-					'&currency=' + currency +
-					'&subreportid=' + subreportid +
-					'&secid=' + secid +
-					'&filename=' + filename +
-					'&type=' + type +
-					'&version=' + version +
-					'&format=' + format,
-				type: 'GET',
-				xhrFields: {
-					responseType: 'blob'
-				},
-				success: function (data) {
-					$('#loader').modal('hide');
-					if (data && data.size > 100) {
-						const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
-						const url = window.URL.createObjectURL(blob);
-						const a = document.createElement('a');
-						a.style.display = 'none';
-						a.href = url;
-						a.download = filename;
-						document.body.appendChild(a);
-						a.click();
-						window.URL.revokeObjectURL(url);
-						document.body.removeChild(a);
-						showResultModal('BRRS', filename + ' downloaded successfully.');
-					} else {
-						showResultModal('Information', 'No data was available to create a download.');
-					}
-				},
-				error: function () {
-					$('#loader').modal('hide');
-					showResultModal('Error', 'An error occurred while downloading the file.');
-				}
-			});
+		    $.ajax({
+		        url: './downloadExcel?reportid=' + reportid +
+		             '&fromdate=' + fromdate +
+		             '&asondate=' + asondate +
+		             '&todate=' + todate +
+		             '&currency=' + currency +
+		             '&subreportid=' + subreportid +
+		             '&secid=' + secid +
+		             '&filename=' + filename +
+		             '&type=' + type +
+		             '&version=' + version +
+		             '&format=' + format,
+		        type: 'GET',
+		        xhrFields: {
+		            responseType: 'blob'
+		        },
+		        success: function (data) {
+		            $('#loader').modal('hide');
+		            if (data && data.size > 100) {
+		                const blob = new Blob([data], { type: 'application/vnd.ms-excel' });
+		                const url = window.URL.createObjectURL(blob);
+		                const a = document.createElement('a');
+		                a.style.display = 'none';
+		                a.href = url;
+		                a.download = filename;
+		                document.body.appendChild(a);
+		                a.click();
+		                window.URL.revokeObjectURL(url);
+		                document.body.removeChild(a);
+		                showResultModal('BRRS', filename + ' downloaded successfully.');
+		            } else {
+		                showResultModal('Information', 'No data was available to create a download.');
+		            }
+		        },
+		        error: function () {
+		            $('#loader').modal('hide');
+		            showResultModal('Error', 'An error occurred while downloading the file.');
+		        }
+		    });
 		}
 
 		function editRecord() {
@@ -537,235 +555,324 @@ PURPOSE		: BRRS MANUAL REPORT
 
 
 	<script>
-		// Show Modify (enable inputs & dropdowns)
-		function showmodify(btn) {
-			var readonlyIds = ["R26_TOTAL"];
+			// Show Modify (enable inputs & dropdowns)
+			function showmodify(btn) {
+				var readonlyIds = ["R26_TOTAL"];
 
-			$(".Show_input").each(function () {
-				if (!readonlyIds.includes(this.id)) {
-					$(this).removeAttr("readonly").removeAttr("disabled");
-				}
-			});
-			for (let i = 11; i <= 25; i++) {
-				let fields = [
-					"TOTAL",
-
-				];
-
-				fields.forEach(field => {
-					let selector = `#R${i}_${field}`;
-					if ($(selector).length) {  // check if element exists
-						$(selector).css({"background-color": "#d3d3d3"});
+				$(".Show_input").each(function () {
+					if (!readonlyIds.includes(this.id)) {
+						$(this).removeAttr("readonly").removeAttr("disabled");
 					}
 				});
+				for (let i = 11; i <= 25; i++) {
+					let fields = [
+						"TOTAL",
+
+					];
+
+					fields.forEach(field => {
+						let selector = `#R${i}_${field}`;
+						if ($(selector).length) {  // check if element exists
+							$(selector).css({"background-color": "#d3d3d3"});
+						}
+					});
+				}
+
+
+
+				// Toggle buttons
+				$("#submitButton").show();
+
+				// Show Cancel button only when Modify is clicked
+				$("#cancelRecord").show();
+
+				// Optionally hide the clicked Modify button
+				$(btn).hide();
 			}
 
-
-
-			// Toggle buttons
-			$("#submitButton").show();
-
-			// Show Cancel button only when Modify is clicked
-			$("#cancelRecord").show();
-
-			// Optionally hide the clicked Modify button
-			$(btn).hide();
-		}
-
-		//Cancel / Reset function
-		function cancelModify() {
-			if (confirm("Are you sure you want to cancel changes? Page will reload.")) {
-				// ✅ Only when user clicks YES
-				location.reload();
-
-				$(".Show_input").attr("readonly", true).attr("disabled", true);
-
-
-				$("#submitButton, #btnBack_edit").hide();
-				$("#btnBack").show();
-
-				// Hide Cancel button again
-				$("#cancelRecord").hide();
-
-				// Show all Modify buttons
-				$("#addRecord").show();
-			}
-			// ❌ If user clicks CANCEL, nothing happens
-		}
-
-
-
-
-	</script>
-
-	<SCRIPT>
-
-		//Calculating Totals for 25'th row
-		function calculateR26Totals() {
-			let totalLess = 0;
-			let totalMore = 0;
-
-			for (let i = 12; i <= 25; i++) {
-				// Get numeric values, remove commas
-				let lessVal = parseFloat($("#R" + i + "_TOTAL").val().replace(/,/g, "")) || 0;
-				let moreVal = parseFloat($("#R" + i + "_TOTAL").val().replace(/,/g, "")) || 0;
-
-				totalLess += lessVal;
-				totalMore += moreVal;
-			}
-
-			// Set totals with 2 decimal formatting
-			$("#R26_TOTAL").val(
-				totalLess.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0})
-			);
-			$("#R26_TOTAL").val(
-				totalMore.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0})
-			);
-		}
-
-		// Call on page load
-		$(document).ready(function () {
-			calculateR26Totals();
-
-			// Attach listener only to R11-R50 amount fields
-			for (let i = 12; i <= 25; i++) {
-				$("#R" + i + "_TOTAL").on("input", function () {
-					calculateR26Totals();
-				});
-			}
-		});
-
-
-
-	</SCRIPT>
-
-	<script>
-
-
-		// This function is for closing the modal after an action is complete.
-		// It hides the result and loader modals and reloads the page.
-		function closemodel() {
-			$("#resultModal").modal("hide");
-			$('#loader').modal('hide');
-
-			// Only reload if not from Details modal
-			if (!isDetailsModal) {
-				setTimeout(function () {
+			//Cancel / Reset function
+			function cancelModify() {
+				if (confirm("Are you sure you want to cancel changes? Page will reload.")) {
+					// ✅ Only when user clicks YES
 					location.reload();
-				}, 300);
-			} else {
-				// reset flag for next modal usage
-				isDetailsModal = false;
+
+					$(".Show_input").attr("readonly", true).attr("disabled", true);
+
+
+					$("#submitButton, #btnBack_edit").hide();
+					$("#btnBack").show();
+
+					// Hide Cancel button again
+					$("#cancelRecord").hide();
+
+					// Show all Modify buttons
+					$("#addRecord").show();
+				}
+				// ❌ If user clicks CANCEL, nothing happens
 			}
-		}
 
-		// This is the main function that orchestrates the entire form submission process.
-		// It is triggered by the "Update" button click.
-		// Make the function global so onclick="fileuploads(this)" can see it
-		window.fileuploads = function (btn) {
-			try {
-				// ✅ Get report date
-				const asondate = btn.getAttribute("data-todate");
 
-				// ✅ Show loader
-				$('#loader').modal('show');
 
-				// ✅ Calculate totals if exists
-				if (typeof calculateTotals === "function") {
-					calculateTotals();
+
+		</script>
+
+		<SCRIPT>
+
+				//Calculating Totals for 25'th row
+				function calculateR26Totals() {
+					let totalLess = 0;
+					let totalMore = 0;
+
+					for (let i = 12; i <= 25; i++) {
+						// Get numeric values, remove commas
+						let lessVal = parseFloat($("#R" + i + "_TOTAL").val().replace(/,/g, "")) || 0;
+						let moreVal = parseFloat($("#R" + i + "_TOTAL").val().replace(/,/g, "")) || 0;
+
+						totalLess += lessVal;
+						totalMore += moreVal;
+					}
+
+					// Set totals with 2 decimal formatting
+					$("#R26_TOTAL").val(
+						totalLess.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0})
+					);
+					$("#R26_TOTAL").val(
+						totalMore.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0})
+					);
 				}
 
-				// ✅ Remove commas from text inputs
-				$("#fileupload input[type='text']").each(function () {
-					const val = $(this).val();
-					if (val && val.includes(",")) {
-						$(this).val(val.replace(/,/g, ''));
+				// Call on page load
+				$(document).ready(function () {
+					calculateR26Totals();
+
+					// Attach listener only to R11-R50 amount fields
+					for (let i = 12; i <= 25; i++) {
+						$("#R" + i + "_TOTAL").on("input", function () {
+							calculateR26Totals();
+						});
 					}
 				});
 
-				// ✅ Validate form
-				if (!$("#fileupload").valid()) {
-					$('#loader').modal('hide');
-					return;
-				}
 
-				// ✅ Get type from URL
-				const urlParams = new URLSearchParams(window.location.search);
-				const urlType = urlParams.get("type");
-				const isResub = urlType && urlType.toUpperCase() === 'RESUB';
 
-				// ✅ Redirect URL (RESUB only, M_LA2 only)
-				const previousUrl = window.previousUrl || null;
+			</SCRIPT>
 
-				const redirectUrl = isResub
-					? (previousUrl ? previousUrl : "/BRRS/Resubmission?rptcode=M_LA2")
-					: null;
+<script>
+	
 
-				// ✅ API endpoint
-				let apiUrl = './M_LA2update';
-				if (isResub) {
-					apiUrl = './UpdateM_LA2_ReSub';
-				}
+	// This function is for closing the modal after an action is complete.
+	// It hides the result and loader modals and reloads the page.
+	function closemodel() {
+    $("#resultModal").modal("hide");
+    $('#loader').modal('hide');
 
-				// ✅ Build FormData
-				const formData = new FormData();
-				formData.append("asondate", asondate);
-				formData.append("type", urlType || "");
+    // Only reload if not from Details modal
+    if (!isDetailsModal) {
+        setTimeout(function () {
+            location.reload();
+        }, 300);
+    } else {
+        // reset flag for next modal usage
+        isDetailsModal = false;
+    }
+}
 
-				$('#fileupload').find(':input').each(function () {
-					const name = $(this).attr('name');
-					if (name) {
-						formData.append(name, $(this).val());
-					}
-				});
+	// This is the main function that orchestrates the entire form submission process.
+	// It is triggered by the "Update" button click.
+// Make the function global so onclick="fileuploads(this)" can see it
+ /*function fileuploads (btn) {
+    try {
+        // ✅ Get report date
+        const asondate = btn.getAttribute("data-todate");
 
-				// ✅ AJAX call
-				$.ajax({
-					url: apiUrl,
-					type: 'POST',
-					data: formData,
-					processData: false,
-					contentType: false,
-					dataType: 'text',
+        // ✅ Show loader
+        $('#loader').modal('show');
 
-					success: function (response) {
-						$("#resultModalLabel").text("BRRS");
-						$("#resultModalBody").text(response);
-						$("#resultModal").modal("show");
+        // ✅ Calculate totals if exists
+        if (typeof calculateTotals === "function") {
+            calculateTotals();
+        }
 
-						// ✅ Redirect after modal closes (RESUB only)
-						if (redirectUrl) {
-							$("#resultModal").one('hidden.bs.modal', function () {
-								window.location.href = redirectUrl;
-							});
-						}
-					},
+        // ✅ Remove commas from text inputs
+        $("#fileupload input[type='text']").each(function () {
+            const val = $(this).val();
+            if (val && val.includes(",")) {
+                $(this).val(val.replace(/,/g, ''));
+            }
+        });
 
-					error: function (jqXHR) {
-						$("#resultModalLabel").text("Error");
-						$("#resultModalBody").text(
-							"Update failed: " + (jqXHR.responseText || "Unknown error")
-						);
-						$("#resultModal").modal("show");
+        // ✅ Validate form
+        if (!$("#fileupload").valid()) {
+            $('#loader').modal('hide');
+            return;
+        }
 
-						// ✅ Redirect after modal closes (RESUB only)
-						if (redirectUrl) {
-							$("#resultModal").one('hidden.bs.modal', function () {
-								window.location.href = redirectUrl;
-							});
-						}
-					},
+        // ✅ Get type from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlType = urlParams.get("type");
+        const isResub = urlType && urlType.toUpperCase() === 'RESUB';
 
-					complete: function () {
-						$('#loader').modal('hide');
-					}
-				});
+        // ✅ Redirect URL (RESUB only, M_LA2 only)
+        const previousUrl = window.previousUrl || null;
 
-			} catch (error) {
-				$('#loader').modal('hide');
-				console.error("Error during file upload:", error);
-			}
-		};
+        const redirectUrl = isResub
+            ? (previousUrl ? previousUrl : "/BRRS/Resubmission?rptcode=M_LA2")
+            : null;
+
+        // ✅ API endpoint
+        let apiUrl = './M_LA2update';
+        if (isResub) {
+            apiUrl = './UpdateM_LA2_ReSub';
+        }
+
+        // ✅ Build FormData
+        const formData = new FormData();
+        formData.append("asondate", asondate);
+        formData.append("type", urlType || "");
+
+        $('#fileupload').find(':input').each(function () {
+            const name = $(this).attr('name');
+            if (name) {
+                formData.append(name, $(this).val());
+            }
+        });
+
+        // ✅ AJAX call
+        $.ajax({
+            url: apiUrl,
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            dataType: 'text',
+
+            success: function (response) {
+                $("#resultModalLabel").text("BRRS");
+                $("#resultModalBody").text(response);
+                $("#resultModal").modal("show");
+
+                // ✅ Redirect after modal closes (RESUB only)
+                if (redirectUrl) {
+                    $("#resultModal").one('hidden.bs.modal', function () {
+                        window.location.href = redirectUrl;
+                    });
+                }
+            },
+
+            error: function (jqXHR) {
+                $("#resultModalLabel").text("Error");
+                $("#resultModalBody").text(
+                    "Update failed: " + (jqXHR.responseText || "Unknown error")
+                );
+                $("#resultModal").modal("show");
+
+                // ✅ Redirect after modal closes (RESUB only)
+                if (redirectUrl) {
+                    $("#resultModal").one('hidden.bs.modal', function () {
+                        window.location.href = redirectUrl;
+                    });
+                }
+            },
+
+            complete: function () {
+                $('#loader').modal('hide');
+            }
+        });
+
+    } catch (error) {
+        $('#loader').modal('hide');
+        console.error("Error during file upload:", error);
+    }
+};
+*/
+function fileuploads(btn) {
+
+    try {
+
+        const asondate = btn.getAttribute("data-todate");
+
+        $('#loader').modal('show');
+
+        if (typeof calculateTotals === "function") {
+            calculateTotals();
+        }
+
+        // Remove commas
+        $("#fileupload input[type='text']").each(function () {
+            const val = $(this).val();
+            if (val && val.includes(",")) {
+                $(this).val(val.replace(/,/g, ''));
+            }
+        });
+
+        if (!$("#fileupload").valid()) {
+            $('#loader').modal('hide');
+            return;
+        }
+
+        // Get type from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlType = urlParams.get("type");
+
+        const isResub = urlType && urlType.toUpperCase() === 'RESUB';
+
+        // ✅ Use SERIALIZE (NOT FormData)
+        const formData =
+            $('#fileupload').serialize()
+            + '&asondate=' + encodeURIComponent(asondate)
+            + '&type=' + encodeURIComponent(urlType || '');
+
+        console.log("✅ Form data prepared");
+
+        let apiUrl = './M_LA2update';
+        if (isResub) {
+            apiUrl = './UpdateM_LA2_ReSub';
+        }
+
+        $.ajax({
+            url: apiUrl,
+            type: 'POST',
+            data: formData,
+            dataType: 'text',
+
+            success: function (response) {
+                $("#resultModalLabel").text("BRRS");
+                $("#resultModalBody").text(response);
+                $("#resultModal").modal("show");
+
+                $("#resultModal")
+                    .off("hidden.bs.modal")
+                    .on("hidden.bs.modal", function () {
+                        if (isResub) {
+                            window.location.href =
+                                window.previousUrl
+                                    ? window.previousUrl
+                                    : "/BRRS/Resubmission?rptcode=M_LA2";
+                        }
+                    });
+            },
+
+            error: function (jqXHR) {
+                console.log("Error response:", jqXHR.responseText);
+
+                $("#resultModalLabel").text("Error");
+                $("#resultModalBody").text(
+                    "Update failed: " +
+                    (jqXHR.responseText || "Unknown error")
+                );
+                $("#resultModal").modal("show");
+            },
+
+            complete: function () {
+                $('#loader').modal('hide');
+            }
+        });
+
+    } catch (error) {
+        $('#loader').modal('hide');
+        console.error("Error during file upload:", error);
+    }
+}
 
 
 

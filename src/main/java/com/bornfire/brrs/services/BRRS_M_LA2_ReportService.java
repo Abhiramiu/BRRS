@@ -247,81 +247,49 @@ public class BRRS_M_LA2_ReportService {
 	}
 
 
+
 	public void updateResubReport(M_LA2_Resub_Summary_Entity updatedEntity) {
 
-		Date reportDate = updatedEntity.getReportDate();
+	    Date reportDate = updatedEntity.getReportDate();
 
-		// ----------------------------------------------------
-		// 1️⃣ GET CURRENT VERSION FROM RESUB TABLE
-		// ----------------------------------------------------
+	    BigDecimal maxResubVer = M_LA2_Resub_Summary_Repo.findMaxVersion(reportDate);
+	    if (maxResubVer == null) {
+	        throw new RuntimeException("No record for report date: " + reportDate);
+	    }
 
-		BigDecimal maxResubVer = M_LA2_Resub_Summary_Repo.findMaxVersion(reportDate);
+	    BigDecimal newVersion = maxResubVer.add(BigDecimal.ONE);
+	    Date now = new Date();
 
-		if (maxResubVer == null)
-			throw new RuntimeException("No record for: " + reportDate);
+	    M_LA2_Resub_Summary_Entity resubSummary = new M_LA2_Resub_Summary_Entity();
+	    BeanUtils.copyProperties(updatedEntity, resubSummary, "reportDate", "reportVersion", "reportResubDate");
+	    resubSummary.setReportDate(reportDate);
+	    resubSummary.setReportVersion(newVersion);
+	    resubSummary.setREPORT_RESUBDATE(now);
 
-		BigDecimal newVersion = maxResubVer.add(BigDecimal.ONE);
+	    M_LA2_Resub_Detail_Entity resubDetail = new M_LA2_Resub_Detail_Entity();
+	    BeanUtils.copyProperties(updatedEntity, resubDetail, "reportDate", "reportVersion", "reportResubDate");
+	    resubDetail.setReportDate(reportDate);
+	    resubDetail.setReportVersion(newVersion);
+	    resubDetail.setREPORT_RESUBDATE(now);
 
-		Date now = new Date();
+	    M_LA2_Archival_Summary_Entity archSummary = new M_LA2_Archival_Summary_Entity();
+	    BeanUtils.copyProperties(updatedEntity, archSummary, "reportDate", "reportVersion", "reportResubDate");
+	    archSummary.setReportDate(reportDate);
+	    archSummary.setReportVersion(newVersion);
+	    archSummary.setReportResubDate(now);
 
-		// ====================================================
-		// 2️⃣ RESUB SUMMARY – FROM UPDATED VALUES
-		// ====================================================
+	    M_LA2_Archival_Detail_Entity archDetail = new M_LA2_Archival_Detail_Entity();
+	    BeanUtils.copyProperties(updatedEntity, archDetail, "reportDate", "reportVersion", "reportResubDate");
+	    archDetail.setReportDate(reportDate);
+	    archDetail.setReportVersion(newVersion);
+	    archDetail.setReportResubDate(now);
 
-		M_LA2_Resub_Summary_Entity resubSummary = new M_LA2_Resub_Summary_Entity();
-
-		BeanUtils.copyProperties(updatedEntity, resubSummary, "reportDate", "reportVersion", "reportResubDate");
-
-		resubSummary.setReportDate(reportDate);
-		resubSummary.setReportVersion(newVersion);
-		resubSummary.setREPORT_RESUBDATE(now);
-
-		// ====================================================
-		// 3️⃣ RESUB DETAIL – SAME UPDATED VALUES
-		// ====================================================
-
-		M_LA2_Resub_Detail_Entity resubDetail = new M_LA2_Resub_Detail_Entity();
-
-		BeanUtils.copyProperties(updatedEntity, resubDetail, "reportDate", "reportVersion", "reportResubDate");
-
-		resubDetail.setReportDate(reportDate);
-		resubDetail.setReportVersion(newVersion);
-		resubDetail.setREPORT_RESUBDATE(now);
-
-		// ====================================================
-		// 4️⃣ ARCHIVAL SUMMARY – SAME VALUES + SAME VERSION
-		// ====================================================
-
-		M_LA2_Archival_Summary_Entity archSummary = new M_LA2_Archival_Summary_Entity();
-
-		BeanUtils.copyProperties(updatedEntity, archSummary, "reportDate", "reportVersion", "reportResubDate");
-
-		archSummary.setReportDate(reportDate);
-		archSummary.setReportVersion(newVersion); // SAME VERSION
-		archSummary.setReportResubDate(now);
-
-		// ====================================================
-		// 5️⃣ ARCHIVAL DETAIL – SAME VALUES + SAME VERSION
-		// ====================================================
-
-		M_LA2_Archival_Detail_Entity archDetail = new M_LA2_Archival_Detail_Entity();
-
-		BeanUtils.copyProperties(updatedEntity, archDetail, "reportDate", "reportVersion", "reportResubDate");
-
-		archDetail.setReportDate(reportDate);
-		archDetail.setReportVersion(newVersion); // SAME VERSION
-		archDetail.setReportResubDate(now);
-
-		// ====================================================
-		// 6️⃣ SAVE ALL WITH SAME DATA
-		// ====================================================
-
-		M_LA2_Resub_Summary_Repo.save(resubSummary);
-		M_LA2_Resub_Detail_Repo.save(resubDetail);
-
-		M_LA2_Archival_Summary_Repo.save(archSummary);
-		BRRS_M_LA2_Archival_Detail_Repo.save(archDetail);
+	    M_LA2_Resub_Summary_Repo.save(resubSummary);
+	    M_LA2_Resub_Detail_Repo.save(resubDetail);
+	    M_LA2_Archival_Summary_Repo.save(archSummary);
+	    BRRS_M_LA2_Archival_Detail_Repo.save(archDetail);
 	}
+
 
 	public List<Object[]> getM_LA2Resub() {
 		List<Object[]> resubList = new ArrayList<>();
