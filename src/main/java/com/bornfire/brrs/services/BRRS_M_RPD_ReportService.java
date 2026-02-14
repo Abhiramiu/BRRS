@@ -185,6 +185,7 @@ public class BRRS_M_RPD_ReportService {
 	            // ---------- CASE 1: ARCHIVAL ----------
 	            if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
 
+	              if(dtltype.equals("report")) {
 	                List<BRRS_M_RPD_Archival_Summary_Entity1> T1Master = BRRS_M_RPD_Archival_Summary_Repo1
 	                        .getdatabydateListarchival(d1, version);
 	                List<BRRS_M_RPD_Archival_Summary_Entity2> T2Master = BRRS_M_RPD_Archival_Summary_Repo2
@@ -214,11 +215,47 @@ public class BRRS_M_RPD_ReportService {
 	    			mv.addObject("reportsummary8", T8Master);
 	    			mv.addObject("reportsummary9", T9Master);
 	    			
-	    			mv.addObject("displaymode", "summary");
+	    			mv.addObject("displaymode", "summaryArc");
+	              }
+	              else
+	              {
+	            	   List<BRRS_M_RPD_Archival_Summary_Entity1> T1Master = BRRS_M_RPD_Archival_Summary_Repo1
+		                        .getdatabydateListarchival(d1, version);
+		                List<BRRS_M_RPD_Archival_Summary_Entity2> T2Master = BRRS_M_RPD_Archival_Summary_Repo2
+		                        .getdatabydateListarchival(d1, version);
+		                List<BRRS_M_RPD_Archival_Summary_Entity3> T3Master = BRRS_M_RPD_Archival_Summary_Repo3
+		                        .getdatabydateListarchival(d1, version);
+		                List<BRRS_M_RPD_Archival_Summary_Entity4> T4Master = BRRS_M_RPD_Archival_Summary_Repo4
+		                        .getdatabydateListarchival(d1, version);
+		                List<BRRS_M_RPD_Archival_Summary_Entity5> T5Master = BRRS_M_RPD_Archival_Summary_Repo5
+		                        .getdatabydateListarchival(d1, version);
+		                List<BRRS_M_RPD_Archival_Summary_Entity6> T6Master = BRRS_M_RPD_Archival_Summary_Repo6
+		                        .getdatabydateListarchival(d1, version);
+		                List<BRRS_M_RPD_Archival_Summary_Entity7> T7Master = BRRS_M_RPD_Archival_Summary_Repo7
+		                        .getdatabydateListarchival(d1, version);
+		                List<BRRS_M_RPD_Archival_Summary_Entity8> T8Master = BRRS_M_RPD_Archival_Summary_Repo8
+		                        .getdatabydateListarchival(d1, version);
+		                List<BRRS_M_RPD_Archival_Summary_Entity9> T9Master = BRRS_M_RPD_Archival_Summary_Repo9
+		                        .getdatabydateListarchival(d1, version);
+
+		                mv.addObject("reportsummary", T1Master);
+		    			mv.addObject("reportsummary2", T2Master);
+		    			mv.addObject("reportsummary3", T3Master);
+		    			mv.addObject("reportsummary4", T4Master);
+		    			mv.addObject("reportsummary5", T5Master);
+		    			mv.addObject("reportsummary6", T6Master);
+		    			mv.addObject("reportsummary7", T7Master);
+		    			mv.addObject("reportsummary8", T8Master);
+		    			mv.addObject("reportsummary9", T9Master);
+		    			
+		    			mv.addObject("displaymode", "DetailsArc");
+	              }
 	            }
 	         // ---------- CASE 2: RESUB ----------
 	            else if ("RESUB".equalsIgnoreCase(type) && version != null) {
 
+	            	if(dtltype.equals("report"))
+	            	{	            	
 	            	 List<BRRS_M_RPD_Archival_Summary_Entity1> T1Master = BRRS_M_RPD_Archival_Summary_Repo1
 		                        .getdatabydateListarchival(d1, version);
 		                List<BRRS_M_RPD_Archival_Summary_Entity2> T2Master = BRRS_M_RPD_Archival_Summary_Repo2
@@ -248,10 +285,84 @@ public class BRRS_M_RPD_ReportService {
 		    			mv.addObject("reportsummary8", T8Master);
 		    			mv.addObject("reportsummary9", T9Master);
 		    			
-		    			mv.addObject("displaymode", "summary");
+		    			mv.addObject("displaymode", "summaryResub");
 	            }
+	            	else
+	            	{
+	            		List<BRRS_M_RPD_Archival_Summary_Entity1> T1Master = BRRS_M_RPD_Archival_Summary_Repo1
+		                        .getdatabydateListarchival(d1, version);
+		                List<BRRS_M_RPD_Archival_Summary_Entity2> T2Master = BRRS_M_RPD_Archival_Summary_Repo2
+		                        .getdatabydateListarchival(d1, version);
+		                List<BRRS_M_RPD_Archival_Summary_Entity3> T3Master = BRRS_M_RPD_Archival_Summary_Repo3
+		                        .getdatabydateListarchival(d1, version);
+		                List<BRRS_M_RPD_Archival_Summary_Entity4> T4Master = BRRS_M_RPD_Archival_Summary_Repo4
+		                        .getdatabydateListarchival(d1, version);
+		                List<BRRS_M_RPD_Archival_Summary_Entity5> T5Master = BRRS_M_RPD_Archival_Summary_Repo5
+		                        .getdatabydateListarchival(d1, version);
+		                List<BRRS_M_RPD_Archival_Summary_Entity6> T6Master = BRRS_M_RPD_Archival_Summary_Repo6
+		                        .getdatabydateListarchival(d1, version);
+		                List<BRRS_M_RPD_Archival_Summary_Entity7> T7Master = BRRS_M_RPD_Archival_Summary_Repo7
+		                        .getdatabydateListarchival(d1, version);
+		                List<BRRS_M_RPD_Archival_Summary_Entity8> T8Master = BRRS_M_RPD_Archival_Summary_Repo8
+		                        .getdatabydateListarchival(d1, version);
+		                List<BRRS_M_RPD_Archival_Summary_Entity9> T9Master = BRRS_M_RPD_Archival_Summary_Repo9
+		                        .getdatabydateListarchival(d1, version);
+
+		                mv.addObject("reportsummary", T1Master);
+		    			mv.addObject("reportsummary2", T2Master);
+		    			mv.addObject("reportsummary3", T3Master);
+		    			mv.addObject("reportsummary4", T4Master);
+		    			mv.addObject("reportsummary5", T5Master);
+		    			mv.addObject("reportsummary6", T6Master);
+		    			mv.addObject("reportsummary7", T7Master);
+		    			mv.addObject("reportsummary8", T8Master);
+		    			mv.addObject("reportsummary9", T9Master);
+		    			
+		    			mv.addObject("displaymode", "DetailsResub");
+	            	}
+	            } 	
 	            // ---------- CASE 3: NORMAL ----------
 	            else {
+	            	
+	            	
+	            	if(dtltype.equals("detail"))
+		            {
+		            	System.out.println("I'am in Detail");
+		            	    List<M_RPD_Detail_Entity1> T1Master = brrs_M_RPD_Detail_Repo1.getdatabydateList(d1);
+			                List<M_RPD_Detail_Entity2> T2Master = brrs_M_RPD_Detail_Repo2.getdatabydateList(d1);
+			                List<M_RPD_Detail_Entity3> T3Master = brrs_M_RPD_Detail_Repo3.getdatabydateList(d1);
+			                List<M_RPD_Detail_Entity4> T4Master = brrs_M_RPD_Detail_Repo4.getdatabydateList(d1);
+			                List<M_RPD_Detail_Entity5> T5Master = brrs_M_RPD_Detail_Repo5.getdatabydateList(d1);
+			                List<M_RPD_Detail_Entity6> T6Master = brrs_M_RPD_Detail_Repo6.getdatabydateList(d1);
+			                List<M_RPD_Detail_Entity7> T7Master = brrs_M_RPD_Detail_Repo7.getdatabydateList(d1);
+			                List<M_RPD_Detail_Entity8> T8Master = brrs_M_RPD_Detail_Repo8.getdatabydateList(d1);
+			                List<M_RPD_Detail_Entity9> T9Master = brrs_M_RPD_Detail_Repo9.getdatabydateList(d1);
+
+
+			                System.out.println("count "+T1Master.size());		
+			                System.out.println("count2 "+T2Master.size());
+			                System.out.println("count3 "+T3Master.size());
+			                System.out.println("count4 "+T4Master.size());
+			                System.out.println("count5 "+T5Master.size());
+			                System.out.println("count6 "+T6Master.size());
+			                System.out.println("count7 "+T7Master.size());
+			                System.out.println("count8 "+T8Master.size());
+			                System.out.println("count9 "+T9Master.size());
+
+			            	mv.addObject("reportsummary", T1Master);
+			        		mv.addObject("reportsummary2", T2Master);
+			        		mv.addObject("reportsummary3", T3Master);
+			        		mv.addObject("reportsummary4", T4Master);
+			        		mv.addObject("reportsummary5", T5Master);
+			        		mv.addObject("reportsummary6", T6Master);
+			        		mv.addObject("reportsummary7", T7Master);
+			        		mv.addObject("reportsummary8", T8Master);
+			        		mv.addObject("reportsummary9", T9Master);
+			        		
+			        		mv.addObject("displaymode", "Details");
+			        	}
+	            	else
+	            	{
 	            	System.out.println("I'am in Normal");
 	                List<M_RPD_Summary_Entity1> T1Master = BRRS_M_RPD_Summary_Repo1.getdatabydateList(d1);
 	                List<M_RPD_Summary_Entity2> T2Master = BRRS_M_RPD_Summary_Repo2.getdatabydateList(d1);
@@ -286,44 +397,8 @@ public class BRRS_M_RPD_ReportService {
 	        		
 	        		mv.addObject("displaymode", "summary");	
 	            }
-		  
-	            if(dtltype.equals("detail"))
-	            {
-	            	System.out.println("I'am in Detail");
-	            	    List<M_RPD_Detail_Entity1> T1Master = brrs_M_RPD_Detail_Repo1.getdatabydateList(d1);
-		                List<M_RPD_Detail_Entity2> T2Master = brrs_M_RPD_Detail_Repo2.getdatabydateList(d1);
-		                List<M_RPD_Detail_Entity3> T3Master = brrs_M_RPD_Detail_Repo3.getdatabydateList(d1);
-		                List<M_RPD_Detail_Entity4> T4Master = brrs_M_RPD_Detail_Repo4.getdatabydateList(d1);
-		                List<M_RPD_Detail_Entity5> T5Master = brrs_M_RPD_Detail_Repo5.getdatabydateList(d1);
-		                List<M_RPD_Detail_Entity6> T6Master = brrs_M_RPD_Detail_Repo6.getdatabydateList(d1);
-		                List<M_RPD_Detail_Entity7> T7Master = brrs_M_RPD_Detail_Repo7.getdatabydateList(d1);
-		                List<M_RPD_Detail_Entity8> T8Master = brrs_M_RPD_Detail_Repo8.getdatabydateList(d1);
-		                List<M_RPD_Detail_Entity9> T9Master = brrs_M_RPD_Detail_Repo9.getdatabydateList(d1);
-
-
-		                System.out.println("count "+T1Master.size());		
-		                System.out.println("count2 "+T2Master.size());
-		                System.out.println("count3 "+T3Master.size());
-		                System.out.println("count4 "+T4Master.size());
-		                System.out.println("count5 "+T5Master.size());
-		                System.out.println("count6 "+T6Master.size());
-		                System.out.println("count7 "+T7Master.size());
-		                System.out.println("count8 "+T8Master.size());
-		                System.out.println("count9 "+T9Master.size());
-
-		            	mv.addObject("reportsummary", T1Master);
-		        		mv.addObject("reportsummary2", T2Master);
-		        		mv.addObject("reportsummary3", T3Master);
-		        		mv.addObject("reportsummary4", T4Master);
-		        		mv.addObject("reportsummary5", T5Master);
-		        		mv.addObject("reportsummary6", T6Master);
-		        		mv.addObject("reportsummary7", T7Master);
-		        		mv.addObject("reportsummary8", T8Master);
-		        		mv.addObject("reportsummary9", T9Master);
-		        		
-		        		mv.addObject("displaymode", "Details");
-		        	}
-	
+	         }
+	            
 		mv.setViewName("BRRS/M_RPD");		
 		
 		System.out.println("scv" + mv.getViewName());
@@ -765,7 +840,7 @@ public void updateReport8(M_RPD_Summary_Entity8 entity8) {
             }
         }
     } catch (Exception e) {
-        throw new RuntimeException("Error while updating R101-150 fields", e);
+        throw new RuntimeException("Error while updating R351-400 fields", e);
     }
     BRRS_M_RPD_Summary_Repo8.save(existing);
     brrs_M_RPD_Detail_Repo8.save(detailexisting);
@@ -802,7 +877,7 @@ public void updateReport9(M_RPD_Summary_Entity9 entity9) {
             for (String field : fields) {
                 String getterName = "get" + prefix + field;
                 String setterName = "set" + prefix + field;
-
+                System.out.println("Detail Existing....1");
                 try {
                     Method getter = M_RPD_Summary_Entity9.class.getMethod(getterName);
                     Object newValue = getter.invoke(entity9);
@@ -813,62 +888,56 @@ public void updateReport9(M_RPD_Summary_Entity9 entity9) {
                     
                     setter.invoke(existing, newValue);
                     detailsetter.invoke(detailexisting, newValue);
+                    System.out.println("Detail Existing....2");
                 } catch (NoSuchMethodException e) {
                     // if any field is missing in entity class, skip it
                     continue;
                 }
             }
         }
+        System.out.println("Detail Existing....3");
         Method getter1 = M_RPD_Summary_Entity9.class.getMethod("getR451_APPROVED_LIMIT");
-        Method setter1 = M_RPD_Summary_Entity9.class.getMethod("setR451_APPROVED_LIMIT", getter1.getReturnType());
-        
-        Method detailgetter1 = M_RPD_Detail_Entity9.class.getMethod("getR451_APPROVED_LIMIT");
-        Method detailsetter1 = M_RPD_Detail_Entity9.class.getMethod("setR451_APPROVED_LIMIT", detailgetter1.getReturnType());
-        
+        Method setter1 = M_RPD_Summary_Entity9.class.getMethod("setR451_APPROVED_LIMIT", getter1.getReturnType());       
         Method getter2 = M_RPD_Summary_Entity9.class.getMethod("getR451_OUTSTANDING_AMOUNT");
-        Method setter2 = M_RPD_Summary_Entity9.class.getMethod("setR451_OUTSTANDING_AMOUNT", getter2.getReturnType());
-        
-        Method detailgetter2 = M_RPD_Detail_Entity9.class.getMethod("getR451_OUTSTANDING_AMOUNT");
-        Method detailsetter2 = M_RPD_Detail_Entity9.class.getMethod("setR451_OUTSTANDING_AMOUNT", detailgetter2.getReturnType());
-        
+        Method setter2 = M_RPD_Summary_Entity9.class.getMethod("setR451_OUTSTANDING_AMOUNT", getter2.getReturnType());       
         Method getter3 = M_RPD_Summary_Entity9.class.getMethod("getR451_EXCESS_OVER_CEILING");
-        Method setter3 = M_RPD_Summary_Entity9.class.getMethod("setR451_EXCESS_OVER_CEILING", getter3.getReturnType());
-        
-        Method detailgetter3 = M_RPD_Detail_Entity9.class.getMethod("getR451_EXCESS_OVER_CEILING");
-        Method detailsetter3 = M_RPD_Detail_Entity9.class.getMethod("setR451_EXCESS_OVER_CEILING", detailgetter3.getReturnType());
-
+        Method setter3 = M_RPD_Summary_Entity9.class.getMethod("setR451_EXCESS_OVER_CEILING", getter3.getReturnType());   
         Method getter4 = M_RPD_Summary_Entity9.class.getMethod("getR451_CURRENT_PROVISIONS");
-        Method setter4 = M_RPD_Summary_Entity9.class.getMethod("setR451_CURRENT_PROVISIONS", getter4.getReturnType());
-        
-        Method detailgetter4 = M_RPD_Detail_Entity9.class.getMethod("getR451_CURRENT_PROVISIONS");
-        Method detailsetter4 = M_RPD_Detail_Entity9.class.getMethod("setR451_CURRENT_PROVISIONS", detailgetter4.getReturnType());
-
+        Method setter4 = M_RPD_Summary_Entity9.class.getMethod("setR451_CURRENT_PROVISIONS", getter4.getReturnType());     
         Method getter5 = M_RPD_Summary_Entity9.class.getMethod("getR451_VALUE");
         Method setter5 = M_RPD_Summary_Entity9.class.getMethod("setR451_VALUE", getter5.getReturnType());
         
+        Method detailgetter1 = M_RPD_Detail_Entity9.class.getMethod("getR451_APPROVED_LIMIT");
+        Method detailsetter1 = M_RPD_Detail_Entity9.class.getMethod("setR451_APPROVED_LIMIT", detailgetter1.getReturnType());
+        Method detailgetter2 = M_RPD_Detail_Entity9.class.getMethod("getR451_OUTSTANDING_AMOUNT");
+        Method detailsetter2 = M_RPD_Detail_Entity9.class.getMethod("setR451_OUTSTANDING_AMOUNT", detailgetter2.getReturnType());
+        Method detailgetter3 = M_RPD_Detail_Entity9.class.getMethod("getR451_EXCESS_OVER_CEILING");
+        Method detailsetter3 = M_RPD_Detail_Entity9.class.getMethod("setR451_EXCESS_OVER_CEILING", detailgetter3.getReturnType());
+        Method detailgetter4 = M_RPD_Detail_Entity9.class.getMethod("getR451_CURRENT_PROVISIONS");
+        Method detailsetter4 = M_RPD_Detail_Entity9.class.getMethod("setR451_CURRENT_PROVISIONS", detailgetter4.getReturnType());
         Method detailgetter5 = M_RPD_Detail_Entity9.class.getMethod("getR451_VALUE");
         Method detailsetter5 = M_RPD_Detail_Entity9.class.getMethod("setR451_VALUE", detailgetter5.getReturnType());
-        
+        System.out.println("Detail Existing....4");
         setter1.invoke(existing, getter1.invoke(entity9));
-        detailsetter1.invoke(detailexisting, detailgetter1.invoke(entity9));
-        
         setter2.invoke(existing, getter2.invoke(entity9));
-        detailsetter2.invoke(detailexisting, detailgetter2.invoke(entity9));
-        
         setter3.invoke(existing, getter3.invoke(entity9));
-        detailsetter3.invoke(detailexisting, detailgetter3.invoke(entity9));
-        
-        setter4.invoke(existing, getter4.invoke(entity9));
-        detailsetter4.invoke(detailexisting, detailgetter4.invoke(entity9));
-        
+        setter4.invoke(existing, getter4.invoke(entity9));       
         setter5.invoke(existing, getter5.invoke(entity9));
-        detailsetter5.invoke(detailexisting, detailgetter5.invoke(entity9));
+        System.out.println("Detail Existing....5");
         
+//        detailsetter1.invoke(detailexisting, detailgetter1.invoke(entity9));
+//        detailsetter2.invoke(detailexisting, detailgetter2.invoke(entity9));
+//        detailsetter3.invoke(detailexisting, detailgetter3.invoke(entity9));
+//        detailsetter4.invoke(detailexisting, detailgetter4.invoke(entity9));
+//        detailsetter5.invoke(detailexisting, detailgetter5.invoke(entity9));
+         
+System.out.println("Detail Existing .......6");        
     } catch (Exception e) {
         throw new RuntimeException("Error while updating R401-450 fields", e);
-    }
+    	//e.printStackTrace();
+    	}
     BRRS_M_RPD_Summary_Repo9.save(existing);
-    brrs_M_RPD_Detail_Repo9.save(detailexisting);
+   brrs_M_RPD_Detail_Repo9.save(detailexisting);
 }
 
 public List<Object> getM_RPDarchival() {
@@ -49641,7 +49710,8 @@ public List<Object[]> getM_RPDArchival() {
             for (BRRS_M_RPD_Archival_Summary_Entity1 entity : latestArchivalList) {
                 archivalList.add(new Object[] {
                         entity.getReportDate(),
-                        entity.getReportVersion()
+                        entity.getReportVersion(),
+                        entity.getReportResubDate()
                 });
             }
             System.out.println("Fetched " + archivalList.size() + " record(s)");

@@ -14,9 +14,9 @@ import javax.persistence.TemporalType;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
-@Table(name = "BRRS_M_RPD_ARCHIVALTABLE_SUMMARY1")
-@IdClass(M_RPD_Archival_Summary1_PK.class)
-public class BRRS_M_RPD_Archival_Summary_Entity1 {
+@Table(name = "BRRS_M_RPD_RESUB_SUMMARY1")
+@IdClass(M_RPD_Resub_Summary1_PK.class)
+public class BRRS_M_RPD_Resub_Summary_Entity1 {
 	
 
 	private String R11_PRODUCT;
@@ -3209,7 +3209,7 @@ public class BRRS_M_RPD_Archival_Summary_Entity1 {
 	public void setDEL_FLG(String dEL_FLG) {
 		DEL_FLG = dEL_FLG;
 	}
-	public BRRS_M_RPD_Archival_Summary_Entity1() {
+	public BRRS_M_RPD_Resub_Summary_Entity1() {
 		super();
 		// TODO Auto-generated constructor stub
 	}

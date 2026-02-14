@@ -441,7 +441,7 @@
 									    <td th:text="${ReData[1]}" style="text-align:left;"></td>
 									
 									   <td th:text="${ReData[2] != null ? #dates.format(ReData[2],'dd/MM/yyyy') : ''}"
-									        style="color:#08a6f1;"></td>
+									        style="color:#08a6f1;" onclick="getReport(this, event)"></td>
 									       									
 									    <td th:text="${domain}"></td>
 									

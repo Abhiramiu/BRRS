@@ -14,10 +14,10 @@ import javax.persistence.TemporalType;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
-@Table(name = "BRRS_M_RPD_ARCHIVALTABLE_SUMMARY2")
+@Table(name = "BRRS_M_RPD_RESUB_SUMMARY2")
 
-@IdClass(M_RPD_Archival_Summary2_PK.class)
-public class BRRS_M_RPD_Archival_Summary_Entity2 {
+@IdClass(M_RPD_Resub_Summary2_PK.class)
+public class BRRS_M_RPD_Resub_Summary_Entity2 {
 
     private String R51_PRODUCT;
     private String R51_NAME_INSIDER_BORROWER;
@@ -3990,7 +3990,7 @@ public class BRRS_M_RPD_Archival_Summary_Entity2 {
 		public void setDEL_FLG(String dEL_FLG) {
 			DEL_FLG = dEL_FLG;
 		}
-		public BRRS_M_RPD_Archival_Summary_Entity2() {
+		public BRRS_M_RPD_Resub_Summary_Entity2() {
 			super();
 			
 		}

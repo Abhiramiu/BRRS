@@ -371,24 +371,42 @@ $(window).on('beforeunload', function() {
 		window.history.back();
 	}
 	
-	function showdetails() {
-					 /* showResultModal('BRRS',' Details page not available for Manual Report');
-					 var loader = new bootstrap.Modal(document.getElementById('loader'), {backdrop: 'static',keyboard: false});
-						loader.show(); */
-						
+	function showdetails() {					
 						$('#loader').modal('show');
 						var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='detail', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/
-							location.href = Callurl;
-					 
+							location.href = Callurl;				 
 				}
 		
 	function showsummary() {
-		/* var loader = new bootstrap.Modal(document.getElementById('loader'), {backdrop: 'static',keyboard: false});
-							loader.show(); */
+		
 							$('#loader').modal('show');
 							var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/
 								location.href = Callurl;
 	}
+	function showdetailsArc() {					
+		$('#loader').modal('show');
+		var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='detail', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/
+			location.href = Callurl;				 
+}
+
+function showsummaryArc() {
+
+			$('#loader').modal('show');
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/
+				location.href = Callurl;
+}
+function showdetailsResub() {					
+	$('#loader').modal('show');
+	var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='detail', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/
+		location.href = Callurl;				 
+}
+
+function showsummaryResub() {
+
+		$('#loader').modal('show');
+		var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/
+			location.href = Callurl;
+}
     </script>
 
 <script>
@@ -438,10 +456,7 @@ function downloadfile(button) {
 	var filename = button.getAttribute('data-filename');
 	var type = button.getAttribute('data-type');
 			var version = button.getAttribute('data-version');
-
-			/* var loader = new bootstrap.Modal(document.getElementById('loader'), {backdrop: 'static',keyboard: false});
-				loader.show(); */
-
+	
 				$('#loader').modal('show');
 	$.ajax({
 		url: './downloadExcel?reportid=' + reportid +
@@ -459,8 +474,9 @@ function downloadfile(button) {
 			responseType: 'blob'
 		},
 		success: function (data) {
-			$('#loader').modal('hide');
-
+			alert("Before")
+			$('#loader').modal('hide');	
+			alert("After")
 			if (data && data.size > 100) {
 				const blob = new Blob([data], { type: 'application/vnd.ms-excel' });
 				const url = window.URL.createObjectURL(blob);
@@ -875,6 +891,16 @@ function fileuploads(btn) {
     });
 }
 
+
+$('#reports').DataTable({
+    deferRender: true,
+    scrollY: 500,
+    scroller: true,
+    paging: false,
+    autoWidth: false
+});
+
+
 </script>
 
 <style>
@@ -1072,10 +1098,21 @@ function fileuploads(btn) {
 		<button type="button" class="custom-tab-btn"
 				id="custom-tab-btnDetails" onclick="showdetails();"
 				th:if="${displaymode == 'summary'}">Details</button>
+				
+				  <button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showsummaryArc();" th:if="${displaymode == 'DetailsArc'}">Summary</button>
+		<button type="button" class="custom-tab-btn"
+				id="custom-tab-btnDetails" onclick="showdetailsArc();"
+				th:if="${displaymode == 'summaryArc'}">Details</button>
+				
+				  <button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showsummaryResub();" th:if="${displaymode == 'DetailsResub'}">Summary</button>
+		<button type="button" class="custom-tab-btn"
+				id="custom-tab-btnDetails" onclick="showdetailsResub();"
+				th:if="${displaymode == 'summaryResub'}">Details</button>
+				
 		<!-- Modify button -->
 		<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
 											title="Click to EDIT Records"
-											th:if="${displaymode == 'summary'}"
+											th:if="${displaymode == 'summary' or displaymode == 'summaryResub'}"
 											id="addRecord">
 											Modify
 										</button>
@@ -1088,7 +1125,7 @@ function fileuploads(btn) {
 				        style="display: none;">Cancel</button>
 
     
-        <button type="button" class="custom-tab-btn" id="custom-tab-btnAdd" th:if="${displaymode == 'summary' or displaymode == 'Details'}"
+        <button type="button" class="custom-tab-btn" id="custom-tab-btnAdd" th:if="${displaymode == 'summary' or displaymode == 'Details' or displaymode == 'DetailsArc' or displaymode == 'summaryArc' or displaymode == 'DetailsResub' or displaymode == 'summaryResub'}"
             th:attr="data-reportid=${reportid}, 
                      data-asondate=${asondate}, 
                      data-fromdate=${fromdate}, 
@@ -1104,14 +1141,14 @@ function fileuploads(btn) {
         </button>
 
 		<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-			th:if="${displaymode == 'Details' or displaymode == 'summary'}" onclick="startReport(this);" th:attr="
+			th:if="${displaymode == 'Details' or displaymode == 'summary' or displaymode == 'DetailsArc' or displaymode == 'summaryArc' or displaymode == 'DetailsResub' or displaymode == 'summaryResub'}" onclick="startReport(this);" th:attr="
 				    data-reportid=${reportid},
 				    data-asondate=${asondate}, 
 				    data-fromdate=${fromdate},
 				    data-todate=${todate},
 					data-currency=${currency},  
 					data-dtltype=${dtltype}, 
-				    data-filename='M_RPDDetails',
+				    data-filename='EMail_M_RPD.xlsx',
 					data-type=${type},
 					data-version=${version}
 				  ">E-Mail
@@ -1121,7 +1158,7 @@ function fileuploads(btn) {
 					</div>
 				</div>
 			
-			<div th:if="${displaymode == 'summary' or displaymode == 'Details'}">
+			<div th:if="${displaymode == 'Details' or displaymode == 'summary' or displaymode == 'DetailsArc' or displaymode == 'summaryArc' or displaymode == 'DetailsResub' or displaymode == 'summaryResub'}">
 			<div class="row" >
 				<div class="col-sm-12">
 					<form action="#" method="POST" id="fileupload">
