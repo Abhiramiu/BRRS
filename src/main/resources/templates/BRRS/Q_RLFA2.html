@@ -1183,7 +1183,7 @@ function cancelModify() {
 
 	// This is the main function that orchestrates the entire form submission process.
 	// It is triggered by the "Update" button click.
-	window.fileuploads = function (btn) {
+/* 	window.fileuploads = function (btn) {
     try {
         // ✅ Get the report date from the button's data attribute
         const asondate = btn.getAttribute("data-todate");
@@ -1270,6 +1270,107 @@ function cancelModify() {
         console.error("Error during file upload:", error);
     }
 };
+ */
+ 
+ 
+ function fileuploads(btn) {
+
+	    try {
+
+	        const asondate = btn.getAttribute("data-todate");
+
+	        $('#loader').modal('show');
+
+	         if (typeof calculateR10Totals === "function") calculateR10Totals();
+	        if (typeof calculateR14Totals === "function") calculateR14Totals();
+	        if (typeof calculateR28Totals === "function") calculateR28Totals();
+	        if (typeof calculateR37Totals === "function") calculateR37Totals();
+	        if (typeof calculateR40Totals === "function") calculateR40Totals();
+	        if (typeof calculateR43Totals === "function") calculateR43Totals();
+	        if (typeof calculateR48Totals === "function") calculateR48Totals();
+	        if (typeof calculateR52Totals === "function") calculateR52Totals();
+	        if (typeof calculateR56Totals === "function") calculateR56Totals();
+	        if (typeof calculateR63Totals === "function") calculateR63Totals();
+	        if (typeof calculateTotals === "function") calculateTotals();
+
+		
+
+	        // Remove commas
+	        $("#fileupload input[type='text']").each(function () {
+	            const val = $(this).val();
+	            if (val && val.includes(",")) {
+	                $(this).val(val.replace(/,/g, ''));
+	            }
+	        });
+
+	        if (!$("#fileupload").valid()) {
+	            $('#loader').modal('hide');
+	            return;
+	        }
+
+	        // Get type from URL
+	        const urlParams = new URLSearchParams(window.location.search);
+	        const urlType = urlParams.get("type");
+
+	        const isResub = urlType && urlType.toUpperCase() === 'RESUB';
+
+	        // ✅ Use SERIALIZE (NOT FormData)
+	        const formData =
+	            $('#fileupload').serialize()
+	            + '&asondate=' + encodeURIComponent(asondate)
+	            + '&type=' + encodeURIComponent(urlType || '');
+
+	        console.log("✅ Form data prepared");
+
+	        let apiUrl = './Q_RLFA2update';
+	        if (isResub) {
+	            apiUrl = './UpdateQ_RLFA2_ReSub';
+	        }
+
+	        $.ajax({
+	            url: apiUrl,
+	            type: 'POST',
+	            data: formData,
+	            dataType: 'text',
+
+	            success: function (response) {
+	                $("#resultModalLabel").text("BRRS");
+	                $("#resultModalBody").text(response);
+	                $("#resultModal").modal("show");
+
+	                $("#resultModal")
+	                    .off("hidden.bs.modal")
+	                    .on("hidden.bs.modal", function () {
+	                        if (isResub) {
+	                            window.location.href =
+	                                window.previousUrl
+	                                    ? window.previousUrl
+	                                    : "/BRRS/Resubmission?rptcode=M_CA4";
+	                        }
+	                    });
+	            },
+
+	            error: function (jqXHR) {
+	                console.log("Error response:", jqXHR.responseText);
+
+	                $("#resultModalLabel").text("Error");
+	                $("#resultModalBody").text(
+	                    "Update failed: " +
+	                    (jqXHR.responseText || "Unknown error")
+	                );
+	                $("#resultModal").modal("show");
+	            },
+
+	            complete: function () {
+	                $('#loader').modal('hide');
+	            }
+	        });
+
+	    } catch (error) {
+	        $('#loader').modal('hide');
+	        console.error("Error during file upload:", error);
+	    }
+	}
 
 
 	</script>

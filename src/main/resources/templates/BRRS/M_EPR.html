@@ -983,7 +983,7 @@ $(document).ready(function() {
 	// This is the main function that orchestrates the entire form submission process.
 	// It is triggered by the "Update" button click.
 // Make the function global so onclick="fileuploads(this)" can see it
- window.fileuploads = function (btn) {
+/*  window.fileuploads = function (btn) {
 	    const asondate = btn.getAttribute("data-todate");
 
 	    $('#loader').modal('show');
@@ -1051,9 +1051,97 @@ $(document).ready(function() {
 	            $('#loader').modal('hide');
 	        }
 	    });
-	};
+	}; */
 
- 
+	function fileuploads(btn) {
+
+	    try {
+
+	        const asondate = btn.getAttribute("data-todate");
+
+	        $('#loader').modal('show');
+
+	        if (typeof calculateAllGpfsrCharges === "function") {
+	        	calculateAllGpfsrCharges();
+	        }
+
+	        // Remove commas
+	        $("#fileupload input[type='text']").each(function () {
+	            const val = $(this).val();
+	            if (val && val.includes(",")) {
+	                $(this).val(val.replace(/,/g, ''));
+	            }
+	        });
+
+	        if (!$("#fileupload").valid()) {
+	            $('#loader').modal('hide');
+	            return;
+	        }
+
+	        // Get type from URL
+	        const urlParams = new URLSearchParams(window.location.search);
+	        const urlType = urlParams.get("type");
+
+	        const isResub = urlType && urlType.toUpperCase() === 'RESUB';
+
+	        // ✅ Use SERIALIZE (NOT FormData)
+	        const formData =
+	            $('#fileupload').serialize()
+	            + '&asondate=' + encodeURIComponent(asondate)
+	            + '&type=' + encodeURIComponent(urlType || '');
+
+	        console.log("✅ Form data prepared");
+
+	        let apiUrl = './M_EPRupdate';
+	        if (isResub) {
+	            apiUrl = './UpdateM_EPR_ReSub';
+	        }
+
+	        $.ajax({
+	            url: apiUrl,
+	            type: 'POST',
+	            data: formData,
+	            dataType: 'text',
+
+	            success: function (response) {
+	                $("#resultModalLabel").text("BRRS");
+	                $("#resultModalBody").text(response);
+	                $("#resultModal").modal("show");
+
+	                $("#resultModal")
+	                    .off("hidden.bs.modal")
+	                    .on("hidden.bs.modal", function () {
+	                        if (isResub) {
+	                            window.location.href =
+	                                window.previousUrl
+	                                    ? window.previousUrl
+	                                    : "/BRRS/Resubmission?rptcode=M_CA4";
+	                        }
+	                    });
+	            },
+
+	            error: function (jqXHR) {
+	                console.log("Error response:", jqXHR.responseText);
+
+	                $("#resultModalLabel").text("Error");
+	                $("#resultModalBody").text(
+	                    "Update failed: " +
+	                    (jqXHR.responseText || "Unknown error")
+	                );
+	                $("#resultModal").modal("show");
+	            },
+
+	            complete: function () {
+	                $('#loader').modal('hide');
+	            }
+	        });
+
+	    } catch (error) {
+	        $('#loader').modal('hide');
+	        console.error("Error during file upload:", error);
+	    }
+	}
+
 
 
 
