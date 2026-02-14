@@ -410,17 +410,26 @@ let isDetailsModal = false;
 
 		//to fetch summary from the database - called from the summary button
 		function showdetails() {
-			$('#loader').modal('show');
-			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='detail', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/;
-			location.href = Callurl;
+			 $('#loader').modal('show');
+			    var Callurl = /*[[@{'/Reports/' + ${reportid}(
+			        dtltype='detail',
+			        fromdate=${fromdate},
+			        todate=${todate},
+			        type=${type},
+			        asondate=${asondate},
+			        version=${version}
+			    )}]]*/;
+			    location.href = Callurl;
+
 }
 
-		function showsummary() {
+
+function showsummary() {
 			$('#loader').modal('show');
-			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/;
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate}, version=${version})}]]*/;
 			location.href = Callurl;
 		}
-
+		
 
 	</script>
 <script>

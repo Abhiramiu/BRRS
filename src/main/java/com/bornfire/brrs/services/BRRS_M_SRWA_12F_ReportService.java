@@ -72,8 +72,6 @@ public class BRRS_M_SRWA_12F_ReportService {
 	@Autowired
 	BRRS_M_SRWA_12F_Archival_Summary_Repo M_SRWA_12F_Archival_Summary_Repo;
 
-
-
 	@Autowired
 	BRRS_M_SRWA_12F_Archival_Detail_Repo BRRS_M_SRWA_12F_Archival_Detail_Repo;
 
@@ -369,35 +367,34 @@ public class BRRS_M_SRWA_12F_ReportService {
 	}
 
 	// Archival View
-		public List<Object[]> getM_SRWA_12FArchival() {
-			List<Object[]> archivalList = new ArrayList<>();
+	public List<Object[]> getM_SRWA_12FArchival() {
+		List<Object[]> archivalList = new ArrayList<>();
 
-			try {
-				List<M_SRWA_12F_Archival_Summary_Entity> repoData = M_SRWA_12F_Archival_Summary_Repo
-						.getdatabydateListWithVersion();
+		try {
+			List<M_SRWA_12F_Archival_Summary_Entity> repoData = M_SRWA_12F_Archival_Summary_Repo
+					.getdatabydateListWithVersion();
 
-				if (repoData != null && !repoData.isEmpty()) {
-					for (M_SRWA_12F_Archival_Summary_Entity entity : repoData) {
-						Object[] row = new Object[] { entity.getReportDate(), entity.getReportVersion(),
-								entity.getReportResubDate() };
-						archivalList.add(row);
-					}
-
-					System.out.println("Fetched " + archivalList.size() + " archival records");
-					M_SRWA_12F_Archival_Summary_Entity first = repoData.get(0);
-					System.out.println("Latest archival version: " + first.getReportVersion());
-				} else {
-					System.out.println("No archival data found.");
+			if (repoData != null && !repoData.isEmpty()) {
+				for (M_SRWA_12F_Archival_Summary_Entity entity : repoData) {
+					Object[] row = new Object[] { entity.getReportDate(), entity.getReportVersion(),
+							entity.getReportResubDate() };
+					archivalList.add(row);
 				}
 
-			} catch (Exception e) {
-				System.err.println("Error fetching M_SRWA_12F Archival data: " + e.getMessage());
-				e.printStackTrace();
+				System.out.println("Fetched " + archivalList.size() + " archival records");
+				M_SRWA_12F_Archival_Summary_Entity first = repoData.get(0);
+				System.out.println("Latest archival version: " + first.getReportVersion());
+			} else {
+				System.out.println("No archival data found.");
 			}
-			
 
-			return archivalList;
+		} catch (Exception e) {
+			System.err.println("Error fetching M_SRWA_12F Archival data: " + e.getMessage());
+			e.printStackTrace();
 		}
+
+		return archivalList;
+	}
 
 	// Normal format Excel
 
@@ -2289,7 +2286,9 @@ public class BRRS_M_SRWA_12F_ReportService {
 							cell6.setCellStyle(textStyle);
 						}
 
-						// row22
+						// ==========================
+						// R22
+						// ==========================
 						row = sheet.getRow(21);
 
 						cell1 = row.createCell(1);
@@ -2310,6 +2309,33 @@ public class BRRS_M_SRWA_12F_ReportService {
 							cell2.setCellStyle(textStyle);
 						}
 
+						cell3 = row.createCell(4);
+						if (record1.getR22_RATING_AGENCY() != null) {
+							cell3.setCellValue(record1.getR22_RATING_AGENCY());
+							cell3.setCellStyle(textStyle);
+						} else {
+							cell3.setCellValue("");
+							cell3.setCellStyle(textStyle);
+						}
+
+						cell4 = row.createCell(6);
+						if (record1.getR22_EXPOSURE_AMT() != null) {
+							cell4.setCellValue(record1.getR22_EXPOSURE_AMT().doubleValue());
+							cell4.setCellStyle(numberStyle);
+						} else {
+							cell4.setCellValue("");
+							cell4.setCellStyle(textStyle);
+						}
+
+						cell5 = row.createCell(7);
+						if (record1.getR22_RISK_WEIGHT() != null) {
+							cell5.setCellValue(record1.getR22_RISK_WEIGHT().doubleValue());
+							cell5.setCellStyle(numberStyle);
+						} else {
+							cell5.setCellValue("");
+							cell5.setCellStyle(textStyle);
+						}
+
 						cell6 = row.createCell(8);
 						if (record1.getR22_RISK_WEIGHTED_AMT() != null) {
 							cell6.setCellValue(record1.getR22_RISK_WEIGHTED_AMT().doubleValue());
@@ -2319,7 +2345,9 @@ public class BRRS_M_SRWA_12F_ReportService {
 							cell6.setCellStyle(textStyle);
 						}
 
-						// row23
+						// ==========================
+						// R23
+						// ==========================
 						row = sheet.getRow(22);
 
 						cell1 = row.createCell(1);
@@ -2340,6 +2368,33 @@ public class BRRS_M_SRWA_12F_ReportService {
 							cell2.setCellStyle(textStyle);
 						}
 
+						cell3 = row.createCell(4);
+						if (record1.getR23_RATING_AGENCY() != null) {
+							cell3.setCellValue(record1.getR23_RATING_AGENCY());
+							cell3.setCellStyle(textStyle);
+						} else {
+							cell3.setCellValue("");
+							cell3.setCellStyle(textStyle);
+						}
+
+						cell4 = row.createCell(6);
+						if (record1.getR23_EXPOSURE_AMT() != null) {
+							cell4.setCellValue(record1.getR23_EXPOSURE_AMT().doubleValue());
+							cell4.setCellStyle(numberStyle);
+						} else {
+							cell4.setCellValue("");
+							cell4.setCellStyle(textStyle);
+						}
+
+						cell5 = row.createCell(7);
+						if (record1.getR23_RISK_WEIGHT() != null) {
+							cell5.setCellValue(record1.getR23_RISK_WEIGHT().doubleValue());
+							cell5.setCellStyle(numberStyle);
+						} else {
+							cell5.setCellValue("");
+							cell5.setCellStyle(textStyle);
+						}
+
 						cell6 = row.createCell(8);
 						if (record1.getR23_RISK_WEIGHTED_AMT() != null) {
 							cell6.setCellValue(record1.getR23_RISK_WEIGHTED_AMT().doubleValue());
@@ -2349,7 +2404,9 @@ public class BRRS_M_SRWA_12F_ReportService {
 							cell6.setCellStyle(textStyle);
 						}
 
-						// row24
+						// ==========================
+						// R24
+						// ==========================
 						row = sheet.getRow(23);
 
 						cell1 = row.createCell(1);
@@ -2370,6 +2427,33 @@ public class BRRS_M_SRWA_12F_ReportService {
 							cell2.setCellStyle(textStyle);
 						}
 
+						cell3 = row.createCell(4);
+						if (record1.getR24_RATING_AGENCY() != null) {
+							cell3.setCellValue(record1.getR24_RATING_AGENCY());
+							cell3.setCellStyle(textStyle);
+						} else {
+							cell3.setCellValue("");
+							cell3.setCellStyle(textStyle);
+						}
+
+						cell4 = row.createCell(6);
+						if (record1.getR24_EXPOSURE_AMT() != null) {
+							cell4.setCellValue(record1.getR24_EXPOSURE_AMT().doubleValue());
+							cell4.setCellStyle(numberStyle);
+						} else {
+							cell4.setCellValue("");
+							cell4.setCellStyle(textStyle);
+						}
+
+						cell5 = row.createCell(7);
+						if (record1.getR24_RISK_WEIGHT() != null) {
+							cell5.setCellValue(record1.getR24_RISK_WEIGHT().doubleValue());
+							cell5.setCellStyle(numberStyle);
+						} else {
+							cell5.setCellValue("");
+							cell5.setCellStyle(textStyle);
+						}
+
 						cell6 = row.createCell(8);
 						if (record1.getR24_RISK_WEIGHTED_AMT() != null) {
 							cell6.setCellValue(record1.getR24_RISK_WEIGHTED_AMT().doubleValue());
@@ -2378,7 +2462,6 @@ public class BRRS_M_SRWA_12F_ReportService {
 							cell6.setCellValue("");
 							cell6.setCellStyle(textStyle);
 						}
-
 						// row25
 						row = sheet.getRow(24);
 
@@ -4927,7 +5010,9 @@ public class BRRS_M_SRWA_12F_ReportService {
 						cell6.setCellStyle(textStyle);
 					}
 
-					// row22
+					// ==========================
+					// R22
+					// ==========================
 					row = sheet.getRow(21);
 
 					cell1 = row.createCell(1);
@@ -4948,6 +5033,33 @@ public class BRRS_M_SRWA_12F_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
+					cell3 = row.createCell(4);
+					if (record1.getR22_RATING_AGENCY() != null) {
+						cell3.setCellValue(record1.getR22_RATING_AGENCY());
+						cell3.setCellStyle(textStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(6);
+					if (record1.getR22_EXPOSURE_AMT() != null) {
+						cell4.setCellValue(record1.getR22_EXPOSURE_AMT().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(7);
+					if (record1.getR22_RISK_WEIGHT() != null) {
+						cell5.setCellValue(record1.getR22_RISK_WEIGHT().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
 					cell6 = row.createCell(8);
 					if (record1.getR22_RISK_WEIGHTED_AMT() != null) {
 						cell6.setCellValue(record1.getR22_RISK_WEIGHTED_AMT().doubleValue());
@@ -4957,7 +5069,9 @@ public class BRRS_M_SRWA_12F_ReportService {
 						cell6.setCellStyle(textStyle);
 					}
 
-					// row23
+					// ==========================
+					// R23
+					// ==========================
 					row = sheet.getRow(22);
 
 					cell1 = row.createCell(1);
@@ -4978,6 +5092,33 @@ public class BRRS_M_SRWA_12F_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
+					cell3 = row.createCell(4);
+					if (record1.getR23_RATING_AGENCY() != null) {
+						cell3.setCellValue(record1.getR23_RATING_AGENCY());
+						cell3.setCellStyle(textStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(6);
+					if (record1.getR23_EXPOSURE_AMT() != null) {
+						cell4.setCellValue(record1.getR23_EXPOSURE_AMT().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(7);
+					if (record1.getR23_RISK_WEIGHT() != null) {
+						cell5.setCellValue(record1.getR23_RISK_WEIGHT().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
 					cell6 = row.createCell(8);
 					if (record1.getR23_RISK_WEIGHTED_AMT() != null) {
 						cell6.setCellValue(record1.getR23_RISK_WEIGHTED_AMT().doubleValue());
@@ -4987,7 +5128,9 @@ public class BRRS_M_SRWA_12F_ReportService {
 						cell6.setCellStyle(textStyle);
 					}
 
-					// row24
+					// ==========================
+					// R24
+					// ==========================
 					row = sheet.getRow(23);
 
 					cell1 = row.createCell(1);
@@ -5008,6 +5151,33 @@ public class BRRS_M_SRWA_12F_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
+					cell3 = row.createCell(4);
+					if (record1.getR24_RATING_AGENCY() != null) {
+						cell3.setCellValue(record1.getR24_RATING_AGENCY());
+						cell3.setCellStyle(textStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(6);
+					if (record1.getR24_EXPOSURE_AMT() != null) {
+						cell4.setCellValue(record1.getR24_EXPOSURE_AMT().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(7);
+					if (record1.getR24_RISK_WEIGHT() != null) {
+						cell5.setCellValue(record1.getR24_RISK_WEIGHT().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
 					cell6 = row.createCell(8);
 					if (record1.getR24_RISK_WEIGHTED_AMT() != null) {
 						cell6.setCellValue(record1.getR24_RISK_WEIGHTED_AMT().doubleValue());
@@ -5016,7 +5186,6 @@ public class BRRS_M_SRWA_12F_ReportService {
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-
 					// row25
 					row = sheet.getRow(24);
 
@@ -7569,7 +7738,9 @@ public class BRRS_M_SRWA_12F_ReportService {
 						cell6.setCellStyle(textStyle);
 					}
 
-					// row22
+					// ==========================
+					// R22
+					// ==========================
 					row = sheet.getRow(21);
 
 					cell1 = row.createCell(1);
@@ -7590,6 +7761,33 @@ public class BRRS_M_SRWA_12F_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
+					cell3 = row.createCell(4);
+					if (record1.getR22_RATING_AGENCY() != null) {
+						cell3.setCellValue(record1.getR22_RATING_AGENCY());
+						cell3.setCellStyle(textStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(6);
+					if (record1.getR22_EXPOSURE_AMT() != null) {
+						cell4.setCellValue(record1.getR22_EXPOSURE_AMT().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(7);
+					if (record1.getR22_RISK_WEIGHT() != null) {
+						cell5.setCellValue(record1.getR22_RISK_WEIGHT().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
 					cell6 = row.createCell(8);
 					if (record1.getR22_RISK_WEIGHTED_AMT() != null) {
 						cell6.setCellValue(record1.getR22_RISK_WEIGHTED_AMT().doubleValue());
@@ -7599,7 +7797,9 @@ public class BRRS_M_SRWA_12F_ReportService {
 						cell6.setCellStyle(textStyle);
 					}
 
-					// row23
+					// ==========================
+					// R23
+					// ==========================
 					row = sheet.getRow(22);
 
 					cell1 = row.createCell(1);
@@ -7620,6 +7820,33 @@ public class BRRS_M_SRWA_12F_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
+					cell3 = row.createCell(4);
+					if (record1.getR23_RATING_AGENCY() != null) {
+						cell3.setCellValue(record1.getR23_RATING_AGENCY());
+						cell3.setCellStyle(textStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(6);
+					if (record1.getR23_EXPOSURE_AMT() != null) {
+						cell4.setCellValue(record1.getR23_EXPOSURE_AMT().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(7);
+					if (record1.getR23_RISK_WEIGHT() != null) {
+						cell5.setCellValue(record1.getR23_RISK_WEIGHT().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
 					cell6 = row.createCell(8);
 					if (record1.getR23_RISK_WEIGHTED_AMT() != null) {
 						cell6.setCellValue(record1.getR23_RISK_WEIGHTED_AMT().doubleValue());
@@ -7629,7 +7856,9 @@ public class BRRS_M_SRWA_12F_ReportService {
 						cell6.setCellStyle(textStyle);
 					}
 
-					// row24
+					// ==========================
+					// R24
+					// ==========================
 					row = sheet.getRow(23);
 
 					cell1 = row.createCell(1);
@@ -7650,6 +7879,33 @@ public class BRRS_M_SRWA_12F_ReportService {
 						cell2.setCellStyle(textStyle);
 					}
 
+					cell3 = row.createCell(4);
+					if (record1.getR24_RATING_AGENCY() != null) {
+						cell3.setCellValue(record1.getR24_RATING_AGENCY());
+						cell3.setCellStyle(textStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(6);
+					if (record1.getR24_EXPOSURE_AMT() != null) {
+						cell4.setCellValue(record1.getR24_EXPOSURE_AMT().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(7);
+					if (record1.getR24_RISK_WEIGHT() != null) {
+						cell5.setCellValue(record1.getR24_RISK_WEIGHT().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
 					cell6 = row.createCell(8);
 					if (record1.getR24_RISK_WEIGHTED_AMT() != null) {
 						cell6.setCellValue(record1.getR24_RISK_WEIGHTED_AMT().doubleValue());
@@ -7658,7 +7914,6 @@ public class BRRS_M_SRWA_12F_ReportService {
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-
 					// row25
 					row = sheet.getRow(24);
 

@@ -15,7 +15,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Entity
 @Table(name = "BRRS_M_RPD_ARCHIVALTABLE_SUMMARY4")
 
-@IdClass(M_RPD_Archival_Summary4_PK.class)
+@IdClass(M_RPD_PK.class)
 public class BRRS_M_RPD_Archival_Summary_Entity4 {
 	  private String R151_PRODUCT;
 	    private String R151_NAME_INSIDER_BORROWER;
