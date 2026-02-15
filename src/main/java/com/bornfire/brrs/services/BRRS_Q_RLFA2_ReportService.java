@@ -13,8 +13,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
+
 
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
@@ -2435,7 +2434,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 							// row14
 							// Column D4 - No. of Accounts
-							cellE = row.createCell(6);
+							cellE = row.createCell(5);
 							if (record.getR14_no_of_acc() != null) {
 							    cellE.setCellValue(record.getR14_no_of_acc().doubleValue());
 							    cellE.setCellStyle(numberStyle);
@@ -2471,7 +2470,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row15
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR15_no_of_acc() != null) {
 				cellE.setCellValue(record.getR15_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -2508,7 +2507,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row16
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR16_no_of_acc() != null) {
 				cellE.setCellValue(record.getR16_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -2545,7 +2544,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row17
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR17_no_of_acc() != null) {
 				cellE.setCellValue(record.getR17_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -2582,7 +2581,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row18
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR18_no_of_acc() != null) {
 				cellE.setCellValue(record.getR18_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -2619,7 +2618,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row19
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR19_no_of_acc() != null) {
 				cellE.setCellValue(record.getR19_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -2656,7 +2655,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row20
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR20_no_of_acc() != null) {
 				cellE.setCellValue(record.getR20_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -2693,7 +2692,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row21
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR21_no_of_acc() != null) {
 				cellE.setCellValue(record.getR21_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -2730,7 +2729,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row22
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR22_no_of_acc() != null) {
 				cellE.setCellValue(record.getR22_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -2767,7 +2766,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row23
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR23_no_of_acc() != null) {
 				cellE.setCellValue(record.getR23_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -2804,7 +2803,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row24
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR24_no_of_acc() != null) {
 				cellE.setCellValue(record.getR24_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -2841,7 +2840,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row25
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR25_no_of_acc() != null) {
 				cellE.setCellValue(record.getR25_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -2885,7 +2884,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row28
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR28_no_of_acc() != null) {
 				cellE.setCellValue(record.getR28_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -2923,7 +2922,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row29
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR29_no_of_acc() != null) {
 				cellE.setCellValue(record.getR29_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -2960,7 +2959,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row30
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR30_no_of_acc() != null) {
 				cellE.setCellValue(record.getR30_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -3000,7 +2999,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row32
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR32_no_of_acc() != null) {
 				cellE.setCellValue(record.getR32_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -3037,7 +3036,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row33
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR33_no_of_acc() != null) {
 				cellE.setCellValue(record.getR33_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -3074,7 +3073,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row34
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR34_no_of_acc() != null) {
 				cellE.setCellValue(record.getR34_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -3111,7 +3110,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row35
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR35_no_of_acc() != null) {
 				cellE.setCellValue(record.getR35_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -3148,7 +3147,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row36
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR36_no_of_acc() != null) {
 				cellE.setCellValue(record.getR36_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -3185,7 +3184,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row37
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR37_no_of_acc() != null) {
 				cellE.setCellValue(record.getR37_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -3222,7 +3221,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row38
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR38_no_of_acc() != null) {
 				cellE.setCellValue(record.getR38_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -3259,7 +3258,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row39
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR39_no_of_acc() != null) {
 				cellE.setCellValue(record.getR39_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -3296,7 +3295,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row40
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR40_no_of_acc() != null) {
 				cellE.setCellValue(record.getR40_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -3333,7 +3332,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row41
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR41_no_of_acc() != null) {
 				cellE.setCellValue(record.getR41_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -3370,7 +3369,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row42
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR42_no_of_acc() != null) {
 				cellE.setCellValue(record.getR42_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -3407,7 +3406,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row43
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR43_no_of_acc() != null) {
 				cellE.setCellValue(record.getR43_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -3534,7 +3533,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 
 			// row47-------->        d) Other (specify)*(NEW 44)
-			row = sheet.getRow(45);
+			row = sheet.getRow(43);
 
 			// row47
 			// Column B2 - Original Amount
@@ -3571,7 +3570,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 
 			// row48-->    (iv)  Other Financial Corporations (sum of lines (a) to (e)):(NEW 45)
-			row = sheet.getRow(46);
+			row = sheet.getRow(44);
 
 			// row48
 			// Column B2 - Original Amount
@@ -3749,7 +3748,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row57
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR57_no_of_acc() != null) {
 				cellE.setCellValue(record.getR57_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -3788,7 +3787,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row53
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR53_no_of_acc() != null) {
 				cellE.setCellValue(record.getR53_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -3826,7 +3825,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row54
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR54_no_of_acc() != null) {
 				cellE.setCellValue(record.getR54_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -3863,7 +3862,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row55
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR55_no_of_acc() != null) {
 				cellE.setCellValue(record.getR55_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -3900,7 +3899,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row56
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR56_no_of_acc() != null) {
 				cellE.setCellValue(record.getR56_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -3939,7 +3938,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row58
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR58_no_of_acc() != null) {
 				cellE.setCellValue(record.getR58_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -3976,7 +3975,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row59
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR59_no_of_acc() != null) {
 				cellE.setCellValue(record.getR59_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -4013,7 +4012,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row60
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR60_no_of_acc() != null) {
 				cellE.setCellValue(record.getR60_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -4050,7 +4049,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row61
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR61_no_of_acc() != null) {
 				cellE.setCellValue(record.getR61_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -4087,7 +4086,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row62
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR62_no_of_acc() != null) {
 				cellE.setCellValue(record.getR62_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -4124,7 +4123,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row63
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR63_no_of_acc() != null) {
 				cellE.setCellValue(record.getR63_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -4161,7 +4160,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row64
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR64_no_of_acc() != null) {
 				cellE.setCellValue(record.getR64_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -5972,6 +5971,7 @@ public class BRRS_Q_RLFA2_ReportService {
 								row = sheet.createRow(startRow + i);
 							}
 							
+
 							// row10
 							// Column B2 - Original Amount 
 							Cell cellB = row.createCell(3);
@@ -6023,7 +6023,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 							// row11
 						    // Column C3 - Foreclosure Amount
-						 cellC = row.createCell(4);
+							 cellC = row.createCell(4);
 							if (record.getR10_fore_amt() != null) {
 								cellC.setCellValue(record.getR10_fore_amt().doubleValue());
 								cellC.setCellStyle(numberStyle);
@@ -6146,7 +6146,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 							// row14
 							// Column D4 - No. of Accounts
-							cellE = row.createCell(6);
+							cellE = row.createCell(5);
 							if (record.getR14_no_of_acc() != null) {
 							    cellE.setCellValue(record.getR14_no_of_acc().doubleValue());
 							    cellE.setCellStyle(numberStyle);
@@ -6182,7 +6182,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row15
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR15_no_of_acc() != null) {
 				cellE.setCellValue(record.getR15_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -6219,7 +6219,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row16
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR16_no_of_acc() != null) {
 				cellE.setCellValue(record.getR16_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -6256,7 +6256,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row17
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR17_no_of_acc() != null) {
 				cellE.setCellValue(record.getR17_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -6293,7 +6293,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row18
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR18_no_of_acc() != null) {
 				cellE.setCellValue(record.getR18_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -6330,7 +6330,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row19
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR19_no_of_acc() != null) {
 				cellE.setCellValue(record.getR19_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -6367,7 +6367,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row20
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR20_no_of_acc() != null) {
 				cellE.setCellValue(record.getR20_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -6404,7 +6404,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row21
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR21_no_of_acc() != null) {
 				cellE.setCellValue(record.getR21_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -6441,7 +6441,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row22
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR22_no_of_acc() != null) {
 				cellE.setCellValue(record.getR22_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -6478,7 +6478,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row23
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR23_no_of_acc() != null) {
 				cellE.setCellValue(record.getR23_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -6515,7 +6515,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row24
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR24_no_of_acc() != null) {
 				cellE.setCellValue(record.getR24_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -6552,7 +6552,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row25
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR25_no_of_acc() != null) {
 				cellE.setCellValue(record.getR25_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -6596,7 +6596,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row28
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR28_no_of_acc() != null) {
 				cellE.setCellValue(record.getR28_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -6634,7 +6634,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row29
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR29_no_of_acc() != null) {
 				cellE.setCellValue(record.getR29_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -6671,7 +6671,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row30
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR30_no_of_acc() != null) {
 				cellE.setCellValue(record.getR30_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -6711,7 +6711,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row32
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR32_no_of_acc() != null) {
 				cellE.setCellValue(record.getR32_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -6748,7 +6748,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row33
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR33_no_of_acc() != null) {
 				cellE.setCellValue(record.getR33_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -6785,7 +6785,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row34
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR34_no_of_acc() != null) {
 				cellE.setCellValue(record.getR34_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -6822,7 +6822,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row35
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR35_no_of_acc() != null) {
 				cellE.setCellValue(record.getR35_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -6859,7 +6859,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row36
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR36_no_of_acc() != null) {
 				cellE.setCellValue(record.getR36_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -6896,7 +6896,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row37
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR37_no_of_acc() != null) {
 				cellE.setCellValue(record.getR37_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -6933,7 +6933,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row38
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR38_no_of_acc() != null) {
 				cellE.setCellValue(record.getR38_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -6970,7 +6970,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row39
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR39_no_of_acc() != null) {
 				cellE.setCellValue(record.getR39_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -7007,7 +7007,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row40
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR40_no_of_acc() != null) {
 				cellE.setCellValue(record.getR40_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -7044,7 +7044,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row41
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR41_no_of_acc() != null) {
 				cellE.setCellValue(record.getR41_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -7081,7 +7081,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row42
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR42_no_of_acc() != null) {
 				cellE.setCellValue(record.getR42_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -7118,7 +7118,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row43
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR43_no_of_acc() != null) {
 				cellE.setCellValue(record.getR43_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -7245,7 +7245,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 
 			// row47-------->        d) Other (specify)*(NEW 44)
-			row = sheet.getRow(45);
+			row = sheet.getRow(43);
 
 			// row47
 			// Column B2 - Original Amount
@@ -7282,7 +7282,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 
 			// row48-->    (iv)  Other Financial Corporations (sum of lines (a) to (e)):(NEW 45)
-			row = sheet.getRow(46);
+			row = sheet.getRow(44);
 
 			// row48
 			// Column B2 - Original Amount
@@ -7460,7 +7460,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row57
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR57_no_of_acc() != null) {
 				cellE.setCellValue(record.getR57_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -7499,7 +7499,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row53
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR53_no_of_acc() != null) {
 				cellE.setCellValue(record.getR53_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -7537,7 +7537,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row54
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR54_no_of_acc() != null) {
 				cellE.setCellValue(record.getR54_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -7574,7 +7574,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row55
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR55_no_of_acc() != null) {
 				cellE.setCellValue(record.getR55_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -7611,7 +7611,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row56
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR56_no_of_acc() != null) {
 				cellE.setCellValue(record.getR56_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -7650,7 +7650,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row58
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR58_no_of_acc() != null) {
 				cellE.setCellValue(record.getR58_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -7687,7 +7687,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row59
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR59_no_of_acc() != null) {
 				cellE.setCellValue(record.getR59_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -7724,7 +7724,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row60
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR60_no_of_acc() != null) {
 				cellE.setCellValue(record.getR60_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -7761,7 +7761,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row61
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR61_no_of_acc() != null) {
 				cellE.setCellValue(record.getR61_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -7798,7 +7798,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row62
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR62_no_of_acc() != null) {
 				cellE.setCellValue(record.getR62_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -7835,7 +7835,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row63
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR63_no_of_acc() != null) {
 				cellE.setCellValue(record.getR63_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -7872,7 +7872,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row64
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR64_no_of_acc() != null) {
 				cellE.setCellValue(record.getR64_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -7880,6 +7880,8 @@ public class BRRS_Q_RLFA2_ReportService {
 				cellE.setCellValue("");
 				cellE.setCellStyle(textStyle);
 			}
+
+
 
 
 
@@ -9685,6 +9687,7 @@ public class BRRS_Q_RLFA2_ReportService {
 								row = sheet.createRow(startRow + i);
 							}
 							
+
 							// row10
 							// Column B2 - Original Amount 
 							Cell cellB = row.createCell(3);
@@ -9859,7 +9862,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 							// row14
 							// Column D4 - No. of Accounts
-							cellE = row.createCell(6);
+							cellE = row.createCell(5);
 							if (record.getR14_no_of_acc() != null) {
 							    cellE.setCellValue(record.getR14_no_of_acc().doubleValue());
 							    cellE.setCellStyle(numberStyle);
@@ -9895,7 +9898,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row15
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR15_no_of_acc() != null) {
 				cellE.setCellValue(record.getR15_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -9932,7 +9935,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row16
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR16_no_of_acc() != null) {
 				cellE.setCellValue(record.getR16_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -9969,7 +9972,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row17
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR17_no_of_acc() != null) {
 				cellE.setCellValue(record.getR17_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -10006,7 +10009,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row18
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR18_no_of_acc() != null) {
 				cellE.setCellValue(record.getR18_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -10043,7 +10046,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row19
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR19_no_of_acc() != null) {
 				cellE.setCellValue(record.getR19_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -10080,7 +10083,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row20
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR20_no_of_acc() != null) {
 				cellE.setCellValue(record.getR20_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -10117,7 +10120,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row21
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR21_no_of_acc() != null) {
 				cellE.setCellValue(record.getR21_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -10154,7 +10157,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row22
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR22_no_of_acc() != null) {
 				cellE.setCellValue(record.getR22_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -10191,7 +10194,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row23
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR23_no_of_acc() != null) {
 				cellE.setCellValue(record.getR23_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -10228,7 +10231,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row24
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR24_no_of_acc() != null) {
 				cellE.setCellValue(record.getR24_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -10265,7 +10268,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row25
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR25_no_of_acc() != null) {
 				cellE.setCellValue(record.getR25_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -10309,7 +10312,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row28
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR28_no_of_acc() != null) {
 				cellE.setCellValue(record.getR28_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -10347,7 +10350,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row29
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR29_no_of_acc() != null) {
 				cellE.setCellValue(record.getR29_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -10384,7 +10387,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row30
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR30_no_of_acc() != null) {
 				cellE.setCellValue(record.getR30_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -10424,7 +10427,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row32
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR32_no_of_acc() != null) {
 				cellE.setCellValue(record.getR32_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -10461,7 +10464,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row33
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR33_no_of_acc() != null) {
 				cellE.setCellValue(record.getR33_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -10498,7 +10501,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row34
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR34_no_of_acc() != null) {
 				cellE.setCellValue(record.getR34_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -10535,7 +10538,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row35
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR35_no_of_acc() != null) {
 				cellE.setCellValue(record.getR35_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -10572,7 +10575,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row36
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR36_no_of_acc() != null) {
 				cellE.setCellValue(record.getR36_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -10609,7 +10612,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row37
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR37_no_of_acc() != null) {
 				cellE.setCellValue(record.getR37_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -10646,7 +10649,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row38
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR38_no_of_acc() != null) {
 				cellE.setCellValue(record.getR38_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -10683,7 +10686,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row39
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR39_no_of_acc() != null) {
 				cellE.setCellValue(record.getR39_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -10720,7 +10723,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row40
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR40_no_of_acc() != null) {
 				cellE.setCellValue(record.getR40_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -10757,7 +10760,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row41
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR41_no_of_acc() != null) {
 				cellE.setCellValue(record.getR41_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -10794,7 +10797,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row42
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR42_no_of_acc() != null) {
 				cellE.setCellValue(record.getR42_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -10831,7 +10834,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row43
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR43_no_of_acc() != null) {
 				cellE.setCellValue(record.getR43_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -10958,7 +10961,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 
 			// row47-------->        d) Other (specify)*(NEW 44)
-			row = sheet.getRow(45);
+			row = sheet.getRow(43);
 
 			// row47
 			// Column B2 - Original Amount
@@ -10995,7 +10998,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 
 			// row48-->    (iv)  Other Financial Corporations (sum of lines (a) to (e)):(NEW 45)
-			row = sheet.getRow(46);
+			row = sheet.getRow(44);
 
 			// row48
 			// Column B2 - Original Amount
@@ -11173,7 +11176,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row57
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR57_no_of_acc() != null) {
 				cellE.setCellValue(record.getR57_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -11212,7 +11215,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row53
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR53_no_of_acc() != null) {
 				cellE.setCellValue(record.getR53_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -11250,7 +11253,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row54
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR54_no_of_acc() != null) {
 				cellE.setCellValue(record.getR54_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -11287,7 +11290,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row55
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR55_no_of_acc() != null) {
 				cellE.setCellValue(record.getR55_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -11324,7 +11327,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row56
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR56_no_of_acc() != null) {
 				cellE.setCellValue(record.getR56_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -11363,7 +11366,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row58
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR58_no_of_acc() != null) {
 				cellE.setCellValue(record.getR58_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -11400,7 +11403,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row59
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR59_no_of_acc() != null) {
 				cellE.setCellValue(record.getR59_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -11437,7 +11440,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row60
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR60_no_of_acc() != null) {
 				cellE.setCellValue(record.getR60_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -11474,7 +11477,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row61
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR61_no_of_acc() != null) {
 				cellE.setCellValue(record.getR61_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -11511,7 +11514,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row62
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR62_no_of_acc() != null) {
 				cellE.setCellValue(record.getR62_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -11548,7 +11551,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row63
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR63_no_of_acc() != null) {
 				cellE.setCellValue(record.getR63_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -11585,7 +11588,7 @@ public class BRRS_Q_RLFA2_ReportService {
 
 			// row64
 			// Column D4 - No. of Accounts
-			cellE = row.createCell(6);
+			cellE = row.createCell(5);
 			if (record.getR64_no_of_acc() != null) {
 				cellE.setCellValue(record.getR64_no_of_acc().doubleValue());
 				cellE.setCellStyle(numberStyle);
@@ -11594,8 +11597,6 @@ public class BRRS_Q_RLFA2_ReportService {
 				cellE.setCellStyle(textStyle);
 			}
 
-
-			
 
 		
 
