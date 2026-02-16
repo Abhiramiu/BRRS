@@ -853,6 +853,9 @@ public class RegulatoryReportServices {
 			repsummary = BRRS_M_NOSVOS_reportservice.getM_NOSVOSView(reportId, fromdate, todate, currency, dtltype,
 					pageable, type, version);
 			break;
+			
+			case "M_FAS": repsummary = BRRS_M_FAS_reportservice.getBRRS_M_FASView(reportId, fromdate, todate,
+					 currency, dtltype, pageable, type, version); break;
 
 		/*
 		 * 
@@ -2544,6 +2547,15 @@ public class RegulatoryReportServices {
 				repfile = BRRS_Q_SMME_DEP_ReportService.getQ_SMME_DEPExcel(filename, reportId, fromdate, todate,
 						currency, dtltype, type, format, version);
 			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			break;
+			
+		case "M_FAS":
+			try {
+				repfile = BRRS_M_FAS_reportservice.getM_FASExcel(filename, reportId, fromdate, todate, currency,
+						dtltype, type, version);
+			} catch (Exception e) { // TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			break;

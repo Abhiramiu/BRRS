@@ -93,7 +93,7 @@ public class BRRS_M_FAS_ReportService<BBRS_M_FAS_Detail_Repo> {
 
     public ModelAndView getBRRS_M_FASView(String reportId, String fromdate, String todate,
             String currency, String dtltype, Pageable pageable,
-            String type, String version) {
+            String type, BigDecimal version) {
 
         ModelAndView mv = new ModelAndView();
         Session hs = sessionFactory.getCurrentSession();
@@ -307,11 +307,11 @@ public class BRRS_M_FAS_ReportService<BBRS_M_FAS_Detail_Repo> {
 	}
 
     public byte[] getM_FASExcel(String filename, String reportId, String fromdate, String todate, String currency,
-            String dtltype, String type, String version) throws Exception {
+            String dtltype, String type, BigDecimal version) throws Exception {
         logger.info("Service: Starting Excel generation process in memory.");
 
         // ARCHIVAL check
-        if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && !version.trim().isEmpty()) {
+        if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
             logger.info("Service: Generating ARCHIVAL report for version {}", version);
             return getSummaryExcelARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
         }
@@ -322,7 +322,7 @@ public class BRRS_M_FAS_ReportService<BBRS_M_FAS_Detail_Repo> {
                 .getdatabydateList(dateformat.parse(todate));
 
         if (dataList.isEmpty()) {
-            logger.warn("Service: No data found for M_SFINP2 report. Returning empty result.");
+            logger.warn("Service: No data found for M_FAS report. Returning empty result.");
             return new byte[0];
         }
 
@@ -1085,7 +1085,7 @@ public class BRRS_M_FAS_ReportService<BBRS_M_FAS_Detail_Repo> {
     }
 
     public byte[] getSummaryExcelARCHIVAL(String filename, String reportId, String fromdate, String todate,
-            String currency, String dtltype, String type, String version) throws Exception {
+            String currency, String dtltype, String type, BigDecimal version) throws Exception {
         logger.info("Service: Starting Excel generation process in memory.");
         if (type.equals("ARCHIVAL") & version != null) {
 
