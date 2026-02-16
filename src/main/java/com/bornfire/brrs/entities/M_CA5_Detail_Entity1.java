@@ -6,16 +6,14 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.IdClass;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import org.springframework.format.annotation.DateTimeFormat;
 @Entity
-@Table(name = "BRRS_M_CA5_ARCHIVALTABLE_SUMMARY1")
-@IdClass(M_CA5_Archival_Summary1_PK.class)
-public class M_CA5_Archival_Summary_Entity1 {
+@Table(name = "BRRS_M_CA5_DETAILTABLE1")
+public class M_CA5_Detail_Entity1 {
 	
 	private String r14_line_no;
     private String r14_note_holders;
@@ -1365,27 +1363,22 @@ public class M_CA5_Archival_Summary_Entity1 {
     private BigDecimal r100_amount_derecognised_p000;
     private BigDecimal r100_total_p000;
     
-    @Id
-    @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "dd/MM/yyyy")
-	@Column(name = "REPORT_DATE")
-    private Date reportDate;
-	
+
+	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern = "dd/MM/yyyy")
 	@Id
+	@Column(name = "REPORT_DATE")
+	private Date reportDate;
+	
 	@Column(name = "REPORT_VERSION")
 	private BigDecimal reportVersion;
 	
-    @Column(name = "REPORT_RESUBDATE")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date reportResubDate;
-    
-    
-	private String report_frequency;
-	private String report_code;
-	private String report_desc;
-	private String entity_flg;
-	private String modify_flg;
-	private String del_flg;
+	public String report_frequency;
+	public String report_code;
+	public String report_desc;
+	public String entity_flg;
+	public String modify_flg;
+	public String del_flg;
 	public String getR14_line_no() {
 		return r14_line_no;
 	}
@@ -6078,12 +6071,6 @@ public class M_CA5_Archival_Summary_Entity1 {
 	public void setReportVersion(BigDecimal reportVersion) {
 		this.reportVersion = reportVersion;
 	}
-	public Date getReportResubDate() {
-		return reportResubDate;
-	}
-	public void setReportResubDate(Date reportResubDate) {
-		this.reportResubDate = reportResubDate;
-	}
 	public String getReport_frequency() {
 		return report_frequency;
 	}
@@ -6120,7 +6107,7 @@ public class M_CA5_Archival_Summary_Entity1 {
 	public void setDel_flg(String del_flg) {
 		this.del_flg = del_flg;
 	}
-	public M_CA5_Archival_Summary_Entity1() {
+	public M_CA5_Detail_Entity1() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
@@ -6129,6 +6116,7 @@ public class M_CA5_Archival_Summary_Entity1 {
 	
 
 	
+
 	
 	
 }

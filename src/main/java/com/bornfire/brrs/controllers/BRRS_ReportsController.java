@@ -1123,7 +1123,7 @@ public class BRRS_ReportsController {
 	public ResponseEntity<String> updateAllReports(
 			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
 			@ModelAttribute M_CA5_Summary_Entity1 request1, @ModelAttribute M_CA5_Summary_Entity2 request2
-
+			
 	) {
 		try {
 			System.out.println("Came to single controller");

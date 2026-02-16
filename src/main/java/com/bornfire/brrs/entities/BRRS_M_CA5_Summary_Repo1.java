@@ -1,28 +1,32 @@
+
 package com.bornfire.brrs.entities;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
+@Repository
+public interface BRRS_M_CA5_Summary_Repo1 extends JpaRepository<M_CA5_Summary_Entity1, Date> {
 
-public interface BRRS_M_CA5_Summary_Repo1
-        extends JpaRepository<M_CA5_Summary_Entity1, Date> {
+	
 
     // Fetch all rows for a specific report date
     @Query(value = "SELECT * FROM BRRS_M_CA5_SUMMARYTABLE1 WHERE REPORT_DATE = ?1", nativeQuery = true)
-    List<M_CA5_Summary_Entity1> getdatabydateList(Date rpt_date);
-    
-@Query(value = "SELECT *  FROM BRRS_M_CA5_SUMMARYTABLE1 WHERE REPORT_DATE = ?1   AND REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION DESC FETCH FIRST 1 ROWS ONLY ", nativeQuery = true)
-List<M_CA5_Summary_Entity1> getdatabydateListWithVersion(String todate);
+    List<M_CA5_Summary_Entity1> getdatabydateList(Date report_date);
+
+    @Query(value = "SELECT *  FROM BRRS_M_CA5_SUMMARYTABLE1 WHERE REPORT_DATE = ?1   AND REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION DESC FETCH FIRST 1 ROWS ONLY ", nativeQuery = true)
+    List<M_CA5_Summary_Entity1> getdatabydateListWithVersion(String todate);
 
     // Find the latest version for a report date
     Optional<M_CA5_Summary_Entity1> findTopByReportDateOrderByReportVersionDesc(Date reportDate);
 
     // Check if a version exists for a report date
-    Optional<M_CA5_Summary_Entity1> findByReportDateAndReportVersion(Date reportDate, String reportVersion);
+    Optional<M_CA5_Summary_Entity1> findByReportDateAndReportVersion(Date reportDate, BigDecimal reportVersion);
 
-        @Query(value = "SELECT *  FROM BRRS_M_CA5_SUMMARYTABLE1 WHERE REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION DESC FETCH FIRST 1 ROWS ONLY ", nativeQuery = true)
+    @Query(value = "SELECT *  FROM BRRS_M_CA5_SUMMARYTABLE1 WHERE REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION DESC FETCH FIRST 1 ROWS ONLY ", nativeQuery = true)
     List<M_CA5_Summary_Entity1> getdatabydateListWithVersion();
 }

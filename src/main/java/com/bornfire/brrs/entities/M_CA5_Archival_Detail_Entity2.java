@@ -12,10 +12,11 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import org.springframework.format.annotation.DateTimeFormat;
+
 @Entity
-@Table(name = "BRRS_M_CA5_ARCHIVALTABLE_SUMMARY2")
-@IdClass(M_CA5_Archival_Summary2_PK.class)
-public class M_CA5_Archival_Summary_Entity2 {
+@Table(name = "BRRS_M_CA5_ARCHIVALTABLE_DETAIL2")
+@IdClass(M_CA5_Archival_Detail2_PK.class)
+public class M_CA5_Archival_Detail_Entity2 {
 	
 	private String r101_line_no;
     private String r101_note_holders;
@@ -866,28 +867,25 @@ public class M_CA5_Archival_Summary_Entity2 {
     private BigDecimal r150_amount;
     private BigDecimal r150_amount_derecognised_p000;
     private BigDecimal r150_total_p000;
-    
-    @Id
-    @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "dd/MM/yyyy")
-	@Column(name = "REPORT_DATE")
-    private Date reportDate;
-	
+
+
+	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern = "dd/MM/yyyy")
 	@Id
+	@Column(name = "REPORT_DATE")
+	private Date reportDate;
 	@Column(name = "REPORT_VERSION")
 	private BigDecimal reportVersion;
+
+	@Column(name = "REPORT_RESUBDATE")
+	private Date reportResubDate;
 	
-    @Column(name = "REPORT_RESUBDATE")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date reportResubDate;
-    
-    
-	private String report_frequency;
-	private String report_code;
-	private String report_desc;
-	private String entity_flg;
-	private String modify_flg;
-	private String del_flg;
+	public String report_frequency;
+	public String report_code;
+	public String report_desc;
+	public String entity_flg;
+	public String modify_flg;
+	public String del_flg;
 	public String getR101_line_no() {
 		return r101_line_no;
 	}
@@ -3942,15 +3940,10 @@ public class M_CA5_Archival_Summary_Entity2 {
 	public void setDel_flg(String del_flg) {
 		this.del_flg = del_flg;
 	}
-	public M_CA5_Archival_Summary_Entity2() {
+	public M_CA5_Archival_Detail_Entity2() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	
-	
-
-	
-	
 	
 
 

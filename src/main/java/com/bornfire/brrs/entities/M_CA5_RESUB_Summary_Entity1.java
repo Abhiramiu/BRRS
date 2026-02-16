@@ -1,3 +1,4 @@
+
 package com.bornfire.brrs.entities;
 
 import java.math.BigDecimal;
@@ -13,9 +14,9 @@ import javax.persistence.TemporalType;
 
 import org.springframework.format.annotation.DateTimeFormat;
 @Entity
-@Table(name = "BRRS_M_CA5_ARCHIVALTABLE_SUMMARY1")
+@Table(name = "BRRS_M_CA5_RESUB_SUMMARYTABLE1")
 @IdClass(M_CA5_Archival_Summary1_PK.class)
-public class M_CA5_Archival_Summary_Entity1 {
+public class M_CA5_RESUB_Summary_Entity1 {
 	
 	private String r14_line_no;
     private String r14_note_holders;
@@ -6120,7 +6121,7 @@ public class M_CA5_Archival_Summary_Entity1 {
 	public void setDel_flg(String del_flg) {
 		this.del_flg = del_flg;
 	}
-	public M_CA5_Archival_Summary_Entity1() {
+	public M_CA5_RESUB_Summary_Entity1() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
