@@ -213,113 +213,104 @@ public class BRRS_M_LARADV_ReportService {
 		try {
 			Date d1 = dateformat.parse(todate);
 
-			/* ===================== ARCHIVAL ===================== */
 			if ("ARCHIVAL".equalsIgnoreCase(type)) {
 
-				// 🔹 ARCHIVAL → DETAIL
 				if ("detail".equalsIgnoreCase(dtltype)) {
 
-					mv.addObject("reportsummary",
+					mv.addObject("reportsummary1",
 							M_LARADV_Archival_Detail_Repo1.getdatabydateListarchival(d1, version));
+
 					mv.addObject("reportsummary2",
 							M_LARADV_Archival_Detail_Repo2.getdatabydateListarchival(d1, version));
+
 					mv.addObject("reportsummary3",
 							M_LARADV_Archival_Detail_Repo3.getdatabydateListarchival(d1, version));
+
 					mv.addObject("reportsummary4",
 							M_LARADV_Archival_Detail_Repo4.getdatabydateListarchival(d1, version));
+
 					mv.addObject("reportsummary5",
 							M_LARADV_Archival_Detail_Repo5.getdatabydateListarchival(d1, version));
 
 					mv.addObject("displaymode", "detail");
-				} else if ("report".equalsIgnoreCase(dtltype)) {
 
-					mv.addObject("reportsummary",
+				} else {
+
+					mv.addObject("reportsummary1",
 							M_LARADV_Archival_Summary_Repo1.getdatabydateListarchival(d1, version));
+
 					mv.addObject("reportsummary2",
 							M_LARADV_Archival_Summary_Repo2.getdatabydateListarchival(d1, version));
+
 					mv.addObject("reportsummary3",
 							M_LARADV_Archival_Summary_Repo3.getdatabydateListarchival(d1, version));
+
 					mv.addObject("reportsummary4",
 							M_LARADV_Archival_Summary_Repo4.getdatabydateListarchival(d1, version));
+
 					mv.addObject("reportsummary5",
 							M_LARADV_Archival_Summary_Repo5.getdatabydateListarchival(d1, version));
 
 					mv.addObject("displaymode", "summary");
 				}
-				// 🔹 ARCHIVAL → SUMMARY
-				else {
 
-					mv.addObject("reportsummary",
-							M_LARADV_Archival_Summary_Repo1.getdatabydateListarchival(d1, version));
-					mv.addObject("reportsummary2",
-							M_LARADV_Archival_Summary_Repo2.getdatabydateListarchival(d1, version));
-					mv.addObject("reportsummary3",
-							M_LARADV_Archival_Summary_Repo3.getdatabydateListarchival(d1, version));
-					mv.addObject("reportsummary4",
-							M_LARADV_Archival_Summary_Repo4.getdatabydateListarchival(d1, version));
-					mv.addObject("reportsummary5",
-							M_LARADV_Archival_Summary_Repo5.getdatabydateListarchival(d1, version));
+			} else if ("RESUB".equalsIgnoreCase(type)) {
 
-					mv.addObject("displaymode", "summary");
-				}
-			}
-
-			else if ("RESUB".equalsIgnoreCase(type)) {
-
-				// 🔹 ARCHIVAL → DETAIL
 				if ("detail".equalsIgnoreCase(dtltype)) {
 
-					mv.addObject("reportsummary", M_LARADV_Resub_Detail_Repo1.getdatabydateListarchival(d1, version));
+					mv.addObject("reportsummary1", M_LARADV_Resub_Detail_Repo1.getdatabydateListarchival(d1, version));
+
 					mv.addObject("reportsummary2", M_LARADV_Resub_Detail_Repo2.getdatabydateListarchival(d1, version));
+
 					mv.addObject("reportsummary3", M_LARADV_Resub_Detail_Repo3.getdatabydateListarchival(d1, version));
+
 					mv.addObject("reportsummary4", M_LARADV_Resub_Detail_Repo4.getdatabydateListarchival(d1, version));
+
 					mv.addObject("reportsummary5", M_LARADV_Resub_Detail_Repo5.getdatabydateListarchival(d1, version));
 
 					mv.addObject("displaymode", "detail");
-				} else if ("report".equalsIgnoreCase(dtltype)) {
 
-					mv.addObject("reportsummary", M_LARADV_Resub_Summary_Repo1.getdatabydateListarchival(d1, version));
+				} else {
+
+					mv.addObject("reportsummary1", M_LARADV_Resub_Summary_Repo1.getdatabydateListarchival(d1, version));
+
 					mv.addObject("reportsummary2", M_LARADV_Resub_Summary_Repo2.getdatabydateListarchival(d1, version));
+
 					mv.addObject("reportsummary3", M_LARADV_Resub_Summary_Repo3.getdatabydateListarchival(d1, version));
+
 					mv.addObject("reportsummary4", M_LARADV_Resub_Summary_Repo4.getdatabydateListarchival(d1, version));
+
 					mv.addObject("reportsummary5", M_LARADV_Resub_Summary_Repo5.getdatabydateListarchival(d1, version));
 
 					mv.addObject("displaymode", "summary");
 				}
-				// 🔹 ARCHIVAL → SUMMARY
-				else {
 
-					mv.addObject("reportsummary", M_LARADV_Resub_Summary_Repo1.getdatabydateListarchival(d1, version));
-					mv.addObject("reportsummary2", M_LARADV_Resub_Summary_Repo2.getdatabydateListarchival(d1, version));
-					mv.addObject("reportsummary3", M_LARADV_Resub_Summary_Repo3.getdatabydateListarchival(d1, version));
-					mv.addObject("reportsummary4", M_LARADV_Resub_Summary_Repo4.getdatabydateListarchival(d1, version));
-					mv.addObject("reportsummary5", M_LARADV_Resub_Summary_Repo5.getdatabydateListarchival(d1, version));
+			} else {
 
-					mv.addObject("displaymode", "summary");
-				}
-			}
-
-			/* ===================== NORMAL ===================== */
-			else {
-
-				// 🔹 NORMAL → DETAIL
 				if ("detail".equalsIgnoreCase(dtltype)) {
 
-					mv.addObject("reportsummary", M_LARADV_Detail_Repo1.getdatabydateList(d1));
+					mv.addObject("reportsummary1", M_LARADV_Detail_Repo1.getdatabydateList(d1));
+
 					mv.addObject("reportsummary2", M_LARADV_Detail_Repo2.getdatabydateList(d1));
+
 					mv.addObject("reportsummary3", M_LARADV_Detail_Repo3.getdatabydateList(d1));
+
 					mv.addObject("reportsummary4", M_LARADV_Detail_Repo4.getdatabydateList(d1));
+
 					mv.addObject("reportsummary5", M_LARADV_Detail_Repo5.getdatabydateList(d1));
 
 					mv.addObject("displaymode", "detail");
-				}
-				// 🔹 NORMAL → SUMMARY
-				else {
 
-					mv.addObject("reportsummary", M_LARADV_Summary_Repo1.getdatabydateList(d1));
+				} else {
+
+					mv.addObject("reportsummary1", M_LARADV_Summary_Repo1.getdatabydateList(d1));
+
 					mv.addObject("reportsummary2", M_LARADV_Summary_Repo2.getdatabydateList(d1));
+
 					mv.addObject("reportsummary3", M_LARADV_Summary_Repo3.getdatabydateList(d1));
+
 					mv.addObject("reportsummary4", M_LARADV_Summary_Repo4.getdatabydateList(d1));
+
 					mv.addObject("reportsummary5", M_LARADV_Summary_Repo5.getdatabydateList(d1));
 
 					mv.addObject("displaymode", "summary");
@@ -330,7 +321,6 @@ public class BRRS_M_LARADV_ReportService {
 			e.printStackTrace();
 		}
 
-		System.out.println("SUMMARY MODE | View = " + mv.getViewName());
 		return mv;
 	}
 
@@ -340,7 +330,7 @@ public class BRRS_M_LARADV_ReportService {
 
 		M_LARADV_Summary_Entity1 existing = M_LARADV_Summary_Repo1.findById(updatedEntity.getReport_date()).orElseThrow(
 				() -> new RuntimeException("Record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
-		
+
 		M_LARADV_Detail_Entity1 existing1 = M_LARADV_Detail_Repo1.findById(updatedEntity.getReport_date()).orElseThrow(
 				() -> new RuntimeException("Record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
 
@@ -465,7 +455,7 @@ public class BRRS_M_LARADV_ReportService {
 		} catch (Exception e) {
 			throw new RuntimeException("Error while updating date fields", e);
 		}
-		
+
 		try {
 			// 1️⃣ Loop through R14 to R100
 			for (int i = 10; i <= 70; i++) {
@@ -599,7 +589,7 @@ public class BRRS_M_LARADV_ReportService {
 
 		M_LARADV_Summary_Entity2 existing = M_LARADV_Summary_Repo2.findById(updatedEntity.getReport_date()).orElseThrow(
 				() -> new RuntimeException("Record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
-		
+
 		M_LARADV_Detail_Entity2 existing1 = M_LARADV_Detail_Repo2.findById(updatedEntity.getReport_date()).orElseThrow(
 				() -> new RuntimeException("Record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
 
@@ -733,7 +723,7 @@ public class BRRS_M_LARADV_ReportService {
 		} catch (Exception e) {
 			throw new RuntimeException("Error while updating date fields", e);
 		}
-		
+
 		try {
 			// 1️⃣ Loop through R14 to R100
 			for (int i = 71; i <= 140; i++) {
@@ -872,14 +862,14 @@ public class BRRS_M_LARADV_ReportService {
 
 	public void updateReport3(M_LARADV_Summary_Entity3 updatedEntity) {
 		System.out.println("Came to services");
-		System.out.println("Report Date: " + updatedEntity.getReportDate());
+		System.out.println("Report Date: " + updatedEntity.getReport_date());
 
-		M_LARADV_Summary_Entity3 existing = M_LARADV_Summary_Repo3.findById(updatedEntity.getReportDate()).orElseThrow(
-				() -> new RuntimeException("Record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
+		M_LARADV_Summary_Entity3 existing = M_LARADV_Summary_Repo3.findById(updatedEntity.getReport_date()).orElseThrow(
+				() -> new RuntimeException("Record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
 
-		M_LARADV_Detail_Entity3 existing1 = M_LARADV_Detail_Repo3.findById(updatedEntity.getReportDate()).orElseThrow(
-				() -> new RuntimeException("Record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
-		
+		M_LARADV_Detail_Entity3 existing1 = M_LARADV_Detail_Repo3.findById(updatedEntity.getReport_date()).orElseThrow(
+				() -> new RuntimeException("Record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
+
 		try {
 			// 1️⃣ Loop through R14 to R100
 			for (int i = 141; i <= 210; i++) {
@@ -1141,7 +1131,7 @@ public class BRRS_M_LARADV_ReportService {
 		} catch (Exception e) {
 			throw new RuntimeException("Error while updating date fields", e);
 		}
-		
+
 		// 3️⃣ Save updated entity
 		M_LARADV_Summary_Repo3.save(existing);
 		M_LARADV_Detail_Repo3.save(existing1);
@@ -1149,13 +1139,13 @@ public class BRRS_M_LARADV_ReportService {
 
 	public void updateReport4(M_LARADV_Summary_Entity4 updatedEntity) {
 		System.out.println("Came to services");
-		System.out.println("Report Date: " + updatedEntity.getReportDate());
+		System.out.println("Report Date: " + updatedEntity.getReport_date());
 
-		M_LARADV_Summary_Entity4 existing = M_LARADV_Summary_Repo4.findById(updatedEntity.getReportDate()).orElseThrow(
-				() -> new RuntimeException("Record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
-		
-		M_LARADV_Detail_Entity4 existing1 = M_LARADV_Detail_Repo4.findById(updatedEntity.getReportDate()).orElseThrow(
-				() -> new RuntimeException("Record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
+		M_LARADV_Summary_Entity4 existing = M_LARADV_Summary_Repo4.findById(updatedEntity.getReport_date()).orElseThrow(
+				() -> new RuntimeException("Record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
+
+		M_LARADV_Detail_Entity4 existing1 = M_LARADV_Detail_Repo4.findById(updatedEntity.getReport_date()).orElseThrow(
+				() -> new RuntimeException("Record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
 
 		try {
 			// 1️⃣ Loop through R14 to R100
@@ -1425,13 +1415,13 @@ public class BRRS_M_LARADV_ReportService {
 
 	public void updateReport5(M_LARADV_Summary_Entity5 updatedEntity) {
 		System.out.println("Came to services");
-		System.out.println("Report Date: " + updatedEntity.getReportDate());
+		System.out.println("Report Date: " + updatedEntity.getReport_date());
 
-		M_LARADV_Summary_Entity5 existing = M_LARADV_Summary_Repo5.findById(updatedEntity.getReportDate()).orElseThrow(
-				() -> new RuntimeException("Record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
-		
-		M_LARADV_Detail_Entity5 existing1 = M_LARADV_Detail_Repo5.findById(updatedEntity.getReportDate()).orElseThrow(
-				() -> new RuntimeException("Record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
+		M_LARADV_Summary_Entity5 existing = M_LARADV_Summary_Repo5.findById(updatedEntity.getReport_date()).orElseThrow(
+				() -> new RuntimeException("Record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
+
+		M_LARADV_Detail_Entity5 existing1 = M_LARADV_Detail_Repo5.findById(updatedEntity.getReport_date()).orElseThrow(
+				() -> new RuntimeException("Record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
 
 		try {
 			// 1️⃣ Loop through R14 to R100
@@ -68531,7 +68521,7 @@ public class BRRS_M_LARADV_ReportService {
 
 				mergedList.add(new Object[] { reportDate, reportVersion, reportResubDate });
 			}
-			
+
 			List<Object[]> list9 = M_LARADV_Resub_Summary_Repo5.getResubData();
 
 			for (Object[] e : list9) {
@@ -68561,7 +68551,7 @@ public class BRRS_M_LARADV_ReportService {
 			return Collections.emptyList();
 		}
 	}
-	
+
 	public List<Object[]> getM_LARADVResub1() {
 		List<Object[]> resubList = new ArrayList<>();
 		try {
@@ -68592,7 +68582,8 @@ public class BRRS_M_LARADV_ReportService {
 
 			if (latestArchivalList != null && !latestArchivalList.isEmpty()) {
 				for (M_LARADV_Archival_Summary_Entity1 entity : latestArchivalList) {
-					archivalList.add(new Object[] { entity.getReport_date(), entity.getReport_version(),entity.getReportResubDate() });
+					archivalList.add(new Object[] { entity.getReport_date(), entity.getReport_version(),
+							entity.getReportResubDate() });
 				}
 				System.out.println("Fetched " + archivalList.size() + " record(s)");
 			} else {
@@ -68607,108 +68598,89 @@ public class BRRS_M_LARADV_ReportService {
 	}
 
 	@Transactional
-	public BigDecimal updateReportReSub(
-	        M_LARADV_Summary_Entity1 updatedEntity1,
-	        M_LARADV_Summary_Entity2 updatedEntity2,
-	        M_LARADV_Summary_Entity3 updatedEntity3,
-	        M_LARADV_Summary_Entity4 updatedEntity4,
-	        M_LARADV_Summary_Entity5 updatedEntity5) {
+	public BigDecimal updateReportReSub(M_LARADV_Summary_Entity1 updatedEntity1,
+			M_LARADV_Summary_Entity2 updatedEntity2, M_LARADV_Summary_Entity3 updatedEntity3,
+			M_LARADV_Summary_Entity4 updatedEntity4, M_LARADV_Summary_Entity5 updatedEntity5) {
 
-	    System.out.println("=========== START LARADV RESUB SERVICE ===========");
-	    System.out.println("Report Date: " + updatedEntity1.getReport_date());
+		System.out.println("=========== START LARADV RESUB SERVICE ===========");
+		System.out.println("Report Date: " + updatedEntity1.getReport_date());
 
-	    Date reportDate = updatedEntity1.getReport_date();
-	    BigDecimal newVersion = BigDecimal.ONE;
+		Date reportDate = updatedEntity1.getReport_date();
+		BigDecimal newVersion = BigDecimal.ONE;
 
-	    try {
+		try {
 
-	        // 1️⃣ GET LATEST VERSION
-	        Optional<M_LARADV_Archival_Summary_Entity1> latestArchivalOpt =
-	                M_LARADV_Archival_Summary_Repo1
-	                        .getLatestArchivalVersionByDate(reportDate);
+			// 1️⃣ GET LATEST VERSION
+			Optional<M_LARADV_Archival_Summary_Entity1> latestArchivalOpt = M_LARADV_Archival_Summary_Repo1
+					.getLatestArchivalVersionByDate(reportDate);
 
-	        if (latestArchivalOpt.isPresent()) {
+			if (latestArchivalOpt.isPresent()) {
 
-	            BigDecimal latestVersion =
-	                    latestArchivalOpt.get().getReport_version();
+				BigDecimal latestVersion = latestArchivalOpt.get().getReport_version();
 
-	            if (latestVersion != null) {
-	                newVersion = latestVersion.add(BigDecimal.ONE);
-	            }
-	        }
+				if (latestVersion != null) {
+					newVersion = latestVersion.add(BigDecimal.ONE);
+				}
+			}
 
-	        System.out.println("New Version Generated: " + newVersion);
+			System.out.println("New Version Generated: " + newVersion);
 
-	        // 2️⃣ DUPLICATE CHECK (CORRECT METHOD NAME)
-	        boolean versionExists =
-	                M_LARADV_Archival_Summary_Repo1
-	                        .checkVersion(
-	                                reportDate,
-	                                newVersion
-	                        ).isPresent();
+			// 2️⃣ DUPLICATE CHECK (CORRECT METHOD NAME)
+			boolean versionExists = M_LARADV_Archival_Summary_Repo1.checkVersion(reportDate, newVersion).isPresent();
 
-	        if (versionExists) {
-	            throw new RuntimeException(
-	                    "⚠ Version " + newVersion +
-	                    " already exists for report date " + reportDate
-	            );
-	        }
+			if (versionExists) {
+				throw new RuntimeException("⚠ Version " + newVersion + " already exists for report date " + reportDate);
+			}
 
-	        // 3️⃣ CREATE ARCHIVAL ENTITIES
-	        M_LARADV_Archival_Summary_Entity1 archivalEntity1 =
-	                new M_LARADV_Archival_Summary_Entity1();
-	        M_LARADV_Archival_Summary_Entity2 archivalEntity2 =
-	                new M_LARADV_Archival_Summary_Entity2();
-	        M_LARADV_Archival_Summary_Entity3 archivalEntity3 =
-	                new M_LARADV_Archival_Summary_Entity3();
-	        M_LARADV_Archival_Summary_Entity4 archivalEntity4 =
-	                new M_LARADV_Archival_Summary_Entity4();
-	        M_LARADV_Archival_Summary_Entity5 archivalEntity5 =
-	                new M_LARADV_Archival_Summary_Entity5();
+			// 3️⃣ CREATE ARCHIVAL ENTITIES
+			M_LARADV_Archival_Summary_Entity1 archivalEntity1 = new M_LARADV_Archival_Summary_Entity1();
+			M_LARADV_Archival_Summary_Entity2 archivalEntity2 = new M_LARADV_Archival_Summary_Entity2();
+			M_LARADV_Archival_Summary_Entity3 archivalEntity3 = new M_LARADV_Archival_Summary_Entity3();
+			M_LARADV_Archival_Summary_Entity4 archivalEntity4 = new M_LARADV_Archival_Summary_Entity4();
+			M_LARADV_Archival_Summary_Entity5 archivalEntity5 = new M_LARADV_Archival_Summary_Entity5();
 
-	        // 4️⃣ COPY DATA
-	        BeanUtils.copyProperties(updatedEntity1, archivalEntity1);
-	        BeanUtils.copyProperties(updatedEntity2, archivalEntity2);
-	        BeanUtils.copyProperties(updatedEntity3, archivalEntity3);
-	        BeanUtils.copyProperties(updatedEntity4, archivalEntity4);
-	        BeanUtils.copyProperties(updatedEntity5, archivalEntity5);
+			// 4️⃣ COPY DATA
+			BeanUtils.copyProperties(updatedEntity1, archivalEntity1);
+			BeanUtils.copyProperties(updatedEntity2, archivalEntity2);
+			BeanUtils.copyProperties(updatedEntity3, archivalEntity3);
+			BeanUtils.copyProperties(updatedEntity4, archivalEntity4);
+			BeanUtils.copyProperties(updatedEntity5, archivalEntity5);
 
-	        Date now = new Date();
+			Date now = new Date();
 
-	        // 5️⃣ SET COMMON VALUES
-	        archivalEntity1.setReport_date(reportDate);
-	        archivalEntity2.setReport_date(reportDate);
-	        archivalEntity3.setReport_date(reportDate);
-	        archivalEntity4.setReport_date(reportDate);
-	        archivalEntity5.setReport_date(reportDate);
+			// 5️⃣ SET COMMON VALUES
+			archivalEntity1.setReport_date(reportDate);
+			archivalEntity2.setReport_date(reportDate);
+			archivalEntity3.setReport_date(reportDate);
+			archivalEntity4.setReport_date(reportDate);
+			archivalEntity5.setReport_date(reportDate);
 
-	        archivalEntity1.setReport_version(newVersion);
-	        archivalEntity2.setReport_version(newVersion);
-	        archivalEntity3.setReport_version(newVersion);
-	        archivalEntity4.setReport_version(newVersion);
-	        archivalEntity5.setReport_version(newVersion);
+			archivalEntity1.setReport_version(newVersion);
+			archivalEntity2.setReport_version(newVersion);
+			archivalEntity3.setReport_version(newVersion);
+			archivalEntity4.setReport_version(newVersion);
+			archivalEntity5.setReport_version(newVersion);
 
-	        archivalEntity1.setReportResubDate(now);
-	        archivalEntity2.setReportResubDate(now);
-	        archivalEntity3.setReportResubDate(now);
-	        archivalEntity4.setReportResubDate(now);
-	        archivalEntity5.setReportResubDate(now);
+			archivalEntity1.setReportResubDate(now);
+			archivalEntity2.setReportResubDate(now);
+			archivalEntity3.setReportResubDate(now);
+			archivalEntity4.setReportResubDate(now);
+			archivalEntity5.setReportResubDate(now);
 
-	        // 6️⃣ SAVE
-	        M_LARADV_Archival_Summary_Repo1.save(archivalEntity1);
-	        M_LARADV_Archival_Summary_Repo2.save(archivalEntity2);
-	        M_LARADV_Archival_Summary_Repo3.save(archivalEntity3);
-	        M_LARADV_Archival_Summary_Repo4.save(archivalEntity4);
-	        M_LARADV_Archival_Summary_Repo5.save(archivalEntity5);
+			// 6️⃣ SAVE
+			M_LARADV_Archival_Summary_Repo1.save(archivalEntity1);
+			M_LARADV_Archival_Summary_Repo2.save(archivalEntity2);
+			M_LARADV_Archival_Summary_Repo3.save(archivalEntity3);
+			M_LARADV_Archival_Summary_Repo4.save(archivalEntity4);
+			M_LARADV_Archival_Summary_Repo5.save(archivalEntity5);
 
-	        System.out.println("=========== ARCHIVAL SAVE SUCCESS ==========");
-	        return newVersion;
+			System.out.println("=========== ARCHIVAL SAVE SUCCESS ==========");
+			return newVersion;
 
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        throw new RuntimeException(
-	                "Error while creating LARADV archival resubmission record", e);
-	    }
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException("Error while creating LARADV archival resubmission record", e);
+		}
 	}
 
 	public byte[] getExcelM_LARADV_RESUB(String filename, String reportId, String fromdate, String todate,
@@ -102233,213 +102205,184 @@ public class BRRS_M_LARADV_ReportService {
 			c.setCellStyle(txtStyle);
 		}
 	}
-	
+
 	@Transactional
-	public BigDecimal updateReportReSub1(
-			M_LARADV_Resub_Summary_Entity1 updatedEntity1,
-			M_LARADV_Resub_Summary_Entity2 updatedEntity2,
-			M_LARADV_Resub_Summary_Entity3 updatedEntity3,
-			M_LARADV_Resub_Summary_Entity4 updatedEntity4,
-			M_LARADV_Resub_Summary_Entity5 updatedEntity5) {
+	public BigDecimal updateReportReSub1(M_LARADV_Resub_Summary_Entity1 updatedEntity1,
+			M_LARADV_Resub_Summary_Entity2 updatedEntity2, M_LARADV_Resub_Summary_Entity3 updatedEntity3,
+			M_LARADV_Resub_Summary_Entity4 updatedEntity4, M_LARADV_Resub_Summary_Entity5 updatedEntity5) {
 
-	    System.out.println("=========== START LARADV RESUB SERVICE ===========");
-	    System.out.println("Report Date: " + updatedEntity1.getReport_date());
+		System.out.println("=========== START LARADV RESUB SERVICE ===========");
+		System.out.println("Report Date: " + updatedEntity1.getReport_date());
 
-	    Date reportDate = updatedEntity1.getReport_date();
-	    BigDecimal newVersion = BigDecimal.ONE;
-	    
-	    BigDecimal maxVersion = M_LARADV_Resub_Summary_Repo1.findGlobalMaxReportVersion();
+		Date reportDate = updatedEntity1.getReport_date();
+		BigDecimal newVersion = BigDecimal.ONE;
+
+		BigDecimal maxVersion = M_LARADV_Resub_Summary_Repo1.findGlobalMaxReportVersion();
 		BigDecimal nextVersion = (maxVersion == null) ? BigDecimal.ONE : maxVersion.add(BigDecimal.ONE);
 
-	    try {
-	        // 3️⃣ CREATE ARCHIVAL ENTITIES
-	        M_LARADV_Resub_Summary_Entity1 archivalEntity1 =
-	                new M_LARADV_Resub_Summary_Entity1();
-	        M_LARADV_Resub_Summary_Entity2 archivalEntity2 =
-	                new M_LARADV_Resub_Summary_Entity2();
-	        M_LARADV_Resub_Summary_Entity3 archivalEntity3 =
-	                new M_LARADV_Resub_Summary_Entity3();
-	        M_LARADV_Resub_Summary_Entity4 archivalEntity4 =
-	                new M_LARADV_Resub_Summary_Entity4();
-	        M_LARADV_Resub_Summary_Entity5 archivalEntity5 =
-	                new M_LARADV_Resub_Summary_Entity5();
-	        
-	        
-	        // 3️⃣ CREATE ARCHIVAL ENTITIES
-	        M_LARADV_Resub_Detail_Entity1 archivalEntity6 =
-	                new M_LARADV_Resub_Detail_Entity1();
-	        M_LARADV_Resub_Detail_Entity2 archivalEntity7 =
-	                new M_LARADV_Resub_Detail_Entity2();
-	        M_LARADV_Resub_Detail_Entity3 archivalEntity8 =
-	                new M_LARADV_Resub_Detail_Entity3();
-	        M_LARADV_Resub_Detail_Entity4 archivalEntity9 =
-	                new M_LARADV_Resub_Detail_Entity4();
-	        M_LARADV_Resub_Detail_Entity5 archivalEntity10 =
-	                new M_LARADV_Resub_Detail_Entity5();
-	        
-	        // 3️⃣ CREATE ARCHIVAL ENTITIES
-	        M_LARADV_Archival_Summary_Entity1 archivalEntity11 =
-	                new M_LARADV_Archival_Summary_Entity1();
-	        M_LARADV_Archival_Summary_Entity2 archivalEntity12 =
-	                new M_LARADV_Archival_Summary_Entity2();
-	        M_LARADV_Archival_Summary_Entity3 archivalEntity13 =
-	                new M_LARADV_Archival_Summary_Entity3();
-	        M_LARADV_Archival_Summary_Entity4 archivalEntity14 =
-	                new M_LARADV_Archival_Summary_Entity4();
-	        M_LARADV_Archival_Summary_Entity5 archivalEntity15 =
-	                new M_LARADV_Archival_Summary_Entity5();
-	        
-	        
-	        // 3️⃣ CREATE ARCHIVAL ENTITIES
-	        M_LARADV_Archival_Detail_Entity1 archivalEntity16 =
-	                new M_LARADV_Archival_Detail_Entity1();
-	        M_LARADV_Archival_Detail_Entity2 archivalEntity17 =
-	                new M_LARADV_Archival_Detail_Entity2();
-	        M_LARADV_Archival_Detail_Entity3 archivalEntity18 =
-	                new M_LARADV_Archival_Detail_Entity3();
-	        M_LARADV_Archival_Detail_Entity4 archivalEntity19 =
-	                new M_LARADV_Archival_Detail_Entity4();
-	        M_LARADV_Archival_Detail_Entity5 archivalEntity20 =
-	                new M_LARADV_Archival_Detail_Entity5();
+		try {
+			// 3️⃣ CREATE ARCHIVAL ENTITIES
+			M_LARADV_Resub_Summary_Entity1 archivalEntity1 = new M_LARADV_Resub_Summary_Entity1();
+			M_LARADV_Resub_Summary_Entity2 archivalEntity2 = new M_LARADV_Resub_Summary_Entity2();
+			M_LARADV_Resub_Summary_Entity3 archivalEntity3 = new M_LARADV_Resub_Summary_Entity3();
+			M_LARADV_Resub_Summary_Entity4 archivalEntity4 = new M_LARADV_Resub_Summary_Entity4();
+			M_LARADV_Resub_Summary_Entity5 archivalEntity5 = new M_LARADV_Resub_Summary_Entity5();
 
-	        // 4️⃣ COPY DATA
-	        BeanUtils.copyProperties(updatedEntity1, archivalEntity1);
-	        BeanUtils.copyProperties(updatedEntity2, archivalEntity2);
-	        BeanUtils.copyProperties(updatedEntity3, archivalEntity3);
-	        BeanUtils.copyProperties(updatedEntity4, archivalEntity4);
-	        BeanUtils.copyProperties(updatedEntity5, archivalEntity5);
-	        
-	        BeanUtils.copyProperties(updatedEntity1, archivalEntity6);
-	        BeanUtils.copyProperties(updatedEntity2, archivalEntity7);
-	        BeanUtils.copyProperties(updatedEntity3, archivalEntity8);
-	        BeanUtils.copyProperties(updatedEntity4, archivalEntity9);
-	        BeanUtils.copyProperties(updatedEntity5, archivalEntity10);
+			// 3️⃣ CREATE ARCHIVAL ENTITIES
+			M_LARADV_Resub_Detail_Entity1 archivalEntity6 = new M_LARADV_Resub_Detail_Entity1();
+			M_LARADV_Resub_Detail_Entity2 archivalEntity7 = new M_LARADV_Resub_Detail_Entity2();
+			M_LARADV_Resub_Detail_Entity3 archivalEntity8 = new M_LARADV_Resub_Detail_Entity3();
+			M_LARADV_Resub_Detail_Entity4 archivalEntity9 = new M_LARADV_Resub_Detail_Entity4();
+			M_LARADV_Resub_Detail_Entity5 archivalEntity10 = new M_LARADV_Resub_Detail_Entity5();
 
-	        BeanUtils.copyProperties(updatedEntity1, archivalEntity11);
-	        BeanUtils.copyProperties(updatedEntity2, archivalEntity12);
-	        BeanUtils.copyProperties(updatedEntity3, archivalEntity13);
-	        BeanUtils.copyProperties(updatedEntity4, archivalEntity14);
-	        BeanUtils.copyProperties(updatedEntity5, archivalEntity15);
-	        
-	        BeanUtils.copyProperties(updatedEntity1, archivalEntity16);
-	        BeanUtils.copyProperties(updatedEntity2, archivalEntity17);
-	        BeanUtils.copyProperties(updatedEntity3, archivalEntity18);
-	        BeanUtils.copyProperties(updatedEntity4, archivalEntity19);
-	        BeanUtils.copyProperties(updatedEntity5, archivalEntity20);
+			// 3️⃣ CREATE ARCHIVAL ENTITIES
+			M_LARADV_Archival_Summary_Entity1 archivalEntity11 = new M_LARADV_Archival_Summary_Entity1();
+			M_LARADV_Archival_Summary_Entity2 archivalEntity12 = new M_LARADV_Archival_Summary_Entity2();
+			M_LARADV_Archival_Summary_Entity3 archivalEntity13 = new M_LARADV_Archival_Summary_Entity3();
+			M_LARADV_Archival_Summary_Entity4 archivalEntity14 = new M_LARADV_Archival_Summary_Entity4();
+			M_LARADV_Archival_Summary_Entity5 archivalEntity15 = new M_LARADV_Archival_Summary_Entity5();
 
+			// 3️⃣ CREATE ARCHIVAL ENTITIES
+			M_LARADV_Archival_Detail_Entity1 archivalEntity16 = new M_LARADV_Archival_Detail_Entity1();
+			M_LARADV_Archival_Detail_Entity2 archivalEntity17 = new M_LARADV_Archival_Detail_Entity2();
+			M_LARADV_Archival_Detail_Entity3 archivalEntity18 = new M_LARADV_Archival_Detail_Entity3();
+			M_LARADV_Archival_Detail_Entity4 archivalEntity19 = new M_LARADV_Archival_Detail_Entity4();
+			M_LARADV_Archival_Detail_Entity5 archivalEntity20 = new M_LARADV_Archival_Detail_Entity5();
 
-	        Date now = new Date();
+			// 4️⃣ COPY DATA
+			BeanUtils.copyProperties(updatedEntity1, archivalEntity1);
+			BeanUtils.copyProperties(updatedEntity2, archivalEntity2);
+			BeanUtils.copyProperties(updatedEntity3, archivalEntity3);
+			BeanUtils.copyProperties(updatedEntity4, archivalEntity4);
+			BeanUtils.copyProperties(updatedEntity5, archivalEntity5);
 
-	        // 5️⃣ SET COMMON VALUES
-	        archivalEntity1.setReport_date(reportDate);
-	        archivalEntity2.setReport_date(reportDate);
-	        archivalEntity3.setReport_date(reportDate);
-	        archivalEntity4.setReport_date(reportDate);
-	        archivalEntity5.setReport_date(reportDate);
+			BeanUtils.copyProperties(updatedEntity1, archivalEntity6);
+			BeanUtils.copyProperties(updatedEntity2, archivalEntity7);
+			BeanUtils.copyProperties(updatedEntity3, archivalEntity8);
+			BeanUtils.copyProperties(updatedEntity4, archivalEntity9);
+			BeanUtils.copyProperties(updatedEntity5, archivalEntity10);
 
-	        archivalEntity1.setReport_version(nextVersion);
-	        archivalEntity2.setReport_version(nextVersion);
-	        archivalEntity3.setReport_version(nextVersion);
-	        archivalEntity4.setReport_version(nextVersion);
-	        archivalEntity5.setReport_version(nextVersion);
+			BeanUtils.copyProperties(updatedEntity1, archivalEntity11);
+			BeanUtils.copyProperties(updatedEntity2, archivalEntity12);
+			BeanUtils.copyProperties(updatedEntity3, archivalEntity13);
+			BeanUtils.copyProperties(updatedEntity4, archivalEntity14);
+			BeanUtils.copyProperties(updatedEntity5, archivalEntity15);
 
-	        archivalEntity1.setReportResubDate(now);
-	        archivalEntity2.setReportResubDate(now);
-	        archivalEntity3.setReportResubDate(now);
-	        archivalEntity4.setReportResubDate(now);
-	        archivalEntity5.setReportResubDate(now);
-	        
-	        archivalEntity6.setReport_date(reportDate);
-	        archivalEntity7.setReport_date(reportDate);
-	        archivalEntity8.setReport_date(reportDate);
-	        archivalEntity9.setReport_date(reportDate);
-	        archivalEntity10.setReport_date(reportDate);
+			BeanUtils.copyProperties(updatedEntity1, archivalEntity16);
+			BeanUtils.copyProperties(updatedEntity2, archivalEntity17);
+			BeanUtils.copyProperties(updatedEntity3, archivalEntity18);
+			BeanUtils.copyProperties(updatedEntity4, archivalEntity19);
+			BeanUtils.copyProperties(updatedEntity5, archivalEntity20);
 
-	        archivalEntity6.setReport_version(nextVersion);
-	        archivalEntity7.setReport_version(nextVersion);
-	        archivalEntity8.setReport_version(nextVersion);
-	        archivalEntity9.setReport_version(nextVersion);
-	        archivalEntity10.setReport_version(nextVersion);
+			Date now = new Date();
 
-	        archivalEntity6.setReportResubDate(now);
-	        archivalEntity7.setReportResubDate(now);
-	        archivalEntity8.setReportResubDate(now);
-	        archivalEntity9.setReportResubDate(now);
-	        archivalEntity10.setReportResubDate(now);
-	        
-	        
-	     // 5️⃣ SET COMMON VALUES
-	        archivalEntity11.setReport_date(reportDate);
-	        archivalEntity12.setReport_date(reportDate);
-	        archivalEntity13.setReport_date(reportDate);
-	        archivalEntity14.setReport_date(reportDate);
-	        archivalEntity15.setReport_date(reportDate);
+			// 5️⃣ SET COMMON VALUES
+			archivalEntity1.setReport_date(reportDate);
+			archivalEntity2.setReport_date(reportDate);
+			archivalEntity3.setReport_date(reportDate);
+			archivalEntity4.setReport_date(reportDate);
+			archivalEntity5.setReport_date(reportDate);
 
-	        archivalEntity11.setReport_version(nextVersion);
-	        archivalEntity12.setReport_version(nextVersion);
-	        archivalEntity13.setReport_version(nextVersion);
-	        archivalEntity14.setReport_version(nextVersion);
-	        archivalEntity15.setReport_version(nextVersion);
+			archivalEntity1.setReport_version(nextVersion);
+			archivalEntity2.setReport_version(nextVersion);
+			archivalEntity3.setReport_version(nextVersion);
+			archivalEntity4.setReport_version(nextVersion);
+			archivalEntity5.setReport_version(nextVersion);
 
-	        archivalEntity11.setReportResubDate(now);
-	        archivalEntity12.setReportResubDate(now);
-	        archivalEntity13.setReportResubDate(now);
-	        archivalEntity14.setReportResubDate(now);
-	        archivalEntity15.setReportResubDate(now);
-	        
-	        archivalEntity16.setReport_date(reportDate);
-	        archivalEntity17.setReport_date(reportDate);
-	        archivalEntity18.setReport_date(reportDate);
-	        archivalEntity19.setReport_date(reportDate);
-	        archivalEntity20.setReport_date(reportDate);
+			archivalEntity1.setReportResubDate(now);
+			archivalEntity2.setReportResubDate(now);
+			archivalEntity3.setReportResubDate(now);
+			archivalEntity4.setReportResubDate(now);
+			archivalEntity5.setReportResubDate(now);
 
-	        archivalEntity16.setReport_version(nextVersion);
-	        archivalEntity17.setReport_version(nextVersion);
-	        archivalEntity18.setReport_version(nextVersion);
-	        archivalEntity19.setReport_version(nextVersion);
-	        archivalEntity20.setReport_version(nextVersion);
+			archivalEntity6.setReport_date(reportDate);
+			archivalEntity7.setReport_date(reportDate);
+			archivalEntity8.setReport_date(reportDate);
+			archivalEntity9.setReport_date(reportDate);
+			archivalEntity10.setReport_date(reportDate);
 
-	        archivalEntity16.setReportResubDate(now);
-	        archivalEntity17.setReportResubDate(now);
-	        archivalEntity18.setReportResubDate(now);
-	        archivalEntity19.setReportResubDate(now);
-	        archivalEntity20.setReportResubDate(now);
+			archivalEntity6.setReport_version(nextVersion);
+			archivalEntity7.setReport_version(nextVersion);
+			archivalEntity8.setReport_version(nextVersion);
+			archivalEntity9.setReport_version(nextVersion);
+			archivalEntity10.setReport_version(nextVersion);
 
+			archivalEntity6.setReportResubDate(now);
+			archivalEntity7.setReportResubDate(now);
+			archivalEntity8.setReportResubDate(now);
+			archivalEntity9.setReportResubDate(now);
+			archivalEntity10.setReportResubDate(now);
 
-	        // 6️⃣ SAVE
-	        M_LARADV_Resub_Summary_Repo1.save(archivalEntity1);
-	        M_LARADV_Resub_Summary_Repo2.save(archivalEntity2);
-	        M_LARADV_Resub_Summary_Repo3.save(archivalEntity3);
-	        M_LARADV_Resub_Summary_Repo4.save(archivalEntity4);
-	        M_LARADV_Resub_Summary_Repo5.save(archivalEntity5);
-	        
-	        M_LARADV_Resub_Detail_Repo1.save(archivalEntity6);
-	        M_LARADV_Resub_Detail_Repo2.save(archivalEntity7);
-	        M_LARADV_Resub_Detail_Repo3.save(archivalEntity8);
-	        M_LARADV_Resub_Detail_Repo4.save(archivalEntity9);
-	        M_LARADV_Resub_Detail_Repo5.save(archivalEntity10);
-	        
-	        // 6️⃣ SAVE
-	        M_LARADV_Archival_Summary_Repo1.save(archivalEntity11);
-	        M_LARADV_Archival_Summary_Repo2.save(archivalEntity12);
-	        M_LARADV_Archival_Summary_Repo3.save(archivalEntity13);
-	        M_LARADV_Archival_Summary_Repo4.save(archivalEntity14);
-	        M_LARADV_Archival_Summary_Repo5.save(archivalEntity15);
-	        
-	        M_LARADV_Archival_Detail_Repo1.save(archivalEntity16);
-	        M_LARADV_Archival_Detail_Repo2.save(archivalEntity17);
-	        M_LARADV_Archival_Detail_Repo3.save(archivalEntity18);
-	        M_LARADV_Archival_Detail_Repo4.save(archivalEntity19);
-	        M_LARADV_Archival_Detail_Repo5.save(archivalEntity20);
+			// 5️⃣ SET COMMON VALUES
+			archivalEntity11.setReport_date(reportDate);
+			archivalEntity12.setReport_date(reportDate);
+			archivalEntity13.setReport_date(reportDate);
+			archivalEntity14.setReport_date(reportDate);
+			archivalEntity15.setReport_date(reportDate);
 
-	        System.out.println("=========== ARCHIVAL SAVE SUCCESS ==========");
-	        return newVersion;
+			archivalEntity11.setReport_version(nextVersion);
+			archivalEntity12.setReport_version(nextVersion);
+			archivalEntity13.setReport_version(nextVersion);
+			archivalEntity14.setReport_version(nextVersion);
+			archivalEntity15.setReport_version(nextVersion);
 
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        throw new RuntimeException(
-	                "Error while creating LARADV archival resubmission record", e);
-	    }
+			archivalEntity11.setReportResubDate(now);
+			archivalEntity12.setReportResubDate(now);
+			archivalEntity13.setReportResubDate(now);
+			archivalEntity14.setReportResubDate(now);
+			archivalEntity15.setReportResubDate(now);
+
+			archivalEntity16.setReport_date(reportDate);
+			archivalEntity17.setReport_date(reportDate);
+			archivalEntity18.setReport_date(reportDate);
+			archivalEntity19.setReport_date(reportDate);
+			archivalEntity20.setReport_date(reportDate);
+
+			archivalEntity16.setReport_version(nextVersion);
+			archivalEntity17.setReport_version(nextVersion);
+			archivalEntity18.setReport_version(nextVersion);
+			archivalEntity19.setReport_version(nextVersion);
+			archivalEntity20.setReport_version(nextVersion);
+
+			archivalEntity16.setReportResubDate(now);
+			archivalEntity17.setReportResubDate(now);
+			archivalEntity18.setReportResubDate(now);
+			archivalEntity19.setReportResubDate(now);
+			archivalEntity20.setReportResubDate(now);
+
+			// 6️⃣ SAVE
+			M_LARADV_Resub_Summary_Repo1.save(archivalEntity1);
+			M_LARADV_Resub_Summary_Repo2.save(archivalEntity2);
+			M_LARADV_Resub_Summary_Repo3.save(archivalEntity3);
+			M_LARADV_Resub_Summary_Repo4.save(archivalEntity4);
+			M_LARADV_Resub_Summary_Repo5.save(archivalEntity5);
+
+			M_LARADV_Resub_Detail_Repo1.save(archivalEntity6);
+			M_LARADV_Resub_Detail_Repo2.save(archivalEntity7);
+			M_LARADV_Resub_Detail_Repo3.save(archivalEntity8);
+			M_LARADV_Resub_Detail_Repo4.save(archivalEntity9);
+			M_LARADV_Resub_Detail_Repo5.save(archivalEntity10);
+
+			// 6️⃣ SAVE
+			M_LARADV_Archival_Summary_Repo1.save(archivalEntity11);
+			M_LARADV_Archival_Summary_Repo2.save(archivalEntity12);
+			M_LARADV_Archival_Summary_Repo3.save(archivalEntity13);
+			M_LARADV_Archival_Summary_Repo4.save(archivalEntity14);
+			M_LARADV_Archival_Summary_Repo5.save(archivalEntity15);
+
+			M_LARADV_Archival_Detail_Repo1.save(archivalEntity16);
+			M_LARADV_Archival_Detail_Repo2.save(archivalEntity17);
+			M_LARADV_Archival_Detail_Repo3.save(archivalEntity18);
+			M_LARADV_Archival_Detail_Repo4.save(archivalEntity19);
+			M_LARADV_Archival_Detail_Repo5.save(archivalEntity20);
+
+			System.out.println("=========== ARCHIVAL SAVE SUCCESS ==========");
+			return newVersion;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException("Error while creating LARADV archival resubmission record", e);
+		}
 	}
 
 }
