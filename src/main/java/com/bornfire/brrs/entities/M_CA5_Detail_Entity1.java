@@ -20,13 +20,13 @@ public class M_CA5_Detail_Entity1 {
     private String r14_name_of_instrument_programe;
     private String r14_issuing_entity_if_issued_throughan_spv;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r14_issuance_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r14_contractual_maturity_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r14_effective_maturity_date_if_date;
     private BigDecimal r14_amount;
 
@@ -35,13 +35,13 @@ public class M_CA5_Detail_Entity1 {
     private String r15_name_of_instrument_programe;
     private String r15_issuing_entity_if_issued_throughan_spv;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r15_issuance_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r15_contractual_maturity_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r15_effective_maturity_date_if_date;
     private BigDecimal r15_amount;
 
@@ -50,13 +50,13 @@ public class M_CA5_Detail_Entity1 {
     private String r16_name_of_instrument_programe;
     private String r16_issuing_entity_if_issued_throughan_spv;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r16_issuance_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r16_contractual_maturity_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r16_effective_maturity_date_if_date;
     private BigDecimal r16_amount;
 
@@ -65,13 +65,13 @@ public class M_CA5_Detail_Entity1 {
     private String r17_name_of_instrument_programe;
     private String r17_issuing_entity_if_issued_throughan_spv;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r17_issuance_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r17_contractual_maturity_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r17_effective_maturity_date_if_date;
     private BigDecimal r17_amount;
 
@@ -80,13 +80,13 @@ public class M_CA5_Detail_Entity1 {
     private String r18_name_of_instrument_programe;
     private String r18_issuing_entity_if_issued_throughan_spv;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r18_issuance_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r18_contractual_maturity_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r18_effective_maturity_date_if_date;
     private BigDecimal r18_amount;
 
@@ -95,13 +95,13 @@ public class M_CA5_Detail_Entity1 {
     private String r19_name_of_instrument_programe;
     private String r19_issuing_entity_if_issued_throughan_spv;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r19_issuance_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r19_contractual_maturity_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r19_effective_maturity_date_if_date;
     private BigDecimal r19_amount;
 
@@ -110,13 +110,13 @@ public class M_CA5_Detail_Entity1 {
     private String r20_name_of_instrument_programe;
     private String r20_issuing_entity_if_issued_throughan_spv;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r20_issuance_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r20_contractual_maturity_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r20_effective_maturity_date_if_date;
     private BigDecimal r20_amount;
 
@@ -125,13 +125,13 @@ public class M_CA5_Detail_Entity1 {
     private String r21_name_of_instrument_programe;
     private String r21_issuing_entity_if_issued_throughan_spv;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r21_issuance_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r21_contractual_maturity_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r21_effective_maturity_date_if_date;
     private BigDecimal r21_amount;
 
@@ -140,13 +140,13 @@ public class M_CA5_Detail_Entity1 {
     private String r22_name_of_instrument_programe;
     private String r22_issuing_entity_if_issued_throughan_spv;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r22_issuance_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r22_contractual_maturity_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r22_effective_maturity_date_if_date;
     private BigDecimal r22_amount;
 
@@ -155,13 +155,13 @@ public class M_CA5_Detail_Entity1 {
     private String r23_name_of_instrument_programe;
     private String r23_issuing_entity_if_issued_throughan_spv;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r23_issuance_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r23_contractual_maturity_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r23_effective_maturity_date_if_date;
     private BigDecimal r23_amount;
 
@@ -170,13 +170,13 @@ public class M_CA5_Detail_Entity1 {
     private String r24_name_of_instrument_programe;
     private String r24_issuing_entity_if_issued_throughan_spv;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r24_issuance_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r24_contractual_maturity_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r24_effective_maturity_date_if_date;
     private BigDecimal r24_amount;
 
@@ -185,13 +185,13 @@ public class M_CA5_Detail_Entity1 {
     private String r25_name_of_instrument_programe;
     private String r25_issuing_entity_if_issued_throughan_spv;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r25_issuance_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r25_contractual_maturity_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r25_effective_maturity_date_if_date;
     private BigDecimal r25_amount;
 
@@ -200,13 +200,13 @@ public class M_CA5_Detail_Entity1 {
     private String r26_name_of_instrument_programe;
     private String r26_issuing_entity_if_issued_throughan_spv;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r26_issuance_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r26_contractual_maturity_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r26_effective_maturity_date_if_date;
     private BigDecimal r26_amount;
 
@@ -215,13 +215,13 @@ public class M_CA5_Detail_Entity1 {
     private String r27_name_of_instrument_programe;
     private String r27_issuing_entity_if_issued_throughan_spv;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r27_issuance_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r27_contractual_maturity_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r27_effective_maturity_date_if_date;
     private BigDecimal r27_amount;
 
@@ -230,13 +230,13 @@ public class M_CA5_Detail_Entity1 {
     private String r28_name_of_instrument_programe;
     private String r28_issuing_entity_if_issued_throughan_spv;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r28_issuance_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r28_contractual_maturity_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r28_effective_maturity_date_if_date;
     private BigDecimal r28_amount;
 
@@ -246,13 +246,13 @@ public class M_CA5_Detail_Entity1 {
     private String r35_name_of_instrument_programe;
     private String r35_issuing_entity_if_issued_throughan_spv;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r35_issuance_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r35_contractual_maturity_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r35_effective_maturity_date_if_date;
     private BigDecimal r35_amount;
     private BigDecimal r35_amount_derecognised_p000;
@@ -263,13 +263,13 @@ public class M_CA5_Detail_Entity1 {
     private String r36_name_of_instrument_programe;
     private String r36_issuing_entity_if_issued_throughan_spv;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r36_issuance_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r36_contractual_maturity_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r36_effective_maturity_date_if_date;
     private BigDecimal r36_amount;
     private BigDecimal r36_amount_derecognised_p000;
@@ -280,13 +280,13 @@ public class M_CA5_Detail_Entity1 {
     private String r37_name_of_instrument_programe;
     private String r37_issuing_entity_if_issued_throughan_spv;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r37_issuance_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r37_contractual_maturity_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r37_effective_maturity_date_if_date;
     private BigDecimal r37_amount;
     private BigDecimal r37_amount_derecognised_p000;
@@ -297,13 +297,13 @@ public class M_CA5_Detail_Entity1 {
     private String r38_name_of_instrument_programe;
     private String r38_issuing_entity_if_issued_throughan_spv;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r38_issuance_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r38_contractual_maturity_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r38_effective_maturity_date_if_date;
     private BigDecimal r38_amount;
     private BigDecimal r38_amount_derecognised_p000;
@@ -314,13 +314,13 @@ public class M_CA5_Detail_Entity1 {
     private String r39_name_of_instrument_programe;
     private String r39_issuing_entity_if_issued_throughan_spv;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r39_issuance_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r39_contractual_maturity_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r39_effective_maturity_date_if_date;
     private BigDecimal r39_amount;
     private BigDecimal r39_amount_derecognised_p000;
@@ -331,13 +331,13 @@ public class M_CA5_Detail_Entity1 {
     private String r40_name_of_instrument_programe;
     private String r40_issuing_entity_if_issued_throughan_spv;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r40_issuance_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r40_contractual_maturity_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r40_effective_maturity_date_if_date;
     private BigDecimal r40_amount;
     private BigDecimal r40_amount_derecognised_p000;
@@ -348,13 +348,13 @@ public class M_CA5_Detail_Entity1 {
     private String r41_name_of_instrument_programe;
     private String r41_issuing_entity_if_issued_throughan_spv;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r41_issuance_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r41_contractual_maturity_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r41_effective_maturity_date_if_date;
     private BigDecimal r41_amount;
     private BigDecimal r41_amount_derecognised_p000;
@@ -365,13 +365,13 @@ public class M_CA5_Detail_Entity1 {
     private String r42_name_of_instrument_programe;
     private String r42_issuing_entity_if_issued_throughan_spv;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r42_issuance_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r42_contractual_maturity_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r42_effective_maturity_date_if_date;
     private BigDecimal r42_amount;
     private BigDecimal r42_amount_derecognised_p000;
@@ -382,13 +382,13 @@ public class M_CA5_Detail_Entity1 {
     private String r43_name_of_instrument_programe;
     private String r43_issuing_entity_if_issued_throughan_spv;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r43_issuance_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r43_contractual_maturity_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r43_effective_maturity_date_if_date;
     private BigDecimal r43_amount;
     private BigDecimal r43_amount_derecognised_p000;
@@ -399,13 +399,13 @@ public class M_CA5_Detail_Entity1 {
     private String r44_name_of_instrument_programe;
     private String r44_issuing_entity_if_issued_throughan_spv;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r44_issuance_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r44_contractual_maturity_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r44_effective_maturity_date_if_date;
     private BigDecimal r44_amount;
     private BigDecimal r44_amount_derecognised_p000;
@@ -416,13 +416,13 @@ public class M_CA5_Detail_Entity1 {
     private String r45_name_of_instrument_programe;
     private String r45_issuing_entity_if_issued_throughan_spv;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r45_issuance_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r45_contractual_maturity_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r45_effective_maturity_date_if_date;
     private BigDecimal r45_amount;
     private BigDecimal r45_amount_derecognised_p000;
@@ -433,13 +433,13 @@ public class M_CA5_Detail_Entity1 {
     private String r46_name_of_instrument_programe;
     private String r46_issuing_entity_if_issued_throughan_spv;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r46_issuance_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r46_contractual_maturity_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r46_effective_maturity_date_if_date;
     private BigDecimal r46_amount;
     private BigDecimal r46_amount_derecognised_p000;
@@ -450,13 +450,13 @@ public class M_CA5_Detail_Entity1 {
     private String r47_name_of_instrument_programe;
     private String r47_issuing_entity_if_issued_throughan_spv;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r47_issuance_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r47_contractual_maturity_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r47_effective_maturity_date_if_date;
     private BigDecimal r47_amount;
     private BigDecimal r47_amount_derecognised_p000;
@@ -467,13 +467,13 @@ public class M_CA5_Detail_Entity1 {
     private String r48_name_of_instrument_programe;
     private String r48_issuing_entity_if_issued_throughan_spv;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r48_issuance_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r48_contractual_maturity_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r48_effective_maturity_date_if_date;
     private BigDecimal r48_amount;
     private BigDecimal r48_amount_derecognised_p000;
@@ -484,13 +484,13 @@ public class M_CA5_Detail_Entity1 {
     private String r49_name_of_instrument_programe;
     private String r49_issuing_entity_if_issued_throughan_spv;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r49_issuance_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r49_contractual_maturity_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r49_effective_maturity_date_if_date;
     private BigDecimal r49_amount;
     private BigDecimal r49_amount_derecognised_p000;
@@ -501,13 +501,13 @@ public class M_CA5_Detail_Entity1 {
     private String r50_name_of_instrument_programe;
     private String r50_issuing_entity_if_issued_throughan_spv;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r50_issuance_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r50_contractual_maturity_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r50_effective_maturity_date_if_date;
     private BigDecimal r50_amount;
     private BigDecimal r50_amount_derecognised_p000;
@@ -518,13 +518,13 @@ public class M_CA5_Detail_Entity1 {
     private String r51_name_of_instrument_programe;
     private String r51_issuing_entity_if_issued_throughan_spv;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r51_issuance_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r51_contractual_maturity_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r51_effective_maturity_date_if_date;
     private BigDecimal r51_amount;
     private BigDecimal r51_amount_derecognised_p000;
@@ -535,13 +535,13 @@ public class M_CA5_Detail_Entity1 {
     private String r52_name_of_instrument_programe;
     private String r52_issuing_entity_if_issued_throughan_spv;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r52_issuance_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r52_contractual_maturity_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r52_effective_maturity_date_if_date;
     private BigDecimal r52_amount;
     private BigDecimal r52_amount_derecognised_p000;
@@ -552,13 +552,13 @@ public class M_CA5_Detail_Entity1 {
     private String r53_name_of_instrument_programe;
     private String r53_issuing_entity_if_issued_throughan_spv;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r53_issuance_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r53_contractual_maturity_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r53_effective_maturity_date_if_date;
     private BigDecimal r53_amount;
     private BigDecimal r53_amount_derecognised_p000;
@@ -569,13 +569,13 @@ public class M_CA5_Detail_Entity1 {
     private String r54_name_of_instrument_programe;
     private String r54_issuing_entity_if_issued_throughan_spv;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r54_issuance_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r54_contractual_maturity_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r54_effective_maturity_date_if_date;
     private BigDecimal r54_amount;
     private BigDecimal r54_amount_derecognised_p000;
@@ -586,13 +586,13 @@ public class M_CA5_Detail_Entity1 {
     private String r55_name_of_instrument_programe;
     private String r55_issuing_entity_if_issued_throughan_spv;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r55_issuance_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r55_contractual_maturity_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r55_effective_maturity_date_if_date;
     private BigDecimal r55_amount;
     private BigDecimal r55_amount_derecognised_p000;
@@ -603,13 +603,13 @@ public class M_CA5_Detail_Entity1 {
     private String r56_name_of_instrument_programe;
     private String r56_issuing_entity_if_issued_throughan_spv;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r56_issuance_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r56_contractual_maturity_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r56_effective_maturity_date_if_date;
     private BigDecimal r56_amount;
     private BigDecimal r56_amount_derecognised_p000;
@@ -620,13 +620,13 @@ public class M_CA5_Detail_Entity1 {
     private String r57_name_of_instrument_programe;
     private String r57_issuing_entity_if_issued_throughan_spv;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r57_issuance_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r57_contractual_maturity_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r57_effective_maturity_date_if_date;
     private BigDecimal r57_amount;
     private BigDecimal r57_amount_derecognised_p000;
@@ -637,13 +637,13 @@ public class M_CA5_Detail_Entity1 {
     private String r58_name_of_instrument_programe;
     private String r58_issuing_entity_if_issued_throughan_spv;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r58_issuance_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r58_contractual_maturity_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r58_effective_maturity_date_if_date;
     private BigDecimal r58_amount;
     private BigDecimal r58_amount_derecognised_p000;
@@ -654,13 +654,13 @@ public class M_CA5_Detail_Entity1 {
     private String r59_name_of_instrument_programe;
     private String r59_issuing_entity_if_issued_throughan_spv;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r59_issuance_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r59_contractual_maturity_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r59_effective_maturity_date_if_date;
     private BigDecimal r59_amount;
     private BigDecimal r59_amount_derecognised_p000;
@@ -671,13 +671,13 @@ public class M_CA5_Detail_Entity1 {
     private String r60_name_of_instrument_programe;
     private String r60_issuing_entity_if_issued_throughan_spv;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r60_issuance_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r60_contractual_maturity_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r60_effective_maturity_date_if_date;
     private BigDecimal r60_amount;
     private BigDecimal r60_amount_derecognised_p000;
@@ -688,13 +688,13 @@ public class M_CA5_Detail_Entity1 {
     private String r61_name_of_instrument_programe;
     private String r61_issuing_entity_if_issued_throughan_spv;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r61_issuance_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r61_contractual_maturity_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r61_effective_maturity_date_if_date;
     private BigDecimal r61_amount;
     private BigDecimal r61_amount_derecognised_p000;
@@ -705,13 +705,13 @@ public class M_CA5_Detail_Entity1 {
     private String r62_name_of_instrument_programe;
     private String r62_issuing_entity_if_issued_throughan_spv;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r62_issuance_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r62_contractual_maturity_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r62_effective_maturity_date_if_date;
     private BigDecimal r62_amount;
     private BigDecimal r62_amount_derecognised_p000;
@@ -722,13 +722,13 @@ public class M_CA5_Detail_Entity1 {
     private String r63_name_of_instrument_programe;
     private String r63_issuing_entity_if_issued_throughan_spv;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r63_issuance_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r63_contractual_maturity_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r63_effective_maturity_date_if_date;
     private BigDecimal r63_amount;
     private BigDecimal r63_amount_derecognised_p000;
@@ -739,13 +739,13 @@ public class M_CA5_Detail_Entity1 {
     private String r64_name_of_instrument_programe;
     private String r64_issuing_entity_if_issued_throughan_spv;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r64_issuance_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r64_contractual_maturity_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r64_effective_maturity_date_if_date;
     private BigDecimal r64_amount;
     private BigDecimal r64_amount_derecognised_p000;
@@ -756,13 +756,13 @@ public class M_CA5_Detail_Entity1 {
     private String r65_name_of_instrument_programe;
     private String r65_issuing_entity_if_issued_throughan_spv;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r65_issuance_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r65_contractual_maturity_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r65_effective_maturity_date_if_date;
     private BigDecimal r65_amount;
     private BigDecimal r65_amount_derecognised_p000;
@@ -773,13 +773,13 @@ public class M_CA5_Detail_Entity1 {
     private String r66_name_of_instrument_programe;
     private String r66_issuing_entity_if_issued_throughan_spv;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r66_issuance_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r66_contractual_maturity_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r66_effective_maturity_date_if_date;
     private BigDecimal r66_amount;
     private BigDecimal r66_amount_derecognised_p000;
@@ -790,13 +790,13 @@ public class M_CA5_Detail_Entity1 {
     private String r67_name_of_instrument_programe;
     private String r67_issuing_entity_if_issued_throughan_spv;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r67_issuance_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r67_contractual_maturity_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r67_effective_maturity_date_if_date;
     private BigDecimal r67_amount;
     private BigDecimal r67_amount_derecognised_p000;
@@ -807,13 +807,13 @@ public class M_CA5_Detail_Entity1 {
     private String r68_name_of_instrument_programe;
     private String r68_issuing_entity_if_issued_throughan_spv;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r68_issuance_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r68_contractual_maturity_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r68_effective_maturity_date_if_date;
     private BigDecimal r68_amount;
     private BigDecimal r68_amount_derecognised_p000;
@@ -824,13 +824,13 @@ public class M_CA5_Detail_Entity1 {
     private String r69_name_of_instrument_programe;
     private String r69_issuing_entity_if_issued_throughan_spv;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r69_issuance_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r69_contractual_maturity_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r69_effective_maturity_date_if_date;
     private BigDecimal r69_amount;
     private BigDecimal r69_amount_derecognised_p000;
@@ -841,13 +841,13 @@ public class M_CA5_Detail_Entity1 {
     private String r70_name_of_instrument_programe;
     private String r70_issuing_entity_if_issued_throughan_spv;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r70_issuance_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r70_contractual_maturity_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r70_effective_maturity_date_if_date;
     private BigDecimal r70_amount;
     private BigDecimal r70_amount_derecognised_p000;
@@ -858,13 +858,13 @@ public class M_CA5_Detail_Entity1 {
     private String r71_name_of_instrument_programe;
     private String r71_issuing_entity_if_issued_throughan_spv;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r71_issuance_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r71_contractual_maturity_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r71_effective_maturity_date_if_date;
     private BigDecimal r71_amount;
     private BigDecimal r71_amount_derecognised_p000;
@@ -875,13 +875,13 @@ public class M_CA5_Detail_Entity1 {
     private String r72_name_of_instrument_programe;
     private String r72_issuing_entity_if_issued_throughan_spv;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r72_issuance_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r72_contractual_maturity_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r72_effective_maturity_date_if_date;
     private BigDecimal r72_amount;
     private BigDecimal r72_amount_derecognised_p000;
@@ -892,13 +892,13 @@ public class M_CA5_Detail_Entity1 {
     private String r73_name_of_instrument_programe;
     private String r73_issuing_entity_if_issued_throughan_spv;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r73_issuance_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r73_contractual_maturity_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r73_effective_maturity_date_if_date;
     private BigDecimal r73_amount;
     private BigDecimal r73_amount_derecognised_p000;
@@ -909,13 +909,13 @@ public class M_CA5_Detail_Entity1 {
     private String r74_name_of_instrument_programe;
     private String r74_issuing_entity_if_issued_throughan_spv;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r74_issuance_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r74_contractual_maturity_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r74_effective_maturity_date_if_date;
     private BigDecimal r74_amount;
     private BigDecimal r74_amount_derecognised_p000;
@@ -926,13 +926,13 @@ public class M_CA5_Detail_Entity1 {
     private String r75_name_of_instrument_programe;
     private String r75_issuing_entity_if_issued_throughan_spv;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r75_issuance_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r75_contractual_maturity_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r75_effective_maturity_date_if_date;
     private BigDecimal r75_amount;
     private BigDecimal r75_amount_derecognised_p000;
@@ -943,13 +943,13 @@ public class M_CA5_Detail_Entity1 {
     private String r76_name_of_instrument_programe;
     private String r76_issuing_entity_if_issued_throughan_spv;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r76_issuance_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r76_contractual_maturity_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r76_effective_maturity_date_if_date;
     private BigDecimal r76_amount;
     private BigDecimal r76_amount_derecognised_p000;
@@ -960,13 +960,13 @@ public class M_CA5_Detail_Entity1 {
     private String r77_name_of_instrument_programe;
     private String r77_issuing_entity_if_issued_throughan_spv;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r77_issuance_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r77_contractual_maturity_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r77_effective_maturity_date_if_date;
     private BigDecimal r77_amount;
     private BigDecimal r77_amount_derecognised_p000;
@@ -977,13 +977,13 @@ public class M_CA5_Detail_Entity1 {
     private String r78_name_of_instrument_programe;
     private String r78_issuing_entity_if_issued_throughan_spv;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r78_issuance_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r78_contractual_maturity_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r78_effective_maturity_date_if_date;
     private BigDecimal r78_amount;
     private BigDecimal r78_amount_derecognised_p000;
@@ -994,13 +994,13 @@ public class M_CA5_Detail_Entity1 {
     private String r79_name_of_instrument_programe;
     private String r79_issuing_entity_if_issued_throughan_spv;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r79_issuance_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r79_contractual_maturity_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r79_effective_maturity_date_if_date;
     private BigDecimal r79_amount;
     private BigDecimal r79_amount_derecognised_p000;
@@ -1011,13 +1011,13 @@ public class M_CA5_Detail_Entity1 {
     private String r80_name_of_instrument_programe;
     private String r80_issuing_entity_if_issued_throughan_spv;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r80_issuance_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r80_contractual_maturity_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r80_effective_maturity_date_if_date;
     private BigDecimal r80_amount;
     private BigDecimal r80_amount_derecognised_p000;
@@ -1028,13 +1028,13 @@ public class M_CA5_Detail_Entity1 {
     private String r81_name_of_instrument_programe;
     private String r81_issuing_entity_if_issued_throughan_spv;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r81_issuance_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r81_contractual_maturity_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r81_effective_maturity_date_if_date;
     private BigDecimal r81_amount;
     private BigDecimal r81_amount_derecognised_p000;
@@ -1045,13 +1045,13 @@ public class M_CA5_Detail_Entity1 {
     private String r82_name_of_instrument_programe;
     private String r82_issuing_entity_if_issued_throughan_spv;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r82_issuance_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r82_contractual_maturity_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r82_effective_maturity_date_if_date;
     private BigDecimal r82_amount;
     private BigDecimal r82_amount_derecognised_p000;
@@ -1062,13 +1062,13 @@ public class M_CA5_Detail_Entity1 {
     private String r83_name_of_instrument_programe;
     private String r83_issuing_entity_if_issued_throughan_spv;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r83_issuance_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r83_contractual_maturity_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r83_effective_maturity_date_if_date;
     private BigDecimal r83_amount;
     private BigDecimal r83_amount_derecognised_p000;
@@ -1079,13 +1079,13 @@ public class M_CA5_Detail_Entity1 {
     private String r84_name_of_instrument_programe;
     private String r84_issuing_entity_if_issued_throughan_spv;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r84_issuance_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r84_contractual_maturity_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r84_effective_maturity_date_if_date;
     private BigDecimal r84_amount;
     private BigDecimal r84_amount_derecognised_p000;
@@ -1096,13 +1096,13 @@ public class M_CA5_Detail_Entity1 {
     private String r85_name_of_instrument_programe;
     private String r85_issuing_entity_if_issued_throughan_spv;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r85_issuance_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r85_contractual_maturity_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r85_effective_maturity_date_if_date;
     private BigDecimal r85_amount;
     private BigDecimal r85_amount_derecognised_p000;
@@ -1113,13 +1113,13 @@ public class M_CA5_Detail_Entity1 {
     private String r86_name_of_instrument_programe;
     private String r86_issuing_entity_if_issued_throughan_spv;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r86_issuance_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r86_contractual_maturity_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r86_effective_maturity_date_if_date;
     private BigDecimal r86_amount;
     private BigDecimal r86_amount_derecognised_p000;
@@ -1130,13 +1130,13 @@ public class M_CA5_Detail_Entity1 {
     private String r87_name_of_instrument_programe;
     private String r87_issuing_entity_if_issued_throughan_spv;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r87_issuance_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r87_contractual_maturity_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r87_effective_maturity_date_if_date;
     private BigDecimal r87_amount;
     private BigDecimal r87_amount_derecognised_p000;
@@ -1147,13 +1147,13 @@ public class M_CA5_Detail_Entity1 {
     private String r88_name_of_instrument_programe;
     private String r88_issuing_entity_if_issued_throughan_spv;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r88_issuance_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r88_contractual_maturity_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r88_effective_maturity_date_if_date;
     private BigDecimal r88_amount;
     private BigDecimal r88_amount_derecognised_p000;
@@ -1164,13 +1164,13 @@ public class M_CA5_Detail_Entity1 {
     private String r89_name_of_instrument_programe;
     private String r89_issuing_entity_if_issued_throughan_spv;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r89_issuance_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r89_contractual_maturity_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r89_effective_maturity_date_if_date;
     private BigDecimal r89_amount;
     private BigDecimal r89_amount_derecognised_p000;
@@ -1181,13 +1181,13 @@ public class M_CA5_Detail_Entity1 {
     private String r90_name_of_instrument_programe;
     private String r90_issuing_entity_if_issued_throughan_spv;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r90_issuance_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r90_contractual_maturity_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r90_effective_maturity_date_if_date;
     private BigDecimal r90_amount;
     private BigDecimal r90_amount_derecognised_p000;
@@ -1198,13 +1198,13 @@ public class M_CA5_Detail_Entity1 {
     private String r91_name_of_instrument_programe;
     private String r91_issuing_entity_if_issued_throughan_spv;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r91_issuance_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r91_contractual_maturity_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r91_effective_maturity_date_if_date;
     private BigDecimal r91_amount;
     private BigDecimal r91_amount_derecognised_p000;
@@ -1215,13 +1215,13 @@ public class M_CA5_Detail_Entity1 {
     private String r92_name_of_instrument_programe;
     private String r92_issuing_entity_if_issued_throughan_spv;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r92_issuance_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r92_contractual_maturity_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r92_effective_maturity_date_if_date;
     private BigDecimal r92_amount;
     private BigDecimal r92_amount_derecognised_p000;
@@ -1232,13 +1232,13 @@ public class M_CA5_Detail_Entity1 {
     private String r93_name_of_instrument_programe;
     private String r93_issuing_entity_if_issued_throughan_spv;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r93_issuance_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r93_contractual_maturity_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r93_effective_maturity_date_if_date;
     private BigDecimal r93_amount;
     private BigDecimal r93_amount_derecognised_p000;
@@ -1249,13 +1249,13 @@ public class M_CA5_Detail_Entity1 {
     private String r94_name_of_instrument_programe;
     private String r94_issuing_entity_if_issued_throughan_spv;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r94_issuance_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r94_contractual_maturity_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r94_effective_maturity_date_if_date;
     private BigDecimal r94_amount;
     private BigDecimal r94_amount_derecognised_p000;
@@ -1266,13 +1266,13 @@ public class M_CA5_Detail_Entity1 {
     private String r95_name_of_instrument_programe;
     private String r95_issuing_entity_if_issued_throughan_spv;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r95_issuance_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r95_contractual_maturity_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r95_effective_maturity_date_if_date;
     private BigDecimal r95_amount;
     private BigDecimal r95_amount_derecognised_p000;
@@ -1283,13 +1283,13 @@ public class M_CA5_Detail_Entity1 {
     private String r96_name_of_instrument_programe;
     private String r96_issuing_entity_if_issued_throughan_spv;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r96_issuance_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r96_contractual_maturity_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r96_effective_maturity_date_if_date;
     private BigDecimal r96_amount;
     private BigDecimal r96_amount_derecognised_p000;
@@ -1300,13 +1300,13 @@ public class M_CA5_Detail_Entity1 {
     private String r97_name_of_instrument_programe;
     private String r97_issuing_entity_if_issued_throughan_spv;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r97_issuance_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r97_contractual_maturity_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r97_effective_maturity_date_if_date;
     private BigDecimal r97_amount;
     private BigDecimal r97_amount_derecognised_p000;
@@ -1317,13 +1317,13 @@ public class M_CA5_Detail_Entity1 {
     private String r98_name_of_instrument_programe;
     private String r98_issuing_entity_if_issued_throughan_spv;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r98_issuance_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r98_contractual_maturity_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r98_effective_maturity_date_if_date;
     private BigDecimal r98_amount;
     private BigDecimal r98_amount_derecognised_p000;
@@ -1334,13 +1334,13 @@ public class M_CA5_Detail_Entity1 {
     private String r99_name_of_instrument_programe;
     private String r99_issuing_entity_if_issued_throughan_spv;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r99_issuance_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r99_contractual_maturity_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r99_effective_maturity_date_if_date;
     private BigDecimal r99_amount;
     private BigDecimal r99_amount_derecognised_p000;
@@ -1351,13 +1351,13 @@ public class M_CA5_Detail_Entity1 {
     private String r100_name_of_instrument_programe;
     private String r100_issuing_entity_if_issued_throughan_spv;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r100_issuance_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r100_contractual_maturity_date;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+   @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date r100_effective_maturity_date_if_date;
     private BigDecimal r100_amount;
     private BigDecimal r100_amount_derecognised_p000;

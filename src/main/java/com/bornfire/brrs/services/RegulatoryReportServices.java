@@ -6633,9 +6633,9 @@ public class RegulatoryReportServices {
 			try {
 				List<Object[]> resubList = BRRS_M_CA5_reportservice.getM_CA5Resub();
 				resubmissionData.addAll(resubList);
-				System.out.println("Resubmission data fetched for M_INT_RATES_FCA: " + resubList.size());
+				System.out.println("Resubmission data fetched for CA5: " + resubList.size());
 			} catch (Exception e) {
-				System.err.println("Error fetching resubmission data for M_INT_RATES_FCA: " + e.getMessage());
+				System.err.println("Error fetching resubmission data for CA5: " + e.getMessage());
 				e.printStackTrace();
 			}
 			break;

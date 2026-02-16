@@ -61,6 +61,8 @@ import com.bornfire.brrs.entities.M_CA5_RESUB_Summary_Entity1;
 import com.bornfire.brrs.entities.M_CA5_RESUB_Summary_Entity2;
 import com.bornfire.brrs.entities.M_CA5_Summary_Entity1;
 import com.bornfire.brrs.entities.M_CA5_Summary_Entity2;
+import com.bornfire.brrs.entities.M_CA6_RESUB_Summary_Entity1;
+import com.bornfire.brrs.entities.M_CA6_RESUB_Summary_Entity2;
 
 @Component
 @Service

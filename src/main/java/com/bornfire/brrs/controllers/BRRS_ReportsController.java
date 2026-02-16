@@ -1141,13 +1141,14 @@ public class BRRS_ReportsController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
 		}
 	}
-
+	
 	@RequestMapping(value = "/UpdateM_CA5_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
-	public ResponseEntity<String> updateReportReSubAll(
-			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@ModelAttribute M_CA5_Summary_Entity1 request1, @ModelAttribute M_CA5_Summary_Entity2 request2,
-			HttpServletRequest req) {
+	public ResponseEntity<String> updateReportReSub(
+
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate, // ✅ ISO format
+			@RequestParam(required = false) String type, @ModelAttribute M_CA5_RESUB_Summary_Entity1 request1,
+			@ModelAttribute M_CA5_RESUB_Summary_Entity2 request2, HttpServletRequest req) {
 
 		try {
 			System.out.println("Came to M_CA5 Resub Controller");
@@ -1155,21 +1156,48 @@ public class BRRS_ReportsController {
 			if (asondate != null) {
 				request1.setReportDate(asondate);
 				request2.setReportDate(asondate);
-				System.out.println("🗓 Set Report Date: " + asondate);
+				System.out.println("Set Report Date: " + asondate);
 			}
 
-			// ✅ Call service
-			CA5reportService.updateReportReSub(request1, request2);
-
+			// Call service
+			CA5reportService.updateResubReport(request1,request2);
 			return ResponseEntity.ok("Resubmission Updated Successfully");
 
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body("M_FXR Resubmission Update Failed: " + e.getMessage());
+					.body("M_CA5 Resubmission Update Failed: " + e.getMessage());
 		}
 	}
+	
+	
 
+	/*
+	 * @RequestMapping(value = "/UpdateM_CA5_ReSub", method = { RequestMethod.GET,
+	 * RequestMethod.POST })
+	 * 
+	 * @ResponseBody public ResponseEntity<String> updateReportReSubAll(
+	 * 
+	 * @RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date
+	 * asondate,
+	 * 
+	 * @ModelAttribute M_CA5_Summary_Entity1 request1, @ModelAttribute
+	 * M_CA5_Summary_Entity2 request2, HttpServletRequest req) {
+	 * 
+	 * try { System.out.println("Came to M_CA5 Resub Controller");
+	 * 
+	 * if (asondate != null) { request1.setReportDate(asondate);
+	 * request2.setReportDate(asondate); System.out.println("🗓 Set Report Date: " +
+	 * asondate); }
+	 * 
+	 * // ✅ Call service CA5reportService.updateReportReSub(request1, request2);
+	 * 
+	 * return ResponseEntity.ok("Resubmission Updated Successfully");
+	 * 
+	 * } catch (Exception e) { e.printStackTrace(); return
+	 * ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	 * .body("M_FXR Resubmission Update Failed: " + e.getMessage()); } }
+	 */
 	@Autowired
 	BRRS_BDISB1_ReportService BDISB1reportService;
 

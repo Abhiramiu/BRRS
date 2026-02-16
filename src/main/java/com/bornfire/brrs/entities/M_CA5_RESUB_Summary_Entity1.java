@@ -1377,7 +1377,6 @@ public class M_CA5_RESUB_Summary_Entity1 {
 	private BigDecimal reportVersion;
 	
     @Column(name = "REPORT_RESUBDATE")
-    @Temporal(TemporalType.TIMESTAMP)
     private Date reportResubDate;
     
     
