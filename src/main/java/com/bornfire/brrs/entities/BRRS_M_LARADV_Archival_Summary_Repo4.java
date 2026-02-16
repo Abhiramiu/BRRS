@@ -16,12 +16,12 @@ public interface BRRS_M_LARADV_Archival_Summary_Repo4
         extends JpaRepository<M_LARADV_Archival_Summary_Entity4,M_LARADV_PK> {
 
     // Fetch specific archival data by report date & version
-    @Query(value = "SELECT * FROM BRRS_M_LARADV_ARCHIVALTABLE_SUMMARY4 WHERE REPORT_DATE = ?1 AND REPORT_VERSION = ?2", nativeQuery = true)
+    @Query(value = "SELECT * FROM BRRS_M_LARADV_ARCHIVALTABLE_SUMMARY4 WHERE REPORT_DATE = ?1 AND report_version = ?2", nativeQuery = true)
     List<M_LARADV_Archival_Summary_Entity4> getdatabydateListarchival(Date reportDate, BigDecimal reportVersion);
 
     // Fetch latest archival version for given date (no version input)
     @Query(value = "SELECT * FROM BRRS_M_LARADV_ARCHIVALTABLE_SUMMARY4 "
-            + "WHERE REPORT_DATE = ?1 AND REPORT_VERSION IS NOT NULL " + "ORDER BY TO_NUMBER(REPORT_VERSION) DESC "
+            + "WHERE REPORT_DATE = ?1 AND report_version IS NOT NULL " + "ORDER BY TO_NUMBER(report_version) DESC "
             + "FETCH FIRST 1 ROWS ONLY", nativeQuery = true)
     Optional<M_LARADV_Archival_Summary_Entity4> getLatestArchivalVersionByDate(Date reportDate);
 
@@ -31,7 +31,7 @@ public interface BRRS_M_LARADV_Archival_Summary_Repo4
  	Optional<M_LARADV_Archival_Summary_Entity4> checkVersion(@Param("reportDate") Date reportDate,
  			@Param("reportVersion") BigDecimal reportVersion);
 
-    @Query(value = "SELECT * FROM BRRS_M_LARADV_ARCHIVALTABLE_SUMMARY4 WHERE REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION ASC", nativeQuery = true)
+    @Query(value = "SELECT * FROM BRRS_M_LARADV_ARCHIVALTABLE_SUMMARY4 WHERE report_version IS NOT NULL ORDER BY report_version ASC", nativeQuery = true)
     List<M_LARADV_Archival_Summary_Entity4> getdatabydateListWithVersion();
 
 }

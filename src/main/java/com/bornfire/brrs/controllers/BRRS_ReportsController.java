@@ -4009,9 +4009,9 @@ public class BRRS_ReportsController {
 			// set date into all 4 entities
 			request1.setReport_date(asondate);
 			request2.setReport_date(asondate);
-			request3.setReportDate(asondate);
-			request4.setReportDate(asondate);
-			request5.setReportDate(asondate);
+			request3.setReport_date(asondate);
+			request4.setReport_date(asondate);
+			request5.setReport_date(asondate);
 
 			// call services
 			LARADVreportService.updateReport(request1);

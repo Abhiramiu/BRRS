@@ -14,12 +14,12 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface BRRS_M_LARADV_Resub_Summary_Repo2 extends JpaRepository<M_LARADV_Resub_Summary_Entity2, M_LARADV_PK> {
 	// Fetch specific archival data by report date & version
-	@Query(value = "SELECT * FROM BRRS_M_LARADV_RESUBTABLE_SUMMARY2 WHERE REPORT_DATE = ?1 AND REPORT_VERSION = ?2", nativeQuery = true)
+	@Query(value = "SELECT * FROM BRRS_M_LARADV_RESUBTABLE_SUMMARY2 WHERE REPORT_DATE = ?1 AND report_version = ?2", nativeQuery = true)
 	List<M_LARADV_Resub_Summary_Entity2> getdatabydateListarchival(Date reportDate, BigDecimal reportVersion);
 
 	// Fetch latest archival version for given date (no version input)
 	@Query(value = "SELECT * FROM BRRS_M_LARADV_RESUBTABLE_SUMMARY2 "
-			+ "WHERE REPORT_DATE = ?1 AND REPORT_VERSION IS NOT NULL " + "ORDER BY TO_NUMBER(REPORT_VERSION) DESC "
+			+ "WHERE REPORT_DATE = ?1 AND report_version IS NOT NULL " + "ORDER BY TO_NUMBER(report_version) DESC "
 			+ "FETCH FIRST 1 ROWS ONLY", nativeQuery = true)
 	Optional<M_LARADV_Resub_Summary_Entity2> getLatestArchivalVersionByDate(Date reportDate);
 
@@ -29,10 +29,10 @@ public interface BRRS_M_LARADV_Resub_Summary_Repo2 extends JpaRepository<M_LARAD
 	Optional<M_LARADV_Resub_Summary_Entity2> checkVersion(@Param("reportDate") Date reportDate,
 			@Param("reportVersion") BigDecimal reportVersion);
 
-	@Query(value = "SELECT * FROM BRRS_M_LARADV_RESUBTABLE_SUMMARY2 WHERE REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION ASC", nativeQuery = true)
+	@Query(value = "SELECT * FROM BRRS_M_LARADV_RESUBTABLE_SUMMARY2 WHERE report_version IS NOT NULL ORDER BY report_version ASC", nativeQuery = true)
 	List<M_LARADV_Resub_Summary_Entity2> getdatabydateListWithVersion();
 	
-	@Query(value = "SELECT REPORT_DATE, REPORT_VERSION, REPORT_RESUBDATE " + "FROM BRRS_M_LARADV_RESUBTABLE_SUMMARY2 "
+	@Query(value = "SELECT REPORT_DATE, report_version, REPORT_RESUBDATE " + "FROM BRRS_M_LARADV_RESUBTABLE_SUMMARY2 "
 			+ "WHERE REPORT_VERSION IS NOT NULL " + "ORDER BY REPORT_VERSION", nativeQuery = true)
 	List<Object[]> getResubData();
 }

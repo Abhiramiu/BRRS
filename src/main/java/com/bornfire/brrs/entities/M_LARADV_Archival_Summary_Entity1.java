@@ -1122,7 +1122,6 @@ public class M_LARADV_Archival_Summary_Entity1 implements Serializable{
     private BigDecimal report_version;
 
     @Column(name = "REPORT_RESUBDATE")
-    @Temporal(TemporalType.TIMESTAMP)
     private Date reportResubDate;
 	private String report_frequency;
 	private String report_code;

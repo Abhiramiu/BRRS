@@ -1279,7 +1279,6 @@ public class M_LARADV_Archival_Summary_Entity2 implements Serializable{
     private BigDecimal R140_LIMIT_PCT_UNIMPAIRED_CAP;
 	
     @Id
-    @Column(name = "REPORT_DATE")
     private Date report_date;
     private BigDecimal report_version;
 

@@ -1281,8 +1281,8 @@ public class M_LARADV_Summary_Entity3 {
 	
   
     @Id
-    private Date reportDate;
-    private String reportVersion;
+    private Date report_date;
+    private String report_version;
 	private String report_frequency;
 	private String report_code;
 	private String report_desc;
@@ -7169,18 +7169,6 @@ public class M_LARADV_Summary_Entity3 {
 	public void setR210_LIMIT_PCT_UNIMPAIRED_CAP(BigDecimal r210_LIMIT_PCT_UNIMPAIRED_CAP) {
 		R210_LIMIT_PCT_UNIMPAIRED_CAP = r210_LIMIT_PCT_UNIMPAIRED_CAP;
 	}
-	public Date getReportDate() {
-		return reportDate;
-	}
-	public void setReportDate(Date reportDate) {
-		this.reportDate = reportDate;
-	}
-	public String getReportVersion() {
-		return reportVersion;
-	}
-	public void setReportVersion(String reportVersion) {
-		this.reportVersion = reportVersion;
-	}
 	public String getReport_frequency() {
 		return report_frequency;
 	}
@@ -7216,6 +7204,19 @@ public class M_LARADV_Summary_Entity3 {
 	}
 	public void setDel_flg(String del_flg) {
 		this.del_flg = del_flg;
+	}
+	
+	public Date getReport_date() {
+		return report_date;
+	}
+	public void setReport_date(Date report_date) {
+		this.report_date = report_date;
+	}
+	public String getReport_version() {
+		return report_version;
+	}
+	public void setReport_version(String report_version) {
+		this.report_version = report_version;
 	}
 	public M_LARADV_Summary_Entity3() {
 		super();
