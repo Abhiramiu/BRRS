@@ -1424,7 +1424,7 @@ function cancelModify() {
 						</div>
 						<!-- Title -->
 						<h5
-								style="font-family: arial; font-size: 20px; font-weight: bold; color: white; margin: 0 10px;">
+								style="font-family: arial; font-size: 18px; font-weight: bold; color: white; margin: 0 10px;">
 							(3) QUARTERLY SCHEDULE:  Q-RLFA2: FORECLOSED <br> ASSETS
    (P'000)
 </h5>
@@ -2435,38 +2435,7 @@ function cancelModify() {
 													readonly /></td>
 											</tr>
 
-<tr>
-												<td id="ROW36" style="font-weight: bold;"><input
-													class="display-input Show_input " type="text"
-													value="h)  Other specify" id="r36_sche_fore_ass"
-													name="r36_sche_fore_ass"
-													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; padding-left: 45px;"
-													readonly /></td>
 
-												<td id="ROW36"
-													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
-													class="display-input Show_input" type="text"
-													th:value="${report.r36_orig_amt != null ? #numbers.formatDecimal(report.r36_orig_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
-													id="r36_orig_amt" name="r36_orig_amt"
-													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
-													readonly /></td>
-
-												<td id="ROW36"
-													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
-													class="display-input Show_input" type="text"
-													th:value="${report.r36_fore_amt != null ? #numbers.formatDecimal(report.r36_fore_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
-													id="r36_fore_amt" name="r36_fore_amt"
-													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
-													readonly /></td>
-
-												<td id="ROW36"
-													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
-													class="display-input Show_input" type="text"
-													th:value="${report.r36_no_of_acc != null ? #numbers.formatDecimal(report.r36_no_of_acc, 1, 'COMMA', 0, 'POINT') : '0'}"
-													id="r36_no_of_acc" name="r36_no_of_acc"
-													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
-													readonly /></td>
-											</tr>
 											<tr>
 												<td id="ROW35" style="font-weight: bold;"><input
 													class="display-input Show_input " type="text"
@@ -2501,7 +2470,38 @@ function cancelModify() {
 											</tr>
 
 
-											
+											<tr>
+																							<td id="ROW36" style="font-weight: bold;"><input
+																								class="display-input Show_input " type="text"
+																								value="h)  Other specify" id="r36_sche_fore_ass"
+																								name="r36_sche_fore_ass"
+																								style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; padding-left: 45px;"
+																								readonly /></td>
+
+																							<td id="ROW36"
+																								style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+																								class="display-input Show_input" type="text"
+																								th:value="${report.r36_orig_amt != null ? #numbers.formatDecimal(report.r36_orig_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+																								id="r36_orig_amt" name="r36_orig_amt"
+																								style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+																								readonly /></td>
+
+																							<td id="ROW36"
+																								style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+																								class="display-input Show_input" type="text"
+																								th:value="${report.r36_fore_amt != null ? #numbers.formatDecimal(report.r36_fore_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+																								id="r36_fore_amt" name="r36_fore_amt"
+																								style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+																								readonly /></td>
+
+																							<td id="ROW36"
+																								style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+																								class="display-input Show_input" type="text"
+																								th:value="${report.r36_no_of_acc != null ? #numbers.formatDecimal(report.r36_no_of_acc, 1, 'COMMA', 0, 'POINT') : '0'}"
+																								id="r36_no_of_acc" name="r36_no_of_acc"
+																								style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+																								readonly /></td>
+																						</tr>
 
 
 
@@ -3148,7 +3148,7 @@ function cancelModify() {
 											<tr>
 												<td id="ROW56" style="font-weight: bold;"><input
 													class="display-input Show_input " type="text"
-													value="d) Financial Auxiliaries (sum 1 to 4)"
+													value="d) Financial Auxiliaries (sum 1 to 5)"
 													id="r56_sche_fore_ass" name="r56_sche_fore_ass"
 													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; padding-left: 45px;"
 													readonly /></td>
@@ -3213,7 +3213,7 @@ function cancelModify() {
 											<tr>
 												<td id="ROW58" style="font-weight: bold;"><input
 													class="display-input Show_input " type="text"
-													value="1. Insurance brokers" id="r58_sche_fore_ass"
+													value="2. Insurance brokers" id="r58_sche_fore_ass"
 													name="r58_sche_fore_ass"
 													style="background-color: #FFFFFF; width:   -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; padding-left: 65px;"
 													readonly /></td>
@@ -3247,7 +3247,7 @@ function cancelModify() {
 											<tr>
 												<td id="ROW59" style="font-weight: bold;"><input
 													class="display-input Show_input " type="text"
-													value="2. fund administrators" id="r59_sche_fore_ass"
+													value="3. fund administrators" id="r59_sche_fore_ass"
 													name="r59_sche_fore_ass"
 													style="background-color: #FFFFFF; width:   -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; padding-left: 65px;"
 													readonly /></td>
@@ -3281,7 +3281,7 @@ function cancelModify() {
 											<tr>
 												<td id="ROW60" style="font-weight: bold;"><input
 													class="display-input Show_input " type="text"
-													value="3. Bureau de change" id="r60_sche_fore_ass"
+													value="4. Bureau de change" id="r60_sche_fore_ass"
 													name="r60_sche_fore_ass"
 													style="background-color: #FFFFFF; width:   -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; padding-left: 65px;"
 													readonly /></td>
@@ -3315,7 +3315,7 @@ function cancelModify() {
 											<tr>
 												<td id="ROW61" style="font-weight: bold;"><input
 													class="display-input Show_input " type="text"
-													value="4. Other (specify)*" id="r61_sche_fore_ass"
+													value="5. Other (specify)*" id="r61_sche_fore_ass"
 													name="r61_sche_fore_ass"
 													style="background-color: #FFFFFF; width:   -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; padding-left: 65px;"
 													readonly /></td>
