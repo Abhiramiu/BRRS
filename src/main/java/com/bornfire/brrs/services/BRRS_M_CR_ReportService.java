@@ -47,6 +47,7 @@ import com.bornfire.brrs.entities.M_CR_Detail_Entity;
 import com.bornfire.brrs.entities.M_CR_Resub_Detail_Entity;
 import com.bornfire.brrs.entities.M_CR_Resub_Summary_Entity;
 import com.bornfire.brrs.entities.M_CR_Summary_Entity;
+import com.bornfire.brrs.entities.M_OPTR_Archival_Summary_Entity;
 
 @Component
 @Service
@@ -332,7 +333,7 @@ public class BRRS_M_CR_ReportService {
 		List<Object[]> resubList = new ArrayList<>();
 		try {
 			List<M_CR_Archival_Summary_Entity> latestArchivalList = M_CR_Archival_Summary_Repo
-					.getdatabydateListWithVersionAll();
+					.getdatabydateListWithVersion();
 
 			if (latestArchivalList != null && !latestArchivalList.isEmpty()) {
 				for (M_CR_Archival_Summary_Entity entity : latestArchivalList) {
@@ -356,7 +357,7 @@ public class BRRS_M_CR_ReportService {
 
 		try {
 			List<M_CR_Archival_Summary_Entity> repoData = M_CR_Archival_Summary_Repo
-					.getdatabydateListWithVersionAll();
+					.getdatabydateListWithVersions();
 
 			if (repoData != null && !repoData.isEmpty()) {
 				for (M_CR_Archival_Summary_Entity entity : repoData) {

@@ -1461,8 +1461,6 @@ public class BRRS_ReportsController {
 	 * .body("Resubmission Update Failed: " + e.getMessage()); } }
 	 */
 
-	@Autowired
-	BRRS_M_OPTR_ReportService M_OPTRreportService;
 	/*
 	 * @PostMapping("/MOPTRupdateAll")
 	 * 

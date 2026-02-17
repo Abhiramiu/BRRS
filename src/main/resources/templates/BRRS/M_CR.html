@@ -532,7 +532,6 @@ PURPOSE		: BRRS MANUAL REPORT
 
 
 
-
 	<script>
 		// Show Modify (enable inputs & dropdowns)
 		function showmodify(btn) {
@@ -564,7 +563,7 @@ PURPOSE		: BRRS MANUAL REPORT
 
 			//     }
 
-			// Toggle buttons
+			/*// Toggle buttons
 			$("#submitButton, #btnBack_edit").show();
 			$("#btnBack").hide();
 
@@ -572,50 +571,35 @@ PURPOSE		: BRRS MANUAL REPORT
 			$("#cancelRecord").show();
 
 			// Optionally hide the clicked Modify button
-			$(btn).hide();
+			$(btn).hide();*/
+			// Show buttons
+			
+						$("#submitButton").show();
+						$("#cancelRecord").show(); // Show Cancel button only when Modify is clicked
+
+						// Hide the clicked Modify button
+						$(btn).hide();
 		}
 
 		//Cancel / Reset function
 		function cancelModify() {
-			if (confirm("Are you sure you want to cancel changes? Page will reload.")) {
-				// ✅ Only when user clicks YES
-				location.reload();
+					if (confirm("Are you sure you want to cancel changes? Page will reload.")) {
+						// ✅ Only when user clicks YES
+						location.reload();
 
-				$(".Show_input").attr("readonly", true).attr("disabled", true);
+						$(".Show_input").attr("readonly", true).attr("disabled", true);
 
-				//  for (let i = 11; i <= 50; i++) {
-				//      $("#R" + i + "_TOTAL_LONG_POS_TEXT").show();
-				//  $("#R" + i + "_TOTAL_SHORT_POS_TEXT").show();
-				//  $("#R" + i + "_GROSS_OPEN_POS_TEXT").show();
-				//  $("#R" + i + "_CHARGE_BASIS_RISK_TEXT").show();
-				//  $("#R" + i + "_CAPITAL_CHARGE_BASIS_RISK_TEXT").show();
-				//  $("#R" + i + "_NET_OPEN_POS_TEXT").show();
-				//  $("#R" + i + "_CHARGE_DIR_RISK_TEXT").show();   
-				//  $("#R" + i + "_CAPITAL_CHARGE_DIR_RISK_TEXT").show();
-				//  $("#R" + i + "_TOTAL_CAPITAL_CHARGE_TEXT").show();
+						$("#submitButton, #btnBack_edit").hide();
+						$("#btnBack").show();
 
-				//  $("#R" + i + "_TOTAL_LONG_POS").hide();
-				//  $("#R" + i + "_TOTAL_SHORT_POS").hide();
-				//  $("#R" + i + "_GROSS_OPEN_POS").hide();
-				//  $("#R" + i + "_CHARGE_BASIS_RISK").hide();
-				//  $("#R" + i + "_CAPITAL_CHARGE_BASIS_RISK").hide();
-				//  $("#R" + i + "_NET_OPEN_POS").hide();
-				//  $("#R" + i + "_CHARGE_DIR_RISK").hide();
-				//  $("#R" + i + "_CAPITAL_CHARGE_DIR_RISK").hide();
-				//  $("#R" + i + "_TOTAL_CAPITAL_CHARGE").hide();
-				//  }
+						// Hide Cancel button again
+						$("#cancelRecord").hide();
 
-				$("#submitButton, #btnBack_edit").hide();
-				$("#btnBack").show();
-
-				// Hide Cancel button again
-				$("#cancelRecord").hide();
-
-				// Show all Modify buttons
-				$("#addRecord").show();
-			}
-			// ❌ If user clicks CANCEL, nothing happens
-		}
+						// Show all Modify buttons
+						$("#addRecord").show();
+					}
+					// ❌ If user clicks CANCEL, nothing happens
+				}
 
 
 
@@ -776,7 +760,8 @@ PURPOSE		: BRRS MANUAL REPORT
 </script>
 		<!--// This is the main function that orchestrates the entire form submission process.
 		// It is triggered by the "Update" button click.
-		// Make the function global so onclick="fileuploads(this)" can see it
+		// Make the function global so onclick="
+(this)" can see it
 		window.fileuploads = function (btn) {
 			try {
 				// ✅ Get report date
@@ -1990,14 +1975,17 @@ PURPOSE		: BRRS MANUAL REPORT
 									</table>
 								</div>
 
-								<div style="text-align: center; margin-top: 10px;">
+								<div style="text-align: center; margin-top: 10px; background-color: #f1f1f1;">
 
-									<button id="submitButton" type="button" class="custom-tab-btn Show_input"
-										form="fileupload" th:attr="data-todate=${asondate}" onclick="fileuploads(this);"
-										style="display: none;">Submit</button>
-								</div>
-
-
+									<button id="submitButton" 
+									        type="button" 
+									        class="custom-tab-btn Show_input"
+									        form="fileupload" 
+									        th:attr="data-todate=${asondate}" 
+									        onclick="fileuploads(this);"
+									        style="display: none; background-color: #ffffff;">
+									    Submit
+									</button>
 
 							</form>
 

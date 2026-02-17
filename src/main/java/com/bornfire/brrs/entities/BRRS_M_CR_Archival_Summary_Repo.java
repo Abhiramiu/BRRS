@@ -23,7 +23,8 @@ public interface BRRS_M_CR_Archival_Summary_Repo extends JpaRepository<M_CR_Arch
     List<M_CR_Archival_Summary_Entity> getdatabydateListarchival(Date report_date, BigDecimal report_version);
     
     
-    
+	@Query(value = "SELECT * FROM BRRS_M_CR_ARCHIVALTABLE_SUMMARY WHERE REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION ASC", nativeQuery = true)
+	List<M_CR_Archival_Summary_Entity> getdatabydateListWithVersions();
     
    
     	    
@@ -36,7 +37,7 @@ public interface BRRS_M_CR_Archival_Summary_Repo extends JpaRepository<M_CR_Arch
     	     Optional<M_CR_Archival_Summary_Entity> findByReport_dateAndReport_version(Date report_date, BigDecimal report_version);
     	    
     	    //Current Report Version Only Shown 
-    	    @Query(value = "SELECT *  FROM BRRS_M_CR_ARCHIVALTABLE_SUMMARY WHERE REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION ASC FETCH FIRST 1 ROWS ONLY ", nativeQuery = true)
+    	    @Query(value = "SELECT *  FROM BRRS_M_CR_ARCHIVALTABLE_SUMMARY WHERE REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION ASC", nativeQuery = true)
     	    List<M_CR_Archival_Summary_Entity> getdatabydateListWithVersion();
 
     	    @Query(value = "SELECT *  FROM BRRS_M_CR_ARCHIVALTABLE_SUMMARY WHERE REPORT_VERSION IS NOT NULL ", nativeQuery = true)

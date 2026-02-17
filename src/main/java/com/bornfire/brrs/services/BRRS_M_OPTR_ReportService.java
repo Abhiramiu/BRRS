@@ -318,7 +318,7 @@ public class BRRS_M_OPTR_ReportService {
 		List<Object[]> resubList = new ArrayList<>();
 		try {
 			List<M_OPTR_Archival_Summary_Entity> latestArchivalList = M_OPTR_Archival_Summary_Repo
-					.getdatabydateListWithVersionAll();
+					.getdatabydateListWithVersion();
 
 			if (latestArchivalList != null && !latestArchivalList.isEmpty()) {
 				for (M_OPTR_Archival_Summary_Entity entity : latestArchivalList) {
@@ -342,7 +342,7 @@ public class BRRS_M_OPTR_ReportService {
 
 		try {
 			List<M_OPTR_Archival_Summary_Entity> repoData = M_OPTR_Archival_Summary_Repo
-					.getdatabydateListWithVersionAll();
+					.getdatabydateListWithVersions();
 
 			if (repoData != null && !repoData.isEmpty()) {
 				for (M_OPTR_Archival_Summary_Entity entity : repoData) {
