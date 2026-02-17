@@ -931,9 +931,9 @@ PURPOSE		: BRRS MANUAL REPORT
 
 						<!-- Title -->
 						<h5
-							style="font-family: arial; font-size: 16px; font-weight: bold; color: white; margin: 0 10px;">
+							style="font-family: arial; font-size: 20px; font-weight: bold; color: white; margin: 0 10px;">
 
-							Monthly Schedule M-SRWA 12g - Schedule of Rated Security Firms
+							Monthly Schedule M-SRWA 12g - Schedule <br> of Rated Security Firms
 
 
 						</h5>
@@ -950,17 +950,11 @@ PURPOSE		: BRRS MANUAL REPORT
 
 					<div class="custom-tab-btn-group nav-buttons"
 						style="display: flex; color: white; align-items: center;">
-						<!-- 📅 Date -->
-						<!-- <span class="white-text"
-							style="color: white !important; font-size: 16px; margin-right: 20px;">Report
-							Date: <span th:text="${report_date}">2025-07-04</span>
-						</span> -->
-
-
-
-						<span class="white-text" style="color: white !important; font-size: 13px; margin-right: 20px;">
-							Report Date: <span th:text="${#strings.replace(asondate, '/', '-')}">2025-07-04</span>
-						</span>
+					
+						<span class="white-text"
+													style="color: white !important; font-size: 16px; margin-right: 20px;">Report Date: <span
+														th:text="${#strings.replace(asondate, '/', '-')}">2025-07-04</span>
+												</span>
 
 						<!-- Buttons -->
 						<input type="hidden" id="selectedTab" th:value="${displaymode}">
@@ -997,7 +991,7 @@ PURPOSE		: BRRS MANUAL REPORT
                      data-filename='M_SRWA_12G.xlsx',
                      data-type=${type},
 					 data-version=${version != null ? version : ''} " onclick="downloadfile(this);"
-							style="font-family: Arial; font-weight: bold;font-size: 14px;">
+							style="font-family: Arial; font-weight: bold;">
 							<i class="fa fa-download"></i> Format
 						</button>
 
@@ -1013,7 +1007,7 @@ PURPOSE		: BRRS MANUAL REPORT
             data-filename='EMAIL_M_SRWA_12G.xlsx',
             data-type=${type},
             data-format='email',
-            data-version=${version != null ? version : ''}" style="font-family: Arial; font-weight: bold;font-size: 14px;">
+            data-version=${version != null ? version : ''}" style="font-family: Arial; font-weight: bold;">
 							<i class="fa fa-download"></i> Email
 
 						</button>
@@ -1044,14 +1038,14 @@ PURPOSE		: BRRS MANUAL REPORT
 				          color: white; font-size: 20px;
 				          background-color: rgb(107, 122, 143); 
 				          margin-top:10px; margin-bottom:10px; padding: 5px;">
-					Re-submission Summary View - M-SRWA-12G
+					Resubmission Summary View - M-SRWA-12G
 				</h1>
 
 				<h1 th:if="${type == 'RESUB' and displaymode == 'resubDetail'}" style="text-align: left; font-weight: bold;
 				          color: white; font-size: 20px;
 				          background-color: rgb(107, 122, 143); 
 				          margin-top:10px; margin-bottom:10px; padding: 5px;">
-					Re-submission Detail View - M-SRWA-12G
+					Resubmission Detail View - M-SRWA-12G
 				</h1>
 
 				<div

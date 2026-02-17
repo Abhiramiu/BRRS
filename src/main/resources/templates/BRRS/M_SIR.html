@@ -484,7 +484,7 @@ PURPOSE		: BRFREPORT
 			showResultModal('Alert', 'Development in progress');
 
 		}
-		
+
 
 		function showResultModal(title, message) {
 			// Set the text for the modal elements
@@ -941,45 +941,45 @@ PURPOSE		: BRFREPORT
 				apiUrl = './UpdateM_SIR_ReSub';
 			}
 			$.ajax({
-								url: apiUrl,
-								type: 'POST',
-								data: formData,
-								processData: false,
-								contentType: false,
-								dataType: 'text',
+				url: apiUrl,
+				type: 'POST',
+				data: formData,
+				processData: false,
+				contentType: false,
+				dataType: 'text',
 
-								success: function (response) {
-									$("#resultModalLabel").text("BRRS");
-									$("#resultModalBody").text(response);
-									$("#resultModal").modal("show");
+				success: function (response) {
+					$("#resultModalLabel").text("BRRS");
+					$("#resultModalBody").text(response);
+					$("#resultModal").modal("show");
 
-									// Redirect after modal close (OLD LOGIC)
-									$("#resultModal")
-										.off("hidden.bs.modal")
-										.on("hidden.bs.modal", function () {
-											if (isResubmissionUpdate) {
-												window.location.href = previousUrl
-													? previousUrl
-													: "/BRRS/Resubmission?rptcode=Q_STAFF";
-											}
-										});
-								},
+					// Redirect after modal close (OLD LOGIC)
+					$("#resultModal")
+						.off("hidden.bs.modal")
+						.on("hidden.bs.modal", function () {
+							if (isResubmissionUpdate) {
+								window.location.href = previousUrl
+									? previousUrl
+									: "/BRRS/Resubmission?rptcode=Q_STAFF";
+							}
+						});
+				},
 
-								error: function (jqXHR) {
-									console.log("Error response:", jqXHR.responseText);
-									$("#resultModalLabel").text("Error");
-									$("#resultModalBody").text("Update failed. Check console.");
-									$("#resultModal").modal("show");
-								},
+				error: function (jqXHR) {
+					console.log("Error response:", jqXHR.responseText);
+					$("#resultModalLabel").text("Error");
+					$("#resultModalBody").text("Update failed. Check console.");
+					$("#resultModal").modal("show");
+				},
 
-								complete: function () {
-									$('#loader').modal('hide');
-								}
-							});
+				complete: function () {
+					$('#loader').modal('hide');
+				}
+			});
 
-							console.log("✅ AJAX executed successfully");
-						}
-	
+			console.log("✅ AJAX executed successfully");
+		}
+
 	</script>
 
 	</script>
@@ -1127,18 +1127,18 @@ PURPOSE		: BRFREPORT
 		const reportId = /*[[${reportid}]]*/ null;
 		/*]]>*/
 		function closemodel() {
-				    const modalElement = document.getElementById('resultModal');
-				    const modal = bootstrap.Modal.getInstance(modalElement);
-				    modal.hide();
+			const modalElement = document.getElementById('resultModal');
+			const modal = bootstrap.Modal.getInstance(modalElement);
+			modal.hide();
 
-				    const message = document.getElementById("resultModalBody").innerText.toLowerCase();
+			const message = document.getElementById("resultModalBody").innerText.toLowerCase();
 
-				    if (message.includes("resubmission")) {
-				        window.history.back();
-				    } else {
-				        location.reload();
-				    }
-				}
+			if (message.includes("resubmission")) {
+				window.history.back();
+			} else {
+				location.reload();
+			}
+		}
 	</script>
 
 
@@ -1212,7 +1212,8 @@ PURPOSE		: BRFREPORT
 							onclick="cancelModify();" style="display: none;">Cancel</button>
 
 						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
-							onclick="downloadfile(this)" th:if="${displaymode == 'summary' or displaymode == 'detail'or displaymode == 'resubSummary'or displaymode == 'resubDetail'}"
+							onclick="downloadfile(this)"
+							th:if="${displaymode == 'summary' or displaymode == 'detail'or displaymode == 'resubSummary'or displaymode == 'resubDetail'}"
 							th:attr="data-reportid=${reportid},
 							               data-asondate=${asondate},
 							               data-fromdate=${fromdate},
@@ -1225,7 +1226,8 @@ PURPOSE		: BRFREPORT
 							<i class="fa fa-download"></i> Format
 						</button>
 						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
-							onclick="downloadfile(this)" th:if="${displaymode == 'summary' or displaymode == 'detail'or displaymode == 'resubSummary'or displaymode == 'resubDetail'}"
+							onclick="downloadfile(this)"
+							th:if="${displaymode == 'summary' or displaymode == 'detail'or displaymode == 'resubSummary'or displaymode == 'resubDetail'}"
 							th:attr="data-reportid=${reportid},
 							        data-asondate=${asondate},
 							        data-fromdate=${fromdate},
@@ -1393,16 +1395,12 @@ PURPOSE		: BRFREPORT
 													<td style="text-align: center;
 			">1</td>
 
-													<td id="ROW12" style="
-		white-space: normal;
-		  word-wrap: break-word;
-		  max-width: 220px;
-		  line-height: 1.2;
-		  text-align: left;
-		  vertical-align: middle;
-		  font-weight: bold;
-	    " th:title="${report.r12_product}" th:text="${report.r12_product}">
-													</td>
+													<td id="ROW12" style="font-weight: bold;"><input
+															class="display-input Show_input " type="text"
+															th:value="'Corporate Firms, Securities Firms and Foreign Public Sector Entities'"
+															id="r12_product" name="r12_product"
+															style="background-color: #FFFFFF; width: 790px; height: 28px; border-color: transparent; text-align: left;"
+															readonly /></td>
 
 													<td style="text-align: center; 
 	           vertical-align: middle; 
@@ -1494,16 +1492,14 @@ PURPOSE		: BRFREPORT
 
 													<td style="text-align: center;">2</td>
 
-													<td id="ROW13" style="
-				white-space: normal;
-				  word-wrap: break-word;
-				  max-width: 220px;
-				  line-height: 1.2;
-				  text-align: left;
-				  vertical-align: middle;
-				  padding-left: 20px;
-			    " th:title="${report.r13_product}" th:text="${report.r13_product}">
+													<td id="ROW13" style="font-weight: bold;">
+														<input class="display-input Show_input" type="text"
+															th:value="'Banks and Financial Institutions'"
+															id="r13_product" name="r13_product"
+															style="background-color: #FFFFFF; width: 790px; height: 28px; border-color: transparent; text-align: left;"
+															readonly />
 													</td>
+
 
 													<td style="padding-left: 20px;">
 														<input class="display-input show_input" type="text"
@@ -1583,16 +1579,14 @@ PURPOSE		: BRFREPORT
 
 													<td style="text-align: center;">3</td>
 
-													<td id="ROW14" style="
-				white-space: normal;
-				  word-wrap: break-word;
-				  max-width: 220px;
-				  line-height: 1.2;
-				  text-align: left;
-				  vertical-align: middle;
-				  padding-left: 20px;
-			    " th:title="${report.r14_product}" th:text="${report.r14_product}">
+													<td id="ROW14" style="font-weight: bold;">
+														<input class="display-input Show_input" type="text"
+															th:value="'Insurance Companies and Pension Funds'"
+															id="r14_product" name="r14_product"
+															style="background-color: #FFFFFF; width: 790px; height: 28px; border-color: transparent; text-align: left;"
+															readonly />
 													</td>
+
 
 													<td style="padding-left: 20px;">
 														<input class="display-input show_input" type="text"
@@ -1673,16 +1667,14 @@ PURPOSE		: BRFREPORT
 
 													<td style="text-align: center;">4</td>
 
-													<td id="ROW15" style="
-				white-space: normal;
-				  word-wrap: break-word;
-				  max-width: 220px;
-				  line-height: 1.2;
-				  text-align: left;
-				  vertical-align: middle;
-				  padding-left: 20px;
-			    " th:title="${report.r15_product}" th:text="${report.r15_product}">
+													<td id="ROW15" style="font-weight: bold;">
+														<input class="display-input Show_input" type="text"
+															th:value="'Non-Banking Financial Companies (NBFCs)'"
+															id="r15_product" name="r15_product"
+															style="background-color: #FFFFFF; width: 790px; height: 28px; border-color: transparent; text-align: left;"
+															readonly />
 													</td>
+
 
 
 													<td style="padding-left: 20px;">
@@ -1762,16 +1754,14 @@ PURPOSE		: BRFREPORT
 
 													<td style="text-align: center;">5</td>
 
-													<td id="ROW16" style="
-				white-space: normal;
-				  word-wrap: break-word;
-				  max-width: 220px;
-				  line-height: 1.2;
-				  text-align: left;
-				  vertical-align: middle;
-				  padding-left: 20px;
-			    " th:title="${report.r16_product}" th:text="${report.r16_product}">
+													<td id="ROW16" style="font-weight: bold;">
+														<input class="display-input Show_input" type="text"
+															th:value="'Other Regulated Financial Entities'"
+															id="r16_product" name="r16_product"
+															style="background-color: #FFFFFF; width: 790px; height: 28px; border-color: transparent; text-align: left;"
+															readonly />
 													</td>
+
 													<td style="padding-left: 20px;">
 														<input class="display-input show_input" type="text"
 															th:value="${report.r16_amt_6m != null ? #numbers.formatDecimal(report.r16_amt_6m,0,'COMMA',0,'POINT'):'0'}"
@@ -1850,16 +1840,14 @@ PURPOSE		: BRFREPORT
 
 													<td style="text-align: center;">6</td>
 
-													<td id="ROW17" style="
-				white-space: normal;
-				  word-wrap: break-word;
-				  max-width: 220px;
-				  line-height: 1.2;
-				  text-align: left;
-				  vertical-align: middle;
-				  padding-left: 20px;
-			    " th:title="${report.r17_product}" th:text="${report.r17_product}">
+													<td id="ROW17" style="font-weight: bold;">
+														<input class="display-input Show_input" type="text"
+															th:value="'Micro Finance Institutions'" id="r17_product"
+															name="r17_product"
+															style="background-color: #FFFFFF; width: 790px; height: 28px; border-color: transparent; text-align: left;"
+															readonly />
 													</td>
+
 
 													<td style="padding-left: 20px;">
 														<input class="display-input show_input" type="text"
@@ -1938,16 +1926,14 @@ PURPOSE		: BRFREPORT
 													<td style="text-align: center;
 					">7</td>
 
-													<td id="ROW18" style="
-				white-space: normal;
-				  word-wrap: break-word;
-				  max-width: 220px;
-				  line-height: 1.2;
-				  text-align: left;
-				  vertical-align: middle;
-				  font-weight: bold;
-			    " th:title="${report.r18_product}" th:text="${report.r18_product}">
+													<td id="ROW18" style="font-weight: bold;">
+														<input class="display-input Show_input" type="text"
+															th:value="'Housing Finance Companies'" id="r18_product"
+															name="r18_product"
+															style="background-color: #FFFFFF; width: 790px; height: 28px; border-color: transparent; text-align: left;"
+															readonly />
 													</td>
+
 
 
 													<td style="background-color:rgb(107, 122, 143);">
@@ -2015,14 +2001,12 @@ PURPOSE		: BRFREPORT
 												<tr>
 													<td style="text-align: center;">8</td>
 
-													<td id="ROW19" style="
-				white-space: normal;
-				  word-wrap: break-word;
-				  max-width: 220px;
-				  line-height: 1.2;
-				  text-align: left;
-				  vertical-align: middle; padding-left: 20px;
-			    " th:title="${report.r19_product}" th:text="${report.r19_product}">
+													<td id="ROW19" style="font-weight: bold;">
+														<input class="display-input Show_input" type="text"
+															th:value="'Primary Dealers'" id="r19_product"
+															name="r19_product"
+															style="background-color: #FFFFFF; width: 790px; height: 28px; border-color: transparent; text-align: left;"
+															readonly />
 													</td>
 
 
@@ -2105,15 +2089,14 @@ PURPOSE		: BRFREPORT
 												<tr>
 													<td style="text-align: center;">9</td>
 
-													<td id="ROW20" style="
-							white-space: normal;
-							  word-wrap: break-word;
-							  max-width: 220px;
-							  line-height: 1.2;
-							  text-align: left;
-							  vertical-align: middle; padding-left: 20px;
-						    " th:title="${report.r20_product}" th:text="${report.r20_product}">
+													<td id="ROW20" style="font-weight: bold;">
+														<input class="display-input Show_input" type="text"
+															th:value="'Asset Reconstruction Companies'" id="r20_product"
+															name="r20_product"
+															style="background-color: #FFFFFF; width: 790px; height: 28px; border-color: transparent; text-align: left;"
+															readonly />
 													</td>
+
 
 													<td style="padding-left: 20px;">
 														<input class="display-input show_input" type="text"
@@ -2193,15 +2176,14 @@ PURPOSE		: BRFREPORT
 												<tr>
 													<td style="text-align: center;">10</td>
 
-													<td id="ROW219" style="
-								white-space: normal;
-								  word-wrap: break-word;
-								  max-width: 220px;
-								  line-height: 1.2;
-								  text-align: left;
-								  vertical-align: middle; padding-left: 20px;
-							    " th:title="${report.r21_product}" th:text="${report.r21_product}">
+													<td id="ROW21" style="font-weight: bold;">
+														<input class="display-input Show_input" type="text"
+															th:value="'Payment Banks'" id="r21_product"
+															name="r21_product"
+															style="background-color: #FFFFFF; width: 790px; height: 28px; border-color: transparent; text-align: left;"
+															readonly />
 													</td>
+
 
 
 													<td style="padding-left: 20px;">
@@ -2282,15 +2264,14 @@ PURPOSE		: BRFREPORT
 												<tr>
 													<td style="text-align: center;">11</td>
 
-													<td id="ROW22" style="
-									white-space: normal;
-									  word-wrap: break-word;
-									  max-width: 220px;
-									  line-height: 1.2;
-									  text-align: left;
-									  vertical-align: middle; padding-left: 20px;
-								    " th:title="${report.r22_product}" th:text="${report.r22_product}">
+													<td id="ROW22" style="font-weight: bold;">
+														<input class="display-input Show_input" type="text"
+															th:value="'Small Finance Banks'" id="r22_product"
+															name="r22_product"
+															style="background-color: #FFFFFF; width: 790px; height: 28px; border-color: transparent; text-align: left;"
+															readonly />
 													</td>
+
 
 
 													<td style="padding-left: 20px;">
@@ -2371,15 +2352,14 @@ PURPOSE		: BRFREPORT
 												<tr>
 													<td style="text-align: center;">12</td>
 
-													<td id="ROW23" style="
-										white-space: normal;
-										  word-wrap: break-word;
-										  max-width: 220px;
-										  line-height: 1.2;
-										  text-align: left;
-										  vertical-align: middle; padding-left: 20px;
-									    " th:title="${report.r23_product}" th:text="${report.r23_product}">
+													<td id="ROW23" style="font-weight: bold;">
+														<input class="display-input Show_input" type="text"
+															th:value="'Co-operative Banks'" id="r23_product"
+															name="r23_product"
+															style="background-color: #FFFFFF; width: 790px; height: 28px; border-color: transparent; text-align: left;"
+															readonly />
 													</td>
+
 													<td style="padding-left: 20px;">
 														<input class="display-input show_input" type="text"
 															th:value="${report.r23_amt_6m != null ? #numbers.formatDecimal(report.r23_amt_6m,0,'COMMA',0,'POINT'):'0'}"
@@ -2458,16 +2438,14 @@ PURPOSE		: BRFREPORT
 												<tr>
 													<td style="text-align: center;">13</td>
 
-													<td id="ROW24" style="
-											white-space: normal;
-											  word-wrap: break-word;
-											  max-width: 220px;
-											  line-height: 1.2;
-											  text-align: left;
-											  vertical-align: middle;
-											  font-weight: bold;
-										    " th:title="${report.r24_product}" th:text="${report.r24_product}">
+													<td id="ROW24" style="font-weight: bold;">
+														<input class="display-input Show_input" type="text"
+															th:value="'Regional Rural Banks'" id="r24_product"
+															name="r24_product"
+															style="background-color: #FFFFFF; width: 790px; height: 28px; border-color: transparent; text-align: left;"
+															readonly />
 													</td>
+
 
 
 													<td style="padding-left: 20px;  vertical-align: middle;">
@@ -2552,16 +2530,14 @@ PURPOSE		: BRFREPORT
 
 													<td style="text-align: center;">14</td>
 
-													<td id="ROW25" style="
-																			white-space: normal;
-																			  word-wrap: break-word;
-																			  max-width: 220px;
-																			  line-height: 1.2;
-																			  text-align: left;
-																			  vertical-align: middle;
-																			  font-weight: bold;
-																		    " th:title="${report.r25_product}" th:text="${report.r25_product}">
+													<td id="ROW25" style="font-weight: bold;">
+														<input class="display-input Show_input" type="text"
+															th:value="'Mutual Funds'" id="r25_product"
+															name="r25_product"
+															style="background-color: #FFFFFF; width: 790px; height: 28px; border-color: transparent; text-align: left;"
+															readonly />
 													</td>
+
 
 
 
@@ -2646,16 +2622,14 @@ PURPOSE		: BRFREPORT
 												<tr>
 													<td style="text-align: center;">15</td>
 
-													<td id="ROW26" style="
-																				white-space: normal;
-																				  word-wrap: break-word;
-																				  max-width: 220px;
-																				  line-height: 1.2;
-																				  text-align: left;
-																				  vertical-align: middle;
-																				  font-weight: bold;
-																			    " th:title="${report.r26_product}" th:text="${report.r26_product}">
+													<td id="ROW26" style="font-weight: bold;">
+														<input class="display-input Show_input" type="text"
+															th:value="'Alternative Investment Funds'" id="r26_product"
+															name="r26_product"
+															style="background-color: #FFFFFF; width: 790px; height: 28px; border-color: transparent; text-align: left;"
+															readonly />
 													</td>
+
 
 
 
@@ -2742,16 +2716,14 @@ PURPOSE		: BRFREPORT
 
 													<td style="text-align: center;">16</td>
 
-													<td id="ROW27" style="
-																					white-space: normal;
-																					  word-wrap: break-word;
-																					  max-width: 220px;
-																					  line-height: 1.2;
-																					  text-align: left;
-																					  vertical-align: middle;
-																					  font-weight: bold;
-																				    " th:title="${report.r27_product}" th:text="${report.r27_product}">
+													<td id="ROW27" style="font-weight: bold;">
+														<input class="display-input Show_input" type="text"
+															th:value="'Portfolio Managers'" id="r27_product"
+															name="r27_product"
+															style="background-color: #FFFFFF; width: 790px; height: 28px; border-color: transparent; text-align: left;"
+															readonly />
 													</td>
+
 
 
 
@@ -2824,15 +2796,14 @@ PURPOSE		: BRFREPORT
 
 													<td style="text-align: center;">17</td>
 
-													<td id="ROW28" style="
-													white-space: normal;
-													  word-wrap: break-word;
-													  max-width: 220px;
-													  line-height: 1.2;
-													  text-align: left;
-													  vertical-align: middle; padding-left: 20px;
-												    " th:title="${report.r28_product}" th:text="${report.r28_product}">
+													<td id="ROW28" style="font-weight: bold;">
+														<input class="display-input Show_input" type="text"
+															th:value="'Stock Brokers'" id="r28_product"
+															name="r28_product"
+															style="background-color: #FFFFFF; width: 790px; height: 28px; border-color: transparent; text-align: left;"
+															readonly />
 													</td>
+
 
 
 													<td style="padding-left: 20px;">
@@ -2913,15 +2884,14 @@ PURPOSE		: BRFREPORT
 
 													<td style="text-align: center;">18</td>
 
-													<td id="ROW29" style="
-														white-space: normal;
-														  word-wrap: break-word;
-														  max-width: 220px;
-														  line-height: 1.2;
-														  text-align: left;
-														  vertical-align: middle; padding-left: 20px;
-													    " th:title="${report.r29_product}" th:text="${report.r29_product}">
+													<td id="ROW29" style="font-weight: bold;">
+														<input class="display-input Show_input" type="text"
+															th:value="'Credit Rating Agencies'" id="r29_product"
+															name="r29_product"
+															style="background-color: #FFFFFF; width: 790px; height: 28px; border-color: transparent; text-align: left;"
+															readonly />
 													</td>
+
 
 													<td style="padding-left: 20px;">
 														<input class="display-input show_input" type="text"
@@ -3001,15 +2971,14 @@ PURPOSE		: BRFREPORT
 												<tr>
 													<td style="text-align: center;">19</td>
 
-													<td id="ROW30" style="
-															white-space: normal;
-															  word-wrap: break-word;
-															  max-width: 220px;
-															  line-height: 1.2;
-															  text-align: left;
-															  vertical-align: middle; padding-left: 20px;
-														    " th:title="${report.r30_product}" th:text="${report.r30_product}">
+													<td id="ROW30" style="font-weight: bold;">
+														<input class="display-input Show_input" type="text"
+															th:value="'Depositories'" id="r30_product"
+															name="r30_product"
+															style="background-color: #FFFFFF; width: 790px; height: 28px; border-color: transparent; text-align: left;"
+															readonly />
 													</td>
+
 
 													<td style="padding-left: 20px;">
 														<input class="display-input show_input" type="text"
@@ -3089,15 +3058,14 @@ PURPOSE		: BRFREPORT
 												<tr>
 													<td style="text-align: center;">20</td>
 
-													<td id="ROW31" style="
-															white-space: normal;
-															  word-wrap: break-word;
-															  max-width: 220px;
-															  line-height: 1.2;
-															  text-align: left;
-															  vertical-align: middle; padding-left: 20px;
-														    " th:title="${report.r31_product}" th:text="${report.r31_product}">
+													<td id="ROW31" style="font-weight: bold;">
+														<input class="display-input Show_input" type="text"
+															th:value="'Clearing Corporations'" id="r31_product"
+															name="r31_product"
+															style="background-color: #FFFFFF; width: 790px; height: 28px; border-color: transparent; text-align: left;"
+															readonly />
 													</td>
+
 
 
 													<td style="padding-left: 20px;">
@@ -3179,16 +3147,14 @@ PURPOSE		: BRFREPORT
 
 													<td style="text-align: center;">21</td>
 
-													<td id="ROW32" style="
-															white-space: normal;
-															  word-wrap: break-word;
-															  max-width: 220px;
-															  line-height: 1.2;
-															  text-align: left;
-															  vertical-align: middle; padding-left: 20px;
-															  
-														    " th:title="${report.r32_product}" th:text="${report.r32_product}">
+													<td id="ROW32" style="font-weight: bold;">
+														<input class="display-input Show_input" type="text"
+															th:value="'Financial Market Infrastructure Institutions'"
+															id="r32_product" name="r32_product"
+															style="background-color: #FFFFFF; width: 790px; height: 28px; border-color: transparent; text-align: left;"
+															readonly />
 													</td>
+
 
 
 													<td style="padding-left: 20px;">
@@ -3269,16 +3235,14 @@ PURPOSE		: BRFREPORT
 												<tr>
 													<td style="text-align: center;">22</td>
 
-													<td id="ROW33" style="
-															white-space: normal;
-															  word-wrap: break-word;
-															  max-width: 220px;
-															  line-height: 1.2;
-															  text-align: left;
-															  vertical-align: middle;
-															  font-weight: bold;
-														    " th:title="${report.r33_product}" th:text="${report.r33_product}">
+													<td id="ROW33" style="font-weight: bold;">
+														<input class="display-input Show_input" type="text"
+															th:value="'Other Financial Sector Entities'"
+															id="r33_product" name="r33_product"
+															style="background-color: #FFFFFF; width: 790px; height: 28px; border-color: transparent; text-align: left;"
+															readonly />
 													</td>
+
 
 
 													<td style="background-color: black;"></td>
