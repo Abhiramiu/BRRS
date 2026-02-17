@@ -1153,9 +1153,11 @@ PURPOSE		: BRRS MANUAL REPORT
 
 
 
-						<span class="white-text" style="color: white !important; font-size: 13px; margin-right: 20px;">
-							Report Date: <span th:text="${#strings.replace(asondate, '/', '-')}">2025-07-04</span>
-						</span>
+						<span class="white-text"
+							style="color: white !important; font-size: 16px; margin-right: 20px;">
+							Report Date: <span
+							th:text="${#strings.replace(asondate, '/', '-')}">2025-07-04</span>
+						</span> <input type="hidden" id="selectedTab" th:value="${dtltype}">
 
 						<!-- Buttons -->
 						<input type="hidden" id="selectedTab" th:value="${displaymode}">
@@ -1192,7 +1194,7 @@ PURPOSE		: BRRS MANUAL REPORT
                      data-filename='M_CA3.xlsx',
                      data-type=${type},
 					 data-version=${version != null ? version : ''} " onclick="downloadfile(this);"
-							style="font-family: Arial; font-weight: bold;font-size: 14px;">
+							style="font-family: Arial; font-weight: bold;">
 							<i class="fa fa-download"></i> Format
 						</button>
 
@@ -1209,7 +1211,7 @@ PURPOSE		: BRRS MANUAL REPORT
             data-type=${type},
             data-format='email',
             data-version=${version != null ? version : ''}"
-							style="font-family: Arial; font-weight: bold;font-size: 14px;">
+							style="font-family: Arial; font-weight: bold;">
 							<i class="fa fa-download"></i> Email
 
 						</button>
