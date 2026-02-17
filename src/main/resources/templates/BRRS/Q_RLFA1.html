@@ -533,7 +533,9 @@ let isDetailsModal = false;
             });
         });
 
-    
+    $("#r48_new_column_collateral_amount,#r48_new_column_no_of_accts,#r48_new_column_carrying_amount").css("background-color", "#d3d3d3");
+    $("#r27_new_column_collateral_amount,#r27_new_column_no_of_accts,#r27_new_column_carrying_amount").css("background-color", "#d3d3d3");
+    $("#r42_new_column_collateral_amount,#r42_new_column_no_of_accts,#r42_new_column_carrying_amount").css("background-color", "#d3d3d3");
     
     // Toggle buttons 
     
@@ -1128,7 +1130,7 @@ window.fileuploads = function (btn) {
                 if (type && type.toUpperCase() === 'RESUB') {
                     location.href = '/BRRS/Resubmission?rptcode=Q_RLFA1'
                 }else{
-                    window.history.back();
+                    location.href = '/BRRS/BRRSValidations?rptcode=Q_RLFA1&todate='+asondate
                 }
             },
             error: function (jqXHR) {
@@ -1205,7 +1207,7 @@ window.fileuploads = function (btn) {
 						style="display: flex; color: white; align-items: center;">
 						<!-- 📅 Date -->
 						<span class="white-text"
-      style="color: white !important; font-size: 16px; margin-right: 20px;">
+      style="color: white !important; font-size: 16px; margin-right: 20px;white-space: nowrap;">
     Report Date: <span th:text="${#strings.replace(asondate, '/', '-')}">2025-07-04</span>
 </span>
 
@@ -1267,7 +1269,7 @@ window.fileuploads = function (btn) {
 					 				 data-type=${type},
 					    			 data-version=${version}"
 							onclick="downloadfile(this);">
-							<i class="fa fa-download"></i>Format 
+							<i class="fa fa-download"></i> Format 
 						</button>
 
                         <button type="button" class="custom-tab-btn"
@@ -1309,11 +1311,28 @@ window.fileuploads = function (btn) {
 
                     <p style="text-align: left; font-weight: bold; 
 						color: white;  font-size: 20px;  background-color: rgb(107, 122, 143); 
-						margin-top:10px; margin-bottom:10px;padding: 5px;" th:if="${displaymode == 'summary'}">Summary View - Q RLFA1</p>
+						margin-top:10px; margin-bottom:10px;padding: 5px;" th:if="${type != 'ARCHIVAL' and type != 'RESUB' and displaymode == 'summary'}">Summary View - Q RLFA1</p>
+
+                    <p style="text-align: left; font-weight: bold; 
+                    color: white;  font-size: 20px;  background-color: rgb(107, 122, 143); 
+                    margin-top:10px; margin-bottom:10px;padding: 5px;" th:if="${type != 'ARCHIVAL' and type != 'RESUB' and displaymode == 'detail'}">Detail View - Q RLFA1</p>
 
                         <p style="text-align: left; font-weight: bold; 
-						color: white;  font-size: 20px;  background-color: rgb(107, 122, 143); 
-						margin-top:10px; margin-bottom:10px;padding: 5px;" th:if="${displaymode == 'detail'}">Detail View - Q RLFA1</p>
+                    color: white;  font-size: 20px;  background-color: rgb(107, 122, 143); 
+                    margin-top:10px; margin-bottom:10px;padding: 5px;" th:if="${type == 'ARCHIVAL' and displaymode == 'summary'}">Archival Summary View - Q RLFA1</p>
+
+                    <p style="text-align: left; font-weight: bold; 
+                    color: white;  font-size: 20px;  background-color: rgb(107, 122, 143); 
+                    margin-top:10px; margin-bottom:10px;padding: 5px;" th:if="${type == 'ARCHIVAL' and displaymode == 'detail'}">Archival Detail View - Q RLFA1</p>
+
+                        <p style="text-align: left; font-weight: bold; 
+                    color: white;  font-size: 20px;  background-color: rgb(107, 122, 143); 
+                    margin-top:10px; margin-bottom:10px;padding: 5px;" th:if="${type == 'RESUB' and displaymode == 'summary'}">Resubmission Summary View - Q RLFA1</p>
+
+                    <p style="text-align: left; font-weight: bold; 
+                    color: white;  font-size: 20px;  background-color: rgb(107, 122, 143); 
+                    margin-top:10px; margin-bottom:10px;padding: 5px;" th:if="${type == 'RESUB' and displaymode == 'detail'}">Resubmission Detail View - Q RLFA1</p>
+                      
 					<div class="row">
 						<div class="col-sm-12">
 						<form action="#" method="POST" id="fileupload">
@@ -1881,7 +1900,7 @@ window.fileuploads = function (btn) {
 
 <tr>
     <td id='R70' style='font-weight: bold;'>
-        <input class='display-input Show_input' type='text' value='        Other property ' 
+        <input type='text' value='        Other property ' 
                id='r27_new_column_rene_loans' name='r27_new_column_rene_loans'
                style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; ' readonly />
     </td>
@@ -2297,7 +2316,7 @@ window.fileuploads = function (btn) {
 
 <tr>
     <td id='R71' style='font-weight: bold;'>
-        <input class='display-input Show_input' type='text' value='        SACCOs' 
+        <input type='text' value='        SACCOs' 
                id='r42_new_column_rene_loans' name='r42_new_column_rene_loans'
                style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; ' readonly />
     </td>
@@ -2505,7 +2524,7 @@ window.fileuploads = function (btn) {
 
 <tr>
     <td id='R72' style='font-weight: bold;'>
-        <input class='display-input Show_input' type='text' value='             1 .Assets managers' 
+        <input type='text' value='             1 .Assets managers' 
                id='r48_new_column_rene_loans' name='r48_new_column_rene_loans'
                style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; ' readonly />
     </td>

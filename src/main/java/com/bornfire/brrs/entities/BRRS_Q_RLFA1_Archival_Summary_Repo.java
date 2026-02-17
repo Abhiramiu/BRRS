@@ -33,6 +33,6 @@ public interface BRRS_Q_RLFA1_Archival_Summary_Repo extends JpaRepository<Q_RLFA
     @Query(value = "SELECT *  FROM BRRS_Q_RLFA1_ARCHIVALTABLE_SUMMARY WHERE REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION ASC FETCH FIRST 1 ROWS ONLY ", nativeQuery = true)
     List<Q_RLFA1_Archival_Summary_Entity> getdatabydateListWithVersion();
 
-    @Query(value = "SELECT *  FROM BRRS_Q_RLFA1_ARCHIVALTABLE_SUMMARY WHERE REPORT_VERSION IS NOT NULL ", nativeQuery = true)
+    @Query(value = "SELECT *  FROM BRRS_Q_RLFA1_ARCHIVALTABLE_SUMMARY WHERE REPORT_VERSION IS NOT NULL ORDER BY CAST(REPORT_VERSION AS INT)", nativeQuery = true)
     List<Q_RLFA1_Archival_Summary_Entity> getdatabydateListWithVersionAll();
 }

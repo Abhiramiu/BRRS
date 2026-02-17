@@ -931,7 +931,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 		 Row  row = sheet.getRow(10) != null ? sheet.getRow(10) : sheet.createRow(10);
 		 Cell cell1 = row.createCell(0);
 
-		 if (record1.getR1_NAME_OF_BANK_AND_COUNTRY_NOSTRO() != null && !record1.getR1_NAME_OF_BANK_AND_COUNTRY_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR1_NAME_OF_BANK_AND_COUNTRY_NOSTRO() != null ){
 		     cell1.setCellValue(record1.getR1_NAME_OF_BANK_AND_COUNTRY_NOSTRO().toString().trim() );
 		     cell1.setCellStyle(numberStyle);
 		 } else {
@@ -941,7 +941,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell2 = row.createCell(1);
 
-		 if (record1.getR1_TYPE_OF_ACCOUNT_NOSTRO() != null && !record1.getR1_TYPE_OF_ACCOUNT_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR1_TYPE_OF_ACCOUNT_NOSTRO() != null ){
 		     cell2.setCellValue(record1.getR1_TYPE_OF_ACCOUNT_NOSTRO().toString().trim() );
 		     cell2.setCellStyle(numberStyle);
 		 } else {
@@ -951,7 +951,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell3 = row.createCell(2);
 
-		 if (record1.getR1_PURPOSE_NOSTRO() != null && !record1.getR1_PURPOSE_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR1_PURPOSE_NOSTRO() != null ){
 		     cell3.setCellValue(record1.getR1_PURPOSE_NOSTRO().toString().trim() );
 		     cell3.setCellStyle(numberStyle);
 		 } else {
@@ -961,7 +961,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell4 = row.createCell(3);
 
-		 if (record1.getR1_CURRENCY_NOSTRO() != null && !record1.getR1_CURRENCY_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR1_CURRENCY_NOSTRO() != null ){
 		     cell4.setCellValue(record1.getR1_CURRENCY_NOSTRO().toString().trim() );
 		     cell4.setCellStyle(numberStyle);
 		 } else {
@@ -971,7 +971,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell5 = row.createCell(4);
 
-		 if (record1.getR1_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO() != null && !record1.getR1_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR1_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO() != null ){
 		     cell5.setCellValue(record1.getR1_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO().toString().trim() );
 		     cell5.setCellStyle(numberStyle);
 		 } else {
@@ -981,7 +981,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell6 = row.createCell(5);
 
-		 if (record1.getR1_RISK_WEIGHT_NOSTRO() != null && !record1.getR1_RISK_WEIGHT_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR1_RISK_WEIGHT_NOSTRO() != null ){
 		     cell6.setCellValue(record1.getR1_RISK_WEIGHT_NOSTRO().toString().trim() );
 		     cell6.setCellStyle(numberStyle);
 		 } else {
@@ -991,7 +991,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell7 = row.createCell(6);
 
-		 if (record1.getR1_AMOUNT_DEMAND_NOSTRO() != null && !record1.getR1_AMOUNT_DEMAND_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR1_AMOUNT_DEMAND_NOSTRO() != null ){
 		     cell7.setCellValue(record1.getR1_AMOUNT_DEMAND_NOSTRO().toString().trim() );
 		     cell7.setCellStyle(numberStyle);
 		 } else {
@@ -1001,7 +1001,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell8 = row.createCell(7);
 
-		 if (record1.getR1_RISK_WEIGHTED_AMOUNT_NOSTRO() != null && !record1.getR1_RISK_WEIGHTED_AMOUNT_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR1_RISK_WEIGHTED_AMOUNT_NOSTRO() != null ){
 		     cell8.setCellValue(record1.getR1_RISK_WEIGHTED_AMOUNT_NOSTRO().toString().trim() );
 		     cell8.setCellStyle(numberStyle);
 		 } else {
@@ -1013,7 +1013,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 		  row = sheet.getRow(11) != null ? sheet.getRow(11) : sheet.createRow(11);
 		  Cell cell9 = row.createCell(0);
 
-		 if (record1.getR2_NAME_OF_BANK_AND_COUNTRY_NOSTRO() != null && !record1.getR2_NAME_OF_BANK_AND_COUNTRY_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR2_NAME_OF_BANK_AND_COUNTRY_NOSTRO() != null ){
 		     cell9.setCellValue(record1.getR2_NAME_OF_BANK_AND_COUNTRY_NOSTRO().toString().trim() );
 		     cell9.setCellStyle(numberStyle);
 		 } else {
@@ -1023,7 +1023,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell10 = row.createCell(1);
 
-		 if (record1.getR2_TYPE_OF_ACCOUNT_NOSTRO() != null && !record1.getR2_TYPE_OF_ACCOUNT_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR2_TYPE_OF_ACCOUNT_NOSTRO() != null ){
 		     cell10.setCellValue(record1.getR2_TYPE_OF_ACCOUNT_NOSTRO().toString().trim() );
 		     cell10.setCellStyle(numberStyle);
 		 } else {
@@ -1033,7 +1033,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell11 = row.createCell(2);
 
-		 if (record1.getR2_PURPOSE_NOSTRO() != null && !record1.getR2_PURPOSE_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR2_PURPOSE_NOSTRO() != null ){
 		     cell11.setCellValue(record1.getR2_PURPOSE_NOSTRO().toString().trim() );
 		     cell11.setCellStyle(numberStyle);
 		 } else {
@@ -1043,7 +1043,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell12 = row.createCell(3);
 
-		 if (record1.getR2_CURRENCY_NOSTRO() != null && !record1.getR2_CURRENCY_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR2_CURRENCY_NOSTRO() != null ){
 		     cell12.setCellValue(record1.getR2_CURRENCY_NOSTRO().toString().trim() );
 		     cell12.setCellStyle(numberStyle);
 		 } else {
@@ -1053,7 +1053,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell13 = row.createCell(4);
 
-		 if (record1.getR2_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO() != null && !record1.getR2_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR2_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO() != null ){
 		     cell13.setCellValue(record1.getR2_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO().toString().trim() );
 		     cell13.setCellStyle(numberStyle);
 		 } else {
@@ -1063,7 +1063,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell14 = row.createCell(5);
 
-		 if (record1.getR2_RISK_WEIGHT_NOSTRO() != null && !record1.getR2_RISK_WEIGHT_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR2_RISK_WEIGHT_NOSTRO() != null ){
 		     cell14.setCellValue(record1.getR2_RISK_WEIGHT_NOSTRO().toString().trim() );
 		     cell14.setCellStyle(numberStyle);
 		 } else {
@@ -1073,7 +1073,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell15 = row.createCell(6);
 
-		 if (record1.getR2_AMOUNT_DEMAND_NOSTRO() != null && !record1.getR2_AMOUNT_DEMAND_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR2_AMOUNT_DEMAND_NOSTRO() != null ){
 		     cell15.setCellValue(record1.getR2_AMOUNT_DEMAND_NOSTRO().toString().trim() );
 		     cell15.setCellStyle(numberStyle);
 		 } else {
@@ -1083,7 +1083,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell16 = row.createCell(7);
 
-		 if (record1.getR2_RISK_WEIGHTED_AMOUNT_NOSTRO() != null && !record1.getR2_RISK_WEIGHTED_AMOUNT_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR2_RISK_WEIGHTED_AMOUNT_NOSTRO() != null ){
 		     cell16.setCellValue(record1.getR2_RISK_WEIGHTED_AMOUNT_NOSTRO().toString().trim() );
 		     cell16.setCellStyle(numberStyle);
 		 } else {
@@ -1095,7 +1095,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 		  row = sheet.getRow(12) != null ? sheet.getRow(12) : sheet.createRow(12);
 		  Cell cell17 = row.createCell(0);
 
-		 if (record1.getR3_NAME_OF_BANK_AND_COUNTRY_NOSTRO() != null && !record1.getR3_NAME_OF_BANK_AND_COUNTRY_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR3_NAME_OF_BANK_AND_COUNTRY_NOSTRO() != null ){
 		     cell17.setCellValue(record1.getR3_NAME_OF_BANK_AND_COUNTRY_NOSTRO().toString().trim() );
 		     cell17.setCellStyle(numberStyle);
 		 } else {
@@ -1105,7 +1105,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell18 = row.createCell(1);
 
-		 if (record1.getR3_TYPE_OF_ACCOUNT_NOSTRO() != null && !record1.getR3_TYPE_OF_ACCOUNT_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR3_TYPE_OF_ACCOUNT_NOSTRO() != null ){
 		     cell18.setCellValue(record1.getR3_TYPE_OF_ACCOUNT_NOSTRO().toString().trim() );
 		     cell18.setCellStyle(numberStyle);
 		 } else {
@@ -1115,7 +1115,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell19 = row.createCell(2);
 
-		 if (record1.getR3_PURPOSE_NOSTRO() != null && !record1.getR3_PURPOSE_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR3_PURPOSE_NOSTRO() != null ){
 		     cell19.setCellValue(record1.getR3_PURPOSE_NOSTRO().toString().trim() );
 		     cell19.setCellStyle(numberStyle);
 		 } else {
@@ -1125,7 +1125,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell20 = row.createCell(3);
 
-		 if (record1.getR3_CURRENCY_NOSTRO() != null && !record1.getR3_CURRENCY_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR3_CURRENCY_NOSTRO() != null ){
 		     cell20.setCellValue(record1.getR3_CURRENCY_NOSTRO().toString().trim() );
 		     cell20.setCellStyle(numberStyle);
 		 } else {
@@ -1135,7 +1135,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell21 = row.createCell(4);
 
-		 if (record1.getR3_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO() != null && !record1.getR3_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR3_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO() != null ){
 		     cell21.setCellValue(record1.getR3_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO().toString().trim() );
 		     cell21.setCellStyle(numberStyle);
 		 } else {
@@ -1145,7 +1145,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell22 = row.createCell(5);
 
-		 if (record1.getR3_RISK_WEIGHT_NOSTRO() != null && !record1.getR3_RISK_WEIGHT_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR3_RISK_WEIGHT_NOSTRO() != null ){
 		     cell22.setCellValue(record1.getR3_RISK_WEIGHT_NOSTRO().toString().trim() );
 		     cell22.setCellStyle(numberStyle);
 		 } else {
@@ -1155,7 +1155,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell23 = row.createCell(6);
 
-		 if (record1.getR3_AMOUNT_DEMAND_NOSTRO() != null && !record1.getR3_AMOUNT_DEMAND_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR3_AMOUNT_DEMAND_NOSTRO() != null ){
 		     cell23.setCellValue(record1.getR3_AMOUNT_DEMAND_NOSTRO().toString().trim() );
 		     cell23.setCellStyle(numberStyle);
 		 } else {
@@ -1165,7 +1165,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell24 = row.createCell(7);
 
-		 if (record1.getR3_RISK_WEIGHTED_AMOUNT_NOSTRO() != null && !record1.getR3_RISK_WEIGHTED_AMOUNT_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR3_RISK_WEIGHTED_AMOUNT_NOSTRO() != null ){
 		     cell24.setCellValue(record1.getR3_RISK_WEIGHTED_AMOUNT_NOSTRO().toString().trim() );
 		     cell24.setCellStyle(numberStyle);
 		 } else {
@@ -1177,7 +1177,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 		  row = sheet.getRow(13) != null ? sheet.getRow(13) : sheet.createRow(13);
 		  Cell cell25 = row.createCell(0);
 
-		 if (record1.getR4_NAME_OF_BANK_AND_COUNTRY_NOSTRO() != null && !record1.getR4_NAME_OF_BANK_AND_COUNTRY_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR4_NAME_OF_BANK_AND_COUNTRY_NOSTRO() != null ){
 		     cell25.setCellValue(record1.getR4_NAME_OF_BANK_AND_COUNTRY_NOSTRO().toString().trim() );
 		     cell25.setCellStyle(numberStyle);
 		 } else {
@@ -1187,7 +1187,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell26 = row.createCell(1);
 
-		 if (record1.getR4_TYPE_OF_ACCOUNT_NOSTRO() != null && !record1.getR4_TYPE_OF_ACCOUNT_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR4_TYPE_OF_ACCOUNT_NOSTRO() != null ){
 		     cell26.setCellValue(record1.getR4_TYPE_OF_ACCOUNT_NOSTRO().toString().trim() );
 		     cell26.setCellStyle(numberStyle);
 		 } else {
@@ -1197,7 +1197,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell27 = row.createCell(2);
 
-		 if (record1.getR4_PURPOSE_NOSTRO() != null && !record1.getR4_PURPOSE_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR4_PURPOSE_NOSTRO() != null ){
 		     cell27.setCellValue(record1.getR4_PURPOSE_NOSTRO().toString().trim() );
 		     cell27.setCellStyle(numberStyle);
 		 } else {
@@ -1207,7 +1207,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell28 = row.createCell(3);
 
-		 if (record1.getR4_CURRENCY_NOSTRO() != null && !record1.getR4_CURRENCY_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR4_CURRENCY_NOSTRO() != null ){
 		     cell28.setCellValue(record1.getR4_CURRENCY_NOSTRO().toString().trim() );
 		     cell28.setCellStyle(numberStyle);
 		 } else {
@@ -1217,7 +1217,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell29 = row.createCell(4);
 
-		 if (record1.getR4_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO() != null && !record1.getR4_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR4_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO() != null ){
 		     cell29.setCellValue(record1.getR4_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO().toString().trim() );
 		     cell29.setCellStyle(numberStyle);
 		 } else {
@@ -1227,7 +1227,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell30 = row.createCell(5);
 
-		 if (record1.getR4_RISK_WEIGHT_NOSTRO() != null && !record1.getR4_RISK_WEIGHT_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR4_RISK_WEIGHT_NOSTRO() != null ){
 		     cell30.setCellValue(record1.getR4_RISK_WEIGHT_NOSTRO().toString().trim() );
 		     cell30.setCellStyle(numberStyle);
 		 } else {
@@ -1237,7 +1237,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell31 = row.createCell(6);
 
-		 if (record1.getR4_AMOUNT_DEMAND_NOSTRO() != null && !record1.getR4_AMOUNT_DEMAND_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR4_AMOUNT_DEMAND_NOSTRO() != null ){
 		     cell31.setCellValue(record1.getR4_AMOUNT_DEMAND_NOSTRO().toString().trim() );
 		     cell31.setCellStyle(numberStyle);
 		 } else {
@@ -1247,7 +1247,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell32 = row.createCell(7);
 
-		 if (record1.getR4_RISK_WEIGHTED_AMOUNT_NOSTRO() != null && !record1.getR4_RISK_WEIGHTED_AMOUNT_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR4_RISK_WEIGHTED_AMOUNT_NOSTRO() != null ){
 		     cell32.setCellValue(record1.getR4_RISK_WEIGHTED_AMOUNT_NOSTRO().toString().trim() );
 		     cell32.setCellStyle(numberStyle);
 		 } else {
@@ -1259,7 +1259,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 		  row = sheet.getRow(14) != null ? sheet.getRow(14) : sheet.createRow(14);
 		  Cell cell33 = row.createCell(0);
 
-		 if (record1.getR5_NAME_OF_BANK_AND_COUNTRY_NOSTRO() != null && !record1.getR5_NAME_OF_BANK_AND_COUNTRY_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR5_NAME_OF_BANK_AND_COUNTRY_NOSTRO() != null ){
 		     cell33.setCellValue(record1.getR5_NAME_OF_BANK_AND_COUNTRY_NOSTRO().toString().trim() );
 		     cell33.setCellStyle(numberStyle);
 		 } else {
@@ -1269,7 +1269,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell34 = row.createCell(1);
 
-		 if (record1.getR5_TYPE_OF_ACCOUNT_NOSTRO() != null && !record1.getR5_TYPE_OF_ACCOUNT_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR5_TYPE_OF_ACCOUNT_NOSTRO() != null ){
 		     cell34.setCellValue(record1.getR5_TYPE_OF_ACCOUNT_NOSTRO().toString().trim() );
 		     cell34.setCellStyle(numberStyle);
 		 } else {
@@ -1279,7 +1279,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell35 = row.createCell(2);
 
-		 if (record1.getR5_PURPOSE_NOSTRO() != null && !record1.getR5_PURPOSE_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR5_PURPOSE_NOSTRO() != null ){
 		     cell35.setCellValue(record1.getR5_PURPOSE_NOSTRO().toString().trim() );
 		     cell35.setCellStyle(numberStyle);
 		 } else {
@@ -1289,7 +1289,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell36 = row.createCell(3);
 
-		 if (record1.getR5_CURRENCY_NOSTRO() != null && !record1.getR5_CURRENCY_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR5_CURRENCY_NOSTRO() != null ){
 		     cell36.setCellValue(record1.getR5_CURRENCY_NOSTRO().toString().trim() );
 		     cell36.setCellStyle(numberStyle);
 		 } else {
@@ -1299,7 +1299,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell37 = row.createCell(4);
 
-		 if (record1.getR5_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO() != null && !record1.getR5_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR5_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO() != null ){
 		     cell37.setCellValue(record1.getR5_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO().toString().trim() );
 		     cell37.setCellStyle(numberStyle);
 		 } else {
@@ -1309,7 +1309,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell38 = row.createCell(5);
 
-		 if (record1.getR5_RISK_WEIGHT_NOSTRO() != null && !record1.getR5_RISK_WEIGHT_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR5_RISK_WEIGHT_NOSTRO() != null ){
 		     cell38.setCellValue(record1.getR5_RISK_WEIGHT_NOSTRO().toString().trim() );
 		     cell38.setCellStyle(numberStyle);
 		 } else {
@@ -1319,7 +1319,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell39 = row.createCell(6);
 
-		 if (record1.getR5_AMOUNT_DEMAND_NOSTRO() != null && !record1.getR5_AMOUNT_DEMAND_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR5_AMOUNT_DEMAND_NOSTRO() != null ){
 		     cell39.setCellValue(record1.getR5_AMOUNT_DEMAND_NOSTRO().toString().trim() );
 		     cell39.setCellStyle(numberStyle);
 		 } else {
@@ -1329,7 +1329,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell40 = row.createCell(7);
 
-		 if (record1.getR5_RISK_WEIGHTED_AMOUNT_NOSTRO() != null && !record1.getR5_RISK_WEIGHTED_AMOUNT_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR5_RISK_WEIGHTED_AMOUNT_NOSTRO() != null ){
 		     cell40.setCellValue(record1.getR5_RISK_WEIGHTED_AMOUNT_NOSTRO().toString().trim() );
 		     cell40.setCellStyle(numberStyle);
 		 } else {
@@ -1341,7 +1341,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 		  row = sheet.getRow(15) != null ? sheet.getRow(15) : sheet.createRow(15);
 		  Cell cell41 = row.createCell(0);
 
-		 if (record1.getR6_NAME_OF_BANK_AND_COUNTRY_NOSTRO() != null && !record1.getR6_NAME_OF_BANK_AND_COUNTRY_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR6_NAME_OF_BANK_AND_COUNTRY_NOSTRO() != null ){
 		     cell41.setCellValue(record1.getR6_NAME_OF_BANK_AND_COUNTRY_NOSTRO().toString().trim() );
 		     cell41.setCellStyle(numberStyle);
 		 } else {
@@ -1351,7 +1351,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell42 = row.createCell(1);
 
-		 if (record1.getR6_TYPE_OF_ACCOUNT_NOSTRO() != null && !record1.getR6_TYPE_OF_ACCOUNT_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR6_TYPE_OF_ACCOUNT_NOSTRO() != null ){
 		     cell42.setCellValue(record1.getR6_TYPE_OF_ACCOUNT_NOSTRO().toString().trim() );
 		     cell42.setCellStyle(numberStyle);
 		 } else {
@@ -1361,7 +1361,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell43 = row.createCell(2);
 
-		 if (record1.getR6_PURPOSE_NOSTRO() != null && !record1.getR6_PURPOSE_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR6_PURPOSE_NOSTRO() != null ){
 		     cell43.setCellValue(record1.getR6_PURPOSE_NOSTRO().toString().trim() );
 		     cell43.setCellStyle(numberStyle);
 		 } else {
@@ -1371,7 +1371,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell44 = row.createCell(3);
 
-		 if (record1.getR6_CURRENCY_NOSTRO() != null && !record1.getR6_CURRENCY_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR6_CURRENCY_NOSTRO() != null ){
 		     cell44.setCellValue(record1.getR6_CURRENCY_NOSTRO().toString().trim() );
 		     cell44.setCellStyle(numberStyle);
 		 } else {
@@ -1381,7 +1381,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell45 = row.createCell(4);
 
-		 if (record1.getR6_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO() != null && !record1.getR6_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR6_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO() != null ){
 		     cell45.setCellValue(record1.getR6_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO().toString().trim() );
 		     cell45.setCellStyle(numberStyle);
 		 } else {
@@ -1391,7 +1391,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell46 = row.createCell(5);
 
-		 if (record1.getR6_RISK_WEIGHT_NOSTRO() != null && !record1.getR6_RISK_WEIGHT_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR6_RISK_WEIGHT_NOSTRO() != null ){
 		     cell46.setCellValue(record1.getR6_RISK_WEIGHT_NOSTRO().toString().trim() );
 		     cell46.setCellStyle(numberStyle);
 		 } else {
@@ -1401,7 +1401,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell47 = row.createCell(6);
 
-		 if (record1.getR6_AMOUNT_DEMAND_NOSTRO() != null && !record1.getR6_AMOUNT_DEMAND_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR6_AMOUNT_DEMAND_NOSTRO() != null ){
 		     cell47.setCellValue(record1.getR6_AMOUNT_DEMAND_NOSTRO().toString().trim() );
 		     cell47.setCellStyle(numberStyle);
 		 } else {
@@ -1411,7 +1411,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell48 = row.createCell(7);
 
-		 if (record1.getR6_RISK_WEIGHTED_AMOUNT_NOSTRO() != null && !record1.getR6_RISK_WEIGHTED_AMOUNT_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR6_RISK_WEIGHTED_AMOUNT_NOSTRO() != null ){
 		     cell48.setCellValue(record1.getR6_RISK_WEIGHTED_AMOUNT_NOSTRO().toString().trim() );
 		     cell48.setCellStyle(numberStyle);
 		 } else {
@@ -1423,7 +1423,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 		  row = sheet.getRow(16) != null ? sheet.getRow(16) : sheet.createRow(16);
 		  Cell cell49 = row.createCell(0);
 
-		 if (record1.getR7_NAME_OF_BANK_AND_COUNTRY_NOSTRO() != null && !record1.getR7_NAME_OF_BANK_AND_COUNTRY_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR7_NAME_OF_BANK_AND_COUNTRY_NOSTRO() != null ){
 		     cell49.setCellValue(record1.getR7_NAME_OF_BANK_AND_COUNTRY_NOSTRO().toString().trim() );
 		     cell49.setCellStyle(numberStyle);
 		 } else {
@@ -1433,7 +1433,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell50 = row.createCell(1);
 
-		 if (record1.getR7_TYPE_OF_ACCOUNT_NOSTRO() != null && !record1.getR7_TYPE_OF_ACCOUNT_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR7_TYPE_OF_ACCOUNT_NOSTRO() != null ){
 		     cell50.setCellValue(record1.getR7_TYPE_OF_ACCOUNT_NOSTRO().toString().trim() );
 		     cell50.setCellStyle(numberStyle);
 		 } else {
@@ -1443,7 +1443,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell51 = row.createCell(2);
 
-		 if (record1.getR7_PURPOSE_NOSTRO() != null && !record1.getR7_PURPOSE_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR7_PURPOSE_NOSTRO() != null ){
 		     cell51.setCellValue(record1.getR7_PURPOSE_NOSTRO().toString().trim() );
 		     cell51.setCellStyle(numberStyle);
 		 } else {
@@ -1453,7 +1453,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell52 = row.createCell(3);
 
-		 if (record1.getR7_CURRENCY_NOSTRO() != null && !record1.getR7_CURRENCY_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR7_CURRENCY_NOSTRO() != null ){
 		     cell52.setCellValue(record1.getR7_CURRENCY_NOSTRO().toString().trim() );
 		     cell52.setCellStyle(numberStyle);
 		 } else {
@@ -1463,7 +1463,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell53 = row.createCell(4);
 
-		 if (record1.getR7_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO() != null && !record1.getR7_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR7_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO() != null ){
 		     cell53.setCellValue(record1.getR7_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO().toString().trim() );
 		     cell53.setCellStyle(numberStyle);
 		 } else {
@@ -1473,7 +1473,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell54 = row.createCell(5);
 
-		 if (record1.getR7_RISK_WEIGHT_NOSTRO() != null && !record1.getR7_RISK_WEIGHT_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR7_RISK_WEIGHT_NOSTRO() != null ){
 		     cell54.setCellValue(record1.getR7_RISK_WEIGHT_NOSTRO().toString().trim() );
 		     cell54.setCellStyle(numberStyle);
 		 } else {
@@ -1483,7 +1483,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell55 = row.createCell(6);
 
-		 if (record1.getR7_AMOUNT_DEMAND_NOSTRO() != null && !record1.getR7_AMOUNT_DEMAND_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR7_AMOUNT_DEMAND_NOSTRO() != null ){
 		     cell55.setCellValue(record1.getR7_AMOUNT_DEMAND_NOSTRO().toString().trim() );
 		     cell55.setCellStyle(numberStyle);
 		 } else {
@@ -1493,7 +1493,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell56 = row.createCell(7);
 
-		 if (record1.getR7_RISK_WEIGHTED_AMOUNT_NOSTRO() != null && !record1.getR7_RISK_WEIGHTED_AMOUNT_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR7_RISK_WEIGHTED_AMOUNT_NOSTRO() != null ){
 		     cell56.setCellValue(record1.getR7_RISK_WEIGHTED_AMOUNT_NOSTRO().toString().trim() );
 		     cell56.setCellStyle(numberStyle);
 		 } else {
@@ -1505,7 +1505,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 		  row = sheet.getRow(17) != null ? sheet.getRow(17) : sheet.createRow(17);
 		  Cell cell57 = row.createCell(0);
 
-		 if (record1.getR8_NAME_OF_BANK_AND_COUNTRY_NOSTRO() != null && !record1.getR8_NAME_OF_BANK_AND_COUNTRY_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR8_NAME_OF_BANK_AND_COUNTRY_NOSTRO() != null ){
 		     cell57.setCellValue(record1.getR8_NAME_OF_BANK_AND_COUNTRY_NOSTRO().toString().trim() );
 		     cell57.setCellStyle(numberStyle);
 		 } else {
@@ -1515,7 +1515,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell58 = row.createCell(1);
 
-		 if (record1.getR8_TYPE_OF_ACCOUNT_NOSTRO() != null && !record1.getR8_TYPE_OF_ACCOUNT_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR8_TYPE_OF_ACCOUNT_NOSTRO() != null ){
 		     cell58.setCellValue(record1.getR8_TYPE_OF_ACCOUNT_NOSTRO().toString().trim() );
 		     cell58.setCellStyle(numberStyle);
 		 } else {
@@ -1525,7 +1525,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell59 = row.createCell(2);
 
-		 if (record1.getR8_PURPOSE_NOSTRO() != null && !record1.getR8_PURPOSE_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR8_PURPOSE_NOSTRO() != null ){
 		     cell59.setCellValue(record1.getR8_PURPOSE_NOSTRO().toString().trim() );
 		     cell59.setCellStyle(numberStyle);
 		 } else {
@@ -1535,7 +1535,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell60 = row.createCell(3);
 
-		 if (record1.getR8_CURRENCY_NOSTRO() != null && !record1.getR8_CURRENCY_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR8_CURRENCY_NOSTRO() != null ){
 		     cell60.setCellValue(record1.getR8_CURRENCY_NOSTRO().toString().trim() );
 		     cell60.setCellStyle(numberStyle);
 		 } else {
@@ -1545,7 +1545,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell61 = row.createCell(4);
 
-		 if (record1.getR8_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO() != null && !record1.getR8_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR8_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO() != null ){
 		     cell61.setCellValue(record1.getR8_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO().toString().trim() );
 		     cell61.setCellStyle(numberStyle);
 		 } else {
@@ -1555,7 +1555,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell62 = row.createCell(5);
 
-		 if (record1.getR8_RISK_WEIGHT_NOSTRO() != null && !record1.getR8_RISK_WEIGHT_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR8_RISK_WEIGHT_NOSTRO() != null ){
 		     cell62.setCellValue(record1.getR8_RISK_WEIGHT_NOSTRO().toString().trim() );
 		     cell62.setCellStyle(numberStyle);
 		 } else {
@@ -1565,7 +1565,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell63 = row.createCell(6);
 
-		 if (record1.getR8_AMOUNT_DEMAND_NOSTRO() != null && !record1.getR8_AMOUNT_DEMAND_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR8_AMOUNT_DEMAND_NOSTRO() != null ){
 		     cell63.setCellValue(record1.getR8_AMOUNT_DEMAND_NOSTRO().toString().trim() );
 		     cell63.setCellStyle(numberStyle);
 		 } else {
@@ -1575,7 +1575,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell64 = row.createCell(7);
 
-		 if (record1.getR8_RISK_WEIGHTED_AMOUNT_NOSTRO() != null && !record1.getR8_RISK_WEIGHTED_AMOUNT_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR8_RISK_WEIGHTED_AMOUNT_NOSTRO() != null ){
 		     cell64.setCellValue(record1.getR8_RISK_WEIGHTED_AMOUNT_NOSTRO().toString().trim() );
 		     cell64.setCellStyle(numberStyle);
 		 } else {
@@ -1587,7 +1587,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 		  row = sheet.getRow(18) != null ? sheet.getRow(18) : sheet.createRow(18);
 		  Cell cell65 = row.createCell(0);
 
-		 if (record1.getR9_NAME_OF_BANK_AND_COUNTRY_NOSTRO() != null && !record1.getR9_NAME_OF_BANK_AND_COUNTRY_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR9_NAME_OF_BANK_AND_COUNTRY_NOSTRO() != null ){
 		     cell65.setCellValue(record1.getR9_NAME_OF_BANK_AND_COUNTRY_NOSTRO().toString().trim() );
 		     cell65.setCellStyle(numberStyle);
 		 } else {
@@ -1597,7 +1597,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell66 = row.createCell(1);
 
-		 if (record1.getR9_TYPE_OF_ACCOUNT_NOSTRO() != null && !record1.getR9_TYPE_OF_ACCOUNT_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR9_TYPE_OF_ACCOUNT_NOSTRO() != null ){
 		     cell66.setCellValue(record1.getR9_TYPE_OF_ACCOUNT_NOSTRO().toString().trim() );
 		     cell66.setCellStyle(numberStyle);
 		 } else {
@@ -1607,7 +1607,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell67 = row.createCell(2);
 
-		 if (record1.getR9_PURPOSE_NOSTRO() != null && !record1.getR9_PURPOSE_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR9_PURPOSE_NOSTRO() != null ){
 		     cell67.setCellValue(record1.getR9_PURPOSE_NOSTRO().toString().trim() );
 		     cell67.setCellStyle(numberStyle);
 		 } else {
@@ -1617,7 +1617,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell68 = row.createCell(3);
 
-		 if (record1.getR9_CURRENCY_NOSTRO() != null && !record1.getR9_CURRENCY_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR9_CURRENCY_NOSTRO() != null ){
 		     cell68.setCellValue(record1.getR9_CURRENCY_NOSTRO().toString().trim() );
 		     cell68.setCellStyle(numberStyle);
 		 } else {
@@ -1627,7 +1627,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell69 = row.createCell(4);
 
-		 if (record1.getR9_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO() != null && !record1.getR9_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR9_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO() != null ){
 		     cell69.setCellValue(record1.getR9_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO().toString().trim() );
 		     cell69.setCellStyle(numberStyle);
 		 } else {
@@ -1637,7 +1637,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell70 = row.createCell(5);
 
-		 if (record1.getR9_RISK_WEIGHT_NOSTRO() != null && !record1.getR9_RISK_WEIGHT_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR9_RISK_WEIGHT_NOSTRO() != null ){
 		     cell70.setCellValue(record1.getR9_RISK_WEIGHT_NOSTRO().toString().trim() );
 		     cell70.setCellStyle(numberStyle);
 		 } else {
@@ -1647,7 +1647,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell71 = row.createCell(6);
 
-		 if (record1.getR9_AMOUNT_DEMAND_NOSTRO() != null && !record1.getR9_AMOUNT_DEMAND_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR9_AMOUNT_DEMAND_NOSTRO() != null ){
 		     cell71.setCellValue(record1.getR9_AMOUNT_DEMAND_NOSTRO().toString().trim() );
 		     cell71.setCellStyle(numberStyle);
 		 } else {
@@ -1657,7 +1657,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell72 = row.createCell(7);
 
-		 if (record1.getR9_RISK_WEIGHTED_AMOUNT_NOSTRO() != null && !record1.getR9_RISK_WEIGHTED_AMOUNT_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR9_RISK_WEIGHTED_AMOUNT_NOSTRO() != null ){
 		     cell72.setCellValue(record1.getR9_RISK_WEIGHTED_AMOUNT_NOSTRO().toString().trim() );
 		     cell72.setCellStyle(numberStyle);
 		 } else {
@@ -1681,7 +1681,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 			Row  row = sheet.getRow(23) != null ? sheet.getRow(23) : sheet.createRow(23);
 			 Cell cell1 = row.createCell(0);
 
-			 if (record1.getR1_NAME_OF_BANK_AND_COUNTRY_VOSTRO() != null && !record1.getR1_NAME_OF_BANK_AND_COUNTRY_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR1_NAME_OF_BANK_AND_COUNTRY_VOSTRO() != null ){
 			     cell1.setCellValue(record1.getR1_NAME_OF_BANK_AND_COUNTRY_VOSTRO().toString().trim() );
 			     cell1.setCellStyle(numberStyle);
 			 } else {
@@ -1691,7 +1691,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell2 = row.createCell(1);
 
-			 if (record1.getR1_TYPE_OF_ACCOUNT_VOSTRO() != null && !record1.getR1_TYPE_OF_ACCOUNT_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR1_TYPE_OF_ACCOUNT_VOSTRO() != null ){
 			     cell2.setCellValue(record1.getR1_TYPE_OF_ACCOUNT_VOSTRO().toString().trim() );
 			     cell2.setCellStyle(numberStyle);
 			 } else {
@@ -1701,7 +1701,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell3 = row.createCell(2);
 
-			 if (record1.getR1_PURPOSE_VOSTRO() != null && !record1.getR1_PURPOSE_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR1_PURPOSE_VOSTRO() != null ){
 			     cell3.setCellValue(record1.getR1_PURPOSE_VOSTRO().toString().trim() );
 			     cell3.setCellStyle(numberStyle);
 			 } else {
@@ -1711,7 +1711,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell4 = row.createCell(3);
 
-			 if (record1.getR1_CURRENCY_VOSTRO() != null && !record1.getR1_CURRENCY_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR1_CURRENCY_VOSTRO() != null ){
 			     cell4.setCellValue(record1.getR1_CURRENCY_VOSTRO().toString().trim() );
 			     cell4.setCellStyle(numberStyle);
 			 } else {
@@ -1721,7 +1721,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell7 = row.createCell(6);
 
-			 if (record1.getR1_AMOUNT_DEMAND_VOSTRO() != null && !record1.getR1_AMOUNT_DEMAND_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR1_AMOUNT_DEMAND_VOSTRO() != null ){
 			     cell7.setCellValue(record1.getR1_AMOUNT_DEMAND_VOSTRO().toString().trim() );
 			     cell7.setCellStyle(numberStyle);
 			 } else {
@@ -1733,7 +1733,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 			  row = sheet.getRow(24) != null ? sheet.getRow(24) : sheet.createRow(24);
 			  Cell cell9 = row.createCell(0);
 
-			 if (record1.getR2_NAME_OF_BANK_AND_COUNTRY_VOSTRO() != null && !record1.getR2_NAME_OF_BANK_AND_COUNTRY_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR2_NAME_OF_BANK_AND_COUNTRY_VOSTRO() != null ){
 			     cell9.setCellValue(record1.getR2_NAME_OF_BANK_AND_COUNTRY_VOSTRO().toString().trim() );
 			     cell9.setCellStyle(numberStyle);
 			 } else {
@@ -1743,7 +1743,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell10 = row.createCell(1);
 
-			 if (record1.getR2_TYPE_OF_ACCOUNT_VOSTRO() != null && !record1.getR2_TYPE_OF_ACCOUNT_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR2_TYPE_OF_ACCOUNT_VOSTRO() != null ){
 			     cell10.setCellValue(record1.getR2_TYPE_OF_ACCOUNT_VOSTRO().toString().trim() );
 			     cell10.setCellStyle(numberStyle);
 			 } else {
@@ -1753,7 +1753,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell11 = row.createCell(2);
 
-			 if (record1.getR2_PURPOSE_VOSTRO() != null && !record1.getR2_PURPOSE_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR2_PURPOSE_VOSTRO() != null ){
 			     cell11.setCellValue(record1.getR2_PURPOSE_VOSTRO().toString().trim() );
 			     cell11.setCellStyle(numberStyle);
 			 } else {
@@ -1763,7 +1763,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell12 = row.createCell(3);
 
-			 if (record1.getR2_CURRENCY_VOSTRO() != null && !record1.getR2_CURRENCY_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR2_CURRENCY_VOSTRO() != null ){
 			     cell12.setCellValue(record1.getR2_CURRENCY_VOSTRO().toString().trim() );
 			     cell12.setCellStyle(numberStyle);
 			 } else {
@@ -1773,7 +1773,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell15 = row.createCell(6);
 
-			 if (record1.getR2_AMOUNT_DEMAND_VOSTRO() != null && !record1.getR2_AMOUNT_DEMAND_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR2_AMOUNT_DEMAND_VOSTRO() != null ){
 			     cell15.setCellValue(record1.getR2_AMOUNT_DEMAND_VOSTRO().toString().trim() );
 			     cell15.setCellStyle(numberStyle);
 			 } else {
@@ -1785,7 +1785,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 			  row = sheet.getRow(25) != null ? sheet.getRow(25) : sheet.createRow(25);
 			  Cell cell17 = row.createCell(0);
 
-			 if (record1.getR3_NAME_OF_BANK_AND_COUNTRY_VOSTRO() != null && !record1.getR3_NAME_OF_BANK_AND_COUNTRY_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR3_NAME_OF_BANK_AND_COUNTRY_VOSTRO() != null ){
 			     cell17.setCellValue(record1.getR3_NAME_OF_BANK_AND_COUNTRY_VOSTRO().toString().trim() );
 			     cell17.setCellStyle(numberStyle);
 			 } else {
@@ -1795,7 +1795,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell18 = row.createCell(1);
 
-			 if (record1.getR3_TYPE_OF_ACCOUNT_VOSTRO() != null && !record1.getR3_TYPE_OF_ACCOUNT_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR3_TYPE_OF_ACCOUNT_VOSTRO() != null ){
 			     cell18.setCellValue(record1.getR3_TYPE_OF_ACCOUNT_VOSTRO().toString().trim() );
 			     cell18.setCellStyle(numberStyle);
 			 } else {
@@ -1805,7 +1805,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell19 = row.createCell(2);
 
-			 if (record1.getR3_PURPOSE_VOSTRO() != null && !record1.getR3_PURPOSE_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR3_PURPOSE_VOSTRO() != null ){
 			     cell19.setCellValue(record1.getR3_PURPOSE_VOSTRO().toString().trim() );
 			     cell19.setCellStyle(numberStyle);
 			 } else {
@@ -1815,7 +1815,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell20 = row.createCell(3);
 
-			 if (record1.getR3_CURRENCY_VOSTRO() != null && !record1.getR3_CURRENCY_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR3_CURRENCY_VOSTRO() != null ){
 			     cell20.setCellValue(record1.getR3_CURRENCY_VOSTRO().toString().trim() );
 			     cell20.setCellStyle(numberStyle);
 			 } else {
@@ -1825,7 +1825,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell23 = row.createCell(6);
 
-			 if (record1.getR3_AMOUNT_DEMAND_VOSTRO() != null && !record1.getR3_AMOUNT_DEMAND_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR3_AMOUNT_DEMAND_VOSTRO() != null ){
 			     cell23.setCellValue(record1.getR3_AMOUNT_DEMAND_VOSTRO().toString().trim() );
 			     cell23.setCellStyle(numberStyle);
 			 } else {
@@ -1837,7 +1837,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 			  row = sheet.getRow(26) != null ? sheet.getRow(26) : sheet.createRow(26);
 			  Cell cell25 = row.createCell(0);
 
-			 if (record1.getR4_NAME_OF_BANK_AND_COUNTRY_VOSTRO() != null && !record1.getR4_NAME_OF_BANK_AND_COUNTRY_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR4_NAME_OF_BANK_AND_COUNTRY_VOSTRO() != null ){
 			     cell25.setCellValue(record1.getR4_NAME_OF_BANK_AND_COUNTRY_VOSTRO().toString().trim() );
 			     cell25.setCellStyle(numberStyle);
 			 } else {
@@ -1847,7 +1847,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell26 = row.createCell(1);
 
-			 if (record1.getR4_TYPE_OF_ACCOUNT_VOSTRO() != null && !record1.getR4_TYPE_OF_ACCOUNT_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR4_TYPE_OF_ACCOUNT_VOSTRO() != null ){
 			     cell26.setCellValue(record1.getR4_TYPE_OF_ACCOUNT_VOSTRO().toString().trim() );
 			     cell26.setCellStyle(numberStyle);
 			 } else {
@@ -1857,7 +1857,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell27 = row.createCell(2);
 
-			 if (record1.getR4_PURPOSE_VOSTRO() != null && !record1.getR4_PURPOSE_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR4_PURPOSE_VOSTRO() != null ){
 			     cell27.setCellValue(record1.getR4_PURPOSE_VOSTRO().toString().trim() );
 			     cell27.setCellStyle(numberStyle);
 			 } else {
@@ -1867,7 +1867,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell28 = row.createCell(3);
 
-			 if (record1.getR4_CURRENCY_VOSTRO() != null && !record1.getR4_CURRENCY_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR4_CURRENCY_VOSTRO() != null ){
 			     cell28.setCellValue(record1.getR4_CURRENCY_VOSTRO().toString().trim() );
 			     cell28.setCellStyle(numberStyle);
 			 } else {
@@ -1877,7 +1877,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell31 = row.createCell(6);
 
-			 if (record1.getR4_AMOUNT_DEMAND_VOSTRO() != null && !record1.getR4_AMOUNT_DEMAND_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR4_AMOUNT_DEMAND_VOSTRO() != null ){
 			     cell31.setCellValue(record1.getR4_AMOUNT_DEMAND_VOSTRO().toString().trim() );
 			     cell31.setCellStyle(numberStyle);
 			 } else {
@@ -1889,7 +1889,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 			  row = sheet.getRow(27) != null ? sheet.getRow(27) : sheet.createRow(27);
 			  Cell cell33 = row.createCell(0);
 
-			 if (record1.getR5_NAME_OF_BANK_AND_COUNTRY_VOSTRO() != null && !record1.getR5_NAME_OF_BANK_AND_COUNTRY_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR5_NAME_OF_BANK_AND_COUNTRY_VOSTRO() != null ){
 			     cell33.setCellValue(record1.getR5_NAME_OF_BANK_AND_COUNTRY_VOSTRO().toString().trim() );
 			     cell33.setCellStyle(numberStyle);
 			 } else {
@@ -1899,7 +1899,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell34 = row.createCell(1);
 
-			 if (record1.getR5_TYPE_OF_ACCOUNT_VOSTRO() != null && !record1.getR5_TYPE_OF_ACCOUNT_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR5_TYPE_OF_ACCOUNT_VOSTRO() != null ){
 			     cell34.setCellValue(record1.getR5_TYPE_OF_ACCOUNT_VOSTRO().toString().trim() );
 			     cell34.setCellStyle(numberStyle);
 			 } else {
@@ -1909,7 +1909,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell35 = row.createCell(2);
 
-			 if (record1.getR5_PURPOSE_VOSTRO() != null && !record1.getR5_PURPOSE_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR5_PURPOSE_VOSTRO() != null ){
 			     cell35.setCellValue(record1.getR5_PURPOSE_VOSTRO().toString().trim() );
 			     cell35.setCellStyle(numberStyle);
 			 } else {
@@ -1919,7 +1919,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell36 = row.createCell(3);
 
-			 if (record1.getR5_CURRENCY_VOSTRO() != null && !record1.getR5_CURRENCY_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR5_CURRENCY_VOSTRO() != null ){
 			     cell36.setCellValue(record1.getR5_CURRENCY_VOSTRO().toString().trim() );
 			     cell36.setCellStyle(numberStyle);
 			 } else {
@@ -1929,7 +1929,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell39 = row.createCell(6);
 
-			 if (record1.getR5_AMOUNT_DEMAND_VOSTRO() != null && !record1.getR5_AMOUNT_DEMAND_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR5_AMOUNT_DEMAND_VOSTRO() != null ){
 			     cell39.setCellValue(record1.getR5_AMOUNT_DEMAND_VOSTRO().toString().trim() );
 			     cell39.setCellStyle(numberStyle);
 			 } else {
@@ -1941,7 +1941,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 			  row = sheet.getRow(28) != null ? sheet.getRow(28) : sheet.createRow(28);
 			  Cell cell41 = row.createCell(0);
 
-			 if (record1.getR6_NAME_OF_BANK_AND_COUNTRY_VOSTRO() != null && !record1.getR6_NAME_OF_BANK_AND_COUNTRY_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR6_NAME_OF_BANK_AND_COUNTRY_VOSTRO() != null ){
 			     cell41.setCellValue(record1.getR6_NAME_OF_BANK_AND_COUNTRY_VOSTRO().toString().trim() );
 			     cell41.setCellStyle(numberStyle);
 			 } else {
@@ -1951,7 +1951,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell42 = row.createCell(1);
 
-			 if (record1.getR6_TYPE_OF_ACCOUNT_VOSTRO() != null && !record1.getR6_TYPE_OF_ACCOUNT_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR6_TYPE_OF_ACCOUNT_VOSTRO() != null ){
 			     cell42.setCellValue(record1.getR6_TYPE_OF_ACCOUNT_VOSTRO().toString().trim() );
 			     cell42.setCellStyle(numberStyle);
 			 } else {
@@ -1961,7 +1961,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell43 = row.createCell(2);
 
-			 if (record1.getR6_PURPOSE_VOSTRO() != null && !record1.getR6_PURPOSE_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR6_PURPOSE_VOSTRO() != null ){
 			     cell43.setCellValue(record1.getR6_PURPOSE_VOSTRO().toString().trim() );
 			     cell43.setCellStyle(numberStyle);
 			 } else {
@@ -1971,7 +1971,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell44 = row.createCell(3);
 
-			 if (record1.getR6_CURRENCY_VOSTRO() != null && !record1.getR6_CURRENCY_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR6_CURRENCY_VOSTRO() != null ){
 			     cell44.setCellValue(record1.getR6_CURRENCY_VOSTRO().toString().trim() );
 			     cell44.setCellStyle(numberStyle);
 			 } else {
@@ -1981,7 +1981,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell47 = row.createCell(6);
 
-			 if (record1.getR6_AMOUNT_DEMAND_VOSTRO() != null && !record1.getR6_AMOUNT_DEMAND_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR6_AMOUNT_DEMAND_VOSTRO() != null ){
 			     cell47.setCellValue(record1.getR6_AMOUNT_DEMAND_VOSTRO().toString().trim() );
 			     cell47.setCellStyle(numberStyle);
 			 } else {
@@ -1993,7 +1993,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 			  row = sheet.getRow(29) != null ? sheet.getRow(29) : sheet.createRow(29);
 			  Cell cell49 = row.createCell(0);
 
-			 if (record1.getR7_NAME_OF_BANK_AND_COUNTRY_VOSTRO() != null && !record1.getR7_NAME_OF_BANK_AND_COUNTRY_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR7_NAME_OF_BANK_AND_COUNTRY_VOSTRO() != null ){
 			     cell49.setCellValue(record1.getR7_NAME_OF_BANK_AND_COUNTRY_VOSTRO().toString().trim() );
 			     cell49.setCellStyle(numberStyle);
 			 } else {
@@ -2003,7 +2003,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell50 = row.createCell(1);
 
-			 if (record1.getR7_TYPE_OF_ACCOUNT_VOSTRO() != null && !record1.getR7_TYPE_OF_ACCOUNT_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR7_TYPE_OF_ACCOUNT_VOSTRO() != null ){
 			     cell50.setCellValue(record1.getR7_TYPE_OF_ACCOUNT_VOSTRO().toString().trim() );
 			     cell50.setCellStyle(numberStyle);
 			 } else {
@@ -2013,7 +2013,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell51 = row.createCell(2);
 
-			 if (record1.getR7_PURPOSE_VOSTRO() != null && !record1.getR7_PURPOSE_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR7_PURPOSE_VOSTRO() != null ){
 			     cell51.setCellValue(record1.getR7_PURPOSE_VOSTRO().toString().trim() );
 			     cell51.setCellStyle(numberStyle);
 			 } else {
@@ -2023,7 +2023,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell52 = row.createCell(3);
 
-			 if (record1.getR7_CURRENCY_VOSTRO() != null && !record1.getR7_CURRENCY_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR7_CURRENCY_VOSTRO() != null ){
 			     cell52.setCellValue(record1.getR7_CURRENCY_VOSTRO().toString().trim() );
 			     cell52.setCellStyle(numberStyle);
 			 } else {
@@ -2033,7 +2033,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell55 = row.createCell(6);
 
-			 if (record1.getR7_AMOUNT_DEMAND_VOSTRO() != null && !record1.getR7_AMOUNT_DEMAND_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR7_AMOUNT_DEMAND_VOSTRO() != null ){
 			     cell55.setCellValue(record1.getR7_AMOUNT_DEMAND_VOSTRO().toString().trim() );
 			     cell55.setCellStyle(numberStyle);
 			 } else {
@@ -2045,7 +2045,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 			  row = sheet.getRow(30) != null ? sheet.getRow(30) : sheet.createRow(30);
 			  Cell cell57 = row.createCell(0);
 
-			 if (record1.getR8_NAME_OF_BANK_AND_COUNTRY_VOSTRO() != null && !record1.getR8_NAME_OF_BANK_AND_COUNTRY_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR8_NAME_OF_BANK_AND_COUNTRY_VOSTRO() != null ){
 			     cell57.setCellValue(record1.getR8_NAME_OF_BANK_AND_COUNTRY_VOSTRO().toString().trim() );
 			     cell57.setCellStyle(numberStyle);
 			 } else {
@@ -2055,7 +2055,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell58 = row.createCell(1);
 
-			 if (record1.getR8_TYPE_OF_ACCOUNT_VOSTRO() != null && !record1.getR8_TYPE_OF_ACCOUNT_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR8_TYPE_OF_ACCOUNT_VOSTRO() != null ){
 			     cell58.setCellValue(record1.getR8_TYPE_OF_ACCOUNT_VOSTRO().toString().trim() );
 			     cell58.setCellStyle(numberStyle);
 			 } else {
@@ -2065,7 +2065,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell59 = row.createCell(2);
 
-			 if (record1.getR8_PURPOSE_VOSTRO() != null && !record1.getR8_PURPOSE_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR8_PURPOSE_VOSTRO() != null ){
 			     cell59.setCellValue(record1.getR8_PURPOSE_VOSTRO().toString().trim() );
 			     cell59.setCellStyle(numberStyle);
 			 } else {
@@ -2075,7 +2075,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell60 = row.createCell(3);
 
-			 if (record1.getR8_CURRENCY_VOSTRO() != null && !record1.getR8_CURRENCY_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR8_CURRENCY_VOSTRO() != null ){
 			     cell60.setCellValue(record1.getR8_CURRENCY_VOSTRO().toString().trim() );
 			     cell60.setCellStyle(numberStyle);
 			 } else {
@@ -2085,7 +2085,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell63 = row.createCell(6);
 
-			 if (record1.getR8_AMOUNT_DEMAND_VOSTRO() != null && !record1.getR8_AMOUNT_DEMAND_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR8_AMOUNT_DEMAND_VOSTRO() != null ){
 			     cell63.setCellValue(record1.getR8_AMOUNT_DEMAND_VOSTRO().toString().trim() );
 			     cell63.setCellStyle(numberStyle);
 			 } else {
@@ -2109,7 +2109,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 		Row  row = sheet.getRow(36) != null ? sheet.getRow(36) : sheet.createRow(36);
 		 Cell cell1 = row.createCell(0);
 
-		 if (record1.getR1_NAME_OF_BANK_NOSTRO1() != null && !record1.getR1_NAME_OF_BANK_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR1_NAME_OF_BANK_NOSTRO1() != null ){
 		     cell1.setCellValue(record1.getR1_NAME_OF_BANK_NOSTRO1().toString().trim() );
 		     cell1.setCellStyle(numberStyle);
 		 } else {
@@ -2119,7 +2119,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell2 = row.createCell(1);
 
-		 if (record1.getR1_TYPE_OF_ACCOUNT_NOSTRO1() != null && !record1.getR1_TYPE_OF_ACCOUNT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR1_TYPE_OF_ACCOUNT_NOSTRO1() != null ){
 		     cell2.setCellValue(record1.getR1_TYPE_OF_ACCOUNT_NOSTRO1().toString().trim() );
 		     cell2.setCellStyle(numberStyle);
 		 } else {
@@ -2129,7 +2129,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell3 = row.createCell(2);
 
-		 if (record1.getR1_PURPOSE_NOSTRO1() != null && !record1.getR1_PURPOSE_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR1_PURPOSE_NOSTRO1() != null ){
 		     cell3.setCellValue(record1.getR1_PURPOSE_NOSTRO1().toString().trim() );
 		     cell3.setCellStyle(numberStyle);
 		 } else {
@@ -2139,7 +2139,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell4 = row.createCell(3);
 
-		 if (record1.getR1_CURRENCY_NOSTRO1() != null && !record1.getR1_CURRENCY_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR1_CURRENCY_NOSTRO1() != null ){
 		     cell4.setCellValue(record1.getR1_CURRENCY_NOSTRO1().toString().trim() );
 		     cell4.setCellStyle(numberStyle);
 		 } else {
@@ -2149,7 +2149,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell5 = row.createCell(4);
 
-		 if (record1.getR1_SOVEREIGN_RATING_NOSTRO1() != null && !record1.getR1_SOVEREIGN_RATING_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR1_SOVEREIGN_RATING_NOSTRO1() != null ){
 		     cell5.setCellValue(record1.getR1_SOVEREIGN_RATING_NOSTRO1().toString().trim() );
 		     cell5.setCellStyle(numberStyle);
 		 } else {
@@ -2159,7 +2159,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell6 = row.createCell(5);
 
-		 if (record1.getR1_RISK_WEIGHT_NOSTRO1() != null && !record1.getR1_RISK_WEIGHT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR1_RISK_WEIGHT_NOSTRO1() != null ){
 		     cell6.setCellValue(record1.getR1_RISK_WEIGHT_NOSTRO1().toString().trim() );
 		     cell6.setCellStyle(numberStyle);
 		 } else {
@@ -2169,7 +2169,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell7 = row.createCell(6);
 
-		 if (record1.getR1_AMOUNT_DEMAND_NOSTRO1() != null && !record1.getR1_AMOUNT_DEMAND_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR1_AMOUNT_DEMAND_NOSTRO1() != null ){
 		     cell7.setCellValue(record1.getR1_AMOUNT_DEMAND_NOSTRO1().toString().trim() );
 		     cell7.setCellStyle(numberStyle);
 		 } else {
@@ -2179,7 +2179,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell8 = row.createCell(7);
 
-		 if (record1.getR1_RISK_WEIGHTED_AMOUNT_NOSTRO1() != null && !record1.getR1_RISK_WEIGHTED_AMOUNT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR1_RISK_WEIGHTED_AMOUNT_NOSTRO1() != null ){
 		     cell8.setCellValue(record1.getR1_RISK_WEIGHTED_AMOUNT_NOSTRO1().toString().trim() );
 		     cell8.setCellStyle(numberStyle);
 		 } else {
@@ -2191,7 +2191,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 		  row = sheet.getRow(37) != null ? sheet.getRow(37) : sheet.createRow(37);
 		  Cell cell9 = row.createCell(0);
 
-		 if (record1.getR2_NAME_OF_BANK_NOSTRO1() != null && !record1.getR2_NAME_OF_BANK_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR2_NAME_OF_BANK_NOSTRO1() != null ){
 		     cell9.setCellValue(record1.getR2_NAME_OF_BANK_NOSTRO1().toString().trim() );
 		     cell9.setCellStyle(numberStyle);
 		 } else {
@@ -2201,7 +2201,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell10 = row.createCell(1);
 
-		 if (record1.getR2_TYPE_OF_ACCOUNT_NOSTRO1() != null && !record1.getR2_TYPE_OF_ACCOUNT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR2_TYPE_OF_ACCOUNT_NOSTRO1() != null ){
 		     cell10.setCellValue(record1.getR2_TYPE_OF_ACCOUNT_NOSTRO1().toString().trim() );
 		     cell10.setCellStyle(numberStyle);
 		 } else {
@@ -2211,7 +2211,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell11 = row.createCell(2);
 
-		 if (record1.getR2_PURPOSE_NOSTRO1() != null && !record1.getR2_PURPOSE_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR2_PURPOSE_NOSTRO1() != null ){
 		     cell11.setCellValue(record1.getR2_PURPOSE_NOSTRO1().toString().trim() );
 		     cell11.setCellStyle(numberStyle);
 		 } else {
@@ -2221,7 +2221,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell12 = row.createCell(3);
 
-		 if (record1.getR2_CURRENCY_NOSTRO1() != null && !record1.getR2_CURRENCY_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR2_CURRENCY_NOSTRO1() != null ){
 		     cell12.setCellValue(record1.getR2_CURRENCY_NOSTRO1().toString().trim() );
 		     cell12.setCellStyle(numberStyle);
 		 } else {
@@ -2231,7 +2231,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell13 = row.createCell(4);
 
-		 if (record1.getR2_SOVEREIGN_RATING_NOSTRO1() != null && !record1.getR2_SOVEREIGN_RATING_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR2_SOVEREIGN_RATING_NOSTRO1() != null ){
 		     cell13.setCellValue(record1.getR2_SOVEREIGN_RATING_NOSTRO1().toString().trim() );
 		     cell13.setCellStyle(numberStyle);
 		 } else {
@@ -2241,7 +2241,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell14 = row.createCell(5);
 
-		 if (record1.getR2_RISK_WEIGHT_NOSTRO1() != null && !record1.getR2_RISK_WEIGHT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR2_RISK_WEIGHT_NOSTRO1() != null ){
 		     cell14.setCellValue(record1.getR2_RISK_WEIGHT_NOSTRO1().toString().trim() );
 		     cell14.setCellStyle(numberStyle);
 		 } else {
@@ -2251,7 +2251,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell15 = row.createCell(6);
 
-		 if (record1.getR2_AMOUNT_DEMAND_NOSTRO1() != null && !record1.getR2_AMOUNT_DEMAND_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR2_AMOUNT_DEMAND_NOSTRO1() != null ){
 		     cell15.setCellValue(record1.getR2_AMOUNT_DEMAND_NOSTRO1().toString().trim() );
 		     cell15.setCellStyle(numberStyle);
 		 } else {
@@ -2261,7 +2261,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell16 = row.createCell(7);
 
-		 if (record1.getR2_RISK_WEIGHTED_AMOUNT_NOSTRO1() != null && !record1.getR2_RISK_WEIGHTED_AMOUNT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR2_RISK_WEIGHTED_AMOUNT_NOSTRO1() != null ){
 		     cell16.setCellValue(record1.getR2_RISK_WEIGHTED_AMOUNT_NOSTRO1().toString().trim() );
 		     cell16.setCellStyle(numberStyle);
 		 } else {
@@ -2273,7 +2273,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 		  row = sheet.getRow(38) != null ? sheet.getRow(38) : sheet.createRow(38);
 		  Cell cell17 = row.createCell(0);
 
-		 if (record1.getR3_NAME_OF_BANK_NOSTRO1() != null && !record1.getR3_NAME_OF_BANK_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR3_NAME_OF_BANK_NOSTRO1() != null ){
 		     cell17.setCellValue(record1.getR3_NAME_OF_BANK_NOSTRO1().toString().trim() );
 		     cell17.setCellStyle(numberStyle);
 		 } else {
@@ -2283,7 +2283,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell18 = row.createCell(1);
 
-		 if (record1.getR3_TYPE_OF_ACCOUNT_NOSTRO1() != null && !record1.getR3_TYPE_OF_ACCOUNT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR3_TYPE_OF_ACCOUNT_NOSTRO1() != null ){
 		     cell18.setCellValue(record1.getR3_TYPE_OF_ACCOUNT_NOSTRO1().toString().trim() );
 		     cell18.setCellStyle(numberStyle);
 		 } else {
@@ -2293,7 +2293,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell19 = row.createCell(2);
 
-		 if (record1.getR3_PURPOSE_NOSTRO1() != null && !record1.getR3_PURPOSE_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR3_PURPOSE_NOSTRO1() != null ){
 		     cell19.setCellValue(record1.getR3_PURPOSE_NOSTRO1().toString().trim() );
 		     cell19.setCellStyle(numberStyle);
 		 } else {
@@ -2303,7 +2303,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell20 = row.createCell(3);
 
-		 if (record1.getR3_CURRENCY_NOSTRO1() != null && !record1.getR3_CURRENCY_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR3_CURRENCY_NOSTRO1() != null ){
 		     cell20.setCellValue(record1.getR3_CURRENCY_NOSTRO1().toString().trim() );
 		     cell20.setCellStyle(numberStyle);
 		 } else {
@@ -2313,7 +2313,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell21 = row.createCell(4);
 
-		 if (record1.getR3_SOVEREIGN_RATING_NOSTRO1() != null && !record1.getR3_SOVEREIGN_RATING_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR3_SOVEREIGN_RATING_NOSTRO1() != null ){
 		     cell21.setCellValue(record1.getR3_SOVEREIGN_RATING_NOSTRO1().toString().trim() );
 		     cell21.setCellStyle(numberStyle);
 		 } else {
@@ -2323,7 +2323,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell22 = row.createCell(5);
 
-		 if (record1.getR3_RISK_WEIGHT_NOSTRO1() != null && !record1.getR3_RISK_WEIGHT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR3_RISK_WEIGHT_NOSTRO1() != null ){
 		     cell22.setCellValue(record1.getR3_RISK_WEIGHT_NOSTRO1().toString().trim() );
 		     cell22.setCellStyle(numberStyle);
 		 } else {
@@ -2333,7 +2333,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell23 = row.createCell(6);
 
-		 if (record1.getR3_AMOUNT_DEMAND_NOSTRO1() != null && !record1.getR3_AMOUNT_DEMAND_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR3_AMOUNT_DEMAND_NOSTRO1() != null ){
 		     cell23.setCellValue(record1.getR3_AMOUNT_DEMAND_NOSTRO1().toString().trim() );
 		     cell23.setCellStyle(numberStyle);
 		 } else {
@@ -2343,7 +2343,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell24 = row.createCell(7);
 
-		 if (record1.getR3_RISK_WEIGHTED_AMOUNT_NOSTRO1() != null && !record1.getR3_RISK_WEIGHTED_AMOUNT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR3_RISK_WEIGHTED_AMOUNT_NOSTRO1() != null ){
 		     cell24.setCellValue(record1.getR3_RISK_WEIGHTED_AMOUNT_NOSTRO1().toString().trim() );
 		     cell24.setCellStyle(numberStyle);
 		 } else {
@@ -2355,7 +2355,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 		  row = sheet.getRow(39) != null ? sheet.getRow(39) : sheet.createRow(39);
 		  Cell cell25 = row.createCell(0);
 
-		 if (record1.getR4_NAME_OF_BANK_NOSTRO1() != null && !record1.getR4_NAME_OF_BANK_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR4_NAME_OF_BANK_NOSTRO1() != null ){
 		     cell25.setCellValue(record1.getR4_NAME_OF_BANK_NOSTRO1().toString().trim() );
 		     cell25.setCellStyle(numberStyle);
 		 } else {
@@ -2365,7 +2365,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell26 = row.createCell(1);
 
-		 if (record1.getR4_TYPE_OF_ACCOUNT_NOSTRO1() != null && !record1.getR4_TYPE_OF_ACCOUNT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR4_TYPE_OF_ACCOUNT_NOSTRO1() != null ){
 		     cell26.setCellValue(record1.getR4_TYPE_OF_ACCOUNT_NOSTRO1().toString().trim() );
 		     cell26.setCellStyle(numberStyle);
 		 } else {
@@ -2375,7 +2375,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell27 = row.createCell(2);
 
-		 if (record1.getR4_PURPOSE_NOSTRO1() != null && !record1.getR4_PURPOSE_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR4_PURPOSE_NOSTRO1() != null ){
 		     cell27.setCellValue(record1.getR4_PURPOSE_NOSTRO1().toString().trim() );
 		     cell27.setCellStyle(numberStyle);
 		 } else {
@@ -2385,7 +2385,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell28 = row.createCell(3);
 
-		 if (record1.getR4_CURRENCY_NOSTRO1() != null && !record1.getR4_CURRENCY_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR4_CURRENCY_NOSTRO1() != null ){
 		     cell28.setCellValue(record1.getR4_CURRENCY_NOSTRO1().toString().trim() );
 		     cell28.setCellStyle(numberStyle);
 		 } else {
@@ -2395,7 +2395,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell29 = row.createCell(4);
 
-		 if (record1.getR4_SOVEREIGN_RATING_NOSTRO1() != null && !record1.getR4_SOVEREIGN_RATING_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR4_SOVEREIGN_RATING_NOSTRO1() != null ){
 		     cell29.setCellValue(record1.getR4_SOVEREIGN_RATING_NOSTRO1().toString().trim() );
 		     cell29.setCellStyle(numberStyle);
 		 } else {
@@ -2405,7 +2405,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell30 = row.createCell(5);
 
-		 if (record1.getR4_RISK_WEIGHT_NOSTRO1() != null && !record1.getR4_RISK_WEIGHT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR4_RISK_WEIGHT_NOSTRO1() != null ){
 		     cell30.setCellValue(record1.getR4_RISK_WEIGHT_NOSTRO1().toString().trim() );
 		     cell30.setCellStyle(numberStyle);
 		 } else {
@@ -2415,7 +2415,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell31 = row.createCell(6);
 
-		 if (record1.getR4_AMOUNT_DEMAND_NOSTRO1() != null && !record1.getR4_AMOUNT_DEMAND_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR4_AMOUNT_DEMAND_NOSTRO1() != null ){
 		     cell31.setCellValue(record1.getR4_AMOUNT_DEMAND_NOSTRO1().toString().trim() );
 		     cell31.setCellStyle(numberStyle);
 		 } else {
@@ -2425,7 +2425,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell32 = row.createCell(7);
 
-		 if (record1.getR4_RISK_WEIGHTED_AMOUNT_NOSTRO1() != null && !record1.getR4_RISK_WEIGHTED_AMOUNT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR4_RISK_WEIGHTED_AMOUNT_NOSTRO1() != null ){
 		     cell32.setCellValue(record1.getR4_RISK_WEIGHTED_AMOUNT_NOSTRO1().toString().trim() );
 		     cell32.setCellStyle(numberStyle);
 		 } else {
@@ -2437,7 +2437,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 		  row = sheet.getRow(40) != null ? sheet.getRow(40) : sheet.createRow(40);
 		  Cell cell33 = row.createCell(0);
 
-		 if (record1.getR5_NAME_OF_BANK_NOSTRO1() != null && !record1.getR5_NAME_OF_BANK_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR5_NAME_OF_BANK_NOSTRO1() != null ){
 		     cell33.setCellValue(record1.getR5_NAME_OF_BANK_NOSTRO1().toString().trim() );
 		     cell33.setCellStyle(numberStyle);
 		 } else {
@@ -2447,7 +2447,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell34 = row.createCell(1);
 
-		 if (record1.getR5_TYPE_OF_ACCOUNT_NOSTRO1() != null && !record1.getR5_TYPE_OF_ACCOUNT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR5_TYPE_OF_ACCOUNT_NOSTRO1() != null ){
 		     cell34.setCellValue(record1.getR5_TYPE_OF_ACCOUNT_NOSTRO1().toString().trim() );
 		     cell34.setCellStyle(numberStyle);
 		 } else {
@@ -2457,7 +2457,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell35 = row.createCell(2);
 
-		 if (record1.getR5_PURPOSE_NOSTRO1() != null && !record1.getR5_PURPOSE_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR5_PURPOSE_NOSTRO1() != null ){
 		     cell35.setCellValue(record1.getR5_PURPOSE_NOSTRO1().toString().trim() );
 		     cell35.setCellStyle(numberStyle);
 		 } else {
@@ -2467,7 +2467,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell36 = row.createCell(3);
 
-		 if (record1.getR5_CURRENCY_NOSTRO1() != null && !record1.getR5_CURRENCY_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR5_CURRENCY_NOSTRO1() != null ){
 		     cell36.setCellValue(record1.getR5_CURRENCY_NOSTRO1().toString().trim() );
 		     cell36.setCellStyle(numberStyle);
 		 } else {
@@ -2477,7 +2477,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell37 = row.createCell(4);
 
-		 if (record1.getR5_SOVEREIGN_RATING_NOSTRO1() != null && !record1.getR5_SOVEREIGN_RATING_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR5_SOVEREIGN_RATING_NOSTRO1() != null ){
 		     cell37.setCellValue(record1.getR5_SOVEREIGN_RATING_NOSTRO1().toString().trim() );
 		     cell37.setCellStyle(numberStyle);
 		 } else {
@@ -2487,7 +2487,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell38 = row.createCell(5);
 
-		 if (record1.getR5_RISK_WEIGHT_NOSTRO1() != null && !record1.getR5_RISK_WEIGHT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR5_RISK_WEIGHT_NOSTRO1() != null ){
 		     cell38.setCellValue(record1.getR5_RISK_WEIGHT_NOSTRO1().toString().trim() );
 		     cell38.setCellStyle(numberStyle);
 		 } else {
@@ -2497,7 +2497,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell39 = row.createCell(6);
 
-		 if (record1.getR5_AMOUNT_DEMAND_NOSTRO1() != null && !record1.getR5_AMOUNT_DEMAND_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR5_AMOUNT_DEMAND_NOSTRO1() != null ){
 		     cell39.setCellValue(record1.getR5_AMOUNT_DEMAND_NOSTRO1().toString().trim() );
 		     cell39.setCellStyle(numberStyle);
 		 } else {
@@ -2507,7 +2507,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell40 = row.createCell(7);
 
-		 if (record1.getR5_RISK_WEIGHTED_AMOUNT_NOSTRO1() != null && !record1.getR5_RISK_WEIGHTED_AMOUNT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR5_RISK_WEIGHTED_AMOUNT_NOSTRO1() != null ){
 		     cell40.setCellValue(record1.getR5_RISK_WEIGHTED_AMOUNT_NOSTRO1().toString().trim() );
 		     cell40.setCellStyle(numberStyle);
 		 } else {
@@ -2519,7 +2519,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 		  row = sheet.getRow(41) != null ? sheet.getRow(41) : sheet.createRow(41);
 		  Cell cell41 = row.createCell(0);
 
-		 if (record1.getR6_NAME_OF_BANK_NOSTRO1() != null && !record1.getR6_NAME_OF_BANK_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR6_NAME_OF_BANK_NOSTRO1() != null ){
 		     cell41.setCellValue(record1.getR6_NAME_OF_BANK_NOSTRO1().toString().trim() );
 		     cell41.setCellStyle(numberStyle);
 		 } else {
@@ -2529,7 +2529,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell42 = row.createCell(1);
 
-		 if (record1.getR6_TYPE_OF_ACCOUNT_NOSTRO1() != null && !record1.getR6_TYPE_OF_ACCOUNT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR6_TYPE_OF_ACCOUNT_NOSTRO1() != null ){
 		     cell42.setCellValue(record1.getR6_TYPE_OF_ACCOUNT_NOSTRO1().toString().trim() );
 		     cell42.setCellStyle(numberStyle);
 		 } else {
@@ -2539,7 +2539,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell43 = row.createCell(2);
 
-		 if (record1.getR6_PURPOSE_NOSTRO1() != null && !record1.getR6_PURPOSE_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR6_PURPOSE_NOSTRO1() != null ){
 		     cell43.setCellValue(record1.getR6_PURPOSE_NOSTRO1().toString().trim() );
 		     cell43.setCellStyle(numberStyle);
 		 } else {
@@ -2549,7 +2549,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell44 = row.createCell(3);
 
-		 if (record1.getR6_CURRENCY_NOSTRO1() != null && !record1.getR6_CURRENCY_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR6_CURRENCY_NOSTRO1() != null ){
 		     cell44.setCellValue(record1.getR6_CURRENCY_NOSTRO1().toString().trim() );
 		     cell44.setCellStyle(numberStyle);
 		 } else {
@@ -2559,7 +2559,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell45 = row.createCell(4);
 
-		 if (record1.getR6_SOVEREIGN_RATING_NOSTRO1() != null && !record1.getR6_SOVEREIGN_RATING_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR6_SOVEREIGN_RATING_NOSTRO1() != null ){
 		     cell45.setCellValue(record1.getR6_SOVEREIGN_RATING_NOSTRO1().toString().trim() );
 		     cell45.setCellStyle(numberStyle);
 		 } else {
@@ -2569,7 +2569,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell46 = row.createCell(5);
 
-		 if (record1.getR6_RISK_WEIGHT_NOSTRO1() != null && !record1.getR6_RISK_WEIGHT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR6_RISK_WEIGHT_NOSTRO1() != null ){
 		     cell46.setCellValue(record1.getR6_RISK_WEIGHT_NOSTRO1().toString().trim() );
 		     cell46.setCellStyle(numberStyle);
 		 } else {
@@ -2579,7 +2579,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell47 = row.createCell(6);
 
-		 if (record1.getR6_AMOUNT_DEMAND_NOSTRO1() != null && !record1.getR6_AMOUNT_DEMAND_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR6_AMOUNT_DEMAND_NOSTRO1() != null ){
 		     cell47.setCellValue(record1.getR6_AMOUNT_DEMAND_NOSTRO1().toString().trim() );
 		     cell47.setCellStyle(numberStyle);
 		 } else {
@@ -2589,7 +2589,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell48 = row.createCell(7);
 
-		 if (record1.getR6_RISK_WEIGHTED_AMOUNT_NOSTRO1() != null && !record1.getR6_RISK_WEIGHTED_AMOUNT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR6_RISK_WEIGHTED_AMOUNT_NOSTRO1() != null ){
 		     cell48.setCellValue(record1.getR6_RISK_WEIGHTED_AMOUNT_NOSTRO1().toString().trim() );
 		     cell48.setCellStyle(numberStyle);
 		 } else {
@@ -2601,7 +2601,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 		  row = sheet.getRow(42) != null ? sheet.getRow(42) : sheet.createRow(42);
 		  Cell cell49 = row.createCell(0);
 
-		 if (record1.getR7_NAME_OF_BANK_NOSTRO1() != null && !record1.getR7_NAME_OF_BANK_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR7_NAME_OF_BANK_NOSTRO1() != null ){
 		     cell49.setCellValue(record1.getR7_NAME_OF_BANK_NOSTRO1().toString().trim() );
 		     cell49.setCellStyle(numberStyle);
 		 } else {
@@ -2611,7 +2611,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell50 = row.createCell(1);
 
-		 if (record1.getR7_TYPE_OF_ACCOUNT_NOSTRO1() != null && !record1.getR7_TYPE_OF_ACCOUNT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR7_TYPE_OF_ACCOUNT_NOSTRO1() != null ){
 		     cell50.setCellValue(record1.getR7_TYPE_OF_ACCOUNT_NOSTRO1().toString().trim() );
 		     cell50.setCellStyle(numberStyle);
 		 } else {
@@ -2621,7 +2621,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell51 = row.createCell(2);
 
-		 if (record1.getR7_PURPOSE_NOSTRO1() != null && !record1.getR7_PURPOSE_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR7_PURPOSE_NOSTRO1() != null ){
 		     cell51.setCellValue(record1.getR7_PURPOSE_NOSTRO1().toString().trim() );
 		     cell51.setCellStyle(numberStyle);
 		 } else {
@@ -2631,7 +2631,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell52 = row.createCell(3);
 
-		 if (record1.getR7_CURRENCY_NOSTRO1() != null && !record1.getR7_CURRENCY_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR7_CURRENCY_NOSTRO1() != null ){
 		     cell52.setCellValue(record1.getR7_CURRENCY_NOSTRO1().toString().trim() );
 		     cell52.setCellStyle(numberStyle);
 		 } else {
@@ -2641,7 +2641,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell53 = row.createCell(4);
 
-		 if (record1.getR7_SOVEREIGN_RATING_NOSTRO1() != null && !record1.getR7_SOVEREIGN_RATING_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR7_SOVEREIGN_RATING_NOSTRO1() != null ){
 		     cell53.setCellValue(record1.getR7_SOVEREIGN_RATING_NOSTRO1().toString().trim() );
 		     cell53.setCellStyle(numberStyle);
 		 } else {
@@ -2651,7 +2651,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell54 = row.createCell(5);
 
-		 if (record1.getR7_RISK_WEIGHT_NOSTRO1() != null && !record1.getR7_RISK_WEIGHT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR7_RISK_WEIGHT_NOSTRO1() != null ){
 		     cell54.setCellValue(record1.getR7_RISK_WEIGHT_NOSTRO1().toString().trim() );
 		     cell54.setCellStyle(numberStyle);
 		 } else {
@@ -2661,7 +2661,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell55 = row.createCell(6);
 
-		 if (record1.getR7_AMOUNT_DEMAND_NOSTRO1() != null && !record1.getR7_AMOUNT_DEMAND_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR7_AMOUNT_DEMAND_NOSTRO1() != null ){
 		     cell55.setCellValue(record1.getR7_AMOUNT_DEMAND_NOSTRO1().toString().trim() );
 		     cell55.setCellStyle(numberStyle);
 		 } else {
@@ -2671,7 +2671,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell56 = row.createCell(7);
 
-		 if (record1.getR7_RISK_WEIGHTED_AMOUNT_NOSTRO1() != null && !record1.getR7_RISK_WEIGHTED_AMOUNT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR7_RISK_WEIGHTED_AMOUNT_NOSTRO1() != null ){
 		     cell56.setCellValue(record1.getR7_RISK_WEIGHTED_AMOUNT_NOSTRO1().toString().trim() );
 		     cell56.setCellStyle(numberStyle);
 		 } else {
@@ -2683,7 +2683,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 		  row = sheet.getRow(43) != null ? sheet.getRow(43) : sheet.createRow(43);
 		  Cell cell57 = row.createCell(0);
 
-		 if (record1.getR8_NAME_OF_BANK_NOSTRO1() != null && !record1.getR8_NAME_OF_BANK_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR8_NAME_OF_BANK_NOSTRO1() != null ){
 		     cell57.setCellValue(record1.getR8_NAME_OF_BANK_NOSTRO1().toString().trim() );
 		     cell57.setCellStyle(numberStyle);
 		 } else {
@@ -2693,7 +2693,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell58 = row.createCell(1);
 
-		 if (record1.getR8_TYPE_OF_ACCOUNT_NOSTRO1() != null && !record1.getR8_TYPE_OF_ACCOUNT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR8_TYPE_OF_ACCOUNT_NOSTRO1() != null ){
 		     cell58.setCellValue(record1.getR8_TYPE_OF_ACCOUNT_NOSTRO1().toString().trim() );
 		     cell58.setCellStyle(numberStyle);
 		 } else {
@@ -2703,7 +2703,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell59 = row.createCell(2);
 
-		 if (record1.getR8_PURPOSE_NOSTRO1() != null && !record1.getR8_PURPOSE_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR8_PURPOSE_NOSTRO1() != null ){
 		     cell59.setCellValue(record1.getR8_PURPOSE_NOSTRO1().toString().trim() );
 		     cell59.setCellStyle(numberStyle);
 		 } else {
@@ -2713,7 +2713,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell60 = row.createCell(3);
 
-		 if (record1.getR8_CURRENCY_NOSTRO1() != null && !record1.getR8_CURRENCY_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR8_CURRENCY_NOSTRO1() != null ){
 		     cell60.setCellValue(record1.getR8_CURRENCY_NOSTRO1().toString().trim() );
 		     cell60.setCellStyle(numberStyle);
 		 } else {
@@ -2723,7 +2723,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell61 = row.createCell(4);
 
-		 if (record1.getR8_SOVEREIGN_RATING_NOSTRO1() != null && !record1.getR8_SOVEREIGN_RATING_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR8_SOVEREIGN_RATING_NOSTRO1() != null ){
 		     cell61.setCellValue(record1.getR8_SOVEREIGN_RATING_NOSTRO1().toString().trim() );
 		     cell61.setCellStyle(numberStyle);
 		 } else {
@@ -2733,7 +2733,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell62 = row.createCell(5);
 
-		 if (record1.getR8_RISK_WEIGHT_NOSTRO1() != null && !record1.getR8_RISK_WEIGHT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR8_RISK_WEIGHT_NOSTRO1() != null ){
 		     cell62.setCellValue(record1.getR8_RISK_WEIGHT_NOSTRO1().toString().trim() );
 		     cell62.setCellStyle(numberStyle);
 		 } else {
@@ -2743,7 +2743,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell63 = row.createCell(6);
 
-		 if (record1.getR8_AMOUNT_DEMAND_NOSTRO1() != null && !record1.getR8_AMOUNT_DEMAND_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR8_AMOUNT_DEMAND_NOSTRO1() != null ){
 		     cell63.setCellValue(record1.getR8_AMOUNT_DEMAND_NOSTRO1().toString().trim() );
 		     cell63.setCellStyle(numberStyle);
 		 } else {
@@ -2753,7 +2753,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell64 = row.createCell(7);
 
-		 if (record1.getR8_RISK_WEIGHTED_AMOUNT_NOSTRO1() != null && !record1.getR8_RISK_WEIGHTED_AMOUNT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR8_RISK_WEIGHTED_AMOUNT_NOSTRO1() != null ){
 		     cell64.setCellValue(record1.getR8_RISK_WEIGHTED_AMOUNT_NOSTRO1().toString().trim() );
 		     cell64.setCellStyle(numberStyle);
 		 } else {
@@ -2765,7 +2765,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 		  row = sheet.getRow(44) != null ? sheet.getRow(44) : sheet.createRow(44);
 		  Cell cell65 = row.createCell(0);
 
-		 if (record1.getR9_NAME_OF_BANK_NOSTRO1() != null && !record1.getR9_NAME_OF_BANK_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR9_NAME_OF_BANK_NOSTRO1() != null ){
 		     cell65.setCellValue(record1.getR9_NAME_OF_BANK_NOSTRO1().toString().trim() );
 		     cell65.setCellStyle(numberStyle);
 		 } else {
@@ -2775,7 +2775,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell66 = row.createCell(1);
 
-		 if (record1.getR9_TYPE_OF_ACCOUNT_NOSTRO1() != null && !record1.getR9_TYPE_OF_ACCOUNT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR9_TYPE_OF_ACCOUNT_NOSTRO1() != null ){
 		     cell66.setCellValue(record1.getR9_TYPE_OF_ACCOUNT_NOSTRO1().toString().trim() );
 		     cell66.setCellStyle(numberStyle);
 		 } else {
@@ -2785,7 +2785,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell67 = row.createCell(2);
 
-		 if (record1.getR9_PURPOSE_NOSTRO1() != null && !record1.getR9_PURPOSE_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR9_PURPOSE_NOSTRO1() != null ){
 		     cell67.setCellValue(record1.getR9_PURPOSE_NOSTRO1().toString().trim() );
 		     cell67.setCellStyle(numberStyle);
 		 } else {
@@ -2795,7 +2795,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell68 = row.createCell(3);
 
-		 if (record1.getR9_CURRENCY_NOSTRO1() != null && !record1.getR9_CURRENCY_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR9_CURRENCY_NOSTRO1() != null ){
 		     cell68.setCellValue(record1.getR9_CURRENCY_NOSTRO1().toString().trim() );
 		     cell68.setCellStyle(numberStyle);
 		 } else {
@@ -2805,7 +2805,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell69 = row.createCell(4);
 
-		 if (record1.getR9_SOVEREIGN_RATING_NOSTRO1() != null && !record1.getR9_SOVEREIGN_RATING_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR9_SOVEREIGN_RATING_NOSTRO1() != null ){
 		     cell69.setCellValue(record1.getR9_SOVEREIGN_RATING_NOSTRO1().toString().trim() );
 		     cell69.setCellStyle(numberStyle);
 		 } else {
@@ -2815,7 +2815,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell70 = row.createCell(5);
 
-		 if (record1.getR9_RISK_WEIGHT_NOSTRO1() != null && !record1.getR9_RISK_WEIGHT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR9_RISK_WEIGHT_NOSTRO1() != null ){
 		     cell70.setCellValue(record1.getR9_RISK_WEIGHT_NOSTRO1().toString().trim() );
 		     cell70.setCellStyle(numberStyle);
 		 } else {
@@ -2825,7 +2825,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell71 = row.createCell(6);
 
-		 if (record1.getR9_AMOUNT_DEMAND_NOSTRO1() != null && !record1.getR9_AMOUNT_DEMAND_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR9_AMOUNT_DEMAND_NOSTRO1() != null ){
 		     cell71.setCellValue(record1.getR9_AMOUNT_DEMAND_NOSTRO1().toString().trim() );
 		     cell71.setCellStyle(numberStyle);
 		 } else {
@@ -2835,7 +2835,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell72 = row.createCell(7);
 
-		 if (record1.getR9_RISK_WEIGHTED_AMOUNT_NOSTRO1() != null && !record1.getR9_RISK_WEIGHTED_AMOUNT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR9_RISK_WEIGHTED_AMOUNT_NOSTRO1() != null ){
 		     cell72.setCellValue(record1.getR9_RISK_WEIGHTED_AMOUNT_NOSTRO1().toString().trim() );
 		     cell72.setCellStyle(numberStyle);
 		 } else {
@@ -2847,7 +2847,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 		  row = sheet.getRow(45) != null ? sheet.getRow(45) : sheet.createRow(45);
 		  Cell cell73 = row.createCell(0);
 
-		 if (record1.getR10_NAME_OF_BANK_NOSTRO1() != null && !record1.getR10_NAME_OF_BANK_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR10_NAME_OF_BANK_NOSTRO1() != null ){
 		     cell73.setCellValue(record1.getR10_NAME_OF_BANK_NOSTRO1().toString().trim() );
 		     cell73.setCellStyle(numberStyle);
 		 } else {
@@ -2857,7 +2857,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell74 = row.createCell(1);
 
-		 if (record1.getR10_TYPE_OF_ACCOUNT_NOSTRO1() != null && !record1.getR10_TYPE_OF_ACCOUNT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR10_TYPE_OF_ACCOUNT_NOSTRO1() != null ){
 		     cell74.setCellValue(record1.getR10_TYPE_OF_ACCOUNT_NOSTRO1().toString().trim() );
 		     cell74.setCellStyle(numberStyle);
 		 } else {
@@ -2867,7 +2867,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell75 = row.createCell(2);
 
-		 if (record1.getR10_PURPOSE_NOSTRO1() != null && !record1.getR10_PURPOSE_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR10_PURPOSE_NOSTRO1() != null ){
 		     cell75.setCellValue(record1.getR10_PURPOSE_NOSTRO1().toString().trim() );
 		     cell75.setCellStyle(numberStyle);
 		 } else {
@@ -2877,7 +2877,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell76 = row.createCell(3);
 
-		 if (record1.getR10_CURRENCY_NOSTRO1() != null && !record1.getR10_CURRENCY_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR10_CURRENCY_NOSTRO1() != null ){
 		     cell76.setCellValue(record1.getR10_CURRENCY_NOSTRO1().toString().trim() );
 		     cell76.setCellStyle(numberStyle);
 		 } else {
@@ -2887,7 +2887,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell77 = row.createCell(4);
 
-		 if (record1.getR10_SOVEREIGN_RATING_NOSTRO1() != null && !record1.getR10_SOVEREIGN_RATING_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR10_SOVEREIGN_RATING_NOSTRO1() != null ){
 		     cell77.setCellValue(record1.getR10_SOVEREIGN_RATING_NOSTRO1().toString().trim() );
 		     cell77.setCellStyle(numberStyle);
 		 } else {
@@ -2897,7 +2897,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell78 = row.createCell(5);
 
-		 if (record1.getR10_RISK_WEIGHT_NOSTRO1() != null && !record1.getR10_RISK_WEIGHT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR10_RISK_WEIGHT_NOSTRO1() != null ){
 		     cell78.setCellValue(record1.getR10_RISK_WEIGHT_NOSTRO1().toString().trim() );
 		     cell78.setCellStyle(numberStyle);
 		 } else {
@@ -2907,7 +2907,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell79 = row.createCell(6);
 
-		 if (record1.getR10_AMOUNT_DEMAND_NOSTRO1() != null && !record1.getR10_AMOUNT_DEMAND_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR10_AMOUNT_DEMAND_NOSTRO1() != null ){
 		     cell79.setCellValue(record1.getR10_AMOUNT_DEMAND_NOSTRO1().toString().trim() );
 		     cell79.setCellStyle(numberStyle);
 		 } else {
@@ -2917,7 +2917,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell80 = row.createCell(7);
 
-		 if (record1.getR10_RISK_WEIGHTED_AMOUNT_NOSTRO1() != null && !record1.getR10_RISK_WEIGHTED_AMOUNT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR10_RISK_WEIGHTED_AMOUNT_NOSTRO1() != null ){
 		     cell80.setCellValue(record1.getR10_RISK_WEIGHTED_AMOUNT_NOSTRO1().toString().trim() );
 		     cell80.setCellStyle(numberStyle);
 		 } else {
@@ -2929,7 +2929,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 		  row = sheet.getRow(46) != null ? sheet.getRow(46) : sheet.createRow(46);
 		  Cell cell81 = row.createCell(0);
 
-		 if (record1.getR11_NAME_OF_BANK_NOSTRO1() != null && !record1.getR11_NAME_OF_BANK_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR11_NAME_OF_BANK_NOSTRO1() != null ){
 		     cell81.setCellValue(record1.getR11_NAME_OF_BANK_NOSTRO1().toString().trim() );
 		     cell81.setCellStyle(numberStyle);
 		 } else {
@@ -2939,7 +2939,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell82 = row.createCell(1);
 
-		 if (record1.getR11_TYPE_OF_ACCOUNT_NOSTRO1() != null && !record1.getR11_TYPE_OF_ACCOUNT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR11_TYPE_OF_ACCOUNT_NOSTRO1() != null ){
 		     cell82.setCellValue(record1.getR11_TYPE_OF_ACCOUNT_NOSTRO1().toString().trim() );
 		     cell82.setCellStyle(numberStyle);
 		 } else {
@@ -2949,7 +2949,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell83 = row.createCell(2);
 
-		 if (record1.getR11_PURPOSE_NOSTRO1() != null && !record1.getR11_PURPOSE_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR11_PURPOSE_NOSTRO1() != null ){
 		     cell83.setCellValue(record1.getR11_PURPOSE_NOSTRO1().toString().trim() );
 		     cell83.setCellStyle(numberStyle);
 		 } else {
@@ -2959,7 +2959,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell84 = row.createCell(3);
 
-		 if (record1.getR11_CURRENCY_NOSTRO1() != null && !record1.getR11_CURRENCY_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR11_CURRENCY_NOSTRO1() != null ){
 		     cell84.setCellValue(record1.getR11_CURRENCY_NOSTRO1().toString().trim() );
 		     cell84.setCellStyle(numberStyle);
 		 } else {
@@ -2969,7 +2969,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell85 = row.createCell(4);
 
-		 if (record1.getR11_SOVEREIGN_RATING_NOSTRO1() != null && !record1.getR11_SOVEREIGN_RATING_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR11_SOVEREIGN_RATING_NOSTRO1() != null ){
 		     cell85.setCellValue(record1.getR11_SOVEREIGN_RATING_NOSTRO1().toString().trim() );
 		     cell85.setCellStyle(numberStyle);
 		 } else {
@@ -2979,7 +2979,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell86 = row.createCell(5);
 
-		 if (record1.getR11_RISK_WEIGHT_NOSTRO1() != null && !record1.getR11_RISK_WEIGHT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR11_RISK_WEIGHT_NOSTRO1() != null ){
 		     cell86.setCellValue(record1.getR11_RISK_WEIGHT_NOSTRO1().toString().trim() );
 		     cell86.setCellStyle(numberStyle);
 		 } else {
@@ -2989,7 +2989,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell87 = row.createCell(6);
 
-		 if (record1.getR11_AMOUNT_DEMAND_NOSTRO1() != null && !record1.getR11_AMOUNT_DEMAND_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR11_AMOUNT_DEMAND_NOSTRO1() != null ){
 		     cell87.setCellValue(record1.getR11_AMOUNT_DEMAND_NOSTRO1().toString().trim() );
 		     cell87.setCellStyle(numberStyle);
 		 } else {
@@ -2999,7 +2999,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell88 = row.createCell(7);
 
-		 if (record1.getR11_RISK_WEIGHTED_AMOUNT_NOSTRO1() != null && !record1.getR11_RISK_WEIGHTED_AMOUNT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR11_RISK_WEIGHTED_AMOUNT_NOSTRO1() != null ){
 		     cell88.setCellValue(record1.getR11_RISK_WEIGHTED_AMOUNT_NOSTRO1().toString().trim() );
 		     cell88.setCellStyle(numberStyle);
 		 } else {
@@ -3024,7 +3024,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 	    Row  row = sheet.getRow(51) != null ? sheet.getRow(51) : sheet.createRow(51);
 	    Cell cell1 = row.createCell(0);
 
-	    if (record1.getR1_NAME_OF_BANK_VOSTRO1() != null && !record1.getR1_NAME_OF_BANK_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR1_NAME_OF_BANK_VOSTRO1() != null ){
 	        cell1.setCellValue(record1.getR1_NAME_OF_BANK_VOSTRO1().toString().trim() );
 	        cell1.setCellStyle(numberStyle);
 	    } else {
@@ -3034,7 +3034,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell2 = row.createCell(1);
 
-	    if (record1.getR1_TYPE_OF_ACCOUNT_VOSTRO1() != null && !record1.getR1_TYPE_OF_ACCOUNT_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR1_TYPE_OF_ACCOUNT_VOSTRO1() != null ){
 	        cell2.setCellValue(record1.getR1_TYPE_OF_ACCOUNT_VOSTRO1().toString().trim() );
 	        cell2.setCellStyle(numberStyle);
 	    } else {
@@ -3044,7 +3044,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell3 = row.createCell(2);
 
-	    if (record1.getR1_PURPOSE_VOSTRO1() != null && !record1.getR1_PURPOSE_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR1_PURPOSE_VOSTRO1() != null ){
 	        cell3.setCellValue(record1.getR1_PURPOSE_VOSTRO1().toString().trim() );
 	        cell3.setCellStyle(numberStyle);
 	    } else {
@@ -3054,7 +3054,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell4 = row.createCell(3);
 
-	    if (record1.getR1_CURRENCY_VOSTRO1() != null && !record1.getR1_CURRENCY_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR1_CURRENCY_VOSTRO1() != null ){
 	        cell4.setCellValue(record1.getR1_CURRENCY_VOSTRO1().toString().trim() );
 	        cell4.setCellStyle(numberStyle);
 	    } else {
@@ -3064,7 +3064,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell7 = row.createCell(6);
 
-	    if (record1.getR1_AMOUNT_DEMAND_VOSTRO1() != null && !record1.getR1_AMOUNT_DEMAND_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR1_AMOUNT_DEMAND_VOSTRO1() != null ){
 	        cell7.setCellValue(record1.getR1_AMOUNT_DEMAND_VOSTRO1().toString().trim() );
 	        cell7.setCellStyle(numberStyle);
 	    } else {
@@ -3076,7 +3076,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 	     row = sheet.getRow(52) != null ? sheet.getRow(52) : sheet.createRow(52);
 	     Cell cell9 = row.createCell(0);
 
-	    if (record1.getR2_NAME_OF_BANK_VOSTRO1() != null && !record1.getR2_NAME_OF_BANK_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR2_NAME_OF_BANK_VOSTRO1() != null ){
 	        cell9.setCellValue(record1.getR2_NAME_OF_BANK_VOSTRO1().toString().trim() );
 	        cell9.setCellStyle(numberStyle);
 	    } else {
@@ -3086,7 +3086,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell10 = row.createCell(1);
 
-	    if (record1.getR2_TYPE_OF_ACCOUNT_VOSTRO1() != null && !record1.getR2_TYPE_OF_ACCOUNT_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR2_TYPE_OF_ACCOUNT_VOSTRO1() != null ){
 	        cell10.setCellValue(record1.getR2_TYPE_OF_ACCOUNT_VOSTRO1().toString().trim() );
 	        cell10.setCellStyle(numberStyle);
 	    } else {
@@ -3096,7 +3096,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell11 = row.createCell(2);
 
-	    if (record1.getR2_PURPOSE_VOSTRO1() != null && !record1.getR2_PURPOSE_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR2_PURPOSE_VOSTRO1() != null ){
 	        cell11.setCellValue(record1.getR2_PURPOSE_VOSTRO1().toString().trim() );
 	        cell11.setCellStyle(numberStyle);
 	    } else {
@@ -3106,7 +3106,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell12 = row.createCell(3);
 
-	    if (record1.getR2_CURRENCY_VOSTRO1() != null && !record1.getR2_CURRENCY_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR2_CURRENCY_VOSTRO1() != null ){
 	        cell12.setCellValue(record1.getR2_CURRENCY_VOSTRO1().toString().trim() );
 	        cell12.setCellStyle(numberStyle);
 	    } else {
@@ -3116,7 +3116,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell15 = row.createCell(6);
 
-	    if (record1.getR2_AMOUNT_DEMAND_VOSTRO1() != null && !record1.getR2_AMOUNT_DEMAND_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR2_AMOUNT_DEMAND_VOSTRO1() != null ){
 	        cell15.setCellValue(record1.getR2_AMOUNT_DEMAND_VOSTRO1().toString().trim() );
 	        cell15.setCellStyle(numberStyle);
 	    } else {
@@ -3128,7 +3128,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 	     row = sheet.getRow(53) != null ? sheet.getRow(53) : sheet.createRow(53);
 	     Cell cell17 = row.createCell(0);
 
-	    if (record1.getR3_NAME_OF_BANK_VOSTRO1() != null && !record1.getR3_NAME_OF_BANK_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR3_NAME_OF_BANK_VOSTRO1() != null ){
 	        cell17.setCellValue(record1.getR3_NAME_OF_BANK_VOSTRO1().toString().trim() );
 	        cell17.setCellStyle(numberStyle);
 	    } else {
@@ -3138,7 +3138,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell18 = row.createCell(1);
 
-	    if (record1.getR3_TYPE_OF_ACCOUNT_VOSTRO1() != null && !record1.getR3_TYPE_OF_ACCOUNT_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR3_TYPE_OF_ACCOUNT_VOSTRO1() != null ){
 	        cell18.setCellValue(record1.getR3_TYPE_OF_ACCOUNT_VOSTRO1().toString().trim() );
 	        cell18.setCellStyle(numberStyle);
 	    } else {
@@ -3148,7 +3148,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell19 = row.createCell(2);
 
-	    if (record1.getR3_PURPOSE_VOSTRO1() != null && !record1.getR3_PURPOSE_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR3_PURPOSE_VOSTRO1() != null ){
 	        cell19.setCellValue(record1.getR3_PURPOSE_VOSTRO1().toString().trim() );
 	        cell19.setCellStyle(numberStyle);
 	    } else {
@@ -3158,7 +3158,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell20 = row.createCell(3);
 
-	    if (record1.getR3_CURRENCY_VOSTRO1() != null && !record1.getR3_CURRENCY_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR3_CURRENCY_VOSTRO1() != null ){
 	        cell20.setCellValue(record1.getR3_CURRENCY_VOSTRO1().toString().trim() );
 	        cell20.setCellStyle(numberStyle);
 	    } else {
@@ -3168,7 +3168,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell23 = row.createCell(6);
 
-	    if (record1.getR3_AMOUNT_DEMAND_VOSTRO1() != null && !record1.getR3_AMOUNT_DEMAND_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR3_AMOUNT_DEMAND_VOSTRO1() != null ){
 	        cell23.setCellValue(record1.getR3_AMOUNT_DEMAND_VOSTRO1().toString().trim() );
 	        cell23.setCellStyle(numberStyle);
 	    } else {
@@ -3180,7 +3180,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 	     row = sheet.getRow(54) != null ? sheet.getRow(54) : sheet.createRow(54);
 	     Cell cell25 = row.createCell(0);
 
-	    if (record1.getR4_NAME_OF_BANK_VOSTRO1() != null && !record1.getR4_NAME_OF_BANK_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR4_NAME_OF_BANK_VOSTRO1() != null ){
 	        cell25.setCellValue(record1.getR4_NAME_OF_BANK_VOSTRO1().toString().trim() );
 	        cell25.setCellStyle(numberStyle);
 	    } else {
@@ -3190,7 +3190,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell26 = row.createCell(1);
 
-	    if (record1.getR4_TYPE_OF_ACCOUNT_VOSTRO1() != null && !record1.getR4_TYPE_OF_ACCOUNT_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR4_TYPE_OF_ACCOUNT_VOSTRO1() != null ){
 	        cell26.setCellValue(record1.getR4_TYPE_OF_ACCOUNT_VOSTRO1().toString().trim() );
 	        cell26.setCellStyle(numberStyle);
 	    } else {
@@ -3200,7 +3200,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell27 = row.createCell(2);
 
-	    if (record1.getR4_PURPOSE_VOSTRO1() != null && !record1.getR4_PURPOSE_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR4_PURPOSE_VOSTRO1() != null ){
 	        cell27.setCellValue(record1.getR4_PURPOSE_VOSTRO1().toString().trim() );
 	        cell27.setCellStyle(numberStyle);
 	    } else {
@@ -3210,7 +3210,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell28 = row.createCell(3);
 
-	    if (record1.getR4_CURRENCY_VOSTRO1() != null && !record1.getR4_CURRENCY_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR4_CURRENCY_VOSTRO1() != null ){
 	        cell28.setCellValue(record1.getR4_CURRENCY_VOSTRO1().toString().trim() );
 	        cell28.setCellStyle(numberStyle);
 	    } else {
@@ -3220,7 +3220,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell31 = row.createCell(6);
 
-	    if (record1.getR4_AMOUNT_DEMAND_VOSTRO1() != null && !record1.getR4_AMOUNT_DEMAND_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR4_AMOUNT_DEMAND_VOSTRO1() != null ){
 	        cell31.setCellValue(record1.getR4_AMOUNT_DEMAND_VOSTRO1().toString().trim() );
 	        cell31.setCellStyle(numberStyle);
 	    } else {
@@ -3232,7 +3232,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 	     row = sheet.getRow(55) != null ? sheet.getRow(55) : sheet.createRow(55);
 	     Cell cell33 = row.createCell(0);
 
-	    if (record1.getR5_NAME_OF_BANK_VOSTRO1() != null && !record1.getR5_NAME_OF_BANK_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR5_NAME_OF_BANK_VOSTRO1() != null ){
 	        cell33.setCellValue(record1.getR5_NAME_OF_BANK_VOSTRO1().toString().trim() );
 	        cell33.setCellStyle(numberStyle);
 	    } else {
@@ -3242,7 +3242,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell34 = row.createCell(1);
 
-	    if (record1.getR5_TYPE_OF_ACCOUNT_VOSTRO1() != null && !record1.getR5_TYPE_OF_ACCOUNT_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR5_TYPE_OF_ACCOUNT_VOSTRO1() != null ){
 	        cell34.setCellValue(record1.getR5_TYPE_OF_ACCOUNT_VOSTRO1().toString().trim() );
 	        cell34.setCellStyle(numberStyle);
 	    } else {
@@ -3252,7 +3252,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell35 = row.createCell(2);
 
-	    if (record1.getR5_PURPOSE_VOSTRO1() != null && !record1.getR5_PURPOSE_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR5_PURPOSE_VOSTRO1() != null ){
 	        cell35.setCellValue(record1.getR5_PURPOSE_VOSTRO1().toString().trim() );
 	        cell35.setCellStyle(numberStyle);
 	    } else {
@@ -3262,7 +3262,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell36 = row.createCell(3);
 
-	    if (record1.getR5_CURRENCY_VOSTRO1() != null && !record1.getR5_CURRENCY_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR5_CURRENCY_VOSTRO1() != null ){
 	        cell36.setCellValue(record1.getR5_CURRENCY_VOSTRO1().toString().trim() );
 	        cell36.setCellStyle(numberStyle);
 	    } else {
@@ -3272,7 +3272,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell39 = row.createCell(6);
 
-	    if (record1.getR5_AMOUNT_DEMAND_VOSTRO1() != null && !record1.getR5_AMOUNT_DEMAND_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR5_AMOUNT_DEMAND_VOSTRO1() != null ){
 	        cell39.setCellValue(record1.getR5_AMOUNT_DEMAND_VOSTRO1().toString().trim() );
 	        cell39.setCellStyle(numberStyle);
 	    } else {
@@ -3284,7 +3284,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 	     row = sheet.getRow(56) != null ? sheet.getRow(56) : sheet.createRow(56);
 	     Cell cell41 = row.createCell(0);
 
-	    if (record1.getR6_NAME_OF_BANK_VOSTRO1() != null && !record1.getR6_NAME_OF_BANK_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR6_NAME_OF_BANK_VOSTRO1() != null ){
 	        cell41.setCellValue(record1.getR6_NAME_OF_BANK_VOSTRO1().toString().trim() );
 	        cell41.setCellStyle(numberStyle);
 	    } else {
@@ -3294,7 +3294,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell42 = row.createCell(1);
 
-	    if (record1.getR6_TYPE_OF_ACCOUNT_VOSTRO1() != null && !record1.getR6_TYPE_OF_ACCOUNT_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR6_TYPE_OF_ACCOUNT_VOSTRO1() != null ){
 	        cell42.setCellValue(record1.getR6_TYPE_OF_ACCOUNT_VOSTRO1().toString().trim() );
 	        cell42.setCellStyle(numberStyle);
 	    } else {
@@ -3304,7 +3304,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell43 = row.createCell(2);
 
-	    if (record1.getR6_PURPOSE_VOSTRO1() != null && !record1.getR6_PURPOSE_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR6_PURPOSE_VOSTRO1() != null ){
 	        cell43.setCellValue(record1.getR6_PURPOSE_VOSTRO1().toString().trim() );
 	        cell43.setCellStyle(numberStyle);
 	    } else {
@@ -3314,7 +3314,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell44 = row.createCell(3);
 
-	    if (record1.getR6_CURRENCY_VOSTRO1() != null && !record1.getR6_CURRENCY_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR6_CURRENCY_VOSTRO1() != null ){
 	        cell44.setCellValue(record1.getR6_CURRENCY_VOSTRO1().toString().trim() );
 	        cell44.setCellStyle(numberStyle);
 	    } else {
@@ -3324,7 +3324,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell47 = row.createCell(6);
 
-	    if (record1.getR6_AMOUNT_DEMAND_VOSTRO1() != null && !record1.getR6_AMOUNT_DEMAND_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR6_AMOUNT_DEMAND_VOSTRO1() != null ){
 	        cell47.setCellValue(record1.getR6_AMOUNT_DEMAND_VOSTRO1().toString().trim() );
 	        cell47.setCellStyle(numberStyle);
 	    } else {
@@ -3336,7 +3336,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 	     row = sheet.getRow(57) != null ? sheet.getRow(57) : sheet.createRow(57);
 	     Cell cell49 = row.createCell(0);
 
-	    if (record1.getR7_NAME_OF_BANK_VOSTRO1() != null && !record1.getR7_NAME_OF_BANK_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR7_NAME_OF_BANK_VOSTRO1() != null ){
 	        cell49.setCellValue(record1.getR7_NAME_OF_BANK_VOSTRO1().toString().trim() );
 	        cell49.setCellStyle(numberStyle);
 	    } else {
@@ -3346,7 +3346,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell50 = row.createCell(1);
 
-	    if (record1.getR7_TYPE_OF_ACCOUNT_VOSTRO1() != null && !record1.getR7_TYPE_OF_ACCOUNT_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR7_TYPE_OF_ACCOUNT_VOSTRO1() != null ){
 	        cell50.setCellValue(record1.getR7_TYPE_OF_ACCOUNT_VOSTRO1().toString().trim() );
 	        cell50.setCellStyle(numberStyle);
 	    } else {
@@ -3356,7 +3356,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell51 = row.createCell(2);
 
-	    if (record1.getR7_PURPOSE_VOSTRO1() != null && !record1.getR7_PURPOSE_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR7_PURPOSE_VOSTRO1() != null ){
 	        cell51.setCellValue(record1.getR7_PURPOSE_VOSTRO1().toString().trim() );
 	        cell51.setCellStyle(numberStyle);
 	    } else {
@@ -3366,7 +3366,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell52 = row.createCell(3);
 
-	    if (record1.getR7_CURRENCY_VOSTRO1() != null && !record1.getR7_CURRENCY_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR7_CURRENCY_VOSTRO1() != null ){
 	        cell52.setCellValue(record1.getR7_CURRENCY_VOSTRO1().toString().trim() );
 	        cell52.setCellStyle(numberStyle);
 	    } else {
@@ -3376,7 +3376,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell55 = row.createCell(6);
 
-	    if (record1.getR7_AMOUNT_DEMAND_VOSTRO1() != null && !record1.getR7_AMOUNT_DEMAND_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR7_AMOUNT_DEMAND_VOSTRO1() != null ){
 	        cell55.setCellValue(record1.getR7_AMOUNT_DEMAND_VOSTRO1().toString().trim() );
 	        cell55.setCellStyle(numberStyle);
 	    } else {
@@ -3400,7 +3400,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 		 Row  row = sheet.getRow(10) != null ? sheet.getRow(10) : sheet.createRow(10);
 		 Cell cell1 = row.createCell(0);
 
-		 if (record1.getR1_NAME_OF_BANK_AND_COUNTRY_NOSTRO() != null && !record1.getR1_NAME_OF_BANK_AND_COUNTRY_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR1_NAME_OF_BANK_AND_COUNTRY_NOSTRO() != null ){
 		     cell1.setCellValue(record1.getR1_NAME_OF_BANK_AND_COUNTRY_NOSTRO().toString().trim() );
 		     cell1.setCellStyle(numberStyle);
 		 } else {
@@ -3410,7 +3410,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell2 = row.createCell(1);
 
-		 if (record1.getR1_TYPE_OF_ACCOUNT_NOSTRO() != null && !record1.getR1_TYPE_OF_ACCOUNT_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR1_TYPE_OF_ACCOUNT_NOSTRO() != null ){
 		     cell2.setCellValue(record1.getR1_TYPE_OF_ACCOUNT_NOSTRO().toString().trim() );
 		     cell2.setCellStyle(numberStyle);
 		 } else {
@@ -3420,7 +3420,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell3 = row.createCell(2);
 
-		 if (record1.getR1_PURPOSE_NOSTRO() != null && !record1.getR1_PURPOSE_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR1_PURPOSE_NOSTRO() != null ){
 		     cell3.setCellValue(record1.getR1_PURPOSE_NOSTRO().toString().trim() );
 		     cell3.setCellStyle(numberStyle);
 		 } else {
@@ -3430,7 +3430,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell4 = row.createCell(3);
 
-		 if (record1.getR1_CURRENCY_NOSTRO() != null && !record1.getR1_CURRENCY_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR1_CURRENCY_NOSTRO() != null ){
 		     cell4.setCellValue(record1.getR1_CURRENCY_NOSTRO().toString().trim() );
 		     cell4.setCellStyle(numberStyle);
 		 } else {
@@ -3440,7 +3440,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell5 = row.createCell(4);
 
-		 if (record1.getR1_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO() != null && !record1.getR1_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR1_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO() != null ){
 		     cell5.setCellValue(record1.getR1_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO().toString().trim() );
 		     cell5.setCellStyle(numberStyle);
 		 } else {
@@ -3450,7 +3450,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell6 = row.createCell(5);
 
-		 if (record1.getR1_RISK_WEIGHT_NOSTRO() != null && !record1.getR1_RISK_WEIGHT_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR1_RISK_WEIGHT_NOSTRO() != null ){
 		     cell6.setCellValue(record1.getR1_RISK_WEIGHT_NOSTRO().toString().trim() );
 		     cell6.setCellStyle(numberStyle);
 		 } else {
@@ -3460,7 +3460,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell7 = row.createCell(6);
 
-		 if (record1.getR1_AMOUNT_DEMAND_NOSTRO() != null && !record1.getR1_AMOUNT_DEMAND_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR1_AMOUNT_DEMAND_NOSTRO() != null ){
 		     cell7.setCellValue(record1.getR1_AMOUNT_DEMAND_NOSTRO().toString().trim() );
 		     cell7.setCellStyle(numberStyle);
 		 } else {
@@ -3470,7 +3470,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell8 = row.createCell(7);
 
-		 if (record1.getR1_RISK_WEIGHTED_AMOUNT_NOSTRO() != null && !record1.getR1_RISK_WEIGHTED_AMOUNT_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR1_RISK_WEIGHTED_AMOUNT_NOSTRO() != null ){
 		     cell8.setCellValue(record1.getR1_RISK_WEIGHTED_AMOUNT_NOSTRO().toString().trim() );
 		     cell8.setCellStyle(numberStyle);
 		 } else {
@@ -3482,7 +3482,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 		  row = sheet.getRow(11) != null ? sheet.getRow(11) : sheet.createRow(11);
 		  Cell cell9 = row.createCell(0);
 
-		 if (record1.getR2_NAME_OF_BANK_AND_COUNTRY_NOSTRO() != null && !record1.getR2_NAME_OF_BANK_AND_COUNTRY_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR2_NAME_OF_BANK_AND_COUNTRY_NOSTRO() != null ){
 		     cell9.setCellValue(record1.getR2_NAME_OF_BANK_AND_COUNTRY_NOSTRO().toString().trim() );
 		     cell9.setCellStyle(numberStyle);
 		 } else {
@@ -3492,7 +3492,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell10 = row.createCell(1);
 
-		 if (record1.getR2_TYPE_OF_ACCOUNT_NOSTRO() != null && !record1.getR2_TYPE_OF_ACCOUNT_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR2_TYPE_OF_ACCOUNT_NOSTRO() != null ){
 		     cell10.setCellValue(record1.getR2_TYPE_OF_ACCOUNT_NOSTRO().toString().trim() );
 		     cell10.setCellStyle(numberStyle);
 		 } else {
@@ -3502,7 +3502,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell11 = row.createCell(2);
 
-		 if (record1.getR2_PURPOSE_NOSTRO() != null && !record1.getR2_PURPOSE_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR2_PURPOSE_NOSTRO() != null ){
 		     cell11.setCellValue(record1.getR2_PURPOSE_NOSTRO().toString().trim() );
 		     cell11.setCellStyle(numberStyle);
 		 } else {
@@ -3512,7 +3512,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell12 = row.createCell(3);
 
-		 if (record1.getR2_CURRENCY_NOSTRO() != null && !record1.getR2_CURRENCY_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR2_CURRENCY_NOSTRO() != null ){
 		     cell12.setCellValue(record1.getR2_CURRENCY_NOSTRO().toString().trim() );
 		     cell12.setCellStyle(numberStyle);
 		 } else {
@@ -3522,7 +3522,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell13 = row.createCell(4);
 
-		 if (record1.getR2_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO() != null && !record1.getR2_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR2_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO() != null ){
 		     cell13.setCellValue(record1.getR2_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO().toString().trim() );
 		     cell13.setCellStyle(numberStyle);
 		 } else {
@@ -3532,7 +3532,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell14 = row.createCell(5);
 
-		 if (record1.getR2_RISK_WEIGHT_NOSTRO() != null && !record1.getR2_RISK_WEIGHT_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR2_RISK_WEIGHT_NOSTRO() != null ){
 		     cell14.setCellValue(record1.getR2_RISK_WEIGHT_NOSTRO().toString().trim() );
 		     cell14.setCellStyle(numberStyle);
 		 } else {
@@ -3542,7 +3542,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell15 = row.createCell(6);
 
-		 if (record1.getR2_AMOUNT_DEMAND_NOSTRO() != null && !record1.getR2_AMOUNT_DEMAND_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR2_AMOUNT_DEMAND_NOSTRO() != null ){
 		     cell15.setCellValue(record1.getR2_AMOUNT_DEMAND_NOSTRO().toString().trim() );
 		     cell15.setCellStyle(numberStyle);
 		 } else {
@@ -3552,7 +3552,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell16 = row.createCell(7);
 
-		 if (record1.getR2_RISK_WEIGHTED_AMOUNT_NOSTRO() != null && !record1.getR2_RISK_WEIGHTED_AMOUNT_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR2_RISK_WEIGHTED_AMOUNT_NOSTRO() != null ){
 		     cell16.setCellValue(record1.getR2_RISK_WEIGHTED_AMOUNT_NOSTRO().toString().trim() );
 		     cell16.setCellStyle(numberStyle);
 		 } else {
@@ -3564,7 +3564,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 		  row = sheet.getRow(12) != null ? sheet.getRow(12) : sheet.createRow(12);
 		  Cell cell17 = row.createCell(0);
 
-		 if (record1.getR3_NAME_OF_BANK_AND_COUNTRY_NOSTRO() != null && !record1.getR3_NAME_OF_BANK_AND_COUNTRY_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR3_NAME_OF_BANK_AND_COUNTRY_NOSTRO() != null ){
 		     cell17.setCellValue(record1.getR3_NAME_OF_BANK_AND_COUNTRY_NOSTRO().toString().trim() );
 		     cell17.setCellStyle(numberStyle);
 		 } else {
@@ -3574,7 +3574,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell18 = row.createCell(1);
 
-		 if (record1.getR3_TYPE_OF_ACCOUNT_NOSTRO() != null && !record1.getR3_TYPE_OF_ACCOUNT_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR3_TYPE_OF_ACCOUNT_NOSTRO() != null ){
 		     cell18.setCellValue(record1.getR3_TYPE_OF_ACCOUNT_NOSTRO().toString().trim() );
 		     cell18.setCellStyle(numberStyle);
 		 } else {
@@ -3584,7 +3584,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell19 = row.createCell(2);
 
-		 if (record1.getR3_PURPOSE_NOSTRO() != null && !record1.getR3_PURPOSE_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR3_PURPOSE_NOSTRO() != null ){
 		     cell19.setCellValue(record1.getR3_PURPOSE_NOSTRO().toString().trim() );
 		     cell19.setCellStyle(numberStyle);
 		 } else {
@@ -3594,7 +3594,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell20 = row.createCell(3);
 
-		 if (record1.getR3_CURRENCY_NOSTRO() != null && !record1.getR3_CURRENCY_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR3_CURRENCY_NOSTRO() != null ){
 		     cell20.setCellValue(record1.getR3_CURRENCY_NOSTRO().toString().trim() );
 		     cell20.setCellStyle(numberStyle);
 		 } else {
@@ -3604,7 +3604,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell21 = row.createCell(4);
 
-		 if (record1.getR3_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO() != null && !record1.getR3_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR3_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO() != null ){
 		     cell21.setCellValue(record1.getR3_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO().toString().trim() );
 		     cell21.setCellStyle(numberStyle);
 		 } else {
@@ -3614,7 +3614,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell22 = row.createCell(5);
 
-		 if (record1.getR3_RISK_WEIGHT_NOSTRO() != null && !record1.getR3_RISK_WEIGHT_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR3_RISK_WEIGHT_NOSTRO() != null ){
 		     cell22.setCellValue(record1.getR3_RISK_WEIGHT_NOSTRO().toString().trim() );
 		     cell22.setCellStyle(numberStyle);
 		 } else {
@@ -3624,7 +3624,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell23 = row.createCell(6);
 
-		 if (record1.getR3_AMOUNT_DEMAND_NOSTRO() != null && !record1.getR3_AMOUNT_DEMAND_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR3_AMOUNT_DEMAND_NOSTRO() != null ){
 		     cell23.setCellValue(record1.getR3_AMOUNT_DEMAND_NOSTRO().toString().trim() );
 		     cell23.setCellStyle(numberStyle);
 		 } else {
@@ -3634,7 +3634,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell24 = row.createCell(7);
 
-		 if (record1.getR3_RISK_WEIGHTED_AMOUNT_NOSTRO() != null && !record1.getR3_RISK_WEIGHTED_AMOUNT_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR3_RISK_WEIGHTED_AMOUNT_NOSTRO() != null ){
 		     cell24.setCellValue(record1.getR3_RISK_WEIGHTED_AMOUNT_NOSTRO().toString().trim() );
 		     cell24.setCellStyle(numberStyle);
 		 } else {
@@ -3646,7 +3646,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 		  row = sheet.getRow(13) != null ? sheet.getRow(13) : sheet.createRow(13);
 		  Cell cell25 = row.createCell(0);
 
-		 if (record1.getR4_NAME_OF_BANK_AND_COUNTRY_NOSTRO() != null && !record1.getR4_NAME_OF_BANK_AND_COUNTRY_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR4_NAME_OF_BANK_AND_COUNTRY_NOSTRO() != null ){
 		     cell25.setCellValue(record1.getR4_NAME_OF_BANK_AND_COUNTRY_NOSTRO().toString().trim() );
 		     cell25.setCellStyle(numberStyle);
 		 } else {
@@ -3656,7 +3656,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell26 = row.createCell(1);
 
-		 if (record1.getR4_TYPE_OF_ACCOUNT_NOSTRO() != null && !record1.getR4_TYPE_OF_ACCOUNT_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR4_TYPE_OF_ACCOUNT_NOSTRO() != null ){
 		     cell26.setCellValue(record1.getR4_TYPE_OF_ACCOUNT_NOSTRO().toString().trim() );
 		     cell26.setCellStyle(numberStyle);
 		 } else {
@@ -3666,7 +3666,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell27 = row.createCell(2);
 
-		 if (record1.getR4_PURPOSE_NOSTRO() != null && !record1.getR4_PURPOSE_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR4_PURPOSE_NOSTRO() != null ){
 		     cell27.setCellValue(record1.getR4_PURPOSE_NOSTRO().toString().trim() );
 		     cell27.setCellStyle(numberStyle);
 		 } else {
@@ -3676,7 +3676,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell28 = row.createCell(3);
 
-		 if (record1.getR4_CURRENCY_NOSTRO() != null && !record1.getR4_CURRENCY_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR4_CURRENCY_NOSTRO() != null ){
 		     cell28.setCellValue(record1.getR4_CURRENCY_NOSTRO().toString().trim() );
 		     cell28.setCellStyle(numberStyle);
 		 } else {
@@ -3686,7 +3686,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell29 = row.createCell(4);
 
-		 if (record1.getR4_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO() != null && !record1.getR4_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR4_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO() != null ){
 		     cell29.setCellValue(record1.getR4_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO().toString().trim() );
 		     cell29.setCellStyle(numberStyle);
 		 } else {
@@ -3696,7 +3696,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell30 = row.createCell(5);
 
-		 if (record1.getR4_RISK_WEIGHT_NOSTRO() != null && !record1.getR4_RISK_WEIGHT_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR4_RISK_WEIGHT_NOSTRO() != null ){
 		     cell30.setCellValue(record1.getR4_RISK_WEIGHT_NOSTRO().toString().trim() );
 		     cell30.setCellStyle(numberStyle);
 		 } else {
@@ -3706,7 +3706,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell31 = row.createCell(6);
 
-		 if (record1.getR4_AMOUNT_DEMAND_NOSTRO() != null && !record1.getR4_AMOUNT_DEMAND_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR4_AMOUNT_DEMAND_NOSTRO() != null ){
 		     cell31.setCellValue(record1.getR4_AMOUNT_DEMAND_NOSTRO().toString().trim() );
 		     cell31.setCellStyle(numberStyle);
 		 } else {
@@ -3716,7 +3716,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell32 = row.createCell(7);
 
-		 if (record1.getR4_RISK_WEIGHTED_AMOUNT_NOSTRO() != null && !record1.getR4_RISK_WEIGHTED_AMOUNT_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR4_RISK_WEIGHTED_AMOUNT_NOSTRO() != null ){
 		     cell32.setCellValue(record1.getR4_RISK_WEIGHTED_AMOUNT_NOSTRO().toString().trim() );
 		     cell32.setCellStyle(numberStyle);
 		 } else {
@@ -3728,7 +3728,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 		  row = sheet.getRow(14) != null ? sheet.getRow(14) : sheet.createRow(14);
 		  Cell cell33 = row.createCell(0);
 
-		 if (record1.getR5_NAME_OF_BANK_AND_COUNTRY_NOSTRO() != null && !record1.getR5_NAME_OF_BANK_AND_COUNTRY_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR5_NAME_OF_BANK_AND_COUNTRY_NOSTRO() != null ){
 		     cell33.setCellValue(record1.getR5_NAME_OF_BANK_AND_COUNTRY_NOSTRO().toString().trim() );
 		     cell33.setCellStyle(numberStyle);
 		 } else {
@@ -3738,7 +3738,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell34 = row.createCell(1);
 
-		 if (record1.getR5_TYPE_OF_ACCOUNT_NOSTRO() != null && !record1.getR5_TYPE_OF_ACCOUNT_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR5_TYPE_OF_ACCOUNT_NOSTRO() != null ){
 		     cell34.setCellValue(record1.getR5_TYPE_OF_ACCOUNT_NOSTRO().toString().trim() );
 		     cell34.setCellStyle(numberStyle);
 		 } else {
@@ -3748,7 +3748,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell35 = row.createCell(2);
 
-		 if (record1.getR5_PURPOSE_NOSTRO() != null && !record1.getR5_PURPOSE_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR5_PURPOSE_NOSTRO() != null ){
 		     cell35.setCellValue(record1.getR5_PURPOSE_NOSTRO().toString().trim() );
 		     cell35.setCellStyle(numberStyle);
 		 } else {
@@ -3758,7 +3758,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell36 = row.createCell(3);
 
-		 if (record1.getR5_CURRENCY_NOSTRO() != null && !record1.getR5_CURRENCY_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR5_CURRENCY_NOSTRO() != null ){
 		     cell36.setCellValue(record1.getR5_CURRENCY_NOSTRO().toString().trim() );
 		     cell36.setCellStyle(numberStyle);
 		 } else {
@@ -3768,7 +3768,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell37 = row.createCell(4);
 
-		 if (record1.getR5_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO() != null && !record1.getR5_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR5_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO() != null ){
 		     cell37.setCellValue(record1.getR5_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO().toString().trim() );
 		     cell37.setCellStyle(numberStyle);
 		 } else {
@@ -3778,7 +3778,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell38 = row.createCell(5);
 
-		 if (record1.getR5_RISK_WEIGHT_NOSTRO() != null && !record1.getR5_RISK_WEIGHT_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR5_RISK_WEIGHT_NOSTRO() != null ){
 		     cell38.setCellValue(record1.getR5_RISK_WEIGHT_NOSTRO().toString().trim() );
 		     cell38.setCellStyle(numberStyle);
 		 } else {
@@ -3788,7 +3788,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell39 = row.createCell(6);
 
-		 if (record1.getR5_AMOUNT_DEMAND_NOSTRO() != null && !record1.getR5_AMOUNT_DEMAND_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR5_AMOUNT_DEMAND_NOSTRO() != null ){
 		     cell39.setCellValue(record1.getR5_AMOUNT_DEMAND_NOSTRO().toString().trim() );
 		     cell39.setCellStyle(numberStyle);
 		 } else {
@@ -3798,7 +3798,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell40 = row.createCell(7);
 
-		 if (record1.getR5_RISK_WEIGHTED_AMOUNT_NOSTRO() != null && !record1.getR5_RISK_WEIGHTED_AMOUNT_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR5_RISK_WEIGHTED_AMOUNT_NOSTRO() != null ){
 		     cell40.setCellValue(record1.getR5_RISK_WEIGHTED_AMOUNT_NOSTRO().toString().trim() );
 		     cell40.setCellStyle(numberStyle);
 		 } else {
@@ -3810,7 +3810,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 		  row = sheet.getRow(15) != null ? sheet.getRow(15) : sheet.createRow(15);
 		  Cell cell41 = row.createCell(0);
 
-		 if (record1.getR6_NAME_OF_BANK_AND_COUNTRY_NOSTRO() != null && !record1.getR6_NAME_OF_BANK_AND_COUNTRY_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR6_NAME_OF_BANK_AND_COUNTRY_NOSTRO() != null ){
 		     cell41.setCellValue(record1.getR6_NAME_OF_BANK_AND_COUNTRY_NOSTRO().toString().trim() );
 		     cell41.setCellStyle(numberStyle);
 		 } else {
@@ -3820,7 +3820,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell42 = row.createCell(1);
 
-		 if (record1.getR6_TYPE_OF_ACCOUNT_NOSTRO() != null && !record1.getR6_TYPE_OF_ACCOUNT_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR6_TYPE_OF_ACCOUNT_NOSTRO() != null ){
 		     cell42.setCellValue(record1.getR6_TYPE_OF_ACCOUNT_NOSTRO().toString().trim() );
 		     cell42.setCellStyle(numberStyle);
 		 } else {
@@ -3830,7 +3830,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell43 = row.createCell(2);
 
-		 if (record1.getR6_PURPOSE_NOSTRO() != null && !record1.getR6_PURPOSE_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR6_PURPOSE_NOSTRO() != null ){
 		     cell43.setCellValue(record1.getR6_PURPOSE_NOSTRO().toString().trim() );
 		     cell43.setCellStyle(numberStyle);
 		 } else {
@@ -3840,7 +3840,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell44 = row.createCell(3);
 
-		 if (record1.getR6_CURRENCY_NOSTRO() != null && !record1.getR6_CURRENCY_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR6_CURRENCY_NOSTRO() != null ){
 		     cell44.setCellValue(record1.getR6_CURRENCY_NOSTRO().toString().trim() );
 		     cell44.setCellStyle(numberStyle);
 		 } else {
@@ -3850,7 +3850,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell45 = row.createCell(4);
 
-		 if (record1.getR6_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO() != null && !record1.getR6_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR6_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO() != null ){
 		     cell45.setCellValue(record1.getR6_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO().toString().trim() );
 		     cell45.setCellStyle(numberStyle);
 		 } else {
@@ -3860,7 +3860,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell46 = row.createCell(5);
 
-		 if (record1.getR6_RISK_WEIGHT_NOSTRO() != null && !record1.getR6_RISK_WEIGHT_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR6_RISK_WEIGHT_NOSTRO() != null ){
 		     cell46.setCellValue(record1.getR6_RISK_WEIGHT_NOSTRO().toString().trim() );
 		     cell46.setCellStyle(numberStyle);
 		 } else {
@@ -3870,7 +3870,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell47 = row.createCell(6);
 
-		 if (record1.getR6_AMOUNT_DEMAND_NOSTRO() != null && !record1.getR6_AMOUNT_DEMAND_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR6_AMOUNT_DEMAND_NOSTRO() != null ){
 		     cell47.setCellValue(record1.getR6_AMOUNT_DEMAND_NOSTRO().toString().trim() );
 		     cell47.setCellStyle(numberStyle);
 		 } else {
@@ -3880,7 +3880,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell48 = row.createCell(7);
 
-		 if (record1.getR6_RISK_WEIGHTED_AMOUNT_NOSTRO() != null && !record1.getR6_RISK_WEIGHTED_AMOUNT_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR6_RISK_WEIGHTED_AMOUNT_NOSTRO() != null ){
 		     cell48.setCellValue(record1.getR6_RISK_WEIGHTED_AMOUNT_NOSTRO().toString().trim() );
 		     cell48.setCellStyle(numberStyle);
 		 } else {
@@ -3892,7 +3892,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 		  row = sheet.getRow(16) != null ? sheet.getRow(16) : sheet.createRow(16);
 		  Cell cell49 = row.createCell(0);
 
-		 if (record1.getR7_NAME_OF_BANK_AND_COUNTRY_NOSTRO() != null && !record1.getR7_NAME_OF_BANK_AND_COUNTRY_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR7_NAME_OF_BANK_AND_COUNTRY_NOSTRO() != null ){
 		     cell49.setCellValue(record1.getR7_NAME_OF_BANK_AND_COUNTRY_NOSTRO().toString().trim() );
 		     cell49.setCellStyle(numberStyle);
 		 } else {
@@ -3902,7 +3902,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell50 = row.createCell(1);
 
-		 if (record1.getR7_TYPE_OF_ACCOUNT_NOSTRO() != null && !record1.getR7_TYPE_OF_ACCOUNT_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR7_TYPE_OF_ACCOUNT_NOSTRO() != null ){
 		     cell50.setCellValue(record1.getR7_TYPE_OF_ACCOUNT_NOSTRO().toString().trim() );
 		     cell50.setCellStyle(numberStyle);
 		 } else {
@@ -3912,7 +3912,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell51 = row.createCell(2);
 
-		 if (record1.getR7_PURPOSE_NOSTRO() != null && !record1.getR7_PURPOSE_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR7_PURPOSE_NOSTRO() != null ){
 		     cell51.setCellValue(record1.getR7_PURPOSE_NOSTRO().toString().trim() );
 		     cell51.setCellStyle(numberStyle);
 		 } else {
@@ -3922,7 +3922,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell52 = row.createCell(3);
 
-		 if (record1.getR7_CURRENCY_NOSTRO() != null && !record1.getR7_CURRENCY_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR7_CURRENCY_NOSTRO() != null ){
 		     cell52.setCellValue(record1.getR7_CURRENCY_NOSTRO().toString().trim() );
 		     cell52.setCellStyle(numberStyle);
 		 } else {
@@ -3932,7 +3932,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell53 = row.createCell(4);
 
-		 if (record1.getR7_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO() != null && !record1.getR7_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR7_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO() != null ){
 		     cell53.setCellValue(record1.getR7_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO().toString().trim() );
 		     cell53.setCellStyle(numberStyle);
 		 } else {
@@ -3942,7 +3942,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell54 = row.createCell(5);
 
-		 if (record1.getR7_RISK_WEIGHT_NOSTRO() != null && !record1.getR7_RISK_WEIGHT_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR7_RISK_WEIGHT_NOSTRO() != null ){
 		     cell54.setCellValue(record1.getR7_RISK_WEIGHT_NOSTRO().toString().trim() );
 		     cell54.setCellStyle(numberStyle);
 		 } else {
@@ -3952,7 +3952,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell55 = row.createCell(6);
 
-		 if (record1.getR7_AMOUNT_DEMAND_NOSTRO() != null && !record1.getR7_AMOUNT_DEMAND_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR7_AMOUNT_DEMAND_NOSTRO() != null ){
 		     cell55.setCellValue(record1.getR7_AMOUNT_DEMAND_NOSTRO().toString().trim() );
 		     cell55.setCellStyle(numberStyle);
 		 } else {
@@ -3962,7 +3962,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell56 = row.createCell(7);
 
-		 if (record1.getR7_RISK_WEIGHTED_AMOUNT_NOSTRO() != null && !record1.getR7_RISK_WEIGHTED_AMOUNT_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR7_RISK_WEIGHTED_AMOUNT_NOSTRO() != null ){
 		     cell56.setCellValue(record1.getR7_RISK_WEIGHTED_AMOUNT_NOSTRO().toString().trim() );
 		     cell56.setCellStyle(numberStyle);
 		 } else {
@@ -3974,7 +3974,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 		  row = sheet.getRow(17) != null ? sheet.getRow(17) : sheet.createRow(17);
 		  Cell cell57 = row.createCell(0);
 
-		 if (record1.getR8_NAME_OF_BANK_AND_COUNTRY_NOSTRO() != null && !record1.getR8_NAME_OF_BANK_AND_COUNTRY_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR8_NAME_OF_BANK_AND_COUNTRY_NOSTRO() != null ){
 		     cell57.setCellValue(record1.getR8_NAME_OF_BANK_AND_COUNTRY_NOSTRO().toString().trim() );
 		     cell57.setCellStyle(numberStyle);
 		 } else {
@@ -3984,7 +3984,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell58 = row.createCell(1);
 
-		 if (record1.getR8_TYPE_OF_ACCOUNT_NOSTRO() != null && !record1.getR8_TYPE_OF_ACCOUNT_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR8_TYPE_OF_ACCOUNT_NOSTRO() != null ){
 		     cell58.setCellValue(record1.getR8_TYPE_OF_ACCOUNT_NOSTRO().toString().trim() );
 		     cell58.setCellStyle(numberStyle);
 		 } else {
@@ -3994,7 +3994,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell59 = row.createCell(2);
 
-		 if (record1.getR8_PURPOSE_NOSTRO() != null && !record1.getR8_PURPOSE_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR8_PURPOSE_NOSTRO() != null ){
 		     cell59.setCellValue(record1.getR8_PURPOSE_NOSTRO().toString().trim() );
 		     cell59.setCellStyle(numberStyle);
 		 } else {
@@ -4004,7 +4004,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell60 = row.createCell(3);
 
-		 if (record1.getR8_CURRENCY_NOSTRO() != null && !record1.getR8_CURRENCY_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR8_CURRENCY_NOSTRO() != null ){
 		     cell60.setCellValue(record1.getR8_CURRENCY_NOSTRO().toString().trim() );
 		     cell60.setCellStyle(numberStyle);
 		 } else {
@@ -4014,7 +4014,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell61 = row.createCell(4);
 
-		 if (record1.getR8_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO() != null && !record1.getR8_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR8_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO() != null ){
 		     cell61.setCellValue(record1.getR8_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO().toString().trim() );
 		     cell61.setCellStyle(numberStyle);
 		 } else {
@@ -4024,7 +4024,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell62 = row.createCell(5);
 
-		 if (record1.getR8_RISK_WEIGHT_NOSTRO() != null && !record1.getR8_RISK_WEIGHT_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR8_RISK_WEIGHT_NOSTRO() != null ){
 		     cell62.setCellValue(record1.getR8_RISK_WEIGHT_NOSTRO().toString().trim() );
 		     cell62.setCellStyle(numberStyle);
 		 } else {
@@ -4034,7 +4034,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell63 = row.createCell(6);
 
-		 if (record1.getR8_AMOUNT_DEMAND_NOSTRO() != null && !record1.getR8_AMOUNT_DEMAND_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR8_AMOUNT_DEMAND_NOSTRO() != null ){
 		     cell63.setCellValue(record1.getR8_AMOUNT_DEMAND_NOSTRO().toString().trim() );
 		     cell63.setCellStyle(numberStyle);
 		 } else {
@@ -4044,7 +4044,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell64 = row.createCell(7);
 
-		 if (record1.getR8_RISK_WEIGHTED_AMOUNT_NOSTRO() != null && !record1.getR8_RISK_WEIGHTED_AMOUNT_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR8_RISK_WEIGHTED_AMOUNT_NOSTRO() != null ){
 		     cell64.setCellValue(record1.getR8_RISK_WEIGHTED_AMOUNT_NOSTRO().toString().trim() );
 		     cell64.setCellStyle(numberStyle);
 		 } else {
@@ -4056,7 +4056,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 		  row = sheet.getRow(18) != null ? sheet.getRow(18) : sheet.createRow(18);
 		  Cell cell65 = row.createCell(0);
 
-		 if (record1.getR9_NAME_OF_BANK_AND_COUNTRY_NOSTRO() != null && !record1.getR9_NAME_OF_BANK_AND_COUNTRY_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR9_NAME_OF_BANK_AND_COUNTRY_NOSTRO() != null ){
 		     cell65.setCellValue(record1.getR9_NAME_OF_BANK_AND_COUNTRY_NOSTRO().toString().trim() );
 		     cell65.setCellStyle(numberStyle);
 		 } else {
@@ -4066,7 +4066,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell66 = row.createCell(1);
 
-		 if (record1.getR9_TYPE_OF_ACCOUNT_NOSTRO() != null && !record1.getR9_TYPE_OF_ACCOUNT_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR9_TYPE_OF_ACCOUNT_NOSTRO() != null ){
 		     cell66.setCellValue(record1.getR9_TYPE_OF_ACCOUNT_NOSTRO().toString().trim() );
 		     cell66.setCellStyle(numberStyle);
 		 } else {
@@ -4076,7 +4076,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell67 = row.createCell(2);
 
-		 if (record1.getR9_PURPOSE_NOSTRO() != null && !record1.getR9_PURPOSE_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR9_PURPOSE_NOSTRO() != null ){
 		     cell67.setCellValue(record1.getR9_PURPOSE_NOSTRO().toString().trim() );
 		     cell67.setCellStyle(numberStyle);
 		 } else {
@@ -4086,7 +4086,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell68 = row.createCell(3);
 
-		 if (record1.getR9_CURRENCY_NOSTRO() != null && !record1.getR9_CURRENCY_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR9_CURRENCY_NOSTRO() != null ){
 		     cell68.setCellValue(record1.getR9_CURRENCY_NOSTRO().toString().trim() );
 		     cell68.setCellStyle(numberStyle);
 		 } else {
@@ -4096,7 +4096,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell69 = row.createCell(4);
 
-		 if (record1.getR9_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO() != null && !record1.getR9_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR9_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO() != null ){
 		     cell69.setCellValue(record1.getR9_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO().toString().trim() );
 		     cell69.setCellStyle(numberStyle);
 		 } else {
@@ -4106,7 +4106,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell70 = row.createCell(5);
 
-		 if (record1.getR9_RISK_WEIGHT_NOSTRO() != null && !record1.getR9_RISK_WEIGHT_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR9_RISK_WEIGHT_NOSTRO() != null ){
 		     cell70.setCellValue(record1.getR9_RISK_WEIGHT_NOSTRO().toString().trim() );
 		     cell70.setCellStyle(numberStyle);
 		 } else {
@@ -4116,7 +4116,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell71 = row.createCell(6);
 
-		 if (record1.getR9_AMOUNT_DEMAND_NOSTRO() != null && !record1.getR9_AMOUNT_DEMAND_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR9_AMOUNT_DEMAND_NOSTRO() != null ){
 		     cell71.setCellValue(record1.getR9_AMOUNT_DEMAND_NOSTRO().toString().trim() );
 		     cell71.setCellStyle(numberStyle);
 		 } else {
@@ -4126,7 +4126,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell72 = row.createCell(7);
 
-		 if (record1.getR9_RISK_WEIGHTED_AMOUNT_NOSTRO() != null && !record1.getR9_RISK_WEIGHTED_AMOUNT_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR9_RISK_WEIGHTED_AMOUNT_NOSTRO() != null ){
 		     cell72.setCellValue(record1.getR9_RISK_WEIGHTED_AMOUNT_NOSTRO().toString().trim() );
 		     cell72.setCellStyle(numberStyle);
 		 } else {
@@ -4150,7 +4150,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 			Row  row = sheet.getRow(23) != null ? sheet.getRow(23) : sheet.createRow(23);
 			 Cell cell1 = row.createCell(0);
 
-			 if (record1.getR1_NAME_OF_BANK_AND_COUNTRY_VOSTRO() != null && !record1.getR1_NAME_OF_BANK_AND_COUNTRY_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR1_NAME_OF_BANK_AND_COUNTRY_VOSTRO() != null ){
 			     cell1.setCellValue(record1.getR1_NAME_OF_BANK_AND_COUNTRY_VOSTRO().toString().trim() );
 			     cell1.setCellStyle(numberStyle);
 			 } else {
@@ -4160,7 +4160,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell2 = row.createCell(1);
 
-			 if (record1.getR1_TYPE_OF_ACCOUNT_VOSTRO() != null && !record1.getR1_TYPE_OF_ACCOUNT_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR1_TYPE_OF_ACCOUNT_VOSTRO() != null ){
 			     cell2.setCellValue(record1.getR1_TYPE_OF_ACCOUNT_VOSTRO().toString().trim() );
 			     cell2.setCellStyle(numberStyle);
 			 } else {
@@ -4170,7 +4170,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell3 = row.createCell(2);
 
-			 if (record1.getR1_PURPOSE_VOSTRO() != null && !record1.getR1_PURPOSE_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR1_PURPOSE_VOSTRO() != null ){
 			     cell3.setCellValue(record1.getR1_PURPOSE_VOSTRO().toString().trim() );
 			     cell3.setCellStyle(numberStyle);
 			 } else {
@@ -4180,7 +4180,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell4 = row.createCell(3);
 
-			 if (record1.getR1_CURRENCY_VOSTRO() != null && !record1.getR1_CURRENCY_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR1_CURRENCY_VOSTRO() != null ){
 			     cell4.setCellValue(record1.getR1_CURRENCY_VOSTRO().toString().trim() );
 			     cell4.setCellStyle(numberStyle);
 			 } else {
@@ -4190,7 +4190,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell7 = row.createCell(6);
 
-			 if (record1.getR1_AMOUNT_DEMAND_VOSTRO() != null && !record1.getR1_AMOUNT_DEMAND_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR1_AMOUNT_DEMAND_VOSTRO() != null ){
 			     cell7.setCellValue(record1.getR1_AMOUNT_DEMAND_VOSTRO().toString().trim() );
 			     cell7.setCellStyle(numberStyle);
 			 } else {
@@ -4202,7 +4202,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 			  row = sheet.getRow(24) != null ? sheet.getRow(24) : sheet.createRow(24);
 			  Cell cell9 = row.createCell(0);
 
-			 if (record1.getR2_NAME_OF_BANK_AND_COUNTRY_VOSTRO() != null && !record1.getR2_NAME_OF_BANK_AND_COUNTRY_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR2_NAME_OF_BANK_AND_COUNTRY_VOSTRO() != null ){
 			     cell9.setCellValue(record1.getR2_NAME_OF_BANK_AND_COUNTRY_VOSTRO().toString().trim() );
 			     cell9.setCellStyle(numberStyle);
 			 } else {
@@ -4212,7 +4212,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell10 = row.createCell(1);
 
-			 if (record1.getR2_TYPE_OF_ACCOUNT_VOSTRO() != null && !record1.getR2_TYPE_OF_ACCOUNT_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR2_TYPE_OF_ACCOUNT_VOSTRO() != null ){
 			     cell10.setCellValue(record1.getR2_TYPE_OF_ACCOUNT_VOSTRO().toString().trim() );
 			     cell10.setCellStyle(numberStyle);
 			 } else {
@@ -4222,7 +4222,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell11 = row.createCell(2);
 
-			 if (record1.getR2_PURPOSE_VOSTRO() != null && !record1.getR2_PURPOSE_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR2_PURPOSE_VOSTRO() != null ){
 			     cell11.setCellValue(record1.getR2_PURPOSE_VOSTRO().toString().trim() );
 			     cell11.setCellStyle(numberStyle);
 			 } else {
@@ -4232,7 +4232,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell12 = row.createCell(3);
 
-			 if (record1.getR2_CURRENCY_VOSTRO() != null && !record1.getR2_CURRENCY_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR2_CURRENCY_VOSTRO() != null ){
 			     cell12.setCellValue(record1.getR2_CURRENCY_VOSTRO().toString().trim() );
 			     cell12.setCellStyle(numberStyle);
 			 } else {
@@ -4242,7 +4242,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell15 = row.createCell(6);
 
-			 if (record1.getR2_AMOUNT_DEMAND_VOSTRO() != null && !record1.getR2_AMOUNT_DEMAND_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR2_AMOUNT_DEMAND_VOSTRO() != null ){
 			     cell15.setCellValue(record1.getR2_AMOUNT_DEMAND_VOSTRO().toString().trim() );
 			     cell15.setCellStyle(numberStyle);
 			 } else {
@@ -4254,7 +4254,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 			  row = sheet.getRow(25) != null ? sheet.getRow(25) : sheet.createRow(25);
 			  Cell cell17 = row.createCell(0);
 
-			 if (record1.getR3_NAME_OF_BANK_AND_COUNTRY_VOSTRO() != null && !record1.getR3_NAME_OF_BANK_AND_COUNTRY_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR3_NAME_OF_BANK_AND_COUNTRY_VOSTRO() != null ){
 			     cell17.setCellValue(record1.getR3_NAME_OF_BANK_AND_COUNTRY_VOSTRO().toString().trim() );
 			     cell17.setCellStyle(numberStyle);
 			 } else {
@@ -4264,7 +4264,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell18 = row.createCell(1);
 
-			 if (record1.getR3_TYPE_OF_ACCOUNT_VOSTRO() != null && !record1.getR3_TYPE_OF_ACCOUNT_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR3_TYPE_OF_ACCOUNT_VOSTRO() != null ){
 			     cell18.setCellValue(record1.getR3_TYPE_OF_ACCOUNT_VOSTRO().toString().trim() );
 			     cell18.setCellStyle(numberStyle);
 			 } else {
@@ -4274,7 +4274,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell19 = row.createCell(2);
 
-			 if (record1.getR3_PURPOSE_VOSTRO() != null && !record1.getR3_PURPOSE_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR3_PURPOSE_VOSTRO() != null ){
 			     cell19.setCellValue(record1.getR3_PURPOSE_VOSTRO().toString().trim() );
 			     cell19.setCellStyle(numberStyle);
 			 } else {
@@ -4284,7 +4284,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell20 = row.createCell(3);
 
-			 if (record1.getR3_CURRENCY_VOSTRO() != null && !record1.getR3_CURRENCY_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR3_CURRENCY_VOSTRO() != null ){
 			     cell20.setCellValue(record1.getR3_CURRENCY_VOSTRO().toString().trim() );
 			     cell20.setCellStyle(numberStyle);
 			 } else {
@@ -4294,7 +4294,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell23 = row.createCell(6);
 
-			 if (record1.getR3_AMOUNT_DEMAND_VOSTRO() != null && !record1.getR3_AMOUNT_DEMAND_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR3_AMOUNT_DEMAND_VOSTRO() != null ){
 			     cell23.setCellValue(record1.getR3_AMOUNT_DEMAND_VOSTRO().toString().trim() );
 			     cell23.setCellStyle(numberStyle);
 			 } else {
@@ -4306,7 +4306,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 			  row = sheet.getRow(26) != null ? sheet.getRow(26) : sheet.createRow(26);
 			  Cell cell25 = row.createCell(0);
 
-			 if (record1.getR4_NAME_OF_BANK_AND_COUNTRY_VOSTRO() != null && !record1.getR4_NAME_OF_BANK_AND_COUNTRY_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR4_NAME_OF_BANK_AND_COUNTRY_VOSTRO() != null ){
 			     cell25.setCellValue(record1.getR4_NAME_OF_BANK_AND_COUNTRY_VOSTRO().toString().trim() );
 			     cell25.setCellStyle(numberStyle);
 			 } else {
@@ -4316,7 +4316,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell26 = row.createCell(1);
 
-			 if (record1.getR4_TYPE_OF_ACCOUNT_VOSTRO() != null && !record1.getR4_TYPE_OF_ACCOUNT_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR4_TYPE_OF_ACCOUNT_VOSTRO() != null ){
 			     cell26.setCellValue(record1.getR4_TYPE_OF_ACCOUNT_VOSTRO().toString().trim() );
 			     cell26.setCellStyle(numberStyle);
 			 } else {
@@ -4326,7 +4326,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell27 = row.createCell(2);
 
-			 if (record1.getR4_PURPOSE_VOSTRO() != null && !record1.getR4_PURPOSE_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR4_PURPOSE_VOSTRO() != null ){
 			     cell27.setCellValue(record1.getR4_PURPOSE_VOSTRO().toString().trim() );
 			     cell27.setCellStyle(numberStyle);
 			 } else {
@@ -4336,7 +4336,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell28 = row.createCell(3);
 
-			 if (record1.getR4_CURRENCY_VOSTRO() != null && !record1.getR4_CURRENCY_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR4_CURRENCY_VOSTRO() != null ){
 			     cell28.setCellValue(record1.getR4_CURRENCY_VOSTRO().toString().trim() );
 			     cell28.setCellStyle(numberStyle);
 			 } else {
@@ -4346,7 +4346,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell31 = row.createCell(6);
 
-			 if (record1.getR4_AMOUNT_DEMAND_VOSTRO() != null && !record1.getR4_AMOUNT_DEMAND_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR4_AMOUNT_DEMAND_VOSTRO() != null ){
 			     cell31.setCellValue(record1.getR4_AMOUNT_DEMAND_VOSTRO().toString().trim() );
 			     cell31.setCellStyle(numberStyle);
 			 } else {
@@ -4358,7 +4358,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 			  row = sheet.getRow(27) != null ? sheet.getRow(27) : sheet.createRow(27);
 			  Cell cell33 = row.createCell(0);
 
-			 if (record1.getR5_NAME_OF_BANK_AND_COUNTRY_VOSTRO() != null && !record1.getR5_NAME_OF_BANK_AND_COUNTRY_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR5_NAME_OF_BANK_AND_COUNTRY_VOSTRO() != null ){
 			     cell33.setCellValue(record1.getR5_NAME_OF_BANK_AND_COUNTRY_VOSTRO().toString().trim() );
 			     cell33.setCellStyle(numberStyle);
 			 } else {
@@ -4368,7 +4368,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell34 = row.createCell(1);
 
-			 if (record1.getR5_TYPE_OF_ACCOUNT_VOSTRO() != null && !record1.getR5_TYPE_OF_ACCOUNT_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR5_TYPE_OF_ACCOUNT_VOSTRO() != null ){
 			     cell34.setCellValue(record1.getR5_TYPE_OF_ACCOUNT_VOSTRO().toString().trim() );
 			     cell34.setCellStyle(numberStyle);
 			 } else {
@@ -4378,7 +4378,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell35 = row.createCell(2);
 
-			 if (record1.getR5_PURPOSE_VOSTRO() != null && !record1.getR5_PURPOSE_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR5_PURPOSE_VOSTRO() != null ){
 			     cell35.setCellValue(record1.getR5_PURPOSE_VOSTRO().toString().trim() );
 			     cell35.setCellStyle(numberStyle);
 			 } else {
@@ -4388,7 +4388,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell36 = row.createCell(3);
 
-			 if (record1.getR5_CURRENCY_VOSTRO() != null && !record1.getR5_CURRENCY_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR5_CURRENCY_VOSTRO() != null ){
 			     cell36.setCellValue(record1.getR5_CURRENCY_VOSTRO().toString().trim() );
 			     cell36.setCellStyle(numberStyle);
 			 } else {
@@ -4398,7 +4398,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell39 = row.createCell(6);
 
-			 if (record1.getR5_AMOUNT_DEMAND_VOSTRO() != null && !record1.getR5_AMOUNT_DEMAND_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR5_AMOUNT_DEMAND_VOSTRO() != null ){
 			     cell39.setCellValue(record1.getR5_AMOUNT_DEMAND_VOSTRO().toString().trim() );
 			     cell39.setCellStyle(numberStyle);
 			 } else {
@@ -4410,7 +4410,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 			  row = sheet.getRow(28) != null ? sheet.getRow(28) : sheet.createRow(28);
 			  Cell cell41 = row.createCell(0);
 
-			 if (record1.getR6_NAME_OF_BANK_AND_COUNTRY_VOSTRO() != null && !record1.getR6_NAME_OF_BANK_AND_COUNTRY_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR6_NAME_OF_BANK_AND_COUNTRY_VOSTRO() != null ){
 			     cell41.setCellValue(record1.getR6_NAME_OF_BANK_AND_COUNTRY_VOSTRO().toString().trim() );
 			     cell41.setCellStyle(numberStyle);
 			 } else {
@@ -4420,7 +4420,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell42 = row.createCell(1);
 
-			 if (record1.getR6_TYPE_OF_ACCOUNT_VOSTRO() != null && !record1.getR6_TYPE_OF_ACCOUNT_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR6_TYPE_OF_ACCOUNT_VOSTRO() != null ){
 			     cell42.setCellValue(record1.getR6_TYPE_OF_ACCOUNT_VOSTRO().toString().trim() );
 			     cell42.setCellStyle(numberStyle);
 			 } else {
@@ -4430,7 +4430,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell43 = row.createCell(2);
 
-			 if (record1.getR6_PURPOSE_VOSTRO() != null && !record1.getR6_PURPOSE_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR6_PURPOSE_VOSTRO() != null ){
 			     cell43.setCellValue(record1.getR6_PURPOSE_VOSTRO().toString().trim() );
 			     cell43.setCellStyle(numberStyle);
 			 } else {
@@ -4440,7 +4440,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell44 = row.createCell(3);
 
-			 if (record1.getR6_CURRENCY_VOSTRO() != null && !record1.getR6_CURRENCY_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR6_CURRENCY_VOSTRO() != null ){
 			     cell44.setCellValue(record1.getR6_CURRENCY_VOSTRO().toString().trim() );
 			     cell44.setCellStyle(numberStyle);
 			 } else {
@@ -4450,7 +4450,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell47 = row.createCell(6);
 
-			 if (record1.getR6_AMOUNT_DEMAND_VOSTRO() != null && !record1.getR6_AMOUNT_DEMAND_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR6_AMOUNT_DEMAND_VOSTRO() != null ){
 			     cell47.setCellValue(record1.getR6_AMOUNT_DEMAND_VOSTRO().toString().trim() );
 			     cell47.setCellStyle(numberStyle);
 			 } else {
@@ -4462,7 +4462,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 			  row = sheet.getRow(29) != null ? sheet.getRow(29) : sheet.createRow(29);
 			  Cell cell49 = row.createCell(0);
 
-			 if (record1.getR7_NAME_OF_BANK_AND_COUNTRY_VOSTRO() != null && !record1.getR7_NAME_OF_BANK_AND_COUNTRY_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR7_NAME_OF_BANK_AND_COUNTRY_VOSTRO() != null ){
 			     cell49.setCellValue(record1.getR7_NAME_OF_BANK_AND_COUNTRY_VOSTRO().toString().trim() );
 			     cell49.setCellStyle(numberStyle);
 			 } else {
@@ -4472,7 +4472,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell50 = row.createCell(1);
 
-			 if (record1.getR7_TYPE_OF_ACCOUNT_VOSTRO() != null && !record1.getR7_TYPE_OF_ACCOUNT_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR7_TYPE_OF_ACCOUNT_VOSTRO() != null ){
 			     cell50.setCellValue(record1.getR7_TYPE_OF_ACCOUNT_VOSTRO().toString().trim() );
 			     cell50.setCellStyle(numberStyle);
 			 } else {
@@ -4482,7 +4482,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell51 = row.createCell(2);
 
-			 if (record1.getR7_PURPOSE_VOSTRO() != null && !record1.getR7_PURPOSE_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR7_PURPOSE_VOSTRO() != null ){
 			     cell51.setCellValue(record1.getR7_PURPOSE_VOSTRO().toString().trim() );
 			     cell51.setCellStyle(numberStyle);
 			 } else {
@@ -4492,7 +4492,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell52 = row.createCell(3);
 
-			 if (record1.getR7_CURRENCY_VOSTRO() != null && !record1.getR7_CURRENCY_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR7_CURRENCY_VOSTRO() != null ){
 			     cell52.setCellValue(record1.getR7_CURRENCY_VOSTRO().toString().trim() );
 			     cell52.setCellStyle(numberStyle);
 			 } else {
@@ -4502,7 +4502,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell55 = row.createCell(6);
 
-			 if (record1.getR7_AMOUNT_DEMAND_VOSTRO() != null && !record1.getR7_AMOUNT_DEMAND_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR7_AMOUNT_DEMAND_VOSTRO() != null ){
 			     cell55.setCellValue(record1.getR7_AMOUNT_DEMAND_VOSTRO().toString().trim() );
 			     cell55.setCellStyle(numberStyle);
 			 } else {
@@ -4514,7 +4514,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 			  row = sheet.getRow(30) != null ? sheet.getRow(30) : sheet.createRow(30);
 			  Cell cell57 = row.createCell(0);
 
-			 if (record1.getR8_NAME_OF_BANK_AND_COUNTRY_VOSTRO() != null && !record1.getR8_NAME_OF_BANK_AND_COUNTRY_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR8_NAME_OF_BANK_AND_COUNTRY_VOSTRO() != null ){
 			     cell57.setCellValue(record1.getR8_NAME_OF_BANK_AND_COUNTRY_VOSTRO().toString().trim() );
 			     cell57.setCellStyle(numberStyle);
 			 } else {
@@ -4524,7 +4524,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell58 = row.createCell(1);
 
-			 if (record1.getR8_TYPE_OF_ACCOUNT_VOSTRO() != null && !record1.getR8_TYPE_OF_ACCOUNT_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR8_TYPE_OF_ACCOUNT_VOSTRO() != null ){
 			     cell58.setCellValue(record1.getR8_TYPE_OF_ACCOUNT_VOSTRO().toString().trim() );
 			     cell58.setCellStyle(numberStyle);
 			 } else {
@@ -4534,7 +4534,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell59 = row.createCell(2);
 
-			 if (record1.getR8_PURPOSE_VOSTRO() != null && !record1.getR8_PURPOSE_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR8_PURPOSE_VOSTRO() != null ){
 			     cell59.setCellValue(record1.getR8_PURPOSE_VOSTRO().toString().trim() );
 			     cell59.setCellStyle(numberStyle);
 			 } else {
@@ -4544,7 +4544,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell60 = row.createCell(3);
 
-			 if (record1.getR8_CURRENCY_VOSTRO() != null && !record1.getR8_CURRENCY_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR8_CURRENCY_VOSTRO() != null ){
 			     cell60.setCellValue(record1.getR8_CURRENCY_VOSTRO().toString().trim() );
 			     cell60.setCellStyle(numberStyle);
 			 } else {
@@ -4554,7 +4554,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell63 = row.createCell(6);
 
-			 if (record1.getR8_AMOUNT_DEMAND_VOSTRO() != null && !record1.getR8_AMOUNT_DEMAND_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR8_AMOUNT_DEMAND_VOSTRO() != null ){
 			     cell63.setCellValue(record1.getR8_AMOUNT_DEMAND_VOSTRO().toString().trim() );
 			     cell63.setCellStyle(numberStyle);
 			 } else {
@@ -4578,7 +4578,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 		Row  row = sheet.getRow(36) != null ? sheet.getRow(36) : sheet.createRow(36);
 		 Cell cell1 = row.createCell(0);
 
-		 if (record1.getR1_NAME_OF_BANK_NOSTRO1() != null && !record1.getR1_NAME_OF_BANK_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR1_NAME_OF_BANK_NOSTRO1() != null ){
 		     cell1.setCellValue(record1.getR1_NAME_OF_BANK_NOSTRO1().toString().trim() );
 		     cell1.setCellStyle(numberStyle);
 		 } else {
@@ -4588,7 +4588,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell2 = row.createCell(1);
 
-		 if (record1.getR1_TYPE_OF_ACCOUNT_NOSTRO1() != null && !record1.getR1_TYPE_OF_ACCOUNT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR1_TYPE_OF_ACCOUNT_NOSTRO1() != null ){
 		     cell2.setCellValue(record1.getR1_TYPE_OF_ACCOUNT_NOSTRO1().toString().trim() );
 		     cell2.setCellStyle(numberStyle);
 		 } else {
@@ -4598,7 +4598,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell3 = row.createCell(2);
 
-		 if (record1.getR1_PURPOSE_NOSTRO1() != null && !record1.getR1_PURPOSE_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR1_PURPOSE_NOSTRO1() != null ){
 		     cell3.setCellValue(record1.getR1_PURPOSE_NOSTRO1().toString().trim() );
 		     cell3.setCellStyle(numberStyle);
 		 } else {
@@ -4608,7 +4608,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell4 = row.createCell(3);
 
-		 if (record1.getR1_CURRENCY_NOSTRO1() != null && !record1.getR1_CURRENCY_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR1_CURRENCY_NOSTRO1() != null ){
 		     cell4.setCellValue(record1.getR1_CURRENCY_NOSTRO1().toString().trim() );
 		     cell4.setCellStyle(numberStyle);
 		 } else {
@@ -4618,7 +4618,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell5 = row.createCell(4);
 
-		 if (record1.getR1_SOVEREIGN_RATING_NOSTRO1() != null && !record1.getR1_SOVEREIGN_RATING_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR1_SOVEREIGN_RATING_NOSTRO1() != null ){
 		     cell5.setCellValue(record1.getR1_SOVEREIGN_RATING_NOSTRO1().toString().trim() );
 		     cell5.setCellStyle(numberStyle);
 		 } else {
@@ -4628,7 +4628,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell6 = row.createCell(5);
 
-		 if (record1.getR1_RISK_WEIGHT_NOSTRO1() != null && !record1.getR1_RISK_WEIGHT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR1_RISK_WEIGHT_NOSTRO1() != null ){
 		     cell6.setCellValue(record1.getR1_RISK_WEIGHT_NOSTRO1().toString().trim() );
 		     cell6.setCellStyle(numberStyle);
 		 } else {
@@ -4638,7 +4638,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell7 = row.createCell(6);
 
-		 if (record1.getR1_AMOUNT_DEMAND_NOSTRO1() != null && !record1.getR1_AMOUNT_DEMAND_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR1_AMOUNT_DEMAND_NOSTRO1() != null ){
 		     cell7.setCellValue(record1.getR1_AMOUNT_DEMAND_NOSTRO1().toString().trim() );
 		     cell7.setCellStyle(numberStyle);
 		 } else {
@@ -4648,7 +4648,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell8 = row.createCell(7);
 
-		 if (record1.getR1_RISK_WEIGHTED_AMOUNT_NOSTRO1() != null && !record1.getR1_RISK_WEIGHTED_AMOUNT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR1_RISK_WEIGHTED_AMOUNT_NOSTRO1() != null ){
 		     cell8.setCellValue(record1.getR1_RISK_WEIGHTED_AMOUNT_NOSTRO1().toString().trim() );
 		     cell8.setCellStyle(numberStyle);
 		 } else {
@@ -4660,7 +4660,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 		  row = sheet.getRow(37) != null ? sheet.getRow(37) : sheet.createRow(37);
 		  Cell cell9 = row.createCell(0);
 
-		 if (record1.getR2_NAME_OF_BANK_NOSTRO1() != null && !record1.getR2_NAME_OF_BANK_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR2_NAME_OF_BANK_NOSTRO1() != null ){
 		     cell9.setCellValue(record1.getR2_NAME_OF_BANK_NOSTRO1().toString().trim() );
 		     cell9.setCellStyle(numberStyle);
 		 } else {
@@ -4670,7 +4670,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell10 = row.createCell(1);
 
-		 if (record1.getR2_TYPE_OF_ACCOUNT_NOSTRO1() != null && !record1.getR2_TYPE_OF_ACCOUNT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR2_TYPE_OF_ACCOUNT_NOSTRO1() != null ){
 		     cell10.setCellValue(record1.getR2_TYPE_OF_ACCOUNT_NOSTRO1().toString().trim() );
 		     cell10.setCellStyle(numberStyle);
 		 } else {
@@ -4680,7 +4680,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell11 = row.createCell(2);
 
-		 if (record1.getR2_PURPOSE_NOSTRO1() != null && !record1.getR2_PURPOSE_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR2_PURPOSE_NOSTRO1() != null ){
 		     cell11.setCellValue(record1.getR2_PURPOSE_NOSTRO1().toString().trim() );
 		     cell11.setCellStyle(numberStyle);
 		 } else {
@@ -4690,7 +4690,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell12 = row.createCell(3);
 
-		 if (record1.getR2_CURRENCY_NOSTRO1() != null && !record1.getR2_CURRENCY_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR2_CURRENCY_NOSTRO1() != null ){
 		     cell12.setCellValue(record1.getR2_CURRENCY_NOSTRO1().toString().trim() );
 		     cell12.setCellStyle(numberStyle);
 		 } else {
@@ -4700,7 +4700,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell13 = row.createCell(4);
 
-		 if (record1.getR2_SOVEREIGN_RATING_NOSTRO1() != null && !record1.getR2_SOVEREIGN_RATING_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR2_SOVEREIGN_RATING_NOSTRO1() != null ){
 		     cell13.setCellValue(record1.getR2_SOVEREIGN_RATING_NOSTRO1().toString().trim() );
 		     cell13.setCellStyle(numberStyle);
 		 } else {
@@ -4710,7 +4710,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell14 = row.createCell(5);
 
-		 if (record1.getR2_RISK_WEIGHT_NOSTRO1() != null && !record1.getR2_RISK_WEIGHT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR2_RISK_WEIGHT_NOSTRO1() != null ){
 		     cell14.setCellValue(record1.getR2_RISK_WEIGHT_NOSTRO1().toString().trim() );
 		     cell14.setCellStyle(numberStyle);
 		 } else {
@@ -4720,7 +4720,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell15 = row.createCell(6);
 
-		 if (record1.getR2_AMOUNT_DEMAND_NOSTRO1() != null && !record1.getR2_AMOUNT_DEMAND_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR2_AMOUNT_DEMAND_NOSTRO1() != null ){
 		     cell15.setCellValue(record1.getR2_AMOUNT_DEMAND_NOSTRO1().toString().trim() );
 		     cell15.setCellStyle(numberStyle);
 		 } else {
@@ -4730,7 +4730,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell16 = row.createCell(7);
 
-		 if (record1.getR2_RISK_WEIGHTED_AMOUNT_NOSTRO1() != null && !record1.getR2_RISK_WEIGHTED_AMOUNT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR2_RISK_WEIGHTED_AMOUNT_NOSTRO1() != null ){
 		     cell16.setCellValue(record1.getR2_RISK_WEIGHTED_AMOUNT_NOSTRO1().toString().trim() );
 		     cell16.setCellStyle(numberStyle);
 		 } else {
@@ -4742,7 +4742,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 		  row = sheet.getRow(38) != null ? sheet.getRow(38) : sheet.createRow(38);
 		  Cell cell17 = row.createCell(0);
 
-		 if (record1.getR3_NAME_OF_BANK_NOSTRO1() != null && !record1.getR3_NAME_OF_BANK_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR3_NAME_OF_BANK_NOSTRO1() != null ){
 		     cell17.setCellValue(record1.getR3_NAME_OF_BANK_NOSTRO1().toString().trim() );
 		     cell17.setCellStyle(numberStyle);
 		 } else {
@@ -4752,7 +4752,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell18 = row.createCell(1);
 
-		 if (record1.getR3_TYPE_OF_ACCOUNT_NOSTRO1() != null && !record1.getR3_TYPE_OF_ACCOUNT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR3_TYPE_OF_ACCOUNT_NOSTRO1() != null ){
 		     cell18.setCellValue(record1.getR3_TYPE_OF_ACCOUNT_NOSTRO1().toString().trim() );
 		     cell18.setCellStyle(numberStyle);
 		 } else {
@@ -4762,7 +4762,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell19 = row.createCell(2);
 
-		 if (record1.getR3_PURPOSE_NOSTRO1() != null && !record1.getR3_PURPOSE_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR3_PURPOSE_NOSTRO1() != null ){
 		     cell19.setCellValue(record1.getR3_PURPOSE_NOSTRO1().toString().trim() );
 		     cell19.setCellStyle(numberStyle);
 		 } else {
@@ -4772,7 +4772,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell20 = row.createCell(3);
 
-		 if (record1.getR3_CURRENCY_NOSTRO1() != null && !record1.getR3_CURRENCY_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR3_CURRENCY_NOSTRO1() != null ){
 		     cell20.setCellValue(record1.getR3_CURRENCY_NOSTRO1().toString().trim() );
 		     cell20.setCellStyle(numberStyle);
 		 } else {
@@ -4782,7 +4782,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell21 = row.createCell(4);
 
-		 if (record1.getR3_SOVEREIGN_RATING_NOSTRO1() != null && !record1.getR3_SOVEREIGN_RATING_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR3_SOVEREIGN_RATING_NOSTRO1() != null ){
 		     cell21.setCellValue(record1.getR3_SOVEREIGN_RATING_NOSTRO1().toString().trim() );
 		     cell21.setCellStyle(numberStyle);
 		 } else {
@@ -4792,7 +4792,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell22 = row.createCell(5);
 
-		 if (record1.getR3_RISK_WEIGHT_NOSTRO1() != null && !record1.getR3_RISK_WEIGHT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR3_RISK_WEIGHT_NOSTRO1() != null ){
 		     cell22.setCellValue(record1.getR3_RISK_WEIGHT_NOSTRO1().toString().trim() );
 		     cell22.setCellStyle(numberStyle);
 		 } else {
@@ -4802,7 +4802,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell23 = row.createCell(6);
 
-		 if (record1.getR3_AMOUNT_DEMAND_NOSTRO1() != null && !record1.getR3_AMOUNT_DEMAND_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR3_AMOUNT_DEMAND_NOSTRO1() != null ){
 		     cell23.setCellValue(record1.getR3_AMOUNT_DEMAND_NOSTRO1().toString().trim() );
 		     cell23.setCellStyle(numberStyle);
 		 } else {
@@ -4812,7 +4812,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell24 = row.createCell(7);
 
-		 if (record1.getR3_RISK_WEIGHTED_AMOUNT_NOSTRO1() != null && !record1.getR3_RISK_WEIGHTED_AMOUNT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR3_RISK_WEIGHTED_AMOUNT_NOSTRO1() != null ){
 		     cell24.setCellValue(record1.getR3_RISK_WEIGHTED_AMOUNT_NOSTRO1().toString().trim() );
 		     cell24.setCellStyle(numberStyle);
 		 } else {
@@ -4824,7 +4824,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 		  row = sheet.getRow(39) != null ? sheet.getRow(39) : sheet.createRow(39);
 		  Cell cell25 = row.createCell(0);
 
-		 if (record1.getR4_NAME_OF_BANK_NOSTRO1() != null && !record1.getR4_NAME_OF_BANK_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR4_NAME_OF_BANK_NOSTRO1() != null ){
 		     cell25.setCellValue(record1.getR4_NAME_OF_BANK_NOSTRO1().toString().trim() );
 		     cell25.setCellStyle(numberStyle);
 		 } else {
@@ -4834,7 +4834,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell26 = row.createCell(1);
 
-		 if (record1.getR4_TYPE_OF_ACCOUNT_NOSTRO1() != null && !record1.getR4_TYPE_OF_ACCOUNT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR4_TYPE_OF_ACCOUNT_NOSTRO1() != null ){
 		     cell26.setCellValue(record1.getR4_TYPE_OF_ACCOUNT_NOSTRO1().toString().trim() );
 		     cell26.setCellStyle(numberStyle);
 		 } else {
@@ -4844,7 +4844,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell27 = row.createCell(2);
 
-		 if (record1.getR4_PURPOSE_NOSTRO1() != null && !record1.getR4_PURPOSE_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR4_PURPOSE_NOSTRO1() != null ){
 		     cell27.setCellValue(record1.getR4_PURPOSE_NOSTRO1().toString().trim() );
 		     cell27.setCellStyle(numberStyle);
 		 } else {
@@ -4854,7 +4854,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell28 = row.createCell(3);
 
-		 if (record1.getR4_CURRENCY_NOSTRO1() != null && !record1.getR4_CURRENCY_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR4_CURRENCY_NOSTRO1() != null ){
 		     cell28.setCellValue(record1.getR4_CURRENCY_NOSTRO1().toString().trim() );
 		     cell28.setCellStyle(numberStyle);
 		 } else {
@@ -4864,7 +4864,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell29 = row.createCell(4);
 
-		 if (record1.getR4_SOVEREIGN_RATING_NOSTRO1() != null && !record1.getR4_SOVEREIGN_RATING_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR4_SOVEREIGN_RATING_NOSTRO1() != null ){
 		     cell29.setCellValue(record1.getR4_SOVEREIGN_RATING_NOSTRO1().toString().trim() );
 		     cell29.setCellStyle(numberStyle);
 		 } else {
@@ -4874,7 +4874,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell30 = row.createCell(5);
 
-		 if (record1.getR4_RISK_WEIGHT_NOSTRO1() != null && !record1.getR4_RISK_WEIGHT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR4_RISK_WEIGHT_NOSTRO1() != null ){
 		     cell30.setCellValue(record1.getR4_RISK_WEIGHT_NOSTRO1().toString().trim() );
 		     cell30.setCellStyle(numberStyle);
 		 } else {
@@ -4884,7 +4884,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell31 = row.createCell(6);
 
-		 if (record1.getR4_AMOUNT_DEMAND_NOSTRO1() != null && !record1.getR4_AMOUNT_DEMAND_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR4_AMOUNT_DEMAND_NOSTRO1() != null ){
 		     cell31.setCellValue(record1.getR4_AMOUNT_DEMAND_NOSTRO1().toString().trim() );
 		     cell31.setCellStyle(numberStyle);
 		 } else {
@@ -4894,7 +4894,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell32 = row.createCell(7);
 
-		 if (record1.getR4_RISK_WEIGHTED_AMOUNT_NOSTRO1() != null && !record1.getR4_RISK_WEIGHTED_AMOUNT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR4_RISK_WEIGHTED_AMOUNT_NOSTRO1() != null ){
 		     cell32.setCellValue(record1.getR4_RISK_WEIGHTED_AMOUNT_NOSTRO1().toString().trim() );
 		     cell32.setCellStyle(numberStyle);
 		 } else {
@@ -4906,7 +4906,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 		  row = sheet.getRow(40) != null ? sheet.getRow(40) : sheet.createRow(40);
 		  Cell cell33 = row.createCell(0);
 
-		 if (record1.getR5_NAME_OF_BANK_NOSTRO1() != null && !record1.getR5_NAME_OF_BANK_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR5_NAME_OF_BANK_NOSTRO1() != null ){
 		     cell33.setCellValue(record1.getR5_NAME_OF_BANK_NOSTRO1().toString().trim() );
 		     cell33.setCellStyle(numberStyle);
 		 } else {
@@ -4916,7 +4916,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell34 = row.createCell(1);
 
-		 if (record1.getR5_TYPE_OF_ACCOUNT_NOSTRO1() != null && !record1.getR5_TYPE_OF_ACCOUNT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR5_TYPE_OF_ACCOUNT_NOSTRO1() != null ){
 		     cell34.setCellValue(record1.getR5_TYPE_OF_ACCOUNT_NOSTRO1().toString().trim() );
 		     cell34.setCellStyle(numberStyle);
 		 } else {
@@ -4926,7 +4926,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell35 = row.createCell(2);
 
-		 if (record1.getR5_PURPOSE_NOSTRO1() != null && !record1.getR5_PURPOSE_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR5_PURPOSE_NOSTRO1() != null ){
 		     cell35.setCellValue(record1.getR5_PURPOSE_NOSTRO1().toString().trim() );
 		     cell35.setCellStyle(numberStyle);
 		 } else {
@@ -4936,7 +4936,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell36 = row.createCell(3);
 
-		 if (record1.getR5_CURRENCY_NOSTRO1() != null && !record1.getR5_CURRENCY_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR5_CURRENCY_NOSTRO1() != null ){
 		     cell36.setCellValue(record1.getR5_CURRENCY_NOSTRO1().toString().trim() );
 		     cell36.setCellStyle(numberStyle);
 		 } else {
@@ -4946,7 +4946,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell37 = row.createCell(4);
 
-		 if (record1.getR5_SOVEREIGN_RATING_NOSTRO1() != null && !record1.getR5_SOVEREIGN_RATING_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR5_SOVEREIGN_RATING_NOSTRO1() != null ){
 		     cell37.setCellValue(record1.getR5_SOVEREIGN_RATING_NOSTRO1().toString().trim() );
 		     cell37.setCellStyle(numberStyle);
 		 } else {
@@ -4956,7 +4956,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell38 = row.createCell(5);
 
-		 if (record1.getR5_RISK_WEIGHT_NOSTRO1() != null && !record1.getR5_RISK_WEIGHT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR5_RISK_WEIGHT_NOSTRO1() != null ){
 		     cell38.setCellValue(record1.getR5_RISK_WEIGHT_NOSTRO1().toString().trim() );
 		     cell38.setCellStyle(numberStyle);
 		 } else {
@@ -4966,7 +4966,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell39 = row.createCell(6);
 
-		 if (record1.getR5_AMOUNT_DEMAND_NOSTRO1() != null && !record1.getR5_AMOUNT_DEMAND_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR5_AMOUNT_DEMAND_NOSTRO1() != null ){
 		     cell39.setCellValue(record1.getR5_AMOUNT_DEMAND_NOSTRO1().toString().trim() );
 		     cell39.setCellStyle(numberStyle);
 		 } else {
@@ -4976,7 +4976,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell40 = row.createCell(7);
 
-		 if (record1.getR5_RISK_WEIGHTED_AMOUNT_NOSTRO1() != null && !record1.getR5_RISK_WEIGHTED_AMOUNT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR5_RISK_WEIGHTED_AMOUNT_NOSTRO1() != null ){
 		     cell40.setCellValue(record1.getR5_RISK_WEIGHTED_AMOUNT_NOSTRO1().toString().trim() );
 		     cell40.setCellStyle(numberStyle);
 		 } else {
@@ -4988,7 +4988,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 		  row = sheet.getRow(41) != null ? sheet.getRow(41) : sheet.createRow(41);
 		  Cell cell41 = row.createCell(0);
 
-		 if (record1.getR6_NAME_OF_BANK_NOSTRO1() != null && !record1.getR6_NAME_OF_BANK_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR6_NAME_OF_BANK_NOSTRO1() != null ){
 		     cell41.setCellValue(record1.getR6_NAME_OF_BANK_NOSTRO1().toString().trim() );
 		     cell41.setCellStyle(numberStyle);
 		 } else {
@@ -4998,7 +4998,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell42 = row.createCell(1);
 
-		 if (record1.getR6_TYPE_OF_ACCOUNT_NOSTRO1() != null && !record1.getR6_TYPE_OF_ACCOUNT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR6_TYPE_OF_ACCOUNT_NOSTRO1() != null ){
 		     cell42.setCellValue(record1.getR6_TYPE_OF_ACCOUNT_NOSTRO1().toString().trim() );
 		     cell42.setCellStyle(numberStyle);
 		 } else {
@@ -5008,7 +5008,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell43 = row.createCell(2);
 
-		 if (record1.getR6_PURPOSE_NOSTRO1() != null && !record1.getR6_PURPOSE_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR6_PURPOSE_NOSTRO1() != null ){
 		     cell43.setCellValue(record1.getR6_PURPOSE_NOSTRO1().toString().trim() );
 		     cell43.setCellStyle(numberStyle);
 		 } else {
@@ -5018,7 +5018,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell44 = row.createCell(3);
 
-		 if (record1.getR6_CURRENCY_NOSTRO1() != null && !record1.getR6_CURRENCY_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR6_CURRENCY_NOSTRO1() != null ){
 		     cell44.setCellValue(record1.getR6_CURRENCY_NOSTRO1().toString().trim() );
 		     cell44.setCellStyle(numberStyle);
 		 } else {
@@ -5028,7 +5028,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell45 = row.createCell(4);
 
-		 if (record1.getR6_SOVEREIGN_RATING_NOSTRO1() != null && !record1.getR6_SOVEREIGN_RATING_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR6_SOVEREIGN_RATING_NOSTRO1() != null ){
 		     cell45.setCellValue(record1.getR6_SOVEREIGN_RATING_NOSTRO1().toString().trim() );
 		     cell45.setCellStyle(numberStyle);
 		 } else {
@@ -5038,7 +5038,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell46 = row.createCell(5);
 
-		 if (record1.getR6_RISK_WEIGHT_NOSTRO1() != null && !record1.getR6_RISK_WEIGHT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR6_RISK_WEIGHT_NOSTRO1() != null ){
 		     cell46.setCellValue(record1.getR6_RISK_WEIGHT_NOSTRO1().toString().trim() );
 		     cell46.setCellStyle(numberStyle);
 		 } else {
@@ -5048,7 +5048,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell47 = row.createCell(6);
 
-		 if (record1.getR6_AMOUNT_DEMAND_NOSTRO1() != null && !record1.getR6_AMOUNT_DEMAND_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR6_AMOUNT_DEMAND_NOSTRO1() != null ){
 		     cell47.setCellValue(record1.getR6_AMOUNT_DEMAND_NOSTRO1().toString().trim() );
 		     cell47.setCellStyle(numberStyle);
 		 } else {
@@ -5058,7 +5058,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell48 = row.createCell(7);
 
-		 if (record1.getR6_RISK_WEIGHTED_AMOUNT_NOSTRO1() != null && !record1.getR6_RISK_WEIGHTED_AMOUNT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR6_RISK_WEIGHTED_AMOUNT_NOSTRO1() != null ){
 		     cell48.setCellValue(record1.getR6_RISK_WEIGHTED_AMOUNT_NOSTRO1().toString().trim() );
 		     cell48.setCellStyle(numberStyle);
 		 } else {
@@ -5070,7 +5070,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 		  row = sheet.getRow(42) != null ? sheet.getRow(42) : sheet.createRow(42);
 		  Cell cell49 = row.createCell(0);
 
-		 if (record1.getR7_NAME_OF_BANK_NOSTRO1() != null && !record1.getR7_NAME_OF_BANK_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR7_NAME_OF_BANK_NOSTRO1() != null ){
 		     cell49.setCellValue(record1.getR7_NAME_OF_BANK_NOSTRO1().toString().trim() );
 		     cell49.setCellStyle(numberStyle);
 		 } else {
@@ -5080,7 +5080,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell50 = row.createCell(1);
 
-		 if (record1.getR7_TYPE_OF_ACCOUNT_NOSTRO1() != null && !record1.getR7_TYPE_OF_ACCOUNT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR7_TYPE_OF_ACCOUNT_NOSTRO1() != null ){
 		     cell50.setCellValue(record1.getR7_TYPE_OF_ACCOUNT_NOSTRO1().toString().trim() );
 		     cell50.setCellStyle(numberStyle);
 		 } else {
@@ -5090,7 +5090,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell51 = row.createCell(2);
 
-		 if (record1.getR7_PURPOSE_NOSTRO1() != null && !record1.getR7_PURPOSE_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR7_PURPOSE_NOSTRO1() != null ){
 		     cell51.setCellValue(record1.getR7_PURPOSE_NOSTRO1().toString().trim() );
 		     cell51.setCellStyle(numberStyle);
 		 } else {
@@ -5100,7 +5100,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell52 = row.createCell(3);
 
-		 if (record1.getR7_CURRENCY_NOSTRO1() != null && !record1.getR7_CURRENCY_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR7_CURRENCY_NOSTRO1() != null ){
 		     cell52.setCellValue(record1.getR7_CURRENCY_NOSTRO1().toString().trim() );
 		     cell52.setCellStyle(numberStyle);
 		 } else {
@@ -5110,7 +5110,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell53 = row.createCell(4);
 
-		 if (record1.getR7_SOVEREIGN_RATING_NOSTRO1() != null && !record1.getR7_SOVEREIGN_RATING_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR7_SOVEREIGN_RATING_NOSTRO1() != null ){
 		     cell53.setCellValue(record1.getR7_SOVEREIGN_RATING_NOSTRO1().toString().trim() );
 		     cell53.setCellStyle(numberStyle);
 		 } else {
@@ -5120,7 +5120,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell54 = row.createCell(5);
 
-		 if (record1.getR7_RISK_WEIGHT_NOSTRO1() != null && !record1.getR7_RISK_WEIGHT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR7_RISK_WEIGHT_NOSTRO1() != null ){
 		     cell54.setCellValue(record1.getR7_RISK_WEIGHT_NOSTRO1().toString().trim() );
 		     cell54.setCellStyle(numberStyle);
 		 } else {
@@ -5130,7 +5130,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell55 = row.createCell(6);
 
-		 if (record1.getR7_AMOUNT_DEMAND_NOSTRO1() != null && !record1.getR7_AMOUNT_DEMAND_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR7_AMOUNT_DEMAND_NOSTRO1() != null ){
 		     cell55.setCellValue(record1.getR7_AMOUNT_DEMAND_NOSTRO1().toString().trim() );
 		     cell55.setCellStyle(numberStyle);
 		 } else {
@@ -5140,7 +5140,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell56 = row.createCell(7);
 
-		 if (record1.getR7_RISK_WEIGHTED_AMOUNT_NOSTRO1() != null && !record1.getR7_RISK_WEIGHTED_AMOUNT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR7_RISK_WEIGHTED_AMOUNT_NOSTRO1() != null ){
 		     cell56.setCellValue(record1.getR7_RISK_WEIGHTED_AMOUNT_NOSTRO1().toString().trim() );
 		     cell56.setCellStyle(numberStyle);
 		 } else {
@@ -5152,7 +5152,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 		  row = sheet.getRow(43) != null ? sheet.getRow(43) : sheet.createRow(43);
 		  Cell cell57 = row.createCell(0);
 
-		 if (record1.getR8_NAME_OF_BANK_NOSTRO1() != null && !record1.getR8_NAME_OF_BANK_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR8_NAME_OF_BANK_NOSTRO1() != null ){
 		     cell57.setCellValue(record1.getR8_NAME_OF_BANK_NOSTRO1().toString().trim() );
 		     cell57.setCellStyle(numberStyle);
 		 } else {
@@ -5162,7 +5162,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell58 = row.createCell(1);
 
-		 if (record1.getR8_TYPE_OF_ACCOUNT_NOSTRO1() != null && !record1.getR8_TYPE_OF_ACCOUNT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR8_TYPE_OF_ACCOUNT_NOSTRO1() != null ){
 		     cell58.setCellValue(record1.getR8_TYPE_OF_ACCOUNT_NOSTRO1().toString().trim() );
 		     cell58.setCellStyle(numberStyle);
 		 } else {
@@ -5172,7 +5172,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell59 = row.createCell(2);
 
-		 if (record1.getR8_PURPOSE_NOSTRO1() != null && !record1.getR8_PURPOSE_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR8_PURPOSE_NOSTRO1() != null ){
 		     cell59.setCellValue(record1.getR8_PURPOSE_NOSTRO1().toString().trim() );
 		     cell59.setCellStyle(numberStyle);
 		 } else {
@@ -5182,7 +5182,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell60 = row.createCell(3);
 
-		 if (record1.getR8_CURRENCY_NOSTRO1() != null && !record1.getR8_CURRENCY_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR8_CURRENCY_NOSTRO1() != null ){
 		     cell60.setCellValue(record1.getR8_CURRENCY_NOSTRO1().toString().trim() );
 		     cell60.setCellStyle(numberStyle);
 		 } else {
@@ -5192,7 +5192,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell61 = row.createCell(4);
 
-		 if (record1.getR8_SOVEREIGN_RATING_NOSTRO1() != null && !record1.getR8_SOVEREIGN_RATING_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR8_SOVEREIGN_RATING_NOSTRO1() != null ){
 		     cell61.setCellValue(record1.getR8_SOVEREIGN_RATING_NOSTRO1().toString().trim() );
 		     cell61.setCellStyle(numberStyle);
 		 } else {
@@ -5202,7 +5202,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell62 = row.createCell(5);
 
-		 if (record1.getR8_RISK_WEIGHT_NOSTRO1() != null && !record1.getR8_RISK_WEIGHT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR8_RISK_WEIGHT_NOSTRO1() != null ){
 		     cell62.setCellValue(record1.getR8_RISK_WEIGHT_NOSTRO1().toString().trim() );
 		     cell62.setCellStyle(numberStyle);
 		 } else {
@@ -5212,7 +5212,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell63 = row.createCell(6);
 
-		 if (record1.getR8_AMOUNT_DEMAND_NOSTRO1() != null && !record1.getR8_AMOUNT_DEMAND_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR8_AMOUNT_DEMAND_NOSTRO1() != null ){
 		     cell63.setCellValue(record1.getR8_AMOUNT_DEMAND_NOSTRO1().toString().trim() );
 		     cell63.setCellStyle(numberStyle);
 		 } else {
@@ -5222,7 +5222,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell64 = row.createCell(7);
 
-		 if (record1.getR8_RISK_WEIGHTED_AMOUNT_NOSTRO1() != null && !record1.getR8_RISK_WEIGHTED_AMOUNT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR8_RISK_WEIGHTED_AMOUNT_NOSTRO1() != null ){
 		     cell64.setCellValue(record1.getR8_RISK_WEIGHTED_AMOUNT_NOSTRO1().toString().trim() );
 		     cell64.setCellStyle(numberStyle);
 		 } else {
@@ -5234,7 +5234,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 		  row = sheet.getRow(44) != null ? sheet.getRow(44) : sheet.createRow(44);
 		  Cell cell65 = row.createCell(0);
 
-		 if (record1.getR9_NAME_OF_BANK_NOSTRO1() != null && !record1.getR9_NAME_OF_BANK_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR9_NAME_OF_BANK_NOSTRO1() != null ){
 		     cell65.setCellValue(record1.getR9_NAME_OF_BANK_NOSTRO1().toString().trim() );
 		     cell65.setCellStyle(numberStyle);
 		 } else {
@@ -5244,7 +5244,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell66 = row.createCell(1);
 
-		 if (record1.getR9_TYPE_OF_ACCOUNT_NOSTRO1() != null && !record1.getR9_TYPE_OF_ACCOUNT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR9_TYPE_OF_ACCOUNT_NOSTRO1() != null ){
 		     cell66.setCellValue(record1.getR9_TYPE_OF_ACCOUNT_NOSTRO1().toString().trim() );
 		     cell66.setCellStyle(numberStyle);
 		 } else {
@@ -5254,7 +5254,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell67 = row.createCell(2);
 
-		 if (record1.getR9_PURPOSE_NOSTRO1() != null && !record1.getR9_PURPOSE_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR9_PURPOSE_NOSTRO1() != null ){
 		     cell67.setCellValue(record1.getR9_PURPOSE_NOSTRO1().toString().trim() );
 		     cell67.setCellStyle(numberStyle);
 		 } else {
@@ -5264,7 +5264,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell68 = row.createCell(3);
 
-		 if (record1.getR9_CURRENCY_NOSTRO1() != null && !record1.getR9_CURRENCY_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR9_CURRENCY_NOSTRO1() != null ){
 		     cell68.setCellValue(record1.getR9_CURRENCY_NOSTRO1().toString().trim() );
 		     cell68.setCellStyle(numberStyle);
 		 } else {
@@ -5274,7 +5274,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell69 = row.createCell(4);
 
-		 if (record1.getR9_SOVEREIGN_RATING_NOSTRO1() != null && !record1.getR9_SOVEREIGN_RATING_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR9_SOVEREIGN_RATING_NOSTRO1() != null ){
 		     cell69.setCellValue(record1.getR9_SOVEREIGN_RATING_NOSTRO1().toString().trim() );
 		     cell69.setCellStyle(numberStyle);
 		 } else {
@@ -5284,7 +5284,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell70 = row.createCell(5);
 
-		 if (record1.getR9_RISK_WEIGHT_NOSTRO1() != null && !record1.getR9_RISK_WEIGHT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR9_RISK_WEIGHT_NOSTRO1() != null ){
 		     cell70.setCellValue(record1.getR9_RISK_WEIGHT_NOSTRO1().toString().trim() );
 		     cell70.setCellStyle(numberStyle);
 		 } else {
@@ -5294,7 +5294,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell71 = row.createCell(6);
 
-		 if (record1.getR9_AMOUNT_DEMAND_NOSTRO1() != null && !record1.getR9_AMOUNT_DEMAND_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR9_AMOUNT_DEMAND_NOSTRO1() != null ){
 		     cell71.setCellValue(record1.getR9_AMOUNT_DEMAND_NOSTRO1().toString().trim() );
 		     cell71.setCellStyle(numberStyle);
 		 } else {
@@ -5304,7 +5304,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell72 = row.createCell(7);
 
-		 if (record1.getR9_RISK_WEIGHTED_AMOUNT_NOSTRO1() != null && !record1.getR9_RISK_WEIGHTED_AMOUNT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR9_RISK_WEIGHTED_AMOUNT_NOSTRO1() != null ){
 		     cell72.setCellValue(record1.getR9_RISK_WEIGHTED_AMOUNT_NOSTRO1().toString().trim() );
 		     cell72.setCellStyle(numberStyle);
 		 } else {
@@ -5316,7 +5316,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 		  row = sheet.getRow(45) != null ? sheet.getRow(45) : sheet.createRow(45);
 		  Cell cell73 = row.createCell(0);
 
-		 if (record1.getR10_NAME_OF_BANK_NOSTRO1() != null && !record1.getR10_NAME_OF_BANK_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR10_NAME_OF_BANK_NOSTRO1() != null ){
 		     cell73.setCellValue(record1.getR10_NAME_OF_BANK_NOSTRO1().toString().trim() );
 		     cell73.setCellStyle(numberStyle);
 		 } else {
@@ -5326,7 +5326,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell74 = row.createCell(1);
 
-		 if (record1.getR10_TYPE_OF_ACCOUNT_NOSTRO1() != null && !record1.getR10_TYPE_OF_ACCOUNT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR10_TYPE_OF_ACCOUNT_NOSTRO1() != null ){
 		     cell74.setCellValue(record1.getR10_TYPE_OF_ACCOUNT_NOSTRO1().toString().trim() );
 		     cell74.setCellStyle(numberStyle);
 		 } else {
@@ -5336,7 +5336,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell75 = row.createCell(2);
 
-		 if (record1.getR10_PURPOSE_NOSTRO1() != null && !record1.getR10_PURPOSE_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR10_PURPOSE_NOSTRO1() != null ){
 		     cell75.setCellValue(record1.getR10_PURPOSE_NOSTRO1().toString().trim() );
 		     cell75.setCellStyle(numberStyle);
 		 } else {
@@ -5346,7 +5346,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell76 = row.createCell(3);
 
-		 if (record1.getR10_CURRENCY_NOSTRO1() != null && !record1.getR10_CURRENCY_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR10_CURRENCY_NOSTRO1() != null ){
 		     cell76.setCellValue(record1.getR10_CURRENCY_NOSTRO1().toString().trim() );
 		     cell76.setCellStyle(numberStyle);
 		 } else {
@@ -5356,7 +5356,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell77 = row.createCell(4);
 
-		 if (record1.getR10_SOVEREIGN_RATING_NOSTRO1() != null && !record1.getR10_SOVEREIGN_RATING_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR10_SOVEREIGN_RATING_NOSTRO1() != null ){
 		     cell77.setCellValue(record1.getR10_SOVEREIGN_RATING_NOSTRO1().toString().trim() );
 		     cell77.setCellStyle(numberStyle);
 		 } else {
@@ -5366,7 +5366,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell78 = row.createCell(5);
 
-		 if (record1.getR10_RISK_WEIGHT_NOSTRO1() != null && !record1.getR10_RISK_WEIGHT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR10_RISK_WEIGHT_NOSTRO1() != null ){
 		     cell78.setCellValue(record1.getR10_RISK_WEIGHT_NOSTRO1().toString().trim() );
 		     cell78.setCellStyle(numberStyle);
 		 } else {
@@ -5376,7 +5376,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell79 = row.createCell(6);
 
-		 if (record1.getR10_AMOUNT_DEMAND_NOSTRO1() != null && !record1.getR10_AMOUNT_DEMAND_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR10_AMOUNT_DEMAND_NOSTRO1() != null ){
 		     cell79.setCellValue(record1.getR10_AMOUNT_DEMAND_NOSTRO1().toString().trim() );
 		     cell79.setCellStyle(numberStyle);
 		 } else {
@@ -5386,7 +5386,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell80 = row.createCell(7);
 
-		 if (record1.getR10_RISK_WEIGHTED_AMOUNT_NOSTRO1() != null && !record1.getR10_RISK_WEIGHTED_AMOUNT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR10_RISK_WEIGHTED_AMOUNT_NOSTRO1() != null ){
 		     cell80.setCellValue(record1.getR10_RISK_WEIGHTED_AMOUNT_NOSTRO1().toString().trim() );
 		     cell80.setCellStyle(numberStyle);
 		 } else {
@@ -5398,7 +5398,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 		  row = sheet.getRow(46) != null ? sheet.getRow(46) : sheet.createRow(46);
 		  Cell cell81 = row.createCell(0);
 
-		 if (record1.getR11_NAME_OF_BANK_NOSTRO1() != null && !record1.getR11_NAME_OF_BANK_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR11_NAME_OF_BANK_NOSTRO1() != null ){
 		     cell81.setCellValue(record1.getR11_NAME_OF_BANK_NOSTRO1().toString().trim() );
 		     cell81.setCellStyle(numberStyle);
 		 } else {
@@ -5408,7 +5408,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell82 = row.createCell(1);
 
-		 if (record1.getR11_TYPE_OF_ACCOUNT_NOSTRO1() != null && !record1.getR11_TYPE_OF_ACCOUNT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR11_TYPE_OF_ACCOUNT_NOSTRO1() != null ){
 		     cell82.setCellValue(record1.getR11_TYPE_OF_ACCOUNT_NOSTRO1().toString().trim() );
 		     cell82.setCellStyle(numberStyle);
 		 } else {
@@ -5418,7 +5418,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell83 = row.createCell(2);
 
-		 if (record1.getR11_PURPOSE_NOSTRO1() != null && !record1.getR11_PURPOSE_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR11_PURPOSE_NOSTRO1() != null ){
 		     cell83.setCellValue(record1.getR11_PURPOSE_NOSTRO1().toString().trim() );
 		     cell83.setCellStyle(numberStyle);
 		 } else {
@@ -5428,7 +5428,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell84 = row.createCell(3);
 
-		 if (record1.getR11_CURRENCY_NOSTRO1() != null && !record1.getR11_CURRENCY_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR11_CURRENCY_NOSTRO1() != null ){
 		     cell84.setCellValue(record1.getR11_CURRENCY_NOSTRO1().toString().trim() );
 		     cell84.setCellStyle(numberStyle);
 		 } else {
@@ -5438,7 +5438,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell85 = row.createCell(4);
 
-		 if (record1.getR11_SOVEREIGN_RATING_NOSTRO1() != null && !record1.getR11_SOVEREIGN_RATING_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR11_SOVEREIGN_RATING_NOSTRO1() != null ){
 		     cell85.setCellValue(record1.getR11_SOVEREIGN_RATING_NOSTRO1().toString().trim() );
 		     cell85.setCellStyle(numberStyle);
 		 } else {
@@ -5448,7 +5448,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell86 = row.createCell(5);
 
-		 if (record1.getR11_RISK_WEIGHT_NOSTRO1() != null && !record1.getR11_RISK_WEIGHT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR11_RISK_WEIGHT_NOSTRO1() != null ){
 		     cell86.setCellValue(record1.getR11_RISK_WEIGHT_NOSTRO1().toString().trim() );
 		     cell86.setCellStyle(numberStyle);
 		 } else {
@@ -5458,7 +5458,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell87 = row.createCell(6);
 
-		 if (record1.getR11_AMOUNT_DEMAND_NOSTRO1() != null && !record1.getR11_AMOUNT_DEMAND_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR11_AMOUNT_DEMAND_NOSTRO1() != null ){
 		     cell87.setCellValue(record1.getR11_AMOUNT_DEMAND_NOSTRO1().toString().trim() );
 		     cell87.setCellStyle(numberStyle);
 		 } else {
@@ -5468,7 +5468,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell88 = row.createCell(7);
 
-		 if (record1.getR11_RISK_WEIGHTED_AMOUNT_NOSTRO1() != null && !record1.getR11_RISK_WEIGHTED_AMOUNT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR11_RISK_WEIGHTED_AMOUNT_NOSTRO1() != null ){
 		     cell88.setCellValue(record1.getR11_RISK_WEIGHTED_AMOUNT_NOSTRO1().toString().trim() );
 		     cell88.setCellStyle(numberStyle);
 		 } else {
@@ -5493,7 +5493,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 	    Row  row = sheet.getRow(51) != null ? sheet.getRow(51) : sheet.createRow(51);
 	    Cell cell1 = row.createCell(0);
 
-	    if (record1.getR1_NAME_OF_BANK_VOSTRO1() != null && !record1.getR1_NAME_OF_BANK_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR1_NAME_OF_BANK_VOSTRO1() != null ){
 	        cell1.setCellValue(record1.getR1_NAME_OF_BANK_VOSTRO1().toString().trim() );
 	        cell1.setCellStyle(numberStyle);
 	    } else {
@@ -5503,7 +5503,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell2 = row.createCell(1);
 
-	    if (record1.getR1_TYPE_OF_ACCOUNT_VOSTRO1() != null && !record1.getR1_TYPE_OF_ACCOUNT_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR1_TYPE_OF_ACCOUNT_VOSTRO1() != null ){
 	        cell2.setCellValue(record1.getR1_TYPE_OF_ACCOUNT_VOSTRO1().toString().trim() );
 	        cell2.setCellStyle(numberStyle);
 	    } else {
@@ -5513,7 +5513,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell3 = row.createCell(2);
 
-	    if (record1.getR1_PURPOSE_VOSTRO1() != null && !record1.getR1_PURPOSE_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR1_PURPOSE_VOSTRO1() != null ){
 	        cell3.setCellValue(record1.getR1_PURPOSE_VOSTRO1().toString().trim() );
 	        cell3.setCellStyle(numberStyle);
 	    } else {
@@ -5523,7 +5523,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell4 = row.createCell(3);
 
-	    if (record1.getR1_CURRENCY_VOSTRO1() != null && !record1.getR1_CURRENCY_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR1_CURRENCY_VOSTRO1() != null ){
 	        cell4.setCellValue(record1.getR1_CURRENCY_VOSTRO1().toString().trim() );
 	        cell4.setCellStyle(numberStyle);
 	    } else {
@@ -5533,7 +5533,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell7 = row.createCell(6);
 
-	    if (record1.getR1_AMOUNT_DEMAND_VOSTRO1() != null && !record1.getR1_AMOUNT_DEMAND_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR1_AMOUNT_DEMAND_VOSTRO1() != null ){
 	        cell7.setCellValue(record1.getR1_AMOUNT_DEMAND_VOSTRO1().toString().trim() );
 	        cell7.setCellStyle(numberStyle);
 	    } else {
@@ -5545,7 +5545,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 	     row = sheet.getRow(52) != null ? sheet.getRow(52) : sheet.createRow(52);
 	     Cell cell9 = row.createCell(0);
 
-	    if (record1.getR2_NAME_OF_BANK_VOSTRO1() != null && !record1.getR2_NAME_OF_BANK_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR2_NAME_OF_BANK_VOSTRO1() != null ){
 	        cell9.setCellValue(record1.getR2_NAME_OF_BANK_VOSTRO1().toString().trim() );
 	        cell9.setCellStyle(numberStyle);
 	    } else {
@@ -5555,7 +5555,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell10 = row.createCell(1);
 
-	    if (record1.getR2_TYPE_OF_ACCOUNT_VOSTRO1() != null && !record1.getR2_TYPE_OF_ACCOUNT_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR2_TYPE_OF_ACCOUNT_VOSTRO1() != null ){
 	        cell10.setCellValue(record1.getR2_TYPE_OF_ACCOUNT_VOSTRO1().toString().trim() );
 	        cell10.setCellStyle(numberStyle);
 	    } else {
@@ -5565,7 +5565,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell11 = row.createCell(2);
 
-	    if (record1.getR2_PURPOSE_VOSTRO1() != null && !record1.getR2_PURPOSE_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR2_PURPOSE_VOSTRO1() != null ){
 	        cell11.setCellValue(record1.getR2_PURPOSE_VOSTRO1().toString().trim() );
 	        cell11.setCellStyle(numberStyle);
 	    } else {
@@ -5575,7 +5575,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell12 = row.createCell(3);
 
-	    if (record1.getR2_CURRENCY_VOSTRO1() != null && !record1.getR2_CURRENCY_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR2_CURRENCY_VOSTRO1() != null ){
 	        cell12.setCellValue(record1.getR2_CURRENCY_VOSTRO1().toString().trim() );
 	        cell12.setCellStyle(numberStyle);
 	    } else {
@@ -5585,7 +5585,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell15 = row.createCell(6);
 
-	    if (record1.getR2_AMOUNT_DEMAND_VOSTRO1() != null && !record1.getR2_AMOUNT_DEMAND_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR2_AMOUNT_DEMAND_VOSTRO1() != null ){
 	        cell15.setCellValue(record1.getR2_AMOUNT_DEMAND_VOSTRO1().toString().trim() );
 	        cell15.setCellStyle(numberStyle);
 	    } else {
@@ -5597,7 +5597,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 	     row = sheet.getRow(53) != null ? sheet.getRow(53) : sheet.createRow(53);
 	     Cell cell17 = row.createCell(0);
 
-	    if (record1.getR3_NAME_OF_BANK_VOSTRO1() != null && !record1.getR3_NAME_OF_BANK_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR3_NAME_OF_BANK_VOSTRO1() != null ){
 	        cell17.setCellValue(record1.getR3_NAME_OF_BANK_VOSTRO1().toString().trim() );
 	        cell17.setCellStyle(numberStyle);
 	    } else {
@@ -5607,7 +5607,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell18 = row.createCell(1);
 
-	    if (record1.getR3_TYPE_OF_ACCOUNT_VOSTRO1() != null && !record1.getR3_TYPE_OF_ACCOUNT_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR3_TYPE_OF_ACCOUNT_VOSTRO1() != null ){
 	        cell18.setCellValue(record1.getR3_TYPE_OF_ACCOUNT_VOSTRO1().toString().trim() );
 	        cell18.setCellStyle(numberStyle);
 	    } else {
@@ -5617,7 +5617,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell19 = row.createCell(2);
 
-	    if (record1.getR3_PURPOSE_VOSTRO1() != null && !record1.getR3_PURPOSE_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR3_PURPOSE_VOSTRO1() != null ){
 	        cell19.setCellValue(record1.getR3_PURPOSE_VOSTRO1().toString().trim() );
 	        cell19.setCellStyle(numberStyle);
 	    } else {
@@ -5627,7 +5627,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell20 = row.createCell(3);
 
-	    if (record1.getR3_CURRENCY_VOSTRO1() != null && !record1.getR3_CURRENCY_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR3_CURRENCY_VOSTRO1() != null ){
 	        cell20.setCellValue(record1.getR3_CURRENCY_VOSTRO1().toString().trim() );
 	        cell20.setCellStyle(numberStyle);
 	    } else {
@@ -5637,7 +5637,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell23 = row.createCell(6);
 
-	    if (record1.getR3_AMOUNT_DEMAND_VOSTRO1() != null && !record1.getR3_AMOUNT_DEMAND_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR3_AMOUNT_DEMAND_VOSTRO1() != null ){
 	        cell23.setCellValue(record1.getR3_AMOUNT_DEMAND_VOSTRO1().toString().trim() );
 	        cell23.setCellStyle(numberStyle);
 	    } else {
@@ -5649,7 +5649,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 	     row = sheet.getRow(54) != null ? sheet.getRow(54) : sheet.createRow(54);
 	     Cell cell25 = row.createCell(0);
 
-	    if (record1.getR4_NAME_OF_BANK_VOSTRO1() != null && !record1.getR4_NAME_OF_BANK_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR4_NAME_OF_BANK_VOSTRO1() != null ){
 	        cell25.setCellValue(record1.getR4_NAME_OF_BANK_VOSTRO1().toString().trim() );
 	        cell25.setCellStyle(numberStyle);
 	    } else {
@@ -5659,7 +5659,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell26 = row.createCell(1);
 
-	    if (record1.getR4_TYPE_OF_ACCOUNT_VOSTRO1() != null && !record1.getR4_TYPE_OF_ACCOUNT_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR4_TYPE_OF_ACCOUNT_VOSTRO1() != null ){
 	        cell26.setCellValue(record1.getR4_TYPE_OF_ACCOUNT_VOSTRO1().toString().trim() );
 	        cell26.setCellStyle(numberStyle);
 	    } else {
@@ -5669,7 +5669,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell27 = row.createCell(2);
 
-	    if (record1.getR4_PURPOSE_VOSTRO1() != null && !record1.getR4_PURPOSE_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR4_PURPOSE_VOSTRO1() != null ){
 	        cell27.setCellValue(record1.getR4_PURPOSE_VOSTRO1().toString().trim() );
 	        cell27.setCellStyle(numberStyle);
 	    } else {
@@ -5679,7 +5679,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell28 = row.createCell(3);
 
-	    if (record1.getR4_CURRENCY_VOSTRO1() != null && !record1.getR4_CURRENCY_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR4_CURRENCY_VOSTRO1() != null ){
 	        cell28.setCellValue(record1.getR4_CURRENCY_VOSTRO1().toString().trim() );
 	        cell28.setCellStyle(numberStyle);
 	    } else {
@@ -5689,7 +5689,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell31 = row.createCell(6);
 
-	    if (record1.getR4_AMOUNT_DEMAND_VOSTRO1() != null && !record1.getR4_AMOUNT_DEMAND_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR4_AMOUNT_DEMAND_VOSTRO1() != null ){
 	        cell31.setCellValue(record1.getR4_AMOUNT_DEMAND_VOSTRO1().toString().trim() );
 	        cell31.setCellStyle(numberStyle);
 	    } else {
@@ -5701,7 +5701,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 	     row = sheet.getRow(55) != null ? sheet.getRow(55) : sheet.createRow(55);
 	     Cell cell33 = row.createCell(0);
 
-	    if (record1.getR5_NAME_OF_BANK_VOSTRO1() != null && !record1.getR5_NAME_OF_BANK_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR5_NAME_OF_BANK_VOSTRO1() != null ){
 	        cell33.setCellValue(record1.getR5_NAME_OF_BANK_VOSTRO1().toString().trim() );
 	        cell33.setCellStyle(numberStyle);
 	    } else {
@@ -5711,7 +5711,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell34 = row.createCell(1);
 
-	    if (record1.getR5_TYPE_OF_ACCOUNT_VOSTRO1() != null && !record1.getR5_TYPE_OF_ACCOUNT_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR5_TYPE_OF_ACCOUNT_VOSTRO1() != null ){
 	        cell34.setCellValue(record1.getR5_TYPE_OF_ACCOUNT_VOSTRO1().toString().trim() );
 	        cell34.setCellStyle(numberStyle);
 	    } else {
@@ -5721,7 +5721,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell35 = row.createCell(2);
 
-	    if (record1.getR5_PURPOSE_VOSTRO1() != null && !record1.getR5_PURPOSE_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR5_PURPOSE_VOSTRO1() != null ){
 	        cell35.setCellValue(record1.getR5_PURPOSE_VOSTRO1().toString().trim() );
 	        cell35.setCellStyle(numberStyle);
 	    } else {
@@ -5731,7 +5731,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell36 = row.createCell(3);
 
-	    if (record1.getR5_CURRENCY_VOSTRO1() != null && !record1.getR5_CURRENCY_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR5_CURRENCY_VOSTRO1() != null ){
 	        cell36.setCellValue(record1.getR5_CURRENCY_VOSTRO1().toString().trim() );
 	        cell36.setCellStyle(numberStyle);
 	    } else {
@@ -5741,7 +5741,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell39 = row.createCell(6);
 
-	    if (record1.getR5_AMOUNT_DEMAND_VOSTRO1() != null && !record1.getR5_AMOUNT_DEMAND_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR5_AMOUNT_DEMAND_VOSTRO1() != null ){
 	        cell39.setCellValue(record1.getR5_AMOUNT_DEMAND_VOSTRO1().toString().trim() );
 	        cell39.setCellStyle(numberStyle);
 	    } else {
@@ -5753,7 +5753,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 	     row = sheet.getRow(56) != null ? sheet.getRow(56) : sheet.createRow(56);
 	     Cell cell41 = row.createCell(0);
 
-	    if (record1.getR6_NAME_OF_BANK_VOSTRO1() != null && !record1.getR6_NAME_OF_BANK_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR6_NAME_OF_BANK_VOSTRO1() != null ){
 	        cell41.setCellValue(record1.getR6_NAME_OF_BANK_VOSTRO1().toString().trim() );
 	        cell41.setCellStyle(numberStyle);
 	    } else {
@@ -5763,7 +5763,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell42 = row.createCell(1);
 
-	    if (record1.getR6_TYPE_OF_ACCOUNT_VOSTRO1() != null && !record1.getR6_TYPE_OF_ACCOUNT_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR6_TYPE_OF_ACCOUNT_VOSTRO1() != null ){
 	        cell42.setCellValue(record1.getR6_TYPE_OF_ACCOUNT_VOSTRO1().toString().trim() );
 	        cell42.setCellStyle(numberStyle);
 	    } else {
@@ -5773,7 +5773,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell43 = row.createCell(2);
 
-	    if (record1.getR6_PURPOSE_VOSTRO1() != null && !record1.getR6_PURPOSE_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR6_PURPOSE_VOSTRO1() != null ){
 	        cell43.setCellValue(record1.getR6_PURPOSE_VOSTRO1().toString().trim() );
 	        cell43.setCellStyle(numberStyle);
 	    } else {
@@ -5783,7 +5783,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell44 = row.createCell(3);
 
-	    if (record1.getR6_CURRENCY_VOSTRO1() != null && !record1.getR6_CURRENCY_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR6_CURRENCY_VOSTRO1() != null ){
 	        cell44.setCellValue(record1.getR6_CURRENCY_VOSTRO1().toString().trim() );
 	        cell44.setCellStyle(numberStyle);
 	    } else {
@@ -5793,7 +5793,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell47 = row.createCell(6);
 
-	    if (record1.getR6_AMOUNT_DEMAND_VOSTRO1() != null && !record1.getR6_AMOUNT_DEMAND_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR6_AMOUNT_DEMAND_VOSTRO1() != null ){
 	        cell47.setCellValue(record1.getR6_AMOUNT_DEMAND_VOSTRO1().toString().trim() );
 	        cell47.setCellStyle(numberStyle);
 	    } else {
@@ -5805,7 +5805,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 	     row = sheet.getRow(57) != null ? sheet.getRow(57) : sheet.createRow(57);
 	     Cell cell49 = row.createCell(0);
 
-	    if (record1.getR7_NAME_OF_BANK_VOSTRO1() != null && !record1.getR7_NAME_OF_BANK_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR7_NAME_OF_BANK_VOSTRO1() != null ){
 	        cell49.setCellValue(record1.getR7_NAME_OF_BANK_VOSTRO1().toString().trim() );
 	        cell49.setCellStyle(numberStyle);
 	    } else {
@@ -5815,7 +5815,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell50 = row.createCell(1);
 
-	    if (record1.getR7_TYPE_OF_ACCOUNT_VOSTRO1() != null && !record1.getR7_TYPE_OF_ACCOUNT_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR7_TYPE_OF_ACCOUNT_VOSTRO1() != null ){
 	        cell50.setCellValue(record1.getR7_TYPE_OF_ACCOUNT_VOSTRO1().toString().trim() );
 	        cell50.setCellStyle(numberStyle);
 	    } else {
@@ -5825,7 +5825,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell51 = row.createCell(2);
 
-	    if (record1.getR7_PURPOSE_VOSTRO1() != null && !record1.getR7_PURPOSE_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR7_PURPOSE_VOSTRO1() != null ){
 	        cell51.setCellValue(record1.getR7_PURPOSE_VOSTRO1().toString().trim() );
 	        cell51.setCellStyle(numberStyle);
 	    } else {
@@ -5835,7 +5835,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell52 = row.createCell(3);
 
-	    if (record1.getR7_CURRENCY_VOSTRO1() != null && !record1.getR7_CURRENCY_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR7_CURRENCY_VOSTRO1() != null ){
 	        cell52.setCellValue(record1.getR7_CURRENCY_VOSTRO1().toString().trim() );
 	        cell52.setCellStyle(numberStyle);
 	    } else {
@@ -5845,7 +5845,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell55 = row.createCell(6);
 
-	    if (record1.getR7_AMOUNT_DEMAND_VOSTRO1() != null && !record1.getR7_AMOUNT_DEMAND_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR7_AMOUNT_DEMAND_VOSTRO1() != null ){
 	        cell55.setCellValue(record1.getR7_AMOUNT_DEMAND_VOSTRO1().toString().trim() );
 	        cell55.setCellStyle(numberStyle);
 	    } else {
@@ -5869,7 +5869,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 		 Row  row = sheet.getRow(10) != null ? sheet.getRow(10) : sheet.createRow(10);
 		 Cell cell1 = row.createCell(0);
 
-		 if (record1.getR1_NAME_OF_BANK_AND_COUNTRY_NOSTRO() != null && !record1.getR1_NAME_OF_BANK_AND_COUNTRY_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR1_NAME_OF_BANK_AND_COUNTRY_NOSTRO() != null ){
 		     cell1.setCellValue(record1.getR1_NAME_OF_BANK_AND_COUNTRY_NOSTRO().toString().trim() );
 		     cell1.setCellStyle(numberStyle);
 		 } else {
@@ -5879,7 +5879,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell2 = row.createCell(1);
 
-		 if (record1.getR1_TYPE_OF_ACCOUNT_NOSTRO() != null && !record1.getR1_TYPE_OF_ACCOUNT_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR1_TYPE_OF_ACCOUNT_NOSTRO() != null ){
 		     cell2.setCellValue(record1.getR1_TYPE_OF_ACCOUNT_NOSTRO().toString().trim() );
 		     cell2.setCellStyle(numberStyle);
 		 } else {
@@ -5889,7 +5889,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell3 = row.createCell(2);
 
-		 if (record1.getR1_PURPOSE_NOSTRO() != null && !record1.getR1_PURPOSE_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR1_PURPOSE_NOSTRO() != null ){
 		     cell3.setCellValue(record1.getR1_PURPOSE_NOSTRO().toString().trim() );
 		     cell3.setCellStyle(numberStyle);
 		 } else {
@@ -5899,7 +5899,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell4 = row.createCell(3);
 
-		 if (record1.getR1_CURRENCY_NOSTRO() != null && !record1.getR1_CURRENCY_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR1_CURRENCY_NOSTRO() != null ){
 		     cell4.setCellValue(record1.getR1_CURRENCY_NOSTRO().toString().trim() );
 		     cell4.setCellStyle(numberStyle);
 		 } else {
@@ -5909,7 +5909,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell5 = row.createCell(4);
 
-		 if (record1.getR1_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO() != null && !record1.getR1_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR1_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO() != null ){
 		     cell5.setCellValue(record1.getR1_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO().toString().trim() );
 		     cell5.setCellStyle(numberStyle);
 		 } else {
@@ -5919,7 +5919,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell6 = row.createCell(5);
 
-		 if (record1.getR1_RISK_WEIGHT_NOSTRO() != null && !record1.getR1_RISK_WEIGHT_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR1_RISK_WEIGHT_NOSTRO() != null ){
 		     cell6.setCellValue(record1.getR1_RISK_WEIGHT_NOSTRO().toString().trim() );
 		     cell6.setCellStyle(numberStyle);
 		 } else {
@@ -5929,7 +5929,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell7 = row.createCell(6);
 
-		 if (record1.getR1_AMOUNT_DEMAND_NOSTRO() != null && !record1.getR1_AMOUNT_DEMAND_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR1_AMOUNT_DEMAND_NOSTRO() != null ){
 		     cell7.setCellValue(record1.getR1_AMOUNT_DEMAND_NOSTRO().toString().trim() );
 		     cell7.setCellStyle(numberStyle);
 		 } else {
@@ -5939,7 +5939,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell8 = row.createCell(7);
 
-		 if (record1.getR1_RISK_WEIGHTED_AMOUNT_NOSTRO() != null && !record1.getR1_RISK_WEIGHTED_AMOUNT_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR1_RISK_WEIGHTED_AMOUNT_NOSTRO() != null ){
 		     cell8.setCellValue(record1.getR1_RISK_WEIGHTED_AMOUNT_NOSTRO().toString().trim() );
 		     cell8.setCellStyle(numberStyle);
 		 } else {
@@ -5951,7 +5951,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 		  row = sheet.getRow(11) != null ? sheet.getRow(11) : sheet.createRow(11);
 		  Cell cell9 = row.createCell(0);
 
-		 if (record1.getR2_NAME_OF_BANK_AND_COUNTRY_NOSTRO() != null && !record1.getR2_NAME_OF_BANK_AND_COUNTRY_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR2_NAME_OF_BANK_AND_COUNTRY_NOSTRO() != null ){
 		     cell9.setCellValue(record1.getR2_NAME_OF_BANK_AND_COUNTRY_NOSTRO().toString().trim() );
 		     cell9.setCellStyle(numberStyle);
 		 } else {
@@ -5961,7 +5961,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell10 = row.createCell(1);
 
-		 if (record1.getR2_TYPE_OF_ACCOUNT_NOSTRO() != null && !record1.getR2_TYPE_OF_ACCOUNT_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR2_TYPE_OF_ACCOUNT_NOSTRO() != null ){
 		     cell10.setCellValue(record1.getR2_TYPE_OF_ACCOUNT_NOSTRO().toString().trim() );
 		     cell10.setCellStyle(numberStyle);
 		 } else {
@@ -5971,7 +5971,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell11 = row.createCell(2);
 
-		 if (record1.getR2_PURPOSE_NOSTRO() != null && !record1.getR2_PURPOSE_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR2_PURPOSE_NOSTRO() != null ){
 		     cell11.setCellValue(record1.getR2_PURPOSE_NOSTRO().toString().trim() );
 		     cell11.setCellStyle(numberStyle);
 		 } else {
@@ -5981,7 +5981,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell12 = row.createCell(3);
 
-		 if (record1.getR2_CURRENCY_NOSTRO() != null && !record1.getR2_CURRENCY_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR2_CURRENCY_NOSTRO() != null ){
 		     cell12.setCellValue(record1.getR2_CURRENCY_NOSTRO().toString().trim() );
 		     cell12.setCellStyle(numberStyle);
 		 } else {
@@ -5991,7 +5991,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell13 = row.createCell(4);
 
-		 if (record1.getR2_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO() != null && !record1.getR2_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR2_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO() != null ){
 		     cell13.setCellValue(record1.getR2_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO().toString().trim() );
 		     cell13.setCellStyle(numberStyle);
 		 } else {
@@ -6001,7 +6001,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell14 = row.createCell(5);
 
-		 if (record1.getR2_RISK_WEIGHT_NOSTRO() != null && !record1.getR2_RISK_WEIGHT_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR2_RISK_WEIGHT_NOSTRO() != null ){
 		     cell14.setCellValue(record1.getR2_RISK_WEIGHT_NOSTRO().toString().trim() );
 		     cell14.setCellStyle(numberStyle);
 		 } else {
@@ -6011,7 +6011,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell15 = row.createCell(6);
 
-		 if (record1.getR2_AMOUNT_DEMAND_NOSTRO() != null && !record1.getR2_AMOUNT_DEMAND_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR2_AMOUNT_DEMAND_NOSTRO() != null ){
 		     cell15.setCellValue(record1.getR2_AMOUNT_DEMAND_NOSTRO().toString().trim() );
 		     cell15.setCellStyle(numberStyle);
 		 } else {
@@ -6021,7 +6021,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell16 = row.createCell(7);
 
-		 if (record1.getR2_RISK_WEIGHTED_AMOUNT_NOSTRO() != null && !record1.getR2_RISK_WEIGHTED_AMOUNT_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR2_RISK_WEIGHTED_AMOUNT_NOSTRO() != null ){
 		     cell16.setCellValue(record1.getR2_RISK_WEIGHTED_AMOUNT_NOSTRO().toString().trim() );
 		     cell16.setCellStyle(numberStyle);
 		 } else {
@@ -6033,7 +6033,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 		  row = sheet.getRow(12) != null ? sheet.getRow(12) : sheet.createRow(12);
 		  Cell cell17 = row.createCell(0);
 
-		 if (record1.getR3_NAME_OF_BANK_AND_COUNTRY_NOSTRO() != null && !record1.getR3_NAME_OF_BANK_AND_COUNTRY_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR3_NAME_OF_BANK_AND_COUNTRY_NOSTRO() != null ){
 		     cell17.setCellValue(record1.getR3_NAME_OF_BANK_AND_COUNTRY_NOSTRO().toString().trim() );
 		     cell17.setCellStyle(numberStyle);
 		 } else {
@@ -6043,7 +6043,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell18 = row.createCell(1);
 
-		 if (record1.getR3_TYPE_OF_ACCOUNT_NOSTRO() != null && !record1.getR3_TYPE_OF_ACCOUNT_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR3_TYPE_OF_ACCOUNT_NOSTRO() != null ){
 		     cell18.setCellValue(record1.getR3_TYPE_OF_ACCOUNT_NOSTRO().toString().trim() );
 		     cell18.setCellStyle(numberStyle);
 		 } else {
@@ -6053,7 +6053,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell19 = row.createCell(2);
 
-		 if (record1.getR3_PURPOSE_NOSTRO() != null && !record1.getR3_PURPOSE_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR3_PURPOSE_NOSTRO() != null ){
 		     cell19.setCellValue(record1.getR3_PURPOSE_NOSTRO().toString().trim() );
 		     cell19.setCellStyle(numberStyle);
 		 } else {
@@ -6063,7 +6063,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell20 = row.createCell(3);
 
-		 if (record1.getR3_CURRENCY_NOSTRO() != null && !record1.getR3_CURRENCY_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR3_CURRENCY_NOSTRO() != null ){
 		     cell20.setCellValue(record1.getR3_CURRENCY_NOSTRO().toString().trim() );
 		     cell20.setCellStyle(numberStyle);
 		 } else {
@@ -6073,7 +6073,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell21 = row.createCell(4);
 
-		 if (record1.getR3_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO() != null && !record1.getR3_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR3_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO() != null ){
 		     cell21.setCellValue(record1.getR3_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO().toString().trim() );
 		     cell21.setCellStyle(numberStyle);
 		 } else {
@@ -6083,7 +6083,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell22 = row.createCell(5);
 
-		 if (record1.getR3_RISK_WEIGHT_NOSTRO() != null && !record1.getR3_RISK_WEIGHT_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR3_RISK_WEIGHT_NOSTRO() != null ){
 		     cell22.setCellValue(record1.getR3_RISK_WEIGHT_NOSTRO().toString().trim() );
 		     cell22.setCellStyle(numberStyle);
 		 } else {
@@ -6093,7 +6093,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell23 = row.createCell(6);
 
-		 if (record1.getR3_AMOUNT_DEMAND_NOSTRO() != null && !record1.getR3_AMOUNT_DEMAND_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR3_AMOUNT_DEMAND_NOSTRO() != null ){
 		     cell23.setCellValue(record1.getR3_AMOUNT_DEMAND_NOSTRO().toString().trim() );
 		     cell23.setCellStyle(numberStyle);
 		 } else {
@@ -6103,7 +6103,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell24 = row.createCell(7);
 
-		 if (record1.getR3_RISK_WEIGHTED_AMOUNT_NOSTRO() != null && !record1.getR3_RISK_WEIGHTED_AMOUNT_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR3_RISK_WEIGHTED_AMOUNT_NOSTRO() != null ){
 		     cell24.setCellValue(record1.getR3_RISK_WEIGHTED_AMOUNT_NOSTRO().toString().trim() );
 		     cell24.setCellStyle(numberStyle);
 		 } else {
@@ -6115,7 +6115,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 		  row = sheet.getRow(13) != null ? sheet.getRow(13) : sheet.createRow(13);
 		  Cell cell25 = row.createCell(0);
 
-		 if (record1.getR4_NAME_OF_BANK_AND_COUNTRY_NOSTRO() != null && !record1.getR4_NAME_OF_BANK_AND_COUNTRY_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR4_NAME_OF_BANK_AND_COUNTRY_NOSTRO() != null ){
 		     cell25.setCellValue(record1.getR4_NAME_OF_BANK_AND_COUNTRY_NOSTRO().toString().trim() );
 		     cell25.setCellStyle(numberStyle);
 		 } else {
@@ -6125,7 +6125,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell26 = row.createCell(1);
 
-		 if (record1.getR4_TYPE_OF_ACCOUNT_NOSTRO() != null && !record1.getR4_TYPE_OF_ACCOUNT_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR4_TYPE_OF_ACCOUNT_NOSTRO() != null ){
 		     cell26.setCellValue(record1.getR4_TYPE_OF_ACCOUNT_NOSTRO().toString().trim() );
 		     cell26.setCellStyle(numberStyle);
 		 } else {
@@ -6135,7 +6135,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell27 = row.createCell(2);
 
-		 if (record1.getR4_PURPOSE_NOSTRO() != null && !record1.getR4_PURPOSE_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR4_PURPOSE_NOSTRO() != null ){
 		     cell27.setCellValue(record1.getR4_PURPOSE_NOSTRO().toString().trim() );
 		     cell27.setCellStyle(numberStyle);
 		 } else {
@@ -6145,7 +6145,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell28 = row.createCell(3);
 
-		 if (record1.getR4_CURRENCY_NOSTRO() != null && !record1.getR4_CURRENCY_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR4_CURRENCY_NOSTRO() != null ){
 		     cell28.setCellValue(record1.getR4_CURRENCY_NOSTRO().toString().trim() );
 		     cell28.setCellStyle(numberStyle);
 		 } else {
@@ -6155,7 +6155,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell29 = row.createCell(4);
 
-		 if (record1.getR4_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO() != null && !record1.getR4_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR4_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO() != null ){
 		     cell29.setCellValue(record1.getR4_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO().toString().trim() );
 		     cell29.setCellStyle(numberStyle);
 		 } else {
@@ -6165,7 +6165,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell30 = row.createCell(5);
 
-		 if (record1.getR4_RISK_WEIGHT_NOSTRO() != null && !record1.getR4_RISK_WEIGHT_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR4_RISK_WEIGHT_NOSTRO() != null ){
 		     cell30.setCellValue(record1.getR4_RISK_WEIGHT_NOSTRO().toString().trim() );
 		     cell30.setCellStyle(numberStyle);
 		 } else {
@@ -6175,7 +6175,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell31 = row.createCell(6);
 
-		 if (record1.getR4_AMOUNT_DEMAND_NOSTRO() != null && !record1.getR4_AMOUNT_DEMAND_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR4_AMOUNT_DEMAND_NOSTRO() != null ){
 		     cell31.setCellValue(record1.getR4_AMOUNT_DEMAND_NOSTRO().toString().trim() );
 		     cell31.setCellStyle(numberStyle);
 		 } else {
@@ -6185,7 +6185,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell32 = row.createCell(7);
 
-		 if (record1.getR4_RISK_WEIGHTED_AMOUNT_NOSTRO() != null && !record1.getR4_RISK_WEIGHTED_AMOUNT_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR4_RISK_WEIGHTED_AMOUNT_NOSTRO() != null ){
 		     cell32.setCellValue(record1.getR4_RISK_WEIGHTED_AMOUNT_NOSTRO().toString().trim() );
 		     cell32.setCellStyle(numberStyle);
 		 } else {
@@ -6197,7 +6197,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 		  row = sheet.getRow(14) != null ? sheet.getRow(14) : sheet.createRow(14);
 		  Cell cell33 = row.createCell(0);
 
-		 if (record1.getR5_NAME_OF_BANK_AND_COUNTRY_NOSTRO() != null && !record1.getR5_NAME_OF_BANK_AND_COUNTRY_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR5_NAME_OF_BANK_AND_COUNTRY_NOSTRO() != null ){
 		     cell33.setCellValue(record1.getR5_NAME_OF_BANK_AND_COUNTRY_NOSTRO().toString().trim() );
 		     cell33.setCellStyle(numberStyle);
 		 } else {
@@ -6207,7 +6207,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell34 = row.createCell(1);
 
-		 if (record1.getR5_TYPE_OF_ACCOUNT_NOSTRO() != null && !record1.getR5_TYPE_OF_ACCOUNT_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR5_TYPE_OF_ACCOUNT_NOSTRO() != null ){
 		     cell34.setCellValue(record1.getR5_TYPE_OF_ACCOUNT_NOSTRO().toString().trim() );
 		     cell34.setCellStyle(numberStyle);
 		 } else {
@@ -6217,7 +6217,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell35 = row.createCell(2);
 
-		 if (record1.getR5_PURPOSE_NOSTRO() != null && !record1.getR5_PURPOSE_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR5_PURPOSE_NOSTRO() != null ){
 		     cell35.setCellValue(record1.getR5_PURPOSE_NOSTRO().toString().trim() );
 		     cell35.setCellStyle(numberStyle);
 		 } else {
@@ -6227,7 +6227,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell36 = row.createCell(3);
 
-		 if (record1.getR5_CURRENCY_NOSTRO() != null && !record1.getR5_CURRENCY_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR5_CURRENCY_NOSTRO() != null ){
 		     cell36.setCellValue(record1.getR5_CURRENCY_NOSTRO().toString().trim() );
 		     cell36.setCellStyle(numberStyle);
 		 } else {
@@ -6237,7 +6237,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell37 = row.createCell(4);
 
-		 if (record1.getR5_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO() != null && !record1.getR5_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR5_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO() != null ){
 		     cell37.setCellValue(record1.getR5_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO().toString().trim() );
 		     cell37.setCellStyle(numberStyle);
 		 } else {
@@ -6247,7 +6247,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell38 = row.createCell(5);
 
-		 if (record1.getR5_RISK_WEIGHT_NOSTRO() != null && !record1.getR5_RISK_WEIGHT_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR5_RISK_WEIGHT_NOSTRO() != null ){
 		     cell38.setCellValue(record1.getR5_RISK_WEIGHT_NOSTRO().toString().trim() );
 		     cell38.setCellStyle(numberStyle);
 		 } else {
@@ -6257,7 +6257,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell39 = row.createCell(6);
 
-		 if (record1.getR5_AMOUNT_DEMAND_NOSTRO() != null && !record1.getR5_AMOUNT_DEMAND_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR5_AMOUNT_DEMAND_NOSTRO() != null ){
 		     cell39.setCellValue(record1.getR5_AMOUNT_DEMAND_NOSTRO().toString().trim() );
 		     cell39.setCellStyle(numberStyle);
 		 } else {
@@ -6267,7 +6267,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell40 = row.createCell(7);
 
-		 if (record1.getR5_RISK_WEIGHTED_AMOUNT_NOSTRO() != null && !record1.getR5_RISK_WEIGHTED_AMOUNT_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR5_RISK_WEIGHTED_AMOUNT_NOSTRO() != null ){
 		     cell40.setCellValue(record1.getR5_RISK_WEIGHTED_AMOUNT_NOSTRO().toString().trim() );
 		     cell40.setCellStyle(numberStyle);
 		 } else {
@@ -6279,7 +6279,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 		  row = sheet.getRow(15) != null ? sheet.getRow(15) : sheet.createRow(15);
 		  Cell cell41 = row.createCell(0);
 
-		 if (record1.getR6_NAME_OF_BANK_AND_COUNTRY_NOSTRO() != null && !record1.getR6_NAME_OF_BANK_AND_COUNTRY_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR6_NAME_OF_BANK_AND_COUNTRY_NOSTRO() != null ){
 		     cell41.setCellValue(record1.getR6_NAME_OF_BANK_AND_COUNTRY_NOSTRO().toString().trim() );
 		     cell41.setCellStyle(numberStyle);
 		 } else {
@@ -6289,7 +6289,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell42 = row.createCell(1);
 
-		 if (record1.getR6_TYPE_OF_ACCOUNT_NOSTRO() != null && !record1.getR6_TYPE_OF_ACCOUNT_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR6_TYPE_OF_ACCOUNT_NOSTRO() != null ){
 		     cell42.setCellValue(record1.getR6_TYPE_OF_ACCOUNT_NOSTRO().toString().trim() );
 		     cell42.setCellStyle(numberStyle);
 		 } else {
@@ -6299,7 +6299,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell43 = row.createCell(2);
 
-		 if (record1.getR6_PURPOSE_NOSTRO() != null && !record1.getR6_PURPOSE_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR6_PURPOSE_NOSTRO() != null ){
 		     cell43.setCellValue(record1.getR6_PURPOSE_NOSTRO().toString().trim() );
 		     cell43.setCellStyle(numberStyle);
 		 } else {
@@ -6309,7 +6309,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell44 = row.createCell(3);
 
-		 if (record1.getR6_CURRENCY_NOSTRO() != null && !record1.getR6_CURRENCY_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR6_CURRENCY_NOSTRO() != null ){
 		     cell44.setCellValue(record1.getR6_CURRENCY_NOSTRO().toString().trim() );
 		     cell44.setCellStyle(numberStyle);
 		 } else {
@@ -6319,7 +6319,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell45 = row.createCell(4);
 
-		 if (record1.getR6_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO() != null && !record1.getR6_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR6_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO() != null ){
 		     cell45.setCellValue(record1.getR6_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO().toString().trim() );
 		     cell45.setCellStyle(numberStyle);
 		 } else {
@@ -6329,7 +6329,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell46 = row.createCell(5);
 
-		 if (record1.getR6_RISK_WEIGHT_NOSTRO() != null && !record1.getR6_RISK_WEIGHT_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR6_RISK_WEIGHT_NOSTRO() != null ){
 		     cell46.setCellValue(record1.getR6_RISK_WEIGHT_NOSTRO().toString().trim() );
 		     cell46.setCellStyle(numberStyle);
 		 } else {
@@ -6339,7 +6339,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell47 = row.createCell(6);
 
-		 if (record1.getR6_AMOUNT_DEMAND_NOSTRO() != null && !record1.getR6_AMOUNT_DEMAND_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR6_AMOUNT_DEMAND_NOSTRO() != null ){
 		     cell47.setCellValue(record1.getR6_AMOUNT_DEMAND_NOSTRO().toString().trim() );
 		     cell47.setCellStyle(numberStyle);
 		 } else {
@@ -6349,7 +6349,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell48 = row.createCell(7);
 
-		 if (record1.getR6_RISK_WEIGHTED_AMOUNT_NOSTRO() != null && !record1.getR6_RISK_WEIGHTED_AMOUNT_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR6_RISK_WEIGHTED_AMOUNT_NOSTRO() != null ){
 		     cell48.setCellValue(record1.getR6_RISK_WEIGHTED_AMOUNT_NOSTRO().toString().trim() );
 		     cell48.setCellStyle(numberStyle);
 		 } else {
@@ -6361,7 +6361,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 		  row = sheet.getRow(16) != null ? sheet.getRow(16) : sheet.createRow(16);
 		  Cell cell49 = row.createCell(0);
 
-		 if (record1.getR7_NAME_OF_BANK_AND_COUNTRY_NOSTRO() != null && !record1.getR7_NAME_OF_BANK_AND_COUNTRY_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR7_NAME_OF_BANK_AND_COUNTRY_NOSTRO() != null ){
 		     cell49.setCellValue(record1.getR7_NAME_OF_BANK_AND_COUNTRY_NOSTRO().toString().trim() );
 		     cell49.setCellStyle(numberStyle);
 		 } else {
@@ -6371,7 +6371,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell50 = row.createCell(1);
 
-		 if (record1.getR7_TYPE_OF_ACCOUNT_NOSTRO() != null && !record1.getR7_TYPE_OF_ACCOUNT_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR7_TYPE_OF_ACCOUNT_NOSTRO() != null ){
 		     cell50.setCellValue(record1.getR7_TYPE_OF_ACCOUNT_NOSTRO().toString().trim() );
 		     cell50.setCellStyle(numberStyle);
 		 } else {
@@ -6381,7 +6381,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell51 = row.createCell(2);
 
-		 if (record1.getR7_PURPOSE_NOSTRO() != null && !record1.getR7_PURPOSE_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR7_PURPOSE_NOSTRO() != null ){
 		     cell51.setCellValue(record1.getR7_PURPOSE_NOSTRO().toString().trim() );
 		     cell51.setCellStyle(numberStyle);
 		 } else {
@@ -6391,7 +6391,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell52 = row.createCell(3);
 
-		 if (record1.getR7_CURRENCY_NOSTRO() != null && !record1.getR7_CURRENCY_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR7_CURRENCY_NOSTRO() != null ){
 		     cell52.setCellValue(record1.getR7_CURRENCY_NOSTRO().toString().trim() );
 		     cell52.setCellStyle(numberStyle);
 		 } else {
@@ -6401,7 +6401,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell53 = row.createCell(4);
 
-		 if (record1.getR7_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO() != null && !record1.getR7_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR7_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO() != null ){
 		     cell53.setCellValue(record1.getR7_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO().toString().trim() );
 		     cell53.setCellStyle(numberStyle);
 		 } else {
@@ -6411,7 +6411,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell54 = row.createCell(5);
 
-		 if (record1.getR7_RISK_WEIGHT_NOSTRO() != null && !record1.getR7_RISK_WEIGHT_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR7_RISK_WEIGHT_NOSTRO() != null ){
 		     cell54.setCellValue(record1.getR7_RISK_WEIGHT_NOSTRO().toString().trim() );
 		     cell54.setCellStyle(numberStyle);
 		 } else {
@@ -6421,7 +6421,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell55 = row.createCell(6);
 
-		 if (record1.getR7_AMOUNT_DEMAND_NOSTRO() != null && !record1.getR7_AMOUNT_DEMAND_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR7_AMOUNT_DEMAND_NOSTRO() != null ){
 		     cell55.setCellValue(record1.getR7_AMOUNT_DEMAND_NOSTRO().toString().trim() );
 		     cell55.setCellStyle(numberStyle);
 		 } else {
@@ -6431,7 +6431,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell56 = row.createCell(7);
 
-		 if (record1.getR7_RISK_WEIGHTED_AMOUNT_NOSTRO() != null && !record1.getR7_RISK_WEIGHTED_AMOUNT_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR7_RISK_WEIGHTED_AMOUNT_NOSTRO() != null ){
 		     cell56.setCellValue(record1.getR7_RISK_WEIGHTED_AMOUNT_NOSTRO().toString().trim() );
 		     cell56.setCellStyle(numberStyle);
 		 } else {
@@ -6443,7 +6443,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 		  row = sheet.getRow(17) != null ? sheet.getRow(17) : sheet.createRow(17);
 		  Cell cell57 = row.createCell(0);
 
-		 if (record1.getR8_NAME_OF_BANK_AND_COUNTRY_NOSTRO() != null && !record1.getR8_NAME_OF_BANK_AND_COUNTRY_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR8_NAME_OF_BANK_AND_COUNTRY_NOSTRO() != null ){
 		     cell57.setCellValue(record1.getR8_NAME_OF_BANK_AND_COUNTRY_NOSTRO().toString().trim() );
 		     cell57.setCellStyle(numberStyle);
 		 } else {
@@ -6453,7 +6453,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell58 = row.createCell(1);
 
-		 if (record1.getR8_TYPE_OF_ACCOUNT_NOSTRO() != null && !record1.getR8_TYPE_OF_ACCOUNT_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR8_TYPE_OF_ACCOUNT_NOSTRO() != null ){
 		     cell58.setCellValue(record1.getR8_TYPE_OF_ACCOUNT_NOSTRO().toString().trim() );
 		     cell58.setCellStyle(numberStyle);
 		 } else {
@@ -6463,7 +6463,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell59 = row.createCell(2);
 
-		 if (record1.getR8_PURPOSE_NOSTRO() != null && !record1.getR8_PURPOSE_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR8_PURPOSE_NOSTRO() != null ){
 		     cell59.setCellValue(record1.getR8_PURPOSE_NOSTRO().toString().trim() );
 		     cell59.setCellStyle(numberStyle);
 		 } else {
@@ -6473,7 +6473,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell60 = row.createCell(3);
 
-		 if (record1.getR8_CURRENCY_NOSTRO() != null && !record1.getR8_CURRENCY_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR8_CURRENCY_NOSTRO() != null ){
 		     cell60.setCellValue(record1.getR8_CURRENCY_NOSTRO().toString().trim() );
 		     cell60.setCellStyle(numberStyle);
 		 } else {
@@ -6483,7 +6483,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell61 = row.createCell(4);
 
-		 if (record1.getR8_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO() != null && !record1.getR8_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR8_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO() != null ){
 		     cell61.setCellValue(record1.getR8_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO().toString().trim() );
 		     cell61.setCellStyle(numberStyle);
 		 } else {
@@ -6493,7 +6493,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell62 = row.createCell(5);
 
-		 if (record1.getR8_RISK_WEIGHT_NOSTRO() != null && !record1.getR8_RISK_WEIGHT_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR8_RISK_WEIGHT_NOSTRO() != null ){
 		     cell62.setCellValue(record1.getR8_RISK_WEIGHT_NOSTRO().toString().trim() );
 		     cell62.setCellStyle(numberStyle);
 		 } else {
@@ -6503,7 +6503,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell63 = row.createCell(6);
 
-		 if (record1.getR8_AMOUNT_DEMAND_NOSTRO() != null && !record1.getR8_AMOUNT_DEMAND_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR8_AMOUNT_DEMAND_NOSTRO() != null ){
 		     cell63.setCellValue(record1.getR8_AMOUNT_DEMAND_NOSTRO().toString().trim() );
 		     cell63.setCellStyle(numberStyle);
 		 } else {
@@ -6513,7 +6513,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell64 = row.createCell(7);
 
-		 if (record1.getR8_RISK_WEIGHTED_AMOUNT_NOSTRO() != null && !record1.getR8_RISK_WEIGHTED_AMOUNT_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR8_RISK_WEIGHTED_AMOUNT_NOSTRO() != null ){
 		     cell64.setCellValue(record1.getR8_RISK_WEIGHTED_AMOUNT_NOSTRO().toString().trim() );
 		     cell64.setCellStyle(numberStyle);
 		 } else {
@@ -6525,7 +6525,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 		  row = sheet.getRow(18) != null ? sheet.getRow(18) : sheet.createRow(18);
 		  Cell cell65 = row.createCell(0);
 
-		 if (record1.getR9_NAME_OF_BANK_AND_COUNTRY_NOSTRO() != null && !record1.getR9_NAME_OF_BANK_AND_COUNTRY_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR9_NAME_OF_BANK_AND_COUNTRY_NOSTRO() != null ){
 		     cell65.setCellValue(record1.getR9_NAME_OF_BANK_AND_COUNTRY_NOSTRO().toString().trim() );
 		     cell65.setCellStyle(numberStyle);
 		 } else {
@@ -6535,7 +6535,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell66 = row.createCell(1);
 
-		 if (record1.getR9_TYPE_OF_ACCOUNT_NOSTRO() != null && !record1.getR9_TYPE_OF_ACCOUNT_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR9_TYPE_OF_ACCOUNT_NOSTRO() != null ){
 		     cell66.setCellValue(record1.getR9_TYPE_OF_ACCOUNT_NOSTRO().toString().trim() );
 		     cell66.setCellStyle(numberStyle);
 		 } else {
@@ -6545,7 +6545,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell67 = row.createCell(2);
 
-		 if (record1.getR9_PURPOSE_NOSTRO() != null && !record1.getR9_PURPOSE_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR9_PURPOSE_NOSTRO() != null ){
 		     cell67.setCellValue(record1.getR9_PURPOSE_NOSTRO().toString().trim() );
 		     cell67.setCellStyle(numberStyle);
 		 } else {
@@ -6555,7 +6555,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell68 = row.createCell(3);
 
-		 if (record1.getR9_CURRENCY_NOSTRO() != null && !record1.getR9_CURRENCY_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR9_CURRENCY_NOSTRO() != null ){
 		     cell68.setCellValue(record1.getR9_CURRENCY_NOSTRO().toString().trim() );
 		     cell68.setCellStyle(numberStyle);
 		 } else {
@@ -6565,7 +6565,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell69 = row.createCell(4);
 
-		 if (record1.getR9_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO() != null && !record1.getR9_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR9_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO() != null ){
 		     cell69.setCellValue(record1.getR9_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO().toString().trim() );
 		     cell69.setCellStyle(numberStyle);
 		 } else {
@@ -6575,7 +6575,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell70 = row.createCell(5);
 
-		 if (record1.getR9_RISK_WEIGHT_NOSTRO() != null && !record1.getR9_RISK_WEIGHT_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR9_RISK_WEIGHT_NOSTRO() != null ){
 		     cell70.setCellValue(record1.getR9_RISK_WEIGHT_NOSTRO().toString().trim() );
 		     cell70.setCellStyle(numberStyle);
 		 } else {
@@ -6585,7 +6585,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell71 = row.createCell(6);
 
-		 if (record1.getR9_AMOUNT_DEMAND_NOSTRO() != null && !record1.getR9_AMOUNT_DEMAND_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR9_AMOUNT_DEMAND_NOSTRO() != null ){
 		     cell71.setCellValue(record1.getR9_AMOUNT_DEMAND_NOSTRO().toString().trim() );
 		     cell71.setCellStyle(numberStyle);
 		 } else {
@@ -6595,7 +6595,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell72 = row.createCell(7);
 
-		 if (record1.getR9_RISK_WEIGHTED_AMOUNT_NOSTRO() != null && !record1.getR9_RISK_WEIGHTED_AMOUNT_NOSTRO().toString().trim().equals("N/A") ) {
+		 if (record1.getR9_RISK_WEIGHTED_AMOUNT_NOSTRO() != null ){
 		     cell72.setCellValue(record1.getR9_RISK_WEIGHTED_AMOUNT_NOSTRO().toString().trim() );
 		     cell72.setCellStyle(numberStyle);
 		 } else {
@@ -6619,7 +6619,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 			Row  row = sheet.getRow(23) != null ? sheet.getRow(23) : sheet.createRow(23);
 			 Cell cell1 = row.createCell(0);
 
-			 if (record1.getR1_NAME_OF_BANK_AND_COUNTRY_VOSTRO() != null && !record1.getR1_NAME_OF_BANK_AND_COUNTRY_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR1_NAME_OF_BANK_AND_COUNTRY_VOSTRO() != null ){
 			     cell1.setCellValue(record1.getR1_NAME_OF_BANK_AND_COUNTRY_VOSTRO().toString().trim() );
 			     cell1.setCellStyle(numberStyle);
 			 } else {
@@ -6629,7 +6629,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell2 = row.createCell(1);
 
-			 if (record1.getR1_TYPE_OF_ACCOUNT_VOSTRO() != null && !record1.getR1_TYPE_OF_ACCOUNT_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR1_TYPE_OF_ACCOUNT_VOSTRO() != null ){
 			     cell2.setCellValue(record1.getR1_TYPE_OF_ACCOUNT_VOSTRO().toString().trim() );
 			     cell2.setCellStyle(numberStyle);
 			 } else {
@@ -6639,7 +6639,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell3 = row.createCell(2);
 
-			 if (record1.getR1_PURPOSE_VOSTRO() != null && !record1.getR1_PURPOSE_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR1_PURPOSE_VOSTRO() != null ){
 			     cell3.setCellValue(record1.getR1_PURPOSE_VOSTRO().toString().trim() );
 			     cell3.setCellStyle(numberStyle);
 			 } else {
@@ -6649,7 +6649,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell4 = row.createCell(3);
 
-			 if (record1.getR1_CURRENCY_VOSTRO() != null && !record1.getR1_CURRENCY_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR1_CURRENCY_VOSTRO() != null ){
 			     cell4.setCellValue(record1.getR1_CURRENCY_VOSTRO().toString().trim() );
 			     cell4.setCellStyle(numberStyle);
 			 } else {
@@ -6659,7 +6659,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell7 = row.createCell(6);
 
-			 if (record1.getR1_AMOUNT_DEMAND_VOSTRO() != null && !record1.getR1_AMOUNT_DEMAND_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR1_AMOUNT_DEMAND_VOSTRO() != null ){
 			     cell7.setCellValue(record1.getR1_AMOUNT_DEMAND_VOSTRO().toString().trim() );
 			     cell7.setCellStyle(numberStyle);
 			 } else {
@@ -6671,7 +6671,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 			  row = sheet.getRow(24) != null ? sheet.getRow(24) : sheet.createRow(24);
 			  Cell cell9 = row.createCell(0);
 
-			 if (record1.getR2_NAME_OF_BANK_AND_COUNTRY_VOSTRO() != null && !record1.getR2_NAME_OF_BANK_AND_COUNTRY_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR2_NAME_OF_BANK_AND_COUNTRY_VOSTRO() != null ){
 			     cell9.setCellValue(record1.getR2_NAME_OF_BANK_AND_COUNTRY_VOSTRO().toString().trim() );
 			     cell9.setCellStyle(numberStyle);
 			 } else {
@@ -6681,7 +6681,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell10 = row.createCell(1);
 
-			 if (record1.getR2_TYPE_OF_ACCOUNT_VOSTRO() != null && !record1.getR2_TYPE_OF_ACCOUNT_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR2_TYPE_OF_ACCOUNT_VOSTRO() != null ){
 			     cell10.setCellValue(record1.getR2_TYPE_OF_ACCOUNT_VOSTRO().toString().trim() );
 			     cell10.setCellStyle(numberStyle);
 			 } else {
@@ -6691,7 +6691,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell11 = row.createCell(2);
 
-			 if (record1.getR2_PURPOSE_VOSTRO() != null && !record1.getR2_PURPOSE_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR2_PURPOSE_VOSTRO() != null ){
 			     cell11.setCellValue(record1.getR2_PURPOSE_VOSTRO().toString().trim() );
 			     cell11.setCellStyle(numberStyle);
 			 } else {
@@ -6701,7 +6701,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell12 = row.createCell(3);
 
-			 if (record1.getR2_CURRENCY_VOSTRO() != null && !record1.getR2_CURRENCY_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR2_CURRENCY_VOSTRO() != null ){
 			     cell12.setCellValue(record1.getR2_CURRENCY_VOSTRO().toString().trim() );
 			     cell12.setCellStyle(numberStyle);
 			 } else {
@@ -6711,7 +6711,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell15 = row.createCell(6);
 
-			 if (record1.getR2_AMOUNT_DEMAND_VOSTRO() != null && !record1.getR2_AMOUNT_DEMAND_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR2_AMOUNT_DEMAND_VOSTRO() != null ){
 			     cell15.setCellValue(record1.getR2_AMOUNT_DEMAND_VOSTRO().toString().trim() );
 			     cell15.setCellStyle(numberStyle);
 			 } else {
@@ -6723,7 +6723,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 			  row = sheet.getRow(25) != null ? sheet.getRow(25) : sheet.createRow(25);
 			  Cell cell17 = row.createCell(0);
 
-			 if (record1.getR3_NAME_OF_BANK_AND_COUNTRY_VOSTRO() != null && !record1.getR3_NAME_OF_BANK_AND_COUNTRY_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR3_NAME_OF_BANK_AND_COUNTRY_VOSTRO() != null ){
 			     cell17.setCellValue(record1.getR3_NAME_OF_BANK_AND_COUNTRY_VOSTRO().toString().trim() );
 			     cell17.setCellStyle(numberStyle);
 			 } else {
@@ -6733,7 +6733,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell18 = row.createCell(1);
 
-			 if (record1.getR3_TYPE_OF_ACCOUNT_VOSTRO() != null && !record1.getR3_TYPE_OF_ACCOUNT_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR3_TYPE_OF_ACCOUNT_VOSTRO() != null ){
 			     cell18.setCellValue(record1.getR3_TYPE_OF_ACCOUNT_VOSTRO().toString().trim() );
 			     cell18.setCellStyle(numberStyle);
 			 } else {
@@ -6743,7 +6743,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell19 = row.createCell(2);
 
-			 if (record1.getR3_PURPOSE_VOSTRO() != null && !record1.getR3_PURPOSE_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR3_PURPOSE_VOSTRO() != null ){
 			     cell19.setCellValue(record1.getR3_PURPOSE_VOSTRO().toString().trim() );
 			     cell19.setCellStyle(numberStyle);
 			 } else {
@@ -6753,7 +6753,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell20 = row.createCell(3);
 
-			 if (record1.getR3_CURRENCY_VOSTRO() != null && !record1.getR3_CURRENCY_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR3_CURRENCY_VOSTRO() != null ){
 			     cell20.setCellValue(record1.getR3_CURRENCY_VOSTRO().toString().trim() );
 			     cell20.setCellStyle(numberStyle);
 			 } else {
@@ -6763,7 +6763,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell23 = row.createCell(6);
 
-			 if (record1.getR3_AMOUNT_DEMAND_VOSTRO() != null && !record1.getR3_AMOUNT_DEMAND_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR3_AMOUNT_DEMAND_VOSTRO() != null ){
 			     cell23.setCellValue(record1.getR3_AMOUNT_DEMAND_VOSTRO().toString().trim() );
 			     cell23.setCellStyle(numberStyle);
 			 } else {
@@ -6775,7 +6775,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 			  row = sheet.getRow(26) != null ? sheet.getRow(26) : sheet.createRow(26);
 			  Cell cell25 = row.createCell(0);
 
-			 if (record1.getR4_NAME_OF_BANK_AND_COUNTRY_VOSTRO() != null && !record1.getR4_NAME_OF_BANK_AND_COUNTRY_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR4_NAME_OF_BANK_AND_COUNTRY_VOSTRO() != null ){
 			     cell25.setCellValue(record1.getR4_NAME_OF_BANK_AND_COUNTRY_VOSTRO().toString().trim() );
 			     cell25.setCellStyle(numberStyle);
 			 } else {
@@ -6785,7 +6785,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell26 = row.createCell(1);
 
-			 if (record1.getR4_TYPE_OF_ACCOUNT_VOSTRO() != null && !record1.getR4_TYPE_OF_ACCOUNT_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR4_TYPE_OF_ACCOUNT_VOSTRO() != null ){
 			     cell26.setCellValue(record1.getR4_TYPE_OF_ACCOUNT_VOSTRO().toString().trim() );
 			     cell26.setCellStyle(numberStyle);
 			 } else {
@@ -6795,7 +6795,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell27 = row.createCell(2);
 
-			 if (record1.getR4_PURPOSE_VOSTRO() != null && !record1.getR4_PURPOSE_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR4_PURPOSE_VOSTRO() != null ){
 			     cell27.setCellValue(record1.getR4_PURPOSE_VOSTRO().toString().trim() );
 			     cell27.setCellStyle(numberStyle);
 			 } else {
@@ -6805,7 +6805,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell28 = row.createCell(3);
 
-			 if (record1.getR4_CURRENCY_VOSTRO() != null && !record1.getR4_CURRENCY_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR4_CURRENCY_VOSTRO() != null ){
 			     cell28.setCellValue(record1.getR4_CURRENCY_VOSTRO().toString().trim() );
 			     cell28.setCellStyle(numberStyle);
 			 } else {
@@ -6815,7 +6815,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell31 = row.createCell(6);
 
-			 if (record1.getR4_AMOUNT_DEMAND_VOSTRO() != null && !record1.getR4_AMOUNT_DEMAND_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR4_AMOUNT_DEMAND_VOSTRO() != null ){
 			     cell31.setCellValue(record1.getR4_AMOUNT_DEMAND_VOSTRO().toString().trim() );
 			     cell31.setCellStyle(numberStyle);
 			 } else {
@@ -6827,7 +6827,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 			  row = sheet.getRow(27) != null ? sheet.getRow(27) : sheet.createRow(27);
 			  Cell cell33 = row.createCell(0);
 
-			 if (record1.getR5_NAME_OF_BANK_AND_COUNTRY_VOSTRO() != null && !record1.getR5_NAME_OF_BANK_AND_COUNTRY_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR5_NAME_OF_BANK_AND_COUNTRY_VOSTRO() != null ){
 			     cell33.setCellValue(record1.getR5_NAME_OF_BANK_AND_COUNTRY_VOSTRO().toString().trim() );
 			     cell33.setCellStyle(numberStyle);
 			 } else {
@@ -6837,7 +6837,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell34 = row.createCell(1);
 
-			 if (record1.getR5_TYPE_OF_ACCOUNT_VOSTRO() != null && !record1.getR5_TYPE_OF_ACCOUNT_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR5_TYPE_OF_ACCOUNT_VOSTRO() != null ){
 			     cell34.setCellValue(record1.getR5_TYPE_OF_ACCOUNT_VOSTRO().toString().trim() );
 			     cell34.setCellStyle(numberStyle);
 			 } else {
@@ -6847,7 +6847,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell35 = row.createCell(2);
 
-			 if (record1.getR5_PURPOSE_VOSTRO() != null && !record1.getR5_PURPOSE_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR5_PURPOSE_VOSTRO() != null ){
 			     cell35.setCellValue(record1.getR5_PURPOSE_VOSTRO().toString().trim() );
 			     cell35.setCellStyle(numberStyle);
 			 } else {
@@ -6857,7 +6857,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell36 = row.createCell(3);
 
-			 if (record1.getR5_CURRENCY_VOSTRO() != null && !record1.getR5_CURRENCY_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR5_CURRENCY_VOSTRO() != null ){
 			     cell36.setCellValue(record1.getR5_CURRENCY_VOSTRO().toString().trim() );
 			     cell36.setCellStyle(numberStyle);
 			 } else {
@@ -6867,7 +6867,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell39 = row.createCell(6);
 
-			 if (record1.getR5_AMOUNT_DEMAND_VOSTRO() != null && !record1.getR5_AMOUNT_DEMAND_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR5_AMOUNT_DEMAND_VOSTRO() != null ){
 			     cell39.setCellValue(record1.getR5_AMOUNT_DEMAND_VOSTRO().toString().trim() );
 			     cell39.setCellStyle(numberStyle);
 			 } else {
@@ -6879,7 +6879,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 			  row = sheet.getRow(28) != null ? sheet.getRow(28) : sheet.createRow(28);
 			  Cell cell41 = row.createCell(0);
 
-			 if (record1.getR6_NAME_OF_BANK_AND_COUNTRY_VOSTRO() != null && !record1.getR6_NAME_OF_BANK_AND_COUNTRY_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR6_NAME_OF_BANK_AND_COUNTRY_VOSTRO() != null ){
 			     cell41.setCellValue(record1.getR6_NAME_OF_BANK_AND_COUNTRY_VOSTRO().toString().trim() );
 			     cell41.setCellStyle(numberStyle);
 			 } else {
@@ -6889,7 +6889,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell42 = row.createCell(1);
 
-			 if (record1.getR6_TYPE_OF_ACCOUNT_VOSTRO() != null && !record1.getR6_TYPE_OF_ACCOUNT_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR6_TYPE_OF_ACCOUNT_VOSTRO() != null ){
 			     cell42.setCellValue(record1.getR6_TYPE_OF_ACCOUNT_VOSTRO().toString().trim() );
 			     cell42.setCellStyle(numberStyle);
 			 } else {
@@ -6899,7 +6899,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell43 = row.createCell(2);
 
-			 if (record1.getR6_PURPOSE_VOSTRO() != null && !record1.getR6_PURPOSE_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR6_PURPOSE_VOSTRO() != null ){
 			     cell43.setCellValue(record1.getR6_PURPOSE_VOSTRO().toString().trim() );
 			     cell43.setCellStyle(numberStyle);
 			 } else {
@@ -6909,7 +6909,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell44 = row.createCell(3);
 
-			 if (record1.getR6_CURRENCY_VOSTRO() != null && !record1.getR6_CURRENCY_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR6_CURRENCY_VOSTRO() != null ){
 			     cell44.setCellValue(record1.getR6_CURRENCY_VOSTRO().toString().trim() );
 			     cell44.setCellStyle(numberStyle);
 			 } else {
@@ -6919,7 +6919,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell47 = row.createCell(6);
 
-			 if (record1.getR6_AMOUNT_DEMAND_VOSTRO() != null && !record1.getR6_AMOUNT_DEMAND_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR6_AMOUNT_DEMAND_VOSTRO() != null ){
 			     cell47.setCellValue(record1.getR6_AMOUNT_DEMAND_VOSTRO().toString().trim() );
 			     cell47.setCellStyle(numberStyle);
 			 } else {
@@ -6931,7 +6931,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 			  row = sheet.getRow(29) != null ? sheet.getRow(29) : sheet.createRow(29);
 			  Cell cell49 = row.createCell(0);
 
-			 if (record1.getR7_NAME_OF_BANK_AND_COUNTRY_VOSTRO() != null && !record1.getR7_NAME_OF_BANK_AND_COUNTRY_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR7_NAME_OF_BANK_AND_COUNTRY_VOSTRO() != null ){
 			     cell49.setCellValue(record1.getR7_NAME_OF_BANK_AND_COUNTRY_VOSTRO().toString().trim() );
 			     cell49.setCellStyle(numberStyle);
 			 } else {
@@ -6941,7 +6941,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell50 = row.createCell(1);
 
-			 if (record1.getR7_TYPE_OF_ACCOUNT_VOSTRO() != null && !record1.getR7_TYPE_OF_ACCOUNT_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR7_TYPE_OF_ACCOUNT_VOSTRO() != null ){
 			     cell50.setCellValue(record1.getR7_TYPE_OF_ACCOUNT_VOSTRO().toString().trim() );
 			     cell50.setCellStyle(numberStyle);
 			 } else {
@@ -6951,7 +6951,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell51 = row.createCell(2);
 
-			 if (record1.getR7_PURPOSE_VOSTRO() != null && !record1.getR7_PURPOSE_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR7_PURPOSE_VOSTRO() != null ){
 			     cell51.setCellValue(record1.getR7_PURPOSE_VOSTRO().toString().trim() );
 			     cell51.setCellStyle(numberStyle);
 			 } else {
@@ -6961,7 +6961,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell52 = row.createCell(3);
 
-			 if (record1.getR7_CURRENCY_VOSTRO() != null && !record1.getR7_CURRENCY_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR7_CURRENCY_VOSTRO() != null ){
 			     cell52.setCellValue(record1.getR7_CURRENCY_VOSTRO().toString().trim() );
 			     cell52.setCellStyle(numberStyle);
 			 } else {
@@ -6971,7 +6971,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell55 = row.createCell(6);
 
-			 if (record1.getR7_AMOUNT_DEMAND_VOSTRO() != null && !record1.getR7_AMOUNT_DEMAND_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR7_AMOUNT_DEMAND_VOSTRO() != null ){
 			     cell55.setCellValue(record1.getR7_AMOUNT_DEMAND_VOSTRO().toString().trim() );
 			     cell55.setCellStyle(numberStyle);
 			 } else {
@@ -6983,7 +6983,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 			  row = sheet.getRow(30) != null ? sheet.getRow(30) : sheet.createRow(30);
 			  Cell cell57 = row.createCell(0);
 
-			 if (record1.getR8_NAME_OF_BANK_AND_COUNTRY_VOSTRO() != null && !record1.getR8_NAME_OF_BANK_AND_COUNTRY_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR8_NAME_OF_BANK_AND_COUNTRY_VOSTRO() != null ){
 			     cell57.setCellValue(record1.getR8_NAME_OF_BANK_AND_COUNTRY_VOSTRO().toString().trim() );
 			     cell57.setCellStyle(numberStyle);
 			 } else {
@@ -6993,7 +6993,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell58 = row.createCell(1);
 
-			 if (record1.getR8_TYPE_OF_ACCOUNT_VOSTRO() != null && !record1.getR8_TYPE_OF_ACCOUNT_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR8_TYPE_OF_ACCOUNT_VOSTRO() != null ){
 			     cell58.setCellValue(record1.getR8_TYPE_OF_ACCOUNT_VOSTRO().toString().trim() );
 			     cell58.setCellStyle(numberStyle);
 			 } else {
@@ -7003,7 +7003,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell59 = row.createCell(2);
 
-			 if (record1.getR8_PURPOSE_VOSTRO() != null && !record1.getR8_PURPOSE_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR8_PURPOSE_VOSTRO() != null ){
 			     cell59.setCellValue(record1.getR8_PURPOSE_VOSTRO().toString().trim() );
 			     cell59.setCellStyle(numberStyle);
 			 } else {
@@ -7013,7 +7013,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell60 = row.createCell(3);
 
-			 if (record1.getR8_CURRENCY_VOSTRO() != null && !record1.getR8_CURRENCY_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR8_CURRENCY_VOSTRO() != null ){
 			     cell60.setCellValue(record1.getR8_CURRENCY_VOSTRO().toString().trim() );
 			     cell60.setCellStyle(numberStyle);
 			 } else {
@@ -7023,7 +7023,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 			  Cell cell63 = row.createCell(6);
 
-			 if (record1.getR8_AMOUNT_DEMAND_VOSTRO() != null && !record1.getR8_AMOUNT_DEMAND_VOSTRO().toString().trim().equals("N/A") ) {
+			 if (record1.getR8_AMOUNT_DEMAND_VOSTRO() != null ){
 			     cell63.setCellValue(record1.getR8_AMOUNT_DEMAND_VOSTRO().toString().trim() );
 			     cell63.setCellStyle(numberStyle);
 			 } else {
@@ -7047,7 +7047,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 		Row  row = sheet.getRow(36) != null ? sheet.getRow(36) : sheet.createRow(36);
 		 Cell cell1 = row.createCell(0);
 
-		 if (record1.getR1_NAME_OF_BANK_NOSTRO1() != null && !record1.getR1_NAME_OF_BANK_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR1_NAME_OF_BANK_NOSTRO1() != null ){
 		     cell1.setCellValue(record1.getR1_NAME_OF_BANK_NOSTRO1().toString().trim() );
 		     cell1.setCellStyle(numberStyle);
 		 } else {
@@ -7057,7 +7057,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell2 = row.createCell(1);
 
-		 if (record1.getR1_TYPE_OF_ACCOUNT_NOSTRO1() != null && !record1.getR1_TYPE_OF_ACCOUNT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR1_TYPE_OF_ACCOUNT_NOSTRO1() != null ){
 		     cell2.setCellValue(record1.getR1_TYPE_OF_ACCOUNT_NOSTRO1().toString().trim() );
 		     cell2.setCellStyle(numberStyle);
 		 } else {
@@ -7067,7 +7067,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell3 = row.createCell(2);
 
-		 if (record1.getR1_PURPOSE_NOSTRO1() != null && !record1.getR1_PURPOSE_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR1_PURPOSE_NOSTRO1() != null ){
 		     cell3.setCellValue(record1.getR1_PURPOSE_NOSTRO1().toString().trim() );
 		     cell3.setCellStyle(numberStyle);
 		 } else {
@@ -7077,7 +7077,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell4 = row.createCell(3);
 
-		 if (record1.getR1_CURRENCY_NOSTRO1() != null && !record1.getR1_CURRENCY_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR1_CURRENCY_NOSTRO1() != null ){
 		     cell4.setCellValue(record1.getR1_CURRENCY_NOSTRO1().toString().trim() );
 		     cell4.setCellStyle(numberStyle);
 		 } else {
@@ -7087,7 +7087,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell5 = row.createCell(4);
 
-		 if (record1.getR1_SOVEREIGN_RATING_NOSTRO1() != null && !record1.getR1_SOVEREIGN_RATING_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR1_SOVEREIGN_RATING_NOSTRO1() != null ){
 		     cell5.setCellValue(record1.getR1_SOVEREIGN_RATING_NOSTRO1().toString().trim() );
 		     cell5.setCellStyle(numberStyle);
 		 } else {
@@ -7097,7 +7097,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell6 = row.createCell(5);
 
-		 if (record1.getR1_RISK_WEIGHT_NOSTRO1() != null && !record1.getR1_RISK_WEIGHT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR1_RISK_WEIGHT_NOSTRO1() != null ){
 		     cell6.setCellValue(record1.getR1_RISK_WEIGHT_NOSTRO1().toString().trim() );
 		     cell6.setCellStyle(numberStyle);
 		 } else {
@@ -7107,7 +7107,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell7 = row.createCell(6);
 
-		 if (record1.getR1_AMOUNT_DEMAND_NOSTRO1() != null && !record1.getR1_AMOUNT_DEMAND_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR1_AMOUNT_DEMAND_NOSTRO1() != null ){
 		     cell7.setCellValue(record1.getR1_AMOUNT_DEMAND_NOSTRO1().toString().trim() );
 		     cell7.setCellStyle(numberStyle);
 		 } else {
@@ -7117,7 +7117,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell8 = row.createCell(7);
 
-		 if (record1.getR1_RISK_WEIGHTED_AMOUNT_NOSTRO1() != null && !record1.getR1_RISK_WEIGHTED_AMOUNT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR1_RISK_WEIGHTED_AMOUNT_NOSTRO1() != null ){
 		     cell8.setCellValue(record1.getR1_RISK_WEIGHTED_AMOUNT_NOSTRO1().toString().trim() );
 		     cell8.setCellStyle(numberStyle);
 		 } else {
@@ -7129,7 +7129,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 		  row = sheet.getRow(37) != null ? sheet.getRow(37) : sheet.createRow(37);
 		  Cell cell9 = row.createCell(0);
 
-		 if (record1.getR2_NAME_OF_BANK_NOSTRO1() != null && !record1.getR2_NAME_OF_BANK_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR2_NAME_OF_BANK_NOSTRO1() != null ){
 		     cell9.setCellValue(record1.getR2_NAME_OF_BANK_NOSTRO1().toString().trim() );
 		     cell9.setCellStyle(numberStyle);
 		 } else {
@@ -7139,7 +7139,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell10 = row.createCell(1);
 
-		 if (record1.getR2_TYPE_OF_ACCOUNT_NOSTRO1() != null && !record1.getR2_TYPE_OF_ACCOUNT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR2_TYPE_OF_ACCOUNT_NOSTRO1() != null ){
 		     cell10.setCellValue(record1.getR2_TYPE_OF_ACCOUNT_NOSTRO1().toString().trim() );
 		     cell10.setCellStyle(numberStyle);
 		 } else {
@@ -7149,7 +7149,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell11 = row.createCell(2);
 
-		 if (record1.getR2_PURPOSE_NOSTRO1() != null && !record1.getR2_PURPOSE_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR2_PURPOSE_NOSTRO1() != null ){
 		     cell11.setCellValue(record1.getR2_PURPOSE_NOSTRO1().toString().trim() );
 		     cell11.setCellStyle(numberStyle);
 		 } else {
@@ -7159,7 +7159,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell12 = row.createCell(3);
 
-		 if (record1.getR2_CURRENCY_NOSTRO1() != null && !record1.getR2_CURRENCY_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR2_CURRENCY_NOSTRO1() != null ){
 		     cell12.setCellValue(record1.getR2_CURRENCY_NOSTRO1().toString().trim() );
 		     cell12.setCellStyle(numberStyle);
 		 } else {
@@ -7169,7 +7169,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell13 = row.createCell(4);
 
-		 if (record1.getR2_SOVEREIGN_RATING_NOSTRO1() != null && !record1.getR2_SOVEREIGN_RATING_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR2_SOVEREIGN_RATING_NOSTRO1() != null ){
 		     cell13.setCellValue(record1.getR2_SOVEREIGN_RATING_NOSTRO1().toString().trim() );
 		     cell13.setCellStyle(numberStyle);
 		 } else {
@@ -7179,7 +7179,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell14 = row.createCell(5);
 
-		 if (record1.getR2_RISK_WEIGHT_NOSTRO1() != null && !record1.getR2_RISK_WEIGHT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR2_RISK_WEIGHT_NOSTRO1() != null ){
 		     cell14.setCellValue(record1.getR2_RISK_WEIGHT_NOSTRO1().toString().trim() );
 		     cell14.setCellStyle(numberStyle);
 		 } else {
@@ -7189,7 +7189,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell15 = row.createCell(6);
 
-		 if (record1.getR2_AMOUNT_DEMAND_NOSTRO1() != null && !record1.getR2_AMOUNT_DEMAND_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR2_AMOUNT_DEMAND_NOSTRO1() != null ){
 		     cell15.setCellValue(record1.getR2_AMOUNT_DEMAND_NOSTRO1().toString().trim() );
 		     cell15.setCellStyle(numberStyle);
 		 } else {
@@ -7199,7 +7199,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell16 = row.createCell(7);
 
-		 if (record1.getR2_RISK_WEIGHTED_AMOUNT_NOSTRO1() != null && !record1.getR2_RISK_WEIGHTED_AMOUNT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR2_RISK_WEIGHTED_AMOUNT_NOSTRO1() != null ){
 		     cell16.setCellValue(record1.getR2_RISK_WEIGHTED_AMOUNT_NOSTRO1().toString().trim() );
 		     cell16.setCellStyle(numberStyle);
 		 } else {
@@ -7211,7 +7211,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 		  row = sheet.getRow(38) != null ? sheet.getRow(38) : sheet.createRow(38);
 		  Cell cell17 = row.createCell(0);
 
-		 if (record1.getR3_NAME_OF_BANK_NOSTRO1() != null && !record1.getR3_NAME_OF_BANK_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR3_NAME_OF_BANK_NOSTRO1() != null ){
 		     cell17.setCellValue(record1.getR3_NAME_OF_BANK_NOSTRO1().toString().trim() );
 		     cell17.setCellStyle(numberStyle);
 		 } else {
@@ -7221,7 +7221,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell18 = row.createCell(1);
 
-		 if (record1.getR3_TYPE_OF_ACCOUNT_NOSTRO1() != null && !record1.getR3_TYPE_OF_ACCOUNT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR3_TYPE_OF_ACCOUNT_NOSTRO1() != null ){
 		     cell18.setCellValue(record1.getR3_TYPE_OF_ACCOUNT_NOSTRO1().toString().trim() );
 		     cell18.setCellStyle(numberStyle);
 		 } else {
@@ -7231,7 +7231,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell19 = row.createCell(2);
 
-		 if (record1.getR3_PURPOSE_NOSTRO1() != null && !record1.getR3_PURPOSE_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR3_PURPOSE_NOSTRO1() != null ){
 		     cell19.setCellValue(record1.getR3_PURPOSE_NOSTRO1().toString().trim() );
 		     cell19.setCellStyle(numberStyle);
 		 } else {
@@ -7241,7 +7241,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell20 = row.createCell(3);
 
-		 if (record1.getR3_CURRENCY_NOSTRO1() != null && !record1.getR3_CURRENCY_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR3_CURRENCY_NOSTRO1() != null ){
 		     cell20.setCellValue(record1.getR3_CURRENCY_NOSTRO1().toString().trim() );
 		     cell20.setCellStyle(numberStyle);
 		 } else {
@@ -7251,7 +7251,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell21 = row.createCell(4);
 
-		 if (record1.getR3_SOVEREIGN_RATING_NOSTRO1() != null && !record1.getR3_SOVEREIGN_RATING_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR3_SOVEREIGN_RATING_NOSTRO1() != null ){
 		     cell21.setCellValue(record1.getR3_SOVEREIGN_RATING_NOSTRO1().toString().trim() );
 		     cell21.setCellStyle(numberStyle);
 		 } else {
@@ -7261,7 +7261,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell22 = row.createCell(5);
 
-		 if (record1.getR3_RISK_WEIGHT_NOSTRO1() != null && !record1.getR3_RISK_WEIGHT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR3_RISK_WEIGHT_NOSTRO1() != null ){
 		     cell22.setCellValue(record1.getR3_RISK_WEIGHT_NOSTRO1().toString().trim() );
 		     cell22.setCellStyle(numberStyle);
 		 } else {
@@ -7271,7 +7271,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell23 = row.createCell(6);
 
-		 if (record1.getR3_AMOUNT_DEMAND_NOSTRO1() != null && !record1.getR3_AMOUNT_DEMAND_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR3_AMOUNT_DEMAND_NOSTRO1() != null ){
 		     cell23.setCellValue(record1.getR3_AMOUNT_DEMAND_NOSTRO1().toString().trim() );
 		     cell23.setCellStyle(numberStyle);
 		 } else {
@@ -7281,7 +7281,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell24 = row.createCell(7);
 
-		 if (record1.getR3_RISK_WEIGHTED_AMOUNT_NOSTRO1() != null && !record1.getR3_RISK_WEIGHTED_AMOUNT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR3_RISK_WEIGHTED_AMOUNT_NOSTRO1() != null ){
 		     cell24.setCellValue(record1.getR3_RISK_WEIGHTED_AMOUNT_NOSTRO1().toString().trim() );
 		     cell24.setCellStyle(numberStyle);
 		 } else {
@@ -7293,7 +7293,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 		  row = sheet.getRow(39) != null ? sheet.getRow(39) : sheet.createRow(39);
 		  Cell cell25 = row.createCell(0);
 
-		 if (record1.getR4_NAME_OF_BANK_NOSTRO1() != null && !record1.getR4_NAME_OF_BANK_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR4_NAME_OF_BANK_NOSTRO1() != null ){
 		     cell25.setCellValue(record1.getR4_NAME_OF_BANK_NOSTRO1().toString().trim() );
 		     cell25.setCellStyle(numberStyle);
 		 } else {
@@ -7303,7 +7303,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell26 = row.createCell(1);
 
-		 if (record1.getR4_TYPE_OF_ACCOUNT_NOSTRO1() != null && !record1.getR4_TYPE_OF_ACCOUNT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR4_TYPE_OF_ACCOUNT_NOSTRO1() != null ){
 		     cell26.setCellValue(record1.getR4_TYPE_OF_ACCOUNT_NOSTRO1().toString().trim() );
 		     cell26.setCellStyle(numberStyle);
 		 } else {
@@ -7313,7 +7313,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell27 = row.createCell(2);
 
-		 if (record1.getR4_PURPOSE_NOSTRO1() != null && !record1.getR4_PURPOSE_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR4_PURPOSE_NOSTRO1() != null ){
 		     cell27.setCellValue(record1.getR4_PURPOSE_NOSTRO1().toString().trim() );
 		     cell27.setCellStyle(numberStyle);
 		 } else {
@@ -7323,7 +7323,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell28 = row.createCell(3);
 
-		 if (record1.getR4_CURRENCY_NOSTRO1() != null && !record1.getR4_CURRENCY_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR4_CURRENCY_NOSTRO1() != null ){
 		     cell28.setCellValue(record1.getR4_CURRENCY_NOSTRO1().toString().trim() );
 		     cell28.setCellStyle(numberStyle);
 		 } else {
@@ -7333,7 +7333,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell29 = row.createCell(4);
 
-		 if (record1.getR4_SOVEREIGN_RATING_NOSTRO1() != null && !record1.getR4_SOVEREIGN_RATING_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR4_SOVEREIGN_RATING_NOSTRO1() != null ){
 		     cell29.setCellValue(record1.getR4_SOVEREIGN_RATING_NOSTRO1().toString().trim() );
 		     cell29.setCellStyle(numberStyle);
 		 } else {
@@ -7343,7 +7343,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell30 = row.createCell(5);
 
-		 if (record1.getR4_RISK_WEIGHT_NOSTRO1() != null && !record1.getR4_RISK_WEIGHT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR4_RISK_WEIGHT_NOSTRO1() != null ){
 		     cell30.setCellValue(record1.getR4_RISK_WEIGHT_NOSTRO1().toString().trim() );
 		     cell30.setCellStyle(numberStyle);
 		 } else {
@@ -7353,7 +7353,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell31 = row.createCell(6);
 
-		 if (record1.getR4_AMOUNT_DEMAND_NOSTRO1() != null && !record1.getR4_AMOUNT_DEMAND_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR4_AMOUNT_DEMAND_NOSTRO1() != null ){
 		     cell31.setCellValue(record1.getR4_AMOUNT_DEMAND_NOSTRO1().toString().trim() );
 		     cell31.setCellStyle(numberStyle);
 		 } else {
@@ -7363,7 +7363,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell32 = row.createCell(7);
 
-		 if (record1.getR4_RISK_WEIGHTED_AMOUNT_NOSTRO1() != null && !record1.getR4_RISK_WEIGHTED_AMOUNT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR4_RISK_WEIGHTED_AMOUNT_NOSTRO1() != null ){
 		     cell32.setCellValue(record1.getR4_RISK_WEIGHTED_AMOUNT_NOSTRO1().toString().trim() );
 		     cell32.setCellStyle(numberStyle);
 		 } else {
@@ -7375,7 +7375,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 		  row = sheet.getRow(40) != null ? sheet.getRow(40) : sheet.createRow(40);
 		  Cell cell33 = row.createCell(0);
 
-		 if (record1.getR5_NAME_OF_BANK_NOSTRO1() != null && !record1.getR5_NAME_OF_BANK_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR5_NAME_OF_BANK_NOSTRO1() != null ){
 		     cell33.setCellValue(record1.getR5_NAME_OF_BANK_NOSTRO1().toString().trim() );
 		     cell33.setCellStyle(numberStyle);
 		 } else {
@@ -7385,7 +7385,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell34 = row.createCell(1);
 
-		 if (record1.getR5_TYPE_OF_ACCOUNT_NOSTRO1() != null && !record1.getR5_TYPE_OF_ACCOUNT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR5_TYPE_OF_ACCOUNT_NOSTRO1() != null ){
 		     cell34.setCellValue(record1.getR5_TYPE_OF_ACCOUNT_NOSTRO1().toString().trim() );
 		     cell34.setCellStyle(numberStyle);
 		 } else {
@@ -7395,7 +7395,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell35 = row.createCell(2);
 
-		 if (record1.getR5_PURPOSE_NOSTRO1() != null && !record1.getR5_PURPOSE_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR5_PURPOSE_NOSTRO1() != null ){
 		     cell35.setCellValue(record1.getR5_PURPOSE_NOSTRO1().toString().trim() );
 		     cell35.setCellStyle(numberStyle);
 		 } else {
@@ -7405,7 +7405,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell36 = row.createCell(3);
 
-		 if (record1.getR5_CURRENCY_NOSTRO1() != null && !record1.getR5_CURRENCY_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR5_CURRENCY_NOSTRO1() != null ){
 		     cell36.setCellValue(record1.getR5_CURRENCY_NOSTRO1().toString().trim() );
 		     cell36.setCellStyle(numberStyle);
 		 } else {
@@ -7415,7 +7415,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell37 = row.createCell(4);
 
-		 if (record1.getR5_SOVEREIGN_RATING_NOSTRO1() != null && !record1.getR5_SOVEREIGN_RATING_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR5_SOVEREIGN_RATING_NOSTRO1() != null ){
 		     cell37.setCellValue(record1.getR5_SOVEREIGN_RATING_NOSTRO1().toString().trim() );
 		     cell37.setCellStyle(numberStyle);
 		 } else {
@@ -7425,7 +7425,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell38 = row.createCell(5);
 
-		 if (record1.getR5_RISK_WEIGHT_NOSTRO1() != null && !record1.getR5_RISK_WEIGHT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR5_RISK_WEIGHT_NOSTRO1() != null ){
 		     cell38.setCellValue(record1.getR5_RISK_WEIGHT_NOSTRO1().toString().trim() );
 		     cell38.setCellStyle(numberStyle);
 		 } else {
@@ -7435,7 +7435,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell39 = row.createCell(6);
 
-		 if (record1.getR5_AMOUNT_DEMAND_NOSTRO1() != null && !record1.getR5_AMOUNT_DEMAND_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR5_AMOUNT_DEMAND_NOSTRO1() != null ){
 		     cell39.setCellValue(record1.getR5_AMOUNT_DEMAND_NOSTRO1().toString().trim() );
 		     cell39.setCellStyle(numberStyle);
 		 } else {
@@ -7445,7 +7445,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell40 = row.createCell(7);
 
-		 if (record1.getR5_RISK_WEIGHTED_AMOUNT_NOSTRO1() != null && !record1.getR5_RISK_WEIGHTED_AMOUNT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR5_RISK_WEIGHTED_AMOUNT_NOSTRO1() != null ){
 		     cell40.setCellValue(record1.getR5_RISK_WEIGHTED_AMOUNT_NOSTRO1().toString().trim() );
 		     cell40.setCellStyle(numberStyle);
 		 } else {
@@ -7457,7 +7457,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 		  row = sheet.getRow(41) != null ? sheet.getRow(41) : sheet.createRow(41);
 		  Cell cell41 = row.createCell(0);
 
-		 if (record1.getR6_NAME_OF_BANK_NOSTRO1() != null && !record1.getR6_NAME_OF_BANK_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR6_NAME_OF_BANK_NOSTRO1() != null ){
 		     cell41.setCellValue(record1.getR6_NAME_OF_BANK_NOSTRO1().toString().trim() );
 		     cell41.setCellStyle(numberStyle);
 		 } else {
@@ -7467,7 +7467,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell42 = row.createCell(1);
 
-		 if (record1.getR6_TYPE_OF_ACCOUNT_NOSTRO1() != null && !record1.getR6_TYPE_OF_ACCOUNT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR6_TYPE_OF_ACCOUNT_NOSTRO1() != null ){
 		     cell42.setCellValue(record1.getR6_TYPE_OF_ACCOUNT_NOSTRO1().toString().trim() );
 		     cell42.setCellStyle(numberStyle);
 		 } else {
@@ -7477,7 +7477,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell43 = row.createCell(2);
 
-		 if (record1.getR6_PURPOSE_NOSTRO1() != null && !record1.getR6_PURPOSE_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR6_PURPOSE_NOSTRO1() != null ){
 		     cell43.setCellValue(record1.getR6_PURPOSE_NOSTRO1().toString().trim() );
 		     cell43.setCellStyle(numberStyle);
 		 } else {
@@ -7487,7 +7487,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell44 = row.createCell(3);
 
-		 if (record1.getR6_CURRENCY_NOSTRO1() != null && !record1.getR6_CURRENCY_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR6_CURRENCY_NOSTRO1() != null ){
 		     cell44.setCellValue(record1.getR6_CURRENCY_NOSTRO1().toString().trim() );
 		     cell44.setCellStyle(numberStyle);
 		 } else {
@@ -7497,7 +7497,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell45 = row.createCell(4);
 
-		 if (record1.getR6_SOVEREIGN_RATING_NOSTRO1() != null && !record1.getR6_SOVEREIGN_RATING_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR6_SOVEREIGN_RATING_NOSTRO1() != null ){
 		     cell45.setCellValue(record1.getR6_SOVEREIGN_RATING_NOSTRO1().toString().trim() );
 		     cell45.setCellStyle(numberStyle);
 		 } else {
@@ -7507,7 +7507,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell46 = row.createCell(5);
 
-		 if (record1.getR6_RISK_WEIGHT_NOSTRO1() != null && !record1.getR6_RISK_WEIGHT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR6_RISK_WEIGHT_NOSTRO1() != null ){
 		     cell46.setCellValue(record1.getR6_RISK_WEIGHT_NOSTRO1().toString().trim() );
 		     cell46.setCellStyle(numberStyle);
 		 } else {
@@ -7517,7 +7517,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell47 = row.createCell(6);
 
-		 if (record1.getR6_AMOUNT_DEMAND_NOSTRO1() != null && !record1.getR6_AMOUNT_DEMAND_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR6_AMOUNT_DEMAND_NOSTRO1() != null ){
 		     cell47.setCellValue(record1.getR6_AMOUNT_DEMAND_NOSTRO1().toString().trim() );
 		     cell47.setCellStyle(numberStyle);
 		 } else {
@@ -7527,7 +7527,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell48 = row.createCell(7);
 
-		 if (record1.getR6_RISK_WEIGHTED_AMOUNT_NOSTRO1() != null && !record1.getR6_RISK_WEIGHTED_AMOUNT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR6_RISK_WEIGHTED_AMOUNT_NOSTRO1() != null ){
 		     cell48.setCellValue(record1.getR6_RISK_WEIGHTED_AMOUNT_NOSTRO1().toString().trim() );
 		     cell48.setCellStyle(numberStyle);
 		 } else {
@@ -7539,7 +7539,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 		  row = sheet.getRow(42) != null ? sheet.getRow(42) : sheet.createRow(42);
 		  Cell cell49 = row.createCell(0);
 
-		 if (record1.getR7_NAME_OF_BANK_NOSTRO1() != null && !record1.getR7_NAME_OF_BANK_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR7_NAME_OF_BANK_NOSTRO1() != null ){
 		     cell49.setCellValue(record1.getR7_NAME_OF_BANK_NOSTRO1().toString().trim() );
 		     cell49.setCellStyle(numberStyle);
 		 } else {
@@ -7549,7 +7549,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell50 = row.createCell(1);
 
-		 if (record1.getR7_TYPE_OF_ACCOUNT_NOSTRO1() != null && !record1.getR7_TYPE_OF_ACCOUNT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR7_TYPE_OF_ACCOUNT_NOSTRO1() != null ){
 		     cell50.setCellValue(record1.getR7_TYPE_OF_ACCOUNT_NOSTRO1().toString().trim() );
 		     cell50.setCellStyle(numberStyle);
 		 } else {
@@ -7559,7 +7559,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell51 = row.createCell(2);
 
-		 if (record1.getR7_PURPOSE_NOSTRO1() != null && !record1.getR7_PURPOSE_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR7_PURPOSE_NOSTRO1() != null ){
 		     cell51.setCellValue(record1.getR7_PURPOSE_NOSTRO1().toString().trim() );
 		     cell51.setCellStyle(numberStyle);
 		 } else {
@@ -7569,7 +7569,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell52 = row.createCell(3);
 
-		 if (record1.getR7_CURRENCY_NOSTRO1() != null && !record1.getR7_CURRENCY_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR7_CURRENCY_NOSTRO1() != null ){
 		     cell52.setCellValue(record1.getR7_CURRENCY_NOSTRO1().toString().trim() );
 		     cell52.setCellStyle(numberStyle);
 		 } else {
@@ -7579,7 +7579,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell53 = row.createCell(4);
 
-		 if (record1.getR7_SOVEREIGN_RATING_NOSTRO1() != null && !record1.getR7_SOVEREIGN_RATING_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR7_SOVEREIGN_RATING_NOSTRO1() != null ){
 		     cell53.setCellValue(record1.getR7_SOVEREIGN_RATING_NOSTRO1().toString().trim() );
 		     cell53.setCellStyle(numberStyle);
 		 } else {
@@ -7589,7 +7589,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell54 = row.createCell(5);
 
-		 if (record1.getR7_RISK_WEIGHT_NOSTRO1() != null && !record1.getR7_RISK_WEIGHT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR7_RISK_WEIGHT_NOSTRO1() != null ){
 		     cell54.setCellValue(record1.getR7_RISK_WEIGHT_NOSTRO1().toString().trim() );
 		     cell54.setCellStyle(numberStyle);
 		 } else {
@@ -7599,7 +7599,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell55 = row.createCell(6);
 
-		 if (record1.getR7_AMOUNT_DEMAND_NOSTRO1() != null && !record1.getR7_AMOUNT_DEMAND_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR7_AMOUNT_DEMAND_NOSTRO1() != null ){
 		     cell55.setCellValue(record1.getR7_AMOUNT_DEMAND_NOSTRO1().toString().trim() );
 		     cell55.setCellStyle(numberStyle);
 		 } else {
@@ -7609,7 +7609,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell56 = row.createCell(7);
 
-		 if (record1.getR7_RISK_WEIGHTED_AMOUNT_NOSTRO1() != null && !record1.getR7_RISK_WEIGHTED_AMOUNT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR7_RISK_WEIGHTED_AMOUNT_NOSTRO1() != null ){
 		     cell56.setCellValue(record1.getR7_RISK_WEIGHTED_AMOUNT_NOSTRO1().toString().trim() );
 		     cell56.setCellStyle(numberStyle);
 		 } else {
@@ -7621,7 +7621,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 		  row = sheet.getRow(43) != null ? sheet.getRow(43) : sheet.createRow(43);
 		  Cell cell57 = row.createCell(0);
 
-		 if (record1.getR8_NAME_OF_BANK_NOSTRO1() != null && !record1.getR8_NAME_OF_BANK_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR8_NAME_OF_BANK_NOSTRO1() != null ){
 		     cell57.setCellValue(record1.getR8_NAME_OF_BANK_NOSTRO1().toString().trim() );
 		     cell57.setCellStyle(numberStyle);
 		 } else {
@@ -7631,7 +7631,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell58 = row.createCell(1);
 
-		 if (record1.getR8_TYPE_OF_ACCOUNT_NOSTRO1() != null && !record1.getR8_TYPE_OF_ACCOUNT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR8_TYPE_OF_ACCOUNT_NOSTRO1() != null ){
 		     cell58.setCellValue(record1.getR8_TYPE_OF_ACCOUNT_NOSTRO1().toString().trim() );
 		     cell58.setCellStyle(numberStyle);
 		 } else {
@@ -7641,7 +7641,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell59 = row.createCell(2);
 
-		 if (record1.getR8_PURPOSE_NOSTRO1() != null && !record1.getR8_PURPOSE_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR8_PURPOSE_NOSTRO1() != null ){
 		     cell59.setCellValue(record1.getR8_PURPOSE_NOSTRO1().toString().trim() );
 		     cell59.setCellStyle(numberStyle);
 		 } else {
@@ -7651,7 +7651,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell60 = row.createCell(3);
 
-		 if (record1.getR8_CURRENCY_NOSTRO1() != null && !record1.getR8_CURRENCY_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR8_CURRENCY_NOSTRO1() != null ){
 		     cell60.setCellValue(record1.getR8_CURRENCY_NOSTRO1().toString().trim() );
 		     cell60.setCellStyle(numberStyle);
 		 } else {
@@ -7661,7 +7661,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell61 = row.createCell(4);
 
-		 if (record1.getR8_SOVEREIGN_RATING_NOSTRO1() != null && !record1.getR8_SOVEREIGN_RATING_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR8_SOVEREIGN_RATING_NOSTRO1() != null ){
 		     cell61.setCellValue(record1.getR8_SOVEREIGN_RATING_NOSTRO1().toString().trim() );
 		     cell61.setCellStyle(numberStyle);
 		 } else {
@@ -7671,7 +7671,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell62 = row.createCell(5);
 
-		 if (record1.getR8_RISK_WEIGHT_NOSTRO1() != null && !record1.getR8_RISK_WEIGHT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR8_RISK_WEIGHT_NOSTRO1() != null ){
 		     cell62.setCellValue(record1.getR8_RISK_WEIGHT_NOSTRO1().toString().trim() );
 		     cell62.setCellStyle(numberStyle);
 		 } else {
@@ -7681,7 +7681,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell63 = row.createCell(6);
 
-		 if (record1.getR8_AMOUNT_DEMAND_NOSTRO1() != null && !record1.getR8_AMOUNT_DEMAND_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR8_AMOUNT_DEMAND_NOSTRO1() != null ){
 		     cell63.setCellValue(record1.getR8_AMOUNT_DEMAND_NOSTRO1().toString().trim() );
 		     cell63.setCellStyle(numberStyle);
 		 } else {
@@ -7691,7 +7691,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell64 = row.createCell(7);
 
-		 if (record1.getR8_RISK_WEIGHTED_AMOUNT_NOSTRO1() != null && !record1.getR8_RISK_WEIGHTED_AMOUNT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR8_RISK_WEIGHTED_AMOUNT_NOSTRO1() != null ){
 		     cell64.setCellValue(record1.getR8_RISK_WEIGHTED_AMOUNT_NOSTRO1().toString().trim() );
 		     cell64.setCellStyle(numberStyle);
 		 } else {
@@ -7703,7 +7703,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 		  row = sheet.getRow(44) != null ? sheet.getRow(44) : sheet.createRow(44);
 		  Cell cell65 = row.createCell(0);
 
-		 if (record1.getR9_NAME_OF_BANK_NOSTRO1() != null && !record1.getR9_NAME_OF_BANK_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR9_NAME_OF_BANK_NOSTRO1() != null ){
 		     cell65.setCellValue(record1.getR9_NAME_OF_BANK_NOSTRO1().toString().trim() );
 		     cell65.setCellStyle(numberStyle);
 		 } else {
@@ -7713,7 +7713,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell66 = row.createCell(1);
 
-		 if (record1.getR9_TYPE_OF_ACCOUNT_NOSTRO1() != null && !record1.getR9_TYPE_OF_ACCOUNT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR9_TYPE_OF_ACCOUNT_NOSTRO1() != null ){
 		     cell66.setCellValue(record1.getR9_TYPE_OF_ACCOUNT_NOSTRO1().toString().trim() );
 		     cell66.setCellStyle(numberStyle);
 		 } else {
@@ -7723,7 +7723,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell67 = row.createCell(2);
 
-		 if (record1.getR9_PURPOSE_NOSTRO1() != null && !record1.getR9_PURPOSE_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR9_PURPOSE_NOSTRO1() != null ){
 		     cell67.setCellValue(record1.getR9_PURPOSE_NOSTRO1().toString().trim() );
 		     cell67.setCellStyle(numberStyle);
 		 } else {
@@ -7733,7 +7733,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell68 = row.createCell(3);
 
-		 if (record1.getR9_CURRENCY_NOSTRO1() != null && !record1.getR9_CURRENCY_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR9_CURRENCY_NOSTRO1() != null ){
 		     cell68.setCellValue(record1.getR9_CURRENCY_NOSTRO1().toString().trim() );
 		     cell68.setCellStyle(numberStyle);
 		 } else {
@@ -7743,7 +7743,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell69 = row.createCell(4);
 
-		 if (record1.getR9_SOVEREIGN_RATING_NOSTRO1() != null && !record1.getR9_SOVEREIGN_RATING_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR9_SOVEREIGN_RATING_NOSTRO1() != null ){
 		     cell69.setCellValue(record1.getR9_SOVEREIGN_RATING_NOSTRO1().toString().trim() );
 		     cell69.setCellStyle(numberStyle);
 		 } else {
@@ -7753,7 +7753,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell70 = row.createCell(5);
 
-		 if (record1.getR9_RISK_WEIGHT_NOSTRO1() != null && !record1.getR9_RISK_WEIGHT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR9_RISK_WEIGHT_NOSTRO1() != null ){
 		     cell70.setCellValue(record1.getR9_RISK_WEIGHT_NOSTRO1().toString().trim() );
 		     cell70.setCellStyle(numberStyle);
 		 } else {
@@ -7763,7 +7763,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell71 = row.createCell(6);
 
-		 if (record1.getR9_AMOUNT_DEMAND_NOSTRO1() != null && !record1.getR9_AMOUNT_DEMAND_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR9_AMOUNT_DEMAND_NOSTRO1() != null ){
 		     cell71.setCellValue(record1.getR9_AMOUNT_DEMAND_NOSTRO1().toString().trim() );
 		     cell71.setCellStyle(numberStyle);
 		 } else {
@@ -7773,7 +7773,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell72 = row.createCell(7);
 
-		 if (record1.getR9_RISK_WEIGHTED_AMOUNT_NOSTRO1() != null && !record1.getR9_RISK_WEIGHTED_AMOUNT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR9_RISK_WEIGHTED_AMOUNT_NOSTRO1() != null ){
 		     cell72.setCellValue(record1.getR9_RISK_WEIGHTED_AMOUNT_NOSTRO1().toString().trim() );
 		     cell72.setCellStyle(numberStyle);
 		 } else {
@@ -7785,7 +7785,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 		  row = sheet.getRow(45) != null ? sheet.getRow(45) : sheet.createRow(45);
 		  Cell cell73 = row.createCell(0);
 
-		 if (record1.getR10_NAME_OF_BANK_NOSTRO1() != null && !record1.getR10_NAME_OF_BANK_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR10_NAME_OF_BANK_NOSTRO1() != null ){
 		     cell73.setCellValue(record1.getR10_NAME_OF_BANK_NOSTRO1().toString().trim() );
 		     cell73.setCellStyle(numberStyle);
 		 } else {
@@ -7795,7 +7795,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell74 = row.createCell(1);
 
-		 if (record1.getR10_TYPE_OF_ACCOUNT_NOSTRO1() != null && !record1.getR10_TYPE_OF_ACCOUNT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR10_TYPE_OF_ACCOUNT_NOSTRO1() != null ){
 		     cell74.setCellValue(record1.getR10_TYPE_OF_ACCOUNT_NOSTRO1().toString().trim() );
 		     cell74.setCellStyle(numberStyle);
 		 } else {
@@ -7805,7 +7805,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell75 = row.createCell(2);
 
-		 if (record1.getR10_PURPOSE_NOSTRO1() != null && !record1.getR10_PURPOSE_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR10_PURPOSE_NOSTRO1() != null ){
 		     cell75.setCellValue(record1.getR10_PURPOSE_NOSTRO1().toString().trim() );
 		     cell75.setCellStyle(numberStyle);
 		 } else {
@@ -7815,7 +7815,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell76 = row.createCell(3);
 
-		 if (record1.getR10_CURRENCY_NOSTRO1() != null && !record1.getR10_CURRENCY_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR10_CURRENCY_NOSTRO1() != null ){
 		     cell76.setCellValue(record1.getR10_CURRENCY_NOSTRO1().toString().trim() );
 		     cell76.setCellStyle(numberStyle);
 		 } else {
@@ -7825,7 +7825,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell77 = row.createCell(4);
 
-		 if (record1.getR10_SOVEREIGN_RATING_NOSTRO1() != null && !record1.getR10_SOVEREIGN_RATING_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR10_SOVEREIGN_RATING_NOSTRO1() != null ){
 		     cell77.setCellValue(record1.getR10_SOVEREIGN_RATING_NOSTRO1().toString().trim() );
 		     cell77.setCellStyle(numberStyle);
 		 } else {
@@ -7835,7 +7835,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell78 = row.createCell(5);
 
-		 if (record1.getR10_RISK_WEIGHT_NOSTRO1() != null && !record1.getR10_RISK_WEIGHT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR10_RISK_WEIGHT_NOSTRO1() != null ){
 		     cell78.setCellValue(record1.getR10_RISK_WEIGHT_NOSTRO1().toString().trim() );
 		     cell78.setCellStyle(numberStyle);
 		 } else {
@@ -7845,7 +7845,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell79 = row.createCell(6);
 
-		 if (record1.getR10_AMOUNT_DEMAND_NOSTRO1() != null && !record1.getR10_AMOUNT_DEMAND_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR10_AMOUNT_DEMAND_NOSTRO1() != null ){
 		     cell79.setCellValue(record1.getR10_AMOUNT_DEMAND_NOSTRO1().toString().trim() );
 		     cell79.setCellStyle(numberStyle);
 		 } else {
@@ -7855,7 +7855,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell80 = row.createCell(7);
 
-		 if (record1.getR10_RISK_WEIGHTED_AMOUNT_NOSTRO1() != null && !record1.getR10_RISK_WEIGHTED_AMOUNT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR10_RISK_WEIGHTED_AMOUNT_NOSTRO1() != null ){
 		     cell80.setCellValue(record1.getR10_RISK_WEIGHTED_AMOUNT_NOSTRO1().toString().trim() );
 		     cell80.setCellStyle(numberStyle);
 		 } else {
@@ -7867,7 +7867,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 		  row = sheet.getRow(46) != null ? sheet.getRow(46) : sheet.createRow(46);
 		  Cell cell81 = row.createCell(0);
 
-		 if (record1.getR11_NAME_OF_BANK_NOSTRO1() != null && !record1.getR11_NAME_OF_BANK_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR11_NAME_OF_BANK_NOSTRO1() != null ){
 		     cell81.setCellValue(record1.getR11_NAME_OF_BANK_NOSTRO1().toString().trim() );
 		     cell81.setCellStyle(numberStyle);
 		 } else {
@@ -7877,7 +7877,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell82 = row.createCell(1);
 
-		 if (record1.getR11_TYPE_OF_ACCOUNT_NOSTRO1() != null && !record1.getR11_TYPE_OF_ACCOUNT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR11_TYPE_OF_ACCOUNT_NOSTRO1() != null ){
 		     cell82.setCellValue(record1.getR11_TYPE_OF_ACCOUNT_NOSTRO1().toString().trim() );
 		     cell82.setCellStyle(numberStyle);
 		 } else {
@@ -7887,7 +7887,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell83 = row.createCell(2);
 
-		 if (record1.getR11_PURPOSE_NOSTRO1() != null && !record1.getR11_PURPOSE_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR11_PURPOSE_NOSTRO1() != null ){
 		     cell83.setCellValue(record1.getR11_PURPOSE_NOSTRO1().toString().trim() );
 		     cell83.setCellStyle(numberStyle);
 		 } else {
@@ -7897,7 +7897,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell84 = row.createCell(3);
 
-		 if (record1.getR11_CURRENCY_NOSTRO1() != null && !record1.getR11_CURRENCY_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR11_CURRENCY_NOSTRO1() != null ){
 		     cell84.setCellValue(record1.getR11_CURRENCY_NOSTRO1().toString().trim() );
 		     cell84.setCellStyle(numberStyle);
 		 } else {
@@ -7907,7 +7907,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell85 = row.createCell(4);
 
-		 if (record1.getR11_SOVEREIGN_RATING_NOSTRO1() != null && !record1.getR11_SOVEREIGN_RATING_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR11_SOVEREIGN_RATING_NOSTRO1() != null ){
 		     cell85.setCellValue(record1.getR11_SOVEREIGN_RATING_NOSTRO1().toString().trim() );
 		     cell85.setCellStyle(numberStyle);
 		 } else {
@@ -7917,7 +7917,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell86 = row.createCell(5);
 
-		 if (record1.getR11_RISK_WEIGHT_NOSTRO1() != null && !record1.getR11_RISK_WEIGHT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR11_RISK_WEIGHT_NOSTRO1() != null ){
 		     cell86.setCellValue(record1.getR11_RISK_WEIGHT_NOSTRO1().toString().trim() );
 		     cell86.setCellStyle(numberStyle);
 		 } else {
@@ -7927,7 +7927,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell87 = row.createCell(6);
 
-		 if (record1.getR11_AMOUNT_DEMAND_NOSTRO1() != null && !record1.getR11_AMOUNT_DEMAND_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR11_AMOUNT_DEMAND_NOSTRO1() != null ){
 		     cell87.setCellValue(record1.getR11_AMOUNT_DEMAND_NOSTRO1().toString().trim() );
 		     cell87.setCellStyle(numberStyle);
 		 } else {
@@ -7937,7 +7937,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 		  Cell cell88 = row.createCell(7);
 
-		 if (record1.getR11_RISK_WEIGHTED_AMOUNT_NOSTRO1() != null && !record1.getR11_RISK_WEIGHTED_AMOUNT_NOSTRO1().toString().trim().equals("N/A") ) {
+		 if (record1.getR11_RISK_WEIGHTED_AMOUNT_NOSTRO1() != null ){
 		     cell88.setCellValue(record1.getR11_RISK_WEIGHTED_AMOUNT_NOSTRO1().toString().trim() );
 		     cell88.setCellStyle(numberStyle);
 		 } else {
@@ -7962,7 +7962,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 	    Row row = sheet.getRow(62) != null ? sheet.getRow(62) : sheet.createRow(62);
 	    Cell cell1 = row.createCell(0);
 
-	   if (record1.getR1_DUE_FROM_DOMESTIC_NAME_OF_BANK() != null && !record1.getR1_DUE_FROM_DOMESTIC_NAME_OF_BANK().toString().trim().equals("N/A") ) {
+	   if (record1.getR1_DUE_FROM_DOMESTIC_NAME_OF_BANK() != null ){
 	       cell1.setCellValue(record1.getR1_DUE_FROM_DOMESTIC_NAME_OF_BANK().toString().trim() );
 	       cell1.setCellStyle(numberStyle);
 	   } else {
@@ -7972,7 +7972,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	    Cell cell2 = row.createCell(1);
 
-	   if (record1.getR1_DUE_FROM_DOMESTIC_ACCT_TYPE() != null && !record1.getR1_DUE_FROM_DOMESTIC_ACCT_TYPE().toString().trim().equals("N/A") ) {
+	   if (record1.getR1_DUE_FROM_DOMESTIC_ACCT_TYPE() != null ){
 	       cell2.setCellValue(record1.getR1_DUE_FROM_DOMESTIC_ACCT_TYPE().toString().trim() );
 	       cell2.setCellStyle(numberStyle);
 	   } else {
@@ -7982,7 +7982,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	    Cell cell3 = row.createCell(2);
 
-	   if (record1.getR1_DUE_FROM_DOMESTIC_PURPOSE() != null && !record1.getR1_DUE_FROM_DOMESTIC_PURPOSE().toString().trim().equals("N/A") ) {
+	   if (record1.getR1_DUE_FROM_DOMESTIC_PURPOSE() != null ){
 	       cell3.setCellValue(record1.getR1_DUE_FROM_DOMESTIC_PURPOSE().toString().trim() );
 	       cell3.setCellStyle(numberStyle);
 	   } else {
@@ -7992,7 +7992,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	    Cell cell4 = row.createCell(3);
 
-	   if (record1.getR1_DUE_FROM_DOMESTIC_AMOUNT() != null && !record1.getR1_DUE_FROM_DOMESTIC_AMOUNT().toString().trim().equals("N/A") ) {
+	   if (record1.getR1_DUE_FROM_DOMESTIC_AMOUNT() != null ){
 	       cell4.setCellValue(record1.getR1_DUE_FROM_DOMESTIC_AMOUNT().toString().trim() );
 	       cell4.setCellStyle(numberStyle);
 	   } else {
@@ -8002,7 +8002,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	    Cell cell5 = row.createCell(4);
 
-	   if (record1.getR1_DUE_FROM_DOMESTIC_RISK_WEIGHT() != null && !record1.getR1_DUE_FROM_DOMESTIC_RISK_WEIGHT().toString().trim().equals("N/A") ) {
+	   if (record1.getR1_DUE_FROM_DOMESTIC_RISK_WEIGHT() != null ){
 	       cell5.setCellValue(record1.getR1_DUE_FROM_DOMESTIC_RISK_WEIGHT().toString().trim() );
 	       cell5.setCellStyle(numberStyle);
 	   } else {
@@ -8012,7 +8012,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	    Cell cell6 = row.createCell(5);
 
-	   if (record1.getR1_DUE_FROM_DOMESTIC_CURRENCY() != null && !record1.getR1_DUE_FROM_DOMESTIC_CURRENCY().toString().trim().equals("N/A") ) {
+	   if (record1.getR1_DUE_FROM_DOMESTIC_CURRENCY() != null ){
 	       cell6.setCellValue(record1.getR1_DUE_FROM_DOMESTIC_CURRENCY().toString().trim() );
 	       cell6.setCellStyle(numberStyle);
 	   } else {
@@ -8022,7 +8022,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	    Cell cell7 = row.createCell(6);
 
-	   if (record1.getR1_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT() != null && !record1.getR1_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT().toString().trim().equals("N/A") ) {
+	   if (record1.getR1_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT() != null ){
 	       cell7.setCellValue(record1.getR1_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT().toString().trim() );
 	       cell7.setCellStyle(numberStyle);
 	   } else {
@@ -8034,7 +8034,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 	    row = sheet.getRow(63) != null ? sheet.getRow(63) : sheet.createRow(63);
 	    Cell cell8 = row.createCell(0);
 
-	   if (record1.getR2_DUE_FROM_DOMESTIC_NAME_OF_BANK() != null && !record1.getR2_DUE_FROM_DOMESTIC_NAME_OF_BANK().toString().trim().equals("N/A") ) {
+	   if (record1.getR2_DUE_FROM_DOMESTIC_NAME_OF_BANK() != null ){
 	       cell8.setCellValue(record1.getR2_DUE_FROM_DOMESTIC_NAME_OF_BANK().toString().trim() );
 	       cell8.setCellStyle(numberStyle);
 	   } else {
@@ -8044,7 +8044,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	    Cell cell9 = row.createCell(1);
 
-	   if (record1.getR2_DUE_FROM_DOMESTIC_ACCT_TYPE() != null && !record1.getR2_DUE_FROM_DOMESTIC_ACCT_TYPE().toString().trim().equals("N/A") ) {
+	   if (record1.getR2_DUE_FROM_DOMESTIC_ACCT_TYPE() != null ){
 	       cell9.setCellValue(record1.getR2_DUE_FROM_DOMESTIC_ACCT_TYPE().toString().trim() );
 	       cell9.setCellStyle(numberStyle);
 	   } else {
@@ -8054,7 +8054,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	    Cell cell10 = row.createCell(2);
 
-	   if (record1.getR2_DUE_FROM_DOMESTIC_PURPOSE() != null && !record1.getR2_DUE_FROM_DOMESTIC_PURPOSE().toString().trim().equals("N/A") ) {
+	   if (record1.getR2_DUE_FROM_DOMESTIC_PURPOSE() != null ){
 	       cell10.setCellValue(record1.getR2_DUE_FROM_DOMESTIC_PURPOSE().toString().trim() );
 	       cell10.setCellStyle(numberStyle);
 	   } else {
@@ -8064,7 +8064,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	    Cell cell11 = row.createCell(3);
 
-	   if (record1.getR2_DUE_FROM_DOMESTIC_AMOUNT() != null && !record1.getR2_DUE_FROM_DOMESTIC_AMOUNT().toString().trim().equals("N/A") ) {
+	   if (record1.getR2_DUE_FROM_DOMESTIC_AMOUNT() != null ){
 	       cell11.setCellValue(record1.getR2_DUE_FROM_DOMESTIC_AMOUNT().toString().trim() );
 	       cell11.setCellStyle(numberStyle);
 	   } else {
@@ -8074,7 +8074,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	    Cell cell12 = row.createCell(4);
 
-	   if (record1.getR2_DUE_FROM_DOMESTIC_RISK_WEIGHT() != null && !record1.getR2_DUE_FROM_DOMESTIC_RISK_WEIGHT().toString().trim().equals("N/A") ) {
+	   if (record1.getR2_DUE_FROM_DOMESTIC_RISK_WEIGHT() != null ){
 	       cell12.setCellValue(record1.getR2_DUE_FROM_DOMESTIC_RISK_WEIGHT().toString().trim() );
 	       cell12.setCellStyle(numberStyle);
 	   } else {
@@ -8084,7 +8084,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	    Cell cell13 = row.createCell(5);
 
-	   if (record1.getR2_DUE_FROM_DOMESTIC_CURRENCY() != null && !record1.getR2_DUE_FROM_DOMESTIC_CURRENCY().toString().trim().equals("N/A") ) {
+	   if (record1.getR2_DUE_FROM_DOMESTIC_CURRENCY() != null ){
 	       cell13.setCellValue(record1.getR2_DUE_FROM_DOMESTIC_CURRENCY().toString().trim() );
 	       cell13.setCellStyle(numberStyle);
 	   } else {
@@ -8094,7 +8094,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	    Cell cell14 = row.createCell(6);
 
-	   if (record1.getR2_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT() != null && !record1.getR2_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT().toString().trim().equals("N/A") ) {
+	   if (record1.getR2_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT() != null ){
 	       cell14.setCellValue(record1.getR2_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT().toString().trim() );
 	       cell14.setCellStyle(numberStyle);
 	   } else {
@@ -8106,7 +8106,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 	    row = sheet.getRow(64) != null ? sheet.getRow(64) : sheet.createRow(64);
 	    Cell cell15 = row.createCell(0);
 
-	   if (record1.getR3_DUE_FROM_DOMESTIC_NAME_OF_BANK() != null && !record1.getR3_DUE_FROM_DOMESTIC_NAME_OF_BANK().toString().trim().equals("N/A") ) {
+	   if (record1.getR3_DUE_FROM_DOMESTIC_NAME_OF_BANK() != null ){
 	       cell15.setCellValue(record1.getR3_DUE_FROM_DOMESTIC_NAME_OF_BANK().toString().trim() );
 	       cell15.setCellStyle(numberStyle);
 	   } else {
@@ -8116,7 +8116,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	    Cell cell16 = row.createCell(1);
 
-	   if (record1.getR3_DUE_FROM_DOMESTIC_ACCT_TYPE() != null && !record1.getR3_DUE_FROM_DOMESTIC_ACCT_TYPE().toString().trim().equals("N/A") ) {
+	   if (record1.getR3_DUE_FROM_DOMESTIC_ACCT_TYPE() != null ){
 	       cell16.setCellValue(record1.getR3_DUE_FROM_DOMESTIC_ACCT_TYPE().toString().trim() );
 	       cell16.setCellStyle(numberStyle);
 	   } else {
@@ -8126,7 +8126,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	    Cell cell17 = row.createCell(2);
 
-	   if (record1.getR3_DUE_FROM_DOMESTIC_PURPOSE() != null && !record1.getR3_DUE_FROM_DOMESTIC_PURPOSE().toString().trim().equals("N/A") ) {
+	   if (record1.getR3_DUE_FROM_DOMESTIC_PURPOSE() != null ){
 	       cell17.setCellValue(record1.getR3_DUE_FROM_DOMESTIC_PURPOSE().toString().trim() );
 	       cell17.setCellStyle(numberStyle);
 	   } else {
@@ -8136,7 +8136,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	    Cell cell18 = row.createCell(3);
 
-	   if (record1.getR3_DUE_FROM_DOMESTIC_AMOUNT() != null && !record1.getR3_DUE_FROM_DOMESTIC_AMOUNT().toString().trim().equals("N/A") ) {
+	   if (record1.getR3_DUE_FROM_DOMESTIC_AMOUNT() != null ){
 	       cell18.setCellValue(record1.getR3_DUE_FROM_DOMESTIC_AMOUNT().toString().trim() );
 	       cell18.setCellStyle(numberStyle);
 	   } else {
@@ -8146,7 +8146,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	    Cell cell19 = row.createCell(4);
 
-	   if (record1.getR3_DUE_FROM_DOMESTIC_RISK_WEIGHT() != null && !record1.getR3_DUE_FROM_DOMESTIC_RISK_WEIGHT().toString().trim().equals("N/A") ) {
+	   if (record1.getR3_DUE_FROM_DOMESTIC_RISK_WEIGHT() != null ){
 	       cell19.setCellValue(record1.getR3_DUE_FROM_DOMESTIC_RISK_WEIGHT().toString().trim() );
 	       cell19.setCellStyle(numberStyle);
 	   } else {
@@ -8156,7 +8156,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	    Cell cell20 = row.createCell(5);
 
-	   if (record1.getR3_DUE_FROM_DOMESTIC_CURRENCY() != null && !record1.getR3_DUE_FROM_DOMESTIC_CURRENCY().toString().trim().equals("N/A") ) {
+	   if (record1.getR3_DUE_FROM_DOMESTIC_CURRENCY() != null ){
 	       cell20.setCellValue(record1.getR3_DUE_FROM_DOMESTIC_CURRENCY().toString().trim() );
 	       cell20.setCellStyle(numberStyle);
 	   } else {
@@ -8166,7 +8166,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	    Cell cell21 = row.createCell(6);
 
-	   if (record1.getR3_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT() != null && !record1.getR3_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT().toString().trim().equals("N/A") ) {
+	   if (record1.getR3_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT() != null ){
 	       cell21.setCellValue(record1.getR3_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT().toString().trim() );
 	       cell21.setCellStyle(numberStyle);
 	   } else {
@@ -8178,7 +8178,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 	    row = sheet.getRow(65) != null ? sheet.getRow(65) : sheet.createRow(65);
 	    Cell cell22 = row.createCell(0);
 
-	   if (record1.getR4_DUE_FROM_DOMESTIC_NAME_OF_BANK() != null && !record1.getR4_DUE_FROM_DOMESTIC_NAME_OF_BANK().toString().trim().equals("N/A") ) {
+	   if (record1.getR4_DUE_FROM_DOMESTIC_NAME_OF_BANK() != null ){
 	       cell22.setCellValue(record1.getR4_DUE_FROM_DOMESTIC_NAME_OF_BANK().toString().trim() );
 	       cell22.setCellStyle(numberStyle);
 	   } else {
@@ -8188,7 +8188,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	    Cell cell23 = row.createCell(1);
 
-	   if (record1.getR4_DUE_FROM_DOMESTIC_ACCT_TYPE() != null && !record1.getR4_DUE_FROM_DOMESTIC_ACCT_TYPE().toString().trim().equals("N/A") ) {
+	   if (record1.getR4_DUE_FROM_DOMESTIC_ACCT_TYPE() != null ){
 	       cell23.setCellValue(record1.getR4_DUE_FROM_DOMESTIC_ACCT_TYPE().toString().trim() );
 	       cell23.setCellStyle(numberStyle);
 	   } else {
@@ -8198,7 +8198,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	    Cell cell24 = row.createCell(2);
 
-	   if (record1.getR4_DUE_FROM_DOMESTIC_PURPOSE() != null && !record1.getR4_DUE_FROM_DOMESTIC_PURPOSE().toString().trim().equals("N/A") ) {
+	   if (record1.getR4_DUE_FROM_DOMESTIC_PURPOSE() != null ){
 	       cell24.setCellValue(record1.getR4_DUE_FROM_DOMESTIC_PURPOSE().toString().trim() );
 	       cell24.setCellStyle(numberStyle);
 	   } else {
@@ -8208,7 +8208,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	    Cell cell25 = row.createCell(3);
 
-	   if (record1.getR4_DUE_FROM_DOMESTIC_AMOUNT() != null && !record1.getR4_DUE_FROM_DOMESTIC_AMOUNT().toString().trim().equals("N/A") ) {
+	   if (record1.getR4_DUE_FROM_DOMESTIC_AMOUNT() != null ){
 	       cell25.setCellValue(record1.getR4_DUE_FROM_DOMESTIC_AMOUNT().toString().trim() );
 	       cell25.setCellStyle(numberStyle);
 	   } else {
@@ -8218,7 +8218,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	    Cell cell26 = row.createCell(4);
 
-	   if (record1.getR4_DUE_FROM_DOMESTIC_RISK_WEIGHT() != null && !record1.getR4_DUE_FROM_DOMESTIC_RISK_WEIGHT().toString().trim().equals("N/A") ) {
+	   if (record1.getR4_DUE_FROM_DOMESTIC_RISK_WEIGHT() != null ){
 	       cell26.setCellValue(record1.getR4_DUE_FROM_DOMESTIC_RISK_WEIGHT().toString().trim() );
 	       cell26.setCellStyle(numberStyle);
 	   } else {
@@ -8228,7 +8228,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	    Cell cell27 = row.createCell(5);
 
-	   if (record1.getR4_DUE_FROM_DOMESTIC_CURRENCY() != null && !record1.getR4_DUE_FROM_DOMESTIC_CURRENCY().toString().trim().equals("N/A") ) {
+	   if (record1.getR4_DUE_FROM_DOMESTIC_CURRENCY() != null ){
 	       cell27.setCellValue(record1.getR4_DUE_FROM_DOMESTIC_CURRENCY().toString().trim() );
 	       cell27.setCellStyle(numberStyle);
 	   } else {
@@ -8238,7 +8238,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	    Cell cell28 = row.createCell(6);
 
-	   if (record1.getR4_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT() != null && !record1.getR4_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT().toString().trim().equals("N/A") ) {
+	   if (record1.getR4_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT() != null ){
 	       cell28.setCellValue(record1.getR4_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT().toString().trim() );
 	       cell28.setCellStyle(numberStyle);
 	   } else {
@@ -8250,7 +8250,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 	    row = sheet.getRow(66) != null ? sheet.getRow(66) : sheet.createRow(66);
 	    Cell cell29 = row.createCell(0);
 
-	   if (record1.getR5_DUE_FROM_DOMESTIC_NAME_OF_BANK() != null && !record1.getR5_DUE_FROM_DOMESTIC_NAME_OF_BANK().toString().trim().equals("N/A") ) {
+	   if (record1.getR5_DUE_FROM_DOMESTIC_NAME_OF_BANK() != null ){
 	       cell29.setCellValue(record1.getR5_DUE_FROM_DOMESTIC_NAME_OF_BANK().toString().trim() );
 	       cell29.setCellStyle(numberStyle);
 	   } else {
@@ -8260,7 +8260,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	    Cell cell30 = row.createCell(1);
 
-	   if (record1.getR5_DUE_FROM_DOMESTIC_ACCT_TYPE() != null && !record1.getR5_DUE_FROM_DOMESTIC_ACCT_TYPE().toString().trim().equals("N/A") ) {
+	   if (record1.getR5_DUE_FROM_DOMESTIC_ACCT_TYPE() != null ){
 	       cell30.setCellValue(record1.getR5_DUE_FROM_DOMESTIC_ACCT_TYPE().toString().trim() );
 	       cell30.setCellStyle(numberStyle);
 	   } else {
@@ -8270,7 +8270,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	    Cell cell31 = row.createCell(2);
 
-	   if (record1.getR5_DUE_FROM_DOMESTIC_PURPOSE() != null && !record1.getR5_DUE_FROM_DOMESTIC_PURPOSE().toString().trim().equals("N/A") ) {
+	   if (record1.getR5_DUE_FROM_DOMESTIC_PURPOSE() != null ){
 	       cell31.setCellValue(record1.getR5_DUE_FROM_DOMESTIC_PURPOSE().toString().trim() );
 	       cell31.setCellStyle(numberStyle);
 	   } else {
@@ -8280,7 +8280,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	    Cell cell32 = row.createCell(3);
 
-	   if (record1.getR5_DUE_FROM_DOMESTIC_AMOUNT() != null && !record1.getR5_DUE_FROM_DOMESTIC_AMOUNT().toString().trim().equals("N/A") ) {
+	   if (record1.getR5_DUE_FROM_DOMESTIC_AMOUNT() != null ){
 	       cell32.setCellValue(record1.getR5_DUE_FROM_DOMESTIC_AMOUNT().toString().trim() );
 	       cell32.setCellStyle(numberStyle);
 	   } else {
@@ -8290,7 +8290,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	    Cell cell33 = row.createCell(4);
 
-	   if (record1.getR5_DUE_FROM_DOMESTIC_RISK_WEIGHT() != null && !record1.getR5_DUE_FROM_DOMESTIC_RISK_WEIGHT().toString().trim().equals("N/A") ) {
+	   if (record1.getR5_DUE_FROM_DOMESTIC_RISK_WEIGHT() != null ){
 	       cell33.setCellValue(record1.getR5_DUE_FROM_DOMESTIC_RISK_WEIGHT().toString().trim() );
 	       cell33.setCellStyle(numberStyle);
 	   } else {
@@ -8300,7 +8300,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	    Cell cell34 = row.createCell(5);
 
-	   if (record1.getR5_DUE_FROM_DOMESTIC_CURRENCY() != null && !record1.getR5_DUE_FROM_DOMESTIC_CURRENCY().toString().trim().equals("N/A") ) {
+	   if (record1.getR5_DUE_FROM_DOMESTIC_CURRENCY() != null ){
 	       cell34.setCellValue(record1.getR5_DUE_FROM_DOMESTIC_CURRENCY().toString().trim() );
 	       cell34.setCellStyle(numberStyle);
 	   } else {
@@ -8310,7 +8310,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	    Cell cell35 = row.createCell(6);
 
-	   if (record1.getR5_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT() != null && !record1.getR5_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT().toString().trim().equals("N/A") ) {
+	   if (record1.getR5_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT() != null ){
 	       cell35.setCellValue(record1.getR5_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT().toString().trim() );
 	       cell35.setCellStyle(numberStyle);
 	   } else {
@@ -8322,7 +8322,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 	    row = sheet.getRow(67) != null ? sheet.getRow(67) : sheet.createRow(67);
 	    Cell cell36 = row.createCell(0);
 
-	   if (record1.getR6_DUE_FROM_DOMESTIC_NAME_OF_BANK() != null && !record1.getR6_DUE_FROM_DOMESTIC_NAME_OF_BANK().toString().trim().equals("N/A") ) {
+	   if (record1.getR6_DUE_FROM_DOMESTIC_NAME_OF_BANK() != null ){
 	       cell36.setCellValue(record1.getR6_DUE_FROM_DOMESTIC_NAME_OF_BANK().toString().trim() );
 	       cell36.setCellStyle(numberStyle);
 	   } else {
@@ -8332,7 +8332,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	    Cell cell37 = row.createCell(1);
 
-	   if (record1.getR6_DUE_FROM_DOMESTIC_ACCT_TYPE() != null && !record1.getR6_DUE_FROM_DOMESTIC_ACCT_TYPE().toString().trim().equals("N/A") ) {
+	   if (record1.getR6_DUE_FROM_DOMESTIC_ACCT_TYPE() != null ){
 	       cell37.setCellValue(record1.getR6_DUE_FROM_DOMESTIC_ACCT_TYPE().toString().trim() );
 	       cell37.setCellStyle(numberStyle);
 	   } else {
@@ -8342,7 +8342,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	    Cell cell38 = row.createCell(2);
 
-	   if (record1.getR6_DUE_FROM_DOMESTIC_PURPOSE() != null && !record1.getR6_DUE_FROM_DOMESTIC_PURPOSE().toString().trim().equals("N/A") ) {
+	   if (record1.getR6_DUE_FROM_DOMESTIC_PURPOSE() != null ){
 	       cell38.setCellValue(record1.getR6_DUE_FROM_DOMESTIC_PURPOSE().toString().trim() );
 	       cell38.setCellStyle(numberStyle);
 	   } else {
@@ -8352,7 +8352,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	    Cell cell39 = row.createCell(3);
 
-	   if (record1.getR6_DUE_FROM_DOMESTIC_AMOUNT() != null && !record1.getR6_DUE_FROM_DOMESTIC_AMOUNT().toString().trim().equals("N/A") ) {
+	   if (record1.getR6_DUE_FROM_DOMESTIC_AMOUNT() != null ){
 	       cell39.setCellValue(record1.getR6_DUE_FROM_DOMESTIC_AMOUNT().toString().trim() );
 	       cell39.setCellStyle(numberStyle);
 	   } else {
@@ -8362,7 +8362,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	    Cell cell40 = row.createCell(4);
 
-	   if (record1.getR6_DUE_FROM_DOMESTIC_RISK_WEIGHT() != null && !record1.getR6_DUE_FROM_DOMESTIC_RISK_WEIGHT().toString().trim().equals("N/A") ) {
+	   if (record1.getR6_DUE_FROM_DOMESTIC_RISK_WEIGHT() != null ){
 	       cell40.setCellValue(record1.getR6_DUE_FROM_DOMESTIC_RISK_WEIGHT().toString().trim() );
 	       cell40.setCellStyle(numberStyle);
 	   } else {
@@ -8372,7 +8372,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	    Cell cell41 = row.createCell(5);
 
-	   if (record1.getR6_DUE_FROM_DOMESTIC_CURRENCY() != null && !record1.getR6_DUE_FROM_DOMESTIC_CURRENCY().toString().trim().equals("N/A") ) {
+	   if (record1.getR6_DUE_FROM_DOMESTIC_CURRENCY() != null ){
 	       cell41.setCellValue(record1.getR6_DUE_FROM_DOMESTIC_CURRENCY().toString().trim() );
 	       cell41.setCellStyle(numberStyle);
 	   } else {
@@ -8382,7 +8382,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	    Cell cell42 = row.createCell(6);
 
-	   if (record1.getR6_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT() != null && !record1.getR6_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT().toString().trim().equals("N/A") ) {
+	   if (record1.getR6_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT() != null ){
 	       cell42.setCellValue(record1.getR6_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT().toString().trim() );
 	       cell42.setCellStyle(numberStyle);
 	   } else {
@@ -8394,7 +8394,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 	    row = sheet.getRow(68) != null ? sheet.getRow(68) : sheet.createRow(68);
 	    Cell cell43 = row.createCell(0);
 
-	   if (record1.getR7_DUE_FROM_DOMESTIC_NAME_OF_BANK() != null && !record1.getR7_DUE_FROM_DOMESTIC_NAME_OF_BANK().toString().trim().equals("N/A") ) {
+	   if (record1.getR7_DUE_FROM_DOMESTIC_NAME_OF_BANK() != null ){
 	       cell43.setCellValue(record1.getR7_DUE_FROM_DOMESTIC_NAME_OF_BANK().toString().trim() );
 	       cell43.setCellStyle(numberStyle);
 	   } else {
@@ -8404,7 +8404,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	    Cell cell44 = row.createCell(1);
 
-	   if (record1.getR7_DUE_FROM_DOMESTIC_ACCT_TYPE() != null && !record1.getR7_DUE_FROM_DOMESTIC_ACCT_TYPE().toString().trim().equals("N/A") ) {
+	   if (record1.getR7_DUE_FROM_DOMESTIC_ACCT_TYPE() != null ){
 	       cell44.setCellValue(record1.getR7_DUE_FROM_DOMESTIC_ACCT_TYPE().toString().trim() );
 	       cell44.setCellStyle(numberStyle);
 	   } else {
@@ -8414,7 +8414,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	    Cell cell45 = row.createCell(2);
 
-	   if (record1.getR7_DUE_FROM_DOMESTIC_PURPOSE() != null && !record1.getR7_DUE_FROM_DOMESTIC_PURPOSE().toString().trim().equals("N/A") ) {
+	   if (record1.getR7_DUE_FROM_DOMESTIC_PURPOSE() != null ){
 	       cell45.setCellValue(record1.getR7_DUE_FROM_DOMESTIC_PURPOSE().toString().trim() );
 	       cell45.setCellStyle(numberStyle);
 	   } else {
@@ -8424,7 +8424,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	    Cell cell46 = row.createCell(3);
 
-	   if (record1.getR7_DUE_FROM_DOMESTIC_AMOUNT() != null && !record1.getR7_DUE_FROM_DOMESTIC_AMOUNT().toString().trim().equals("N/A") ) {
+	   if (record1.getR7_DUE_FROM_DOMESTIC_AMOUNT() != null ){
 	       cell46.setCellValue(record1.getR7_DUE_FROM_DOMESTIC_AMOUNT().toString().trim() );
 	       cell46.setCellStyle(numberStyle);
 	   } else {
@@ -8434,7 +8434,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	    Cell cell47 = row.createCell(4);
 
-	   if (record1.getR7_DUE_FROM_DOMESTIC_RISK_WEIGHT() != null && !record1.getR7_DUE_FROM_DOMESTIC_RISK_WEIGHT().toString().trim().equals("N/A") ) {
+	   if (record1.getR7_DUE_FROM_DOMESTIC_RISK_WEIGHT() != null ){
 	       cell47.setCellValue(record1.getR7_DUE_FROM_DOMESTIC_RISK_WEIGHT().toString().trim() );
 	       cell47.setCellStyle(numberStyle);
 	   } else {
@@ -8444,7 +8444,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	    Cell cell48 = row.createCell(5);
 
-	   if (record1.getR7_DUE_FROM_DOMESTIC_CURRENCY() != null && !record1.getR7_DUE_FROM_DOMESTIC_CURRENCY().toString().trim().equals("N/A") ) {
+	   if (record1.getR7_DUE_FROM_DOMESTIC_CURRENCY() != null ){
 	       cell48.setCellValue(record1.getR7_DUE_FROM_DOMESTIC_CURRENCY().toString().trim() );
 	       cell48.setCellStyle(numberStyle);
 	   } else {
@@ -8454,7 +8454,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	    Cell cell49 = row.createCell(6);
 
-	   if (record1.getR7_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT() != null && !record1.getR7_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT().toString().trim().equals("N/A") ) {
+	   if (record1.getR7_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT() != null ){
 	       cell49.setCellValue(record1.getR7_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT().toString().trim() );
 	       cell49.setCellStyle(numberStyle);
 	   } else {
@@ -8466,7 +8466,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 	    row = sheet.getRow(69) != null ? sheet.getRow(69) : sheet.createRow(69);
 	    Cell cell50 = row.createCell(0);
 
-	   if (record1.getR8_DUE_FROM_DOMESTIC_NAME_OF_BANK() != null && !record1.getR8_DUE_FROM_DOMESTIC_NAME_OF_BANK().toString().trim().equals("N/A") ) {
+	   if (record1.getR8_DUE_FROM_DOMESTIC_NAME_OF_BANK() != null ){
 	       cell50.setCellValue(record1.getR8_DUE_FROM_DOMESTIC_NAME_OF_BANK().toString().trim() );
 	       cell50.setCellStyle(numberStyle);
 	   } else {
@@ -8476,7 +8476,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	    Cell cell51 = row.createCell(1);
 
-	   if (record1.getR8_DUE_FROM_DOMESTIC_ACCT_TYPE() != null && !record1.getR8_DUE_FROM_DOMESTIC_ACCT_TYPE().toString().trim().equals("N/A") ) {
+	   if (record1.getR8_DUE_FROM_DOMESTIC_ACCT_TYPE() != null ){
 	       cell51.setCellValue(record1.getR8_DUE_FROM_DOMESTIC_ACCT_TYPE().toString().trim() );
 	       cell51.setCellStyle(numberStyle);
 	   } else {
@@ -8486,7 +8486,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	    Cell cell52 = row.createCell(2);
 
-	   if (record1.getR8_DUE_FROM_DOMESTIC_PURPOSE() != null && !record1.getR8_DUE_FROM_DOMESTIC_PURPOSE().toString().trim().equals("N/A") ) {
+	   if (record1.getR8_DUE_FROM_DOMESTIC_PURPOSE() != null ){
 	       cell52.setCellValue(record1.getR8_DUE_FROM_DOMESTIC_PURPOSE().toString().trim() );
 	       cell52.setCellStyle(numberStyle);
 	   } else {
@@ -8496,7 +8496,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	    Cell cell53 = row.createCell(3);
 
-	   if (record1.getR8_DUE_FROM_DOMESTIC_AMOUNT() != null && !record1.getR8_DUE_FROM_DOMESTIC_AMOUNT().toString().trim().equals("N/A") ) {
+	   if (record1.getR8_DUE_FROM_DOMESTIC_AMOUNT() != null ){
 	       cell53.setCellValue(record1.getR8_DUE_FROM_DOMESTIC_AMOUNT().toString().trim() );
 	       cell53.setCellStyle(numberStyle);
 	   } else {
@@ -8506,7 +8506,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	    Cell cell54 = row.createCell(4);
 
-	   if (record1.getR8_DUE_FROM_DOMESTIC_RISK_WEIGHT() != null && !record1.getR8_DUE_FROM_DOMESTIC_RISK_WEIGHT().toString().trim().equals("N/A") ) {
+	   if (record1.getR8_DUE_FROM_DOMESTIC_RISK_WEIGHT() != null ){
 	       cell54.setCellValue(record1.getR8_DUE_FROM_DOMESTIC_RISK_WEIGHT().toString().trim() );
 	       cell54.setCellStyle(numberStyle);
 	   } else {
@@ -8516,7 +8516,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	    Cell cell55 = row.createCell(5);
 
-	   if (record1.getR8_DUE_FROM_DOMESTIC_CURRENCY() != null && !record1.getR8_DUE_FROM_DOMESTIC_CURRENCY().toString().trim().equals("N/A") ) {
+	   if (record1.getR8_DUE_FROM_DOMESTIC_CURRENCY() != null ){
 	       cell55.setCellValue(record1.getR8_DUE_FROM_DOMESTIC_CURRENCY().toString().trim() );
 	       cell55.setCellStyle(numberStyle);
 	   } else {
@@ -8526,7 +8526,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	    Cell cell56 = row.createCell(6);
 
-	   if (record1.getR8_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT() != null && !record1.getR8_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT().toString().trim().equals("N/A") ) {
+	   if (record1.getR8_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT() != null ){
 	       cell56.setCellValue(record1.getR8_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT().toString().trim() );
 	       cell56.setCellStyle(numberStyle);
 	   } else {
@@ -8538,7 +8538,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 	    row = sheet.getRow(70) != null ? sheet.getRow(70) : sheet.createRow(70);
 	    Cell cell57 = row.createCell(0);
 
-	   if (record1.getR9_DUE_FROM_DOMESTIC_NAME_OF_BANK() != null && !record1.getR9_DUE_FROM_DOMESTIC_NAME_OF_BANK().toString().trim().equals("N/A") ) {
+	   if (record1.getR9_DUE_FROM_DOMESTIC_NAME_OF_BANK() != null ){
 	       cell57.setCellValue(record1.getR9_DUE_FROM_DOMESTIC_NAME_OF_BANK().toString().trim() );
 	       cell57.setCellStyle(numberStyle);
 	   } else {
@@ -8548,7 +8548,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	    Cell cell58 = row.createCell(1);
 
-	   if (record1.getR9_DUE_FROM_DOMESTIC_ACCT_TYPE() != null && !record1.getR9_DUE_FROM_DOMESTIC_ACCT_TYPE().toString().trim().equals("N/A") ) {
+	   if (record1.getR9_DUE_FROM_DOMESTIC_ACCT_TYPE() != null ){
 	       cell58.setCellValue(record1.getR9_DUE_FROM_DOMESTIC_ACCT_TYPE().toString().trim() );
 	       cell58.setCellStyle(numberStyle);
 	   } else {
@@ -8558,7 +8558,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	    Cell cell59 = row.createCell(2);
 
-	   if (record1.getR9_DUE_FROM_DOMESTIC_PURPOSE() != null && !record1.getR9_DUE_FROM_DOMESTIC_PURPOSE().toString().trim().equals("N/A") ) {
+	   if (record1.getR9_DUE_FROM_DOMESTIC_PURPOSE() != null ){
 	       cell59.setCellValue(record1.getR9_DUE_FROM_DOMESTIC_PURPOSE().toString().trim() );
 	       cell59.setCellStyle(numberStyle);
 	   } else {
@@ -8568,7 +8568,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	    Cell cell60 = row.createCell(3);
 
-	   if (record1.getR9_DUE_FROM_DOMESTIC_AMOUNT() != null && !record1.getR9_DUE_FROM_DOMESTIC_AMOUNT().toString().trim().equals("N/A") ) {
+	   if (record1.getR9_DUE_FROM_DOMESTIC_AMOUNT() != null ){
 	       cell60.setCellValue(record1.getR9_DUE_FROM_DOMESTIC_AMOUNT().toString().trim() );
 	       cell60.setCellStyle(numberStyle);
 	   } else {
@@ -8578,7 +8578,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	    Cell cell61 = row.createCell(4);
 
-	   if (record1.getR9_DUE_FROM_DOMESTIC_RISK_WEIGHT() != null && !record1.getR9_DUE_FROM_DOMESTIC_RISK_WEIGHT().toString().trim().equals("N/A") ) {
+	   if (record1.getR9_DUE_FROM_DOMESTIC_RISK_WEIGHT() != null ){
 	       cell61.setCellValue(record1.getR9_DUE_FROM_DOMESTIC_RISK_WEIGHT().toString().trim() );
 	       cell61.setCellStyle(numberStyle);
 	   } else {
@@ -8588,7 +8588,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	    Cell cell62 = row.createCell(5);
 
-	   if (record1.getR9_DUE_FROM_DOMESTIC_CURRENCY() != null && !record1.getR9_DUE_FROM_DOMESTIC_CURRENCY().toString().trim().equals("N/A") ) {
+	   if (record1.getR9_DUE_FROM_DOMESTIC_CURRENCY() != null ){
 	       cell62.setCellValue(record1.getR9_DUE_FROM_DOMESTIC_CURRENCY().toString().trim() );
 	       cell62.setCellStyle(numberStyle);
 	   } else {
@@ -8598,7 +8598,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	    Cell cell63 = row.createCell(6);
 
-	   if (record1.getR9_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT() != null && !record1.getR9_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT().toString().trim().equals("N/A") ) {
+	   if (record1.getR9_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT() != null ){
 	       cell63.setCellValue(record1.getR9_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT().toString().trim() );
 	       cell63.setCellStyle(numberStyle);
 	   } else {
@@ -8610,7 +8610,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 	    row = sheet.getRow(71) != null ? sheet.getRow(71) : sheet.createRow(71);
 	    Cell cell64 = row.createCell(0);
 
-	   if (record1.getR10_DUE_FROM_DOMESTIC_NAME_OF_BANK() != null && !record1.getR10_DUE_FROM_DOMESTIC_NAME_OF_BANK().toString().trim().equals("N/A") ) {
+	   if (record1.getR10_DUE_FROM_DOMESTIC_NAME_OF_BANK() != null ){
 	       cell64.setCellValue(record1.getR10_DUE_FROM_DOMESTIC_NAME_OF_BANK().toString().trim() );
 	       cell64.setCellStyle(numberStyle);
 	   } else {
@@ -8620,7 +8620,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	    Cell cell65 = row.createCell(1);
 
-	   if (record1.getR10_DUE_FROM_DOMESTIC_ACCT_TYPE() != null && !record1.getR10_DUE_FROM_DOMESTIC_ACCT_TYPE().toString().trim().equals("N/A") ) {
+	   if (record1.getR10_DUE_FROM_DOMESTIC_ACCT_TYPE() != null ){
 	       cell65.setCellValue(record1.getR10_DUE_FROM_DOMESTIC_ACCT_TYPE().toString().trim() );
 	       cell65.setCellStyle(numberStyle);
 	   } else {
@@ -8630,7 +8630,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	    Cell cell66 = row.createCell(2);
 
-	   if (record1.getR10_DUE_FROM_DOMESTIC_PURPOSE() != null && !record1.getR10_DUE_FROM_DOMESTIC_PURPOSE().toString().trim().equals("N/A") ) {
+	   if (record1.getR10_DUE_FROM_DOMESTIC_PURPOSE() != null ){
 	       cell66.setCellValue(record1.getR10_DUE_FROM_DOMESTIC_PURPOSE().toString().trim() );
 	       cell66.setCellStyle(numberStyle);
 	   } else {
@@ -8640,7 +8640,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	    Cell cell67 = row.createCell(3);
 
-	   if (record1.getR10_DUE_FROM_DOMESTIC_AMOUNT() != null && !record1.getR10_DUE_FROM_DOMESTIC_AMOUNT().toString().trim().equals("N/A") ) {
+	   if (record1.getR10_DUE_FROM_DOMESTIC_AMOUNT() != null ){
 	       cell67.setCellValue(record1.getR10_DUE_FROM_DOMESTIC_AMOUNT().toString().trim() );
 	       cell67.setCellStyle(numberStyle);
 	   } else {
@@ -8650,7 +8650,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	    Cell cell68 = row.createCell(4);
 
-	   if (record1.getR10_DUE_FROM_DOMESTIC_RISK_WEIGHT() != null && !record1.getR10_DUE_FROM_DOMESTIC_RISK_WEIGHT().toString().trim().equals("N/A") ) {
+	   if (record1.getR10_DUE_FROM_DOMESTIC_RISK_WEIGHT() != null ){
 	       cell68.setCellValue(record1.getR10_DUE_FROM_DOMESTIC_RISK_WEIGHT().toString().trim() );
 	       cell68.setCellStyle(numberStyle);
 	   } else {
@@ -8660,7 +8660,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	    Cell cell69 = row.createCell(5);
 
-	   if (record1.getR10_DUE_FROM_DOMESTIC_CURRENCY() != null && !record1.getR10_DUE_FROM_DOMESTIC_CURRENCY().toString().trim().equals("N/A") ) {
+	   if (record1.getR10_DUE_FROM_DOMESTIC_CURRENCY() != null ){
 	       cell69.setCellValue(record1.getR10_DUE_FROM_DOMESTIC_CURRENCY().toString().trim() );
 	       cell69.setCellStyle(numberStyle);
 	   } else {
@@ -8670,7 +8670,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	    Cell cell70 = row.createCell(6);
 
-	   if (record1.getR10_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT() != null && !record1.getR10_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT().toString().trim().equals("N/A") ) {
+	   if (record1.getR10_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT() != null ){
 	       cell70.setCellValue(record1.getR10_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT().toString().trim() );
 	       cell70.setCellStyle(numberStyle);
 	   } else {
@@ -8682,7 +8682,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 	    row = sheet.getRow(72) != null ? sheet.getRow(72) : sheet.createRow(72);
 	    Cell cell71 = row.createCell(0);
 
-	   if (record1.getR11_DUE_FROM_DOMESTIC_NAME_OF_BANK() != null && !record1.getR11_DUE_FROM_DOMESTIC_NAME_OF_BANK().toString().trim().equals("N/A") ) {
+	   if (record1.getR11_DUE_FROM_DOMESTIC_NAME_OF_BANK() != null ){
 	       cell71.setCellValue(record1.getR11_DUE_FROM_DOMESTIC_NAME_OF_BANK().toString().trim() );
 	       cell71.setCellStyle(numberStyle);
 	   } else {
@@ -8692,7 +8692,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	    Cell cell72 = row.createCell(1);
 
-	   if (record1.getR11_DUE_FROM_DOMESTIC_ACCT_TYPE() != null && !record1.getR11_DUE_FROM_DOMESTIC_ACCT_TYPE().toString().trim().equals("N/A") ) {
+	   if (record1.getR11_DUE_FROM_DOMESTIC_ACCT_TYPE() != null ){
 	       cell72.setCellValue(record1.getR11_DUE_FROM_DOMESTIC_ACCT_TYPE().toString().trim() );
 	       cell72.setCellStyle(numberStyle);
 	   } else {
@@ -8702,7 +8702,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	    Cell cell73 = row.createCell(2);
 
-	   if (record1.getR11_DUE_FROM_DOMESTIC_PURPOSE() != null && !record1.getR11_DUE_FROM_DOMESTIC_PURPOSE().toString().trim().equals("N/A") ) {
+	   if (record1.getR11_DUE_FROM_DOMESTIC_PURPOSE() != null ){
 	       cell73.setCellValue(record1.getR11_DUE_FROM_DOMESTIC_PURPOSE().toString().trim() );
 	       cell73.setCellStyle(numberStyle);
 	   } else {
@@ -8712,7 +8712,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	    Cell cell74 = row.createCell(3);
 
-	   if (record1.getR11_DUE_FROM_DOMESTIC_AMOUNT() != null && !record1.getR11_DUE_FROM_DOMESTIC_AMOUNT().toString().trim().equals("N/A") ) {
+	   if (record1.getR11_DUE_FROM_DOMESTIC_AMOUNT() != null ){
 	       cell74.setCellValue(record1.getR11_DUE_FROM_DOMESTIC_AMOUNT().toString().trim() );
 	       cell74.setCellStyle(numberStyle);
 	   } else {
@@ -8722,7 +8722,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	    Cell cell75 = row.createCell(4);
 
-	   if (record1.getR11_DUE_FROM_DOMESTIC_RISK_WEIGHT() != null && !record1.getR11_DUE_FROM_DOMESTIC_RISK_WEIGHT().toString().trim().equals("N/A") ) {
+	   if (record1.getR11_DUE_FROM_DOMESTIC_RISK_WEIGHT() != null ){
 	       cell75.setCellValue(record1.getR11_DUE_FROM_DOMESTIC_RISK_WEIGHT().toString().trim() );
 	       cell75.setCellStyle(numberStyle);
 	   } else {
@@ -8732,7 +8732,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	    Cell cell76 = row.createCell(5);
 
-	   if (record1.getR11_DUE_FROM_DOMESTIC_CURRENCY() != null && !record1.getR11_DUE_FROM_DOMESTIC_CURRENCY().toString().trim().equals("N/A") ) {
+	   if (record1.getR11_DUE_FROM_DOMESTIC_CURRENCY() != null ){
 	       cell76.setCellValue(record1.getR11_DUE_FROM_DOMESTIC_CURRENCY().toString().trim() );
 	       cell76.setCellStyle(numberStyle);
 	   } else {
@@ -8742,7 +8742,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	    Cell cell77 = row.createCell(6);
 
-	   if (record1.getR11_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT() != null && !record1.getR11_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT().toString().trim().equals("N/A") ) {
+	   if (record1.getR11_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT() != null ){
 	       cell77.setCellValue(record1.getR11_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT().toString().trim() );
 	       cell77.setCellStyle(numberStyle);
 	   } else {
@@ -8753,7 +8753,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 	   row = sheet.getRow(77) != null ? sheet.getRow(77) : sheet.createRow(77);
 	   Cell cell78 = row.createCell(0);
 
-	  if (record1.getR1_DUE_TO_DOMESTIC_NAME_OF_BANK() != null && !record1.getR1_DUE_TO_DOMESTIC_NAME_OF_BANK().toString().trim().equals("N/A") ) {
+	  if (record1.getR1_DUE_TO_DOMESTIC_NAME_OF_BANK() != null ){
 	      cell78.setCellValue(record1.getR1_DUE_TO_DOMESTIC_NAME_OF_BANK().toString().trim() );
 	      cell78.setCellStyle(numberStyle);
 	  } else {
@@ -8763,7 +8763,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	   Cell cell79 = row.createCell(1);
 
-	  if (record1.getR1_DUE_TO_DOMESTIC_ACCT_TYPE() != null && !record1.getR1_DUE_TO_DOMESTIC_ACCT_TYPE().toString().trim().equals("N/A") ) {
+	  if (record1.getR1_DUE_TO_DOMESTIC_ACCT_TYPE() != null ){
 	      cell79.setCellValue(record1.getR1_DUE_TO_DOMESTIC_ACCT_TYPE().toString().trim() );
 	      cell79.setCellStyle(numberStyle);
 	  } else {
@@ -8773,7 +8773,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	   Cell cell80 = row.createCell(2);
 
-	  if (record1.getR1_DUE_TO_DOMESTIC_PURPOSE() != null && !record1.getR1_DUE_TO_DOMESTIC_PURPOSE().toString().trim().equals("N/A") ) {
+	  if (record1.getR1_DUE_TO_DOMESTIC_PURPOSE() != null ){
 	      cell80.setCellValue(record1.getR1_DUE_TO_DOMESTIC_PURPOSE().toString().trim() );
 	      cell80.setCellStyle(numberStyle);
 	  } else {
@@ -8783,7 +8783,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	   Cell cell81 = row.createCell(3);
 
-	  if (record1.getR1_DUE_TO_DOMESTIC_AMOUNT() != null && !record1.getR1_DUE_TO_DOMESTIC_AMOUNT().toString().trim().equals("N/A") ) {
+	  if (record1.getR1_DUE_TO_DOMESTIC_AMOUNT() != null ){
 	      cell81.setCellValue(record1.getR1_DUE_TO_DOMESTIC_AMOUNT().toString().trim() );
 	      cell81.setCellStyle(numberStyle);
 	  } else {
@@ -8793,7 +8793,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	   Cell cell82 = row.createCell(4);
 
-	  if (record1.getR1_DUE_TO_DOMESTIC_RISK_WEIGHT() != null && !record1.getR1_DUE_TO_DOMESTIC_RISK_WEIGHT().toString().trim().equals("N/A") ) {
+	  if (record1.getR1_DUE_TO_DOMESTIC_RISK_WEIGHT() != null ){
 	      cell82.setCellValue(record1.getR1_DUE_TO_DOMESTIC_RISK_WEIGHT().toString().trim() );
 	      cell82.setCellStyle(numberStyle);
 	  } else {
@@ -8803,7 +8803,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	   Cell cell83 = row.createCell(5);
 
-	  if (record1.getR1_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT() != null && !record1.getR1_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT().toString().trim().equals("N/A") ) {
+	  if (record1.getR1_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT() != null ){
 	      cell83.setCellValue(record1.getR1_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT().toString().trim() );
 	      cell83.setCellStyle(numberStyle);
 	  } else {
@@ -8815,7 +8815,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 	   row = sheet.getRow(78) != null ? sheet.getRow(78) : sheet.createRow(78);
 	   Cell cell84 = row.createCell(0);
 
-	  if (record1.getR2_DUE_TO_DOMESTIC_NAME_OF_BANK() != null && !record1.getR2_DUE_TO_DOMESTIC_NAME_OF_BANK().toString().trim().equals("N/A") ) {
+	  if (record1.getR2_DUE_TO_DOMESTIC_NAME_OF_BANK() != null ){
 	      cell84.setCellValue(record1.getR2_DUE_TO_DOMESTIC_NAME_OF_BANK().toString().trim() );
 	      cell84.setCellStyle(numberStyle);
 	  } else {
@@ -8825,7 +8825,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	   Cell cell85 = row.createCell(1);
 
-	  if (record1.getR2_DUE_TO_DOMESTIC_ACCT_TYPE() != null && !record1.getR2_DUE_TO_DOMESTIC_ACCT_TYPE().toString().trim().equals("N/A") ) {
+	  if (record1.getR2_DUE_TO_DOMESTIC_ACCT_TYPE() != null ){
 	      cell85.setCellValue(record1.getR2_DUE_TO_DOMESTIC_ACCT_TYPE().toString().trim() );
 	      cell85.setCellStyle(numberStyle);
 	  } else {
@@ -8835,7 +8835,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	   Cell cell86 = row.createCell(2);
 
-	  if (record1.getR2_DUE_TO_DOMESTIC_PURPOSE() != null && !record1.getR2_DUE_TO_DOMESTIC_PURPOSE().toString().trim().equals("N/A") ) {
+	  if (record1.getR2_DUE_TO_DOMESTIC_PURPOSE() != null ){
 	      cell86.setCellValue(record1.getR2_DUE_TO_DOMESTIC_PURPOSE().toString().trim() );
 	      cell86.setCellStyle(numberStyle);
 	  } else {
@@ -8845,7 +8845,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	   Cell cell87 = row.createCell(3);
 
-	  if (record1.getR2_DUE_TO_DOMESTIC_AMOUNT() != null && !record1.getR2_DUE_TO_DOMESTIC_AMOUNT().toString().trim().equals("N/A") ) {
+	  if (record1.getR2_DUE_TO_DOMESTIC_AMOUNT() != null ){
 	      cell87.setCellValue(record1.getR2_DUE_TO_DOMESTIC_AMOUNT().toString().trim() );
 	      cell87.setCellStyle(numberStyle);
 	  } else {
@@ -8855,7 +8855,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	   Cell cell88 = row.createCell(4);
 
-	  if (record1.getR2_DUE_TO_DOMESTIC_RISK_WEIGHT() != null && !record1.getR2_DUE_TO_DOMESTIC_RISK_WEIGHT().toString().trim().equals("N/A") ) {
+	  if (record1.getR2_DUE_TO_DOMESTIC_RISK_WEIGHT() != null ){
 	      cell88.setCellValue(record1.getR2_DUE_TO_DOMESTIC_RISK_WEIGHT().toString().trim() );
 	      cell88.setCellStyle(numberStyle);
 	  } else {
@@ -8865,7 +8865,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	   Cell cell89 = row.createCell(5);
 
-	  if (record1.getR2_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT() != null && !record1.getR2_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT().toString().trim().equals("N/A") ) {
+	  if (record1.getR2_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT() != null ){
 	      cell89.setCellValue(record1.getR2_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT().toString().trim() );
 	      cell89.setCellStyle(numberStyle);
 	  } else {
@@ -8877,7 +8877,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 	   row = sheet.getRow(79) != null ? sheet.getRow(79) : sheet.createRow(79);
 	   Cell cell90 = row.createCell(0);
 
-	  if (record1.getR3_DUE_TO_DOMESTIC_NAME_OF_BANK() != null && !record1.getR3_DUE_TO_DOMESTIC_NAME_OF_BANK().toString().trim().equals("N/A") ) {
+	  if (record1.getR3_DUE_TO_DOMESTIC_NAME_OF_BANK() != null ){
 	      cell90.setCellValue(record1.getR3_DUE_TO_DOMESTIC_NAME_OF_BANK().toString().trim() );
 	      cell90.setCellStyle(numberStyle);
 	  } else {
@@ -8887,7 +8887,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	   Cell cell91 = row.createCell(1);
 
-	  if (record1.getR3_DUE_TO_DOMESTIC_ACCT_TYPE() != null && !record1.getR3_DUE_TO_DOMESTIC_ACCT_TYPE().toString().trim().equals("N/A") ) {
+	  if (record1.getR3_DUE_TO_DOMESTIC_ACCT_TYPE() != null ){
 	      cell91.setCellValue(record1.getR3_DUE_TO_DOMESTIC_ACCT_TYPE().toString().trim() );
 	      cell91.setCellStyle(numberStyle);
 	  } else {
@@ -8897,7 +8897,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	   Cell cell92 = row.createCell(2);
 
-	  if (record1.getR3_DUE_TO_DOMESTIC_PURPOSE() != null && !record1.getR3_DUE_TO_DOMESTIC_PURPOSE().toString().trim().equals("N/A") ) {
+	  if (record1.getR3_DUE_TO_DOMESTIC_PURPOSE() != null ){
 	      cell92.setCellValue(record1.getR3_DUE_TO_DOMESTIC_PURPOSE().toString().trim() );
 	      cell92.setCellStyle(numberStyle);
 	  } else {
@@ -8907,7 +8907,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	   Cell cell93 = row.createCell(3);
 
-	  if (record1.getR3_DUE_TO_DOMESTIC_AMOUNT() != null && !record1.getR3_DUE_TO_DOMESTIC_AMOUNT().toString().trim().equals("N/A") ) {
+	  if (record1.getR3_DUE_TO_DOMESTIC_AMOUNT() != null ){
 	      cell93.setCellValue(record1.getR3_DUE_TO_DOMESTIC_AMOUNT().toString().trim() );
 	      cell93.setCellStyle(numberStyle);
 	  } else {
@@ -8917,7 +8917,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	   Cell cell94 = row.createCell(4);
 
-	  if (record1.getR3_DUE_TO_DOMESTIC_RISK_WEIGHT() != null && !record1.getR3_DUE_TO_DOMESTIC_RISK_WEIGHT().toString().trim().equals("N/A") ) {
+	  if (record1.getR3_DUE_TO_DOMESTIC_RISK_WEIGHT() != null ){
 	      cell94.setCellValue(record1.getR3_DUE_TO_DOMESTIC_RISK_WEIGHT().toString().trim() );
 	      cell94.setCellStyle(numberStyle);
 	  } else {
@@ -8927,7 +8927,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	   Cell cell95 = row.createCell(5);
 
-	  if (record1.getR3_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT() != null && !record1.getR3_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT().toString().trim().equals("N/A") ) {
+	  if (record1.getR3_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT() != null ){
 	      cell95.setCellValue(record1.getR3_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT().toString().trim() );
 	      cell95.setCellStyle(numberStyle);
 	  } else {
@@ -8939,7 +8939,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 	   row = sheet.getRow(80) != null ? sheet.getRow(80) : sheet.createRow(80);
 	   Cell cell96 = row.createCell(0);
 
-	  if (record1.getR4_DUE_TO_DOMESTIC_NAME_OF_BANK() != null && !record1.getR4_DUE_TO_DOMESTIC_NAME_OF_BANK().toString().trim().equals("N/A") ) {
+	  if (record1.getR4_DUE_TO_DOMESTIC_NAME_OF_BANK() != null ){
 	      cell96.setCellValue(record1.getR4_DUE_TO_DOMESTIC_NAME_OF_BANK().toString().trim() );
 	      cell96.setCellStyle(numberStyle);
 	  } else {
@@ -8949,7 +8949,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	   Cell cell97 = row.createCell(1);
 
-	  if (record1.getR4_DUE_TO_DOMESTIC_ACCT_TYPE() != null && !record1.getR4_DUE_TO_DOMESTIC_ACCT_TYPE().toString().trim().equals("N/A") ) {
+	  if (record1.getR4_DUE_TO_DOMESTIC_ACCT_TYPE() != null ){
 	      cell97.setCellValue(record1.getR4_DUE_TO_DOMESTIC_ACCT_TYPE().toString().trim() );
 	      cell97.setCellStyle(numberStyle);
 	  } else {
@@ -8959,7 +8959,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	   Cell cell98 = row.createCell(2);
 
-	  if (record1.getR4_DUE_TO_DOMESTIC_PURPOSE() != null && !record1.getR4_DUE_TO_DOMESTIC_PURPOSE().toString().trim().equals("N/A") ) {
+	  if (record1.getR4_DUE_TO_DOMESTIC_PURPOSE() != null ){
 	      cell98.setCellValue(record1.getR4_DUE_TO_DOMESTIC_PURPOSE().toString().trim() );
 	      cell98.setCellStyle(numberStyle);
 	  } else {
@@ -8969,7 +8969,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	   Cell cell99 = row.createCell(3);
 
-	  if (record1.getR4_DUE_TO_DOMESTIC_AMOUNT() != null && !record1.getR4_DUE_TO_DOMESTIC_AMOUNT().toString().trim().equals("N/A") ) {
+	  if (record1.getR4_DUE_TO_DOMESTIC_AMOUNT() != null ){
 	      cell99.setCellValue(record1.getR4_DUE_TO_DOMESTIC_AMOUNT().toString().trim() );
 	      cell99.setCellStyle(numberStyle);
 	  } else {
@@ -8979,7 +8979,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	   Cell cell100 = row.createCell(4);
 
-	  if (record1.getR4_DUE_TO_DOMESTIC_RISK_WEIGHT() != null && !record1.getR4_DUE_TO_DOMESTIC_RISK_WEIGHT().toString().trim().equals("N/A") ) {
+	  if (record1.getR4_DUE_TO_DOMESTIC_RISK_WEIGHT() != null ){
 	      cell100.setCellValue(record1.getR4_DUE_TO_DOMESTIC_RISK_WEIGHT().toString().trim() );
 	      cell100.setCellStyle(numberStyle);
 	  } else {
@@ -8989,7 +8989,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	   Cell cell101 = row.createCell(5);
 
-	  if (record1.getR4_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT() != null && !record1.getR4_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT().toString().trim().equals("N/A") ) {
+	  if (record1.getR4_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT() != null ){
 	      cell101.setCellValue(record1.getR4_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT().toString().trim() );
 	      cell101.setCellStyle(numberStyle);
 	  } else {
@@ -9001,7 +9001,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 	   row = sheet.getRow(81) != null ? sheet.getRow(81) : sheet.createRow(81);
 	   Cell cell102 = row.createCell(0);
 
-	  if (record1.getR5_DUE_TO_DOMESTIC_NAME_OF_BANK() != null && !record1.getR5_DUE_TO_DOMESTIC_NAME_OF_BANK().toString().trim().equals("N/A") ) {
+	  if (record1.getR5_DUE_TO_DOMESTIC_NAME_OF_BANK() != null ){
 	      cell102.setCellValue(record1.getR5_DUE_TO_DOMESTIC_NAME_OF_BANK().toString().trim() );
 	      cell102.setCellStyle(numberStyle);
 	  } else {
@@ -9011,7 +9011,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	   Cell cell103 = row.createCell(1);
 
-	  if (record1.getR5_DUE_TO_DOMESTIC_ACCT_TYPE() != null && !record1.getR5_DUE_TO_DOMESTIC_ACCT_TYPE().toString().trim().equals("N/A") ) {
+	  if (record1.getR5_DUE_TO_DOMESTIC_ACCT_TYPE() != null ){
 	      cell103.setCellValue(record1.getR5_DUE_TO_DOMESTIC_ACCT_TYPE().toString().trim() );
 	      cell103.setCellStyle(numberStyle);
 	  } else {
@@ -9021,7 +9021,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	   Cell cell104 = row.createCell(2);
 
-	  if (record1.getR5_DUE_TO_DOMESTIC_PURPOSE() != null && !record1.getR5_DUE_TO_DOMESTIC_PURPOSE().toString().trim().equals("N/A") ) {
+	  if (record1.getR5_DUE_TO_DOMESTIC_PURPOSE() != null ){
 	      cell104.setCellValue(record1.getR5_DUE_TO_DOMESTIC_PURPOSE().toString().trim() );
 	      cell104.setCellStyle(numberStyle);
 	  } else {
@@ -9031,7 +9031,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	   Cell cell105 = row.createCell(3);
 
-	  if (record1.getR5_DUE_TO_DOMESTIC_AMOUNT() != null && !record1.getR5_DUE_TO_DOMESTIC_AMOUNT().toString().trim().equals("N/A") ) {
+	  if (record1.getR5_DUE_TO_DOMESTIC_AMOUNT() != null ){
 	      cell105.setCellValue(record1.getR5_DUE_TO_DOMESTIC_AMOUNT().toString().trim() );
 	      cell105.setCellStyle(numberStyle);
 	  } else {
@@ -9041,7 +9041,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	   Cell cell106 = row.createCell(4);
 
-	  if (record1.getR5_DUE_TO_DOMESTIC_RISK_WEIGHT() != null && !record1.getR5_DUE_TO_DOMESTIC_RISK_WEIGHT().toString().trim().equals("N/A") ) {
+	  if (record1.getR5_DUE_TO_DOMESTIC_RISK_WEIGHT() != null ){
 	      cell106.setCellValue(record1.getR5_DUE_TO_DOMESTIC_RISK_WEIGHT().toString().trim() );
 	      cell106.setCellStyle(numberStyle);
 	  } else {
@@ -9051,7 +9051,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	   Cell cell107 = row.createCell(5);
 
-	  if (record1.getR5_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT() != null && !record1.getR5_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT().toString().trim().equals("N/A") ) {
+	  if (record1.getR5_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT() != null ){
 	      cell107.setCellValue(record1.getR5_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT().toString().trim() );
 	      cell107.setCellStyle(numberStyle);
 	  } else {
@@ -9063,7 +9063,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 	   row = sheet.getRow(82) != null ? sheet.getRow(82) : sheet.createRow(82);
 	   Cell cell108 = row.createCell(0);
 
-	  if (record1.getR6_DUE_TO_DOMESTIC_NAME_OF_BANK() != null && !record1.getR6_DUE_TO_DOMESTIC_NAME_OF_BANK().toString().trim().equals("N/A") ) {
+	  if (record1.getR6_DUE_TO_DOMESTIC_NAME_OF_BANK() != null ){
 	      cell108.setCellValue(record1.getR6_DUE_TO_DOMESTIC_NAME_OF_BANK().toString().trim() );
 	      cell108.setCellStyle(numberStyle);
 	  } else {
@@ -9073,7 +9073,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	   Cell cell109 = row.createCell(1);
 
-	  if (record1.getR6_DUE_TO_DOMESTIC_ACCT_TYPE() != null && !record1.getR6_DUE_TO_DOMESTIC_ACCT_TYPE().toString().trim().equals("N/A") ) {
+	  if (record1.getR6_DUE_TO_DOMESTIC_ACCT_TYPE() != null ){
 	      cell109.setCellValue(record1.getR6_DUE_TO_DOMESTIC_ACCT_TYPE().toString().trim() );
 	      cell109.setCellStyle(numberStyle);
 	  } else {
@@ -9083,7 +9083,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	   Cell cell110 = row.createCell(2);
 
-	  if (record1.getR6_DUE_TO_DOMESTIC_PURPOSE() != null && !record1.getR6_DUE_TO_DOMESTIC_PURPOSE().toString().trim().equals("N/A") ) {
+	  if (record1.getR6_DUE_TO_DOMESTIC_PURPOSE() != null ){
 	      cell110.setCellValue(record1.getR6_DUE_TO_DOMESTIC_PURPOSE().toString().trim() );
 	      cell110.setCellStyle(numberStyle);
 	  } else {
@@ -9093,7 +9093,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	   Cell cell111 = row.createCell(3);
 
-	  if (record1.getR6_DUE_TO_DOMESTIC_AMOUNT() != null && !record1.getR6_DUE_TO_DOMESTIC_AMOUNT().toString().trim().equals("N/A") ) {
+	  if (record1.getR6_DUE_TO_DOMESTIC_AMOUNT() != null ){
 	      cell111.setCellValue(record1.getR6_DUE_TO_DOMESTIC_AMOUNT().toString().trim() );
 	      cell111.setCellStyle(numberStyle);
 	  } else {
@@ -9103,7 +9103,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	   Cell cell112 = row.createCell(4);
 
-	  if (record1.getR6_DUE_TO_DOMESTIC_RISK_WEIGHT() != null && !record1.getR6_DUE_TO_DOMESTIC_RISK_WEIGHT().toString().trim().equals("N/A") ) {
+	  if (record1.getR6_DUE_TO_DOMESTIC_RISK_WEIGHT() != null ){
 	      cell112.setCellValue(record1.getR6_DUE_TO_DOMESTIC_RISK_WEIGHT().toString().trim() );
 	      cell112.setCellStyle(numberStyle);
 	  } else {
@@ -9113,7 +9113,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	   Cell cell113 = row.createCell(5);
 
-	  if (record1.getR6_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT() != null && !record1.getR6_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT().toString().trim().equals("N/A") ) {
+	  if (record1.getR6_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT() != null ){
 	      cell113.setCellValue(record1.getR6_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT().toString().trim() );
 	      cell113.setCellStyle(numberStyle);
 	  } else {
@@ -9125,7 +9125,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 	   row = sheet.getRow(83) != null ? sheet.getRow(83) : sheet.createRow(83);
 	   Cell cell114 = row.createCell(0);
 
-	  if (record1.getR7_DUE_TO_DOMESTIC_NAME_OF_BANK() != null && !record1.getR7_DUE_TO_DOMESTIC_NAME_OF_BANK().toString().trim().equals("N/A") ) {
+	  if (record1.getR7_DUE_TO_DOMESTIC_NAME_OF_BANK() != null ){
 	      cell114.setCellValue(record1.getR7_DUE_TO_DOMESTIC_NAME_OF_BANK().toString().trim() );
 	      cell114.setCellStyle(numberStyle);
 	  } else {
@@ -9135,7 +9135,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	   Cell cell115 = row.createCell(1);
 
-	  if (record1.getR7_DUE_TO_DOMESTIC_ACCT_TYPE() != null && !record1.getR7_DUE_TO_DOMESTIC_ACCT_TYPE().toString().trim().equals("N/A") ) {
+	  if (record1.getR7_DUE_TO_DOMESTIC_ACCT_TYPE() != null ){
 	      cell115.setCellValue(record1.getR7_DUE_TO_DOMESTIC_ACCT_TYPE().toString().trim() );
 	      cell115.setCellStyle(numberStyle);
 	  } else {
@@ -9145,7 +9145,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	   Cell cell116 = row.createCell(2);
 
-	  if (record1.getR7_DUE_TO_DOMESTIC_PURPOSE() != null && !record1.getR7_DUE_TO_DOMESTIC_PURPOSE().toString().trim().equals("N/A") ) {
+	  if (record1.getR7_DUE_TO_DOMESTIC_PURPOSE() != null ){
 	      cell116.setCellValue(record1.getR7_DUE_TO_DOMESTIC_PURPOSE().toString().trim() );
 	      cell116.setCellStyle(numberStyle);
 	  } else {
@@ -9155,7 +9155,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	   Cell cell117 = row.createCell(3);
 
-	  if (record1.getR7_DUE_TO_DOMESTIC_AMOUNT() != null && !record1.getR7_DUE_TO_DOMESTIC_AMOUNT().toString().trim().equals("N/A") ) {
+	  if (record1.getR7_DUE_TO_DOMESTIC_AMOUNT() != null ){
 	      cell117.setCellValue(record1.getR7_DUE_TO_DOMESTIC_AMOUNT().toString().trim() );
 	      cell117.setCellStyle(numberStyle);
 	  } else {
@@ -9165,7 +9165,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	   Cell cell118 = row.createCell(4);
 
-	  if (record1.getR7_DUE_TO_DOMESTIC_RISK_WEIGHT() != null && !record1.getR7_DUE_TO_DOMESTIC_RISK_WEIGHT().toString().trim().equals("N/A") ) {
+	  if (record1.getR7_DUE_TO_DOMESTIC_RISK_WEIGHT() != null ){
 	      cell118.setCellValue(record1.getR7_DUE_TO_DOMESTIC_RISK_WEIGHT().toString().trim() );
 	      cell118.setCellStyle(numberStyle);
 	  } else {
@@ -9175,7 +9175,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	   Cell cell119 = row.createCell(5);
 
-	  if (record1.getR7_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT() != null && !record1.getR7_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT().toString().trim().equals("N/A") ) {
+	  if (record1.getR7_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT() != null ){
 	      cell119.setCellValue(record1.getR7_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT().toString().trim() );
 	      cell119.setCellStyle(numberStyle);
 	  } else {
@@ -9187,7 +9187,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 	   row = sheet.getRow(84) != null ? sheet.getRow(84) : sheet.createRow(84);
 	   Cell cell120 = row.createCell(0);
 
-	  if (record1.getR8_DUE_TO_DOMESTIC_NAME_OF_BANK() != null && !record1.getR8_DUE_TO_DOMESTIC_NAME_OF_BANK().toString().trim().equals("N/A") ) {
+	  if (record1.getR8_DUE_TO_DOMESTIC_NAME_OF_BANK() != null ){
 	      cell120.setCellValue(record1.getR8_DUE_TO_DOMESTIC_NAME_OF_BANK().toString().trim() );
 	      cell120.setCellStyle(numberStyle);
 	  } else {
@@ -9197,7 +9197,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	   Cell cell121 = row.createCell(1);
 
-	  if (record1.getR8_DUE_TO_DOMESTIC_ACCT_TYPE() != null && !record1.getR8_DUE_TO_DOMESTIC_ACCT_TYPE().toString().trim().equals("N/A") ) {
+	  if (record1.getR8_DUE_TO_DOMESTIC_ACCT_TYPE() != null ){
 	      cell121.setCellValue(record1.getR8_DUE_TO_DOMESTIC_ACCT_TYPE().toString().trim() );
 	      cell121.setCellStyle(numberStyle);
 	  } else {
@@ -9207,7 +9207,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	   Cell cell122 = row.createCell(2);
 
-	  if (record1.getR8_DUE_TO_DOMESTIC_PURPOSE() != null && !record1.getR8_DUE_TO_DOMESTIC_PURPOSE().toString().trim().equals("N/A") ) {
+	  if (record1.getR8_DUE_TO_DOMESTIC_PURPOSE() != null ){
 	      cell122.setCellValue(record1.getR8_DUE_TO_DOMESTIC_PURPOSE().toString().trim() );
 	      cell122.setCellStyle(numberStyle);
 	  } else {
@@ -9217,7 +9217,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	   Cell cell123 = row.createCell(3);
 
-	  if (record1.getR8_DUE_TO_DOMESTIC_AMOUNT() != null && !record1.getR8_DUE_TO_DOMESTIC_AMOUNT().toString().trim().equals("N/A") ) {
+	  if (record1.getR8_DUE_TO_DOMESTIC_AMOUNT() != null ){
 	      cell123.setCellValue(record1.getR8_DUE_TO_DOMESTIC_AMOUNT().toString().trim() );
 	      cell123.setCellStyle(numberStyle);
 	  } else {
@@ -9227,7 +9227,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	   Cell cell124 = row.createCell(4);
 
-	  if (record1.getR8_DUE_TO_DOMESTIC_RISK_WEIGHT() != null && !record1.getR8_DUE_TO_DOMESTIC_RISK_WEIGHT().toString().trim().equals("N/A") ) {
+	  if (record1.getR8_DUE_TO_DOMESTIC_RISK_WEIGHT() != null ){
 	      cell124.setCellValue(record1.getR8_DUE_TO_DOMESTIC_RISK_WEIGHT().toString().trim() );
 	      cell124.setCellStyle(numberStyle);
 	  } else {
@@ -9237,7 +9237,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	   Cell cell125 = row.createCell(5);
 
-	  if (record1.getR8_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT() != null && !record1.getR8_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT().toString().trim().equals("N/A") ) {
+	  if (record1.getR8_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT() != null ){
 	      cell125.setCellValue(record1.getR8_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT().toString().trim() );
 	      cell125.setCellStyle(numberStyle);
 	  } else {
@@ -9259,7 +9259,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 	    Row  row = sheet.getRow(51) != null ? sheet.getRow(51) : sheet.createRow(51);
 	    Cell cell1 = row.createCell(0);
 
-	    if (record1.getR1_NAME_OF_BANK_VOSTRO1() != null && !record1.getR1_NAME_OF_BANK_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR1_NAME_OF_BANK_VOSTRO1() != null ){
 	        cell1.setCellValue(record1.getR1_NAME_OF_BANK_VOSTRO1().toString().trim() );
 	        cell1.setCellStyle(numberStyle);
 	    } else {
@@ -9269,7 +9269,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell2 = row.createCell(1);
 
-	    if (record1.getR1_TYPE_OF_ACCOUNT_VOSTRO1() != null && !record1.getR1_TYPE_OF_ACCOUNT_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR1_TYPE_OF_ACCOUNT_VOSTRO1() != null ){
 	        cell2.setCellValue(record1.getR1_TYPE_OF_ACCOUNT_VOSTRO1().toString().trim() );
 	        cell2.setCellStyle(numberStyle);
 	    } else {
@@ -9279,7 +9279,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell3 = row.createCell(2);
 
-	    if (record1.getR1_PURPOSE_VOSTRO1() != null && !record1.getR1_PURPOSE_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR1_PURPOSE_VOSTRO1() != null ){
 	        cell3.setCellValue(record1.getR1_PURPOSE_VOSTRO1().toString().trim() );
 	        cell3.setCellStyle(numberStyle);
 	    } else {
@@ -9289,7 +9289,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell4 = row.createCell(3);
 
-	    if (record1.getR1_CURRENCY_VOSTRO1() != null && !record1.getR1_CURRENCY_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR1_CURRENCY_VOSTRO1() != null ){
 	        cell4.setCellValue(record1.getR1_CURRENCY_VOSTRO1().toString().trim() );
 	        cell4.setCellStyle(numberStyle);
 	    } else {
@@ -9299,7 +9299,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell7 = row.createCell(6);
 
-	    if (record1.getR1_AMOUNT_DEMAND_VOSTRO1() != null && !record1.getR1_AMOUNT_DEMAND_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR1_AMOUNT_DEMAND_VOSTRO1() != null ){
 	        cell7.setCellValue(record1.getR1_AMOUNT_DEMAND_VOSTRO1().toString().trim() );
 	        cell7.setCellStyle(numberStyle);
 	    } else {
@@ -9311,7 +9311,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 	     row = sheet.getRow(52) != null ? sheet.getRow(52) : sheet.createRow(52);
 	     Cell cell9 = row.createCell(0);
 
-	    if (record1.getR2_NAME_OF_BANK_VOSTRO1() != null && !record1.getR2_NAME_OF_BANK_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR2_NAME_OF_BANK_VOSTRO1() != null ){
 	        cell9.setCellValue(record1.getR2_NAME_OF_BANK_VOSTRO1().toString().trim() );
 	        cell9.setCellStyle(numberStyle);
 	    } else {
@@ -9321,7 +9321,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell10 = row.createCell(1);
 
-	    if (record1.getR2_TYPE_OF_ACCOUNT_VOSTRO1() != null && !record1.getR2_TYPE_OF_ACCOUNT_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR2_TYPE_OF_ACCOUNT_VOSTRO1() != null ){
 	        cell10.setCellValue(record1.getR2_TYPE_OF_ACCOUNT_VOSTRO1().toString().trim() );
 	        cell10.setCellStyle(numberStyle);
 	    } else {
@@ -9331,7 +9331,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell11 = row.createCell(2);
 
-	    if (record1.getR2_PURPOSE_VOSTRO1() != null && !record1.getR2_PURPOSE_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR2_PURPOSE_VOSTRO1() != null ){
 	        cell11.setCellValue(record1.getR2_PURPOSE_VOSTRO1().toString().trim() );
 	        cell11.setCellStyle(numberStyle);
 	    } else {
@@ -9341,7 +9341,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell12 = row.createCell(3);
 
-	    if (record1.getR2_CURRENCY_VOSTRO1() != null && !record1.getR2_CURRENCY_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR2_CURRENCY_VOSTRO1() != null ){
 	        cell12.setCellValue(record1.getR2_CURRENCY_VOSTRO1().toString().trim() );
 	        cell12.setCellStyle(numberStyle);
 	    } else {
@@ -9351,7 +9351,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell15 = row.createCell(6);
 
-	    if (record1.getR2_AMOUNT_DEMAND_VOSTRO1() != null && !record1.getR2_AMOUNT_DEMAND_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR2_AMOUNT_DEMAND_VOSTRO1() != null ){
 	        cell15.setCellValue(record1.getR2_AMOUNT_DEMAND_VOSTRO1().toString().trim() );
 	        cell15.setCellStyle(numberStyle);
 	    } else {
@@ -9363,7 +9363,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 	     row = sheet.getRow(53) != null ? sheet.getRow(53) : sheet.createRow(53);
 	     Cell cell17 = row.createCell(0);
 
-	    if (record1.getR3_NAME_OF_BANK_VOSTRO1() != null && !record1.getR3_NAME_OF_BANK_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR3_NAME_OF_BANK_VOSTRO1() != null ){
 	        cell17.setCellValue(record1.getR3_NAME_OF_BANK_VOSTRO1().toString().trim() );
 	        cell17.setCellStyle(numberStyle);
 	    } else {
@@ -9373,7 +9373,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell18 = row.createCell(1);
 
-	    if (record1.getR3_TYPE_OF_ACCOUNT_VOSTRO1() != null && !record1.getR3_TYPE_OF_ACCOUNT_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR3_TYPE_OF_ACCOUNT_VOSTRO1() != null ){
 	        cell18.setCellValue(record1.getR3_TYPE_OF_ACCOUNT_VOSTRO1().toString().trim() );
 	        cell18.setCellStyle(numberStyle);
 	    } else {
@@ -9383,7 +9383,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell19 = row.createCell(2);
 
-	    if (record1.getR3_PURPOSE_VOSTRO1() != null && !record1.getR3_PURPOSE_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR3_PURPOSE_VOSTRO1() != null ){
 	        cell19.setCellValue(record1.getR3_PURPOSE_VOSTRO1().toString().trim() );
 	        cell19.setCellStyle(numberStyle);
 	    } else {
@@ -9393,7 +9393,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell20 = row.createCell(3);
 
-	    if (record1.getR3_CURRENCY_VOSTRO1() != null && !record1.getR3_CURRENCY_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR3_CURRENCY_VOSTRO1() != null ){
 	        cell20.setCellValue(record1.getR3_CURRENCY_VOSTRO1().toString().trim() );
 	        cell20.setCellStyle(numberStyle);
 	    } else {
@@ -9403,7 +9403,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell23 = row.createCell(6);
 
-	    if (record1.getR3_AMOUNT_DEMAND_VOSTRO1() != null && !record1.getR3_AMOUNT_DEMAND_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR3_AMOUNT_DEMAND_VOSTRO1() != null ){
 	        cell23.setCellValue(record1.getR3_AMOUNT_DEMAND_VOSTRO1().toString().trim() );
 	        cell23.setCellStyle(numberStyle);
 	    } else {
@@ -9415,7 +9415,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 	     row = sheet.getRow(54) != null ? sheet.getRow(54) : sheet.createRow(54);
 	     Cell cell25 = row.createCell(0);
 
-	    if (record1.getR4_NAME_OF_BANK_VOSTRO1() != null && !record1.getR4_NAME_OF_BANK_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR4_NAME_OF_BANK_VOSTRO1() != null ){
 	        cell25.setCellValue(record1.getR4_NAME_OF_BANK_VOSTRO1().toString().trim() );
 	        cell25.setCellStyle(numberStyle);
 	    } else {
@@ -9425,7 +9425,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell26 = row.createCell(1);
 
-	    if (record1.getR4_TYPE_OF_ACCOUNT_VOSTRO1() != null && !record1.getR4_TYPE_OF_ACCOUNT_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR4_TYPE_OF_ACCOUNT_VOSTRO1() != null ){
 	        cell26.setCellValue(record1.getR4_TYPE_OF_ACCOUNT_VOSTRO1().toString().trim() );
 	        cell26.setCellStyle(numberStyle);
 	    } else {
@@ -9435,7 +9435,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell27 = row.createCell(2);
 
-	    if (record1.getR4_PURPOSE_VOSTRO1() != null && !record1.getR4_PURPOSE_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR4_PURPOSE_VOSTRO1() != null ){
 	        cell27.setCellValue(record1.getR4_PURPOSE_VOSTRO1().toString().trim() );
 	        cell27.setCellStyle(numberStyle);
 	    } else {
@@ -9445,7 +9445,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell28 = row.createCell(3);
 
-	    if (record1.getR4_CURRENCY_VOSTRO1() != null && !record1.getR4_CURRENCY_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR4_CURRENCY_VOSTRO1() != null ){
 	        cell28.setCellValue(record1.getR4_CURRENCY_VOSTRO1().toString().trim() );
 	        cell28.setCellStyle(numberStyle);
 	    } else {
@@ -9455,7 +9455,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell31 = row.createCell(6);
 
-	    if (record1.getR4_AMOUNT_DEMAND_VOSTRO1() != null && !record1.getR4_AMOUNT_DEMAND_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR4_AMOUNT_DEMAND_VOSTRO1() != null ){
 	        cell31.setCellValue(record1.getR4_AMOUNT_DEMAND_VOSTRO1().toString().trim() );
 	        cell31.setCellStyle(numberStyle);
 	    } else {
@@ -9467,7 +9467,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 	     row = sheet.getRow(55) != null ? sheet.getRow(55) : sheet.createRow(55);
 	     Cell cell33 = row.createCell(0);
 
-	    if (record1.getR5_NAME_OF_BANK_VOSTRO1() != null && !record1.getR5_NAME_OF_BANK_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR5_NAME_OF_BANK_VOSTRO1() != null ){
 	        cell33.setCellValue(record1.getR5_NAME_OF_BANK_VOSTRO1().toString().trim() );
 	        cell33.setCellStyle(numberStyle);
 	    } else {
@@ -9477,7 +9477,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell34 = row.createCell(1);
 
-	    if (record1.getR5_TYPE_OF_ACCOUNT_VOSTRO1() != null && !record1.getR5_TYPE_OF_ACCOUNT_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR5_TYPE_OF_ACCOUNT_VOSTRO1() != null ){
 	        cell34.setCellValue(record1.getR5_TYPE_OF_ACCOUNT_VOSTRO1().toString().trim() );
 	        cell34.setCellStyle(numberStyle);
 	    } else {
@@ -9487,7 +9487,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell35 = row.createCell(2);
 
-	    if (record1.getR5_PURPOSE_VOSTRO1() != null && !record1.getR5_PURPOSE_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR5_PURPOSE_VOSTRO1() != null ){
 	        cell35.setCellValue(record1.getR5_PURPOSE_VOSTRO1().toString().trim() );
 	        cell35.setCellStyle(numberStyle);
 	    } else {
@@ -9497,7 +9497,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell36 = row.createCell(3);
 
-	    if (record1.getR5_CURRENCY_VOSTRO1() != null && !record1.getR5_CURRENCY_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR5_CURRENCY_VOSTRO1() != null ){
 	        cell36.setCellValue(record1.getR5_CURRENCY_VOSTRO1().toString().trim() );
 	        cell36.setCellStyle(numberStyle);
 	    } else {
@@ -9507,7 +9507,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell39 = row.createCell(6);
 
-	    if (record1.getR5_AMOUNT_DEMAND_VOSTRO1() != null && !record1.getR5_AMOUNT_DEMAND_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR5_AMOUNT_DEMAND_VOSTRO1() != null ){
 	        cell39.setCellValue(record1.getR5_AMOUNT_DEMAND_VOSTRO1().toString().trim() );
 	        cell39.setCellStyle(numberStyle);
 	    } else {
@@ -9519,7 +9519,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 	     row = sheet.getRow(56) != null ? sheet.getRow(56) : sheet.createRow(56);
 	     Cell cell41 = row.createCell(0);
 
-	    if (record1.getR6_NAME_OF_BANK_VOSTRO1() != null && !record1.getR6_NAME_OF_BANK_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR6_NAME_OF_BANK_VOSTRO1() != null ){
 	        cell41.setCellValue(record1.getR6_NAME_OF_BANK_VOSTRO1().toString().trim() );
 	        cell41.setCellStyle(numberStyle);
 	    } else {
@@ -9529,7 +9529,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell42 = row.createCell(1);
 
-	    if (record1.getR6_TYPE_OF_ACCOUNT_VOSTRO1() != null && !record1.getR6_TYPE_OF_ACCOUNT_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR6_TYPE_OF_ACCOUNT_VOSTRO1() != null ){
 	        cell42.setCellValue(record1.getR6_TYPE_OF_ACCOUNT_VOSTRO1().toString().trim() );
 	        cell42.setCellStyle(numberStyle);
 	    } else {
@@ -9539,7 +9539,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell43 = row.createCell(2);
 
-	    if (record1.getR6_PURPOSE_VOSTRO1() != null && !record1.getR6_PURPOSE_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR6_PURPOSE_VOSTRO1() != null ){
 	        cell43.setCellValue(record1.getR6_PURPOSE_VOSTRO1().toString().trim() );
 	        cell43.setCellStyle(numberStyle);
 	    } else {
@@ -9549,7 +9549,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell44 = row.createCell(3);
 
-	    if (record1.getR6_CURRENCY_VOSTRO1() != null && !record1.getR6_CURRENCY_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR6_CURRENCY_VOSTRO1() != null ){
 	        cell44.setCellValue(record1.getR6_CURRENCY_VOSTRO1().toString().trim() );
 	        cell44.setCellStyle(numberStyle);
 	    } else {
@@ -9559,7 +9559,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell47 = row.createCell(6);
 
-	    if (record1.getR6_AMOUNT_DEMAND_VOSTRO1() != null && !record1.getR6_AMOUNT_DEMAND_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR6_AMOUNT_DEMAND_VOSTRO1() != null ){
 	        cell47.setCellValue(record1.getR6_AMOUNT_DEMAND_VOSTRO1().toString().trim() );
 	        cell47.setCellStyle(numberStyle);
 	    } else {
@@ -9571,7 +9571,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 	     row = sheet.getRow(57) != null ? sheet.getRow(57) : sheet.createRow(57);
 	     Cell cell49 = row.createCell(0);
 
-	    if (record1.getR7_NAME_OF_BANK_VOSTRO1() != null && !record1.getR7_NAME_OF_BANK_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR7_NAME_OF_BANK_VOSTRO1() != null ){
 	        cell49.setCellValue(record1.getR7_NAME_OF_BANK_VOSTRO1().toString().trim() );
 	        cell49.setCellStyle(numberStyle);
 	    } else {
@@ -9581,7 +9581,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell50 = row.createCell(1);
 
-	    if (record1.getR7_TYPE_OF_ACCOUNT_VOSTRO1() != null && !record1.getR7_TYPE_OF_ACCOUNT_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR7_TYPE_OF_ACCOUNT_VOSTRO1() != null ){
 	        cell50.setCellValue(record1.getR7_TYPE_OF_ACCOUNT_VOSTRO1().toString().trim() );
 	        cell50.setCellStyle(numberStyle);
 	    } else {
@@ -9591,7 +9591,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell51 = row.createCell(2);
 
-	    if (record1.getR7_PURPOSE_VOSTRO1() != null && !record1.getR7_PURPOSE_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR7_PURPOSE_VOSTRO1() != null ){
 	        cell51.setCellValue(record1.getR7_PURPOSE_VOSTRO1().toString().trim() );
 	        cell51.setCellStyle(numberStyle);
 	    } else {
@@ -9601,7 +9601,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell52 = row.createCell(3);
 
-	    if (record1.getR7_CURRENCY_VOSTRO1() != null && !record1.getR7_CURRENCY_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR7_CURRENCY_VOSTRO1() != null ){
 	        cell52.setCellValue(record1.getR7_CURRENCY_VOSTRO1().toString().trim() );
 	        cell52.setCellStyle(numberStyle);
 	    } else {
@@ -9611,7 +9611,7 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 
 	     Cell cell55 = row.createCell(6);
 
-	    if (record1.getR7_AMOUNT_DEMAND_VOSTRO1() != null && !record1.getR7_AMOUNT_DEMAND_VOSTRO1().toString().trim().equals("N/A") ) {
+	    if (record1.getR7_AMOUNT_DEMAND_VOSTRO1() != null ){
 	        cell55.setCellValue(record1.getR7_AMOUNT_DEMAND_VOSTRO1().toString().trim() );
 	        cell55.setCellStyle(numberStyle);
 	    } else {
@@ -10172,7 +10172,7 @@ if (dtltype.equals("email_report") ) {
 	    Row row = sheet.getRow(62) != null ? sheet.getRow(62) : sheet.createRow(62);
 	    Cell cell1 = row.createCell(0);
 
-	   if (record1.getR1_DUE_FROM_DOMESTIC_NAME_OF_BANK() != null && !record1.getR1_DUE_FROM_DOMESTIC_NAME_OF_BANK().toString().trim().equals("N/A") ) {
+	   if (record1.getR1_DUE_FROM_DOMESTIC_NAME_OF_BANK() != null ){
 	       cell1.setCellValue(record1.getR1_DUE_FROM_DOMESTIC_NAME_OF_BANK().toString().trim() );
 	       cell1.setCellStyle(numberStyle);
 	   } else {
@@ -10182,7 +10182,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell2 = row.createCell(1);
 
-	   if (record1.getR1_DUE_FROM_DOMESTIC_ACCT_TYPE() != null && !record1.getR1_DUE_FROM_DOMESTIC_ACCT_TYPE().toString().trim().equals("N/A") ) {
+	   if (record1.getR1_DUE_FROM_DOMESTIC_ACCT_TYPE() != null ){
 	       cell2.setCellValue(record1.getR1_DUE_FROM_DOMESTIC_ACCT_TYPE().toString().trim() );
 	       cell2.setCellStyle(numberStyle);
 	   } else {
@@ -10192,7 +10192,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell3 = row.createCell(2);
 
-	   if (record1.getR1_DUE_FROM_DOMESTIC_PURPOSE() != null && !record1.getR1_DUE_FROM_DOMESTIC_PURPOSE().toString().trim().equals("N/A") ) {
+	   if (record1.getR1_DUE_FROM_DOMESTIC_PURPOSE() != null ){
 	       cell3.setCellValue(record1.getR1_DUE_FROM_DOMESTIC_PURPOSE().toString().trim() );
 	       cell3.setCellStyle(numberStyle);
 	   } else {
@@ -10202,7 +10202,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell4 = row.createCell(3);
 
-	   if (record1.getR1_DUE_FROM_DOMESTIC_AMOUNT() != null && !record1.getR1_DUE_FROM_DOMESTIC_AMOUNT().toString().trim().equals("N/A") ) {
+	   if (record1.getR1_DUE_FROM_DOMESTIC_AMOUNT() != null ){
 	       cell4.setCellValue(record1.getR1_DUE_FROM_DOMESTIC_AMOUNT().toString().trim() );
 	       cell4.setCellStyle(numberStyle);
 	   } else {
@@ -10212,7 +10212,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell5 = row.createCell(4);
 
-	   if (record1.getR1_DUE_FROM_DOMESTIC_RISK_WEIGHT() != null && !record1.getR1_DUE_FROM_DOMESTIC_RISK_WEIGHT().toString().trim().equals("N/A") ) {
+	   if (record1.getR1_DUE_FROM_DOMESTIC_RISK_WEIGHT() != null ){
 	       cell5.setCellValue(record1.getR1_DUE_FROM_DOMESTIC_RISK_WEIGHT().toString().trim() );
 	       cell5.setCellStyle(numberStyle);
 	   } else {
@@ -10222,7 +10222,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell6 = row.createCell(5);
 
-	   if (record1.getR1_DUE_FROM_DOMESTIC_CURRENCY() != null && !record1.getR1_DUE_FROM_DOMESTIC_CURRENCY().toString().trim().equals("N/A") ) {
+	   if (record1.getR1_DUE_FROM_DOMESTIC_CURRENCY() != null ){
 	       cell6.setCellValue(record1.getR1_DUE_FROM_DOMESTIC_CURRENCY().toString().trim() );
 	       cell6.setCellStyle(numberStyle);
 	   } else {
@@ -10232,7 +10232,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell7 = row.createCell(6);
 
-	   if (record1.getR1_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT() != null && !record1.getR1_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT().toString().trim().equals("N/A") ) {
+	   if (record1.getR1_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT() != null ){
 	       cell7.setCellValue(record1.getR1_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT().toString().trim() );
 	       cell7.setCellStyle(numberStyle);
 	   } else {
@@ -10244,7 +10244,7 @@ if (dtltype.equals("email_report") ) {
 	    row = sheet.getRow(63) != null ? sheet.getRow(63) : sheet.createRow(63);
 	    Cell cell8 = row.createCell(0);
 
-	   if (record1.getR2_DUE_FROM_DOMESTIC_NAME_OF_BANK() != null && !record1.getR2_DUE_FROM_DOMESTIC_NAME_OF_BANK().toString().trim().equals("N/A") ) {
+	   if (record1.getR2_DUE_FROM_DOMESTIC_NAME_OF_BANK() != null ){
 	       cell8.setCellValue(record1.getR2_DUE_FROM_DOMESTIC_NAME_OF_BANK().toString().trim() );
 	       cell8.setCellStyle(numberStyle);
 	   } else {
@@ -10254,7 +10254,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell9 = row.createCell(1);
 
-	   if (record1.getR2_DUE_FROM_DOMESTIC_ACCT_TYPE() != null && !record1.getR2_DUE_FROM_DOMESTIC_ACCT_TYPE().toString().trim().equals("N/A") ) {
+	   if (record1.getR2_DUE_FROM_DOMESTIC_ACCT_TYPE() != null ){
 	       cell9.setCellValue(record1.getR2_DUE_FROM_DOMESTIC_ACCT_TYPE().toString().trim() );
 	       cell9.setCellStyle(numberStyle);
 	   } else {
@@ -10264,7 +10264,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell10 = row.createCell(2);
 
-	   if (record1.getR2_DUE_FROM_DOMESTIC_PURPOSE() != null && !record1.getR2_DUE_FROM_DOMESTIC_PURPOSE().toString().trim().equals("N/A") ) {
+	   if (record1.getR2_DUE_FROM_DOMESTIC_PURPOSE() != null ){
 	       cell10.setCellValue(record1.getR2_DUE_FROM_DOMESTIC_PURPOSE().toString().trim() );
 	       cell10.setCellStyle(numberStyle);
 	   } else {
@@ -10274,7 +10274,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell11 = row.createCell(3);
 
-	   if (record1.getR2_DUE_FROM_DOMESTIC_AMOUNT() != null && !record1.getR2_DUE_FROM_DOMESTIC_AMOUNT().toString().trim().equals("N/A") ) {
+	   if (record1.getR2_DUE_FROM_DOMESTIC_AMOUNT() != null ){
 	       cell11.setCellValue(record1.getR2_DUE_FROM_DOMESTIC_AMOUNT().toString().trim() );
 	       cell11.setCellStyle(numberStyle);
 	   } else {
@@ -10284,7 +10284,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell12 = row.createCell(4);
 
-	   if (record1.getR2_DUE_FROM_DOMESTIC_RISK_WEIGHT() != null && !record1.getR2_DUE_FROM_DOMESTIC_RISK_WEIGHT().toString().trim().equals("N/A") ) {
+	   if (record1.getR2_DUE_FROM_DOMESTIC_RISK_WEIGHT() != null ){
 	       cell12.setCellValue(record1.getR2_DUE_FROM_DOMESTIC_RISK_WEIGHT().toString().trim() );
 	       cell12.setCellStyle(numberStyle);
 	   } else {
@@ -10294,7 +10294,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell13 = row.createCell(5);
 
-	   if (record1.getR2_DUE_FROM_DOMESTIC_CURRENCY() != null && !record1.getR2_DUE_FROM_DOMESTIC_CURRENCY().toString().trim().equals("N/A") ) {
+	   if (record1.getR2_DUE_FROM_DOMESTIC_CURRENCY() != null ){
 	       cell13.setCellValue(record1.getR2_DUE_FROM_DOMESTIC_CURRENCY().toString().trim() );
 	       cell13.setCellStyle(numberStyle);
 	   } else {
@@ -10304,7 +10304,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell14 = row.createCell(6);
 
-	   if (record1.getR2_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT() != null && !record1.getR2_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT().toString().trim().equals("N/A") ) {
+	   if (record1.getR2_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT() != null ){
 	       cell14.setCellValue(record1.getR2_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT().toString().trim() );
 	       cell14.setCellStyle(numberStyle);
 	   } else {
@@ -10316,7 +10316,7 @@ if (dtltype.equals("email_report") ) {
 	    row = sheet.getRow(64) != null ? sheet.getRow(64) : sheet.createRow(64);
 	    Cell cell15 = row.createCell(0);
 
-	   if (record1.getR3_DUE_FROM_DOMESTIC_NAME_OF_BANK() != null && !record1.getR3_DUE_FROM_DOMESTIC_NAME_OF_BANK().toString().trim().equals("N/A") ) {
+	   if (record1.getR3_DUE_FROM_DOMESTIC_NAME_OF_BANK() != null ){
 	       cell15.setCellValue(record1.getR3_DUE_FROM_DOMESTIC_NAME_OF_BANK().toString().trim() );
 	       cell15.setCellStyle(numberStyle);
 	   } else {
@@ -10326,7 +10326,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell16 = row.createCell(1);
 
-	   if (record1.getR3_DUE_FROM_DOMESTIC_ACCT_TYPE() != null && !record1.getR3_DUE_FROM_DOMESTIC_ACCT_TYPE().toString().trim().equals("N/A") ) {
+	   if (record1.getR3_DUE_FROM_DOMESTIC_ACCT_TYPE() != null ){
 	       cell16.setCellValue(record1.getR3_DUE_FROM_DOMESTIC_ACCT_TYPE().toString().trim() );
 	       cell16.setCellStyle(numberStyle);
 	   } else {
@@ -10336,7 +10336,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell17 = row.createCell(2);
 
-	   if (record1.getR3_DUE_FROM_DOMESTIC_PURPOSE() != null && !record1.getR3_DUE_FROM_DOMESTIC_PURPOSE().toString().trim().equals("N/A") ) {
+	   if (record1.getR3_DUE_FROM_DOMESTIC_PURPOSE() != null ){
 	       cell17.setCellValue(record1.getR3_DUE_FROM_DOMESTIC_PURPOSE().toString().trim() );
 	       cell17.setCellStyle(numberStyle);
 	   } else {
@@ -10346,7 +10346,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell18 = row.createCell(3);
 
-	   if (record1.getR3_DUE_FROM_DOMESTIC_AMOUNT() != null && !record1.getR3_DUE_FROM_DOMESTIC_AMOUNT().toString().trim().equals("N/A") ) {
+	   if (record1.getR3_DUE_FROM_DOMESTIC_AMOUNT() != null ){
 	       cell18.setCellValue(record1.getR3_DUE_FROM_DOMESTIC_AMOUNT().toString().trim() );
 	       cell18.setCellStyle(numberStyle);
 	   } else {
@@ -10356,7 +10356,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell19 = row.createCell(4);
 
-	   if (record1.getR3_DUE_FROM_DOMESTIC_RISK_WEIGHT() != null && !record1.getR3_DUE_FROM_DOMESTIC_RISK_WEIGHT().toString().trim().equals("N/A") ) {
+	   if (record1.getR3_DUE_FROM_DOMESTIC_RISK_WEIGHT() != null ){
 	       cell19.setCellValue(record1.getR3_DUE_FROM_DOMESTIC_RISK_WEIGHT().toString().trim() );
 	       cell19.setCellStyle(numberStyle);
 	   } else {
@@ -10366,7 +10366,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell20 = row.createCell(5);
 
-	   if (record1.getR3_DUE_FROM_DOMESTIC_CURRENCY() != null && !record1.getR3_DUE_FROM_DOMESTIC_CURRENCY().toString().trim().equals("N/A") ) {
+	   if (record1.getR3_DUE_FROM_DOMESTIC_CURRENCY() != null ){
 	       cell20.setCellValue(record1.getR3_DUE_FROM_DOMESTIC_CURRENCY().toString().trim() );
 	       cell20.setCellStyle(numberStyle);
 	   } else {
@@ -10376,7 +10376,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell21 = row.createCell(6);
 
-	   if (record1.getR3_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT() != null && !record1.getR3_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT().toString().trim().equals("N/A") ) {
+	   if (record1.getR3_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT() != null ){
 	       cell21.setCellValue(record1.getR3_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT().toString().trim() );
 	       cell21.setCellStyle(numberStyle);
 	   } else {
@@ -10388,7 +10388,7 @@ if (dtltype.equals("email_report") ) {
 	    row = sheet.getRow(65) != null ? sheet.getRow(65) : sheet.createRow(65);
 	    Cell cell22 = row.createCell(0);
 
-	   if (record1.getR4_DUE_FROM_DOMESTIC_NAME_OF_BANK() != null && !record1.getR4_DUE_FROM_DOMESTIC_NAME_OF_BANK().toString().trim().equals("N/A") ) {
+	   if (record1.getR4_DUE_FROM_DOMESTIC_NAME_OF_BANK() != null ){
 	       cell22.setCellValue(record1.getR4_DUE_FROM_DOMESTIC_NAME_OF_BANK().toString().trim() );
 	       cell22.setCellStyle(numberStyle);
 	   } else {
@@ -10398,7 +10398,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell23 = row.createCell(1);
 
-	   if (record1.getR4_DUE_FROM_DOMESTIC_ACCT_TYPE() != null && !record1.getR4_DUE_FROM_DOMESTIC_ACCT_TYPE().toString().trim().equals("N/A") ) {
+	   if (record1.getR4_DUE_FROM_DOMESTIC_ACCT_TYPE() != null ){
 	       cell23.setCellValue(record1.getR4_DUE_FROM_DOMESTIC_ACCT_TYPE().toString().trim() );
 	       cell23.setCellStyle(numberStyle);
 	   } else {
@@ -10408,7 +10408,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell24 = row.createCell(2);
 
-	   if (record1.getR4_DUE_FROM_DOMESTIC_PURPOSE() != null && !record1.getR4_DUE_FROM_DOMESTIC_PURPOSE().toString().trim().equals("N/A") ) {
+	   if (record1.getR4_DUE_FROM_DOMESTIC_PURPOSE() != null ){
 	       cell24.setCellValue(record1.getR4_DUE_FROM_DOMESTIC_PURPOSE().toString().trim() );
 	       cell24.setCellStyle(numberStyle);
 	   } else {
@@ -10418,7 +10418,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell25 = row.createCell(3);
 
-	   if (record1.getR4_DUE_FROM_DOMESTIC_AMOUNT() != null && !record1.getR4_DUE_FROM_DOMESTIC_AMOUNT().toString().trim().equals("N/A") ) {
+	   if (record1.getR4_DUE_FROM_DOMESTIC_AMOUNT() != null ){
 	       cell25.setCellValue(record1.getR4_DUE_FROM_DOMESTIC_AMOUNT().toString().trim() );
 	       cell25.setCellStyle(numberStyle);
 	   } else {
@@ -10428,7 +10428,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell26 = row.createCell(4);
 
-	   if (record1.getR4_DUE_FROM_DOMESTIC_RISK_WEIGHT() != null && !record1.getR4_DUE_FROM_DOMESTIC_RISK_WEIGHT().toString().trim().equals("N/A") ) {
+	   if (record1.getR4_DUE_FROM_DOMESTIC_RISK_WEIGHT() != null ){
 	       cell26.setCellValue(record1.getR4_DUE_FROM_DOMESTIC_RISK_WEIGHT().toString().trim() );
 	       cell26.setCellStyle(numberStyle);
 	   } else {
@@ -10438,7 +10438,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell27 = row.createCell(5);
 
-	   if (record1.getR4_DUE_FROM_DOMESTIC_CURRENCY() != null && !record1.getR4_DUE_FROM_DOMESTIC_CURRENCY().toString().trim().equals("N/A") ) {
+	   if (record1.getR4_DUE_FROM_DOMESTIC_CURRENCY() != null ){
 	       cell27.setCellValue(record1.getR4_DUE_FROM_DOMESTIC_CURRENCY().toString().trim() );
 	       cell27.setCellStyle(numberStyle);
 	   } else {
@@ -10448,7 +10448,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell28 = row.createCell(6);
 
-	   if (record1.getR4_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT() != null && !record1.getR4_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT().toString().trim().equals("N/A") ) {
+	   if (record1.getR4_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT() != null ){
 	       cell28.setCellValue(record1.getR4_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT().toString().trim() );
 	       cell28.setCellStyle(numberStyle);
 	   } else {
@@ -10460,7 +10460,7 @@ if (dtltype.equals("email_report") ) {
 	    row = sheet.getRow(66) != null ? sheet.getRow(66) : sheet.createRow(66);
 	    Cell cell29 = row.createCell(0);
 
-	   if (record1.getR5_DUE_FROM_DOMESTIC_NAME_OF_BANK() != null && !record1.getR5_DUE_FROM_DOMESTIC_NAME_OF_BANK().toString().trim().equals("N/A") ) {
+	   if (record1.getR5_DUE_FROM_DOMESTIC_NAME_OF_BANK() != null ){
 	       cell29.setCellValue(record1.getR5_DUE_FROM_DOMESTIC_NAME_OF_BANK().toString().trim() );
 	       cell29.setCellStyle(numberStyle);
 	   } else {
@@ -10470,7 +10470,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell30 = row.createCell(1);
 
-	   if (record1.getR5_DUE_FROM_DOMESTIC_ACCT_TYPE() != null && !record1.getR5_DUE_FROM_DOMESTIC_ACCT_TYPE().toString().trim().equals("N/A") ) {
+	   if (record1.getR5_DUE_FROM_DOMESTIC_ACCT_TYPE() != null ){
 	       cell30.setCellValue(record1.getR5_DUE_FROM_DOMESTIC_ACCT_TYPE().toString().trim() );
 	       cell30.setCellStyle(numberStyle);
 	   } else {
@@ -10480,7 +10480,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell31 = row.createCell(2);
 
-	   if (record1.getR5_DUE_FROM_DOMESTIC_PURPOSE() != null && !record1.getR5_DUE_FROM_DOMESTIC_PURPOSE().toString().trim().equals("N/A") ) {
+	   if (record1.getR5_DUE_FROM_DOMESTIC_PURPOSE() != null ){
 	       cell31.setCellValue(record1.getR5_DUE_FROM_DOMESTIC_PURPOSE().toString().trim() );
 	       cell31.setCellStyle(numberStyle);
 	   } else {
@@ -10490,7 +10490,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell32 = row.createCell(3);
 
-	   if (record1.getR5_DUE_FROM_DOMESTIC_AMOUNT() != null && !record1.getR5_DUE_FROM_DOMESTIC_AMOUNT().toString().trim().equals("N/A") ) {
+	   if (record1.getR5_DUE_FROM_DOMESTIC_AMOUNT() != null ){
 	       cell32.setCellValue(record1.getR5_DUE_FROM_DOMESTIC_AMOUNT().toString().trim() );
 	       cell32.setCellStyle(numberStyle);
 	   } else {
@@ -10500,7 +10500,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell33 = row.createCell(4);
 
-	   if (record1.getR5_DUE_FROM_DOMESTIC_RISK_WEIGHT() != null && !record1.getR5_DUE_FROM_DOMESTIC_RISK_WEIGHT().toString().trim().equals("N/A") ) {
+	   if (record1.getR5_DUE_FROM_DOMESTIC_RISK_WEIGHT() != null ){
 	       cell33.setCellValue(record1.getR5_DUE_FROM_DOMESTIC_RISK_WEIGHT().toString().trim() );
 	       cell33.setCellStyle(numberStyle);
 	   } else {
@@ -10510,7 +10510,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell34 = row.createCell(5);
 
-	   if (record1.getR5_DUE_FROM_DOMESTIC_CURRENCY() != null && !record1.getR5_DUE_FROM_DOMESTIC_CURRENCY().toString().trim().equals("N/A") ) {
+	   if (record1.getR5_DUE_FROM_DOMESTIC_CURRENCY() != null ){
 	       cell34.setCellValue(record1.getR5_DUE_FROM_DOMESTIC_CURRENCY().toString().trim() );
 	       cell34.setCellStyle(numberStyle);
 	   } else {
@@ -10520,7 +10520,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell35 = row.createCell(6);
 
-	   if (record1.getR5_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT() != null && !record1.getR5_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT().toString().trim().equals("N/A") ) {
+	   if (record1.getR5_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT() != null ){
 	       cell35.setCellValue(record1.getR5_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT().toString().trim() );
 	       cell35.setCellStyle(numberStyle);
 	   } else {
@@ -10532,7 +10532,7 @@ if (dtltype.equals("email_report") ) {
 	    row = sheet.getRow(67) != null ? sheet.getRow(67) : sheet.createRow(67);
 	    Cell cell36 = row.createCell(0);
 
-	   if (record1.getR6_DUE_FROM_DOMESTIC_NAME_OF_BANK() != null && !record1.getR6_DUE_FROM_DOMESTIC_NAME_OF_BANK().toString().trim().equals("N/A") ) {
+	   if (record1.getR6_DUE_FROM_DOMESTIC_NAME_OF_BANK() != null ){
 	       cell36.setCellValue(record1.getR6_DUE_FROM_DOMESTIC_NAME_OF_BANK().toString().trim() );
 	       cell36.setCellStyle(numberStyle);
 	   } else {
@@ -10542,7 +10542,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell37 = row.createCell(1);
 
-	   if (record1.getR6_DUE_FROM_DOMESTIC_ACCT_TYPE() != null && !record1.getR6_DUE_FROM_DOMESTIC_ACCT_TYPE().toString().trim().equals("N/A") ) {
+	   if (record1.getR6_DUE_FROM_DOMESTIC_ACCT_TYPE() != null ){
 	       cell37.setCellValue(record1.getR6_DUE_FROM_DOMESTIC_ACCT_TYPE().toString().trim() );
 	       cell37.setCellStyle(numberStyle);
 	   } else {
@@ -10552,7 +10552,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell38 = row.createCell(2);
 
-	   if (record1.getR6_DUE_FROM_DOMESTIC_PURPOSE() != null && !record1.getR6_DUE_FROM_DOMESTIC_PURPOSE().toString().trim().equals("N/A") ) {
+	   if (record1.getR6_DUE_FROM_DOMESTIC_PURPOSE() != null ){
 	       cell38.setCellValue(record1.getR6_DUE_FROM_DOMESTIC_PURPOSE().toString().trim() );
 	       cell38.setCellStyle(numberStyle);
 	   } else {
@@ -10562,7 +10562,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell39 = row.createCell(3);
 
-	   if (record1.getR6_DUE_FROM_DOMESTIC_AMOUNT() != null && !record1.getR6_DUE_FROM_DOMESTIC_AMOUNT().toString().trim().equals("N/A") ) {
+	   if (record1.getR6_DUE_FROM_DOMESTIC_AMOUNT() != null ){
 	       cell39.setCellValue(record1.getR6_DUE_FROM_DOMESTIC_AMOUNT().toString().trim() );
 	       cell39.setCellStyle(numberStyle);
 	   } else {
@@ -10572,7 +10572,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell40 = row.createCell(4);
 
-	   if (record1.getR6_DUE_FROM_DOMESTIC_RISK_WEIGHT() != null && !record1.getR6_DUE_FROM_DOMESTIC_RISK_WEIGHT().toString().trim().equals("N/A") ) {
+	   if (record1.getR6_DUE_FROM_DOMESTIC_RISK_WEIGHT() != null ){
 	       cell40.setCellValue(record1.getR6_DUE_FROM_DOMESTIC_RISK_WEIGHT().toString().trim() );
 	       cell40.setCellStyle(numberStyle);
 	   } else {
@@ -10582,7 +10582,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell41 = row.createCell(5);
 
-	   if (record1.getR6_DUE_FROM_DOMESTIC_CURRENCY() != null && !record1.getR6_DUE_FROM_DOMESTIC_CURRENCY().toString().trim().equals("N/A") ) {
+	   if (record1.getR6_DUE_FROM_DOMESTIC_CURRENCY() != null ){
 	       cell41.setCellValue(record1.getR6_DUE_FROM_DOMESTIC_CURRENCY().toString().trim() );
 	       cell41.setCellStyle(numberStyle);
 	   } else {
@@ -10592,7 +10592,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell42 = row.createCell(6);
 
-	   if (record1.getR6_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT() != null && !record1.getR6_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT().toString().trim().equals("N/A") ) {
+	   if (record1.getR6_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT() != null ){
 	       cell42.setCellValue(record1.getR6_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT().toString().trim() );
 	       cell42.setCellStyle(numberStyle);
 	   } else {
@@ -10604,7 +10604,7 @@ if (dtltype.equals("email_report") ) {
 	    row = sheet.getRow(68) != null ? sheet.getRow(68) : sheet.createRow(68);
 	    Cell cell43 = row.createCell(0);
 
-	   if (record1.getR7_DUE_FROM_DOMESTIC_NAME_OF_BANK() != null && !record1.getR7_DUE_FROM_DOMESTIC_NAME_OF_BANK().toString().trim().equals("N/A") ) {
+	   if (record1.getR7_DUE_FROM_DOMESTIC_NAME_OF_BANK() != null ){
 	       cell43.setCellValue(record1.getR7_DUE_FROM_DOMESTIC_NAME_OF_BANK().toString().trim() );
 	       cell43.setCellStyle(numberStyle);
 	   } else {
@@ -10614,7 +10614,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell44 = row.createCell(1);
 
-	   if (record1.getR7_DUE_FROM_DOMESTIC_ACCT_TYPE() != null && !record1.getR7_DUE_FROM_DOMESTIC_ACCT_TYPE().toString().trim().equals("N/A") ) {
+	   if (record1.getR7_DUE_FROM_DOMESTIC_ACCT_TYPE() != null ){
 	       cell44.setCellValue(record1.getR7_DUE_FROM_DOMESTIC_ACCT_TYPE().toString().trim() );
 	       cell44.setCellStyle(numberStyle);
 	   } else {
@@ -10624,7 +10624,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell45 = row.createCell(2);
 
-	   if (record1.getR7_DUE_FROM_DOMESTIC_PURPOSE() != null && !record1.getR7_DUE_FROM_DOMESTIC_PURPOSE().toString().trim().equals("N/A") ) {
+	   if (record1.getR7_DUE_FROM_DOMESTIC_PURPOSE() != null ){
 	       cell45.setCellValue(record1.getR7_DUE_FROM_DOMESTIC_PURPOSE().toString().trim() );
 	       cell45.setCellStyle(numberStyle);
 	   } else {
@@ -10634,7 +10634,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell46 = row.createCell(3);
 
-	   if (record1.getR7_DUE_FROM_DOMESTIC_AMOUNT() != null && !record1.getR7_DUE_FROM_DOMESTIC_AMOUNT().toString().trim().equals("N/A") ) {
+	   if (record1.getR7_DUE_FROM_DOMESTIC_AMOUNT() != null ){
 	       cell46.setCellValue(record1.getR7_DUE_FROM_DOMESTIC_AMOUNT().toString().trim() );
 	       cell46.setCellStyle(numberStyle);
 	   } else {
@@ -10644,7 +10644,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell47 = row.createCell(4);
 
-	   if (record1.getR7_DUE_FROM_DOMESTIC_RISK_WEIGHT() != null && !record1.getR7_DUE_FROM_DOMESTIC_RISK_WEIGHT().toString().trim().equals("N/A") ) {
+	   if (record1.getR7_DUE_FROM_DOMESTIC_RISK_WEIGHT() != null ){
 	       cell47.setCellValue(record1.getR7_DUE_FROM_DOMESTIC_RISK_WEIGHT().toString().trim() );
 	       cell47.setCellStyle(numberStyle);
 	   } else {
@@ -10654,7 +10654,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell48 = row.createCell(5);
 
-	   if (record1.getR7_DUE_FROM_DOMESTIC_CURRENCY() != null && !record1.getR7_DUE_FROM_DOMESTIC_CURRENCY().toString().trim().equals("N/A") ) {
+	   if (record1.getR7_DUE_FROM_DOMESTIC_CURRENCY() != null ){
 	       cell48.setCellValue(record1.getR7_DUE_FROM_DOMESTIC_CURRENCY().toString().trim() );
 	       cell48.setCellStyle(numberStyle);
 	   } else {
@@ -10664,7 +10664,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell49 = row.createCell(6);
 
-	   if (record1.getR7_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT() != null && !record1.getR7_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT().toString().trim().equals("N/A") ) {
+	   if (record1.getR7_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT() != null ){
 	       cell49.setCellValue(record1.getR7_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT().toString().trim() );
 	       cell49.setCellStyle(numberStyle);
 	   } else {
@@ -10676,7 +10676,7 @@ if (dtltype.equals("email_report") ) {
 	    row = sheet.getRow(69) != null ? sheet.getRow(69) : sheet.createRow(69);
 	    Cell cell50 = row.createCell(0);
 
-	   if (record1.getR8_DUE_FROM_DOMESTIC_NAME_OF_BANK() != null && !record1.getR8_DUE_FROM_DOMESTIC_NAME_OF_BANK().toString().trim().equals("N/A") ) {
+	   if (record1.getR8_DUE_FROM_DOMESTIC_NAME_OF_BANK() != null ){
 	       cell50.setCellValue(record1.getR8_DUE_FROM_DOMESTIC_NAME_OF_BANK().toString().trim() );
 	       cell50.setCellStyle(numberStyle);
 	   } else {
@@ -10686,7 +10686,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell51 = row.createCell(1);
 
-	   if (record1.getR8_DUE_FROM_DOMESTIC_ACCT_TYPE() != null && !record1.getR8_DUE_FROM_DOMESTIC_ACCT_TYPE().toString().trim().equals("N/A") ) {
+	   if (record1.getR8_DUE_FROM_DOMESTIC_ACCT_TYPE() != null ){
 	       cell51.setCellValue(record1.getR8_DUE_FROM_DOMESTIC_ACCT_TYPE().toString().trim() );
 	       cell51.setCellStyle(numberStyle);
 	   } else {
@@ -10696,7 +10696,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell52 = row.createCell(2);
 
-	   if (record1.getR8_DUE_FROM_DOMESTIC_PURPOSE() != null && !record1.getR8_DUE_FROM_DOMESTIC_PURPOSE().toString().trim().equals("N/A") ) {
+	   if (record1.getR8_DUE_FROM_DOMESTIC_PURPOSE() != null ){
 	       cell52.setCellValue(record1.getR8_DUE_FROM_DOMESTIC_PURPOSE().toString().trim() );
 	       cell52.setCellStyle(numberStyle);
 	   } else {
@@ -10706,7 +10706,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell53 = row.createCell(3);
 
-	   if (record1.getR8_DUE_FROM_DOMESTIC_AMOUNT() != null && !record1.getR8_DUE_FROM_DOMESTIC_AMOUNT().toString().trim().equals("N/A") ) {
+	   if (record1.getR8_DUE_FROM_DOMESTIC_AMOUNT() != null ){
 	       cell53.setCellValue(record1.getR8_DUE_FROM_DOMESTIC_AMOUNT().toString().trim() );
 	       cell53.setCellStyle(numberStyle);
 	   } else {
@@ -10716,7 +10716,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell54 = row.createCell(4);
 
-	   if (record1.getR8_DUE_FROM_DOMESTIC_RISK_WEIGHT() != null && !record1.getR8_DUE_FROM_DOMESTIC_RISK_WEIGHT().toString().trim().equals("N/A") ) {
+	   if (record1.getR8_DUE_FROM_DOMESTIC_RISK_WEIGHT() != null ){
 	       cell54.setCellValue(record1.getR8_DUE_FROM_DOMESTIC_RISK_WEIGHT().toString().trim() );
 	       cell54.setCellStyle(numberStyle);
 	   } else {
@@ -10726,7 +10726,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell55 = row.createCell(5);
 
-	   if (record1.getR8_DUE_FROM_DOMESTIC_CURRENCY() != null && !record1.getR8_DUE_FROM_DOMESTIC_CURRENCY().toString().trim().equals("N/A") ) {
+	   if (record1.getR8_DUE_FROM_DOMESTIC_CURRENCY() != null ){
 	       cell55.setCellValue(record1.getR8_DUE_FROM_DOMESTIC_CURRENCY().toString().trim() );
 	       cell55.setCellStyle(numberStyle);
 	   } else {
@@ -10736,7 +10736,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell56 = row.createCell(6);
 
-	   if (record1.getR8_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT() != null && !record1.getR8_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT().toString().trim().equals("N/A") ) {
+	   if (record1.getR8_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT() != null ){
 	       cell56.setCellValue(record1.getR8_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT().toString().trim() );
 	       cell56.setCellStyle(numberStyle);
 	   } else {
@@ -10748,7 +10748,7 @@ if (dtltype.equals("email_report") ) {
 	    row = sheet.getRow(70) != null ? sheet.getRow(70) : sheet.createRow(70);
 	    Cell cell57 = row.createCell(0);
 
-	   if (record1.getR9_DUE_FROM_DOMESTIC_NAME_OF_BANK() != null && !record1.getR9_DUE_FROM_DOMESTIC_NAME_OF_BANK().toString().trim().equals("N/A") ) {
+	   if (record1.getR9_DUE_FROM_DOMESTIC_NAME_OF_BANK() != null ){
 	       cell57.setCellValue(record1.getR9_DUE_FROM_DOMESTIC_NAME_OF_BANK().toString().trim() );
 	       cell57.setCellStyle(numberStyle);
 	   } else {
@@ -10758,7 +10758,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell58 = row.createCell(1);
 
-	   if (record1.getR9_DUE_FROM_DOMESTIC_ACCT_TYPE() != null && !record1.getR9_DUE_FROM_DOMESTIC_ACCT_TYPE().toString().trim().equals("N/A") ) {
+	   if (record1.getR9_DUE_FROM_DOMESTIC_ACCT_TYPE() != null ){
 	       cell58.setCellValue(record1.getR9_DUE_FROM_DOMESTIC_ACCT_TYPE().toString().trim() );
 	       cell58.setCellStyle(numberStyle);
 	   } else {
@@ -10768,7 +10768,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell59 = row.createCell(2);
 
-	   if (record1.getR9_DUE_FROM_DOMESTIC_PURPOSE() != null && !record1.getR9_DUE_FROM_DOMESTIC_PURPOSE().toString().trim().equals("N/A") ) {
+	   if (record1.getR9_DUE_FROM_DOMESTIC_PURPOSE() != null ){
 	       cell59.setCellValue(record1.getR9_DUE_FROM_DOMESTIC_PURPOSE().toString().trim() );
 	       cell59.setCellStyle(numberStyle);
 	   } else {
@@ -10778,7 +10778,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell60 = row.createCell(3);
 
-	   if (record1.getR9_DUE_FROM_DOMESTIC_AMOUNT() != null && !record1.getR9_DUE_FROM_DOMESTIC_AMOUNT().toString().trim().equals("N/A") ) {
+	   if (record1.getR9_DUE_FROM_DOMESTIC_AMOUNT() != null ){
 	       cell60.setCellValue(record1.getR9_DUE_FROM_DOMESTIC_AMOUNT().toString().trim() );
 	       cell60.setCellStyle(numberStyle);
 	   } else {
@@ -10788,7 +10788,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell61 = row.createCell(4);
 
-	   if (record1.getR9_DUE_FROM_DOMESTIC_RISK_WEIGHT() != null && !record1.getR9_DUE_FROM_DOMESTIC_RISK_WEIGHT().toString().trim().equals("N/A") ) {
+	   if (record1.getR9_DUE_FROM_DOMESTIC_RISK_WEIGHT() != null ){
 	       cell61.setCellValue(record1.getR9_DUE_FROM_DOMESTIC_RISK_WEIGHT().toString().trim() );
 	       cell61.setCellStyle(numberStyle);
 	   } else {
@@ -10798,7 +10798,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell62 = row.createCell(5);
 
-	   if (record1.getR9_DUE_FROM_DOMESTIC_CURRENCY() != null && !record1.getR9_DUE_FROM_DOMESTIC_CURRENCY().toString().trim().equals("N/A") ) {
+	   if (record1.getR9_DUE_FROM_DOMESTIC_CURRENCY() != null ){
 	       cell62.setCellValue(record1.getR9_DUE_FROM_DOMESTIC_CURRENCY().toString().trim() );
 	       cell62.setCellStyle(numberStyle);
 	   } else {
@@ -10808,7 +10808,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell63 = row.createCell(6);
 
-	   if (record1.getR9_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT() != null && !record1.getR9_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT().toString().trim().equals("N/A") ) {
+	   if (record1.getR9_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT() != null ){
 	       cell63.setCellValue(record1.getR9_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT().toString().trim() );
 	       cell63.setCellStyle(numberStyle);
 	   } else {
@@ -10820,7 +10820,7 @@ if (dtltype.equals("email_report") ) {
 	    row = sheet.getRow(71) != null ? sheet.getRow(71) : sheet.createRow(71);
 	    Cell cell64 = row.createCell(0);
 
-	   if (record1.getR10_DUE_FROM_DOMESTIC_NAME_OF_BANK() != null && !record1.getR10_DUE_FROM_DOMESTIC_NAME_OF_BANK().toString().trim().equals("N/A") ) {
+	   if (record1.getR10_DUE_FROM_DOMESTIC_NAME_OF_BANK() != null ){
 	       cell64.setCellValue(record1.getR10_DUE_FROM_DOMESTIC_NAME_OF_BANK().toString().trim() );
 	       cell64.setCellStyle(numberStyle);
 	   } else {
@@ -10830,7 +10830,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell65 = row.createCell(1);
 
-	   if (record1.getR10_DUE_FROM_DOMESTIC_ACCT_TYPE() != null && !record1.getR10_DUE_FROM_DOMESTIC_ACCT_TYPE().toString().trim().equals("N/A") ) {
+	   if (record1.getR10_DUE_FROM_DOMESTIC_ACCT_TYPE() != null ){
 	       cell65.setCellValue(record1.getR10_DUE_FROM_DOMESTIC_ACCT_TYPE().toString().trim() );
 	       cell65.setCellStyle(numberStyle);
 	   } else {
@@ -10840,7 +10840,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell66 = row.createCell(2);
 
-	   if (record1.getR10_DUE_FROM_DOMESTIC_PURPOSE() != null && !record1.getR10_DUE_FROM_DOMESTIC_PURPOSE().toString().trim().equals("N/A") ) {
+	   if (record1.getR10_DUE_FROM_DOMESTIC_PURPOSE() != null ){
 	       cell66.setCellValue(record1.getR10_DUE_FROM_DOMESTIC_PURPOSE().toString().trim() );
 	       cell66.setCellStyle(numberStyle);
 	   } else {
@@ -10850,7 +10850,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell67 = row.createCell(3);
 
-	   if (record1.getR10_DUE_FROM_DOMESTIC_AMOUNT() != null && !record1.getR10_DUE_FROM_DOMESTIC_AMOUNT().toString().trim().equals("N/A") ) {
+	   if (record1.getR10_DUE_FROM_DOMESTIC_AMOUNT() != null ){
 	       cell67.setCellValue(record1.getR10_DUE_FROM_DOMESTIC_AMOUNT().toString().trim() );
 	       cell67.setCellStyle(numberStyle);
 	   } else {
@@ -10860,7 +10860,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell68 = row.createCell(4);
 
-	   if (record1.getR10_DUE_FROM_DOMESTIC_RISK_WEIGHT() != null && !record1.getR10_DUE_FROM_DOMESTIC_RISK_WEIGHT().toString().trim().equals("N/A") ) {
+	   if (record1.getR10_DUE_FROM_DOMESTIC_RISK_WEIGHT() != null ){
 	       cell68.setCellValue(record1.getR10_DUE_FROM_DOMESTIC_RISK_WEIGHT().toString().trim() );
 	       cell68.setCellStyle(numberStyle);
 	   } else {
@@ -10870,7 +10870,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell69 = row.createCell(5);
 
-	   if (record1.getR10_DUE_FROM_DOMESTIC_CURRENCY() != null && !record1.getR10_DUE_FROM_DOMESTIC_CURRENCY().toString().trim().equals("N/A") ) {
+	   if (record1.getR10_DUE_FROM_DOMESTIC_CURRENCY() != null ){
 	       cell69.setCellValue(record1.getR10_DUE_FROM_DOMESTIC_CURRENCY().toString().trim() );
 	       cell69.setCellStyle(numberStyle);
 	   } else {
@@ -10880,7 +10880,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell70 = row.createCell(6);
 
-	   if (record1.getR10_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT() != null && !record1.getR10_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT().toString().trim().equals("N/A") ) {
+	   if (record1.getR10_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT() != null ){
 	       cell70.setCellValue(record1.getR10_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT().toString().trim() );
 	       cell70.setCellStyle(numberStyle);
 	   } else {
@@ -10892,7 +10892,7 @@ if (dtltype.equals("email_report") ) {
 	    row = sheet.getRow(72) != null ? sheet.getRow(72) : sheet.createRow(72);
 	    Cell cell71 = row.createCell(0);
 
-	   if (record1.getR11_DUE_FROM_DOMESTIC_NAME_OF_BANK() != null && !record1.getR11_DUE_FROM_DOMESTIC_NAME_OF_BANK().toString().trim().equals("N/A") ) {
+	   if (record1.getR11_DUE_FROM_DOMESTIC_NAME_OF_BANK() != null ){
 	       cell71.setCellValue(record1.getR11_DUE_FROM_DOMESTIC_NAME_OF_BANK().toString().trim() );
 	       cell71.setCellStyle(numberStyle);
 	   } else {
@@ -10902,7 +10902,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell72 = row.createCell(1);
 
-	   if (record1.getR11_DUE_FROM_DOMESTIC_ACCT_TYPE() != null && !record1.getR11_DUE_FROM_DOMESTIC_ACCT_TYPE().toString().trim().equals("N/A") ) {
+	   if (record1.getR11_DUE_FROM_DOMESTIC_ACCT_TYPE() != null ){
 	       cell72.setCellValue(record1.getR11_DUE_FROM_DOMESTIC_ACCT_TYPE().toString().trim() );
 	       cell72.setCellStyle(numberStyle);
 	   } else {
@@ -10912,7 +10912,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell73 = row.createCell(2);
 
-	   if (record1.getR11_DUE_FROM_DOMESTIC_PURPOSE() != null && !record1.getR11_DUE_FROM_DOMESTIC_PURPOSE().toString().trim().equals("N/A") ) {
+	   if (record1.getR11_DUE_FROM_DOMESTIC_PURPOSE() != null ){
 	       cell73.setCellValue(record1.getR11_DUE_FROM_DOMESTIC_PURPOSE().toString().trim() );
 	       cell73.setCellStyle(numberStyle);
 	   } else {
@@ -10922,7 +10922,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell74 = row.createCell(3);
 
-	   if (record1.getR11_DUE_FROM_DOMESTIC_AMOUNT() != null && !record1.getR11_DUE_FROM_DOMESTIC_AMOUNT().toString().trim().equals("N/A") ) {
+	   if (record1.getR11_DUE_FROM_DOMESTIC_AMOUNT() != null ){
 	       cell74.setCellValue(record1.getR11_DUE_FROM_DOMESTIC_AMOUNT().toString().trim() );
 	       cell74.setCellStyle(numberStyle);
 	   } else {
@@ -10932,7 +10932,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell75 = row.createCell(4);
 
-	   if (record1.getR11_DUE_FROM_DOMESTIC_RISK_WEIGHT() != null && !record1.getR11_DUE_FROM_DOMESTIC_RISK_WEIGHT().toString().trim().equals("N/A") ) {
+	   if (record1.getR11_DUE_FROM_DOMESTIC_RISK_WEIGHT() != null ){
 	       cell75.setCellValue(record1.getR11_DUE_FROM_DOMESTIC_RISK_WEIGHT().toString().trim() );
 	       cell75.setCellStyle(numberStyle);
 	   } else {
@@ -10942,7 +10942,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell76 = row.createCell(5);
 
-	   if (record1.getR11_DUE_FROM_DOMESTIC_CURRENCY() != null && !record1.getR11_DUE_FROM_DOMESTIC_CURRENCY().toString().trim().equals("N/A") ) {
+	   if (record1.getR11_DUE_FROM_DOMESTIC_CURRENCY() != null ){
 	       cell76.setCellValue(record1.getR11_DUE_FROM_DOMESTIC_CURRENCY().toString().trim() );
 	       cell76.setCellStyle(numberStyle);
 	   } else {
@@ -10952,7 +10952,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell77 = row.createCell(6);
 
-	   if (record1.getR11_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT() != null && !record1.getR11_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT().toString().trim().equals("N/A") ) {
+	   if (record1.getR11_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT() != null ){
 	       cell77.setCellValue(record1.getR11_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT().toString().trim() );
 	       cell77.setCellStyle(numberStyle);
 	   } else {
@@ -10963,7 +10963,7 @@ if (dtltype.equals("email_report") ) {
 	   row = sheet.getRow(77) != null ? sheet.getRow(77) : sheet.createRow(77);
 	   Cell cell78 = row.createCell(0);
 
-	  if (record1.getR1_DUE_TO_DOMESTIC_NAME_OF_BANK() != null && !record1.getR1_DUE_TO_DOMESTIC_NAME_OF_BANK().toString().trim().equals("N/A") ) {
+	  if (record1.getR1_DUE_TO_DOMESTIC_NAME_OF_BANK() != null ){
 	      cell78.setCellValue(record1.getR1_DUE_TO_DOMESTIC_NAME_OF_BANK().toString().trim() );
 	      cell78.setCellStyle(numberStyle);
 	  } else {
@@ -10973,7 +10973,7 @@ if (dtltype.equals("email_report") ) {
 
 	   Cell cell79 = row.createCell(1);
 
-	  if (record1.getR1_DUE_TO_DOMESTIC_ACCT_TYPE() != null && !record1.getR1_DUE_TO_DOMESTIC_ACCT_TYPE().toString().trim().equals("N/A") ) {
+	  if (record1.getR1_DUE_TO_DOMESTIC_ACCT_TYPE() != null ){
 	      cell79.setCellValue(record1.getR1_DUE_TO_DOMESTIC_ACCT_TYPE().toString().trim() );
 	      cell79.setCellStyle(numberStyle);
 	  } else {
@@ -10983,7 +10983,7 @@ if (dtltype.equals("email_report") ) {
 
 	   Cell cell80 = row.createCell(2);
 
-	  if (record1.getR1_DUE_TO_DOMESTIC_PURPOSE() != null && !record1.getR1_DUE_TO_DOMESTIC_PURPOSE().toString().trim().equals("N/A") ) {
+	  if (record1.getR1_DUE_TO_DOMESTIC_PURPOSE() != null ){
 	      cell80.setCellValue(record1.getR1_DUE_TO_DOMESTIC_PURPOSE().toString().trim() );
 	      cell80.setCellStyle(numberStyle);
 	  } else {
@@ -10993,7 +10993,7 @@ if (dtltype.equals("email_report") ) {
 
 	   Cell cell81 = row.createCell(3);
 
-	  if (record1.getR1_DUE_TO_DOMESTIC_AMOUNT() != null && !record1.getR1_DUE_TO_DOMESTIC_AMOUNT().toString().trim().equals("N/A") ) {
+	  if (record1.getR1_DUE_TO_DOMESTIC_AMOUNT() != null ){
 	      cell81.setCellValue(record1.getR1_DUE_TO_DOMESTIC_AMOUNT().toString().trim() );
 	      cell81.setCellStyle(numberStyle);
 	  } else {
@@ -11003,7 +11003,7 @@ if (dtltype.equals("email_report") ) {
 
 	   Cell cell82 = row.createCell(4);
 
-	  if (record1.getR1_DUE_TO_DOMESTIC_RISK_WEIGHT() != null && !record1.getR1_DUE_TO_DOMESTIC_RISK_WEIGHT().toString().trim().equals("N/A") ) {
+	  if (record1.getR1_DUE_TO_DOMESTIC_RISK_WEIGHT() != null ){
 	      cell82.setCellValue(record1.getR1_DUE_TO_DOMESTIC_RISK_WEIGHT().toString().trim() );
 	      cell82.setCellStyle(numberStyle);
 	  } else {
@@ -11013,7 +11013,7 @@ if (dtltype.equals("email_report") ) {
 
 	   Cell cell83 = row.createCell(5);
 
-	  if (record1.getR1_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT() != null && !record1.getR1_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT().toString().trim().equals("N/A") ) {
+	  if (record1.getR1_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT() != null ){
 	      cell83.setCellValue(record1.getR1_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT().toString().trim() );
 	      cell83.setCellStyle(numberStyle);
 	  } else {
@@ -11025,7 +11025,7 @@ if (dtltype.equals("email_report") ) {
 	   row = sheet.getRow(78) != null ? sheet.getRow(78) : sheet.createRow(78);
 	   Cell cell84 = row.createCell(0);
 
-	  if (record1.getR2_DUE_TO_DOMESTIC_NAME_OF_BANK() != null && !record1.getR2_DUE_TO_DOMESTIC_NAME_OF_BANK().toString().trim().equals("N/A") ) {
+	  if (record1.getR2_DUE_TO_DOMESTIC_NAME_OF_BANK() != null ){
 	      cell84.setCellValue(record1.getR2_DUE_TO_DOMESTIC_NAME_OF_BANK().toString().trim() );
 	      cell84.setCellStyle(numberStyle);
 	  } else {
@@ -11035,7 +11035,7 @@ if (dtltype.equals("email_report") ) {
 
 	   Cell cell85 = row.createCell(1);
 
-	  if (record1.getR2_DUE_TO_DOMESTIC_ACCT_TYPE() != null && !record1.getR2_DUE_TO_DOMESTIC_ACCT_TYPE().toString().trim().equals("N/A") ) {
+	  if (record1.getR2_DUE_TO_DOMESTIC_ACCT_TYPE() != null ){
 	      cell85.setCellValue(record1.getR2_DUE_TO_DOMESTIC_ACCT_TYPE().toString().trim() );
 	      cell85.setCellStyle(numberStyle);
 	  } else {
@@ -11045,7 +11045,7 @@ if (dtltype.equals("email_report") ) {
 
 	   Cell cell86 = row.createCell(2);
 
-	  if (record1.getR2_DUE_TO_DOMESTIC_PURPOSE() != null && !record1.getR2_DUE_TO_DOMESTIC_PURPOSE().toString().trim().equals("N/A") ) {
+	  if (record1.getR2_DUE_TO_DOMESTIC_PURPOSE() != null ){
 	      cell86.setCellValue(record1.getR2_DUE_TO_DOMESTIC_PURPOSE().toString().trim() );
 	      cell86.setCellStyle(numberStyle);
 	  } else {
@@ -11055,7 +11055,7 @@ if (dtltype.equals("email_report") ) {
 
 	   Cell cell87 = row.createCell(3);
 
-	  if (record1.getR2_DUE_TO_DOMESTIC_AMOUNT() != null && !record1.getR2_DUE_TO_DOMESTIC_AMOUNT().toString().trim().equals("N/A") ) {
+	  if (record1.getR2_DUE_TO_DOMESTIC_AMOUNT() != null ){
 	      cell87.setCellValue(record1.getR2_DUE_TO_DOMESTIC_AMOUNT().toString().trim() );
 	      cell87.setCellStyle(numberStyle);
 	  } else {
@@ -11065,7 +11065,7 @@ if (dtltype.equals("email_report") ) {
 
 	   Cell cell88 = row.createCell(4);
 
-	  if (record1.getR2_DUE_TO_DOMESTIC_RISK_WEIGHT() != null && !record1.getR2_DUE_TO_DOMESTIC_RISK_WEIGHT().toString().trim().equals("N/A") ) {
+	  if (record1.getR2_DUE_TO_DOMESTIC_RISK_WEIGHT() != null ){
 	      cell88.setCellValue(record1.getR2_DUE_TO_DOMESTIC_RISK_WEIGHT().toString().trim() );
 	      cell88.setCellStyle(numberStyle);
 	  } else {
@@ -11075,7 +11075,7 @@ if (dtltype.equals("email_report") ) {
 
 	   Cell cell89 = row.createCell(5);
 
-	  if (record1.getR2_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT() != null && !record1.getR2_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT().toString().trim().equals("N/A") ) {
+	  if (record1.getR2_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT() != null ){
 	      cell89.setCellValue(record1.getR2_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT().toString().trim() );
 	      cell89.setCellStyle(numberStyle);
 	  } else {
@@ -11087,7 +11087,7 @@ if (dtltype.equals("email_report") ) {
 	   row = sheet.getRow(79) != null ? sheet.getRow(79) : sheet.createRow(79);
 	   Cell cell90 = row.createCell(0);
 
-	  if (record1.getR3_DUE_TO_DOMESTIC_NAME_OF_BANK() != null && !record1.getR3_DUE_TO_DOMESTIC_NAME_OF_BANK().toString().trim().equals("N/A") ) {
+	  if (record1.getR3_DUE_TO_DOMESTIC_NAME_OF_BANK() != null ){
 	      cell90.setCellValue(record1.getR3_DUE_TO_DOMESTIC_NAME_OF_BANK().toString().trim() );
 	      cell90.setCellStyle(numberStyle);
 	  } else {
@@ -11097,7 +11097,7 @@ if (dtltype.equals("email_report") ) {
 
 	   Cell cell91 = row.createCell(1);
 
-	  if (record1.getR3_DUE_TO_DOMESTIC_ACCT_TYPE() != null && !record1.getR3_DUE_TO_DOMESTIC_ACCT_TYPE().toString().trim().equals("N/A") ) {
+	  if (record1.getR3_DUE_TO_DOMESTIC_ACCT_TYPE() != null ){
 	      cell91.setCellValue(record1.getR3_DUE_TO_DOMESTIC_ACCT_TYPE().toString().trim() );
 	      cell91.setCellStyle(numberStyle);
 	  } else {
@@ -11107,7 +11107,7 @@ if (dtltype.equals("email_report") ) {
 
 	   Cell cell92 = row.createCell(2);
 
-	  if (record1.getR3_DUE_TO_DOMESTIC_PURPOSE() != null && !record1.getR3_DUE_TO_DOMESTIC_PURPOSE().toString().trim().equals("N/A") ) {
+	  if (record1.getR3_DUE_TO_DOMESTIC_PURPOSE() != null ){
 	      cell92.setCellValue(record1.getR3_DUE_TO_DOMESTIC_PURPOSE().toString().trim() );
 	      cell92.setCellStyle(numberStyle);
 	  } else {
@@ -11117,7 +11117,7 @@ if (dtltype.equals("email_report") ) {
 
 	   Cell cell93 = row.createCell(3);
 
-	  if (record1.getR3_DUE_TO_DOMESTIC_AMOUNT() != null && !record1.getR3_DUE_TO_DOMESTIC_AMOUNT().toString().trim().equals("N/A") ) {
+	  if (record1.getR3_DUE_TO_DOMESTIC_AMOUNT() != null ){
 	      cell93.setCellValue(record1.getR3_DUE_TO_DOMESTIC_AMOUNT().toString().trim() );
 	      cell93.setCellStyle(numberStyle);
 	  } else {
@@ -11127,7 +11127,7 @@ if (dtltype.equals("email_report") ) {
 
 	   Cell cell94 = row.createCell(4);
 
-	  if (record1.getR3_DUE_TO_DOMESTIC_RISK_WEIGHT() != null && !record1.getR3_DUE_TO_DOMESTIC_RISK_WEIGHT().toString().trim().equals("N/A") ) {
+	  if (record1.getR3_DUE_TO_DOMESTIC_RISK_WEIGHT() != null ){
 	      cell94.setCellValue(record1.getR3_DUE_TO_DOMESTIC_RISK_WEIGHT().toString().trim() );
 	      cell94.setCellStyle(numberStyle);
 	  } else {
@@ -11137,7 +11137,7 @@ if (dtltype.equals("email_report") ) {
 
 	   Cell cell95 = row.createCell(5);
 
-	  if (record1.getR3_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT() != null && !record1.getR3_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT().toString().trim().equals("N/A") ) {
+	  if (record1.getR3_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT() != null ){
 	      cell95.setCellValue(record1.getR3_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT().toString().trim() );
 	      cell95.setCellStyle(numberStyle);
 	  } else {
@@ -11149,7 +11149,7 @@ if (dtltype.equals("email_report") ) {
 	   row = sheet.getRow(80) != null ? sheet.getRow(80) : sheet.createRow(80);
 	   Cell cell96 = row.createCell(0);
 
-	  if (record1.getR4_DUE_TO_DOMESTIC_NAME_OF_BANK() != null && !record1.getR4_DUE_TO_DOMESTIC_NAME_OF_BANK().toString().trim().equals("N/A") ) {
+	  if (record1.getR4_DUE_TO_DOMESTIC_NAME_OF_BANK() != null ){
 	      cell96.setCellValue(record1.getR4_DUE_TO_DOMESTIC_NAME_OF_BANK().toString().trim() );
 	      cell96.setCellStyle(numberStyle);
 	  } else {
@@ -11159,7 +11159,7 @@ if (dtltype.equals("email_report") ) {
 
 	   Cell cell97 = row.createCell(1);
 
-	  if (record1.getR4_DUE_TO_DOMESTIC_ACCT_TYPE() != null && !record1.getR4_DUE_TO_DOMESTIC_ACCT_TYPE().toString().trim().equals("N/A") ) {
+	  if (record1.getR4_DUE_TO_DOMESTIC_ACCT_TYPE() != null ){
 	      cell97.setCellValue(record1.getR4_DUE_TO_DOMESTIC_ACCT_TYPE().toString().trim() );
 	      cell97.setCellStyle(numberStyle);
 	  } else {
@@ -11169,7 +11169,7 @@ if (dtltype.equals("email_report") ) {
 
 	   Cell cell98 = row.createCell(2);
 
-	  if (record1.getR4_DUE_TO_DOMESTIC_PURPOSE() != null && !record1.getR4_DUE_TO_DOMESTIC_PURPOSE().toString().trim().equals("N/A") ) {
+	  if (record1.getR4_DUE_TO_DOMESTIC_PURPOSE() != null ){
 	      cell98.setCellValue(record1.getR4_DUE_TO_DOMESTIC_PURPOSE().toString().trim() );
 	      cell98.setCellStyle(numberStyle);
 	  } else {
@@ -11179,7 +11179,7 @@ if (dtltype.equals("email_report") ) {
 
 	   Cell cell99 = row.createCell(3);
 
-	  if (record1.getR4_DUE_TO_DOMESTIC_AMOUNT() != null && !record1.getR4_DUE_TO_DOMESTIC_AMOUNT().toString().trim().equals("N/A") ) {
+	  if (record1.getR4_DUE_TO_DOMESTIC_AMOUNT() != null ){
 	      cell99.setCellValue(record1.getR4_DUE_TO_DOMESTIC_AMOUNT().toString().trim() );
 	      cell99.setCellStyle(numberStyle);
 	  } else {
@@ -11189,7 +11189,7 @@ if (dtltype.equals("email_report") ) {
 
 	   Cell cell100 = row.createCell(4);
 
-	  if (record1.getR4_DUE_TO_DOMESTIC_RISK_WEIGHT() != null && !record1.getR4_DUE_TO_DOMESTIC_RISK_WEIGHT().toString().trim().equals("N/A") ) {
+	  if (record1.getR4_DUE_TO_DOMESTIC_RISK_WEIGHT() != null ){
 	      cell100.setCellValue(record1.getR4_DUE_TO_DOMESTIC_RISK_WEIGHT().toString().trim() );
 	      cell100.setCellStyle(numberStyle);
 	  } else {
@@ -11199,7 +11199,7 @@ if (dtltype.equals("email_report") ) {
 
 	   Cell cell101 = row.createCell(5);
 
-	  if (record1.getR4_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT() != null && !record1.getR4_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT().toString().trim().equals("N/A") ) {
+	  if (record1.getR4_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT() != null ){
 	      cell101.setCellValue(record1.getR4_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT().toString().trim() );
 	      cell101.setCellStyle(numberStyle);
 	  } else {
@@ -11211,7 +11211,7 @@ if (dtltype.equals("email_report") ) {
 	   row = sheet.getRow(81) != null ? sheet.getRow(81) : sheet.createRow(81);
 	   Cell cell102 = row.createCell(0);
 
-	  if (record1.getR5_DUE_TO_DOMESTIC_NAME_OF_BANK() != null && !record1.getR5_DUE_TO_DOMESTIC_NAME_OF_BANK().toString().trim().equals("N/A") ) {
+	  if (record1.getR5_DUE_TO_DOMESTIC_NAME_OF_BANK() != null ){
 	      cell102.setCellValue(record1.getR5_DUE_TO_DOMESTIC_NAME_OF_BANK().toString().trim() );
 	      cell102.setCellStyle(numberStyle);
 	  } else {
@@ -11221,7 +11221,7 @@ if (dtltype.equals("email_report") ) {
 
 	   Cell cell103 = row.createCell(1);
 
-	  if (record1.getR5_DUE_TO_DOMESTIC_ACCT_TYPE() != null && !record1.getR5_DUE_TO_DOMESTIC_ACCT_TYPE().toString().trim().equals("N/A") ) {
+	  if (record1.getR5_DUE_TO_DOMESTIC_ACCT_TYPE() != null ){
 	      cell103.setCellValue(record1.getR5_DUE_TO_DOMESTIC_ACCT_TYPE().toString().trim() );
 	      cell103.setCellStyle(numberStyle);
 	  } else {
@@ -11231,7 +11231,7 @@ if (dtltype.equals("email_report") ) {
 
 	   Cell cell104 = row.createCell(2);
 
-	  if (record1.getR5_DUE_TO_DOMESTIC_PURPOSE() != null && !record1.getR5_DUE_TO_DOMESTIC_PURPOSE().toString().trim().equals("N/A") ) {
+	  if (record1.getR5_DUE_TO_DOMESTIC_PURPOSE() != null ){
 	      cell104.setCellValue(record1.getR5_DUE_TO_DOMESTIC_PURPOSE().toString().trim() );
 	      cell104.setCellStyle(numberStyle);
 	  } else {
@@ -11241,7 +11241,7 @@ if (dtltype.equals("email_report") ) {
 
 	   Cell cell105 = row.createCell(3);
 
-	  if (record1.getR5_DUE_TO_DOMESTIC_AMOUNT() != null && !record1.getR5_DUE_TO_DOMESTIC_AMOUNT().toString().trim().equals("N/A") ) {
+	  if (record1.getR5_DUE_TO_DOMESTIC_AMOUNT() != null ){
 	      cell105.setCellValue(record1.getR5_DUE_TO_DOMESTIC_AMOUNT().toString().trim() );
 	      cell105.setCellStyle(numberStyle);
 	  } else {
@@ -11251,7 +11251,7 @@ if (dtltype.equals("email_report") ) {
 
 	   Cell cell106 = row.createCell(4);
 
-	  if (record1.getR5_DUE_TO_DOMESTIC_RISK_WEIGHT() != null && !record1.getR5_DUE_TO_DOMESTIC_RISK_WEIGHT().toString().trim().equals("N/A") ) {
+	  if (record1.getR5_DUE_TO_DOMESTIC_RISK_WEIGHT() != null ){
 	      cell106.setCellValue(record1.getR5_DUE_TO_DOMESTIC_RISK_WEIGHT().toString().trim() );
 	      cell106.setCellStyle(numberStyle);
 	  } else {
@@ -11261,7 +11261,7 @@ if (dtltype.equals("email_report") ) {
 
 	   Cell cell107 = row.createCell(5);
 
-	  if (record1.getR5_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT() != null && !record1.getR5_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT().toString().trim().equals("N/A") ) {
+	  if (record1.getR5_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT() != null ){
 	      cell107.setCellValue(record1.getR5_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT().toString().trim() );
 	      cell107.setCellStyle(numberStyle);
 	  } else {
@@ -11273,7 +11273,7 @@ if (dtltype.equals("email_report") ) {
 	   row = sheet.getRow(82) != null ? sheet.getRow(82) : sheet.createRow(82);
 	   Cell cell108 = row.createCell(0);
 
-	  if (record1.getR6_DUE_TO_DOMESTIC_NAME_OF_BANK() != null && !record1.getR6_DUE_TO_DOMESTIC_NAME_OF_BANK().toString().trim().equals("N/A") ) {
+	  if (record1.getR6_DUE_TO_DOMESTIC_NAME_OF_BANK() != null ){
 	      cell108.setCellValue(record1.getR6_DUE_TO_DOMESTIC_NAME_OF_BANK().toString().trim() );
 	      cell108.setCellStyle(numberStyle);
 	  } else {
@@ -11283,7 +11283,7 @@ if (dtltype.equals("email_report") ) {
 
 	   Cell cell109 = row.createCell(1);
 
-	  if (record1.getR6_DUE_TO_DOMESTIC_ACCT_TYPE() != null && !record1.getR6_DUE_TO_DOMESTIC_ACCT_TYPE().toString().trim().equals("N/A") ) {
+	  if (record1.getR6_DUE_TO_DOMESTIC_ACCT_TYPE() != null ){
 	      cell109.setCellValue(record1.getR6_DUE_TO_DOMESTIC_ACCT_TYPE().toString().trim() );
 	      cell109.setCellStyle(numberStyle);
 	  } else {
@@ -11293,7 +11293,7 @@ if (dtltype.equals("email_report") ) {
 
 	   Cell cell110 = row.createCell(2);
 
-	  if (record1.getR6_DUE_TO_DOMESTIC_PURPOSE() != null && !record1.getR6_DUE_TO_DOMESTIC_PURPOSE().toString().trim().equals("N/A") ) {
+	  if (record1.getR6_DUE_TO_DOMESTIC_PURPOSE() != null ){
 	      cell110.setCellValue(record1.getR6_DUE_TO_DOMESTIC_PURPOSE().toString().trim() );
 	      cell110.setCellStyle(numberStyle);
 	  } else {
@@ -11303,7 +11303,7 @@ if (dtltype.equals("email_report") ) {
 
 	   Cell cell111 = row.createCell(3);
 
-	  if (record1.getR6_DUE_TO_DOMESTIC_AMOUNT() != null && !record1.getR6_DUE_TO_DOMESTIC_AMOUNT().toString().trim().equals("N/A") ) {
+	  if (record1.getR6_DUE_TO_DOMESTIC_AMOUNT() != null ){
 	      cell111.setCellValue(record1.getR6_DUE_TO_DOMESTIC_AMOUNT().toString().trim() );
 	      cell111.setCellStyle(numberStyle);
 	  } else {
@@ -11313,7 +11313,7 @@ if (dtltype.equals("email_report") ) {
 
 	   Cell cell112 = row.createCell(4);
 
-	  if (record1.getR6_DUE_TO_DOMESTIC_RISK_WEIGHT() != null && !record1.getR6_DUE_TO_DOMESTIC_RISK_WEIGHT().toString().trim().equals("N/A") ) {
+	  if (record1.getR6_DUE_TO_DOMESTIC_RISK_WEIGHT() != null ){
 	      cell112.setCellValue(record1.getR6_DUE_TO_DOMESTIC_RISK_WEIGHT().toString().trim() );
 	      cell112.setCellStyle(numberStyle);
 	  } else {
@@ -11323,7 +11323,7 @@ if (dtltype.equals("email_report") ) {
 
 	   Cell cell113 = row.createCell(5);
 
-	  if (record1.getR6_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT() != null && !record1.getR6_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT().toString().trim().equals("N/A") ) {
+	  if (record1.getR6_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT() != null ){
 	      cell113.setCellValue(record1.getR6_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT().toString().trim() );
 	      cell113.setCellStyle(numberStyle);
 	  } else {
@@ -11335,7 +11335,7 @@ if (dtltype.equals("email_report") ) {
 	   row = sheet.getRow(83) != null ? sheet.getRow(83) : sheet.createRow(83);
 	   Cell cell114 = row.createCell(0);
 
-	  if (record1.getR7_DUE_TO_DOMESTIC_NAME_OF_BANK() != null && !record1.getR7_DUE_TO_DOMESTIC_NAME_OF_BANK().toString().trim().equals("N/A") ) {
+	  if (record1.getR7_DUE_TO_DOMESTIC_NAME_OF_BANK() != null ){
 	      cell114.setCellValue(record1.getR7_DUE_TO_DOMESTIC_NAME_OF_BANK().toString().trim() );
 	      cell114.setCellStyle(numberStyle);
 	  } else {
@@ -11345,7 +11345,7 @@ if (dtltype.equals("email_report") ) {
 
 	   Cell cell115 = row.createCell(1);
 
-	  if (record1.getR7_DUE_TO_DOMESTIC_ACCT_TYPE() != null && !record1.getR7_DUE_TO_DOMESTIC_ACCT_TYPE().toString().trim().equals("N/A") ) {
+	  if (record1.getR7_DUE_TO_DOMESTIC_ACCT_TYPE() != null ){
 	      cell115.setCellValue(record1.getR7_DUE_TO_DOMESTIC_ACCT_TYPE().toString().trim() );
 	      cell115.setCellStyle(numberStyle);
 	  } else {
@@ -11355,7 +11355,7 @@ if (dtltype.equals("email_report") ) {
 
 	   Cell cell116 = row.createCell(2);
 
-	  if (record1.getR7_DUE_TO_DOMESTIC_PURPOSE() != null && !record1.getR7_DUE_TO_DOMESTIC_PURPOSE().toString().trim().equals("N/A") ) {
+	  if (record1.getR7_DUE_TO_DOMESTIC_PURPOSE() != null ){
 	      cell116.setCellValue(record1.getR7_DUE_TO_DOMESTIC_PURPOSE().toString().trim() );
 	      cell116.setCellStyle(numberStyle);
 	  } else {
@@ -11365,7 +11365,7 @@ if (dtltype.equals("email_report") ) {
 
 	   Cell cell117 = row.createCell(3);
 
-	  if (record1.getR7_DUE_TO_DOMESTIC_AMOUNT() != null && !record1.getR7_DUE_TO_DOMESTIC_AMOUNT().toString().trim().equals("N/A") ) {
+	  if (record1.getR7_DUE_TO_DOMESTIC_AMOUNT() != null ){
 	      cell117.setCellValue(record1.getR7_DUE_TO_DOMESTIC_AMOUNT().toString().trim() );
 	      cell117.setCellStyle(numberStyle);
 	  } else {
@@ -11375,7 +11375,7 @@ if (dtltype.equals("email_report") ) {
 
 	   Cell cell118 = row.createCell(4);
 
-	  if (record1.getR7_DUE_TO_DOMESTIC_RISK_WEIGHT() != null && !record1.getR7_DUE_TO_DOMESTIC_RISK_WEIGHT().toString().trim().equals("N/A") ) {
+	  if (record1.getR7_DUE_TO_DOMESTIC_RISK_WEIGHT() != null ){
 	      cell118.setCellValue(record1.getR7_DUE_TO_DOMESTIC_RISK_WEIGHT().toString().trim() );
 	      cell118.setCellStyle(numberStyle);
 	  } else {
@@ -11385,7 +11385,7 @@ if (dtltype.equals("email_report") ) {
 
 	   Cell cell119 = row.createCell(5);
 
-	  if (record1.getR7_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT() != null && !record1.getR7_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT().toString().trim().equals("N/A") ) {
+	  if (record1.getR7_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT() != null ){
 	      cell119.setCellValue(record1.getR7_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT().toString().trim() );
 	      cell119.setCellStyle(numberStyle);
 	  } else {
@@ -11397,7 +11397,7 @@ if (dtltype.equals("email_report") ) {
 	   row = sheet.getRow(84) != null ? sheet.getRow(84) : sheet.createRow(84);
 	   Cell cell120 = row.createCell(0);
 
-	  if (record1.getR8_DUE_TO_DOMESTIC_NAME_OF_BANK() != null && !record1.getR8_DUE_TO_DOMESTIC_NAME_OF_BANK().toString().trim().equals("N/A") ) {
+	  if (record1.getR8_DUE_TO_DOMESTIC_NAME_OF_BANK() != null ){
 	      cell120.setCellValue(record1.getR8_DUE_TO_DOMESTIC_NAME_OF_BANK().toString().trim() );
 	      cell120.setCellStyle(numberStyle);
 	  } else {
@@ -11407,7 +11407,7 @@ if (dtltype.equals("email_report") ) {
 
 	   Cell cell121 = row.createCell(1);
 
-	  if (record1.getR8_DUE_TO_DOMESTIC_ACCT_TYPE() != null && !record1.getR8_DUE_TO_DOMESTIC_ACCT_TYPE().toString().trim().equals("N/A") ) {
+	  if (record1.getR8_DUE_TO_DOMESTIC_ACCT_TYPE() != null ){
 	      cell121.setCellValue(record1.getR8_DUE_TO_DOMESTIC_ACCT_TYPE().toString().trim() );
 	      cell121.setCellStyle(numberStyle);
 	  } else {
@@ -11417,7 +11417,7 @@ if (dtltype.equals("email_report") ) {
 
 	   Cell cell122 = row.createCell(2);
 
-	  if (record1.getR8_DUE_TO_DOMESTIC_PURPOSE() != null && !record1.getR8_DUE_TO_DOMESTIC_PURPOSE().toString().trim().equals("N/A") ) {
+	  if (record1.getR8_DUE_TO_DOMESTIC_PURPOSE() != null ){
 	      cell122.setCellValue(record1.getR8_DUE_TO_DOMESTIC_PURPOSE().toString().trim() );
 	      cell122.setCellStyle(numberStyle);
 	  } else {
@@ -11427,7 +11427,7 @@ if (dtltype.equals("email_report") ) {
 
 	   Cell cell123 = row.createCell(3);
 
-	  if (record1.getR8_DUE_TO_DOMESTIC_AMOUNT() != null && !record1.getR8_DUE_TO_DOMESTIC_AMOUNT().toString().trim().equals("N/A") ) {
+	  if (record1.getR8_DUE_TO_DOMESTIC_AMOUNT() != null ){
 	      cell123.setCellValue(record1.getR8_DUE_TO_DOMESTIC_AMOUNT().toString().trim() );
 	      cell123.setCellStyle(numberStyle);
 	  } else {
@@ -11437,7 +11437,7 @@ if (dtltype.equals("email_report") ) {
 
 	   Cell cell124 = row.createCell(4);
 
-	  if (record1.getR8_DUE_TO_DOMESTIC_RISK_WEIGHT() != null && !record1.getR8_DUE_TO_DOMESTIC_RISK_WEIGHT().toString().trim().equals("N/A") ) {
+	  if (record1.getR8_DUE_TO_DOMESTIC_RISK_WEIGHT() != null ){
 	      cell124.setCellValue(record1.getR8_DUE_TO_DOMESTIC_RISK_WEIGHT().toString().trim() );
 	      cell124.setCellStyle(numberStyle);
 	  } else {
@@ -11447,7 +11447,7 @@ if (dtltype.equals("email_report") ) {
 
 	   Cell cell125 = row.createCell(5);
 
-	  if (record1.getR8_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT() != null && !record1.getR8_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT().toString().trim().equals("N/A") ) {
+	  if (record1.getR8_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT() != null ){
 	      cell125.setCellValue(record1.getR8_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT().toString().trim() );
 	      cell125.setCellStyle(numberStyle);
 	  } else {
@@ -11469,7 +11469,7 @@ if (dtltype.equals("email_report") ) {
 	    Row row = sheet.getRow(62) != null ? sheet.getRow(62) : sheet.createRow(62);
 	    Cell cell1 = row.createCell(0);
 
-	   if (record1.getR1_DUE_FROM_DOMESTIC_NAME_OF_BANK() != null && !record1.getR1_DUE_FROM_DOMESTIC_NAME_OF_BANK().toString().trim().equals("N/A") ) {
+	   if (record1.getR1_DUE_FROM_DOMESTIC_NAME_OF_BANK() != null ){
 	       cell1.setCellValue(record1.getR1_DUE_FROM_DOMESTIC_NAME_OF_BANK().toString().trim() );
 	       cell1.setCellStyle(numberStyle);
 	   } else {
@@ -11479,7 +11479,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell2 = row.createCell(1);
 
-	   if (record1.getR1_DUE_FROM_DOMESTIC_ACCT_TYPE() != null && !record1.getR1_DUE_FROM_DOMESTIC_ACCT_TYPE().toString().trim().equals("N/A") ) {
+	   if (record1.getR1_DUE_FROM_DOMESTIC_ACCT_TYPE() != null ){
 	       cell2.setCellValue(record1.getR1_DUE_FROM_DOMESTIC_ACCT_TYPE().toString().trim() );
 	       cell2.setCellStyle(numberStyle);
 	   } else {
@@ -11489,7 +11489,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell3 = row.createCell(2);
 
-	   if (record1.getR1_DUE_FROM_DOMESTIC_PURPOSE() != null && !record1.getR1_DUE_FROM_DOMESTIC_PURPOSE().toString().trim().equals("N/A") ) {
+	   if (record1.getR1_DUE_FROM_DOMESTIC_PURPOSE() != null ){
 	       cell3.setCellValue(record1.getR1_DUE_FROM_DOMESTIC_PURPOSE().toString().trim() );
 	       cell3.setCellStyle(numberStyle);
 	   } else {
@@ -11499,7 +11499,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell4 = row.createCell(3);
 
-	   if (record1.getR1_DUE_FROM_DOMESTIC_AMOUNT() != null && !record1.getR1_DUE_FROM_DOMESTIC_AMOUNT().toString().trim().equals("N/A") ) {
+	   if (record1.getR1_DUE_FROM_DOMESTIC_AMOUNT() != null ){
 	       cell4.setCellValue(record1.getR1_DUE_FROM_DOMESTIC_AMOUNT().toString().trim() );
 	       cell4.setCellStyle(numberStyle);
 	   } else {
@@ -11509,7 +11509,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell5 = row.createCell(4);
 
-	   if (record1.getR1_DUE_FROM_DOMESTIC_RISK_WEIGHT() != null && !record1.getR1_DUE_FROM_DOMESTIC_RISK_WEIGHT().toString().trim().equals("N/A") ) {
+	   if (record1.getR1_DUE_FROM_DOMESTIC_RISK_WEIGHT() != null ){
 	       cell5.setCellValue(record1.getR1_DUE_FROM_DOMESTIC_RISK_WEIGHT().toString().trim() );
 	       cell5.setCellStyle(numberStyle);
 	   } else {
@@ -11519,7 +11519,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell6 = row.createCell(5);
 
-	   if (record1.getR1_DUE_FROM_DOMESTIC_CURRENCY() != null && !record1.getR1_DUE_FROM_DOMESTIC_CURRENCY().toString().trim().equals("N/A") ) {
+	   if (record1.getR1_DUE_FROM_DOMESTIC_CURRENCY() != null ){
 	       cell6.setCellValue(record1.getR1_DUE_FROM_DOMESTIC_CURRENCY().toString().trim() );
 	       cell6.setCellStyle(numberStyle);
 	   } else {
@@ -11529,7 +11529,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell7 = row.createCell(6);
 
-	   if (record1.getR1_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT() != null && !record1.getR1_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT().toString().trim().equals("N/A") ) {
+	   if (record1.getR1_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT() != null ){
 	       cell7.setCellValue(record1.getR1_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT().toString().trim() );
 	       cell7.setCellStyle(numberStyle);
 	   } else {
@@ -11541,7 +11541,7 @@ if (dtltype.equals("email_report") ) {
 	    row = sheet.getRow(63) != null ? sheet.getRow(63) : sheet.createRow(63);
 	    Cell cell8 = row.createCell(0);
 
-	   if (record1.getR2_DUE_FROM_DOMESTIC_NAME_OF_BANK() != null && !record1.getR2_DUE_FROM_DOMESTIC_NAME_OF_BANK().toString().trim().equals("N/A") ) {
+	   if (record1.getR2_DUE_FROM_DOMESTIC_NAME_OF_BANK() != null ){
 	       cell8.setCellValue(record1.getR2_DUE_FROM_DOMESTIC_NAME_OF_BANK().toString().trim() );
 	       cell8.setCellStyle(numberStyle);
 	   } else {
@@ -11551,7 +11551,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell9 = row.createCell(1);
 
-	   if (record1.getR2_DUE_FROM_DOMESTIC_ACCT_TYPE() != null && !record1.getR2_DUE_FROM_DOMESTIC_ACCT_TYPE().toString().trim().equals("N/A") ) {
+	   if (record1.getR2_DUE_FROM_DOMESTIC_ACCT_TYPE() != null ){
 	       cell9.setCellValue(record1.getR2_DUE_FROM_DOMESTIC_ACCT_TYPE().toString().trim() );
 	       cell9.setCellStyle(numberStyle);
 	   } else {
@@ -11561,7 +11561,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell10 = row.createCell(2);
 
-	   if (record1.getR2_DUE_FROM_DOMESTIC_PURPOSE() != null && !record1.getR2_DUE_FROM_DOMESTIC_PURPOSE().toString().trim().equals("N/A") ) {
+	   if (record1.getR2_DUE_FROM_DOMESTIC_PURPOSE() != null ){
 	       cell10.setCellValue(record1.getR2_DUE_FROM_DOMESTIC_PURPOSE().toString().trim() );
 	       cell10.setCellStyle(numberStyle);
 	   } else {
@@ -11571,7 +11571,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell11 = row.createCell(3);
 
-	   if (record1.getR2_DUE_FROM_DOMESTIC_AMOUNT() != null && !record1.getR2_DUE_FROM_DOMESTIC_AMOUNT().toString().trim().equals("N/A") ) {
+	   if (record1.getR2_DUE_FROM_DOMESTIC_AMOUNT() != null ){
 	       cell11.setCellValue(record1.getR2_DUE_FROM_DOMESTIC_AMOUNT().toString().trim() );
 	       cell11.setCellStyle(numberStyle);
 	   } else {
@@ -11581,7 +11581,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell12 = row.createCell(4);
 
-	   if (record1.getR2_DUE_FROM_DOMESTIC_RISK_WEIGHT() != null && !record1.getR2_DUE_FROM_DOMESTIC_RISK_WEIGHT().toString().trim().equals("N/A") ) {
+	   if (record1.getR2_DUE_FROM_DOMESTIC_RISK_WEIGHT() != null ){
 	       cell12.setCellValue(record1.getR2_DUE_FROM_DOMESTIC_RISK_WEIGHT().toString().trim() );
 	       cell12.setCellStyle(numberStyle);
 	   } else {
@@ -11591,7 +11591,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell13 = row.createCell(5);
 
-	   if (record1.getR2_DUE_FROM_DOMESTIC_CURRENCY() != null && !record1.getR2_DUE_FROM_DOMESTIC_CURRENCY().toString().trim().equals("N/A") ) {
+	   if (record1.getR2_DUE_FROM_DOMESTIC_CURRENCY() != null ){
 	       cell13.setCellValue(record1.getR2_DUE_FROM_DOMESTIC_CURRENCY().toString().trim() );
 	       cell13.setCellStyle(numberStyle);
 	   } else {
@@ -11601,7 +11601,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell14 = row.createCell(6);
 
-	   if (record1.getR2_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT() != null && !record1.getR2_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT().toString().trim().equals("N/A") ) {
+	   if (record1.getR2_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT() != null ){
 	       cell14.setCellValue(record1.getR2_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT().toString().trim() );
 	       cell14.setCellStyle(numberStyle);
 	   } else {
@@ -11613,7 +11613,7 @@ if (dtltype.equals("email_report") ) {
 	    row = sheet.getRow(64) != null ? sheet.getRow(64) : sheet.createRow(64);
 	    Cell cell15 = row.createCell(0);
 
-	   if (record1.getR3_DUE_FROM_DOMESTIC_NAME_OF_BANK() != null && !record1.getR3_DUE_FROM_DOMESTIC_NAME_OF_BANK().toString().trim().equals("N/A") ) {
+	   if (record1.getR3_DUE_FROM_DOMESTIC_NAME_OF_BANK() != null ){
 	       cell15.setCellValue(record1.getR3_DUE_FROM_DOMESTIC_NAME_OF_BANK().toString().trim() );
 	       cell15.setCellStyle(numberStyle);
 	   } else {
@@ -11623,7 +11623,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell16 = row.createCell(1);
 
-	   if (record1.getR3_DUE_FROM_DOMESTIC_ACCT_TYPE() != null && !record1.getR3_DUE_FROM_DOMESTIC_ACCT_TYPE().toString().trim().equals("N/A") ) {
+	   if (record1.getR3_DUE_FROM_DOMESTIC_ACCT_TYPE() != null ){
 	       cell16.setCellValue(record1.getR3_DUE_FROM_DOMESTIC_ACCT_TYPE().toString().trim() );
 	       cell16.setCellStyle(numberStyle);
 	   } else {
@@ -11633,7 +11633,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell17 = row.createCell(2);
 
-	   if (record1.getR3_DUE_FROM_DOMESTIC_PURPOSE() != null && !record1.getR3_DUE_FROM_DOMESTIC_PURPOSE().toString().trim().equals("N/A") ) {
+	   if (record1.getR3_DUE_FROM_DOMESTIC_PURPOSE() != null ){
 	       cell17.setCellValue(record1.getR3_DUE_FROM_DOMESTIC_PURPOSE().toString().trim() );
 	       cell17.setCellStyle(numberStyle);
 	   } else {
@@ -11643,7 +11643,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell18 = row.createCell(3);
 
-	   if (record1.getR3_DUE_FROM_DOMESTIC_AMOUNT() != null && !record1.getR3_DUE_FROM_DOMESTIC_AMOUNT().toString().trim().equals("N/A") ) {
+	   if (record1.getR3_DUE_FROM_DOMESTIC_AMOUNT() != null ){
 	       cell18.setCellValue(record1.getR3_DUE_FROM_DOMESTIC_AMOUNT().toString().trim() );
 	       cell18.setCellStyle(numberStyle);
 	   } else {
@@ -11653,7 +11653,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell19 = row.createCell(4);
 
-	   if (record1.getR3_DUE_FROM_DOMESTIC_RISK_WEIGHT() != null && !record1.getR3_DUE_FROM_DOMESTIC_RISK_WEIGHT().toString().trim().equals("N/A") ) {
+	   if (record1.getR3_DUE_FROM_DOMESTIC_RISK_WEIGHT() != null ){
 	       cell19.setCellValue(record1.getR3_DUE_FROM_DOMESTIC_RISK_WEIGHT().toString().trim() );
 	       cell19.setCellStyle(numberStyle);
 	   } else {
@@ -11663,7 +11663,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell20 = row.createCell(5);
 
-	   if (record1.getR3_DUE_FROM_DOMESTIC_CURRENCY() != null && !record1.getR3_DUE_FROM_DOMESTIC_CURRENCY().toString().trim().equals("N/A") ) {
+	   if (record1.getR3_DUE_FROM_DOMESTIC_CURRENCY() != null ){
 	       cell20.setCellValue(record1.getR3_DUE_FROM_DOMESTIC_CURRENCY().toString().trim() );
 	       cell20.setCellStyle(numberStyle);
 	   } else {
@@ -11673,7 +11673,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell21 = row.createCell(6);
 
-	   if (record1.getR3_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT() != null && !record1.getR3_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT().toString().trim().equals("N/A") ) {
+	   if (record1.getR3_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT() != null ){
 	       cell21.setCellValue(record1.getR3_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT().toString().trim() );
 	       cell21.setCellStyle(numberStyle);
 	   } else {
@@ -11685,7 +11685,7 @@ if (dtltype.equals("email_report") ) {
 	    row = sheet.getRow(65) != null ? sheet.getRow(65) : sheet.createRow(65);
 	    Cell cell22 = row.createCell(0);
 
-	   if (record1.getR4_DUE_FROM_DOMESTIC_NAME_OF_BANK() != null && !record1.getR4_DUE_FROM_DOMESTIC_NAME_OF_BANK().toString().trim().equals("N/A") ) {
+	   if (record1.getR4_DUE_FROM_DOMESTIC_NAME_OF_BANK() != null ){
 	       cell22.setCellValue(record1.getR4_DUE_FROM_DOMESTIC_NAME_OF_BANK().toString().trim() );
 	       cell22.setCellStyle(numberStyle);
 	   } else {
@@ -11695,7 +11695,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell23 = row.createCell(1);
 
-	   if (record1.getR4_DUE_FROM_DOMESTIC_ACCT_TYPE() != null && !record1.getR4_DUE_FROM_DOMESTIC_ACCT_TYPE().toString().trim().equals("N/A") ) {
+	   if (record1.getR4_DUE_FROM_DOMESTIC_ACCT_TYPE() != null ){
 	       cell23.setCellValue(record1.getR4_DUE_FROM_DOMESTIC_ACCT_TYPE().toString().trim() );
 	       cell23.setCellStyle(numberStyle);
 	   } else {
@@ -11705,7 +11705,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell24 = row.createCell(2);
 
-	   if (record1.getR4_DUE_FROM_DOMESTIC_PURPOSE() != null && !record1.getR4_DUE_FROM_DOMESTIC_PURPOSE().toString().trim().equals("N/A") ) {
+	   if (record1.getR4_DUE_FROM_DOMESTIC_PURPOSE() != null ){
 	       cell24.setCellValue(record1.getR4_DUE_FROM_DOMESTIC_PURPOSE().toString().trim() );
 	       cell24.setCellStyle(numberStyle);
 	   } else {
@@ -11715,7 +11715,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell25 = row.createCell(3);
 
-	   if (record1.getR4_DUE_FROM_DOMESTIC_AMOUNT() != null && !record1.getR4_DUE_FROM_DOMESTIC_AMOUNT().toString().trim().equals("N/A") ) {
+	   if (record1.getR4_DUE_FROM_DOMESTIC_AMOUNT() != null ){
 	       cell25.setCellValue(record1.getR4_DUE_FROM_DOMESTIC_AMOUNT().toString().trim() );
 	       cell25.setCellStyle(numberStyle);
 	   } else {
@@ -11725,7 +11725,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell26 = row.createCell(4);
 
-	   if (record1.getR4_DUE_FROM_DOMESTIC_RISK_WEIGHT() != null && !record1.getR4_DUE_FROM_DOMESTIC_RISK_WEIGHT().toString().trim().equals("N/A") ) {
+	   if (record1.getR4_DUE_FROM_DOMESTIC_RISK_WEIGHT() != null ){
 	       cell26.setCellValue(record1.getR4_DUE_FROM_DOMESTIC_RISK_WEIGHT().toString().trim() );
 	       cell26.setCellStyle(numberStyle);
 	   } else {
@@ -11735,7 +11735,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell27 = row.createCell(5);
 
-	   if (record1.getR4_DUE_FROM_DOMESTIC_CURRENCY() != null && !record1.getR4_DUE_FROM_DOMESTIC_CURRENCY().toString().trim().equals("N/A") ) {
+	   if (record1.getR4_DUE_FROM_DOMESTIC_CURRENCY() != null ){
 	       cell27.setCellValue(record1.getR4_DUE_FROM_DOMESTIC_CURRENCY().toString().trim() );
 	       cell27.setCellStyle(numberStyle);
 	   } else {
@@ -11745,7 +11745,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell28 = row.createCell(6);
 
-	   if (record1.getR4_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT() != null && !record1.getR4_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT().toString().trim().equals("N/A") ) {
+	   if (record1.getR4_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT() != null ){
 	       cell28.setCellValue(record1.getR4_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT().toString().trim() );
 	       cell28.setCellStyle(numberStyle);
 	   } else {
@@ -11757,7 +11757,7 @@ if (dtltype.equals("email_report") ) {
 	    row = sheet.getRow(66) != null ? sheet.getRow(66) : sheet.createRow(66);
 	    Cell cell29 = row.createCell(0);
 
-	   if (record1.getR5_DUE_FROM_DOMESTIC_NAME_OF_BANK() != null && !record1.getR5_DUE_FROM_DOMESTIC_NAME_OF_BANK().toString().trim().equals("N/A") ) {
+	   if (record1.getR5_DUE_FROM_DOMESTIC_NAME_OF_BANK() != null ){
 	       cell29.setCellValue(record1.getR5_DUE_FROM_DOMESTIC_NAME_OF_BANK().toString().trim() );
 	       cell29.setCellStyle(numberStyle);
 	   } else {
@@ -11767,7 +11767,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell30 = row.createCell(1);
 
-	   if (record1.getR5_DUE_FROM_DOMESTIC_ACCT_TYPE() != null && !record1.getR5_DUE_FROM_DOMESTIC_ACCT_TYPE().toString().trim().equals("N/A") ) {
+	   if (record1.getR5_DUE_FROM_DOMESTIC_ACCT_TYPE() != null ){
 	       cell30.setCellValue(record1.getR5_DUE_FROM_DOMESTIC_ACCT_TYPE().toString().trim() );
 	       cell30.setCellStyle(numberStyle);
 	   } else {
@@ -11777,7 +11777,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell31 = row.createCell(2);
 
-	   if (record1.getR5_DUE_FROM_DOMESTIC_PURPOSE() != null && !record1.getR5_DUE_FROM_DOMESTIC_PURPOSE().toString().trim().equals("N/A") ) {
+	   if (record1.getR5_DUE_FROM_DOMESTIC_PURPOSE() != null ){
 	       cell31.setCellValue(record1.getR5_DUE_FROM_DOMESTIC_PURPOSE().toString().trim() );
 	       cell31.setCellStyle(numberStyle);
 	   } else {
@@ -11787,7 +11787,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell32 = row.createCell(3);
 
-	   if (record1.getR5_DUE_FROM_DOMESTIC_AMOUNT() != null && !record1.getR5_DUE_FROM_DOMESTIC_AMOUNT().toString().trim().equals("N/A") ) {
+	   if (record1.getR5_DUE_FROM_DOMESTIC_AMOUNT() != null ){
 	       cell32.setCellValue(record1.getR5_DUE_FROM_DOMESTIC_AMOUNT().toString().trim() );
 	       cell32.setCellStyle(numberStyle);
 	   } else {
@@ -11797,7 +11797,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell33 = row.createCell(4);
 
-	   if (record1.getR5_DUE_FROM_DOMESTIC_RISK_WEIGHT() != null && !record1.getR5_DUE_FROM_DOMESTIC_RISK_WEIGHT().toString().trim().equals("N/A") ) {
+	   if (record1.getR5_DUE_FROM_DOMESTIC_RISK_WEIGHT() != null ){
 	       cell33.setCellValue(record1.getR5_DUE_FROM_DOMESTIC_RISK_WEIGHT().toString().trim() );
 	       cell33.setCellStyle(numberStyle);
 	   } else {
@@ -11807,7 +11807,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell34 = row.createCell(5);
 
-	   if (record1.getR5_DUE_FROM_DOMESTIC_CURRENCY() != null && !record1.getR5_DUE_FROM_DOMESTIC_CURRENCY().toString().trim().equals("N/A") ) {
+	   if (record1.getR5_DUE_FROM_DOMESTIC_CURRENCY() != null ){
 	       cell34.setCellValue(record1.getR5_DUE_FROM_DOMESTIC_CURRENCY().toString().trim() );
 	       cell34.setCellStyle(numberStyle);
 	   } else {
@@ -11817,7 +11817,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell35 = row.createCell(6);
 
-	   if (record1.getR5_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT() != null && !record1.getR5_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT().toString().trim().equals("N/A") ) {
+	   if (record1.getR5_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT() != null ){
 	       cell35.setCellValue(record1.getR5_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT().toString().trim() );
 	       cell35.setCellStyle(numberStyle);
 	   } else {
@@ -11829,7 +11829,7 @@ if (dtltype.equals("email_report") ) {
 	    row = sheet.getRow(67) != null ? sheet.getRow(67) : sheet.createRow(67);
 	    Cell cell36 = row.createCell(0);
 
-	   if (record1.getR6_DUE_FROM_DOMESTIC_NAME_OF_BANK() != null && !record1.getR6_DUE_FROM_DOMESTIC_NAME_OF_BANK().toString().trim().equals("N/A") ) {
+	   if (record1.getR6_DUE_FROM_DOMESTIC_NAME_OF_BANK() != null ){
 	       cell36.setCellValue(record1.getR6_DUE_FROM_DOMESTIC_NAME_OF_BANK().toString().trim() );
 	       cell36.setCellStyle(numberStyle);
 	   } else {
@@ -11839,7 +11839,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell37 = row.createCell(1);
 
-	   if (record1.getR6_DUE_FROM_DOMESTIC_ACCT_TYPE() != null && !record1.getR6_DUE_FROM_DOMESTIC_ACCT_TYPE().toString().trim().equals("N/A") ) {
+	   if (record1.getR6_DUE_FROM_DOMESTIC_ACCT_TYPE() != null ){
 	       cell37.setCellValue(record1.getR6_DUE_FROM_DOMESTIC_ACCT_TYPE().toString().trim() );
 	       cell37.setCellStyle(numberStyle);
 	   } else {
@@ -11849,7 +11849,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell38 = row.createCell(2);
 
-	   if (record1.getR6_DUE_FROM_DOMESTIC_PURPOSE() != null && !record1.getR6_DUE_FROM_DOMESTIC_PURPOSE().toString().trim().equals("N/A") ) {
+	   if (record1.getR6_DUE_FROM_DOMESTIC_PURPOSE() != null ){
 	       cell38.setCellValue(record1.getR6_DUE_FROM_DOMESTIC_PURPOSE().toString().trim() );
 	       cell38.setCellStyle(numberStyle);
 	   } else {
@@ -11859,7 +11859,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell39 = row.createCell(3);
 
-	   if (record1.getR6_DUE_FROM_DOMESTIC_AMOUNT() != null && !record1.getR6_DUE_FROM_DOMESTIC_AMOUNT().toString().trim().equals("N/A") ) {
+	   if (record1.getR6_DUE_FROM_DOMESTIC_AMOUNT() != null ){
 	       cell39.setCellValue(record1.getR6_DUE_FROM_DOMESTIC_AMOUNT().toString().trim() );
 	       cell39.setCellStyle(numberStyle);
 	   } else {
@@ -11869,7 +11869,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell40 = row.createCell(4);
 
-	   if (record1.getR6_DUE_FROM_DOMESTIC_RISK_WEIGHT() != null && !record1.getR6_DUE_FROM_DOMESTIC_RISK_WEIGHT().toString().trim().equals("N/A") ) {
+	   if (record1.getR6_DUE_FROM_DOMESTIC_RISK_WEIGHT() != null ){
 	       cell40.setCellValue(record1.getR6_DUE_FROM_DOMESTIC_RISK_WEIGHT().toString().trim() );
 	       cell40.setCellStyle(numberStyle);
 	   } else {
@@ -11879,7 +11879,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell41 = row.createCell(5);
 
-	   if (record1.getR6_DUE_FROM_DOMESTIC_CURRENCY() != null && !record1.getR6_DUE_FROM_DOMESTIC_CURRENCY().toString().trim().equals("N/A") ) {
+	   if (record1.getR6_DUE_FROM_DOMESTIC_CURRENCY() != null ){
 	       cell41.setCellValue(record1.getR6_DUE_FROM_DOMESTIC_CURRENCY().toString().trim() );
 	       cell41.setCellStyle(numberStyle);
 	   } else {
@@ -11889,7 +11889,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell42 = row.createCell(6);
 
-	   if (record1.getR6_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT() != null && !record1.getR6_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT().toString().trim().equals("N/A") ) {
+	   if (record1.getR6_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT() != null ){
 	       cell42.setCellValue(record1.getR6_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT().toString().trim() );
 	       cell42.setCellStyle(numberStyle);
 	   } else {
@@ -11901,7 +11901,7 @@ if (dtltype.equals("email_report") ) {
 	    row = sheet.getRow(68) != null ? sheet.getRow(68) : sheet.createRow(68);
 	    Cell cell43 = row.createCell(0);
 
-	   if (record1.getR7_DUE_FROM_DOMESTIC_NAME_OF_BANK() != null && !record1.getR7_DUE_FROM_DOMESTIC_NAME_OF_BANK().toString().trim().equals("N/A") ) {
+	   if (record1.getR7_DUE_FROM_DOMESTIC_NAME_OF_BANK() != null ){
 	       cell43.setCellValue(record1.getR7_DUE_FROM_DOMESTIC_NAME_OF_BANK().toString().trim() );
 	       cell43.setCellStyle(numberStyle);
 	   } else {
@@ -11911,7 +11911,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell44 = row.createCell(1);
 
-	   if (record1.getR7_DUE_FROM_DOMESTIC_ACCT_TYPE() != null && !record1.getR7_DUE_FROM_DOMESTIC_ACCT_TYPE().toString().trim().equals("N/A") ) {
+	   if (record1.getR7_DUE_FROM_DOMESTIC_ACCT_TYPE() != null ){
 	       cell44.setCellValue(record1.getR7_DUE_FROM_DOMESTIC_ACCT_TYPE().toString().trim() );
 	       cell44.setCellStyle(numberStyle);
 	   } else {
@@ -11921,7 +11921,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell45 = row.createCell(2);
 
-	   if (record1.getR7_DUE_FROM_DOMESTIC_PURPOSE() != null && !record1.getR7_DUE_FROM_DOMESTIC_PURPOSE().toString().trim().equals("N/A") ) {
+	   if (record1.getR7_DUE_FROM_DOMESTIC_PURPOSE() != null ){
 	       cell45.setCellValue(record1.getR7_DUE_FROM_DOMESTIC_PURPOSE().toString().trim() );
 	       cell45.setCellStyle(numberStyle);
 	   } else {
@@ -11931,7 +11931,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell46 = row.createCell(3);
 
-	   if (record1.getR7_DUE_FROM_DOMESTIC_AMOUNT() != null && !record1.getR7_DUE_FROM_DOMESTIC_AMOUNT().toString().trim().equals("N/A") ) {
+	   if (record1.getR7_DUE_FROM_DOMESTIC_AMOUNT() != null ){
 	       cell46.setCellValue(record1.getR7_DUE_FROM_DOMESTIC_AMOUNT().toString().trim() );
 	       cell46.setCellStyle(numberStyle);
 	   } else {
@@ -11941,7 +11941,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell47 = row.createCell(4);
 
-	   if (record1.getR7_DUE_FROM_DOMESTIC_RISK_WEIGHT() != null && !record1.getR7_DUE_FROM_DOMESTIC_RISK_WEIGHT().toString().trim().equals("N/A") ) {
+	   if (record1.getR7_DUE_FROM_DOMESTIC_RISK_WEIGHT() != null ){
 	       cell47.setCellValue(record1.getR7_DUE_FROM_DOMESTIC_RISK_WEIGHT().toString().trim() );
 	       cell47.setCellStyle(numberStyle);
 	   } else {
@@ -11951,7 +11951,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell48 = row.createCell(5);
 
-	   if (record1.getR7_DUE_FROM_DOMESTIC_CURRENCY() != null && !record1.getR7_DUE_FROM_DOMESTIC_CURRENCY().toString().trim().equals("N/A") ) {
+	   if (record1.getR7_DUE_FROM_DOMESTIC_CURRENCY() != null ){
 	       cell48.setCellValue(record1.getR7_DUE_FROM_DOMESTIC_CURRENCY().toString().trim() );
 	       cell48.setCellStyle(numberStyle);
 	   } else {
@@ -11961,7 +11961,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell49 = row.createCell(6);
 
-	   if (record1.getR7_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT() != null && !record1.getR7_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT().toString().trim().equals("N/A") ) {
+	   if (record1.getR7_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT() != null ){
 	       cell49.setCellValue(record1.getR7_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT().toString().trim() );
 	       cell49.setCellStyle(numberStyle);
 	   } else {
@@ -11973,7 +11973,7 @@ if (dtltype.equals("email_report") ) {
 	    row = sheet.getRow(69) != null ? sheet.getRow(69) : sheet.createRow(69);
 	    Cell cell50 = row.createCell(0);
 
-	   if (record1.getR8_DUE_FROM_DOMESTIC_NAME_OF_BANK() != null && !record1.getR8_DUE_FROM_DOMESTIC_NAME_OF_BANK().toString().trim().equals("N/A") ) {
+	   if (record1.getR8_DUE_FROM_DOMESTIC_NAME_OF_BANK() != null ){
 	       cell50.setCellValue(record1.getR8_DUE_FROM_DOMESTIC_NAME_OF_BANK().toString().trim() );
 	       cell50.setCellStyle(numberStyle);
 	   } else {
@@ -11983,7 +11983,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell51 = row.createCell(1);
 
-	   if (record1.getR8_DUE_FROM_DOMESTIC_ACCT_TYPE() != null && !record1.getR8_DUE_FROM_DOMESTIC_ACCT_TYPE().toString().trim().equals("N/A") ) {
+	   if (record1.getR8_DUE_FROM_DOMESTIC_ACCT_TYPE() != null ){
 	       cell51.setCellValue(record1.getR8_DUE_FROM_DOMESTIC_ACCT_TYPE().toString().trim() );
 	       cell51.setCellStyle(numberStyle);
 	   } else {
@@ -11993,7 +11993,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell52 = row.createCell(2);
 
-	   if (record1.getR8_DUE_FROM_DOMESTIC_PURPOSE() != null && !record1.getR8_DUE_FROM_DOMESTIC_PURPOSE().toString().trim().equals("N/A") ) {
+	   if (record1.getR8_DUE_FROM_DOMESTIC_PURPOSE() != null ){
 	       cell52.setCellValue(record1.getR8_DUE_FROM_DOMESTIC_PURPOSE().toString().trim() );
 	       cell52.setCellStyle(numberStyle);
 	   } else {
@@ -12003,7 +12003,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell53 = row.createCell(3);
 
-	   if (record1.getR8_DUE_FROM_DOMESTIC_AMOUNT() != null && !record1.getR8_DUE_FROM_DOMESTIC_AMOUNT().toString().trim().equals("N/A") ) {
+	   if (record1.getR8_DUE_FROM_DOMESTIC_AMOUNT() != null ){
 	       cell53.setCellValue(record1.getR8_DUE_FROM_DOMESTIC_AMOUNT().toString().trim() );
 	       cell53.setCellStyle(numberStyle);
 	   } else {
@@ -12013,7 +12013,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell54 = row.createCell(4);
 
-	   if (record1.getR8_DUE_FROM_DOMESTIC_RISK_WEIGHT() != null && !record1.getR8_DUE_FROM_DOMESTIC_RISK_WEIGHT().toString().trim().equals("N/A") ) {
+	   if (record1.getR8_DUE_FROM_DOMESTIC_RISK_WEIGHT() != null ){
 	       cell54.setCellValue(record1.getR8_DUE_FROM_DOMESTIC_RISK_WEIGHT().toString().trim() );
 	       cell54.setCellStyle(numberStyle);
 	   } else {
@@ -12023,7 +12023,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell55 = row.createCell(5);
 
-	   if (record1.getR8_DUE_FROM_DOMESTIC_CURRENCY() != null && !record1.getR8_DUE_FROM_DOMESTIC_CURRENCY().toString().trim().equals("N/A") ) {
+	   if (record1.getR8_DUE_FROM_DOMESTIC_CURRENCY() != null ){
 	       cell55.setCellValue(record1.getR8_DUE_FROM_DOMESTIC_CURRENCY().toString().trim() );
 	       cell55.setCellStyle(numberStyle);
 	   } else {
@@ -12033,7 +12033,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell56 = row.createCell(6);
 
-	   if (record1.getR8_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT() != null && !record1.getR8_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT().toString().trim().equals("N/A") ) {
+	   if (record1.getR8_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT() != null ){
 	       cell56.setCellValue(record1.getR8_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT().toString().trim() );
 	       cell56.setCellStyle(numberStyle);
 	   } else {
@@ -12045,7 +12045,7 @@ if (dtltype.equals("email_report") ) {
 	    row = sheet.getRow(70) != null ? sheet.getRow(70) : sheet.createRow(70);
 	    Cell cell57 = row.createCell(0);
 
-	   if (record1.getR9_DUE_FROM_DOMESTIC_NAME_OF_BANK() != null && !record1.getR9_DUE_FROM_DOMESTIC_NAME_OF_BANK().toString().trim().equals("N/A") ) {
+	   if (record1.getR9_DUE_FROM_DOMESTIC_NAME_OF_BANK() != null ){
 	       cell57.setCellValue(record1.getR9_DUE_FROM_DOMESTIC_NAME_OF_BANK().toString().trim() );
 	       cell57.setCellStyle(numberStyle);
 	   } else {
@@ -12055,7 +12055,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell58 = row.createCell(1);
 
-	   if (record1.getR9_DUE_FROM_DOMESTIC_ACCT_TYPE() != null && !record1.getR9_DUE_FROM_DOMESTIC_ACCT_TYPE().toString().trim().equals("N/A") ) {
+	   if (record1.getR9_DUE_FROM_DOMESTIC_ACCT_TYPE() != null ){
 	       cell58.setCellValue(record1.getR9_DUE_FROM_DOMESTIC_ACCT_TYPE().toString().trim() );
 	       cell58.setCellStyle(numberStyle);
 	   } else {
@@ -12065,7 +12065,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell59 = row.createCell(2);
 
-	   if (record1.getR9_DUE_FROM_DOMESTIC_PURPOSE() != null && !record1.getR9_DUE_FROM_DOMESTIC_PURPOSE().toString().trim().equals("N/A") ) {
+	   if (record1.getR9_DUE_FROM_DOMESTIC_PURPOSE() != null ){
 	       cell59.setCellValue(record1.getR9_DUE_FROM_DOMESTIC_PURPOSE().toString().trim() );
 	       cell59.setCellStyle(numberStyle);
 	   } else {
@@ -12075,7 +12075,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell60 = row.createCell(3);
 
-	   if (record1.getR9_DUE_FROM_DOMESTIC_AMOUNT() != null && !record1.getR9_DUE_FROM_DOMESTIC_AMOUNT().toString().trim().equals("N/A") ) {
+	   if (record1.getR9_DUE_FROM_DOMESTIC_AMOUNT() != null ){
 	       cell60.setCellValue(record1.getR9_DUE_FROM_DOMESTIC_AMOUNT().toString().trim() );
 	       cell60.setCellStyle(numberStyle);
 	   } else {
@@ -12085,7 +12085,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell61 = row.createCell(4);
 
-	   if (record1.getR9_DUE_FROM_DOMESTIC_RISK_WEIGHT() != null && !record1.getR9_DUE_FROM_DOMESTIC_RISK_WEIGHT().toString().trim().equals("N/A") ) {
+	   if (record1.getR9_DUE_FROM_DOMESTIC_RISK_WEIGHT() != null ){
 	       cell61.setCellValue(record1.getR9_DUE_FROM_DOMESTIC_RISK_WEIGHT().toString().trim() );
 	       cell61.setCellStyle(numberStyle);
 	   } else {
@@ -12095,7 +12095,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell62 = row.createCell(5);
 
-	   if (record1.getR9_DUE_FROM_DOMESTIC_CURRENCY() != null && !record1.getR9_DUE_FROM_DOMESTIC_CURRENCY().toString().trim().equals("N/A") ) {
+	   if (record1.getR9_DUE_FROM_DOMESTIC_CURRENCY() != null ){
 	       cell62.setCellValue(record1.getR9_DUE_FROM_DOMESTIC_CURRENCY().toString().trim() );
 	       cell62.setCellStyle(numberStyle);
 	   } else {
@@ -12105,7 +12105,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell63 = row.createCell(6);
 
-	   if (record1.getR9_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT() != null && !record1.getR9_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT().toString().trim().equals("N/A") ) {
+	   if (record1.getR9_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT() != null ){
 	       cell63.setCellValue(record1.getR9_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT().toString().trim() );
 	       cell63.setCellStyle(numberStyle);
 	   } else {
@@ -12117,7 +12117,7 @@ if (dtltype.equals("email_report") ) {
 	    row = sheet.getRow(71) != null ? sheet.getRow(71) : sheet.createRow(71);
 	    Cell cell64 = row.createCell(0);
 
-	   if (record1.getR10_DUE_FROM_DOMESTIC_NAME_OF_BANK() != null && !record1.getR10_DUE_FROM_DOMESTIC_NAME_OF_BANK().toString().trim().equals("N/A") ) {
+	   if (record1.getR10_DUE_FROM_DOMESTIC_NAME_OF_BANK() != null ){
 	       cell64.setCellValue(record1.getR10_DUE_FROM_DOMESTIC_NAME_OF_BANK().toString().trim() );
 	       cell64.setCellStyle(numberStyle);
 	   } else {
@@ -12127,7 +12127,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell65 = row.createCell(1);
 
-	   if (record1.getR10_DUE_FROM_DOMESTIC_ACCT_TYPE() != null && !record1.getR10_DUE_FROM_DOMESTIC_ACCT_TYPE().toString().trim().equals("N/A") ) {
+	   if (record1.getR10_DUE_FROM_DOMESTIC_ACCT_TYPE() != null ){
 	       cell65.setCellValue(record1.getR10_DUE_FROM_DOMESTIC_ACCT_TYPE().toString().trim() );
 	       cell65.setCellStyle(numberStyle);
 	   } else {
@@ -12137,7 +12137,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell66 = row.createCell(2);
 
-	   if (record1.getR10_DUE_FROM_DOMESTIC_PURPOSE() != null && !record1.getR10_DUE_FROM_DOMESTIC_PURPOSE().toString().trim().equals("N/A") ) {
+	   if (record1.getR10_DUE_FROM_DOMESTIC_PURPOSE() != null ){
 	       cell66.setCellValue(record1.getR10_DUE_FROM_DOMESTIC_PURPOSE().toString().trim() );
 	       cell66.setCellStyle(numberStyle);
 	   } else {
@@ -12147,7 +12147,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell67 = row.createCell(3);
 
-	   if (record1.getR10_DUE_FROM_DOMESTIC_AMOUNT() != null && !record1.getR10_DUE_FROM_DOMESTIC_AMOUNT().toString().trim().equals("N/A") ) {
+	   if (record1.getR10_DUE_FROM_DOMESTIC_AMOUNT() != null ){
 	       cell67.setCellValue(record1.getR10_DUE_FROM_DOMESTIC_AMOUNT().toString().trim() );
 	       cell67.setCellStyle(numberStyle);
 	   } else {
@@ -12157,7 +12157,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell68 = row.createCell(4);
 
-	   if (record1.getR10_DUE_FROM_DOMESTIC_RISK_WEIGHT() != null && !record1.getR10_DUE_FROM_DOMESTIC_RISK_WEIGHT().toString().trim().equals("N/A") ) {
+	   if (record1.getR10_DUE_FROM_DOMESTIC_RISK_WEIGHT() != null ){
 	       cell68.setCellValue(record1.getR10_DUE_FROM_DOMESTIC_RISK_WEIGHT().toString().trim() );
 	       cell68.setCellStyle(numberStyle);
 	   } else {
@@ -12167,7 +12167,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell69 = row.createCell(5);
 
-	   if (record1.getR10_DUE_FROM_DOMESTIC_CURRENCY() != null && !record1.getR10_DUE_FROM_DOMESTIC_CURRENCY().toString().trim().equals("N/A") ) {
+	   if (record1.getR10_DUE_FROM_DOMESTIC_CURRENCY() != null ){
 	       cell69.setCellValue(record1.getR10_DUE_FROM_DOMESTIC_CURRENCY().toString().trim() );
 	       cell69.setCellStyle(numberStyle);
 	   } else {
@@ -12177,7 +12177,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell70 = row.createCell(6);
 
-	   if (record1.getR10_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT() != null && !record1.getR10_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT().toString().trim().equals("N/A") ) {
+	   if (record1.getR10_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT() != null ){
 	       cell70.setCellValue(record1.getR10_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT().toString().trim() );
 	       cell70.setCellStyle(numberStyle);
 	   } else {
@@ -12189,7 +12189,7 @@ if (dtltype.equals("email_report") ) {
 	    row = sheet.getRow(72) != null ? sheet.getRow(72) : sheet.createRow(72);
 	    Cell cell71 = row.createCell(0);
 
-	   if (record1.getR11_DUE_FROM_DOMESTIC_NAME_OF_BANK() != null && !record1.getR11_DUE_FROM_DOMESTIC_NAME_OF_BANK().toString().trim().equals("N/A") ) {
+	   if (record1.getR11_DUE_FROM_DOMESTIC_NAME_OF_BANK() != null ){
 	       cell71.setCellValue(record1.getR11_DUE_FROM_DOMESTIC_NAME_OF_BANK().toString().trim() );
 	       cell71.setCellStyle(numberStyle);
 	   } else {
@@ -12199,7 +12199,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell72 = row.createCell(1);
 
-	   if (record1.getR11_DUE_FROM_DOMESTIC_ACCT_TYPE() != null && !record1.getR11_DUE_FROM_DOMESTIC_ACCT_TYPE().toString().trim().equals("N/A") ) {
+	   if (record1.getR11_DUE_FROM_DOMESTIC_ACCT_TYPE() != null ){
 	       cell72.setCellValue(record1.getR11_DUE_FROM_DOMESTIC_ACCT_TYPE().toString().trim() );
 	       cell72.setCellStyle(numberStyle);
 	   } else {
@@ -12209,7 +12209,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell73 = row.createCell(2);
 
-	   if (record1.getR11_DUE_FROM_DOMESTIC_PURPOSE() != null && !record1.getR11_DUE_FROM_DOMESTIC_PURPOSE().toString().trim().equals("N/A") ) {
+	   if (record1.getR11_DUE_FROM_DOMESTIC_PURPOSE() != null ){
 	       cell73.setCellValue(record1.getR11_DUE_FROM_DOMESTIC_PURPOSE().toString().trim() );
 	       cell73.setCellStyle(numberStyle);
 	   } else {
@@ -12219,7 +12219,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell74 = row.createCell(3);
 
-	   if (record1.getR11_DUE_FROM_DOMESTIC_AMOUNT() != null && !record1.getR11_DUE_FROM_DOMESTIC_AMOUNT().toString().trim().equals("N/A") ) {
+	   if (record1.getR11_DUE_FROM_DOMESTIC_AMOUNT() != null ){
 	       cell74.setCellValue(record1.getR11_DUE_FROM_DOMESTIC_AMOUNT().toString().trim() );
 	       cell74.setCellStyle(numberStyle);
 	   } else {
@@ -12229,7 +12229,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell75 = row.createCell(4);
 
-	   if (record1.getR11_DUE_FROM_DOMESTIC_RISK_WEIGHT() != null && !record1.getR11_DUE_FROM_DOMESTIC_RISK_WEIGHT().toString().trim().equals("N/A") ) {
+	   if (record1.getR11_DUE_FROM_DOMESTIC_RISK_WEIGHT() != null ){
 	       cell75.setCellValue(record1.getR11_DUE_FROM_DOMESTIC_RISK_WEIGHT().toString().trim() );
 	       cell75.setCellStyle(numberStyle);
 	   } else {
@@ -12239,7 +12239,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell76 = row.createCell(5);
 
-	   if (record1.getR11_DUE_FROM_DOMESTIC_CURRENCY() != null && !record1.getR11_DUE_FROM_DOMESTIC_CURRENCY().toString().trim().equals("N/A") ) {
+	   if (record1.getR11_DUE_FROM_DOMESTIC_CURRENCY() != null ){
 	       cell76.setCellValue(record1.getR11_DUE_FROM_DOMESTIC_CURRENCY().toString().trim() );
 	       cell76.setCellStyle(numberStyle);
 	   } else {
@@ -12249,7 +12249,7 @@ if (dtltype.equals("email_report") ) {
 
 	    Cell cell77 = row.createCell(6);
 
-	   if (record1.getR11_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT() != null && !record1.getR11_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT().toString().trim().equals("N/A") ) {
+	   if (record1.getR11_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT() != null ){
 	       cell77.setCellValue(record1.getR11_DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT().toString().trim() );
 	       cell77.setCellStyle(numberStyle);
 	   } else {
@@ -12260,7 +12260,7 @@ if (dtltype.equals("email_report") ) {
 	   row = sheet.getRow(77) != null ? sheet.getRow(77) : sheet.createRow(77);
 	   Cell cell78 = row.createCell(0);
 
-	  if (record1.getR1_DUE_TO_DOMESTIC_NAME_OF_BANK() != null && !record1.getR1_DUE_TO_DOMESTIC_NAME_OF_BANK().toString().trim().equals("N/A") ) {
+	  if (record1.getR1_DUE_TO_DOMESTIC_NAME_OF_BANK() != null ){
 	      cell78.setCellValue(record1.getR1_DUE_TO_DOMESTIC_NAME_OF_BANK().toString().trim() );
 	      cell78.setCellStyle(numberStyle);
 	  } else {
@@ -12270,7 +12270,7 @@ if (dtltype.equals("email_report") ) {
 
 	   Cell cell79 = row.createCell(1);
 
-	  if (record1.getR1_DUE_TO_DOMESTIC_ACCT_TYPE() != null && !record1.getR1_DUE_TO_DOMESTIC_ACCT_TYPE().toString().trim().equals("N/A") ) {
+	  if (record1.getR1_DUE_TO_DOMESTIC_ACCT_TYPE() != null ){
 	      cell79.setCellValue(record1.getR1_DUE_TO_DOMESTIC_ACCT_TYPE().toString().trim() );
 	      cell79.setCellStyle(numberStyle);
 	  } else {
@@ -12280,7 +12280,7 @@ if (dtltype.equals("email_report") ) {
 
 	   Cell cell80 = row.createCell(2);
 
-	  if (record1.getR1_DUE_TO_DOMESTIC_PURPOSE() != null && !record1.getR1_DUE_TO_DOMESTIC_PURPOSE().toString().trim().equals("N/A") ) {
+	  if (record1.getR1_DUE_TO_DOMESTIC_PURPOSE() != null ){
 	      cell80.setCellValue(record1.getR1_DUE_TO_DOMESTIC_PURPOSE().toString().trim() );
 	      cell80.setCellStyle(numberStyle);
 	  } else {
@@ -12290,7 +12290,7 @@ if (dtltype.equals("email_report") ) {
 
 	   Cell cell81 = row.createCell(3);
 
-	  if (record1.getR1_DUE_TO_DOMESTIC_AMOUNT() != null && !record1.getR1_DUE_TO_DOMESTIC_AMOUNT().toString().trim().equals("N/A") ) {
+	  if (record1.getR1_DUE_TO_DOMESTIC_AMOUNT() != null ){
 	      cell81.setCellValue(record1.getR1_DUE_TO_DOMESTIC_AMOUNT().toString().trim() );
 	      cell81.setCellStyle(numberStyle);
 	  } else {
@@ -12300,7 +12300,7 @@ if (dtltype.equals("email_report") ) {
 
 	   Cell cell82 = row.createCell(4);
 
-	  if (record1.getR1_DUE_TO_DOMESTIC_RISK_WEIGHT() != null && !record1.getR1_DUE_TO_DOMESTIC_RISK_WEIGHT().toString().trim().equals("N/A") ) {
+	  if (record1.getR1_DUE_TO_DOMESTIC_RISK_WEIGHT() != null ){
 	      cell82.setCellValue(record1.getR1_DUE_TO_DOMESTIC_RISK_WEIGHT().toString().trim() );
 	      cell82.setCellStyle(numberStyle);
 	  } else {
@@ -12310,7 +12310,7 @@ if (dtltype.equals("email_report") ) {
 
 	   Cell cell83 = row.createCell(5);
 
-	  if (record1.getR1_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT() != null && !record1.getR1_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT().toString().trim().equals("N/A") ) {
+	  if (record1.getR1_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT() != null ){
 	      cell83.setCellValue(record1.getR1_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT().toString().trim() );
 	      cell83.setCellStyle(numberStyle);
 	  } else {
@@ -12322,7 +12322,7 @@ if (dtltype.equals("email_report") ) {
 	   row = sheet.getRow(78) != null ? sheet.getRow(78) : sheet.createRow(78);
 	   Cell cell84 = row.createCell(0);
 
-	  if (record1.getR2_DUE_TO_DOMESTIC_NAME_OF_BANK() != null && !record1.getR2_DUE_TO_DOMESTIC_NAME_OF_BANK().toString().trim().equals("N/A") ) {
+	  if (record1.getR2_DUE_TO_DOMESTIC_NAME_OF_BANK() != null ){
 	      cell84.setCellValue(record1.getR2_DUE_TO_DOMESTIC_NAME_OF_BANK().toString().trim() );
 	      cell84.setCellStyle(numberStyle);
 	  } else {
@@ -12332,7 +12332,7 @@ if (dtltype.equals("email_report") ) {
 
 	   Cell cell85 = row.createCell(1);
 
-	  if (record1.getR2_DUE_TO_DOMESTIC_ACCT_TYPE() != null && !record1.getR2_DUE_TO_DOMESTIC_ACCT_TYPE().toString().trim().equals("N/A") ) {
+	  if (record1.getR2_DUE_TO_DOMESTIC_ACCT_TYPE() != null ){
 	      cell85.setCellValue(record1.getR2_DUE_TO_DOMESTIC_ACCT_TYPE().toString().trim() );
 	      cell85.setCellStyle(numberStyle);
 	  } else {
@@ -12342,7 +12342,7 @@ if (dtltype.equals("email_report") ) {
 
 	   Cell cell86 = row.createCell(2);
 
-	  if (record1.getR2_DUE_TO_DOMESTIC_PURPOSE() != null && !record1.getR2_DUE_TO_DOMESTIC_PURPOSE().toString().trim().equals("N/A") ) {
+	  if (record1.getR2_DUE_TO_DOMESTIC_PURPOSE() != null ){
 	      cell86.setCellValue(record1.getR2_DUE_TO_DOMESTIC_PURPOSE().toString().trim() );
 	      cell86.setCellStyle(numberStyle);
 	  } else {
@@ -12352,7 +12352,7 @@ if (dtltype.equals("email_report") ) {
 
 	   Cell cell87 = row.createCell(3);
 
-	  if (record1.getR2_DUE_TO_DOMESTIC_AMOUNT() != null && !record1.getR2_DUE_TO_DOMESTIC_AMOUNT().toString().trim().equals("N/A") ) {
+	  if (record1.getR2_DUE_TO_DOMESTIC_AMOUNT() != null ){
 	      cell87.setCellValue(record1.getR2_DUE_TO_DOMESTIC_AMOUNT().toString().trim() );
 	      cell87.setCellStyle(numberStyle);
 	  } else {
@@ -12362,7 +12362,7 @@ if (dtltype.equals("email_report") ) {
 
 	   Cell cell88 = row.createCell(4);
 
-	  if (record1.getR2_DUE_TO_DOMESTIC_RISK_WEIGHT() != null && !record1.getR2_DUE_TO_DOMESTIC_RISK_WEIGHT().toString().trim().equals("N/A") ) {
+	  if (record1.getR2_DUE_TO_DOMESTIC_RISK_WEIGHT() != null ){
 	      cell88.setCellValue(record1.getR2_DUE_TO_DOMESTIC_RISK_WEIGHT().toString().trim() );
 	      cell88.setCellStyle(numberStyle);
 	  } else {
@@ -12372,7 +12372,7 @@ if (dtltype.equals("email_report") ) {
 
 	   Cell cell89 = row.createCell(5);
 
-	  if (record1.getR2_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT() != null && !record1.getR2_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT().toString().trim().equals("N/A") ) {
+	  if (record1.getR2_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT() != null ){
 	      cell89.setCellValue(record1.getR2_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT().toString().trim() );
 	      cell89.setCellStyle(numberStyle);
 	  } else {
@@ -12384,7 +12384,7 @@ if (dtltype.equals("email_report") ) {
 	   row = sheet.getRow(79) != null ? sheet.getRow(79) : sheet.createRow(79);
 	   Cell cell90 = row.createCell(0);
 
-	  if (record1.getR3_DUE_TO_DOMESTIC_NAME_OF_BANK() != null && !record1.getR3_DUE_TO_DOMESTIC_NAME_OF_BANK().toString().trim().equals("N/A") ) {
+	  if (record1.getR3_DUE_TO_DOMESTIC_NAME_OF_BANK() != null ){
 	      cell90.setCellValue(record1.getR3_DUE_TO_DOMESTIC_NAME_OF_BANK().toString().trim() );
 	      cell90.setCellStyle(numberStyle);
 	  } else {
@@ -12394,7 +12394,7 @@ if (dtltype.equals("email_report") ) {
 
 	   Cell cell91 = row.createCell(1);
 
-	  if (record1.getR3_DUE_TO_DOMESTIC_ACCT_TYPE() != null && !record1.getR3_DUE_TO_DOMESTIC_ACCT_TYPE().toString().trim().equals("N/A") ) {
+	  if (record1.getR3_DUE_TO_DOMESTIC_ACCT_TYPE() != null ){
 	      cell91.setCellValue(record1.getR3_DUE_TO_DOMESTIC_ACCT_TYPE().toString().trim() );
 	      cell91.setCellStyle(numberStyle);
 	  } else {
@@ -12404,7 +12404,7 @@ if (dtltype.equals("email_report") ) {
 
 	   Cell cell92 = row.createCell(2);
 
-	  if (record1.getR3_DUE_TO_DOMESTIC_PURPOSE() != null && !record1.getR3_DUE_TO_DOMESTIC_PURPOSE().toString().trim().equals("N/A") ) {
+	  if (record1.getR3_DUE_TO_DOMESTIC_PURPOSE() != null ){
 	      cell92.setCellValue(record1.getR3_DUE_TO_DOMESTIC_PURPOSE().toString().trim() );
 	      cell92.setCellStyle(numberStyle);
 	  } else {
@@ -12414,7 +12414,7 @@ if (dtltype.equals("email_report") ) {
 
 	   Cell cell93 = row.createCell(3);
 
-	  if (record1.getR3_DUE_TO_DOMESTIC_AMOUNT() != null && !record1.getR3_DUE_TO_DOMESTIC_AMOUNT().toString().trim().equals("N/A") ) {
+	  if (record1.getR3_DUE_TO_DOMESTIC_AMOUNT() != null ){
 	      cell93.setCellValue(record1.getR3_DUE_TO_DOMESTIC_AMOUNT().toString().trim() );
 	      cell93.setCellStyle(numberStyle);
 	  } else {
@@ -12424,7 +12424,7 @@ if (dtltype.equals("email_report") ) {
 
 	   Cell cell94 = row.createCell(4);
 
-	  if (record1.getR3_DUE_TO_DOMESTIC_RISK_WEIGHT() != null && !record1.getR3_DUE_TO_DOMESTIC_RISK_WEIGHT().toString().trim().equals("N/A") ) {
+	  if (record1.getR3_DUE_TO_DOMESTIC_RISK_WEIGHT() != null ){
 	      cell94.setCellValue(record1.getR3_DUE_TO_DOMESTIC_RISK_WEIGHT().toString().trim() );
 	      cell94.setCellStyle(numberStyle);
 	  } else {
@@ -12434,7 +12434,7 @@ if (dtltype.equals("email_report") ) {
 
 	   Cell cell95 = row.createCell(5);
 
-	  if (record1.getR3_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT() != null && !record1.getR3_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT().toString().trim().equals("N/A") ) {
+	  if (record1.getR3_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT() != null ){
 	      cell95.setCellValue(record1.getR3_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT().toString().trim() );
 	      cell95.setCellStyle(numberStyle);
 	  } else {
@@ -12446,7 +12446,7 @@ if (dtltype.equals("email_report") ) {
 	   row = sheet.getRow(80) != null ? sheet.getRow(80) : sheet.createRow(80);
 	   Cell cell96 = row.createCell(0);
 
-	  if (record1.getR4_DUE_TO_DOMESTIC_NAME_OF_BANK() != null && !record1.getR4_DUE_TO_DOMESTIC_NAME_OF_BANK().toString().trim().equals("N/A") ) {
+	  if (record1.getR4_DUE_TO_DOMESTIC_NAME_OF_BANK() != null ){
 	      cell96.setCellValue(record1.getR4_DUE_TO_DOMESTIC_NAME_OF_BANK().toString().trim() );
 	      cell96.setCellStyle(numberStyle);
 	  } else {
@@ -12456,7 +12456,7 @@ if (dtltype.equals("email_report") ) {
 
 	   Cell cell97 = row.createCell(1);
 
-	  if (record1.getR4_DUE_TO_DOMESTIC_ACCT_TYPE() != null && !record1.getR4_DUE_TO_DOMESTIC_ACCT_TYPE().toString().trim().equals("N/A") ) {
+	  if (record1.getR4_DUE_TO_DOMESTIC_ACCT_TYPE() != null ){
 	      cell97.setCellValue(record1.getR4_DUE_TO_DOMESTIC_ACCT_TYPE().toString().trim() );
 	      cell97.setCellStyle(numberStyle);
 	  } else {
@@ -12466,7 +12466,7 @@ if (dtltype.equals("email_report") ) {
 
 	   Cell cell98 = row.createCell(2);
 
-	  if (record1.getR4_DUE_TO_DOMESTIC_PURPOSE() != null && !record1.getR4_DUE_TO_DOMESTIC_PURPOSE().toString().trim().equals("N/A") ) {
+	  if (record1.getR4_DUE_TO_DOMESTIC_PURPOSE() != null ){
 	      cell98.setCellValue(record1.getR4_DUE_TO_DOMESTIC_PURPOSE().toString().trim() );
 	      cell98.setCellStyle(numberStyle);
 	  } else {
@@ -12476,7 +12476,7 @@ if (dtltype.equals("email_report") ) {
 
 	   Cell cell99 = row.createCell(3);
 
-	  if (record1.getR4_DUE_TO_DOMESTIC_AMOUNT() != null && !record1.getR4_DUE_TO_DOMESTIC_AMOUNT().toString().trim().equals("N/A") ) {
+	  if (record1.getR4_DUE_TO_DOMESTIC_AMOUNT() != null ){
 	      cell99.setCellValue(record1.getR4_DUE_TO_DOMESTIC_AMOUNT().toString().trim() );
 	      cell99.setCellStyle(numberStyle);
 	  } else {
@@ -12486,7 +12486,7 @@ if (dtltype.equals("email_report") ) {
 
 	   Cell cell100 = row.createCell(4);
 
-	  if (record1.getR4_DUE_TO_DOMESTIC_RISK_WEIGHT() != null && !record1.getR4_DUE_TO_DOMESTIC_RISK_WEIGHT().toString().trim().equals("N/A") ) {
+	  if (record1.getR4_DUE_TO_DOMESTIC_RISK_WEIGHT() != null ){
 	      cell100.setCellValue(record1.getR4_DUE_TO_DOMESTIC_RISK_WEIGHT().toString().trim() );
 	      cell100.setCellStyle(numberStyle);
 	  } else {
@@ -12496,7 +12496,7 @@ if (dtltype.equals("email_report") ) {
 
 	   Cell cell101 = row.createCell(5);
 
-	  if (record1.getR4_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT() != null && !record1.getR4_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT().toString().trim().equals("N/A") ) {
+	  if (record1.getR4_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT() != null ){
 	      cell101.setCellValue(record1.getR4_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT().toString().trim() );
 	      cell101.setCellStyle(numberStyle);
 	  } else {
@@ -12508,7 +12508,7 @@ if (dtltype.equals("email_report") ) {
 	   row = sheet.getRow(81) != null ? sheet.getRow(81) : sheet.createRow(81);
 	   Cell cell102 = row.createCell(0);
 
-	  if (record1.getR5_DUE_TO_DOMESTIC_NAME_OF_BANK() != null && !record1.getR5_DUE_TO_DOMESTIC_NAME_OF_BANK().toString().trim().equals("N/A") ) {
+	  if (record1.getR5_DUE_TO_DOMESTIC_NAME_OF_BANK() != null ){
 	      cell102.setCellValue(record1.getR5_DUE_TO_DOMESTIC_NAME_OF_BANK().toString().trim() );
 	      cell102.setCellStyle(numberStyle);
 	  } else {
@@ -12518,7 +12518,7 @@ if (dtltype.equals("email_report") ) {
 
 	   Cell cell103 = row.createCell(1);
 
-	  if (record1.getR5_DUE_TO_DOMESTIC_ACCT_TYPE() != null && !record1.getR5_DUE_TO_DOMESTIC_ACCT_TYPE().toString().trim().equals("N/A") ) {
+	  if (record1.getR5_DUE_TO_DOMESTIC_ACCT_TYPE() != null ){
 	      cell103.setCellValue(record1.getR5_DUE_TO_DOMESTIC_ACCT_TYPE().toString().trim() );
 	      cell103.setCellStyle(numberStyle);
 	  } else {
@@ -12528,7 +12528,7 @@ if (dtltype.equals("email_report") ) {
 
 	   Cell cell104 = row.createCell(2);
 
-	  if (record1.getR5_DUE_TO_DOMESTIC_PURPOSE() != null && !record1.getR5_DUE_TO_DOMESTIC_PURPOSE().toString().trim().equals("N/A") ) {
+	  if (record1.getR5_DUE_TO_DOMESTIC_PURPOSE() != null ){
 	      cell104.setCellValue(record1.getR5_DUE_TO_DOMESTIC_PURPOSE().toString().trim() );
 	      cell104.setCellStyle(numberStyle);
 	  } else {
@@ -12538,7 +12538,7 @@ if (dtltype.equals("email_report") ) {
 
 	   Cell cell105 = row.createCell(3);
 
-	  if (record1.getR5_DUE_TO_DOMESTIC_AMOUNT() != null && !record1.getR5_DUE_TO_DOMESTIC_AMOUNT().toString().trim().equals("N/A") ) {
+	  if (record1.getR5_DUE_TO_DOMESTIC_AMOUNT() != null ){
 	      cell105.setCellValue(record1.getR5_DUE_TO_DOMESTIC_AMOUNT().toString().trim() );
 	      cell105.setCellStyle(numberStyle);
 	  } else {
@@ -12548,7 +12548,7 @@ if (dtltype.equals("email_report") ) {
 
 	   Cell cell106 = row.createCell(4);
 
-	  if (record1.getR5_DUE_TO_DOMESTIC_RISK_WEIGHT() != null && !record1.getR5_DUE_TO_DOMESTIC_RISK_WEIGHT().toString().trim().equals("N/A") ) {
+	  if (record1.getR5_DUE_TO_DOMESTIC_RISK_WEIGHT() != null ){
 	      cell106.setCellValue(record1.getR5_DUE_TO_DOMESTIC_RISK_WEIGHT().toString().trim() );
 	      cell106.setCellStyle(numberStyle);
 	  } else {
@@ -12558,7 +12558,7 @@ if (dtltype.equals("email_report") ) {
 
 	   Cell cell107 = row.createCell(5);
 
-	  if (record1.getR5_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT() != null && !record1.getR5_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT().toString().trim().equals("N/A") ) {
+	  if (record1.getR5_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT() != null ){
 	      cell107.setCellValue(record1.getR5_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT().toString().trim() );
 	      cell107.setCellStyle(numberStyle);
 	  } else {
@@ -12570,7 +12570,7 @@ if (dtltype.equals("email_report") ) {
 	   row = sheet.getRow(82) != null ? sheet.getRow(82) : sheet.createRow(82);
 	   Cell cell108 = row.createCell(0);
 
-	  if (record1.getR6_DUE_TO_DOMESTIC_NAME_OF_BANK() != null && !record1.getR6_DUE_TO_DOMESTIC_NAME_OF_BANK().toString().trim().equals("N/A") ) {
+	  if (record1.getR6_DUE_TO_DOMESTIC_NAME_OF_BANK() != null ){
 	      cell108.setCellValue(record1.getR6_DUE_TO_DOMESTIC_NAME_OF_BANK().toString().trim() );
 	      cell108.setCellStyle(numberStyle);
 	  } else {
@@ -12580,7 +12580,7 @@ if (dtltype.equals("email_report") ) {
 
 	   Cell cell109 = row.createCell(1);
 
-	  if (record1.getR6_DUE_TO_DOMESTIC_ACCT_TYPE() != null && !record1.getR6_DUE_TO_DOMESTIC_ACCT_TYPE().toString().trim().equals("N/A") ) {
+	  if (record1.getR6_DUE_TO_DOMESTIC_ACCT_TYPE() != null ){
 	      cell109.setCellValue(record1.getR6_DUE_TO_DOMESTIC_ACCT_TYPE().toString().trim() );
 	      cell109.setCellStyle(numberStyle);
 	  } else {
@@ -12590,7 +12590,7 @@ if (dtltype.equals("email_report") ) {
 
 	   Cell cell110 = row.createCell(2);
 
-	  if (record1.getR6_DUE_TO_DOMESTIC_PURPOSE() != null && !record1.getR6_DUE_TO_DOMESTIC_PURPOSE().toString().trim().equals("N/A") ) {
+	  if (record1.getR6_DUE_TO_DOMESTIC_PURPOSE() != null ){
 	      cell110.setCellValue(record1.getR6_DUE_TO_DOMESTIC_PURPOSE().toString().trim() );
 	      cell110.setCellStyle(numberStyle);
 	  } else {
@@ -12600,7 +12600,7 @@ if (dtltype.equals("email_report") ) {
 
 	   Cell cell111 = row.createCell(3);
 
-	  if (record1.getR6_DUE_TO_DOMESTIC_AMOUNT() != null && !record1.getR6_DUE_TO_DOMESTIC_AMOUNT().toString().trim().equals("N/A") ) {
+	  if (record1.getR6_DUE_TO_DOMESTIC_AMOUNT() != null ){
 	      cell111.setCellValue(record1.getR6_DUE_TO_DOMESTIC_AMOUNT().toString().trim() );
 	      cell111.setCellStyle(numberStyle);
 	  } else {
@@ -12610,7 +12610,7 @@ if (dtltype.equals("email_report") ) {
 
 	   Cell cell112 = row.createCell(4);
 
-	  if (record1.getR6_DUE_TO_DOMESTIC_RISK_WEIGHT() != null && !record1.getR6_DUE_TO_DOMESTIC_RISK_WEIGHT().toString().trim().equals("N/A") ) {
+	  if (record1.getR6_DUE_TO_DOMESTIC_RISK_WEIGHT() != null ){
 	      cell112.setCellValue(record1.getR6_DUE_TO_DOMESTIC_RISK_WEIGHT().toString().trim() );
 	      cell112.setCellStyle(numberStyle);
 	  } else {
@@ -12620,7 +12620,7 @@ if (dtltype.equals("email_report") ) {
 
 	   Cell cell113 = row.createCell(5);
 
-	  if (record1.getR6_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT() != null && !record1.getR6_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT().toString().trim().equals("N/A") ) {
+	  if (record1.getR6_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT() != null ){
 	      cell113.setCellValue(record1.getR6_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT().toString().trim() );
 	      cell113.setCellStyle(numberStyle);
 	  } else {
@@ -12632,7 +12632,7 @@ if (dtltype.equals("email_report") ) {
 	   row = sheet.getRow(83) != null ? sheet.getRow(83) : sheet.createRow(83);
 	   Cell cell114 = row.createCell(0);
 
-	  if (record1.getR7_DUE_TO_DOMESTIC_NAME_OF_BANK() != null && !record1.getR7_DUE_TO_DOMESTIC_NAME_OF_BANK().toString().trim().equals("N/A") ) {
+	  if (record1.getR7_DUE_TO_DOMESTIC_NAME_OF_BANK() != null ){
 	      cell114.setCellValue(record1.getR7_DUE_TO_DOMESTIC_NAME_OF_BANK().toString().trim() );
 	      cell114.setCellStyle(numberStyle);
 	  } else {
@@ -12642,7 +12642,7 @@ if (dtltype.equals("email_report") ) {
 
 	   Cell cell115 = row.createCell(1);
 
-	  if (record1.getR7_DUE_TO_DOMESTIC_ACCT_TYPE() != null && !record1.getR7_DUE_TO_DOMESTIC_ACCT_TYPE().toString().trim().equals("N/A") ) {
+	  if (record1.getR7_DUE_TO_DOMESTIC_ACCT_TYPE() != null ){
 	      cell115.setCellValue(record1.getR7_DUE_TO_DOMESTIC_ACCT_TYPE().toString().trim() );
 	      cell115.setCellStyle(numberStyle);
 	  } else {
@@ -12652,7 +12652,7 @@ if (dtltype.equals("email_report") ) {
 
 	   Cell cell116 = row.createCell(2);
 
-	  if (record1.getR7_DUE_TO_DOMESTIC_PURPOSE() != null && !record1.getR7_DUE_TO_DOMESTIC_PURPOSE().toString().trim().equals("N/A") ) {
+	  if (record1.getR7_DUE_TO_DOMESTIC_PURPOSE() != null ){
 	      cell116.setCellValue(record1.getR7_DUE_TO_DOMESTIC_PURPOSE().toString().trim() );
 	      cell116.setCellStyle(numberStyle);
 	  } else {
@@ -12662,7 +12662,7 @@ if (dtltype.equals("email_report") ) {
 
 	   Cell cell117 = row.createCell(3);
 
-	  if (record1.getR7_DUE_TO_DOMESTIC_AMOUNT() != null && !record1.getR7_DUE_TO_DOMESTIC_AMOUNT().toString().trim().equals("N/A") ) {
+	  if (record1.getR7_DUE_TO_DOMESTIC_AMOUNT() != null ){
 	      cell117.setCellValue(record1.getR7_DUE_TO_DOMESTIC_AMOUNT().toString().trim() );
 	      cell117.setCellStyle(numberStyle);
 	  } else {
@@ -12672,7 +12672,7 @@ if (dtltype.equals("email_report") ) {
 
 	   Cell cell118 = row.createCell(4);
 
-	  if (record1.getR7_DUE_TO_DOMESTIC_RISK_WEIGHT() != null && !record1.getR7_DUE_TO_DOMESTIC_RISK_WEIGHT().toString().trim().equals("N/A") ) {
+	  if (record1.getR7_DUE_TO_DOMESTIC_RISK_WEIGHT() != null ){
 	      cell118.setCellValue(record1.getR7_DUE_TO_DOMESTIC_RISK_WEIGHT().toString().trim() );
 	      cell118.setCellStyle(numberStyle);
 	  } else {
@@ -12682,7 +12682,7 @@ if (dtltype.equals("email_report") ) {
 
 	   Cell cell119 = row.createCell(5);
 
-	  if (record1.getR7_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT() != null && !record1.getR7_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT().toString().trim().equals("N/A") ) {
+	  if (record1.getR7_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT() != null ){
 	      cell119.setCellValue(record1.getR7_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT().toString().trim() );
 	      cell119.setCellStyle(numberStyle);
 	  } else {
@@ -12694,7 +12694,7 @@ if (dtltype.equals("email_report") ) {
 	   row = sheet.getRow(84) != null ? sheet.getRow(84) : sheet.createRow(84);
 	   Cell cell120 = row.createCell(0);
 
-	  if (record1.getR8_DUE_TO_DOMESTIC_NAME_OF_BANK() != null && !record1.getR8_DUE_TO_DOMESTIC_NAME_OF_BANK().toString().trim().equals("N/A") ) {
+	  if (record1.getR8_DUE_TO_DOMESTIC_NAME_OF_BANK() != null ){
 	      cell120.setCellValue(record1.getR8_DUE_TO_DOMESTIC_NAME_OF_BANK().toString().trim() );
 	      cell120.setCellStyle(numberStyle);
 	  } else {
@@ -12704,7 +12704,7 @@ if (dtltype.equals("email_report") ) {
 
 	   Cell cell121 = row.createCell(1);
 
-	  if (record1.getR8_DUE_TO_DOMESTIC_ACCT_TYPE() != null && !record1.getR8_DUE_TO_DOMESTIC_ACCT_TYPE().toString().trim().equals("N/A") ) {
+	  if (record1.getR8_DUE_TO_DOMESTIC_ACCT_TYPE() != null ){
 	      cell121.setCellValue(record1.getR8_DUE_TO_DOMESTIC_ACCT_TYPE().toString().trim() );
 	      cell121.setCellStyle(numberStyle);
 	  } else {
@@ -12714,7 +12714,7 @@ if (dtltype.equals("email_report") ) {
 
 	   Cell cell122 = row.createCell(2);
 
-	  if (record1.getR8_DUE_TO_DOMESTIC_PURPOSE() != null && !record1.getR8_DUE_TO_DOMESTIC_PURPOSE().toString().trim().equals("N/A") ) {
+	  if (record1.getR8_DUE_TO_DOMESTIC_PURPOSE() != null ){
 	      cell122.setCellValue(record1.getR8_DUE_TO_DOMESTIC_PURPOSE().toString().trim() );
 	      cell122.setCellStyle(numberStyle);
 	  } else {
@@ -12724,7 +12724,7 @@ if (dtltype.equals("email_report") ) {
 
 	   Cell cell123 = row.createCell(3);
 
-	  if (record1.getR8_DUE_TO_DOMESTIC_AMOUNT() != null && !record1.getR8_DUE_TO_DOMESTIC_AMOUNT().toString().trim().equals("N/A") ) {
+	  if (record1.getR8_DUE_TO_DOMESTIC_AMOUNT() != null ){
 	      cell123.setCellValue(record1.getR8_DUE_TO_DOMESTIC_AMOUNT().toString().trim() );
 	      cell123.setCellStyle(numberStyle);
 	  } else {
@@ -12734,7 +12734,7 @@ if (dtltype.equals("email_report") ) {
 
 	   Cell cell124 = row.createCell(4);
 
-	  if (record1.getR8_DUE_TO_DOMESTIC_RISK_WEIGHT() != null && !record1.getR8_DUE_TO_DOMESTIC_RISK_WEIGHT().toString().trim().equals("N/A") ) {
+	  if (record1.getR8_DUE_TO_DOMESTIC_RISK_WEIGHT() != null ){
 	      cell124.setCellValue(record1.getR8_DUE_TO_DOMESTIC_RISK_WEIGHT().toString().trim() );
 	      cell124.setCellStyle(numberStyle);
 	  } else {
@@ -12744,7 +12744,7 @@ if (dtltype.equals("email_report") ) {
 
 	   Cell cell125 = row.createCell(5);
 
-	  if (record1.getR8_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT() != null && !record1.getR8_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT().toString().trim().equals("N/A") ) {
+	  if (record1.getR8_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT() != null ){
 	      cell125.setCellValue(record1.getR8_DUE_TO_DOMESTIC_RISK_WEIGHT_AMT().toString().trim() );
 	      cell125.setCellStyle(numberStyle);
 	  } else {

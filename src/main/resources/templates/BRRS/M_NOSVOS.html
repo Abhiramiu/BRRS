@@ -819,7 +819,7 @@ function calculateR101Totals() {
                 if (type && type.toUpperCase() === 'RESUB') {
                     location.href = '/BRRS/Resubmission?rptcode=M_NOSVOS'
                 }else{
-                    window.history.back();
+                    location.href = '/BRRS/BRRSValidations?rptcode=M_NOSVOS&todate='+asondate
                 }
 
 				},
@@ -918,10 +918,10 @@ function calculateR101Totals() {
                     				 data-todate=${todate},
                     				 data-currency=${currency}, 
                     				 data-dtltype=${dtltype},
-                    				 data-filename='M_NOSVOS.xls',
+                    				 data-filename='M_NOSVOS.xlsx',
 					 				 data-type=${type},
 					    			 data-version=${version}" onclick="downloadfile(this);">
-							<i class="fa fa-download"></i>Format
+							<i class="fa fa-download"></i> Format
 						</button>
 
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
@@ -934,7 +934,7 @@ function calculateR101Totals() {
                     				 data-filename='M_NOSVOS_EMAIL.xlsx',
 					 				 data-type=${type},
 					    			 data-version=${version}" onclick="downloadfile(this);">
-							<i class="fa fa-download"></i>Email
+							<i class="fa fa-download"></i> Email
 						</button>
 
 
@@ -957,13 +957,31 @@ function calculateR101Totals() {
 
 				</div>
 				<div>
-					                    <p style="text-align: left; font-weight: bold; 
+
+					<p style="text-align: left; font-weight: bold; 
 						color: white;  font-size: 20px;  background-color: rgb(107, 122, 143); 
-						margin-top:10px; margin-bottom:10px;padding: 5px;" th:if="${displaymode == 'summary'}">Summary View - M-NOSVOS</p>
+						margin-top:10px; margin-bottom:10px;padding: 5px;" th:if="${type != 'ARCHIVAL' and type != 'RESUB' and displaymode == 'summary'}">Summary View - M-NOSVOS</p>
+
+                    <p style="text-align: left; font-weight: bold; 
+                    color: white;  font-size: 20px;  background-color: rgb(107, 122, 143); 
+                    margin-top:10px; margin-bottom:10px;padding: 5px;" th:if="${type != 'ARCHIVAL' and type != 'RESUB' and displaymode == 'detail'}">Detail View - M-NOSVOS</p>
 
                         <p style="text-align: left; font-weight: bold; 
-						color: white;  font-size: 20px;  background-color: rgb(107, 122, 143); 
-						margin-top:10px; margin-bottom:10px;padding: 5px;" th:if="${displaymode == 'detail'}">Detail View - M-NOSVOS</p>
+                    color: white;  font-size: 20px;  background-color: rgb(107, 122, 143); 
+                    margin-top:10px; margin-bottom:10px;padding: 5px;" th:if="${type == 'ARCHIVAL' and displaymode == 'summary'}">Archival Summary View - M-NOSVOS</p>
+
+                    <p style="text-align: left; font-weight: bold; 
+                    color: white;  font-size: 20px;  background-color: rgb(107, 122, 143); 
+                    margin-top:10px; margin-bottom:10px;padding: 5px;" th:if="${type == 'ARCHIVAL' and displaymode == 'detail'}">Archival Detail View - M-NOSVOS</p>
+
+                        <p style="text-align: left; font-weight: bold; 
+                    color: white;  font-size: 20px;  background-color: rgb(107, 122, 143); 
+                    margin-top:10px; margin-bottom:10px;padding: 5px;" th:if="${type == 'RESUB' and displaymode == 'summary'}">Resubmission Summary View - M-NOSVOS</p>
+
+                    <p style="text-align: left; font-weight: bold; 
+                    color: white;  font-size: 20px;  background-color: rgb(107, 122, 143); 
+                    margin-top:10px; margin-bottom:10px;padding: 5px;" th:if="${type == 'RESUB' and displaymode == 'detail'}">Resubmission Detail View - M-NOSVOS</p> 
+
 					<div class="row">
 						<div class="col-lg-12">
 							<form action="#" method="POST" id="fileupload">
