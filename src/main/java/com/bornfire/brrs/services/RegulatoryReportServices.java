@@ -6558,9 +6558,9 @@ public class RegulatoryReportServices {
 			try {
 				List<Object[]> resubList = brrs_q_rlfa2_reportservice.getQ_RLFA2Resub();
 				resubmissionData.addAll(resubList);
-				System.out.println("Resubmission data fetched for M_CA4: " + resubList.size());
+				System.out.println("Resubmission data fetched for Q_RLFA2: " + resubList.size());
 			} catch (Exception e) {
-				System.err.println("Error fetching resubmission data for M_CA4: " + e.getMessage());
+				System.err.println("Error fetching resubmission data for Q_RLFA2: " + e.getMessage());
 				e.printStackTrace();
 			}
 			break;
