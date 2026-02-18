@@ -935,24 +935,23 @@ $(document).ready(function() {
 </script>
 
 
+ <script>
+	function closemodel() {
+		$("#resultModal").modal("hide");
+		$('#loader').modal('hide');
 
-<script>
-		function closemodel() {
-			$("#resultModal").modal("hide");
-			$('#loader').modal('hide');
+		const message = $("#resultModalBody").text();
+		const reportCode = document.getElementById("currentReportCode").value;
 
-			// Check if the success message is showing
-			const message = $("#resultModalBody").text();
-
-			if (message.includes("Resubmission Updated Successfully")) {
-				// ✅ Go back to the previous page
-				window.history.back();
-			} else {
-				// For other messages, just reload the same page
-				setTimeout(() => location.reload(), 300);
-			}
+		if (message.includes("Resubmission Updated Successfully")) {
+			// Redirect to correct list page based on report code
+			window.location.href = "/resubmission/list?reportCode=" + reportCode;
+		} else {
+			// Reload same page
+			setTimeout(() => location.reload(), 300);
 		}
-	</script>
+	}
+</script>
 
 
 
@@ -1052,6 +1051,9 @@ $(document).ready(function() {
 	        }
 	    });
 	}; */
+	
+	
+	
 
 	function fileuploads(btn) {
 
@@ -1115,7 +1117,7 @@ $(document).ready(function() {
 	                            window.location.href =
 	                                window.previousUrl
 	                                    ? window.previousUrl
-	                                    : "/BRRS/Resubmission?rptcode=M_CA4";
+	                                    : "/BRRS/Resubmission?rptcode=M_EPR";
 	                        }
 	                    });
 	            },
@@ -3322,23 +3324,25 @@ $(document).ready(function() {
 
 	<!-- Custom Alert/Result Modal (Matches your existing style) -->
 	<div class="modal fade" id="resultModal">
-			<div class="modal-dialog modal-dialog-centered">
-				<div class="modal-content">
-					<!-- Your custom styled header -->
-					<div class="menu-title-header">
-						<div class="modal-title" id="resultModalLabel" style="text-align: center; color: white;">
-							<!-- Title will be set by JavaScript -->
-						</div>
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<!-- Your custom styled header -->
+				<div class="menu-title-header">
+					<div class="modal-title" id="resultModalLabel"
+						style="text-align: center; color: white;">
+						<!-- Title will be set by JavaScript -->
 					</div>
-					<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
-						<p id="resultModalBody"></p>
-						<!-- Your custom styled button -->
-						<button type="button" class="custom-tab-btn" onclick="closemodel()"
-							data-bs-dismiss="modal">OK</button>
-					</div>
+				</div>
+				<div class="modal-body"
+					style="text-align: center; font-size: 1.1rem;">
+					<p id="resultModalBody"></p>
+					<!-- Your custom styled button -->
+					<button type="button" class="custom-tab-btn" onclick="closemodel()"
+						data-dismiss="modal">OK</button>
 				</div>
 			</div>
 		</div>
+	</div>
 
 	<!-- Custom Cellresult Modal -->
 	<div class="modal fade" id="cellresultModal">
