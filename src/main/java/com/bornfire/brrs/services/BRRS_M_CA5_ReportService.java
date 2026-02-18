@@ -232,120 +232,127 @@ public class BRRS_M_CA5_ReportService {
 		return mv;
 	}
 
-	public void updateResubReport(M_CA5_RESUB_Summary_Entity1 updatedEntity1,
-			M_CA5_RESUB_Summary_Entity2 updatedEntity2) {
+	public void updateResubReport(
+	        M_CA5_RESUB_Summary_Entity1 updatedEntity1,
+	        M_CA5_RESUB_Summary_Entity2 updatedEntity2) {
 
-		Date reportDate1 = updatedEntity1.getReportDate();
-		Date reportDate2 = updatedEntity2.getReportDate();
+	    // ====================================================
+	    // 1️⃣ GET REPORT DATE
+	    // ====================================================
 
-		// ----------------------------------------------------
-		// 1️⃣ GET CURRENT VERSION FROM RESUB TABLE
-		// ----------------------------------------------------
+	    Date reportDate1 = updatedEntity1.getReportDate();
+	    Date reportDate2 = updatedEntity2.getReportDate();
 
-		BigDecimal maxResubVer = brrs_M_CA5_resub_summary_repo1.findMaxVersion(reportDate1);
-		BigDecimal maxResubVer2 = brrs_M_CA5_resub_summary_repo2.findMaxVersion(reportDate2);
+	    if (reportDate1 == null || reportDate2 == null) {
+	        throw new RuntimeException("Report date cannot be null");
+	    }
 
-		if (maxResubVer == null)
-			throw new RuntimeException("No record for: " + reportDate1);
-		if (maxResubVer2 == null)
-			throw new RuntimeException("No record for: " + reportDate2);
+	    // ====================================================
+	    // 2️⃣ FETCH MAX VERSION FROM BOTH TABLES
+	    // ====================================================
 
-		BigDecimal newVersion = maxResubVer.add(BigDecimal.ONE);
+	    BigDecimal maxVer1 = brrs_M_CA5_resub_summary_repo1.findMaxVersion(reportDate1);
+	    BigDecimal maxVer2 = brrs_M_CA5_resub_summary_repo2.findMaxVersion(reportDate2);
 
-		Date now = new Date();
+	    // If no previous version exists → start from 0
+	    if (maxVer1 == null) maxVer1 = BigDecimal.ZERO;
+	    if (maxVer2 == null) maxVer2 = BigDecimal.ZERO;
 
-		// ====================================================
-		// 2️⃣ RESUB SUMMARY – FROM UPDATED VALUES
-		// ====================================================
+	    // Take highest version from both
+	    BigDecimal currentMax = maxVer1.max(maxVer2);
 
-		M_CA5_RESUB_Summary_Entity1 resubSummary = new M_CA5_RESUB_Summary_Entity1();
-		M_CA5_RESUB_Summary_Entity2 resubSummary2 = new M_CA5_RESUB_Summary_Entity2();
+	    // Generate new version
+	    BigDecimal newVersion = currentMax.add(BigDecimal.ONE);
 
-		BeanUtils.copyProperties(updatedEntity1, resubSummary, "reportDate", "reportVersion", "reportResubDate");
+	    Date now = new Date();
 
-		resubSummary.setReportDate(reportDate1);
-		resubSummary.setReportVersion(newVersion);
-		resubSummary.setReportResubDate(now);
+	    // ====================================================
+	    // 3️⃣ CREATE RESUB SUMMARY RECORDS
+	    // ====================================================
 
-		BeanUtils.copyProperties(updatedEntity2, resubSummary2, "reportDate", "reportVersion", "reportResubDate");
+	    M_CA5_RESUB_Summary_Entity1 resubSummary1 = new M_CA5_RESUB_Summary_Entity1();
+	    M_CA5_RESUB_Summary_Entity2 resubSummary2 = new M_CA5_RESUB_Summary_Entity2();
 
-		resubSummary2.setReportDate(reportDate2);
-		resubSummary2.setReportVersion(newVersion);
-		resubSummary2.setReportResubDate(now);
+	    BeanUtils.copyProperties(updatedEntity1, resubSummary1);
+	    BeanUtils.copyProperties(updatedEntity2, resubSummary2);
 
-		// ====================================================
-		// 3️⃣ RESUB DETAIL – SAME UPDATED VALUES
-		// ====================================================
+	    resubSummary1.setReportDate(reportDate1);
+	    resubSummary1.setReportVersion(newVersion);
+	    resubSummary1.setReportResubDate(now);
 
-		M_CA5_RESUB_Detail_Entity1 resubDetail = new M_CA5_RESUB_Detail_Entity1();
-		M_CA5_RESUB_Detail_Entity2 resubDetail2 = new M_CA5_RESUB_Detail_Entity2();
+	    resubSummary2.setReportDate(reportDate2);
+	    resubSummary2.setReportVersion(newVersion);
+	    resubSummary2.setReportResubDate(now);
 
-		BeanUtils.copyProperties(updatedEntity1, resubDetail, "reportDate", "reportVersion", "reportResubDate");
+	    // ====================================================
+	    // 4️⃣ CREATE RESUB DETAIL RECORDS
+	    // ====================================================
 
-		resubDetail.setReportDate(reportDate1);
-		resubDetail.setReportVersion(newVersion);
-		resubDetail.setReportResubDate(now);
+	    M_CA5_RESUB_Detail_Entity1 resubDetail1 = new M_CA5_RESUB_Detail_Entity1();
+	    M_CA5_RESUB_Detail_Entity2 resubDetail2 = new M_CA5_RESUB_Detail_Entity2();
 
-		BeanUtils.copyProperties(updatedEntity2, resubDetail2, "reportDate", "reportVersion", "reportResubDate");
+	    BeanUtils.copyProperties(updatedEntity1, resubDetail1);
+	    BeanUtils.copyProperties(updatedEntity2, resubDetail2);
 
-		resubDetail2.setReportDate(reportDate2);
-		resubDetail2.setReportVersion(newVersion);
-		resubDetail2.setReportResubDate(now);
+	    resubDetail1.setReportDate(reportDate1);
+	    resubDetail1.setReportVersion(newVersion);
+	    resubDetail1.setReportResubDate(now);
 
-		// ====================================================
-		// 4️⃣ ARCHIVAL SUMMARY – SAME VALUES + SAME VERSION
-		// ====================================================
+	    resubDetail2.setReportDate(reportDate2);
+	    resubDetail2.setReportVersion(newVersion);
+	    resubDetail2.setReportResubDate(now);
 
-		M_CA5_Archival_Summary_Entity1 archSummary = new M_CA5_Archival_Summary_Entity1();
-		M_CA5_Archival_Summary_Entity2 archSummary2 = new M_CA5_Archival_Summary_Entity2();
+	    // ====================================================
+	    // 5️⃣ CREATE ARCHIVAL SUMMARY RECORDS
+	    // ====================================================
 
-		BeanUtils.copyProperties(updatedEntity1, archSummary, "reportDate", "reportVersion", "reportResubDate");
+	    M_CA5_Archival_Summary_Entity1 archSummary1 = new M_CA5_Archival_Summary_Entity1();
+	    M_CA5_Archival_Summary_Entity2 archSummary2 = new M_CA5_Archival_Summary_Entity2();
 
-		archSummary.setReportDate(reportDate1);
-		archSummary.setReportVersion(newVersion); // SAME VERSION
-		archSummary.setReportResubDate(now);
+	    BeanUtils.copyProperties(updatedEntity1, archSummary1);
+	    BeanUtils.copyProperties(updatedEntity2, archSummary2);
 
-		BeanUtils.copyProperties(updatedEntity2, archSummary2, "reportDate", "reportVersion", "reportResubDate");
+	    archSummary1.setReportDate(reportDate1);
+	    archSummary1.setReportVersion(newVersion);
+	    archSummary1.setReportResubDate(now);
 
-		archSummary2.setReportDate(reportDate2);
-		archSummary2.setReportVersion(newVersion); // SAME VERSION
-		archSummary2.setReportResubDate(now);
+	    archSummary2.setReportDate(reportDate2);
+	    archSummary2.setReportVersion(newVersion);
+	    archSummary2.setReportResubDate(now);
 
-		// ====================================================
-		// 5️⃣ ARCHIVAL DETAIL – SAME VALUES + SAME VERSION
-		// ====================================================
+	    // ====================================================
+	    // 6️⃣ CREATE ARCHIVAL DETAIL RECORDS
+	    // ====================================================
 
-		M_CA5_Archival_Detail_Entity1 archDetail = new M_CA5_Archival_Detail_Entity1();
-		M_CA5_Archival_Detail_Entity2 archDetail2 = new M_CA5_Archival_Detail_Entity2();
+	    M_CA5_Archival_Detail_Entity1 archDetail1 = new M_CA5_Archival_Detail_Entity1();
+	    M_CA5_Archival_Detail_Entity2 archDetail2 = new M_CA5_Archival_Detail_Entity2();
 
-		BeanUtils.copyProperties(updatedEntity1, archDetail, "reportDate", "reportVersion", "reportResubDate");
+	    BeanUtils.copyProperties(updatedEntity1, archDetail1);
+	    BeanUtils.copyProperties(updatedEntity2, archDetail2);
 
-		archDetail.setReportDate(reportDate1);
-		archDetail.setReportVersion(newVersion); // SAME VERSION
-		archDetail.setReportResubDate(now);
+	    archDetail1.setReportDate(reportDate1);
+	    archDetail1.setReportVersion(newVersion);
+	    archDetail1.setReportResubDate(now);
 
-		BeanUtils.copyProperties(updatedEntity2, archDetail2, "reportDate", "reportVersion", "reportResubDate");
+	    archDetail2.setReportDate(reportDate2);
+	    archDetail2.setReportVersion(newVersion);
+	    archDetail2.setReportResubDate(now);
 
-		archDetail2.setReportDate(reportDate2);
-		archDetail2.setReportVersion(newVersion); // SAME VERSION
-		archDetail2.setReportResubDate(now);
+	    // ====================================================
+	    // 7️⃣ SAVE EVERYTHING
+	    // ====================================================
 
-		// ====================================================
-		// 6️⃣ SAVE ALL WITH SAME DATA
-		// ====================================================
+	    brrs_M_CA5_resub_summary_repo1.save(resubSummary1);
+	    brrs_M_CA5_resub_summary_repo2.save(resubSummary2);
 
-		brrs_M_CA5_resub_summary_repo1.save(resubSummary);
-		brrs_M_CA5_resub_summary_repo2.save(resubSummary2);
+	    brrs_M_CA5_resub_detail_repo1.save(resubDetail1);
+	    brrs_M_CA5_resub_detail_repo2.save(resubDetail2);
 
-		brrs_M_CA5_resub_detail_repo1.save(resubDetail);
-		brrs_M_CA5_resub_detail_repo2.save(resubDetail2);
+	    BRRS_M_CA5_Archival_Summary_Repo1.save(archSummary1);
+	    BRRS_M_CA5_Archival_Summary_Repo2.save(archSummary2);
 
-		BRRS_M_CA5_Archival_Summary_Repo1.save(archSummary);
-		BRRS_M_CA5_Archival_Summary_Repo2.save(archSummary2);
-
-		M_CA5_DETAILArchival_Repo1.save(archDetail);
-		M_CA5_DETAILArchival_Repo2.save(archDetail2);
-
+	    M_CA5_DETAILArchival_Repo1.save(archDetail1);
+	    M_CA5_DETAILArchival_Repo2.save(archDetail2);
 	}
 
 	public void updateReport(M_CA5_Summary_Entity1 updatedSummary) {
