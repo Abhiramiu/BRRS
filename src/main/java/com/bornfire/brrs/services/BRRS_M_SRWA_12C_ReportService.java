@@ -1002,29 +1002,29 @@ public class BRRS_M_SRWA_12C_ReportService {
 					 * cell5.setCellStyle(textStyle); }
 					 */
 
+			
+					
 					// row13
 					row = sheet.getRow(12);
 					// Column D
-					/*
-					 * cell3 = row.createCell(3); if (record.getR13_NUMBER_OF_FAILED_TRADES() !=
-					 * null) {
-					 * cell3.setCellValue(record.getR13_NUMBER_OF_FAILED_TRADES().doubleValue());
-					 * cell3.setCellStyle(numberStyle); } else { cell3.setCellValue("");
-					 * cell3.setCellStyle(textStyle); } // Column E cell4 = row.createCell(4); if
-					 * (record.getR13_POSITIVE_CURRENT_EXPOSURE() != null) {
-					 * cell4.setCellValue(record.getR13_POSITIVE_CURRENT_EXPOSURE().doubleValue());
-					 * cell4.setCellStyle(numberStyle); } else { cell4.setCellValue("");
-					 * cell4.setCellStyle(textStyle); }
-					 */
-					/*
-					 * // Column F Cell cell5 = row.createCell(5); if
-					 * (record.getR13_RISK_MULTIPLIER() != null) {
-					 * 
-					 * cell5.setCellValue(record.getR13_RISK_MULTIPLIER().doubleValue() / 100);
-					 * cell5.setCellStyle(percentStyle);
-					 * 
-					 * } else { cell5.setCellValue(""); cell5.setCellStyle(textStyle); }
-					 */
+					cell3 = row.createCell(3);
+					if (record.getR13_NUMBER_OF_FAILED_TRADES() != null) {
+						cell3.setCellValue(record.getR13_NUMBER_OF_FAILED_TRADES().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+					// Column E
+					cell4 = row.createCell(4);
+					if (record.getR13_POSITIVE_CURRENT_EXPOSURE() != null) {
+						cell4.setCellValue(record.getR13_POSITIVE_CURRENT_EXPOSURE().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+					
 
 					// row14
 					row = sheet.getRow(13);
@@ -1174,17 +1174,23 @@ public class BRRS_M_SRWA_12C_ReportService {
 					// row23
 					row = sheet.getRow(22);
 					// Column D
-					/*
-					 * cell3 = row.createCell(3); if (record.getR23_NUMBER_OF_FAILED_TRADES() !=
-					 * null) {
-					 * cell3.setCellValue(record.getR23_NUMBER_OF_FAILED_TRADES().doubleValue());
-					 * cell3.setCellStyle(numberStyle); } else { cell3.setCellValue("");
-					 * cell3.setCellStyle(textStyle); } // Column E cell4 = row.createCell(4); if
-					 * (record.getR23_POSITIVE_CURRENT_EXPOSURE() != null) {
-					 * cell4.setCellValue(record.getR23_POSITIVE_CURRENT_EXPOSURE().doubleValue());
-					 * cell4.setCellStyle(numberStyle); } else { cell4.setCellValue("");
-					 * cell4.setCellStyle(textStyle); }
-					 */
+					cell3 = row.createCell(3);
+					if (record.getR23_NUMBER_OF_FAILED_TRADES() != null) {
+						cell3.setCellValue(record.getR23_NUMBER_OF_FAILED_TRADES().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+					// Column E
+					cell4 = row.createCell(4);
+					if (record.getR23_POSITIVE_CURRENT_EXPOSURE() != null) {
+						cell4.setCellValue(record.getR23_POSITIVE_CURRENT_EXPOSURE().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
 
 					// row24
 					row = sheet.getRow(23);
@@ -1772,26 +1778,23 @@ public class BRRS_M_SRWA_12C_ReportService {
 					// row13
 					row = sheet.getRow(12);
 					// Column D
-					/*
-					 * cell3 = row.createCell(3); if (record.getR13_NUMBER_OF_FAILED_TRADES() !=
-					 * null) {
-					 * cell3.setCellValue(record.getR13_NUMBER_OF_FAILED_TRADES().doubleValue());
-					 * cell3.setCellStyle(numberStyle); } else { cell3.setCellValue("");
-					 * cell3.setCellStyle(textStyle); } // Column E cell4 = row.createCell(4); if
-					 * (record.getR13_POSITIVE_CURRENT_EXPOSURE() != null) {
-					 * cell4.setCellValue(record.getR13_POSITIVE_CURRENT_EXPOSURE().doubleValue());
-					 * cell4.setCellStyle(numberStyle); } else { cell4.setCellValue("");
-					 * cell4.setCellStyle(textStyle); }
-					 */
-					/*
-					 * // Column F Cell cell5 = row.createCell(5); if
-					 * (record.getR13_RISK_MULTIPLIER() != null) {
-					 * 
-					 * cell5.setCellValue(record.getR13_RISK_MULTIPLIER().doubleValue() / 100);
-					 * cell5.setCellStyle(percentStyle);
-					 * 
-					 * } else { cell5.setCellValue(""); cell5.setCellStyle(textStyle); }
-					 */
+					cell3 = row.createCell(3);
+					if (record.getR13_NUMBER_OF_FAILED_TRADES() != null) {
+						cell3.setCellValue(record.getR13_NUMBER_OF_FAILED_TRADES().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+					// Column E
+					cell4 = row.createCell(4);
+					if (record.getR13_POSITIVE_CURRENT_EXPOSURE() != null) {
+						cell4.setCellValue(record.getR13_POSITIVE_CURRENT_EXPOSURE().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
 
 					// row14
 					row = sheet.getRow(13);
@@ -1941,17 +1944,23 @@ public class BRRS_M_SRWA_12C_ReportService {
 					// row23
 					row = sheet.getRow(22);
 					// Column D
-					/*
-					 * cell3 = row.createCell(3); if (record.getR23_NUMBER_OF_FAILED_TRADES() !=
-					 * null) {
-					 * cell3.setCellValue(record.getR23_NUMBER_OF_FAILED_TRADES().doubleValue());
-					 * cell3.setCellStyle(numberStyle); } else { cell3.setCellValue("");
-					 * cell3.setCellStyle(textStyle); } // Column E cell4 = row.createCell(4); if
-					 * (record.getR23_POSITIVE_CURRENT_EXPOSURE() != null) {
-					 * cell4.setCellValue(record.getR23_POSITIVE_CURRENT_EXPOSURE().doubleValue());
-					 * cell4.setCellStyle(numberStyle); } else { cell4.setCellValue("");
-					 * cell4.setCellStyle(textStyle); }
-					 */
+					cell3 = row.createCell(3);
+					if (record.getR23_NUMBER_OF_FAILED_TRADES() != null) {
+						cell3.setCellValue(record.getR23_NUMBER_OF_FAILED_TRADES().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+					// Column E
+					cell4 = row.createCell(4);
+					if (record.getR23_POSITIVE_CURRENT_EXPOSURE() != null) {
+						cell4.setCellValue(record.getR23_POSITIVE_CURRENT_EXPOSURE().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
 
 					// row24
 					row = sheet.getRow(23);
@@ -2547,26 +2556,23 @@ public class BRRS_M_SRWA_12C_ReportService {
 					// row13
 					row = sheet.getRow(12);
 					// Column D
-					/*
-					 * cell3 = row.createCell(3); if (record.getR13_NUMBER_OF_FAILED_TRADES() !=
-					 * null) {
-					 * cell3.setCellValue(record.getR13_NUMBER_OF_FAILED_TRADES().doubleValue());
-					 * cell3.setCellStyle(numberStyle); } else { cell3.setCellValue("");
-					 * cell3.setCellStyle(textStyle); } // Column E cell4 = row.createCell(4); if
-					 * (record.getR13_POSITIVE_CURRENT_EXPOSURE() != null) {
-					 * cell4.setCellValue(record.getR13_POSITIVE_CURRENT_EXPOSURE().doubleValue());
-					 * cell4.setCellStyle(numberStyle); } else { cell4.setCellValue("");
-					 * cell4.setCellStyle(textStyle); }
-					 */
-					/*
-					 * // Column F Cell cell5 = row.createCell(5); if
-					 * (record.getR13_RISK_MULTIPLIER() != null) {
-					 * 
-					 * cell5.setCellValue(record.getR13_RISK_MULTIPLIER().doubleValue() / 100);
-					 * cell5.setCellStyle(percentStyle);
-					 * 
-					 * } else { cell5.setCellValue(""); cell5.setCellStyle(textStyle); }
-					 */
+					cell3 = row.createCell(3);
+					if (record.getR13_NUMBER_OF_FAILED_TRADES() != null) {
+						cell3.setCellValue(record.getR13_NUMBER_OF_FAILED_TRADES().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+					// Column E
+					cell4 = row.createCell(4);
+					if (record.getR13_POSITIVE_CURRENT_EXPOSURE() != null) {
+						cell4.setCellValue(record.getR13_POSITIVE_CURRENT_EXPOSURE().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
 
 					// row14
 					row = sheet.getRow(13);
@@ -2716,17 +2722,23 @@ public class BRRS_M_SRWA_12C_ReportService {
 					// row23
 					row = sheet.getRow(22);
 					// Column D
-					/*
-					 * cell3 = row.createCell(3); if (record.getR23_NUMBER_OF_FAILED_TRADES() !=
-					 * null) {
-					 * cell3.setCellValue(record.getR23_NUMBER_OF_FAILED_TRADES().doubleValue());
-					 * cell3.setCellStyle(numberStyle); } else { cell3.setCellValue("");
-					 * cell3.setCellStyle(textStyle); } // Column E cell4 = row.createCell(4); if
-					 * (record.getR23_POSITIVE_CURRENT_EXPOSURE() != null) {
-					 * cell4.setCellValue(record.getR23_POSITIVE_CURRENT_EXPOSURE().doubleValue());
-					 * cell4.setCellStyle(numberStyle); } else { cell4.setCellValue("");
-					 * cell4.setCellStyle(textStyle); }
-					 */
+					cell3 = row.createCell(3);
+					if (record.getR23_NUMBER_OF_FAILED_TRADES() != null) {
+						cell3.setCellValue(record.getR23_NUMBER_OF_FAILED_TRADES().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+					// Column E
+					cell4 = row.createCell(4);
+					if (record.getR23_POSITIVE_CURRENT_EXPOSURE() != null) {
+						cell4.setCellValue(record.getR23_POSITIVE_CURRENT_EXPOSURE().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
 
 					// row24
 					row = sheet.getRow(23);
