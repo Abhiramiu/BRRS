@@ -941,17 +941,22 @@ $(document).ready(function() {
 		$('#loader').modal('hide');
 
 		const message = $("#resultModalBody").text();
-		const reportCode = document.getElementById("currentReportCode").value;
 
 		if (message.includes("Resubmission Updated Successfully")) {
-			// Redirect to correct list page based on report code
-			window.location.href = "/resubmission/list?reportCode=" + reportCode;
+			// Go back and refresh the previous page
+			if (document.referrer) {
+				window.location.href = document.referrer;
+			} else {
+				window.history.back();
+				setTimeout(() => location.reload(), 300);
+			}
 		} else {
-			// Reload same page
+			// Reload same page for other messages
 			setTimeout(() => location.reload(), 300);
 		}
 	}
 </script>
+
 
 
 
