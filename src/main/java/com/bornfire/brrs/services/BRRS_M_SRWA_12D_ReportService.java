@@ -235,7 +235,9 @@ public class BRRS_M_SRWA_12D_ReportService {
 		return mv;
 	}
 
+	@Transactional
 	public void updateReport(M_SRWA_12D_Summary_Entity updatedEntity) {
+
 		System.out.println("Came to services");
 		System.out.println("report_date: " + updatedEntity.getReport_date());
 
@@ -243,176 +245,54 @@ public class BRRS_M_SRWA_12D_ReportService {
 				.orElseThrow(() -> new RuntimeException(
 						"Record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
 
+		M_SRWA_12D_Detail_Entity existing1 = bRRS_M_SRWA_12D_Detail_Repo.findById(updatedEntity.getReport_date())
+				.orElseThrow(() -> new RuntimeException(
+						"Detail Record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
+
 		try {
-			// Loop from R11 to R50 and copy fields
-			for (int i = 12; i <= 15; i++) {
-				String prefix = "R" + i + "_";
-				String[] fields = { "PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS", "TOTAL_CURRENT_EXCHANGE_CONTRACTS",
-						"POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS",
-						"APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS", "PRINCIPAL_AMOUNT_INTEREST_CONTRACTS",
-						"TOTAL_CURRENT_INTEREST_CONTRACTS", "POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS",
-						"POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS",
-						"APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS" };
 
-				for (String field : fields) {
-					String getterName = "get" + prefix + field;
-					String setterName = "set" + prefix + field;
+			String[] totalFields = { "PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS", "TOTAL_CURRENT_EXCHANGE_CONTRACTS",
+					"POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS", "APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS",
+					"PRINCIPAL_AMOUNT_INTEREST_CONTRACTS", "TOTAL_CURRENT_INTEREST_CONTRACTS",
+					"POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS", "APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS",
+					"PRINCIPAL_AMOUNT_EQUITY_CONTRACTS", "TOTAL_CURRENT_EQUITY_CONTRACTS",
+					"POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS", "APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS",
+					"PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS", "TOTAL_CURRENT_PRECIOUS_CONTRACTS",
+					"POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS", "APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS",
+					"PRINCIPAL_AMOUNT_DEBT_CONTRACTS", "TOTAL_CURRENT_DEBT_CONTRACTS",
+					"POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS", "APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS",
+					"PRINCIPAL_AMOUNT_CREDIT_CONTRACTS", "TOTAL_CURRENT_CREDIT_CONTRACTS",
+					"POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS", "APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS",
+					"PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS", "POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS",
+					"ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS", "APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS" };
 
-					try {
-						Method getter = M_SRWA_12D_Summary_Entity.class.getMethod(getterName);
-						Method setter = M_SRWA_12D_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-
-						Object newValue = getter.invoke(updatedEntity);
-						setter.invoke(existing, newValue);
-					} catch (NoSuchMethodException e) {
-						// Skip missing fields
-						continue;
-					}
-				}
-			}
-
-			// Loop from R17 to R30 and copy fields
-			for (int i = 21; i <= 24; i++) {
-				String prefix = "R" + i + "_";
-				String[] fields = {
-
-						"PRINCIPAL_AMOUNT_EQUITY_CONTRACTS", "TOTAL_CURRENT_EQUITY_CONTRACTS",
-						"POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS", "APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS",
-						"PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS", "TOTAL_CURRENT_PRECIOUS_CONTRACTS",
-						"POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS",
-						"APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS" };
-
-				for (String field : fields) {
-					String getterName = "get" + prefix + field;
-					String setterName = "set" + prefix + field;
-
-					try {
-						Method getter = M_SRWA_12D_Summary_Entity.class.getMethod(getterName);
-						Method setter = M_SRWA_12D_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-
-						Object newValue = getter.invoke(updatedEntity);
-						setter.invoke(existing, newValue);
-					} catch (NoSuchMethodException e) {
-						// Skip missing fields
-						continue;
-					}
-				}
-			}
-
-			// Loop from R32 to R33 and copy fields
-			for (int i = 30; i <= 33; i++) {
-				String prefix = "R" + i + "_";
-				String[] fields = {
-
-						"PRINCIPAL_AMOUNT_DEBT_CONTRACTS", "TOTAL_CURRENT_DEBT_CONTRACTS",
-						"POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS", "APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS",
-
-						"PRINCIPAL_AMOUNT_CREDIT_CONTRACTS", "TOTAL_CURRENT_CREDIT_CONTRACTS",
-						"POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS",
-						"APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS" };
-
-				for (String field : fields) {
-					String getterName = "get" + prefix + field;
-					String setterName = "set" + prefix + field;
-
-					try {
-						Method getter = M_SRWA_12D_Summary_Entity.class.getMethod(getterName);
-						Method setter = M_SRWA_12D_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-
-						Object newValue = getter.invoke(updatedEntity);
-						setter.invoke(existing, newValue);
-					} catch (NoSuchMethodException e) {
-						// Skip missing fields
-						continue;
-					}
-				}
-			}
-
-			// Loop from R35 to R36 and copy fields
-			for (int i = 43; i <= 45; i++) {
-				String prefix = "R" + i + "_";
-				String[] fields = { "PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS",
-						"POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS", "ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS",
-						"APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS",
-
-				};
-
-				for (String field : fields) {
-					String getterName = "get" + prefix + field;
-					String setterName = "set" + prefix + field;
-
-					try {
-						Method getter = M_SRWA_12D_Summary_Entity.class.getMethod(getterName);
-						Method setter = M_SRWA_12D_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-
-						Object newValue = getter.invoke(updatedEntity);
-						setter.invoke(existing, newValue);
-					} catch (NoSuchMethodException e) {
-						// Skip missing fields
-						continue;
-					}
-				}
-			}
-
-			String[] totalFields = {
-
-					"PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS", "POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS",
-					"CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS", "RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS",
-
-					"PRINCIPAL_AMOUNT_INTEREST_CONTRACTS",
-
-					"POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS", "CREDIT_EQUIVALENT_INTEREST_CONTRACTS",
-
-					"RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS",
-
-					"PRINCIPAL_AMOUNT_EQUITY_CONTRACTS",
-
-					"POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS", "CREDIT_EQUIVALENT_EQUITY_CONTRACTS",
-
-					"RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS",
-
-					"PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS",
-
-					"POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS", "CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS",
-
-					"RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS",
-
-					"PRINCIPAL_AMOUNT_DEBT_CONTRACTS",
-
-					"POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS", "CREDIT_EQUIVALENT_DEBT_CONTRACTS",
-
-					"RISK_WEIGHTED_ASSET_DEBT_CONTRACTS",
-
-					"PRINCIPAL_AMOUNT_CREDIT_CONTRACTS",
-
-					"POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS", "CREDIT_EQUIVALENT_CREDIT_CONTRACTS",
-
-					"RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS",
-
-					"PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS",
-
-					"CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS",
-
-					"RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS"
-
-			};
-
-			// Loop from R12 to R57 and copy fields
 			for (int i = 12; i <= 45; i++) {
+
 				String prefix = "R" + i + "_";
 
 				for (String field : totalFields) {
+
 					String getterName = "get" + prefix + field;
 					String setterName = "set" + prefix + field;
 
 					try {
-						Method getter = M_SRWA_12D_Summary_Entity.class.getMethod(getterName);
-						Method setter = M_SRWA_12D_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
 
-						Object newValue = getter.invoke(updatedEntity);
-						setter.invoke(existing, newValue);
+						// ===== Summary Update =====
+						Method getterSummary = M_SRWA_12D_Summary_Entity.class.getMethod(getterName);
+						Method setterSummary = M_SRWA_12D_Summary_Entity.class.getMethod(setterName,
+								getterSummary.getReturnType());
+
+						Object newValue = getterSummary.invoke(updatedEntity);
+						setterSummary.invoke(existing, newValue);
+
+						// ===== Detail Update =====
+						Method getterDetail = M_SRWA_12D_Detail_Entity.class.getMethod(getterName);
+						Method setterDetail = M_SRWA_12D_Detail_Entity.class.getMethod(setterName,
+								getterDetail.getReturnType());
+
+						setterDetail.invoke(existing1, newValue);
+
 					} catch (NoSuchMethodException e) {
-						// Skip if field does not exist for this row/field
 						continue;
 					}
 				}
@@ -422,9 +302,12 @@ public class BRRS_M_SRWA_12D_ReportService {
 			throw new RuntimeException("Error while updating report fields", e);
 		}
 
-		// Save updated entity
-		System.out.println("abc");
+		System.out.println("Saving Summary and Detail...");
+
 		M_SRWA_12D_Summary_Repo.save(existing);
+		bRRS_M_SRWA_12D_Detail_Repo.save(existing1);
+
+		System.out.println("Update Completed Successfully");
 	}
 
 	public byte[] getM_SRWA_12DExcel(String filename, String reportId, String fromdate, String todate, String currency,
