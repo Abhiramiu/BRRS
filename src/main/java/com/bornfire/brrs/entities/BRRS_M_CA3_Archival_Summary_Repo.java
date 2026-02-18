@@ -34,7 +34,7 @@ public interface BRRS_M_CA3_Archival_Summary_Repo extends JpaRepository<M_CA3_Ar
 	@Query(value = "SELECT *  FROM BRRS_M_CA3_ARCHIVALTABLE_SUMMARY WHERE REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION ASC FETCH FIRST 1 ROWS ONLY ", nativeQuery = true)
 	List<M_CA3_Archival_Summary_Entity> getdatabydateListWithVersion();
 
-	@Query(value = "SELECT *  FROM BRRS_M_CA3_ARCHIVALTABLE_SUMMARY WHERE REPORT_VERSION IS NOT NULL ", nativeQuery = true)
+	@Query(value = "SELECT *  FROM BRRS_M_CA3_ARCHIVALTABLE_SUMMARY WHERE REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION ASC", nativeQuery = true)
 	List<M_CA3_Archival_Summary_Entity> getdatabydateListWithVersionAll();
 
 }
