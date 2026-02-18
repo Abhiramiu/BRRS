@@ -411,7 +411,7 @@ PURPOSE		: BRRS MANUAL REPORT
 	        type=${type},
 	        asondate=${asondate},
 	        version=${version}
-	    )}]]*/;
+	    )}]]*/
 			location.href = Callurl;
 
 		}
@@ -423,7 +423,7 @@ PURPOSE		: BRRS MANUAL REPORT
 					fromdate=${fromdate}, 
 					todate=${todate}, 
 					type=${type}, 
-					asondate=${asondate})}]]*/;
+					asondate=${asondate})}]]*/
 			location.href = Callurl;
 		}
 
@@ -900,208 +900,109 @@ PURPOSE		: BRRS MANUAL REPORT
 				isDetailsModal = false;
 			}
 		}
-
-		// This is the main function that orchestrates the entire form submission process.
-		// It is triggered by the "Update" button click.
-		// Make the function global so onclick="fileuploads(this)" can see it
-		/*function fileuploads (btn) {
-		   try {
-			   // ✅ Get report date
-			   const asondate = btn.getAttribute("data-todate");
+</script>
+		
 	   
-			   // ✅ Show loader
-			   $('#loader').modal('show');
-	   
-			   // ✅ Calculate totals if exists
-			   if (typeof calculateTotals === "function") {
-				   calculateTotals();
-			   }
-	   
-			   // ✅ Remove commas from text inputs
-			   $("#fileupload input[type='text']").each(function () {
-				   const val = $(this).val();
-				   if (val && val.includes(",")) {
-					   $(this).val(val.replace(/,/g, ''));
-				   }
-			   });
-	   
-			   // ✅ Validate form
-			   if (!$("#fileupload").valid()) {
-				   $('#loader').modal('hide');
-				   return;
-			   }
-	   
-			   // ✅ Get type from URL
-			   const urlParams = new URLSearchParams(window.location.search);
-			   const urlType = urlParams.get("type");
-			   const isResub = urlType && urlType.toUpperCase() === 'RESUB';
-	   
-			   // ✅ Redirect URL (RESUB only, M_CA3 only)
-			   const previousUrl = window.previousUrl || null;
-	   
-			   const redirectUrl = isResub
-				   ? (previousUrl ? previousUrl : "/BRRS/Resubmission?rptcode=M_CA3")
-				   : null;
-	   
-			   // ✅ API endpoint
-			   let apiUrl = './M_CA3update';
-			   if (isResub) {
-				   apiUrl = './UpdateM_CA3_ReSub';
-			   }
-	   
-			   // ✅ Build FormData
-			   const formData = new FormData();
-			   formData.append("asondate", asondate);
-			   formData.append("type", urlType || "");
-	   
-			   $('#fileupload').find(':input').each(function () {
-				   const name = $(this).attr('name');
-				   if (name) {
-					   formData.append(name, $(this).val());
-				   }
-			   });
-	   
-			   // ✅ AJAX call
-			   $.ajax({
-				   url: apiUrl,
-				   type: 'POST',
-				   data: formData,
-				   processData: false,
-				   contentType: false,
-				   dataType: 'text',
-	   
-				   success: function (response) {
-					   $("#resultModalLabel").text("BRRS");
-					   $("#resultModalBody").text(response);
-					   $("#resultModal").modal("show");
-	   
-					   // ✅ Redirect after modal closes (RESUB only)
-					   if (redirectUrl) {
-						   $("#resultModal").one('hidden.bs.modal', function () {
-							   window.location.href = redirectUrl;
-						   });
-					   }
-				   },
-	   
-				   error: function (jqXHR) {
-					   $("#resultModalLabel").text("Error");
-					   $("#resultModalBody").text(
-						   "Update failed: " + (jqXHR.responseText || "Unknown error")
-					   );
-					   $("#resultModal").modal("show");
-	   
-					   // ✅ Redirect after modal closes (RESUB only)
-					   if (redirectUrl) {
-						   $("#resultModal").one('hidden.bs.modal', function () {
-							   window.location.href = redirectUrl;
-						   });
-					   }
-				   },
-	   
-				   complete: function () {
-					   $('#loader').modal('hide');
-				   }
-			   });
-	   
-		   } catch (error) {
-			   $('#loader').modal('hide');
-			   console.error("Error during file upload:", error);
-		   }
-	   };
-	   */
-		function fileuploads(btn) {
+	   <script>
+	   	function fileuploads(btn) {
 
-			try {
+	   	    try {
 
-				const asondate = btn.getAttribute("data-todate");
+	   	        const asondate = btn.getAttribute("data-todate");
 
-				$('#loader').modal('show');
+	   	        $('#loader').modal('show');
 
-				if (typeof calculateTotals === "function") {
-					calculateTotals();
-				}
+	   	        if (typeof calculateTotals === "function") {
+	   	            calculateTotals();
+	   	        }
 
-				// Remove commas
-				$("#fileupload input[type='text']").each(function () {
-					const val = $(this).val();
-					if (val && val.includes(",")) {
-						$(this).val(val.replace(/,/g, ''));
-					}
-				});
+	   	        // Remove commas
+	   	        $("#fileupload input[type='text']").each(function () {
+	   	            const val = $(this).val();
+	   	            if (val && val.includes(",")) {
+	   	                $(this).val(val.replace(/,/g, ''));
+	   	            }
+	   	        });
 
-				if (!$("#fileupload").valid()) {
-					$('#loader').modal('hide');
-					return;
-				}
+	   	        if (!$("#fileupload").valid()) {
+	   	            $('#loader').modal('hide');
+	   	            return;
+	   	        }
 
-				// Get type from URL
-				const urlParams = new URLSearchParams(window.location.search);
-				const urlType = urlParams.get("type");
+	   	        // Get type from URL
+	   	        const urlParams = new URLSearchParams(window.location.search);
+	   	        const urlType = urlParams.get("type");
 
-				const isResub = urlType && urlType.toUpperCase() === 'RESUB';
+	   	        const isResub = urlType && urlType.toUpperCase() === 'RESUB';
 
-				// ✅ Use SERIALIZE (NOT FormData)
-				const formData =
-					$('#fileupload').serialize()
-					+ '&asondate=' + encodeURIComponent(asondate)
-					+ '&type=' + encodeURIComponent(urlType || '');
+	   	        // Use SERIALIZE
+	   	        const formData =
+	   	            $('#fileupload').serialize()
+	   	            + '&asondate=' + encodeURIComponent(asondate)
+	   	            + '&type=' + encodeURIComponent(urlType || '');
 
-				console.log("✅ Form data prepared");
+	   	        console.log("Form data prepared");
+	   	        console.log("URL TYPE:", urlType);
+	   	        console.log("IS RESUB:", isResub);
 
-				let apiUrl = './M_CA3update';
-				if (isResub) {
-					apiUrl = './UpdateM_CA3_ReSub';
-				}
+	   	        let apiUrl = './M_CA3update';
+	   	        if (isResub) {
+	   	            apiUrl = './UpdateM_CA3_ReSub';
+	   	        }
 
-				$.ajax({
-					url: apiUrl,
-					type: 'POST',
-					data: formData,
-					dataType: 'text',
+	   	        $.ajax({
+	   	            url: apiUrl,
+	   	            type: 'POST',
+	   	            data: formData,
+	   	            dataType: 'text',
 
-					success: function (response) {
-						$("#resultModalLabel").text("BRRS");
-						$("#resultModalBody").text(response);
-						$("#resultModal").modal("show");
+	   	            success: function (response) {
 
-						$("#resultModal")
-							.off("hidden.bs.modal")
-							.on("hidden.bs.modal", function () {
-								if (isResub) {
-									window.location.href =
-										window.previousUrl
-											? window.previousUrl
-											: "/BRRS/Resubmission?rptcode=M_CA3";
-								}
-							});
-					},
+	   	                $("#resultModalLabel").text("BRRS");
+	   	                $("#resultModalBody").text(response);
+	   	                $("#resultModal").modal("show");
 
-					error: function (jqXHR) {
-						console.log("Error response:", jqXHR.responseText);
+	   	                // Properly bind modal hidden event
+	   	                $("#resultModal")
+	   	                    .off("hidden.bs.modal")
+	   	                    .on("hidden.bs.modal", function () {
 
-						$("#resultModalLabel").text("Error");
-						$("#resultModalBody").text(
-							"Update failed: " +
-							(jqXHR.responseText || "Unknown error")
-						);
-						$("#resultModal").modal("show");
-					},
+	   	                        if (isResub) {
 
-					complete: function () {
-						$('#loader').modal('hide');
-					}
-				});
+	   	                            if (window.previousUrl && window.previousUrl !== "") {
+	   	                                window.location.href = window.previousUrl;
+	   	                            } else {
+	   	                                window.location.href = "/BRRS/Resubmission?rptcode=M_CA3"; // ✅ removed space
+	   	                            }
+	   	                        }
+	   	                    });
+	   	            },
 
-			} catch (error) {
-				$('#loader').modal('hide');
-				console.error("Error during file upload:", error);
-			}
-		}
+	   	            error: function (jqXHR) {
+
+	   	                console.log("Error response:", jqXHR.responseText);
+
+	   	                $("#resultModalLabel").text("Error");
+	   	                $("#resultModalBody").text(
+	   	                    "Update failed: " +
+	   	                    (jqXHR.responseText || "Unknown error")
+	   	                );
+	   	                $("#resultModal").modal("show");
+	   	            },
+
+	   	            complete: function () {
+	   	                $('#loader').modal('hide');
+	   	            }
+	   	        });
+
+	   	    } catch (error) {
+	   	        $('#loader').modal('hide');
+	   	        console.error("Error during file upload:", error);
+	   	    }
+	   	}
+	   	</script>
 
 
-
-
-	</script>
 </head>
 
 
