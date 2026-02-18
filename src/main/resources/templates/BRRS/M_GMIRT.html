@@ -515,11 +515,7 @@ function editRecord(){
 	showResultModal('Alert', 'Development in progress');
 	
 }
-function closemodel(){
-	$('#alert').modal('hide');
-	$('#resultModal').modal('hide');
-	
-}
+
 
 function showResultModal(title, message) {
 	// Set the text for the modal elements
@@ -894,16 +890,20 @@ $(document).ready(function() {
 
 	// This function is for closing the modal after an action is complete.
 	// It hides the result and loader modals and reloads the page.
+
 	function closemodel() {
-	    $("#resultModal").modal("hide");
-	    $('#loader').modal('hide');
+			    const modalElement = document.getElementById('resultModal');
+			    const modal = bootstrap.Modal.getInstance(modalElement);
+			    modal.hide();
 
-	    // Reload the page after a short delay to ensure the modal animation completes smoothly.
-	    setTimeout(function () {
-	        location.reload();
-	    }, 300);
-	}
+			    const message = document.getElementById("resultModalBody").innerText.toLowerCase();
 
+			    if (message.includes("resubmission")) {
+			        window.history.back();
+			    } else {
+			        location.reload();
+			    }
+			}
 	// This is the main function that orchestrates the entire form submission process.
 	// It is triggered by the "Update" button click.
 // Make the function global so onclick="fileuploads(this)" can see it
@@ -1094,7 +1094,7 @@ function fileuploads(btn) {
 						<!-- Title -->
 						<h5
 							style="font-family: arial; font-size: 20px; font-weight: bold; color: white; margin: 0 10px;">
-							(17) MONTHLY SCHEDLE: M-GMIRT: GENERAL MARKET <br>INTEREST RATE RISK: TRADING BOOK</h5>
+							(17) MONTHLY SCHEDLE: M-GMIRT: <br> GENERAL MARKET INTEREST RATE  <br>RISK: TRADING BOOK</h5>
 							
 							
 							<!-- Moving bus-board text -->
@@ -1208,14 +1208,14 @@ function fileuploads(btn) {
 				          color: white; font-size: 20px;
 				          background-color: rgb(107, 122, 143); 
 				          margin-top:10px; margin-bottom:10px; padding: 5px;">
-					Re-submission Summary View - M-GMIRT
+					Resubmission Summary View - M-GMIRT
 				</h1>
 
 				<h1 th:if="${type == 'RESUB' and displaymode == 'resubDetail'}" style="text-align: left; font-weight: bold;
 				          color: white; font-size: 20px;
 				          background-color: rgb(107, 122, 143); 
 				          margin-top:10px; margin-bottom:10px; padding: 5px;">
-					Re-submission Detail View - M-GMIRT
+					Resubmission Detail View - M-GMIRT
 				</h1>
 				
 				<div th:if="${displaymode == 'summary' or displaymode == 'Details'or displaymode == 'resubSummary'or displaymode == 'resubDetail'}">
@@ -1677,27 +1677,24 @@ function fileuploads(btn) {
 
 
 
-	<!-- Custom Alert/Result Modal (Matches your existing style) -->
 	<div class="modal fade" id="resultModal">
-		<div class="modal-dialog modal-dialog-centered">
-			<div class="modal-content">
-				<!-- Your custom styled header -->
-				<div class="menu-title-header">
-					<div class="modal-title" id="resultModalLabel"
-						style="text-align: center; color: white;">
-						<!-- Title will be set by JavaScript -->
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content">
+					<!-- Your custom styled header -->
+					<div class="menu-title-header">
+						<div class="modal-title" id="resultModalLabel" style="text-align: center; color: white;">
+							<!-- Title will be set by JavaScript -->
+						</div>
 					</div>
-				</div>
-				<div class="modal-body"
-					style="text-align: center; font-size: 1.1rem;">
-					<p id="resultModalBody"></p>
-					<!-- Your custom styled button -->
-					<button type="button" class="custom-tab-btn" onclick="closemodel()"
-						data-dismiss="modal">OK</button>
+					<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+						<p id="resultModalBody"></p>
+						<!-- Your custom styled button -->
+						<button type="button" class="custom-tab-btn" onclick="closemodel()"
+							data-bs-dismiss="modal">OK</button>
+					</div>
 				</div>
 			</div>
 		</div>
-	</div>
 
 	<!-- Custom Cellresult Modal -->
 	<div class="modal fade" id="cellresultModal">

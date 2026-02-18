@@ -439,7 +439,7 @@ public class BRRS_ReportsController {
 			AIDPreportService.updateReport3(request3);
 			AIDPreportService.updateReport4(request4);
 
-			return ResponseEntity.ok("Updated Successfully.");
+			return ResponseEntity.ok("Modified Successfully.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -462,7 +462,7 @@ public class BRRS_ReportsController {
 			// call services
 			BRRS_M_LA4_ReportService.updateReport(request1);
 
-			return ResponseEntity.ok("Updated Successfully.");
+			return ResponseEntity.ok("Modified Successfully.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -486,7 +486,7 @@ public class BRRS_ReportsController {
 	 * 
 	 * // call services BRRS_MDISB1_ReportService.updateReport(request1);
 	 * 
-	 * return ResponseEntity.ok("Updated Successfully."); } catch (Exception e) {
+	 * return ResponseEntity.ok("Modified Successfully."); } catch (Exception e) {
 	 * e.printStackTrace(); return
 	 * ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).
 	 * body("Update Failed: " + e.getMessage()); } }
@@ -576,7 +576,7 @@ public class BRRS_ReportsController {
 			// call services
 			brrs_m_ca2_reportservice.updateReport(request1);
 
-			return ResponseEntity.ok("Updated Successfully.");
+			return ResponseEntity.ok("Modified Successfully.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -606,7 +606,7 @@ public class BRRS_ReportsController {
 			M_TOP_100_BORROWER_ReportService.updateReport(request1);
 			M_TOP_100_BORROWER_ReportService.updateReport1(request2);
 
-			return ResponseEntity.ok("Updated Successfully.");
+			return ResponseEntity.ok("Modified Successfully.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -633,7 +633,7 @@ public class BRRS_ReportsController {
 			// call services
 			brrs_m_mrc_reportservice.updateReport(request1);
 
-			return ResponseEntity.ok("Updated Successfully.");
+			return ResponseEntity.ok("Modified Successfully.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -660,7 +660,7 @@ public class BRRS_ReportsController {
 			// call services
 			brrs_m_liqgap_reportservice.updateReport(request1);
 
-			return ResponseEntity.ok("Updated Successfully.");
+			return ResponseEntity.ok("Modified Successfully.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -685,7 +685,7 @@ public class BRRS_ReportsController {
 			// call services
 			SRWA12DreportService.updateReport(request1);
 
-			return ResponseEntity.ok("Updated Successfully");
+			return ResponseEntity.ok("Modified Successfully.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -807,7 +807,7 @@ public class BRRS_ReportsController {
 	 * CA3reportService.updateReport5(request1);
 	 * CA3reportService.updateReport6(request1);
 	 * 
-	 * return ResponseEntity.ok("Updated Successfully."); } catch (Exception e) {
+	 * return ResponseEntity.ok("Modified Successfully."); } catch (Exception e) {
 	 * e.printStackTrace(); return
 	 * ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).
 	 * body("Update Failed: " + e.getMessage()); } }
@@ -967,7 +967,7 @@ public class BRRS_ReportsController {
 			// call services
 			brrs_m_or1_reportservice.updateReport(request1);
 
-			return ResponseEntity.ok("Updated Successfully.");
+			return ResponseEntity.ok("Modified Successfully.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -1046,7 +1046,7 @@ public class BRRS_ReportsController {
 			// ✅ directly update summary report
 			LA3reportService.updateReport(request);
 
-			return ResponseEntity.ok("Updated Successfully.");
+			return ResponseEntity.ok("Modified Successfully.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -1108,7 +1108,7 @@ public class BRRS_ReportsController {
 			/* brrs_m_liq_reportservice.updateReport(request1); */
 			brrs_m_liq_reportservice.updateReport1(request2);
 
-			return ResponseEntity.ok("Updated Successfully.");
+			return ResponseEntity.ok("Modified Successfully.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -1135,7 +1135,7 @@ public class BRRS_ReportsController {
 			CA5reportService.updateReport(request1);
 			CA5reportService.updateReport2(request2);
 
-			return ResponseEntity.ok("Updated Successfully.");
+			return ResponseEntity.ok("Modified Successfully.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -1211,7 +1211,7 @@ public class BRRS_ReportsController {
 
 			BDISB1reportService.updateDetailFromForm(asondate, allParams);
 
-			return ResponseEntity.ok("Updated Successfully.");
+			return ResponseEntity.ok("Modified Successfully.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -1262,7 +1262,7 @@ public class BRRS_ReportsController {
 	 * 
 	 * INT_RATES_FCAreportService.updateDetailFromForm(asondate, allParams);
 	 * 
-	 * return ResponseEntity.ok("Updated Successfully."); } catch (Exception e) {
+	 * return ResponseEntity.ok("Modified Successfully."); } catch (Exception e) {
 	 * e.printStackTrace(); return ResponseEntity
 	 * .status(HttpStatus.INTERNAL_SERVER_ERROR) .body("Update Failed: " +
 	 * e.getMessage()); } }
@@ -1425,7 +1425,7 @@ public class BRRS_ReportsController {
 	 * 
 	 * INT_RATES_reportService.updateDetailFromForm(asondate, allParams);
 	 * 
-	 * return ResponseEntity.ok("Updated Successfully."); } catch (Exception e) {
+	 * return ResponseEntity.ok("Modified Successfully."); } catch (Exception e) {
 	 * e.printStackTrace(); return ResponseEntity
 	 * .status(HttpStatus.INTERNAL_SERVER_ERROR) .body("Update Failed: " +
 	 * e.getMessage()); } }
@@ -1473,7 +1473,7 @@ public class BRRS_ReportsController {
 	 * 
 	 * M_OPTRreportService.updateDetailFromForm(asondate, allParams);
 	 * 
-	 * return ResponseEntity.ok("Updated Successfully."); } catch (Exception e) {
+	 * return ResponseEntity.ok("Modified Successfully."); } catch (Exception e) {
 	 * e.printStackTrace(); return ResponseEntity
 	 * .status(HttpStatus.INTERNAL_SERVER_ERROR) .body("Update Failed: " +
 	 * e.getMessage()); } }
@@ -1552,7 +1552,7 @@ public class BRRS_ReportsController {
 
 			M_OPTRNEWreportService.updateDetailFromForm(asondate, allParams);
 
-			return ResponseEntity.ok("Updated Successfully.");
+			return ResponseEntity.ok("Modified Successfully.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -1608,7 +1608,7 @@ public class BRRS_ReportsController {
 	 * 
 	 * // call services BDISB3reportService.updateReport(request1);
 	 * 
-	 * return ResponseEntity.ok("Updated Successfully."); } catch (Exception e) {
+	 * return ResponseEntity.ok("Modified Successfully."); } catch (Exception e) {
 	 * e.printStackTrace(); return
 	 * ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).
 	 * body("Update Failed: " + e.getMessage()); } }
@@ -1620,7 +1620,7 @@ public class BRRS_ReportsController {
 		try {
 			System.out.println("came to Controller for updating values");
 			BDISB3reportService.updateDetailFromForm(asondate, allParams);
-			return ResponseEntity.ok("Updated Successfully.");
+			return ResponseEntity.ok("Modified Successfully.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -1667,7 +1667,7 @@ public class BRRS_ReportsController {
 
 			BRRS_MDISB5_ReportService.updateDetailFromForm(asondate, allParams);
 
-			return ResponseEntity.ok("Updated Successfully.");
+			return ResponseEntity.ok("Modified Successfully.");
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1738,7 +1738,7 @@ public class BRRS_ReportsController {
 	 * brrs_MDISB5_ReportService.updateReport2(request2);
 	 * brrs_MDISB5_ReportService.updateReport3(request3);
 	 * 
-	 * return ResponseEntity.ok("Updated Successfully."); } catch (Exception e) {
+	 * return ResponseEntity.ok("Modified Successfully."); } catch (Exception e) {
 	 * e.printStackTrace(); return
 	 * ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).
 	 * body("Update Failed: " + e.getMessage()); } }
@@ -1786,7 +1786,7 @@ public class BRRS_ReportsController {
 			request1.setReport_date(asondate);
 			// call services
 			BRRS_M_CR_ReportService.updateReport(request1);
-			return ResponseEntity.ok("Updated Successfully.");
+			return ResponseEntity.ok("Modified Successfully.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -1811,7 +1811,7 @@ public class BRRS_ReportsController {
 			// call services
 			SECLreportService.updateReport(request1);
 
-			return ResponseEntity.ok("Updated Successfully.");
+			return ResponseEntity.ok("Modified Successfully.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -2003,7 +2003,7 @@ public class BRRS_ReportsController {
 			// call services
 			brrs_m_int_new_rates_reportservice.updateReport(request1);
 
-			return ResponseEntity.ok("Updated Successfully.");
+			return ResponseEntity.ok("Modified Successfully.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -2068,7 +2068,7 @@ public class BRRS_ReportsController {
 				M_CA7_ReportService.updateDetail(detail);
 			}
 
-			return ResponseEntity.ok("Updated Successfully.");
+			return ResponseEntity.ok("Modified Successfully.");
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -2093,7 +2093,7 @@ public class BRRS_ReportsController {
 
 			M_SFINP1_ReportService.updateReport(request1);
 
-			return ResponseEntity.ok("Updated Successfully.");
+			return ResponseEntity.ok("Modified Successfully.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -2256,7 +2256,7 @@ public class BRRS_ReportsController {
 	 * 
 	 * // call services INTRATESFCACreportService.updateReport(request1);
 	 * 
-	 * return ResponseEntity.ok("Updated Successfully."); } catch (Exception e) {
+	 * return ResponseEntity.ok("Modified Successfully."); } catch (Exception e) {
 	 * e.printStackTrace(); return
 	 * ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 	 * .body("Update Failed: " + e.getMessage()); } }
@@ -2737,7 +2737,7 @@ public class BRRS_ReportsController {
 			brrs_m_srwa_12a_reportservice.updateReport6(request6);
 			brrs_m_srwa_12a_reportservice.updateReport7(request7);
 
-			return ResponseEntity.ok("Updated Successfully.");
+			return ResponseEntity.ok("Modified Successfully.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -2783,7 +2783,7 @@ public class BRRS_ReportsController {
 			brrs_M_SRWA_12A_New_reportservice.updateReport7(request7);
 			brrs_M_SRWA_12A_New_reportservice.updateReport8(request8);
 
-			return ResponseEntity.ok("Updated Successfully.");
+			return ResponseEntity.ok("Modified Successfully.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -2841,7 +2841,7 @@ public class BRRS_ReportsController {
 			brrs_m_srwa_12b_reportservice.updateReport7(request7);
 			brrs_m_srwa_12b_reportservice.updateReport8(request8);
 
-			return ResponseEntity.ok("Updated Successfully.");
+			return ResponseEntity.ok("Modified Successfully.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -2924,7 +2924,7 @@ public class BRRS_ReportsController {
 			// call services
 			q_rlfa2_reportService.updateReport(request);
 
-			return ResponseEntity.ok("Updated Successfully.");
+			return ResponseEntity.ok("Modified Successfully.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -3032,7 +3032,7 @@ public class BRRS_ReportsController {
 			// call services
 			brrs_q_rlfa1_reportservice.updateReport(request);
 
-			return ResponseEntity.ok("Updated Successfully.");
+			return ResponseEntity.ok("Modified Successfully.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -3105,7 +3105,7 @@ public class BRRS_ReportsController {
 			BRRS_M_RPD_ReportService.updateReport8(request8);
 			BRRS_M_RPD_ReportService.updateReport9(request9);
 
-			return ResponseEntity.ok("Updated Successfully.");
+			return ResponseEntity.ok("Modified Successfully.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -3129,7 +3129,7 @@ public class BRRS_ReportsController {
 	 * 
 	 * // call services BRRS_MDISB1_ReportService.updateReport(request1);
 	 * 
-	 * return ResponseEntity.ok("Updated Successfully."); } catch (Exception e) {
+	 * return ResponseEntity.ok("Modified Successfully."); } catch (Exception e) {
 	 * e.printStackTrace(); return
 	 * ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).
 	 * body("Update Failed: " + e.getMessage()); } }
@@ -3145,7 +3145,7 @@ public class BRRS_ReportsController {
 
 			BRRS_MDISB1_ReportService.updateDetailFromForm(asondate, allParams);
 
-			return ResponseEntity.ok("Updated Successfully.");
+			return ResponseEntity.ok("Modified Successfully.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed : " + e.getMessage());
@@ -3190,7 +3190,7 @@ public class BRRS_ReportsController {
 	 * 
 	 * // call services BRRS_MDISB2_ReportService.updateReport(request1);
 	 * 
-	 * return ResponseEntity.ok("Updated Successfully."); } catch (Exception e) {
+	 * return ResponseEntity.ok("Modified Successfully."); } catch (Exception e) {
 	 * e.printStackTrace(); return
 	 * ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).
 	 * body("Update Failed: " + e.getMessage()); } }
@@ -3206,7 +3206,7 @@ public class BRRS_ReportsController {
 
 			BRRS_MDISB2_ReportService.updateDetailFromForm(asondate, allParams);
 
-			return ResponseEntity.ok("Updated Successfully.");
+			return ResponseEntity.ok("Modified Successfully.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed : " + e.getMessage());
@@ -3230,7 +3230,7 @@ public class BRRS_ReportsController {
 	 * 
 	 * // call services BRRS_MDISB3_ReportService.updateReport(request1);
 	 * 
-	 * return ResponseEntity.ok("Updated Successfully."); } catch (Exception e) {
+	 * return ResponseEntity.ok("Modified Successfully."); } catch (Exception e) {
 	 * e.printStackTrace(); return
 	 * ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).
 	 * body("Update Failed: " + e.getMessage()); } }
@@ -3246,7 +3246,7 @@ public class BRRS_ReportsController {
 
 			BRRS_MDISB3_ReportService.updateDetailFromForm(asondate, allParams);
 
-			return ResponseEntity.ok("Updated Successfully.");
+			return ResponseEntity.ok("Modified Successfully.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed : " + e.getMessage());
@@ -3273,7 +3273,7 @@ public class BRRS_ReportsController {
 	 * 
 	 * // call services brrs_sch_17_reportservice.updateReport(request);
 	 * 
-	 * return ResponseEntity.ok("Updated Successfully."); } catch (Exception e) {
+	 * return ResponseEntity.ok("Modified Successfully."); } catch (Exception e) {
 	 * e.printStackTrace(); return
 	 * ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 	 * .body("Update Failed: " + e.getMessage()); } }
@@ -3289,7 +3289,7 @@ public class BRRS_ReportsController {
 
 			brrs_sch_17_reportservice.updateDetailFromForm(asondate, allParams);
 
-			return ResponseEntity.ok("Updated Successfully.");
+			return ResponseEntity.ok("Modified Successfully.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed : " + e.getMessage());
@@ -3314,7 +3314,7 @@ public class BRRS_ReportsController {
 			// call services
 			brrs_FORMAT_II_reportservice.updateReport(request);
 
-			return ResponseEntity.ok("Updated Successfully.");
+			return ResponseEntity.ok("Modified Successfully.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -3510,7 +3510,7 @@ public class BRRS_ReportsController {
 			// call services
 			BRRS_M_SECA_reportservice.updateReport1(request);
 
-			return ResponseEntity.ok("Updated Successfully");
+			return ResponseEntity.ok("Modified Successfully.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -3731,7 +3731,7 @@ public class BRRS_ReportsController {
 			M_IS_Service.MISUpdate1(request1);
 			M_IS_Service.MISUpdate2(request2);
 
-			return ResponseEntity.ok("Updated Successfully.");
+			return ResponseEntity.ok("Modified Successfully.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -4018,7 +4018,7 @@ public class BRRS_ReportsController {
 			LARADVreportService.updateReport4(request4);
 			LARADVreportService.updateReport5(request5);
 
-			return ResponseEntity.ok("Updated Successfully.");
+			return ResponseEntity.ok("Modified Successfully.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -4415,7 +4415,7 @@ public class BRRS_ReportsController {
 			// call services
 			BRRS_M_DEP3_reportservice.updateReport(request1);
 
-			return ResponseEntity.ok("Updated Successfully");
+			return ResponseEntity.ok("Modified Successfully.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -4442,7 +4442,7 @@ public class BRRS_ReportsController {
 			// call services
 			BRRS_M_PD_reportservice.updateReport(request1);
 
-			return ResponseEntity.ok("Updated Successfully");
+			return ResponseEntity.ok("Modified Successfully.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -4469,7 +4469,7 @@ public class BRRS_ReportsController {
 			// call services
 			BRRS_M_PI_reportservice.updateReport(request1);
 
-			return ResponseEntity.ok("Updated Successfully");
+			return ResponseEntity.ok("Modified Successfully.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -4588,7 +4588,7 @@ public class BRRS_ReportsController {
 			BRRS_M_DEP4_ReportService.updateReport5(request5);
 			BRRS_M_DEP4_ReportService.updateReport6(request6);
 
-			return ResponseEntity.ok("Updated Successfully.");
+			return ResponseEntity.ok("Modified Successfully.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -4648,7 +4648,7 @@ public class BRRS_ReportsController {
 			// call services
 			brrs_M_FAS_reportservice.updateReport1(request);
 
-			return ResponseEntity.ok("Updated Successfully.");
+			return ResponseEntity.ok("Modified Successfully.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -4674,7 +4674,7 @@ public class BRRS_ReportsController {
 	 * 
 	 * // call services BRRS_BDISB2_ReportService.updateReport(request);
 	 * 
-	 * return ResponseEntity.ok("Updated Successfully."); } catch (Exception e) {
+	 * return ResponseEntity.ok("Modified Successfully."); } catch (Exception e) {
 	 * e.printStackTrace(); return
 	 * ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).
 	 * body("Update Failed: " + e.getMessage()); } }
@@ -4692,7 +4692,7 @@ public class BRRS_ReportsController {
 
 			BRRS_BDISB2_ReportService.updateDetailFromForm(asondate, allParams);
 
-			return ResponseEntity.ok("Updated Successfully.");
+			return ResponseEntity.ok("Modified Successfully.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -4746,7 +4746,7 @@ public class BRRS_ReportsController {
 			// call services
 			BRRS_ADISB1_ReportService.updateReport(request);
 
-			return ResponseEntity.ok("Updated Successfully.");
+			return ResponseEntity.ok("Modified Successfully.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -4771,7 +4771,7 @@ public class BRRS_ReportsController {
 			// call services
 			BRRS_PL_SCHS_ReportService.updateReport(request);
 
-			return ResponseEntity.ok("Updated Successfully.");
+			return ResponseEntity.ok("Modified Successfully.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -4796,7 +4796,7 @@ public class BRRS_ReportsController {
 			// call services
 			brrs_gl_sch_reportservice.updateReport(request);
 
-			return ResponseEntity.ok("Updated Successfully.");
+			return ResponseEntity.ok("Modified Successfully.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -5041,7 +5041,7 @@ public class BRRS_ReportsController {
 			AIDPreportService.updateReport7(request3);
 			AIDPreportService.updateReport8(request4);
 
-			return ResponseEntity.ok("Updated Successfully.");
+			return ResponseEntity.ok("Modified Successfully.");
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -5083,7 +5083,7 @@ public class BRRS_ReportsController {
 			SRWA12DreportService.updateReport3(request3);
 			SRWA12DreportService.updateReport4(request4);
 
-			return ResponseEntity.ok("Updated Successfully");
+			return ResponseEntity.ok("Modified Successfully.");
 
 		} catch (Exception e) {
 
