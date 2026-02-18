@@ -1302,14 +1302,16 @@ $(document).ready(function() {
 	                $("#resultModal")
 	                    .off("hidden.bs.modal")
 	                    .on("hidden.bs.modal", function () {
-	                        if (isResub) {
-	                            window.location.href =
-	                                window.previousUrl
-	                                    ? window.previousUrl
-	                                    : "/BRRS/Resubmission?rptcode=M_BOP";
-	                        }
-	                    });
-	            },
+							if (isResub) {
+
+								                               if (window.previousUrl && window.previousUrl !== "") {
+								                                   window.location.href = window.previousUrl;
+								                               } else {
+								                                   window.location.href = "/BRRS/Resubmission?rptcode=M_CA5"; // ✅ removed space
+								                               }
+								                           }
+								                       });
+								               },
 
 	            error: function (jqXHR) {
 	                console.log("Error response:", jqXHR.responseText);

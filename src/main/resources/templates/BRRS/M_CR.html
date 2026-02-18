@@ -326,24 +326,25 @@ PURPOSE		: BRRS MANUAL REPORT
 
 		/* ✨ Scrolling animation */
 		.scrolling-text {
-		    display: inline-block;
-		    font-family: "Courier New", monospace;
-		    font-weight: bold;
-		    letter-spacing: 1px;
-		    white-space: nowrap;          /* important so text stays in one line */
-		    animation: scroll-left 10s linear infinite;
+			display: inline-block;
+			font-family: "Courier New", monospace;
+			font-weight: bold;
+			letter-spacing: 1px;
+			white-space: nowrap;
+			/* important so text stays in one line */
+			animation: scroll-left 10s linear infinite;
 		}
 
 		/* Animation keyframes */
 		@keyframes scroll-left {
-		    0% {
-		        transform: translateX(100%);
-		    }
-		    100% {
-		        transform: translateX(-100%);
-		    }
-		}
+			0% {
+				transform: translateX(100%);
+			}
 
+			100% {
+				transform: translateX(-100%);
+			}
+		}
 	</style>
 	<script th:inline="javascript">
 
@@ -412,14 +413,14 @@ PURPOSE		: BRRS MANUAL REPORT
 	        asondate=${asondate},
 	        version=${version}
 	    )}]]*/
-			location.href = Callurl;
+				location.href = Callurl;
 
 		}
 
 		function showsummary() {
 			$('#loader').modal('show');
 			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/
-			location.href = Callurl;
+				location.href = Callurl;
 		}
 
 
@@ -573,33 +574,33 @@ PURPOSE		: BRRS MANUAL REPORT
 			// Optionally hide the clicked Modify button
 			$(btn).hide();*/
 			// Show buttons
-			
-						$("#submitButton").show();
-						$("#cancelRecord").show(); // Show Cancel button only when Modify is clicked
 
-						// Hide the clicked Modify button
-						$(btn).hide();
+			$("#submitButton").show();
+			$("#cancelRecord").show(); // Show Cancel button only when Modify is clicked
+
+			// Hide the clicked Modify button
+			$(btn).hide();
 		}
 
 		//Cancel / Reset function
 		function cancelModify() {
-					if (confirm("Are you sure you want to cancel changes? Page will reload.")) {
-						// ✅ Only when user clicks YES
-						location.reload();
+			if (confirm("Are you sure you want to cancel changes? Page will reload.")) {
+				// ✅ Only when user clicks YES
+				location.reload();
 
-						$(".Show_input").attr("readonly", true).attr("disabled", true);
+				$(".Show_input").attr("readonly", true).attr("disabled", true);
 
-						$("#submitButton, #btnBack_edit").hide();
-						$("#btnBack").show();
+				$("#submitButton, #btnBack_edit").hide();
+				$("#btnBack").show();
 
-						// Hide Cancel button again
-						$("#cancelRecord").hide();
+				// Hide Cancel button again
+				$("#cancelRecord").hide();
 
-						// Show all Modify buttons
-						$("#addRecord").show();
-					}
-					// ❌ If user clicks CANCEL, nothing happens
-				}
+				// Show all Modify buttons
+				$("#addRecord").show();
+			}
+			// ❌ If user clicks CANCEL, nothing happens
+		}
 
 
 
@@ -757,8 +758,8 @@ PURPOSE		: BRRS MANUAL REPORT
 				isDetailsModal = false;
 			}
 		}
-</script>
-		<!--// This is the main function that orchestrates the entire form submission process.
+	</script>
+	<!--// This is the main function that orchestrates the entire form submission process.
 		// It is triggered by the "Update" button click.
 		// Make the function global so onclick="
 (this)" can see it
@@ -871,101 +872,103 @@ PURPOSE		: BRRS MANUAL REPORT
 
 
 	</script>-->
-	
+
 	<script>
 		function fileuploads(btn) {
 
-		    try {
+			try {
 
-		        const asondate = btn.getAttribute("data-todate");
+				const asondate = btn.getAttribute("data-todate");
 
-		        $('#loader').modal('show');
+				$('#loader').modal('show');
 
-		        if (typeof calculateTotals === "function") {
-		            calculateTotals();
-		        }
+				if (typeof calculateTotals === "function") {
+					calculateTotals();
+				}
 
-		        // Remove commas
-		        $("#fileupload input[type='text']").each(function () {
-		            const val = $(this).val();
-		            if (val && val.includes(",")) {
-		                $(this).val(val.replace(/,/g, ''));
-		            }
-		        });
+				// Remove commas
+				$("#fileupload input[type='text']").each(function () {
+					const val = $(this).val();
+					if (val && val.includes(",")) {
+						$(this).val(val.replace(/,/g, ''));
+					}
+				});
 
-		        if (!$("#fileupload").valid()) {
-		            $('#loader').modal('hide');
-		            return;
-		        }
+				if (!$("#fileupload").valid()) {
+					$('#loader').modal('hide');
+					return;
+				}
 
-		        // Get type from URL
-		        const urlParams = new URLSearchParams(window.location.search);
-		        const urlType = urlParams.get("type");
+				// Get type from URL
+				const urlParams = new URLSearchParams(window.location.search);
+				const urlType = urlParams.get("type");
 
-		        const isResub = urlType && urlType.toUpperCase() === 'RESUB';
+				const isResub = urlType && urlType.toUpperCase() === 'RESUB';
 
-		        // ✅ Use SERIALIZE (NOT FormData)
-		        const formData =
-		            $('#fileupload').serialize()
-		            + '&asondate=' + encodeURIComponent(asondate)
-		            + '&type=' + encodeURIComponent(urlType || '');
+				// ✅ Use SERIALIZE (NOT FormData)
+				const formData =
+					$('#fileupload').serialize()
+					+ '&asondate=' + encodeURIComponent(asondate)
+					+ '&type=' + encodeURIComponent(urlType || '');
 
-		        console.log("✅ Form data prepared");
+				console.log("✅ Form data prepared");
 
-		        let apiUrl = './M_CRupdate';
-		        if (isResub) {
-		            apiUrl = './UpdateM_CR_ReSub';
-		        }
+				let apiUrl = './M_CRupdate';
+				if (isResub) {
+					apiUrl = './UpdateM_CR_ReSub';
+				}
 
-		        $.ajax({
-		            url: apiUrl,
-		            type: 'POST',
-		            data: formData,
-		            dataType: 'text',
+				$.ajax({
+					url: apiUrl,
+					type: 'POST',
+					data: formData,
+					dataType: 'text',
 
-		            success: function (response) {
-		                $("#resultModalLabel").text("BRRS");
-		                $("#resultModalBody").text(response);
-		                $("#resultModal").modal("show");
+					success: function (response) {
+						$("#resultModalLabel").text("BRRS");
+						$("#resultModalBody").text(response);
+						$("#resultModal").modal("show");
 
-		                $("#resultModal")
-		                    .off("hidden.bs.modal")
-		                    .on("hidden.bs.modal", function () {
-		                        if (isResub) {
-		                            window.location.href =
-		                                window.previousUrl
-		                                    ? window.previousUrl
-		                                    : "/BRRS/Resubmission?rptcode= M_CR";
-		                        }
-		                    });
-		            },
+						$("#resultModal")
+							.off("hidden.bs.modal")
+							.on("hidden.bs.modal", function () {
+								if (isResub) {
 
-		            error: function (jqXHR) {
-		                console.log("Error response:", jqXHR.responseText);
+									if (window.previousUrl && window.previousUrl !== "") {
+										window.location.href = window.previousUrl;
+									} else {
+										window.location.href = "/BRRS/Resubmission?rptcode=M_CA5"; // ✅ removed space
+									}
+								}
+							});
+					},
 
-		                $("#resultModalLabel").text("Error");
-		                $("#resultModalBody").text(
-		                    "Update failed: " +
-		                    (jqXHR.responseText || "Unknown error")
-		                );
-		                $("#resultModal").modal("show");
-		            },
+					error: function (jqXHR) {
+						console.log("Error response:", jqXHR.responseText);
 
-		            complete: function () {
-		                $('#loader').modal('hide');
-		            }
-		        });
+						$("#resultModalLabel").text("Error");
+						$("#resultModalBody").text(
+							"Update failed: " +
+							(jqXHR.responseText || "Unknown error")
+						);
+						$("#resultModal").modal("show");
+					},
 
-		    } catch (error) {
-		        $('#loader').modal('hide');
-		        console.error("Error during file upload:", error);
-		    }
+					complete: function () {
+						$('#loader').modal('hide');
+					}
+				});
+
+			} catch (error) {
+				$('#loader').modal('hide');
+				console.error("Error during file upload:", error);
+			}
 		}
 
 
 
 
-			</script>
+	</script>
 </head>
 
 
@@ -1017,9 +1020,9 @@ PURPOSE		: BRRS MANUAL REPORT
 
 
 						<span class="white-text"
-																		style="color: white !important; font-size: 16px; margin-right: 20px;">Report Date: <span
-																			th:text="${#strings.replace(asondate, '/', '-')}">2025-07-04</span>
-																	</span>
+							style="color: white !important; font-size: 16px; margin-right: 20px;">Report Date: <span
+								th:text="${#strings.replace(asondate, '/', '-')}">2025-07-04</span>
+						</span>
 
 						<!-- Buttons -->
 						<input type="hidden" id="selectedTab" th:value="${displaymode}">
@@ -1977,14 +1980,10 @@ PURPOSE		: BRRS MANUAL REPORT
 
 								<div style="text-align: center; margin-top: 10px; background-color: #f1f1f1;">
 
-									<button id="submitButton" 
-									        type="button" 
-									        class="custom-tab-btn Show_input"
-									        form="fileupload" 
-									        th:attr="data-todate=${asondate}" 
-									        onclick="fileuploads(this);"
-									        style="display: none; background-color: #ffffff;">
-									    Submit
+									<button id="submitButton" type="button" class="custom-tab-btn Show_input"
+										form="fileupload" th:attr="data-todate=${asondate}" onclick="fileuploads(this);"
+										style="display: none; background-color: #ffffff;">
+										Submit
 									</button>
 
 							</form>

@@ -2153,23 +2153,34 @@ function fileuploads(btn) {
 
 
 	    // ✅ Single AJAX call with type info
-	    $.ajax({
-	        url: apiUrl,
-	        type: 'POST',
-	        data: formData,
-	        processData: false,
-	        contentType: false,
-	        dataType: 'text',
-	        success: function (response) {
-	            $("#resultModalLabel").text("BRRS");
-	            $("#resultModalBody").text(response);
-	            $("#resultModal").modal("show");
+		$.ajax({
+			               url: apiUrl,
+			               type: 'POST',
+			               data: formData,
+			               dataType: 'text',
 
-	    	    //  Wait for user to close the modal manually
-	    	    $("#resultModal").off("hidden.bs.modal").on("hidden.bs.modal", function () {
-	    	        location.reload(); // reload ONLY when modal is closed
-	    	    });
-	    	},
+			               success: function (response) {
+
+			                   $("#resultModalLabel").text("BRRS");
+			                   $("#resultModalBody").text(response);
+			                   $("#resultModal").modal("show");
+
+			                   // Properly bind modal hidden event
+			                   $("#resultModal")
+			                       .off("hidden.bs.modal")
+			                       .on("hidden.bs.modal", function () {
+
+			                           if (isResub) {
+
+			                               if (window.previousUrl && window.previousUrl !== "") {
+			                                   window.location.href = window.previousUrl;
+			                               } else {
+			                                   window.location.href = "/BRRS/Resubmission?rptcode=M_CA5"; // ✅ removed space
+			                               }
+			                           }
+			                       });
+			               },
+
 	        error: function (jqXHR) {
 	            console.log("Error response:", jqXHR.responseText);
 	            $("#resultModalLabel").text("Error");
