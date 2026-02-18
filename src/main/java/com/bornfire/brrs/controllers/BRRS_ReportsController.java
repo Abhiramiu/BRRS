@@ -4029,8 +4029,10 @@ public class BRRS_ReportsController {
 	@ResponseBody
 	public ResponseEntity<String> updateReportReSub(
 			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@ModelAttribute M_LARADV_Resub_Summary_Entity1 request1, @ModelAttribute M_LARADV_Resub_Summary_Entity2 request2,
-			@ModelAttribute M_LARADV_Resub_Summary_Entity3 request3, @ModelAttribute M_LARADV_Resub_Summary_Entity4 request4,
+			@ModelAttribute M_LARADV_Resub_Summary_Entity1 request1,
+			@ModelAttribute M_LARADV_Resub_Summary_Entity2 request2,
+			@ModelAttribute M_LARADV_Resub_Summary_Entity3 request3,
+			@ModelAttribute M_LARADV_Resub_Summary_Entity4 request4,
 			@ModelAttribute M_LARADV_Resub_Summary_Entity5 request5, HttpServletRequest req) {
 
 		try {
@@ -4045,8 +4047,12 @@ public class BRRS_ReportsController {
 				System.out.println("Set Report Date: " + asondate);
 			}
 
-			// Call service
-			LARADVreportService.updateReportReSub1(request1, request2, request3, request4, request5);
+			// call services
+			LARADVreportService.updateReport6(request1);
+			LARADVreportService.updateReport7(request2);
+			LARADVreportService.updateReport8(request3);
+			LARADVreportService.updateReport9(request4);
+			LARADVreportService.updateReport10(request5);
 
 			return ResponseEntity.ok("Resubmission Updated Successfully");
 
@@ -4056,8 +4062,6 @@ public class BRRS_ReportsController {
 					.body("Q_LARADV Resubmission Update Failed: " + e.getMessage());
 		}
 	}
-
-
 
 	@Autowired
 	private com.bornfire.brrs.services.BRRS_M_SRWA_12E_ReportService BRRS_M_SRWA_12E_ReportService;
@@ -5048,27 +5052,44 @@ public class BRRS_ReportsController {
 	@RequestMapping(value = "/SRWA12DupdateAll1", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public ResponseEntity<String> updateAllReports1(
+
 			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+
 			@RequestParam("reportType") String reportType,
-			@ModelAttribute M_SRWA_12D_Resub_Summary_Entity request1,@ModelAttribute M_SRWA_12D_Resub_Detail_Entity request2,
-			@ModelAttribute  M_SRWA_12D_Archival_Summary_Entity request3,@ModelAttribute M_SRWA_12D_Archival_Detail_Entity request4
+
+			@ModelAttribute M_SRWA_12D_Resub_Summary_Entity request1
 
 	) {
+
 		try {
-			System.out.println("Came to single controller");
-			// set date into all 4 entities
+
+			System.out.println("Entered Controller");
+
 			request1.setReport_date(asondate);
 
-			// call services
+			// 🔹 Create other 3 entity objects
+			M_SRWA_12D_Resub_Detail_Entity request2 = new M_SRWA_12D_Resub_Detail_Entity();
+			M_SRWA_12D_Archival_Summary_Entity request3 = new M_SRWA_12D_Archival_Summary_Entity();
+			M_SRWA_12D_Archival_Detail_Entity request4 = new M_SRWA_12D_Archival_Detail_Entity();
+
+			// 🔹 Copy all values from request1 into other entities
+			BeanUtils.copyProperties(request1, request2);
+			BeanUtils.copyProperties(request1, request3);
+			BeanUtils.copyProperties(request1, request4);
+
+			// 🔹 Call 4 service methods
 			SRWA12DreportService.updateReport1(request1);
 			SRWA12DreportService.updateReport2(request2);
 			SRWA12DreportService.updateReport3(request3);
 			SRWA12DreportService.updateReport4(request4);
 
 			return ResponseEntity.ok("Updated Successfully");
+
 		} catch (Exception e) {
+
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
 		}
 	}
+
 }

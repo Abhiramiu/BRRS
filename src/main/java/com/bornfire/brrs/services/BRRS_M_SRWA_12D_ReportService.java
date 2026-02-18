@@ -108,103 +108,129 @@ public class BRRS_M_SRWA_12D_ReportService {
 	public ModelAndView getM_SRWA_12DView(String reportId, String fromdate, String todate, String currency,
 			String dtltype, Pageable pageable, String type, BigDecimal version) {
 
+		System.out.println("========== ENTERED getM_SRWA_12DView ==========");
+
 		ModelAndView mv = new ModelAndView("BRRS/M_SRWA_12D");
 
 		Date reportDate = null;
+
 		try {
 			reportDate = dateformat.parse(todate);
+			System.out.println("Parsed Report Date : " + reportDate);
 		} catch (ParseException e) {
+			System.out.println("❌ DATE PARSE ERROR");
 			e.printStackTrace();
 		}
 
-		try {
-			Date d1 = dateformat.parse(todate);
+		System.out.println("Report ID   : " + reportId);
+		System.out.println("From Date   : " + fromdate);
+		System.out.println("To Date     : " + todate);
+		System.out.println("Currency    : " + currency);
+		System.out.println("Type        : " + type);
+		System.out.println("DtlType     : " + dtltype);
+		System.out.println("Version     : " + version);
 
-			/* ===================== ARCHIVAL ===================== */
-			if ("ARCHIVAL".equalsIgnoreCase(type)) {
-
-				// 🔹 ARCHIVAL → DETAIL
-				if ("detail".equalsIgnoreCase(dtltype)) {
-
-					List<M_SRWA_12D_Archival_Detail_Entity> detailList = bRRS_M_SRWA_12D_Archival_Detail_Repo
-							.getdatabydateListarchival(reportDate, version);
-
-					mv.addObject("reportsummary", detailList);
-					mv.addObject("displaymode", "detail");
-				} else if ("report".equalsIgnoreCase(dtltype)) {
-
-					List<M_SRWA_12D_Archival_Summary_Entity> summaryList = bRRS_M_SRWA_12D_Archival_Summary_Repo
-							.getdatabydateListarchival(reportDate, version);
-
-					mv.addObject("reportsummary", summaryList);
-					mv.addObject("displaymode", "summary");
-				}
-				// 🔹 ARCHIVAL → SUMMARY
-				else {
-
-					List<M_SRWA_12D_Archival_Summary_Entity> summaryList = bRRS_M_SRWA_12D_Archival_Summary_Repo
-							.getdatabydateListarchival(reportDate, version);
-
-					mv.addObject("reportsummary", summaryList);
-					mv.addObject("displaymode", "summary");
-				}
-			}
-
-			else if ("RESUB".equalsIgnoreCase(type)) {
-
-				// 🔹 ARCHIVAL → DETAIL
-				if ("detail".equalsIgnoreCase(dtltype)) {
-
-					List<M_SRWA_12D_Resub_Detail_Entity> detailList = bRRS_M_SRWA_12D_Resub_Detail_Repo
-							.getdatabydateListarchival(reportDate, version);
-
-					mv.addObject("reportsummary", detailList);
-					mv.addObject("displaymode", "detail");
-				} else if ("report".equalsIgnoreCase(dtltype)) {
-
-					List<M_SRWA_12D_Resub_Summary_Entity> summaryList = bRRS_M_SRWA_12D_Resub_Summary_Repo
-							.getdatabydateListarchival(reportDate, version);
-
-					mv.addObject("reportsummary", summaryList);
-					mv.addObject("displaymode", "summary");
-				}
-				// 🔹 ARCHIVAL → SUMMARY
-				else {
-
-					List<M_SRWA_12D_Resub_Summary_Entity> summaryList = bRRS_M_SRWA_12D_Resub_Summary_Repo
-							.getdatabydateListarchival(reportDate, version);
-
-					mv.addObject("reportsummary", summaryList);
-					mv.addObject("displaymode", "summary");
-				}
-			}
-
-			/* ===================== NORMAL ===================== */
-			else {
-
-				// 🔹 NORMAL → DETAIL
-				if ("detail".equalsIgnoreCase(dtltype)) {
-
-					List<M_SRWA_12D_Detail_Entity> detailList = bRRS_M_SRWA_12D_Detail_Repo
-							.getdatabydateList(reportDate);
-
-					mv.addObject("reportsummary", detailList);
-					mv.addObject("displaymode", "detail");
-
-				}
-				// 🔹 NORMAL → SUMMARY
-				else {
-
-					List<M_SRWA_12D_Summary_Entity> summaryList = M_SRWA_12D_Summary_Repo.getdatabydateList(reportDate);
-
-					mv.addObject("reportsummary", summaryList);
-					mv.addObject("displaymode", "summary");
-				}
-			}
-
-		} catch (ParseException e) {
-			e.printStackTrace();
+		if (type == null) {
+			System.out.println("❌ TYPE IS NULL");
 		}
+
+		if (version == null) {
+			System.out.println("❌ VERSION IS NULL");
+		}
+
+		/* ===================== ARCHIVAL ===================== */
+		if ("ARCHIVAL".equalsIgnoreCase(type)) {
+
+			System.out.println("➡ ENTERED ARCHIVAL BLOCK");
+
+			if ("detail".equalsIgnoreCase(dtltype)) {
+
+				System.out.println("➡ FETCHING ARCHIVAL DETAIL");
+
+				List<M_SRWA_12D_Archival_Detail_Entity> detailList = bRRS_M_SRWA_12D_Archival_Detail_Repo
+						.getdatabydateListarchival(reportDate, version);
+
+				System.out.println("Archival Detail List Size : " + (detailList != null ? detailList.size() : "NULL"));
+
+				mv.addObject("reportsummary", detailList);
+				mv.addObject("displaymode", "detail");
+
+			} else {
+
+				System.out.println("➡ FETCHING ARCHIVAL SUMMARY");
+
+				List<M_SRWA_12D_Archival_Summary_Entity> summaryList = bRRS_M_SRWA_12D_Archival_Summary_Repo
+						.getdatabydateListarchival(reportDate, version);
+
+				System.out
+						.println("Archival Summary List Size : " + (summaryList != null ? summaryList.size() : "NULL"));
+
+				mv.addObject("reportsummary", summaryList);
+				mv.addObject("displaymode", "summary");
+			}
+		}
+
+		/* ===================== RESUB ===================== */
+		else if ("RESUB".equalsIgnoreCase(type)) {
+
+			System.out.println("➡ ENTERED RESUB BLOCK");
+
+			if ("detail".equalsIgnoreCase(dtltype)) {
+
+				System.out.println("➡ FETCHING RESUB DETAIL");
+
+				List<M_SRWA_12D_Resub_Detail_Entity> detailList = bRRS_M_SRWA_12D_Resub_Detail_Repo
+						.getdatabydateListarchival(reportDate, version);
+
+				System.out.println("Resub Detail List Size : " + (detailList != null ? detailList.size() : "NULL"));
+
+				mv.addObject("reportsummary", detailList);
+				mv.addObject("displaymode", "detail");
+
+			} else {
+
+				System.out.println("➡ FETCHING RESUB SUMMARY");
+
+				List<M_SRWA_12D_Resub_Summary_Entity> summaryList = bRRS_M_SRWA_12D_Resub_Summary_Repo
+						.getdatabydateListarchival(reportDate, version);
+
+				System.out.println("Resub Summary List Size : " + (summaryList != null ? summaryList.size() : "NULL"));
+
+				mv.addObject("reportsummary", summaryList);
+				mv.addObject("displaymode", "summary");
+			}
+		}
+
+		/* ===================== NORMAL ===================== */
+		else {
+
+			System.out.println("➡ ENTERED NORMAL BLOCK");
+
+			if ("detail".equalsIgnoreCase(dtltype)) {
+
+				System.out.println("➡ FETCHING NORMAL DETAIL");
+
+				List<M_SRWA_12D_Detail_Entity> detailList = bRRS_M_SRWA_12D_Detail_Repo.getdatabydateList(reportDate);
+
+				System.out.println("Normal Detail List Size : " + (detailList != null ? detailList.size() : "NULL"));
+
+				mv.addObject("reportsummary", detailList);
+				mv.addObject("displaymode", "detail");
+
+			} else {
+
+				System.out.println("➡ FETCHING NORMAL SUMMARY");
+
+				List<M_SRWA_12D_Summary_Entity> summaryList = M_SRWA_12D_Summary_Repo.getdatabydateList(reportDate);
+
+				System.out.println("Normal Summary List Size : " + (summaryList != null ? summaryList.size() : "NULL"));
+
+				mv.addObject("reportsummary", summaryList);
+				mv.addObject("displaymode", "summary");
+			}
+		}
+
+		System.out.println("========== EXIT getM_SRWA_12DView ==========");
 
 		return mv;
 	}
@@ -4298,7 +4324,8 @@ public class BRRS_M_SRWA_12D_ReportService {
 		}
 	}
 
-	private void copyFieldsArchDetail(M_SRWA_12D_Archival_Detail_Entity source, M_SRWA_12D_Archival_Detail_Entity target, int rowNo) {
+	private void copyFieldsArchDetail(M_SRWA_12D_Archival_Detail_Entity source,
+			M_SRWA_12D_Archival_Detail_Entity target, int rowNo) {
 
 		String prefix = "R" + rowNo + "_";
 

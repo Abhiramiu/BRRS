@@ -33,4 +33,7 @@ public interface BRRS_M_LARADV_Resub_Summary_Repo3  extends JpaRepository<M_LARA
 	@Query(value = "SELECT REPORT_DATE, report_version, REPORT_RESUBDATE " + "FROM BRRS_M_LARADV_RESUBTABLE_SUMMARY3 "
 			+ "WHERE report_version IS NOT NULL " + "ORDER BY report_version", nativeQuery = true)
 	List<Object[]> getResubData();
+	
+	@Query(value = "SELECT NVL(MAX(report_version), 0) FROM BRRS_M_LARADV_RESUBTABLE_SUMMARY3", nativeQuery = true)
+	BigDecimal findGlobalMaxReportVersion();
 }

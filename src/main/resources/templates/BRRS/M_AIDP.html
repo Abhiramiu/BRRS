@@ -1042,10 +1042,22 @@ PURPOSE		: BWRBRREPORT
 				processData: false,
 				contentType: false,
 				dataType: 'text',
-				success: function () {
-					$("#resultModalLabel1").text("BRRS");
-					$("#resultModalBody1").text("Updated Successfully");
-					$("#resultModal1").modal("show");
+				success: function (response) {
+
+					if (reportId && reportId.toUpperCase() === 'RESUB') {
+
+						// 🔹 RESUB Modal
+						$("#resultModalLabel1").text("BRRS");
+						$("#resultModalBody1").text(response);
+						$("#resultModal1").modal("show");
+
+					} else {
+
+						// 🔹 NORMAL Modal
+						$("#resultModalLabel").text("BRRS");
+						$("#resultModalBody").text(response);
+						$("#resultModal").modal("show");
+					}
 				},
 				error: function (jqXHR) {
 					console.error("Error response:", jqXHR.responseText);

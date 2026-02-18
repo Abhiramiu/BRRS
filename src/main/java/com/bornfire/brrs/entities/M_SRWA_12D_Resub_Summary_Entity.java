@@ -260,11 +260,8 @@ public class M_SRWA_12D_Resub_Summary_Entity {
 	private BigDecimal R45_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS;
 	private BigDecimal R45_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS;
 
-	@Temporal(TemporalType.DATE)
-	@DateTimeFormat(pattern = "dd/MM/yyyy")
 	@Id
 	private Date report_date;
-	@Id
 	private BigDecimal report_version;
 	@Column(name = "REPORT_RESUBDATE")
 
