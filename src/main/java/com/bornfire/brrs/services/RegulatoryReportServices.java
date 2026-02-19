@@ -254,7 +254,7 @@ public class RegulatoryReportServices {
 	BRRS_M_GALOR_ReportService BRRS_m_galor_ReportService;
 
 	@Autowired
-	BRRS_M_SRWA_12E_ReportService BRRS_M_SRWA_12E_ReportService;
+	BRRS_M_SRWA_12E_ReportService BRRS_M_SRWA_12E_reportservice;
 
 	@Autowired
 	BRRS_Q_SMME_loans_Advances_ReportService BRRS_Q_SMME_loans_Advances_reportService;
@@ -517,6 +517,11 @@ public class RegulatoryReportServices {
 			
 		case "Q_SMME_DEP":
 			repsummary = BRRS_Q_SMME_DEP_ReportService.getQ_SMME_DEPview(reportId, fromdate, todate, currency, dtltype,
+					pageable, type, version);
+			break;
+			
+		case "M_SRWA_12E":
+			repsummary = BRRS_M_SRWA_12E_reportservice.getBRRS_M_SRWA_12E_LTVView(reportId, fromdate, todate, currency, dtltype,
 					pageable, type, version);
 			break;
 		/*
@@ -2146,7 +2151,17 @@ public class RegulatoryReportServices {
 		 * 
 		 * 
 		 */
-
+			
+		case "M_SRWA_12E":
+		try {
+			repfile = BRRS_M_SRWA_12E_reportservice.BRRS_M_SRWA_12E_LTVExcel(filename, reportId, fromdate, todate,
+					currency, dtltype, type, format, version);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		break;
+		
 		case "BDISB1":
 			try {
 				repfile = brrs_bdisb1_reportservice.getBDISB1Excel(filename, reportId, fromdate, todate, currency,
@@ -4865,7 +4880,7 @@ public class RegulatoryReportServices {
 			break;
 
 		case "M_SRWA_12E":
-			List<Object[]> srweList1 = BRRS_M_SRWA_12E_ReportService.getM_SRWA_12EArchival();
+			List<Object[]> srweList1 = BRRS_M_SRWA_12E_reportservice.getM_SRWA_12E_LTVArchival();
 			archivalData.addAll(srweList1);
 			System.out.println("Fetched M_SRWA_12E archival data: " + srweList1.size());
 			break;
@@ -6560,6 +6575,17 @@ public class RegulatoryReportServices {
 			}
 
 			break;
+			
+		case "M_SRWA_12E":
+		try {
+			List<Object[]> resubList = BRRS_M_SRWA_12E_reportservice.getM_SRWA_12E_LTVResub();
+			resubmissionData.addAll(resubList);
+			System.out.println("Resubmission data fetched for M_SRWA_12E: " + resubList.size());
+		} catch (Exception e) {
+			System.err.println("Error fetching resubmission data for M_SRWA_12E: " + e.getMessage());
+			e.printStackTrace();
+		}
+		break;
 
 		case "M_CA4":
 			try {
@@ -6650,16 +6676,7 @@ public class RegulatoryReportServices {
 			}
 			break;
 
-		case "M_SRWA_12E":
-			try {
-				List<Object[]> resubList = BRRS_M_SRWA_12E_ReportService.getM_SRWA_12EResub();
-				resubmissionData.addAll(resubList);
-				System.out.println("Resubmission data fetched for M_SRWA_12E: " + resubList.size());
-			} catch (Exception e) {
-				System.err.println("Error fetching resubmission data for M_SRWA_12E: " + e.getMessage());
-				e.printStackTrace();
-			}
-			break;
+
 		case "M_INT_RATES_FCA":
 			try {
 				List<Object[]> resubList = BRRS_M_INT_RATES_FCA_ReportService.getM_INT_RATES_FCAResub();

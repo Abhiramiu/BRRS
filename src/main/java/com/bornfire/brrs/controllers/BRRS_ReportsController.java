@@ -72,7 +72,6 @@ import com.bornfire.brrs.services.BRRS_M_FXR_ReportService;
 import com.bornfire.brrs.services.BRRS_M_GALOR_ReportService;
 import com.bornfire.brrs.services.BRRS_M_GMIRT_ReportService;
 import com.bornfire.brrs.services.BRRS_M_GP_ReportService;
-
 import com.bornfire.brrs.services.BRRS_M_INT_RATES_FCA_ReportService;
 import com.bornfire.brrs.services.BRRS_M_INT_RATES_NEW_ReportService;
 import com.bornfire.brrs.services.BRRS_M_INT_RATES_ReportService;
@@ -106,6 +105,7 @@ import com.bornfire.brrs.services.BRRS_M_SRWA_12A_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SRWA_12B_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SRWA_12C_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SRWA_12D_ReportService;
+import com.bornfire.brrs.services.BRRS_M_SRWA_12E_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SRWA_12F_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SRWA_12G_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SRWA_12H_ReportService;
@@ -3576,6 +3576,74 @@ public class BRRS_ReportsController {
 	//
 
 	// Resubmission
+	@Autowired
+	BRRS_M_SRWA_12E_ReportService M_SRWA_12Eservice;
+
+	@RequestMapping(value = "/updateSRWA12EAll", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<String> updateReport(
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+			@ModelAttribute M_SRWA_12E_LTV_Summary_Entity request, HttpServletRequest req) {
+
+		try {
+			System.out.println("came to First controller");
+			SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+
+			// ✅ set the asondate into entity
+			request.setReportDate(asondate);
+
+			M_SRWA_12Eservice.updateReport(request);
+			return ResponseEntity.ok("Modified Successfully.");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
+		}
+	}
+
+	@RequestMapping(value = "/UpdateM_SRWA_12E_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<String> updateReportReSub(
+
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+
+			@ModelAttribute M_SRWA_12E_LTV_Resub_Summary_Entity request,
+
+			HttpServletRequest req) {
+
+		try {
+
+			System.out.println("Came to Resub Controller");
+
+			// =====================================================
+			// 1️⃣ SET REPORT DATE
+			// =====================================================
+
+			if (asondate != null) {
+
+				request.setReportDate(asondate);
+				System.out.println("Set Report Date: " + asondate);
+
+			} else {
+
+				System.out.println("Asondate parameter is null; using entity value: " + request.getReportDate());
+			}
+
+			// =====================================================
+			// 2️⃣ CALL YOUR SERVICE
+			// =====================================================
+
+			M_SRWA_12Eservice.updateResubReport(request);
+
+			return ResponseEntity.ok("Resubmission Updated Successfully");
+
+		} catch (Exception e) {
+
+			e.printStackTrace();
+
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Resubmission Update Failed: " + e.getMessage());
+		}
+	}
 
 	@Autowired
 	private BRRS_M_SRWA_12H_ReportService M_SRWA_12Hservice;
@@ -4063,57 +4131,7 @@ public class BRRS_ReportsController {
 		}
 	}
 
-	@Autowired
-	private com.bornfire.brrs.services.BRRS_M_SRWA_12E_ReportService BRRS_M_SRWA_12E_ReportService;
-
-	@RequestMapping(value = "/updateSRWA12EAll", method = { RequestMethod.GET, RequestMethod.POST })
-	@ResponseBody
-	public ResponseEntity<String> updateAllSRWA12EReports(
-			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@ModelAttribute BRRS_M_SRWA_12E_LTV_Summary_Entity request1) {
-		try {
-			System.out.println("Came to single controller");
-			// set date into all 4 entities
-			request1.setReportDate(asondate);
-			// call services
-			BRRS_M_SRWA_12E_ReportService.updateReport(request1);
-
-			return ResponseEntity.ok(" Updated Successfully.");
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
-		}
-	}
-
-	@RequestMapping(value = "/UpdateM_SRWA_12E_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
-	@ResponseBody
-	public ResponseEntity<String> updateReportReSub(
-			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@ModelAttribute BRRS_M_SRWA_12E_LTV_Summary_Entity request, HttpServletRequest req) {
-
-		try {
-			System.out.println("Came to Resub Controller");
-
-			if (asondate != null) {
-				// Set the asondate into the entity
-				request.setReportDate(asondate);
-				System.out.println("Set Report Date: " + asondate);
-			} else {
-				System.out.println("Asondate parameter is null; using entity value: " + request.getReportDate());
-			}
-
-			// Call service to create a new versioned row
-			BRRS_M_SRWA_12E_ReportService.updateReportReSub(request);
-
-			return ResponseEntity.ok("Resubmission Updated Successfully");
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body("Resubmission Update Failed: " + e.getMessage());
-		}
-	}
-
+	
 	@RequestMapping(value = "/UpdateM_CA6_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public ResponseEntity<String> updateReportReSub(

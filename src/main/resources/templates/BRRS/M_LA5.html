@@ -48,12 +48,11 @@ PURPOSE		: BRFREPORT
 
 
 	<style>
-		
 		table.dataTable th.dt-type-numeric,
 		table.dataTable th.dt-type-date,
 		table.dataTable td.dt-type-numeric,
 		table.dataTable td.dt-type-date {
-		    text-align: left !important;
+			text-align: left !important;
 		}
 
 		.btns {
@@ -335,34 +334,34 @@ PURPOSE		: BRFREPORT
 		});
 
 
-				
-		$(document).ready(function() {
-			Maker_Checker_Function(); 
+
+		$(document).ready(function () {
+			Maker_Checker_Function();
 		});
 
 		// if logged user is a Checker, checker cannot modify, if user is maker , then maker cant download
 		function Maker_Checker_Function() {
 			$.ajax({
-				url: "/BRRS/getUserRole",    
+				url: "/BRRS/getUserRole",
 				type: "GET",
-				success: function(roleId) {
+				success: function (roleId) {
 					// console.log("User Role ID:", roleId);
-				
-					if (roleId === "ADM-C" || roleId === "USR-C"  || roleId === "USER-AUDIT") {
+
+					if (roleId === "ADM-C" || roleId === "USR-C" || roleId === "USER-AUDIT") {
 						const modifyBtn = document.getElementById("addRecord");
 						if (modifyBtn) modifyBtn.style.display = "none";
 					}
 
 					if (roleId === "ADM-M" || roleId === "USR-M") {
-								const button = document.getElementById("custom-tab-btnAdd");
-								if (button) button.style.display = "none";
-							}
+						const button = document.getElementById("custom-tab-btnAdd");
+						if (button) button.style.display = "none";
+					}
 
 				},
-				error: function(err) {
+				error: function (err) {
 					console.error("Error fetching role:", err);
-		     }
-		    });
+				}
+			});
 		}
 
 
@@ -446,81 +445,65 @@ PURPOSE		: BRFREPORT
 
 
 		function downloadfile(button) {
+			var reportid = button.getAttribute('data-reportid');
+			var asondate = button.getAttribute('data-asondate');
+			var fromdate = button.getAttribute('data-fromdate');
+			var todate = button.getAttribute('data-todate');
+			var currency = button.getAttribute('data-currency');
+			var subreportid = button.getAttribute('data-subreportid');
+			var secid = button.getAttribute('data-secid');
+			var dtltype = button.getAttribute('data-dtltype');
+			var filename = button.getAttribute('data-filename');
+			var type = button.getAttribute('data-type');
+			var version = button.getAttribute('data-version');
+			var format = button.getAttribute('data-format');
 
-							var reportid = button.getAttribute('data-reportid');
-							var asondate = button.getAttribute('data-asondate');
-							var fromdate = button.getAttribute('data-fromdate');
-							var todate = button.getAttribute('data-todate');
-							var currency = button.getAttribute('data-currency');
-							var subreportid = button.getAttribute('data-subreportid');
-							var secid = button.getAttribute('data-secid');
-							var dtltype = button.getAttribute('data-dtltype');
-							var filename = button.getAttribute('data-filename');
-							var type = button.getAttribute('data-type');
-							var version = button.getAttribute('data-version');
+			if (format === null) {
+				format = '';   // treat as null
+			}
 
-							// Show loader modal (Bootstrap 5)
-							var loader = new bootstrap.Modal(
-								document.getElementById('loader'),
-								{backdrop: 'static', keyboard: false}
-							);
-							loader.show();
+			$('#loader').modal('show');
 
-							var url = './downloadExcel?reportid=' + reportid +
-								'&fromdate=' + fromdate +
-								'&asondate=' + asondate +
-								'&todate=' + todate +
-								'&currency=' + currency +
-								'&subreportid=' + subreportid +
-								'&secid=' + secid +
-								'&filename=' + filename +
-								'&type=' + type;
-
-							// ✅ ONLY append version if valid
-							if (version && version.trim() !== '') {
-								url += '&version=' + version;
-							}
-
-							$.ajax({
-								url: url,
-								type: 'GET',
-								xhrFields: {responseType: 'blob'},
-
-								success: function (data) {
-
-									if (data && data.size > 100) {
-										const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
-										const url = window.URL.createObjectURL(blob);
-										const a = document.createElement('a');
-
-										a.style.display = 'none';
-										a.href = url;
-										a.download = filename;
-
-										document.body.appendChild(a);
-										a.click();
-
-										window.URL.revokeObjectURL(url);
-										document.body.removeChild(a);
-
-										showResultModal('BRRS', filename + ' downloaded successfully.');
-									} else {
-										showResultModal('Information', 'No data was available to create a download.');
-									}
-								},
-
-								error: function (jqXHR, textStatus, errorThrown) {
-									console.error("Download failed:", textStatus, errorThrown);
-									showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
-								},
-
-								complete: function () {
-									// Hide loader ALWAYS (success, error, timeout, exception)
-									loader.hide();
-								}
-							});
-						}
-
+			$.ajax({
+				url: './downloadExcel?reportid=' + reportid +
+					'&fromdate=' + fromdate +
+					'&asondate=' + asondate +
+					'&todate=' + todate +
+					'&currency=' + currency +
+					'&subreportid=' + subreportid +
+					'&secid=' + secid +
+					'&filename=' + filename +
+					'&type=' + type +
+					'&version=' + version +
+					'&format=' + format,
+				type: 'GET',
+				xhrFields: {
+					responseType: 'blob'
+				},
+				success: function (data) {
+					$('#loader').modal('hide');
+					if (data && data.size > 100) {
+						const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
+						const url = window.URL.createObjectURL(blob);
+						const a = document.createElement('a');
+						a.style.display = 'none';
+						a.href = url;
+						a.download = filename;
+						document.body.appendChild(a);
+						a.click();
+						window.URL.revokeObjectURL(url);
+						document.body.removeChild(a);
+						showResultModal('BRRS', filename + ' downloaded successfully.');
+					} else {
+						showResultModal('Information', 'No data was available to create a download.');
+					}
+				},
+				error: function () {
+					$('#loader').modal('hide');
+					showResultModal('Error', 'An error occurred while downloading the file.');
+				}
+			});
+		}
 
 		function editRecord() {
 			showResultModal('Alert', 'Development in progress');
@@ -531,16 +514,16 @@ PURPOSE		: BRFREPORT
 			$('#resultModal').modal('hide');
 
 		}
-		
-		function closemodels() {
-					    $("#resultModal").modal("hide");
-					    $('#loader').modal('hide');
 
-						// Reload the page after a short delay to ensure the modal animation completes smoothly.
-						    setTimeout(function () {
-						        location.reload();
-						    }, 300);
-					}
+		function closemodels() {
+			$("#resultModal").modal("hide");
+			$('#loader').modal('hide');
+
+			// Reload the page after a short delay to ensure the modal animation completes smoothly.
+			setTimeout(function () {
+				location.reload();
+			}, 300);
+		}
 
 		function showResultModal(title, message) {
 			// Set the text for the modal elements
@@ -550,79 +533,79 @@ PURPOSE		: BRFREPORT
 			// Show the modal
 			$('#resultModal').modal('show');
 		}
-		
-		function showResultModalDetail(title, message) {
-					// Set the text for the modal elements
-					$('#resultModalLabel1').text(title);
-					$('#resultModalBody1').text(message);
 
-					// Show the modal
-					$('#resultModal1').modal('show');
-				}
+		function showResultModalDetail(title, message) {
+			// Set the text for the modal elements
+			$('#resultModalLabel1').text(title);
+			$('#resultModalBody1').text(message);
+
+			// Show the modal
+			$('#resultModal1').modal('show');
+		}
 
 	</script>
-	
-	<script th:inline="javascript">
-			/*<![CDATA[*/
-			const reportId = /*[[${reportid}]]*/ null;
-			/*]]>*/
-		</script>
-	<script>
-				function openDetail(elem, mode) {
-					
-					var type = elem.getAttribute('data-type');   
 
-										        if (type === "ARCHIVAL") {
-										            showResultModal('BRRS',"Archived Data cannot be modified");
-										            return;
-										        }
-					const acctNo = elem.getAttribute("data-acctNo");
-					const asondate = elem.getAttribute("data-asondate");
-					location.href = `/BRRS/Reports/${reportId}/Detailspage?formmode=${mode}&acctNo=${acctNo}&asondate=${asondate}`;
-				}
-			</script>
+	<script th:inline="javascript">
+		/*<![CDATA[*/
+		const reportId = /*[[${reportid}]]*/ null;
+		/*]]>*/
+	</script>
+	<script>
+		function openDetail(elem, mode) {
+
+			var type = elem.getAttribute('data-type');
+
+			if (type === "ARCHIVAL") {
+				showResultModal('BRRS', "Archived Data cannot be modified");
+				return;
+			}
+			const acctNo = elem.getAttribute("data-acctNo");
+			const asondate = elem.getAttribute("data-asondate");
+			location.href = `/BRRS/Reports/${reportId}/Detailspage?formmode=${mode}&acctNo=${acctNo}&asondate=${asondate}`;
+		}
+	</script>
 	<script>
 
 		function startReport(button) {
-							const alertMsg = document.getElementById("alertMessage");
-							const filename = button.getAttribute('data-filename');
-							const fromdate = button.getAttribute('data-fromdate');
-							const todate = button.getAttribute('data-todate');
-							const currency = button.getAttribute('data-currency');
-							const dtltype = button.getAttribute('data-dtltype');
-							const type = button.getAttribute('data-type');
-							const version = button.getAttribute('data-version');
-							const sessionfilename = sessionStorage.getItem("filename");
+			const alertMsg = document.getElementById("alertMessage");
+			const filename = button.getAttribute('data-filename');
+			const fromdate = button.getAttribute('data-fromdate');
+			const todate = button.getAttribute('data-todate');
+			const currency = button.getAttribute('data-currency');
+			const dtltype = button.getAttribute('data-dtltype');
+			const type = button.getAttribute('data-type');
+			const version = button.getAttribute('data-version');
+			const sessionfilename = sessionStorage.getItem("filename");
 
-					if (sessionfilename == filename) {
-						alertMsg.innerHTML = 'Download request already Processing...';
-						showAlert();
-						return;
-					}
+			if (sessionfilename == filename) {
+				alertMsg.innerHTML = 'Download request already Processing...';
+				showAlert();
+				return;
+			}
 
-					alertMsg.innerHTML = 'Download request Processing...';
+			alertMsg.innerHTML = 'Download request Processing...';
+			showAlert();
+
+			const baseUrl = '/BRRS/Reports/startreport';
+			const downloadUrl = baseUrl +
+				'?filename=' + encodeURIComponent(filename) +
+				'&fromdate=' + encodeURIComponent(fromdate) +
+				'&todate=' + encodeURIComponent(todate) +
+				'&currency=' + encodeURIComponent(currency) +
+				'&dtltype=' + encodeURIComponent(dtltype) +
+				'&type=' + encodeURIComponent(type) +
+				'&version=' + encodeURIComponent(version);
+			fetch(downloadUrl)  // ✅ no invalid characters now
+				.then(res => res.text())
+				.then(jobId => {
+
+					alertMsg.innerHTML = 'Download request received...' + jobId;
 					showAlert();
-
-					const baseUrl = '/BRRS/Reports/startreport';
-					const downloadUrl = baseUrl +
-						'?filename=' + encodeURIComponent(filename) +
-						'&fromdate=' + encodeURIComponent(fromdate) +
-						'&todate=' + encodeURIComponent(todate) +
-						'&currency=' + encodeURIComponent(currency) +
-						'&dtltype=' + encodeURIComponent(dtltype) +
-						'&type=' + encodeURIComponent(type) +
-						'&version=' + encodeURIComponent(version);
-					fetch(downloadUrl)  // ✅ no invalid characters now
-						.then(res => res.text())
-						.then(jobId => {
-
-							alertMsg.innerHTML = 'Download request received...' + jobId;
-							showAlert();
-							sessionStorage.setItem("jobId", jobId);
-							sessionStorage.setItem("filename", filename);
-							checkReport(jobId);
-						});
-				}
+					sessionStorage.setItem("jobId", jobId);
+					sessionStorage.setItem("filename", filename);
+					checkReport(jobId);
+				});
+		}
 
 
 		function checkReport(jobId) {
@@ -696,80 +679,85 @@ PURPOSE		: BRFREPORT
 
 	</script>
 	<style>
-		  .dataTables_scrollHeadInner,
-		  table.dataTable {
-		    width: 100% !important;
-		    margin: -2px auto !important;
-		  }
+		.dataTables_scrollHeadInner,
+		table.dataTable {
+			width: 100% !important;
+			margin: -2px auto !important;
+		}
 
-		  /* ✅ Prevent wrapping in all table cells */
-		  #reportdetails th,
-		  #reportdetails td {
-		    white-space: nowrap;
-		  }
-		</style>
-		<style>
-					.left-arrow-circle {
-						background-color: white;
-						color: #007bff;
-						border-radius: 50%;
-						padding: 8px;
-						margin-right: 10px;
-						cursor: pointer;
-					}
-					/* 🚌 Bus display style box */
-								.boards {
-									transform: translateY(6px);
-								  background-color: rgb(107, 122, 143);
-								  color: white;
-								  padding: 5px 5px;
-								  border-radius: 8px;
-								  margin-left: 10px;
-								  overflow: hidden;
-								  white-space: nowrap;
-								  flex: 1; /* ✅ makes it take available space dynamically */
-								  min-width: 200px;
-								  box-shadow: 0 0 10px rgb(107, 122, 143);
-								  position: relative;
-								}
-					/* ✨ Scrolling animation */
-					.scrolling-text {
-						display: inline-block;
-						font-family: "Courier New", monospace;
-						font-weight: bold;
-						letter-spacing: 1px;
-						animation: scroll-left 10s linear infinite;
-					}
-					/* Animation keyframes */
-					@keyframes scroll-left {
-						0% {
-							transform: translateX(100%);
-						}
-						100% {
-							transform: translateX(-100%);
-						}
-					}
-				</style>
+		/* ✅ Prevent wrapping in all table cells */
+		#reportdetails th,
+		#reportdetails td {
+			white-space: nowrap;
+		}
+	</style>
+	<style>
+		.left-arrow-circle {
+			background-color: white;
+			color: #007bff;
+			border-radius: 50%;
+			padding: 8px;
+			margin-right: 10px;
+			cursor: pointer;
+		}
+
+		/* 🚌 Bus display style box */
+		.boards {
+			transform: translateY(6px);
+			background-color: rgb(107, 122, 143);
+			color: white;
+			padding: 5px 5px;
+			border-radius: 8px;
+			margin-left: 10px;
+			overflow: hidden;
+			white-space: nowrap;
+			flex: 1;
+			/* ✅ makes it take available space dynamically */
+			min-width: 200px;
+			box-shadow: 0 0 10px rgb(107, 122, 143);
+			position: relative;
+		}
+
+		/* ✨ Scrolling animation */
+		.scrolling-text {
+			display: inline-block;
+			font-family: "Courier New", monospace;
+			font-weight: bold;
+			letter-spacing: 1px;
+			animation: scroll-left 10s linear infinite;
+		}
+
+		/* Animation keyframes */
+		@keyframes scroll-left {
+			0% {
+				transform: translateX(100%);
+			}
+
+			100% {
+				transform: translateX(-100%);
+			}
+		}
+	</style>
 	<script th:inline="javascript">
-			  $(document).ready(function () {
-			    $('#reportdetails').DataTable({
-			      scrollY: "550px",            // ✅ Adjust vertical scroll height
-			      scrollX: true,               // ✅ Horizontal scrolling
-			      scrollCollapse: true,
-			      autoWidth: false,
-			      paging: true,
-			      searching: true,
-			      lengthChange: false,
-			      ordering: true,
-			      pageLength: 100,
-			      fixedHeader: {
-			        header: true,
-			        footer: false
-			      },                           // ✅ Ensures header stays visible
-			      dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t'
-			    });
-			  });
-			</script>
+		$(document).ready(function () {
+			$('#reportdetails').DataTable({
+				scrollY: "550px",            // ✅ Adjust vertical scroll height
+				scrollX: true,               // ✅ Horizontal scrolling
+				scrollCollapse: true,
+				autoWidth: false,
+				paging: true,
+				searching: true,
+				lengthChange: false,
+				ordering: true,
+				pageLength: 100,
+				fixedHeader: {
+					header: true,
+					footer: false
+				},                           // ✅ Ensures header stays visible
+				dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t'
+			});
+		});
+	</script>
 	<script th:inline="javascript">
 		function showdetailsbyRowAndColumn(a) {
 			var rowId = a.getAttribute('rowId');
@@ -808,58 +796,58 @@ PURPOSE		: BRFREPORT
 		}
 	</script>
 	<script>
-				function submitUpdate() {
-					const formData = $('#DetailForm').serialize(); // Ensure correct form ID
+		function submitUpdate() {
+			const formData = $('#DetailForm').serialize(); // Ensure correct form ID
 
-					// ✅ Store the previous page URL
-					const previousUrl = document.referrer; // same as going back once in history
+			// ✅ Store the previous page URL
+			const previousUrl = document.referrer; // same as going back once in history
 
-					// Show loader while processing
-					$('#loader').modal('show');
+			// Show loader while processing
+			$('#loader').modal('show');
 
-					$.ajax({
-						url: `/BRRS/Reports/${reportId}/update`,
-						type: 'POST',
-						data: formData,
-						success: function (response) {
-							$('#loader').modal('hide');
+			$.ajax({
+				url: `/BRRS/Reports/${reportId}/update`,
+				type: 'POST',
+				data: formData,
+				success: function (response) {
+					$('#loader').modal('hide');
 
-							// Show message via modal
-							if (response && response.toLowerCase().includes('success')) {
-								showResultModalDetail('BRRS', response);
-							} else {
-								showResultModalDetail('Information', response || 'No data updated.');
-							}
+					// Show message via modal
+					if (response && response.toLowerCase().includes('success')) {
+						showResultModalDetail('BRRS', response);
+					} else {
+						showResultModalDetail('Information', response || 'No data updated.');
+					}
 
-							// ✅ Redirect back to the previous page after short delay
-							setTimeout(() => {
-								if (previousUrl) {
-									window.location.href = previousUrl;
-								} else {
-									// fallback: just go back if referrer not found
-									window.history.back();
-								}
-							}, 1500);
-						},
-						error: function (xhr, status, error) {
-							$('#loader').modal('hide');
-							console.error("Update error:", error);
-
-							showResultModalDetail('Error', 'Failed to update record. Please try again.');
-
-							// ✅ On error also return to previous page after delay
-							setTimeout(() => {
-								if (previousUrl) {
-									window.location.href = previousUrl;
-								} else {
-									window.history.back();
-								}
-							}, 1500);
+					// ✅ Redirect back to the previous page after short delay
+					setTimeout(() => {
+						if (previousUrl) {
+							window.location.href = previousUrl;
+						} else {
+							// fallback: just go back if referrer not found
+							window.history.back();
 						}
-					});
-				}
+					}, 1500);
+				},
+				error: function (xhr, status, error) {
+					$('#loader').modal('hide');
+					console.error("Update error:", error);
 
-			</script>
+					showResultModalDetail('Error', 'Failed to update record. Please try again.');
+
+					// ✅ On error also return to previous page after delay
+					setTimeout(() => {
+						if (previousUrl) {
+							window.location.href = previousUrl;
+						} else {
+							window.history.back();
+						}
+					}, 1500);
+				}
+			});
+		}
+
+	</script>
 
 
 
@@ -887,20 +875,20 @@ PURPOSE		: BRFREPORT
 						<!-- Title -->
 						<h5
 							style="font-family: arial; font-size: 20px; padding-top: 10px; font-weight: bold; color: white;">
-							 (25) MONTHLY SCHEDULE: M-LA5: LOANS AND ADVANCES</h5>
-							<!-- Moving bus-board text -->
-											  <div class="boards">
-											    <p class="scrolling-text">BANK OF BOTSWANA - BANKING SUPERVISION DEPARTMENT</p>
-											  </div>
+							(25) MONTHLY SCHEDULE: M-LA5: LOANS AND ADVANCES</h5>
+						<!-- Moving bus-board text -->
+						<div class="boards">
+							<p class="scrolling-text">BANK OF BOTSWANA - BANKING SUPERVISION DEPARTMENT</p>
+						</div>
 
-					</div>   
+					</div>
 
 					<div class="custom-tab-btn-group nav-buttons"
 						style="display: flex; color: white; align-items: center;">
 						<!-- 📅 Date -->
 						<span class="white-text"
-													style="color: white !important; font-size: 16px; margin-right: 20px;">Report
-													Date: <span th:text="${#strings.replace(asondate, '/', '-')}">2025-09-18</span>
+							style="color: white !important; font-size: 16px; margin-right: 20px;">Report
+							Date: <span th:text="${#strings.replace(asondate, '/', '-')}">2025-09-18</span>
 						</span>
 
 						<!-- Buttons -->
@@ -909,21 +897,37 @@ PURPOSE		: BRFREPORT
 							th:if="${displaymode == 'Details'}">Summary</button>
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails();"
 							th:if="${displaymode == 'summary'}">Details</button>
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'summary'}" th:attr="data-reportid=${reportid}, 
-		                     data-asondate=${asondate}, 
-		                     data-fromdate=${fromdate}, 
-		                     data-todate=${todate}, 
-		                     data-currency=${currency},  
-		                     data-dtltype=${dtltype}, 
-		                     data-filename='M_LA5.xlsx',
-		                     data-type=${type},
-		                     data-version=${version}" onclick="downloadfile(this);">
-							<i class="fa fa-download"></i>
+						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
+							onclick="downloadfile(this)"
+							th:if="${displaymode == 'summary' or displaymode == 'detail' or displaymode == 'resubSummary'or displaymode == 'resubDetail'}"
+							th:attr="data-reportid=${reportid},
+							                   data-asondate=${asondate},
+							                   data-fromdate=${fromdate},
+							                   data-todate=${todate},
+							                   data-currency=${currency}, 
+							                   data-dtltype=${dtltype},
+							                   data-filename='M_LA5.xlsx',
+							                   data-type=${type},
+							                   data-version=${version != null ? version : ''}"
+							style="font-family: Arial;font-weight: bold;">
+							<i class="fa fa-download"></i> Format
 						</button>
+						<button type="button" class="custom-tab-btn" onclick="downloadfile(this)" th:if="${displaymode == 'summary' or displaymode == 'detail'
+													          or displaymode == 'resubSummary' or displaymode == 'resubDetail'}" th:attr="data-reportid=${reportid},
+													             data-asondate=${asondate},
+													             data-fromdate=${fromdate},
+													             data-todate=${todate},
+													             data-currency=${currency},
+													             data-dtltype='email',
+													             data-filename='EMAIL_M_LA5.xlsx',
+													             data-type=${type},
+																 data-format='email',
+													             data-version=${version != null ? version : ''}">
+							<i class="fa fa-download"></i> Email
+						</button>
+
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'Details'}" 
-							th:attr=" data-reportid=${reportid}, 
+							th:if="${displaymode == 'Details'}" th:attr=" data-reportid=${reportid}, 
 									  data-asondate=${asondate},
 									  data-fromdate=${fromdate},
 									  data-todate=${todate},
@@ -931,8 +935,7 @@ PURPOSE		: BRFREPORT
 									  data-dtltype=${dtltype}, 
 									  data-filename='M_LA5Detail',
 									  data-type=${type},
-									  data-version=${version}"
-									  onclick="startReport(this);" >
+									  data-version=${version}" onclick="startReport(this);">
 							<i class="fa fa-download"></i>
 						</button>
 					</div>
@@ -1009,8 +1012,7 @@ PURPOSE		: BRFREPORT
 
 										<!-- Row 7 (colored) -->
 										<tr>
-											<td style="text-align: left;"
-												th:text="${report.r7_product}"></td>
+											<td style="text-align: left;" th:text="${report.r7_product}"></td>
 											<td style="text-align: right;background-color: rgb(107, 122, 143);color: white;"
 												th:text="${#numbers.formatDecimal(report.r7_usd,1,'COMMA',0,'POINT')}">
 											</td>
@@ -1162,8 +1164,7 @@ PURPOSE		: BRFREPORT
 
 										<!-- Row 11 (colored) -->
 										<tr>
-											<td style="text-align: left;"
-												th:text="${report.r11_product}"></td>
+											<td style="text-align: left;" th:text="${report.r11_product}"></td>
 											<td style="text-align: right;background-color: rgb(107, 122, 143);color: white;"
 												th:text="${#numbers.formatDecimal(report.r11_usd,1,'COMMA',0,'POINT')}">
 											</td>
@@ -1235,8 +1236,7 @@ PURPOSE		: BRFREPORT
 
 										<!-- Row 13 (colored) -->
 										<tr>
-											<td style="text-align: left;"
-												th:text="${report.r13_product}"></td>
+											<td style="text-align: left;" th:text="${report.r13_product}"></td>
 											<td style="text-align: right;background-color: rgb(107, 122, 143);color: white;"
 												th:text="${#numbers.formatDecimal(report.r13_usd,1,'COMMA',0,'POINT')}">
 											</td>
@@ -1308,8 +1308,7 @@ PURPOSE		: BRFREPORT
 
 										<!-- Row 15 (colored) -->
 										<tr>
-											<td style="text-align: left;"
-												th:text="${report.r15_product}"></td>
+											<td style="text-align: left;" th:text="${report.r15_product}"></td>
 											<td style="text-align: right;background-color: rgb(107, 122, 143);color: white;"
 												th:text="${#numbers.formatDecimal(report.r15_usd,1,'COMMA',0,'POINT')}">
 											</td>
@@ -1381,8 +1380,7 @@ PURPOSE		: BRFREPORT
 
 										<!-- Row 17 (colored) -->
 										<tr>
-											<td style="text-align: left;"
-												th:text="${report.r17_product}"></td>
+											<td style="text-align: left;" th:text="${report.r17_product}"></td>
 											<td style="text-align: right;background-color: rgb(107, 122, 143);color: white;"
 												th:text="${#numbers.formatDecimal(report.r17_usd,1,'COMMA',0,'POINT')}">
 											</td>
@@ -1454,8 +1452,7 @@ PURPOSE		: BRFREPORT
 
 										<!-- Row 19 (colored) -->
 										<tr>
-											<td style="text-align: left;"
-												th:text="${report.r19_product}"></td>
+											<td style="text-align: left;" th:text="${report.r19_product}"></td>
 											<td style="text-align: right;background-color: rgb(107, 122, 143);color: white;"
 												th:text="${#numbers.formatDecimal(report.r19_usd,1,'COMMA',0,'POINT')}">
 											</td>
@@ -1679,8 +1676,7 @@ PURPOSE		: BRFREPORT
 											</td>
 										</tr>
 										<tr>
-											<td style="text-align: left;"
-												th:text="${report.r25_product}"></td>
+											<td style="text-align: left;" th:text="${report.r25_product}"></td>
 											<td style="text-align: right;background-color: rgb(107, 122, 143);color: white;"
 												th:text="${#numbers.formatDecimal(report.r25_usd,1,'COMMA',0,'POINT')}">
 											</td>
@@ -2019,8 +2015,7 @@ PURPOSE		: BRFREPORT
 											</td>
 										</tr>
 										<tr>
-											<td style="text-align: left;"
-												th:text="${report.r34_product}"></td>
+											<td style="text-align: left;" th:text="${report.r34_product}"></td>
 											<td style="text-align: right;background-color: rgb(107, 122, 143);color: white;"
 												th:text="${#numbers.formatDecimal(report.r34_usd,1,'COMMA',0,'POINT')}">
 											</td>
@@ -2128,8 +2123,7 @@ PURPOSE		: BRFREPORT
 											</td>
 										</tr>
 										<tr>
-											<td style="text-align: left;"
-												th:text="${report.r37_product}"></td>
+											<td style="text-align: left;" th:text="${report.r37_product}"></td>
 											<td style="text-align: right;background-color: rgb(107, 122, 143);color: white;"
 												th:text="${#numbers.formatDecimal(report.r37_usd,1,'COMMA',0,'POINT')}">
 											</td>
@@ -2237,8 +2231,7 @@ PURPOSE		: BRFREPORT
 											</td>
 										</tr>
 										<tr>
-											<td style="text-align: left;"
-												th:text="${report.r40_product}"></td>
+											<td style="text-align: left;" th:text="${report.r40_product}"></td>
 											<td style="text-align: right;background-color: rgb(107, 122, 143);color: white;"
 												th:text="${#numbers.formatDecimal(report.r40_usd,1,'COMMA',0,'POINT')}">
 											</td>
@@ -2423,8 +2416,7 @@ PURPOSE		: BRFREPORT
 											</td>
 										</tr>
 										<tr>
-											<td style="text-align: left;"
-												th:text="${report.r45_product}"></td>
+											<td style="text-align: left;" th:text="${report.r45_product}"></td>
 											<td style="text-align: right;background-color: rgb(107, 122, 143);color: white;"
 												th:text="${#numbers.formatDecimal(report.r45_usd,1,'COMMA',0,'POINT')}">
 											</td>
@@ -2570,8 +2562,7 @@ PURPOSE		: BRFREPORT
 											</td>
 										</tr>
 										<tr>
-											<td style="text-align: left;"
-												th:text="${report.r49_product}"></td>
+											<td style="text-align: left;" th:text="${report.r49_product}"></td>
 											<td style="text-align: right;background-color: rgb(107, 122, 143);color: white;"
 												th:text="${#numbers.formatDecimal(report.r49_usd,1,'COMMA',0,'POINT')}">
 											</td>
@@ -2718,8 +2709,7 @@ PURPOSE		: BRFREPORT
 											</td>
 										</tr>
 										<tr>
-											<td style="text-align: left;"
-												th:text="${report.r53_product}"></td>
+											<td style="text-align: left;" th:text="${report.r53_product}"></td>
 											<td style="text-align: right;background-color: rgb(107, 122, 143);color: white;"
 												th:text="${#numbers.formatDecimal(report.r53_usd,1,'COMMA',0,'POINT')}">
 											</td>
@@ -2983,8 +2973,7 @@ PURPOSE		: BRFREPORT
 
 
 										<tr>
-											<td style="text-align: left;"
-												th:text="${report.r60_product}"></td>
+											<td style="text-align: left;" th:text="${report.r60_product}"></td>
 											<td style="text-align: right;background-color: rgb(107, 122, 143);color: white;"
 												th:text="${#numbers.formatDecimal(report.r60_usd,1,'COMMA',0,'POINT')}">
 											</td>
@@ -3109,228 +3098,233 @@ PURPOSE		: BRFREPORT
 				</div>
 
 				<!--  DETAIL -->
-								<div th:if="${displaymode == 'Details'}">
-									<div class="row">
-										<div class="col-sm-12">
-											<div class="table-container" 
-												style="border-right: 1px solid #dee2e6; ">
-												<table class="table table-striped table-bordered table-hover"
-													id="reportdetails">
-													<thead class="thead-light">
-														
-														<tr>
-															<th> </th>
-															<th>S No</th>
-															<th>CUST ID</th>
-															<th>ACCT NUMBER</th>
-															<th>ACCT NAME</th>
-															<th>ACCT BALANCE IN PULA</th>
-															<th>REPORT LABEL</th>
-															<th>REPORT ADDL CRITERIA 1</th>
-															<th>REPORT DATE</th>
-														</tr>
+				<div th:if="${displaymode == 'Details'}">
+					<div class="row">
+						<div class="col-sm-12">
+							<div class="table-container" style="border-right: 1px solid #dee2e6; ">
+								<table class="table table-striped table-bordered table-hover" id="reportdetails">
+									<thead class="thead-light">
 
-													</thead>
+										<tr>
+											<th> </th>
+											<th>S No</th>
+											<th>CUST ID</th>
+											<th>ACCT NUMBER</th>
+											<th>ACCT NAME</th>
+											<th>ACCT BALANCE IN PULA</th>
+											<th>REPORT LABEL</th>
+											<th>REPORT ADDL CRITERIA 1</th>
+											<th>REPORT DATE</th>
+										</tr>
 
-													<tbody style="font-family: Arial;">
-														<tr th:each="report, srlno : ${reportdetails}">
-															<td>
-																<a data-toggle="tooltip" class="editrec" title="Click to Edit this Record">
-																	<i class="fas fa-edit" style="color: black; cursor:pointer;"
-																	th:attr="data-acctNo=${report.acct_number},
+									</thead>
+
+									<tbody style="font-family: Arial;">
+										<tr th:each="report, srlno : ${reportdetails}">
+											<td>
+												<a data-toggle="tooltip" class="editrec"
+													title="Click to Edit this Record">
+													<i class="fas fa-edit" style="color: black; cursor:pointer;"
+														th:attr="data-acctNo=${report.acct_number},
 																	data-asondate=${#dates.format(report.report_date, 'dd-MM-yyyy')},
-																	 data-type=${type}"
-																	 onclick="openDetail(this, 'edit')">
-																		 </i>
-																		 </a>
-																		</td>
-															
-															<td th:text="${srlno.index + 1}"></td>
-															<td th:text="${report.cust_id != null ? report.cust_id : '-'}"></td>
-															<td th:text="${report.acct_number != null ? report.acct_number : '-'}"></td>
-															<td th:text="${report.acct_name != null ? report.acct_name : '-'}"></td>
-															
-															<td style="text-align:right;" th:text="${#numbers.formatDecimal(report.acct_balance_in_pula,1,'COMMA',0,'POINT')}"></td>														
-															<td th:text="${report.report_label != null ? report.report_label : '-'}">
-															</td>
-															<td
-																th:text="${report.report_addl_criteria_1 != null ? report.report_addl_criteria_1 : '-'}">
-															</td>
-															<td th:text="${report.report_date != null 
+																	 data-type=${type}" onclick="openDetail(this, 'edit')">
+													</i>
+												</a>
+											</td>
+
+											<td th:text="${srlno.index + 1}"></td>
+											<td th:text="${report.cust_id != null ? report.cust_id : '-'}"></td>
+											<td th:text="${report.acct_number != null ? report.acct_number : '-'}"></td>
+											<td th:text="${report.acct_name != null ? report.acct_name : '-'}"></td>
+
+											<td style="text-align:right;"
+												th:text="${#numbers.formatDecimal(report.acct_balance_in_pula,1,'COMMA',0,'POINT')}">
+											</td>
+											<td th:text="${report.report_label != null ? report.report_label : '-'}">
+											</td>
+											<td
+												th:text="${report.report_addl_criteria_1 != null ? report.report_addl_criteria_1 : '-'}">
+											</td>
+											<td th:text="${report.report_date != null 
 																													? #dates.format(report.report_date, 'dd-MM-yyyy') : '-'}"></td>
-														</tr>
-													</tbody>
-												</table>
+										</tr>
+									</tbody>
+								</table>
 
-											</div>
+							</div>
 
-											<!-- Submit Button -->
-											<div style="text-align: center; margin-top: 15px; background-color: white;">
-												<button id="submitButton" type="button" class="custom-tab-btn Show_input"
-													onclick="updateform();" style="display: none;">
-													Submit
-												</button>
-											</div>
-										</div>
-									</div>
+							<!-- Submit Button -->
+							<div style="text-align: center; margin-top: 15px; background-color: white;">
+								<button id="submitButton" type="button" class="custom-tab-btn Show_input"
+									onclick="updateform();" style="display: none;">
+									Submit
+								</button>
+							</div>
+						</div>
+					</div>
+				</div>
+
+
+				<!-- M_la1 Detail Form Screen -->
+				<div th:if="${formmode == 'edit'}" class="card">
+					<div class="card-body">
+						<form th:object="${Data}" method="post" id="DetailForm">
+							<!-- Row 1 -->
+							<div class="row formline" style="margin-top:10px;">
+								<label class="col-sm-2">Customer ID</label>
+								<div class="col-sm-3">
+									<input type="text" th:field="*{cust_id}" class="form-control form-control-sm"
+										readonly />
+								</div>
+								<div class="col-sm-1"></div>
+								<label class="col-sm-2">Account Number</label>
+								<div class="col-sm-3">
+									<input type="text" th:field="*{acct_number}" class="form-control form-control-sm"
+										readonly />
+								</div>
+							</div>
+							<!-- Row 2 -->
+							<div class="row formline" style="margin-top:10px;">
+								<label class="col-sm-2">Account Name</label>
+								<div class="col-sm-3">
+									<input type="text" th:field="*{acct_name}" class="form-control form-control-sm"
+										readonly />
 								</div>
 
-			
-			<!-- M_la1 Detail Form Screen -->
-				<div th:if="${formmode == 'edit'}" class="card">
-				  <div class="card-body">
-				    <form th:object="${Data}" method="post" id="DetailForm">
-				      <!-- Row 1 -->
-				      <div class="row formline" style="margin-top:10px;">
-				        <label class="col-sm-2">Customer ID</label>
-				        <div class="col-sm-3">
-				          <input type="text" th:field="*{cust_id}" class="form-control form-control-sm" readonly />
-				        </div>
-				        <div class="col-sm-1"></div>
-				        <label class="col-sm-2">Account Number</label>
-				        <div class="col-sm-3">
-				          <input type="text" th:field="*{acct_number}" class="form-control form-control-sm" readonly />
-				        </div>
-				      </div>
-				      <!-- Row 2 -->
-				      <div class="row formline" style="margin-top:10px;">
-				        <label class="col-sm-2">Account Name</label>
-				        <div class="col-sm-3">
-				          <input type="text" th:field="*{acct_name}" class="form-control form-control-sm" readonly />
-				        </div>
-						
-				        <div class="col-sm-1"></div>
-				        <label class="col-sm-2">Acct Balance</label>
-				        <div class="col-sm-3">
-				          <input type="number" step="0.01" th:field="*{acct_balance_in_pula}" class="form-control form-control-sm" style="text-align:right;" />
-				        </div>
-				      </div>
-				      <!-- Row 3 -->
-				      <div class="row formline" style="margin-top:10px;">
-						<label class="col-sm-2">Report Label</label>
-						 <div class="col-sm-3">
-						<input type="text" th:field="*{report_label}" class="form-control form-control-sm"  readonly />
-						</div>
-						
-				        <div class="col-sm-1"></div>
-						<label class="col-sm-2">Report Addl Criteria 1</label>
-													        <div class="col-sm-3">
-													          <input type="text" th:field="*{report_addl_criteria_1}" class="form-control form-control-sm" readonly />
-													        </div>
-				      </div>
-				     
-				        
-					  <div class="row formline" style="margin-top:10px;">
-					      <label class="col-sm-2">Report Date</label>
-					      <div class="col-sm-3">
-					          <input type="date" name="report_date"  class="form-control form-control-sm" 
-							  th:value="${#dates.format(Data.report_date, 'yyyy-MM-dd')}"readonly />
-					      </div>
-					  </div>
-				 
-					  
-					  
-				      <!-- Update Button -->
-				      <div style="text-align:center; margin-top:20px;">
-				        <button type="button" class="custom-tab-btn" th:if="${formmode == 'edit'}"
-						 onclick="submitUpdate()">Update</button>
-				      </div>
-				    </form>
-				  </div>
-				</div>
+								<div class="col-sm-1"></div>
+								<label class="col-sm-2">Acct Balance</label>
+								<div class="col-sm-3">
+									<input type="number" step="0.01" th:field="*{acct_balance_in_pula}"
+										class="form-control form-control-sm" style="text-align:right;" />
+								</div>
+							</div>
+							<!-- Row 3 -->
+							<div class="row formline" style="margin-top:10px;">
+								<label class="col-sm-2">Report Label</label>
+								<div class="col-sm-3">
+									<input type="text" th:field="*{report_label}" class="form-control form-control-sm"
+										readonly />
+								</div>
 
-
-		</div>
-
-
-
-	</div>
-
-
-
-	<div class="modal fade" id="loader" data-backdrop="static" data-keyboard="false">
-		<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-			<div class="modal-content" style="background: transparent;">
-				<div class="modal-body" style="text-align: center">
-					<div>
-						<img th:src=@{/images/loader.gif} id="bfirelogo"
-							style="width: 153px; height: auto; margin-left: 18px; background-color: transparent; border-color: transparent;"
-							alt="Bornfire">
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-
-
-
-	<!-- Custom Alert/Result Modal (Matches your existing style) -->
-	<div class="modal fade" id="resultModal">
-		<div class="modal-dialog modal-dialog-centered">
-			<div class="modal-content">
-				<!-- Your custom styled header -->
-				<div class="menu-title-header">
-					<div class="modal-title" id="resultModalLabel" style="text-align: center; color: white;">
-						<!-- Title will be set by JavaScript -->
-					</div>
-				</div>
-				<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
-					<p id="resultModalBody"></p>
-					<!-- Your custom styled button -->
-					<button type="button" class="custom-tab-btn" onclick="closemodels()" data-dismiss="modal">OK</button>
-				</div>
-			</div>
-		</div>
-	</div>
-	
-	<!-- For Edit in Detail page -->
-							<div class="modal fade" id="resultModal1">
-								<div class="modal-dialog modal-dialog-centered">
-									<div class="modal-content">
-										<!-- Your custom styled header -->
-										<div class="menu-title-header">
-											<div class="modal-title" id="resultModalLabel1"
-												style="text-align: center; color: white;">
-												<!-- Title will be set by JavaScript -->
-											</div>
-										</div>
-										<div class="modal-body"
-											style="text-align: center; font-size: 1.1rem;">
-											<p id="resultModalBody1"></p>
-											<!-- Your custom styled button -->
-											<button type="button" class="custom-tab-btn" onclick="closemodel()"
-												data-dismiss="modal">OK</button>
-										</div>
-									</div>
+								<div class="col-sm-1"></div>
+								<label class="col-sm-2">Report Addl Criteria 1</label>
+								<div class="col-sm-3">
+									<input type="text" th:field="*{report_addl_criteria_1}"
+										class="form-control form-control-sm" readonly />
 								</div>
 							</div>
 
-	<!-- Custom Cellresult Modal -->
-	<div class="modal fade" id="cellresultModal">
-		<div class="modal-dialog modal-dialog-centered">
-			<div class="modal-content">
 
-				<!-- Custom header -->
-				<div class="menu-title-header"
-					style="background-color:#6c7a91; padding: 8px; border-radius:5px 5px 0 0;">
-					<div class="modal-title" id="cellresultModalLabel" style="text-align: center; color: white;">
-						Do you want to open the report?
+							<div class="row formline" style="margin-top:10px;">
+								<label class="col-sm-2">Report Date</label>
+								<div class="col-sm-3">
+									<input type="date" name="report_date" class="form-control form-control-sm"
+										th:value="${#dates.format(Data.report_date, 'yyyy-MM-dd')}" readonly />
+								</div>
+							</div>
+
+
+
+							<!-- Update Button -->
+							<div style="text-align:center; margin-top:20px;">
+								<button type="button" class="custom-tab-btn" th:if="${formmode == 'edit'}"
+									onclick="submitUpdate()">Update</button>
+							</div>
+						</form>
 					</div>
 				</div>
 
-				<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
-					<button type="button" class="custom-tab-btn cancel-btn" data-bs-dismiss="modal"
-						style="margin-right:10px; border:2px solid #6c7a91; background:white; color:black; border-radius:20px; padding:5px 15px;">
-						Cancel
-					</button>
-					<button type="button" class="custom-tab-btn yes-btn"
-						style="background:#6c7a91; color:white; border:none; border-radius:20px; padding:5px 20px;">
-						Yes
-					</button>
+
+			</div>
+
+
+
+		</div>
+
+
+
+		<div class="modal fade" id="loader" data-backdrop="static" data-keyboard="false">
+			<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+				<div class="modal-content" style="background: transparent;">
+					<div class="modal-body" style="text-align: center">
+						<div>
+							<img th:src=@{/images/loader.gif} id="bfirelogo"
+								style="width: 153px; height: auto; margin-left: 18px; background-color: transparent; border-color: transparent;"
+								alt="Bornfire">
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
-	</div>
+
+
+
+		<!-- Custom Alert/Result Modal (Matches your existing style) -->
+		<div class="modal fade" id="resultModal">
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content">
+					<!-- Your custom styled header -->
+					<div class="menu-title-header">
+						<div class="modal-title" id="resultModalLabel" style="text-align: center; color: white;">
+							<!-- Title will be set by JavaScript -->
+						</div>
+					</div>
+					<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+						<p id="resultModalBody"></p>
+						<!-- Your custom styled button -->
+						<button type="button" class="custom-tab-btn" onclick="closemodels()"
+							data-dismiss="modal">OK</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- For Edit in Detail page -->
+		<div class="modal fade" id="resultModal1">
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content">
+					<!-- Your custom styled header -->
+					<div class="menu-title-header">
+						<div class="modal-title" id="resultModalLabel1" style="text-align: center; color: white;">
+							<!-- Title will be set by JavaScript -->
+						</div>
+					</div>
+					<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+						<p id="resultModalBody1"></p>
+						<!-- Your custom styled button -->
+						<button type="button" class="custom-tab-btn" onclick="closemodel()"
+							data-dismiss="modal">OK</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Custom Cellresult Modal -->
+		<div class="modal fade" id="cellresultModal">
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content">
+
+					<!-- Custom header -->
+					<div class="menu-title-header"
+						style="background-color:#6c7a91; padding: 8px; border-radius:5px 5px 0 0;">
+						<div class="modal-title" id="cellresultModalLabel" style="text-align: center; color: white;">
+							Do you want to open the report?
+						</div>
+					</div>
+
+					<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+						<button type="button" class="custom-tab-btn cancel-btn" data-bs-dismiss="modal"
+							style="margin-right:10px; border:2px solid #6c7a91; background:white; color:black; border-radius:20px; padding:5px 15px;">
+							Cancel
+						</button>
+						<button type="button" class="custom-tab-btn yes-btn"
+							style="background:#6c7a91; color:white; border:none; border-radius:20px; padding:5px 20px;">
+							Yes
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
 
 
 </body>

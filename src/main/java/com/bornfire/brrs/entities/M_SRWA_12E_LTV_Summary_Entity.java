@@ -6,17 +6,14 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.IdClass;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
-@Table(name = "BRRS_M_SRWA_12E_ARCHIVALTABLE_SUMMARY")
-@IdClass(BRRS_M_SRWA_12E_LTV_Archival_Summary_PK.class)
-public class BRRS_M_SRWA_12E_LTV_Archival_Summary_Entity {
+@Table(name = "BRRS_M_SRWA_12E_SUMMARYTABLE")
+public class M_SRWA_12E_LTV_Summary_Entity {
 
 	private String R13_PRODUCT;
 	private BigDecimal R13_PERFORMING_EXPOSURE;
@@ -53,25 +50,38 @@ public class BRRS_M_SRWA_12E_LTV_Archival_Summary_Entity {
 	private BigDecimal R19_NON_PERFORMING;
 	private BigDecimal R19_SPECIFIC_PROV;
 	private BigDecimal R19_UNSECURED_PORTION_NPL;
-
-	@Temporal(TemporalType.DATE)
-	@DateTimeFormat(pattern = "dd/MM/yyyy")
+    private BigDecimal R13_TOTAL;
+    private BigDecimal R14_TOTAL;
+    private BigDecimal R15_TOTAL;
+    private BigDecimal R16_TOTAL;
+    private BigDecimal R17_TOTAL;
+    private BigDecimal R18_TOTAL;
+    private BigDecimal R19_TOTAL;
 	@Id
+	@Temporal(TemporalType.DATE)
 	@Column(name = "REPORT_DATE")
 	private Date reportDate;
+
 	@Column(name = "REPORT_VERSION")
-	private String reportVersion;
-	
-	@Column(name = "REPORT_RESUBDATE")
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date reportResubDate;
-	
+	private BigDecimal reportVersion;
+    @Column(name = "REPORT_FREQUENCY")
+    private String REPORT_FREQUENCY;
 	private String REPORT_CODE;
 	private String REPORT_DESC;
 	private String ENTITY_FLG;
 	private String MODIFY_FLG;
 	private String DEL_FLG;
 
+	
+	public String getREPORT_FREQUENCY() {
+		return REPORT_FREQUENCY;
+	}
+
+	public void setREPORT_FREQUENCY(String rEPORT_FREQUENCY) {
+		REPORT_FREQUENCY = rEPORT_FREQUENCY;
+	}
+	
+	
 	public String getR13_PRODUCT() {
 		return R13_PRODUCT;
 	}
@@ -352,6 +362,8 @@ public class BRRS_M_SRWA_12E_LTV_Archival_Summary_Entity {
 		R19_UNSECURED_PORTION_NPL = r19_UNSECURED_PORTION_NPL;
 	}
 
+
+
 	public Date getReportDate() {
 		return reportDate;
 	}
@@ -360,23 +372,17 @@ public class BRRS_M_SRWA_12E_LTV_Archival_Summary_Entity {
 		this.reportDate = reportDate;
 	}
 
-	public String getReportVersion() {
+
+
+	public BigDecimal getReportVersion() {
 		return reportVersion;
 	}
 
-	public void setReportVersion(String reportVersion) {
+	public void setReportVersion(BigDecimal reportVersion) {
 		this.reportVersion = reportVersion;
 	}
 
-	public Date getReportResubDate() {
-		return reportResubDate;
-	}
 
-	public void setReportResubDate(Date reportResubDate) {
-		this.reportResubDate = reportResubDate;
-	}
-
-	
 	public String getREPORT_CODE() {
 		return REPORT_CODE;
 	}
@@ -416,8 +422,62 @@ public class BRRS_M_SRWA_12E_LTV_Archival_Summary_Entity {
 	public void setDEL_FLG(String dEL_FLG) {
 		DEL_FLG = dEL_FLG;
 	}
+	public BigDecimal getR13_TOTAL() {
+		return R13_TOTAL;
+	}
 
-	public BRRS_M_SRWA_12E_LTV_Archival_Summary_Entity() {
+	public void setR13_TOTAL(BigDecimal r13_TOTAL) {
+		R13_TOTAL = r13_TOTAL;
+	}
+
+	public BigDecimal getR14_TOTAL() {
+		return R14_TOTAL;
+	}
+
+	public void setR14_TOTAL(BigDecimal r14_TOTAL) {
+		R14_TOTAL = r14_TOTAL;
+	}
+
+	public BigDecimal getR15_TOTAL() {
+		return R15_TOTAL;
+	}
+
+	public void setR15_TOTAL(BigDecimal r15_TOTAL) {
+		R15_TOTAL = r15_TOTAL;
+	}
+
+	public BigDecimal getR16_TOTAL() {
+		return R16_TOTAL;
+	}
+
+	public void setR16_TOTAL(BigDecimal r16_TOTAL) {
+		R16_TOTAL = r16_TOTAL;
+	}
+
+	public BigDecimal getR17_TOTAL() {
+		return R17_TOTAL;
+	}
+
+	public void setR17_TOTAL(BigDecimal r17_TOTAL) {
+		R17_TOTAL = r17_TOTAL;
+	}
+
+	public BigDecimal getR18_TOTAL() {
+		return R18_TOTAL;
+	}
+
+	public void setR18_TOTAL(BigDecimal r18_TOTAL) {
+		R18_TOTAL = r18_TOTAL;
+	}
+
+	public BigDecimal getR19_TOTAL() {
+		return R19_TOTAL;
+	}
+
+	public void setR19_TOTAL(BigDecimal r19_TOTAL) {
+		R19_TOTAL = r19_TOTAL;
+	}
+	public M_SRWA_12E_LTV_Summary_Entity() {
 		super();
 	}
 

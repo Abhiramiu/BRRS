@@ -755,33 +755,38 @@ PURPOSE		: BWRBRREPORT
 			}
 
 			// Step 6: AJAX call
-						$.ajax({
+			$.ajax({
 							url: apiUrl,
 							type: 'POST',
 							data: formData,
 							processData: false,
 							contentType: false,
 							dataType: 'text',
+
 							success: function (response) {
 								$("#resultModalLabel").text("BRRS");
 								$("#resultModalBody").text(response);
 								$("#resultModal").modal("show");
 
-								//  Wait for user to close the modal manually
-								$("#resultModal").off("hidden.bs.modal").on("hidden.bs.modal", function () {
-									if (isResubmissionUpdate) {
-										window.location.href = previousUrl
-											? previousUrl
-											: "/BRRS/Resubmission?rptcode=MDISB5";
-									} // reload ONLY when modal is closed
-								});
+								// Redirect after modal close (OLD LOGIC)
+								$("#resultModal")
+									.off("hidden.bs.modal")
+									.on("hidden.bs.modal", function () {
+										if (isResubmissionUpdate) {
+											window.location.href = previousUrl
+												? previousUrl
+												: "/BRRS/Resubmission?rptcode=M_UNCONS_INVEST";
+										}
+									});
 							},
+
 							error: function (jqXHR) {
 								console.log("Error response:", jqXHR.responseText);
 								$("#resultModalLabel").text("Error");
-								$("#resultModalBody").text("Update failed. Check console for details.");
+								$("#resultModalBody").text("Update failed. Check console.");
 								$("#resultModal").modal("show");
 							},
+
 							complete: function () {
 								$('#loader').modal('hide');
 							}
@@ -789,7 +794,6 @@ PURPOSE		: BWRBRREPORT
 
 						console.log("✅ AJAX executed successfully");
 					}
-
 
 
 

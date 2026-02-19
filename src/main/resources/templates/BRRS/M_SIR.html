@@ -75,14 +75,6 @@ PURPOSE		: BRFREPORT
 			border-color: #0c0c0c;
 		}
 
-		.btn-primary:not (:disabled):not (.disabled).active,
-		.btn-primary:not (:disabled):not (.disabled):active,
-		.show>.btn-primary.dropdown-toggle {
-			color: #fff;
-			background-color: #cc000000;
-			border-color: #161617;
-		}
-
 		#finusertb {
 			width: 460px;
 		}
@@ -218,13 +210,7 @@ PURPOSE		: BRFREPORT
 			transition: 0.3s ease;
 		}
 
-		/* When input or select is focused or has a value, move the label up */
-		.form-control:focus~.form-legend,
-		.form-control:not (:placeholder-shown)~.form-legend {
-			top: -8px;
-			font-size: 1rem;
-			color: #007bff;
-		}
+
 
 		/* Hover effect when the input/select is focused */
 		.form-control:focus:hover~.form-legend {
@@ -232,11 +218,7 @@ PURPOSE		: BRFREPORT
 			/* Darker shade of blue on hover */
 		}
 
-		/* Ensure the label returns to the normal color after focus or hover is removed */
-		.form-control:not (:focus)~.form-legend {
-			color: #aaa;
-			/* Normal label color */
-		}
+
 	</style>
 
 	<style>
@@ -960,7 +942,7 @@ PURPOSE		: BRFREPORT
 							if (isResubmissionUpdate) {
 								window.location.href = previousUrl
 									? previousUrl
-									: "/BRRS/Resubmission?rptcode=Q_STAFF";
+									: "/BRRS/Resubmission?rptcode=M_SIR";
 							}
 						});
 				},

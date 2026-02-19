@@ -1,18 +1,29 @@
 package com.bornfire.brrs.entities;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
-public interface BRRS_M_SRWA_12E_LTV_Archival_Detail_Repo extends JpaRepository<BRRS_M_SRWA_12E_LTV_Archival_Detail_Entity, String> {
+@Repository
+public interface BRRS_M_SRWA_12E_LTV_Archival_Detail_Repo extends JpaRepository<M_SRWA_12E_LTV_Archival_Detail_Entity, BRRS_M_SRWA_12E_LTV_PK> {
+
+	@Query(value = "select REPORT_DATE, REPORT_VERSION from BRRS_M_SRWA_12E_ARCHIVALTABLE_DETAIL order by REPORT_VERSION", nativeQuery = true)
+	List<Object> getM_SRWA_12E_LTVarchival();
+
+	@Query(value = "select * from BRRS_M_SRWA_12E_ARCHIVALTABLE_DETAIL where REPORT_DATE = ?1 and REPORT_VERSION = ?2", nativeQuery = true)
+	List<M_SRWA_12E_LTV_Archival_Detail_Entity> getdatabydateListarchival(Date report_date, BigDecimal report_version);
+
+    @Query(value = "SELECT * FROM BRRS_M_SRWA_12E_ARCHIVALTABLE_DETAIL WHERE REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION ASC", nativeQuery = true)
+    List<M_SRWA_12E_LTV_Archival_Detail_Entity> getDetailDatabydateListWithVersion();
+    
+    @Query("SELECT MAX(e.reportVersion) FROM M_SRWA_12E_LTV_Archival_Detail_Entity e WHERE e.reportDate = :date")
+    BigDecimal findMaxVersion(@Param("date") Date date);
+
 	
-	@Query(value = "select * from BRRS_M_SRWA_12E_ARCHIVAL_TABLE_DETAIL where REPORT_DATE=?1 AND DATA_ENTRY_VERSION=?2", nativeQuery = true)
-	List<BRRS_M_SRWA_12E_LTV_Archival_Detail_Entity> getdatabydateList(Date reportdate,String DATA_ENTRY_VERSION);
-	
-	@Query(value = "select * from BRRS_M_SRWA_12E_ARCHIVAL_TABLE_DETAIL where ROW_ID =?1 and COLUMN_ID=?2 AND REPORT_DATE=?3 AND DATA_ENTRY_VERSION=?4", nativeQuery = true)
-	List<BRRS_M_SRWA_12E_LTV_Archival_Detail_Entity> GetDataByRowIdAndColumnId(String rowId,String ColumnId,Date reportdate,String DATA_ENTRY_VERSION);
-	
-	
+
 }

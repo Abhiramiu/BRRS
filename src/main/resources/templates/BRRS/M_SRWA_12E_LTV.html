@@ -356,15 +356,23 @@ PURPOSE		: BWRBRREPORT
 			window.history.back();
 		}
 
-		//to fetch summary from the database - called from the summary button
 		function showdetails() {
-			isDetailsModal = true; // mark that this modal is from Details
-			showResultModal('BRRS', 'Details page not available for Manual Report');
-		}
+			$('#loader').modal('show');
+			var Callurl = /*[[@{'/Reports/' + ${reportid}(
+				        dtltype='detail',
+				        fromdate=${fromdate},
+				        todate=${todate},
+				        type=${type},
+				        asondate=${asondate},
+				        version=${version}
+				    )}]]*/
+				location.href = Callurl;
 
+		}
 		function showsummary() {
 			$('#loader').modal('show');
-			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/			location.href = Callurl;
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate}, version=${version})}]]*/
+				location.href = Callurl;
 		}
 
 
@@ -392,6 +400,38 @@ PURPOSE		: BWRBRREPORT
 			var selectedTab = document.getElementById("selectedTab").value;
 			activateTab(selectedTab);
 		};
+
+
+		function editRecord() {
+			showResultModal('Alert', 'Development in progress');
+
+		}
+		function closemodel() {
+			function closemodel() {
+				const modalElement = document.getElementById('resultModal');
+				const modal = bootstrap.Modal.getInstance(modalElement);
+				modal.hide();
+
+				const message = document.getElementById("resultModalBody").innerText.toLowerCase();
+
+				if (message.includes("resubmission")) {
+					window.history.back();
+				} else {
+					location.reload();
+				}
+			}
+		}
+
+	</script>
+
+
+
+
+
+
+
+
+	<script>
 		function downloadfile(button) {
 			var reportid = button.getAttribute('data-reportid');
 			var asondate = button.getAttribute('data-asondate');
@@ -404,8 +444,14 @@ PURPOSE		: BWRBRREPORT
 			var filename = button.getAttribute('data-filename');
 			var type = button.getAttribute('data-type');
 			var version = button.getAttribute('data-version');
+			var format = button.getAttribute('data-format');
+
+			if (format === null) {
+				format = '';   // treat as null
+			}
 
 			$('#loader').modal('show');
+
 			$.ajax({
 				url: './downloadExcel?reportid=' + reportid +
 					'&fromdate=' + fromdate +
@@ -414,9 +460,10 @@ PURPOSE		: BWRBRREPORT
 					'&currency=' + currency +
 					'&subreportid=' + subreportid +
 					'&secid=' + secid +
+					'&filename=' + filename +
 					'&type=' + type +
 					'&version=' + version +
-					'&filename=' + filename,
+					'&format=' + format,
 				type: 'GET',
 				xhrFields: {
 					responseType: 'blob'
@@ -424,7 +471,7 @@ PURPOSE		: BWRBRREPORT
 				success: function (data) {
 					$('#loader').modal('hide');
 					if (data && data.size > 100) {
-						const blob = new Blob([data], { type: 'application/vnd.ms-excel' });
+						const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
 						const url = window.URL.createObjectURL(blob);
 						const a = document.createElement('a');
 						a.style.display = 'none';
@@ -439,32 +486,11 @@ PURPOSE		: BWRBRREPORT
 						showResultModal('Information', 'No data was available to create a download.');
 					}
 				},
-				error: function (jqXHR, textStatus, errorThrown) {
+				error: function () {
 					$('#loader').modal('hide');
-					console.error("Download failed:", textStatus, errorThrown);
-					showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
+					showResultModal('Error', 'An error occurred while downloading the file.');
 				}
 			});
-		}
-
-
-		function editRecord() {
-			showResultModal('Alert', 'Development in progress');
-
-		}
-		function closemodel() {
-			$("#resultModal").modal("hide");
-			$('#loader').modal('hide');
-
-			// Only reload if not from Details modal
-			if (!isDetailsModal) {
-				setTimeout(function () {
-					location.reload();
-				}, 300);
-			} else {
-				// reset flag for next modal usage
-				isDetailsModal = false;
-			}
 		}
 		function showResultModal(title, message) {
 			// Set the text for the modal elements
@@ -473,16 +499,6 @@ PURPOSE		: BWRBRREPORT
 			// Show the modal
 			$('#resultModal').modal('show');
 		}
-	</script>
-
-
-
-
-
-
-
-
-	<script>
 		// Show Modify (enable inputs & dropdowns)
 		function showmodify(btn) {
 			// ✅ List of IDs that should ALWAYS remain readonly
@@ -490,7 +506,7 @@ PURPOSE		: BWRBRREPORT
 				"R19_UNSECURED_PORTION_NPL", "R19_PERFORMING_EXPOSURE", "R19_NON_PERFORMING", "R19_SPECIFIC_PROV",
 				"R13_UNSECURED_PORTION_NPL", "R14_UNSECURED_PORTION_NPL", "R15_UNSECURED_PORTION_NPL", "R16_UNSECURED_PORTION_NPL",
 				"R17_UNSECURED_PORTION_NPL", "R18_UNSECURED_PORTION_NPL", "R13_PRODUCT", "R14_PRODUCT", "R15_PRODUCT", "R16_PRODUCT",
-				"R17_PRODUCT", "R18_PRODUCT", "R19_PRODUCT"
+				"R17_PRODUCT", "R18_PRODUCT", "R19_PRODUCT", "R13_TOTAL", "R19_TOTAL"
 			];
 			//"R33_INTEREST_RATE", "R34_INTEREST_RATE", "RR35_INTEREST_RATE35_STAFF_LOANS", "R36_INTEREST_RATE", "R37_INTEREST_RATE", "R38_INTEREST_RATE",
 
@@ -501,25 +517,29 @@ PURPOSE		: BWRBRREPORT
 				}
 			});
 
-
 			for (let i = 13; i <= 18; i++) {
-				let fields = [
-					// "_LOCAL",
-					// "_EXPARIATES",
 
+				let fields = [
 					"_PERFORMING_EXPOSURE",
 					"_NON_PERFORMING",
-					"_SPECIFIC_PROV"
+					"_SPECIFIC_PROV",
+					"_TOTAL"
 				];
 
-
 				fields.forEach(field => {
+
+					// Skip ONLY _TOTAL in R13 and R15
+					if ((i === 13 || i === 15 || i == 18) && field === "_TOTAL") {
+						return; // skip this one only
+					}
+
 					let selector = `#R${i}${field}`;
+
 					if ($(selector).length) {
 						$(selector).css("background-color", "#d3d3d3");
 					}
-				});
 
+				});
 
 				// ✅ Toggle buttons visibility
 				$("#submitButton").show();
@@ -554,194 +574,255 @@ PURPOSE		: BWRBRREPORT
 
 	<script>
 
-		function calculateR19Totals() {
-			let totalP = 0;
-			let totalNP = 0;
-			let totalSP = 0;
-
-			// Calculate sum for rows 13–18 only
-			for (let i = 13; i <= 18; i++) {
-				let LVal = parseFloat($("#R" + i + "_PERFORMING_EXPOSURE").val().replace(/,/g, "")) || 0;
-				let NPVal = parseFloat($("#R" + i + "_NON_PERFORMING").val().replace(/,/g, "")) || 0;
-				let SPVal = parseFloat($("#R" + i + "_SPECIFIC_PROV").val().replace(/,/g, "")) || 0;
-
-				totalP += LVal;
-				totalNP += NPVal;
-				totalSP += SPVal;
-			}
-
-			// Store totals ONLY in Row 19
-			$("#R19_PERFORMING_EXPOSURE").val(totalP.toLocaleString('en-US'));
-			$("#R19_NON_PERFORMING").val(totalNP.toLocaleString('en-US'));
-			$("#R19_SPECIFIC_PROV").val(totalSP.toLocaleString('en-US'));
-		}
-
-
-		function calculateR13Totals() {
-
-    for (let i = 13; i <= 19; i++) {
-
-        // R18 = default 0 → no calculation + no %
-        if (i === 18) {
-            $("#R18_UNSECURED_PORTION_NPL").val("0");
-            continue;
-        }
-
-        let ProvVal = parseFloat($("#R" + i + "_SPECIFIC_PROV").val().replace(/,/g, "")) || 0;
-        let NPVal = parseFloat($("#R" + i + "_NON_PERFORMING").val().replace(/,/g, "")) || 0;
-
-        let NPL = 0;
-
-        if (NPVal !== 0) {
-            if (i === 15) {
-                // R15 → NO PERCENT
-                NPL = Math.round(ProvVal / NPVal);
-            } else {
-                // All others except R18 → percent
-                NPL = Math.round((ProvVal / NPVal) * 100);
-            }
-        }
-
-        // Apply formatting
-        if (i === 15) {
-            // R15 no %
-            $("#R15_UNSECURED_PORTION_NPL").val(NPL.toLocaleString('en-US'));
-        } 
-        else {
-            // R13, R14, R16, R19 → add %
-            $("#R" + i + "_UNSECURED_PORTION_NPL").val(
-                NPL.toLocaleString('en-US') 
-            );
-        }
-    }
-}
-
 		$(document).ready(function () {
 
-			calculateR19Totals();
-			calculateR13Totals();
+			/* -----------------------------
+			   COMMON NUMBER PARSER
+			----------------------------- */
+			function getNumber(id) {
+				return parseFloat($(id).val()?.replace(/,/g, "")) || 0;
+			}
 
-			// Attach input events once
-			for (let i = 13; i <= 18; i++) {
+			function setNumber(id, value) {
+				$(id).val(value.toLocaleString('en-US'));
+			}
+
+			/* -----------------------------
+			   1️⃣ R19 EXPOSURE TOTALS
+			   (Sum of Rows 13–18)
+			----------------------------- */
+			function calculateR19ExposureTotals() {
+
+				let totalP = 0;
+				let totalNP = 0;
+				let totalSP = 0;
+
+				for (let i = 13; i <= 18; i++) {
+
+					totalP += getNumber("#R" + i + "_PERFORMING_EXPOSURE");
+					totalNP += getNumber("#R" + i + "_NON_PERFORMING");
+					totalSP += getNumber("#R" + i + "_SPECIFIC_PROV");
+				}
+
+				setNumber("#R19_PERFORMING_EXPOSURE", totalP);
+				setNumber("#R19_NON_PERFORMING", totalNP);
+				setNumber("#R19_SPECIFIC_PROV", totalSP);
+			}
+
+			/* -----------------------------
+			   2️⃣ UNSECURED PORTION NPL %
+			----------------------------- */
+			function calculateUnsecuredNPL() {
+
+				for (let i = 13; i <= 19; i++) {
+
+					if (i === 18) {
+						$("#R18_UNSECURED_PORTION_NPL").val("0");
+						continue;
+					}
+
+					let prov = getNumber("#R" + i + "_SPECIFIC_PROV");
+					let np = getNumber("#R" + i + "_NON_PERFORMING");
+
+					let result = 0;
+
+					if (np !== 0) {
+
+						if (i === 15) {
+							// No %
+							result = Math.round(prov / np);
+						} else {
+							// Percentage
+							result = Math.round((prov / np) * 100);
+						}
+					}
+
+					setNumber("#R" + i + "_UNSECURED_PORTION_NPL", result);
+				}
+			}
+
+			/* -----------------------------
+			   3️⃣ R13 TOTAL
+			   (R14 sum fields)
+			----------------------------- */
+			function calculateR13Total() {
+
+				let total =
+					getNumber("#R13_PERFORMING_EXPOSURE") +
+					getNumber("#R13_NON_PERFORMING") +
+					getNumber("#R13_SPECIFIC_PROV") +
+					getNumber("#R13_UNSECURED_PORTION_NPL");
+
+				setNumber("#R13_TOTAL", total);
+			}
+
+			/* -----------------------------
+			   4️⃣ R15 TOTAL
+			   (R16 logic)
+			----------------------------- */
+			function calculateR15Total() {
+
+				let total =
+					getNumber("#R15_PERFORMING_EXPOSURE") +
+					getNumber("#R15_NON_PERFORMING") -
+					getNumber("#R15_SPECIFIC_PROV");
+
+				setNumber("#R15_TOTAL", total);
+			}
+
+			/* -----------------------------
+			   5️⃣ R19 TOTAL
+			   (Sum of R13–R18 TOTAL)
+			----------------------------- */
+			function calculateR19Total() {
+
+				let total = 0;
+
+				for (let i = 13; i <= 18; i++) {
+					total += getNumber("#R" + i + "_TOTAL");
+				}
+
+				setNumber("#R19_TOTAL", total);
+			}
+
+			/* -----------------------------
+			   MASTER FUNCTION
+			----------------------------- */
+			function calculateAll() {
+				calculateR19ExposureTotals();
+				calculateUnsecuredNPL();
+				calculateR13Total();
+				calculateR15Total();
+				calculateR19Total();
+			}
+
+			/* -----------------------------
+			   INITIAL LOAD
+			----------------------------- */
+			calculateAll();
+
+			/* -----------------------------
+			   INPUT EVENT (Single Binding)
+			----------------------------- */
+			for (let i = 13; i <= 19; i++) {
 
 				$("#R" + i + "_PERFORMING_EXPOSURE, " +
 					"#R" + i + "_NON_PERFORMING, " +
-					"#R" + i + "_SPECIFIC_PROV")
+					"#R" + i + "_SPECIFIC_PROV, " +
+					"#R" + i + "_UNSECURED_PORTION_NPL,"
+					+ "#R" + i + "_TOTAL")
 					.on("input", function () {
-						calculateR19Totals();
-						calculateR13Totals();
+						calculateAll();
 					});
-
 			}
+
 		});
 
 	</script>
 
-
-
 	<script>
-
-
-		// This function is for closing the modal after an action is complete.
-		// It hides the result and loader modals and reloads the page.
-		function closemodel() {
-			$("#resultModal").modal("hide");
-			$('#loader').modal('hide');
-
-			// Only reload if not from Details modal
-			if (!isDetailsModal) {
-				setTimeout(function () {
-					location.reload();
-				}, 300);
-			} else {
-				// reset flag for next modal usage
-				isDetailsModal = false;
-			}
-		}
-
-
 
 		function fileuploads(btn) {
 
-			var asondate = btn.getAttribute("data-todate");
+		    // Get As On Date
+		    const asondate = btn.getAttribute("data-todate") || "";
 
-			// Show Loader
-			$('#loader').modal('show');
+		    // Show Loader
+		    $('#loader').modal('show');
 
-			// Recalculate totals
-			calculateR19Totals();
-			calculateR13Totals();
+		    /* -----------------------------
+		       1️⃣ Recalculate ALL totals
+		    ----------------------------- */
+		    if (typeof calculateAll === "function") {
+		        calculateAll();
+		    }
 
-			// Remove commas from text inputs
-			$("#fileupload input[type='text']").each(function () {
-				var val = $(this).val();
-				if (val && val.includes(",")) {
-					$(this).val(val.replace(/,/g, ''));
-				}
-			});
+		    /* -----------------------------
+		       2️⃣ Remove Commas Before Submit
+		    ----------------------------- */
+		    $("#fileupload input[type='text']").each(function () {
+		        let val = $(this).val();
+		        if (val) {
+		            $(this).val(val.replace(/,/g, ""));
+		        }
+		    });
 
-			// Validate form
-			if (!$("#fileupload").valid()) {
-				$('#loader').modal('hide');
-				return;
-			}
+		    /* -----------------------------
+		       3️⃣ Validate Form
+		    ----------------------------- */
+		    if (!$("#fileupload").valid()) {
+		        $('#loader').modal('hide');
+		        return;
+		    }
 
-			// MAIN FormData collection
-			const formData = new FormData();
-			formData.append("asondate", asondate);
+		    /* -----------------------------
+		       4️⃣ Prepare FormData
+		    ----------------------------- */
+		    const formData = new FormData($("#fileupload")[0]);
+		    formData.append("asondate", asondate);
 
-			// Append all form fields
-			$("#fileupload")
-				.find(':input[name]')
-				.each(function () {
-					formData.append($(this).attr('name'), $(this).val());
-				});
+		    /* -----------------------------
+		       5️⃣ Detect Type (NORMAL / RESUB)
+		    ----------------------------- */
+		    let type = btn.getAttribute("data-type") || "";
+		    let apiUrl = "./updateSRWA12EAll";
+		    let isResubmissionUpdate = false;
 
-			// Detect type ("RESUB" or normal)
-			let type = btn.getAttribute("data-type");  // <-- Ensure button has data-type
+		    if (type.toUpperCase() === "RESUB") {
+		        apiUrl = "./UpdateM_SRWA_12E_ReSub";
+		        isResubmissionUpdate = true;
+		    }
 
-			// Decide API endpoint
-			let apiUrl = './updateSRWA12EAll';
-			if (type && type.toUpperCase() === 'RESUB') {
-				apiUrl = './UpdateM_SRWA_12E_ReSub';
-			}
+		    /* -----------------------------
+		       6️⃣ Disable Button
+		    ----------------------------- */
+		    $(btn).prop("disabled", true);
 
-			// Send AJAX request
-			$.ajax({
-				url: apiUrl,
-				type: 'POST',
-				data: formData,
-				processData: false,
-				contentType: false,
-				dataType: 'text',
+		    /* -----------------------------
+		       7️⃣ AJAX CALL
+		    ----------------------------- */
+		    $.ajax({
+		        url: apiUrl,
+		        type: "POST",
+		        data: formData,
+		        processData: false,
+		        contentType: false,
+		        dataType: "text",
 
-				success: function (response) {
-					$("#resultModalLabel").text("BRRS");
-					$("#resultModalBody").text(response);
-					$("#resultModal").modal("show");
+		        success: function (response) {
 
-					// Redirect for resubmission
-					if (response.includes("Resubmission Updated Successfully")) {
-						setTimeout(function () {
-							if (document.referrer && document.referrer !== '') {
-								window.location.href = document.referrer;
-							} else {
-								window.history.back();
-							}
-						}, 2000);
-					}
-				},
+		            $("#resultModalLabel").text("BRRS");
+		            $("#resultModalBody").text(response);
+		            $("#resultModal").modal("show");
 
-				error: function (jqXHR) {
-					$("#resultModalLabel").text("Error");
-					$("#resultModalBody").text("Update failed: " + jqXHR.responseText);
-					$("#resultModal").modal("show");
-				},
+		            // 🔹 Wait for user to close modal manually
+		            $("#resultModal").off("hidden.bs.modal").on("hidden.bs.modal", function () {
 
-				complete: function () {
-					$('#loader').modal('hide');
-				}
-			});
+		                if (isResubmissionUpdate) {
+		                    window.location.href = "/BRRS/Resubmission?rptcode=M_SRWA_12E";
+		                } else {
+		                    window.location.reload();
+		                }
+
+		            });
+		        },
+
+		        error: function (jqXHR) {
+
+		            console.log("Error response:", jqXHR.responseText);
+
+		            $("#resultModalLabel").text("Error");
+		            $("#resultModalBody").text(
+		                "Update failed: " + (jqXHR.responseText || "Server Error")
+		            );
+		            $("#resultModal").modal("show");
+		        },
+
+		        complete: function () {
+		            $('#loader').modal('hide');
+		            $(btn).prop("disabled", false);
+		        }
+		    });
 		}
 
 	</script>
@@ -766,7 +847,7 @@ PURPOSE		: BWRBRREPORT
 						<h5
 							style="font-family: arial; font-size: 20px; font-weight: bold; color: white; margin: 0 10px;">
 
-							Monthly Schedule M-SRWA 12e - (LTV): Loan to Value Disclosure </h5>
+							Monthly Schedule M-SRWA 12e - (LTV): <br> Loan to Value Disclosure </h5>
 
 						<!-- Moving bus-board text -->
 						<div class="boards">
@@ -783,65 +864,93 @@ PURPOSE		: BWRBRREPORT
 						<!-- Buttons -->
 						<input type="hidden" id="selectedTab" th:value="${displaymode}">
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showsummary();"
-							th:if="${displaymode == 'Details'}">Summary</button>
+							th:if="${displaymode == 'detail' or displaymode == 'resubDetail'}">Summary</button>
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails();"
-							th:if="${displaymode == 'summary'}">Details</button>
+							th:if="${displaymode == 'summary'or displaymode == 'resubSummary'}">Details</button>
 
-
-						<!-- Modify button -->
-						<!-- <button type="button" class="custom-tab-btn"
-        onclick="showmodify(this);"
-        title="Click to EDIT Records"
-        th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
-        id="addRecord">Modify</button> -->
 
 						<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
-							title="Click to EDIT Records"
-							th:if="${type == 'RESUB' or type=='BRRS' and type != 'ARCHIVAL'}"
-							th:classappend="${session.PERMISSIONS == 'W'} and ${dtltype == 'report'} ? 'addedit' "
+							title="Click to EDIT Records" th:if="${type != 'ARCHIVAL'} and ${dtltype != 'detail'}"
+							th:classappend="${session.PERMISSIONS == 'W'} and ${dtltype == 'report'} ? 'addedit'"
 							id="addRecord">
 							Modify
 						</button>
 
-
-						<!-- Cancel button (hidden initially) -->
 						<button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord"
 							onclick="cancelModify();" style="display: none;">Cancel</button>
-
-
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'summary'}" th:attr="data-reportid=${reportid},
-                   				 data-asondate=${asondate},
-                   				 data-fromdate=${fromdate},
-                    				 data-todate=${todate},
-                    				 data-currency=${currency}, 
-                    				 data-dtltype=${dtltype},
-                    				 data-filename='M_SRWA12e.xlsx',
-					 				 data-type=${type},
-					    			 data-version=${version}" onclick="downloadfile(this);">
-							<i class="fa fa-download"></i>
+						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
+							onclick="downloadfile(this)"
+							th:if="${displaymode == 'summary' or displaymode == 'detail' or displaymode == 'resubSummary'or displaymode == 'resubDetail'}"
+							th:attr="data-reportid=${reportid},
+							               data-asondate=${asondate},
+							               data-fromdate=${fromdate},
+							               data-todate=${todate},
+							               data-currency=${currency}, 
+							               data-dtltype=${dtltype},
+							               data-filename='M_SRWA_12E.xlsx',
+							               data-type=${type},
+							               data-version=${version != null ? version : ''}" style="font-family: Arial;font-weight: bold;">
+							<i class="fa fa-download"></i> Format
+						</button>
+						<button type="button" class="custom-tab-btn" onclick="downloadfile(this)" th:if="${displaymode == 'summary' or displaymode == 'detail'
+												          or displaymode == 'resubSummary' or displaymode == 'resubDetail'}" th:attr="data-reportid=${reportid},
+												             data-asondate=${asondate},
+												             data-fromdate=${fromdate},
+												             data-todate=${todate},
+												             data-currency=${currency},
+												             data-dtltype='email',
+												             data-filename='EMAIL_M_SRWA_12E.xlsx',
+												             data-type=${type},
+															 data-format='email',
+												             data-version=${version != null ? version : ''}">
+							<i class="fa fa-download"></i> Email
 						</button>
 
-
-
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'Details'}" onclick="startReport(this);" th:attr="
-								    data-fromdate=${fromdate},
-								    data-todate=${todate},
-									data-currency=${currency},  
-												data-dtltype=${dtltype}, 
-								    data-filename='M_SRWA_12EDetail',
-									data-type=${type},
-												data-version=${version}
-								  ">
-							<i class="fa fa-download"></i>
-						</button>
 
 
 					</div>
-
 				</div>
-				<div th:if="${displaymode == 'summary'}">
+
+				<p th:if="${displaymode == 'summary'and type != 'ARCHIVAL'}" style="text-align: left; font-weight: bold; 
+												color: white;  font-size: 20px;  background-color: rgb(107, 122, 143); 
+												margin-top:10px; margin-bottom:10px;padding: 5px;">Summary View - M SRWA 12E</p>
+
+				<!-- Detail text -->
+				<p th:if="${displaymode == 'detail' and type != 'ARCHIVAL'}" style="text-align: left; font-weight: bold;
+											 color: white;  font-size: 20px;  background-color: rgb(107, 122, 143); 
+											 margin-top:10px; margin-bottom:10px;padding: 5px;">Detail View - M SRWA 12E</p>
+
+				<p th:if="${type == 'ARCHIVAL' and displaymode == 'summary'}" style="text-align: left; font-weight: bold; 
+							      color: white; font-size: 20px;
+							      background-color: rgb(107, 122, 143); 
+							      margin-top:10px; margin-bottom:10px; padding: 5px;">
+					Archival Summary View - M SRWA 12E
+				</p>
+
+				<p th:if="${type == 'ARCHIVAL' and displaymode == 'detail'}" style="text-align: left; font-weight: bold;
+							      color: white; font-size: 20px;
+							      background-color: rgb(107, 122, 143); 
+							      margin-top:10px; margin-bottom:10px; padding: 5px;">
+					Archival Detail View - M SRWA 12E
+				</p>
+
+				<p th:if="${type == 'RESUB' and displaymode == 'resubSummary'}" style="text-align: left; font-weight: bold; 
+										          color: white; font-size: 20px;
+										          background-color: rgb(107, 122, 143); 
+										          margin-top:10px; margin-bottom:10px; padding: 5px;">
+					Resubmission Summary View - M SRWA 12E
+				</p>
+
+				<p th:if="${type == 'RESUB' and displaymode == 'resubDetail'}" style="text-align: left; font-weight: bold;
+										          color: white; font-size: 20px;
+										          background-color: rgb(107, 122, 143); 
+										          margin-top:10px; margin-bottom:10px; padding: 5px;">
+					Resubmission Detail View - M SRWA 12E
+				</p>
+
+				<div
+					th:if="${displaymode == 'summary' or displaymode == 'detail'or displaymode == 'resubSummary'or displaymode == 'resubDetail'}">
+
 					<div class="row">
 						<div class="col-sm-12">
 							<form action="#" method="POST" id="fileupload">
@@ -855,7 +964,7 @@ PURPOSE		: BWRBRREPORT
 												<th style="text-align: center; padding-left: 10px;background-color: #D8D8D8; "
 													rowspan="2">Loan To Value (LTV)</th>
 												<th style="text-align: center; padding-left: 20px;background-color: #D8D8D8;"
-													colspan="4">Residential Mortgages</th>
+													colspan="6">Residential Mortgages</th>
 											</tr>
 											<tr style="background-color: #D8D8D8;">
 												<th style="text-align: right;background-color: #D8D8D8;  ">Performing
@@ -866,6 +975,7 @@ PURPOSE		: BWRBRREPORT
 													Provisions</th>
 												<th style="text-align: right;background-color: #D8D8D8;">Specific
 													Provisions to Unsecured Portion of NPL (%)**</th>
+												<th style="text-align: right;background-color: #D8D8D8;  ">Total</th>
 											</tr>
 
 
@@ -876,19 +986,22 @@ PURPOSE		: BWRBRREPORT
 											<!-- R13 ROW -->
 											<tr style="border-color: 1px solid black;">
 												<td
-													style="background-color: #FFFFFF; width: 350px; height: 35px; border-color: black; text-align: center;">
+													style="background-color: #FFFFFF; width: 250px; height: 35px; border-color: black; text-align: center;">
 												</td>
 												<td
-													style="background-color: #8d8b8b; width: 350px; height: 35px; border-color: black; text-align: center;">
+													style="background-color: #8d8b8b; width: 250px; height: 35px; border-color: black; text-align: center;">
 												</td>
 												<td
-													style="background-color: #8d8b8b; width: 350px; height: 35px; border-color: black; text-align: center;">
+													style="background-color: #8d8b8b; width: 250px; height: 35px; border-color: black; text-align: center;">
 												</td>
 												<td
-													style="background-color: #8d8b8b; width: 350px; height: 35px; border-color: black; text-align: center;">
+													style="background-color: #8d8b8b; width: 250px; height: 35px; border-color: black; text-align: center;">
 												</td>
 												<td
-													style="background-color: #8d8b8b; width: 350px; height: 35px; border-color: black; text-align: center;">
+													style="background-color: #8d8b8b; width: 250px; height: 35px; border-color: black; text-align: center;">
+												</td>
+												<td
+													style="background-color: #8d8b8b; width: 250px; height: 35px; border-color: black; text-align: center;">
 												</td>
 											</tr>
 											<tr>
@@ -924,7 +1037,7 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 
-												<td id="ROW10"
+												<td id="ROW13"
 													style="background-color: rgb(107, 122, 143);font-weight: bold;color: white;padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														id="R13_UNSECURED_PORTION_NPL" name="R13_UNSECURED_PORTION_NPL"
@@ -932,6 +1045,13 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 
+												<td id="ROW13"
+													style="background-color: rgb(107, 122, 143);font-weight: bold;color: white;padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text" id="R13_TOTAL"
+														name="R13_TOTAL"
+														style="background-color: rgb(107, 122, 143);font-weight: bold;color: white; width: 390px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
 											</tr>
 
 
@@ -975,6 +1095,14 @@ PURPOSE		: BWRBRREPORT
 														style="background-color: rgb(107, 122, 143);font-weight: bold;color: white; width: 390px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
+
+												<td id="ROW14" style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R14_TOTAL != null ? #numbers.formatDecimal(report.R14_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="R14_TOTAL" name="R14_TOTAL"
+														style="background-color: #FFFFFF; width: 390px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
 											</tr>
 
 											<!-- R15 ROW -->
@@ -1014,6 +1142,13 @@ PURPOSE		: BWRBRREPORT
 													style="background-color: rgb(107, 122, 143);font-weight: bold;color: white;padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														id="R15_UNSECURED_PORTION_NPL" name="R15_UNSECURED_PORTION_NPL"
+														style="background-color: rgb(107, 122, 143);font-weight: bold;color: white; width: 390px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td id="ROW15"
+													style="background-color: rgb(107, 122, 143);font-weight: bold;color: white;padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text" id="R15_TOTAL"
+														name="R15_TOTAL"
 														style="background-color: rgb(107, 122, 143);font-weight: bold;color: white; width: 390px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
@@ -1059,6 +1194,13 @@ PURPOSE		: BWRBRREPORT
 														style="background-color: rgb(107, 122, 143);font-weight: bold;color: white; width: 390px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
+												<td id="ROW16" style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R16_TOTAL != null ? #numbers.formatDecimal(report.R16_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="R16_TOTAL" name="R16_TOTAL"
+														style="background-color: #FFFFFF; width: 390px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
 											</tr>
 
 											<!-- R17 ROW -->
@@ -1101,6 +1243,13 @@ PURPOSE		: BWRBRREPORT
 														style="background-color: rgb(107, 122, 143);font-weight: bold;color: white; width: 390px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
+												<td id="ROW17" style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R17_TOTAL != null ? #numbers.formatDecimal(report.R17_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="R17_TOTAL" name="R17_TOTAL"
+														style="background-color: #FFFFFF; width: 390px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
 											</tr>
 
 											<!-- R18 ROW -->
@@ -1137,6 +1286,13 @@ PURPOSE		: BWRBRREPORT
 														id="R18_UNSECURED_PORTION_NPL" name="R18_UNSECURED_PORTION_NPL"
 														th:value="'0'"
 														style="background-color: rgb(107, 122, 143);font-weight: bold;color: white; width: 390px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+
+												<td id="ROW18" style="font-weight: bold;padding-left: 20px;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R18_TOTAL}" id="R18_TOTAL" name="R18_TOTAL"
+														style="background-color: #FFFFFF; width: 390px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
 											</tr>
@@ -1181,7 +1337,17 @@ PURPOSE		: BWRBRREPORT
 														style="background-color: rgb(107, 122, 143);font-weight: bold;color: white; width: 390px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
+
+
+												<td id="ROW19"
+													style="background-color: rgb(107, 122, 143);font-weight: bold;color: white;padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text" id="R19_TOTAL"
+														name="R19_TOTAL"
+														style="background-color: rgb(107, 122, 143);font-weight: bold;color: white; width: 390px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
 											</tr>
+
 
 
 										</tbody>
@@ -1248,7 +1414,7 @@ PURPOSE		: BWRBRREPORT
 			</div>
 		</div>
 	</div>
-	<!-- Custom Alert/Result Modal (Matches your existing style) -->
+
 	<div class="modal fade" id="resultModal">
 		<div class="modal-dialog modal-dialog-centered">
 			<div class="modal-content">
