@@ -501,7 +501,7 @@ public class RegulatoryReportServices {
 					pageable, type, version);
 			break;
 
-		case "M_LARADV":
+		case "Q_LARADV":
 			repsummary = brrs_m_laradv_reportservice.getM_LARADVView(reportId, fromdate, todate, currency, dtltype,
 					pageable, type, version);
 			break;
@@ -2523,7 +2523,7 @@ public class RegulatoryReportServices {
 			}
 			break;
 
-		case "M_LARADV":
+		case "Q_LARADV":
 			try {
 				repfile = brrs_m_laradv_reportservice.getM_LARADVExcel(filename, reportId, fromdate, todate, currency,
 						dtltype, type, version);
@@ -4869,7 +4869,7 @@ public class RegulatoryReportServices {
 			archivalData.addAll(srweList1);
 			System.out.println("Fetched M_SRWA_12E archival data: " + srweList1.size());
 			break;
-		case "M_LARADV":
+		case "Q_LARADV":
 			List<Object[]> LAList = brrs_m_laradv_reportservice.getM_LARADVArchival();
 			archivalData.addAll(LAList);
 			System.out.println("Fetched M_LARADV archival data: " + LAList.size());
@@ -6515,7 +6515,7 @@ public class RegulatoryReportServices {
 			}
 			break;
 
-		case "M_LARADV":
+		case "Q_LARADV":
 			try {
 				List<Object[]> resubList = brrs_m_laradv_reportservice.getM_LARADVResub();
 				resubmissionData.addAll(resubList);
