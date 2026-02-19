@@ -99,7 +99,7 @@ public class BRRS_Q_ATF_ReportService {
 	
 	
 	public ModelAndView getQ_ATFView(String reportId, String fromdate, String todate, String currency,
-			String dtltype, Pageable pageable, String type, String version) {
+			String dtltype, Pageable pageable, String type, BigDecimal version) {
 		ModelAndView mv = new ModelAndView();
 		Session hs = sessionFactory.getCurrentSession();
 		int pageSize = pageable.getPageSize();
@@ -236,11 +236,11 @@ public class BRRS_Q_ATF_ReportService {
 	}
 	
 	public byte[] getBRRS_Q_ATFExcel(String filename, String reportId, String fromdate, String todate,
-			String currency, String dtltype, String type, String version) throws Exception {
+			String currency, String dtltype, String type, BigDecimal version) throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.");
 		
 		// ARCHIVAL check
-		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && !version.trim().isEmpty()) {
+		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null ) {
 			logger.info("Service: Generating ARCHIVAL report for version {}", version);
 			return getExcelQ_ATFARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
 		}
@@ -2669,7 +2669,7 @@ return new byte[0];
 
 	
 	public byte[] getExcelQ_ATFARCHIVAL(String filename, String reportId, String fromdate, String todate,
-			String currency, String dtltype, String type, String version) throws Exception {
+			String currency, String dtltype, String type, BigDecimal version) throws Exception {
 
 		logger.info("Service: Starting Excel generation process in memory.");
 
@@ -2681,7 +2681,7 @@ return new byte[0];
 				.getdatabydateListarchival(dateformat.parse(todate), version);
 
 		if (dataList.isEmpty()) {
-			logger.warn("Service: No data found for M_CA4 report. Returning empty result.");
+			logger.warn("Service: No data found for Q_ATF report. Returning empty result.");
 			return new byte[0];
 		}
 

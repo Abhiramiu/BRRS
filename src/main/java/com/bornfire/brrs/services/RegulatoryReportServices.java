@@ -1172,7 +1172,14 @@ public class RegulatoryReportServices {
 		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
 		 */
 			
-			
+			case "Q_ATF":
+				 
+				 repsummary = brrs_q_atf_reportservice.getQ_ATFView(reportId, fromdate,
+				 todate, currency, dtltype, pageable, type, version);
+				 
+				 break;
+					 
+					 
 			
 		case "M_BOP":
 
@@ -3691,6 +3698,18 @@ public class RegulatoryReportServices {
 		 * todate, currency, dtltype, type, version); } catch (Exception e) { // TODO
 		 * Auto-generated catch block e.printStackTrace(); } break;
 		 */
+			
+			 
+		 case "Q_ATF":
+		try {
+			repfile = brrs_q_atf_reportservice.getBRRS_Q_ATFExcel(filename, reportId,
+					 fromdate, todate, currency, dtltype, type, version);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		break;
+		
 
 		case "M_INT_RATES":
 			try {
@@ -5422,6 +5441,17 @@ public class RegulatoryReportServices {
 
 		}
 
+		
+		 else if ("Q_ATF_Detail".equals(filename))
+			 
+		 {
+		 logger.info("Getting Inside Q_ATF_Detail");
+		 fileData = brrs_q_atf_reportservice.getQ_ATFDetailExcel(filename, fromdate,
+		 todate, currency,
+		 dtltype, type, version);
+		 }
+		
+		
 		// else if ("Q_ATF_Detail".equals(filename)) {
 		// logger.info("Getting Inside Q_ATF_Detail");
 		// fileData = brrs_q_atf_reportservice.getQ_ATFDetailExcel(filename, fromdate,
