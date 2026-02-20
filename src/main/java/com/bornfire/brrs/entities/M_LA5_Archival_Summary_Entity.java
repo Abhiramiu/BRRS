@@ -6,13 +6,13 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-
-import org.springframework.format.annotation.DateTimeFormat;
 @Entity
 @Table(name = "BRRS_M_LA5_ARCHIVALTABLE_SUMMARY")
+@IdClass(M_LA5_PK.class)
 public class M_LA5_Archival_Summary_Entity {
 
 	// Row r6
@@ -700,12 +700,15 @@ public class M_LA5_Archival_Summary_Entity {
 	private BigDecimal r62_total;
 
    
-    @Id
-    @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "dd/MM/yyyy")
-    private Date REPORT_DATE;
+	@Id
+	@Temporal(TemporalType.DATE)
+	@Column(name = "REPORT_DATE")
+	private Date reportDate;
 
-    private BigDecimal REPORT_VERSION;
+	@Id
+	@Column(name = "REPORT_VERSION")
+	private BigDecimal reportVersion;
+
 	@Column(name = "REPORT_RESUBDATE")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date reportResubDate;
@@ -4136,17 +4139,18 @@ public class M_LA5_Archival_Summary_Entity {
 	public void setR62_total(BigDecimal r62_total) {
 		this.r62_total = r62_total;
 	}
-	public Date getREPORT_DATE() {
-		return REPORT_DATE;
+
+	public Date getReportDate() {
+		return reportDate;
 	}
-	public void setREPORT_DATE(Date rEPORT_DATE) {
-		REPORT_DATE = rEPORT_DATE;
+	public void setReportDate(Date reportDate) {
+		this.reportDate = reportDate;
 	}
-	public BigDecimal getREPORT_VERSION() {
-		return REPORT_VERSION;
+	public BigDecimal getReportVersion() {
+		return reportVersion;
 	}
-	public void setREPORT_VERSION(BigDecimal rEPORT_VERSION) {
-		REPORT_VERSION = rEPORT_VERSION;
+	public void setReportVersion(BigDecimal reportVersion) {
+		this.reportVersion = reportVersion;
 	}
 	public String getREPORT_FREQUENCY() {
 		return REPORT_FREQUENCY;

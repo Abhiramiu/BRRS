@@ -258,6 +258,11 @@ PURPOSE		: BRFREPORT
 		.table-bordered th {
 			border: 1px solid #000 !important;
 		}
+
+		.table-bordereds td,
+		.table-bordereds th {
+		    border: 1px solid #dfe0e3;
+		}
 	</style>
 
 	<style>
@@ -936,7 +941,7 @@ PURPOSE		: BRFREPORT
 									  data-filename='M_LA5Detail',
 									  data-type=${type},
 									  data-version=${version}" onclick="startReport(this);">
-							<i class="fa fa-download"></i>
+							<i class="fa fa-download"></i> Detail
 						</button>
 					</div>
 				</div>
@@ -3102,7 +3107,7 @@ PURPOSE		: BRFREPORT
 					<div class="row">
 						<div class="col-sm-12">
 							<div class="table-container" style="border-right: 1px solid #dee2e6; ">
-								<table class="table table-striped table-bordered table-hover" id="reportdetails">
+								<table class="table table-striped table-hover table-bordereds " id="reportdetails">
 									<thead class="thead-light">
 
 										<tr>

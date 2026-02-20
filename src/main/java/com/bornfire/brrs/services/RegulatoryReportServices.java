@@ -4224,10 +4224,19 @@ public class RegulatoryReportServices {
 //			}
 //			break;
 			
+//		case "M_LA5":
+//			List<Object[]> LA5DATA = BRRS_M_LA5_reportservice.getM_LA5Archival();
+//			LA5DATA.addAll(LA5DATA);
+//			System.out.println("Fetched M_LA5 archival data: " + LA5DATA.size());
+//			break;
 		case "M_LA5":
-			List<Object[]> LA5DATA = BRRS_M_LA5_reportservice.getM_LA5Archival();
-			LA5DATA.addAll(LA5DATA);
-			System.out.println("Fetched M_LA5 archival data: " + LA5DATA.size());
+			try {
+				archivalData = BRRS_M_LA5_reportservice.getM_LA5Archival();
+
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			break;
 
 		case "M_DEP2":
