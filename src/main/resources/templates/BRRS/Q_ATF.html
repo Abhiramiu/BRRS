@@ -807,65 +807,65 @@ window.onload = function() {
 
 
 function downloadfile(button) {
-			var reportid = button.getAttribute('data-reportid');
-			var asondate = button.getAttribute('data-asondate');
-			var fromdate = button.getAttribute('data-fromdate');
-			var todate = button.getAttribute('data-todate');
-			var currency = button.getAttribute('data-currency');
-			var subreportid = button.getAttribute('data-subreportid');
-			var secid = button.getAttribute('data-secid');
-			var dtltype = button.getAttribute('data-dtltype');
-			var filename = button.getAttribute('data-filename');
-			var type = button.getAttribute('data-type');
-			var version = button.getAttribute('data-version');
+    var reportid = button.getAttribute('data-reportid');
+    var asondate = button.getAttribute('data-asondate');
+    var fromdate = button.getAttribute('data-fromdate');
+    var todate = button.getAttribute('data-todate');
+    var currency = button.getAttribute('data-currency');
+    var subreportid = button.getAttribute('data-subreportid');
+    var secid = button.getAttribute('data-secid');
+    var dtltype = button.getAttribute('data-dtltype');
+    var filename = button.getAttribute('data-filename');
+    var type = button.getAttribute('data-type');
+    var version = button.getAttribute('data-version');
+    var format = button.getAttribute('data-format');
 
+    if (format === null) {
+        format = '';   // treat as null
+    }
 
-			var loader = new bootstrap.Modal(document.getElementById('loader'), {backdrop: 'static',keyboard: false});
-			loader.show();
+    $('#loader').modal('show');
 
-			$.ajax({
-				url: './downloadExcel?reportid=' + reportid +
-					'&fromdate=' + fromdate +
-					'&asondate=' + asondate +
-					'&todate=' + todate +
-					'&currency=' + currency +
-					'&subreportid=' + subreportid +
-					'&secid=' + secid +
-					'&filename=' + filename +
-					'&type=' + type +
-					'&version=' + version,
-				type: 'GET',
-				xhrFields: {
-					responseType: 'blob'
-				},
-				success: function (data) {
-					$('#loader').modal('hide');
-
-					if (data && data.size > 100) {
-						const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
-						const url = window.URL.createObjectURL(blob);
-						const a = document.createElement('a');
-						a.style.display = 'none';
-						a.href = url;
-						a.download = filename;
-						document.body.appendChild(a);
-						a.click();
-						window.URL.revokeObjectURL(url);
-						document.body.removeChild(a);
-
-						showResultModal('BRRS', filename + ' downloaded successfully.');
-					} else {
-						showResultModal('Information', 'No data was available to create a download.');
-					}
-				},
-				error: function (jqXHR, textStatus, errorThrown) {
-					$('#loader').modal('hide');
-					console.error("Download failed:", textStatus, errorThrown);
-					showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
-				}
-			});
-		}
-
+    $.ajax({
+        url: './downloadExcel?reportid=' + reportid +
+             '&fromdate=' + fromdate +
+             '&asondate=' + asondate +
+             '&todate=' + todate +
+             '&currency=' + currency +
+             '&subreportid=' + subreportid +
+             '&secid=' + secid +
+             '&filename=' + filename +
+             '&type=' + type +
+             '&version=' + version +
+             '&format=' + format,
+        type: 'GET',
+        xhrFields: {
+            responseType: 'blob'
+        },
+        success: function (data) {
+            $('#loader').modal('hide');
+            if (data && data.size > 100) {
+                const blob = new Blob([data], { type: 'application/vnd.ms-excel' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+                showResultModal('BRRS', filename + ' downloaded successfully.');
+            } else {
+                showResultModal('Information', 'No data was available to create a download.');
+            }
+        },
+        error: function () {
+            $('#loader').modal('hide');
+            showResultModal('Error', 'An error occurred while downloading the file.');
+        }
+    });
+}
 function editRecord(){
 	showResultModal('Alert', 'Development in progress');
 	
@@ -1688,8 +1688,28 @@ ranges.forEach(range => {
 					 				 data-type=${type},
 					    			 data-version=${version}"
 							onclick="downloadfile(this);">
-							<i class="fa fa-download"></i>
+							<i class="fa fa-download"></i> Format
 						</button>
+						
+							<button type="button" class="custom-tab-btn "
+							id="custom-tab-btnAdd" onclick="downloadfile(this)"
+							th:if="${displaymode == 'summary' or displaymode == 'resub'}"
+							th:attr="data-reportid=${reportid},
+            data-asondate=${asondate},
+            data-fromdate=${fromdate},
+            data-todate=${todate},
+            data-currency=${currency}, 
+            data-dtltype=${dtltype},
+            data-filename='EMAIL_Q_ATF.xlsx',
+            data-type=${type},
+            data-format='email',
+            data-version=${version != null ? version : ''}"
+							style="font-family: Arial; font-weight: bold;">
+							<i class="fa fa-download"></i> Email 
+
+						</button>
+
+						
 
 						<button type="button" class="custom-tab-btn"
 							id="custom-tab-btnAdd" th:if="${displaymode == 'Details'}"
@@ -1704,7 +1724,7 @@ ranges.forEach(range => {
 					data-version=${version} "
 							onclick="startReport(this)">
 							<!-- 🛠️ Fix: pass `this` -->
-							<i class="fa fa-download"></i>
+							<i class="fa fa-download"></i> Detail
 						</button>
 
 					</div>
@@ -1799,7 +1819,7 @@ ranges.forEach(range => {
 											<td id="r12_num_depo_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r12_num_depo_acc }"
-												th:attr="RowId='R12', ColumnId='C3'"
+												th:attr="RowId='R12', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 
 
@@ -1814,7 +1834,7 @@ ranges.forEach(range => {
 											<td id="r12_num_loan_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r12_num_loan_acc }"
-												th:attr="RowId='R12', ColumnId='C5'"
+												th:attr="RowId='R12', ColumnId='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 
 										</tr>
@@ -1839,7 +1859,7 @@ ranges.forEach(range => {
 											<td id="r13_num_depo_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r13_num_depo_acc}"
-												th:attr="RowId='R13', ColumnId='C3'"
+												th:attr="RowId='R13', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 
 											<td id="r13_num_borrowers"
@@ -1851,7 +1871,7 @@ ranges.forEach(range => {
 											<td id="r13_num_loan_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r13_num_loan_acc}"
-												th:attr="RowId='R13', ColumnId='C5'"
+												th:attr="RowId='R13', ColumnId='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -1869,7 +1889,7 @@ ranges.forEach(range => {
 											<td id="r14_num_depo_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r14_num_depo_acc}"
-												th:attr="RowId='R14', ColumnId='C3'"
+												th:attr="RowId='R14', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 
 											<td id="r14_num_borrowers"
@@ -1881,7 +1901,7 @@ ranges.forEach(range => {
 											<td id="r14_num_loan_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r14_num_loan_acc}"
-												th:attr="RowId='R14', ColumnId='C5'"
+												th:attr="RowId='R14', ColumnId='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -1921,7 +1941,7 @@ ranges.forEach(range => {
 											<td id="r16_num_depo_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r16_num_depo_acc}"
-												th:attr="RowId='R16', ColumnId='C3'"
+												th:attr="RowId='R16', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 
 											<td id="r16_num_borrowers"
@@ -1933,7 +1953,7 @@ ranges.forEach(range => {
 											<td id="r16_num_loan_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r16_num_loan_acc}"
-												th:attr="RowId='R16', ColumnId='C5'"
+												th:attr="RowId='R16', ColumnId='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -1951,7 +1971,7 @@ ranges.forEach(range => {
 											<td id="r17_num_depo_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r17_num_depo_acc}"
-												th:attr="RowId='R17', ColumnId='C3'"
+												th:attr="RowId='R17', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 
 											<td id="r17_num_borrowers"
@@ -1963,7 +1983,7 @@ ranges.forEach(range => {
 											<td id="r17_num_loan_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r17_num_loan_acc}"
-												th:attr="RowId='R17', ColumnId='C5'"
+												th:attr="RowId='R17', ColumnId='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -1981,7 +2001,7 @@ ranges.forEach(range => {
 											<td id="r18_num_depo_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r18_num_depo_acc}"
-												th:attr="RowId='R18', ColumnId='C3'"
+												th:attr="RowId='R18', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 
 											<td id="r18_num_borrowers"
@@ -1993,7 +2013,7 @@ ranges.forEach(range => {
 											<td id="r18_num_loan_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r18_num_loan_acc}"
-												th:attr="RowId='R18', ColumnId='C5'"
+												th:attr="RowId='R18', ColumnId='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -2011,7 +2031,7 @@ ranges.forEach(range => {
 											<td id="r19_num_depo_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r19_num_depo_acc}"
-												th:attr="RowId='R19', ColumnId='C3'"
+												th:attr="RowId='R19', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 
 											<td id="r19_num_borrowers"
@@ -2023,7 +2043,7 @@ ranges.forEach(range => {
 											<td id="r19_num_loan_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r19_num_loan_acc}"
-												th:attr="RowId='R19', ColumnId='C5'"
+												th:attr="RowId='R19', ColumnId='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -2041,7 +2061,7 @@ ranges.forEach(range => {
 											<td id="r20_num_depo_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r20_num_depo_acc}"
-												th:attr="RowId='R20', ColumnId='C3'"
+												th:attr="RowId='R20', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 
 											<td id="r20_num_borrowers"
@@ -2053,7 +2073,7 @@ ranges.forEach(range => {
 											<td id="r20_num_loan_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r20_num_loan_acc}"
-												th:attr="RowId='R20', ColumnId='C5'"
+												th:attr="RowId='R20', ColumnId='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -2071,7 +2091,7 @@ ranges.forEach(range => {
 											<td id="r21_num_depo_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r21_num_depo_acc}"
-												th:attr="RowId='R21', ColumnId='C3'"
+												th:attr="RowId='R21', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 
 											<td id="r21_num_borrowers"
@@ -2083,7 +2103,7 @@ ranges.forEach(range => {
 											<td id="r21_num_loan_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r21_num_loan_acc}"
-												th:attr="RowId='R21', ColumnId='C5'"
+												th:attr="RowId='R21', ColumnId='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -2101,7 +2121,7 @@ ranges.forEach(range => {
 											<td id="r22_num_depo_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r22_num_depo_acc}"
-												th:attr="RowId='R22', ColumnId='C3'"
+												th:attr="RowId='R22', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 
 											<td id="r22_num_borrowers"
@@ -2113,7 +2133,7 @@ ranges.forEach(range => {
 											<td id="r22_num_loan_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r22_num_loan_acc}"
-												th:attr="RowId='R22', ColumnId='C5'"
+												th:attr="RowId='R22', ColumnId='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -2131,7 +2151,7 @@ ranges.forEach(range => {
 											<td id="r23_num_depo_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r23_num_depo_acc}"
-												th:attr="RowId='R23', ColumnId='C3'"
+												th:attr="RowId='R23', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 
 											<td id="r23_num_borrowers"
@@ -2143,7 +2163,7 @@ ranges.forEach(range => {
 											<td id="r23_num_loan_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r23_num_loan_acc}"
-												th:attr="RowId='R23', ColumnId='C5'"
+												th:attr="RowId='R23', ColumnId='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -2161,7 +2181,7 @@ ranges.forEach(range => {
 											<td id="r24_num_depo_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r24_num_depo_acc}"
-												th:attr="RowId='R24', ColumnId='C3'"
+												th:attr="RowId='R24', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 
 											<td id="r24_num_borrowers"
@@ -2173,7 +2193,7 @@ ranges.forEach(range => {
 											<td id="r24_num_loan_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r24_num_loan_acc}"
-												th:attr="RowId='R24', ColumnId='C5'"
+												th:attr="RowId='R24', ColumnId='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -2191,7 +2211,7 @@ ranges.forEach(range => {
 											<td id="r25_num_depo_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r25_num_depo_acc}"
-												th:attr="RowId='R25', ColumnId='C3'"
+												th:attr="RowId='R25', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 
 											<td id="r25_num_borrowers"
@@ -2203,7 +2223,7 @@ ranges.forEach(range => {
 											<td id="r25_num_loan_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r25_num_loan_acc}"
-												th:attr="RowId='R25', ColumnId='C5'"
+												th:attr="RowId='R25', ColumnId='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -2221,7 +2241,7 @@ ranges.forEach(range => {
 											<td id="r26_num_depo_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r26_num_depo_acc}"
-												th:attr="RowId='R26', ColumnId='C3'"
+												th:attr="RowId='R26', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 
 											<td id="r26_num_borrowers"
@@ -2233,7 +2253,7 @@ ranges.forEach(range => {
 											<td id="r26_num_loan_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r26_num_loan_acc}"
-												th:attr="RowId='R26', ColumnId='C5'"
+												th:attr="RowId='R26', ColumnId='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -2251,7 +2271,7 @@ ranges.forEach(range => {
 											<td id="r27_num_depo_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r27_num_depo_acc}"
-												th:attr="RowId='R27', ColumnId='C3'"
+												th:attr="RowId='R27', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 
 											<td id="r27_num_borrowers"
@@ -2263,7 +2283,7 @@ ranges.forEach(range => {
 											<td id="r27_num_loan_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r27_num_loan_acc}"
-												th:attr="RowId='R27', ColumnId='C5'"
+												th:attr="RowId='R27', ColumnId='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -2281,7 +2301,7 @@ ranges.forEach(range => {
 											<td id="r28_num_depo_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r28_num_depo_acc}"
-												th:attr="RowId='R28', ColumnId='C3'"
+												th:attr="RowId='R28', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 
 											<td id="r28_num_borrowers"
@@ -2293,7 +2313,7 @@ ranges.forEach(range => {
 											<td id="r28_num_loan_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r28_num_loan_acc}"
-												th:attr="RowId='R28', ColumnId='C5'"
+												th:attr="RowId='R28', ColumnId='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -2333,7 +2353,7 @@ ranges.forEach(range => {
 											<td id="r30_num_depo_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r30_num_depo_acc}"
-												th:attr="RowId='R30', ColumnId='C3'"
+												th:attr="RowId='R30', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 
 											<td id="r30_num_borrowers"
@@ -2345,7 +2365,7 @@ ranges.forEach(range => {
 											<td id="r30_num_loan_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r30_num_loan_acc}"
-												th:attr="RowId='R30', ColumnId='C5'"
+												th:attr="RowId='R30', ColumnId='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -2363,7 +2383,7 @@ ranges.forEach(range => {
 											<td id="r31_num_depo_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r31_num_depo_acc}"
-												th:attr="RowId='R31', ColumnId='C3'"
+												th:attr="RowId='R31', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 
 											<td id="r31_num_borrowers"
@@ -2375,7 +2395,7 @@ ranges.forEach(range => {
 											<td id="r31_num_loan_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r31_num_loan_acc}"
-												th:attr="RowId='R31', ColumnId='C5'"
+												th:attr="RowId='R31', ColumnId='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -2393,7 +2413,7 @@ ranges.forEach(range => {
 											<td id="r32_num_depo_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r32_num_depo_acc}"
-												th:attr="RowId='R32', ColumnId='C3'"
+												th:attr="RowId='R32', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 
 											<td id="r32_num_borrowers"
@@ -2405,7 +2425,7 @@ ranges.forEach(range => {
 											<td id="r32_num_loan_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r32_num_loan_acc}"
-												th:attr="RowId='R32', ColumnId='C5'"
+												th:attr="RowId='R32', ColumnId='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -2423,7 +2443,7 @@ ranges.forEach(range => {
 											<td id="r33_num_depo_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r33_num_depo_acc}"
-												th:attr="RowId='R33', ColumnId='C3'"
+												th:attr="RowId='R33', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 
 											<td id="r33_num_borrowers"
@@ -2435,7 +2455,7 @@ ranges.forEach(range => {
 											<td id="r33_num_loan_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r33_num_loan_acc}"
-												th:attr="RowId='R33', ColumnId='C5'"
+												th:attr="RowId='R33', ColumnId='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -2453,7 +2473,7 @@ ranges.forEach(range => {
 											<td id="r34_num_depo_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r34_num_depo_acc}"
-												th:attr="RowId='R34', ColumnId='C3'"
+												th:attr="RowId='R34', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 
 											<td id="r34_num_borrowers"
@@ -2465,7 +2485,7 @@ ranges.forEach(range => {
 											<td id="r34_num_loan_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r34_num_loan_acc}"
-												th:attr="RowId='R34', ColumnId='C5'"
+												th:attr="RowId='R34', ColumnId='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -2483,7 +2503,7 @@ ranges.forEach(range => {
 											<td id="r35_num_depo_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r35_num_depo_acc}"
-												th:attr="RowId='R35', ColumnId='C3'"
+												th:attr="RowId='R35', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 
 											<td id="r35_num_borrowers"
@@ -2495,7 +2515,7 @@ ranges.forEach(range => {
 											<td id="r35_num_loan_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r35_num_loan_acc}"
-												th:attr="RowId='R35', ColumnId='C5'"
+												th:attr="RowId='R35', ColumnId='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -2513,7 +2533,7 @@ ranges.forEach(range => {
 											<td id="r36_num_depo_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r36_num_depo_acc}"
-												th:attr="RowId='R36', ColumnId='C3'"
+												th:attr="RowId='R36', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 
 											<td id="r36_num_borrowers"
@@ -2525,7 +2545,7 @@ ranges.forEach(range => {
 											<td id="r36_num_loan_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r36_num_loan_acc}"
-												th:attr="RowId='R36', ColumnId='C5'"
+												th:attr="RowId='R36', ColumnId='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -2543,7 +2563,7 @@ ranges.forEach(range => {
 											<td id="r37_num_depo_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r37_num_depo_acc}"
-												th:attr="RowId='R37', ColumnId='C3'"
+												th:attr="RowId='R37', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 
 											<td id="r37_num_borrowers"
@@ -2555,7 +2575,7 @@ ranges.forEach(range => {
 											<td id="r37_num_loan_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r37_num_loan_acc}"
-												th:attr="RowId='R37', ColumnId='C5'"
+												th:attr="RowId='R37', ColumnId='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -2595,7 +2615,7 @@ ranges.forEach(range => {
 											<td id="r39_num_depo_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r39_num_depo_acc}"
-												th:attr="RowId='R39', ColumnId='C3'"
+												th:attr="RowId='R39', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 
 											<td id="r39_num_borrowers"
@@ -2607,7 +2627,7 @@ ranges.forEach(range => {
 											<td id="r39_num_loan_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r39_num_loan_acc}"
-												th:attr="RowId='R39', ColumnId='C5'"
+												th:attr="RowId='R39', ColumnId='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -2625,7 +2645,7 @@ ranges.forEach(range => {
 											<td id="r40_num_depo_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r40_num_depo_acc}"
-												th:attr="RowId='R40', ColumnId='C3'"
+												th:attr="RowId='R40', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 
 											<td id="r40_num_borrowers"
@@ -2637,7 +2657,7 @@ ranges.forEach(range => {
 											<td id="r40_num_loan_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r40_num_loan_acc}"
-												th:attr="RowId='R40', ColumnId='C5'"
+												th:attr="RowId='R40', ColumnId='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -2677,7 +2697,7 @@ ranges.forEach(range => {
 											<td id="r42_num_depo_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r42_num_depo_acc}"
-												th:attr="RowId='R42', ColumnId='C3'"
+												th:attr="RowId='R42', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 
 											<td id="r42_num_borrowers"
@@ -2689,7 +2709,7 @@ ranges.forEach(range => {
 											<td id="r42_num_loan_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r42_num_loan_acc}"
-												th:attr="RowId='R42', ColumnId='C5'"
+												th:attr="RowId='R42', ColumnId='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -2707,7 +2727,7 @@ ranges.forEach(range => {
 											<td id="r43_num_depo_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r43_num_depo_acc}"
-												th:attr="RowId='R43', ColumnId='C3'"
+												th:attr="RowId='R43', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 
 											<td id="r43_num_borrowers"
@@ -2719,7 +2739,7 @@ ranges.forEach(range => {
 											<td id="r43_num_loan_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r43_num_loan_acc}"
-												th:attr="RowId='R43', ColumnId='C5'"
+												th:attr="RowId='R43', ColumnId='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -2759,7 +2779,7 @@ ranges.forEach(range => {
 											<td id="r45_num_depo_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r45_num_depo_acc}"
-												th:attr="RowId='R45', ColumnId='C3'"
+												th:attr="RowId='R45', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 
 											<td id="r45_num_borrowers"
@@ -2771,7 +2791,7 @@ ranges.forEach(range => {
 											<td id="r45_num_loan_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r45_num_loan_acc}"
-												th:attr="RowId='R45', ColumnId='C5'"
+												th:attr="RowId='R45', ColumnId='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -2789,7 +2809,7 @@ ranges.forEach(range => {
 											<td id="r46_num_depo_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r46_num_depo_acc}"
-												th:attr="RowId='R46', ColumnId='C3'"
+												th:attr="RowId='R46', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 
 											<td id="r46_num_borrowers"
@@ -2801,7 +2821,7 @@ ranges.forEach(range => {
 											<td id="r46_num_loan_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r46_num_loan_acc}"
-												th:attr="RowId='R46', ColumnId='C5'"
+												th:attr="RowId='R46', ColumnId='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -2819,7 +2839,7 @@ ranges.forEach(range => {
 											<td id="r47_num_depo_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r47_num_depo_acc}"
-												th:attr="RowId='R47', ColumnId='C3'"
+												th:attr="RowId='R47', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 
 											<td id="r47_num_borrowers"
@@ -2831,7 +2851,7 @@ ranges.forEach(range => {
 											<td id="r47_num_loan_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r47_num_loan_acc}"
-												th:attr="RowId='R47', ColumnId='C5'"
+												th:attr="RowId='R47', ColumnId='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -2849,7 +2869,7 @@ ranges.forEach(range => {
 											<td id="r48_num_depo_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r48_num_depo_acc}"
-												th:attr="RowId='R48', ColumnId='C3'"
+												th:attr="RowId='R48', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 
 											<td id="r48_num_borrowers"
@@ -2861,7 +2881,7 @@ ranges.forEach(range => {
 											<td id="r48_num_loan_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r48_num_loan_acc}"
-												th:attr="RowId='R48', ColumnId='C5'"
+												th:attr="RowId='R48', ColumnId='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -2901,7 +2921,7 @@ ranges.forEach(range => {
 											<td id="r50_num_depo_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r50_num_depo_acc}"
-												th:attr="RowId='R50', ColumnId='C3'"
+												th:attr="RowId='R50', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 
 											<td id="r50_num_borrowers"
@@ -2913,7 +2933,7 @@ ranges.forEach(range => {
 											<td id="r50_num_loan_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r50_num_loan_acc}"
-												th:attr="RowId='R50', ColumnId='C5'"
+												th:attr="RowId='R50', ColumnId='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -2931,7 +2951,7 @@ ranges.forEach(range => {
 											<td id="r51_num_depo_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r51_num_depo_acc}"
-												th:attr="RowId='R51', ColumnId='C3'"
+												th:attr="RowId='R51', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 
 											<td id="r51_num_borrowers"
@@ -2943,7 +2963,7 @@ ranges.forEach(range => {
 											<td id="r51_num_loan_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r51_num_loan_acc}"
-												th:attr="RowId='R51', ColumnId='C5'"
+												th:attr="RowId='R51', ColumnId='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -2961,7 +2981,7 @@ ranges.forEach(range => {
 											<td id="r52_num_depo_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r52_num_depo_acc}"
-												th:attr="RowId='R52', ColumnId='C3'"
+												th:attr="RowId='R52', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 
 											<td id="r52_num_borrowers"
@@ -2973,7 +2993,7 @@ ranges.forEach(range => {
 											<td id="r52_num_loan_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r52_num_loan_acc}"
-												th:attr="RowId='R52', ColumnId='C5'"
+												th:attr="RowId='R52', ColumnId='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -3013,7 +3033,7 @@ ranges.forEach(range => {
 											<td id="r54_num_depo_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r54_num_depo_acc}"
-												th:attr="RowId='R54', ColumnId='C3'"
+												th:attr="RowId='R54', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 
 											<td id="r54_num_borrowers"
@@ -3025,7 +3045,7 @@ ranges.forEach(range => {
 											<td id="r54_num_loan_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r54_num_loan_acc}"
-												th:attr="RowId='R54', ColumnId='C5'"
+												th:attr="RowId='R54', ColumnId='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -3043,7 +3063,7 @@ ranges.forEach(range => {
 											<td id="r55_num_depo_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r55_num_depo_acc}"
-												th:attr="RowId='R55', ColumnId='C3'"
+												th:attr="RowId='R55', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 
 											<td id="r55_num_borrowers"
@@ -3055,7 +3075,7 @@ ranges.forEach(range => {
 											<td id="r55_num_loan_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r55_num_loan_acc}"
-												th:attr="RowId='R55', ColumnId='C5'"
+												th:attr="RowId='R55', ColumnId='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -3073,7 +3093,7 @@ ranges.forEach(range => {
 											<td id="r56_num_depo_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r56_num_depo_acc}"
-												th:attr="RowId='R56', ColumnId='C3'"
+												th:attr="RowId='R56', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 
 											<td id="r56_num_borrowers"
@@ -3085,7 +3105,7 @@ ranges.forEach(range => {
 											<td id="r56_num_loan_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r56_num_loan_acc}"
-												th:attr="RowId='R56', ColumnId='C5'"
+												th:attr="RowId='R56', ColumnId='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -3125,7 +3145,7 @@ ranges.forEach(range => {
 											<td id="r58_num_depo_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r58_num_depo_acc}"
-												th:attr="RowId='R58', ColumnId='C3'"
+												th:attr="RowId='R58', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 
 											<td id="r58_num_borrowers"
@@ -3137,7 +3157,7 @@ ranges.forEach(range => {
 											<td id="r58_num_loan_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r58_num_loan_acc}"
-												th:attr="RowId='R58', ColumnId='C5'"
+												th:attr="RowId='R58', ColumnId='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -3155,7 +3175,7 @@ ranges.forEach(range => {
 											<td id="r59_num_depo_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r59_num_depo_acc}"
-												th:attr="RowId='R59', ColumnId='C3'"
+												th:attr="RowId='R59', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 
 											<td id="r59_num_borrowers"
@@ -3167,7 +3187,7 @@ ranges.forEach(range => {
 											<td id="r59_num_loan_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r59_num_loan_acc}"
-												th:attr="RowId='R59', ColumnId='C5'"
+												th:attr="RowId='R59', ColumnId='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -3185,7 +3205,7 @@ ranges.forEach(range => {
 											<td id="r60_num_depo_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r60_num_depo_acc}"
-												th:attr="RowId='R60', ColumnId='C3'"
+												th:attr="RowId='R60', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 
 											<td id="r60_num_borrowers"
@@ -3197,7 +3217,7 @@ ranges.forEach(range => {
 											<td id="r60_num_loan_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r60_num_loan_acc}"
-												th:attr="RowId='R60', ColumnId='C5'"
+												th:attr="RowId='R60', ColumnId='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -3215,7 +3235,7 @@ ranges.forEach(range => {
 											<td id="r61_num_depo_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r61_num_depo_acc}"
-												th:attr="RowId='R61', ColumnId='C3'"
+												th:attr="RowId='R61', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 
 											<td id="r61_num_borrowers"
@@ -3227,7 +3247,7 @@ ranges.forEach(range => {
 											<td id="r61_num_loan_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r61_num_loan_acc}"
-												th:attr="RowId='R61', ColumnId='C5'"
+												th:attr="RowId='R61', ColumnId='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -3245,7 +3265,7 @@ ranges.forEach(range => {
 											<td id="r62_num_depo_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r62_num_depo_acc}"
-												th:attr="RowId='R62', ColumnId='C3'"
+												th:attr="RowId='R62', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 
 											<td id="r62_num_borrowers"
@@ -3257,7 +3277,7 @@ ranges.forEach(range => {
 											<td id="r62_num_loan_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r62_num_loan_acc}"
-												th:attr="RowId='R62', ColumnId='C5'"
+												th:attr="RowId='R62', ColumnId='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -3275,7 +3295,7 @@ ranges.forEach(range => {
 											<td id="r63_num_depo_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r63_num_depo_acc}"
-												th:attr="RowId='R63', ColumnId='C3'"
+												th:attr="RowId='R63', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 
 											<td id="r63_num_borrowers"
@@ -3287,7 +3307,7 @@ ranges.forEach(range => {
 											<td id="r63_num_loan_acc"
 												style="text-align: right; padding-right: 10px;"
 												th:text="${report?.r63_num_loan_acc}"
-												th:attr="RowId='R63', ColumnId='C5'"
+												th:attr="RowId='R63', ColumnId='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -3351,9 +3371,9 @@ ranges.forEach(range => {
 				<div th:if="${displaymode == 'Details'}">
 					<div class="row">
 						<div class="col-sm-12">
-							<div class="table-responsive scrollable-table-container"
+							<div class="table-responsive "
 								style="border-right: 1px solid #dee2e6;">
-								<table class="table table-striped table-hover" id="reportdetail">
+								<table class="table table-striped table-hover" id="reportdetails">
 									<thead class="thead-light">
 										<tr>
 											<th></th>

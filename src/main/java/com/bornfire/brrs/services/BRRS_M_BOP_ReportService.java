@@ -2377,6 +2377,16 @@ public class BRRS_M_BOP_ReportService {
 		    cell4.setCellValue("");
 		    cell4.setCellStyle(textStyle);
 		}
+		
+		Cell cell5 = row.createCell(4);
+		if (record.getR25_net() != null) {
+		    cell5.setCellValue(record.getR25_net().doubleValue());
+		    cell5.setCellStyle(numberStyle);
+		} else {
+		    cell5.setCellValue("");
+		    cell5.setCellStyle(textStyle);
+		}
+		
 		// Column F
 		cell6 = row.createCell(5);
 		if (record.getR25_cpdm_dt_der() != null) {
@@ -2394,6 +2404,15 @@ public class BRRS_M_BOP_ReportService {
 		} else {
 		    cell7.setCellValue("");
 		    cell7.setCellStyle(textStyle);
+		}
+		
+		Cell cell8 = row.createCell(7);
+		if (record.getR25_cp() != null) {
+		    cell8.setCellValue(record.getR25_cp().doubleValue());
+		    cell8.setCellStyle(numberStyle);
+		} else {
+		    cell8.setCellValue("");
+		    cell8.setCellStyle(textStyle);
 		}
 
 		// ROW 26
@@ -2443,6 +2462,7 @@ public class BRRS_M_BOP_ReportService {
 		    cell7.setCellValue("");
 		    cell7.setCellStyle(textStyle);
 		}
+		
 
 		// ROW 27
 		row = sheet.getRow(26);
@@ -4827,6 +4847,16 @@ public class BRRS_M_BOP_ReportService {
 		    cell4.setCellValue("");
 		    cell4.setCellStyle(textStyle);
 		}
+		
+		Cell cell5 = row.createCell(4);
+		if (record.getR25_net() != null) {
+		    cell5.setCellValue(record.getR25_net().doubleValue());
+		    cell5.setCellStyle(numberStyle);
+		} else {
+		    cell5.setCellValue("");
+		    cell5.setCellStyle(textStyle);
+		}
+		
 		// Column F
 		cell6 = row.createCell(5);
 		if (record.getR25_cpdm_dt_der() != null) {
@@ -4844,6 +4874,15 @@ public class BRRS_M_BOP_ReportService {
 		} else {
 		    cell7.setCellValue("");
 		    cell7.setCellStyle(textStyle);
+		}
+		
+		Cell cell8 = row.createCell(7);
+		if (record.getR25_cp() != null) {
+		    cell8.setCellValue(record.getR25_cp().doubleValue());
+		    cell8.setCellStyle(numberStyle);
+		} else {
+		    cell8.setCellValue("");
+		    cell8.setCellStyle(textStyle);
 		}
 
 		// ROW 26
@@ -7275,6 +7314,16 @@ public class BRRS_M_BOP_ReportService {
 		    cell4.setCellValue("");
 		    cell4.setCellStyle(textStyle);
 		}
+		
+		Cell cell5 = row.createCell(4);
+		if (record.getR25_net() != null) {
+		    cell5.setCellValue(record.getR25_net().doubleValue());
+		    cell5.setCellStyle(numberStyle);
+		} else {
+		    cell5.setCellValue("");
+		    cell5.setCellStyle(textStyle);
+		}
+		
 		// Column F
 		cell6 = row.createCell(5);
 		if (record.getR25_cpdm_dt_der() != null) {
@@ -7292,6 +7341,15 @@ public class BRRS_M_BOP_ReportService {
 		} else {
 		    cell7.setCellValue("");
 		    cell7.setCellStyle(textStyle);
+		}
+		
+		Cell cell8 = row.createCell(7);
+		if (record.getR25_cp() != null) {
+		    cell8.setCellValue(record.getR25_cp().doubleValue());
+		    cell8.setCellStyle(numberStyle);
+		} else {
+		    cell8.setCellValue("");
+		    cell8.setCellStyle(textStyle);
 		}
 
 		// ROW 26

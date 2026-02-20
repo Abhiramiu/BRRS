@@ -3717,8 +3717,8 @@ public class RegulatoryReportServices {
 			 
 		 case "Q_ATF":
 		try {
-			repfile = brrs_q_atf_reportservice.getBRRS_Q_ATFExcel(filename, reportId,
-					 fromdate, todate, currency, dtltype, type, version);
+			repfile = brrs_q_atf_reportservice.getBRRS_Q_ATFExcel(filename, reportId, fromdate, todate, currency,
+					dtltype, type, format, version);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
