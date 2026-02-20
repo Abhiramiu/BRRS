@@ -3131,8 +3131,8 @@ public class RegulatoryReportServices {
 
 		case "M_LA5":
 			try {
-				repfile = BRRS_M_LA5_reportservice.BRRS_M_LA5Excel(filename, reportId, fromdate, todate, currency,
-						dtltype, type, version);
+				repfile = BRRS_M_LA5_reportservice.BRRS_M_LA5Excel(filename, reportId, fromdate, todate,
+						currency, dtltype, type, format, version);
 			} catch (Exception e) { // TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -4185,7 +4185,6 @@ public class RegulatoryReportServices {
 			try {
 				archivalData = BRRS_M_DEP1_reportservice.getM_DEP1Archival();
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			break;
@@ -4215,14 +4214,20 @@ public class RegulatoryReportServices {
 			}
 			break;
 
+//		case "M_LA5":
+//			try {
+//				archivalData = BRRS_M_LA5_reportservice.getM_LA5Archival();
+//
+//			} catch (Exception e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//			break;
+			
 		case "M_LA5":
-			try {
-				archivalData = BRRS_M_LA5_reportservice.getM_LA5Archival();
-
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			List<Object[]> LA5DATA = BRRS_M_LA5_reportservice.getM_LA5Archival();
+			LA5DATA.addAll(LA5DATA);
+			System.out.println("Fetched M_LA5 archival data: " + LA5DATA.size());
 			break;
 
 		case "M_DEP2":

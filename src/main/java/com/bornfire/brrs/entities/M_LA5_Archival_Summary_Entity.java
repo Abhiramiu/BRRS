@@ -3,6 +3,7 @@ package com.bornfire.brrs.entities;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -705,6 +706,9 @@ public class M_LA5_Archival_Summary_Entity {
     private Date REPORT_DATE;
 
     private BigDecimal REPORT_VERSION;
+	@Column(name = "REPORT_RESUBDATE")
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date reportResubDate;
     private String REPORT_FREQUENCY;
     private String REPORT_CODE;
     private String REPORT_DESC;
@@ -4184,4 +4188,12 @@ public class M_LA5_Archival_Summary_Entity {
 		super();
 		// TODO Auto-generated constructor stub
 	}
+	public Date getReportResubDate() {
+		return reportResubDate;
+	}
+	public void setReportResubDate(Date reportResubDate) {
+		this.reportResubDate = reportResubDate;
+	}
+	
+	
 }
