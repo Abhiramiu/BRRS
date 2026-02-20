@@ -15,10 +15,10 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
 @Entity
-@Table(name = "BRRS_M_LA3_ARCHIVALTABLE_SUMMARY2")
+@Table(name = "BRRS_M_LA3_RESUB_SUMMARYTABLE2")
 @IdClass(M_LA3_PK.class)
 
-public class M_LA3_Archival_Summary_Entity2 {
+public class M_LA3_RESUB_Summary_Entity2 {
 	
 	
 	// ====== R36 ======
@@ -528,7 +528,7 @@ public class M_LA3_Archival_Summary_Entity2 {
 
 
 
-			public M_LA3_Archival_Summary_Entity2() {
+			public M_LA3_RESUB_Summary_Entity2() {
 				super();
 				// TODO Auto-generated constructor stub
 			}

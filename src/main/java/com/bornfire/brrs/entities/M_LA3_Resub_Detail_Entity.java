@@ -6,17 +6,21 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
-@Table(name = "BRRS_M_LA3_DETAILTABLE")
-public class M_LA3_Detail_Entity {
+@Table(name = "BRRS_M_LA3_RESUB_DETAILTABLE")
+@IdClass(M_LA3_PK.class)
+public class M_LA3_Resub_Detail_Entity {
 	
 	
 	private String	cust_id;
-	
+	@Id
 	private String	acct_number;
 	private String	acct_name;
 	private String	data_type;
@@ -25,9 +29,19 @@ public class M_LA3_Detail_Entity {
 	private String	modification_remarks;
 	private String	data_entry_version;
 	private BigDecimal	acct_balance_in_pula;
+	
 	@Id
-	@DateTimeFormat(pattern = "yyyy-MM-dd")
-	private Date	report_date;
+	@Temporal(TemporalType.DATE)
+	@Column(name = "REPORT_DATE")
+	private Date reportDate;
+
+	@Id
+	@Column(name = "DATA_ENTRY_VERSION")
+	private BigDecimal reportVersion;
+
+	@Column(name = "REPORT_RESUBDATE")
+	
+	private Date reportResubDate;
 	private String	report_name;
 	private String	create_user;
 	private Date	create_time;
@@ -47,7 +61,7 @@ public class M_LA3_Detail_Entity {
 	private BigDecimal	sanction_limit;
 	private String	report_label;
 	
-	
+
 	public String getCust_id() {
 		return cust_id;
 	}
@@ -138,13 +152,33 @@ public class M_LA3_Detail_Entity {
 	}
 
 
-	public Date getReport_date() {
-		return report_date;
+	public Date getReportDate() {
+		return reportDate;
 	}
 
 
-	public void setReport_date(Date report_date) {
-		this.report_date = report_date;
+	public void setReportDate(Date reportDate) {
+		this.reportDate = reportDate;
+	}
+
+
+	public BigDecimal getReportVersion() {
+		return reportVersion;
+	}
+
+
+	public void setReportVersion(BigDecimal reportVersion) {
+		this.reportVersion = reportVersion;
+	}
+
+
+	public Date getReportResubDate() {
+		return reportResubDate;
+	}
+
+
+	public void setReportResubDate(Date reportResubDate) {
+		this.reportResubDate = reportResubDate;
 	}
 
 
@@ -328,17 +362,11 @@ public class M_LA3_Detail_Entity {
 	}
 
 
-	public M_LA3_Detail_Entity() {
+	public M_LA3_Resub_Detail_Entity() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	  
-	
 
-	
-	
     
+
 }
-    
-    
-    

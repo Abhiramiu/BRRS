@@ -1250,6 +1250,13 @@ public class RegulatoryReportServices {
 					pageable, type, version);
 
 			break;
+			
+		case "M_LA3":
+
+			repsummary = BRRS_M_LA3_reportservice.getM_LA3View(reportId, fromdate, todate, currency, dtltype,
+					pageable, type, version);
+
+			break;
 
 		case "M_SRWA_12G":
 
@@ -2326,6 +2333,8 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
+			
+		
 
 		case "M_SRWA_12G":
 			try {
@@ -3114,6 +3123,17 @@ public class RegulatoryReportServices {
 		case "M_LA1":
 			try {
 				repfile = BRRS_M_LA1_reportservice.BRRS_M_LA1Excel(filename, reportId, fromdate, todate, currency,
+						dtltype, type, version);
+			} catch (Exception e) { // TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+			
+			
+		case "M_LA3":
+			try {
+
+				repfile = BRRS_M_LA3_reportservice.BRRS_M_LA3Excel(filename, reportId, fromdate, todate, currency,
 						dtltype, type, version);
 			} catch (Exception e) { // TODO Auto-generated catch block
 				e.printStackTrace();

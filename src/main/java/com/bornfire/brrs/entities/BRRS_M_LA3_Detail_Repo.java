@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-	public interface BRRS_M_LA3_Detail_Repo extends JpaRepository<M_LA3_Detail_Entity, String> {
+	public interface BRRS_M_LA3_Detail_Repo extends JpaRepository<M_LA3_Detail_Entity, Date> {
 
 		@Query(value = "select * from BRRS_M_LA3_DETAILTABLE", nativeQuery = true)
 		List<M_LA3_Detail_Entity> getdatabydateList(Date reportdate);
