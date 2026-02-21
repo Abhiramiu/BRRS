@@ -4247,30 +4247,14 @@ public class RegulatoryReportServices {
 			}
 			break;
 
-//		case "M_LA5":
-//			try {
-//				archivalData = BRRS_M_LA5_reportservice.getM_LA5Archival();
-//
-//			} catch (Exception e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//			break;
-			
-//		case "M_LA5":
-//			List<Object[]> LA5DATA = BRRS_M_LA5_reportservice.getM_LA5Archival();
-//			LA5DATA.addAll(LA5DATA);
-//			System.out.println("Fetched M_LA5 archival data: " + LA5DATA.size());
-//			break;
-		case "M_LA5":
-			try {
-				archivalData = BRRS_M_LA5_reportservice.getM_LA5Archival();
 
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			
+		case "M_LA5":
+			List<Object[]> LA5DATA = BRRS_M_LA5_reportservice.getM_LA5Archival();
+			LA5DATA.addAll(LA5DATA);
+			System.out.println("Fetched M_LA5 archival data: " + LA5DATA.size());
 			break;
+
 
 		case "M_DEP2":
 			try {
@@ -6633,6 +6617,17 @@ public class RegulatoryReportServices {
 			e.printStackTrace();
 		}
 		break;
+		
+		case "M_LA5":
+			try {
+				List<Object[]> resubList = BRRS_M_LA5_reportservice.getM_LA5Resub();
+				resubmissionData.addAll(resubList);
+				System.out.println("Resubmission data fetched for M_LA5: " + resubList.size());
+			} catch (Exception e) {
+				System.err.println("Error fetching resubmission data for M_LA5: " + e.getMessage());
+				e.printStackTrace();
+			}
+			break;
 
 		case "M_CA4":
 			try {

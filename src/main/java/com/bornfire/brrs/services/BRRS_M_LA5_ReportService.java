@@ -546,71 +546,73 @@ public class BRRS_M_LA5_ReportService {
 	}
 //Gopika
 
-//	public List<Object[]> getM_LA5Resub() {
-//		List<Object[]> resubList = new ArrayList<>();
-//		try {
-//			List<M_LA5_Archival_Summary_Entity> latestArchivalList = M_LA5_Archival_Summary_Repo
-//					.getdatabydateListWithVersion();
-//
-//			if (latestArchivalList != null && !latestArchivalList.isEmpty()) {
-//				for (M_LA5_Archival_Summary_Entity entity : latestArchivalList) {
-//					resubList.add(new Object[] { entity.getReportDate(), entity.getReportVersion(),
-//							entity.getReportResubDate() });
-//				}
-//				System.out.println("Fetched " + resubList.size() + " record(s)");
-//			} else {
-//				System.out.println("No archival data found.");
-//			}
-//
-//		} catch (Exception e) {
-//			System.err.println("Error fetching M_LA5 Resub data: " + e.getMessage());
-//			e.printStackTrace();
-//		}
-//		return resubList;
-//	}
-
-//	// Archival View
-//	public List<Object[]> getM_LA5Archival() {
-//		List<Object[]> archivalList = new ArrayList<>();
-//
-//		try {
-//			List<M_LA5_Archival_Summary_Entity> repoData = BRRS_M_LA5_Archival_Summary_Repo
-//					.getdatabydateListWithVersion();
-//
-//			if (repoData != null && !repoData.isEmpty()) {
-//				for (M_LA5_Archival_Summary_Entity entity : repoData) {
-//					Object[] row = new Object[] { entity.getReportDate(), entity.getReportVersion()};
-//					archivalList.add(row);
-//				}
-//
-//				System.out.println("Fetched " + archivalList.size() + " archival records");
-//				M_LA5_Archival_Summary_Entity first = repoData.get(0);
-//				System.out.println("Latest archival version: " + first.getReportVersion());
-//			} else {
-//				System.out.println("No archival data found.");
-//			}
-//
-//		} catch (Exception e) {
-//			System.err.println("Error fetching M_LA5 Archival data: " + e.getMessage());
-//			e.printStackTrace();
-//		}
-//
-//		return archivalList;
-//	}
-
-	public List<Object> getM_LA5Archival() {
-		List<Object> LA5Archivallist = new ArrayList<>();
+	public List<Object[]> getM_LA5Resub() {
+		List<Object[]> resubList = new ArrayList<>();
 		try {
-			LA5Archivallist = BRRS_M_LA5_Archival_Summary_Repo.getM_LA5archival();
-			System.out.println("countser" + LA5Archivallist.size());
+			List<M_LA5_Archival_Summary_Entity> latestArchivalList = BRRS_M_LA5_Archival_Summary_Repo
+					.getdatabydateListWithVersion();
+
+			if (latestArchivalList != null && !latestArchivalList.isEmpty()) {
+				for (M_LA5_Archival_Summary_Entity entity : latestArchivalList) {
+					resubList.add(new Object[] { entity.getReportDate(), entity.getReportVersion(),
+							entity.getReportResubDate() });
+				}
+				System.out.println("Fetched " + resubList.size() + " record(s)");
+			} else {
+				System.out.println("No archival data found.");
+			}
+
 		} catch (Exception e) {
-			// Log the exception
-			System.err.println("Error fetching M_SFINP2 Archival data: " + e.getMessage());
+			System.err.println("Error fetching M_LA5 Resub data: " + e.getMessage());
 			e.printStackTrace();
 		}
-		return LA5Archivallist;
+		return resubList;
 	}
-	
+
+//	// Archival View
+	// Archival View
+		public List<Object[]> getM_LA5Archival() {
+			List<Object[]> archivalList = new ArrayList<>();
+
+			try {
+				List<M_LA5_Archival_Summary_Entity> repoData = BRRS_M_LA5_Archival_Summary_Repo
+						.getdatabydateListWithVersion();
+
+				if (repoData != null && !repoData.isEmpty()) {
+					for (M_LA5_Archival_Summary_Entity entity : repoData) {
+						Object[] row = new Object[] { entity.getReportDate(), entity.getReportVersion(),
+								entity.getReportResubDate() };
+						archivalList.add(row);
+					}
+
+					System.out.println("Fetched " + archivalList.size() + " archival records");
+					M_LA5_Archival_Summary_Entity first = repoData.get(0);
+					System.out.println("Latest archival version: " + first.getReportVersion());
+				} else {
+					System.out.println("No archival data found.");
+				}
+
+			} catch (Exception e) {
+				System.err.println("Error fetching M_LA5 Archival data: " + e.getMessage());
+				e.printStackTrace();
+			}
+
+			return archivalList;
+		}
+
+//	public List<Object> getM_LA5Archival() {
+//		List<Object> LA5Archivallist = new ArrayList<>();
+//		try {
+//			LA5Archivallist = BRRS_M_LA5_Archival_Summary_Repo.getM_LA5archival();
+//			System.out.println("countser" + LA5Archivallist.size());
+//		} catch (Exception e) {
+//			// Log the exception
+//			System.err.println("Error fetching M_SFINP2 Archival data: " + e.getMessage());
+//			e.printStackTrace();
+//		}
+//		return LA5Archivallist;
+//	}
+//	
 
 	
 	// Normal format Excel
