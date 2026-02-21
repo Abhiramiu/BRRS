@@ -398,6 +398,11 @@ table.dataTable th.dt-type-numeric:nth-child(6) {
 	text-align: right !important;
 	padding-right: 10px !important;
 }
+
+.table-bordereds td,
+        .table-bordereds th {
+            border: 1px solid #dfe0e3;
+        }
 </style>
 
 
@@ -646,7 +651,7 @@ function cancelModify() {
 					   columnDefs: [
 					     { width: "60px", targets: 0 },   // Edit icon column
 					     { width: "150px", targets: 1 }  ,  // S No column
-						 { width: "300px", targets: 7 }    // S No column
+						 { width: "300px", targets: 8 }    // S No column
 					   ],
 
 				      dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t'
@@ -3373,7 +3378,7 @@ ranges.forEach(range => {
 						<div class="col-sm-12">
 							<div class="table-responsive "
 								style="border-right: 1px solid #dee2e6;">
-								<table class="table table-striped table-hover" id="reportdetails">
+								<table class="table table-striped table-hover table-bordereds" id="reportdetails">
 									<thead class="thead-light">
 										<tr>
 											<th></th>
@@ -3384,6 +3389,7 @@ ranges.forEach(range => {
 											<th style="text-align: right;">ACCT_BALANCE_IN_PULA</th>
 											<th>REPORT LABEL</th>
 											<th>REPORT ADDL CRITERIA1</th>
+											<th>REPORT ADDL CRITERIA2</th>
 											<th>REPORT_DATE</th>
 										</tr>
 
@@ -3413,6 +3419,7 @@ ranges.forEach(range => {
 
 											<td th:text="${report.reportLabel}"></td>
 											<td th:text="${report.reportAddlCriteria_1}"></td>
+											<td th:text="${report.reportAddlCriteria_2}"></td>
 											<td
 												th:text="${#dates.format(report.reportDate, 'dd-MM-yyyy')}"></td>
 										</tr>
@@ -3492,6 +3499,16 @@ ranges.forEach(range => {
 							</div>
 
 							<div class="row formline" style="margin-top: 10px;">
+							
+							<label class="col-sm-2">Report Addl Criteria 2</label>
+								<div class="col-sm-3">
+									<input type="text" th:field="*{reportAddlCriteria_2}"
+										class="form-control form-control-sm" readonly />
+								</div>
+							
+							
+							<div class="col-sm-1"></div>
+							
 								<label class="col-sm-2">Report Date</label>
 								<div class="col-sm-3">
 									<input type="date" name="reportDate"
